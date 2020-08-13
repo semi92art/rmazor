@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+	<key id="add">Добавить</key>
+	<key id="click">Клик</key>
+	<key id="clicks">Кликов</key>
+	<key id="continue">Продолжить</key>
+	<key id="continue_as_guest">Продолжить как гость</key>
+	<key id="count_long">Количество</key>
+	<key id="count_short">Шт.</key>
+	<key id="country">Страна</key>
+	<key id="day">День</key>
+	<key id="email">Почта</key>
+	<key id="login">Войти</key>
+	<key id="month">Месяц</key>
+	<key id="no">Нет</key>
+	<key id="password">Пароль</key>
+	<key id="registration">Регистрация</key>
+	<key id="start">Старт</key>
+	<key id="to_save">до сохранения</key>
+	<key id="total">Всего</key>
+	<key id="warning_lose_progress">вы уверены? Текущий прогресс будет потерян</key>
+	<key id="week">Неделя</key>
+	<key id="world">Мир</key>
+	<key id="yes">Да</key>
+</data>

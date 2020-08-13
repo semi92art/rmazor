@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+	<ad type="app_id" os="android">ca-app-pub-1763919853958157~5665911644</ad>
+	<ad type="banner" os="android">ca-app-pub-1763919853958157/6822370207</ad>
+	<ad type="fullscreen" os="android">ca-app-pub-1763919853958157/3106486476</ad>
+	<ad type="native" os="android">ca-app-pub-1763919853958157/5282768267</ad>
+	<ad type="reward" os="android">ca-app-pub-1763919853958157/3375732170</ad>
+	<test_device>id1</test_device>
+	<test_device>id2</test_device>
+	<test_device>id3</test_device>
+	<test_device>id4</test_device>
+</data>
