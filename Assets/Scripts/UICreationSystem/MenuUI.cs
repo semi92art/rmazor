@@ -53,13 +53,13 @@ public class MenuUI : MonoBehaviour
         RectTransform playNow = UIFactory.UIImage(
             UIFactory.UIRectTransform(
                 m_Canvas.rectTransform(),
-                "tournaments",
+                "TESTButton",
                 UIAnchor.Create(Vector2.one, Vector2.one),
                 new Vector2(-180f, -383f),
                 Utility.HalfOne,
                 new Vector2(340f, 230f)
             ),
-            "tournaments_container").rectTransform;
+            "TESTButton_container").rectTransform;
 
         UIFactory.UIText(
             UIFactory.UIRectTransform(
@@ -69,7 +69,7 @@ public class MenuUI : MonoBehaviour
                 new Vector2(0, 26.3f),
                 Utility.HalfOne,
                 new Vector2(0, 52.6f)),
-            "tournaments");
+            "TESTButton");
 
         UIFactory.UIImage(
             UIFactory.UIRectTransform(
@@ -79,7 +79,7 @@ public class MenuUI : MonoBehaviour
                 new Vector2(0, -88.7f), 
                 Utility.HalfOne,
                 new Vector2(0, 177.4f)),
-            "tournaments");
+            "TESTButton");
 
         UIFactory.UIButton(
             UIFactory.UIRectTransform(
@@ -89,10 +89,10 @@ public class MenuUI : MonoBehaviour
                 Vector2.zero,
                 Utility.HalfOne,
                 Vector2.zero),
-            "tournaments",
+            "TESTButton",
             () =>
             {
-                Debug.Log("Tournaments Button Pushed");
+                Debug.Log("TESTButton Pushed");
                 //Button functionality
             },
             playNow.GetComponent<Image>());

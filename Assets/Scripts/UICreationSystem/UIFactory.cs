@@ -49,7 +49,7 @@ public class UIFactory
         string _StyleName)
     {
         Image image = _Item.gameObject.AddComponent<Image>();
-        UIStyleObject style = Resources.Load<UIStyleObject>($"Styles/{_StyleName}");
+        UIStyleObject style = Resources.Load<UIStyleObject>($"styles/{_StyleName}");
         if (style == null)
             return image;
 
@@ -72,7 +72,7 @@ public class UIFactory
         )
     {
         Text text = _Item.gameObject.AddComponent<Text>();
-        UIStyleObject style = Resources.Load<UIStyleObject>($"Styles/{_StyleName}");
+        UIStyleObject style = Resources.Load<UIStyleObject>($"styles/{_StyleName}");
 
         text.text = style.textID;
         text.font = style.font;
@@ -112,7 +112,7 @@ public class UIFactory
         image.raycastTarget = true;
 
         Button button = _Item.gameObject.AddComponent<Button>();
-        UIStyleObject style = Resources.Load<UIStyleObject>($"Styles/{_StyleName}");
+        UIStyleObject style = Resources.Load<UIStyleObject>($"styles/{_StyleName}");
 
         button.transition = style.transition;
         button.interactable = style.interactable;
@@ -170,12 +170,12 @@ public class UIFactory
         item.sizeDelta = _SizeDelta;
         item.localScale = Vector3.one;
 
-        /*
+        
 #if UNITY_EDITOR
-        if (gameObject.GetComponent<RectTranshormHelper>() == null) //RectTranshormHelper - пустой класс, переносить не стал
+        if (gameObject.GetComponent<RectTranshormHelper>() == null) 
             gameObject.AddComponent<RectTranshormHelper>();
 #endif
-        */
+        
         return item;
     }
 
