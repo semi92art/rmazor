@@ -48,7 +48,7 @@ namespace Clickers
             }
         
         
-            m_Ads = FromResources("config\\ads");
+            m_Ads = FromResources("configs\\ads");
             m_LocalizedValues = FromResources($"configs\\{lang}");
             _instance = this;
         }
