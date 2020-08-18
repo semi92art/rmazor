@@ -35,10 +35,10 @@ public static class UIExtentions
     {
         return _Shadow.GetComponent<RectTransform>();
     }
-    /*
+    
     public static RectTransform rectTransform(this RectTranshormHelper _RectTransformHelper)
     {
         return _RectTransformHelper.GetComponent<RectTransform>();
     }
-    */
+    
 }
