@@ -9,7 +9,12 @@ public class ConsoleView : MonoBehaviour
     public GameObject viewContainer; //Container for console view, should be a child of this GameObject
     public Text logTextArea;
     public InputField inputField;
-    public ScrollRect consoleScrollbar;
+    public ScrollRect textScrollbar;
+    public Button enterCommand;
+    public Button downCommand;
+    public Button upCommand;
+    public GameObject ConsoleLog;
+    public GameObject ConsoleScrollBar;
 
     #endregion
 
@@ -133,12 +138,60 @@ public class ConsoleView : MonoBehaviour
 
     #region private methods
 
+    private void CreatePositions()
+    {
+        //Log
+        RectTransform logAreaRectTransform = this.ConsoleLog.GetComponent<RectTransform>();
+        logAreaRectTransform.SetLeft(0);
+        logAreaRectTransform.SetRight(Screen.width - Screen.width * 0.9f);
+        logAreaRectTransform.SetTop(0);
+        logAreaRectTransform.SetBottom(Screen.height * 0.1f);
+
+        //Scroll
+        RectTransform scrollRectTransform = this.ConsoleScrollBar.GetComponent<RectTransform>();
+        scrollRectTransform.SetLeft(Screen.width - Screen.width * 0.1f);
+        scrollRectTransform.SetRight(0);
+        scrollRectTransform.SetTop(0);
+        scrollRectTransform.SetBottom(Screen.height * 0.1f);
+
+        //Input
+        RectTransform inputRectTransform = this.inputField.GetComponent<RectTransform>();
+        inputRectTransform.SetLeft(0);
+        inputRectTransform.SetRight(Screen.width - Screen.width * 0.7f);
+        inputRectTransform.SetTop(Screen.height - Screen.height * 0.1f);
+        inputRectTransform.SetBottom(0);        
+
+        //EnterButton
+        RectTransform enterButtonRectTransform = this.enterCommand.GetComponent<RectTransform>();
+        enterButtonRectTransform.SetLeft(Screen.width - Screen.width * 0.3f);
+        enterButtonRectTransform.SetRight(0);
+        enterButtonRectTransform.SetTop(Screen.height - Screen.height * 0.1f);
+        enterButtonRectTransform.SetBottom(Screen.height * 0.05f);
+
+        //UpButton
+        RectTransform upButtonRectTransform = this.upCommand.GetComponent<RectTransform>();
+        upButtonRectTransform.SetLeft(Screen.width - Screen.width * 0.3f);
+        upButtonRectTransform.SetRight(Screen.width * 0.15f);
+        upButtonRectTransform.SetTop(Screen.height - Screen.height * 0.05f);
+        upButtonRectTransform.SetBottom(0);
+
+        //DownButton
+        RectTransform downButtonRectTransform = this.downCommand.GetComponent<RectTransform>();
+        downButtonRectTransform.SetLeft(Screen.width - Screen.width * 0.15f);
+        downButtonRectTransform.SetRight(0);
+        downButtonRectTransform.SetTop(Screen.height - Screen.height * 0.05f);
+        downButtonRectTransform.SetBottom(0);
+
+    }    
+
     private void ToggleVisibility()
     {
         SetVisibility(!viewContainer.activeSelf);
-        consoleScrollbar.verticalNormalizedPosition = 0f;
+        CreatePositions();
+        textScrollbar.verticalNormalizedPosition = 0f;
         inputField.ActivateInputField();
         inputField.Select();
+        
     }
 
     private void SetVisibility(bool _Visible)
