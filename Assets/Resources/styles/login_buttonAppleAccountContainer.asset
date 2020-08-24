@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c1600272214c7aa418cb76f5cc38aecb, type: 3}
-  m_Name: TESTButton_container
+  m_Name: login_buttonAppleAccountContainer
   m_EditorClassIdentifier: 
   interactable: 0
   transition: 0
@@ -32,7 +32,7 @@ MonoBehaviour:
   colorMultiplyer: 1
   fadeDuration: 0
   sprite: {fileID: 0}
-  imageColor: {r: 0.07375617, g: 0.7264151, b: 0.03769135, a: 1}
+  imageColor: {r: 1, g: 1, b: 1, a: 1}
   raycastImageTarget: 1
   imageType: 0
   useSpriteMesh: 0
