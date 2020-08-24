@@ -16,7 +16,6 @@ using System;
 using System.Reflection;
 
 using GoogleMobileAds.Api;
-using UnityEngine;
 
 namespace GoogleMobileAds.Common
 {

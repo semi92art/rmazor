@@ -6,13 +6,15 @@ namespace Clickers
 {
     public class GameLoader : MonoBehaviour
     {
+        public GameObject consolePrefab;
+        
         private void Start()
         {
             GoogleAdsManager.Instance.Init();
             SceneManager.activeSceneChanged += (previous, current) =>
             {
                 Canvas canvas = UIFactory.UICanvas(
-                    "0",
+                    "Canvas",
                     RenderMode.ScreenSpaceOverlay,
                     true,
                     0,
@@ -31,9 +33,12 @@ namespace Clickers
                     UIAnchor.Create(0, 0, 0, 0),
                     Vector2.down, Vector2.down, Vector2.down
                     ), "TESTButton");
+                
+                if (current.buildIndex == 1)
+                    Instantiate(consolePrefab, canvas.rectTransform(), true);
             };
             
-            SceneManager.LoadScene("Menu");
+            SceneManager.LoadScene(1);
         }
     }
 }
