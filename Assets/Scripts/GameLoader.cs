@@ -20,7 +20,7 @@ namespace Clickers
                     0,
                     AdditionalCanvasShaderChannels.None,
                     CanvasScaler.ScaleMode.ScaleWithScreenSize,
-                    Vector2Int.one,
+                    new Vector2Int(1920,1080),
                     CanvasScaler.ScreenMatchMode.Shrink,
                     0f,
                     100,
@@ -35,7 +35,7 @@ namespace Clickers
                     ), "TESTButton");
                 
                 if (current.buildIndex == 1)
-                    Instantiate(consolePrefab, canvas.rectTransform(), true);
+                    Instantiate(consolePrefab, canvas.rectTransform());
             };
             
             SceneManager.LoadScene(1);
