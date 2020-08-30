@@ -151,6 +151,19 @@ public class UIFactory
         return button;
     }
 
+    public static InputField UIInputField(
+        RectTransform _Item,
+        string _StyleName)
+    {
+        InputField inputField = _Item.gameObject.AddComponent<InputField>();
+        UIStyleObject style = Resources.Load<UIStyleObject>($"styles/{_StyleName}");
+        if (style == null)
+            return inputField;
+
+        
+        return inputField;
+    }
+
     public static RectTransform UIRectTransform(
         RectTransform _Group,
         string _ID,

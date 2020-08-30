@@ -26,7 +26,7 @@ public class MenuUI : MonoBehaviour
             ),
             "menu_background");
 
-        CreateLogin();
+        CreateLoginPanel();
     }
 
     #endregion
@@ -34,7 +34,7 @@ public class MenuUI : MonoBehaviour
     public void CreateCanvas()
     {
         m_Canvas = UIFactory.UICanvas(
-                   "Canvas",
+                   "MenuCanvas",
                    RenderMode.ScreenSpaceOverlay,
                    true,
                    0,
@@ -48,7 +48,7 @@ public class MenuUI : MonoBehaviour
                    GraphicRaycaster.BlockingObjects.None);
     }
 
-    public void CreateLogin()
+    public void CreateLoginPanel()
     {
         float indent = 75f;
 
@@ -71,9 +71,9 @@ public class MenuUI : MonoBehaviour
                 new Vector2(0, -26.3f),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f)),
-            "login_email");
+            "email");
 
-        UIFactory.UIText(
+        UIFactory.UIInputField(
             UIFactory.UIRectTransform(
                 loginPanel,
                 "email_input",
@@ -81,7 +81,7 @@ public class MenuUI : MonoBehaviour
                 new Vector2(0, -indent - 26.3f),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f)),
-            "login_textbox");
+            "textbox");
 
         UIFactory.UIText(
             UIFactory.UIRectTransform(
@@ -91,9 +91,9 @@ public class MenuUI : MonoBehaviour
                 new Vector2(0, -indent * 2 - 26.3f),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f)),
-            "login_password");
+            "password");
 
-        UIFactory.UIText(
+        UIFactory.UIInputField(
             UIFactory.UIRectTransform(
                 loginPanel,
                 "password_input",
@@ -101,7 +101,7 @@ public class MenuUI : MonoBehaviour
                 new Vector2(0, -indent * 3 - 26.3f),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f)),
-            "login_textbox");
+            "textbox");
 
         //LoginButton
         RectTransform login = UIFactory.UIImage(
@@ -113,7 +113,7 @@ public class MenuUI : MonoBehaviour
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f)
             ),
-            "login_buttonLoginContainer").rectTransform;
+            "buttonLoginContainer").rectTransform;
 
         UIFactory.UIImage(
             UIFactory.UIRectTransform(
@@ -123,7 +123,7 @@ public class MenuUI : MonoBehaviour
                 new Vector2(0, -26.3f),
                 Utility.HalfOne,
                 new Vector2(0, 52.6f)),
-            "login_buttonLogin");
+            "buttonLogin");
 
         UIFactory.UIText(
             UIFactory.UIRectTransform(
@@ -133,7 +133,7 @@ public class MenuUI : MonoBehaviour
                 new Vector2(0, 26.3f),
                 Utility.HalfOne,
                 new Vector2(0, 52.6f)),
-            "login_buttonLogin");        
+            "buttonLogin");        
 
         UIFactory.UIButton(
             UIFactory.UIRectTransform(
@@ -143,7 +143,7 @@ public class MenuUI : MonoBehaviour
                 Vector2.zero,
                 Utility.HalfOne,
                 Vector2.zero),
-            "login_buttonLogin",
+            "buttonLogin",
             () =>
             {
                 Debug.Log("LoginButton Pushed");
@@ -161,7 +161,7 @@ public class MenuUI : MonoBehaviour
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f)
             ),
-            "login_buttonAppleAccountContainer").rectTransform;
+            "buttonAppleAccountContainer").rectTransform;
 
         UIFactory.UIImage(
             UIFactory.UIRectTransform(
@@ -171,7 +171,7 @@ public class MenuUI : MonoBehaviour
                 new Vector2(0, -26.3f),
                 Utility.HalfOne,
                 new Vector2(0, 52.6f)),
-            "login_buttonAppleAccount");
+            "buttonAppleAccount");
 
         UIFactory.UIText(
             UIFactory.UIRectTransform(
@@ -181,7 +181,7 @@ public class MenuUI : MonoBehaviour
                 new Vector2(0, 26.3f),
                 Utility.HalfOne,
                 new Vector2(0, 52.6f)),
-            "login_buttonAppleAccount");
+            "buttonAppleAccount");
 
         UIFactory.UIButton(
             UIFactory.UIRectTransform(
@@ -191,7 +191,7 @@ public class MenuUI : MonoBehaviour
                 Vector2.zero,
                 Utility.HalfOne,
                 Vector2.zero),
-            "login_buttonAppleAccount",
+            "buttonAppleAccount",
             () =>
             {
                 Debug.Log("AppleAccount Pushed");
@@ -209,7 +209,7 @@ public class MenuUI : MonoBehaviour
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f)
             ),
-            "login_buttonGoogleAccountContainer").rectTransform;
+            "buttonGoogleAccountContainer").rectTransform;
 
         UIFactory.UIImage(
             UIFactory.UIRectTransform(
@@ -219,7 +219,7 @@ public class MenuUI : MonoBehaviour
                 new Vector2(0, -26.3f),
                 Utility.HalfOne,
                 new Vector2(0, 52.6f)),
-            "login_buttonGoogleAccount");
+            "buttonGoogleAccount");
 
         UIFactory.UIText(
             UIFactory.UIRectTransform(
@@ -229,7 +229,7 @@ public class MenuUI : MonoBehaviour
                 new Vector2(0, 26.3f),
                 Utility.HalfOne,
                 new Vector2(0, 52.6f)),
-            "login_buttonGoogleAccount");
+            "buttonGoogleAccount");
 
         UIFactory.UIButton(
             UIFactory.UIRectTransform(
@@ -239,7 +239,7 @@ public class MenuUI : MonoBehaviour
                 Vector2.zero,
                 Utility.HalfOne,
                 Vector2.zero),
-            "login_buttonGoogleAccount",
+            "buttonGoogleAccount",
             () =>
             {
                 Debug.Log("GoogleAccount Pushed");
@@ -257,7 +257,7 @@ public class MenuUI : MonoBehaviour
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f)
             ),
-            "login_buttonGuestContainer").rectTransform;
+            "buttonGuestContainer").rectTransform;
 
         UIFactory.UIImage(
             UIFactory.UIRectTransform(
@@ -267,7 +267,7 @@ public class MenuUI : MonoBehaviour
                 new Vector2(0, -26.3f),
                 Utility.HalfOne,
                 new Vector2(0, 52.6f)),
-            "login_buttonGuest");
+            "buttonGuest");
 
         UIFactory.UIText(
             UIFactory.UIRectTransform(
@@ -277,7 +277,7 @@ public class MenuUI : MonoBehaviour
                 new Vector2(0, 26.3f),
                 Utility.HalfOne,
                 new Vector2(0, 52.6f)),
-            "login_buttonGuest");
+            "buttonGuest");
 
         UIFactory.UIButton(
             UIFactory.UIRectTransform(
@@ -287,7 +287,7 @@ public class MenuUI : MonoBehaviour
                 Vector2.zero,
                 Utility.HalfOne,
                 Vector2.zero),
-            "login_buttonGuest",
+            "buttonGuest",
             () =>
             {
                 Debug.Log("GuestAccount Pushed");
@@ -305,7 +305,7 @@ public class MenuUI : MonoBehaviour
                 Utility.HalfOne,
                 new Vector2(-320, 52.6f)
             ),
-            "login_buttonRegisterContainer").rectTransform;
+            "buttonRegisterContainer").rectTransform;
 
         UIFactory.UIImage(
             UIFactory.UIRectTransform(
@@ -315,7 +315,7 @@ public class MenuUI : MonoBehaviour
                 new Vector2(0, -26.3f),
                 Utility.HalfOne,
                 new Vector2(0, 52.6f)),
-            "login_buttonRegister");
+            "buttonRegister");
 
         UIFactory.UIText(
             UIFactory.UIRectTransform(
@@ -325,7 +325,7 @@ public class MenuUI : MonoBehaviour
                 new Vector2(0, 26.3f),
                 Utility.HalfOne,
                 new Vector2(0, 52.6f)),
-            "login_buttonRegister");
+            "buttonRegister");
 
         UIFactory.UIButton(
             UIFactory.UIRectTransform(
@@ -335,11 +335,13 @@ public class MenuUI : MonoBehaviour
                 Vector2.zero,
                 Utility.HalfOne,
                 Vector2.zero),
-            "login_buttonRegister",
+            "buttonRegister",
             () =>
             {
                 Debug.Log("buttonRegister Pushed");
                 //Button functionality
+                this.SetVisibleLoginPanel(false);
+                this.CreateRegisterPanel();
             },
             register.GetComponent<Image>());
 
@@ -353,7 +355,7 @@ public class MenuUI : MonoBehaviour
                 Utility.HalfOne,
                 new Vector2(-320, 52.6f)
             ),
-            "login_buttonBackContainer").rectTransform;
+            "buttonBackContainer").rectTransform;
 
         UIFactory.UIImage(
             UIFactory.UIRectTransform(
@@ -363,7 +365,7 @@ public class MenuUI : MonoBehaviour
                 new Vector2(0, -26.3f),
                 Utility.HalfOne,
                 new Vector2(0, 52.6f)),
-            "login_buttonBack");
+            "buttonBack");
 
         UIFactory.UIText(
             UIFactory.UIRectTransform(
@@ -373,7 +375,7 @@ public class MenuUI : MonoBehaviour
                 new Vector2(0, 26.3f),
                 Utility.HalfOne,
                 new Vector2(0, 52.6f)),
-            "login_buttonBack");
+            "buttonBack");
 
         UIFactory.UIButton(
             UIFactory.UIRectTransform(
@@ -383,7 +385,7 @@ public class MenuUI : MonoBehaviour
                 Vector2.zero,
                 Utility.HalfOne,
                 Vector2.zero),
-            "login_buttonBack",
+            "buttonBack",
             () =>
             {
                 Debug.Log("buttonBack Pushed");
@@ -391,5 +393,194 @@ public class MenuUI : MonoBehaviour
             },
             back.GetComponent<Image>());
 
+    }
+
+    public void SetVisibleLoginPanel(bool _visible)
+    {
+        GameObject loginPanel = m_Canvas.transform.Find("login_panel").gameObject;
+        loginPanel.SetActive(_visible);
+    }
+
+    //RegisterPanel
+
+    public void CreateRegisterPanel()
+    {
+        float indent = 75f;
+
+        RectTransform registerPanel = UIFactory.UIImage(
+            UIFactory.UIRectTransform(
+                m_Canvas.GetComponent<RectTransform>(),
+                "register_panel",
+                UIAnchor.Create(Vector2.zero, Vector2.one),
+                new Vector2(0, 10),
+                Utility.HalfOne,
+                new Vector2(-90, -300)
+            ),
+            "dark_panel").rectTransform;
+
+        UIFactory.UIText(
+            UIFactory.UIRectTransform(
+                registerPanel,
+                "email",
+                UIAnchor.Create(Vector2.up, Vector2.one),
+                new Vector2(0, -26.3f),
+                Utility.HalfOne,
+                new Vector2(-100, 52.6f)),
+            "email");
+
+        UIFactory.UIInputField(
+            UIFactory.UIRectTransform(
+                registerPanel,
+                "email_input",
+                UIAnchor.Create(Vector2.up, Vector2.one),
+                new Vector2(0, -indent - 26.3f),
+                Utility.HalfOne,
+                new Vector2(-100, 52.6f)),
+            "textbox");
+
+        UIFactory.UIText(
+            UIFactory.UIRectTransform(
+                registerPanel,
+                "password",
+                UIAnchor.Create(Vector2.up, Vector2.one),
+                new Vector2(0, -indent * 2 - 26.3f),
+                Utility.HalfOne,
+                new Vector2(-100, 52.6f)),
+            "password");
+
+        UIFactory.UIInputField(
+            UIFactory.UIRectTransform(
+                registerPanel,
+                "password_input",
+                UIAnchor.Create(Vector2.up, Vector2.one),
+                new Vector2(0, -indent * 3 - 26.3f),
+                Utility.HalfOne,
+                new Vector2(-100, 52.6f)),
+            "textbox");
+
+        UIFactory.UIText(
+           UIFactory.UIRectTransform(
+               registerPanel,
+               "repeat password",
+               UIAnchor.Create(Vector2.up, Vector2.one),
+               new Vector2(0, -indent * 4 - 26.3f),
+               Utility.HalfOne,
+               new Vector2(-100, 52.6f)),
+           "repeat_password");
+
+        UIFactory.UIInputField(
+            UIFactory.UIRectTransform(
+                registerPanel,
+                "password_input",
+                UIAnchor.Create(Vector2.up, Vector2.one),
+                new Vector2(0, -indent * 5 - 26.3f),
+                Utility.HalfOne,
+                new Vector2(-100, 52.6f)),
+            "textbox");
+
+        //RegisterButton
+        RectTransform register = UIFactory.UIImage(
+            UIFactory.UIRectTransform(
+                registerPanel,
+                "buttonRegister",
+                UIAnchor.Create(Vector2.up, Vector2.one),
+                new Vector2(140, -indent * 6 - 26.3f),
+                Utility.HalfOne,
+                new Vector2(-320, 52.6f)
+            ),
+            "buttonRegisterContainer").rectTransform;
+
+        UIFactory.UIImage(
+            UIFactory.UIRectTransform(
+                register,
+                "icon",
+                UIAnchor.Create(Vector2.up, Vector2.one),
+                new Vector2(0, -26.3f),
+                Utility.HalfOne,
+                new Vector2(0, 52.6f)),
+            "buttonRegister");
+
+        UIFactory.UIText(
+            UIFactory.UIRectTransform(
+                register,
+                "text",
+                UIAnchor.Create(Vector2.zero, Vector2.right),
+                new Vector2(0, 26.3f),
+                Utility.HalfOne,
+                new Vector2(0, 52.6f)),
+            "buttonRegister");
+
+        UIFactory.UIButton(
+            UIFactory.UIRectTransform(
+                register,
+                "button",
+                UIAnchor.Create(Vector2.zero, Vector2.one),
+                Vector2.zero,
+                Utility.HalfOne,
+                Vector2.zero),
+            "buttonRegister",
+            () =>
+            {
+                Debug.Log("buttonRegister Pushed");
+                //Button functionality
+                
+            },
+            register.GetComponent<Image>());
+
+        //BackButton
+        RectTransform back = UIFactory.UIImage(
+            UIFactory.UIRectTransform(
+                registerPanel,
+                "buttonBack",
+                UIAnchor.Create(Vector2.up, Vector2.one),
+                new Vector2(140, -740f),
+                Utility.HalfOne,
+                new Vector2(-320, 52.6f)
+            ),
+            "buttonBackContainer").rectTransform;
+
+        UIFactory.UIImage(
+            UIFactory.UIRectTransform(
+                back,
+                "icon",
+                UIAnchor.Create(Vector2.up, Vector2.one),
+                new Vector2(0, -26.3f),
+                Utility.HalfOne,
+                new Vector2(0, 52.6f)),
+            "buttonBack");
+
+        UIFactory.UIText(
+            UIFactory.UIRectTransform(
+                back,
+                "text",
+                UIAnchor.Create(Vector2.zero, Vector2.right),
+                new Vector2(0, 26.3f),
+                Utility.HalfOne,
+                new Vector2(0, 52.6f)),
+            "buttonBack");
+
+        UIFactory.UIButton(
+            UIFactory.UIRectTransform(
+                back,
+                "button",
+                UIAnchor.Create(Vector2.zero, Vector2.one),
+                Vector2.zero,
+                Utility.HalfOne,
+                Vector2.zero),
+            "buttonBack",
+            () =>
+            {
+                Debug.Log("buttonBack Pushed");
+                //Button functionality
+                this.SetVisibleRegisterPanel(false);
+                this.SetVisibleLoginPanel(true);
+            },
+            back.GetComponent<Image>());
+    }
+
+    public void SetVisibleRegisterPanel(bool _visible)
+    {
+        GameObject registerPanel = m_Canvas.transform.Find("register_panel").gameObject;
+        registerPanel.SetActive(_visible);
     }
 }

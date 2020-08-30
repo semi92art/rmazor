@@ -65,5 +65,6 @@ public class UIStyleObject : ScriptableObject
     public Vector2 shadowEffectDistance;
     public bool shadowUseGraphicsAlpha;
 
+
     #endregion
 }
