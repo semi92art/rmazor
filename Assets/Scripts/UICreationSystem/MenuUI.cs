@@ -52,347 +52,311 @@ public class MenuUI : MonoBehaviour
     {
         float indent = 75f;
 
-        RectTransform loginPanel = UIFactory.UIImage(
-            UIFactory.UIRectTransform(
+        RectTransform loginPanel = UICreatorImage.Create(
                 m_Canvas.GetComponent<RectTransform>(),
                 "login_panel",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
-                new Vector2(0,10),
+                new Vector2(0, 10),
                 Utility.HalfOne,
-                new Vector2(-90, -300)
-            ),
-            "dark_panel").rectTransform;
+                new Vector2(-90, -300),
+                "dark_panel");
 
-        UIFactory.UIText(
-            UIFactory.UIRectTransform(
+        UICreatorText.Create(
                 loginPanel,
                 "email",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -26.3f),
                 Utility.HalfOne,
-                new Vector2(-100, 52.6f)),
-            "email");
+                new Vector2(-100, 52.6f),
+                "email");
 
-        UIFactory.UIInputField(
-            UIFactory.UIRectTransform(
+        UICreatorInputField.Create(
                 loginPanel,
                 "email_input",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -indent - 26.3f),
                 Utility.HalfOne,
-                new Vector2(-100, 52.6f)),
-            "textbox");
+                new Vector2(-100, 52.6f),
+                "textbox");
 
-        UIFactory.UIText(
-            UIFactory.UIRectTransform(
+        UICreatorText.Create(
                 loginPanel,
                 "password",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -indent * 2 - 26.3f),
                 Utility.HalfOne,
-                new Vector2(-100, 52.6f)),
-            "password");
+                new Vector2(-100, 52.6f),
+                "password");
 
-        UIFactory.UIInputField(
-            UIFactory.UIRectTransform(
+        UICreatorInputField.Create(
                 loginPanel,
                 "password_input",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -indent * 3 - 26.3f),
                 Utility.HalfOne,
-                new Vector2(-100, 52.6f)),
-            "textbox");
+                new Vector2(-100, 52.6f),
+                "textbox");
 
-        //LoginButton
-        RectTransform login = UIFactory.UIImage(
-            UIFactory.UIRectTransform(
+        //LoginButton        
+        RectTransform login = UICreatorImage.Create(
                 loginPanel,
                 "buttonLogin",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -indent * 4 - 26.3f),
                 Utility.HalfOne,
-                new Vector2(-100, 52.6f)
-            ),
-            "buttonLoginContainer").rectTransform;
+                new Vector2(-100, 52.6f),
+                "buttonLoginContainer");
 
-        UIFactory.UIImage(
-            UIFactory.UIRectTransform(
+        UICreatorImage.Create(
                 login,
                 "icon",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -26.3f),
                 Utility.HalfOne,
-                new Vector2(0, 52.6f)),
-            "buttonLogin");
+                new Vector2(0, 52.6f),
+                "buttonLogin");
 
-        UIFactory.UIText(
-            UIFactory.UIRectTransform(
+        UICreatorText.Create(
                 login,
                 "text",
                 UIAnchor.Create(Vector2.zero, Vector2.right),
                 new Vector2(0, 26.3f),
                 Utility.HalfOne,
-                new Vector2(0, 52.6f)),
-            "buttonLogin");        
+                new Vector2(0, 52.6f),
+                "buttonLogin");
 
-        UIFactory.UIButton(
-            UIFactory.UIRectTransform(
+        UICreatorButton.Create(
                 login,
                 "button",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
                 Vector2.zero,
                 Utility.HalfOne,
-                Vector2.zero),
-            "buttonLogin",
-            () =>
-            {
-                Debug.Log("LoginButton Pushed");
-                //Button functionality
-            },
-            login.GetComponent<Image>());
+                Vector2.zero,
+                "buttonLogin",
+                () =>
+                {
+                    Debug.Log("LoginButton Pushed");
+                    //Button functionality
+                },
+                login.GetComponent<Image>());
 
         //AppleButton
-        RectTransform appleAccount = UIFactory.UIImage(
-            UIFactory.UIRectTransform(
+        RectTransform appleAccount = UICreatorImage.Create(
                 loginPanel,
-                "buttonAppleAccountLogin",
+                "buttonLogin",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -indent * 5 - 26.3f),
                 Utility.HalfOne,
-                new Vector2(-100, 52.6f)
-            ),
-            "buttonAppleAccountContainer").rectTransform;
+                new Vector2(-100, 52.6f),
+                "buttonAppleAccountContainer");
 
-        UIFactory.UIImage(
-            UIFactory.UIRectTransform(
+        UICreatorImage.Create(
                 appleAccount,
                 "icon",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -26.3f),
                 Utility.HalfOne,
-                new Vector2(0, 52.6f)),
-            "buttonAppleAccount");
+                new Vector2(0, 52.6f),
+                "buttonAppleAccount");
 
-        UIFactory.UIText(
-            UIFactory.UIRectTransform(
+        UICreatorText.Create(
                 appleAccount,
                 "text",
                 UIAnchor.Create(Vector2.zero, Vector2.right),
                 new Vector2(0, 26.3f),
                 Utility.HalfOne,
-                new Vector2(0, 52.6f)),
-            "buttonAppleAccount");
+                new Vector2(0, 52.6f),
+                "buttonAppleAccount");
 
-        UIFactory.UIButton(
-            UIFactory.UIRectTransform(
+        UICreatorButton.Create(
                 appleAccount,
                 "button",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
                 Vector2.zero,
                 Utility.HalfOne,
-                Vector2.zero),
-            "buttonAppleAccount",
-            () =>
-            {
-                Debug.Log("AppleAccount Pushed");
-                //Button functionality
-            },
-            appleAccount.GetComponent<Image>());
+                Vector2.zero,
+                "buttonAppleAccount",
+                () =>
+                {
+                    Debug.Log("AppleAccount Pushed");
+                    //Button functionality
+                },
+                appleAccount.GetComponent<Image>());
 
         //GoogleButton
-        RectTransform googleAccount = UIFactory.UIImage(
-            UIFactory.UIRectTransform(
-                loginPanel,
-                "buttonGoogleAccountLogin",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0, -indent * 6 - 26.3f),
-                Utility.HalfOne,
-                new Vector2(-100, 52.6f)
-            ),
-            "buttonGoogleAccountContainer").rectTransform;
+        RectTransform googleAccount = UICreatorImage.Create(
+               loginPanel,
+               "buttonLogin",
+               UIAnchor.Create(Vector2.up, Vector2.one),
+               new Vector2(0, -indent * 6 - 26.3f),
+               Utility.HalfOne,
+               new Vector2(-100, 52.6f),
+               "buttonGoogleAccountContainer");
 
-        UIFactory.UIImage(
-            UIFactory.UIRectTransform(
+        UICreatorImage.Create(
                 googleAccount,
                 "icon",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -26.3f),
                 Utility.HalfOne,
-                new Vector2(0, 52.6f)),
-            "buttonGoogleAccount");
+                new Vector2(0, 52.6f),
+                "buttonGoogleAccount");
 
-        UIFactory.UIText(
-            UIFactory.UIRectTransform(
+        UICreatorText.Create(
                 googleAccount,
                 "text",
                 UIAnchor.Create(Vector2.zero, Vector2.right),
                 new Vector2(0, 26.3f),
                 Utility.HalfOne,
-                new Vector2(0, 52.6f)),
-            "buttonGoogleAccount");
+                new Vector2(0, 52.6f),
+                "buttonGoogleAccount");
 
-        UIFactory.UIButton(
-            UIFactory.UIRectTransform(
+        UICreatorButton.Create(
                 googleAccount,
                 "button",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
                 Vector2.zero,
                 Utility.HalfOne,
-                Vector2.zero),
-            "buttonGoogleAccount",
-            () =>
-            {
-                Debug.Log("GoogleAccount Pushed");
-                //Button functionality
-            },
-            googleAccount.GetComponent<Image>());
+                Vector2.zero,
+                "buttonGoogleAccount",
+                () =>
+                {
+                    Debug.Log("buttonGoogleAccount Pushed");
+                    //Button functionality
+                },
+                googleAccount.GetComponent<Image>());
 
         //GuestButton
-        RectTransform guestAccount = UIFactory.UIImage(
-            UIFactory.UIRectTransform(
-                loginPanel,
-                "buttonGuestLogin",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0, -indent * 7 - 26.3f),
-                Utility.HalfOne,
-                new Vector2(-100, 52.6f)
-            ),
-            "buttonGuestContainer").rectTransform;
+        RectTransform guestAccount = UICreatorImage.Create(
+            loginPanel,
+              "buttonGuest",
+              UIAnchor.Create(Vector2.up, Vector2.one),
+              new Vector2(0, -indent * 7 - 26.3f),
+              Utility.HalfOne,
+              new Vector2(-100, 52.6f),
+              "buttonGuestContainer");
 
-        UIFactory.UIImage(
-            UIFactory.UIRectTransform(
+        UICreatorImage.Create(
                 guestAccount,
                 "icon",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -26.3f),
                 Utility.HalfOne,
-                new Vector2(0, 52.6f)),
-            "buttonGuest");
+                new Vector2(0, 52.6f),
+                "buttonGuest");
 
-        UIFactory.UIText(
-            UIFactory.UIRectTransform(
+        UICreatorText.Create(
                 guestAccount,
                 "text",
                 UIAnchor.Create(Vector2.zero, Vector2.right),
                 new Vector2(0, 26.3f),
                 Utility.HalfOne,
-                new Vector2(0, 52.6f)),
-            "buttonGuest");
+                new Vector2(0, 52.6f),
+                "buttonGuest");
 
-        UIFactory.UIButton(
-            UIFactory.UIRectTransform(
+        UICreatorButton.Create(
                 guestAccount,
                 "button",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
                 Vector2.zero,
                 Utility.HalfOne,
-                Vector2.zero),
-            "buttonGuest",
-            () =>
-            {
-                Debug.Log("GuestAccount Pushed");
-                //Button functionality
-            },
-            guestAccount.GetComponent<Image>());
+                Vector2.zero,
+                "buttonGuest",
+                () =>
+                {
+                    Debug.Log("guestAccount Pushed");
+                    //Button functionality
+                },
+                guestAccount.GetComponent<Image>());
 
         //RegisterButton
-        RectTransform register = UIFactory.UIImage(
-            UIFactory.UIRectTransform(
-                loginPanel,
-                "buttonRegister",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(-140, - 740f),
-                Utility.HalfOne,
-                new Vector2(-320, 52.6f)
-            ),
-            "buttonRegisterContainer").rectTransform;
+        RectTransform register = UICreatorImage.Create(
+            loginPanel,
+             "buttonRegister",
+             UIAnchor.Create(Vector2.up, Vector2.one),
+             new Vector2(-140, -740f),
+             Utility.HalfOne,
+             new Vector2(-320, 52.6f),
+             "buttonRegisterContainer");
 
-        UIFactory.UIImage(
-            UIFactory.UIRectTransform(
+        UICreatorImage.Create(
                 register,
                 "icon",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -26.3f),
                 Utility.HalfOne,
-                new Vector2(0, 52.6f)),
-            "buttonRegister");
+                new Vector2(0, 52.6f),
+                "buttonRegister");
 
-        UIFactory.UIText(
-            UIFactory.UIRectTransform(
+        UICreatorText.Create(
                 register,
                 "text",
                 UIAnchor.Create(Vector2.zero, Vector2.right),
                 new Vector2(0, 26.3f),
                 Utility.HalfOne,
-                new Vector2(0, 52.6f)),
-            "buttonRegister");
+                new Vector2(0, 52.6f),
+                "buttonRegister");
 
-        UIFactory.UIButton(
-            UIFactory.UIRectTransform(
+        UICreatorButton.Create(
                 register,
                 "button",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
                 Vector2.zero,
                 Utility.HalfOne,
-                Vector2.zero),
-            "buttonRegister",
-            () =>
-            {
-                Debug.Log("buttonRegister Pushed");
-                //Button functionality
-                this.DestroyLoginPanel();
-                this.CreateRegisterPanel();
-            },
-            register.GetComponent<Image>());
+                Vector2.zero,
+                "buttonRegister",
+                () =>
+                {
+                    Debug.Log("buttonRegister Pushed");
+                    //Button functionality
+                    this.DestroyLoginPanel();
+                    this.CreateRegisterPanel();
+                },
+                register.GetComponent<Image>());
 
         //BackButton
-        RectTransform back = UIFactory.UIImage(
-            UIFactory.UIRectTransform(
-                loginPanel,
-                "buttonBack",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(140, -740f),
-                Utility.HalfOne,
-                new Vector2(-320, 52.6f)
-            ),
-            "buttonBackContainer").rectTransform;
 
-        UIFactory.UIImage(
-            UIFactory.UIRectTransform(
+        RectTransform back = UICreatorImage.Create(
+            loginPanel,
+            "buttonBack",
+            UIAnchor.Create(Vector2.up, Vector2.one),
+            new Vector2(140, -740f),
+            Utility.HalfOne,
+            new Vector2(-320, 52.6f),
+            "buttonBackContainer");
+
+        UICreatorImage.Create(
                 back,
                 "icon",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -26.3f),
                 Utility.HalfOne,
-                new Vector2(0, 52.6f)),
-            "buttonBack");
+                new Vector2(0, 52.6f),
+                "buttonBack");
 
-        UIFactory.UIText(
-            UIFactory.UIRectTransform(
+        UICreatorText.Create(
                 back,
                 "text",
                 UIAnchor.Create(Vector2.zero, Vector2.right),
                 new Vector2(0, 26.3f),
                 Utility.HalfOne,
-                new Vector2(0, 52.6f)),
-            "buttonBack");
+                new Vector2(0, 52.6f),
+                "buttonBack");
 
-        UIFactory.UIButton(
-            UIFactory.UIRectTransform(
+        UICreatorButton.Create(
                 back,
                 "button",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
                 Vector2.zero,
                 Utility.HalfOne,
-                Vector2.zero),
-            "buttonBack",
-            () =>
-            {
-                Debug.Log("buttonBack Pushed");
-                //Button functionality
-            },
-            back.GetComponent<Image>());
-
+                Vector2.zero,
+                "buttonBack",
+                () =>
+                {
+                    Debug.Log("buttonBack Pushed");
+                    //Button functionality
+                },
+                back.GetComponent<Image>());
     }
 
     public void DestroyLoginPanel()
@@ -407,175 +371,156 @@ public class MenuUI : MonoBehaviour
     {
         float indent = 75f;
 
-        RectTransform registerPanel = UIFactory.UIImage(
-            UIFactory.UIRectTransform(
+        RectTransform registerPanel = UICreatorImage.Create(
                 m_Canvas.GetComponent<RectTransform>(),
                 "register_panel",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
                 new Vector2(0, 10),
                 Utility.HalfOne,
-                new Vector2(-90, -300)
-            ),
-            "dark_panel").rectTransform;
+                new Vector2(-90, -300),
+                "dark_panel");
 
-        UIFactory.UIText(
-            UIFactory.UIRectTransform(
+        UICreatorText.Create(
                 registerPanel,
                 "email",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -26.3f),
                 Utility.HalfOne,
-                new Vector2(-100, 52.6f)),
-            "email");
+                new Vector2(-100, 52.6f),
+                "email");
 
-        UIFactory.UIInputField(
-            UIFactory.UIRectTransform(
+        UICreatorInputField.Create(
                 registerPanel,
                 "email_input",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -indent - 26.3f),
                 Utility.HalfOne,
-                new Vector2(-100, 52.6f)),
-            "textbox");
+                new Vector2(-100, 52.6f),
+                "textbox");
 
-        UIFactory.UIText(
-            UIFactory.UIRectTransform(
+        UICreatorText.Create(
                 registerPanel,
                 "password",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -indent * 2 - 26.3f),
                 Utility.HalfOne,
-                new Vector2(-100, 52.6f)),
-            "password");
+                new Vector2(-100, 52.6f),
+                "password");
 
-        UIFactory.UIInputField(
-            UIFactory.UIRectTransform(
+        UICreatorInputField.Create(
                 registerPanel,
                 "password_input",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -indent * 3 - 26.3f),
                 Utility.HalfOne,
-                new Vector2(-100, 52.6f)),
-            "textbox");
+                new Vector2(-100, 52.6f),
+                "textbox");
 
-        UIFactory.UIText(
-           UIFactory.UIRectTransform(
+        UICreatorText.Create(
                registerPanel,
                "repeat password",
                UIAnchor.Create(Vector2.up, Vector2.one),
                new Vector2(0, -indent * 4 - 26.3f),
                Utility.HalfOne,
-               new Vector2(-100, 52.6f)),
-           "repeat_password");
+               new Vector2(-100, 52.6f),
+               "repeat_password");
 
-        UIFactory.UIInputField(
-            UIFactory.UIRectTransform(
+        UICreatorInputField.Create(
                 registerPanel,
                 "password_input",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -indent * 5 - 26.3f),
                 Utility.HalfOne,
-                new Vector2(-100, 52.6f)),
-            "textbox");
+                new Vector2(-100, 52.6f),
+                "textbox");
 
         //RegisterButton
-        RectTransform register = UIFactory.UIImage(
-            UIFactory.UIRectTransform(
+        RectTransform register = UICreatorImage.Create(
                 registerPanel,
                 "buttonRegister",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(140, -indent * 6 - 26.3f),
                 Utility.HalfOne,
-                new Vector2(-320, 52.6f)
-            ),
-            "buttonRegisterContainer").rectTransform;
+                new Vector2(-320, 52.6f),
+                "buttonRegisterContainer");
 
-        UIFactory.UIImage(
-            UIFactory.UIRectTransform(
+        UICreatorImage.Create(
                 register,
                 "icon",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -26.3f),
                 Utility.HalfOne,
-                new Vector2(0, 52.6f)),
-            "buttonRegister");
+                new Vector2(0, 52.6f),
+                "buttonRegister");
 
-        UIFactory.UIText(
-            UIFactory.UIRectTransform(
+        UICreatorText.Create(
                 register,
                 "text",
                 UIAnchor.Create(Vector2.zero, Vector2.right),
                 new Vector2(0, 26.3f),
                 Utility.HalfOne,
-                new Vector2(0, 52.6f)),
-            "buttonRegister");
+                new Vector2(0, 52.6f),
+                "buttonRegister");
 
-        UIFactory.UIButton(
-            UIFactory.UIRectTransform(
+        UICreatorButton.Create(
                 register,
                 "button",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
                 Vector2.zero,
                 Utility.HalfOne,
-                Vector2.zero),
-            "buttonRegister",
-            () =>
-            {
+                Vector2.zero,
+                "buttonRegister",
+                () =>
+                {
                 Debug.Log("buttonRegister Pushed");
                 //Button functionality
-                
-            },
-            register.GetComponent<Image>());
+                },
+                register.GetComponent<Image>());
 
         //BackButton
-        RectTransform back = UIFactory.UIImage(
-            UIFactory.UIRectTransform(
+        RectTransform back = UICreatorImage.Create(
                 registerPanel,
                 "buttonBack",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(140, -740f),
                 Utility.HalfOne,
-                new Vector2(-320, 52.6f)
-            ),
-            "buttonBackContainer").rectTransform;
+                new Vector2(-320, 52.6f),
+                "buttonBackContainer");
 
-        UIFactory.UIImage(
-            UIFactory.UIRectTransform(
+        UICreatorImage.Create(
                 back,
                 "icon",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -26.3f),
                 Utility.HalfOne,
-                new Vector2(0, 52.6f)),
-            "buttonBack");
+                new Vector2(0, 52.6f),
+                "buttonBack");
 
-        UIFactory.UIText(
-            UIFactory.UIRectTransform(
+        UICreatorText.Create(
                 back,
                 "text",
                 UIAnchor.Create(Vector2.zero, Vector2.right),
                 new Vector2(0, 26.3f),
                 Utility.HalfOne,
-                new Vector2(0, 52.6f)),
-            "buttonBack");
+                new Vector2(0, 52.6f),
+                "buttonBack");
 
-        UIFactory.UIButton(
-            UIFactory.UIRectTransform(
+        UICreatorButton.Create(
                 back,
                 "button",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
                 Vector2.zero,
                 Utility.HalfOne,
-                Vector2.zero),
-            "buttonBack",
-            () =>
-            {
-                Debug.Log("buttonBack Pushed");
-                //Button functionality
-                this.DestroyRegisterPanel();
-                this.CreateLoginPanel();
-            },
-            back.GetComponent<Image>());
+                Vector2.zero,
+                "buttonBack",
+                () =>
+                {
+                    Debug.Log("buttonBack Pushed");
+                    //Button functionality
+                    this.DestroyRegisterPanel();
+                    this.CreateLoginPanel();
+                },
+                back.GetComponent<Image>());
     }
 
     public void DestroyRegisterPanel()
