@@ -97,7 +97,8 @@ public class MenuUI : MonoBehaviour
                 new Vector2(-100, 52.6f),
                 "textbox");
 
-        //LoginButton        
+        //LoginButton
+        //TODO явно напрашивается некая конструкция на всю кнопку (кнопка+имэджи)
         RectTransform login = UICreatorImage.Create(
                 loginPanel,
                 "buttonLogin",
@@ -106,6 +107,15 @@ public class MenuUI : MonoBehaviour
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
                 "buttonLoginContainer");
+
+        UICreatorImage.Create(
+                login,
+                "frame",
+                UIAnchor.Create(Vector2.up, Vector2.one),
+                new Vector2(0f, -26f),
+                Utility.HalfOne,
+                new Vector2(6f, 60f),
+                "buttonWhiteFrame");
 
         UICreatorImage.Create(
                 login,
@@ -143,12 +153,21 @@ public class MenuUI : MonoBehaviour
         //AppleButton
         RectTransform appleAccount = UICreatorImage.Create(
                 loginPanel,
-                "buttonLogin",
+                "buttonAppleAccount",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -indent * 5 - 26.3f),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
                 "buttonAppleAccountContainer");
+
+        UICreatorImage.Create(
+                appleAccount,
+                "frame",
+                UIAnchor.Create(Vector2.up, Vector2.one),
+                new Vector2(0f, -26f),
+                Utility.HalfOne,
+                new Vector2(6f, 60f),
+                "buttonWhiteFrame");
 
         UICreatorImage.Create(
                 appleAccount,
@@ -186,12 +205,21 @@ public class MenuUI : MonoBehaviour
         //GoogleButton
         RectTransform googleAccount = UICreatorImage.Create(
                loginPanel,
-               "buttonLogin",
+               "buttonGoogleAccount",
                UIAnchor.Create(Vector2.up, Vector2.one),
                new Vector2(0, -indent * 6 - 26.3f),
                Utility.HalfOne,
                new Vector2(-100, 52.6f),
                "buttonGoogleAccountContainer");
+
+        UICreatorImage.Create(
+                googleAccount,
+                "frame",
+                UIAnchor.Create(Vector2.up, Vector2.one),
+                new Vector2(0f, -26f),
+                Utility.HalfOne,
+                new Vector2(6f, 60f),
+                "buttonWhiteFrame");
 
         UICreatorImage.Create(
                 googleAccount,
@@ -238,6 +266,15 @@ public class MenuUI : MonoBehaviour
 
         UICreatorImage.Create(
                 guestAccount,
+                "frame",
+                UIAnchor.Create(Vector2.up, Vector2.one),
+                new Vector2(0f, -26f),
+                Utility.HalfOne,
+                new Vector2(6f, 60f),
+                "buttonWhiteFrame");
+
+        UICreatorImage.Create(
+                guestAccount,
                 "icon",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -26.3f),
@@ -278,6 +315,15 @@ public class MenuUI : MonoBehaviour
              Utility.HalfOne,
              new Vector2(-320, 52.6f),
              "buttonRegisterContainer");
+
+        UICreatorImage.Create(
+                register,
+                "frame",
+                UIAnchor.Create(Vector2.up, Vector2.one),
+                new Vector2(0f, -26f),
+                Utility.HalfOne,
+                new Vector2(6f, 60f),
+                "buttonWhiteFrame");
 
         UICreatorImage.Create(
                 register,
@@ -324,6 +370,15 @@ public class MenuUI : MonoBehaviour
             Utility.HalfOne,
             new Vector2(-320, 52.6f),
             "buttonBackContainer");
+
+        UICreatorImage.Create(
+                back,
+                "frame",
+                UIAnchor.Create(Vector2.up, Vector2.one),
+                new Vector2(0f, -26f),
+                Utility.HalfOne,
+                new Vector2(6f, 60f),
+                "buttonWhiteFrame");
 
         UICreatorImage.Create(
                 back,
@@ -446,6 +501,15 @@ public class MenuUI : MonoBehaviour
 
         UICreatorImage.Create(
                 register,
+                "frame",
+                UIAnchor.Create(Vector2.up, Vector2.one),
+                new Vector2(0f, -26f),
+                Utility.HalfOne,
+                new Vector2(6f, 60f),
+                "buttonWhiteFrame");
+
+        UICreatorImage.Create(
+                register,
                 "icon",
                 UIAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -26.3f),
@@ -486,6 +550,15 @@ public class MenuUI : MonoBehaviour
                 Utility.HalfOne,
                 new Vector2(-320, 52.6f),
                 "buttonBackContainer");
+
+        UICreatorImage.Create(
+                back,
+                "frame",
+                UIAnchor.Create(Vector2.up, Vector2.one),
+                new Vector2(0f, -26f),
+                Utility.HalfOne,
+                new Vector2(6f, 60f),
+                "buttonWhiteFrame");
 
         UICreatorImage.Create(
                 back,
