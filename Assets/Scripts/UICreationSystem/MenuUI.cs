@@ -340,7 +340,7 @@ public class MenuUI : MonoBehaviour
             {
                 Debug.Log("buttonRegister Pushed");
                 //Button functionality
-                this.SetVisibleLoginPanel(false);
+                this.DestroyLoginPanel();
                 this.CreateRegisterPanel();
             },
             register.GetComponent<Image>());
@@ -395,10 +395,10 @@ public class MenuUI : MonoBehaviour
 
     }
 
-    public void SetVisibleLoginPanel(bool _visible)
+    public void DestroyLoginPanel()
     {
         GameObject loginPanel = m_Canvas.transform.Find("login_panel").gameObject;
-        loginPanel.SetActive(_visible);
+        Destroy(loginPanel);
     }
 
     //RegisterPanel
@@ -572,15 +572,15 @@ public class MenuUI : MonoBehaviour
             {
                 Debug.Log("buttonBack Pushed");
                 //Button functionality
-                this.SetVisibleRegisterPanel(false);
-                this.SetVisibleLoginPanel(true);
+                this.DestroyRegisterPanel();
+                this.CreateLoginPanel();
             },
             back.GetComponent<Image>());
     }
 
-    public void SetVisibleRegisterPanel(bool _visible)
+    public void DestroyRegisterPanel()
     {
         GameObject registerPanel = m_Canvas.transform.Find("register_panel").gameObject;
-        registerPanel.SetActive(_visible);
+        Destroy(registerPanel);
     }
 }
