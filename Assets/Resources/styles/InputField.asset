@@ -42,7 +42,7 @@ MonoBehaviour:
   fillOrigin: 0
   fillClockwise: 1
   textColor: {r: 0, g: 0, b: 0, a: 1}
-  raycastTextTarget: 0
+  raycastTextTarget: 1
   textID: 
   font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
   fontStyle: 0
