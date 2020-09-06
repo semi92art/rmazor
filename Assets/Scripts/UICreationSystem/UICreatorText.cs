@@ -1,19 +1,28 @@
-﻿using UnityEngine;
+﻿using UICreationSystem;
+using UICreationSystem.Factories;
+using UnityEngine;
 using UnityEngine.UI;
 
 static class UICreatorText
 {
-    public static RectTransform Create(RectTransform _parent, string _name, UIAnchor _anchor, Vector2 _anchoredPosition, Vector2 _pivot, Vector2 _SizeDelta, string _styleName)
+    public static RectTransform Create(
+        RectTransform _Parent,
+        string _Name,
+        UIAnchor _Anchor,
+        Vector2 _AnchoredPosition, 
+        Vector2 _Pivot,
+        Vector2 _SizeDelta,
+        string _StyleName)
     {
-        return UIFactory.UIText(
-         UIFactory.UIRectTransform(
-             _parent,
-             _name,
-             _anchor,
-             _anchoredPosition,
-             _pivot,
+        return UiFactory.UiText(
+         UiFactory.UiRectTransform(
+             _Parent,
+             _Name,
+             _Anchor,
+             _AnchoredPosition,
+             _Pivot,
              _SizeDelta),
-         _styleName).rectTransform;
+         _StyleName).rectTransform;
     }
 }
 

@@ -1,24 +1,55 @@
-﻿using UnityEngine;
+﻿using UICreationSystem;
+using UICreationSystem.Factories;
+using UnityEngine;
 using UnityEngine.UI;
 
 
 static class UICreatorInputField
 {
-    //TODO return rectTarnsform
-    public static void Create(RectTransform _parent, string _name, UIAnchor _anchor, Vector2 _anchoredPosition, Vector2 _pivot, Vector2 _SizeDelta, string _styleName, Image _targetGraphic, Text _targetText, Text _targetPlaceholder)
+    public static InputField Create(
+        RectTransform _Parent, 
+        string _Name, 
+        UIAnchor _Anchor,
+        Vector2 _AnchoredPosition, 
+        Vector2 _Pivot,
+        Vector2 _SizeDelta,
+        string _StyleName,
+        Image _TargetGraphic,
+        Text _TargetText,
+        Text _TargetPlaceholder)
     {
-        UIFactory.UIInputField(
-         UIFactory.UIRectTransform(
-             _parent,
-             _name,
-             _anchor,
-             _anchoredPosition,
-             _pivot,
+        return Create(
+         UiFactory.UiRectTransform(
+             _Parent,
+             _Name,
+             _Anchor,
+             _AnchoredPosition,
+             _Pivot,
              _SizeDelta),
-         _styleName,
-         _targetGraphic,
-         _targetText,
-         _targetPlaceholder);
+         _StyleName,
+         _TargetGraphic,
+         _TargetText,
+         _TargetPlaceholder);
+    }
+    
+    private static InputField Create(
+        RectTransform _Item,
+        string _StyleName,
+        Image _TargetGraphic,
+        Text _TargetText,
+        Text _TargetPlaceholder)
+    {
+        InputField inputField = _Item.gameObject.AddComponent<InputField>();
+        UIStyleObject style = ResLoader.GetStyle(_StyleName);
+
+        inputField.placeholder = _TargetPlaceholder;
+        _TargetPlaceholder.SetParent(inputField);
+        inputField.textComponent = _TargetText;
+        _TargetText.SetParent(inputField);
+        inputField.targetGraphic = _TargetGraphic;
+        _TargetGraphic.SetParent(inputField);
+
+        return inputField;
     }
 }
 

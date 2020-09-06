@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UICreationSystem;
+using UICreationSystem.Factories;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class MenuUI : MonoBehaviour
@@ -15,9 +18,9 @@ public class MenuUI : MonoBehaviour
     {
         CreateCanvas();
 
-        UIFactory.UIImage(
-            UIFactory.UIRectTransform(
-                m_Canvas.GetComponent<RectTransform>(),
+        UiFactory.UiImage(
+            UiFactory.UiRectTransform(
+                m_Canvas.RTransform(),
                 "background",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
                 Vector2.zero,
@@ -33,7 +36,7 @@ public class MenuUI : MonoBehaviour
 
     public void CreateCanvas()
     {
-        m_Canvas = UIFactory.UICanvas(
+        m_Canvas = UiFactory.UiCanvas(
                    "MenuCanvas",
                    RenderMode.ScreenSpaceOverlay,
                    true,
@@ -53,7 +56,7 @@ public class MenuUI : MonoBehaviour
         float indent = 75f;
 
         RectTransform loginPanel = UICreatorImage.Create(
-                m_Canvas.GetComponent<RectTransform>(),
+                m_Canvas.RTransform(),
                 "login_panel",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
                 new Vector2(0, 10),
@@ -88,7 +91,9 @@ public class MenuUI : MonoBehaviour
                new Vector2(-100, 52.6f),
                "InputFieldContainer");
 
-        UICreatorText.Create(
+        
+        TextMeshProUGUI tmpEmailText = UiTmpTextFactory.Create(
+        //UICreatorText.Create(
                 email,
                 "emailText",
                 UIAnchor.Create(Vector2.up, Vector2.one),
@@ -97,7 +102,8 @@ public class MenuUI : MonoBehaviour
                 new Vector2(-100, 52.6f),
                 "InputField");
 
-        UICreatorText.Create(
+        TextMeshProUGUI tmpEmailPlaceHolder = UiTmpTextFactory.Create(
+        //UICreatorText.Create(
                 email,
                 "emailPlaceholder",
                 UIAnchor.Create(Vector2.up, Vector2.one),
@@ -105,8 +111,8 @@ public class MenuUI : MonoBehaviour
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
                 "InputField");
-
-        UICreatorInputField.Create(
+        
+        UiTmpInputFieldFactory.Create(
                 email,
                 "email_input",
                 UIAnchor.Create(Vector2.up, Vector2.one),
@@ -115,8 +121,8 @@ public class MenuUI : MonoBehaviour
                 new Vector2(-100, 52.6f),
                 "InputField",
                 email.GetComponent<Image>(),
-                email.Find("emailText").GetComponent<Text>(),
-                email.Find("emailPlaceholder").GetComponent<Text>());
+                tmpEmailText,
+                tmpEmailPlaceHolder);
 
         UICreatorText.Create(
                 loginPanel,
@@ -466,7 +472,7 @@ public class MenuUI : MonoBehaviour
         float indent = 75f;
 
         RectTransform registerPanel = UICreatorImage.Create(
-                m_Canvas.GetComponent<RectTransform>(),
+                m_Canvas.RTransform(),
                 "register_panel",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
                 new Vector2(0, 10),

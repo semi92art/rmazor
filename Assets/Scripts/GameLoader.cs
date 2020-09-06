@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using UICreationSystem;
+using UICreationSystem.Factories;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -13,7 +15,7 @@ namespace Clickers
             GoogleAdsManager.Instance.Init();
             SceneManager.activeSceneChanged += (previous, current) =>
             {
-                Canvas canvas = UIFactory.UICanvas(
+                Canvas canvas = UiFactory.UiCanvas(
                     "Canvas",
                     RenderMode.ScreenSpaceOverlay,
                     true,
@@ -27,15 +29,15 @@ namespace Clickers
                     true,
                     GraphicRaycaster.BlockingObjects.None);
                 
-                UIFactory.UIImage(UIFactory.UIRectTransform(
-                    canvas.rectTransform(),
+                UiFactory.UiImage(UiFactory.UiRectTransform(
+                    canvas.RTransform(),
                     "image",
                     UIAnchor.Create(0, 0, 0, 0),
                     Vector2.down, Vector2.down, Vector2.down
                     ), "TESTButton");
                 
                 if (current.buildIndex == 1)
-                    Instantiate(consolePrefab, canvas.rectTransform());
+                    Instantiate(consolePrefab, canvas.RTransform());
             };
             
             SceneManager.LoadScene(1);
