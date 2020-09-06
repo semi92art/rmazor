@@ -44,8 +44,6 @@ public class UIStyleObject : ScriptableObject
     [Range(0, 3)] public int fillOrigin;
     public bool fillClockwise = true;
 
-
-
     [Header("TEXT PROPERTIES:")]
     public Color textColor = Color.white;
     public bool raycastTextTarget;

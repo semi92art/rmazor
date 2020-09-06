@@ -70,14 +70,53 @@ public class MenuUI : MonoBehaviour
                 new Vector2(-100, 52.6f),
                 "email");
 
-        UICreatorInputField.Create(
-                loginPanel,
-                "email_input",
+        //UICreatorInputField.Create(
+        //        loginPanel,
+        //        "email_input",
+        //        UIAnchor.Create(Vector2.up, Vector2.one),
+        //        new Vector2(0, -indent - 26.3f),
+        //        Utility.HalfOne,
+        //        new Vector2(-100, 52.6f),
+        //        "textbox");
+
+        RectTransform email = UICreatorImage.Create(
+               loginPanel,
+               "inputEmail",
+               UIAnchor.Create(Vector2.up, Vector2.one),
+               new Vector2(0, -indent - 26.3f),
+               Utility.HalfOne,
+               new Vector2(-100, 52.6f),
+               "InputFieldContainer");
+
+        UICreatorText.Create(
+                email,
+                "emailText",
                 UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0, -indent - 26.3f),
+                new Vector2(0, -26.3f),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
-                "textbox");
+                "InputField");
+
+        UICreatorText.Create(
+                email,
+                "emailPlaceholder",
+                UIAnchor.Create(Vector2.up, Vector2.one),
+                new Vector2(0, -26.3f),
+                Utility.HalfOne,
+                new Vector2(-100, 52.6f),
+                "InputField");
+
+        UICreatorInputField.Create(
+                email,
+                "email_input",
+                UIAnchor.Create(Vector2.up, Vector2.one),
+                new Vector2(0, -26.3f),
+                Utility.HalfOne,
+                new Vector2(-100, 52.6f),
+                "InputField",
+                email.GetComponent<Image>(),
+                email.Find("emailText").GetComponent<Text>(),
+                email.Find("emailPlaceholder").GetComponent<Text>());
 
         UICreatorText.Create(
                 loginPanel,
@@ -88,14 +127,14 @@ public class MenuUI : MonoBehaviour
                 new Vector2(-100, 52.6f),
                 "password");
 
-        UICreatorInputField.Create(
-                loginPanel,
-                "password_input",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0, -indent * 3 - 26.3f),
-                Utility.HalfOne,
-                new Vector2(-100, 52.6f),
-                "textbox");
+        //UICreatorInputField.Create(
+        //        loginPanel,
+        //        "password_input",
+        //        UIAnchor.Create(Vector2.up, Vector2.one),
+        //        new Vector2(0, -indent * 3 - 26.3f),
+        //        Utility.HalfOne,
+        //        new Vector2(-100, 52.6f),
+        //        "textbox");
 
         //LoginButton
         //TODO явно напрашивается некая конструкция на всю кнопку (кнопка+имэджи)
@@ -444,14 +483,24 @@ public class MenuUI : MonoBehaviour
                 new Vector2(-100, 52.6f),
                 "email");
 
-        UICreatorInputField.Create(
-                registerPanel,
-                "email_input",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0, -indent - 26.3f),
-                Utility.HalfOne,
-                new Vector2(-100, 52.6f),
-                "textbox");
+        //RectTransform email = UICreatorImage.Create(
+        //        registerPanel,
+        //        "inputEmail",
+        //        UIAnchor.Create(Vector2.up, Vector2.one),
+        //        new Vector2(140, -indent - 26.3f),
+        //        Utility.HalfOne,
+        //        new Vector2(-320, 52.6f),
+        //        "InputFieldContainer");
+
+        //UICreatorInputField.Create(
+        //        email,
+        //        "email_input",
+        //        UIAnchor.Create(Vector2.up, Vector2.one),
+        //        new Vector2(0, - 26.3f),
+        //        Utility.HalfOne,
+        //        new Vector2(-100, 52.6f),
+        //        "textbox",
+        //        email.GetComponent<Image>());
 
         UICreatorText.Create(
                 registerPanel,
@@ -462,14 +511,14 @@ public class MenuUI : MonoBehaviour
                 new Vector2(-100, 52.6f),
                 "password");
 
-        UICreatorInputField.Create(
-                registerPanel,
-                "password_input",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0, -indent * 3 - 26.3f),
-                Utility.HalfOne,
-                new Vector2(-100, 52.6f),
-                "textbox");
+        //UICreatorInputField.Create(
+        //        registerPanel,
+        //        "password_input",
+        //        UIAnchor.Create(Vector2.up, Vector2.one),
+        //        new Vector2(0, -indent * 3 - 26.3f),
+        //        Utility.HalfOne,
+        //        new Vector2(-100, 52.6f),
+        //        "textbox");
 
         UICreatorText.Create(
                registerPanel,
@@ -480,14 +529,15 @@ public class MenuUI : MonoBehaviour
                new Vector2(-100, 52.6f),
                "repeat_password");
 
-        UICreatorInputField.Create(
-                registerPanel,
-                "password_input",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0, -indent * 5 - 26.3f),
-                Utility.HalfOne,
-                new Vector2(-100, 52.6f),
-                "textbox");
+
+        //UICreatorInputField.Create(
+        //        registerPanel,
+        //        "password_input",
+        //        UIAnchor.Create(Vector2.up, Vector2.one),
+        //        new Vector2(0, -indent * 5 - 26.3f),
+        //        Utility.HalfOne,
+        //        new Vector2(-100, 52.6f),
+        //        "textbox");
 
         //RegisterButton
         RectTransform register = UICreatorImage.Create(

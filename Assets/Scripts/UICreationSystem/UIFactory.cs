@@ -153,14 +153,33 @@ public class UIFactory
 
     public static InputField UIInputField(
         RectTransform _Item,
-        string _StyleName)
+        string _StyleName,
+        Image targetGraphic,
+        Text targetText,
+        Text targetPlaceholder)
     {
         InputField inputField = _Item.gameObject.AddComponent<InputField>();
         UIStyleObject style = Resources.Load<UIStyleObject>($"styles/{_StyleName}");
-        if (style == null)
-            return inputField;
 
-        
+        inputField.targetGraphic = targetGraphic;
+
+        inputField.textComponent = targetText;
+        inputField.placeholder = targetPlaceholder;
+
+        //text.text = style.textID;
+        //text.font = style.font;
+        //text.fontStyle = style.fontStyle;
+        //text.fontSize = style.fontSize;
+        //text.lineSpacing = style.lineSpacing;
+        //text.supportRichText = style.richText;
+        //text.alignment = style.alignment;
+        //text.alignByGeometry = style.alignByGeometry;
+        //text.horizontalOverflow = style.horizontalOverflow;
+        //text.verticalOverflow = style.verticalOverflow;
+        //text.resizeTextForBestFit = style.bestFit;
+        //text.color = style.textColor;
+        //text.raycastTarget = style.raycastTextTarget;
+
         return inputField;
     }
 
