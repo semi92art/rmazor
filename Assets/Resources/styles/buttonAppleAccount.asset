@@ -54,7 +54,14 @@ MonoBehaviour:
   alignByGeometry: 0
   lineSpacing: 1
   bestFit: 0
-  shadowOn: 0
+  isShadow: 0
   shadowEffectColor: {r: 0, g: 0, b: 0, a: 1}
   shadowEffectDistance: {x: 0, y: 0}
   shadowUseGraphicsAlpha: 0
+  text: {fileID: 847006866932602687, guid: 151705ae35b04664488b7c1d7dbe37b6, type: 3}
+  button: {fileID: 5845598281855491040, guid: 99b6823e67ee3714d85777f1046b6a69, type: 3}
+  inputField: {fileID: 0}
+  image: {fileID: 0}
+  toggle: {fileID: 0}
+  slider: {fileID: 0}
+  scrollbar: {fileID: 0}

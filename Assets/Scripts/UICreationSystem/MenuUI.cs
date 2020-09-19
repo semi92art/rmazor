@@ -56,62 +56,34 @@ public class MenuUI : MonoBehaviour
         float indent = 75f;
 
         RectTransform loginPanel = UICreatorImage.Create(
-                m_Canvas.RTransform(),
-                "login_panel",
-                UIAnchor.Create(Vector2.zero, Vector2.one),
-                new Vector2(0, 10),
-                Utility.HalfOne,
-                new Vector2(-90, -300),
-                "dark_panel");
+            m_Canvas.RTransform(),
+            "login_panel",
+            UIAnchor.Create(Vector2.zero, Vector2.one),
+            new Vector2(0, 10),
+            Utility.HalfOne,
+            new Vector2(-90, -300),
+            "dark_panel");
 
-        UICreatorText.Create(
-                loginPanel,
-                "email",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0, -26.3f),
-                Utility.HalfOne,
-                new Vector2(-100, 52.6f),
-                "email");
+        //Email Text
+        UiTmpTextFactory.Create(
+            loginPanel,
+            "email",
+            UIAnchor.Create(Vector2.up, Vector2.one),
+            new Vector2(0, -26.3f),
+            Utility.HalfOne,
+            new Vector2(-100, 52.6f),
+            "email");
 
-        //UICreatorInputField.Create(
-        //        loginPanel,
-        //        "email_input",
-        //        UIAnchor.Create(Vector2.up, Vector2.one),
-        //        new Vector2(0, -indent - 26.3f),
-        //        Utility.HalfOne,
-        //        new Vector2(-100, 52.6f),
-        //        "textbox");
-
+        //Email Input
         RectTransform email = UICreatorImage.Create(
-               loginPanel,
-               "inputEmail",
-               UIAnchor.Create(Vector2.up, Vector2.one),
-               new Vector2(0, -indent - 26.3f),
-               Utility.HalfOne,
-               new Vector2(-100, 52.6f),
-               "InputFieldContainer");
+            loginPanel,
+            "inputEmail",
+            UIAnchor.Create(Vector2.up, Vector2.one),
+            new Vector2(0, -indent - 26.3f),
+            Utility.HalfOne,
+            new Vector2(-100, 52.6f),
+            "InputFieldContainer");
 
-        
-        TextMeshProUGUI tmpEmailText = UiTmpTextFactory.Create(
-        //UICreatorText.Create(
-                email,
-                "emailText",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0, -26.3f),
-                Utility.HalfOne,
-                new Vector2(-100, 52.6f),
-                "InputField");
-
-        TextMeshProUGUI tmpEmailPlaceHolder = UiTmpTextFactory.Create(
-        //UICreatorText.Create(
-                email,
-                "emailPlaceholder",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0, -26.3f),
-                Utility.HalfOne,
-                new Vector2(-100, 52.6f),
-                "InputField");
-        
         UiTmpInputFieldFactory.Create(
                 email,
                 "email_input",
@@ -120,11 +92,11 @@ public class MenuUI : MonoBehaviour
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
                 "InputField",
-                email.GetComponent<Image>(),
-                tmpEmailText,
-                tmpEmailPlaceHolder);
+                email.GetComponent<Image>()
+        );
 
-        UICreatorText.Create(
+        //Password Text
+        UiTmpTextFactory.Create(
                 loginPanel,
                 "password",
                 UIAnchor.Create(Vector2.up, Vector2.one),
@@ -133,17 +105,28 @@ public class MenuUI : MonoBehaviour
                 new Vector2(-100, 52.6f),
                 "password");
 
-        //UICreatorInputField.Create(
-        //        loginPanel,
-        //        "password_input",
-        //        UIAnchor.Create(Vector2.up, Vector2.one),
-        //        new Vector2(0, -indent * 3 - 26.3f),
-        //        Utility.HalfOne,
-        //        new Vector2(-100, 52.6f),
-        //        "textbox");
+        //Email Input
+        RectTransform password = UICreatorImage.Create(
+            loginPanel,
+            "inputPassword",
+            UIAnchor.Create(Vector2.up, Vector2.one),
+            new Vector2(0, -indent * 3 - 26.3f),
+            Utility.HalfOne,
+            new Vector2(-100, 52.6f),
+            "InputFieldContainer");
+
+        UiTmpInputFieldFactory.Create(
+            password,
+            "password_input",
+            UIAnchor.Create(Vector2.up, Vector2.one),
+            new Vector2(0, -26.3f),
+            Utility.HalfOne,
+            new Vector2(-100, 52.6f),
+            "InputField",
+            password.GetComponent<Image>()
+        );
 
         //LoginButton
-        //TODO явно напрашивается некая конструкция на всю кнопку (кнопка+имэджи)
         RectTransform login = UICreatorImage.Create(
                 loginPanel,
                 "buttonLogin",
@@ -153,47 +136,20 @@ public class MenuUI : MonoBehaviour
                 new Vector2(-100, 52.6f),
                 "buttonLoginContainer");
 
-        UICreatorImage.Create(
-                login,
-                "frame",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0f, -26f),
-                Utility.HalfOne,
-                new Vector2(6f, 60f),
-                "buttonWhiteFrame");
-
-        UICreatorImage.Create(
-                login,
-                "icon",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0, -26.3f),
-                Utility.HalfOne,
-                new Vector2(0, 52.6f),
-                "buttonLogin");
-
-        UICreatorText.Create(
-                login,
-                "text",
-                UIAnchor.Create(Vector2.zero, Vector2.right),
-                new Vector2(0, 26.3f),
-                Utility.HalfOne,
-                new Vector2(0, 52.6f),
-                "buttonLogin");
-
-        UICreatorButton.Create(
-                login,
-                "button",
-                UIAnchor.Create(Vector2.zero, Vector2.one),
-                Vector2.zero,
-                Utility.HalfOne,
-                Vector2.zero,
-                "buttonLogin",
-                () =>
-                {
-                    Debug.Log("LoginButton Pushed");
-                    //Button functionality
-                },
-                login.GetComponent<Image>());
+        UiTmpButtonFactory.Create(
+            login,
+            "button",
+            UIAnchor.Create(Vector2.zero, Vector2.one),
+            Vector2.zero,
+            Utility.HalfOne,
+            Vector2.zero,
+            "buttonLogin",
+            () =>
+            {
+                Debug.Log("LoginButton Pushed");
+                //Button functionality
+            }
+        );
 
         //AppleButton
         RectTransform appleAccount = UICreatorImage.Create(
@@ -205,34 +161,8 @@ public class MenuUI : MonoBehaviour
                 new Vector2(-100, 52.6f),
                 "buttonAppleAccountContainer");
 
-        UICreatorImage.Create(
-                appleAccount,
-                "frame",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0f, -26f),
-                Utility.HalfOne,
-                new Vector2(6f, 60f),
-                "buttonWhiteFrame");
 
-        UICreatorImage.Create(
-                appleAccount,
-                "icon",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0, -26.3f),
-                Utility.HalfOne,
-                new Vector2(0, 52.6f),
-                "buttonAppleAccount");
-
-        UICreatorText.Create(
-                appleAccount,
-                "text",
-                UIAnchor.Create(Vector2.zero, Vector2.right),
-                new Vector2(0, 26.3f),
-                Utility.HalfOne,
-                new Vector2(0, 52.6f),
-                "buttonAppleAccount");
-
-        UICreatorButton.Create(
+        UiTmpButtonFactory.Create(
                 appleAccount,
                 "button",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
@@ -244,8 +174,8 @@ public class MenuUI : MonoBehaviour
                 {
                     Debug.Log("AppleAccount Pushed");
                     //Button functionality
-                },
-                appleAccount.GetComponent<Image>());
+                }
+                );
 
         //GoogleButton
         RectTransform googleAccount = UICreatorImage.Create(
@@ -257,34 +187,7 @@ public class MenuUI : MonoBehaviour
                new Vector2(-100, 52.6f),
                "buttonGoogleAccountContainer");
 
-        UICreatorImage.Create(
-                googleAccount,
-                "frame",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0f, -26f),
-                Utility.HalfOne,
-                new Vector2(6f, 60f),
-                "buttonWhiteFrame");
-
-        UICreatorImage.Create(
-                googleAccount,
-                "icon",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0, -26.3f),
-                Utility.HalfOne,
-                new Vector2(0, 52.6f),
-                "buttonGoogleAccount");
-
-        UICreatorText.Create(
-                googleAccount,
-                "text",
-                UIAnchor.Create(Vector2.zero, Vector2.right),
-                new Vector2(0, 26.3f),
-                Utility.HalfOne,
-                new Vector2(0, 52.6f),
-                "buttonGoogleAccount");
-
-        UICreatorButton.Create(
+        UiTmpButtonFactory.Create(
                 googleAccount,
                 "button",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
@@ -296,8 +199,8 @@ public class MenuUI : MonoBehaviour
                 {
                     Debug.Log("buttonGoogleAccount Pushed");
                     //Button functionality
-                },
-                googleAccount.GetComponent<Image>());
+                }
+                );
 
         //GuestButton
         RectTransform guestAccount = UICreatorImage.Create(
@@ -309,34 +212,7 @@ public class MenuUI : MonoBehaviour
               new Vector2(-100, 52.6f),
               "buttonGuestContainer");
 
-        UICreatorImage.Create(
-                guestAccount,
-                "frame",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0f, -26f),
-                Utility.HalfOne,
-                new Vector2(6f, 60f),
-                "buttonWhiteFrame");
-
-        UICreatorImage.Create(
-                guestAccount,
-                "icon",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0, -26.3f),
-                Utility.HalfOne,
-                new Vector2(0, 52.6f),
-                "buttonGuest");
-
-        UICreatorText.Create(
-                guestAccount,
-                "text",
-                UIAnchor.Create(Vector2.zero, Vector2.right),
-                new Vector2(0, 26.3f),
-                Utility.HalfOne,
-                new Vector2(0, 52.6f),
-                "buttonGuest");
-
-        UICreatorButton.Create(
+        UiTmpButtonFactory.Create(
                 guestAccount,
                 "button",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
@@ -348,8 +224,8 @@ public class MenuUI : MonoBehaviour
                 {
                     Debug.Log("guestAccount Pushed");
                     //Button functionality
-                },
-                guestAccount.GetComponent<Image>());
+                }
+                );
 
         //RegisterButton
         RectTransform register = UICreatorImage.Create(

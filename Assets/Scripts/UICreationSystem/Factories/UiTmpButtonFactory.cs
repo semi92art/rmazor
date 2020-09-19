@@ -1,12 +1,13 @@
 ﻿using Clickers.Utils;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace UICreationSystem.Factories
 {
     public static class UiTmpButtonFactory
     {
-        public static Button Create(
+        public static GameObject Create(
             RectTransform _Parent,
             string _Name,
             UIAnchor _Anchor,
@@ -14,36 +15,37 @@ namespace UICreationSystem.Factories
             Vector2 _Pivot,
             Vector2 _SizeDelta,
             string _StyleName,
-            UnityEngine.Events.UnityAction _OnClick)
+            UnityEngine.Events.UnityAction _OnClick
+            )
         {
-            RectTransform rTr = UiFactory.UiRectTransform(
+
+            UIStyleObject style = ResLoader.GetStyle(_StyleName);
+            GameObject buttonObj = Object.Instantiate(style.button);
+
+            var rTr = buttonObj.RTransform();
+            rTr = UiFactory.UiRectTransform(
                 _Parent,
                 _Name,
                 _Anchor,
                 _AnchoredPosition,
                 _Pivot,
-                _SizeDelta);
+                _SizeDelta,
+                rTr);
+
+            //TODO Какая-то хрень со стилем текста !!!
+            TextMeshProUGUI buttonObjText = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
+            TextMeshProUGUI tmp = style.text.GetComponent<TextMeshProUGUI>();
             
-            rTr.SetParent(_Parent);
-            rTr.anchorMin = _Anchor.Min;
-            rTr.anchorMax = _Anchor.Max;
-            rTr.anchoredPosition = _AnchoredPosition;
-            rTr.pivot = _Pivot;
-            rTr.sizeDelta = _SizeDelta;
-            rTr.localScale = Vector3.one;
-            
-            UIStyleObject style = ResLoader.GetStyle(_StyleName);
-            Image image = rTr.gameObject.AddComponent<Image>();
-            image.GetCopyOf(style.button.GetComponent<Image>());
-            Button button = rTr.gameObject.AddComponent<Button>();
-            button.GetCopyOf(style.button.GetComponent<Button>());
-            
-            button.targetGraphic = image;
-            var @event = new Button.ButtonClickedEvent();
+            //buttonObjText.GetCopyOf(tmp);
+            buttonObjText.text = tmp.text;
+
+            Button button = buttonObj.GetComponentInChildren<Button>();
+            //button.targetGraphic = image;
+             var @event = new Button.ButtonClickedEvent();
             @event.AddListener(_OnClick);
             button.onClick = @event;
 
-            return button;
+            return buttonObj;
         }
     }
 }

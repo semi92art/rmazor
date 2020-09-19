@@ -15,9 +15,7 @@ namespace UICreationSystem.Factories
             Vector2 _Pivot,
             Vector2 _SizeDelta,
             string _StyleName,
-            Image _TargetGraphic,
-            TextMeshProUGUI _TargetText,
-            TextMeshProUGUI _TargetPlaceHolder
+            Image _TargetGraphic
         )
         {
             UIStyleObject style = ResLoader.GetStyle(_StyleName);
@@ -35,10 +33,6 @@ namespace UICreationSystem.Factories
 
             var inputField = rTr.GetComponent<TMP_InputField>();
             
-            inputField.placeholder = _TargetPlaceHolder;
-            _TargetPlaceHolder.SetParent(rTr);
-            inputField.textComponent = _TargetText;
-            _TargetText.SetParent(rTr);
             inputField.targetGraphic = _TargetGraphic;
             _TargetGraphic.SetParent(rTr);
             
