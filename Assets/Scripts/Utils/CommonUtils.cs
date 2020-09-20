@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Threading;
 using UnityEngine;
 
@@ -44,6 +45,26 @@ namespace Utils
                 Thread.Sleep(millisecs);
                 _StopWaiting.Value = true;
             };
+        }
+        
+        //https://answers.unity.com/questions/246116/how-can-i-generate-a-guid-or-a-uuid-from-within-un.html
+        public static string GetUniqueID()
+        {
+            string key = "ID";
+ 
+            var random = new System.Random();                     
+            var epochStart = new DateTime(1970, 1, 1, 8, 0, 0, System.DateTimeKind.Utc);
+            double timestamp = (DateTime.UtcNow - epochStart).TotalSeconds;
+         
+            string uniqueId = Application.systemLanguage //Language
+                              + "-" + Application.platform //Device    
+                              + "-" + String.Format("{0:X}", Convert.ToInt32(timestamp)) //Time
+                              + "-" + String.Format("{0:X}", Convert.ToInt32(Time.time * 1000000)) //Time in game
+                              + "-" + String.Format("{0:X}", random.Next(1000000000)); //random number
+         
+            Debug.Log($"Generated Unique ID: {uniqueId}");
+            
+            return uniqueId;
         }
     }
     

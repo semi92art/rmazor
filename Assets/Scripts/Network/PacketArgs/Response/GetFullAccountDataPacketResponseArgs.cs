@@ -2,7 +2,7 @@
 
 namespace Network.PacketArgs
 {
-    public class AccountDataPacketResponseArgs
+    public class GetFullAccountDataPacketResponseArgs
     {
         public Account Acocunt { get; set; }
         public Score[] Scores { get; set; }

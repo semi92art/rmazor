@@ -1,0 +1,21 @@
+﻿using Network.PacketArgs;
+
+namespace Network.Packets
+{
+    public class GetProfilePacket : PacketBase
+    {
+        public override int Id => 2;
+        public override string Url => $"{GameClient.Instance.BaseUrl}/api/profiles/get";
+
+        public GetProfileResponseArgs Response { get; private set; }
+        
+        public GetProfilePacket(AccountIdGameIdRequestdArgs _Request) : base(_Request)
+        { }
+
+        public override void DeserializeResponse(string _Json)
+        {
+            Response = GameClient.Deserialize<GetProfileResponseArgs>(_Json);
+            base.DeserializeResponse(_Json);
+        }
+    }
+}

@@ -7,11 +7,11 @@ namespace Network
     public abstract class PacketBase : IPacket
     {
         public abstract int Id { get; }
-        public abstract object Request { get; }
         public abstract string Url { get; }
-        public abstract string Method { get; }
+        public virtual string Method => "POST";
         public virtual bool OnlyOne => false;
         public virtual bool Resend => false;
+        public object Request { get; }
         public bool IsDone { get; private set; }
         public string ResponseRaw { get; private set; }
         public long ResponseCode { get; set; }
@@ -19,6 +19,11 @@ namespace Network
         private Action m_Success;
         private Action m_Fail;
         private Action m_Cancel;
+
+        protected PacketBase(object _Request)
+        {
+            Request = _Request;
+        }
 
         #region public methods
 
