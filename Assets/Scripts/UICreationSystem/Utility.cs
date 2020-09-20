@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using Utils;
 
 public static class Utility
 {
@@ -116,7 +117,7 @@ public static class Utility
 
     public static string GetMD5Hash(byte[] _Bytes)
     {
-        return MD5Utility.MD5.GetMD5String(_Bytes);
+        return Md5.GetMd5String(_Bytes);
     }
     
     public static bool IsEmailAddressValid(string _Mail)
