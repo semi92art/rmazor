@@ -1,13 +1,11 @@
-﻿using System.Collections;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Network;
 using Network.PacketArgs;
 using Network.Packets;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.TestTools;
+using Utility = Utils.Utility;
 
 namespace Tests.Editor
 {
@@ -30,10 +28,7 @@ namespace Tests.Editor
 
             //Act
             request.SendWebRequest();
-            while (!request.isDone && !stopWaiting)
-            {
-                //do nothing and wait
-            }
+            while (!request.isDone && !stopWaiting) { } //do nothing and wait
             
             //Assert
             Assert.IsTrue(Utility.IsInRange(request.responseCode, 200, 299));
@@ -208,13 +203,18 @@ namespace Tests.Editor
             bool requestSuccess = false;
             
             //Act
+            var options = ProfileOption.CreateList();
+            options[3] = new ProfileOption {Available = true, Option = 4};
+
             IPacket packet = new SetProfilePacket(
                     new SetProfileRequestArgs
                     {
-                        Option1 = 2,
-                        Option1Available = true
+                        AccountId = 1,
+                        GameId = 1,
+                        Options = options
                     })
                 .OnSuccess(() => requestSuccess = true);
+            GameClient.Instance.Send(packet);
 
             //Assert
             Debug.Log($"response code: {packet.ResponseCode}");
@@ -239,6 +239,7 @@ namespace Tests.Editor
                         GameId = 1
                     })
                 .OnSuccess(() => requestSuccess = true);
+            GameClient.Instance.Send(packet);
             
             //Assert
             Debug.Log($"response code: {packet.ResponseCode}");

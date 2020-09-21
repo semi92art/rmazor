@@ -9,10 +9,6 @@
         long ResponseCode { get; set; }
         string Method { get;}
         bool OnlyOne { get; }
-        bool IsDone { get; }
         void DeserializeResponse(string _Json);
-        void InvokeSuccess();
-        void InvokeFail();
-        void InvokeCancel();
     }
 }

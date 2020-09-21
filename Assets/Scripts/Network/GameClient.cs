@@ -73,7 +73,7 @@ namespace Network
             if (m_Packets.ContainsKey(_Packet.Id))
             {
                 if (m_Packets[_Packet.Id].OnlyOne)
-                    _Packet.InvokeCancel();
+                    _Packet.ResponseCode = 300;
                 else
                 {
                     m_Packets[_Packet.Id] = _Packet;
@@ -111,11 +111,6 @@ namespace Network
             
             _Packet.ResponseCode = request.responseCode;
             _Packet.DeserializeResponse(request.downloadHandler.text);
-            
-            if (Utility.IsInRange(request.responseCode, 100, 299))
-                _Packet.InvokeSuccess();
-            else if (Utility.IsInRange(request.responseCode, 400, 599))
-                _Packet.InvokeFail();
         }
 
         public static T Deserialize<T>(string _Json)
