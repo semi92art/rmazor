@@ -66,6 +66,12 @@ namespace Utils
             
             return uniqueId;
         }
+
+        public static void IncWithOverflow(ref int _Value, int _Threshold)
+        {
+            if (++_Value >= _Threshold)
+                _Value = 0;
+        }
     }
     
     public class Bool
