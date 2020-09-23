@@ -139,6 +139,7 @@ public class MenuUI : MonoBehaviour
         UiTmpButtonFactory.Create(
             login,
             "button",
+            "Login",
             UIAnchor.Create(Vector2.zero, Vector2.one),
             Vector2.zero,
             Utility.HalfOne,
@@ -165,6 +166,7 @@ public class MenuUI : MonoBehaviour
         UiTmpButtonFactory.Create(
                 appleAccount,
                 "button",
+                "Login with Apple",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
                 Vector2.zero,
                 Utility.HalfOne,
@@ -190,6 +192,7 @@ public class MenuUI : MonoBehaviour
         UiTmpButtonFactory.Create(
                 googleAccount,
                 "button",
+                "Login with Google",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
                 Vector2.zero,
                 Utility.HalfOne,
@@ -215,6 +218,7 @@ public class MenuUI : MonoBehaviour
         UiTmpButtonFactory.Create(
                 guestAccount,
                 "button",
+                "Login as guest",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
                 Vector2.zero,
                 Utility.HalfOne,
@@ -237,36 +241,10 @@ public class MenuUI : MonoBehaviour
              new Vector2(-320, 52.6f),
              "buttonRegisterContainer");
 
-        UICreatorImage.Create(
-                register,
-                "frame",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0f, -26f),
-                Utility.HalfOne,
-                new Vector2(6f, 60f),
-                "buttonWhiteFrame");
-
-        UICreatorImage.Create(
-                register,
-                "icon",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0, -26.3f),
-                Utility.HalfOne,
-                new Vector2(0, 52.6f),
-                "buttonRegister");
-
-        UICreatorText.Create(
-                register,
-                "text",
-                UIAnchor.Create(Vector2.zero, Vector2.right),
-                new Vector2(0, 26.3f),
-                Utility.HalfOne,
-                new Vector2(0, 52.6f),
-                "buttonRegister");
-
-        UICreatorButton.Create(
+        UiTmpButtonFactory.Create(
                 register,
                 "button",
+                "Register",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
                 Vector2.zero,
                 Utility.HalfOne,
@@ -278,11 +256,10 @@ public class MenuUI : MonoBehaviour
                     //Button functionality
                     this.DestroyLoginPanel();
                     this.CreateRegisterPanel();
-                },
-                register.GetComponent<Image>());
+                }
+                );
 
         //BackButton
-
         RectTransform back = UICreatorImage.Create(
             loginPanel,
             "buttonBack",
@@ -292,36 +269,10 @@ public class MenuUI : MonoBehaviour
             new Vector2(-320, 52.6f),
             "buttonBackContainer");
 
-        UICreatorImage.Create(
-                back,
-                "frame",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0f, -26f),
-                Utility.HalfOne,
-                new Vector2(6f, 60f),
-                "buttonWhiteFrame");
-
-        UICreatorImage.Create(
-                back,
-                "icon",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0, -26.3f),
-                Utility.HalfOne,
-                new Vector2(0, 52.6f),
-                "buttonBack");
-
-        UICreatorText.Create(
-                back,
-                "text",
-                UIAnchor.Create(Vector2.zero, Vector2.right),
-                new Vector2(0, 26.3f),
-                Utility.HalfOne,
-                new Vector2(0, 52.6f),
-                "buttonBack");
-
-        UICreatorButton.Create(
+        UiTmpButtonFactory.Create(
                 back,
                 "button",
+                "Back",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
                 Vector2.zero,
                 Utility.HalfOne,
@@ -331,8 +282,8 @@ public class MenuUI : MonoBehaviour
                 {
                     Debug.Log("buttonBack Pushed");
                     //Button functionality
-                },
-                back.GetComponent<Image>());
+                }
+                );
     }
 
     public void DestroyLoginPanel()
@@ -356,7 +307,8 @@ public class MenuUI : MonoBehaviour
                 new Vector2(-90, -300),
                 "dark_panel");
 
-        UICreatorText.Create(
+        //Email Text
+        UiTmpTextFactory.Create(
                 registerPanel,
                 "email",
                 UIAnchor.Create(Vector2.up, Vector2.one),
@@ -365,26 +317,29 @@ public class MenuUI : MonoBehaviour
                 new Vector2(-100, 52.6f),
                 "email");
 
-        //RectTransform email = UICreatorImage.Create(
-        //        registerPanel,
-        //        "inputEmail",
-        //        UIAnchor.Create(Vector2.up, Vector2.one),
-        //        new Vector2(140, -indent - 26.3f),
-        //        Utility.HalfOne,
-        //        new Vector2(-320, 52.6f),
-        //        "InputFieldContainer");
+        //Email Input
+        RectTransform email = UICreatorImage.Create(
+            registerPanel,
+            "inputEmail",
+            UIAnchor.Create(Vector2.up, Vector2.one),
+            new Vector2(0, -indent - 26.3f),
+            Utility.HalfOne,
+            new Vector2(-100, 52.6f),
+            "InputFieldContainer");
 
-        //UICreatorInputField.Create(
-        //        email,
-        //        "email_input",
-        //        UIAnchor.Create(Vector2.up, Vector2.one),
-        //        new Vector2(0, - 26.3f),
-        //        Utility.HalfOne,
-        //        new Vector2(-100, 52.6f),
-        //        "textbox",
-        //        email.GetComponent<Image>());
+        UiTmpInputFieldFactory.Create(
+            email,
+            "email_input",
+            UIAnchor.Create(Vector2.up, Vector2.one),
+            new Vector2(0, -26.3f),
+            Utility.HalfOne,
+            new Vector2(-100, 52.6f),
+            "InputField",
+            email.GetComponent<Image>()
+        );
 
-        UICreatorText.Create(
+        //Password Text
+        UiTmpTextFactory.Create(
                 registerPanel,
                 "password",
                 UIAnchor.Create(Vector2.up, Vector2.one),
@@ -393,33 +348,57 @@ public class MenuUI : MonoBehaviour
                 new Vector2(-100, 52.6f),
                 "password");
 
-        //UICreatorInputField.Create(
-        //        registerPanel,
-        //        "password_input",
-        //        UIAnchor.Create(Vector2.up, Vector2.one),
-        //        new Vector2(0, -indent * 3 - 26.3f),
-        //        Utility.HalfOne,
-        //        new Vector2(-100, 52.6f),
-        //        "textbox");
+        //Password Input
+        RectTransform password = UICreatorImage.Create(
+            registerPanel,
+            "inputPassword",
+            UIAnchor.Create(Vector2.up, Vector2.one),
+            new Vector2(0, -indent * 3 - 26.3f),
+            Utility.HalfOne,
+            new Vector2(-100, 52.6f),
+            "InputFieldContainer");
 
-        UICreatorText.Create(
+        UiTmpInputFieldFactory.Create(
+            password,
+            "password_input",
+            UIAnchor.Create(Vector2.up, Vector2.one),
+            new Vector2(0,  - 26.3f),
+            Utility.HalfOne,
+            new Vector2(-100, 52.6f),
+            "InputField",
+            password.GetComponent<Image>()
+        );
+
+        //Repeat Password Text
+        UiTmpTextFactory.Create(
                registerPanel,
-               "repeat password",
+               "repeat_password",
                UIAnchor.Create(Vector2.up, Vector2.one),
                new Vector2(0, -indent * 4 - 26.3f),
                Utility.HalfOne,
                new Vector2(-100, 52.6f),
                "repeat_password");
 
+        //Repeat Password Input
+        RectTransform repeatPassword = UICreatorImage.Create(
+            registerPanel,
+            "inputRepeatPassword",
+            UIAnchor.Create(Vector2.up, Vector2.one),
+            new Vector2(0, -indent * 5 - 26.3f),
+            Utility.HalfOne,
+            new Vector2(-100, 52.6f),
+            "InputFieldContainer");
 
-        //UICreatorInputField.Create(
-        //        registerPanel,
-        //        "password_input",
-        //        UIAnchor.Create(Vector2.up, Vector2.one),
-        //        new Vector2(0, -indent * 5 - 26.3f),
-        //        Utility.HalfOne,
-        //        new Vector2(-100, 52.6f),
-        //        "textbox");
+        UiTmpInputFieldFactory.Create(
+            repeatPassword,
+            "repeatPassword_input",
+            UIAnchor.Create(Vector2.up, Vector2.one),
+            new Vector2(0, - 26.3f),
+            Utility.HalfOne,
+            new Vector2(-100, 52.6f),
+            "InputField",
+            repeatPassword.GetComponent<Image>()
+        );
 
         //RegisterButton
         RectTransform register = UICreatorImage.Create(
@@ -431,36 +410,10 @@ public class MenuUI : MonoBehaviour
                 new Vector2(-320, 52.6f),
                 "buttonRegisterContainer");
 
-        UICreatorImage.Create(
-                register,
-                "frame",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0f, -26f),
-                Utility.HalfOne,
-                new Vector2(6f, 60f),
-                "buttonWhiteFrame");
-
-        UICreatorImage.Create(
-                register,
-                "icon",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0, -26.3f),
-                Utility.HalfOne,
-                new Vector2(0, 52.6f),
-                "buttonRegister");
-
-        UICreatorText.Create(
-                register,
-                "text",
-                UIAnchor.Create(Vector2.zero, Vector2.right),
-                new Vector2(0, 26.3f),
-                Utility.HalfOne,
-                new Vector2(0, 52.6f),
-                "buttonRegister");
-
-        UICreatorButton.Create(
+        UiTmpButtonFactory.Create(
                 register,
                 "button",
+                "Register",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
                 Vector2.zero,
                 Utility.HalfOne,
@@ -470,8 +423,8 @@ public class MenuUI : MonoBehaviour
                 {
                 Debug.Log("buttonRegister Pushed");
                 //Button functionality
-                },
-                register.GetComponent<Image>());
+                }
+                );
 
         //BackButton
         RectTransform back = UICreatorImage.Create(
@@ -483,36 +436,10 @@ public class MenuUI : MonoBehaviour
                 new Vector2(-320, 52.6f),
                 "buttonBackContainer");
 
-        UICreatorImage.Create(
-                back,
-                "frame",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0f, -26f),
-                Utility.HalfOne,
-                new Vector2(6f, 60f),
-                "buttonWhiteFrame");
-
-        UICreatorImage.Create(
-                back,
-                "icon",
-                UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0, -26.3f),
-                Utility.HalfOne,
-                new Vector2(0, 52.6f),
-                "buttonBack");
-
-        UICreatorText.Create(
-                back,
-                "text",
-                UIAnchor.Create(Vector2.zero, Vector2.right),
-                new Vector2(0, 26.3f),
-                Utility.HalfOne,
-                new Vector2(0, 52.6f),
-                "buttonBack");
-
-        UICreatorButton.Create(
+        UiTmpButtonFactory.Create(
                 back,
                 "button",
+                "Back",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
                 Vector2.zero,
                 Utility.HalfOne,
@@ -524,8 +451,8 @@ public class MenuUI : MonoBehaviour
                     //Button functionality
                     this.DestroyRegisterPanel();
                     this.CreateLoginPanel();
-                },
-                back.GetComponent<Image>());
+                }
+                );
     }
 
     public void DestroyRegisterPanel()

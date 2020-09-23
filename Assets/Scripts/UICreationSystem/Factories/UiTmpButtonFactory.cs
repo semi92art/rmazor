@@ -10,6 +10,7 @@ namespace UICreationSystem.Factories
         public static GameObject Create(
             RectTransform _Parent,
             string _Name,
+            string _Text,
             UIAnchor _Anchor,
             Vector2 _AnchoredPosition,
             Vector2 _Pivot,
@@ -32,15 +33,10 @@ namespace UICreationSystem.Factories
                 _SizeDelta,
                 rTr);
 
-            //TODO Какая-то хрень со стилем текста !!!
             TextMeshProUGUI buttonObjText = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
-            TextMeshProUGUI tmp = style.text.GetComponent<TextMeshProUGUI>();
-            
-            //buttonObjText.GetCopyOf(tmp);
-            buttonObjText.text = tmp.text;
+            buttonObjText.text = _Text;
 
             Button button = buttonObj.GetComponentInChildren<Button>();
-            //button.targetGraphic = image;
              var @event = new Button.ButtonClickedEvent();
             @event.AddListener(_OnClick);
             button.onClick = @event;

@@ -35,6 +35,8 @@ namespace UICreationSystem.Factories
             
             inputField.targetGraphic = _TargetGraphic;
             _TargetGraphic.SetParent(rTr);
+            rTr.SetLeft(1);
+            rTr.SetRight(1);
             
             return inputField;
         }

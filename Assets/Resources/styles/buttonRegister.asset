@@ -12,25 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1600272214c7aa418cb76f5cc38aecb, type: 3}
   m_Name: buttonRegister
   m_EditorClassIdentifier: 
-  interactable: 1
-  transition: 0
-  normalState:
-    sprite: {fileID: 0}
-    color: {r: 0, g: 0, b: 0, a: 0}
-  highlightedState:
-    sprite: {fileID: 0}
-    color: {r: 0, g: 0, b: 0, a: 0}
-  pressedState:
-    sprite: {fileID: 0}
-    color: {r: 0, g: 0, b: 0, a: 0}
-  selectedState:
-    sprite: {fileID: 0}
-    color: {r: 0, g: 0, b: 0, a: 0}
-  disabledState:
-    sprite: {fileID: 0}
-    color: {r: 0, g: 0, b: 0, a: 0}
-  colorMultiplyer: 1
-  fadeDuration: 0
   sprite: {fileID: 0}
   imageColor: {r: 0.6156863, g: 0.53333336, b: 0.31764707, a: 1}
   raycastImageTarget: 1
@@ -41,24 +22,7 @@ MonoBehaviour:
   fillMethod: 0
   fillOrigin: 0
   fillClockwise: 1
-  textColor: {r: 1, g: 1, b: 1, a: 1}
-  raycastTextTarget: 0
-  textID: Register
-  font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-  fontStyle: 0
-  fontSize: 40
-  alignment: 4
-  horizontalOverflow: 0
-  verticalOverflow: 0
-  richText: 0
-  alignByGeometry: 0
-  lineSpacing: 1
-  bestFit: 0
-  isShadow: 0
-  shadowEffectColor: {r: 0, g: 0, b: 0, a: 1}
-  shadowEffectDistance: {x: 0, y: 0}
-  shadowUseGraphicsAlpha: 0
-  text: {fileID: 847006866932602687, guid: c071ae8a1fddd3f46abb9982dd0260c4, type: 3}
+  text: {fileID: 0}
   button: {fileID: 5845598281855491040, guid: e9e05cea320d52c4896206eeb9c4e636, type: 3}
   inputField: {fileID: 0}
   image: {fileID: 0}
