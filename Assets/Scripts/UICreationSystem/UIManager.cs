@@ -30,7 +30,7 @@ public class UIManager : MonoBehaviour
 
         SceneManager.activeSceneChanged += (_Arg0, _Scene) =>
         {
-            if (_Scene.name == "_menu")
+            if (_Scene.name == "Main")
             {
                 m_Menu = gameObject.AddComponent<MenuUI>();
                 Destroy(m_Level);

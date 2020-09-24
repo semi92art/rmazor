@@ -141,46 +141,46 @@ public class ConsoleView : MonoBehaviour
     private void CreatePositions()
     {
         GameObject canvas = GameObject.Find("Canvas");
-        RectTransform canvasRectTransform = canvas.GetComponent<RectTransform>();
+        RectTransform canvasRectTransform = canvas.RTransform();
         float screenWidth = canvasRectTransform.sizeDelta.x;
         float screenHeight = canvasRectTransform.sizeDelta.y;
         //Log
-        RectTransform logAreaRectTransform = this.ConsoleLog.GetComponent<RectTransform>();
+        RectTransform logAreaRectTransform = ConsoleLog.RTransform();
         logAreaRectTransform.SetLeft(0);
         logAreaRectTransform.SetRight(screenWidth - screenWidth * 0.9f);
         logAreaRectTransform.SetTop(0);
         logAreaRectTransform.SetBottom(screenHeight * 0.1f);
 
         //Scroll
-        RectTransform scrollRectTransform = this.ConsoleScrollBar.GetComponent<RectTransform>();
+        RectTransform scrollRectTransform = ConsoleScrollBar.RTransform();
         scrollRectTransform.SetLeft(screenWidth - screenWidth * 0.1f);
         scrollRectTransform.SetRight(0);
         scrollRectTransform.SetTop(0);
         scrollRectTransform.SetBottom(screenHeight * 0.1f);
 
         //Input
-        RectTransform inputRectTransform = this.inputField.GetComponent<RectTransform>();
+        RectTransform inputRectTransform = inputField.RTransform();
         inputRectTransform.SetLeft(0);
         inputRectTransform.SetRight(screenWidth - screenWidth * 0.7f);
         inputRectTransform.SetTop(screenHeight - screenHeight * 0.1f);
         inputRectTransform.SetBottom(0);        
 
         //EnterButton
-        RectTransform enterButtonRectTransform = this.enterCommand.GetComponent<RectTransform>();
+        RectTransform enterButtonRectTransform = enterCommand.RTransform();
         enterButtonRectTransform.SetLeft(screenWidth - screenWidth * 0.3f);
         enterButtonRectTransform.SetRight(0);
         enterButtonRectTransform.SetTop(screenHeight - screenHeight * 0.1f);
         enterButtonRectTransform.SetBottom(screenHeight * 0.05f);
 
         //UpButton
-        RectTransform upButtonRectTransform = this.upCommand.GetComponent<RectTransform>();
+        RectTransform upButtonRectTransform = upCommand.RTransform();
         upButtonRectTransform.SetLeft(screenWidth - screenWidth * 0.3f);
         upButtonRectTransform.SetRight(screenWidth * 0.15f);
         upButtonRectTransform.SetTop(screenHeight - screenHeight * 0.05f);
         upButtonRectTransform.SetBottom(0);
 
         //DownButton
-        RectTransform downButtonRectTransform = this.downCommand.GetComponent<RectTransform>();
+        RectTransform downButtonRectTransform = downCommand.RTransform();
         downButtonRectTransform.SetLeft(screenWidth - screenWidth * 0.15f);
         downButtonRectTransform.SetRight(0);
         downButtonRectTransform.SetTop(screenHeight - screenHeight * 0.05f);

@@ -26,11 +26,11 @@ namespace Clickers
             RegisterTestDevices();
             MobileAds.Initialize(initStatus => { });
 
-            m_BannerAd = new BannerView(ResourcesLoader.Instance.GoogleAdsBannerId, AdSize.SmartBanner,
+            m_BannerAd = new BannerView(ResLoader.GoogleAdsBannerId, AdSize.SmartBanner,
                 AdPosition.Bottom);
-            m_FullscreenAd = new InterstitialAd(ResourcesLoader.Instance.GoogleAdsFullscreenId);
-            m_RewardedAd = new RewardedAd(ResourcesLoader.Instance.GoogleAdsRewardId);
-            m_NativeAd = new AdLoader.Builder(ResourcesLoader.Instance.GoogleAdsNativeAdId).Build();
+            m_FullscreenAd = new InterstitialAd(ResLoader.GoogleAdsFullscreenId);
+            m_RewardedAd = new RewardedAd(ResLoader.GoogleAdsRewardId);
+            m_NativeAd = new AdLoader.Builder(ResLoader.GoogleAdsNativeAdId).Build();
             m_AdRequest = new AdRequest.Builder().Build();
 
             m_FullscreenAd.LoadAd(m_AdRequest);
@@ -63,7 +63,7 @@ namespace Clickers
         private static void RegisterTestDevices()
         {
             RequestConfiguration.Builder builder = new RequestConfiguration.Builder();
-            builder.SetTestDeviceIds(ResourcesLoader.Instance.GoogleTestDeviceIds);
+            builder.SetTestDeviceIds(ResLoader.GoogleTestDeviceIds);
         }
 
     }
