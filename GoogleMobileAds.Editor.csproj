@@ -272,6 +272,9 @@
  <Reference Include="UnityEditor.Android.Extensions">
  <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/AndroidPlayer/UnityEditor.Android.Extensions.dll</HintPath>
  </Reference>
+ <Reference Include="Newtonsoft.Json">
+ <HintPath>C:/dev/Clickers/Assets/JsonDotNet/Assemblies/Standalone/Newtonsoft.Json.dll</HintPath>
+ </Reference>
  <Reference Include="Google.IOSResolver_v1.2.157">
  <HintPath>C:/dev/Clickers/Library/PackageCache/com.google.external-dependency-manager@1.2.157/ExternalDependencyManager/Editor/Google.IOSResolver_v1.2.157.dll</HintPath>
  </Reference>
