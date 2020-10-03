@@ -55,6 +55,8 @@ public class MenuUI : MonoBehaviour
     public void CreateLoginPanel()
     {
         float indent = 75f;
+        float smallIndent = 60f;
+        float positionY = -26.3f;
 
         RectTransform loginPanel = UICreatorImage.Create(
             m_Canvas.RTransform(),
@@ -70,17 +72,18 @@ public class MenuUI : MonoBehaviour
             loginPanel,
             "email",
             UIAnchor.Create(Vector2.up, Vector2.one),
-            new Vector2(0, -26.3f),
+            new Vector2(0, positionY),
             Utility.HalfOne,
             new Vector2(-100, 52.6f),
             "email");
 
         //Email Input
+        positionY -= smallIndent;
         RectTransform email = UICreatorImage.Create(
             loginPanel,
             "inputEmail",
             UIAnchor.Create(Vector2.up, Vector2.one),
-            new Vector2(0, -indent - 26.3f),
+            new Vector2(0, positionY),
             Utility.HalfOne,
             new Vector2(-100, 52.6f),
             "InputFieldContainer");
@@ -97,21 +100,23 @@ public class MenuUI : MonoBehaviour
         );
 
         //Password Text
+        positionY -= indent*0.7f;
         UiTmpTextFactory.Create(
                 loginPanel,
                 "password",
                 UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0, -indent * 2 - 26.3f),
+                new Vector2(0, positionY),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
                 "password");
 
         //Email Input
+        positionY -= smallIndent;
         RectTransform password = UICreatorImage.Create(
             loginPanel,
             "inputPassword",
             UIAnchor.Create(Vector2.up, Vector2.one),
-            new Vector2(0, -indent * 3 - 26.3f),
+            new Vector2(0, positionY),
             Utility.HalfOne,
             new Vector2(-100, 52.6f),
             "InputFieldContainer");
@@ -128,11 +133,12 @@ public class MenuUI : MonoBehaviour
         );
 
         //LoginButton
+        positionY -= indent;
         RectTransform login = UICreatorImage.Create(
                 loginPanel,
                 "buttonLogin",
                 UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0, -indent * 4 - 26.3f),
+                new Vector2(0, positionY),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
                 "buttonLoginContainer");
@@ -154,11 +160,12 @@ public class MenuUI : MonoBehaviour
         );
 
         //AppleButton
+        positionY -= indent;
         RectTransform appleAccount = UICreatorImage.Create(
                 loginPanel,
                 "buttonAppleAccount",
                 UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0, -indent * 5 - 26.3f),
+                new Vector2(0, positionY),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
                 "buttonAppleAccountContainer");
@@ -181,11 +188,12 @@ public class MenuUI : MonoBehaviour
                 );
 
         //GoogleButton
+        positionY -= indent;
         RectTransform googleAccount = UICreatorImage.Create(
                loginPanel,
                "buttonGoogleAccount",
                UIAnchor.Create(Vector2.up, Vector2.one),
-               new Vector2(0, -indent * 6 - 26.3f),
+               new Vector2(0, positionY),
                Utility.HalfOne,
                new Vector2(-100, 52.6f),
                "buttonGoogleAccountContainer");
@@ -207,11 +215,12 @@ public class MenuUI : MonoBehaviour
                 );
 
         //GuestButton
+        positionY -= indent;
         RectTransform guestAccount = UICreatorImage.Create(
             loginPanel,
               "buttonGuest",
               UIAnchor.Create(Vector2.up, Vector2.one),
-              new Vector2(0, -indent * 7 - 26.3f),
+              new Vector2(0, positionY),
               Utility.HalfOne,
               new Vector2(-100, 52.6f),
               "buttonGuestContainer");
@@ -298,6 +307,8 @@ public class MenuUI : MonoBehaviour
     public void CreateRegisterPanel()
     {
         float indent = 75f;
+        float smallIndent = 60f;
+        float positionY = -26.3f;
 
         RectTransform registerPanel = UICreatorImage.Create(
                 m_Canvas.RTransform(),
@@ -313,17 +324,18 @@ public class MenuUI : MonoBehaviour
                 registerPanel,
                 "email",
                 UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0, -26.3f),
+                new Vector2(0, positionY),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
                 "email");
 
         //Email Input
+        positionY -= smallIndent;
         RectTransform email = UICreatorImage.Create(
             registerPanel,
             "inputEmail",
             UIAnchor.Create(Vector2.up, Vector2.one),
-            new Vector2(0, -indent - 26.3f),
+            new Vector2(0, positionY),
             Utility.HalfOne,
             new Vector2(-100, 52.6f),
             "InputFieldContainer");
@@ -340,21 +352,23 @@ public class MenuUI : MonoBehaviour
         );
 
         //Password Text
+        positionY -= indent * 0.7f;
         UiTmpTextFactory.Create(
                 registerPanel,
                 "password",
                 UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(0, -indent * 2 - 26.3f),
+                new Vector2(0, positionY),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
                 "password");
 
         //Password Input
+        positionY -= smallIndent;
         RectTransform password = UICreatorImage.Create(
             registerPanel,
             "inputPassword",
             UIAnchor.Create(Vector2.up, Vector2.one),
-            new Vector2(0, -indent * 3 - 26.3f),
+            new Vector2(0, positionY),
             Utility.HalfOne,
             new Vector2(-100, 52.6f),
             "InputFieldContainer");
@@ -371,21 +385,23 @@ public class MenuUI : MonoBehaviour
         );
 
         //Repeat Password Text
+        positionY -= indent*0.7f;
         UiTmpTextFactory.Create(
                registerPanel,
                "repeat_password",
                UIAnchor.Create(Vector2.up, Vector2.one),
-               new Vector2(0, -indent * 4 - 26.3f),
+               new Vector2(0, positionY),
                Utility.HalfOne,
                new Vector2(-100, 52.6f),
                "repeat_password");
 
         //Repeat Password Input
+        positionY -= smallIndent;
         RectTransform repeatPassword = UICreatorImage.Create(
             registerPanel,
             "inputRepeatPassword",
             UIAnchor.Create(Vector2.up, Vector2.one),
-            new Vector2(0, -indent * 5 - 26.3f),
+            new Vector2(0, positionY),
             Utility.HalfOne,
             new Vector2(-100, 52.6f),
             "InputFieldContainer");
@@ -402,11 +418,12 @@ public class MenuUI : MonoBehaviour
         );
 
         //RegisterButton
+        positionY -= indent;
         RectTransform register = UICreatorImage.Create(
                 registerPanel,
                 "buttonRegister",
                 UIAnchor.Create(Vector2.up, Vector2.one),
-                new Vector2(140, -indent * 6 - 26.3f),
+                new Vector2(140, positionY),
                 Utility.HalfOne,
                 new Vector2(-320, 52.6f),
                 "buttonRegisterContainer");
