@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1600272214c7aa418cb76f5cc38aecb, type: 3}
   m_Name: buttonAppleAccount
   m_EditorClassIdentifier: 
-  sprite: {fileID: 0}
-  imageColor: {r: 1, g: 1, b: 1, a: 1}
+  sprite: {fileID: 21300000, guid: 96885854aa8bba34c852077568b231ba, type: 3}
+  imageColor: {r: 0.028301895, g: 0.028301895, b: 0.028301895, a: 1}
   raycastImageTarget: 1
   imageType: 0
   useSpriteMesh: 0
