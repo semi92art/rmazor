@@ -1,4 +1,7 @@
-﻿using TMPro;
+﻿using Network;
+using Network.PacketArgs;
+using Network.Packets;
+using TMPro;
 using UICreationSystem;
 using UICreationSystem.Factories;
 using UnityEngine;
@@ -7,9 +10,11 @@ using Utils;
 
 public class MenuUI : MonoBehaviour
 {
-    #region attributes
+    #region private fields
 
     private Canvas m_Canvas;
+    private LoadingPanel m_LoadingPanel;
+    private ITransitionRenderer m_TransitionRenderer;
 
     #endregion
 
@@ -17,6 +22,7 @@ public class MenuUI : MonoBehaviour
 
     private void Start()
     {
+        GameClient.Instance.Start();
         CreateCanvas();
 
         UiFactory.UiImage(
@@ -30,12 +36,102 @@ public class MenuUI : MonoBehaviour
             ),
             "menu_background");
 
-        CreateLoginPanel();
+        CreateLoadingPanel();
     }
 
     #endregion
 
-    public void CreateCanvas()
+    #region private methods
+
+    private void CreateLoadingPanel()
+    {
+        m_LoadingPanel = LoadingPanel.Create(m_Canvas.RTransform(), "Loading Panel");
+        CreateLoadingTransitionPanel();
+        StartCoroutine(Coroutines.WaitEndOfFrame(() =>
+        {
+            m_TransitionRenderer = CircleTransparentTransitionRenderer.Create();
+            m_TransitionRenderer.OnTransitionMoment = (_, _Args) =>
+            {
+                m_LoadingPanel.DoLoading = false;
+                CreateLoginPanel();
+            };
+
+            //wait 2 seconds anyway
+            float delayAnyway = 2f;
+            bool isSuccess = false;
+            float startTime = Time.time;
+            StartCoroutine(Coroutines.DoWhile(
+                () => delayAnyway = Mathf.Max(2f - (Time.time - startTime), 0),
+                null,
+                () => !isSuccess,
+                () => true));
+            
+            
+            IPacket testPacket = new TestConnectionPacket(null)
+                .OnSuccess(() =>
+                {
+                    Debug.Log("Test connection successfully");
+                    isSuccess = true;
+                    StartCoroutine(Coroutines.Delay(
+                        () =>
+                        {
+                            IPacket loginPacket = new LoginUserPacket(new LoginUserPacketRequestArgs
+                            {
+                                Name = SaverUtils.GetValue(SaverKeys.Login),
+                                PasswordHash = SaverUtils.GetValue(SaverKeys.PasswordHash),
+                                DeviceId = SystemInfo.deviceUniqueIdentifier
+                            }).OnSuccess(() =>
+                                {
+                                    Debug.Log("Login successfully");
+                                    m_TransitionRenderer.StartTransition();
+                                }
+                                /*here we must load main menu*/);
+                            loginPacket.OnFail(() =>
+                            {
+                                if (loginPacket.ErrorMessage.Id == RequestErrorCodes.AccontEntityNotFoundByDeviceId)
+                                {
+                                    IPacket registerPacket = new RegisterUserPacket(
+                                        new RegisterUserUserPacketRequestArgs
+                                        {
+                                            DeviceId = SystemInfo.deviceUniqueIdentifier
+                                        }).OnSuccess(() =>
+                                        {
+                                            Debug.Log("Register by DeviceId successfully");
+                                            /*here we must load main menu*/
+                                        })
+                                        .OnFail(() => { Debug.LogError($"Register by DeviceId failed: {loginPacket.ErrorMessage.Message}"); });
+                                    GameClient.Instance.Send(registerPacket);
+                                }
+                                else if (loginPacket.ErrorMessage.Id == RequestErrorCodes.WrongLoginOrPassword)
+                                    m_TransitionRenderer.StartTransition();
+                                else
+                                    Debug.LogError($"Login failed: {loginPacket.ErrorMessage.Message}");
+                            });
+                            GameClient.Instance.Send(loginPacket);
+                        },
+                        delayAnyway));
+                    
+                    
+                })
+                .OnFail(() => Debug.LogError("Failed test connection"));
+            GameClient.Instance.Send(testPacket);
+        }));
+    }
+
+    private void CreateLoadingTransitionPanel()
+    {
+        UIAnchor anchor = UIAnchor.Create(Vector2.zero, Vector2.one);
+        Vector2 anchoredPosition = new Vector2(0, 10);
+        Vector2 pivot = Utility.HalfOne;
+        Vector2 sizeDelta = new Vector2(-90, -300);
+        
+        RectTransform rTr = UiFactory.UiRectTransform(
+            m_Canvas.RTransform(), "TransitionPanel", anchor, anchoredPosition, pivot, sizeDelta);
+
+        GameObject prefab = PrefabInitializer.InitializeUiPrefab(rTr, "ui_panel_transition", "transition_panel");
+    }
+
+    private void CreateCanvas()
     {
         m_Canvas = UiFactory.UiCanvas(
                    "MenuCanvas",
@@ -51,8 +147,8 @@ public class MenuUI : MonoBehaviour
                    true,
                    GraphicRaycaster.BlockingObjects.None);
     }
-
-    public void CreateLoginPanel()
+    
+    private void CreateLoginPanel()
     {
         float indent = 75f;
 
@@ -287,7 +383,7 @@ public class MenuUI : MonoBehaviour
                 );
     }
 
-    public void DestroyLoginPanel()
+    private void DestroyLoginPanel()
     {
         GameObject loginPanel = m_Canvas.transform.Find("login_panel").gameObject;
         Destroy(loginPanel);
@@ -295,7 +391,7 @@ public class MenuUI : MonoBehaviour
 
     //RegisterPanel
 
-    public void CreateRegisterPanel()
+    private void CreateRegisterPanel()
     {
         float indent = 75f;
 
@@ -450,15 +546,17 @@ public class MenuUI : MonoBehaviour
                 {
                     Debug.Log("buttonBack Pushed");
                     //Button functionality
-                    this.DestroyRegisterPanel();
-                    this.CreateLoginPanel();
+                    DestroyRegisterPanel();
+                    CreateLoginPanel();
                 }
                 );
     }
 
-    public void DestroyRegisterPanel()
+    private void DestroyRegisterPanel()
     {
         GameObject registerPanel = m_Canvas.transform.Find("register_panel").gameObject;
         Destroy(registerPanel);
     }
+    
+    #endregion
 }

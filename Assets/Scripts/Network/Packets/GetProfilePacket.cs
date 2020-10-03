@@ -14,7 +14,8 @@ namespace Network.Packets
 
         public override void DeserializeResponse(string _Json)
         {
-            Response = GameClient.Deserialize<GetProfileResponseArgs>(_Json);
+            if (Utils.Utility.IsInRange(ResponseCode, 200, 299))
+                Response = GameClient.Deserialize<GetProfileResponseArgs>(_Json);
             base.DeserializeResponse(_Json);
         }
     }

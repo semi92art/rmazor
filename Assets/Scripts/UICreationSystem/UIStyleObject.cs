@@ -1,9 +1,20 @@
-﻿using TMPro;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
+using Malee.List;
 
 namespace UICreationSystem
 {
+    [System.Serializable]
+    public class Prefab
+    {
+        public GameObject item;
+        public string name;
+    }
+    
+    [System.Serializable]
+    public class PrefabsList : ReorderableArray<Prefab>
+    { }
+    
     [CreateAssetMenu(fileName = "new_style", menuName = "Style", order = 1)]
     public class UIStyleObject : ScriptableObject
     {
@@ -25,10 +36,9 @@ namespace UICreationSystem
         [Header("TMP Text")] public GameObject text;
         [Header("TMP Button")] public GameObject button;
         [Header("TMP Input Field:")] public GameObject inputField;
-        [Header("Image")] public GameObject image;
-        [Header("Toggle")] public GameObject toggle;
-        [Header("Slider")] public GameObject slider;
-        [Header("Scrollbar")] public GameObject scrollbar;
+
+        [Header("Prefabs"), Reorderable(paginate = true, pageSize = 5)]
+        public PrefabsList prefabs;
 
         #endregion
     }
