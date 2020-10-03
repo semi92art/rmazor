@@ -177,8 +177,8 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 40
-  m_fontSizeBase: 40
+  m_fontSize: 30
+  m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -372,7 +372,7 @@ GameObject:
   - component: {fileID: 363743702731915932}
   - component: {fileID: 7182520480650281367}
   m_Layer: 0
-  m_Name: Button
+  m_Name: Button_Brown
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -37,7 +37,19 @@ namespace UICreationSystem.Factories
             buttonObjText.text = _Text;
 
             Button button = buttonObj.GetComponentInChildren<Button>();
-             var @event = new Button.ButtonClickedEvent();
+
+            var iconObj = buttonObj.transform.GetChild(1);
+            if (style.sprite != null)
+            {
+                iconObj.GetComponent<RectTransform>().SetRight(320);
+                iconObj.transform.localScale = new Vector3(0.7f,0.7f,1);
+                var tmp = iconObj.GetComponent<RectTranshormHelper>();
+                Image icon = iconObj.GetComponent<Image>();
+                icon.sprite = style.sprite;
+                icon.color = style.imageColor;
+            }
+
+            var @event = new Button.ButtonClickedEvent();
             @event.AddListener(_OnClick);
             button.onClick = @event;
 
