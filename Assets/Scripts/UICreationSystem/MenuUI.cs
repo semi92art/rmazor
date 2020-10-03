@@ -9,7 +9,8 @@ public class MenuUI : MonoBehaviour
 {
     #region attributes
 
-    private Canvas m_Canvas;
+    private Canvas m_canvas;
+    private Resolution m_resolution;
 
     #endregion
 
@@ -17,11 +18,12 @@ public class MenuUI : MonoBehaviour
 
     private void Start()
     {
+        m_resolution = Screen.currentResolution;
         CreateCanvas();
 
         UiFactory.UiImage(
             UiFactory.UiRectTransform(
-                m_Canvas.RTransform(),
+                m_canvas.RTransform(),
                 "background",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
                 Vector2.zero,
@@ -33,11 +35,12 @@ public class MenuUI : MonoBehaviour
         CreateLoginPanel();
     }
 
+
     #endregion
 
     public void CreateCanvas()
     {
-        m_Canvas = UiFactory.UiCanvas(
+        m_canvas = UiFactory.UiCanvas(
                    "MenuCanvas",
                    RenderMode.ScreenSpaceOverlay,
                    true,
@@ -59,12 +62,12 @@ public class MenuUI : MonoBehaviour
         float positionY = -26.3f;
 
         RectTransform loginPanel = UICreatorImage.Create(
-            m_Canvas.RTransform(),
+            m_canvas.RTransform(),
             "login_panel",
             UIAnchor.Create(Vector2.zero, Vector2.one),
             new Vector2(0, 10),
             Utility.HalfOne,
-            new Vector2(-90, -300),
+            new Vector2(-60, -300),
             "dark_panel");
 
         //Email Text
@@ -242,13 +245,15 @@ public class MenuUI : MonoBehaviour
                 );
 
         //RegisterButton
+        float x = Screen.height / Screen.width;
+        float buttonSizeDelta = 39.4706f * x * x * (-1) + 257.7418f * x - 697.7933f;
         RectTransform register = UICreatorImage.Create(
             loginPanel,
              "buttonRegister",
              UIAnchor.Create(Vector2.up, Vector2.one),
              new Vector2(-140, -740f),
              Utility.HalfOne,
-             new Vector2(-320, 52.6f),
+             new Vector2(buttonSizeDelta, 52.6f),
              "buttonRegisterContainer");
 
         UiTmpButtonFactory.Create(
@@ -276,7 +281,7 @@ public class MenuUI : MonoBehaviour
             UIAnchor.Create(Vector2.up, Vector2.one),
             new Vector2(140, -740f),
             Utility.HalfOne,
-            new Vector2(-320, 52.6f),
+            new Vector2(buttonSizeDelta, 52.6f),
             "buttonBackContainer");
 
         UiTmpButtonFactory.Create(
@@ -298,7 +303,7 @@ public class MenuUI : MonoBehaviour
 
     public void DestroyLoginPanel()
     {
-        GameObject loginPanel = m_Canvas.transform.Find("login_panel").gameObject;
+        GameObject loginPanel = m_canvas.transform.Find("login_panel").gameObject;
         Destroy(loginPanel);
     }
 
@@ -311,7 +316,7 @@ public class MenuUI : MonoBehaviour
         float positionY = -26.3f;
 
         RectTransform registerPanel = UICreatorImage.Create(
-                m_Canvas.RTransform(),
+                m_canvas.RTransform(),
                 "register_panel",
                 UIAnchor.Create(Vector2.zero, Vector2.one),
                 new Vector2(0, 10),
@@ -475,7 +480,7 @@ public class MenuUI : MonoBehaviour
 
     public void DestroyRegisterPanel()
     {
-        GameObject registerPanel = m_Canvas.transform.Find("register_panel").gameObject;
+        GameObject registerPanel = m_canvas.transform.Find("register_panel").gameObject;
         Destroy(registerPanel);
     }
 }
