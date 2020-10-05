@@ -6,31 +6,31 @@ namespace UICreationSystem
 {
     public class PrefabInitializer
     {
-        public static GameObject InitializeUiPrefab(
+        public static GameObject InitUiPrefab(
             RectTransform _RectTransform,
             string _Style,
             string _Prefab)
         {
-            GameObject instance = InitializePrefabCore(_Style, _Prefab);
+            GameObject instance = InitPrefabBase(_Style, _Prefab);
             UiFactory.CopyRTransform(_RectTransform, instance.RTransform());
             Object.Destroy(_RectTransform.gameObject);
-            
+            instance.RTransform().localScale = Vector3.one;
             return instance;
         }
 
-        public static GameObject InitializePrefab(
+        public static GameObject InitPrefab(
             Transform _Transform,
             string _Style,
             string _Prefab)
         {
-            GameObject instance = InitializePrefabCore(_Style, _Prefab);
+            GameObject instance = InitPrefabBase(_Style, _Prefab);
             UiFactory.CopyTransform(_Transform, instance.transform);
             Object.Destroy(_Transform.gameObject);
-
+            instance.transform.localScale = Vector3.one;
             return instance;
         }
 
-        private static GameObject InitializePrefabCore(
+        private static GameObject InitPrefabBase(
             string _Style,
             string _Prefab)
         {

@@ -9,7 +9,7 @@ namespace UICreationSystem.Factories
         public static TextMeshProUGUI Create(
             RectTransform _Parent,
             string _Name,
-            UIAnchor _Anchor,
+            UiAnchor _Anchor,
             Vector2 _AnchoredPosition,
             Vector2 _Pivot,
             Vector2 _SizeDelta,
@@ -19,16 +19,8 @@ namespace UICreationSystem.Factories
             GameObject obj = Object.Instantiate(style.text);
             
             var rTr = obj.RTransform();
-            rTr = UiFactory.UiRectTransform(
-                _Parent,
-                _Name,
-                _Anchor,
-                _AnchoredPosition,
-                _Pivot,
-                _SizeDelta,
-                rTr);
+            rTr.Set(_Parent, _Name, _Anchor, _AnchoredPosition, _Pivot, _SizeDelta);
 
-            var componentes = obj.GetComponents<Component>();
             TextMeshProUGUI result = obj.GetComponent<TextMeshProUGUI>();
             return result;
         }

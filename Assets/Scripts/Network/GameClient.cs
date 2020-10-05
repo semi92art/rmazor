@@ -46,28 +46,25 @@ namespace Network
         
         #region Unity methods
         
-        public void Start()
+        public void Init()
         {
 #if AZURE
             m_ServerName = "Azure";
 #else
             m_ServerName = "Ubuntu1";
 #endif
-            Init();
-        }
-
-        #endregion
-
-        private void Init()
-        {
             m_ServerBaseUrls = new Dictionary<string, string>
             {
                 {"Ubuntu1", @"http://77.37.152.15:7000"},
                 {"Azure", @"https://clickersapi.azurewebsites.net"},
                 {"Test", @"http://77.37.152.15:7100"}
             };
+            
+            DontDestroyOnLoad(gameObject);
         }
 
+        #endregion
+        
         public void Send(IPacket _Packet)
         {
             if (m_Packets.ContainsKey(_Packet.Id))

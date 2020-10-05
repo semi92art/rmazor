@@ -70,17 +70,16 @@ public class LoadingPanel : MonoBehaviour
     
     public static LoadingPanel Create(
         RectTransform _Parent, 
-        string _Name)
+        string _Name,
+        UiAnchor _Anchor,
+        Vector2 _AnchoredPosition,
+        Vector2 _Pivot,
+        Vector2 _SizeDelta)
     {
-        UIAnchor anchor = UIAnchor.Create(Vector2.zero, Vector2.one);
-        Vector2 anchoredPosition = new Vector2(0, 10);
-        Vector2 pivot = Utility.HalfOne;
-        Vector2 sizeDelta = new Vector2(-90, -300);
-
         RectTransform rTr = UiFactory.UiRectTransform(
-            _Parent, _Name, anchor, anchoredPosition, pivot, sizeDelta);
+            _Parent, _Name, _Anchor, _AnchoredPosition, _Pivot, _SizeDelta);
 
-        GameObject prefab = PrefabInitializer.InitializeUiPrefab(rTr, "loading_panel", "loading_panel");
+        GameObject prefab = PrefabInitializer.InitUiPrefab(rTr, "loading_panel", "loading_panel");
         
         return prefab.GetComponent<LoadingPanel>();
     }
@@ -96,7 +95,7 @@ public class LoadingPanel : MonoBehaviour
         
         m_Indicator.Rotate(Vector3.back, Time.deltaTime * speed);
         m_Indicator2.Rotate(Vector3.forward, Time.deltaTime * speed);
-        
+
         int time = Mathf.FloorToInt(Time.time * 5f);
         if (time % 2 == 0 &&  time != m_TimePrev)
         {
@@ -109,6 +108,8 @@ public class LoadingPanel : MonoBehaviour
     
     #endregion
 }
+
+#region Editor
 
 #if UNITY_EDITOR
 
@@ -132,3 +133,5 @@ public class LoadingPanelEditor : Editor
 }
 
 #endif
+
+#endregion

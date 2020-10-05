@@ -1,4 +1,5 @@
 ﻿using Clickers;
+using Network;
 using UICreationSystem;
 using UICreationSystem.Factories;
 using UnityEngine;
@@ -16,6 +17,7 @@ public class GameLoader : MonoBehaviour
     {
         Instance = this;       
         GoogleAdsManager.Instance.Init();
+        GameClient.Instance.Init();
         SceneManager.activeSceneChanged += (previous, current) =>
         {
             Canvas canvas = UiFactory.UiCanvas(
@@ -35,7 +37,7 @@ public class GameLoader : MonoBehaviour
             UiFactory.UiImage(UiFactory.UiRectTransform(
                 canvas.RTransform(),
                 "image",
-                UIAnchor.Create(0, 0, 0, 0),
+                UiAnchor.Create(0, 0, 0, 0),
                 Vector2.down, Vector2.down, Vector2.down
             ), "TESTButton");
                 

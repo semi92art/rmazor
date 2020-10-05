@@ -32,7 +32,7 @@ public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRen
         GameObject instance = GameObject.FindGameObjectWithTag("RenderTransitionCamera");
         if (instance == null)
         {
-            instance = PrefabInitializer.InitializePrefab(
+            instance = PrefabInitializer.InitPrefab(
                 new GameObject().transform, 
                 "ui_panel_transition",
                 "render_camera"
