@@ -1,5 +1,4 @@
-﻿using Clickers.Utils;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 

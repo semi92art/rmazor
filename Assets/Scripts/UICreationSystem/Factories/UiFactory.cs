@@ -1,8 +1,8 @@
 ﻿using Clickers;
-using Clickers.Utils;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using Utils;
 
 namespace UICreationSystem.Factories
 {

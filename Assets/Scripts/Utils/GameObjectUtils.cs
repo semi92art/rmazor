@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using UnityEngine;
 
-namespace Clickers.Utils
+namespace Utils
 {
     public static class GameObjectUtils
     {
@@ -30,6 +30,16 @@ namespace Clickers.Utils
                 finfo.SetValue(comp, finfo.GetValue(other));
             }
             return comp as T;
+        }
+
+        public static void SetParent(this GameObject _Object, GameObject _Parent)
+        {
+            _Object.transform.SetParent(_Parent.transform);
+        }
+
+        public static void SetParent(this GameObject _Object, Transform _Parent)
+        {
+            _Object.transform.SetParent(_Parent);
         }
     }
 }

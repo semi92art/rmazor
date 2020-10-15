@@ -125,7 +125,7 @@ public class MenuUI
                                         m_LoadingPanel.DoLoading = false;
                                         m_LoadingPanel.gameObject.SetActive(false);
                                         
-                                        m_MainMenuUi = new MainMenuUi(m_Canvas.RTransform());
+                                        m_MainMenuUi = new MainMenuUi(m_Canvas.RTransform(), null);
                                     };
                                     // m_TransitionRenderer.OnTransitionMoment = (_, _Args) =>
                                     // {

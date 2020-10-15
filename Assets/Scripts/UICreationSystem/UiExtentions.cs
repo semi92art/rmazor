@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace UICreationSystem
 {
@@ -25,6 +26,13 @@ namespace UICreationSystem
         public static void SetParent(this UIBehaviour _UiBehaviour, RectTransform _NewParent)
         {
             _UiBehaviour.RTransform().SetParent(_NewParent);
+        }
+
+        public static void SetOnClick(this Button _Button, UnityEngine.Events.UnityAction _OnClick)
+        {
+            var @event = new Button.ButtonClickedEvent();
+            @event.AddListener(_OnClick);
+            _Button.onClick = @event;
         }
     }
 }
