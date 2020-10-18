@@ -37,13 +37,13 @@ namespace Utils
             return false;
         }
 
-        public static System.Action WaitForSecs(float _Seconds, Bool _StopWaiting)
+        public static Action WaitForSecs(float _Seconds, Action _OnFinish)
         {
             return () =>
             {
                 int millisecs = Mathf.RoundToInt(_Seconds * 1000);
                 Thread.Sleep(millisecs);
-                _StopWaiting.Value = true;
+                _OnFinish?.Invoke();
             };
         }
         
@@ -72,12 +72,5 @@ namespace Utils
             if (++_Value >= _Threshold)
                 _Value = 0;
         }
-    }
-    
-    public class Bool
-    {
-        public bool Value { get; set; }
-
-        public static implicit operator bool(Bool b) => b.Value;
     }
 }

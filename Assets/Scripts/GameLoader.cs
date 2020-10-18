@@ -1,46 +1,49 @@
-﻿using UICreationSystem;
+﻿using Clickers;
+using UICreationSystem;
 using UICreationSystem.Factories;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-namespace Clickers
+public class GameLoader : MonoBehaviour
 {
-    public class GameLoader : MonoBehaviour
-    {
-        public GameObject consolePrefab;
+    public static GameLoader Instance { get; private set; }
+
+    public GameObject consolePrefab;
+    public GameObject loadingPanel;
         
-        private void Start()
+    private void Start()
+    {
+        Instance = this;       
+        GoogleAdsManager.Instance.Init();
+        SceneManager.activeSceneChanged += (previous, current) =>
         {
-            GoogleAdsManager.Instance.Init();
-            SceneManager.activeSceneChanged += (previous, current) =>
-            {
-                Canvas canvas = UiFactory.UiCanvas(
-                    "Canvas",
-                    RenderMode.ScreenSpaceOverlay,
-                    true,
-                    0,
-                    AdditionalCanvasShaderChannels.None,
-                    CanvasScaler.ScaleMode.ScaleWithScreenSize,
-                    new Vector2Int(1920,1080),
-                    CanvasScaler.ScreenMatchMode.Shrink,
-                    0f,
-                    100,
-                    true,
-                    GraphicRaycaster.BlockingObjects.None);
+            Canvas canvas = UiFactory.UiCanvas(
+                "Canvas",
+                RenderMode.ScreenSpaceOverlay,
+                true,
+                0,
+                AdditionalCanvasShaderChannels.None,
+                CanvasScaler.ScaleMode.ScaleWithScreenSize,
+                new Vector2Int(1920,1080),
+                CanvasScaler.ScreenMatchMode.Shrink,
+                0f,
+                100,
+                true,
+                GraphicRaycaster.BlockingObjects.None);
                 
-                UiFactory.UiImage(UiFactory.UiRectTransform(
-                    canvas.RTransform(),
-                    "image",
-                    UIAnchor.Create(0, 0, 0, 0),
-                    Vector2.down, Vector2.down, Vector2.down
-                    ), "TESTButton");
+            UiFactory.UiImage(UiFactory.UiRectTransform(
+                canvas.RTransform(),
+                "image",
+                UIAnchor.Create(0, 0, 0, 0),
+                Vector2.down, Vector2.down, Vector2.down
+            ), "TESTButton");
                 
-                if (current.buildIndex == 1)
-                    Instantiate(consolePrefab, canvas.RTransform());
-            };
+            if (current.buildIndex == 1)
+                Instantiate(consolePrefab, canvas.RTransform());
+        };
             
-            SceneManager.LoadScene(1);
-        }
+        DontDestroyOnLoad(gameObject);
+        SceneManager.LoadScene(1);
     }
 }

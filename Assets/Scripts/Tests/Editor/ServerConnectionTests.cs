@@ -23,8 +23,8 @@ namespace Tests.Editor
             request.downloadHandler = new DownloadHandlerBuffer();
 
             //wait 5 seconds before cancel
-            var stopWaiting = new Utils.Bool();
-            Task.Run(Utils.CommonUtils.WaitForSecs(5f, stopWaiting));
+            bool stopWaiting = false;
+            Task.Run(Utils.CommonUtils.WaitForSecs(5f, () => stopWaiting = true));
 
             //Act
             request.SendWebRequest();

@@ -1,7 +1,8 @@
 ﻿using System;
+using Network.PacketArgs;
+using Newtonsoft.Json;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.Networking;
+using Utility = Utils.Utility;
 
 namespace Network
 {
@@ -17,26 +18,14 @@ namespace Network
         public object Request { get; }
         public string ResponseRaw { get; private set; }
 
-        public long ResponseCode
-        {
-            get => m_ResponseCode;
-            set
-            {
-                m_ResponseCode = value;
-                if (Utils.Utility.IsInRange(value, 200, 299))
-                    InvokeSuccess();
-                else if (Utils.Utility.IsInRange(value, 300, 399))
-                    InvokeCancel();
-                else if (Utils.Utility.IsInRange(value, 400, 499))
-                    InvokeFail();
-            }
-        }
+        public ErrorResponseArgs ErrorMessage { get; protected set; }
         
+        public long ResponseCode { get; set; }
+
         #endregion
         
         #region private fields
         
-        private long m_ResponseCode;
         private Action m_Success;
         private Action m_Fail;
         private Action m_Cancel;
@@ -94,19 +83,19 @@ namespace Network
         
         #region public methods
 
-        public virtual PacketBase OnSuccess(Action _Action)
+        public virtual IPacket OnSuccess(Action _Action)
         {
             m_Success += _Action;
             return this;
         }
 
-        public virtual PacketBase OnFail(Action _Action)
+        public virtual IPacket OnFail(Action _Action)
         {
             m_Fail += _Action;
             return this;
         }
 
-        public virtual PacketBase OnCancel(Action _Action)
+        public virtual IPacket OnCancel(Action _Action)
         {
             m_Cancel = _Action;
             return this;
@@ -115,7 +104,15 @@ namespace Network
         public virtual void DeserializeResponse(string _Json)
         {
             ResponseRaw = _Json;
-            //here must be set Response
+            if (!Utility.IsInRange(ResponseCode, 200, 299))
+                ErrorMessage = JsonConvert.DeserializeObject<ErrorResponseArgs>(_Json);
+            
+            if (Utility.IsInRange(ResponseCode, 200, 299))
+                InvokeSuccess();
+            else if (Utility.IsInRange(ResponseCode, 300, 399))
+                InvokeCancel();
+            else if (Utility.IsInRange(ResponseCode, 400, 499))
+                InvokeFail();
         }
         
         #endregion

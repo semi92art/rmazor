@@ -37,4 +37,19 @@ public static class Coroutines
         
         _Action();
     }
+
+    public static IEnumerator DoWhile(Action _Action, Action _FinishAction, Func<bool> _Predicate, Func<bool> _WaitEndOfFrame)
+    {
+        if (_Action == null || _Predicate == null)
+            yield break;
+
+        while (_Predicate.Invoke())
+        {
+            _Action();
+            if (_WaitEndOfFrame.Invoke())
+                yield return new WaitForEndOfFrame();
+        }
+        
+        _FinishAction?.Invoke();
+    }
 }

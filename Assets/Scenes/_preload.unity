@@ -151,6 +151,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   consolePrefab: {fileID: 6739011661087431237, guid: 302b725af59c27942abb2cc52411cb24,
     type: 3}
+  loadingPanel: {fileID: 92356324094370806, guid: 1118dc2d3b2fbb94fab949eac790797a,
+    type: 3}
 --- !u!4 &601712047
 Transform:
   m_ObjectHideFlags: 0

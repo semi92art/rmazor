@@ -8,7 +8,7 @@ public static class UiExtentions
     
     public static RectTransform RTransform(this UIBehaviour _UiBehaviour) =>
         _UiBehaviour.GetComponent<RectTransform>();
-    
+
     public static RectTransform RTransform(this RectTranshormHelper _Helper) =>
         _Helper.GetComponent<RectTransform>();
     

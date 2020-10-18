@@ -96,10 +96,24 @@ namespace UICreationSystem.Factories
             return item;
         }
 
+        public static void CopyRTransform(RectTransform _From, RectTransform _To)
+        {
+            _To.parent = _From.parent;
+            _To.anchorMin = _From.anchorMin;
+            _To.anchorMax = _From.anchorMax;
+            _To.anchoredPosition = _From.anchoredPosition;
+            _To.pivot = _From.pivot;
+            _To.sizeDelta = _From.sizeDelta;
+        }
 
+        public static void CopyTransform(Transform _From, Transform _To)
+        {
+            _To.position = _From.position;
+            _To.rotation = _From.rotation;
+            _To.localScale = _From.localScale;
+        }
 
         #endregion
-
     }
 }
 
