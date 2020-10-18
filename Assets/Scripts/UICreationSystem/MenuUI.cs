@@ -3,6 +3,7 @@ using Network.PacketArgs;
 using Network.Packets;
 using UICreationSystem;
 using UICreationSystem.Factories;
+using UICreationSystem.Panels;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils;
@@ -156,7 +157,6 @@ public class MenuUI
                                     m_TransitionRenderer.OnTransitionMoment = (_, _Args) =>
                                     {
                                         m_LoadingPanel.DoLoading = false;
-                                        CreateLoginPanel();
                                     };
                                     m_TransitionRenderer.StartTransition();
                                 }
@@ -186,7 +186,7 @@ public class MenuUI
 
         return PrefabInitializer.InitUiPrefab(rTr, "ui_panel_transition", "transition_panel");
     }
-    
+    /*
     private void CreateLoginPanel()
     {
         float indent = 75f;
@@ -596,6 +596,6 @@ public class MenuUI
         GameObject registerPanel = m_Canvas.transform.Find("register_panel").gameObject;
         Object.Destroy(registerPanel);
     }
-    
+    */
     #endregion
 }

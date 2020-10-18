@@ -1,4 +1,5 @@
 ﻿using UICreationSystem.Factories;
+using UICreationSystem.Panels;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils;
@@ -155,6 +156,7 @@ namespace UICreationSystem
         private void OnLoginButtonClick()
         {
             m_OnLoginClick?.Invoke();
+            LoginPanel.CreatePanel(m_MainMenu);
             //TODO login button logic
         }
 

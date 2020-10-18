@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UICreationSystem;
 using UICreationSystem.Factories;
 using Utils;
 using UnityEngine.UI;
@@ -10,16 +11,16 @@ namespace UICreationSystem.Panels
     public class RegistrationPanel
     {
         // Start is called before the first frame update
-        public static void CreatePanel(Canvas _Canvas)
+        public static void CreatePanel(RectTransform _Container)
         {
             float indent = 75f;
             float smallIndent = 60f;
             float positionY = -26.3f;
 
             RectTransform registerPanel = UICreatorImage.Create(
-                    _Canvas.RTransform(),
+                _Container,
                     "register_panel",
-                    UIAnchor.Create(Vector2.zero, Vector2.one),
+                    UiAnchor.Create(Vector2.zero, Vector2.one),
                     new Vector2(0, 10),
                     Utility.HalfOne,
                     new Vector2(-90, -300),
@@ -29,7 +30,7 @@ namespace UICreationSystem.Panels
             UiTmpTextFactory.Create(
                     registerPanel,
                     "email",
-                    UIAnchor.Create(Vector2.up, Vector2.one),
+                    UiAnchor.Create(Vector2.up, Vector2.one),
                     new Vector2(0, positionY),
                     Utility.HalfOne,
                     new Vector2(-100, 52.6f),
@@ -41,7 +42,7 @@ namespace UICreationSystem.Panels
             RectTransform email = UICreatorImage.Create(
                 registerPanel,
                 "inputEmail",
-                UIAnchor.Create(Vector2.up, Vector2.one),
+                UiAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, positionY),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
@@ -50,7 +51,7 @@ namespace UICreationSystem.Panels
             UiTmpInputFieldFactory.Create(
                 email,
                 "email_input",
-                UIAnchor.Create(Vector2.up, Vector2.one),
+                UiAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -26.3f),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
@@ -63,7 +64,7 @@ namespace UICreationSystem.Panels
             UiTmpTextFactory.Create(
                     registerPanel,
                     "password",
-                    UIAnchor.Create(Vector2.up, Vector2.one),
+                    UiAnchor.Create(Vector2.up, Vector2.one),
                     new Vector2(0, positionY),
                     Utility.HalfOne,
                     new Vector2(-100, 52.6f),
@@ -75,7 +76,7 @@ namespace UICreationSystem.Panels
             RectTransform password = UICreatorImage.Create(
                 registerPanel,
                 "inputPassword",
-                UIAnchor.Create(Vector2.up, Vector2.one),
+                UiAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, positionY),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
@@ -84,7 +85,7 @@ namespace UICreationSystem.Panels
             UiTmpInputFieldFactory.Create(
                 password,
                 "password_input",
-                UIAnchor.Create(Vector2.up, Vector2.one),
+                UiAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -26.3f),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
@@ -97,7 +98,7 @@ namespace UICreationSystem.Panels
             UiTmpTextFactory.Create(
                    registerPanel,
                    "repeat_password",
-                   UIAnchor.Create(Vector2.up, Vector2.one),
+                   UiAnchor.Create(Vector2.up, Vector2.one),
                    new Vector2(0, positionY),
                    Utility.HalfOne,
                    new Vector2(-100, 52.6f),
@@ -109,7 +110,7 @@ namespace UICreationSystem.Panels
             RectTransform repeatPassword = UICreatorImage.Create(
                 registerPanel,
                 "inputRepeatPassword",
-                UIAnchor.Create(Vector2.up, Vector2.one),
+                UiAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, positionY),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
@@ -118,7 +119,7 @@ namespace UICreationSystem.Panels
             UiTmpInputFieldFactory.Create(
                 repeatPassword,
                 "repeatPassword_input",
-                UIAnchor.Create(Vector2.up, Vector2.one),
+                UiAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -26.3f),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
@@ -131,7 +132,7 @@ namespace UICreationSystem.Panels
             RectTransform register = UICreatorImage.Create(
                     registerPanel,
                     "buttonRegister",
-                    UIAnchor.Create(Vector2.up, Vector2.one),
+                    UiAnchor.Create(Vector2.up, Vector2.one),
                     new Vector2(140, positionY),
                     Utility.HalfOne,
                     new Vector2(-320, 52.6f),
@@ -141,7 +142,7 @@ namespace UICreationSystem.Panels
                     register,
                     "button",
                     "Register",
-                    UIAnchor.Create(Vector2.zero, Vector2.one),
+                    UiAnchor.Create(Vector2.zero, Vector2.one),
                     Vector2.zero,
                     Utility.HalfOne,
                     Vector2.zero,
@@ -157,7 +158,7 @@ namespace UICreationSystem.Panels
             RectTransform back = UICreatorImage.Create(
                     registerPanel,
                     "buttonBack",
-                    UIAnchor.Create(Vector2.up, Vector2.one),
+                    UiAnchor.Create(Vector2.up, Vector2.one),
                     new Vector2(140, -740f),
                     Utility.HalfOne,
                     new Vector2(-320, 52.6f),
@@ -167,7 +168,7 @@ namespace UICreationSystem.Panels
                     back,
                     "button",
                     "Back",
-                    UIAnchor.Create(Vector2.zero, Vector2.one),
+                    UiAnchor.Create(Vector2.zero, Vector2.one),
                     Vector2.zero,
                     Utility.HalfOne,
                     Vector2.zero,
@@ -176,16 +177,16 @@ namespace UICreationSystem.Panels
                     {
                         Debug.Log("buttonBack Pushed");
                         //Button functionality
-                        DestroyPanel(_Canvas);
-                        LoginPanel.CreatePanel(_Canvas);
+                        DestroyPanel(_Container);
+                        LoginPanel.CreatePanel(_Container);
                     }
                     );
         }
 
         // Update is called once per frame
-        public static void DestroyPanel(Canvas _Canvas)
+        public static void DestroyPanel(RectTransform _Container)
         {
-            GameObject registerPanel = _Canvas.transform.Find("register_panel").gameObject;
+            GameObject registerPanel = _Container.Find("register_panel").gameObject;
             Object.Destroy(registerPanel);
         }
     }
