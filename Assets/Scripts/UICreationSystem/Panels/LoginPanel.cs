@@ -21,7 +21,16 @@ namespace UICreationSystem.Panels
                 UiAnchor.Create(Vector2.zero, Vector2.one),
                 new Vector2(0, 10),
                 Utility.HalfOne,
-                new Vector2(-60, -300),
+                new Vector2(-65, -300),
+                "white_panel");
+
+            UICreatorImage.Create(
+                loginPanel,
+                "inner_panel",
+                UiAnchor.Create(Vector2.zero, Vector2.one),
+                new Vector2(0, 0),
+                Utility.HalfOne,
+                new Vector2(-10, -10),
                 "dark_panel");
 
             //Email Text

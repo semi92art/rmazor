@@ -150,6 +150,7 @@ namespace UICreationSystem
 
         private void OnSettingsButtonClick()
         {
+            SettingsPanel.CreatePanel(m_MainMenu);
             //TODO settings button logic
         }
 
@@ -157,6 +158,7 @@ namespace UICreationSystem
         {
             m_OnLoginClick?.Invoke();
             LoginPanel.CreatePanel(m_MainMenu);
+            
             //TODO login button logic
         }
 
