@@ -1,9 +1,15 @@
 ﻿using System;
 using System.Collections;
+using Network;
 using UnityEngine;
 
 public static class Coroutines
 {
+    public static Coroutine StartCoroutine(IEnumerator _Coroutine)
+    {
+        return GameClient.Instance.StartCoroutine(_Coroutine);
+    }
+    
     public static IEnumerator Action(Action _Action)
     {
         _Action?.Invoke();

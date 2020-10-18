@@ -1,5 +1,4 @@
-﻿using Clickers.Utils;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -10,7 +9,7 @@ namespace UICreationSystem.Factories
         public static TMP_InputField Create(
             RectTransform _Parent,
             string _Name,
-            UIAnchor _Anchor,
+            UiAnchor _Anchor,
             Vector2 _AnchoredPosition,
             Vector2 _Pivot,
             Vector2 _SizeDelta,
@@ -22,15 +21,7 @@ namespace UICreationSystem.Factories
             GameObject obj = Object.Instantiate(style.inputField);
             
             var rTr = obj.RTransform();
-            rTr = UiFactory.UiRectTransform(
-                _Parent,
-                _Name,
-                _Anchor,
-                _AnchoredPosition,
-                _Pivot,
-                _SizeDelta,
-                rTr);
-
+            rTr.Set(_Parent, _Name, _Anchor, _AnchoredPosition, _Pivot, _SizeDelta);
             var inputField = rTr.GetComponent<TMP_InputField>();
             
             inputField.targetGraphic = _TargetGraphic;

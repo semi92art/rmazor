@@ -1,8 +1,8 @@
 ﻿using Clickers;
-using Clickers.Utils;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using Utils;
 
 namespace UICreationSystem.Factories
 {
@@ -71,25 +71,16 @@ namespace UICreationSystem.Factories
         
         public static RectTransform UiRectTransform(
             RectTransform _Parent,
-            string _Id,
-            UIAnchor _Anchor,
+            string _Name,
+            UiAnchor _Anchor,
             Vector2 _AnchoredPosition,
             Vector2 _Pivot,
-            Vector2 _SizeDelta,
-            RectTransform _Item = null
+            Vector2 _SizeDelta
         )
         {
-            var item = _Item == null ? 
-                new GameObject(_Id).AddComponent<RectTransform>() : _Item;
+            var item = new GameObject(_Name).AddComponent<RectTransform>();
+            item.Set(_Parent, _Name, _Anchor, _AnchoredPosition, _Pivot, _SizeDelta);
             
-            item.SetParent(_Parent);
-            item.anchorMin = _Anchor.Min;
-            item.anchorMax = _Anchor.Max;
-            item.anchoredPosition = _AnchoredPosition;
-            item.pivot = _Pivot;
-            item.sizeDelta = _SizeDelta;
-            item.localScale = Vector3.one;
-
 #if UNITY_EDITOR
             item.gameObject.AddComponentIfNotExist<RectTranshormHelper>();
 #endif
