@@ -2,21 +2,25 @@
 using System.Linq;
 using UnityEngine;
 using UICreationSystem;
+using Utils;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 public interface ITransitionRenderer
 {
-    void StartTransition();
-    EventHandler OnTransitionMoment { get; set; }
+    void StartTransition(bool _Fast = false);
+    EventHandler TransitionAction { set; }
+    RectTransform TransitionPanel { get; set; }
 }
 
 public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRenderer
 {
-    public EventHandler OnTransitionMoment { get; set; }
+    public EventHandler TransitionAction { get; set; }
+    public RectTransform TransitionPanel { get; set; }
     
     public AnimationCurve curve;
+    public AnimationCurve fastCurve;
     public MeshRenderer transitionRenderer;
     
     private Material m_Material;
@@ -42,27 +46,29 @@ public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRen
         return instance.GetComponent<CircleTransparentTransitionRenderer>();
     }
     
-    public void StartTransition()
+    public void StartTransition(bool _Fast = false)
     {
+        AnimationCurve ac = _Fast ? fastCurve : curve;
+        
         float startTime = Time.time;
         bool doEvent = false;
 
         StartCoroutine(Coroutines.DoWhile(() =>
             {
                 float dt = Time.time - startTime;
-                m_Material.SetFloat("_AlphaCoeff", curve.Evaluate(dt));
-                if (!doEvent && dt > curve.keys.Last().time * 0.5f)
+                m_Material.SetFloat("_AlphaCoeff", ac.Evaluate(dt));
+                if (!doEvent && dt > ac.keys.Last().time * 0.5f)
                 {
-                    OnTransitionMoment?.Invoke(this, null);
+                    TransitionAction?.Invoke(this, null);
                     doEvent = true;
                 }
             },
             () =>
             {
-                OnTransitionMoment = null;
-                m_Material.SetFloat("_AlphaCoeff", curve.keys.Last().value);
+                TransitionAction = null;
+                m_Material.SetFloat("_AlphaCoeff", ac.keys.Last().value);
             },
-            () => Time.time - startTime < curve.keys.Last().time,
+            () => Time.time - startTime < ac.keys.Last().time,
             () => true));
     }
 }

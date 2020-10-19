@@ -50,5 +50,20 @@ namespace UICreationSystem
             _Item.sizeDelta = _SizeDelta;
             _Item.localScale = Vector3.one;
         }
+
+        public static void Set(this RectTransform _Item, RectTransformLite _Lite)
+        {
+            if (_Lite.Anchor.HasValue)
+            {
+                _Item.anchorMin = _Lite.Anchor.Value.Min;
+                _Item.anchorMax = _Lite.Anchor.Value.Max;
+            }
+            if (_Lite.AnchoredPosition.HasValue)
+                _Item.anchoredPosition = _Lite.AnchoredPosition.Value;
+            if (_Lite.Pivot.HasValue)
+                _Item.pivot = _Lite.Pivot.Value;
+            if (_Lite.SizeDelta.HasValue)
+                _Item.sizeDelta = _Lite.SizeDelta.Value;
+        }
     }
 }

@@ -69,25 +69,17 @@ public class MenuUI
         m_DialogContainer = UiFactory.UiRectTransform(
             m_Canvas.RTransform(),
             "Dialog Container",
-            UiAnchor.Create(Vector2.zero, Vector2.one), 
-            new Vector2(0, 10),
-            Vector2.one * 0.5f,
-            new Vector2(-90, -300));
+            RtrLites.DialogWindow);
     }
 
     private void CreateLoadingPanel()
     {
-        m_LoadingPanel = LoadingPanel.Create(
-            m_DialogContainer,
-            "Loading Panel",
-            UiAnchor.Create(Vector2.zero, Vector2.one),
-            Vector2.zero, 
-            Vector2.one * 0.5f, 
-            Vector2.zero);
+        m_LoadingPanel = LoadingPanel.Create(m_DialogContainer);
         GameObject transitionPanel = CreateLoadingTransitionPanel();
         Coroutines.StartCoroutine(Coroutines.WaitEndOfFrame(() =>
         {
             m_TransitionRenderer = CircleTransparentTransitionRenderer.Create();
+            m_TransitionRenderer.TransitionPanel = transitionPanel.RTransform();
             
             //wait 2 seconds anyway
             float delayAnyway = 2f;
@@ -116,22 +108,17 @@ public class MenuUI
                                 {
                                     Debug.Log("Login successfully");
                                     /*here we must load main menu*/
-                                    m_TransitionRenderer.OnTransitionMoment = (_, _Args) =>
+                                    m_TransitionRenderer.TransitionAction = (_, _Args) =>
                                     {
-                                        var rTr = transitionPanel.RTransform();
-                                        rTr.anchoredPosition = Vector2.zero;
-                                        rTr.sizeDelta = Vector2.zero;
-                                        
+                                        transitionPanel.RTransform().Set(RtrLites.FullFill);
                                         m_LoadingPanel.DoLoading = false;
                                         m_LoadingPanel.gameObject.SetActive(false);
                                         
-                                        m_MainMenuUi = new MainMenuUi(m_Canvas.RTransform(), null);
+                                        m_MainMenuUi = new MainMenuUi(
+                                            m_Canvas.RTransform(),
+                                            m_DialogContainer,
+                                            null);
                                     };
-                                    // m_TransitionRenderer.OnTransitionMoment = (_, _Args) =>
-                                    // {
-                                    //     m_LoadingPanel.DoLoading = false;
-                                    //     CreateLoginPanel();
-                                    // };
                                     m_TransitionRenderer.StartTransition();
                                 }
                                 );
@@ -153,7 +140,7 @@ public class MenuUI
                                 }
                                 else if (loginPacket.ErrorMessage.Id == RequestErrorCodes.WrongLoginOrPassword)
                                 {
-                                    m_TransitionRenderer.OnTransitionMoment = (_, _Args) =>
+                                    m_TransitionRenderer.TransitionAction = (_, _Args) =>
                                     {
                                         m_LoadingPanel.DoLoading = false;
                                         CreateLoginPanel();
@@ -176,13 +163,10 @@ public class MenuUI
 
     private GameObject CreateLoadingTransitionPanel()
     {
-        UiAnchor anchor = UiAnchor.Create(Vector2.zero, Vector2.one);
-        Vector2 anchoredPosition = new Vector2(0, 10);
-        Vector2 pivot = Vector2.one * 0.5f;
-        Vector2 sizeDelta = new Vector2(-90, -300);
-        
         RectTransform rTr = UiFactory.UiRectTransform(
-            m_Canvas.RTransform(), "TransitionPanel", anchor, anchoredPosition, pivot, sizeDelta);
+            m_Canvas.RTransform(),
+            "TransitionPanel", 
+            RtrLites.DialogWindow);
 
         return PrefabInitializer.InitUiPrefab(rTr, "ui_panel_transition", "transition_panel");
     }

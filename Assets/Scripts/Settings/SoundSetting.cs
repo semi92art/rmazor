@@ -1,9 +1,14 @@
-﻿public class SoundSetting : ISetting
+﻿namespace Settings
 {
-    public void Set(object _Parameter)
+    public class SoundSetting : ISetting
     {
-        bool volumeOn = (bool) _Parameter;
+        public SettingType Type => SettingType.OnOff;
+
+        public void Set(object _Parameter)
+        {
+            bool volumeOn = (bool) _Parameter;
         
-        //TODO set sound on/off
+            //TODO set sound on/off
+        }
     }
 }

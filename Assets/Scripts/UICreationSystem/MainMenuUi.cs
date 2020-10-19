@@ -9,16 +9,22 @@ namespace UICreationSystem
     {
         private RectTransform m_MainMenu;
         private RectTransform m_GameTitleContainer;
+        private RectTransform m_DialogContainer;
         private GameObject m_GameTitle;
         private System.Action m_OnLoginClick;
 
         public MainMenuUi(RectTransform _Parent,
-            System.Action _OnLoginClick)
+            RectTransform _DialogContainer,
+            System.Action _OnLoginClick
+            )
         {
             InitContainers(_Parent);
+            m_DialogContainer = _DialogContainer;
             m_OnLoginClick = _OnLoginClick;
+            
             SetGameTitle(SaveUtils.GetValue<int>(SaveKey.GameId));
             InitButtonsScrollView();
+            InitSmallButtons();
             InitPlayButton();
         }
 
@@ -74,9 +80,8 @@ namespace UICreationSystem
                     Vector2.up * 240f),
                 "main_menu",
                 "buttons_scroll_view");
-
-            PrefabContent prefabContent = buttonsScrollView.GetComponent<PrefabContent>();
-            RectTransform contentRtr = prefabContent.GetItemRTransform("content");
+            
+            RectTransform contentRtr = buttonsScrollView.GetContentItemRTransform("content");
             
             var sizeDelta = Vector2.one * 150;
             
@@ -93,21 +98,7 @@ namespace UICreationSystem
             
             profileButton.GetComponent<Button>().SetOnClick(OnProfileButtonClick);
             profileButton.SetParent(contentRtr);
-            
-            var settingsButton = PrefabInitializer.InitUiPrefab(
-                UiFactory.UiRectTransform(
-                    m_MainMenu,
-                    "Settings Button",
-                    UiAnchor.Create(0.5f, 0, 0.5f, 0),
-                    new Vector2(0, 130),
-                    Vector2.one * 0.5f,
-                    sizeDelta),
-                "main_menu",
-                "settings_button");
-            
-            settingsButton.GetComponent<Button>().SetOnClick(OnSettingsButtonClick);
-            settingsButton.SetParent(contentRtr);
-            
+
             var loginButton = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_MainMenu,
@@ -121,6 +112,23 @@ namespace UICreationSystem
             
             loginButton.GetComponent<Button>().SetOnClick(OnLoginButtonClick);
             loginButton.SetParent(contentRtr);
+        }
+
+        private void InitSmallButtons()
+        {
+            var settingsButtonSmall = PrefabInitializer.InitUiPrefab(
+                UiFactory.UiRectTransform(
+                    m_MainMenu,
+                    "Settings Button",
+                    UiAnchor.Create(1, 0, 1, 0),
+                    new Vector2(-43, 35),
+                    Vector2.one * 0.5f,
+                    new Vector2(63, 54)),
+                "main_menu",
+                "settings_button_small");
+            
+            settingsButtonSmall.GetComponent<Button>().SetOnClick(OnSettingsButtonClick);
+            settingsButtonSmall.SetParent(m_MainMenu);
         }
 
         private void InitPlayButton()

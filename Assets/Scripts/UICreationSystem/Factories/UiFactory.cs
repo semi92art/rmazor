@@ -1,4 +1,5 @@
-﻿using Clickers;
+﻿using System;
+using Clickers;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -87,6 +88,20 @@ namespace UICreationSystem.Factories
             return item;
         }
 
+        public static RectTransform UiRectTransform(
+            RectTransform _Parent,
+            string _Name,
+            RectTransformLite _RtrLite)
+        {
+            return UiRectTransform(
+                _Parent,
+                _Name,
+                _RtrLite.Anchor ?? default,
+                 _RtrLite.AnchoredPosition ?? default,
+                _RtrLite.Pivot ?? default,
+                _RtrLite.SizeDelta ?? default);
+        }
+
         public static void CopyRTransform(RectTransform _From, RectTransform _To)
         {
             _To.parent = _From.parent;
@@ -103,6 +118,8 @@ namespace UICreationSystem.Factories
             _To.rotation = _From.rotation;
             _To.localScale = _From.localScale;
         }
+
+        
 
         #endregion
     }

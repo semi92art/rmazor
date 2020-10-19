@@ -50,8 +50,6 @@ namespace Utils
         //https://answers.unity.com/questions/246116/how-can-i-generate-a-guid-or-a-uuid-from-within-un.html
         public static string GetUniqueID()
         {
-            string key = "ID";
- 
             var random = new System.Random();                     
             var epochStart = new DateTime(1970, 1, 1, 8, 0, 0, System.DateTimeKind.Utc);
             double timestamp = (DateTime.UtcNow - epochStart).TotalSeconds;

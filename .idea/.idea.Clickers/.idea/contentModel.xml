@@ -242,6 +242,7 @@
             <e p="RectTransformExtentions.cs" t="Include" />
             <e p="RectTransformLite.cs" t="Include" />
             <e p="RectTranshormHelper.cs" t="Include" />
+            <e p="RtrLites.cs" t="Include" />
             <e p="SettingsPanelUi.cs" t="Include" />
             <e p="UIAnchor.cs" t="Include" />
             <e p="UICreatorImage.cs" t="Include" />
@@ -249,13 +250,13 @@
             <e p="UIManager.cs" t="Include" />
             <e p="UIStyleObject.cs" t="Include" />
           </e>
-          <e p="UiState.cs" t="Include" />
           <e p="Utils" t="Include">
+            <e p="ColorExtentions.cs" t="Include" />
             <e p="ColorUtils.cs" t="Include" />
             <e p="CommonUtils.cs" t="Include" />
             <e p="Coroutines.cs" t="Include" />
-            <e p="GameObjectExtentions.cs" t="Include" />
             <e p="Md5.cs" t="Include" />
+            <e p="ObjectExtentions.cs" t="Include" />
             <e p="SaveUtils.cs" t="Include" />
             <e p="Utility.cs" t="Include" />
           </e>

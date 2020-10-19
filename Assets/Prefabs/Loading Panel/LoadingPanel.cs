@@ -69,18 +69,10 @@ public class LoadingPanel : MonoBehaviour
     #region factory methods
     
     public static LoadingPanel Create(
-        RectTransform _Parent, 
-        string _Name,
-        UiAnchor _Anchor,
-        Vector2 _AnchoredPosition,
-        Vector2 _Pivot,
-        Vector2 _SizeDelta)
+        RectTransform _Parent)
     {
-        RectTransform rTr = UiFactory.UiRectTransform(
-            _Parent, _Name, _Anchor, _AnchoredPosition, _Pivot, _SizeDelta);
-
+        RectTransform rTr = UiFactory.UiRectTransform(_Parent, "Loading Panel", RtrLites.FullFill);
         GameObject prefab = PrefabInitializer.InitUiPrefab(rTr, "loading_panel", "loading_panel");
-        
         return prefab.GetComponent<LoadingPanel>();
     }
     

@@ -5,23 +5,33 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f7c5a47f-03bf-40e5-9156-603eceee5987" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Language.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Settings/ISetting.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Settings/ISetting.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Settings/LanguageSetting.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Settings/SoundSetting.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/RectTransformLite.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/RectTransformLite.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/SettingsPanelUi.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/SettingsPanelUi.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/RtrLites.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/RtrLites.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Utils/ColorExtentions.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Utils/ColorExtentions.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Clickers/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Clickers/.idea/contentModel.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Clickers/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Clickers/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Loading Panel/LoadingPanel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Loading Panel/LoadingPanel.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Prefabs/UI Transition/RenderTexCamera.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/UI Transition/RenderTexCamera.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/CircleTransparentTransitionRenderer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CircleTransparentTransitionRenderer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Language.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Language.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Network/GameClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Network/GameClient.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Settings/ISetting.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Settings/ISetting.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Settings/LanguageSetting.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Settings/LanguageSetting.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Settings/SoundSetting.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Settings/SoundSetting.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/Factories/UiFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/Factories/UiFactory.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/MainMenuUi.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/MainMenuUi.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/MenuUI.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/MenuUI.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Utils/GameObjectUtils.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Utils/GameObjectExtentions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Utils/GameObjectUtils.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Utils/GameObjectExtentions.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/RectTransformExtentions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/RectTransformExtentions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/RectTransformLite.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/RectTransformLite.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/SettingsPanelUi.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/SettingsPanelUi.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UiState.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UiState.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Utils/CommonUtils.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Utils/CommonUtils.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Utils/Coroutines.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Utils/Coroutines.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Utils/GameObjectExtentions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Utils/ObjectExtentions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Utils/GameObjectExtentions.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Utils/ObjectExtentions.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Textures/UI/yellow_rounded_rectangle_button_border.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/UI/yellow_rounded_rectangle_button_border.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,14 +58,10 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Network/Packets/LoginUserPacket.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/A278EBD4-4AB0-472B-B8E6-38263E06CD61/61/9e5e24a6/WaitForEndOfFrame.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Utils/Coroutines.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Language.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/94AC0D9D-15BF-4B68-86D5-361183B38676/ee/c15fb6ca/Preset.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/A278EBD4-4AB0-472B-B8E6-38263E06CD61/e0/d83c9009/YieldInstruction.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UICreationSystem/SettingsPanelUi.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/A278EBD4-4AB0-472B-B8E6-38263E06CD61/29/3c3ad5c8/Coroutine.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Network/PacketArgs/GetScoreResponseArgs.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Unity/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/VertexModifiers/BaseMeshEffect.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/A278EBD4-4AB0-472B-B8E6-38263E06CD61/dc/9053775e/Vector2.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UICreationSystem/PrefabInitializer.cs" root0="FORCE_HIGHLIGHTING" />
@@ -69,31 +75,19 @@
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UICreationSystem/UICreatorImage.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/A278EBD4-4AB0-472B-B8E6-38263E06CD61/0d/29f17d3e/Behaviour.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CFAFC873-2420-4D76-AA16-5BC115D2D394/bc/f91abfee/UnityWebRequest.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/A278EBD4-4AB0-472B-B8E6-38263E06CD61/0b/f08e1d4f/Transform.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UICreationSystem/Factories/UiFactory.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Settings/ISetting.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.textmeshpro@2.0.1/Scripts/Runtime/TMP_Text.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/TextExtentions.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UICreationSystem/RectTransformLite.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scenes/_preload.unity" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Network/Packets/TestConnectionPacket.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/A278EBD4-4AB0-472B-B8E6-38263E06CD61/06/845fc6c2/Random.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://C:/Program Files/Unity/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/Toggle.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Utils/GameObjectExtentions.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Utils/ObjectExtentions.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/CircleTransparentTransitionRenderer.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://C:/Program Files/Unity/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/Selectable.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Network/PacketArgs/ErrorResponseArgs.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UiState.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UICreationSystem/RectTransformExtentions.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CFAFC873-2420-4D76-AA16-5BC115D2D394/9e/06b1ff96/UnityWebRequestAsyncOperation.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/8788DF23-D12C-4548-A89D-2A54A21132B9/81/7f28d97a/Enumerable.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/ResLoader.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Network/Packets/RegisterUserPacket.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Network/Packets/GetScorePacket.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UICreationSystem/MainMenuUi.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Prefabs/Loading Panel/LoadingPanel.prefab" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Prefabs/Loading Panel/LoadingPanel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Network/Packets/GetFullAccountDataPacket.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UICreationSystem/RtrLites.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Utils/CommonUtils.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://C:/Program Files/Unity/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/MaskableGraphic.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.textmeshpro@2.0.1/Scripts/Runtime/TextMeshPro.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Entities/Account.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Tests/Editor/ServerConnectionTests.cs" root0="FORCE_HIGHLIGHTING" />
@@ -101,59 +95,74 @@
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Network/Packets/GetProfilePacket.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Network/Packets/SetProfilePacket.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Network/IPacket.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://C:/Program Files/Unity/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/ScrollRect.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.textmeshpro@2.0.1/Scripts/Runtime/TMP_InputField.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Console/ConsoleController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/A278EBD4-4AB0-472B-B8E6-38263E06CD61/a6/98cfd292/RectTransform.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/SaveKey.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.textmeshpro@2.0.1/Scripts/Runtime/TextMeshProUGUI.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Network/PacketBase.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Utils/SaveUtils.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/PrefabContent.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/A278EBD4-4AB0-472B-B8E6-38263E06CD61/10/5751410e/Object.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/StayLastChild.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/A278EBD4-4AB0-472B-B8E6-38263E06CD61/0a/7060c394/Component.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/GoogleAdsManager.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/GameLoader.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Utils/ColorExtentions.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.textmeshpro@2.0.1/Scripts/Runtime/TMP_FontAsset.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Settings/SoundSetting.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Network/GameClient.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/RequestErrorCodes.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Unity/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/EventSystem/UIBehaviour.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/11BD515F-D2A0-4526-8509-D23726DE0F46/17/9e48b005/ResourceReader.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Settings/LanguageSetting.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/A278EBD4-4AB0-472B-B8E6-38263E06CD61/79/37a79958/MonoBehaviour.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Network/Packets/SetScorePacket.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/A278EBD4-4AB0-472B-B8E6-38263E06CD61/61/9e5e24a6/WaitForEndOfFrame.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Language.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UICreationSystem/SettingsPanelUi.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Network/PacketArgs/GetScoreResponseArgs.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Settings/ISetting.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/TextExtentions.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UICreationSystem/RectTransformLite.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Network/Packets/TestConnectionPacket.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/A278EBD4-4AB0-472B-B8E6-38263E06CD61/06/845fc6c2/Random.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Unity/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/Toggle.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Unity/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/Selectable.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Network/PacketArgs/ErrorResponseArgs.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UICreationSystem/RectTransformExtentions.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CFAFC873-2420-4D76-AA16-5BC115D2D394/9e/06b1ff96/UnityWebRequestAsyncOperation.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UICreationSystem/MainMenuUi.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Prefabs/Loading Panel/LoadingPanel.prefab" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Prefabs/Loading Panel/LoadingPanel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Unity/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/MaskableGraphic.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Unity/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/ScrollRect.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Console/ConsoleController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/PrefabContent.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/A278EBD4-4AB0-472B-B8E6-38263E06CD61/10/5751410e/Object.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/A278EBD4-4AB0-472B-B8E6-38263E06CD61/0a/7060c394/Component.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/GoogleAdsManager.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/GameLoader.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Unity/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/Image.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Unity/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/Graphic.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Unity/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/Mask.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UICreationSystem/UiManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/MainSceneLoader.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UICreationSystem/UIStyleObject.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/LocalizedKeys.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://C:/Program Files/Unity/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/EventSystem/UIBehaviour.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/11BD515F-D2A0-4526-8509-D23726DE0F46/17/9e48b005/ResourceReader.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UICreationSystem/UiExtentions.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/A278EBD4-4AB0-472B-B8E6-38263E06CD61/c9/4f996bbe/GameObject.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Settings/LanguageSetting.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Unity/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/Button.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ProjectSettings/QualitySettings.asset" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UICreationSystem/RectTranshormHelper.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/BC617192-96C9-40D8-BAED-413B5F322816/95/8e1a096f/TextAlignmentOptions.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UICreationSystem/UiAnchor.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/A278EBD4-4AB0-472B-B8E6-38263E06CD61/79/37a79958/MonoBehaviour.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Utils/Utility.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UICreationSystem/MenuUI.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/C5DC6B49-17B2-4E94-AE43-1E2D91EEAD2C/d7/e0172a0d/Canvas.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Network/Packets/SetScorePacket.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/BC617192-96C9-40D8-BAED-413B5F322816/6f/d52b3b02/FontStyles.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/UiPrefabCreator.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/PrefabCreator.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/CircleTransparentTransitionPanel.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Network/IPacket.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Network/Packets/TestConnectionPacket.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/TransitionPanel.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Utils/StayLastChild.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/StayLastChild.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Utils/CommonUtils.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/ErrorCodes.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/RequestErrorCodes.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Network/PacketBase.cs" />
@@ -161,7 +170,6 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/UIManager.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/Editor/RectTransformHelperEditor.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Console/RectTransformExtentions.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/RectTransformExtentions.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/Factories/UiTmpButtonFactory.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/Factories/UiTmpInputFieldFactory.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/Factories/UiTmpTextFactory.cs" />
@@ -175,27 +183,33 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/SaveKeys.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/SaveKey.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/RectTranshormHelper.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Utils/Coroutines.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/UiManager.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Utils/SaveUtils.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/UiExtentions.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/PrefabContent.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/ISetting.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/SoundSetting.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Language.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/CircleTransparentTransitionRenderer.cs" />
-        <option value="$PROJECT_DIR$/Assets/Prefabs/Loading Panel/LoadingPanel.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/PrefabInitializer.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Utils/GameObjectUtils.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Utils/GameObjectExtentions.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Settings/LanguageSetting.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Settings/SoundSetting.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Settings/ISetting.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/MainMenuUi.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/MenuUI.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/SettingsPanelUi.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/RectTransformLite.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/RectTransformExtentions.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Utils/GameObjectExtentions.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Language.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Utils/ObjectExtentions.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Utils/Utility.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Utils/ColorExtentions.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Utils/CommonUtils.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Utils/Coroutines.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/Factories/UiFactory.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/SettingsPanelUi.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/MenuUI.cs" />
+        <option value="$PROJECT_DIR$/Assets/Prefabs/Loading Panel/LoadingPanel.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/RtrLites.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UICreationSystem/MainMenuUi.cs" />
       </list>
     </option>
   </component>
@@ -275,7 +289,9 @@
       <workItem from="1601704327489" duration="18296000" />
       <workItem from="1601794299983" duration="15081000" />
       <workItem from="1601974732870" duration="3806000" />
-      <workItem from="1602741122223" duration="11502000" />
+      <workItem from="1602741122223" duration="15657000" />
+      <workItem from="1602834360432" duration="2650000" />
+      <workItem from="1603088190541" duration="5287000" />
     </task>
     <servers />
   </component>
@@ -402,11 +418,11 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="937" y="437" width="686" height="526" key="find.popup/0.0.2560.1400/-1920.151.1920.1040@0.0.2560.1400" timestamp="1601799674005" />
-    <state x="943" y="315" width="672" height="678" key="search.everywhere.popup" timestamp="1602780858771">
+    <state x="943" y="315" width="672" height="678" key="search.everywhere.popup" timestamp="1603091174299">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-1213" y="385" width="672" height="504" key="search.everywhere.popup/0.0.2560.1400/-1920.151.1920.1040@-1920.151.1920.1040" timestamp="1600883061913" />
-    <state x="943" y="315" width="672" height="678" key="search.everywhere.popup/0.0.2560.1400/-1920.151.1920.1040@0.0.2560.1400" timestamp="1602780858771" />
+    <state x="943" y="315" width="672" height="678" key="search.everywhere.popup/0.0.2560.1400/-1920.151.1920.1040@0.0.2560.1400" timestamp="1603091174299" />
   </component>
   <component name="XDebuggerManager">
     <watches-manager>
