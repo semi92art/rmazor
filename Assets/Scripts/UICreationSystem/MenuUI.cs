@@ -52,16 +52,13 @@ public class MenuUI
 
     private void CreateBackground()
     {
-        UiFactory.UiImage(
+        PrefabInitializer.InitUiPrefab(
             UiFactory.UiRectTransform(
                 m_Canvas.RTransform(),
-                "background",
-                UiAnchor.Create(Vector2.zero, Vector2.one),
-                Vector2.zero,
-                Vector2.one * 0.5f,
-                Vector2.zero
-            ),
-            "menu_background");
+                "Background Panel",
+                RtrLites.FullFill),
+            "main_menu",
+            "background_panel");
     }
     
     private void CreateDialogContainer()
@@ -70,6 +67,8 @@ public class MenuUI
             m_Canvas.RTransform(),
             "Dialog Container",
             RtrLites.DialogWindow);
+        var childOrderer = m_DialogContainer.gameObject.AddComponent<ChildOrderer>();
+        childOrderer.order = 1;
     }
 
     private void CreateLoadingPanel()
@@ -166,7 +165,7 @@ public class MenuUI
         RectTransform rTr = UiFactory.UiRectTransform(
             m_Canvas.RTransform(),
             "TransitionPanel", 
-            RtrLites.DialogWindow);
+            RtrLites.FullFill);
 
         return PrefabInitializer.InitUiPrefab(rTr, "ui_panel_transition", "transition_panel");
     }

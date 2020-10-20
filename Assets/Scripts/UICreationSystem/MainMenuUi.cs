@@ -1,4 +1,5 @@
-﻿using UICreationSystem.Factories;
+﻿using System.Collections.Generic;
+using UICreationSystem.Factories;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils;
@@ -7,6 +8,50 @@ namespace UICreationSystem
 {
     public class MainMenuUi
     {
+        private List<ChooseGameItemProps> m_cgiPropsList = new List<ChooseGameItemProps>
+        {
+            new ChooseGameItemProps
+            {
+                Icon = null,
+                Title = "POINT CLICKER",
+                IsComingSoon = false,
+                IsVisible = true,
+                OnClick = null
+            },
+            new ChooseGameItemProps
+            {
+                Icon = null,
+                Title = "FIGURE DRAWER",
+                IsComingSoon = false,
+                IsVisible = true,
+                OnClick = null
+            },
+            new ChooseGameItemProps
+            {
+                Icon = null,
+                Title = "MATH TRAIN",
+                IsComingSoon = true,
+                IsVisible = true,
+                OnClick = null
+            },
+            new ChooseGameItemProps
+            {
+                Icon = null,
+                Title = "TILE PATHER",
+                IsComingSoon = true,
+                IsVisible = false,
+                OnClick = null
+            },
+            new ChooseGameItemProps
+            {
+                Icon = null,
+                Title = "BALANCE DRAWER",
+                IsComingSoon = true,
+                IsVisible = false,
+                OnClick = null
+            }
+        };
+        
         private RectTransform m_MainMenu;
         private RectTransform m_GameTitleContainer;
         private RectTransform m_DialogContainer;
@@ -41,32 +86,42 @@ namespace UICreationSystem
             m_GameTitleContainer = UiFactory.UiRectTransform(
                 m_MainMenu,
                 "Game Title",
-                UiAnchor.Create(new Vector2(0.5f, 1.0f), new Vector2(0.5f, 1.0f)),
-                new Vector2(0, -93f),
+                UiAnchor.Create(0.5f, 1f, 0.5f, 1f), 
+                new Vector2(0, -47f),
                 Vector2.one * 0.5f,
-                new Vector2(270f, 185f));
+                new Vector2(511f, 92f));
         }
 
         private void SetGameTitle(int _GameId)
         {
-            switch (_GameId)
+            GameObject selectGameButon = PrefabInitializer.InitUiPrefab(
+                UiFactory.UiRectTransform(
+                    m_GameTitleContainer,
+                    "Select Game Button",
+                    UiAnchor.Create(1, 1, 1, 1),
+                    new Vector2(-56f, -56f),
+                    Vector2.one * 0.5f,
+                    new Vector2(113f, 113f)),
+                "main_menu",
+                "select_game_button");
+            selectGameButon.GetContentItemButton("button").SetOnClick(OnSelectGameClick);
+
+            var commonPos = new RectTransformLite
             {
-                case 1:
-                    m_GameTitle = PrefabInitializer.InitUiPrefab(
-                        UiFactory.UiRectTransform(
-                            m_GameTitleContainer,
-                            "Pimple Killer Title",
-                            UiAnchor.Create(Vector2.zero, Vector2.one), 
-                            Vector2.zero, 
-                            Vector2.one * 0.5f,
-                            Vector2.zero),
-                        "pimple_killer_main_menu", "game_title");
-                    break;
-                default:
-                    SaveUtils.PutValue(SaveKey.GameId, 1); //TODO put id of default game (depends from build)
-                    SetGameTitle(1);
-                    break;
-            }
+                Anchor = UiAnchor.Create(0, 0, 1, 1),
+                AnchoredPosition = Vector2.zero,
+                Pivot = Vector2.one * 0.5f,
+                SizeDelta = Vector2.zero
+            };
+            
+            m_GameTitle = PrefabInitializer.InitUiPrefab(
+                UiFactory.UiRectTransform(
+                    m_GameTitleContainer,
+                    "Point Clicker Title",
+                    commonPos),
+                "main_menu", $"game_{_GameId}_title");
+            
+            SaveUtils.PutValue(SaveKey.GameId, _GameId);
         }
 
         private void InitButtonsScrollView()
@@ -150,6 +205,38 @@ namespace UICreationSystem
         
         #region event methods
 
+        private void OnSelectGameClick()
+        {
+            GameObject selectGamePanel = PrefabInitializer.InitUiPrefab(
+                UiFactory.UiRectTransform(
+                    m_DialogContainer,
+                    "Select Game Panel",
+                    RtrLites.FullFill),
+                "main_menu",
+                "select_game_panel");
+            RectTransform content = selectGamePanel.GetContentItemRTransform("content");
+
+            GameObject cgiObj = PrefabInitializer.InitUiPrefab(
+                UiFactory.UiRectTransform(
+                    content,
+                    "Choose Game Item",
+                    UiAnchor.Create(0, 1, 0, 1),
+                    new Vector2(218f, -43f),
+                    Vector2.one * 0.5f,
+                    new Vector2(416f, 66f)),
+                "main_menu",
+                "select_game_item");
+
+            foreach (var cgiProps in m_cgiPropsList)
+            {
+                var cgiObjClone = cgiObj.Clone();
+                ChooseGameItem cgi = cgiObjClone.GetComponent<ChooseGameItem>();
+                cgi.Init(cgiProps);
+            }
+            
+            Object.Destroy(cgiObj);
+        }
+        
         private void OnProfileButtonClick()
         {
             //TODO profile button logic

@@ -2,6 +2,7 @@
 using UnityEngine;
 using Malee.List;
 using UICreationSystem;
+using UnityEngine.UI;
 
 
 public class PrefabContent : MonoBehaviour
@@ -33,5 +34,10 @@ public class PrefabContent : MonoBehaviour
     public RectTransform GetItemRTransform(string _Name)
     {
         return GetItem(_Name).RTransform();
+    }
+
+    public Button GetItemButton(string _Name)
+    {
+        return GetItem(_Name).GetComponent<Button>();
     }
 }

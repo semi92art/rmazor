@@ -42,3 +42,20 @@ MonoBehaviour:
     - item: {fileID: 6592728042775572582, guid: 5eef98311fa7f15408a5a3490aafbdb3,
         type: 3}
       name: play_button
+    - item: {fileID: 2503092321609905571, guid: 31995bed2d621954b8fbff9ce6c2bfd5,
+        type: 3}
+      name: game_1_title
+    - item: {fileID: 4466409264557108589, guid: fec898ce281d2934bb99f9b869ff2955,
+        type: 3}
+      name: select_game_button
+    - item: {fileID: 2601192048318346412, guid: 7e959f70d47cecc48959d0790bfa9bb6,
+        type: 3}
+      name: settings_button_small
+    - item: {fileID: 7966785875846887869, guid: dedbccfb580d861489828ee6c4ac6734,
+        type: 3}
+      name: background_panel
+    - item: {fileID: 747921176770291476, guid: 807747a73ae42d140917c0774c57872d, type: 3}
+      name: select_game_panel
+    - item: {fileID: 4679155808465040501, guid: 372172082b978474f818739806e0dfb0,
+        type: 3}
+      name: select_game_item

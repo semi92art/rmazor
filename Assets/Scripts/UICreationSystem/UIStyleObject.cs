@@ -37,7 +37,7 @@ namespace UICreationSystem
         [Header("TMP Button")] public GameObject button;
         [Header("TMP Input Field:")] public GameObject inputField;
 
-        [Header("Prefabs"), Reorderable(paginate = true, pageSize = 5)]
+        [Header("Prefabs"), Reorderable(paginate = true, pageSize = 15)]
         public PrefabsList prefabs;
 
         #endregion

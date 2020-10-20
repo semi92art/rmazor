@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Utils
 {
@@ -59,6 +60,11 @@ namespace Utils
             return _Prefab.GetComponent<PrefabContent>().GetItemRTransform(_ItemName);
         }
 
+        public static Button GetContentItemButton(this GameObject _Prefab, string _ItemName)
+        {
+            return _Prefab.GetComponent<PrefabContent>().GetItemButton(_ItemName);
+        }
+
         public static List<Transform> GetChilds(this Transform _Transform, bool _Recursive = false)
         {
             var result = new List<Transform>();
@@ -87,6 +93,14 @@ namespace Utils
             if (root != null)
                 result = result.Concat(new[] {root});
             return result.ToList();
+        }
+
+        public static GameObject Clone(this GameObject _Object)
+        {
+            var tr = _Object.transform;
+            GameObject cloned = Object.Instantiate(_Object, tr.position, tr.rotation, tr.parent);
+            cloned.name = $"{_Object.name} (Clone)";
+            return cloned;
         }
     }
 }
