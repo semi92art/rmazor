@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UICreationSystem;
@@ -10,7 +11,12 @@ using Utils;
 using UnityEditor;
 #endif
 
-public class LoadingPanel : MonoBehaviour
+public interface ILoadingPanel : IDialogItem
+{
+    bool DoLoading { get; set; }
+}
+
+public class LoadingPanel : MonoBehaviour, ILoadingPanel
 {
     #region serialized fields
     
@@ -40,6 +46,7 @@ public class LoadingPanel : MonoBehaviour
     
     #region private fields
     
+    private IDialogViewer m_DialogViewer;
     private Transform m_Indicator;
     private Transform m_Indicator2;
     private string m_LoadingText = "Loading";
@@ -47,7 +54,7 @@ public class LoadingPanel : MonoBehaviour
     private int m_TimePrev;
     private bool m_DoLoading;
     private bool m_IsConnectionProblem;
-
+    
     #endregion
 
     #region engine methods
@@ -68,12 +75,16 @@ public class LoadingPanel : MonoBehaviour
 
     #region factory methods
     
-    public static LoadingPanel Create(
-        RectTransform _Parent)
+    public static ILoadingPanel Create(
+        IDialogViewer _DialogViewer)
     {
-        RectTransform rTr = UiFactory.UiRectTransform(_Parent, "Loading Panel", RtrLites.FullFill);
+        RectTransform rTr = UiFactory.UiRectTransform(
+            _DialogViewer.DialogContainer, "Loading Panel", RtrLites.FullFill);
         GameObject prefab = PrefabInitializer.InitUiPrefab(rTr, "loading_panel", "loading_panel");
-        return prefab.GetComponent<LoadingPanel>();
+        LoadingPanel lp = prefab.GetComponent<LoadingPanel>();
+        lp.gameObject.SetActive(false);
+        lp.m_DialogViewer = _DialogViewer;
+        return lp;
     }
     
     #endregion
@@ -96,6 +107,20 @@ public class LoadingPanel : MonoBehaviour
         }
 
         m_TimePrev = time;
+    }
+    
+    #endregion
+    
+    #region public methods
+
+    public void Show(RectTransform _FromItem = null)
+    {
+        m_DialogViewer.Show(_FromItem, gameObject.RTransform());
+    }
+
+    public void Hide(RectTransform _ToItem = null)
+    {
+        m_DialogViewer.Show(gameObject.RTransform(), _ToItem, 0.1f, true);
     }
     
     #endregion

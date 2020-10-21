@@ -64,31 +64,40 @@ namespace Utils
             _FinishAction?.Invoke();
         }
 
-        public static IEnumerator DoTransparentTransition(RectTransform _Item, float _Time, bool _Disappear = false, Action _OnFinish = null)
+        public static IEnumerator DoTransparentTransition(
+            RectTransform _Item,
+            Dictionary<Graphic, float> _GraphicsAndAlphas,
+            float _Time,
+            bool _Disappear = false,
+            Action _OnFinish = null)
         {
-            var selectables = _Item.GetComponentsInChildrenEx<Selectable>();
-            Dictionary<Graphic, float> graphicsAndAlphas = _Item.GetComponentsInChildrenEx<Graphic>()
-                .Select(_Im => new {_Im, _Im.color.a})
-                .ToDictionary(_El => _El._Im, _El => _El.a);
-
-            foreach (var s in selectables)
-                s.interactable = false;
-
+            if (_Item == null)
+                yield break;
+            _Item.gameObject.SetActive(true);
+            
             float currTime = Time.time;
             while (Time.time < currTime + _Time)
             {
-                float timeCoeff = (currTime + _Time - Time.time) / Time.time;
+                float timeCoeff = (currTime + _Time - Time.time) / _Time;
                 float alphaCoeff = _Disappear ? timeCoeff : 1 - timeCoeff;
 
-                foreach(var ga in graphicsAndAlphas.ToList())
-                    ga.Key.color = ga.Key.color.SetAlpha(ga.Value * alphaCoeff);
+                foreach (var ga in _GraphicsAndAlphas.ToList())
+                {
+                    var graphic = ga.Key;
+                    if (graphic.IsAlive())
+                        ga.Key.color = ga.Key.color.SetAlpha(ga.Value * alphaCoeff);
+                }
             
                 yield return new WaitForEndOfFrame();
             }
-        
-            foreach (var s in selectables)
-                s.interactable = true;
-        
+            
+            foreach (var ga in _GraphicsAndAlphas.ToList())
+            {
+                var graphic = ga.Key;
+                if (graphic.IsAlive())
+                    graphic.color = graphic.color.SetAlpha(_Disappear ? 0 : ga.Value);
+            }
+
             _OnFinish?.Invoke();
             yield return null;
         }

@@ -101,6 +101,8 @@ namespace UICreationSystem.Factories
                 _RtrLite.Pivot ?? default,
                 _RtrLite.SizeDelta ?? default);
         }
+        
+        public static RectTransform EmptyRectTransform => new RectTransform();
 
         public static void CopyRTransform(RectTransform _From, RectTransform _To)
         {

@@ -59,3 +59,6 @@ MonoBehaviour:
     - item: {fileID: 4679155808465040501, guid: 372172082b978474f818739806e0dfb0,
         type: 3}
       name: select_game_item
+    - item: {fileID: 6009559761229068857, guid: f89d217feb272fb41b6df9bbb7e43091,
+        type: 3}
+      name: dialog_viewer

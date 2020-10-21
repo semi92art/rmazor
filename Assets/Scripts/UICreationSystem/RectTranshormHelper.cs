@@ -37,12 +37,15 @@ namespace UICreationSystem
             gs.fontSize = 13;
             
             GUILayout.Space(5);
-            GUILayout.Label($"Anchor:\t\t {anchMin.x}, {anchMin.y}, {anchMax.x}, {anchMax.y}", gs);
+            GUILayout.Label($"Anchor:\t\t {anchMin.x}  {anchMin.y}  {anchMax.x}  {anchMax.y}", gs);
             GUILayout.Space(5);
 
+            GUILayout.Label("\t\tX:\tY:", gs);
+            GUILayout.Space(5);
+            
             string anchPosXstr = Mathf.FloorToInt(anchPos.x * 10f) % 10 == 0 ? $"{anchPos.x:F0}" : $"{anchPos.x:F1}";
             string anchPosYstr = Mathf.FloorToInt(anchPos.y * 10f) % 10 == 0 ? $"{anchPos.y:F0}" : $"{anchPos.y:F1}";
-            GUILayout.Label($"Anch.pos.:\t {anchPosXstr}\t{anchPosYstr}", gs);
+            GUILayout.Label($"Anch.position:\t {anchPosXstr}\t{anchPosYstr}", gs);
             GUILayout.Space(5);
             string pivotXstr = Mathf.FloorToInt(pivot.x * 10f) % 10 == 0 ? $"{pivot.x:F0}" : $"{pivot.x:F1}";
             string pivotYstr = Mathf.FloorToInt(pivot.y * 10f) % 10 == 0 ? $"{pivot.y:F0}" : $"{pivot.y:F1}";

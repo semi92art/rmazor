@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Utils
@@ -101,6 +102,11 @@ namespace Utils
             GameObject cloned = Object.Instantiate(_Object, tr.position, tr.rotation, tr.parent);
             cloned.name = $"{_Object.name} (Clone)";
             return cloned;
+        }
+
+        public static bool IsAlive(this UIBehaviour _UiBehaviour)
+        {
+            return _UiBehaviour != null && !_UiBehaviour.IsDestroyed();
         }
     }
 }

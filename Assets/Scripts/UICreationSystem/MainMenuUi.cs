@@ -51,26 +51,28 @@ namespace UICreationSystem
                 OnClick = null
             }
         };
-        
+
+        private IDialogViewer m_DialogViewer;
         private RectTransform m_MainMenu;
         private RectTransform m_GameTitleContainer;
-        private RectTransform m_DialogContainer;
         private GameObject m_GameTitle;
         private System.Action m_OnLoginClick;
 
         public MainMenuUi(RectTransform _Parent,
-            RectTransform _DialogContainer,
+            IDialogViewer _DialogViewer,
             System.Action _OnLoginClick
             )
         {
             InitContainers(_Parent);
-            m_DialogContainer = _DialogContainer;
+            m_DialogViewer = _DialogViewer;
             m_OnLoginClick = _OnLoginClick;
             
             SetGameTitle(SaveUtils.GetValue<int>(SaveKey.GameId));
             InitButtonsScrollView();
             InitSmallButtons();
             InitPlayButton();
+            
+            m_DialogViewer.SetNotDialogItems(new [] {m_MainMenu});
         }
 
         private void InitContainers(RectTransform _Parent)
@@ -82,7 +84,7 @@ namespace UICreationSystem
                 Vector2.zero,
                 Vector2.one * 0.5f,
                 Vector2.zero);
-            
+
             m_GameTitleContainer = UiFactory.UiRectTransform(
                 m_MainMenu,
                 "Game Title",
@@ -209,12 +211,17 @@ namespace UICreationSystem
         {
             GameObject selectGamePanel = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_DialogContainer,
+                    m_DialogViewer.DialogContainer,
                     "Select Game Panel",
                     RtrLites.FullFill),
                 "main_menu",
                 "select_game_panel");
             RectTransform content = selectGamePanel.GetContentItemRTransform("content");
+            Button backButton = selectGamePanel.GetContentItemButton("back_button");
+            backButton.SetOnClick(() =>
+            {
+                m_DialogViewer.Show(selectGamePanel.RTransform(), null, 0.2f, true);
+            });
 
             GameObject cgiObj = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
@@ -226,7 +233,7 @@ namespace UICreationSystem
                     new Vector2(416f, 66f)),
                 "main_menu",
                 "select_game_item");
-
+            
             foreach (var cgiProps in m_cgiPropsList)
             {
                 var cgiObjClone = cgiObj.Clone();
@@ -235,6 +242,7 @@ namespace UICreationSystem
             }
             
             Object.Destroy(cgiObj);
+            m_DialogViewer.Show(null, selectGamePanel.RTransform(), 0.2f);
         }
         
         private void OnProfileButtonClick()

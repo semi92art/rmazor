@@ -12,8 +12,8 @@ public class MenuUI
     #region private fields
 
     private Canvas m_Canvas;
-    private RectTransform m_DialogContainer;
-    private LoadingPanel m_LoadingPanel;
+    private ILoadingPanel m_LoadingPanel;
+    private IDialogViewer m_DialogViewer;
     private ITransitionRenderer m_TransitionRenderer;
     private MainMenuUi m_MainMenuUi;
 
@@ -63,17 +63,20 @@ public class MenuUI
     
     private void CreateDialogContainer()
     {
-        m_DialogContainer = UiFactory.UiRectTransform(
-            m_Canvas.RTransform(),
-            "Dialog Container",
-            RtrLites.DialogWindow);
-        var childOrderer = m_DialogContainer.gameObject.AddComponent<ChildOrderer>();
-        childOrderer.order = 1;
+        var dialogPanelObj = PrefabInitializer.InitUiPrefab(
+            UiFactory.UiRectTransform(
+                m_Canvas.RTransform(),
+                "Dialog Viewer",
+                RtrLites.FullFill),
+            "main_menu",
+            "dialog_viewer");
+        m_DialogViewer = dialogPanelObj.GetComponent<TransparentTransitionDialogViewer>();
     }
 
     private void CreateLoadingPanel()
     {
-        m_LoadingPanel = LoadingPanel.Create(m_DialogContainer);
+        m_LoadingPanel = LoadingPanel.Create(m_DialogViewer);
+        m_LoadingPanel.Show();
         GameObject transitionPanel = CreateLoadingTransitionPanel();
         Coroutines.StartCoroutine(Coroutines.WaitEndOfFrame(() =>
         {
@@ -111,11 +114,11 @@ public class MenuUI
                                     {
                                         transitionPanel.RTransform().Set(RtrLites.FullFill);
                                         m_LoadingPanel.DoLoading = false;
-                                        m_LoadingPanel.gameObject.SetActive(false);
+                                        m_LoadingPanel.Hide();
                                         
                                         m_MainMenuUi = new MainMenuUi(
                                             m_Canvas.RTransform(),
-                                            m_DialogContainer,
+                                            m_DialogViewer,
                                             null);
                                     };
                                     m_TransitionRenderer.StartTransition();
@@ -175,7 +178,7 @@ public class MenuUI
         float indent = 75f;
 
         RectTransform loginPanel = UICreatorImage.Create(
-            m_DialogContainer,
+            m_DialogViewer.DialogContainer,
             "login_panel",
             UiAnchor.Create(Vector2.zero, Vector2.one),
             Vector2.zero,
