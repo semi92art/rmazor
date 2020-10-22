@@ -79,7 +79,7 @@ namespace UICreationSystem.Factories
             Vector2 _SizeDelta
         )
         {
-            var item = new GameObject(_Name).AddComponent<RectTransform>();
+            var item = new GameObject().AddComponent<RectTransform>();
             item.Set(_Parent, _Name, _Anchor, _AnchoredPosition, _Pivot, _SizeDelta);
             
 #if UNITY_EDITOR
@@ -100,6 +100,33 @@ namespace UICreationSystem.Factories
                  _RtrLite.AnchoredPosition ?? default,
                 _RtrLite.Pivot ?? default,
                 _RtrLite.SizeDelta ?? default);
+        }
+
+        public static RectTransform UiRectTransform(
+            RectTransform _Parent,
+            UiAnchor _Anchor,
+            Vector2 _AnchoredPosition,
+            Vector2 _Pivot,
+            Vector2 _SizeDelta
+        )
+        {
+            return UiRectTransform(
+                _Parent,
+                default,
+                _Anchor,
+                _AnchoredPosition,
+                _Pivot,
+                _SizeDelta);
+        }
+        
+        public static RectTransform UiRectTransform(
+            RectTransform _Parent,
+            RectTransformLite _RtrLite)
+        {
+            return UiRectTransform(
+                _Parent,
+                default,
+                _RtrLite);
         }
         
         public static RectTransform EmptyRectTransform => new RectTransform();

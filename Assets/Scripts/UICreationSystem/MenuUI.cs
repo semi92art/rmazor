@@ -55,7 +55,6 @@ public class MenuUI
         PrefabInitializer.InitUiPrefab(
             UiFactory.UiRectTransform(
                 m_Canvas.RTransform(),
-                "Background Panel",
                 RtrLites.FullFill),
             "main_menu",
             "background_panel");
@@ -66,7 +65,6 @@ public class MenuUI
         var dialogPanelObj = PrefabInitializer.InitUiPrefab(
             UiFactory.UiRectTransform(
                 m_Canvas.RTransform(),
-                "Dialog Viewer",
                 RtrLites.FullFill),
             "main_menu",
             "dialog_viewer");
@@ -165,12 +163,9 @@ public class MenuUI
 
     private GameObject CreateLoadingTransitionPanel()
     {
-        RectTransform rTr = UiFactory.UiRectTransform(
-            m_Canvas.RTransform(),
-            "TransitionPanel", 
-            RtrLites.FullFill);
-
-        return PrefabInitializer.InitUiPrefab(rTr, "ui_panel_transition", "transition_panel");
+        return PrefabInitializer.InitUiPrefab(
+            UiFactory.UiRectTransform(m_Canvas.RTransform(), RtrLites.FullFill),
+            "ui_panel_transition", "transition_panel");
     }
     
     private void CreateLoginPanel()

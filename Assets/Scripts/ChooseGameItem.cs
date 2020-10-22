@@ -33,9 +33,23 @@ public class ChooseGameItem : MonoBehaviour
 
 public class ChooseGameItemProps
 {
-    public string Title { get; set; }
-    public Sprite Icon { get; set; }
-    public bool IsComingSoon { get; set; }
-    public bool IsVisible { get; set; }
-    public UnityEngine.Events.UnityAction OnClick { get; set; }
+    public Sprite Icon { get; }
+    public string Title { get; }
+    public bool IsComingSoon { get; }
+    public bool IsVisible { get; }
+    public UnityEngine.Events.UnityAction OnClick { get; }
+
+    public ChooseGameItemProps(
+        Sprite _Icon,
+        string _Title,
+        bool _IsComingSoon,
+        bool _IsVisible,
+        UnityEngine.Events.UnityAction _OnClick)
+    {
+        Icon = _Icon;
+        Title = _Title;
+        IsComingSoon = _IsComingSoon;
+        IsVisible = _IsVisible;
+        OnClick = _OnClick;
+    }
 }

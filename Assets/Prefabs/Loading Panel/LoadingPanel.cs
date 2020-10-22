@@ -78,9 +78,9 @@ public class LoadingPanel : MonoBehaviour, ILoadingPanel
     public static ILoadingPanel Create(
         IDialogViewer _DialogViewer)
     {
-        RectTransform rTr = UiFactory.UiRectTransform(
-            _DialogViewer.DialogContainer, "Loading Panel", RtrLites.FullFill);
-        GameObject prefab = PrefabInitializer.InitUiPrefab(rTr, "loading_panel", "loading_panel");
+        GameObject prefab = PrefabInitializer.InitUiPrefab(
+            UiFactory.UiRectTransform(_DialogViewer.DialogContainer, RtrLites.FullFill),
+            "loading_panel", "loading_panel");
         LoadingPanel lp = prefab.GetComponent<LoadingPanel>();
         lp.gameObject.SetActive(false);
         lp.m_DialogViewer = _DialogViewer;
