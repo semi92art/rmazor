@@ -1,9 +1,6 @@
 ﻿using System.Linq;
 using UnityEngine;
 using Malee.List;
-using UICreationSystem;
-using UnityEngine.UI;
-
 
 public class PrefabContent : MonoBehaviour
 {
@@ -26,18 +23,8 @@ public class PrefabContent : MonoBehaviour
         return content.FirstOrDefault(_Ci => _Ci.name == _Name)?.item;
     }
 
-    public Transform GetItemTransform(string _Name)
+    public T GetItemComponent<T>(string _Name) where T : Component
     {
-        return GetItem(_Name).transform;
-    }
-
-    public RectTransform GetItemRTransform(string _Name)
-    {
-        return GetItem(_Name).RTransform();
-    }
-
-    public Button GetItemButton(string _Name)
-    {
-        return GetItem(_Name).GetComponent<Button>();
+        return GetItem(_Name).GetComponent<T>();
     }
 }

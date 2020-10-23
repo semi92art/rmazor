@@ -20,7 +20,7 @@ namespace UICreationSystem
                 _Parent, "SettingsPanel", RtrLites.DialogWindow);
             GameObject prefab = PrefabInitializer.InitUiPrefab(
                 res.m_LoadingPanel, "settings_panel", "settings_panel");
-            res.m_Content = prefab.GetContentItemRTransform("content");
+            res.m_Content = prefab.GetComponentItem<RectTransform>("content");
             return res;
         }
 

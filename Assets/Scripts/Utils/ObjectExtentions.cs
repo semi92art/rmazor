@@ -51,19 +51,9 @@ namespace Utils
             return _Prefab.GetComponent<PrefabContent>().GetItem(_ItemName);
         }
 
-        public static Transform GetContentItemTransform(this GameObject _Prefab, string _ItemName)
+        public static T GetComponentItem<T>(this GameObject _Prefab, string _ItemName) where T : Component
         {
-            return _Prefab.GetComponent<PrefabContent>().GetItemTransform(_ItemName);
-        }
-
-        public static RectTransform GetContentItemRTransform(this GameObject _Prefab, string _ItemName)
-        {
-            return _Prefab.GetComponent<PrefabContent>().GetItemRTransform(_ItemName);
-        }
-
-        public static Button GetContentItemButton(this GameObject _Prefab, string _ItemName)
-        {
-            return _Prefab.GetComponent<PrefabContent>().GetItemButton(_ItemName);
+            return _Prefab.GetComponent<PrefabContent>().GetItemComponent<T>(_ItemName);
         }
 
         public static List<Transform> GetChilds(this Transform _Transform, bool _Recursive = false)

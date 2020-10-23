@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UICreationSystem.Factories;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils;
+using Object = UnityEngine.Object;
 
 namespace UICreationSystem
 {
@@ -17,6 +19,8 @@ namespace UICreationSystem
             new ChooseGameItemProps(null, "BALANCE DRAWER", true, false, null)
         };
 
+        private static bool _isDailyBonusClicked;
+        private Animator m_DailyBonusAnimator;
         private IDialogViewer m_DialogViewer;
         private RectTransform m_MainMenu;
         private RectTransform m_GameTitleContainer;
@@ -37,6 +41,8 @@ namespace UICreationSystem
             InitSmallButtons();
             
             m_DialogViewer.SetNotDialogItems(new [] {m_MainMenu});
+
+            CheckIfDailyBonusNotChosenToday();
         }
 
         private void InitContainers(RectTransform _Parent)
@@ -64,12 +70,12 @@ namespace UICreationSystem
                 UiFactory.UiRectTransform(
                     m_GameTitleContainer,
                     UiAnchor.Create(1, 1, 1, 1),
-                    new Vector2(-56f, -56f),
+                    new Vector2(-68f, -87f),
                     Vector2.one * 0.5f,
                     new Vector2(113f, 113f)),
                 "main_menu_buttons",
                 "select_game_button");
-            selectGameButon.GetContentItemButton("button").SetOnClick(OnSelectGameClick);
+            selectGameButon.GetComponentItem<Button>("button").SetOnClick(OnOpenSelectGamePanel);
 
             var commonPos = new RectTransformLite
             {
@@ -97,7 +103,7 @@ namespace UICreationSystem
                     new Vector2(280, 499)),
                 "main_menu", "center_buttons_scroll_view");
             
-            RectTransform content = centerButtonsScrollView.GetContentItemRTransform("content");
+            RectTransform content = centerButtonsScrollView.GetComponentItem<RectTransform>("content");
             var rtrLite = new RectTransformLite
             {
                 Anchor = UiAnchor.Create(0, 1, 0, 1),
@@ -120,7 +126,9 @@ namespace UICreationSystem
                     rtrLite),
                 "main_menu_buttons",
                 "daily_bonus_button");
-            dailyBonusButton.GetComponent<Button>().SetOnClick(OnDailyBonusButtonClick);
+            
+            dailyBonusButton.GetComponentItem<Button>("button").SetOnClick(OnDailyBonusButtonClick);
+            m_DailyBonusAnimator = dailyBonusButton.GetComponentItem<Animator>("animator");
             
             var wheelOfFortuneButton = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
@@ -143,7 +151,7 @@ namespace UICreationSystem
                 "main_menu",
                 "bottom_buttons_scroll_view");
             
-            RectTransform contentRtr = bottomButtonsScrollView.GetContentItemRTransform("content");
+            RectTransform contentRtr = bottomButtonsScrollView.GetComponentItem<RectTransform>("content");
             
             var rTrLite = new RectTransformLite
             {
@@ -188,9 +196,16 @@ namespace UICreationSystem
             settingsButtonSmall.SetParent(m_MainMenu);
         }
 
+        private void CheckIfDailyBonusNotChosenToday()
+        {
+            System.DateTime lastDate = SaveUtils.GetValue<System.DateTime>(SaveKey.DailyBonusLastDate);
+            if (lastDate.Date !=  System.DateTime.Now.Date)
+                m_DailyBonusAnimator.SetTrigger("anim");
+        }
+
         #region event methods
 
-        private void OnSelectGameClick()
+        private void OnOpenSelectGamePanel()
         {
             GameObject selectGamePanel = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
@@ -198,8 +213,8 @@ namespace UICreationSystem
                     RtrLites.FullFill),
                 "main_menu",
                 "select_game_panel");
-            RectTransform content = selectGamePanel.GetContentItemRTransform("content");
-            Button backButton = selectGamePanel.GetContentItemButton("back_button");
+            RectTransform content = selectGamePanel.GetComponentItem<RectTransform>("content");
+            Button backButton = selectGamePanel.GetComponentItem<Button>("back_button");
             backButton.SetOnClick(() =>
             {
                 m_DialogViewer.Show(selectGamePanel.RTransform(), null, 0.2f, true);
@@ -254,7 +269,8 @@ namespace UICreationSystem
 
         private void OnDailyBonusButtonClick()
         {
-            //TODO daily bonus button click
+            SaveUtils.PutValue(SaveKey.DailyBonusLastDate, DateTime.Today);
+            m_DailyBonusAnimator.SetTrigger("stop");
         }
 
         private void OnWheelOfFortuneButtonClick()

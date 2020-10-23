@@ -8,6 +8,7 @@ public class SaveKey
     public static SaveKey PasswordHash => new SaveKey("password_hash", typeof(string));
     public static SaveKey Score(int _Id) => new SaveKey("score_", _Id.ToString(), typeof(GetScoreResponseArgs));
     public static SaveKey GameId => new SaveKey("game_id", typeof(int));
+    public static SaveKey DailyBonusLastDate => new SaveKey("daily_bonus_last_date", typeof(System.DateTime));
     
     #endregion
     
