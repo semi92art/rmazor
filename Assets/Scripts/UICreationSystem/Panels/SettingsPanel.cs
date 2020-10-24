@@ -7,7 +7,6 @@ using UICreationSystem;
 using Utils;
 using UnityEngine.UI;
 using TMPro;
-using DefaultNamespace;
 using Object = UnityEngine.Object;
 using System.Linq;
 
@@ -147,7 +146,7 @@ namespace UICreationSystem.Panels
             languageDropdown.SetParent(languageSettingPanel.gameObject);
             languageDropdown.transform.localScale = new Vector3(1, 1, 1);
             languageDropdown.transform.localPosition = new Vector3(80, 0, 0);
-            List<string> languageList = new List<string>(Enum.GetNames(typeof(DefaultNamespace.Language)));
+            List<string> languageList = new List<string>(Enum.GetNames(typeof(Language)));
             languageDropdown.GetComponent<TMP_Dropdown>().ClearOptions();
             //languageDropdown.GetComponent<TMP_Dropdown>().options = null;
             languageDropdown.GetComponent<TMP_Dropdown>().AddOptions(languageList);
