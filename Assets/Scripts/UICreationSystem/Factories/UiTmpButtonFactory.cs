@@ -33,7 +33,7 @@ namespace UICreationSystem.Factories
             var iconObj = buttonObj.transform.GetChild(1);
             if (style.sprite != null)
             {
-                iconObj.GetComponent<RectTransform>().SetRight(320);
+                iconObj.GetComponent<RectTransform>().SetRight(280);
                 iconObj.transform.localScale = new Vector3(0.7f,0.7f,1);
                 var tmp = iconObj.GetComponent<RectTranshormHelper>();
                 Image icon = iconObj.GetComponent<Image>();
