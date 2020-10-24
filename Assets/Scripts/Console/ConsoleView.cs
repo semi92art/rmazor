@@ -28,6 +28,7 @@ public class ConsoleView : MonoBehaviour
     private readonly List<Vector3> m_TouchPositions = new List<Vector3>();
     private int m_CurrentCommand;
     private int m_Index;
+    private bool isVisible = false;
 
     #endregion
 
@@ -70,7 +71,9 @@ public class ConsoleView : MonoBehaviour
         else if (Input.GetMouseButtonUp(0))
         {
             m_SwipeLastPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-            if (Mathf.Abs(m_SwipeLastPosition.x - m_SwipeFirstPosition.x) > m_SwipeDragDistance)
+            if ((m_SwipeFirstPosition.x - m_SwipeLastPosition.x > m_SwipeDragDistance) && !isVisible)
+                ToggleVisibility();
+            if ((m_SwipeLastPosition.x - m_SwipeFirstPosition.x > m_SwipeDragDistance) && isVisible)
                 ToggleVisibility();
         }
 
@@ -88,7 +91,7 @@ public class ConsoleView : MonoBehaviour
                 m_SwipeLastPosition = m_TouchPositions[m_TouchPositions.Count - 1];
 
                 //if swipeDragDistance > 30% from screen edge
-                if (Mathf.Abs(m_SwipeLastPosition.x - m_SwipeFirstPosition.x) > m_SwipeDragDistance)
+                if ((m_SwipeLastPosition.x - m_SwipeFirstPosition.x > m_SwipeDragDistance) && isVisible)
                     ToggleVisibility();
             }
         }
@@ -201,6 +204,7 @@ public class ConsoleView : MonoBehaviour
 
     private void SetVisibility(bool _Visible)
     {
+        this.isVisible = _Visible;
         viewContainer.SetActive(_Visible);
         if (inputField.text == "`")
             inputField.text = "";
