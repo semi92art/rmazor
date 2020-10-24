@@ -54,3 +54,6 @@ MonoBehaviour:
     - item: {fileID: 1265648874968835986, guid: cb41abc870ea98b47a133ae93ce0e6ee,
         type: 3}
       name: wheel_of_fortune_button
+    - item: {fileID: 5541025160145569569, guid: 80bb05ea1757fad4b97a0dd009723495,
+        type: 3}
+      name: dialog_close_button

@@ -27,23 +27,35 @@ MonoBehaviour:
   inputField: {fileID: 0}
   prefabs:
     array:
-    - item: {fileID: 4809150925502275951, guid: 7be56a062ac9329449bc16bb2cc17057,
-        type: 3}
-      name: bottom_buttons_scroll_view
     - item: {fileID: 2503092321609905571, guid: 31995bed2d621954b8fbff9ce6c2bfd5,
         type: 3}
       name: game_1_title
     - item: {fileID: 7966785875846887869, guid: dedbccfb580d861489828ee6c4ac6734,
         type: 3}
       name: background_panel
+    - item: {fileID: 1534918086853945452, guid: 55cb4aa2cfaaec64bb93c265c026de61,
+        type: 3}
+      name: center_buttons_scroll_view
+    - item: {fileID: 4809150925502275951, guid: 7be56a062ac9329449bc16bb2cc17057,
+        type: 3}
+      name: bottom_buttons_scroll_view
+    - item: {fileID: 6009559761229068857, guid: f89d217feb272fb41b6df9bbb7e43091,
+        type: 3}
+      name: dialog_viewer
     - item: {fileID: 747921176770291476, guid: 807747a73ae42d140917c0774c57872d, type: 3}
       name: select_game_panel
     - item: {fileID: 4679155808465040501, guid: 372172082b978474f818739806e0dfb0,
         type: 3}
       name: select_game_item
-    - item: {fileID: 6009559761229068857, guid: f89d217feb272fb41b6df9bbb7e43091,
+    - item: {fileID: 5978263261467836251, guid: 7e45bf9e0822bbf47b4b8f6edc54dc26,
         type: 3}
-      name: dialog_viewer
-    - item: {fileID: 1534918086853945452, guid: 55cb4aa2cfaaec64bb93c265c026de61,
+      name: daily_bonus_panel
+    - item: {fileID: 4353535992515256928, guid: 6b79a31630448804c98eaedff872ef9b,
         type: 3}
-      name: center_buttons_scroll_view
+      name: daily_bonus_item
+    - item: {fileID: 8219298684319459333, guid: eede4cca5bdbb6c45b2af9c30986f819,
+        type: 3}
+      name: shop_panel
+    - item: {fileID: 3257581172924190555, guid: 66e9d61eff18e4c47970c0a3ee33578d,
+        type: 3}
+      name: shop_item

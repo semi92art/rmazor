@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UICreationSystem;
+using UICreationSystem.Factories;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils;
@@ -15,25 +15,69 @@ public interface IDialogItem
 public interface IDialogViewer
 {
     RectTransform DialogContainer { get; }
-    void Show(RectTransform _ItemFrom, RectTransform _ItemTo, float _TransitionTime = 0.5f, bool _IsGoBack = false);
+    void Show(RectTransform _ItemFrom, RectTransform _ItemTo, bool _IsGoBack = false, float _TransitionTime = 0.2f);
     void SetNotDialogItems(RectTransform[] _Items);
 }
 
 public class TransparentTransitionDialogViewer : MonoBehaviour, IDialogViewer
 {
+    private class GraphicAlphas
+    {
+        public Dictionary<Graphic, float> Alphas { get; }
+
+        public GraphicAlphas(RectTransform _Item)
+        {
+            Alphas = _Item.GetComponentsInChildrenEx<Graphic>()
+                .Distinct()
+                .ToDictionary(_El => _El, _El => _El.color.a);
+        }
+    }
+    
     public Image background;
     public RectTransform dialogContainer;
 
     public RectTransform DialogContainer => dialogContainer;
-    private RectTransform[]  m_NotDialogs;
     
-    Dictionary<int, GraphicAlphas> m_GraphicsAlphas = new Dictionary<int, GraphicAlphas>();
+    private RectTransform[]  m_NotDialogs;
+    private RectTransform m_CloseButton;
+    
+    private Dictionary<int, GraphicAlphas> m_GraphicsAlphas = 
+        new Dictionary<int, GraphicAlphas>();
+    private Stack<RectTransform> m_PanelStack = new Stack<RectTransform>();
 
+    private void Start()
+    {
+        GameObject closeButton = PrefabInitializer.InitUiPrefab(
+            UiFactory.UiRectTransform(
+                gameObject.RTransform(),
+                UiAnchor.Create(0.5f, 0.5f, 0.5f, 0.5f),
+                new Vector2(0, -418f),
+                Vector2.one * 0.5f,
+                Vector2.one * 60f),
+            "main_menu_buttons", "dialog_close_button");
+        closeButton.GetComponentItem<Button>("button").SetOnClick(GoBack);
+        m_CloseButton = closeButton.RTransform();
+        m_GraphicsAlphas.Add(m_CloseButton.GetInstanceID(), new GraphicAlphas(m_CloseButton));
+        m_CloseButton.gameObject.SetActive(false);
+    }
+    
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+            GoBack();
+    }
+
+    private void GoBack()
+    {
+        if (m_PanelStack.Any())
+            Show(m_PanelStack.Pop(), m_PanelStack.Pop(), true);
+    }
+    
     public void Show(
         RectTransform _ItemFrom,
         RectTransform _ItemTo, 
-        float _TransitionTime = 0.5f,
-        bool _IsGoBack = false)
+        bool _IsGoBack = false,
+        float _TransitionTime = 0.2f)
     {
         if (_ItemFrom == null && _ItemTo == null)
             return;
@@ -71,9 +115,22 @@ public class TransparentTransitionDialogViewer : MonoBehaviour, IDialogViewer
                     StartCoroutine(Coroutines.DoTransparentTransition(
                         item, m_GraphicsAlphas[item.GetInstanceID()].Alphas, _TransitionTime, !_IsGoBack));
         }
+
+        if (m_CloseButton != null)
+            StartCoroutine(Coroutines.DoTransparentTransition(m_CloseButton,
+                m_GraphicsAlphas[m_CloseButton.GetInstanceID()].Alphas, _TransitionTime, _IsGoBack));
         
         background.enabled = background.raycastTarget = !(_ItemTo == null && _IsGoBack);
         ClearGraphicsAlphas();
+        
+        if (_ItemTo == null)
+            m_PanelStack.Clear();
+        else
+        {
+            if (!m_PanelStack.Any())
+                m_PanelStack.Push(_ItemFrom);
+            m_PanelStack.Push(_ItemTo);
+        }
     }
 
     public void SetNotDialogItems(RectTransform[]  _Items)
@@ -96,14 +153,4 @@ public class TransparentTransitionDialogViewer : MonoBehaviour, IDialogViewer
     }
 }
 
-public class GraphicAlphas
-{
-    public Dictionary<Graphic, float> Alphas { get; }
 
-    public GraphicAlphas(RectTransform _Item)
-    {
-        Alphas = _Item.GetComponentsInChildrenEx<Graphic>()
-             .Distinct()
-             .ToDictionary(_El => _El, _El => _El.color.a);
-    }
-}

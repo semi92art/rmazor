@@ -7,7 +7,7 @@ namespace UICreationSystem
     [System.Serializable]
     public class Prefab
     {
-        public GameObject item;
+        public Object item;
         public string name;
     }
     

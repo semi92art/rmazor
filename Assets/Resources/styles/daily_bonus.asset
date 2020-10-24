@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1600272214c7aa418cb76f5cc38aecb, type: 3}
+  m_Name: daily_bonus
+  m_EditorClassIdentifier: 
+  sprite: {fileID: 0}
+  imageColor: {r: 1, g: 1, b: 1, a: 1}
+  raycastImageTarget: 1
+  imageType: 0
+  useSpriteMesh: 0
+  preserveAspect: 1
+  pixelsPerUnityMultyply: 0
+  fillMethod: 0
+  fillOrigin: 0
+  fillClockwise: 1
+  text: {fileID: 0}
+  button: {fileID: 0}
+  inputField: {fileID: 0}
+  prefabs:
+    array:
+    - item: {fileID: 21300000, guid: 03ed0e66a9978e74282d34f0beea84b4, type: 3}
+      name: day_1_icon
+    - item: {fileID: 21300000, guid: fd05e6a6581eb0e43ad7069f060f78e8, type: 3}
+      name: day_2_icon
+    - item: {fileID: 21300000, guid: d5294c2ad35bdab498b45b42d8f0ec75, type: 3}
+      name: day_3_icon
+    - item: {fileID: 21300000, guid: fd05e6a6581eb0e43ad7069f060f78e8, type: 3}
+      name: day_4_icon
+    - item: {fileID: 21300000, guid: 965a4b92e4c9ac84f9e94e9d51c54778, type: 3}
+      name: day_5_icon
+    - item: {fileID: 21300000, guid: b9a2e65280826634aa73b84f850ac611, type: 3}
+      name: day_6_icon
+    - item: {fileID: 21300000, guid: ccd2f40585bbddb4da3dd9c75a2ca563, type: 3}
+      name: day_7_icon

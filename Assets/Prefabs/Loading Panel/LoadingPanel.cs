@@ -120,7 +120,7 @@ public class LoadingPanel : MonoBehaviour, ILoadingPanel
 
     public void Hide(RectTransform _ToItem = null)
     {
-        m_DialogViewer.Show(gameObject.RTransform(), _ToItem, 0.1f, true);
+        m_DialogViewer.Show(gameObject.RTransform(), _ToItem, true);
     }
     
     #endregion

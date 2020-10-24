@@ -97,7 +97,8 @@ namespace Utils
                 if (graphic.IsAlive())
                     graphic.color = graphic.color.SetAlpha(_Disappear ? 0 : ga.Value);
             }
-
+            if (_Disappear)
+                _Item.gameObject.SetActive(false);
             _OnFinish?.Invoke();
             yield return null;
         }

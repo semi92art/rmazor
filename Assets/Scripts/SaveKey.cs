@@ -9,7 +9,8 @@ public class SaveKey
     public static SaveKey Score(int _Id) => new SaveKey("score_", _Id.ToString(), typeof(GetScoreResponseArgs));
     public static SaveKey GameId => new SaveKey("game_id", typeof(int));
     public static SaveKey DailyBonusLastDate => new SaveKey("daily_bonus_last_date", typeof(System.DateTime));
-    
+    public static SaveKey DailyBonusLastItemClickedDate => new SaveKey("daily_bonus_last_item_clicked_date", typeof(int));
+    public static SaveKey ShowAds => new SaveKey("show_ads", typeof(bool));
     #endregion
     
     public string Key { get; }
