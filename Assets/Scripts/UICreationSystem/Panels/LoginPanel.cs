@@ -9,16 +9,16 @@ namespace UICreationSystem.Panels
 {
     public class LoginPanel
     {
-        public static void CreatePanel(Canvas _Canvas)
+        public static void CreatePanel(RectTransform _Container)
         {
             float indent = 75f;
             float smallIndent = 60f;
             float positionY = -26.3f;
 
             RectTransform loginPanel = UICreatorImage.Create(
-                _Canvas.RTransform(),
+                _Container,
                 "login_panel",
-                UIAnchor.Create(Vector2.zero, Vector2.one),
+                UiAnchor.Create(Vector2.zero, Vector2.one),
                 new Vector2(0, 10),
                 Utility.HalfOne,
                 new Vector2(-60, -300),
@@ -28,7 +28,7 @@ namespace UICreationSystem.Panels
             UiTmpTextFactory.Create(
                 loginPanel,
                 "email",
-                UIAnchor.Create(Vector2.up, Vector2.one),
+                UiAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, positionY),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
@@ -40,7 +40,7 @@ namespace UICreationSystem.Panels
             RectTransform email = UICreatorImage.Create(
                 loginPanel,
                 "inputEmail",
-                UIAnchor.Create(Vector2.up, Vector2.one),
+                UiAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, positionY),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
@@ -49,7 +49,7 @@ namespace UICreationSystem.Panels
             UiTmpInputFieldFactory.Create(
                 email,
                 "email_input",
-                UIAnchor.Create(Vector2.up, Vector2.one),
+                UiAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -26.3f),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
@@ -62,7 +62,7 @@ namespace UICreationSystem.Panels
             UiTmpTextFactory.Create(
                 loginPanel,
                 "password",
-                UIAnchor.Create(Vector2.up, Vector2.one),
+                UiAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, positionY),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
@@ -74,7 +74,7 @@ namespace UICreationSystem.Panels
             RectTransform password = UICreatorImage.Create(
                 loginPanel,
                 "inputPassword",
-                UIAnchor.Create(Vector2.up, Vector2.one),
+                UiAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, positionY),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
@@ -83,7 +83,7 @@ namespace UICreationSystem.Panels
             UiTmpInputFieldFactory.Create(
                 password,
                 "password_input",
-                UIAnchor.Create(Vector2.up, Vector2.one),
+                UiAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, -26.3f),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
@@ -96,7 +96,7 @@ namespace UICreationSystem.Panels
             RectTransform login = UICreatorImage.Create(
                 loginPanel,
                 "buttonLogin",
-                UIAnchor.Create(Vector2.up, Vector2.one),
+                UiAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, positionY),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
@@ -106,7 +106,7 @@ namespace UICreationSystem.Panels
                 login,
                 "button",
                 "Login",
-                UIAnchor.Create(Vector2.zero, Vector2.one),
+                UiAnchor.Create(Vector2.zero, Vector2.one),
                 Vector2.zero,
                 Utility.HalfOne,
                 Vector2.zero,
@@ -123,7 +123,7 @@ namespace UICreationSystem.Panels
             RectTransform appleAccount = UICreatorImage.Create(
                 loginPanel,
                 "buttonAppleAccount",
-                UIAnchor.Create(Vector2.up, Vector2.one),
+                UiAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, positionY),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
@@ -134,7 +134,7 @@ namespace UICreationSystem.Panels
                 appleAccount,
                 "button",
                 "Login with Apple",
-                UIAnchor.Create(Vector2.zero, Vector2.one),
+                UiAnchor.Create(Vector2.zero, Vector2.one),
                 Vector2.zero,
                 Utility.HalfOne,
                 Vector2.zero,
@@ -151,7 +151,7 @@ namespace UICreationSystem.Panels
             RectTransform googleAccount = UICreatorImage.Create(
                 loginPanel,
                 "buttonGoogleAccount",
-                UIAnchor.Create(Vector2.up, Vector2.one),
+                UiAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, positionY),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
@@ -161,7 +161,7 @@ namespace UICreationSystem.Panels
                 googleAccount,
                 "button",
                 "Login with Google",
-                UIAnchor.Create(Vector2.zero, Vector2.one),
+                UiAnchor.Create(Vector2.zero, Vector2.one),
                 Vector2.zero,
                 Utility.HalfOne,
                 Vector2.zero,
@@ -178,7 +178,7 @@ namespace UICreationSystem.Panels
             RectTransform guestAccount = UICreatorImage.Create(
                 loginPanel,
                 "buttonGuest",
-                UIAnchor.Create(Vector2.up, Vector2.one),
+                UiAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(0, positionY),
                 Utility.HalfOne,
                 new Vector2(-100, 52.6f),
@@ -188,7 +188,7 @@ namespace UICreationSystem.Panels
                 guestAccount,
                 "button",
                 "Login as guest",
-                UIAnchor.Create(Vector2.zero, Vector2.one),
+                UiAnchor.Create(Vector2.zero, Vector2.one),
                 Vector2.zero,
                 Utility.HalfOne,
                 Vector2.zero,
@@ -206,7 +206,7 @@ namespace UICreationSystem.Panels
             RectTransform register = UICreatorImage.Create(
                 loginPanel,
                 "buttonRegister",
-                UIAnchor.Create(Vector2.up, Vector2.one),
+                UiAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(-140, -740f),
                 Utility.HalfOne,
                 new Vector2(buttonSizeDelta, 52.6f),
@@ -216,7 +216,7 @@ namespace UICreationSystem.Panels
                 register,
                 "button",
                 "Register",
-                UIAnchor.Create(Vector2.zero, Vector2.one),
+                UiAnchor.Create(Vector2.zero, Vector2.one),
                 Vector2.zero,
                 Utility.HalfOne,
                 Vector2.zero,
@@ -225,8 +225,8 @@ namespace UICreationSystem.Panels
                 {
                     Debug.Log("buttonRegister Pushed");
                     //Button functionality
-                    DestroyPanel(_Canvas);
-                    RegistrationPanel.CreatePanel(_Canvas);
+                    DestroyPanel(_Container);
+                    RegistrationPanel.CreatePanel(_Container);
                 }
             );
 
@@ -234,7 +234,7 @@ namespace UICreationSystem.Panels
             RectTransform back = UICreatorImage.Create(
                 loginPanel,
                 "buttonBack",
-                UIAnchor.Create(Vector2.up, Vector2.one),
+                UiAnchor.Create(Vector2.up, Vector2.one),
                 new Vector2(140, -740f),
                 Utility.HalfOne,
                 new Vector2(buttonSizeDelta, 52.6f),
@@ -244,7 +244,7 @@ namespace UICreationSystem.Panels
                 back,
                 "button",
                 "Back",
-                UIAnchor.Create(Vector2.zero, Vector2.one),
+                UiAnchor.Create(Vector2.zero, Vector2.one),
                 Vector2.zero,
                 Utility.HalfOne,
                 Vector2.zero,
@@ -252,14 +252,14 @@ namespace UICreationSystem.Panels
                 () =>
                 {
                     Debug.Log("buttonBack Pushed");
-                    //Button functionality
+                    DestroyPanel(_Container);
                 }
             );
         }
 
-        public static void DestroyPanel(Canvas _Canvas)
+        public static void DestroyPanel(RectTransform _Container)
         {
-            GameObject loginPanel = _Canvas.transform.Find("login_panel").gameObject;
+            GameObject loginPanel = _Container.Find("login_panel").gameObject;
             Object.Destroy(loginPanel);
         }
     }
