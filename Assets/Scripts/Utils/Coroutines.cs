@@ -71,7 +71,7 @@ namespace Utils
             bool _Disappear = false,
             Action _OnFinish = null)
         {
-            if (_Item == null)
+            if (Utility.IsNull(_Item))
                 yield break;
             _Item.gameObject.SetActive(true);
             

@@ -117,8 +117,7 @@ public class MenuUI
                                         
                                         m_MainMenuUi = new MainMenuUi(
                                             m_Canvas.RTransform(),
-                                            m_DialogViewer,
-                                            null);
+                                            m_DialogViewer);
                                     };
                                     m_TransitionRenderer.StartTransition();
                                 }

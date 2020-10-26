@@ -11,6 +11,9 @@ public class SaveKey
     public static SaveKey DailyBonusLastDate => new SaveKey("daily_bonus_last_date", typeof(System.DateTime));
     public static SaveKey DailyBonusLastItemClickedDate => new SaveKey("daily_bonus_last_item_clicked_date", typeof(int));
     public static SaveKey ShowAds => new SaveKey("show_ads", typeof(bool));
+    public static SaveKey SettingSoundOn => new SaveKey("sound_on", typeof(bool));
+    public static SaveKey SettingLanguage => new SaveKey("language", typeof(Language));
+    
     #endregion
     
     public string Key { get; }

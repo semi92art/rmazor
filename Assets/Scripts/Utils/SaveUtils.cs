@@ -23,7 +23,14 @@ namespace Utils
             object result = GetValue(_Key);
             if (!typeof(T).GetTypeInfo().IsClass && result == null)
                 return default;
-            return (T) GetValue(_Key);
+
+            if (result == null)
+            {
+                PutValue<T>(_Key, default);
+                result = GetValue(_Key);
+            }
+            
+            return (T) result;
         }
         
         public static void PutValue(SaveKey _Key, object _Value)
