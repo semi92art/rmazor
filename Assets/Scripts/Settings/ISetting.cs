@@ -1,15 +1,22 @@
-﻿namespace Settings
+﻿using System.Collections.Generic;
+
+namespace Settings
 {
     public interface ISetting
     {
+        string Name { get; }
         SettingType Type { get; }
-        void Set(object _Parameter);
+        List<string> Values { get; }
+        object Min { get; }
+        object Max { get; }
+        void Put(object _Parameter);
+        object Get();
     }
 
     public enum SettingType
     {
         OnOff,
-        DropSelection,
+        InPanelSelector,
         Slider
     }
 }

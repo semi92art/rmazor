@@ -142,7 +142,7 @@ namespace Utils
     
         public static bool IsNull<T>(T _Object)
         {
-            return _Object == null || _Object as MonoBehaviour == null;
+            return _Object == null;
         }	
     
         public static long Pow10(int _N)

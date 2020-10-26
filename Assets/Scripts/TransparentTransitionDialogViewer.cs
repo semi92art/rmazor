@@ -79,10 +79,10 @@ public class TransparentTransitionDialogViewer : MonoBehaviour, IDialogViewer
         bool _IsGoBack = false,
         float _TransitionTime = 0.2f)
     {
-        if (_ItemFrom == null && _ItemTo == null)
+        if (Utility.IsNull(_ItemFrom) && Utility.IsNull(_ItemTo))
             return;
         
-        if (_ItemFrom != null)
+        if (!Utility.IsNull(_ItemFrom))
         {
             int instId = _ItemFrom.GetInstanceID();
             if (!m_GraphicsAlphas.ContainsKey(instId))
@@ -97,7 +97,7 @@ public class TransparentTransitionDialogViewer : MonoBehaviour, IDialogViewer
                 })); 
         }
 
-        if (_ItemTo != null)
+        if (!Utility.IsNull(_ItemTo))
         {
             int instId = _ItemTo.GetInstanceID();
             if (!m_GraphicsAlphas.ContainsKey(instId))
@@ -108,22 +108,25 @@ public class TransparentTransitionDialogViewer : MonoBehaviour, IDialogViewer
                 () => background.enabled = true));
         }
 
-        if (m_NotDialogs != null && m_NotDialogs.Any())
+        if (!Utility.IsNull(m_NotDialogs) && m_NotDialogs.Any())
         {
-            if (_ItemFrom == null && !_IsGoBack || _ItemTo == null && _IsGoBack)
+            if (Utility.IsNull(_ItemFrom) && !_IsGoBack || Utility.IsNull(_ItemTo) && _IsGoBack)
                 foreach (var item in m_NotDialogs)
                     StartCoroutine(Coroutines.DoTransparentTransition(
                         item, m_GraphicsAlphas[item.GetInstanceID()].Alphas, _TransitionTime, !_IsGoBack));
         }
 
-        if (m_CloseButton != null)
+        if (!Utility.IsNull(m_CloseButton) && (Utility.IsNull(_ItemFrom) || Utility.IsNull(_ItemTo)))
+        {
             StartCoroutine(Coroutines.DoTransparentTransition(m_CloseButton,
                 m_GraphicsAlphas[m_CloseButton.GetInstanceID()].Alphas, _TransitionTime, _IsGoBack));
+        }
+            
         
-        background.enabled = background.raycastTarget = !(_ItemTo == null && _IsGoBack);
+        background.enabled = background.raycastTarget = !(Utility.IsNull(_ItemTo) && _IsGoBack);
         ClearGraphicsAlphas();
         
-        if (_ItemTo == null)
+        if (Utility.IsNull(_ItemTo))
             m_PanelStack.Clear();
         else
         {

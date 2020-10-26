@@ -33,14 +33,7 @@ public class GameLoader : MonoBehaviour
                 100,
                 true,
                 GraphicRaycaster.BlockingObjects.None);
-                
-            UiFactory.UiImage(UiFactory.UiRectTransform(
-                canvas.RTransform(),
-                "image",
-                UiAnchor.Create(0, 0, 0, 0),
-                Vector2.down, Vector2.down, Vector2.down
-            ), "TESTButton");
-                
+
             if (current.buildIndex == 1)
                 Instantiate(consolePrefab, canvas.RTransform());
         };

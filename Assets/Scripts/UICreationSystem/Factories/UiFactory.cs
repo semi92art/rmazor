@@ -48,28 +48,6 @@ namespace UICreationSystem.Factories
             return canvas;
         }
 
-        public static Image UiImage(
-            RectTransform _Item,
-            string _StyleName)
-        {
-            Image image = _Item.gameObject.AddComponent<Image>();
-            UIStyleObject style = ResLoader.GetStyle(_StyleName);
-            if (style == null)
-                return image;
-
-            image.sprite = style.sprite;
-            image.color = style.imageColor;
-            image.raycastTarget = style.raycastImageTarget;
-            image.useSpriteMesh = style.useSpriteMesh;
-            image.preserveAspect = style.preserveAspect;
-            image.pixelsPerUnitMultiplier = style.pixelsPerUnityMultyply;
-            image.type = style.imageType;
-            image.fillMethod = style.fillMethod;
-            image.fillOrigin = style.fillOrigin;
-            image.fillClockwise = style.fillClockwise;
-            return image;
-        }
-        
         public static RectTransform UiRectTransform(
             RectTransform _Parent,
             string _Name,

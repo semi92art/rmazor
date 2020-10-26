@@ -49,15 +49,13 @@ namespace UICreationSystem
         private RectTransform m_MainMenu;
         private RectTransform m_GameTitleContainer;
         private GameObject m_GameTitle;
-        private System.Action m_OnLoginClick;
 
         public MainMenuUi(RectTransform _Parent,
-            IDialogViewer _DialogViewer,
-            System.Action _OnLoginClick)
+            IDialogViewer _DialogViewer)
         {
             InitContainers(_Parent);
             m_DialogViewer = _DialogViewer;
-            m_OnLoginClick = _OnLoginClick;
+
             
             SetGameTitle(SaveUtils.GetValue<int>(SaveKey.GameId));
             InitCenterButtonsScrollView();
@@ -288,15 +286,16 @@ namespace UICreationSystem
 
         private void OnSettingsButtonClick()
         {
-            //TODO settings button logic
-            SettingsPanel.CreatePanel(m_MainMenu);
+            var settingsPanel = new SettingsPanel();
+            var spRtr = settingsPanel.CreatePanel(m_DialogViewer);
+            m_DialogViewer.Show(null, spRtr);
         }
 
         private void OnLoginButtonClick()
         {
-            m_OnLoginClick?.Invoke();
-            LoginPanel.CreatePanel(m_MainMenu);
-            //TODO login button logic
+            var loginPanel = new LoginPanel();
+            var lpRtr = loginPanel.CreatePanel(m_DialogViewer);
+            m_DialogViewer.Show(null, lpRtr);
         }
 
         private void OnShopButtonClick()
