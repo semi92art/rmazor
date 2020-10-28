@@ -89,6 +89,7 @@ GameObject:
   - component: {fileID: 2006603094509534093}
   - component: {fileID: 1566013748626525529}
   - component: {fileID: 7511557255587344881}
+  - component: {fileID: -6469919806090884838}
   m_Layer: 0
   m_Name: Dialog Close Button
   m_TagString: Untagged
@@ -230,6 +231,30 @@ MonoBehaviour:
     array:
     - item: {fileID: 5541025160145569569}
       name: button
+--- !u!114 &-6469919806090884838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5541025160145569569}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52c162dc854d2f24fa639ba0623de5ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: 20
+  offsetAngle: 90
+  offsetDistance: 3
+  offset: {x: 0.00000017881395, y: -3}
+  color: {r: 0, g: 0, b: 0, a: 0.76862746}
+  blendMode: 0
+  shadowAsSibling: 0
+  cutout: 0
+  baked: 0
+  colorBleedMode: 0
+  modifiedFromInspector: 0
+  bakedShadows: []
 --- !u!1 &7597121105866962087
 GameObject:
   m_ObjectHideFlags: 0

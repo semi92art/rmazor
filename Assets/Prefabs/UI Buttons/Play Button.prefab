@@ -314,6 +314,7 @@ GameObject:
   - component: {fileID: 6392820446912852886}
   - component: {fileID: 1309597775494836065}
   - component: {fileID: 5765093473231897359}
+  - component: {fileID: -4802849455624420959}
   m_Layer: 0
   m_Name: Play Button
   m_TagString: Untagged
@@ -434,6 +435,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59e9a8a8a0c816841bf2f00e1c5197f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-4802849455624420959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6592728042775572582}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52c162dc854d2f24fa639ba0623de5ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: 20
+  offsetAngle: 90
+  offsetDistance: 3
+  offset: {x: 0.00000017881395, y: -3}
+  color: {r: 0, g: 0, b: 0, a: 0.76862746}
+  blendMode: 0
+  shadowAsSibling: 0
+  cutout: 0
+  baked: 0
+  colorBleedMode: 0
+  modifiedFromInspector: 0
+  bakedShadows: []
 --- !u!1 &8717210439857019052
 GameObject:
   m_ObjectHideFlags: 0

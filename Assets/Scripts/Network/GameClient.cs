@@ -101,7 +101,7 @@ namespace Network
 
             //wait 5 seconds before cancel
             bool stopWaiting = false;
-            Task.Run(Utils.CommonUtils.WaitForSecs(5f, () => stopWaiting = true));
+            Task.Run(Utils.Utility.WaitForSecs(5f, () => stopWaiting = true));
 
             request.SendWebRequest();
             while (!request.isDone && !stopWaiting) {  } //do nothing and wait

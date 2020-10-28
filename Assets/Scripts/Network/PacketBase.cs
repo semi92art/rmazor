@@ -17,15 +17,27 @@ namespace Network
         public virtual bool Resend => false;
         public object Request { get; }
         public string ResponseRaw { get; private set; }
-
-        public ErrorResponseArgs ErrorMessage { get; protected set; }
+        
+        public ErrorResponseArgs ErrorMessage {
+            get
+            {
+                if (m_ErrorMessage == null)
+                    return new ErrorResponseArgs
+                    {
+                        Id = 500,
+                        Message = "Internal server error"
+                    };
+                return m_ErrorMessage;
+            }
+        }
         
         public long ResponseCode { get; set; }
 
         #endregion
         
         #region private fields
-        
+
+        private ErrorResponseArgs m_ErrorMessage;
         private Action m_Success;
         private Action m_Fail;
         private Action m_Cancel;
@@ -85,13 +97,13 @@ namespace Network
 
         public virtual IPacket OnSuccess(Action _Action)
         {
-            m_Success += _Action;
+            m_Success = _Action;
             return this;
         }
 
         public virtual IPacket OnFail(Action _Action)
         {
-            m_Fail += _Action;
+            m_Fail = _Action;
             return this;
         }
 
@@ -105,13 +117,13 @@ namespace Network
         {
             ResponseRaw = _Json;
             if (!Utility.IsInRange(ResponseCode, 200, 299))
-                ErrorMessage = JsonConvert.DeserializeObject<ErrorResponseArgs>(_Json);
+                m_ErrorMessage = JsonConvert.DeserializeObject<ErrorResponseArgs>(_Json);
             
             if (Utility.IsInRange(ResponseCode, 200, 299))
                 InvokeSuccess();
             else if (Utility.IsInRange(ResponseCode, 300, 399))
                 InvokeCancel();
-            else if (Utility.IsInRange(ResponseCode, 400, 499))
+            else if (Utility.IsInRange(ResponseCode, 400, 599))
                 InvokeFail();
         }
         

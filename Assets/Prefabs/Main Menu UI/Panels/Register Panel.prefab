@@ -394,6 +394,7 @@ GameObject:
   - component: {fileID: 8552280345567684338}
   - component: {fileID: 4681096156694669266}
   - component: {fileID: 2553863806466223475}
+  - component: {fileID: 3227185269353415589}
   m_Layer: 0
   m_Name: Button Register
   m_TagString: Untagged
@@ -457,6 +458,30 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 0.01
+--- !u!114 &3227185269353415589
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1084195570784899370}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52c162dc854d2f24fa639ba0623de5ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: 20
+  offsetAngle: 85
+  offsetDistance: 3
+  offset: {x: 0.2614677, y: -2.988584}
+  color: {r: 0, g: 0, b: 0, a: 0.76862746}
+  blendMode: 0
+  shadowAsSibling: 0
+  cutout: 0
+  baked: 0
+  colorBleedMode: 0
+  modifiedFromInspector: 0
+  bakedShadows: []
 --- !u!1 &1342713783961515527
 GameObject:
   m_ObjectHideFlags: 0
@@ -674,6 +699,7 @@ GameObject:
   - component: {fileID: 8761334532930894171}
   - component: {fileID: 4348516542839520845}
   - component: {fileID: 6204361957057730154}
+  - component: {fileID: 5683954229788408783}
   m_Layer: 5
   m_Name: Repeat Password Input Field
   m_TagString: Untagged
@@ -833,6 +859,30 @@ MonoBehaviour:
   m_isRichTextEditingAllowed: 0
   m_LineLimit: 0
   m_InputValidator: {fileID: 0}
+--- !u!114 &5683954229788408783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1718802088453940881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52c162dc854d2f24fa639ba0623de5ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: 20
+  offsetAngle: 85
+  offsetDistance: 3
+  offset: {x: 0.2614677, y: -2.988584}
+  color: {r: 0, g: 0, b: 0, a: 0.76862746}
+  blendMode: 0
+  shadowAsSibling: 0
+  cutout: 0
+  baked: 0
+  colorBleedMode: 0
+  modifiedFromInspector: 0
+  bakedShadows: []
 --- !u!1 &1780210619435788525
 GameObject:
   m_ObjectHideFlags: 0
@@ -1086,6 +1136,7 @@ GameObject:
   - component: {fileID: 8789872755923165623}
   - component: {fileID: 5458999185160959201}
   - component: {fileID: 6504002402830318559}
+  - component: {fileID: 240600526579405631}
   m_Layer: 0
   m_Name: Register Panel
   m_TagString: Untagged
@@ -1188,6 +1239,30 @@ MonoBehaviour:
       name: register_button
     - item: {fileID: 489310277034560579}
       name: register_button_text
+--- !u!114 &240600526579405631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2987709224702265387}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52c162dc854d2f24fa639ba0623de5ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: 20
+  offsetAngle: 90
+  offsetDistance: 3
+  offset: {x: 0.00000017881395, y: -3}
+  color: {r: 0, g: 0, b: 0, a: 0.76862746}
+  blendMode: 0
+  shadowAsSibling: 0
+  cutout: 0
+  baked: 0
+  colorBleedMode: 0
+  modifiedFromInspector: 0
+  bakedShadows: []
 --- !u!1 &3549950371181663384
 GameObject:
   m_ObjectHideFlags: 0
@@ -1200,6 +1275,7 @@ GameObject:
   - component: {fileID: 6077563873115225698}
   - component: {fileID: 8536829033349540462}
   - component: {fileID: 8355892081487745825}
+  - component: {fileID: 1345891170020490016}
   m_Layer: 5
   m_Name: Password Input Field
   m_TagString: Untagged
@@ -1359,6 +1435,30 @@ MonoBehaviour:
   m_isRichTextEditingAllowed: 0
   m_LineLimit: 0
   m_InputValidator: {fileID: 0}
+--- !u!114 &1345891170020490016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3549950371181663384}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52c162dc854d2f24fa639ba0623de5ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: 20
+  offsetAngle: 85
+  offsetDistance: 3
+  offset: {x: 0.2614677, y: -2.988584}
+  color: {r: 0, g: 0, b: 0, a: 0.76862746}
+  blendMode: 0
+  shadowAsSibling: 0
+  cutout: 0
+  baked: 0
+  colorBleedMode: 0
+  modifiedFromInspector: 0
+  bakedShadows: []
 --- !u!1 &3645174338952590730
 GameObject:
   m_ObjectHideFlags: 0
@@ -1443,6 +1543,7 @@ GameObject:
   - component: {fileID: 4382828777853172975}
   - component: {fileID: 8749590893431201164}
   - component: {fileID: 5183846688017960525}
+  - component: {fileID: 6673971959631528998}
   m_Layer: 5
   m_Name: Login Input Field
   m_TagString: Untagged
@@ -1602,6 +1703,30 @@ MonoBehaviour:
   m_isRichTextEditingAllowed: 0
   m_LineLimit: 0
   m_InputValidator: {fileID: 0}
+--- !u!114 &6673971959631528998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3890136018102493649}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52c162dc854d2f24fa639ba0623de5ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: 20
+  offsetAngle: 85
+  offsetDistance: 3
+  offset: {x: 0.2614677, y: -2.988584}
+  color: {r: 0, g: 0, b: 0, a: 0.76862746}
+  blendMode: 0
+  shadowAsSibling: 0
+  cutout: 0
+  baked: 0
+  colorBleedMode: 0
+  modifiedFromInspector: 0
+  bakedShadows: []
 --- !u!1 &4664857231763792626
 GameObject:
   m_ObjectHideFlags: 0

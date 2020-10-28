@@ -251,6 +251,7 @@ GameObject:
   - component: {fileID: 2464189173734772614}
   - component: {fileID: 1229213688830257571}
   - component: {fileID: 3660293323595076077}
+  - component: {fileID: -617777252588750958}
   m_Layer: 0
   m_Name: Daily Bonus Button
   m_TagString: Untagged
@@ -377,6 +378,30 @@ MonoBehaviour:
       name: button
     - item: {fileID: 535438626655088089}
       name: animator
+--- !u!114 &-617777252588750958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6244953112480298204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52c162dc854d2f24fa639ba0623de5ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: 20
+  offsetAngle: 90
+  offsetDistance: 3
+  offset: {x: 0.00000017881395, y: -3}
+  color: {r: 0, g: 0, b: 0, a: 0.76862746}
+  blendMode: 0
+  shadowAsSibling: 0
+  cutout: 0
+  baked: 0
+  colorBleedMode: 0
+  modifiedFromInspector: 0
+  bakedShadows: []
 --- !u!1 &8924217929251870021
 GameObject:
   m_ObjectHideFlags: 0

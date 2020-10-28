@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Extentions;
 using UICreationSystem.Factories;
 using UICreationSystem.Panels;
 using UnityEngine;
@@ -10,39 +11,6 @@ namespace UICreationSystem
 {
     public class MainMenuUi
     {
-        private readonly List<ChooseGameItemProps> m_CgiPropsList = new List<ChooseGameItemProps>
-        {
-            new ChooseGameItemProps(null, "POINT CLICKER", false, true, null),
-            new ChooseGameItemProps(null, "FIGURE DRAWER", false, true, null),
-            new ChooseGameItemProps(null, "MATH TRAIN", true, true, null),
-            new ChooseGameItemProps(null, "TILE PATHER", true, false, null),
-            new ChooseGameItemProps(null, "BALANCE DRAWER", true, false, null)
-        };
-
-        private readonly List<DailyBonusProps> m_DailyBonusPropsList = new List<DailyBonusProps>
-        {
-            new DailyBonusProps( 1, 300, _Icon: PrefabInitializer.GetObject<Sprite>("daily_bonus", "day_1_icon")),
-            new DailyBonusProps( 2, 1000, _Icon: PrefabInitializer.GetObject<Sprite>("daily_bonus", "day_2_icon")),
-            new DailyBonusProps( 3, _Diamonds: 3, _Icon: PrefabInitializer.GetObject<Sprite>("daily_bonus", "day_3_icon")),
-            new DailyBonusProps( 4, 3000, _Icon: PrefabInitializer.GetObject<Sprite>("daily_bonus", "day_4_icon")),
-            new DailyBonusProps( 5, _Diamonds: 5, _Icon: PrefabInitializer.GetObject<Sprite>("daily_bonus", "day_5_icon")),
-            new DailyBonusProps( 6, 5000, _Icon: PrefabInitializer.GetObject<Sprite>("daily_bonus", "day_6_icon")),
-            new DailyBonusProps( 7, _Diamonds: 8, _Icon: PrefabInitializer.GetObject<Sprite>("daily_bonus", "day_7_icon")),
-        };
-
-        private readonly List<ShopItemProps> m_ShopItemPropsList = new List<ShopItemProps>
-        {
-            new ShopItemProps("No Ads", "9.99$", "20$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_0_icon")),
-            new ShopItemProps("30,000", "9.99$", "20$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_1_icon")),
-            new ShopItemProps("30", "9.99$", "20$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_2_icon")),
-            new ShopItemProps("80,000", "19.99$", "40$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_3_icon")),
-            new ShopItemProps("80", "19.99$", "40$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_4_icon")),
-            new ShopItemProps("200,000", "39.99$", "80$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_5_icon")),
-            new ShopItemProps("200", "39.99$", "80$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_6_icon")),
-            new ShopItemProps("500,000", "79.99$", "180$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_7_icon")),
-            new ShopItemProps("500", "79.99$", "180$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_8_icon"))
-        };
-
         private static bool _isDailyBonusClicked;
         private Animator m_DailyBonusAnimator;
         private IDialogViewer m_DialogViewer;
@@ -225,58 +193,15 @@ namespace UICreationSystem
                 m_DailyBonusAnimator.SetTrigger(AnimKeys.Anim);
         }
 
-        private int GetCurrentDailyBonusDay()
-        {
-            int dailyBonusDay = 0;
-            System.DateTime lastDate = SaveUtils.GetValue<System.DateTime>(SaveKey.DailyBonusLastDate);
-            System.DateTime today = System.DateTime.Now.Date;
-            int daysPast = Mathf.FloorToInt((float)(lastDate.Date - today).TotalDays);
-            if (daysPast > 0)
-            {
-                dailyBonusDay = 1;
-                int lastItemClickedDay = SaveUtils.GetValue<int>(SaveKey.DailyBonusLastItemClickedDate);
-
-                if (daysPast == 1)
-                    dailyBonusDay = lastItemClickedDay + 1;
-
-                if (dailyBonusDay > m_DailyBonusPropsList.Max(_Props => _Props.Day))
-                    dailyBonusDay = 0;
-            }
-
-            return dailyBonusDay;
-        }
+        
 
         #region event methods
 
         private void OnOpenSelectGamePanel()
         {
-            GameObject selectGamePanel = PrefabInitializer.InitUiPrefab(
-                UiFactory.UiRectTransform(
-                    m_DialogViewer.DialogContainer,
-                    RtrLites.FullFill),
-                "main_menu",
-                "select_game_panel");
-            RectTransform content = selectGamePanel.GetComponentItem<RectTransform>("content");
-            
-            GameObject cgiObj = PrefabInitializer.InitUiPrefab(
-                UiFactory.UiRectTransform(
-                    content,
-                    UiAnchor.Create(0, 1, 0, 1),
-                    new Vector2(218f, -43f),
-                    Vector2.one * 0.5f,
-                    new Vector2(416f, 66f)),
-                "main_menu",
-                "select_game_item");
-            
-            foreach (var cgiProps in m_CgiPropsList)
-            {
-                var cgiObjClone = cgiObj.Clone();
-                ChooseGameItem cgi = cgiObjClone.GetComponent<ChooseGameItem>();
-                cgi.Init(cgiProps);
-            }
-            
-            Object.Destroy(cgiObj);
-            m_DialogViewer.Show(null, selectGamePanel.RTransform());
+            var selectGamePanel = new SelectGamePanel();
+            RectTransform sgpRtr = selectGamePanel.Create(m_DialogViewer);
+            m_DialogViewer.Show(null, sgpRtr);
         }
         
         private void OnProfileButtonClick()
@@ -300,35 +225,9 @@ namespace UICreationSystem
 
         private void OnShopButtonClick()
         {
-            GameObject shopPanel = PrefabInitializer.InitUiPrefab(
-                UiFactory.UiRectTransform(
-                    m_DialogViewer.DialogContainer,
-                    RtrLites.FullFill),
-                "main_menu",
-                "shop_panel");
-            RectTransform content = shopPanel.GetComponentItem<RectTransform>("content");
-            
-            GameObject shopItem = PrefabInitializer.InitUiPrefab(
-                UiFactory.UiRectTransform(
-                    content,
-                    UiAnchor.Create(0, 1, 0, 1),
-                    new Vector2(218f, -60f),
-                    Vector2.one * 0.5f,
-                    new Vector2(416f, 100f)),
-                "main_menu",
-                "shop_item");
-            
-            foreach (var shopItemProps in m_ShopItemPropsList)
-            {
-                if (shopItemProps.Amount == "No Ads" && !SaveUtils.GetValue<bool>(SaveKey.ShowAds))
-                    continue;
-                var shopItemClone = shopItem.Clone();
-                ShopItem si = shopItemClone.GetComponent<ShopItem>();
-                si.Init(shopItemProps);
-            }
-            
-            Object.Destroy(shopItem);
-            m_DialogViewer.Show(null, shopPanel.RTransform());
+            var shopPanel = new ShopPanel();
+            RectTransform shPRtr = shopPanel.Create(m_DialogViewer);
+            m_DialogViewer.Show(null, shPRtr);
         }
 
         private void OnPlayButtonClick()
@@ -338,45 +237,9 @@ namespace UICreationSystem
 
         private void OnDailyBonusButtonClick()
         {
-            int dailyBonusDay = GetCurrentDailyBonusDay();
-            System.DateTime lastDate = SaveUtils.GetValue<System.DateTime>(SaveKey.DailyBonusLastDate);
-            System.DateTime today = System.DateTime.Now.Date;
-            
-            if (lastDate.Date != today)
-            {
-                SaveUtils.PutValue(SaveKey.DailyBonusLastDate, System.DateTime.Today);
-                m_DailyBonusAnimator.SetTrigger(AnimKeys.Stop);
-            }
-
-            GameObject dailyBonusPanel = PrefabInitializer.InitUiPrefab(
-                UiFactory.UiRectTransform(
-                    m_DialogViewer.DialogContainer,
-                    RtrLites.FullFill),
-                "main_menu",
-                "daily_bonus_panel");
-            RectTransform content = dailyBonusPanel.GetComponentItem<RectTransform>("content");
-            
-            GameObject dbItem = PrefabInitializer.InitUiPrefab(
-                UiFactory.UiRectTransform(
-                    content,
-                    UiAnchor.Create(0, 1, 0, 1),
-                    new Vector2(218f, -60f),
-                    Vector2.one * 0.5f,
-                    new Vector2(416f, 100f)),
-                "main_menu",
-                "daily_bonus_item");
-            
-            foreach (var dbProps in m_DailyBonusPropsList)
-            {
-                if (dbProps.Day == dailyBonusDay)
-                    dbProps.IsActive = true;
-                var dbItemClone = dbItem.Clone();
-                DailyBonusItem dbi = dbItemClone.GetComponent<DailyBonusItem>();
-                dbi.Init(dbProps);
-            }
-            
-            Object.Destroy(dbItem);
-            m_DialogViewer.Show(null, dailyBonusPanel.RTransform());
+            var dailyBonusPanel = new DailyBonusPanel();
+            RectTransform dbpRtr = dailyBonusPanel.Create(m_DialogViewer, m_DailyBonusAnimator);
+            m_DialogViewer.Show(null, dbpRtr);
         }
 
         private void OnWheelOfFortuneButtonClick()

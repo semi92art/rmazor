@@ -24,7 +24,7 @@ namespace Tests.Editor
 
             //wait 5 seconds before cancel
             bool stopWaiting = false;
-            Task.Run(Utils.CommonUtils.WaitForSecs(5f, () => stopWaiting = true));
+            Task.Run(Utility.WaitForSecs(5f, () => stopWaiting = true));
 
             //Act
             request.SendWebRequest();
@@ -78,7 +78,7 @@ namespace Tests.Editor
                 {
                     Name = "",
                     PasswordHash = "",
-                    DeviceId = $"test_{Utils.CommonUtils.GetUniqueID()}"
+                    DeviceId = $"test_{Utility.GetUniqueID()}"
                 })
                 .OnSuccess(() => requestSuccess = true);
             GameClient.Instance.Send(packet);

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2338348674611996818}
   - component: {fileID: 3463894909509605627}
   - component: {fileID: 540576917986103651}
+  - component: {fileID: -3953326133666025243}
   m_Layer: 0
   m_Name: Settings Panel
   m_TagString: Untagged
@@ -91,6 +92,30 @@ MonoBehaviour:
     array:
     - item: {fileID: 553711355306752002}
       name: content
+--- !u!114 &-3953326133666025243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 432638780763177933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52c162dc854d2f24fa639ba0623de5ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: 20
+  offsetAngle: 90
+  offsetDistance: 3
+  offset: {x: 0.00000017881395, y: -3}
+  color: {r: 0, g: 0, b: 0, a: 0.76862746}
+  blendMode: 0
+  shadowAsSibling: 0
+  cutout: 0
+  baked: 0
+  colorBleedMode: 0
+  modifiedFromInspector: 0
+  bakedShadows: []
 --- !u!1 &553711355306752002
 GameObject:
   m_ObjectHideFlags: 0

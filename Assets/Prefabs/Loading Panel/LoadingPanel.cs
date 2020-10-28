@@ -102,7 +102,7 @@ public class LoadingPanel : MonoBehaviour, ILoadingPanel
         int time = Mathf.FloorToInt(Time.time * 5f);
         if (time % 2 == 0 &&  time != m_TimePrev)
         {
-            CommonUtils.IncWithOverflow(ref m_PointsState, 4);
+            Utility.IncWithOverflow(ref m_PointsState, 4);
             loading.text = m_LoadingText + string.Concat(Enumerable.Repeat(".", m_PointsState));
         }
 

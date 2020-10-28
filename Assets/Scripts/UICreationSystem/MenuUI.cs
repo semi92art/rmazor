@@ -108,24 +108,14 @@ public class MenuUI
                             }).OnSuccess(() =>
                                 {
                                     Debug.Log("Login successfully");
-                                    /*here we must load main menu*/
-                                    m_TransitionRenderer.TransitionAction = (_, _Args) =>
-                                    {
-                                        transitionPanel.RTransform().Set(RtrLites.FullFill);
-                                        m_LoadingPanel.DoLoading = false;
-                                        m_LoadingPanel.Hide();
-                                        
-                                        m_MainMenuUi = new MainMenuUi(
-                                            m_Canvas.RTransform(),
-                                            m_DialogViewer);
-                                    };
-                                    m_TransitionRenderer.StartTransition();
+                                    LoadMainMenu();
                                 }
                                 );
                             loginPacket.OnFail(() =>
                             {
                                 if (loginPacket.ErrorMessage.Id == RequestErrorCodes.AccontEntityNotFoundByDeviceId)
                                 {
+                                    Debug.LogWarning($"Login failed: Account with this device id was not found");
                                     IPacket registerPacket = new RegisterUserPacket(
                                         new RegisterUserUserPacketRequestArgs
                                         {
@@ -140,14 +130,15 @@ public class MenuUI
                                 }
                                 else if (loginPacket.ErrorMessage.Id == RequestErrorCodes.WrongLoginOrPassword)
                                 {
-                                    m_TransitionRenderer.TransitionAction = (_, _Args) =>
-                                    {
-                                        m_LoadingPanel.DoLoading = false;
-                                    };
-                                    m_TransitionRenderer.StartTransition();
+                                    Debug.LogError("Login failed: Wrong login or password");
+                                    LoadMainMenu();
                                 }
                                 else
+                                {
                                     Debug.LogError($"Login failed: {loginPacket.ErrorMessage.Message}");
+                                    LoadMainMenu();
+                                }
+                                    
                             });
                             GameClient.Instance.Send(loginPacket);
                         },
@@ -158,6 +149,20 @@ public class MenuUI
                 .OnFail(() => Debug.LogError("Failed test connection"));
             GameClient.Instance.Send(testPacket);
         }));
+    }
+
+    private void LoadMainMenu()
+    {
+        m_TransitionRenderer.TransitionAction = (_, _Args) =>
+        {
+            m_LoadingPanel.DoLoading = false;
+            m_LoadingPanel.Hide();
+                                        
+            m_MainMenuUi = new MainMenuUi(
+                m_Canvas.RTransform(),
+                m_DialogViewer);
+        };
+        m_TransitionRenderer.StartTransition();
     }
 
     private GameObject CreateLoadingTransitionPanel()
