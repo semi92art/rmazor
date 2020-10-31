@@ -12,20 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1600272214c7aa418cb76f5cc38aecb, type: 3}
   m_Name: loading_panel
   m_EditorClassIdentifier: 
-  sprite: {fileID: 0}
-  imageColor: {r: 1, g: 1, b: 1, a: 1}
-  raycastImageTarget: 1
-  imageType: 0
-  useSpriteMesh: 0
-  preserveAspect: 1
-  pixelsPerUnityMultyply: 0
-  fillMethod: 0
-  fillOrigin: 0
-  fillClockwise: 1
-  text: {fileID: 0}
-  button: {fileID: 0}
-  inputField: {fileID: 0}
   prefabs:
     array:
     - item: {fileID: 92356324094370806, guid: 1118dc2d3b2fbb94fab949eac790797a, type: 3}
       name: loading_panel
+    - item: {fileID: 21300000, guid: e0199762ef15195438b83abfc9825838, type: 3}
+      name: button_icon_close
+    - item: {fileID: 21300000, guid: 036dd3a227ea2874fb8b7c2c3b220aff, type: 3}
+      name: button_icon_back

@@ -126,7 +126,7 @@ namespace Tests.Editor
             
             //Act
             IPacket packet = new GetScoresPacket(
-                    new AccountIdGameIdRequestdArgs
+                    new AccIdGameId
                     {
                         AccountId = 1,
                         GameId = 1,
@@ -179,7 +179,7 @@ namespace Tests.Editor
             
             //Act
             IPacket packet = new GetProfilePacket(
-                    new AccountIdGameIdRequestdArgs
+                    new AccIdGameId
                     {
                         AccountId = 1,
                         GameId = 1
@@ -210,7 +210,6 @@ namespace Tests.Editor
                     new SetProfileRequestArgs
                     {
                         AccountId = 1,
-                        GameId = 1,
                         Options = options
                     })
                 .OnSuccess(() => requestSuccess = true);
@@ -233,7 +232,7 @@ namespace Tests.Editor
             
             //Act
             IPacket packet = new GetFullAccountDataPacket(
-                    new AccountIdGameIdRequestdArgs
+                    new AccIdGameId
                     {
                         AccountId = 1,
                         GameId = 1

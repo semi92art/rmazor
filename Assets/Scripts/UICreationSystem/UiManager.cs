@@ -1,41 +1,59 @@
-﻿using UnityEngine;
+﻿using DebugConsole;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace UICreationSystem
 {
-    public class UiManager : MonoBehaviour
+    public enum UiCategory
     {
-        #region static properties
+        Nothing,
+        Loading,
+        MainMenu,
+        SelectGame,
+        DailyBonus,
+        WheelOfFortune,
+        Profile,
+        LoginOrRegistration,
+        Shop,
+        Settings
+    }
+    
+    public class UiManager : MonoBehaviour, ISingleton
+    {
         public static UiManager Instance { get; private set; }
-
-        #endregion
-
-        #region private fields
-
-        private MenuUI m_Menu;
-
-        #endregion
-
-        #region engine methods
-
+        public delegate void UiStateHandler(UiCategory _Prev, UiCategory _New);
+        public event UiStateHandler OnCurrentCategoryChanged;
+        
+        public UiCategory CurrentCategory
+        {
+            get => m_CurrentCategory;
+            set
+            {
+                OnCurrentCategoryChanged?.Invoke(m_CurrentCategory, value);
+                m_CurrentCategory = value;
+            }
+        }
+        
+        private UiCategory m_CurrentCategory = UiCategory.Nothing;
+        
         private void Awake()
         {
             if (Instance != null)
             {
-                DestroyImmediate(gameObject);
+                Destroy(gameObject);
                 return;
             }
-
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
             SceneManager.activeSceneChanged += (_Arg0, _Scene) =>
             {
                 if (_Scene.name == "Main")
-                    m_Menu = new MenuUI();
+                    MenuUi.Create();
+#if !RELEASE
+                DebugConsoleView.Create();
+#endif
             };
         }
-
-        #endregion
     }
 }

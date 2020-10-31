@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections.Generic;
 using UICreationSystem;
+using UICreationSystem.Panels;
 using UnityEngine.Events;
+using Utils;
 
 public class DailyBonusItem : MonoBehaviour
 {
@@ -11,10 +14,10 @@ public class DailyBonusItem : MonoBehaviour
     public Image icon;
     public TextMeshProUGUI price;
     public TextMeshProUGUI day;
-
+    
     private DailyBonusProps m_Props;
     
-    public void Init(DailyBonusProps _Props)
+    public void Init(DailyBonusProps _Props, IActionExecuter _ActionExecuter)
     {
         icon.sprite = _Props.Icon;
         day.text = $"Day {_Props.Day}";
@@ -22,7 +25,25 @@ public class DailyBonusItem : MonoBehaviour
         if (_Props.IsActive)
             animator.SetTrigger(AnimKeys.Anim);
         
-        button.SetOnClick(_Props.Click);
+        button.onClick.AddListener(() =>
+        {
+            var money = new Dictionary<MoneyType, int>();
+            if (_Props.Gold > 0)
+                money.Add(MoneyType.Gold, _Props.Gold);
+            if (_Props.Diamonds > 0)
+                money.Add(MoneyType.Diamonds, _Props.Diamonds);
+            MoneyManager.Instance.SetIncome(money, icon.RTransform());
+            MoneyManager.Instance.PlusMoney(money);
+            
+            SaveUtils.PutValue(SaveKey.DailyBonusLastDate, System.DateTime.Today);
+            animator.SetTrigger(AnimKeys.Stop);
+        });
+        
+        
+        button.onClick.AddListener(() =>
+        {
+            _ActionExecuter.Action = _Props.Click;
+        });
     }
 }
 
@@ -33,19 +54,19 @@ public class DailyBonusProps
     public int Diamonds { get; }
     public Sprite Icon { get; }
     public bool IsActive { get; set; }
-    public UnityAction Click { get; }
+    public System.Action Click { get; set; }
 
     public DailyBonusProps(
         int _Day,
         int _Gold = 0,
         int _Diamonds = 0,
         Sprite _Icon = null,
-        UnityAction _OnClick = null)
+        System.Action _Click = null)
     {
         Day = _Day;
         Gold = _Gold;
         Diamonds = _Diamonds;
         Icon = _Icon;
-        Click = _OnClick;
+        Click = _Click;
     }
 }

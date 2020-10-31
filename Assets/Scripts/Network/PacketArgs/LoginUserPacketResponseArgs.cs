@@ -1,8 +1,13 @@
-﻿namespace Network.PacketArgs
+﻿using System;
+
+namespace Network.PacketArgs
 {
     public class LoginUserPacketResponseArgs
     {
-        public int AccountId { get; set; }
-        public int GameId { get; set; }
+        public string Name { get; set; }
+        public string PasswordHash { get; set; }
+        public string DeviceId { get; set; }
+        public int Id { get; set; }
+        public DateTime CreationTime { get; set; }
     }
 }

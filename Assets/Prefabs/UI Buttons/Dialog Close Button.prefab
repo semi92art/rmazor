@@ -231,6 +231,8 @@ MonoBehaviour:
     array:
     - item: {fileID: 5541025160145569569}
       name: button
+    - item: {fileID: 7597121105866962087}
+      name: close_icon
 --- !u!114 &-6469919806090884838
 MonoBehaviour:
   m_ObjectHideFlags: 0

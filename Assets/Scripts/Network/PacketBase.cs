@@ -15,6 +15,7 @@ namespace Network
         public virtual string Method => "POST";
         public virtual bool OnlyOne => false;
         public virtual bool Resend => false;
+        public bool IsDone { get; set; }
         public object Request { get; }
         public string ResponseRaw { get; private set; }
         
@@ -72,6 +73,7 @@ namespace Network
             try
             {
                 m_Fail?.Invoke();
+                Debug.LogError(ErrorMessage);
             }
             catch (Exception e)
             {
@@ -125,6 +127,8 @@ namespace Network
                 InvokeCancel();
             else if (Utility.IsInRange(ResponseCode, 400, 599))
                 InvokeFail();
+
+            IsDone = true;
         }
         
         #endregion

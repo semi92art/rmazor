@@ -10,7 +10,7 @@ namespace Network.Packets
         public List<GetScoreResponseArgs> Response { get; private set; }
 
 
-        public GetScoresPacket(AccountIdGameIdRequestdArgs _Request) : base(_Request)
+        public GetScoresPacket(AccIdGameId _Request) : base(_Request)
         { }
 
         public override void DeserializeResponse(string _Json)

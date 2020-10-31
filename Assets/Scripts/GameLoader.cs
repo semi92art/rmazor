@@ -1,44 +1,13 @@
-﻿using Clickers;
-using Network;
-using UICreationSystem;
-using UICreationSystem.Factories;
+﻿using Network;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class GameLoader : MonoBehaviour
 {
-    public static GameLoader Instance { get; private set; }
-
-    public GameObject consolePrefab;
-    public GameObject loadingPanel;
-        
     private void Start()
     {
-        Instance = this;       
         GoogleAdsManager.Instance.Init();
         GameClient.Instance.Init();
-        SceneManager.activeSceneChanged += (previous, current) =>
-        {
-            Canvas canvas = UiFactory.UiCanvas(
-                "Canvas",
-                RenderMode.ScreenSpaceOverlay,
-                true,
-                0,
-                AdditionalCanvasShaderChannels.None,
-                CanvasScaler.ScaleMode.ScaleWithScreenSize,
-                new Vector2Int(1920,1080),
-                CanvasScaler.ScreenMatchMode.Shrink,
-                0f,
-                100,
-                true,
-                GraphicRaycaster.BlockingObjects.None);
-
-            if (current.buildIndex == 1)
-                Instantiate(consolePrefab, canvas.RTransform());
-        };
-            
-        DontDestroyOnLoad(gameObject);
         SceneManager.LoadScene(1);
     }
 }

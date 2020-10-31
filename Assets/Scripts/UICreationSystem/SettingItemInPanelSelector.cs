@@ -15,7 +15,6 @@ namespace UICreationSystem
         public TextMeshProUGUI setting;
 
         public void Init(
-            RectTransform _SettingsPanel,
             IDialogViewer _DialogViewer,
             System.Func<string> _Value,
             string _Name,
@@ -31,9 +30,12 @@ namespace UICreationSystem
                 if (items == null)
                     return;
                 
-                var selectorPanel = new SettingsSelectorPanel();
-                RectTransform selPanRtr = selectorPanel.CreatePanel(_Value?.Invoke(), _DialogViewer, items, _Select);
-                _DialogViewer.Show(_SettingsPanel, selPanRtr);
+                IDialogPanel selectorPanel = new SettingsSelectorPanel(
+                    _DialogViewer,
+                    _Value?.Invoke(),
+                    items, 
+                    _Select);
+                selectorPanel.Show();
             });
         }
     }

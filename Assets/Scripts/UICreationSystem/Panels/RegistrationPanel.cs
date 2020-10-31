@@ -7,13 +7,39 @@ using UnityEngine.UI;
 
 namespace UICreationSystem.Panels
 {
-    public class RegistrationPanel
+    public class RegistrationPanel : IDialogPanel
     {
-        public RectTransform CreatePanel(IDialogViewer _DialogViewer)
+        #region private members
+        
+        private readonly IDialogViewer m_DialogViewer;
+        
+        #endregion
+        
+        #region api
+
+        public UiCategory Category => UiCategory.LoginOrRegistration;
+        public RectTransform Panel { get; private set; }
+        
+        public RegistrationPanel(IDialogViewer _DialogViewer)
+        {
+            m_DialogViewer = _DialogViewer;
+        }
+
+        public void Show()
+        {
+            Panel = Create();
+            m_DialogViewer.Show( this);
+        }
+        
+        #endregion
+        
+        #region private methods
+        
+        private RectTransform Create()
         {
             GameObject rp = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    _DialogViewer.DialogContainer,
+                    m_DialogViewer.DialogContainer,
                     RtrLites.FullFill),
                 "main_menu", "register_panel");
             
@@ -26,9 +52,9 @@ namespace UICreationSystem.Panels
             Button registerButton = rp.GetComponentItem<Button>("register_button");
             TextMeshProUGUI registerButtonText = rp.GetComponentItem<TextMeshProUGUI>("register_button_text");
             
-            
-
             return rp.RTransform();
         }
+        
+        #endregion
     }
 }

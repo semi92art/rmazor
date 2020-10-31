@@ -1,4 +1,5 @@
-﻿using Network;
+﻿using Extentions;
+using Network;
 using Network.PacketArgs;
 using Network.Packets;
 using UICreationSystem;
@@ -8,7 +9,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Utils;
 
-public class MenuUI
+public class MenuUi
 {
     #region private fields
 
@@ -16,13 +17,12 @@ public class MenuUI
     private ILoadingPanel m_LoadingPanel;
     private IDialogViewer m_DialogViewer;
     private ITransitionRenderer m_TransitionRenderer;
-    private MainMenuUi m_MainMenuUi;
 
     #endregion
 
     #region constructor
 
-    public MenuUI()
+    public MenuUi()
     {
         CreateCanvas();
         CreateBackground();
@@ -30,6 +30,15 @@ public class MenuUI
         CreateLoadingPanel();
     }
 
+    #endregion
+    
+    #region factory
+
+    public static void Create()
+    {
+        new MenuUi();
+    }
+    
     #endregion
     
     #region private methods
@@ -69,19 +78,23 @@ public class MenuUI
                 RtrLites.FullFill),
             "main_menu",
             "dialog_viewer");
-        m_DialogViewer = dialogPanelObj.GetComponent<TransparentTransitionDialogViewer>();
+        m_DialogViewer = dialogPanelObj.GetComponent<DefaultDialogViewer>();
     }
 
     private void CreateLoadingPanel()
     {
-        m_LoadingPanel = LoadingPanel.Create(m_DialogViewer);
+        m_LoadingPanel = new LoadingPanel(m_DialogViewer);
         m_LoadingPanel.Show();
-        GameObject transitionPanel = CreateLoadingTransitionPanel();
+        
+        Debug.Log($"Device Id: {GameClient.Instance.DeviceId}");
+        Debug.Log($"Account Id: {GameClient.Instance.AccountId}");
+        
         Coroutines.StartCoroutine(Coroutines.WaitEndOfFrame(() =>
         {
+            var transitionPanelObj = CreateLoadingTransitionPanel();
             m_TransitionRenderer = CircleTransparentTransitionRenderer.Create();
-            m_TransitionRenderer.TransitionPanel = transitionPanel.RTransform();
-            
+            RawImage rImage = transitionPanelObj.GetComponentItem<RawImage>("raw_image");
+            rImage.texture = m_TransitionRenderer.Texture;
             //wait 2 seconds anyway
             float delayAnyway = 2f;
             bool isSuccess = false;
@@ -100,14 +113,16 @@ public class MenuUI
                     Coroutines.StartCoroutine(Coroutines.Delay(
                         () =>
                         {
-                            IPacket loginPacket = new LoginUserPacket(new LoginUserPacketRequestArgs
+                            var loginPacket = new LoginUserPacket(new LoginUserPacketRequestArgs
                             {
-                                Name = SaveUtils.GetValue<string>(SaveKey.Login),
-                                PasswordHash = SaveUtils.GetValue<string>(SaveKey.PasswordHash),
-                                DeviceId = SystemInfo.deviceUniqueIdentifier
-                            }).OnSuccess(() =>
+                                Name = GameClient.Instance.Login,
+                                PasswordHash = GameClient.Instance.PasswordHash,
+                                DeviceId = GameClient.Instance.DeviceId
+                            });
+                            loginPacket.OnSuccess(() =>
                                 {
                                     Debug.Log("Login successfully");
+                                    GameClient.Instance.AccountId = loginPacket.Response.Id;
                                     LoadMainMenu();
                                 }
                                 );
@@ -115,17 +130,17 @@ public class MenuUI
                             {
                                 if (loginPacket.ErrorMessage.Id == RequestErrorCodes.AccontEntityNotFoundByDeviceId)
                                 {
-                                    Debug.LogWarning($"Login failed: Account with this device id was not found");
+                                    Debug.LogWarning(loginPacket.ErrorMessage);
                                     IPacket registerPacket = new RegisterUserPacket(
                                         new RegisterUserUserPacketRequestArgs
                                         {
-                                            DeviceId = SystemInfo.deviceUniqueIdentifier
+                                            DeviceId = GameClient.Instance.DeviceId
                                         }).OnSuccess(() =>
                                         {
                                             Debug.Log("Register by DeviceId successfully");
-                                            /*here we must load main menu*/
+                                            LoadMainMenu();
                                         })
-                                        .OnFail(() => { Debug.LogError($"Register by DeviceId failed: {loginPacket.ErrorMessage.Message}"); });
+                                        .OnFail(() => { Debug.LogError(loginPacket.ErrorMessage); });
                                     GameClient.Instance.Send(registerPacket);
                                 }
                                 else if (loginPacket.ErrorMessage.Id == RequestErrorCodes.WrongLoginOrPassword)
@@ -135,10 +150,9 @@ public class MenuUI
                                 }
                                 else
                                 {
-                                    Debug.LogError($"Login failed: {loginPacket.ErrorMessage.Message}");
+                                    Debug.LogError(loginPacket.ErrorMessage);
                                     LoadMainMenu();
                                 }
-                                    
                             });
                             GameClient.Instance.Send(loginPacket);
                         },
@@ -158,7 +172,7 @@ public class MenuUI
             m_LoadingPanel.DoLoading = false;
             m_LoadingPanel.Hide();
                                         
-            m_MainMenuUi = new MainMenuUi(
+            MainMenuUi.Create(
                 m_Canvas.RTransform(),
                 m_DialogViewer);
         };
@@ -171,7 +185,6 @@ public class MenuUI
             UiFactory.UiRectTransform(m_Canvas.RTransform(), RtrLites.FullFill),
             "ui_panel_transition", "transition_panel");
     }
-    
     
     #endregion
 }

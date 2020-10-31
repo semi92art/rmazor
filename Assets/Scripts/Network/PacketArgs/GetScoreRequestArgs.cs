@@ -1,6 +1,6 @@
 ﻿namespace Network.PacketArgs
 {
-    public class GetScoreRequestArgs : AccountIdGameIdRequestdArgs
+    public class GetScoreRequestArgs : AccIdGameId
     {
         public int Type { get; set; }
     }

@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 public class EditorBuilder : EditorWindow
@@ -8,28 +7,27 @@ public class EditorBuilder : EditorWindow
     private int m_PlatformPopupIndex;
 
     [MenuItem("Tools/Builder")]
-
     public static void ShowWindow()
     {
-        GetWindow<EditorBuilder>("EditorBuilder");
+        GetWindow<EditorBuilder>("Builder");
     }
 
     private void OnGUI()
     {
         //Platform (Android/iOS) selection
 
-        this.m_PlatformPopupIndex = EditorGUILayout.Popup(this.m_PlatformPopupIndex, this.m_PlatformPopupOptions);
+        m_PlatformPopupIndex = EditorGUILayout.Popup(m_PlatformPopupIndex, m_PlatformPopupOptions);
         if (GUILayout.Button("Set"))
-            this.PlatformSelector();
+            PlatformSelector();
         if (GUILayout.Button("Developer Build"))
-            this.LoadDeveloperBuild();
+            LoadDeveloperBuild();
         if (GUILayout.Button("Release Build"))
-            this.LoadReleaseBuild();
+            LoadReleaseBuild();
     }
 
     private void PlatformSelector()
     {
-        switch (this.m_PlatformPopupIndex)
+        switch (m_PlatformPopupIndex)
         {
             case 0:
                 Debug.Log("Switching platform to: Android");

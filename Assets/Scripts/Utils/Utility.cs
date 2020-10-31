@@ -204,12 +204,7 @@ namespace Utils
         {
             return new Color(_R/255.0f, _G/255.0f, _B/255.0f, 1);
         }
-    
-        public static bool IsNull<T>(T _Object)
-        {
-            return _Object == null;
-        }	
-    
+
         public static long Pow10(int _N)
         {
             return Pow(10, _N);

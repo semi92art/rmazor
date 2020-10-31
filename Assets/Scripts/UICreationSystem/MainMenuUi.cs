@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Extentions;
+﻿using Extentions;
 using UICreationSystem.Factories;
 using UICreationSystem.Panels;
 using UnityEngine;
@@ -12,31 +10,49 @@ namespace UICreationSystem
     public class MainMenuUi
     {
         private static bool _isDailyBonusClicked;
-        private Animator m_DailyBonusAnimator;
+        
         private IDialogViewer m_DialogViewer;
+        private IMiniPanel m_BankMiniPanel;
+
+        private GameObject m_GameTitle;
+        private RectTransform m_Parent;
         private RectTransform m_MainMenu;
         private RectTransform m_GameTitleContainer;
-        private GameObject m_GameTitle;
+        private Animator m_DailyBonusAnimator;
 
-        public MainMenuUi(RectTransform _Parent,
+        public static MainMenuUi Create(RectTransform _Parent,
             IDialogViewer _DialogViewer)
         {
+            return new MainMenuUi(_Parent, _DialogViewer);
+        }
+
+        private MainMenuUi(RectTransform _Parent,
+            IDialogViewer _DialogViewer)
+        {
+            UiManager.Instance.CurrentCategory = UiCategory.MainMenu;
             InitContainers(_Parent);
             m_DialogViewer = _DialogViewer;
-
             
             SetGameTitle(SaveUtils.GetValue<int>(SaveKey.GameId));
             InitCenterButtonsScrollView();
             InitBottomButtonsScrollView();
             InitSmallButtons();
+            InitBankMiniPanel();
             
             m_DialogViewer.SetNotDialogItems(new [] {m_MainMenu});
 
             CheckIfDailyBonusNotChosenToday();
         }
 
+        private void InitBankMiniPanel()
+        {
+            m_BankMiniPanel = new BankMiniPanel(m_Parent, m_DialogViewer);
+            m_BankMiniPanel.Show();
+        }
+
         private void InitContainers(RectTransform _Parent)
         {
+            m_Parent = _Parent;
             m_MainMenu = UiFactory.UiRectTransform(
                 _Parent,
                 "Main Menu",
@@ -44,6 +60,13 @@ namespace UICreationSystem
                 Vector2.zero,
                 Vector2.one * 0.5f,
                 Vector2.zero);
+
+            var activeStateWatcher = m_MainMenu.gameObject.AddComponent<ActiveStateWatcher>();
+            activeStateWatcher.ActiveStateChanged += _Args =>
+            {
+                if (_Args.IsActive)
+                    CheckIfDailyBonusNotChosenToday();
+            };
 
             m_GameTitleContainer = UiFactory.UiRectTransform(
                 m_MainMenu,
@@ -189,19 +212,16 @@ namespace UICreationSystem
         private void CheckIfDailyBonusNotChosenToday()
         {
             System.DateTime lastDate = SaveUtils.GetValue<System.DateTime>(SaveKey.DailyBonusLastDate);
-            if (lastDate.Date !=  System.DateTime.Now.Date)
-                m_DailyBonusAnimator.SetTrigger(AnimKeys.Anim);
+            m_DailyBonusAnimator.SetTrigger(lastDate.Date == System.DateTime.Now.Date ?
+                AnimKeys.Stop : AnimKeys.Anim);
         }
-
         
-
         #region event methods
 
         private void OnOpenSelectGamePanel()
         {
-            var selectGamePanel = new SelectGamePanel();
-            RectTransform sgpRtr = selectGamePanel.Create(m_DialogViewer);
-            m_DialogViewer.Show(null, sgpRtr);
+            IDialogPanel selectGamePanel = new SelectGamePanel(m_DialogViewer);
+            selectGamePanel.Show();
         }
         
         private void OnProfileButtonClick()
@@ -211,23 +231,20 @@ namespace UICreationSystem
 
         private void OnSettingsButtonClick()
         {
-            var settingsPanel = new SettingsPanel();
-            var spRtr = settingsPanel.CreatePanel(m_DialogViewer);
-            m_DialogViewer.Show(null, spRtr);
+            IDialogPanel settingsPanel = new SettingsPanel(m_DialogViewer);
+            settingsPanel.Show();
         }
 
         private void OnLoginButtonClick()
         {
-            var loginPanel = new LoginPanel();
-            var lpRtr = loginPanel.CreatePanel(m_DialogViewer);
-            m_DialogViewer.Show(null, lpRtr);
+            IDialogPanel loginPanel = new LoginPanel(m_DialogViewer);
+            loginPanel.Show();
         }
 
         private void OnShopButtonClick()
         {
-            var shopPanel = new ShopPanel();
-            RectTransform shPRtr = shopPanel.Create(m_DialogViewer);
-            m_DialogViewer.Show(null, shPRtr);
+            IDialogPanel shopPanel = new ShopPanel(m_DialogViewer);
+            shopPanel.Show();
         }
 
         private void OnPlayButtonClick()
@@ -237,9 +254,8 @@ namespace UICreationSystem
 
         private void OnDailyBonusButtonClick()
         {
-            var dailyBonusPanel = new DailyBonusPanel();
-            RectTransform dbpRtr = dailyBonusPanel.Create(m_DialogViewer, m_DailyBonusAnimator);
-            m_DialogViewer.Show(null, dbpRtr);
+            IDialogPanel dailyBonusPanel = new DailyBonusPanel(m_DialogViewer, (IActionExecuter)m_BankMiniPanel);
+            dailyBonusPanel.Show();
         }
 
         private void OnWheelOfFortuneButtonClick()

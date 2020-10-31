@@ -56,3 +56,6 @@ MonoBehaviour:
       name: settings_panel
     - item: {fileID: 432638780763177933, guid: 622fc568ecbde9f448197a9bf5ef69dc, type: 3}
       name: settings_selector_panel
+    - item: {fileID: 4929242845806425626, guid: 7bbb09f06d17654488940008edd7f655,
+        type: 3}
+      name: bank_mini_panel

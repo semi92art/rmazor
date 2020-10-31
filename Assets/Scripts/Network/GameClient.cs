@@ -1,15 +1,15 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 using Newtonsoft.Json;
+using UICreationSystem;
 using Utils;
 
 namespace Network
 {
-    public class GameClient : MonoBehaviour
+    public class GameClient : MonoBehaviour, ISingleton
     {
         #region singleton
         
@@ -37,15 +37,26 @@ namespace Network
         private string m_ServerName;
         private Dictionary<string, string> m_ServerBaseUrls;
         
+        
         #endregion
         
         #region public properties
 
         public string BaseUrl => m_ServerBaseUrls[m_ServerName];
 
+        public int AccountId
+        {
+            get => SaveUtils.GetValue<int>(SaveKey.AccountId);
+            set => SaveUtils.PutValue(SaveKey.AccountId, value);
+        } 
+        public string Login => SaveUtils.GetValue<string>(SaveKey.Login);
+        public string PasswordHash => SaveUtils.GetValue<string>(SaveKey.PasswordHash);
+        public string DeviceId => SystemInfo.deviceUniqueIdentifier;
+        
+
         #endregion
         
-        #region Unity methods
+        #region public methods
         
         public void Init()
         {
@@ -64,8 +75,6 @@ namespace Network
             DontDestroyOnLoad(gameObject);
         }
 
-        #endregion
-        
         public void Send(IPacket _Packet)
         {
             if (m_Packets.ContainsKey(_Packet.Id))
@@ -84,7 +93,21 @@ namespace Network
                 SendCore(_Packet);
             }
         }
+        
+        public static T Deserialize<T>(string _Json)
+        {
+            return JsonConvert.DeserializeObject<T>(_Json);
+        }
 
+        public void SetTestMode()
+        {
+            m_ServerName = "Test";
+        }
+        
+        #endregion
+        
+        #region private methods
+        
         private void SendCore(IPacket _Packet)
         {
             StartCoroutine(Coroutines.Action(() => SendRequest(_Packet)));
@@ -110,15 +133,7 @@ namespace Network
             _Packet.ResponseCode = request.responseCode;
             _Packet.DeserializeResponse(request.downloadHandler.text);
         }
-
-        public static T Deserialize<T>(string _Json)
-        {
-            return JsonConvert.DeserializeObject<T>(_Json);
-        }
-
-        public void SetTestMode()
-        {
-            m_ServerName = "Test";
-        }
+        
+        #endregion
     }
 }

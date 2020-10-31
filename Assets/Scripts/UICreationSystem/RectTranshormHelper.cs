@@ -73,6 +73,13 @@ namespace UICreationSystem
 
             if (GUILayout.Button("Clone"))
                 m_RectTranshormHelper.gameObject.Clone();
+            
+            GUILayout.Space(5);
+            GUILayout.Label("Additional info:", gs);
+            GUILayout.Space(5);
+            GUILayout.Label("Position:", gs);
+            GUILayout.Label(rTr.position.ToString(), gs);
+            
         }
     }
 #endif

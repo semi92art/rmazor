@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using Extentions;
 using UnityEngine;
 using UICreationSystem;
+using UICreationSystem.Factories;
 using Utils;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -11,14 +13,14 @@ public interface ITransitionRenderer
 {
     void StartTransition(bool _Fast = false);
     EventHandler TransitionAction { set; }
-    RectTransform TransitionPanel { get; set; }
+    RenderTexture Texture { get; }
 }
 
 public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRenderer
 {
     public EventHandler TransitionAction { get; set; }
-    public RectTransform TransitionPanel { get; set; }
-    
+    public RenderTexture Texture { get; set; }
+
     public AnimationCurve curve;
     public AnimationCurve fastCurve;
     public MeshRenderer transitionRenderer;
@@ -42,10 +44,11 @@ public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRen
                 "render_camera"
             );
         }
-
-        return instance.GetComponent<CircleTransparentTransitionRenderer>();
+        var result = instance.GetComponent<CircleTransparentTransitionRenderer>();
+        result.Texture = result.gameObject.GetComponentItem<Camera>("camera").targetTexture;
+        return result;
     }
-    
+
     public void StartTransition(bool _Fast = false)
     {
         AnimationCurve ac = _Fast ? fastCurve : curve;

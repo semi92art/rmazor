@@ -9,7 +9,7 @@ namespace Network.Packets
 
         public GetProfileResponseArgs Response { get; private set; }
         
-        public GetProfilePacket(AccountIdGameIdRequestdArgs _Request) : base(_Request)
+        public GetProfilePacket(AccIdGameId _Request) : base(_Request)
         { }
 
         public override void DeserializeResponse(string _Json)

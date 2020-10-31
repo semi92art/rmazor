@@ -8,7 +8,7 @@ namespace Network.Packets
         public override string Url => $"{GameClient.Instance.BaseUrl}/api/accounts/getfulldata";
         public GetFullAccountDataPacketResponseArgs Response { get; private set; }
 
-        public GetFullAccountDataPacket(AccountIdGameIdRequestdArgs _Request) : base(_Request)
+        public GetFullAccountDataPacket(AccIdGameId _Request) : base(_Request)
         { }
 
         public override void DeserializeResponse(string _Json)

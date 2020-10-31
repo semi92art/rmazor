@@ -5,8 +5,12 @@ using UnityEngine;
 
 namespace UICreationSystem.Panels
 {
-    public class SelectGamePanel
+    public class SelectGamePanel : IDialogPanel
     {
+        #region private members
+        
+        private readonly IDialogViewer m_DialogViewer;
+        
         private readonly List<ChooseGameItemProps> m_CgiPropsList = new List<ChooseGameItemProps>
         {
             new ChooseGameItemProps(null, "POINT CLICKER", false, true, null),
@@ -15,12 +19,34 @@ namespace UICreationSystem.Panels
             new ChooseGameItemProps(null, "TILE PATHER", true, false, null),
             new ChooseGameItemProps(null, "BALANCE DRAWER", true, false, null)
         };
+        
+        #endregion
 
-        public RectTransform Create(IDialogViewer _DialogViewer)
+        #region api
+
+        public UiCategory Category => UiCategory.SelectGame;
+        public RectTransform Panel { get; private set; }
+        
+        public SelectGamePanel(IDialogViewer _DialogViewer)
+        {
+            m_DialogViewer = _DialogViewer;
+        }
+
+        public void Show()
+        {
+            Panel = Create();
+            m_DialogViewer.Show(this);
+        }
+
+        #endregion
+        
+        #region private methods
+        
+        private RectTransform Create()
         {
             GameObject selectGamePanel = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    _DialogViewer.DialogContainer,
+                    m_DialogViewer.DialogContainer,
                     RtrLites.FullFill),
                 "main_menu",
                 "select_game_panel");
@@ -46,5 +72,7 @@ namespace UICreationSystem.Panels
             Object.Destroy(cgiObj);
             return selectGamePanel.RTransform();
         }
+        
+        #endregion
     }
 }

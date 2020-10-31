@@ -6,8 +6,10 @@ using Utils;
 
 namespace UICreationSystem.Panels
 {
-    public class ShopPanel
+    public class ShopPanel : IDialogPanel
     {
+        #region private members
+        
         private readonly List<ShopItemProps> m_ShopItemPropsList = new List<ShopItemProps>
         {
             new ShopItemProps("No Ads", "9.99$", "20$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_0_icon")),
@@ -20,12 +22,36 @@ namespace UICreationSystem.Panels
             new ShopItemProps("500,000", "79.99$", "180$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_7_icon")),
             new ShopItemProps("500", "79.99$", "180$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_8_icon"))
         };
+
+        private readonly IDialogViewer m_DialogViewer;
         
-        public RectTransform Create(IDialogViewer _DialogViewer)
+        #endregion
+        
+        #region api
+
+        public UiCategory Category => UiCategory.Shop;
+        public RectTransform Panel { get; private set; }
+
+        public ShopPanel(IDialogViewer _DialogViewer)
+        {
+            m_DialogViewer = _DialogViewer;
+        }
+
+        public void Show()
+        {
+            Panel = Create();
+            m_DialogViewer.Show(this);
+        }
+        
+        #endregion
+        
+        #region private methods
+        
+        private RectTransform Create()
         {
             GameObject shopPanel = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    _DialogViewer.DialogContainer,
+                    m_DialogViewer.DialogContainer,
                     RtrLites.FullFill),
                 "main_menu",
                 "shop_panel");
@@ -55,5 +81,7 @@ namespace UICreationSystem.Panels
             content.anchoredPosition = content.anchoredPosition.SetY(0);
             return shopPanel.RTransform();
         }
+        
+        #endregion
     }
 }

@@ -1,10 +1,6 @@
-﻿using System;
-using Clickers;
-using Extentions;
+﻿using Extentions;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
-using Utils;
 
 namespace UICreationSystem.Factories
 {
@@ -13,7 +9,7 @@ namespace UICreationSystem.Factories
         #region public methods
 
         public static Canvas UiCanvas(
-            string _Id,
+            string _Name,
             RenderMode _RenderMode,
             bool _PixelPerfect,
             int _SortOrder,
@@ -27,8 +23,7 @@ namespace UICreationSystem.Factories
             GraphicRaycaster.BlockingObjects _BlockingObjects
         )
         {
-            GameObject go = new GameObject();
-            go.name = _Id;
+            GameObject go = new GameObject(_Name);
             Canvas canvas = go.AddComponent<Canvas>();
             canvas.renderMode = _RenderMode;
             canvas.pixelPerfect = _PixelPerfect;
@@ -112,7 +107,7 @@ namespace UICreationSystem.Factories
 
         public static void CopyRTransform(RectTransform _From, RectTransform _To)
         {
-            _To.parent = _From.parent;
+            _To.SetParent(_From.parent);
             _To.anchorMin = _From.anchorMin;
             _To.anchorMax = _From.anchorMax;
             _To.anchoredPosition = _From.anchoredPosition;

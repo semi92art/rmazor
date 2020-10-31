@@ -464,11 +464,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 92356324094370806}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8edd6ca7570ee84ba2b89d0217fff2c, type: 3}
+  m_Script: {fileID: 11500000, guid: 0d8c2529e78e41048c888703b2571f5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  indicator: {fileID: 92356323971271019}
-  indicator2: {fileID: 92356323082900028}
+  indicator: {fileID: 92356323082900028}
+  indicator2: {fileID: 92356323971271019}
   animator: {fileID: 3826761651508929853}
   loading: {fileID: 92356323466659031}
   speed: 50
