@@ -17,6 +17,8 @@ public class SaveKey
     public static SaveKey SettingLanguage => new SaveKey("language", typeof(Language));
     public static SaveKey MoneyGold => new SaveKey("money_gold", typeof(int));
     public static SaveKey MoneyDiamonds => new SaveKey("money_diamonds", typeof(int));
+    public static SaveKey WheelOfFortuneLastDate => new SaveKey("wheel_of_fortune_last_date", typeof(System.DateTime));
+    
     #endregion
     
     public string Key { get; }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Exceptions;
 using Network;
 using Network.PacketArgs;
 using Network.Packets;
@@ -9,6 +8,8 @@ using Utils;
 
 public class MoneyManager : MonoBehaviour, ISingleton
 {
+    #region singleton
+    
     private static MoneyManager _instance;
 
     public static MoneyManager Instance
@@ -25,15 +26,23 @@ public class MoneyManager : MonoBehaviour, ISingleton
         }
     }
     
+    #endregion
+    
+    #region private members
+    
+    private bool m_IsMoneySavedLocal;
+    
+    #endregion
+    
+    #region api
+    
     public event MoneyEventHandler OnMoneyCountChanged;
     public event IncomeEventHandler OnIncome;
-
-    private bool m_IsMoneySavedLocal;
-
-    public Dictionary<MoneyType, int> GetMoney()
+    
+    public Dictionary<MoneyType, int> GetMoney(bool _ForcedFromServer = false)
     {
         var result = new Dictionary<MoneyType, int>();
-        if (!m_IsMoneySavedLocal)
+        if (!m_IsMoneySavedLocal || _ForcedFromServer)
         {
             var profPacket = new GetProfilePacket(new AccIdGameId
             {
@@ -89,13 +98,8 @@ public class MoneyManager : MonoBehaviour, ISingleton
         SetMoney(inBank);
         return true;
     }
-
-    public void SetIncome(Dictionary<MoneyType, int> _Money, RectTransform _From)
-    {
-        OnIncome?.Invoke(new IncomeEventArgs(_Money, _From));    
-    }
     
-    private void SetMoney(Dictionary<MoneyType, int> _Money)
+    public void SetMoney(Dictionary<MoneyType, int> _Money)
     {
         var bank = GetMoneyLocal();
         var profPacket = new SetProfilePacket(new SetProfileRequestArgs
@@ -109,7 +113,16 @@ public class MoneyManager : MonoBehaviour, ISingleton
         GameClient.Instance.Send(profPacket);
         SetMoneyLocal(_Money);
     }
+
+    public void SetIncome(Dictionary<MoneyType, int> _Money, RectTransform _From)
+    {
+        OnIncome?.Invoke(new IncomeEventArgs(_Money, _From));    
+    }
     
+    #endregion
+    
+    #region private methods
+
     private Dictionary<MoneyType, int> GetMoneyLocal()
     {
         var result = new Dictionary<MoneyType, int>
@@ -130,7 +143,11 @@ public class MoneyManager : MonoBehaviour, ISingleton
         m_IsMoneySavedLocal = true;
         OnMoneyCountChanged?.Invoke(new MoneyEventArgs(GetMoneyLocal()));
     }
+    
+    #endregion
 }
+
+#region types
 
 public delegate void MoneyEventHandler(MoneyEventArgs _Args);
 
@@ -161,3 +178,5 @@ public enum MoneyType
     Gold,
     Diamonds
 }
+
+#endregion

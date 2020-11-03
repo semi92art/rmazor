@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -236,6 +238,35 @@ namespace Utils
         public static bool IsInRange(int val, int min, int max)
         {
             return val >= min && val <= max;
+        }
+        
+        public static Dictionary<TKey, TValue> Clone<TKey, TValue>
+            (this Dictionary<TKey, TValue> _Original) where TValue : ICloneable
+        {
+            Dictionary<TKey, TValue> ret = new Dictionary<TKey, TValue>(_Original.Count,
+                _Original.Comparer);
+            foreach (KeyValuePair<TKey, TValue> entry in _Original)
+            {
+                ret.Add(entry.Key, (TValue) entry.Value.Clone());
+            }
+            return ret;
+        }
+        
+        public static Dictionary<TKey, TValue> CloneAlt<TKey, TValue>
+            (this Dictionary<TKey, TValue> _Original) where TValue : struct
+        {
+            Dictionary<TKey, TValue> ret = new Dictionary<TKey, TValue>(_Original.Count,
+                _Original.Comparer);
+            foreach (KeyValuePair<TKey, TValue> entry in _Original)
+            {
+                ret.Add(entry.Key, entry.Value);
+            }
+            return ret;
+        }
+
+        public static string ToNumeric(this int _Value)
+        {
+            return _Value.ToString("N0", CultureInfo.CreateSpecificCulture("en-US"));
         }
     }
 }

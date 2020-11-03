@@ -12,7 +12,7 @@ namespace UICreationSystem.Panels
         
         private readonly List<ShopItemProps> m_ShopItemPropsList = new List<ShopItemProps>
         {
-            new ShopItemProps("No Ads", "9.99$", "20$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_0_icon")),
+            //new ShopItemProps("No Ads", "9.99$", "20$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_0_icon")),
             new ShopItemProps("30,000", "9.99$", "20$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_1_icon")),
             new ShopItemProps("30", "9.99$", "20$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_2_icon")),
             new ShopItemProps("80,000", "19.99$", "40$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_3_icon")),

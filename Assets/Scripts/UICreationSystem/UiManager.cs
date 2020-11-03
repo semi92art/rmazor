@@ -1,27 +1,41 @@
-﻿using DebugConsole;
+﻿using System;
+using DebugConsole;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace UICreationSystem
 {
-    public enum UiCategory
+    [Flags]
+    public enum UiCategory : short
     {
-        Nothing,
-        Loading,
-        MainMenu,
-        SelectGame,
-        DailyBonus,
-        WheelOfFortune,
-        Profile,
-        LoginOrRegistration,
-        Shop,
-        Settings
+        Nothing = 0,
+        Loading = 1,
+        MainMenu = 2,
+        SelectGame = 4,
+        DailyBonus = 8,
+        WheelOfFortune = 16,
+        Profile= 32,
+        Login = 64,
+        Shop = 128,
+        Settings = 256
     }
     
     public class UiManager : MonoBehaviour, ISingleton
     {
+        #region singleton
+        
         public static UiManager Instance { get; private set; }
+        
+        #endregion
+
+        #region types
+
         public delegate void UiStateHandler(UiCategory _Prev, UiCategory _New);
+
+        #endregion
+        
+        #region api
+        
         public event UiStateHandler OnCurrentCategoryChanged;
         
         public UiCategory CurrentCategory
@@ -34,7 +48,15 @@ namespace UICreationSystem
             }
         }
         
+        #endregion
+
+        #region private members
+
         private UiCategory m_CurrentCategory = UiCategory.Nothing;
+
+        #endregion
+
+        #region engine methods
         
         private void Awake()
         {
@@ -46,14 +68,20 @@ namespace UICreationSystem
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
-            SceneManager.activeSceneChanged += (_Arg0, _Scene) =>
+            SceneManager.activeSceneChanged += (_Prev, _Next) =>
             {
-                if (_Scene.name == "Main")
-                    MenuUi.Create();
+                if (_Next.name == "Main")
+                {
+                    bool isLoadingFromLevel = _Prev.name == "Level";
+                    MenuUi.Create(isLoadingFromLevel);
+                }
+
 #if !RELEASE
                 DebugConsoleView.Create();
 #endif
             };
         }
+        
+        #endregion
     }
 }

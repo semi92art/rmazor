@@ -11,7 +11,7 @@ namespace Utils
 {
     public static class Coroutines
     {
-        public static Coroutine StartCoroutine(IEnumerator _Coroutine)
+        public static Coroutine Run(IEnumerator _Coroutine)
         {
             return GameClient.Instance.StartCoroutine(_Coroutine);
         }
@@ -47,8 +47,9 @@ namespace Utils
             if (_Action == null || _Predicate == null)
                 yield break;
         
-            yield return new WaitWhile(_Predicate);
-        
+            while (_Predicate())
+                yield return new WaitForEndOfFrame();
+            
             _Action();
         }
 
@@ -80,6 +81,9 @@ namespace Utils
         {
             if (_Item == null)
                 yield break;
+
+            var graphicsAndAlphas = _GraphicsAndAlphas.CloneAlt();
+            
             _Item.gameObject.SetActive(true);
             
             float currTime = Time.time;
@@ -88,7 +92,7 @@ namespace Utils
                 float timeCoeff = (currTime + _Time - Time.time) / _Time;
                 float alphaCoeff = _Disappear ? timeCoeff : 1 - timeCoeff;
 
-                foreach (var ga in _GraphicsAndAlphas.ToList())
+                foreach (var ga in graphicsAndAlphas.ToList())
                 {
                     var graphic = ga.Key;
                     if (graphic.IsAlive())
@@ -98,7 +102,7 @@ namespace Utils
                 yield return new WaitForEndOfFrame();
             }
             
-            foreach (var ga in _GraphicsAndAlphas.ToList())
+            foreach (var ga in graphicsAndAlphas.ToList())
             {
                 var graphic = ga.Key;
                 if (graphic.IsAlive())

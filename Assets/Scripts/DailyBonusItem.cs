@@ -2,9 +2,8 @@
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
-using UICreationSystem;
+using Extentions;
 using UICreationSystem.Panels;
-using UnityEngine.Events;
 using Utils;
 
 public class DailyBonusItem : MonoBehaviour
@@ -14,6 +13,7 @@ public class DailyBonusItem : MonoBehaviour
     public Image icon;
     public TextMeshProUGUI price;
     public TextMeshProUGUI day;
+    public TextMeshProUGUI tomorrow;
     
     private DailyBonusProps m_Props;
     
@@ -24,6 +24,7 @@ public class DailyBonusItem : MonoBehaviour
         price.text = _Props.Gold != 0 ? $"{_Props.Gold}" : $"{_Props.Diamonds}";
         if (_Props.IsActive)
             animator.SetTrigger(AnimKeys.Anim);
+        tomorrow.enabled = _Props.IsTomorrow;
         
         button.onClick.AddListener(() =>
         {
@@ -53,6 +54,7 @@ public class DailyBonusProps
     public int Gold { get; }
     public int Diamonds { get; }
     public Sprite Icon { get; }
+    public bool IsTomorrow { get; set; }
     public bool IsActive { get; set; }
     public System.Action Click { get; set; }
 

@@ -115,15 +115,6 @@ namespace UICreationSystem.Factories
             _To.sizeDelta = _From.sizeDelta;
         }
 
-        public static void CopyTransform(Transform _From, Transform _To)
-        {
-            _To.position = _From.position;
-            _To.rotation = _From.rotation;
-            _To.localScale = _From.localScale;
-        }
-
-        
-
         #endregion
     }
 }

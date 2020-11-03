@@ -289,6 +289,18 @@
  <Reference Include="UnityEditor.Advertisements">
  <HintPath>C:/dev/Clickers/Library/PackageCache/com.unity.ads@2.0.8/Editor/UnityEditor.Advertisements.dll</HintPath>
  </Reference>
+ <Reference Include="Unity.Analytics.Tracker">
+ <HintPath>C:/dev/Clickers/Library/PackageCache/com.unity.analytics@3.2.3/Editor/Unity.Analytics.Tracker.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Analytics.StandardEvents">
+ <HintPath>C:/dev/Clickers/Library/PackageCache/com.unity.analytics@3.2.3/AnalyticsStandardEvents/Unity.Analytics.StandardEvents.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Analytics.Editor">
+ <HintPath>C:/dev/Clickers/Library/PackageCache/com.unity.analytics@3.2.3/Editor/Unity.Analytics.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.Purchasing">
+ <HintPath>C:/dev/Clickers/Library/PackageCache/com.unity.purchasing@2.0.3/Editor/UnityEditor.Purchasing.dll</HintPath>
+ </Reference>
  <Reference Include="nunit.framework">
  <HintPath>C:/dev/Clickers/Library/PackageCache/com.unity.ext.nunit@1.0.0/net35/unity-custom/nunit.framework.dll</HintPath>
  </Reference>

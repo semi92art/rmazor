@@ -18,7 +18,3 @@ MonoBehaviour:
       name: icon_close
     - item: {fileID: 21300000, guid: 036dd3a227ea2874fb8b7c2c3b220aff, type: 3}
       name: icon_back
-    - item: {fileID: 21300000, guid: 9fa8879d3d6bba7458e7cad590adc6cf, type: 3}
-      name: gold_coin
-    - item: {fileID: 21300000, guid: c969dda4cdc79ae46a854c60f1f092ed, type: 3}
-      name: diamond_coin

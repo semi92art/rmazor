@@ -1,4 +1,5 @@
-﻿using UICreationSystem.Factories;
+﻿using Extentions;
+using UICreationSystem.Factories;
 using UnityEngine;
 
 namespace UICreationSystem.Panels

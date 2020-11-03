@@ -1,4 +1,7 @@
 ﻿using Extentions;
+using Network;
+using Network.PacketArgs;
+using Network.Packets;
 using TMPro;
 using UnityEngine;
 using UICreationSystem.Factories;
@@ -7,35 +10,22 @@ using UnityEngine.UI;
 
 namespace UICreationSystem.Panels
 {
-    public class RegistrationPanel : IDialogPanel
+    public class RegistrationPanel : LoginPanelBase
     {
+        public RegistrationPanel(IDialogViewer _DialogViewer) : base(_DialogViewer)
+        { }
+        
         #region private members
-        
-        private readonly IDialogViewer m_DialogViewer;
-        
-        #endregion
-        
-        #region api
 
-        public UiCategory Category => UiCategory.LoginOrRegistration;
-        public RectTransform Panel { get; private set; }
-        
-        public RegistrationPanel(IDialogViewer _DialogViewer)
-        {
-            m_DialogViewer = _DialogViewer;
-        }
+        private TMP_InputField m_RepeatPasswordInputField;
+        private TextMeshProUGUI m_RepeatPasswordErrorHandler;
 
-        public void Show()
-        {
-            Panel = Create();
-            m_DialogViewer.Show( this);
-        }
-        
         #endregion
+
         
-        #region private methods
+        #region private/protected methods
         
-        private RectTransform Create()
+        protected override RectTransform Create()
         {
             GameObject rp = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
@@ -43,16 +33,86 @@ namespace UICreationSystem.Panels
                     RtrLites.FullFill),
                 "main_menu", "register_panel");
             
-            TextMeshProUGUI loginLabel = rp.GetComponentItem<TextMeshProUGUI>("login_label");
-            TMP_InputField loginInputField = rp.GetComponentItem<TMP_InputField>("login_input_field");
-            TextMeshProUGUI passwordLabel = rp.GetComponentItem<TextMeshProUGUI>("password_label");
-            TMP_InputField passwordInputField = rp.GetComponentItem<TMP_InputField>("password_input_field");
-            TextMeshProUGUI repeatPasswordLabel = rp.GetComponentItem<TextMeshProUGUI>("repeat_password_label");
-            TMP_InputField repeatPasswordInputField = rp.GetComponentItem<TMP_InputField>("repeat_password_input_field");
-            Button registerButton = rp.GetComponentItem<Button>("register_button");
+            m_LoginErrorHandler = rp.GetComponentItem<TextMeshProUGUI>("login_error_handler");
+            m_PasswordErrorHandler = rp.GetComponentItem<TextMeshProUGUI>("password_error_handler");
+            m_RepeatPasswordErrorHandler = rp.GetComponentItem<TextMeshProUGUI>("repeat_password_error_handler");
+            
             TextMeshProUGUI registerButtonText = rp.GetComponentItem<TextMeshProUGUI>("register_button_text");
             
+            m_LoginInputField = rp.GetComponentItem<TMP_InputField>("login_input_field");
+            m_PasswordInputField = rp.GetComponentItem<TMP_InputField>("password_input_field");
+            m_RepeatPasswordInputField = rp.GetComponentItem<TMP_InputField>("repeat_password_input_field");
+            Button registerButton = rp.GetComponentItem<Button>("register_button");
+            registerButton.SetOnClick(Register);
+            
+            CleanErrorHandlers();
+            
             return rp.RTransform();
+        }
+
+        private void SetRepeatPasswordError(string _Text)
+        {
+            m_RepeatPasswordErrorHandler.text = _Text;
+        }
+
+        protected override bool IsNoError()
+        {
+            return base.IsNoError() && string.IsNullOrEmpty(m_RepeatPasswordErrorHandler.text);
+        }
+
+        protected override void CleanErrorHandlers()
+        {
+            m_RepeatPasswordErrorHandler.text = string.Empty;
+            base.CleanErrorHandlers();
+        }
+
+        #endregion
+        
+        #region event functions
+
+        private void Register()
+        {
+            CleanErrorHandlers();
+            
+            if (string.IsNullOrEmpty(m_LoginInputField.text))
+                SetLoginError("field is empty");
+            if (string.IsNullOrEmpty(m_PasswordInputField.text))
+                SetPasswordError("field is empty");
+            if (string.IsNullOrEmpty(m_RepeatPasswordInputField.text))
+                SetRepeatPasswordError("field is empty");
+            if (!IsNoError())
+                return;
+            if (m_PasswordInputField.text != m_RepeatPasswordInputField.text)
+                SetPasswordError("passwords do not match");
+            if (!IsNoError())
+                return;
+            
+            var packet = new RegisterUserPacket(new RegisterUserUserPacketRequestArgs
+            {
+                Name = m_LoginInputField.text,
+                PasswordHash = Utility.GetMD5Hash(m_PasswordInputField.text)
+            });
+            packet.OnSuccess(() =>
+            {
+                GameClient.Instance.Login = packet.Response.Name;
+                GameClient.Instance.PasswordHash = packet.Response.PasswordHash;
+                GameClient.Instance.AccountId = packet.Response.Id;
+                MoneyManager.Instance.GetMoney(true);
+                m_DialogViewer.Show(null, true);
+            }).OnFail(() =>
+            {
+                switch (packet.ErrorMessage.Id)
+                {
+                    case ServerErrorCodes.AccountWithThisNameAlreadyExist:
+                        SetLoginError("user with this login already exists");
+                        break;
+                    default:
+                        SetLoginError("login fail. try again later");
+                        break;
+                }
+            });
+            
+            GameClient.Instance.Send(packet);
         }
         
         #endregion

@@ -84,10 +84,10 @@ namespace UICreationSystem
                 .GroupBy(_Item => _Item.FromBehind).ToArray();
             var forwardGroup = fbGroups
                 .FirstOrDefault(_G => _G.First().FromBehind == false)
-                ?.OrderBy(_Item => _Item.Order).ToArray();
+                ?.OrderBy(_Item => -_Item.Order).ToArray();
             var behindGroup = fbGroups
                 .FirstOrDefault(_G => _G.First().FromBehind = true)
-                ?.OrderBy(_Item => -_Item.Order).ToArray();
+                ?.OrderBy(_Item => _Item.Order).ToArray();
 
             int? k = forwardGroup?.First().Parent.childCount - 1;
             if (!k.HasValue || behindGroup == null)

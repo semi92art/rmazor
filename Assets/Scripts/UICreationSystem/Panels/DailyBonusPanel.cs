@@ -83,6 +83,8 @@ namespace UICreationSystem.Panels
             {
                 if (dbProps.Day == dailyBonusDay)
                     dbProps.IsActive = true;
+                else if (dbProps.Day == dailyBonusDay + 1)
+                    dbProps.IsTomorrow = true;
                 var dbItemClone = dbItem.Clone();
                 DailyBonusItem dbi = dbItemClone.GetComponent<DailyBonusItem>();
 
@@ -116,7 +118,7 @@ namespace UICreationSystem.Panels
                 }
 
                 if (dailyBonusDay > m_DailyBonusPropsList.Max(_Props => _Props.Day))
-                    dailyBonusDay = 0;
+                    dailyBonusDay = 1;
             }
 
             return dailyBonusDay;

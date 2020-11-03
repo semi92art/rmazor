@@ -20,7 +20,7 @@ namespace UICreationSystem
     {
         #region public fields
         
-        [Header("Prefabs"), Reorderable(paginate = true, pageSize = 15)]
+        [Header("Prefabs"), Reorderable(paginate = true, pageSize = 20)]
         public PrefabsList prefabs;
 
         #endregion

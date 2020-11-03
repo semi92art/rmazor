@@ -19,29 +19,41 @@ namespace UICreationSystem
         private RectTransform m_MainMenu;
         private RectTransform m_GameTitleContainer;
         private Animator m_DailyBonusAnimator;
+        private UiCategory m_CurrentCategory;
+        private Image m_WofBackground;
+        private Image m_WofBorder;
+        private Button m_WofButton;
+        private Button m_WofAdsButton;
 
-        public static MainMenuUi Create(RectTransform _Parent,
+        public static MainMenuUi Create(
+            RectTransform _Parent,
             IDialogViewer _DialogViewer)
         {
             return new MainMenuUi(_Parent, _DialogViewer);
         }
 
-        private MainMenuUi(RectTransform _Parent,
+        private MainMenuUi(
+            RectTransform _Parent,
             IDialogViewer _DialogViewer)
         {
+            m_DialogViewer = _DialogViewer;
             UiManager.Instance.CurrentCategory = UiCategory.MainMenu;
             InitContainers(_Parent);
-            m_DialogViewer = _DialogViewer;
             
             SetGameTitle(SaveUtils.GetValue<int>(SaveKey.GameId));
             InitCenterButtonsScrollView();
             InitBottomButtonsScrollView();
             InitSmallButtons();
             InitBankMiniPanel();
-            
-            m_DialogViewer.SetNotDialogItems(new [] {m_MainMenu});
-
             CheckIfDailyBonusNotChosenToday();
+            m_DialogViewer.AddNotDialogItem(m_MainMenu, UiCategory.MainMenu);
+            UiManager.Instance.OnCurrentCategoryChanged += (_Prev, _New) =>
+            {
+                if (_Prev == UiCategory.WheelOfFortune && m_WofButton != null)
+                {
+                    CheckIfWofSpinedToday();
+                }
+            };
         }
 
         private void InitBankMiniPanel()
@@ -143,13 +155,23 @@ namespace UICreationSystem
             dailyBonusButton.GetComponentItem<Button>("button").SetOnClick(OnDailyBonusButtonClick);
             m_DailyBonusAnimator = dailyBonusButton.GetComponentItem<Animator>("animator");
             
-            var wheelOfFortuneButton = PrefabInitializer.InitUiPrefab(
+            var go = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     content,
                     rtrLite),
                 "main_menu_buttons",
                 "wheel_of_fortune_button");
-            wheelOfFortuneButton.GetComponent<Button>().SetOnClick(OnWheelOfFortuneButtonClick);
+            m_WofButton = go.GetComponent<Button>();
+            m_WofButton.SetOnClick(OnWheelOfFortuneButtonClick);
+            m_WofBackground = go.GetComponentItem<Image>("background");
+            m_WofBorder = go.GetComponentItem<Image>("border");
+            m_WofAdsButton = go.GetComponentItem<Button>("watch_ad_button");
+            m_WofAdsButton.SetOnClick(() =>
+            {
+                SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, System.DateTime.Now.Date.AddDays(-1));
+                CheckIfWofSpinedToday();
+            });
+            CheckIfWofSpinedToday();
         }
 
         private void InitBottomButtonsScrollView()
@@ -215,13 +237,26 @@ namespace UICreationSystem
             m_DailyBonusAnimator.SetTrigger(lastDate.Date == System.DateTime.Now.Date ?
                 AnimKeys.Stop : AnimKeys.Anim);
         }
+
+        private void CheckIfWofSpinedToday()
+        {
+            System.DateTime lastDate = SaveUtils.GetValue<System.DateTime>(SaveKey.WheelOfFortuneLastDate);
+            bool done = lastDate == System.DateTime.Now.Date;
+            m_WofButton.interactable = !done;
+            string color = done ? "gray" : "purple";
+            m_WofBackground.sprite = PrefabInitializer.GetObject<Sprite>(
+                "button_sprites", $"rect_background_{color}");
+            m_WofBorder.sprite = PrefabInitializer.GetObject<Sprite>(
+                "button_sprites", $"rect_border_{color}");
+            m_WofAdsButton.gameObject.SetActive(done);
+        }
         
         #region event methods
 
         private void OnOpenSelectGamePanel()
         {
-            IDialogPanel selectGamePanel = new SelectGamePanel(m_DialogViewer);
-            selectGamePanel.Show();
+            IDialogPanel selectGame = new SelectGamePanel(m_DialogViewer);
+            selectGame.Show();
         }
         
         private void OnProfileButtonClick()
@@ -231,20 +266,20 @@ namespace UICreationSystem
 
         private void OnSettingsButtonClick()
         {
-            IDialogPanel settingsPanel = new SettingsPanel(m_DialogViewer);
-            settingsPanel.Show();
+            IDialogPanel settings = new SettingsPanel(m_DialogViewer);
+            settings.Show();
         }
 
         private void OnLoginButtonClick()
         {
-            IDialogPanel loginPanel = new LoginPanel(m_DialogViewer);
-            loginPanel.Show();
+            IDialogPanel login = new LoginPanel(m_DialogViewer);
+            login.Show();
         }
 
         private void OnShopButtonClick()
         {
-            IDialogPanel shopPanel = new ShopPanel(m_DialogViewer);
-            shopPanel.Show();
+            IDialogPanel shop = new ShopPanel(m_DialogViewer);
+            shop.Show();
         }
 
         private void OnPlayButtonClick()
@@ -254,13 +289,15 @@ namespace UICreationSystem
 
         private void OnDailyBonusButtonClick()
         {
-            IDialogPanel dailyBonusPanel = new DailyBonusPanel(m_DialogViewer, (IActionExecuter)m_BankMiniPanel);
-            dailyBonusPanel.Show();
+            IDialogPanel dailyBonus = new DailyBonusPanel(
+                m_DialogViewer, (IActionExecuter)m_BankMiniPanel);
+            dailyBonus.Show();
         }
 
         private void OnWheelOfFortuneButtonClick()
         {
-            //TODO wheel of fortune button click
+            IDialogPanel wheelOfFortune = new WheelOfFortunePanel(m_DialogViewer);
+            wheelOfFortune.Show();
         }
         
         #endregion

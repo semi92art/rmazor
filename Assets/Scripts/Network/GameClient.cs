@@ -48,9 +48,19 @@ namespace Network
         {
             get => SaveUtils.GetValue<int>(SaveKey.AccountId);
             set => SaveUtils.PutValue(SaveKey.AccountId, value);
-        } 
-        public string Login => SaveUtils.GetValue<string>(SaveKey.Login);
-        public string PasswordHash => SaveUtils.GetValue<string>(SaveKey.PasswordHash);
+        }
+
+        public string Login
+        {
+            get => SaveUtils.GetValue<string>(SaveKey.Login);
+            set => SaveUtils.PutValue(SaveKey.Login, value);
+        }
+
+        public string PasswordHash
+        {
+            get => SaveUtils.GetValue<string>(SaveKey.PasswordHash);
+            set => SaveUtils.PutValue(SaveKey.PasswordHash, value);
+        }
         public string DeviceId => SystemInfo.deviceUniqueIdentifier;
         
 
@@ -58,21 +68,27 @@ namespace Network
         
         #region public methods
         
-        public void Init()
+        public void Init(bool _TestMode = false)
         {
 #if AZURE
             m_ServerName = "Azure";
 #else
             m_ServerName = "Ubuntu1";
 #endif
+            
+            if (_TestMode)
+                m_ServerName = "TestRunner";
+            
             m_ServerBaseUrls = new Dictionary<string, string>
             {
                 {"Ubuntu1", @"http://77.37.152.15:7000"},
                 {"Azure", @"https://clickersapi.azurewebsites.net"},
-                {"Test", @"http://77.37.152.15:7100"}
+                {"Test", @"http://77.37.152.15:7100"},
+                {"TestRunner", @"http://77.37.152.15:7000"}
             };
             
-            DontDestroyOnLoad(gameObject);
+            if (!IsTestRunningMode)
+                DontDestroyOnLoad(gameObject);
         }
 
         public void Send(IPacket _Packet)
@@ -99,10 +115,7 @@ namespace Network
             return JsonConvert.DeserializeObject<T>(_Json);
         }
 
-        public void SetTestMode()
-        {
-            m_ServerName = "Test";
-        }
+        public bool IsTestRunningMode => m_ServerName == "TestRunner";
         
         #endregion
         

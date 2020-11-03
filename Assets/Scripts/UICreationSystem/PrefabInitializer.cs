@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Extentions;
 using UICreationSystem.Factories;
 using UnityEngine;
 
@@ -12,7 +13,6 @@ namespace UICreationSystem
             string _Prefab)
         {
             GameObject instance = InitPrefabBase(_Style, _Prefab);
-            instance.name = instance.name.Replace("(Clone)", string.Empty);
             UiFactory.CopyRTransform(_RectTransform, instance.RTransform());
             Object.Destroy(_RectTransform.gameObject);
             instance.RTransform().localScale = Vector3.one;
@@ -20,13 +20,14 @@ namespace UICreationSystem
         }
 
         public static GameObject InitPrefab(
-            Transform _Transform,
+            Transform _Parent,
             string _Style,
             string _Prefab)
         {
             GameObject instance = InitPrefabBase(_Style, _Prefab);
-            UiFactory.CopyTransform(_Transform, instance.transform);
-            Object.Destroy(_Transform.gameObject);
+            if (_Parent != null)
+                instance.transform.SetParent(_Parent);
+            
             instance.transform.localScale = Vector3.one;
             return instance;
         }
@@ -42,7 +43,9 @@ namespace UICreationSystem
                 Debug.LogError($"Prefab of style {_Style} with name {_Prefab} was not set");
                 return null;
             }
-            return Object.Instantiate(prefab);
+            var instance = Object.Instantiate(prefab);
+            instance.name = instance.name.Replace("(Clone)", string.Empty);
+            return instance;
         }
         
         public static T GetObject<T>(

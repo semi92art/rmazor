@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeTai.TranslucentImage.Demo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Malee.ReorderableList", "Malee.ReorderableList.csproj", "{09C96F56-E5E9-535D-6D8B-892FA5911B31}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapesRuntime", "ShapesRuntime.csproj", "{BC0B14F6-4A36-D2A7-0AD6-D1EC3507F991}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{416CDACC-BE73-4874-306D-159A6A1BC3B7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Malee.ReorderableList.Editor", "Malee.ReorderableList.Editor.csproj", "{40BB137D-C833-F011-1F3F-8D5EC7A55F5B}"
@@ -22,6 +24,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeTai.TrueShadow.Editor", "LeTai.TrueShadow.Editor.csproj", "{F40DFF53-EB64-A1D3-E881-0FE4468C5C78}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleMobileAds.Editor", "GoogleMobileAds.Editor.csproj", "{535D154E-518E-A70D-BADD-A25C5D6A169E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapesEditor", "ShapesEditor.csproj", "{97C80274-623F-6302-1325-843C9432BAFA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +57,10 @@ Global
 		{09C96F56-E5E9-535D-6D8B-892FA5911B31}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09C96F56-E5E9-535D-6D8B-892FA5911B31}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09C96F56-E5E9-535D-6D8B-892FA5911B31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC0B14F6-4A36-D2A7-0AD6-D1EC3507F991}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC0B14F6-4A36-D2A7-0AD6-D1EC3507F991}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC0B14F6-4A36-D2A7-0AD6-D1EC3507F991}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC0B14F6-4A36-D2A7-0AD6-D1EC3507F991}.Release|Any CPU.Build.0 = Release|Any CPU
 		{416CDACC-BE73-4874-306D-159A6A1BC3B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{416CDACC-BE73-4874-306D-159A6A1BC3B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{416CDACC-BE73-4874-306D-159A6A1BC3B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -73,6 +81,10 @@ Global
 		{535D154E-518E-A70D-BADD-A25C5D6A169E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{535D154E-518E-A70D-BADD-A25C5D6A169E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{535D154E-518E-A70D-BADD-A25C5D6A169E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97C80274-623F-6302-1325-843C9432BAFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97C80274-623F-6302-1325-843C9432BAFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97C80274-623F-6302-1325-843C9432BAFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97C80274-623F-6302-1325-843C9432BAFA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -15,7 +15,7 @@ public class PrefabContent : MonoBehaviour
     public class ContentList : ReorderableArray<ContentItem>
     { }
     
-    [Header("Content"), Reorderable(paginate = true, pageSize = 15)]
+    [Header("Content"), Reorderable(paginate = true, pageSize = 20)]
     public ContentList content;
 
     public GameObject GetItem(string _Name)

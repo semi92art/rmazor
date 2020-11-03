@@ -15,8 +15,7 @@ namespace Tests.Editor
         public void SimpleConnection()
         {
             //Arrange
-            GameClient.Instance.Init();
-            GameClient.Instance.SetTestMode();
+            GameClient.Instance.Init(true);
             string url = $"{GameClient.Instance.BaseUrl}/timetest";
 
             var request = new UnityWebRequest(url, "GET");
@@ -41,8 +40,7 @@ namespace Tests.Editor
         public void LoginByTestGuestUser()
         {
             //Arrange
-            GameClient.Instance.Init();
-            GameClient.Instance.SetTestMode();
+            GameClient.Instance.Init(true);
             bool requestSuccess = false;
             
             //Act
@@ -68,8 +66,7 @@ namespace Tests.Editor
         public void RegisterByTestGuestUser()
         {
             //Arrange
-            GameClient.Instance.Init();
-            GameClient.Instance.SetTestMode();
+            GameClient.Instance.Init(true);
             bool requestSuccess = false;
             
             //Act
@@ -94,8 +91,7 @@ namespace Tests.Editor
         public void GetScore()
         {
             //Arrange
-            GameClient.Instance.Init();
-            GameClient.Instance.SetTestMode();
+            GameClient.Instance.Init(true);
             bool requestSuccess = false;
             
             //Act
@@ -120,8 +116,7 @@ namespace Tests.Editor
         public void GetScores()
         {
             //Arrange
-            GameClient.Instance.Init();
-            GameClient.Instance.SetTestMode();
+            GameClient.Instance.Init(true);
             bool requestSuccess = false;
             
             //Act
@@ -145,8 +140,7 @@ namespace Tests.Editor
         public void SetScore()
         {
             //Arrange
-            GameClient.Instance.Init();
-            GameClient.Instance.SetTestMode();
+            GameClient.Instance.Init(true);
             bool requestSuccess = false;
             Mathf.RoundToInt(Random.value * 100);
             
@@ -173,8 +167,7 @@ namespace Tests.Editor
         public void GetProfile()
         {
             //Arrange
-            GameClient.Instance.Init();
-            GameClient.Instance.SetTestMode();
+            GameClient.Instance.Init(true);
             bool requestSuccess = false;
             
             //Act
@@ -198,8 +191,7 @@ namespace Tests.Editor
         public void SetProfile()
         {
             //Arrange
-            GameClient.Instance.Init();
-            GameClient.Instance.SetTestMode();
+            GameClient.Instance.Init(true);
             bool requestSuccess = false;
             
             //Act
@@ -226,8 +218,7 @@ namespace Tests.Editor
         public void GetFullAccountData()
         {
             //Arrange
-            GameClient.Instance.Init();
-            GameClient.Instance.SetTestMode();
+            GameClient.Instance.Init(true);
             bool requestSuccess = false;
             
             //Act

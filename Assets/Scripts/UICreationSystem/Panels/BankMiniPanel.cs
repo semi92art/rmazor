@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Extentions;
 using UnityEngine;
@@ -40,7 +41,7 @@ namespace UICreationSystem.Panels
         private const float IncomeAnimTime = 2f;
         private const float IncomeAnimDeltaTime = 0.1f;
         private const int IncomeCoinsAnimOnScreen = 3;
-        private const int PoolSize = 10;
+        private const int PoolSize = 8;
         private List<CoinAnimObject> m_CoinsPool = new List<CoinAnimObject>(PoolSize);
         private Image m_GoldIcon;
         private Image m_DiamondIcon;
@@ -79,7 +80,7 @@ namespace UICreationSystem.Panels
             m_DiamondsCount = go.GetComponentItem<TextMeshProUGUI>("diamonds_count_text");
             m_PlusButton = go.GetComponentItem<Button>("plus_money_button");
             m_Animator = go.GetComponentItem<Animator>("animator");
-            
+
             m_PlusButton.SetOnClick(() =>
             {
                 IDialogPanel shopPanel = new ShopPanel(_DialogViewer);
@@ -122,14 +123,18 @@ namespace UICreationSystem.Panels
                 to = m_DiamondIcon.transform.position;
                 moneyType = MoneyType.Diamonds;
             }
-            Sprite sprite = PrefabInitializer.GetObject<Sprite>("icons", iconName);
-
+            
+            List<Sprite> sprites = new List<Sprite>();
+            int spriteCount = 8;
+            for (int i = 0; i < spriteCount; i++)
+                sprites.Add(PrefabInitializer.GetObject<Sprite>("coins", $"{iconName}_{i}"));
+            
             for (int i = 0; i < PoolSize; i++)
             {
                 GameObject item = new GameObject($"coin_{i}");
                 Image coinIcon = item.AddComponent<Image>();
                 coinIcon.raycastTarget = false;
-                coinIcon.sprite = sprite;
+                coinIcon.sprite = sprites[i % spriteCount];
                 item.RTransform().sizeDelta = icon.RTransform().sizeDelta;
                 item.transform.SetParent(m_Animator.transform);
                 item.transform.localScale = Vector3.one;
@@ -141,8 +146,9 @@ namespace UICreationSystem.Panels
                     IsBusy = false
                 });
             }
-
-            Coroutines.StartCoroutine(Coroutines.Repeat(() =>
+            Dictionary<int, bool> finishedDict = new Dictionary<int, bool>();
+            int coroutineIndex = 0;
+            Coroutines.Run(Coroutines.Repeat(() =>
                 {
                     if (!m_CoinsPool.Any())
                         return;
@@ -151,7 +157,9 @@ namespace UICreationSystem.Panels
                         return;
                     coin.IsBusy = true;
                     coin.Item.gameObject.SetActive(true);
-                    Coroutines.StartCoroutine(Coroutines.LerpPosition(
+                    finishedDict.Add(coroutineIndex, false);
+                    int cI = coroutineIndex++;
+                    Coroutines.Run(Coroutines.LerpPosition(
                         coin.Item,
                         _From.position,
                         to,
@@ -161,30 +169,34 @@ namespace UICreationSystem.Panels
                             coin.IsBusy = false;
                             if (coin.Item != null)
                                 coin.Item.gameObject.SetActive(false);
+                            finishedDict[cI] = true;
                         }));
                 },
                 IncomeAnimDeltaTime,
                 IncomeAnimTime,
                 () =>
                 {
-                    foreach (var item in m_CoinsPool)
-                        Object.Destroy(item.Item.gameObject);
-                    m_CoinsPool.Clear();
-                    Coroutines.StartCoroutine(Coroutines.Delay(Action, 0.3f));
+                    Coroutines.Run(Coroutines.WaitWhile(() =>
+                    {
+                        foreach (var item in m_CoinsPool)
+                            Object.Destroy(item.Item.gameObject);
+                        m_CoinsPool.Clear();
+                        Coroutines.Run(Coroutines.Delay(Action, 0.3f));
+                    }, () => finishedDict.Any(_Kvp => !_Kvp.Value)));
                 }));
 
             var currMoney = MoneyManager.Instance.GetMoney();
             if (_Income.ContainsKey(moneyType))
-                Coroutines.StartCoroutine(Coroutines.LerpValue(
+                Coroutines.Run(Coroutines.LerpValue(
                     currMoney[moneyType],
                     currMoney[moneyType] + _Income[moneyType],
                     IncomeAnimTime,
                     _Value =>
                     {
                         if (moneyType == MoneyType.Gold)
-                            m_GoldCount.text = $"{_Value:n0}";
+                            m_GoldCount.text = _Value.ToNumeric();
                         else if (moneyType == MoneyType.Diamonds)
-                            m_DiamondsCount.text = $"{_Value:n0}";
+                            m_DiamondsCount.text = _Value.ToNumeric();
                     }));
         }
         
@@ -201,8 +213,8 @@ namespace UICreationSystem.Panels
 
         private void SetMoneyText(Dictionary<MoneyType, int> _Money)
         {
-            m_GoldCount.text = $"{_Money[MoneyType.Gold]:n0}";
-            m_DiamondsCount.text = $"{_Money[MoneyType.Diamonds]:n0}";
+            m_GoldCount.text = _Money[MoneyType.Gold].ToNumeric();
+            m_DiamondsCount.text = _Money[MoneyType.Diamonds].ToNumeric();
         }
 
         private void CurrentCategoryChanged(UiCategory _Prev, UiCategory _New)
@@ -218,8 +230,7 @@ namespace UICreationSystem.Panels
                 case UiCategory.Settings:
                 case UiCategory.Loading:
                 case UiCategory.SelectGame:
-                case UiCategory.LoginOrRegistration:
-                case UiCategory.WheelOfFortune:
+                case UiCategory.Login:
                     m_IsShowing = false;
                     trigger = _Prev == UiCategory.MainMenu ? AkHideInMm : AkHideInDlg;
                     break;
@@ -234,10 +245,10 @@ namespace UICreationSystem.Panels
                         case UiCategory.Settings:
                         case UiCategory.Loading:
                         case UiCategory.SelectGame:
-                        case UiCategory.LoginOrRegistration:
-                        case UiCategory.WheelOfFortune:
+                        case UiCategory.Login:
                             trigger = AkShowInDlg;
                             break;
+                        case UiCategory.WheelOfFortune:
                         case UiCategory.DailyBonus:
                             // Do nothing
                             break;
@@ -245,6 +256,7 @@ namespace UICreationSystem.Panels
                             throw new NotImplementedException();
                     }
                     break;
+                case UiCategory.WheelOfFortune:
                 case UiCategory.DailyBonus:
                     switch (_Prev)
                     {
@@ -255,11 +267,12 @@ namespace UICreationSystem.Panels
                         case UiCategory.Settings:
                         case UiCategory.Loading:
                         case UiCategory.SelectGame:
-                        case UiCategory.LoginOrRegistration:
-                        case UiCategory.WheelOfFortune:
+                        case UiCategory.Login:
                             trigger = AkShowInDlg;
                             break;
+                        case UiCategory.WheelOfFortune:
                         case UiCategory.Shop:
+                        case UiCategory.DailyBonus:
                             // Do nothing
                             break;
                         default:
@@ -273,12 +286,12 @@ namespace UICreationSystem.Panels
                         case UiCategory.Settings:
                         case UiCategory.Loading:
                         case UiCategory.SelectGame:
-                        case UiCategory.LoginOrRegistration:
-                        case UiCategory.WheelOfFortune:
+                        case UiCategory.Login:
                             trigger = AkShowInMm;
                             break;
                         case UiCategory.Shop:
                         case UiCategory.DailyBonus:
+                        case UiCategory.WheelOfFortune:
                             trigger = AkFromDlgToMm;
                             break;
                         default:
