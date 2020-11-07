@@ -24,26 +24,26 @@ namespace UICreationSystem.Panels
                     RtrLites.FullFill),
                 "main_menu", "login_panel");
 
-            m_LoginErrorHandler = lp.GetComponentItem<TextMeshProUGUI>("login_error_handler");
-            m_PasswordErrorHandler = lp.GetComponentItem<TextMeshProUGUI>("password_error_handler");
+            m_LoginErrorHandler = lp.GetCompItem<TextMeshProUGUI>("login_error_handler");
+            m_PasswordErrorHandler = lp.GetCompItem<TextMeshProUGUI>("password_error_handler");
 
-            TextMeshProUGUI loginButtonText = lp.GetComponentItem<TextMeshProUGUI>("login_button_text");
-            TextMeshProUGUI loginAppleButtonText = lp.GetComponentItem<TextMeshProUGUI>("login_apple_button_text");
-            TextMeshProUGUI loginGoogleButtonText = lp.GetComponentItem<TextMeshProUGUI>("login_google_button_text");
-            TextMeshProUGUI continueAsGuestButtonText = lp.GetComponentItem<TextMeshProUGUI>("continue_as_guest_button_text");
-            TextMeshProUGUI registerButtonText = lp.GetComponentItem<TextMeshProUGUI>("register_button_text");
-            TextMeshProUGUI logoutButtonText = lp.GetComponentItem<TextMeshProUGUI>("logout_button_text");
+            TextMeshProUGUI loginButtonText = lp.GetCompItem<TextMeshProUGUI>("login_button_text");
+            TextMeshProUGUI loginAppleButtonText = lp.GetCompItem<TextMeshProUGUI>("login_apple_button_text");
+            TextMeshProUGUI loginGoogleButtonText = lp.GetCompItem<TextMeshProUGUI>("login_google_button_text");
+            TextMeshProUGUI continueAsGuestButtonText = lp.GetCompItem<TextMeshProUGUI>("continue_as_guest_button_text");
+            TextMeshProUGUI registerButtonText = lp.GetCompItem<TextMeshProUGUI>("register_button_text");
+            TextMeshProUGUI logoutButtonText = lp.GetCompItem<TextMeshProUGUI>("logout_button_text");
             
-            m_LoginInputField = lp.GetComponentItem<TMP_InputField>("login_input_field");
-            m_PasswordInputField = lp.GetComponentItem<TMP_InputField>("password_input_field");
+            m_LoginInputField = lp.GetCompItem<TMP_InputField>("login_input_field");
+            m_PasswordInputField = lp.GetCompItem<TMP_InputField>("password_input_field");
             m_PasswordInputField.contentType = TMP_InputField.ContentType.Password;
             
-            Button loginButton = lp.GetComponentItem<Button>("login_button");
-            Button loginAppleButton = lp.GetComponentItem<Button>("login_apple_button");
-            Button loginGoogleButton = lp.GetComponentItem<Button>("login_google_button");
-            Button continueAsGuestButton = lp.GetComponentItem<Button>("continue_as_guest_button");
-            Button registrationButton = lp.GetComponentItem<Button>("register_button");
-            Button logoutButton = lp.GetComponentItem<Button>("logout_button");
+            Button loginButton = lp.GetCompItem<Button>("login_button");
+            Button loginAppleButton = lp.GetCompItem<Button>("login_apple_button");
+            Button loginGoogleButton = lp.GetCompItem<Button>("login_google_button");
+            Button continueAsGuestButton = lp.GetCompItem<Button>("continue_as_guest_button");
+            Button registrationButton = lp.GetCompItem<Button>("register_button");
+            Button logoutButton = lp.GetCompItem<Button>("logout_button");
             
             loginButton.SetOnClick(Login);
             loginAppleButton.SetOnClick(LoginWithApple);
@@ -131,15 +131,14 @@ namespace UICreationSystem.Panels
         {
             var packet = new LoginUserPacket(new LoginUserPacketRequestArgs
             {
-                Name = m_LoginInputField.text,
-                PasswordHash = Utility.GetMD5Hash(m_PasswordInputField.text)
+                DeviceId = GameClient.Instance.DeviceId
             });
             packet.OnSuccess(() =>
             {
                 GameClient.Instance.Login = string.Empty;
                 GameClient.Instance.PasswordHash = string.Empty;
                 GameClient.Instance.AccountId = packet.Response.Id;
-                MoneyManager.Instance.GetMoney();
+                MoneyManager.Instance.GetMoney(true);
                 m_DialogViewer.Show(null, true);       
             });
             packet.OnFail(() =>

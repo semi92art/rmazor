@@ -12,7 +12,7 @@ namespace UICreationSystem
 
         private bool m_IsInitialized;
         
-        public void Init(bool _Selected, string _Text, UnityAction<string> _Select, ToggleGroup _ToggleGroup)
+        public void Init(bool _Selected, string _Text, System.Action<string> _Select, ToggleGroup _ToggleGroup)
         {
             title.text = _Text;
             name = $"{_Text} Setting";

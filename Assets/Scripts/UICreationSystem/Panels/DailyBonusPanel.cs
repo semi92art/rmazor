@@ -58,7 +58,7 @@ namespace UICreationSystem.Panels
                     RtrLites.FullFill),
                 "main_menu",
                 "daily_bonus_panel");
-            m_Content = dailyBonusPanel.GetComponentItem<RectTransform>("content");
+            m_Content = dailyBonusPanel.GetCompItem<RectTransform>("content");
 
             CreateItems();
             return dailyBonusPanel.RTransform();

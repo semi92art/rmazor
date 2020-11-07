@@ -13,7 +13,7 @@ namespace Extentions
         public static RectTransform RTransform(this UIBehaviour _UiBehaviour) =>
             _UiBehaviour.GetComponent<RectTransform>();
 
-        public static RectTransform RTransform(this RectTranshormHelper _Helper) =>
+        public static RectTransform RTransform(this RectTransformHelper _Helper) =>
             _Helper.GetComponent<RectTransform>();
     
         public static RectTransform RTransform(this GameObject _Object) =>

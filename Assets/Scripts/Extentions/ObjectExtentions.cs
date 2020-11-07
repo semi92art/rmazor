@@ -50,7 +50,7 @@ namespace Extentions
             return _Prefab.GetComponent<PrefabContent>().GetItem(_ItemName);
         }
 
-        public static T GetComponentItem<T>(this GameObject _Prefab, string _ItemName) where T : Component
+        public static T GetCompItem<T>(this GameObject _Prefab, string _ItemName) where T : Component
         {
             return _Prefab.GetComponent<PrefabContent>().GetItemComponent<T>(_ItemName);
         }

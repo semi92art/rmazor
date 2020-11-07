@@ -55,7 +55,7 @@ namespace UICreationSystem.Panels
                     RtrLites.FullFill),
                 "main_menu",
                 "shop_panel");
-            RectTransform content = shopPanel.GetComponentItem<RectTransform>("content");
+            RectTransform content = shopPanel.GetCompItem<RectTransform>("content");
             
             GameObject shopItem = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(

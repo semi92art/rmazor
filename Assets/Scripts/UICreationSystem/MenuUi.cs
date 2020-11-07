@@ -83,7 +83,8 @@ namespace UICreationSystem
                 UiCategory.DailyBonus |
                 UiCategory.MainMenu |
                 UiCategory.SelectGame |
-                UiCategory.Login);
+                UiCategory.Login |
+                UiCategory.Countries);
         }
     
         private void CreateDialogContainer()
@@ -101,15 +102,12 @@ namespace UICreationSystem
         {
             m_LoadingPanel = new LoadingPanel(m_DialogViewer);
             m_LoadingPanel.Show();
-        
-            Debug.Log($"Device Id: {GameClient.Instance.DeviceId}");
-            Debug.Log($"Account Id: {GameClient.Instance.AccountId}");
-        
+
             Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
             {
                 var transitionPanelObj = CreateLoadingTransitionPanel();
                 m_TransitionRenderer = CircleTransparentTransitionRenderer.Create();
-                RawImage rImage = transitionPanelObj.GetComponentItem<RawImage>("raw_image");
+                RawImage rImage = transitionPanelObj.GetCompItem<RawImage>("raw_image");
                 rImage.texture = m_TransitionRenderer.Texture;
                 //wait 2 seconds anyway
                 float delayAnyway = 2f;
@@ -143,13 +141,16 @@ namespace UICreationSystem
                             if (loginPacket.ErrorMessage.Id == RequestErrorCodes.AccontEntityNotFoundByDeviceId)
                             {
                                 Debug.LogWarning(loginPacket.ErrorMessage);
-                                IPacket registerPacket = new RegisterUserPacket(
-                                        new RegisterUserUserPacketRequestArgs
-                                        {
-                                            DeviceId = GameClient.Instance.DeviceId
-                                        }).OnSuccess(() =>
+                                var registerPacket = new RegisterUserPacket(
+                                    new RegisterUserUserPacketRequestArgs
+                                    {
+                                        DeviceId = GameClient.Instance.DeviceId
+                                    });
+                                registerPacket.OnSuccess(() =>
                                     {
                                         Debug.Log("Register by DeviceId successfully");
+                                        GameClient.Instance.AccountId = registerPacket.Response.Id;
+                                        MoneyManager.Instance.GetMoney(true);
                                         LoadMainMenu();
                                     })
                                     .OnFail(() => { Debug.LogError(loginPacket.ErrorMessage); });

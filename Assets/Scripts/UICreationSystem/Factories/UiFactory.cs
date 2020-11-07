@@ -57,7 +57,7 @@ namespace UICreationSystem.Factories
             item.Set(_Parent, _Name, _Anchor, _AnchoredPosition, _Pivot, _SizeDelta);
             
 #if UNITY_EDITOR
-            item.gameObject.AddComponentIfNotExist<RectTranshormHelper>();
+            item.gameObject.AddComponentIfNotExist<RectTransformHelper>();
 #endif
             return item;
         }

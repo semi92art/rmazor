@@ -2,9 +2,7 @@
 using Extentions;
 using UICreationSystem.Factories;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
-using Utils;
 
 namespace UICreationSystem.Panels
 {
@@ -13,11 +11,11 @@ namespace UICreationSystem.Panels
         #region private members
         
         private readonly IDialogViewer m_DialogViewer;
+        private readonly List<string> m_Items;
+        private readonly System.Action<string> m_Select;
+        private readonly string m_DefaultValue;
         private RectTransform m_Content;
-        private List<string> m_Items;
-        private UnityAction<string> m_Select;
         private ToggleGroup m_ToggleGroup;
-        private string m_DefaultValue;
         
         #endregion
 
@@ -30,7 +28,7 @@ namespace UICreationSystem.Panels
             IDialogViewer _DialogViewer,
             string _Value,
             List<string> _Items,
-            UnityAction<string> _Select)
+            System.Action<string> _Select)
         {
             m_DialogViewer = _DialogViewer;
             m_DefaultValue = _Value;
@@ -57,7 +55,7 @@ namespace UICreationSystem.Panels
                 "main_menu", "settings_selector_panel");
 
             m_ToggleGroup = sp.AddComponent<ToggleGroup>();
-            m_Content = sp.GetComponentItem<RectTransform>("content");
+            m_Content = sp.GetCompItem<RectTransform>("content");
             InitItems();
             return sp.RTransform();
         }

@@ -1,10 +1,9 @@
 ﻿namespace Network.PacketArgs
 {
-    public class SetScoreRequestArgs
+    public class SetScoreRequestArgs : AccIdGameId
     {
-        public int AccountId { get; set; }
-        public int GameId { get; set; }
         public int Type { get; set; }
         public int Points { get; set; }
+        public System.DateTime LastUpdateTime { get; set; }
     }
 }

@@ -6,7 +6,7 @@ namespace Settings
 {
     public class LanguageSetting : ISetting
     {
-        public string Name { get; }
+        public string Name => "Language";
         public SettingType Type => SettingType.InPanelSelector;
 
         public List<string> Values => m_LangNames.Values.OrderBy(_Item => _Item).ToList();
@@ -21,11 +21,6 @@ namespace Settings
             {Language.Russian, "Русский"}
         };
 
-        public LanguageSetting()
-        {
-            Name = "Language";
-        }
-        
         public object Get()
         {
             return m_LangNames[SaveUtils.GetValue<Language>(SaveKey.SettingLanguage)];

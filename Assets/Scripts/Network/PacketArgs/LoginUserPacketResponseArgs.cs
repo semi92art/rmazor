@@ -9,5 +9,6 @@ namespace Network.PacketArgs
         public string DeviceId { get; set; }
         public int Id { get; set; }
         public DateTime CreationTime { get; set; }
+        public string CountryKey { get; set; }
     }
 }

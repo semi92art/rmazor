@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Extentions;
+using Network;
 using UICreationSystem.Factories;
 using UnityEngine;
 
@@ -13,12 +14,14 @@ namespace UICreationSystem.Panels
         
         private readonly List<ChooseGameItemProps> m_CgiPropsList = new List<ChooseGameItemProps>
         {
-            new ChooseGameItemProps(null, "POINT CLICKER", false, true, null),
-            new ChooseGameItemProps(null, "FIGURE DRAWER", false, true, null),
-            new ChooseGameItemProps(null, "MATH TRAIN", true, true, null),
-            new ChooseGameItemProps(null, "TILE PATHER", true, false, null),
-            new ChooseGameItemProps(null, "BALANCE DRAWER", true, false, null)
+            new ChooseGameItemProps(1, null, "POINT CLICKER", false, true),
+            new ChooseGameItemProps(2, null, "FIGURE DRAWER", false, true),
+            new ChooseGameItemProps(3, null, "MATH TRAIN", false, false),
+            new ChooseGameItemProps(4, null, "TILE PATHER", false, true),
+            new ChooseGameItemProps(5, null, "BALANCE DRAWER", false, false)
         };
+
+        private System.Action<int> m_SelectGame;
         
         #endregion
 
@@ -27,9 +30,10 @@ namespace UICreationSystem.Panels
         public UiCategory Category => UiCategory.SelectGame;
         public RectTransform Panel { get; private set; }
         
-        public SelectGamePanel(IDialogViewer _DialogViewer)
+        public SelectGamePanel(IDialogViewer _DialogViewer, System.Action<int> _SelectGame)
         {
             m_DialogViewer = _DialogViewer;
+            m_SelectGame = _SelectGame;
         }
 
         public void Show()
@@ -50,7 +54,7 @@ namespace UICreationSystem.Panels
                     RtrLites.FullFill),
                 "main_menu",
                 "select_game_panel");
-            RectTransform content = selectGamePanel.GetComponentItem<RectTransform>("content");
+            RectTransform content = selectGamePanel.GetCompItem<RectTransform>("content");
             
             GameObject cgiObj = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
@@ -66,6 +70,12 @@ namespace UICreationSystem.Panels
             {
                 var cgiObjClone = cgiObj.Clone();
                 ChooseGameItem cgi = cgiObjClone.GetComponent<ChooseGameItem>();
+                cgiProps.Click = () =>
+                {
+                    GameClient.Instance.GameId = cgiProps.GameId;
+                    m_SelectGame.Invoke(cgiProps.GameId);
+                    m_DialogViewer.Show(null, true);
+                };
                 cgi.Init(cgiProps);
             }
             

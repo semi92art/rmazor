@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 namespace UICreationSystem
 {
     [Flags]
-    public enum UiCategory : short
+    public enum UiCategory : int
     {
         Nothing = 0,
         Loading = 1,
@@ -17,7 +17,8 @@ namespace UICreationSystem
         Profile= 32,
         Login = 64,
         Shop = 128,
-        Settings = 256
+        Settings = 256,
+        Countries = 512
     }
     
     public class UiManager : MonoBehaviour, ISingleton
@@ -48,6 +49,12 @@ namespace UICreationSystem
             }
         }
         
+        #if DEBUG
+        
+        public GameObject DebugConsole { get; private set; }
+        
+        #endif
+        
         #endregion
 
         #region private members
@@ -77,7 +84,7 @@ namespace UICreationSystem
                 }
 
 #if !RELEASE
-                DebugConsoleView.Create();
+                DebugConsole = DebugConsoleView.Create();
 #endif
             };
         }

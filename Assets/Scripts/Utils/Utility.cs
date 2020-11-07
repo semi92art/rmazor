@@ -1,6 +1,7 @@
-﻿using System;
+﻿
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -10,6 +11,8 @@ namespace Utils
 {
     public static class Utility
     {
+        public static System.Random RandomGenerator = new System.Random(); 
+        
         public static bool CheckForMainServerInternetConnection()
         {
             return CheckForConnection("77.37.152.15");
@@ -39,7 +42,7 @@ namespace Utils
             return false;
         }
 
-        public static Action WaitForSecs(float _Seconds, Action _OnFinish)
+        public static System.Action WaitForSecs(float _Seconds, System.Action _OnFinish)
         {
             return () =>
             {
@@ -52,15 +55,14 @@ namespace Utils
         //https://answers.unity.com/questions/246116/how-can-i-generate-a-guid-or-a-uuid-from-within-un.html
         public static string GetUniqueID()
         {
-            var random = new System.Random();                     
-            var epochStart = new DateTime(1970, 1, 1, 8, 0, 0, System.DateTimeKind.Utc);
-            double timestamp = (DateTime.UtcNow - epochStart).TotalSeconds;
+            var epochStart = new System.DateTime(1970, 1, 1, 8, 0, 0, System.DateTimeKind.Utc);
+            double timestamp = (System.DateTime.UtcNow - epochStart).TotalSeconds;
          
             string uniqueId = Application.systemLanguage //Language
                               + "-" + Application.platform //Device    
-                              + "-" + String.Format("{0:X}", Convert.ToInt32(timestamp)) //Time
-                              + "-" + String.Format("{0:X}", Convert.ToInt32(Time.time * 1000000)) //Time in game
-                              + "-" + String.Format("{0:X}", random.Next(1000000000)); //random number
+                              + "-" + string.Format("{0:X}", System.Convert.ToInt32(timestamp)) //Time
+                              + "-" + string.Format("{0:X}", System.Convert.ToInt32(Time.time * 1000000)) //Time in game
+                              + "-" + string.Format("{0:X}", RandomGenerator.Next(1000000000)); //random number
          
             Debug.Log($"Generated Unique ID: {uniqueId}");
             
@@ -166,14 +168,14 @@ namespace Utils
     
         public static string ToRoman(int _Number)
         {
-            if (_Number < 0 || _Number >= 40) throw new ArgumentOutOfRangeException();
+            if (_Number < 0 || _Number >= 40) throw new System.ArgumentOutOfRangeException();
             if (_Number < 1) return string.Empty;
             if (_Number >= 10) return "X" + ToRoman(_Number - 10);
             if (_Number >= 9) return "IX" + ToRoman(_Number - 9);
             if (_Number >= 5) return "V" + ToRoman(_Number - 5);
             if (_Number >= 4) return "IV" + ToRoman(_Number - 4);
             if (_Number >= 1) return "I" + ToRoman(_Number - 1);
-            throw new ArgumentOutOfRangeException();
+            throw new System.ArgumentOutOfRangeException();
         }
     
         public static string GetMD5Hash(string _StrToEncrypt)
@@ -189,11 +191,11 @@ namespace Utils
     
         public static bool IsEmailAddressValid(string _Mail)
         {
-            int atInd = _Mail.IndexOf("@", StringComparison.Ordinal);
+            int atInd = _Mail.IndexOf("@", System.StringComparison.Ordinal);
             if (atInd <= 0)
                 return false;
 		
-            int dotInd = _Mail.IndexOf(".", atInd, StringComparison.Ordinal);
+            int dotInd = _Mail.IndexOf(".", atInd,System.StringComparison.Ordinal);
             return dotInd - atInd > 1 && dotInd < _Mail.Length - 1;
         }
     
@@ -241,7 +243,7 @@ namespace Utils
         }
         
         public static Dictionary<TKey, TValue> Clone<TKey, TValue>
-            (this Dictionary<TKey, TValue> _Original) where TValue : ICloneable
+            (this Dictionary<TKey, TValue> _Original) where TValue : System.ICloneable
         {
             Dictionary<TKey, TValue> ret = new Dictionary<TKey, TValue>(_Original.Count,
                 _Original.Comparer);
@@ -267,6 +269,52 @@ namespace Utils
         public static string ToNumeric(this int _Value)
         {
             return _Value.ToString("N0", CultureInfo.CreateSpecificCulture("en-US"));
+        }
+        
+        public static bool IsFullyVisibleFrom(this RectTransform _Item, RectTransform _Rect)
+        {
+            if (!_Item.gameObject.activeInHierarchy)
+                return false;
+ 
+            return _Item.CountCornersVisibleFrom(_Rect) == 4;
+        }
+        
+        public static bool IsVisibleFrom(this RectTransform _Item, RectTransform _Rect)
+        {
+            if (!_Item.gameObject.activeInHierarchy)
+                return false;
+            return _Item.CountCornersVisibleFrom(_Rect) > 0;
+        }
+
+        private static int CountCornersVisibleFrom(this RectTransform _Item, RectTransform _Rect)
+        {
+            Vector3[] itemCorners = new Vector3[4];
+            _Item.GetWorldCorners(itemCorners);
+            Vector3[] rectCorners = new Vector3[4];
+            _Rect.GetWorldCorners(rectCorners);
+
+            int count = 0;
+
+            Vector2[] polygon = rectCorners.Select(_P => new Vector2(_P.x, _P.y)).ToArray();
+            foreach (var corner in itemCorners)
+            {
+                Vector2 point = new Vector2(corner.x, corner.y);
+                if (IsPointInPolygon(polygon, point))
+                    count++;
+            }
+            
+            return count;
+        }
+
+        public static void SetActive(IEnumerable<GameObject> _Items, bool _Active)
+        {
+            foreach (var item in _Items)
+                item.SetActive(_Active);
+        }
+        
+        public static void SetActive<T>(IEnumerable<T> _Items, bool _Active) where T : Component
+        {
+            SetActive(_Items.Select(_Item => _Item.gameObject), _Active);
         }
     }
 }

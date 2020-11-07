@@ -51,7 +51,7 @@ namespace UICreationSystem.Panels
                 null,
                 "wheel_of_fortune",
                 "wheel_main");
-            m_WheelCollider = m_Wheel.GetComponentItem<WheelController>("wheel_controller");
+            m_WheelCollider = m_Wheel.GetCompItem<WheelController>("wheel_controller");
             m_WheelCollider.Init(m_DialogViewer);
         }
 

@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Extentions;
-using Network;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,9 +10,16 @@ namespace Utils
 {
     public static class Coroutines
     {
-        public static Coroutine Run(IEnumerator _Coroutine)
+        private static readonly DontDestroyOnLoad CoroutineRunner;
+
+        static Coroutines()
         {
-            return GameClient.Instance.StartCoroutine(_Coroutine);
+            CoroutineRunner = GameObject.Find("CoroutinesRunner").GetComponent<DontDestroyOnLoad>();
+        }
+        
+        public static void Run(IEnumerator _Coroutine)
+        {
+            CoroutineRunner.StartCoroutine(_Coroutine);
         }
     
         public static IEnumerator Action(Action _Action)

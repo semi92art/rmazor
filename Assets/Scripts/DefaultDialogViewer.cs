@@ -9,6 +9,7 @@ using UICreationSystem.Panels;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils;
+using Object = UnityEngine.Object;
 
 public interface IDialogViewer
 {
@@ -82,8 +83,8 @@ public class DefaultDialogViewer : MonoBehaviour, IDialogViewer, IActionExecuter
                 Vector2.one * 0.5f,
                 Vector2.one * 60f),
             "main_menu_buttons", "dialog_close_button");
-        m_CloseButton = go.GetComponentItem<Button>("button");
-        m_CloseButtonIcon = go.GetComponentItem<Image>("close_icon");
+        m_CloseButton = go.GetCompItem<Button>("button");
+        m_CloseButtonIcon = go.GetCompItem<Image>("close_icon");
         m_CloseButton.SetOnClick(GoBack);
         m_GraphicsAlphas.Add(m_CloseButton.RTransform().GetInstanceID(), new GraphicAlphas(m_CloseButton.RTransform()));
         m_CloseButton.RTransform().gameObject.SetActive(false);
@@ -138,7 +139,12 @@ public class DefaultDialogViewer : MonoBehaviour, IDialogViewer, IActionExecuter
                 () =>
                 {
                     if (_IsGoBack)
+                    {
                         Destroy(itemFrom.Panel.gameObject);
+                        var monobeh = itemFrom as MonoBehaviour;
+                        if (monobeh != null)
+                            Destroy(monobeh.gameObject);
+                    }
                 })); 
         }
 
@@ -189,9 +195,9 @@ public class DefaultDialogViewer : MonoBehaviour, IDialogViewer, IActionExecuter
         
         background.enabled = background.raycastTarget = !(_ItemTo == null && _IsGoBack);
         ClearGraphicsAlphas();
-        
+
         if (_ItemTo == null)
-            m_PanelStack.Clear();
+            ClearPanelStack();
         else
         {
             if (!m_PanelStack.Any())
@@ -224,6 +230,19 @@ public class DefaultDialogViewer : MonoBehaviour, IDialogViewer, IActionExecuter
 
     #region private methods
 
+    private void ClearPanelStack()
+    {
+        var list = new List<IDialogPanel>();
+        while(m_PanelStack.Any())
+            list.Add(m_PanelStack.Pop());
+        foreach (var item in list)
+        {
+            var monobeh = item as MonoBehaviour;
+            if (monobeh != null)
+                Destroy(monobeh);
+        }
+    }
+    
     private void SetCloseButtonIcon()
     {
         IDialogPanel item1, item2 = null;

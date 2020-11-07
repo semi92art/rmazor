@@ -68,6 +68,11 @@ public class ResLoader
         return Resources.Load<UIStyleObject>($"styles/{_StyleName}");
     }
 
+    public static Sprite GetCounry(string _Key)
+    {
+        return Resources.Load<Sprite>($"countries/{_Key}");
+    }
+
     #endregion
         
     #region private methods

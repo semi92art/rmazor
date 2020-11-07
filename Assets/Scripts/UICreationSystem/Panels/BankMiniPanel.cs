@@ -74,12 +74,12 @@ namespace UICreationSystem.Panels
                     Vector2.one * 0.5f,
                     new Vector2(237.9f, 100f)),
                 "main_menu", "bank_mini_panel");
-            m_GoldIcon = go.GetComponentItem<Image>("gold_icon");
-            m_DiamondIcon = go.GetComponentItem<Image>("diamond_icon");
-            m_GoldCount = go.GetComponentItem<TextMeshProUGUI>("gold_count_text");
-            m_DiamondsCount = go.GetComponentItem<TextMeshProUGUI>("diamonds_count_text");
-            m_PlusButton = go.GetComponentItem<Button>("plus_money_button");
-            m_Animator = go.GetComponentItem<Animator>("animator");
+            m_GoldIcon = go.GetCompItem<Image>("gold_icon");
+            m_DiamondIcon = go.GetCompItem<Image>("diamond_icon");
+            m_GoldCount = go.GetCompItem<TextMeshProUGUI>("gold_count_text");
+            m_DiamondsCount = go.GetCompItem<TextMeshProUGUI>("diamonds_count_text");
+            m_PlusButton = go.GetCompItem<Button>("plus_money_button");
+            m_Animator = go.GetCompItem<Animator>("animator");
 
             m_PlusButton.SetOnClick(() =>
             {
@@ -226,13 +226,18 @@ namespace UICreationSystem.Panels
             int trigger = -1;
             switch (_New)
             {
-                case UiCategory.Profile:
                 case UiCategory.Settings:
                 case UiCategory.Loading:
                 case UiCategory.SelectGame:
-                case UiCategory.Login:
                     m_IsShowing = false;
                     trigger = _Prev == UiCategory.MainMenu ? AkHideInMm : AkHideInDlg;
+                    break;
+                case UiCategory.Login:
+                case UiCategory.Countries:
+                    m_IsShowing = false;
+                    trigger = _Prev == UiCategory.MainMenu ? AkHideInMm : AkHideInDlg;
+                    if (_Prev == UiCategory.Countries || _Prev == UiCategory.Login)
+                        trigger = -1;
                     break;
                 case UiCategory.Shop:
                     m_PlusButton.interactable = false;
@@ -241,13 +246,14 @@ namespace UICreationSystem.Panels
                         case UiCategory.MainMenu:
                             trigger = AkFromMmToDlg;
                             break;
-                        case UiCategory.Profile:
                         case UiCategory.Settings:
                         case UiCategory.Loading:
                         case UiCategory.SelectGame:
                         case UiCategory.Login:
+                        case UiCategory.Countries:
                             trigger = AkShowInDlg;
                             break;
+                        case UiCategory.Profile:
                         case UiCategory.WheelOfFortune:
                         case UiCategory.DailyBonus:
                             // Do nothing
@@ -256,6 +262,7 @@ namespace UICreationSystem.Panels
                             throw new NotImplementedException();
                     }
                     break;
+                case UiCategory.Profile:
                 case UiCategory.WheelOfFortune:
                 case UiCategory.DailyBonus:
                     switch (_Prev)
@@ -263,13 +270,14 @@ namespace UICreationSystem.Panels
                         case UiCategory.MainMenu:
                             trigger = AkFromMmToDlg;
                             break;
-                        case UiCategory.Profile:
                         case UiCategory.Settings:
                         case UiCategory.Loading:
                         case UiCategory.SelectGame:
                         case UiCategory.Login:
+                        case UiCategory.Countries:
                             trigger = AkShowInDlg;
                             break;
+                        case UiCategory.Profile:
                         case UiCategory.WheelOfFortune:
                         case UiCategory.Shop:
                         case UiCategory.DailyBonus:
@@ -282,13 +290,14 @@ namespace UICreationSystem.Panels
                 case UiCategory.MainMenu:
                     switch (_Prev)
                     {
-                        case UiCategory.Profile:
                         case UiCategory.Settings:
                         case UiCategory.Loading:
                         case UiCategory.SelectGame:
                         case UiCategory.Login:
+                        case UiCategory.Countries:
                             trigger = AkShowInMm;
                             break;
+                        case UiCategory.Profile:
                         case UiCategory.Shop:
                         case UiCategory.DailyBonus:
                         case UiCategory.WheelOfFortune:

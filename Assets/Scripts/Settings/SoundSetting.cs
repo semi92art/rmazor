@@ -5,16 +5,12 @@ namespace Settings
 {
     public class SoundSetting : ISetting
     {
-        public string Name { get; }
+        public string Name => "Sound";
         public SettingType Type => SettingType.OnOff;
         public List<string> Values => null;
         public object Min => null;
         public object Max => null;
-        public SoundSetting()
-        {
-            Name = "Sound";
-        }
-        
+
         public object Get()
         {
             return SaveUtils.GetValue<bool>(SaveKey.SettingSoundOn);

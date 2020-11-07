@@ -20,7 +20,7 @@ namespace UICreationSystem
             System.Func<string> _Value,
             string _Name,
             System.Func<List<string>> _ListOfItems,
-            UnityAction<string> _Select)
+            System.Action<string> _Select)
         {
             setting.text = _Value?.Invoke();
             name = $"{_Name} Setting";

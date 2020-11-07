@@ -46,7 +46,7 @@ public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRen
             instance.transform.position = instance.transform.position.SetX(-50);
         }
         var result = instance.GetComponent<CircleTransparentTransitionRenderer>();
-        result.Texture = result.gameObject.GetComponentItem<Camera>("camera").targetTexture;
+        result.Texture = result.gameObject.GetCompItem<Camera>("camera").targetTexture;
         return result;
     }
 
@@ -57,10 +57,12 @@ public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRen
         float startTime = Time.time;
         bool doEvent = false;
 
+        string varName = "_AlphaCoeff";
+        m_Material.SetFloat(varName, -1);
         StartCoroutine(Coroutines.DoWhile(() =>
             {
                 float dt = Time.time - startTime;
-                m_Material.SetFloat("_AlphaCoeff", ac.Evaluate(dt));
+                m_Material.SetFloat(varName, ac.Evaluate(dt));
                 if (!doEvent && dt > ac.keys.Last().time * 0.5f)
                 {
                     TransitionAction?.Invoke(this, null);
@@ -70,7 +72,7 @@ public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRen
             () =>
             {
                 TransitionAction = null;
-                m_Material.SetFloat("_AlphaCoeff", ac.keys.Last().value);
+                m_Material.SetFloat(varName, ac.keys.Last().value);
             },
             () => Time.time - startTime < ac.keys.Last().time,
             () => true));

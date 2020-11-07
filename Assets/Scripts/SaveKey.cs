@@ -18,7 +18,12 @@ public class SaveKey
     public static SaveKey MoneyGold => new SaveKey("money_gold", typeof(int));
     public static SaveKey MoneyDiamonds => new SaveKey("money_diamonds", typeof(int));
     public static SaveKey WheelOfFortuneLastDate => new SaveKey("wheel_of_fortune_last_date", typeof(System.DateTime));
-    
+    public static SaveKey CountryKey => new SaveKey("country_key", typeof(string));
+    #if DEBUG
+    public static SaveKey DebugServerUrl => new SaveKey("debug_server_url", typeof(string));
+    public static SaveKey SettingDebug => new SaveKey("debug", typeof(bool));
+    #endif
+
     #endregion
     
     public string Key { get; }

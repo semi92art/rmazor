@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -9,22 +10,34 @@ using Utils;
 
 namespace Network
 {
-    public class GameClient : MonoBehaviour, ISingleton
+    public interface IGameClient
+    {
+        string BaseUrl { get; }
+        int AccountId { get; set; }
+        string Login { get; set; }
+        string PasswordHash { get; set; }
+        string CountryKey { get; set; }
+        int GameId { get; set; }
+        string DeviceId { get; }
+        void Init(bool _TestMode = false);
+        void Send(IPacket _Packet);
+        T Deserialize<T>(string _Json);
+        bool IsTestRunningMode { get; }
+    }
+    
+    public class GameClient : ISingleton, IGameClient
     {
         #region singleton
         
-        private static GameClient _instance;
+        private static IGameClient _instance;
 
-        public static GameClient Instance
+        public static IGameClient Instance
         {
             get
             {
                 if (_instance == null)
-                {
-                    GameObject go = new GameObject("GameClient");
-                    _instance = go.AddComponent<GameClient>();
-                }
-                    
+                    _instance = new GameClient();
+                _instance.Init();
                 return _instance;
             }
         }
@@ -61,7 +74,20 @@ namespace Network
             get => SaveUtils.GetValue<string>(SaveKey.PasswordHash);
             set => SaveUtils.PutValue(SaveKey.PasswordHash, value);
         }
-        public string DeviceId => SystemInfo.deviceUniqueIdentifier;
+
+        public string CountryKey
+        {
+            get => SaveUtils.GetValue<string>(SaveKey.CountryKey);
+            set => SaveUtils.PutValue(SaveKey.CountryKey, value);
+        }
+
+        public int GameId
+        {
+            get => SaveUtils.GetValue<int>(SaveKey.GameId);
+            set => SaveUtils.PutValue(SaveKey.GameId, value);
+        }
+        
+        public string DeviceId => $"test_{SystemInfo.deviceUniqueIdentifier}";
         
 
         #endregion
@@ -72,8 +98,10 @@ namespace Network
         {
 #if AZURE
             m_ServerName = "Azure";
-#else
+#elif RELEASE
             m_ServerName = "Ubuntu1";
+#elif DEBUG
+            m_ServerName = "Debug";
 #endif
             
             if (_TestMode)
@@ -83,12 +111,9 @@ namespace Network
             {
                 {"Ubuntu1", @"http://77.37.152.15:7000"},
                 {"Azure", @"https://clickersapi.azurewebsites.net"},
-                {"Test", @"http://77.37.152.15:7100"},
-                {"TestRunner", @"http://77.37.152.15:7000"}
+                {"Debug", SaveUtils.GetValue<string>(SaveKey.DebugServerUrl)},
+                {"TestRunner", SaveUtils.GetValue<string>(SaveKey.DebugServerUrl)}
             };
-            
-            if (!IsTestRunningMode)
-                DontDestroyOnLoad(gameObject);
         }
 
         public void Send(IPacket _Packet)
@@ -110,7 +135,7 @@ namespace Network
             }
         }
         
-        public static T Deserialize<T>(string _Json)
+        public T Deserialize<T>(string _Json)
         {
             return JsonConvert.DeserializeObject<T>(_Json);
         }
@@ -123,7 +148,7 @@ namespace Network
         
         private void SendCore(IPacket _Packet)
         {
-            StartCoroutine(Coroutines.Action(() => SendRequest(_Packet)));
+            Coroutines.Run(Coroutines.Action(() => SendRequest(_Packet)));
         }
 
         private void SendRequest(IPacket _Packet)
@@ -146,7 +171,7 @@ namespace Network
             _Packet.ResponseCode = request.responseCode;
             _Packet.DeserializeResponse(request.downloadHandler.text);
         }
-        
+
         #endregion
     }
 }

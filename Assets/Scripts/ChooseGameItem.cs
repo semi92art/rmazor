@@ -16,7 +16,7 @@ public class ChooseGameItem : MonoBehaviour
         title.text = _Props.Title;
         icon.sprite = _Props.Icon;
         button.interactable = !_Props.IsComingSoon;
-        button.SetOnClick(() => _Props.OnClick?.Invoke());
+        button.SetOnClick(() => _Props.Click?.Invoke());
         gameObject.SetActive(_Props.IsVisible);
         SetComingSoon(_Props.IsComingSoon);
     }
@@ -34,23 +34,24 @@ public class ChooseGameItem : MonoBehaviour
 
 public class ChooseGameItemProps
 {
+    public int GameId { get; }
     public Sprite Icon { get; }
     public string Title { get; }
     public bool IsComingSoon { get; }
     public bool IsVisible { get; }
-    public UnityEngine.Events.UnityAction OnClick { get; }
+    public UnityEngine.Events.UnityAction Click { get; set; }
 
     public ChooseGameItemProps(
+        int _GameId,
         Sprite _Icon,
         string _Title,
         bool _IsComingSoon,
-        bool _IsVisible,
-        UnityEngine.Events.UnityAction _OnClick)
+        bool _IsVisible)
     {
+        GameId = _GameId;
         Icon = _Icon;
         Title = _Title;
         IsComingSoon = _IsComingSoon;
         IsVisible = _IsVisible;
-        OnClick = _OnClick;
     }
 }

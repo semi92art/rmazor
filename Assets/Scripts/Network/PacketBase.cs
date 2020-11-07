@@ -73,7 +73,6 @@ namespace Network
             try
             {
                 m_Fail?.Invoke();
-                Debug.LogError(ErrorMessage);
             }
             catch (Exception e)
             {
@@ -125,7 +124,7 @@ namespace Network
                 InvokeSuccess();
             else if (Utility.IsInRange(ResponseCode, 300, 399))
                 InvokeCancel();
-            else if (Utility.IsInRange(ResponseCode, 400, 599))
+            else if (Utility.IsInRange(ResponseCode, 400, 599) || ResponseCode == 0)
                 InvokeFail();
 
             IsDone = true;

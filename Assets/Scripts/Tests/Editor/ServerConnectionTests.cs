@@ -54,6 +54,7 @@ namespace Tests.Editor
                 .OnFail(() => requestSuccess = false)
                 .OnSuccess(() => requestSuccess = true) as LoginUserPacket;
             GameClient.Instance.Send(packet);
+            while (!packet.IsDone) { }
             
             //Assert
             Debug.Log($"response code: {packet.ResponseCode}");
@@ -79,6 +80,7 @@ namespace Tests.Editor
                 })
                 .OnSuccess(() => requestSuccess = true);
             GameClient.Instance.Send(packet);
+            while (!packet.IsDone) { }
             
             //Assert
             Debug.Log($"response code: {packet.ResponseCode}");
@@ -104,6 +106,7 @@ namespace Tests.Editor
                     })
                 .OnSuccess(() => requestSuccess = true);
             GameClient.Instance.Send(packet);
+            while (!packet.IsDone) { }
             
             //Assert
             Debug.Log($"response code: {packet.ResponseCode}");
@@ -128,6 +131,7 @@ namespace Tests.Editor
                     })
                 .OnSuccess(() => requestSuccess = true);
             GameClient.Instance.Send(packet);
+            while (!packet.IsDone) { }
             
             //Assert
             Debug.Log($"response code: {packet.ResponseCode}");
@@ -155,6 +159,7 @@ namespace Tests.Editor
                     })
                 .OnSuccess(() => requestSuccess = true);
             GameClient.Instance.Send(packet);
+            while (!packet.IsDone) { }
             
             //Assert
             Debug.Log($"response code: {packet.ResponseCode}");
@@ -179,6 +184,7 @@ namespace Tests.Editor
                     })
                 .OnSuccess(() => requestSuccess = true);
             GameClient.Instance.Send(packet);
+            while (!packet.IsDone) { }
             
             //Assert
             Debug.Log($"response code: {packet.ResponseCode}");
@@ -195,18 +201,17 @@ namespace Tests.Editor
             bool requestSuccess = false;
             
             //Act
-            var options = ProfileOption.CreateList();
-            options[3] = new ProfileOption {Available = true, Option = 4};
+
 
             IPacket packet = new SetProfilePacket(
                     new SetProfileRequestArgs
                     {
-                        AccountId = 1,
-                        Options = options
+                        AccountId = 1
                     })
                 .OnSuccess(() => requestSuccess = true);
             GameClient.Instance.Send(packet);
-
+            while (!packet.IsDone) { }
+            
             //Assert
             Debug.Log($"response code: {packet.ResponseCode}");
             Debug.Log($"response string: {packet.ResponseRaw}");
@@ -230,6 +235,7 @@ namespace Tests.Editor
                     })
                 .OnSuccess(() => requestSuccess = true);
             GameClient.Instance.Send(packet);
+            while (!packet.IsDone) { }
             
             //Assert
             Debug.Log($"response code: {packet.ResponseCode}");

@@ -13,7 +13,7 @@ namespace DebugConsole
         
 #region factory
 
-        public static void Create()
+        public static GameObject Create()
         {
             Canvas canvas = UiFactory.UiCanvas(
                 "Canvas",
@@ -32,6 +32,8 @@ namespace DebugConsole
             PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(canvas.RTransform(), RtrLites.FullFill),
                 "debug_console", "console");
+
+            return canvas.gameObject;
         }
 
 #endregion

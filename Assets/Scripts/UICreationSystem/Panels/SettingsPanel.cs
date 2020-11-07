@@ -50,7 +50,7 @@ namespace UICreationSystem.Panels
                     RtrLites.FullFill),
                 "main_menu", "settings_panel");
 
-            m_Content = sp.GetComponentItem<RectTransform>("content");
+            m_Content = sp.GetCompItem<RectTransform>("content");
             InitSettingItems();
             return sp.RTransform();
         }
@@ -59,6 +59,9 @@ namespace UICreationSystem.Panels
         {
             InitSettingItem(new SoundSetting());
             InitSettingItem(new LanguageSetting());
+            #if DEBUG
+            InitSettingItem(new DebugSetting());
+            #endif
         }
         
         private void InitSettingItem(ISetting _Setting)
