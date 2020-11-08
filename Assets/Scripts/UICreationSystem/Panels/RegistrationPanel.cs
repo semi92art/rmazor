@@ -21,9 +21,6 @@ namespace UICreationSystem.Panels
 
         private TMP_InputField m_RepeatPasswordInputField;
         private TextMeshProUGUI m_RepeatPasswordErrorHandler;
-        private TextMeshProUGUI m_SelectCountryButtonText;
-        private Image m_SelectCountryButtonIcon;
-        private string m_CountryKey;
 
         #endregion
         
@@ -36,9 +33,7 @@ namespace UICreationSystem.Panels
                     m_DialogViewer.DialogContainer,
                     RtrLites.FullFill),
                 "main_menu", "register_panel");
-
-            m_SelectCountryButtonIcon = rp.GetCompItem<Image>("country_select_icon");
-            m_SelectCountryButtonText = rp.GetCompItem<TextMeshProUGUI>("country_select_title");
+            
             m_LoginErrorHandler = rp.GetCompItem<TextMeshProUGUI>("login_error_handler");
             m_PasswordErrorHandler = rp.GetCompItem<TextMeshProUGUI>("password_error_handler");
             m_RepeatPasswordErrorHandler = rp.GetCompItem<TextMeshProUGUI>("repeat_password_error_handler");
@@ -51,16 +46,9 @@ namespace UICreationSystem.Panels
             m_RepeatPasswordInputField = rp.GetCompItem<TMP_InputField>("repeat_password_input_field");
             m_RepeatPasswordInputField.contentType = TMP_InputField.ContentType.Password;
             Button registerButton = rp.GetCompItem<Button>("register_button");
-            Button selectCountryButton = rp.GetCompItem<Button>("country_select_button");
-            
-            registerButton.SetOnClick(Register);
-            selectCountryButton.SetOnClick(SelectCountry);
 
-            string ctrDefaultKey = Countries.Keys[0];
-            m_SelectCountryButtonText.text = ctrDefaultKey;
-            m_SelectCountryButtonIcon.sprite = Countries.GetFlag(ctrDefaultKey);
-            m_CountryKey = ctrDefaultKey;
-            
+            registerButton.SetOnClick(Register);
+
             CleanErrorHandlers();
             
             return rp.RTransform();
@@ -95,8 +83,7 @@ namespace UICreationSystem.Panels
             var packet = new RegisterUserPacket(new RegisterUserUserPacketRequestArgs
             {
                 Name = m_LoginInputField.text,
-                PasswordHash = Utility.GetMD5Hash(m_PasswordInputField.text),
-                CountryKey = m_CountryKey
+                PasswordHash = Utility.GetMD5Hash(m_PasswordInputField.text)
             });
             packet.OnSuccess(() =>
             {
@@ -119,22 +106,6 @@ namespace UICreationSystem.Panels
             });
             
             GameClient.Instance.Send(packet);
-        }
-
-        private void SelectCountry()
-        {
-            var go = new GameObject("Countries Panel");
-            var countriesPanel = go.AddComponent<CountriesPanel>();
-            countriesPanel.Init(
-                m_DialogViewer,
-                m_CountryKey,
-                _SelectedKey =>
-                {
-                    m_CountryKey = _SelectedKey;
-                    m_SelectCountryButtonText.text = _SelectedKey;
-                    m_SelectCountryButtonIcon.sprite = Countries.GetFlag(_SelectedKey);
-                });
-            countriesPanel.Show();
         }
 
         private bool CheckForInputErrors()

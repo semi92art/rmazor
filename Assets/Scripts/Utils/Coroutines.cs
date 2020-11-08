@@ -91,7 +91,13 @@ namespace Utils
             var graphicsAndAlphas = _GraphicsAndAlphas.CloneAlt();
             
             _Item.gameObject.SetActive(true);
-            
+            var animators = _Item.GetComponentsInChildrenEnabled<Animator>();
+            var buttons = _Item.GetComponentsInChildrenEnabled<Button>();
+            foreach (var animator in animators)
+                animator.Key.enabled = false;
+            foreach (var button in buttons)
+                button.Key.enabled = false; 
+
             float currTime = Time.time;
             while (Time.time < currTime + _Time)
             {
@@ -114,6 +120,10 @@ namespace Utils
                 if (graphic.IsAlive())
                     graphic.color = graphic.color.SetAlpha(_Disappear ? 0 : ga.Value);
             }
+            foreach (var animator in animators)
+                animator.Key.enabled = animator.Value;
+            foreach (var button in buttons)
+                button.Key.enabled = button.Value; 
             if (_Disappear)
                 _Item.gameObject.SetActive(false);
             _OnFinish?.Invoke();

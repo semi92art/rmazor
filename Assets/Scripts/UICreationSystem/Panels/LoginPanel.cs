@@ -30,7 +30,6 @@ namespace UICreationSystem.Panels
             TextMeshProUGUI loginButtonText = lp.GetCompItem<TextMeshProUGUI>("login_button_text");
             TextMeshProUGUI loginAppleButtonText = lp.GetCompItem<TextMeshProUGUI>("login_apple_button_text");
             TextMeshProUGUI loginGoogleButtonText = lp.GetCompItem<TextMeshProUGUI>("login_google_button_text");
-            TextMeshProUGUI continueAsGuestButtonText = lp.GetCompItem<TextMeshProUGUI>("continue_as_guest_button_text");
             TextMeshProUGUI registerButtonText = lp.GetCompItem<TextMeshProUGUI>("register_button_text");
             TextMeshProUGUI logoutButtonText = lp.GetCompItem<TextMeshProUGUI>("logout_button_text");
             
@@ -41,7 +40,6 @@ namespace UICreationSystem.Panels
             Button loginButton = lp.GetCompItem<Button>("login_button");
             Button loginAppleButton = lp.GetCompItem<Button>("login_apple_button");
             Button loginGoogleButton = lp.GetCompItem<Button>("login_google_button");
-            Button continueAsGuestButton = lp.GetCompItem<Button>("continue_as_guest_button");
             Button registrationButton = lp.GetCompItem<Button>("register_button");
             Button logoutButton = lp.GetCompItem<Button>("logout_button");
             
@@ -49,15 +47,13 @@ namespace UICreationSystem.Panels
             loginAppleButton.SetOnClick(LoginWithApple);
             loginGoogleButton.SetOnClick(LoginWithGoogle);
             registrationButton.SetOnClick(Registration);
-            continueAsGuestButton.SetOnClick(ContinueAsGuest);
             logoutButton.SetOnClick(Logout);
             
             //TODO when apple login function will be ready, delete line below
-            lp.GetContentItem("login_apple_button_container").SetActive(false);
+            loginAppleButton.gameObject.SetActive(false);
 
             bool isLogined = !string.IsNullOrEmpty(GameClient.Instance.Login);
-            lp.GetContentItem("continue_as_guest_button_container").SetActive(!isLogined);
-            lp.GetContentItem("logout_button_container").SetActive(isLogined);
+            logoutButton.gameObject.SetActive(isLogined);
             
             CleanErrorHandlers();
             return lp.RTransform();
@@ -149,11 +145,6 @@ namespace UICreationSystem.Panels
             GameClient.Instance.Send(packet);
         }
 
-        private void ContinueAsGuest()
-        {
-            m_DialogViewer.Back();
-        }
-        
         #endregion
     }
 }

@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Extensions;
-using Network;
 using UICreationSystem;
 using UICreationSystem.Factories;
 using UICreationSystem.Panels;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UI.ProceduralImage;
 using Utils;
-using Object = UnityEngine.Object;
 
 public interface IDialogViewer
 {

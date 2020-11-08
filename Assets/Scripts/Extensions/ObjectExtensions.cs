@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Extensions
 {
@@ -76,13 +77,22 @@ namespace Extensions
                 GetChilds(_Transform.GetChild(i), ref _List);
         }
 
-        public static List<T> GetComponentsInChildrenEx<T>(this Component _Item) where T : Component
+        public static List<T> GetComponentsInChildrenEx<T>(this Component _Item) where T : Behaviour
         {
             IEnumerable<T> result = _Item.GetComponentsInChildren<T>();
             T root = _Item.GetComponent<T>();
             if (root != null)
                 result = result.Concat(new[] {root});
             return result.ToList();
+        }
+
+        public static Dictionary<T, bool> GetComponentsInChildrenEnabled<T>(this Component _Item) where T : Behaviour
+        {
+            var list = _Item.GetComponentsInChildrenEx<T>();
+            var result = new Dictionary<T, bool>();
+            foreach (var item in list.Where(item => !result.ContainsKey(item)))
+                result.Add(item, item.enabled);
+            return result;
         }
 
         public static GameObject Clone(this GameObject _Object)
