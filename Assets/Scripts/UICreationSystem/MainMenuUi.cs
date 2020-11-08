@@ -1,4 +1,4 @@
-﻿using Extentions;
+﻿using Extensions;
 using Network;
 using UICreationSystem.Factories;
 using UICreationSystem.Panels;

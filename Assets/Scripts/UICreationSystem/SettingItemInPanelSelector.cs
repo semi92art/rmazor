@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Extentions;
+using Extensions;
 using TMPro;
 using UICreationSystem.Factories;
 using UICreationSystem.Panels;

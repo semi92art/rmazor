@@ -402,7 +402,7 @@ namespace MkeyFW
                 }
 
                 Coroutines.Run(Coroutines.Delay(
-                    () => m_DialogViewer.Show(null, true),
+                    () => m_DialogViewer.Back(),
                     2f));
             }
             Debug.Log($"Coins: {coins}; IsBigWin: {isBigWin}");

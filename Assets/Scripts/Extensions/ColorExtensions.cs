@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace Extentions
+namespace Extensions
 {
-    public static class ColorExtentions
+    public static class ColorExtensions
     {
         public static Color SetAlpha(this Color _Color, float _Alpha)
         {

@@ -1,4 +1,4 @@
-﻿using Extentions;
+﻿using Extensions;
 using Network;
 using Network.PacketArgs;
 using Network.Packets;
@@ -88,7 +88,7 @@ namespace UICreationSystem.Panels
                 GameClient.Instance.PasswordHash = packet.Response.PasswordHash;
                 GameClient.Instance.AccountId = packet.Response.Id;
                 MoneyManager.Instance.GetMoney(true);
-                m_DialogViewer.Show(null, true);       
+                m_DialogViewer.Back();       
             });
             packet.OnFail(() =>
             {
@@ -139,7 +139,7 @@ namespace UICreationSystem.Panels
                 GameClient.Instance.PasswordHash = string.Empty;
                 GameClient.Instance.AccountId = packet.Response.Id;
                 MoneyManager.Instance.GetMoney(true);
-                m_DialogViewer.Show(null, true);       
+                m_DialogViewer.Back();       
             });
             packet.OnFail(() =>
             {
@@ -151,7 +151,7 @@ namespace UICreationSystem.Panels
 
         private void ContinueAsGuest()
         {
-            m_DialogViewer.Show(null, true);
+            m_DialogViewer.Back();
         }
         
         #endregion

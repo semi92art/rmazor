@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace Extentions
+namespace Extensions
 {
-    public static class TransformExtentions
+    public static class TransformExtensions
     {
         public static void SetPosX(this Transform _T, float _X)
         {

@@ -4,9 +4,9 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Extentions
+namespace Extensions
 {
-    public static class ObjectExtentions
+    public static class ObjectExtensions
     {
         public static T AddComponentIfNotExist<T>(this GameObject _Object) where T : Component
         {

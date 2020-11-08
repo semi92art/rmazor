@@ -1,4 +1,4 @@
-﻿using Extentions;
+﻿using Extensions;
 using Network;
 using Network.PacketArgs;
 using Network.Packets;
@@ -104,7 +104,7 @@ namespace UICreationSystem.Panels
                 GameClient.Instance.PasswordHash = packet.Response.PasswordHash;
                 GameClient.Instance.AccountId = packet.Response.Id;
                 MoneyManager.Instance.GetMoney(true);
-                m_DialogViewer.Show(null, true);
+                m_DialogViewer.Back();
             }).OnFail(() =>
             {
                 switch (packet.ErrorMessage.Id)

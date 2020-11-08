@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Extentions;
+using Extensions;
 using Network;
 using UICreationSystem;
 using UICreationSystem.Factories;
@@ -14,9 +14,11 @@ using Object = UnityEngine.Object;
 public interface IDialogViewer
 {
     RectTransform DialogContainer { get; }
-    void Show(IDialogPanel _ItemTo, bool _IsGoBack = false, float _TransitionTime = 0.2f);
+    void Show(IDialogPanel _ItemTo, bool _HidePrevious = true);
+    void Back();
     void AddNotDialogItem(RectTransform _Item, UiCategory _Categories);
     void RemoveNotDialogItem(RectTransform _Item);
+    IDialogViewer SetTransitionTime(float _TransitionTime);
 }
 
 public class DefaultDialogViewer : MonoBehaviour, IDialogViewer, IActionExecuter
@@ -32,6 +34,17 @@ public class DefaultDialogViewer : MonoBehaviour, IDialogViewer, IActionExecuter
             Alphas = _Item.GetComponentsInChildrenEx<Graphic>()
                 .Distinct()
                 .ToDictionary(_El => _El, _El => _El.color.a);
+        }
+    }
+
+    private class PanelAndVisibility
+    {
+        public IDialogPanel DialogPanel { get; }
+        public bool IsHidden { get; set; }
+
+        public PanelAndVisibility(IDialogPanel _DialogPanel)
+        {
+            DialogPanel = _DialogPanel;
         }
     }
 
@@ -58,16 +71,18 @@ public class DefaultDialogViewer : MonoBehaviour, IDialogViewer, IActionExecuter
     
     #region private members
 
+    private readonly Dictionary<RectTransform, UiCategoriesVis> m_NotDialogs =
+        new Dictionary<RectTransform, UiCategoriesVis>();
+    private readonly Dictionary<int, GraphicAlphas> m_GraphicsAlphas = 
+        new Dictionary<int, GraphicAlphas>();
+    private readonly Stack<PanelAndVisibility> m_PanelStack = new Stack<PanelAndVisibility>();
     private Sprite m_IconBack;
     private Sprite m_IconClose;
-    private Dictionary<RectTransform, UiCategoriesVis> m_NotDialogs = new Dictionary<RectTransform, UiCategoriesVis>();
     private Button m_CloseButton;
     private Image m_CloseButtonIcon;
     private IDialogPanel m_FromTemp;
-    private Dictionary<int, GraphicAlphas> m_GraphicsAlphas = 
-        new Dictionary<int, GraphicAlphas>();
-    private Stack<IDialogPanel> m_PanelStack = new Stack<IDialogPanel>();
-    private Stack<RectTransform> m_NotDialogsToRemove = new Stack<RectTransform>();
+    private float m_TransitionTime = 0.2f;
+    
 
     #endregion
     
@@ -85,7 +100,7 @@ public class DefaultDialogViewer : MonoBehaviour, IDialogViewer, IActionExecuter
             "main_menu_buttons", "dialog_close_button");
         m_CloseButton = go.GetCompItem<Button>("button");
         m_CloseButtonIcon = go.GetCompItem<Image>("close_icon");
-        m_CloseButton.SetOnClick(GoBack);
+        m_CloseButton.SetOnClick(Back);
         m_GraphicsAlphas.Add(m_CloseButton.RTransform().GetInstanceID(), new GraphicAlphas(m_CloseButton.RTransform()));
         m_CloseButton.RTransform().gameObject.SetActive(false);
 
@@ -96,7 +111,7 @@ public class DefaultDialogViewer : MonoBehaviour, IDialogViewer, IActionExecuter
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
-            GoBack();
+            Back();
     }
     
     #endregion
@@ -105,57 +120,88 @@ public class DefaultDialogViewer : MonoBehaviour, IDialogViewer, IActionExecuter
     
     public Action Action { get; set; }
     public RectTransform DialogContainer => dialogContainer;
-    
-    public void Show(
-        IDialogPanel _ItemTo, 
-        bool _IsGoBack = false,
-        float _TransitionTime = 0.2f)
+
+    public void Show(IDialogPanel _ItemTo, bool _HidePrevious = true)
     {
-        IDialogPanel itemFrom;
-        if (m_FromTemp != null)
-        {
-            itemFrom = m_FromTemp;
-            m_FromTemp = null;
-        }
-        else
-        {
-            itemFrom = m_PanelStack.Any() ? m_PanelStack.Peek() : null;    
-        }
+        var to = new PanelAndVisibility(_ItemTo);
+        ShowCore(to, _HidePrevious, false);
+    }
+
+    public void Back()
+    {
+        ShowCore(m_PanelStack.GetItem(1), true, true);
+    }
+
+    public IDialogViewer SetTransitionTime(float _TransitionTime)
+    {
+        m_TransitionTime = _TransitionTime;
+        return this;
+    }
+
+    public void AddNotDialogItem(RectTransform _Item, UiCategory _Categories)
+    {
+        if (m_NotDialogs.ContainsKey(_Item))
+            return;
+        m_NotDialogs.Add(_Item, new UiCategoriesVis(_Categories, _Item.gameObject.activeSelf));
+        m_GraphicsAlphas.Add(_Item.GetInstanceID(), new GraphicAlphas(_Item));
+    }
+
+    public void RemoveNotDialogItem(RectTransform _Item)
+    {
+        if (!m_NotDialogs.ContainsKey(_Item)) 
+            return;
+        m_NotDialogs.Remove(_Item);
+        m_GraphicsAlphas.Remove(_Item.GetInstanceID());
+    }
+
+    #endregion
+
+    #region private methods
+    
+    private void ShowCore(
+        PanelAndVisibility _ItemTo, 
+        bool _HidePrevious,
+        bool _GoBack)
+    {
+        PanelAndVisibility itemFrom = m_FromTemp != null || !m_PanelStack.Any() ? null : m_PanelStack.Peek();
+        m_FromTemp = null;
         
         if (itemFrom == null && _ItemTo == null)
             return;
+
+        var fromPanel = itemFrom?.DialogPanel.Panel;
+        var toPanel = _ItemTo?.DialogPanel.Panel;
         
-        UiManager.Instance.CurrentCategory = _ItemTo?.Category ?? UiCategory.MainMenu;
+        UiManager.Instance.CurrentCategory = _ItemTo?.DialogPanel?.Category ?? UiCategory.MainMenu;
         var cat = UiManager.Instance.CurrentCategory;
         
-        if (itemFrom != null)
+        if (itemFrom != null && _HidePrevious)
         {
-            int instId = itemFrom.Panel.GetInstanceID();
+            int instId = fromPanel.GetInstanceID();
             if (!m_GraphicsAlphas.ContainsKey(instId))
-                m_GraphicsAlphas.Add(instId, new GraphicAlphas(itemFrom.Panel));
-            itemFrom.Panel.Set(RtrLites.FullFill);
+                m_GraphicsAlphas.Add(instId, new GraphicAlphas(fromPanel));
             StartCoroutine(Coroutines.DoTransparentTransition(
-                itemFrom.Panel, m_GraphicsAlphas[instId].Alphas, _TransitionTime, true,
+                fromPanel, m_GraphicsAlphas[instId].Alphas, m_TransitionTime, true,
                 () =>
                 {
-                    if (_IsGoBack)
-                    {
-                        Destroy(itemFrom.Panel.gameObject);
-                        var monobeh = itemFrom as MonoBehaviour;
-                        if (monobeh != null)
-                            Destroy(monobeh.gameObject);
-                    }
-                })); 
+                    if (!_GoBack)
+                        return;
+                    Destroy(fromPanel.gameObject);
+                    var monobeh = itemFrom.DialogPanel as MonoBehaviour;
+                    if (monobeh != null)
+                        Destroy(monobeh.gameObject);
+                }));
+            itemFrom.IsHidden = true;
         }
 
-        if (_ItemTo != null)
+        if (toPanel != null)
         {
-            int instId = _ItemTo.Panel.GetInstanceID();
+            int instId = toPanel.GetInstanceID();
             if (!m_GraphicsAlphas.ContainsKey(instId))
-                m_GraphicsAlphas.Add(instId, new GraphicAlphas(_ItemTo.Panel));
-            _ItemTo.Panel.Set(RtrLites.FullFill);
+                m_GraphicsAlphas.Add(instId, new GraphicAlphas(toPanel));
+            toPanel.Set(RtrLites.FullFill);
             StartCoroutine(Coroutines.DoTransparentTransition(
-                _ItemTo.Panel, m_GraphicsAlphas[instId].Alphas, _TransitionTime, false, 
+                toPanel, m_GraphicsAlphas[instId].Alphas, m_TransitionTime, false, 
                 () => background.enabled = true));
         }
 
@@ -175,7 +221,7 @@ public class DefaultDialogViewer : MonoBehaviour, IDialogViewer, IActionExecuter
                     StartCoroutine(Coroutines.DoTransparentTransition(
                         item.Key,
                         m_GraphicsAlphas[item.Key.GetInstanceID()].Alphas, 
-                        _TransitionTime,
+                        m_TransitionTime,
                         !show.Value,
                         () =>
                         {
@@ -186,76 +232,46 @@ public class DefaultDialogViewer : MonoBehaviour, IDialogViewer, IActionExecuter
             }
         }
 
-        if (m_CloseButton != null && (itemFrom == null || _ItemTo == null))
+        if (m_CloseButton != null && (itemFrom == null || toPanel == null))
         {
             StartCoroutine(Coroutines.DoTransparentTransition(m_CloseButton.RTransform(),
-                m_GraphicsAlphas[m_CloseButton.RTransform().GetInstanceID()].Alphas, _TransitionTime, _IsGoBack));
+                m_GraphicsAlphas[m_CloseButton.RTransform().GetInstanceID()].Alphas, m_TransitionTime, _GoBack));
         }
-            
         
-        background.enabled = background.raycastTarget = !(_ItemTo == null && _IsGoBack);
+        background.enabled = background.raycastTarget = !(toPanel == null && _GoBack);
         ClearGraphicsAlphas();
-
-        if (_ItemTo == null)
+        
+        if (toPanel == null)
             ClearPanelStack();
         else
         {
             if (!m_PanelStack.Any())
                 m_PanelStack.Push(itemFrom);
-            m_PanelStack.Push(_ItemTo);
+            if (m_PanelStack.Any() && _GoBack)
+                m_PanelStack.Pop();
+            if (!_GoBack)
+                m_PanelStack.Push(_ItemTo);
         }
 
         SetCloseButtonIcon();
     }
 
-    public void AddNotDialogItem(RectTransform _Item, UiCategory _Categories)
-    {
-        if (!m_NotDialogs.ContainsKey(_Item))
-        {
-            m_NotDialogs.Add(_Item, new UiCategoriesVis(_Categories, _Item.gameObject.activeSelf));
-            m_GraphicsAlphas.Add(_Item.GetInstanceID(), new GraphicAlphas(_Item));
-        }
-    }
-
-    public void RemoveNotDialogItem(RectTransform _Item)
-    {
-        if (m_NotDialogs.ContainsKey(_Item))
-        {
-            m_NotDialogs.Remove(_Item);
-            m_GraphicsAlphas.Remove(_Item.GetInstanceID());
-        }
-    }
-
-    #endregion
-
-    #region private methods
-
     private void ClearPanelStack()
     {
-        var list = new List<IDialogPanel>();
+        var list = new List<PanelAndVisibility>();
         while(m_PanelStack.Any())
             list.Add(m_PanelStack.Pop());
-        foreach (var item in list)
-        {
-            var monobeh = item as MonoBehaviour;
-            if (monobeh != null)
-                Destroy(monobeh);
-        }
+        foreach (var monobeh in from item in list 
+            where item != null select item.DialogPanel as MonoBehaviour)
+            Destroy(monobeh);
     }
     
     private void SetCloseButtonIcon()
     {
-        IDialogPanel item1, item2 = null;
-        if (m_PanelStack.Any())
-        {
-            item1 = m_PanelStack.Pop();
-            if (m_PanelStack.Any())
-                item2 = m_PanelStack.Peek();
-            m_PanelStack.Push(item1);
-        }
-        
-        if (m_CloseButton != null)
-            m_CloseButtonIcon.sprite = item2 == null ? m_IconClose : m_IconBack;
+        if (m_CloseButton == null)
+            return;
+        m_CloseButtonIcon.sprite = m_PanelStack.GetItem(1) == null ? 
+            m_IconClose : m_IconBack;
     }
     
     private void ClearGraphicsAlphas()
@@ -266,16 +282,7 @@ public class DefaultDialogViewer : MonoBehaviour, IDialogViewer, IActionExecuter
                 m_GraphicsAlphas.Remove(item.Key);
         }
     }
-    
-    private void GoBack()
-    {
-        if (m_PanelStack.Any())
-        {
-            m_FromTemp = m_PanelStack.Pop();
-            Show(m_PanelStack.Pop(), true);
-        }
-    }
-    
+
     #endregion
 }
 

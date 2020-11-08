@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Extentions;
+using Extensions;
 using UICreationSystem.Factories;
 using UnityEngine;
 

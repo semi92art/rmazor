@@ -1,4 +1,4 @@
-﻿using Extentions;
+﻿using Extensions;
 using UICreationSystem.Factories;
 using UnityEngine;
 
@@ -43,7 +43,7 @@ namespace UICreationSystem.Panels
         
         public void Hide()
         {
-            m_DialogViewer.Show(null, true);
+            m_DialogViewer.Back();
         }
     
         #endregion

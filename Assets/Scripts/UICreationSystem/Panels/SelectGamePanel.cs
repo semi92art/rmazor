@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Extentions;
+using Extensions;
 using Network;
 using UICreationSystem.Factories;
 using UnityEngine;
@@ -74,7 +74,7 @@ namespace UICreationSystem.Panels
                 {
                     GameClient.Instance.GameId = cgiProps.GameId;
                     m_SelectGame.Invoke(cgiProps.GameId);
-                    m_DialogViewer.Show(null, true);
+                    m_DialogViewer.Back();
                 };
                 cgi.Init(cgiProps);
             }

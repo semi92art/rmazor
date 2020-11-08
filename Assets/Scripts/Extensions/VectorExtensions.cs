@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace Extentions
+namespace Extensions
 {
-    public static class VectorExtentions
+    public static class VectorExtensions
     {
         public static Vector3 SetX(this Vector3 _V, float _X)
         {

@@ -1,4 +1,4 @@
-﻿using Extentions;
+﻿using Extensions;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;

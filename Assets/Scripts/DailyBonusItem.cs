@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
-using Extentions;
+using Extensions;
 using UICreationSystem.Panels;
 using Utils;
 

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Extentions;
+using Extensions;
 using UICreationSystem.Factories;
 using UnityEngine;
 using UnityEngine.UI;

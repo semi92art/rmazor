@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Boo.Lang;
-using Extentions;
+using Extensions;
 using UICreationSystem.Factories;
 using UnityEngine;
 using Utils;
@@ -91,7 +91,7 @@ namespace UICreationSystem.Panels
                 dbProps.Click = () =>
                 {
                     SaveUtils.PutValue(SaveKey.DailyBonusLastItemClickedDay, k++);
-                    m_DialogViewer.Show( null, true);
+                    m_DialogViewer.Back();
                 };
                 
                 dbi.Init(dbProps, m_ActionExecuter);

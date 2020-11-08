@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Extentions;
+using Extensions;
 using UnityEngine;
 using UICreationSystem;
 using UICreationSystem.Factories;

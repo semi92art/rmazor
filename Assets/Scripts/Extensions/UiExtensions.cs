@@ -3,9 +3,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Extentions
+namespace Extensions
 {
-    public static class UiExtentions
+    public static class UiExtensions
     {
         public static RectTransform RTransform(this Canvas _Canvas) =>
             _Canvas.GetComponent<RectTransform>();
