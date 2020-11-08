@@ -77,22 +77,23 @@ namespace Extensions
                 GetChilds(_Transform.GetChild(i), ref _List);
         }
 
-        public static List<T> GetComponentsInChildrenEx<T>(this Component _Item) where T : Behaviour
+        public static List<T> GetComponentsInChildrenEx<T>(
+            this Component _Item) where T : Behaviour
         {
             IEnumerable<T> result = _Item.GetComponentsInChildren<T>();
+            result = result.Except(result.Where(_Itm => !_Itm.IsAlive()));
+                
             T root = _Item.GetComponent<T>();
             if (root != null)
                 result = result.Concat(new[] {root});
-            return result.ToList();
+            return result.Distinct().ToList();
         }
 
-        public static Dictionary<T, bool> GetComponentsInChildrenEnabled<T>(this Component _Item) where T : Behaviour
+        public static Dictionary<T, bool> GetComponentsInChildrenEnabled<T>(
+            this Component _Item) where T : Behaviour
         {
             var list = _Item.GetComponentsInChildrenEx<T>();
-            var result = new Dictionary<T, bool>();
-            foreach (var item in list.Where(item => !result.ContainsKey(item)))
-                result.Add(item, item.enabled);
-            return result;
+            return list.ToDictionary(_Itm => _Itm, _Itm => _Itm.enabled);
         }
 
         public static GameObject Clone(this GameObject _Object)
@@ -103,9 +104,10 @@ namespace Extensions
             return cloned;
         }
 
-        public static bool IsAlive(this UIBehaviour _UiBehaviour)
+        public static bool IsAlive(this Behaviour _Beh)
         {
-            return _UiBehaviour != null && !_UiBehaviour.IsDestroyed();
+            return !(_Beh is UIBehaviour) && _Beh != null ||
+                   _Beh is UIBehaviour uiBeh && uiBeh != null && !uiBeh.IsDestroyed();
         }
     }
 }

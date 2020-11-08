@@ -187,7 +187,7 @@ namespace UICreationSystem.Panels
 
             var currMoney = MoneyManager.Instance.GetMoney();
             if (_Income.ContainsKey(moneyType))
-                Coroutines.Run(Coroutines.LerpValue(
+                Coroutines.Run(Coroutines.Lerp(
                     currMoney[moneyType],
                     currMoney[moneyType] + _Income[moneyType],
                     IncomeAnimTime,

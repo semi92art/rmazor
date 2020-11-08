@@ -120,16 +120,19 @@ namespace Utils
                 if (graphic.IsAlive())
                     graphic.color = graphic.color.SetAlpha(_Disappear ? 0 : ga.Value);
             }
+
             foreach (var animator in animators)
-                animator.Key.enabled = animator.Value;
+                if (animator.Key.IsAlive())
+                    animator.Key.enabled = animator.Value;
             foreach (var button in buttons)
-                button.Key.enabled = button.Value; 
+                if (button.Key.IsAlive())
+                    button.Key.enabled = button.Value; 
             if (_Disappear)
                 _Item.gameObject.SetActive(false);
             _OnFinish?.Invoke();
         }
 
-        public static IEnumerator LerpValue(
+        public static IEnumerator Lerp(
             int _From,
             int _To,
             float _Time,
