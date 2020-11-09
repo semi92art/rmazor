@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using Extensions;
-using UICreationSystem;
-using UICreationSystem.Factories;
+using Helpers;
+using UI;
+using UI.Factories;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;

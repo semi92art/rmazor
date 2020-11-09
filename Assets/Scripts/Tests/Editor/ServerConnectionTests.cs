@@ -76,7 +76,7 @@ namespace Tests.Editor
                 {
                     Name = "",
                     PasswordHash = "",
-                    DeviceId = $"test_{Utility.GetUniqueID()}"
+                    DeviceId = $"test_{Utility.GetUniqueId()}"
                 })
                 .OnSuccess(() => requestSuccess = true);
             GameClient.Instance.Send(packet);

@@ -1,5 +1,5 @@
 ﻿namespace Network.PacketArgs
 {
-    public class RegisterUserPacketResponseArgs : LoginUserPacketResponseArgs
+    public class RegisterUserPacketResponseArgs : Account
     { }
 }

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
-using UICreationSystem;
+using Entities;
+using UI;
+using UI.Managers;
 using Utils;
 
 namespace Settings

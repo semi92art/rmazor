@@ -28,5 +28,10 @@ namespace Extensions
         {
             return new Vector2(_V.x, _Y);
         }
+
+        public static Vector2 XY(this Vector3 _V)
+        {
+            return new Vector2(_V.x, _V.y);
+        }
     }
 }

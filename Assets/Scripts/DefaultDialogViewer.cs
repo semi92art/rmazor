@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using Extensions;
-using UICreationSystem;
-using UICreationSystem.Factories;
-using UICreationSystem.Panels;
+using Helpers;
+using UI;
+using UI.Entities;
+using UI.Factories;
+using UI.Managers;
+using UI.Panels;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UI.ProceduralImage;

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Entities;
 using UnityEngine;
 using UnityEngine.Networking;
 using Newtonsoft.Json;
-using UICreationSystem;
 using Utils;
 
 namespace Network

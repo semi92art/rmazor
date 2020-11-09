@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
+using Entities;
+using Managers;
 using Network;
 using Network.PacketArgs;
 using Network.Packets;
-using UICreationSystem;
+using UI;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using Utils;
 
@@ -32,7 +35,7 @@ public class EditorHelper : EditorWindow
         if (GUI.enabled)
             GUILayout.Space(10);
         GUILayout.BeginHorizontal();
-    
+
         if (GUILayout.Button("Enable Daily Bonus"))
             EnableDailyBonus();
         GUILayout.Label("Day:");
@@ -41,7 +44,7 @@ public class EditorHelper : EditorWindow
         GUILayout.EndHorizontal();
         GUILayout.Space(10);
         GUILayout.BeginHorizontal();
-    
+
         if (GUILayout.Button("Set Money"))
             SetMoney(m_Gold, m_Diamonds);
         GUILayout.Label("gold: ");
@@ -50,12 +53,12 @@ public class EditorHelper : EditorWindow
         m_Diamonds = EditorGUILayout.IntField(m_Diamonds);
 
         GUILayout.EndHorizontal();
-        DrawUiLine(Color.gray);
+        EditorUtils.DrawUiLine(Color.gray);
         GUI.enabled = true;
 
         if (GUILayout.Button("Print Common Info"))
             PrintCommonInfo();
-    
+
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("Create test users"))
             CreateTestUsers(m_TestUsersNum);
@@ -66,7 +69,7 @@ public class EditorHelper : EditorWindow
         GUILayout.EndHorizontal();
         if (GUILayout.Button("Delete all test users"))
             DeleteAllTestUsers();
-    
+
         GUILayout.BeginHorizontal();
         GUILayout.Label("Debug Server Url:");
         m_TestUrl = EditorGUILayout.TextField(m_TestUrl);
@@ -75,8 +78,17 @@ public class EditorHelper : EditorWindow
             m_TestUrl = @"http://77.37.152.15:7000";
         if (GUILayout.Button("Delete All Settings"))
             PlayerPrefs.DeleteAll();
-        
-        
+    
+        EditorUtils.DrawUiLine(Color.gray);
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("_preload"))
+            EditorSceneManager.OpenScene("Assets/Scenes/_preload.unity");
+        if (GUILayout.Button("Main"))
+            EditorSceneManager.OpenScene("Assets/Scenes/Main.unity");
+        if (GUILayout.Button("Level"))
+            EditorSceneManager.OpenScene("Assets/Scenes/Level.unity");
+        GUILayout.EndHorizontal();
+    
 
         UpdateTestUrl();
     }
@@ -125,9 +137,9 @@ public class EditorHelper : EditorWindow
             var packet = new RegisterUserPacket(
                 new RegisterUserUserPacketRequestArgs
                 {
-                    Name = m_IsGuest ? string.Empty : $"test_{Utility.GetUniqueID()}",
+                    Name = m_IsGuest ? string.Empty : $"test_{Utility.GetUniqueId()}",
                     PasswordHash = Utility.GetMD5Hash("1"),
-                    DeviceId = m_IsGuest ? $"test_{Utility.GetUniqueID()}" : string.Empty,
+                    DeviceId = m_IsGuest ? $"test_{Utility.GetUniqueId()}" : string.Empty,
                     GameId = gameId,
                     CountryKey = Countries.Keys[randGen.Next(0, cCount)]
                 });
@@ -163,7 +175,7 @@ public class EditorHelper : EditorWindow
                     GameClient.Instance.Send(profPacket);
                 })
                 .OnFail(() => Debug.Log($"{resultTextBegin(ii)} failed"));
-        
+    
             GameClient.Instance.Send(packet);
         }
     }
@@ -179,15 +191,6 @@ public class EditorHelper : EditorWindow
         GameClient.Instance.Init(true);
         GameClient.Instance.Send(packet);
     }
-    
-    public static void DrawUiLine(Color _C, int _Thickness = 2, int _Padding = 10)
-    {
-        Rect r = EditorGUILayout.GetControlRect(GUILayout.Height(_Padding+_Thickness));
-        r.height = _Thickness;
-        r.y += _Padding * 0.5f;
-        r.x -= 2;
-        r.width += 6;
-        EditorGUI.DrawRect(r, _C);
-    }
 }
+
 

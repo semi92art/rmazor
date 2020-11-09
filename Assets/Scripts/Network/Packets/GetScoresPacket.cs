@@ -7,7 +7,7 @@ namespace Network.Packets
     {
         public override int Id => 4;
         public override string Url => $"{GameClient.Instance.BaseUrl}/api/scores/getsome";
-        public List<GetScoreResponseArgs> Response { get; private set; }
+        public List<Score> Response { get; private set; }
 
 
         public GetScoresPacket(AccIdGameId _Request) : base(_Request)
@@ -16,7 +16,7 @@ namespace Network.Packets
         public override void DeserializeResponse(string _Json)
         {
             if (Utils.Utility.IsInRange(ResponseCode, 200, 299))
-                Response = GameClient.Instance.Deserialize<List<GetScoreResponseArgs>>(_Json);
+                Response = GameClient.Instance.Deserialize<List<Score>>(_Json);
             base.DeserializeResponse(_Json);
         }
     }

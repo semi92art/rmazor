@@ -1,4 +1,4 @@
-﻿namespace Network.Packets
+﻿namespace Network.PacketArgs
 {
     public class AccountDataPacketRequestArgs
     {

@@ -6,7 +6,7 @@ namespace Network.Packets
     {
         public override int Id => 5;
         public override string Url => $"{GameClient.Instance.BaseUrl}/api/accounts/login";
-        public LoginUserPacketResponseArgs Response { get; private set; }
+        public Account Response { get; private set; }
         
         private readonly LoginUserPacketRequestArgs m_Request;
 
@@ -16,7 +16,7 @@ namespace Network.Packets
         public override void DeserializeResponse(string _Json)
         {
             if (Utils.Utility.IsInRange(ResponseCode, 200, 299))
-                Response = GameClient.Instance.Deserialize<LoginUserPacketResponseArgs>(_Json);
+                Response = GameClient.Instance.Deserialize<Account>(_Json);
             base.DeserializeResponse(_Json);
         }
     }
