@@ -14,6 +14,7 @@ public partial class TrueShadow : UIBehaviour, IMeshModifier, ICanvasElement
 {
     static readonly Color DEFAULT_COLOR = new Color(0, 0, 0, .15f);
 
+    public bool isBackground;
     [Tooltip("Size of the shadow")]
     [SerializeField] float size = 32;
 
@@ -46,6 +47,16 @@ public partial class TrueShadow : UIBehaviour, IMeshModifier, ICanvasElement
     [SerializeField] ColorBleedMode colorBleedMode;
 
     [SerializeField] bool modifiedFromInspector = false;
+
+    public bool IsBackground
+    {
+        get => isBackground;
+        set
+        {
+
+            isBackground = value;
+        }
+    }
 
     public float Size
     {

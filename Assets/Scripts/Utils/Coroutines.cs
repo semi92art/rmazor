@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Extensions;
 using Helpers;
+using LeTai.TrueShadow;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -97,23 +98,86 @@ namespace Utils
             foreach (var animator in animators)
                 animator.Key.enabled = false;
             foreach (var button in buttons)
-                button.Key.enabled = false; 
+                button.Key.enabled = false;
+
+            var groups = 
+                graphicsAndAlphas.GroupBy(_Ga =>
+                    _Ga.Key != null && _Ga.Key.GetComponent<TrueShadow>() != null && _Ga.Key.GetComponent<TrueShadow>().isBackground);
+            var enumerable = groups as IGrouping<bool, KeyValuePair<Graphic, float>>[] ?? groups.ToArray();
+            var backgroundShadows = enumerable
+                .FirstOrDefault(_G => _G.Key)
+                ?.ToList();
+            var other = enumerable
+                .FirstOrDefault(_G => !_G.Key)
+                ?.ToList();
 
             float currTime = Time.time;
-            while (Time.time < currTime + _Time)
-            {
-                float timeCoeff = (currTime + _Time - Time.time) / _Time;
-                float alphaCoeff = _Disappear ? timeCoeff : 1 - timeCoeff;
+            float shadowBackgrTime = 0.05f;
 
-                foreach (var ga in graphicsAndAlphas.ToList())
-                {
-                    var graphic = ga.Key;
-                    if (graphic.IsAlive())
-                        ga.Key.color = ga.Key.color.SetAlpha(ga.Value * alphaCoeff);
-                }
-            
-                yield return new WaitForEndOfFrame();
+            if (backgroundShadows != null)
+            {
+                // if (_Disappear)
+                //     while (Time.time < currTime + shadowBackgrTime)
+                //     {
+                //         yield return new WaitForEndOfFrame();
+                //         float timeCoeff = (currTime + shadowBackgrTime - Time.time) / shadowBackgrTime;
+                //         float alphaCoeff = timeCoeff;
+                //     
+                //         foreach (var ga in backgroundShadows)
+                //         {
+                //             var graphic = ga.Key;
+                //             if (graphic.IsAlive())
+                //                 ga.Key.color = ga.Key.color.SetAlpha(ga.Value * alphaCoeff);
+                //         }
+                //
+                //         yield return new WaitForEndOfFrame();
+                //     }
+                // else
+                    foreach (var ga in backgroundShadows)
+                    {
+                        var graphic = ga.Key;
+                        if (graphic.IsAlive())
+                            ga.Key.color = ga.Key.color.SetAlpha(0);
+                    }
             }
+            
+            currTime = Time.time;
+            if (other != null)
+            {
+                while (Time.time < currTime + _Time)
+                {
+                    float timeCoeff = (currTime + _Time - Time.time) / _Time;
+                    float alphaCoeff = _Disappear ? timeCoeff : 1 - timeCoeff;
+                    
+                    foreach (var ga in other)
+                    {
+                        var graphic = ga.Key;
+                        if (graphic.IsAlive())
+                            ga.Key.color = ga.Key.color.SetAlpha(ga.Value * alphaCoeff);
+                    }
+                    
+                    yield return new WaitForEndOfFrame();
+                } 
+            }
+
+            shadowBackgrTime = 0.2f;    
+            currTime = Time.time;
+            if (!_Disappear && backgroundShadows != null)
+                while (Time.time < currTime + shadowBackgrTime)
+                {
+                    yield return new WaitForEndOfFrame();
+                    float timeCoeff = (currTime + shadowBackgrTime - Time.time) / shadowBackgrTime;
+                    float alphaCoeff = 1 - timeCoeff;
+                    
+                    foreach (var ga in backgroundShadows)
+                    {
+                        var graphic = ga.Key;
+                        if (graphic.IsAlive())
+                            ga.Key.color = ga.Key.color.SetAlpha(ga.Value * alphaCoeff);
+                    }
+                
+                    yield return new WaitForEndOfFrame();
+                }
             
             foreach (var ga in graphicsAndAlphas.ToList())
             {

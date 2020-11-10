@@ -8,6 +8,7 @@ namespace LeTai.TrueShadow.Editor
 [CustomEditor(typeof(TrueShadow))]
 public class TrueShadowEditor : UnityEditor.Editor
 {
+    private EditorProperty isBackgrProp;
     EditorProperty sizeProp;
     EditorProperty angleProp;
     EditorProperty distanceProp;
@@ -25,6 +26,7 @@ public class TrueShadowEditor : UnityEditor.Editor
 
     void OnEnable()
     {
+        isBackgrProp = new EditorProperty(serializedObject, nameof(TrueShadow.IsBackground));
         sizeProp            = new EditorProperty(serializedObject, nameof(TrueShadow.Size));
         angleProp           = new EditorProperty(serializedObject, nameof(TrueShadow.OffsetAngle));
         distanceProp        = new EditorProperty(serializedObject, nameof(TrueShadow.OffsetDistance));
@@ -48,6 +50,7 @@ public class TrueShadowEditor : UnityEditor.Editor
     {
         serializedObject.Update();
 
+        isBackgrProp.Draw();
         sizeProp.Draw();
         angleProp.Draw();
         distanceProp.Draw();
