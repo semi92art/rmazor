@@ -17,23 +17,19 @@ MonoBehaviour:
   - name: Default
     showDetails: 1
     colorInfoList:
-    - name: Main Background
+    - name: Image Main Background
       color: {r: 0.83921576, g: 0.8235295, b: 0.7686275, a: 1}
-    - name: Dialog Background
+    - name: Image Dialog Background
       color: {r: 0.6981132, g: 0.6798188, b: 0.6157885, a: 1}
-    - name: Dialog Item
+    - name: Image Dialog Item
       color: {r: 0.6509434, g: 0.62974244, b: 0.56189924, a: 1}
-    - name: Btn Normal
+    - name: Button Normal
       color: {r: 0.49056602, g: 0.48310983, b: 0.42346027, a: 1}
-    - name: Btn Pressed
+    - name: Button Pressed
       color: {r: 0.3882353, g: 0.38039216, b: 0.32941177, a: 1}
-    - name: Btn Disabled
+    - name: Button Disabled
       color: {r: 0.5377358, g: 0.5377358, b: 0.5377358, a: 1}
-    - name: White Border
-      color: {r: 1, g: 1, b: 1, a: 1}
-    - name: Shadow
-      color: {r: 0, g: 0, b: 0, a: 1}
-    - name: Text Light
+    - name: Text
       color: {r: 1, g: 1, b: 1, a: 1}
     - name: Text Dark
       color: {r: 0, g: 0, b: 0, a: 1}

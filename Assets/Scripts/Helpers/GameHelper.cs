@@ -147,7 +147,7 @@ namespace Helpers
             GUILayout.Label("R");
             m_Radius = EditorGUILayout.FloatField(m_Radius);
             GUILayout.Label("R Indent");
-            m_Radius = EditorGUILayout.FloatField(m_Radius);
+            m_RadiusIndent = EditorGUILayout.FloatField(m_RadiusIndent);
             GUILayout.EndHorizontal();
             if (GUILayout.Button("Clear"))
                 m_GameHelper.ClearDiscs();

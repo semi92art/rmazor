@@ -1,10 +1,28 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace Helpers
 {
     public class ActiveStateWatcher : MonoBehaviour
     {
+        private Dictionary<GameObject,AudioSource> m_clipDictionary = new Dictionary<GameObject, AudioSource>();
+
         public event ActiveStateHandler ActiveStateChanged;
+
+        private void CheckPlayingClips()
+        {
+            var array = m_clipDictionary.ToArray();
+
+            foreach (var item in array)
+            {
+                if (item.Key != null && !item.Value.isPlaying)
+                {
+                    //remove
+                }
+            }
+        }
+        
 
         private void OnEnable()
         {

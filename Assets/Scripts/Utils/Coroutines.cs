@@ -110,39 +110,19 @@ namespace Utils
             var other = enumerable
                 .FirstOrDefault(_G => !_G.Key)
                 ?.ToList();
-
-            float currTime = Time.time;
-            float shadowBackgrTime = 0.05f;
-
+            
             if (backgroundShadows != null)
             {
-                // if (_Disappear)
-                //     while (Time.time < currTime + shadowBackgrTime)
-                //     {
-                //         yield return new WaitForEndOfFrame();
-                //         float timeCoeff = (currTime + shadowBackgrTime - Time.time) / shadowBackgrTime;
-                //         float alphaCoeff = timeCoeff;
-                //     
-                //         foreach (var ga in backgroundShadows)
-                //         {
-                //             var graphic = ga.Key;
-                //             if (graphic.IsAlive())
-                //                 ga.Key.color = ga.Key.color.SetAlpha(ga.Value * alphaCoeff);
-                //         }
-                //
-                //         yield return new WaitForEndOfFrame();
-                //     }
-                // else
-                    foreach (var ga in backgroundShadows)
-                    {
-                        var graphic = ga.Key;
-                        if (graphic.IsAlive())
-                            ga.Key.color = ga.Key.color.SetAlpha(0);
-                    }
+                foreach (var ga in backgroundShadows)
+                {
+                    var graphic = ga.Key;
+                    if (graphic.IsAlive())
+                        ga.Key.color = ga.Key.color.SetAlpha(0);
+                }
             }
             
-            currTime = Time.time;
-            if (other != null)
+            float currTime = Time.time;
+            if (!_Disappear && other != null)
             {
                 while (Time.time < currTime + _Time)
                 {
@@ -159,8 +139,15 @@ namespace Utils
                     yield return new WaitForEndOfFrame();
                 } 
             }
-
-            shadowBackgrTime = 0.2f;    
+            
+            foreach (var animator in animators)
+                if (animator.Key.IsAlive())
+                    animator.Key.enabled = animator.Value;
+            foreach (var button in buttons)
+                if (button.Key.IsAlive())
+                    button.Key.enabled = button.Value; 
+            
+            float shadowBackgrTime = 0.3f;    
             currTime = Time.time;
             if (!_Disappear && backgroundShadows != null)
                 while (Time.time < currTime + shadowBackgrTime)
@@ -185,15 +172,10 @@ namespace Utils
                 if (graphic.IsAlive())
                     graphic.color = graphic.color.SetAlpha(_Disappear ? 0 : ga.Value);
             }
-
-            foreach (var animator in animators)
-                if (animator.Key.IsAlive())
-                    animator.Key.enabled = animator.Value;
-            foreach (var button in buttons)
-                if (button.Key.IsAlive())
-                    button.Key.enabled = button.Value; 
+            
             if (_Disappear)
                 _Item.gameObject.SetActive(false);
+            
             _OnFinish?.Invoke();
         }
 

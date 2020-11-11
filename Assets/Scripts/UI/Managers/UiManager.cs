@@ -1,7 +1,9 @@
 ﻿using System;
 using DebugConsole;
+using Entities;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Utils;
 
 namespace UI.Managers
 {
@@ -48,6 +50,12 @@ namespace UI.Managers
                 m_CurrentCategory = value;
             }
         }
+
+        public string ColorScheme
+        {
+            get => SaveUtils.GetValue<string>(SaveKey.ColorScheme);
+            set => SaveUtils.PutValue(SaveKey.ColorScheme, value);
+        }
         
         #if DEBUG
         
@@ -74,6 +82,8 @@ namespace UI.Managers
             }
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            if (string.IsNullOrEmpty(ColorScheme))
+                ColorScheme = "Default";
 
             SceneManager.activeSceneChanged += (_Prev, _Next) =>
             {
