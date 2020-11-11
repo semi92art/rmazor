@@ -86,6 +86,7 @@ namespace UI.Panels
 
             m_PlusButton.SetOnClick(() =>
             {
+                SoundManager.Instance.PlayClip("button_click", false);
                 IDialogPanel shopPanel = new ShopPanel(_DialogViewer);
                 shopPanel.Show();
             });

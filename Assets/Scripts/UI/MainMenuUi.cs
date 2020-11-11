@@ -60,6 +60,7 @@ namespace UI
                 if (_Prev == UiCategory.WheelOfFortune && m_WofButton != null)
                     CheckIfWofSpinedToday();
             };
+            SoundManager.Instance.PlayClip("main_menu_theme", true);
         }
 
         private void InitBankMiniPanel()
@@ -270,41 +271,48 @@ namespace UI
 
         private void OnOpenSelectGamePanel()
         {
+            SoundManager.Instance.PlayClip("button_click", false);
             IDialogPanel selectGame = new SelectGamePanel(m_DialogViewer, SetGameLogo);
             selectGame.Show();
         }
         
         private void OnProfileButtonClick()
         {
+            SoundManager.Instance.PlayClip("button_click", false);
             IDialogPanel profile = new ProfilePanel(m_DialogViewer);
             profile.Show();
         }
 
         private void OnSettingsButtonClick()
         {
+            SoundManager.Instance.PlayClip("button_click", false);
             IDialogPanel settings = new SettingsPanel(m_DialogViewer);
             settings.Show();
         }
 
         private void OnLoginButtonClick()
         {
+            SoundManager.Instance.PlayClip("button_click", false);
             IDialogPanel login = new LoginPanel(m_DialogViewer);
             login.Show();
         }
 
         private void OnShopButtonClick()
         {
+            SoundManager.Instance.PlayClip("button_click", false);
             IDialogPanel shop = new ShopPanel(m_DialogViewer);
             shop.Show();
         }
 
         private void OnPlayButtonClick()
         {
+            SoundManager.Instance.PlayClip("button_click", false);
             new LevelLoader().LoadLevel();
         }
 
         private void OnDailyBonusButtonClick()
         {
+            SoundManager.Instance.PlayClip("button_click", false);
             IDialogPanel dailyBonus = new DailyBonusPanel(
                 m_DialogViewer, (IActionExecuter)m_BankMiniPanel);
             dailyBonus.Show();
@@ -312,6 +320,7 @@ namespace UI
 
         private void OnWheelOfFortuneButtonClick()
         {
+            SoundManager.Instance.PlayClip("button_click", false);
             IDialogPanel wheelOfFortune = new WheelOfFortunePanel(m_DialogViewer);
             wheelOfFortune.Show();
         }

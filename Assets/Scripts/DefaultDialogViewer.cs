@@ -285,6 +285,16 @@ public class DefaultDialogViewer : MonoBehaviour, IDialogViewer, IActionExecuter
         }
     }
 
+    private void GoBack()
+    {
+        if (m_PanelStack.Any())
+        {
+            SoundManager.Instance.PlayClip("button_click", false);
+            m_FromTemp = m_PanelStack.Pop();
+            Show(m_PanelStack.Pop(), true);
+        }
+    }
+
     #endregion
 }
 

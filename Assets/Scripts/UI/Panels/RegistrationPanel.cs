@@ -78,6 +78,7 @@ namespace UI.Panels
 
         private void Register()
         {
+            SoundManager.Instance.PlayClip("button_click", false);
             CleanErrorHandlers();
             if (!CheckForInputErrors())
                 return;
