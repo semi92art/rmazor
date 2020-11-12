@@ -496,7 +496,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   order: 1
-  fromBehind: 1
+  fromBehind: 0
 --- !u!114 &3322760973168259926
 MonoBehaviour:
   m_ObjectHideFlags: 0

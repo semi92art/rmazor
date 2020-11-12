@@ -14,11 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabs:
     array:
-    - item: {fileID: 21300000, guid: 778839c29555e914d82cdd51664d9282, type: 3}
+    - item: {fileID: 21300000, guid: 02e4ef8e9e74f134893870545f729f83, type: 3}
       name: rect_background_gray
-    - item: {fileID: 21300000, guid: bba51b1f665925e4680ca3231ca20543, type: 3}
-      name: rect_border_gray
-    - item: {fileID: 21300000, guid: adf7a7893a8aa88429f33429029871c3, type: 3}
+    - item: {fileID: 21300000, guid: bdbd7163ab88ae8489563677f1268ddc, type: 3}
       name: rect_background_purple
-    - item: {fileID: 21300000, guid: 688f917888f66c142a963d8ccab39966, type: 3}
-      name: rect_border_purple

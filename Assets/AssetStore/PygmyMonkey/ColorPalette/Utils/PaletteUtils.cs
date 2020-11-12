@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections.Generic;
+using Random = UnityEngine.Random;
 
 namespace PygmyMonkey.ColorPalette
 {
@@ -154,9 +156,17 @@ namespace PygmyMonkey.ColorPalette
 		public static void SavePalettes(ColorPaletteData paletteData)
 		{
 			#if UNITY_EDITOR
-			UnityEditor.EditorUtility.SetDirty(paletteData);
-			UnityEditor.AssetDatabase.SaveAssets();
-			UnityEditor.AssetDatabase.Refresh();
+			try
+			{
+				UnityEditor.EditorUtility.SetDirty(paletteData);
+				UnityEditor.AssetDatabase.SaveAssets();
+				UnityEditor.AssetDatabase.Refresh();
+			}
+			catch (Exception ex)
+			{
+				Debug.LogWarning(ex.Message);
+			}
+			
 			#endif
 		}
 	}

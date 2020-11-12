@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Entities;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -68,6 +69,7 @@ namespace DebugConsole
             RegisterCommand("load", Load, "Reload specified level.");
             RegisterCommand("reload", Reload, "Reload current level.");
             RegisterCommand("clc", ClearConsole, "Clear console.");
+            RegisterCommand("sw_sound", SwitchSound,"Switch sound.");
         }
 
         #endregion
@@ -217,6 +219,45 @@ namespace DebugConsole
                             break;
                         default:
                             AppendLogLine("No such level.");
+                            break;
+                    }
+                }
+            }
+        }
+
+        void SwitchSound(string[] _Args)
+        {
+            if (_Args.Length == 0)
+                if (Utils.SaveUtils.GetValue<bool>(SaveKey.SettingSoundOn))
+                {
+                    SoundManager.Instance.SwitchSound(false);
+                    SoundManager.Instance.SwitchSoundInActualClips(false);
+                }
+                else
+                {
+                    SoundManager.Instance.SwitchSound(true);
+                    SoundManager.Instance.SwitchSoundInActualClips(true);
+                }
+            else
+            {
+                foreach (string arg in _Args)
+                {
+                    if (arg == "-h")
+                    {
+                        AppendLogLine("on: switches sound on");
+                        AppendLogLine("off: switches sound off");
+                        break;
+                    }
+
+                    switch (arg)
+                    {
+                        case "on":
+                            SoundManager.Instance.SwitchSound(true);
+                            SoundManager.Instance.SwitchSoundInActualClips(true);
+                            break;
+                        case "off":
+                            SoundManager.Instance.SwitchSound(false);
+                            SoundManager.Instance.SwitchSoundInActualClips(false);
                             break;
                     }
                 }

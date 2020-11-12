@@ -1,49 +1,42 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Helpers
 {
     public class ActiveStateWatcher : MonoBehaviour
     {
-        private Dictionary<GameObject,AudioSource> m_clipDictionary = new Dictionary<GameObject, AudioSource>();
-
-        public event ActiveStateHandler ActiveStateChanged;
-
-        private void CheckPlayingClips()
-        {
-            var array = m_clipDictionary.ToArray();
-
-            foreach (var item in array)
-            {
-                if (item.Key != null && !item.Value.isPlaying)
-                {
-                    //remove
-                }
-            }
-        }
+        public event BoolEventHandler ActiveStateChanged;
+        public event BoolEventHandler ViabilityStateChanged;
         
-
         private void OnEnable()
         {
-            ActiveStateChanged?.Invoke(new ActiveStateEventArgs(true));
+            ActiveStateChanged?.Invoke(new BoolEventArgs(true));
+        }
+
+        private void Awake()
+        {
+            ViabilityStateChanged?.Invoke(new BoolEventArgs(true));
         }
 
         private void OnDisable()
         {
-            ActiveStateChanged?.Invoke(new ActiveStateEventArgs(false));
+            ActiveStateChanged?.Invoke(new BoolEventArgs(false));
+        }
+
+        private void OnDestroy()
+        {
+            ViabilityStateChanged?.Invoke(new BoolEventArgs(false));
         }
     }
 
-    public delegate void ActiveStateHandler(ActiveStateEventArgs _Args);
+    public delegate void BoolEventHandler(BoolEventArgs _Args);
 
-    public class ActiveStateEventArgs
+    public class BoolEventArgs
     {
-        public bool IsActive { get; }
+        public bool Value { get; }
 
-        public ActiveStateEventArgs(bool _IsActive)
+        public BoolEventArgs(bool _Value)
         {
-            IsActive = _IsActive;
+            Value = _Value;
         }
     }
 }

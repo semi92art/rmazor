@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Entities;
+using UnityEngine;
 using Utils;
 
 namespace Settings
@@ -20,7 +21,9 @@ namespace Settings
         public void Put(object _Parameter)
         {
             bool volumeOn = (bool) _Parameter;
-            SaveUtils.PutValue(SaveKey.SettingSoundOn, volumeOn);
+            SoundManager.Instance.SwitchSound(volumeOn);
+            SoundManager.Instance.SwitchSoundInActualClips(volumeOn);
+            Debug.Log(volumeOn.ToString());
         }
     }
 }

@@ -102,7 +102,11 @@ public class DefaultDialogViewer : MonoBehaviour, IDialogViewer, IActionExecuter
             "main_menu_buttons", "dialog_close_button");
         m_CloseButton = go.GetCompItem<Button>("button");
         m_CloseButtonIcon = go.GetCompItem<Image>("close_icon");
-        m_CloseButton.SetOnClick(Back);
+        m_CloseButton.SetOnClick(() =>
+        {
+            SoundManager.Instance.PlayMenuButtonClick();
+            Back();
+        });
         m_GraphicsAlphas.Add(m_CloseButton.RTransform().GetInstanceID(), new GraphicAlphas(m_CloseButton.RTransform()));
         m_CloseButton.RTransform().gameObject.SetActive(false);
 

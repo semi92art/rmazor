@@ -31,7 +31,7 @@ namespace UI
         private Button m_WofAdsButton;
 
         private Button m_SelectGameButton;
-        private GameObject m_GameLogo;
+        private Image m_GameLogo;
 
         public static MainMenuUi Create(
             RectTransform _Parent,
@@ -60,6 +60,7 @@ namespace UI
                 if (_Prev == UiCategory.WheelOfFortune && m_WofButton != null)
                     CheckIfWofSpinedToday();
             };
+            SoundManager.Instance.PlayClip("main_menu_theme", true, 0f);
         }
 
         private void InitBankMiniPanel()
@@ -82,7 +83,7 @@ namespace UI
             var activeStateWatcher = m_MainMenu.gameObject.AddComponent<ActiveStateWatcher>();
             activeStateWatcher.ActiveStateChanged += _Args =>
             {
-                if (_Args.IsActive)
+                if (_Args.Value)
                     CheckIfDailyBonusNotChosenToday();
             };
 
@@ -90,9 +91,19 @@ namespace UI
                 m_MainMenu,
                 "Game Logo Container",
                 UiAnchor.Create(0.5f, 1f, 0.5f, 1f), 
-                new Vector2(0, -47f),
+                new Vector2(0, -209f),
                 Vector2.one * 0.5f,
-                new Vector2(486f, 92f));
+                new Vector2(486f, 198.4f));
+
+            var go = PrefabInitializer.InitUiPrefab(
+                UiFactory.UiRectTransform(
+                    m_GameLogoContainer,
+                    UiAnchor.Create(0, 0, 1, 1),
+                    Vector2.zero,
+                    Vector2.one * 0.5f,
+                    Vector2.zero),
+                "game_logos", "game_logo_container");
+            m_GameLogo = go.GetCompItem<Image>("logo");
         }
 
         private void InitSelectGameButton()
@@ -100,8 +111,8 @@ namespace UI
             var go = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_MainMenu,
-                    UiAnchor.Create(1, 1, 1, 1),
-                    new Vector2(-68f, -87f),
+                    UiAnchor.Create(0.5f, 1, 0.5f, 1),
+                    new Vector2(0, -57f),
                     Vector2.one * 0.5f,
                     new Vector2(113f, 113f)),
                 "main_menu_buttons",
@@ -112,24 +123,8 @@ namespace UI
 
         private void SetGameLogo(int _GameId)
         {
-            if (m_GameLogo != null)
-            {
-                m_DialogViewer.RemoveNotDialogItem(m_GameLogo.RTransform());
-                Object.Destroy(m_GameLogo);
-            }
-                
-            var commonPos = new RectTransformLite
-            {
-                Anchor = UiAnchor.Create(0, 0, 1, 1),
-                AnchoredPosition = Vector2.zero,
-                Pivot = Vector2.one * 0.5f,
-                SizeDelta = Vector2.zero
-            };
-            
-            m_GameLogo = PrefabInitializer.InitUiPrefab(
-                UiFactory.UiRectTransform(m_GameLogoContainer, commonPos),
-                "game_logos", $"game_logo_{_GameId}");
-            m_DialogViewer.AddNotDialogItem(m_GameLogo.RTransform(), UiCategory.MainMenu);
+            m_GameLogo.sprite = PrefabInitializer.GetObject<Sprite>(
+                    "game_logos", $"game_logo_{GameClient.Instance.GameId}");
         }
 
         private void InitCenterButtonsScrollView()
@@ -138,9 +133,9 @@ namespace UI
                 UiFactory.UiRectTransform(
                     m_MainMenu,
                     UiAnchor.Create(0.5f, 0.5f, 0.5f, 0.5f),
-                    Vector2.zero,
+                    Vector2.up * -65f,
                     Vector2.one * 0.5f,
-                    new Vector2(280, 499)),
+                    new Vector2(280, 360)),
                 "main_menu", "center_buttons_scroll_view");
             
             RectTransform content = centerButtonsScrollView.GetCompItem<RectTransform>("content");
@@ -160,48 +155,28 @@ namespace UI
                 "play_button");
             playButton.GetComponent<Button>().SetOnClick(OnPlayButtonClick);
             
-            var dailyBonusButton = PrefabInitializer.InitUiPrefab(
+            var ratingsButton = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     content,
                     rtrLite),
                 "main_menu_buttons",
-                "daily_bonus_button");
+                "ratings_button");
+            ratingsButton.GetComponent<Button>().SetOnClick(OnRationgsClick);
             
-            dailyBonusButton.GetCompItem<Button>("button").SetOnClick(OnDailyBonusButtonClick);
-            m_DailyBonusAnimator = dailyBonusButton.GetCompItem<Animator>("animator");
-            
-            var go = PrefabInitializer.InitUiPrefab(
-                UiFactory.UiRectTransform(
-                    content,
-                    rtrLite),
-                "main_menu_buttons",
-                "wheel_of_fortune_button");
-            m_WofButton = go.GetComponent<Button>();
-            m_WofButton.SetOnClick(OnWheelOfFortuneButtonClick);
-            m_WofBackground = go.GetCompItem<Image>("background");
-            m_WofBorder = go.GetCompItem<Image>("border");
-            m_WofAdsButton = go.GetCompItem<Button>("watch_ad_button");
-            m_WofAdsButton.SetOnClick(() =>
-            {
-                SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, System.DateTime.Now.Date.AddDays(-1));
-                CheckIfWofSpinedToday();
-            });
-            CheckIfWofSpinedToday();
         }
 
         private void InitBottomButtonsScrollView()
         {
-            GameObject bottomButtonsScrollView = PrefabInitializer.InitUiPrefab(
+            var go = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_MainMenu,
                     UiAnchor.Create(0, 0, 1, 0),
-                    Vector2.up * 85f,
+                    Vector2.up * 123f,
                     Vector2.one * 0.5f,
-                    Vector2.up * 170f),
+                    Vector2.up * 100f),
                 "main_menu",
                 "bottom_buttons_scroll_view");
-            
-            RectTransform contentRtr = bottomButtonsScrollView.GetCompItem<RectTransform>("content");
+            RectTransform contentRtr = go.GetCompItem<RectTransform>("content");
             
             var rTrLite = new RectTransformLite
             {
@@ -210,12 +185,6 @@ namespace UI
                 Pivot = Vector2.one * 0.5f,
                 SizeDelta = Vector2.one * 100f
             };
-            
-            var profileButton = PrefabInitializer.InitUiPrefab(
-                UiFactory.UiRectTransform(contentRtr, rTrLite),
-                "main_menu_buttons",
-                "profile_button");
-            profileButton.GetComponent<Button>().SetOnClick(OnProfileButtonClick);
 
             var loginButton = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(contentRtr, rTrLite),
@@ -223,11 +192,47 @@ namespace UI
                 "login_button");
             loginButton.GetComponent<Button>().SetOnClick(OnLoginButtonClick);
 
+            var dailyBonusButton = PrefabInitializer.InitUiPrefab(
+                UiFactory.UiRectTransform(contentRtr, rTrLite),
+                "main_menu_buttons",
+                "daily_bonus_button_2");
+            dailyBonusButton.GetCompItem<Button>("button").SetOnClick(OnDailyBonusButtonClick);
+            m_DailyBonusAnimator = dailyBonusButton.GetCompItem<Animator>("animator");
+
             var shopButton = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(contentRtr, rTrLite),
                 "main_menu_buttons",
                 "shop_button");
             shopButton.GetComponent<Button>().SetOnClick(OnShopButtonClick);
+            
+            go = PrefabInitializer.InitUiPrefab(
+                UiFactory.UiRectTransform(
+                    m_MainMenu,
+                    UiAnchor.Create(0, 0, 1, 0),
+                    Vector2.up * 247,
+                    Vector2.one * 0.5f,
+                    Vector2.up * 100f),
+                "main_menu",
+                "bottom_buttons_scroll_view");
+            contentRtr = go.GetCompItem<RectTransform>("content");
+            
+            var wofButton = PrefabInitializer.InitUiPrefab(
+                UiFactory.UiRectTransform(
+                    contentRtr,
+                    rTrLite),
+                "main_menu_buttons",
+                "wheel_of_fortune_button_2");
+            m_WofButton = wofButton.GetComponent<Button>();
+            m_WofButton.SetOnClick(OnWheelOfFortuneButtonClick);
+            m_WofBackground = wofButton.GetCompItem<Image>("background");
+            m_WofBorder = wofButton.GetCompItem<Image>("border");
+            m_WofAdsButton = wofButton.GetCompItem<Button>("watch_ad_button");
+            m_WofAdsButton.SetOnClick(() =>
+            {
+                SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, System.DateTime.Now.Date.AddDays(-1));
+                CheckIfWofSpinedToday();
+            });
+            CheckIfWofSpinedToday();
         }
 
         private void InitSmallButtons()
@@ -261,8 +266,9 @@ namespace UI
             string color = done ? "gray" : "purple";
             m_WofBackground.sprite = PrefabInitializer.GetObject<Sprite>(
                 "button_sprites", $"rect_background_{color}");
-            m_WofBorder.sprite = PrefabInitializer.GetObject<Sprite>(
-                "button_sprites", $"rect_border_{color}");
+            if (ColorUtility.TryParseHtmlString($"#{(!done ? "894089" : "8A8A8A")}", out Color borderColor))
+                m_WofBorder.color = borderColor;
+            
             m_WofAdsButton.gameObject.SetActive(done);
         }
         
@@ -270,41 +276,54 @@ namespace UI
 
         private void OnOpenSelectGamePanel()
         {
+            SoundManager.Instance.PlayMenuButtonClick();
             IDialogPanel selectGame = new SelectGamePanel(m_DialogViewer, SetGameLogo);
             selectGame.Show();
         }
         
         private void OnProfileButtonClick()
         {
+            SoundManager.Instance.PlayMenuButtonClick();
             IDialogPanel profile = new ProfilePanel(m_DialogViewer);
             profile.Show();
         }
 
         private void OnSettingsButtonClick()
         {
+            SoundManager.Instance.PlayMenuButtonClick();
             IDialogPanel settings = new SettingsPanel(m_DialogViewer);
             settings.Show();
         }
 
         private void OnLoginButtonClick()
         {
+            SoundManager.Instance.PlayMenuButtonClick();
             IDialogPanel login = new LoginPanel(m_DialogViewer);
             login.Show();
         }
 
         private void OnShopButtonClick()
         {
+            SoundManager.Instance.PlayMenuButtonClick();
             IDialogPanel shop = new ShopPanel(m_DialogViewer);
             shop.Show();
         }
 
         private void OnPlayButtonClick()
         {
+            SoundManager.Instance.PlayMenuButtonClick();
             new LevelLoader().LoadLevel();
+        }
+
+        private void OnRationgsClick()
+        {
+            SoundManager.Instance.PlayMenuButtonClick();
+            // TODO
         }
 
         private void OnDailyBonusButtonClick()
         {
+            SoundManager.Instance.PlayMenuButtonClick();
             IDialogPanel dailyBonus = new DailyBonusPanel(
                 m_DialogViewer, (IActionExecuter)m_BankMiniPanel);
             dailyBonus.Show();
@@ -312,6 +331,7 @@ namespace UI
 
         private void OnWheelOfFortuneButtonClick()
         {
+            SoundManager.Instance.PlayMenuButtonClick();
             IDialogPanel wheelOfFortune = new WheelOfFortunePanel(m_DialogViewer);
             wheelOfFortune.Show();
         }

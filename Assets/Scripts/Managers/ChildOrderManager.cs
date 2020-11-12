@@ -33,8 +33,24 @@ namespace Managers
         
         #endregion
 
-        #region public methods
+        #region api
 
+        public void UpdateOrdering(Transform _Item, int _Order, bool _FromBehind)
+        {
+            var item = OrderItems.First(_OrderItem => _OrderItem.Item == _Item);
+            item.Order = _Order;
+            item.FromBehind = _FromBehind;
+            
+            var keys = new List<Transform>();
+            foreach (var orderItem in OrderItems.Where(_OrderItem => !keys.Contains(_OrderItem.Parent)))
+            {
+                keys.Add(orderItem.Parent);
+                var group = OrderItems
+                    .GroupBy(_Itm => _Itm.Parent).FirstOrDefault(_G => _G.Key == orderItem.Parent);
+                UpdateOrdering(@group);
+            }
+        }
+        
         public void Add(Transform _Item, int _Order, bool _FromBehind)
         {
             OrderItems.Add(new OrderItem
@@ -59,18 +75,16 @@ namespace Managers
 
         private void LateUpdate()
         {
-            List<Transform> keys = new List<Transform>();
-            
-            foreach (var orderItem in OrderItems)
+            var keys = new List<Transform>();
+            foreach (var orderItem in OrderItems.Where(_OrderItem => 
+                _OrderItem.Parent.childCount != ChildCountDict[_OrderItem.Parent]
+                && !keys.Contains(_OrderItem.Parent)))
             {
-                if (orderItem.Parent.childCount != ChildCountDict[orderItem.Parent]
-                    && !keys.Contains(orderItem.Parent))
-                {
-                    keys.Add(orderItem.Parent);
-                    var group = OrderItems
-                        .GroupBy(_Item => _Item.Parent).FirstOrDefault(_G => _G.Key == orderItem.Parent);
-                    UpdateOrdering(group);
-                }
+                ChildCountDict[orderItem.Parent] = orderItem.Parent.childCount;
+                keys.Add(orderItem.Parent);
+                var group = OrderItems
+                    .GroupBy(_Item => _Item.Parent).FirstOrDefault(_G => _G.Key == orderItem.Parent);
+                UpdateOrdering(@group);
             }
         }
         
@@ -84,7 +98,7 @@ namespace Managers
                 .GroupBy(_Item => _Item.FromBehind).ToArray();
             var forwardGroup = fbGroups
                 .FirstOrDefault(_G => _G.First().FromBehind == false)
-                ?.OrderBy(_Item => -_Item.Order).ToArray();
+                ?.OrderBy(_Item => _Item.Order).ToArray();
             var behindGroup = fbGroups
                 .FirstOrDefault(_G => _G.First().FromBehind = true)
                 ?.OrderBy(_Item => _Item.Order).ToArray();
@@ -92,12 +106,19 @@ namespace Managers
             int? k = forwardGroup?.First().Parent.childCount - 1;
             if (!k.HasValue || behindGroup == null)
                 return;
-            
+
             foreach (var item in behindGroup)
-                item.Item.SetSiblingIndex((k--).Value);
+            {
+                item.Item.SetSiblingIndex(k.Value);
+                k--;
+            }
+                
             k = 0;
             foreach (var item in forwardGroup)
-                item.Item.SetSiblingIndex((k++).Value);
+            {
+                item.Item.SetSiblingIndex(k.Value);
+                k++;
+            }
         }
         
         #endregion

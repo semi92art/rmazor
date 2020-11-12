@@ -16,16 +16,14 @@ MonoBehaviour:
     array:
     - item: {fileID: 2503092321609905571, guid: 50720e250ef9d724fbbd544bb7601ad2,
         type: 3}
+      name: game_logo_container
+    - item: {fileID: 21300000, guid: a6daf4e56be71714481e208be0aa3f56, type: 3}
       name: game_logo_1
-    - item: {fileID: 2503092321609905571, guid: 31995bed2d621954b8fbff9ce6c2bfd5,
-        type: 3}
+    - item: {fileID: 21300000, guid: dc3591f00bef05a4d8b548812664cad5, type: 3}
       name: game_logo_2
-    - item: {fileID: 2503092321609905571, guid: 9a5b51a90d37c8f4394632025c206d58,
-        type: 3}
+    - item: {fileID: 0}
       name: game_logo_3
-    - item: {fileID: 2503092321609905571, guid: 6ce65fcded314804f92561d8c0d3958e,
-        type: 3}
+    - item: {fileID: 21300000, guid: 8e22901e95b85c04a8e8417544ea6705, type: 3}
       name: game_logo_4
-    - item: {fileID: 2503092321609905571, guid: d69b0ea5a07b4424eb2cd8e12d40ff4d,
-        type: 3}
+    - item: {fileID: 0}
       name: game_logo_5

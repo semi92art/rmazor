@@ -15,16 +15,16 @@ namespace UI.Panels
         #region private members
         
         private readonly IDialogViewer m_DialogViewer;
-        
+
         private readonly List<ChooseGameItemProps> m_CgiPropsList = new List<ChooseGameItemProps>
         {
-            new ChooseGameItemProps(1, null, "POINT CLICKER", false, true),
-            new ChooseGameItemProps(2, null, "FIGURE DRAWER", false, true),
-            new ChooseGameItemProps(3, null, "MATH TRAIN", false, false),
-            new ChooseGameItemProps(4, null, "TILE PATHER", false, true),
-            new ChooseGameItemProps(5, null, "BALANCE DRAWER", false, false)
+            new ChooseGameItemProps(1, false, true),
+            new ChooseGameItemProps(2, false, true),
+            new ChooseGameItemProps(3, false, false),
+            new ChooseGameItemProps(4, false, true),
+            new ChooseGameItemProps(5, false, false)
         };
-
+        
         private System.Action<int> m_SelectGame;
         
         #endregion
@@ -66,7 +66,7 @@ namespace UI.Panels
                     UiAnchor.Create(0, 1, 0, 1),
                     new Vector2(218f, -43f),
                     Vector2.one * 0.5f,
-                    new Vector2(416f, 66f)),
+                    new Vector2(416f, 170f)),
                 "main_menu",
                 "select_game_item");
             
@@ -86,6 +86,8 @@ namespace UI.Panels
             Object.Destroy(cgiObj);
             return selectGamePanel.RTransform();
         }
+        
+        
         
         #endregion
     }

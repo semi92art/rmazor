@@ -58,7 +58,7 @@ namespace UI.Panels
         private int AkShowInDlg => AnimKeys.Anim;
         private int AkFromMmToDlg => AnimKeys.Anim4;
         private int AkFromDlgToMm => AnimKeys.Anim3;
-        private int AkHideInMm => AnimKeys.Stop2;
+        private int AkHideInMm => AnimKeys.Stop;
         private int AkHideInDlg => AnimKeys.Stop;
         
         #endregion
@@ -86,6 +86,7 @@ namespace UI.Panels
 
             m_PlusButton.SetOnClick(() =>
             {
+                SoundManager.Instance.PlayMenuButtonClick();
                 IDialogPanel shopPanel = new ShopPanel(_DialogViewer);
                 shopPanel.Show();
             });
@@ -313,10 +314,17 @@ namespace UI.Panels
                 default:
                     throw new NotImplementedException();
             }
-            
+
             if (trigger != -1)
+            {
+                if (prevTrigger != -1)
+                    m_Animator.ResetTrigger(prevTrigger);
                 m_Animator.SetTrigger(trigger);
+                prevTrigger = trigger;
+            }
         }
+
+        private int prevTrigger = -1;
 
         ~BankMiniPanel()
         {
