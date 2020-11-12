@@ -1,4 +1,5 @@
 ﻿using Extensions;
+using Helpers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,28 +9,20 @@ namespace UI.PanelItems
     public class ChooseGameItem : MonoBehaviour
     {
         public Button button;
-        public TextMeshProUGUI title;
         public Image icon;
         public TextMeshProUGUI comingSoonLabel;
     
         public void Init(ChooseGameItemProps _Props)
         {
-            title.text = _Props.Title;
             icon.sprite = _Props.Icon;
             button.interactable = !_Props.IsComingSoon;
-            button.SetOnClick(() => _Props.Click?.Invoke());
-            gameObject.SetActive(_Props.IsVisible);
-            SetComingSoon(_Props.IsComingSoon);
-        }
-    
-        private void SetComingSoon(bool _IsComingSoon)
-        {
-            comingSoonLabel.enabled = _IsComingSoon;
-            if (_IsComingSoon & ColorUtility.TryParseHtmlString("#B7B7B7", out Color disabledColor))
+            button.SetOnClick(() =>
             {
-                icon.color = disabledColor;
-                title.color = disabledColor;
-            }
+                SoundManager.Instance.PlayMenuButtonClick();
+                _Props.Click?.Invoke();
+            });
+            gameObject.SetActive(_Props.IsVisible);
+            comingSoonLabel.enabled = _Props.IsComingSoon;
         }
     }
 
@@ -37,23 +30,24 @@ namespace UI.PanelItems
     {
         public int GameId { get; }
         public Sprite Icon { get; }
-        public string Title { get; }
         public bool IsComingSoon { get; }
         public bool IsVisible { get; }
         public UnityEngine.Events.UnityAction Click { get; set; }
 
         public ChooseGameItemProps(
             int _GameId,
-            Sprite _Icon,
-            string _Title,
             bool _IsComingSoon,
             bool _IsVisible)
         {
             GameId = _GameId;
-            Icon = _Icon;
-            Title = _Title;
+            Icon = GetLogo(_GameId);
             IsComingSoon = _IsComingSoon;
             IsVisible = _IsVisible;
+        }
+        
+        private static Sprite GetLogo(int _GameId)
+        {
+            return PrefabInitializer.GetObject<Sprite>("game_logos", $"game_logo_{_GameId}");
         }
     }
 }

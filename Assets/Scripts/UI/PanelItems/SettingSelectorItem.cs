@@ -20,7 +20,10 @@ namespace UI.PanelItems
             toggle.onValueChanged.AddListener(_IsOn =>
             {
                 if (_IsOn && m_IsInitialized)
+                {
+                    SoundManager.Instance.PlayMenuButtonClick();
                     _Select?.Invoke(_Text);
+                }
             });
 
             toggle.group = _ToggleGroup;

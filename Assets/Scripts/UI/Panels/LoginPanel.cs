@@ -67,7 +67,7 @@ namespace UI.Panels
 
         private void Login()
         {
-            SoundManager.Instance.PlayClip("button_click", false);
+            SoundManager.Instance.PlayMenuButtonClick();
             CleanErrorHandlers();
             if (string.IsNullOrEmpty(m_LoginInputField.text))
                 SetLoginError("field is empty");
@@ -110,28 +110,26 @@ namespace UI.Panels
 
         private void LoginWithApple()
         {
+            SoundManager.Instance.PlayMenuButtonClick();
             // TODO
-            SoundManager.Instance.PlayClip("button_click", false);
-            throw new System.NotImplementedException();    
         }
 
         private void LoginWithGoogle()
         {
+            SoundManager.Instance.PlayMenuButtonClick();
             // TODO
-            SoundManager.Instance.PlayClip("button_click", false);
-            throw new System.NotImplementedException();    
         }
 
         private void Registration()
         {
-            SoundManager.Instance.PlayClip("button_click", false);
+            SoundManager.Instance.PlayMenuButtonClick();
             IDialogPanel regPanel = new RegistrationPanel(m_DialogViewer);
             regPanel.Show();
         }
 
         private void Logout()
         {
-            SoundManager.Instance.PlayClip("button_click", false);
+            SoundManager.Instance.PlayMenuButtonClick();
             var packet = new LoginUserPacket(new LoginUserPacketRequestArgs
             {
                 DeviceId = GameClient.Instance.DeviceId

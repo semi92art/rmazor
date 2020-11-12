@@ -25,6 +25,7 @@ namespace UI.PanelItems
             title.text = _Name;
             button.SetOnClick(() =>
             {
+                SoundManager.Instance.PlayMenuButtonClick();
                 var items = _ListOfItems?.Invoke();
                 if (items == null)
                     return;
@@ -35,6 +36,7 @@ namespace UI.PanelItems
                     items, 
                     _Select);
                 selectorPanel.Show();
+                
             });
         }
     }

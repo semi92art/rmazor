@@ -5,12 +5,22 @@ namespace Helpers
 {
     public class ChildOrderer : MonoBehaviour
     {
-        public int order;
-        public bool fromBehind = true;
-
+        [SerializeField] private int order;
+        [SerializeField] private bool fromBehind = true;
+        private int m_OrderCheck;
+        private bool m_FromBehindCheck;
         private void Start()
         {
             ChildOrderManager.Instance.Add(transform, order, fromBehind);
+        }
+
+        private void Update()
+        {
+            if (order != m_OrderCheck || fromBehind != m_FromBehindCheck)
+                ChildOrderManager.Instance.UpdateOrdering(transform, order, fromBehind);
+            
+            m_FromBehindCheck = fromBehind;
+            m_OrderCheck = order;
         }
     }
 }

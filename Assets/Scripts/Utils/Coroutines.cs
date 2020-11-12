@@ -95,8 +95,8 @@ namespace Utils
             _Item.gameObject.SetActive(true);
             var animators = _Item.GetComponentsInChildrenEnabled<Animator>();
             var buttons = _Item.GetComponentsInChildrenEnabled<Button>();
-            foreach (var animator in animators)
-                animator.Key.enabled = false;
+            // foreach (var animator in animators)
+            //     animator.Key.enabled = false;
             foreach (var button in buttons)
                 button.Key.enabled = false;
 

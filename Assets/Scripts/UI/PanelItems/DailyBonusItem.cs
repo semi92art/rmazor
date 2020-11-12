@@ -13,12 +13,12 @@ namespace UI.PanelItems
 {
     public class DailyBonusItem : MonoBehaviour
     {
-        public Button button;
-        public Animator animator;
-        public Image icon;
-        public TextMeshProUGUI price;
-        public TextMeshProUGUI day;
-        public TextMeshProUGUI tomorrow;
+        [SerializeField] private Button button;
+        [SerializeField] private Animator iconAnimator;
+        [SerializeField] private Image icon;
+        [SerializeField] private TextMeshProUGUI price;
+        [SerializeField] private TextMeshProUGUI day;
+        [SerializeField] private TextMeshProUGUI tomorrow;
     
         private DailyBonusProps m_Props;
     
@@ -27,8 +27,10 @@ namespace UI.PanelItems
             icon.sprite = _Props.Icon;
             day.text = $"Day {_Props.Day}";
             price.text = _Props.Gold != 0 ? $"{_Props.Gold}" : $"{_Props.Diamonds}";
+            button.interactable = _Props.IsActive;
             if (_Props.IsActive)
-                animator.SetTrigger(AnimKeys.Anim);
+                iconAnimator.SetTrigger(AnimKeys.Anim);
+            
             tomorrow.enabled = _Props.IsTomorrow;
         
             button.onClick.AddListener(() =>
@@ -42,7 +44,7 @@ namespace UI.PanelItems
                 MoneyManager.Instance.PlusMoney(money);
             
                 SaveUtils.PutValue(SaveKey.DailyBonusLastDate, System.DateTime.Today);
-                animator.SetTrigger(AnimKeys.Stop);
+                iconAnimator.SetTrigger(AnimKeys.Stop);
             });
         
         

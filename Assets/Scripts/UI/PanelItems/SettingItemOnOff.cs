@@ -27,7 +27,14 @@ namespace UI.PanelItems
 
             offText.text = "Off";
             onText.text = "On";
-            
+
+            void SoundAction(bool _On)
+            {
+                if (_On) SoundManager.Instance.PlayMenuButtonClick();
+            }
+
+            offToggle.onValueChanged.AddListener(SoundAction);
+            onToggle.onValueChanged.AddListener(SoundAction);
             onToggle.onValueChanged.AddListener(_Action);
         }
     }
