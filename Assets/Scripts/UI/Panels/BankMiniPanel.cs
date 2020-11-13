@@ -73,9 +73,9 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     _Parent,
                     UiAnchor.Create(1, 1, 1, 1),
-                    new Vector2(-137f, -49.2f),
-                    Vector2.one * 0.5f,
-                    new Vector2(237.9f, 100f)),
+                    Vector2.up  * -206f,
+                    new Vector2(1f, 0.5f), 
+                    new Vector2(349f, 100f)),
                 "main_menu", "bank_mini_panel");
             m_GoldIcon = go.GetCompItem<Image>("gold_icon");
             m_DiamondIcon = go.GetCompItem<Image>("diamond_icon");
@@ -98,11 +98,16 @@ namespace UI.Panels
 
         public void Show()
         {
-            SetMoneyText(MoneyManager.Instance.GetMoney());
-            int trigger = UiManager.Instance.CurrentCategory == UiCategory.MainMenu ?
-                AnimKeys.Anim2 : AnimKeys.Anim;
-            m_Animator.SetTrigger(trigger);
-            m_IsShowing = true;
+            var bank = MoneyManager.Instance.GetBank();
+            Coroutines.Run(Coroutines.WaitWhile(() =>
+            {
+                SetMoneyText(bank.Money);
+                int trigger = UiManager.Instance.CurrentCategory == UiCategory.MainMenu ?
+                    AnimKeys.Anim2 : AnimKeys.Anim;
+                m_Animator.SetTrigger(trigger);
+                m_IsShowing = true;
+            }, () => !bank.Loaded));
+            
         }
 
         public void Hide()
@@ -189,30 +194,36 @@ namespace UI.Panels
                     }, () => finishedDict.Any(_Kvp => !_Kvp.Value)));
                 }));
 
-            var currMoney = MoneyManager.Instance.GetMoney();
+            var currMoney = MoneyManager.Instance.GetBank();
             if (_Income.ContainsKey(moneyType))
-                Coroutines.Run(Coroutines.Lerp(
-                    currMoney[moneyType],
-                    currMoney[moneyType] + _Income[moneyType],
-                    IncomeAnimTime,
-                    _Value =>
-                    {
-                        if (moneyType == MoneyType.Gold)
-                            m_GoldCount.text = _Value.ToNumeric();
-                        else if (moneyType == MoneyType.Diamonds)
-                            m_DiamondsCount.text = _Value.ToNumeric();
-                    }));
+            {
+                Coroutines.Run(Coroutines.WaitWhile(() =>
+                {
+                    Coroutines.Run(Coroutines.Lerp(
+                        currMoney.Money[moneyType],
+                        currMoney.Money[moneyType] + _Income[moneyType],
+                        IncomeAnimTime,
+                        _Value =>
+                        {
+                            if (moneyType == MoneyType.Gold)
+                                m_GoldCount.text = _Value.ToNumeric();
+                            else if (moneyType == MoneyType.Diamonds)
+                                m_DiamondsCount.text = _Value.ToNumeric();
+                        }));
+                }, () => !currMoney.Loaded));
+            }
+                
         }
         
-        private void MoneyCountChanged(MoneyEventArgs _Args)
+        private void MoneyCountChanged(BankEventArgs _Args)
         {
-            SetMoneyText(_Args.Money);
+            SetMoneyText(_Args.Bank.Money);
         }
         
         private void Income(IncomeEventArgs _Args)
         {
             if (m_IsShowing)
-                AnimateIncome(_Args.Money, _Args.From);
+                AnimateIncome(_Args.Bank.Money, _Args.From);
         }
 
         private void SetMoneyText(Dictionary<MoneyType, int> _Money)

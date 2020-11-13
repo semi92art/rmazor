@@ -4,6 +4,6 @@
     {
         public Account Acocunt { get; set; }
         public Score[] Scores { get; set; }
-        public Profile Profile { get; set; }
+        public ProfileResponse Profile { get; set; }
     }
 }

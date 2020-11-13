@@ -154,7 +154,7 @@ namespace UI
                                     {
                                         Debug.Log("Register by DeviceId successfully");
                                         GameClient.Instance.AccountId = registerPacket.Response.Id;
-                                        MoneyManager.Instance.GetMoney(true);
+                                        MoneyManager.Instance.GetBank(true);
                                         LoadMainMenu();
                                     })
                                     .OnFail(() => { Debug.LogError(loginPacket.ErrorMessage); });

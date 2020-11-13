@@ -1,5 +1,5 @@
 ﻿namespace Network.PacketArgs
 {
-    public class SetProfileRequestArgs : Profile
+    public class SetProfileRequestArgs : ProfileResponse
     { }
 }

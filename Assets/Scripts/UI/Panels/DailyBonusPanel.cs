@@ -83,19 +83,19 @@ namespace UI.Panels
                 "daily_bonus_item");
             
             int dailyBonusDay = GetCurrentDailyBonusDay();
-            int k = 0;
+            
             foreach (var dbProps in m_DailyBonusPropsList)
             {
-                if (dbProps.Day == dailyBonusDay)
+                if (dbProps.Day == dailyBonusDay && !IsDailyBonusGotToday())
                     dbProps.IsActive = true;
-                else if (dbProps.Day == dailyBonusDay + 1)
+                if (dbProps.Day == dailyBonusDay + 1 && !IsDailyBonusGotToday()
+                    || dbProps.Day == dailyBonusDay && IsDailyBonusGotToday())
                     dbProps.IsTomorrow = true;
                 var dbItemClone = dbItem.Clone();
                 DailyBonusItem dbi = dbItemClone.GetComponent<DailyBonusItem>();
 
                 dbProps.Click = () =>
                 {
-                    SaveUtils.PutValue(SaveKey.DailyBonusLastItemClickedDay, k++);
                     m_DialogViewer.Back();
                 };
                 
@@ -104,29 +104,19 @@ namespace UI.Panels
             
             Object.Destroy(dbItem);
         }
+
+        private bool IsDailyBonusGotToday()
+        {
+            var lastDate = SaveUtils.GetValue<System.DateTime>(SaveKey.DailyBonusLastDate);
+            var today = System.DateTime.Now.Date;
+            int daysPast = Mathf.FloorToInt((float)(today - lastDate.Date).TotalDays);
+            return daysPast == 0;
+        }
         
         private int GetCurrentDailyBonusDay()
         {
-            int dailyBonusDay = 0;
-            System.DateTime lastDate = SaveUtils.GetValue<System.DateTime>(SaveKey.DailyBonusLastDate);
-            System.DateTime today = System.DateTime.Now.Date;
-            int daysPast = Mathf.FloorToInt((float)(today - lastDate.Date).TotalDays);
-            if (daysPast > 0)
-            {
-                dailyBonusDay = 1;
-                int lastItemClickedDay = SaveUtils.GetValue<int>(SaveKey.DailyBonusLastItemClickedDay);
-
-                if (daysPast == 1 || SaveUtils.GetValue<bool>(SaveKey.DailyBonusOnDebug))
-                {
-                    dailyBonusDay = lastItemClickedDay + 1;
-                    SaveUtils.PutValue(SaveKey.DailyBonusOnDebug, false);
-                }
-
-                if (dailyBonusDay > m_DailyBonusPropsList.Max(_Props => _Props.Day))
-                    dailyBonusDay = 1;
-            }
-
-            return dailyBonusDay;
+            int lastItemClickedDay = SaveUtils.GetValue<int>(SaveKey.DailyBonusLastItemClickedDay);
+            return lastItemClickedDay + 1;
         }
         
         #endregion

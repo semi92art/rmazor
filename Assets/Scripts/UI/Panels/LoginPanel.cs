@@ -56,6 +56,7 @@ namespace UI.Panels
 
             bool isLogined = !string.IsNullOrEmpty(GameClient.Instance.Login);
             logoutButton.gameObject.SetActive(isLogined);
+            loginButton.gameObject.SetActive(!isLogined);
             
             CleanErrorHandlers();
             return lp.RTransform();
@@ -86,7 +87,7 @@ namespace UI.Panels
                 GameClient.Instance.Login = packet.Response.Name;
                 GameClient.Instance.PasswordHash = packet.Response.PasswordHash;
                 GameClient.Instance.AccountId = packet.Response.Id;
-                MoneyManager.Instance.GetMoney(true);
+                MoneyManager.Instance.GetBank(true);
                 m_DialogViewer.Back();       
             });
             packet.OnFail(() =>
@@ -139,7 +140,7 @@ namespace UI.Panels
                 GameClient.Instance.Login = string.Empty;
                 GameClient.Instance.PasswordHash = string.Empty;
                 GameClient.Instance.AccountId = packet.Response.Id;
-                MoneyManager.Instance.GetMoney(true);
+                MoneyManager.Instance.GetBank(true);
                 m_DialogViewer.Back();       
             });
             packet.OnFail(() =>

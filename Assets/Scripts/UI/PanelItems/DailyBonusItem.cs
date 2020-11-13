@@ -44,6 +44,7 @@ namespace UI.PanelItems
                 MoneyManager.Instance.PlusMoney(money);
             
                 SaveUtils.PutValue(SaveKey.DailyBonusLastDate, System.DateTime.Today);
+                SaveUtils.PutValue(SaveKey.DailyBonusLastItemClickedDay, _Props.Day);
                 iconAnimator.SetTrigger(AnimKeys.Stop);
             });
         

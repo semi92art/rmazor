@@ -41,9 +41,9 @@ namespace Managers
         public event MoneyEventHandler OnMoneyCountChanged;
         public event IncomeEventHandler OnIncome;
     
-        public Dictionary<MoneyType, int> GetMoney(bool _ForcedFromServer = false)
+        public Bank GetBank(bool _ForcedFromServer = false)
         {
-            var result = new Dictionary<MoneyType, int>();
+            var result = new Bank();
             if (!m_IsMoneySavedLocal || _ForcedFromServer)
             {
                 var profPacket = new GetProfilePacket(new AccIdGameId
@@ -52,18 +52,17 @@ namespace Managers
                 });
                 profPacket.OnSuccess(() =>
                 {
-                    result.Add(MoneyType.Gold, profPacket.Response.Gold);
-                    result.Add(MoneyType.Diamonds, profPacket.Response.Diamonds);
+                    result.Money.Add(MoneyType.Gold, profPacket.Response.Gold);
+                    result.Money.Add(MoneyType.Diamonds, profPacket.Response.Diamonds);
+                    result.Loaded = true;
                     SetMoneyLocal(result);
                 }).OnFail(() =>
                 {
-                    Debug.LogError(profPacket.Response);
+                    Debug.LogError(profPacket.ErrorMessage);
                     result = GetMoneyLocal();
                 });
             
                 GameClient.Instance.Send(profPacket);
-            
-                while (!profPacket.IsDone) {}
             }
             else
             {
@@ -75,29 +74,29 @@ namespace Managers
     
         public void PlusMoney(Dictionary<MoneyType, int> _Money)
         {
-            var inBank = GetMoney();
+            var inBank = GetBank();
             if (_Money.ContainsKey(MoneyType.Gold))
-                inBank[MoneyType.Gold] += _Money[MoneyType.Gold];
+                inBank.Money[MoneyType.Gold] += _Money[MoneyType.Gold];
             if (_Money.ContainsKey(MoneyType.Diamonds))
-                inBank[MoneyType.Diamonds] += _Money[MoneyType.Diamonds];
-            SetMoney(inBank);
+                inBank.Money[MoneyType.Diamonds] += _Money[MoneyType.Diamonds];
+            SetMoney(inBank.Money);
         }
 
         public bool TryMinusMoney(Dictionary<MoneyType, int> _Money)
         {
-            var inBank = GetMoney();
+            var inBank = GetBank();
             var mts = new [] {MoneyType.Gold, MoneyType.Diamonds};
             foreach (var mt in mts)
             {
                 if (!_Money.ContainsKey(mt))
                     continue;
             
-                if (inBank[mt] >= _Money[mt])
-                    inBank[mt] -= _Money[mt];
+                if (inBank.Money[mt] >= _Money[mt])
+                    inBank.Money[mt] -= _Money[mt];
                 else
                     return false;
             }
-            SetMoney(inBank);
+            SetMoney(inBank.Money);
             return true;
         }
     
@@ -107,43 +106,58 @@ namespace Managers
             var profPacket = new SetProfilePacket(new SetProfileRequestArgs
             {
                 AccountId = GameClient.Instance.AccountId,
-                Gold = _Money.ContainsKey(MoneyType.Gold) ? _Money[MoneyType.Gold] : bank[MoneyType.Gold],
-                Diamonds = _Money.ContainsKey(MoneyType.Diamonds) ? _Money[MoneyType.Diamonds] : bank[MoneyType.Diamonds]
+                Gold = _Money.ContainsKey(MoneyType.Gold) ? _Money[MoneyType.Gold] : bank.Money[MoneyType.Gold],
+                Diamonds = _Money.ContainsKey(MoneyType.Diamonds) ? _Money[MoneyType.Diamonds] : bank.Money[MoneyType.Diamonds]
             });
             profPacket.OnFail(() => Debug.LogError(profPacket.ErrorMessage));
-        
             GameClient.Instance.Send(profPacket);
-            SetMoneyLocal(_Money);
+            bank.Money = _Money;
+            SetMoneyLocal(bank);
         }
 
         public void SetIncome(Dictionary<MoneyType, int> _Money, RectTransform _From)
         {
-            OnIncome?.Invoke(new IncomeEventArgs(_Money, _From));    
+            var bank = new Bank
+            {
+                Money = _Money,
+                Loaded = true
+            };
+            OnIncome?.Invoke(new IncomeEventArgs(bank, _From));    
         }
     
         #endregion
     
         #region private methods
 
-        private Dictionary<MoneyType, int> GetMoneyLocal()
+        private Bank GetMoneyLocal(Bank _Bank = null)
         {
-            var result = new Dictionary<MoneyType, int>
-            {
-                {MoneyType.Gold, SaveUtils.GetValue<int>(SaveKey.MoneyGold)},
-                {MoneyType.Diamonds, SaveUtils.GetValue<int>(SaveKey.MoneyDiamonds)}
-            };
-            return result;
+            var currentMoney = SaveUtils.GetValue<Dictionary<MoneyType, int>>(SaveKey.Money);
+            if (_Bank == null)
+                return new Bank
+                {
+                    Money = currentMoney,
+                    Loaded = true
+                };
+            _Bank.Money = currentMoney;
+            return _Bank;
         }
 
-        private void SetMoneyLocal(Dictionary<MoneyType, int> _Money)
+        private void SetMoneyLocal(Bank _Bank)
         {
-            if (_Money.ContainsKey(MoneyType.Gold))
-                SaveUtils.PutValue(SaveKey.MoneyGold, _Money[MoneyType.Gold]);
-            if (_Money.ContainsKey(MoneyType.Diamonds))
-                SaveUtils.PutValue(SaveKey.MoneyDiamonds, _Money[MoneyType.Diamonds]);
-        
+            var currentMoney = SaveUtils.GetValue<Dictionary<MoneyType, int>>(SaveKey.Money);
+            if (currentMoney == null)
+                currentMoney = new Dictionary<MoneyType, int>();
+            foreach (var key in _Bank.Money.Keys)
+            {
+                if (currentMoney.ContainsKey(key))
+                    currentMoney[key] = _Bank.Money[key];
+                else
+                    currentMoney.Add(key, _Bank.Money[key]);
+            }
+            SaveUtils.PutValue(SaveKey.Money, currentMoney);
+
             m_IsMoneySavedLocal = true;
-            OnMoneyCountChanged?.Invoke(new MoneyEventArgs(GetMoneyLocal()));
+            OnMoneyCountChanged?.Invoke(new BankEventArgs(GetMoneyLocal()));
         }
     
         #endregion
@@ -151,25 +165,25 @@ namespace Managers
 
     #region types
 
-    public delegate void MoneyEventHandler(MoneyEventArgs _Args);
+    public delegate void MoneyEventHandler(BankEventArgs _Args);
 
     public delegate void IncomeEventHandler(IncomeEventArgs _Args);
 
-    public class MoneyEventArgs
+    public class BankEventArgs
     {
-        public Dictionary<MoneyType, int> Money { get; }
+        public Bank Bank { get; }
 
-        public MoneyEventArgs(Dictionary<MoneyType, int> _Money)
+        public BankEventArgs(Bank _Bank)
         {
-            Money = _Money;
+            Bank = _Bank;
         }
     }
 
-    public class IncomeEventArgs : MoneyEventArgs
+    public class IncomeEventArgs : BankEventArgs
     {
         public RectTransform From { get; }
     
-        public IncomeEventArgs(Dictionary<MoneyType, int> _Money, RectTransform _From) : base(_Money)
+        public IncomeEventArgs(Bank _Bank, RectTransform _From) : base(_Bank)
         {
             From = _From;
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using DebugConsole;
 using Entities;
+using Helpers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;
@@ -60,6 +61,7 @@ namespace UI.Managers
         #if DEBUG
         
         public GameObject DebugConsole { get; private set; }
+        public GameObject DebugReporter { get; private set; }
         
         #endif
         
@@ -75,11 +77,6 @@ namespace UI.Managers
         
         private void Awake()
         {
-            if (Instance != null)
-            {
-                Destroy(gameObject);
-                return;
-            }
             Instance = this;
             DontDestroyOnLoad(gameObject);
             if (string.IsNullOrEmpty(ColorScheme))
@@ -93,8 +90,21 @@ namespace UI.Managers
                     MenuUi.Create(isLoadingFromLevel);
                 }
 
-#if !RELEASE
-                DebugConsole = DebugConsoleView.Create();
+#if DEBUG
+                if (_Prev.name == "_preload")
+                {
+                    bool debugOn = SaveUtils.GetValue<bool>(SaveKey.SettingDebug);
+                    SaveUtils.PutValue(SaveKey.SettingDebug, debugOn);
+                    DebugConsole = DebugConsoleView.Create();
+                    DebugConsole.SetActive(debugOn);
+#if !UNITY_EDITOR
+                    DebugReporter = PrefabInitializer.InitPrefab(
+                        null,
+                        "debug_console",
+                        "reporter");
+                    DebugReporter.SetActive(debugOn);
+#endif
+                }
 #endif
             };
         }

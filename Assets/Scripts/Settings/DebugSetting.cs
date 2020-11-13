@@ -28,6 +28,9 @@ namespace Settings
             bool debugOn = (bool) _Parameter;
             SaveUtils.PutValue(SaveKey.SettingDebug, debugOn);
             UiManager.Instance.DebugConsole.SetActive(debugOn);
+#if !UNITY_EDITOR
+            UiManager.Instance.DebugReporter.SetActive(debugOn);
+#endif
 #endif
         }
     }

@@ -206,7 +206,7 @@ MonoBehaviour:
   m_material: {fileID: 0}
   m_sharedMaterial: {fileID: 0}
   m_isDefaultMaterial: 0
-  m_padding: 1.25
+  m_padding: 8.5625
   m_canvasRenderer: {fileID: 2639100807201644887}
   m_TextComponent: {fileID: 2077458303218885743}
   m_materialReferenceIndex: 1
@@ -300,8 +300,8 @@ MonoBehaviour:
   isBackground: 0
   size: 32
   offsetAngle: 90
-  offsetDistance: 4
-  offset: {x: 0, y: 0}
+  offsetDistance: 0
+  offset: {x: 0, y: -0}
   color: {r: 0, g: 0, b: 0, a: 1}
   blendMode: 0
   shadowAsSibling: 0

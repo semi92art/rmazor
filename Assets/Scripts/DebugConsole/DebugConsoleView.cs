@@ -30,11 +30,9 @@ namespace DebugConsole
                 true,
                 GraphicRaycaster.BlockingObjects.None);
 
-            PrefabInitializer.InitUiPrefab(
+            return PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(canvas.RTransform(), RtrLites.FullFill),
                 "debug_console", "console");
-
-            return canvas.gameObject;
         }
 
 #endregion

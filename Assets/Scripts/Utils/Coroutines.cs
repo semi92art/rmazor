@@ -93,6 +93,9 @@ namespace Utils
             var graphicsAndAlphas = _GraphicsAndAlphas.CloneAlt();
             
             _Item.gameObject.SetActive(true);
+            // var gameObjects = _Item.GetComponentsInChildren<Transform>()
+            //     .Distinct()
+            //     .ToDictionary(_Tr => _Tr.gameObject, _Tr => _Tr.gameObject.activeSelf);
             var animators = _Item.GetComponentsInChildrenEnabled<Animator>();
             var buttons = _Item.GetComponentsInChildrenEnabled<Button>();
             // foreach (var animator in animators)
@@ -140,12 +143,16 @@ namespace Utils
                 } 
             }
             
-            foreach (var animator in animators)
-                if (animator.Key.IsAlive())
-                    animator.Key.enabled = animator.Value;
-            foreach (var button in buttons)
-                if (button.Key.IsAlive())
-                    button.Key.enabled = button.Value; 
+            foreach (var animator in animators
+                .Where(_Animator => _Animator.Key.IsAlive()))
+                animator.Key.enabled = animator.Value;
+            foreach (var button in buttons
+                .Where(_Button => _Button.Key.IsAlive()))
+                button.Key.enabled = button.Value;
+            // foreach (var go in gameObjects)
+            // {
+            //     go.Key.SetActive(go.Value);
+            // }
             
             float shadowBackgrTime = 0.3f;    
             currTime = Time.time;

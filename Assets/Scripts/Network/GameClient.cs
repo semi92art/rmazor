@@ -44,7 +44,7 @@ namespace Network
         
         #endregion
         
-        #region private fields
+        #region private members
         
         private readonly Dictionary<int, IPacket> m_Packets = new Dictionary<int, IPacket>();
         private string m_ServerName;
@@ -92,7 +92,7 @@ namespace Network
 
         #endregion
         
-        #region public methods
+        #region api
         
         public void Init(bool _TestMode = false)
         {
@@ -162,14 +162,19 @@ namespace Network
 
             //wait 5 seconds before cancel
             bool stopWaiting = false;
-            Task.Run(Utils.Utility.WaitForSecs(5f, () => stopWaiting = true));
+            //Task.Run(Utils.Utility.WaitForSecs(5f, () => stopWaiting = true));
 
             request.SendWebRequest();
-            while (!request.isDone && !stopWaiting) {  } //do nothing and wait
             
+            Coroutines.Run(Coroutines.Delay(() => stopWaiting = true, 5f));
             
-            _Packet.ResponseCode = request.responseCode;
-            _Packet.DeserializeResponse(request.downloadHandler.text);
+            Coroutines.Run(Coroutines.WaitWhile(() =>
+            {
+                _Packet.ResponseCode = request.responseCode;
+                _Packet.DeserializeResponse(request.downloadHandler.text);    
+            }, () => !request.isDone && !stopWaiting));
+            //while (!request.isDone && !stopWaiting) {  } //do nothing and wait
+            
         }
 
         #endregion

@@ -23,6 +23,7 @@ namespace UI.Panels
 
         private TMP_InputField m_RepeatPasswordInputField;
         private TextMeshProUGUI m_RepeatPasswordErrorHandler;
+        private TextMeshProUGUI m_RegisteredSuccessfully;
 
         #endregion
         
@@ -39,6 +40,8 @@ namespace UI.Panels
             m_LoginErrorHandler = rp.GetCompItem<TextMeshProUGUI>("login_error_handler");
             m_PasswordErrorHandler = rp.GetCompItem<TextMeshProUGUI>("password_error_handler");
             m_RepeatPasswordErrorHandler = rp.GetCompItem<TextMeshProUGUI>("repeat_password_error_handler");
+            m_RegisteredSuccessfully = rp.GetCompItem<TextMeshProUGUI>("registered_successfully");
+            m_RegisteredSuccessfully.enabled = false;
             
             TextMeshProUGUI registerButtonText = rp.GetCompItem<TextMeshProUGUI>("register_button_text");
             
@@ -93,8 +96,14 @@ namespace UI.Panels
                 GameClient.Instance.Login = packet.Response.Name;
                 GameClient.Instance.PasswordHash = packet.Response.PasswordHash;
                 GameClient.Instance.AccountId = packet.Response.Id;
-                MoneyManager.Instance.GetMoney(true);
-                m_DialogViewer.Back();
+                MoneyManager.Instance.GetBank(true);
+                m_RegisteredSuccessfully.enabled = true;
+                Coroutines.Run(Coroutines.Delay(() =>
+                {
+                    m_DialogViewer.Back();
+                    m_DialogViewer.Back();
+                }, 1f));
+                
             }).OnFail(() =>
             {
                 switch (packet.ErrorMessage.Id)
@@ -124,7 +133,7 @@ namespace UI.Panels
             if (m_LoginInputField.text.Length > 20)
                 SetLoginError("maximum name length: 20 symbols");
             if (m_PasswordInputField.text != m_RepeatPasswordInputField.text)
-                SetPasswordError("passwords do not match");
+                SetRepeatPasswordError("passwords do not match");
             if (!IsNoError())
                 return false;
             if (m_LoginInputField.text.StartsWith(TestUserPrefix))

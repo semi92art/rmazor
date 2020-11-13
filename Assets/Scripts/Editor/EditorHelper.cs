@@ -104,9 +104,8 @@ public class EditorHelper : EditorWindow
 
     private void EnableDailyBonus()
     {
-        SaveUtils.PutValue(SaveKey.DailyBonusLastDate, new System.DateTime(2000, 1, 1));
+        SaveUtils.PutValue(SaveKey.DailyBonusLastDate, System.DateTime.Now.Date.AddDays(-1));
         SaveUtils.PutValue(SaveKey.DailyBonusLastItemClickedDay, m_DailyBonusIndex);
-        SaveUtils.PutValue(SaveKey.DailyBonusOnDebug, true);
     }
 
     private void SetMoney(int _Gold, int _Diamonds)
