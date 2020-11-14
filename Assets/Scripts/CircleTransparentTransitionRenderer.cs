@@ -32,6 +32,7 @@ public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRen
     private void Start()
     {
         m_Material = transitionRenderer.sharedMaterial;
+        m_Material.SetFloat(AlphaCoeff, -1);
     }
     
     public static CircleTransparentTransitionRenderer Create()
@@ -48,7 +49,6 @@ public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRen
         }
         var result = instance.GetComponent<CircleTransparentTransitionRenderer>();
         result.Texture = result.gameObject.GetCompItem<Camera>("camera").targetTexture;
-        result.m_Material.SetFloat(AlphaCoeff, -1);
         return result;
     }
 
