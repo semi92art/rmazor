@@ -2,7 +2,7 @@
 
 namespace Utils
 {
-    public class GeometryUtils
+    public static class GeometryUtils
     {
         public static bool Intersect(Rect _R0, Rect _R1)
         {

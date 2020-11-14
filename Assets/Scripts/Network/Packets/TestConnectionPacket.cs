@@ -6,10 +6,7 @@
         public override string Method => "GET";
         public override string Url => $"{GameClient.Instance.BaseUrl}/timetest";
         
-        public TestConnectionPacket(object _Request) : base(_Request)
-        {
-        }
-
-        
+        public TestConnectionPacket() : base(null)
+        { }
     }
 }

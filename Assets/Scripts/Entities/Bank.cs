@@ -5,7 +5,7 @@ namespace Entities
 {
     public class Bank
     {
-        public Dictionary<MoneyType, int> Money { get; set; } = new Dictionary<MoneyType, int>();
+        public Dictionary<MoneyType, long> Money { get; set; } = new Dictionary<MoneyType, long>();
         public bool Loaded { get; set; }
     }
 }

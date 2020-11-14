@@ -86,7 +86,7 @@ namespace MkeyFW
 
         private void MoneyToBank()
         {
-            var income = new Dictionary<MoneyType, int>();
+            var income = new Dictionary<MoneyType, long>();
             income.Add(moneyType, coins);
             MoneyManager.Instance.PlusMoney(income);
         }

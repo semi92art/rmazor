@@ -318,7 +318,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52c162dc854d2f24fa639ba0623de5ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isBackground: 0
+  isBackground: 1
   size: 32
   offsetAngle: 90
   offsetDistance: 4
@@ -329,7 +329,7 @@ MonoBehaviour:
   cutout: 0
   baked: 0
   colorBleedMode: 0
-  modifiedFromInspector: 0
+  modifiedFromInspector: 1
   bakedShadows: []
 --- !u!1 &3978815442027585898
 GameObject:

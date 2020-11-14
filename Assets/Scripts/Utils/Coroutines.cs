@@ -19,9 +19,9 @@ namespace Utils
             CoroutineRunner = GameObject.Find("CoroutinesRunner").GetComponent<DontDestroyOnLoad>();
         }
         
-        public static void Run(IEnumerator _Coroutine)
+        public static Coroutine Run(IEnumerator _Coroutine)
         {
-            CoroutineRunner.StartCoroutine(_Coroutine);
+            return CoroutineRunner.StartCoroutine(_Coroutine);
         }
     
         public static IEnumerator Action(Action _Action)
@@ -93,13 +93,7 @@ namespace Utils
             var graphicsAndAlphas = _GraphicsAndAlphas.CloneAlt();
             
             _Item.gameObject.SetActive(true);
-            // var gameObjects = _Item.GetComponentsInChildren<Transform>()
-            //     .Distinct()
-            //     .ToDictionary(_Tr => _Tr.gameObject, _Tr => _Tr.gameObject.activeSelf);
-            var animators = _Item.GetComponentsInChildrenEnabled<Animator>();
             var buttons = _Item.GetComponentsInChildrenEnabled<Button>();
-            // foreach (var animator in animators)
-            //     animator.Key.enabled = false;
             foreach (var button in buttons)
                 button.Key.enabled = false;
 
@@ -143,17 +137,10 @@ namespace Utils
                 } 
             }
             
-            foreach (var animator in animators
-                .Where(_Animator => _Animator.Key.IsAlive()))
-                animator.Key.enabled = animator.Value;
             foreach (var button in buttons
                 .Where(_Button => _Button.Key.IsAlive()))
                 button.Key.enabled = button.Value;
-            // foreach (var go in gameObjects)
-            // {
-            //     go.Key.SetActive(go.Value);
-            // }
-            
+
             float shadowBackgrTime = 0.3f;    
             currTime = Time.time;
             if (!_Disappear && backgroundShadows != null)
@@ -185,6 +172,62 @@ namespace Utils
             
             _OnFinish?.Invoke();
         }
+        
+        public static IEnumerator Lerp(
+            long _From,
+            long _To,
+            float _Time,
+            Action<long> _Result,
+            Action _OnFinish = null,
+            Func<bool> _OnBreak = null)
+        {
+            if (_Result == null)
+                yield break;
+            _Result(_From);
+
+            float currTime = Time.time;
+            while (Time.time < currTime + _Time)
+            {
+                float timeCoeff = 1 - (currTime + _Time - Time.time) / _Time;
+                long newVal = MathUtils.Lerp(_From, _To, timeCoeff);
+                _Result(newVal);
+                bool? isBreak = _OnBreak?.Invoke();
+                if (isBreak.HasValue && isBreak.Value)
+                    yield break;
+                yield return new WaitForEndOfFrame();
+            }
+            
+            _Result(_To);
+            _OnFinish?.Invoke();
+        }
+        
+        public static IEnumerator Lerp(
+            float _From,
+            float _To,
+            float _Time,
+            Action<float> _Result,
+            Action _OnFinish = null,
+            Func<bool> _OnBreak = null)
+        {
+            if (_Result == null)
+                yield break;
+            _Result(_From);
+
+            float currTime = Time.time;
+            while (Time.time < currTime + _Time)
+            {
+                float timeCoeff = 1 - (currTime + _Time - Time.time) / _Time;
+                float newVal = Mathf.Lerp(_From, _To, timeCoeff);
+                _Result(newVal);
+                bool? isBreak = _OnBreak?.Invoke();
+                if (isBreak.HasValue && isBreak.Value)
+                    yield break;
+                yield return new WaitForEndOfFrame();
+            }
+            
+            _Result(_To);
+            _OnFinish?.Invoke();
+        }
 
         public static IEnumerator Lerp(
             int _From,
@@ -210,7 +253,35 @@ namespace Utils
             _OnFinish?.Invoke();
         }
         
-        public static IEnumerator LerpPosition(
+        public static IEnumerator Lerp(
+            Color _From,
+            Color _To,
+            float _Time,
+            Action<Color> _Result,
+            Action _OnFinish = null)
+        {
+            if (_Result == null)
+                yield break;
+            _Result(_From);
+
+            float currTime = Time.time;
+            while (Time.time < currTime + _Time)
+            {
+                float timeCoeff = 1 - (currTime + _Time - Time.time) / _Time;
+                float r = Mathf.Lerp(_From.r, _To.r, timeCoeff);
+                float g = Mathf.Lerp(_From.g, _To.g, timeCoeff);
+                float b = Mathf.Lerp(_From.b, _To.b, timeCoeff);
+                float a = Mathf.Lerp(_From.a, _To.a, timeCoeff);
+                var newColor = new Color(r, g, b, a);
+                _Result(newColor);
+                yield return new WaitForEndOfFrame();
+            }
+            
+            _Result(_To);
+            _OnFinish?.Invoke();
+        }
+        
+        public static IEnumerator Lerp(
             RectTransform _Item,
             Vector3 _From,
             Vector3 _To,
@@ -246,20 +317,29 @@ namespace Utils
             if (_Action == null)
                 yield break;
             
-            float currTime = Time.time;
-            float waitingTime = 0f;
-            while (Time.time < currTime + _RepeatTime)
+            float startTime = Time.time;
+            while (Time.time - startTime < _RepeatTime)
             {
-                if (Time.time - currTime > waitingTime)
-                {
-                    _Action();
-                    waitingTime += _RepeatDelta;
-                }
-                
-                yield return new WaitForEndOfFrame();
+                _Action();
+                yield return new WaitForSeconds(_RepeatDelta);
             }
             
             _OnFinish?.Invoke();
+        }
+        
+        public static IEnumerator Repeat(
+            Action _Action,
+            float _RepeatDelta,
+            Func<bool> _DoStop)
+        {
+            if (_Action == null || _DoStop == null)
+                yield break;
+            
+            while (!_DoStop())
+            {
+                _Action();
+                yield return new WaitForSeconds(_RepeatDelta);
+            }
         }
     }
 }

@@ -13,8 +13,8 @@ using Utils;
 public class EditorHelper : EditorWindow
 {
     private int m_DailyBonusIndex;
-    private int m_Gold;
-    private int m_Diamonds;
+    private long m_Gold;
+    private long m_Diamonds;
     private int m_TestUsersNum;
     private bool m_IsGuest;
     private string m_TestUrl;
@@ -48,9 +48,9 @@ public class EditorHelper : EditorWindow
         if (GUILayout.Button("Set Money"))
             SetMoney(m_Gold, m_Diamonds);
         GUILayout.Label("gold: ");
-        m_Gold = EditorGUILayout.IntField(m_Gold);
+        m_Gold = EditorGUILayout.LongField(m_Gold);
         GUILayout.Label("diamonds: ");
-        m_Diamonds = EditorGUILayout.IntField(m_Diamonds);
+        m_Diamonds = EditorGUILayout.LongField(m_Diamonds);
 
         GUILayout.EndHorizontal();
         EditorUtils.DrawUiLine(Color.gray);
@@ -108,9 +108,9 @@ public class EditorHelper : EditorWindow
         SaveUtils.PutValue(SaveKey.DailyBonusLastItemClickedDay, m_DailyBonusIndex);
     }
 
-    private void SetMoney(int _Gold, int _Diamonds)
+    private void SetMoney(long _Gold, long _Diamonds)
     {
-        var money = new Dictionary<MoneyType, int>
+        var money = new Dictionary<MoneyType, long>
         {
             {MoneyType.Gold, _Gold},
             {MoneyType.Diamonds, _Diamonds}

@@ -45,6 +45,7 @@ namespace UI.Panels
         private const float IncomeAnimDeltaTime = 0.1f;
         private const int IncomeCoinsAnimOnScreen = 3;
         private const int PoolSize = 8;
+        private const float SymbolWidth = 18;
         private List<CoinAnimObject> m_CoinsPool = new List<CoinAnimObject>(PoolSize);
         private Image m_GoldIcon;
         private Image m_DiamondIcon;
@@ -52,6 +53,8 @@ namespace UI.Panels
         private TextMeshProUGUI m_DiamondsCount;
         private Button m_PlusButton;
         private Animator m_Animator;
+        private Image m_UpdateIcon;
+        private RectTransform m_BankMiniPanel;
         private bool m_IsShowing;
 
         private int AkShowInMm => AnimKeys.Anim2;
@@ -83,7 +86,12 @@ namespace UI.Panels
             m_DiamondsCount = go.GetCompItem<TextMeshProUGUI>("diamonds_count_text");
             m_PlusButton = go.GetCompItem<Button>("plus_money_button");
             m_Animator = go.GetCompItem<Animator>("animator");
+            m_UpdateIcon = go.GetCompItem<Image>("update_icon");
+            m_BankMiniPanel = go.RTransform();
 
+            m_GoldCount.text = string.Empty;
+            m_DiamondsCount.text = string.Empty;
+            
             m_PlusButton.SetOnClick(() =>
             {
                 SoundManager.Instance.PlayMenuButtonClick();
@@ -99,15 +107,33 @@ namespace UI.Panels
         public void Show()
         {
             var bank = MoneyManager.Instance.GetBank();
+            m_Animator.SetTrigger(UiManager.Instance.CurrentCategory == UiCategory.MainMenu ?
+                AkShowInMm : AkShowInDlg);
+            m_IsShowing = true;
+            m_UpdateIcon.enabled = false;
+            m_BankMiniPanel.sizeDelta = m_BankMiniPanel.sizeDelta.SetX(100);
+            
+            var m_UpdateIconRtr = m_UpdateIcon.RTransform();
+            Coroutines.Run(Coroutines.DoWhile(
+                () =>  m_UpdateIconRtr.Rotate(Vector3.back, 2f),
+                () => m_UpdateIcon.enabled = false,
+                () => !bank.Loaded,
+                () => true));
+            
             Coroutines.Run(Coroutines.WaitWhile(() =>
             {
-                SetMoneyText(bank.Money);
-                int trigger = UiManager.Instance.CurrentCategory == UiCategory.MainMenu ?
-                    AnimKeys.Anim2 : AnimKeys.Anim;
-                m_Animator.SetTrigger(trigger);
-                m_IsShowing = true;
+                int maxTextLength = bank.Money.Max(
+                    _Kvp => _Kvp.Value).ToNumeric().Length;
+                Coroutines.Run(Coroutines.Lerp(
+                    m_BankMiniPanel.sizeDelta.x, 
+                    GetPanelWidth(maxTextLength),
+                    0.3f, 
+                    SetPanelWidth,
+                    () =>
+                    {
+                        SetMoneyText(bank.Money);
+                    }));
             }, () => !bank.Loaded));
-            
         }
 
         public void Hide()
@@ -119,7 +145,7 @@ namespace UI.Panels
         
         #region private methods and destructor
 
-        private void AnimateIncome(Dictionary<MoneyType, int> _Income, RectTransform _From)
+        private void AnimateIncome(Dictionary<MoneyType, long> _Income, RectTransform _From)
         {
             string iconName = "gold_coin";
             Vector3 to = m_GoldIcon.transform.position;
@@ -168,7 +194,7 @@ namespace UI.Panels
                     coin.Item.gameObject.SetActive(true);
                     finishedDict.Add(coroutineIndex, false);
                     int cI = coroutineIndex++;
-                    Coroutines.Run(Coroutines.LerpPosition(
+                    Coroutines.Run(Coroutines.Lerp(
                         coin.Item,
                         _From.position,
                         to,
@@ -199,6 +225,31 @@ namespace UI.Panels
             {
                 Coroutines.Run(Coroutines.WaitWhile(() =>
                 {
+                    int maxCountTextLength = Mathf.Max(m_GoldCount.text.Length, m_DiamondsCount.text.Length);
+                    int newMaxCountTextLength =
+                        Mathf.Max((currMoney.Money[moneyType] + _Income[moneyType]).ToNumeric().Length, maxCountTextLength);
+                           
+                    if (Mathf.Abs(newMaxCountTextLength - maxCountTextLength) > float.Epsilon)
+                    {
+                        float currentPanelWidth = m_BankMiniPanel.sizeDelta.x;
+                        float newPanelWidth = m_GoldIcon.RTransform().rect.width + 
+                                              GetTextWidth(newMaxCountTextLength) +
+                                              m_PlusButton.RTransform().rect.width + 40;
+                        m_GoldCount.rectTransform.sizeDelta =
+                            m_GoldCount.rectTransform.sizeDelta.SetX(GetTextWidth(newMaxCountTextLength));
+                        m_DiamondsCount.rectTransform.sizeDelta =
+                            m_DiamondsCount.rectTransform.sizeDelta.SetX(GetTextWidth(newMaxCountTextLength));
+                    
+                        Coroutines.Run(Coroutines.Lerp(
+                            currentPanelWidth, 
+                            newPanelWidth,
+                            0.3f, 
+                            _Width =>
+                            {
+                                m_BankMiniPanel.sizeDelta = m_BankMiniPanel.sizeDelta.SetX(_Width);
+                            }));
+                    }
+                    
                     Coroutines.Run(Coroutines.Lerp(
                         currMoney.Money[moneyType],
                         currMoney.Money[moneyType] + _Income[moneyType],
@@ -212,7 +263,6 @@ namespace UI.Panels
                         }));
                 }, () => !currMoney.Loaded));
             }
-                
         }
         
         private void MoneyCountChanged(BankEventArgs _Args)
@@ -226,12 +276,44 @@ namespace UI.Panels
                 AnimateIncome(_Args.Bank.Money, _Args.From);
         }
 
-        private void SetMoneyText(Dictionary<MoneyType, int> _Money)
+        private float GetTextWidth(int _TextLength)
+        {
+            return _TextLength * SymbolWidth;
+        }
+        
+        private void SetMoneyText(Dictionary<MoneyType, long> _Money)
         {
             m_GoldCount.text = _Money[MoneyType.Gold].ToNumeric();
+            SetTextWidth(m_GoldCount);
             m_DiamondsCount.text = _Money[MoneyType.Diamonds].ToNumeric();
+            SetTextWidth(m_DiamondsCount);
+            SetPanelWidth();
         }
 
+        private void SetTextWidth(TextMeshProUGUI _Text)
+        {
+            _Text.rectTransform.sizeDelta = 
+                _Text.rectTransform.sizeDelta.SetX(GetTextWidth(_Text.text.Length));
+        }
+        private float GetPanelWidth(int? _MaxTextLength)
+        {
+            int textLength = _MaxTextLength ?? 
+                             Mathf.Max(m_GoldCount.text.Length, m_DiamondsCount.text.Length);
+            return m_GoldIcon.RTransform().rect.width + 
+                                  GetTextWidth(textLength) +
+                                  m_PlusButton.RTransform().rect.width + 40;
+        }
+
+        private void SetPanelWidth(float _Width)
+        {
+            m_BankMiniPanel.sizeDelta = m_BankMiniPanel.sizeDelta.SetX(_Width);
+        }
+        
+        private void SetPanelWidth(int? _MaxTextLength = null)
+        {
+            SetPanelWidth(GetPanelWidth(_MaxTextLength));
+        }
+        
         private void CurrentCategoryChanged(UiCategory _Prev, UiCategory _New)
         {
             if (_Prev == _New || _Prev == UiCategory.Nothing || _New == UiCategory.Nothing)

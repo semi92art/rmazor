@@ -71,7 +71,7 @@ namespace UI
 
         private void CreateBackground()
         {
-            var go =PrefabInitializer.InitUiPrefab(
+            var go = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_Canvas.RTransform(),
                     RtrLites.FullFill),

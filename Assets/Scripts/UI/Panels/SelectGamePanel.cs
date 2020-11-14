@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Extensions;
 using Helpers;
 using Network;
@@ -70,7 +71,7 @@ namespace UI.Panels
                 "main_menu",
                 "select_game_item");
             
-            foreach (var cgiProps in m_CgiPropsList)
+            foreach (var cgiProps in m_CgiPropsList.Where(_Props => _Props.IsVisible))
             {
                 var cgiObjClone = cgiObj.Clone();
                 ChooseGameItem cgi = cgiObjClone.GetComponent<ChooseGameItem>();

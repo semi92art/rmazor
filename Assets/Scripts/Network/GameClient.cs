@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Entities;
+using Network.Packets;
 using UnityEngine;
 using UnityEngine.Networking;
 using Newtonsoft.Json;
@@ -10,33 +11,20 @@ using Utils;
 
 namespace Network
 {
-    public interface IGameClient
-    {
-        string BaseUrl { get; }
-        int AccountId { get; set; }
-        string Login { get; set; }
-        string PasswordHash { get; set; }
-        string CountryKey { get; set; }
-        int GameId { get; set; }
-        string DeviceId { get; }
-        void Init(bool _TestMode = false);
-        void Send(IPacket _Packet);
-        T Deserialize<T>(string _Json);
-        bool IsTestRunningMode { get; }
-    }
-    
-    public class GameClient : ISingleton, IGameClient
+    public class GameClient : ISingleton
     {
         #region singleton
         
-        private static IGameClient _instance;
+        private static GameClient _instance;
 
-        public static IGameClient Instance
+        public static GameClient Instance
         {
             get
             {
-                if (_instance == null)
-                    _instance = new GameClient();
+                if (_instance != null) 
+                    return _instance;
+                
+                _instance = new GameClient(); 
                 _instance.Init();
                 return _instance;
             }
@@ -49,6 +37,8 @@ namespace Network
         private readonly Dictionary<int, IPacket> m_Packets = new Dictionary<int, IPacket>();
         private string m_ServerName;
         private Dictionary<string, string> m_ServerBaseUrls;
+        private bool m_FirstRequest = true;
+        private bool m_ConnectionTestStarted;
         
         
         #endregion
@@ -88,6 +78,12 @@ namespace Network
         }
         
         public string DeviceId => $"test_{SystemInfo.deviceUniqueIdentifier}";
+
+        public bool LastConnectionSucceeded
+        {
+            get => SaveUtils.GetValue<bool>(SaveKey.LastConnectionSucceeded);
+            private set => SaveUtils.PutValue(SaveKey.LastConnectionSucceeded, value);
+        }
         
 
         #endregion
@@ -104,9 +100,6 @@ namespace Network
             m_ServerName = "Debug";
 #endif
             
-            if (_TestMode)
-                m_ServerName = "TestRunner";
-            
             m_ServerBaseUrls = new Dictionary<string, string>
             {
                 {"Ubuntu1", @"http://77.37.152.15:7000"},
@@ -114,6 +107,11 @@ namespace Network
                 {"Debug", SaveUtils.GetValue<string>(SaveKey.DebugServerUrl)},
                 {"TestRunner", SaveUtils.GetValue<string>(SaveKey.DebugServerUrl)}
             };
+            
+            if (_TestMode)
+                m_ServerName = "TestRunner";
+            if (!_TestMode)
+                StartTestingConnection();
         }
 
         public void Send(IPacket _Packet)
@@ -140,8 +138,6 @@ namespace Network
             return JsonConvert.DeserializeObject<T>(_Json);
         }
 
-        public bool IsTestRunningMode => m_ServerName == "TestRunner";
-        
         #endregion
         
         #region private methods
@@ -159,22 +155,35 @@ namespace Network
             byte[] bodyRaw = Encoding.UTF8.GetBytes(json);
             request.uploadHandler = new UploadHandlerRaw(bodyRaw) {contentType = "application/json"};
             request.downloadHandler = new DownloadHandlerBuffer();
-
-            //wait 5 seconds before cancel
+            
             bool stopWaiting = false;
-            //Task.Run(Utils.Utility.WaitForSecs(5f, () => stopWaiting = true));
-
             request.SendWebRequest();
-            
-            Coroutines.Run(Coroutines.Delay(() => stopWaiting = true, 5f));
-            
+            Coroutines.Run(Coroutines.Delay(() => stopWaiting = true, m_FirstRequest ? 5f : 2f));
             Coroutines.Run(Coroutines.WaitWhile(() =>
             {
                 _Packet.ResponseCode = request.responseCode;
-                _Packet.DeserializeResponse(request.downloadHandler.text);    
+                _Packet.DeserializeResponse(request.downloadHandler.text);
+                m_FirstRequest = false;
             }, () => !request.isDone && !stopWaiting));
-            //while (!request.isDone && !stopWaiting) {  } //do nothing and wait
-            
+        }
+
+        private void StartTestingConnection()
+        {
+            if (m_ConnectionTestStarted)
+                return;
+            Coroutines.Run(Coroutines.Repeat(() =>
+            {
+                IPacket testPacket = new TestConnectionPacket()
+                    .OnSuccess(() => LastConnectionSucceeded = true)
+                    .OnFail(() =>
+                        {
+                            Debug.LogError("No connection to server");
+                            LastConnectionSucceeded = false;
+                        }
+                    );
+                Send(testPacket);
+            }, 5f, () => false));
+            m_ConnectionTestStarted = true;
         }
 
         #endregion

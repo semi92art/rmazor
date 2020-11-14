@@ -205,7 +205,6 @@ public class DefaultDialogViewer : MonoBehaviour, IDialogViewer, IActionExecuter
             int instId = toPanel.GetInstanceID();
             if (!m_GraphicsAlphas.ContainsKey(instId))
                 m_GraphicsAlphas.Add(instId, new GraphicAlphas(toPanel));
-            toPanel.Set(RtrLites.FullFill);
             StartCoroutine(Coroutines.DoTransparentTransition(
                 toPanel, m_GraphicsAlphas[instId].Alphas, m_TransitionTime, false, 
                 () => background.enabled = true));

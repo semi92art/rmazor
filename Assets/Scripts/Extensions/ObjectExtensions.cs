@@ -13,6 +13,13 @@ namespace Extensions
         {
             return _Object.GetComponent<T>() == null ? _Object.AddComponent<T>() : null;
         }
+
+        public static void RemoveComponentIfExist<T>(this GameObject _Object) where T : Component
+        {
+            var component = _Object.GetComponent<T>();
+            if (component != null)
+                Object.Destroy(component);
+        }
         
         //https://answers.unity.com/questions/530178/how-to-get-a-component-from-an-object-and-add-it-t.html?_ga=2.165477879.911525322.1599381767-2044961467.1583736117
         public static T GetCopyOf<T>(this Component comp, T other) where T : Component

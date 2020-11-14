@@ -1,5 +1,6 @@
 ﻿using Extensions;
 using Helpers;
+using UI.Entities;
 using UI.Factories;
 using UI.Managers;
 using UnityEngine;
@@ -56,10 +57,11 @@ namespace UI.Panels
             IDialogViewer _DialogViewer)
         {
             GameObject prefab = PrefabInitializer.InitUiPrefab(
-                UiFactory.UiRectTransform(_DialogViewer.DialogContainer, RtrLites.FullFill),
+                UiFactory.UiRectTransform(
+                    _DialogViewer.DialogContainer,
+                    RtrLites.FullFill),
                 "loading_panel", "loading_panel");
             m_View = prefab.GetComponent<LoadingPanelView>();
-            //prefab.SetActive(false);
             return prefab.RTransform();
         }
     

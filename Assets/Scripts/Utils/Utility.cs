@@ -184,9 +184,14 @@ namespace Utils
             return ret;
         }
 
-        public static string ToNumeric(this int _Value)
+        public static string ToNumeric(this long _Value)
         {
             return _Value.ToString("N0", CultureInfo.CreateSpecificCulture("en-US"));
+        }
+
+        public static string ToNumeric(this int _Value)
+        {
+            return ((long) _Value).ToNumeric();
         }
         
         public static bool IsFullyVisibleFrom(this RectTransform _Item, RectTransform _Rect)

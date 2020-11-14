@@ -21,7 +21,6 @@ namespace UI.PanelItems
                 SoundManager.Instance.PlayMenuButtonClick();
                 _Props.Click?.Invoke();
             });
-            gameObject.SetActive(_Props.IsVisible);
             comingSoonLabel.enabled = _Props.IsComingSoon;
         }
     }

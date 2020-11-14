@@ -44,7 +44,8 @@ namespace Managers
         public Bank GetBank(bool _ForcedFromServer = false)
         {
             var result = new Bank();
-            if (!m_IsMoneySavedLocal || _ForcedFromServer)
+            if ((!m_IsMoneySavedLocal || _ForcedFromServer)
+                && GameClient.Instance.LastConnectionSucceeded)
             {
                 var profPacket = new GetProfilePacket(new AccIdGameId
                 {
@@ -59,7 +60,7 @@ namespace Managers
                 }).OnFail(() =>
                 {
                     Debug.LogError(profPacket.ErrorMessage);
-                    result = GetMoneyLocal();
+                    result = GetMoneyLocal(result);
                 });
             
                 GameClient.Instance.Send(profPacket);
@@ -72,13 +73,17 @@ namespace Managers
             return result;
         }
     
-        public void PlusMoney(Dictionary<MoneyType, int> _Money)
+        public void PlusMoney(Dictionary<MoneyType, long> _Money)
         {
             var inBank = GetBank();
-            if (_Money.ContainsKey(MoneyType.Gold))
-                inBank.Money[MoneyType.Gold] += _Money[MoneyType.Gold];
-            if (_Money.ContainsKey(MoneyType.Diamonds))
-                inBank.Money[MoneyType.Diamonds] += _Money[MoneyType.Diamonds];
+            foreach (var kvp in _Money)
+            {
+                if (inBank.Money.ContainsKey(kvp.Key))
+                    inBank.Money[MoneyType.Gold] += _Money[MoneyType.Gold];
+                else
+                    inBank.Money.Add(kvp.Key, kvp.Value);
+            }
+            
             SetMoney(inBank.Money);
         }
 
@@ -100,28 +105,32 @@ namespace Managers
             return true;
         }
     
-        public void SetMoney(Dictionary<MoneyType, int> _Money)
+        public void SetMoney(Dictionary<MoneyType, long> _Money)
         {
             var bank = GetMoneyLocal();
-            var profPacket = new SetProfilePacket(new SetProfileRequestArgs
+            if (GameClient.Instance.LastConnectionSucceeded)
             {
-                AccountId = GameClient.Instance.AccountId,
-                Gold = _Money.ContainsKey(MoneyType.Gold) ? _Money[MoneyType.Gold] : bank.Money[MoneyType.Gold],
-                Diamonds = _Money.ContainsKey(MoneyType.Diamonds) ? _Money[MoneyType.Diamonds] : bank.Money[MoneyType.Diamonds]
-            });
-            profPacket.OnFail(() => Debug.LogError(profPacket.ErrorMessage));
-            GameClient.Instance.Send(profPacket);
+                var profPacket = new SetProfilePacket(new SetProfileRequestArgs
+                {
+                    AccountId = GameClient.Instance.AccountId,
+                    Gold = _Money.ContainsKey(MoneyType.Gold) ? _Money[MoneyType.Gold] : bank.Money[MoneyType.Gold],
+                    Diamonds = _Money.ContainsKey(MoneyType.Diamonds) ? _Money[MoneyType.Diamonds] : bank.Money[MoneyType.Diamonds]
+                });
+                profPacket.OnFail(() => Debug.LogError(profPacket.ErrorMessage));
+                GameClient.Instance.Send(profPacket);    
+            }
             bank.Money = _Money;
             SetMoneyLocal(bank);
         }
 
-        public void SetIncome(Dictionary<MoneyType, int> _Money, RectTransform _From)
+        public void SetIncome(Dictionary<MoneyType, long> _Money, RectTransform _From)
         {
             var bank = new Bank
             {
                 Money = _Money,
                 Loaded = true
             };
+            PlusMoney(bank.Money);
             OnIncome?.Invoke(new IncomeEventArgs(bank, _From));    
         }
     
@@ -131,7 +140,7 @@ namespace Managers
 
         private Bank GetMoneyLocal(Bank _Bank = null)
         {
-            var currentMoney = SaveUtils.GetValue<Dictionary<MoneyType, int>>(SaveKey.Money);
+            var currentMoney = SaveUtils.GetValue<Dictionary<MoneyType, long>>(SaveKey.Money);
             if (_Bank == null)
                 return new Bank
                 {
@@ -139,14 +148,15 @@ namespace Managers
                     Loaded = true
                 };
             _Bank.Money = currentMoney;
+            _Bank.Loaded = true;
             return _Bank;
         }
 
         private void SetMoneyLocal(Bank _Bank)
         {
-            var currentMoney = SaveUtils.GetValue<Dictionary<MoneyType, int>>(SaveKey.Money);
+            var currentMoney = SaveUtils.GetValue<Dictionary<MoneyType, long>>(SaveKey.Money);
             if (currentMoney == null)
-                currentMoney = new Dictionary<MoneyType, int>();
+                currentMoney = new Dictionary<MoneyType, long>();
             foreach (var key in _Bank.Money.Keys)
             {
                 if (currentMoney.ContainsKey(key))

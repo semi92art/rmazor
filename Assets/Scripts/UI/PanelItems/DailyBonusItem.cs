@@ -35,7 +35,7 @@ namespace UI.PanelItems
         
             button.onClick.AddListener(() =>
             {
-                var money = new Dictionary<MoneyType, int>();
+                var money = new Dictionary<MoneyType, long>();
                 if (_Props.Gold > 0)
                     money.Add(MoneyType.Gold, _Props.Gold);
                 if (_Props.Diamonds > 0)

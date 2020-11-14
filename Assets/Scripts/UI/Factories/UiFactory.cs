@@ -60,6 +60,8 @@ namespace UI.Factories
             
 #if UNITY_EDITOR
             item.gameObject.AddComponentIfNotExist<RectTransformHelper>();
+#else
+            item.gameObject.RemoveComponentIfExist<RectTransformHelper>();
 #endif
             return item;
         }
