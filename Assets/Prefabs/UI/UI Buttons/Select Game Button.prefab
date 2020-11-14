@@ -322,6 +322,7 @@ GameObject:
   - component: {fileID: 1387711294868684083}
   - component: {fileID: 2077458303218885743}
   - component: {fileID: 7308486996761384904}
+  - component: {fileID: 9037126099878008427}
   m_Layer: 0
   m_Name: Select Game Label
   m_TagString: Untagged
@@ -481,3 +482,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59e9a8a8a0c816841bf2f00e1c5197f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &9037126099878008427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7586950372442203724}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbf51be86e70d7941bd40914206e4ddc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  translationName: SelectGame
+  FallbackText: SELECT GAME

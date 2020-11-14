@@ -61,6 +61,7 @@ namespace UI
                     CheckIfWofSpinedToday();
             };
             SoundManager.Instance.PlayClip("main_menu_theme", true, 0f);
+            LocalizationManager a = LocalizationManager.Instance;
         }
 
         private void InitBankMiniPanel()

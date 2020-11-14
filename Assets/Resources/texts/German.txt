@@ -1,0 +1,7 @@
+Play = Spiel
+Ratings = Bewertungen
+SelectGame = SPIEL AUSWAEHLEN
+Wheel = Rad
+Shop = Geshaeft
+Bonus = Bonus
+Login = Einloggen

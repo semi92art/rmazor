@@ -1,0 +1,7 @@
+Play = Jugar
+Ratings = Calificaciones
+SelectGame = SELECCIONA UN JUEGO
+Wheel = Rueda
+Shop = Tienda
+Bonus = Bonus
+Login = Iniciar sesión

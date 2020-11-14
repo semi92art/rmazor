@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3301732831583724288}
   - component: {fileID: 7952998590489357799}
   - component: {fileID: 8126744387244507405}
+  - component: {fileID: 3447497488924336995}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -156,6 +157,20 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &3447497488924336995
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6858157447772599251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbf51be86e70d7941bd40914206e4ddc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  translationName: Shop
+  FallbackText: Shop
 --- !u!1 &7281857429519183955
 GameObject:
   m_ObjectHideFlags: 0

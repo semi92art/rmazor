@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Entities;
+using Lean.Localization;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -70,6 +71,7 @@ namespace DebugConsole
             RegisterCommand("reload", Reload, "Reload current level.");
             RegisterCommand("clc", ClearConsole, "Clear console.");
             RegisterCommand("sw_sound", SwitchSound,"Switch sound.");
+            RegisterCommand("set_lang",SetLanguage,"set language");
         }
 
         #endregion
@@ -270,6 +272,29 @@ namespace DebugConsole
             m_Scrollback.Clear();
             if (LogChanged != null)
                 LogChanged(Log);
+        }
+
+        void SetLanguage(string[] _Args)
+        {
+            if (_Args.Length == 0)
+                AppendLogLine("Specify language");
+            else
+            {
+                foreach (string arg in _Args)
+                {
+                    if (arg == "-h")
+                    {
+                        AppendLogLine("Current language list:");
+                        foreach (var lang in Enum.GetValues(typeof(Language)))
+                        {
+                            AppendLogLine(lang.ToString());
+                        }
+                        break;
+                    }
+
+                    LeanLocalization.CurrentLanguage = arg;
+                }
+            }  
         }
         #endregion
     }
