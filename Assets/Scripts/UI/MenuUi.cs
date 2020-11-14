@@ -28,24 +28,25 @@ namespace UI
 
         #region constructor
 
-        private MenuUi(bool _IsLoadingFromLevel)
+        private MenuUi(bool _OnStart)
         {
             CreateCanvas();
             CreateDialogContainer();
             CreateBackground();
-            if (!_IsLoadingFromLevel)
+            CreateTransitionRenderer();
+            if (_OnStart)
                 CreateLoadingPanel();
             else
-                LoadMainMenu();
+                LoadMainMenu(false);
         }
 
         #endregion
     
         #region factory
 
-        public static MenuUi Create(bool _IsLoadingFromLevel)
+        public static MenuUi Create(bool _OnStart)
         {
-            return new MenuUi(_IsLoadingFromLevel);
+            return new MenuUi(_OnStart);
         }
     
         #endregion
@@ -102,6 +103,14 @@ namespace UI
             m_DialogViewer = dialogPanelObj.GetComponent<DefaultDialogViewer>();
         }
 
+        private void CreateTransitionRenderer()
+        {
+            var transitionPanelObj = CreateLoadingTransitionPanel();
+            m_TransitionRenderer = CircleTransparentTransitionRenderer.Create();
+            RawImage rImage = transitionPanelObj.GetCompItem<RawImage>("raw_image");
+            rImage.texture = m_TransitionRenderer.Texture;
+        }
+
         private void CreateLoadingPanel()
         {
             m_LoadingPanel = new LoadingPanel(m_DialogViewer);
@@ -109,11 +118,6 @@ namespace UI
 
             Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
             {
-                var transitionPanelObj = CreateLoadingTransitionPanel();
-                m_TransitionRenderer = CircleTransparentTransitionRenderer.Create();
-                RawImage rImage = transitionPanelObj.GetCompItem<RawImage>("raw_image");
-                rImage.texture = m_TransitionRenderer.Texture;
-                //wait 2 seconds anyway
                 float delayAnyway = 2f;
                 bool isSuccess = false;
                 float startTime = Time.time;
@@ -177,18 +181,28 @@ namespace UI
             }));
         }
 
-        private void LoadMainMenu()
+        private void LoadMainMenu(bool _OnStart = true)
         {
-            m_TransitionRenderer.TransitionAction = (_, _Args) =>
+            if (_OnStart)
             {
-                m_LoadingPanel.DoLoading = false;
-                m_LoadingPanel.Hide();
-                                        
-                MainMenuUi.Create(
-                    m_Canvas.RTransform(),
-                    m_DialogViewer);
-            };
-            m_TransitionRenderer.StartTransition();
+                m_TransitionRenderer.TransitionAction = (_, _Args) =>
+                {
+                    m_LoadingPanel.DoLoading = false;
+                    m_LoadingPanel.Hide();
+                    LoadMainMenuCore();
+                };
+                m_TransitionRenderer.StartTransition();
+            }
+            else
+                LoadMainMenuCore();
+            
+        }
+
+        private void LoadMainMenuCore()
+        {
+            MainMenuUi.Create(
+                m_Canvas.RTransform(),
+                m_DialogViewer);
         }
 
         private GameObject CreateLoadingTransitionPanel()

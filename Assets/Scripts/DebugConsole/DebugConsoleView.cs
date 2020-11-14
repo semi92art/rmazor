@@ -17,7 +17,7 @@ namespace DebugConsole
         public static GameObject Create()
         {
             Canvas canvas = UiFactory.UiCanvas(
-                "Canvas",
+                "DebugConsoleCanvas",
                 RenderMode.ScreenSpaceOverlay,
                 true,
                 1,
@@ -29,6 +29,8 @@ namespace DebugConsole
                 100,
                 true,
                 GraphicRaycaster.BlockingObjects.None);
+            
+            DontDestroyOnLoad(canvas);
 
             return PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(canvas.RTransform(), RtrLites.FullFill),

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Entities;
+using Lean.Localization;
 using Utils;
 
 namespace Settings
@@ -19,7 +20,8 @@ namespace Settings
             {Language.English, "English"},
             {Language.Portugal, "Portugués"},
             {Language.Spanish, "Español"},
-            {Language.Russian, "Русский"}
+            {Language.Russian, "Русский"},
+            {Language.German, "Deutsch"}
         };
 
         public object Get()
@@ -34,6 +36,7 @@ namespace Settings
                 .ToList()
                 .FirstOrDefault(_Kvp => _Kvp.Value == langName).Key;
             SaveUtils.PutValue(SaveKey.SettingLanguage, lang);
+            LeanLocalization.CurrentLanguage = lang.ToString();
         }
     }
 }

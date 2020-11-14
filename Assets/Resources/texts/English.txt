@@ -1,0 +1,7 @@
+Play = Play
+Ratings = Ratings
+SelectGame = SELECT GAME
+Wheel = Wheel
+Shop = Shop
+Bonus = Bonus
+Login = Login

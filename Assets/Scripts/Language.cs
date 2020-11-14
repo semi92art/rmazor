@@ -2,6 +2,7 @@
 {
     Russian,
     English,
+    German,
     Spanish,
     Portugal
 }

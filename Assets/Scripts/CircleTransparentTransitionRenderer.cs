@@ -55,28 +55,30 @@ public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRen
     public void StartTransition(bool _Fast = false)
     {
         AnimationCurve ac = _Fast ? fastCurve : curve;
-        
         float startTime = Time.time;
         bool doEvent = false;
         
-        m_Material.SetFloat(AlphaCoeff, -1);
-        StartCoroutine(Coroutines.DoWhile(() =>
-            {
-                float dt = Time.time - startTime;
-                m_Material.SetFloat(AlphaCoeff, ac.Evaluate(dt));
-                if (!doEvent && dt > ac.keys.Last().time * 0.5f)
+        Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
+        {
+            m_Material.SetFloat(AlphaCoeff, -1);
+            Coroutines.Run(Coroutines.DoWhile(() =>
                 {
-                    TransitionAction?.Invoke(this, null);
-                    doEvent = true;
-                }
-            },
-            () =>
-            {
-                TransitionAction = null;
-                m_Material.SetFloat(AlphaCoeff, ac.keys.Last().value);
-            },
-            () => Time.time - startTime < ac.keys.Last().time,
-            () => true));
+                    float dt = Time.time - startTime;
+                    m_Material.SetFloat(AlphaCoeff, ac.Evaluate(dt));
+                    if (!doEvent && dt > ac.keys.Last().time * 0.5f)
+                    {
+                        TransitionAction?.Invoke(this, null);
+                        doEvent = true;
+                    }
+                },
+                () =>
+                {
+                    TransitionAction = null;
+                    m_Material.SetFloat(AlphaCoeff, ac.keys.Last().value);
+                },
+                () => Time.time - startTime < ac.keys.Last().time,
+                () => true));
+        }));
     }
 }
 

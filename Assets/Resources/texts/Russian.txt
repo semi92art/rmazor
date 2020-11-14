@@ -1,0 +1,7 @@
+Play = Играть
+Ratings = Рейтинги
+SelectGame = ВЫБРАТЬ ИГРУ
+Wheel = Колесо
+Shop = Магазин
+Bonus = Бонус
+Login = Войти

@@ -1,0 +1,7 @@
+Play = Jogar
+Ratings = Avaliações
+SelectGame = SELECIONE O JOGO
+Wheel = Roda
+Shop = Loja
+Bonus = Bonus
+Login = Conecte-se

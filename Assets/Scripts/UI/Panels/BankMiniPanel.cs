@@ -325,6 +325,14 @@ namespace UI.Panels
         
         private void CurrentCategoryChanged(UiCategory _Prev, UiCategory _New)
         {
+            if (m_Animator == null)
+            {
+                MoneyManager.Instance.OnMoneyCountChanged -= MoneyCountChanged;
+                MoneyManager.Instance.OnIncome -= Income;
+                UiManager.Instance.OnCurrentCategoryChanged -= CurrentCategoryChanged;
+                return;
+            }
+            
             if (_Prev == _New || _Prev == UiCategory.Nothing || _New == UiCategory.Nothing)
                 return;
             m_PlusButton.interactable = true;
@@ -420,14 +428,7 @@ namespace UI.Panels
             if (trigger != -1)
                 m_Animator.SetTrigger(trigger);
         }
-        
-        ~BankMiniPanel()
-        {
-            MoneyManager.Instance.OnMoneyCountChanged -= MoneyCountChanged;
-            MoneyManager.Instance.OnIncome -= Income;
-            UiManager.Instance.OnCurrentCategoryChanged -= CurrentCategoryChanged;
-        }
-        
+
         #endregion
     }
 }
