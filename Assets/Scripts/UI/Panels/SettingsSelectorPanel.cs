@@ -84,8 +84,7 @@ namespace UI.Panels
             {
                 var sspiClone = sspi.Clone();
                 SettingSelectorItem si = sspiClone.GetComponent<SettingSelectorItem>();
-                bool selected = item == m_DefaultValue;
-                si.Init(selected, item, m_Select, m_ToggleGroup);
+                si.Init(item, m_Select, m_ToggleGroup);
             }
             
             Object.Destroy(sspi);
