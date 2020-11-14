@@ -9,6 +9,7 @@ using UI;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Utils;
 
 public class EditorHelper : EditorWindow
@@ -84,11 +85,11 @@ public class EditorHelper : EditorWindow
         EditorUtils.DrawUiLine(Color.gray);
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("_preload"))
-            EditorSceneManager.OpenScene("Assets/Scenes/_preload.unity");
+            LoadScene("Assets/Scenes/_preload.unity");
         if (GUILayout.Button("Main"))
-            EditorSceneManager.OpenScene("Assets/Scenes/Main.unity");
+            LoadScene("Assets/Scenes/Main.unity");
         if (GUILayout.Button("Level"))
-            EditorSceneManager.OpenScene("Assets/Scenes/Level.unity");
+            LoadScene("Assets/Scenes/Level.unity");
         GUILayout.EndHorizontal();
     
 
@@ -198,6 +199,14 @@ public class EditorHelper : EditorWindow
         string matPath = @"Assets\Materials\CircleTransparentTransition.mat";
         var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
         mat.SetFloat(CircleTransparentTransitionRenderer.AlphaCoeff, -1);
+    }
+
+    private void LoadScene(string _Name)
+    {
+        if (Application.isPlaying)
+            SceneManager.LoadScene(_Name);
+        else
+            EditorSceneManager.OpenScene(_Name);
     }
 }
 

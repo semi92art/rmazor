@@ -70,6 +70,7 @@ namespace UI.Managers
         #region private members
 
         private UiCategory m_CurrentCategory = UiCategory.Nothing;
+        private string m_PrevScene;
 
         #endregion
 
@@ -82,16 +83,11 @@ namespace UI.Managers
             if (string.IsNullOrEmpty(ColorScheme))
                 ColorScheme = "Default";
 
-            SceneManager.activeSceneChanged += (_Prev, _Next) =>
+            SceneManager.activeSceneChanged += (_, _Next) =>
             {
-                if (_Next.name == "Main")
-                {
-                    bool isLoadingFromLevel = _Prev.name == "Level";
-                    MenuUi.Create(isLoadingFromLevel);
-                }
-
+                
 #if DEBUG
-                if (_Prev.name == "_preload")
+                if (m_PrevScene == "_preload")
                 {
                     bool debugOn = SaveUtils.GetValue<bool>(SaveKey.SettingDebug);
                     SaveUtils.PutValue(SaveKey.SettingDebug, debugOn);
@@ -106,6 +102,14 @@ namespace UI.Managers
 #endif
                 }
 #endif
+                if (_Next.name == "Main")
+                {
+                    if (m_PrevScene == "_preload")
+                        LocalizationManager.Instance.Init();
+                    MenuUi.Create(m_PrevScene == "_preload");
+                }
+
+                m_PrevScene = _Next.name;
             };
         }
         
