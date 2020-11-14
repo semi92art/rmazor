@@ -10,6 +10,7 @@ namespace Constants
         public static int Anim4 { get; }
         public static int Stop { get; }
         public static int Stop2 { get; }
+        public static int Selected { get; }
 
         static AnimKeys()
         {
@@ -19,6 +20,7 @@ namespace Constants
             Anim4 = Animator.StringToHash("anim4");
             Stop = Animator.StringToHash("stop");
             Stop2 = Animator.StringToHash("stop2");
+            Selected = Animator.StringToHash("Selected");
         }
     }
 }

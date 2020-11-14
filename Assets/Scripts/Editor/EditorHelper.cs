@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Entities;
+using Extensions;
 using Managers;
 using Network;
 using Network.PacketArgs;
@@ -78,7 +79,8 @@ public class EditorHelper : EditorWindow
             m_TestUrl = @"http://77.37.152.15:7000";
         if (GUILayout.Button("Delete All Settings"))
             PlayerPrefs.DeleteAll();
-    
+        if (GUILayout.Button("Set Default Materal Props"))
+            SetDefaultMaterialProps();
         EditorUtils.DrawUiLine(Color.gray);
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("_preload"))
@@ -189,6 +191,13 @@ public class EditorHelper : EditorWindow
             .OnFail(() => Debug.Log($"Failed to delete test users: {packet.ErrorMessage}"));
         GameClient.Instance.Init(true);
         GameClient.Instance.Send(packet);
+    }
+
+    private void SetDefaultMaterialProps()
+    {
+        string matPath = @"Assets\Materials\CircleTransparentTransition.mat";
+        var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+        mat.SetFloat(CircleTransparentTransitionRenderer.AlphaCoeff, -1);
     }
 }
 

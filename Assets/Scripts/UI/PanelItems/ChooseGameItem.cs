@@ -14,7 +14,7 @@ namespace UI.PanelItems
     
         public void Init(ChooseGameItemProps _Props)
         {
-            icon.sprite = _Props.Icon;
+            icon.sprite = GetLogo(_Props.GameId);
             button.interactable = !_Props.IsComingSoon;
             button.SetOnClick(() =>
             {
@@ -23,12 +23,16 @@ namespace UI.PanelItems
             });
             comingSoonLabel.enabled = _Props.IsComingSoon;
         }
+        
+        private Sprite GetLogo(int _GameId)
+        {
+            return PrefabInitializer.GetObject<Sprite>("game_logos", $"game_logo_{_GameId}");
+        }
     }
 
     public class ChooseGameItemProps
     {
         public int GameId { get; }
-        public Sprite Icon { get; }
         public bool IsComingSoon { get; }
         public bool IsVisible { get; }
         public UnityEngine.Events.UnityAction Click { get; set; }
@@ -39,14 +43,8 @@ namespace UI.PanelItems
             bool _IsVisible)
         {
             GameId = _GameId;
-            Icon = GetLogo(_GameId);
             IsComingSoon = _IsComingSoon;
             IsVisible = _IsVisible;
-        }
-        
-        private static Sprite GetLogo(int _GameId)
-        {
-            return PrefabInitializer.GetObject<Sprite>("game_logos", $"game_logo_{_GameId}");
         }
     }
 }

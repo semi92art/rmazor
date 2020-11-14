@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Entities;
 using Network;
 using Network.PacketArgs;
@@ -37,7 +38,8 @@ namespace Managers
         #endregion
     
         #region api
-    
+
+        public const long MaxMoneyCount = 999999999999999;
         public event MoneyEventHandler OnMoneyCountChanged;
         public event IncomeEventHandler OnIncome;
     
@@ -107,6 +109,13 @@ namespace Managers
     
         public void SetMoney(Dictionary<MoneyType, long> _Money)
         {
+            foreach (var kvp in _Money.ToArray())
+            {
+                if (kvp.Value > MaxMoneyCount)
+                    _Money[kvp.Key] = MaxMoneyCount;
+                else if (kvp.Value < 0)
+                    _Money[kvp.Key] = 0;
+            }
             var bank = GetMoneyLocal();
             if (GameClient.Instance.LastConnectionSucceeded)
             {

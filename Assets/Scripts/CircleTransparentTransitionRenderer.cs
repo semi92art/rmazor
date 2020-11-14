@@ -19,6 +19,7 @@ public interface ITransitionRenderer
 public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRenderer
 {
     public EventHandler TransitionAction { get; set; }
+    public static readonly int AlphaCoeff = Shader.PropertyToID("_AlphaCoeff");
     public RenderTexture Texture { get; set; }
 
     public AnimationCurve curve;
@@ -26,8 +27,8 @@ public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRen
     public MeshRenderer transitionRenderer;
     
     private Material m_Material;
-    
-    
+
+
     private void Start()
     {
         m_Material = transitionRenderer.sharedMaterial;
@@ -47,6 +48,7 @@ public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRen
         }
         var result = instance.GetComponent<CircleTransparentTransitionRenderer>();
         result.Texture = result.gameObject.GetCompItem<Camera>("camera").targetTexture;
+        result.m_Material.SetFloat(AlphaCoeff, -1);
         return result;
     }
 
@@ -56,13 +58,12 @@ public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRen
         
         float startTime = Time.time;
         bool doEvent = false;
-
-        string varName = "_AlphaCoeff";
-        m_Material.SetFloat(varName, -1);
+        
+        m_Material.SetFloat(AlphaCoeff, -1);
         StartCoroutine(Coroutines.DoWhile(() =>
             {
                 float dt = Time.time - startTime;
-                m_Material.SetFloat(varName, ac.Evaluate(dt));
+                m_Material.SetFloat(AlphaCoeff, ac.Evaluate(dt));
                 if (!doEvent && dt > ac.keys.Last().time * 0.5f)
                 {
                     TransitionAction?.Invoke(this, null);
@@ -72,7 +73,7 @@ public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRen
             () =>
             {
                 TransitionAction = null;
-                m_Material.SetFloat(varName, ac.keys.Last().value);
+                m_Material.SetFloat(AlphaCoeff, ac.keys.Last().value);
             },
             () => Time.time - startTime < ac.keys.Last().time,
             () => true));

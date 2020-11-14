@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using Constants;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,8 +7,9 @@ namespace UI.PanelItems
 {
     public class SettingSelectorItem : MonoBehaviour
     {
-        public Toggle toggle;
-        public TextMeshProUGUI title;
+        [SerializeField] private Toggle toggle;
+        [SerializeField] private TextMeshProUGUI title;
+        [SerializeField] private Animator animator;
 
         private bool m_IsInitialized;
         
@@ -15,8 +17,12 @@ namespace UI.PanelItems
         {
             title.text = _Text;
             name = $"{_Text} Setting";
+            toggle.group = _ToggleGroup;
             toggle.isOn = _Selected;
-            
+            if (_Selected)
+                animator.SetTrigger(AnimKeys.Selected);
+                
+ 
             toggle.onValueChanged.AddListener(_IsOn =>
             {
                 if (_IsOn && m_IsInitialized)
@@ -25,8 +31,7 @@ namespace UI.PanelItems
                     _Select?.Invoke(_Text);
                 }
             });
-
-            toggle.group = _ToggleGroup;
+            
             m_IsInitialized = true;
         }
     }

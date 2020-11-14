@@ -23,8 +23,8 @@ MonoBehaviour:
       color: {r: 0.6981132, g: 0.6798188, b: 0.6157885, a: 1}
     - name: Dialog Item Normal
       color: {r: 0.6509434, g: 0.62974244, b: 0.56189924, a: 1}
-    - name: Dialog Item Normal
-      color: {r: 0.6509434, g: 0.62974244, b: 0.56189924, a: 1}
+    - name: Dialog Item Pressed
+      color: {r: 0.5471698, g: 0.52301174, b: 0.4465112, a: 1}
     - name: Button Normal
       color: {r: 0.49056602, g: 0.48310983, b: 0.42346027, a: 1}
     - name: Button Pressed

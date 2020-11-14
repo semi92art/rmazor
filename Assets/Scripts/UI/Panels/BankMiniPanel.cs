@@ -46,23 +46,23 @@ namespace UI.Panels
         private const int IncomeCoinsAnimOnScreen = 3;
         private const int PoolSize = 8;
         private const float SymbolWidth = 18;
-        private List<CoinAnimObject> m_CoinsPool = new List<CoinAnimObject>(PoolSize);
-        private Image m_GoldIcon;
-        private Image m_DiamondIcon;
-        private TextMeshProUGUI m_GoldCount;
-        private TextMeshProUGUI m_DiamondsCount;
-        private Button m_PlusButton;
-        private Animator m_Animator;
-        private Image m_UpdateIcon;
-        private RectTransform m_BankMiniPanel;
+        
+        private readonly List<CoinAnimObject> m_CoinsPool = new List<CoinAnimObject>(PoolSize);
+        private readonly Image m_GoldIcon;
+        private readonly Image m_DiamondIcon;
+        private readonly TextMeshProUGUI m_GoldCount;
+        private readonly TextMeshProUGUI m_DiamondsCount;
+        private readonly Button m_PlusButton;
+        private readonly Animator m_Animator;
+        private readonly RectTransform m_BankMiniPanel;
         private bool m_IsShowing;
 
-        private int AkShowInMm => AnimKeys.Anim2;
-        private int AkShowInDlg => AnimKeys.Anim;
-        private int AkFromMmToDlg => AnimKeys.Anim4;
-        private int AkFromDlgToMm => AnimKeys.Anim3;
-        private int AkHideInMm => AnimKeys.Stop;
-        private int AkHideInDlg => AnimKeys.Stop;
+        private static int AkShowInMm => AnimKeys.Anim2;
+        private static int AkShowInDlg => AnimKeys.Anim;
+        private static int AkFromMmToDlg => AnimKeys.Anim4;
+        private static int AkFromDlgToMm => AnimKeys.Anim3;
+        private static int AkHideInMm => AnimKeys.Stop;
+        private static int AkHideInDlg => AnimKeys.Stop;
         
         #endregion
 
@@ -86,7 +86,6 @@ namespace UI.Panels
             m_DiamondsCount = go.GetCompItem<TextMeshProUGUI>("diamonds_count_text");
             m_PlusButton = go.GetCompItem<Button>("plus_money_button");
             m_Animator = go.GetCompItem<Animator>("animator");
-            m_UpdateIcon = go.GetCompItem<Image>("update_icon");
             m_BankMiniPanel = go.RTransform();
 
             m_GoldCount.text = string.Empty;
@@ -110,16 +109,8 @@ namespace UI.Panels
             m_Animator.SetTrigger(UiManager.Instance.CurrentCategory == UiCategory.MainMenu ?
                 AkShowInMm : AkShowInDlg);
             m_IsShowing = true;
-            m_UpdateIcon.enabled = false;
             m_BankMiniPanel.sizeDelta = m_BankMiniPanel.sizeDelta.SetX(100);
-            
-            var m_UpdateIconRtr = m_UpdateIcon.RTransform();
-            Coroutines.Run(Coroutines.DoWhile(
-                () =>  m_UpdateIconRtr.Rotate(Vector3.back, 2f),
-                () => m_UpdateIcon.enabled = false,
-                () => !bank.Loaded,
-                () => true));
-            
+
             Coroutines.Run(Coroutines.WaitWhile(() =>
             {
                 int maxTextLength = bank.Money.Max(
@@ -147,16 +138,19 @@ namespace UI.Panels
 
         private void AnimateIncome(Dictionary<MoneyType, long> _Income, RectTransform _From)
         {
+            CreateCoinsPool(_Income);
+            AnimateCoinsTransfer(_Income, _From);
+            AnimateTextIncome(_Income);
+        }
+
+        private void CreateCoinsPool(Dictionary<MoneyType, long> _Income)
+        {
             string iconName = "gold_coin";
-            Vector3 to = m_GoldIcon.transform.position;
             Image icon = m_GoldIcon;
-            MoneyType moneyType = MoneyType.Gold;
             if (_Income.ContainsKey(MoneyType.Diamonds) && _Income[MoneyType.Diamonds] > 0)
             {
                 iconName = "diamond_coin";
                 icon = m_DiamondIcon;
-                to = m_DiamondIcon.transform.position;
-                moneyType = MoneyType.Diamonds;
             }
             
             List<Sprite> sprites = new List<Sprite>();
@@ -181,6 +175,14 @@ namespace UI.Panels
                     IsBusy = false
                 });
             }
+        }
+
+        private void AnimateCoinsTransfer(Dictionary<MoneyType, long> _Income, RectTransform _From)
+        {
+            Vector3 to = m_GoldIcon.transform.position;
+            if (_Income.ContainsKey(MoneyType.Diamonds) && _Income[MoneyType.Diamonds] > 0)
+                to = m_DiamondIcon.transform.position;
+            
             Dictionary<int, bool> finishedDict = new Dictionary<int, bool>();
             int coroutineIndex = 0;
             Coroutines.Run(Coroutines.Repeat(() =>
@@ -219,7 +221,14 @@ namespace UI.Panels
                         Coroutines.Run(Coroutines.Delay(Action, 0.3f));
                     }, () => finishedDict.Any(_Kvp => !_Kvp.Value)));
                 }));
+        }
 
+        private void AnimateTextIncome(Dictionary<MoneyType, long> _Income)
+        {
+            MoneyType moneyType = MoneyType.Gold;
+            if (_Income.ContainsKey(MoneyType.Diamonds) && _Income[MoneyType.Diamonds] > 0)
+                moneyType = MoneyType.Diamonds;
+            
             var currMoney = MoneyManager.Instance.GetBank();
             if (_Income.ContainsKey(moneyType))
             {
@@ -409,16 +418,9 @@ namespace UI.Panels
             }
 
             if (trigger != -1)
-            {
-                if (prevTrigger != -1)
-                    m_Animator.ResetTrigger(prevTrigger);
                 m_Animator.SetTrigger(trigger);
-                prevTrigger = trigger;
-            }
         }
-
-        private int prevTrigger = -1;
-
+        
         ~BankMiniPanel()
         {
             MoneyManager.Instance.OnMoneyCountChanged -= MoneyCountChanged;
@@ -427,7 +429,5 @@ namespace UI.Panels
         }
         
         #endregion
-
-        
     }
 }

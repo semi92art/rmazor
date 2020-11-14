@@ -422,7 +422,7 @@ MonoBehaviour:
   size: 50
   offsetAngle: 90
   offsetDistance: 4
-  offset: {x: 0, y: 0}
+  offset: {x: 0.00000023841858, y: -3.9999998}
   color: {r: 0, g: 0, b: 0, a: 1}
   blendMode: 0
   shadowAsSibling: 0
@@ -647,7 +647,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6509434, g: 0.62974244, b: 0.56189924, a: 1}
+  m_Color: {r: 0.5471698, g: 0.52301174, b: 0.4465112, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
