@@ -1,9 +1,9 @@
 ####  Ресурсы проекта
-[Репозиторий клиента на Github](https://github.com/semi92art/Clickers)
-[Репозиторий сервера на Github](https://github.com/semi92art/ClickersAPI)
-Репозиторий сервера на DockerHub: `drago1/clickersapi`
-[Zeplin](https://zpl.io/aXB9Rzx)
-[Некоторые загруженные ассеты из AssetStore](https://drive.google.com/drive/folders/1WS0G3Cg22T_qDrtIQ8yk-yeF7XMPsZZt?usp=sharing)
+1. [Репозиторий клиента на Github](https://github.com/semi92art/Clickers)
+2. [Репозиторий сервера на Github](https://github.com/semi92art/ClickersAPI)
+3. Репозиторий сервера на DockerHub: `drago1/clickersapi`
+4. [Zeplin](https://zpl.io/aXB9Rzx)
+5. [Некоторые загруженные ассеты из AssetStore](https://drive.google.com/drive/folders/1WS0G3Cg22T_qDrtIQ8yk-yeF7XMPsZZt?usp=sharing)
 
 ---
 
