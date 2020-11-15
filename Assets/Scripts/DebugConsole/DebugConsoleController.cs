@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Constants;
 using Entities;
 using Lean.Localization;
 using UnityEngine;
@@ -211,13 +212,13 @@ namespace DebugConsole
                     switch (arg)
                     {
                         case "preload":
-                            SceneManager.LoadScene(0);
+                            SceneManager.LoadScene(SceneNames.Preload);
                             break;
                         case "menu":
-                            SceneManager.LoadScene(1);
+                            SceneManager.LoadScene(SceneNames.Main);
                             break;
                         case "level":
-                            SceneManager.LoadScene(2);
+                            SceneManager.LoadScene(SceneNames.Level);
                             break;
                         default:
                             AppendLogLine("No such level.");

@@ -652,7 +652,7 @@ namespace Lean.Localization
 			Draw("DetectLanguage", "How should the cultures be used to detect the user's device language?");
 			EditorGUI.BeginDisabledGroup(true);
 				EditorGUI.indentLevel++;
-					switch (Target.DetectLanguage)
+					switch (tgt.DetectLanguage)
 					{
 						case LeanLocalization.DetectType.SystemLanguage:
 							EditorGUILayout.TextField("SystemLanguage", Application.systemLanguage.ToString());
@@ -726,7 +726,7 @@ namespace Lean.Localization
 
 					foreach (var presetLanguage in presetLanguages)
 					{
-						var preset = presetLanguage; menu.AddItem(new GUIContent(presetLanguage.Name), Target.LanguageExists(presetLanguage.Name), () => AddLanguage(preset));
+						var preset = presetLanguage; menu.AddItem(new GUIContent(presetLanguage.Name), tgt.LanguageExists(presetLanguage.Name), () => AddLanguage(preset));
 					}
 
 					menu.ShowAsContext();
@@ -754,15 +754,15 @@ namespace Lean.Localization
 			var newPrefab = EditorGUI.ObjectField(rectB, "", default(Object), typeof(Object), false);
 			if (newPrefab != null)
 			{
-				Undo.RecordObject(Target, "Add Source");
+				Undo.RecordObject(tgt, "Add Source");
 
-				Target.AddPrefab(newPrefab);
+				tgt.AddPrefab(newPrefab);
 
 				Dirty();
 			}
 
 			EditorGUI.indentLevel++;
-				for (var i = 0; i < Target.Prefabs.Count; i++)
+				for (var i = 0; i < tgt.Prefabs.Count; i++)
 				{
 					DrawPrefabs(i);
 				}
@@ -776,7 +776,7 @@ namespace Lean.Localization
 			var rectA   = Reserve();
 			var rectB   = rectA; rectB.xMax -= 22.0f;
 			var rectC   = rectA; rectC.xMin = rectC.xMax - 20.0f;
-			var prefab  = Target.Prefabs[index];
+			var prefab  = tgt.Prefabs[index];
 			var rebuilt = false;
 			var expand  = EditorGUI.Foldout(new Rect(rectA.x, rectA.y, 20, rectA.height), expandPrefab == index, "");
 
@@ -795,7 +795,7 @@ namespace Lean.Localization
 				EndError();
 				if (prefab.Root != null)
 				{
-					Undo.RecordObject(Target, "Rebuild Sources");
+					Undo.RecordObject(tgt, "Rebuild Sources");
 
 					rebuilt |= prefab.RebuildSources();
 
@@ -818,9 +818,9 @@ namespace Lean.Localization
 			}
 			if (GUI.Button(rectC, "X", EditorStyles.miniButton) == true)
 			{
-				Undo.RecordObject(Target, "Remove Prefab");
+				Undo.RecordObject(tgt, "Remove Prefab");
 
-				Target.Prefabs.RemoveAt(index);
+				tgt.Prefabs.RemoveAt(index);
 
 				Dirty();
 
@@ -1015,9 +1015,9 @@ namespace Lean.Localization
 
 		private void AddLanguage(PresetLanguage presetLanguage)
 		{
-			Undo.RecordObject(Target, "Add Language");
+			Undo.RecordObject(tgt, "Add Language");
 
-			Target.AddLanguage(presetLanguage.Name, presetLanguage.Cultures);
+			tgt.AddLanguage(presetLanguage.Name, presetLanguage.Cultures);
 
 			Dirty();
 		}

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Constants;
 using Entities;
 using Managers;
 using Network;
@@ -83,12 +84,12 @@ public class EditorHelper : EditorWindow
             SetDefaultMaterialProps();
         EditorUtils.DrawUiLine(Color.gray);
         GUILayout.BeginHorizontal();
-        if (GUILayout.Button("_preload"))
-            LoadScene("Assets/Scenes/_preload.unity");
-        if (GUILayout.Button("Main"))
-            LoadScene("Assets/Scenes/Main.unity");
-        if (GUILayout.Button("Level"))
-            LoadScene("Assets/Scenes/Level.unity");
+        if (GUILayout.Button(SceneNames.Preload))
+            LoadScene($"Assets/Scenes/{SceneNames.Preload}.unity");
+        if (GUILayout.Button(SceneNames.Main))
+            LoadScene($"Assets/Scenes/{SceneNames.Main}.unity");
+        if (GUILayout.Button(SceneNames.Level))
+            LoadScene($"Assets/Scenes/{SceneNames.Level}.unity");
         GUILayout.EndHorizontal();
     
 
@@ -205,7 +206,11 @@ public class EditorHelper : EditorWindow
         if (Application.isPlaying)
             SceneManager.LoadScene(_Name);
         else
-            EditorSceneManager.OpenScene(_Name);
+        {
+            if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                EditorSceneManager.OpenScene(_Name);    
+        }
+        
     }
 }
 

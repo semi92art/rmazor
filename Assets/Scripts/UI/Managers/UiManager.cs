@@ -1,4 +1,5 @@
 ﻿using System;
+using Constants;
 using DebugConsole;
 using Entities;
 using Helpers;
@@ -83,11 +84,11 @@ namespace UI.Managers
             if (string.IsNullOrEmpty(ColorScheme))
                 ColorScheme = "Default";
 
-            SceneManager.activeSceneChanged += (_, _Next) =>
+            SceneManager.sceneLoaded += (_Scene, _) =>
             {
                 
 #if DEBUG
-                if (m_PrevScene == "_preload")
+                if (m_PrevScene == SceneNames.Preload)
                 {
                     bool debugOn = SaveUtils.GetValue<bool>(SaveKey.SettingDebug);
                     SaveUtils.PutValue(SaveKey.SettingDebug, debugOn);
@@ -102,14 +103,14 @@ namespace UI.Managers
 #endif
                 }
 #endif
-                if (_Next.name == "Main")
+                if (_Scene.name == SceneNames.Main)
                 {
-                    if (m_PrevScene == "_preload")
+                    if (m_PrevScene == SceneNames.Preload)
                         LocalizationManager.Instance.Init();
-                    MenuUi.Create(m_PrevScene == "_preload");
+                    MenuUi.Create(m_PrevScene == SceneNames.Preload);
                 }
 
-                m_PrevScene = _Next.name;
+                m_PrevScene = _Scene.name;
             };
         }
         

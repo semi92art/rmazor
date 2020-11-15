@@ -189,12 +189,12 @@ namespace Lean.Localization
 		protected override void DrawInspector()
 		{
 			entries.Clear();
-			entries.AddRange(Target.Entries);
+			entries.AddRange(tgt.Entries);
 
 			languageNames.Clear();
 			languageNames.AddRange(LeanLocalization.CurrentLanguages.Keys);
 
-			Target.Data = (LeanPhrase.DataType)GUILayout.Toolbar((int)Target.Data, new string[] { "Text", "Object", "Sprite" });
+			tgt.Data = (LeanPhrase.DataType)GUILayout.Toolbar((int)tgt.Data, new string[] { "Text", "Object", "Sprite" });
 
 			EditorGUILayout.Separator();
 
@@ -202,7 +202,7 @@ namespace Lean.Localization
 			{
 				var entry = default(LeanPhrase.Entry);
 
-				if (Target.TryFindTranslation(languageName, ref entry) == true)
+				if (tgt.TryFindTranslation(languageName, ref entry) == true)
 				{
 					DrawEntry(entry, false);
 
@@ -214,9 +214,9 @@ namespace Lean.Localization
 						EditorGUILayout.LabelField(languageName, EditorStyles.boldLabel);
 						if (GUILayout.Button("Create", EditorStyles.miniButton, GUILayout.Width(45.0f)) == true)
 						{
-							Undo.RecordObject(Target, "Create Translation");
+							Undo.RecordObject(tgt, "Create Translation");
 
-							Target.AddEntry(languageName);
+							tgt.AddEntry(languageName);
 
 							Dirty();
 						}
@@ -241,9 +241,9 @@ namespace Lean.Localization
 				EditorGUILayout.LabelField(entry.Language, EditorStyles.boldLabel);
 				if (GUILayout.Button("Remove", EditorStyles.miniButton, GUILayout.Width(55.0f)) == true)
 				{
-					Undo.RecordObject(Target, "Remove Translation");
+					Undo.RecordObject(tgt, "Remove Translation");
 
-					Target.RemoveTranslation(entry.Language);
+					tgt.RemoveTranslation(entry.Language);
 
 					Dirty();
 				}
@@ -254,11 +254,11 @@ namespace Lean.Localization
 				EditorGUILayout.HelpBox("Your LeanLocalization component doesn't define the " + entry.Language + " language.", MessageType.Warning);
 			}
 
-			Undo.RecordObject(Target, "Modified Translation");
+			Undo.RecordObject(tgt, "Modified Translation");
 
 			EditorGUI.BeginChangeCheck();
 			
-			switch (Target.Data)
+			switch (tgt.Data)
 			{
 				case LeanPhrase.DataType.Text:
 					entry.Text = EditorGUILayout.TextArea(entry.Text ?? "", GUILayout.MinHeight(40.0f));

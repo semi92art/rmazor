@@ -162,7 +162,7 @@ namespace UI
                     rtrLite),
                 "main_menu_buttons",
                 "ratings_button");
-            ratingsButton.GetComponent<Button>().SetOnClick(OnRationgsClick);
+            ratingsButton.GetComponent<Button>().SetOnClick(OnRatingsClick);
             
         }
 
@@ -313,10 +313,10 @@ namespace UI
         private void OnPlayButtonClick()
         {
             SoundManager.Instance.PlayMenuButtonClick();
-            new LevelLoader().LoadLevel();
+            LevelLoader.LoadLevel();
         }
 
-        private void OnRationgsClick()
+        private void OnRatingsClick()
         {
             SoundManager.Instance.PlayMenuButtonClick();
             // TODO

@@ -77,7 +77,13 @@ public class SoundManager : MonoBehaviour, ISingleton
         foreach (var clip in m_clipDictionary
             .Where(_Clip => _Clip.Key != null))
             clip.Value.volume = _IsOn ? 1 : 0;
-    } 
+    }
+
+    public void StopPlayingClips()
+    {
+        foreach (var clip in m_clipDictionary.Values.ToArray())
+            clip.Stop();
+    }
 
     #endregion
 }

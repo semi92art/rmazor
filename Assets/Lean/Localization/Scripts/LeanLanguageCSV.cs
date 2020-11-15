@@ -314,7 +314,7 @@ namespace Lean.Localization.Examples
 			EditorGUILayout.Separator();
 
 			EditorGUI.BeginDisabledGroup(true);
-				EditorGUILayout.LabelField("CollectItem" + Target.Separator + "アイテム" + Target.NewLine + "集めました" + Target.Comment + "Comment here");
+				EditorGUILayout.LabelField("CollectItem" + tgt.Separator + "アイテム" + tgt.NewLine + "集めました" + tgt.Comment + "Comment here");
 			EditorGUI.EndDisabledGroup();
 
 			EditorGUILayout.Separator();
@@ -337,9 +337,9 @@ namespace Lean.Localization.Examples
 				}
 			EditorGUILayout.EndHorizontal();
 
-			if (Targets.Length == 1)
+			if (tgts.Length == 1)
 			{
-				var entries = Target.Entries;
+				var entries = tgt.Entries;
 
 				if (entries.Count > 0)
 				{

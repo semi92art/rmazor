@@ -27,7 +27,7 @@ namespace UI.Panels
 
         #endregion
         
-        #region private/protected methods
+        #region nonpublic methods
         
         protected override RectTransform Create()
         {
