@@ -13,7 +13,6 @@ namespace Utils
         #region private fields
 
         private static XElement m_Ads;
-        private static XElement m_LocalizedValues;
 
         #endregion
     
@@ -21,29 +20,7 @@ namespace Utils
 
         static ResLoader()
         {
-            string lang;
-            switch (Application.systemLanguage)
-            {
-                case SystemLanguage.Russian:
-                case SystemLanguage.Ukrainian:
-                case SystemLanguage.Belarusian:
-                    lang = "rus";
-                    break;
-                case SystemLanguage.Chinese:
-                case SystemLanguage.French:
-                case SystemLanguage.German:
-                case SystemLanguage.Italian:
-                case SystemLanguage.Portuguese:
-                case SystemLanguage.Spanish:
-                    lang = "eng";
-                    break;
-                default:
-                    lang = "eng";
-                    break;
-            }
-            
-            m_Ads = FromResources("configs\\ads");
-            m_LocalizedValues = FromResources($"configs\\{lang}");
+            m_Ads = FromResources(@"configs\ads");
         }
     
         #endregion
@@ -55,24 +32,21 @@ namespace Utils
         public static string GoogleAdsFullscreenId => GetAdsNodeValue("fullscreen");
         public static string GoogleAdsRewardId => GetAdsNodeValue("reward");
         public static string GoogleAdsNativeAdId => GetAdsNodeValue("native");
-        public static List<string> GoogleTestDeviceIds => m_Ads.Elements("test_device").Select(el => el.Value).ToList();
-
-        public static string GetLocalizedValue(string key)
-        {
-            return m_LocalizedValues.Elements("key")
-                .Where(el => el.Attribute("id").Value == key)
-                .Select(el => el.Value)
-                .FirstOrDefault();
-        }
+        public static List<string> GoogleTestDeviceIds => m_Ads.Elements("test_device").Select(_El => _El.Value).ToList();
 
         public static UIStyleObject GetStyle(string _StyleName)
         {
             return Resources.Load<UIStyleObject>($"styles/{_StyleName}");
         }
 
-        public static Sprite GetCounry(string _Key)
+        public static Sprite GetCountry(string _Key)
         {
             return Resources.Load<Sprite>($"countries/{_Key}");
+        }
+
+        public static TextAsset GetText(string _Path)
+        {
+            return Resources.Load<TextAsset>(_Path);
         }
 
         #endregion

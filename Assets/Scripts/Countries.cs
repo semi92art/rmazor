@@ -216,7 +216,7 @@ namespace UI
 
         public static Sprite GetFlag(string _Key)
         {
-            return ResLoader.GetCounry(_Key);
+            return ResLoader.GetCountry(_Key);
         }
     }
 }
