@@ -21,6 +21,8 @@ public class EditorHelper : EditorWindow
     private bool m_IsGuest;
     private string m_TestUrl;
     private string m_TestUrlCheck;
+    private int m_GameId ;
+    private int m_GameIdCheck;
     private readonly string[] m_DailyBonusOptions = { "1", "2", "3", "4", "5", "6", "7" };
 
     [MenuItem("Tools/Helper")]
@@ -73,6 +75,12 @@ public class EditorHelper : EditorWindow
             DeleteAllTestUsers();
 
         GUILayout.BeginHorizontal();
+        if (GUILayout.Button("Set Game Id:"))
+            SaveUtils.PutValue(SaveKey.GameId, m_GameId);
+        m_GameId = EditorGUILayout.IntField(m_GameId);
+        GUILayout.EndHorizontal();
+        
+        GUILayout.BeginHorizontal();
         GUILayout.Label("Debug Server Url:");
         m_TestUrl = EditorGUILayout.TextField(m_TestUrl);
         GUILayout.EndHorizontal();
@@ -94,6 +102,7 @@ public class EditorHelper : EditorWindow
     
 
         UpdateTestUrl();
+        UpdateGameId();
     }
 
     private void UpdateTestUrl()
@@ -103,6 +112,15 @@ public class EditorHelper : EditorWindow
         if (string.IsNullOrEmpty(m_TestUrl))
             m_TestUrl = SaveUtils.GetValue<string>(SaveKey.DebugServerUrl);
         m_TestUrlCheck = m_TestUrl;
+    }
+
+    private void UpdateGameId()
+    {
+        if (m_GameId != m_GameIdCheck)
+            SaveUtils.PutValue(SaveKey.GameId, m_GameId);
+        if (m_GameId == 0)
+            m_GameId = SaveUtils.GetValue<int>(SaveKey.GameId);
+        m_GameIdCheck = m_GameId;
     }
 
     private void EnableDailyBonus()
