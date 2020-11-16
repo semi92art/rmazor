@@ -81,7 +81,7 @@ namespace Managers
             foreach (var kvp in _Money)
             {
                 if (inBank.Money.ContainsKey(kvp.Key))
-                    inBank.Money[MoneyType.Gold] += _Money[MoneyType.Gold];
+                    inBank.Money[kvp.Key] += _Money[kvp.Key];
                 else
                     inBank.Money.Add(kvp.Key, kvp.Value);
             }

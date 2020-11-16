@@ -86,9 +86,10 @@ namespace UI.Managers
 
             SceneManager.sceneLoaded += (_Scene, _) =>
             {
-                
+                bool onStart = String.Compare(m_PrevScene, 
+                                              SceneNames.Preload, StringComparison.OrdinalIgnoreCase) == 0;
 #if DEBUG
-                if (m_PrevScene == SceneNames.Preload)
+                if (onStart)
                 {
                     bool debugOn = SaveUtils.GetValue<bool>(SaveKey.SettingDebug);
                     SaveUtils.PutValue(SaveKey.SettingDebug, debugOn);
@@ -103,11 +104,11 @@ namespace UI.Managers
 #endif
                 }
 #endif
-                if (_Scene.name == SceneNames.Main)
+                if (String.Compare(_Scene.name, SceneNames.Main, StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    if (m_PrevScene == SceneNames.Preload)
+                    if (onStart)
                         LocalizationManager.Instance.Init();
-                    MenuUi.Create(m_PrevScene == SceneNames.Preload);
+                    MenuUi.Create(onStart);
                 }
 
                 m_PrevScene = _Scene.name;

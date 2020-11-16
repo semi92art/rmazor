@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
@@ -11,6 +12,12 @@ namespace Utils
     public static class Utility
     {
         public static readonly System.Random RandomGen = new System.Random(); 
+        
+        public static T[] EnumToList<T>() where T : Enum
+        {
+            return Enum.GetValues(typeof(T))
+                .Cast<T>().ToArray();
+        }
         
         public static bool CheckForMainServerInternetConnection()
         {

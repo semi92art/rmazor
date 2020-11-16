@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using Entities;
+using Helpers;
 using Managers;
 using UnityEngine;
 using Utils;
+using TMPro;
 
 namespace MkeyFW
 {
@@ -11,26 +13,58 @@ namespace MkeyFW
     {
         #region serialized fields
         
-        [SerializeField] private int coins;
-        [SerializeField] private bool bigWin;
         [SerializeField] private List<GameObject> hitPrefabs;
-        [SerializeField] private AudioClip hitSound;
-        [SerializeField] private MoneyType moneyType;
+        [SerializeField] private SpriteRenderer icon;
+        [SerializeField] private TextMeshPro text; 
         
         #endregion
 
         #region private members
         
-        private TextMesh m_TextMesh;
-        private float m_DestroyTime = 3f;
+        private const float DestroyTime = 3f;
+        private MoneyType m_MoneyType;
         
         #endregion
 
         #region api
+        
+        public long Coins { get; private set; }
+        public bool BigWin 
+        {
+            get
+            {
+                switch (m_MoneyType)
+                {
+                    case MoneyType.Gold:
+                        return Coins >= 1000000;
+                    case MoneyType.Diamonds:
+                        return Coins >= 100;
+                    default:
+                        throw new System.NotImplementedException();
+                }
+            }
+        }
 
-        public AudioClip HitSound => hitSound;
-        public int Coins => coins;
-        public bool BigWin => bigWin;
+        public void Init(SectorMoney _SectorMoney)
+        {
+            m_MoneyType = _SectorMoney.type;
+            Coins = _SectorMoney.count;
+            string iconName;
+            switch (m_MoneyType)
+            {
+                case MoneyType.Gold:
+                    iconName = "gold_coin_0";
+                    break;
+                case MoneyType.Diamonds:
+                    iconName = "diamond_coin_0";
+                    break;
+                default:
+                    throw new System.NotImplementedException();
+            }
+
+            icon.sprite = PrefabInitializer.GetObject<Sprite>("coins", iconName);
+        }
+        
         
         /// <summary>
         /// Instantiate all prefabs and invoke hit event
@@ -47,14 +81,13 @@ namespace MkeyFW
                         Transform partT = Instantiate(item).transform;
                         partT.position = _Position;
                         if (this && partT) 
-                            Destroy(partT.gameObject, m_DestroyTime);
+                            Destroy(partT.gameObject, DestroyTime);
                     }
                 }
             }
 
             MoneyToBank();
             SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, System.DateTime.Now.Date);
-            // if (hitSound) AudioSource.PlayClipAtPoint(hitSound, transform.position);
         }
         
         #endregion
@@ -63,14 +96,13 @@ namespace MkeyFW
         
         private void Start()
         {
-            m_TextMesh = GetComponent<TextMesh>();
             RefreshText();
         }
 
         private void OnValidate()
         {
-           coins = Mathf.Max(0, coins);
-           RefreshText();
+            Coins = System.Math.Max(0, Coins);
+            RefreshText();
         }
         
         #endregion
@@ -79,15 +111,12 @@ namespace MkeyFW
         
         private void RefreshText()
         {
-            if (!m_TextMesh) m_TextMesh = GetComponent<TextMesh>();
-            if (!m_TextMesh) return;
-            m_TextMesh.text = coins.ToNumeric();
+            text.text = Coins.ToNumeric();
         }
 
         private void MoneyToBank()
         {
-            var income = new Dictionary<MoneyType, long>();
-            income.Add(moneyType, coins);
+            var income = new Dictionary<MoneyType, long> {{m_MoneyType, Coins}};
             MoneyManager.Instance.PlusMoney(income);
         }
         

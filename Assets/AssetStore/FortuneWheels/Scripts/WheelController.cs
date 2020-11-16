@@ -2,86 +2,81 @@
 using Mkey;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Malee.List;
+using Managers;
 using UnityEngine.Events;
 using Utils;
 
 namespace MkeyFW
 {
     internal enum SpinDir {Counter,  ClockWise}
+    
+    [Serializable]
+    public class SectorMoney
+    {
+        public long count;
+        public MoneyType type;
+        public double probability;
+    }
+    
     public class WheelController : MonoBehaviour
     {
+        #region types
+        
+        [Serializable]
+        public class SectorsMoneyList : ReorderableArray<SectorMoney>
+        { }
+        
+        #endregion
+        
         #region serialized fields
+
+        [Space(10, order = 0)]
+        [Header("Sectors Money"), Reorderable(paginate = false)]
+        [SerializeField] private SectorsMoneyList sectorsMoney;
         
         [Header("Main references")]
-        [Space(16, order = 0)]
-        [SerializeField]
-        private Transform Reel;
-        [SerializeField]
-        private Animator pointerAnimator;
-        [SerializeField]
-        private LampsController lampsController;
-        [SerializeField]
-        private SpinButton spinButton;
-        [SerializeField]
-        private ArrowBeviour arrowBeviour;
-        [SerializeField]
-        private SpriteRenderer sectorLight;
+        [Space(10, order = 0)]
+        [SerializeField] private Transform Reel;
+        [SerializeField] private Animator pointerAnimator;
+        [SerializeField] private LampsController lampsController;
+        [SerializeField] private SpinButton spinButton;
+        [SerializeField] private ArrowBeviour arrowBeviour;
+        [SerializeField] private SpriteRenderer sectorLight;
 
         [Header("Spin options")]
-        [Space(16, order = 0)]
-        [SerializeField]
-        private float inRotTime = 0.2f;
-        [SerializeField]
-        private float inRotAngle = 5;
-        [SerializeField]
-        private float mainRotTime = 1.0f;
-        [SerializeField]
-        private EaseAnim mainRotEase = EaseAnim.EaseLinear;
-        [SerializeField]
-        private float outRotTime = 0.2f;
-        [SerializeField]
-        private float outRotAngle = 5;
-        [SerializeField]
-        private float spinStartDelay;
-        [SerializeField]
-        private int spinSpeedMultiplier = 1;
-        [SerializeField]
-        private SpinDir spinDir = SpinDir.Counter;
+        [Space(10, order = 0)]
+        [SerializeField] private float inRotTime = 0.2f;
+        [SerializeField] private float inRotAngle = 5;
+        [SerializeField] private float mainRotTime = 1.0f;
+        [SerializeField] private EaseAnim mainRotEase = EaseAnim.EaseLinear;
+        [SerializeField] private float outRotTime = 0.2f;
+        [SerializeField] private float outRotAngle = 5;
+        [SerializeField] private float spinStartDelay;
+        [SerializeField] private int spinSpeedMultiplier = 1;
+        [SerializeField] private SpinDir spinDir = SpinDir.Counter;
    
         [Header("Lamps control")]
-        [Space(16, order = 0)]
-        [Tooltip("Before spin")]
-        [SerializeField]
-        private LampsFlash lampsFlashAtStart = LampsFlash.Random;
-        [Tooltip("During spin")]
-        [SerializeField]
-        private LampsFlash lampsFlashDuringSpin = LampsFlash.Sequence;
-        [Tooltip("After spin")]
-        [SerializeField]
-        private LampsFlash lampsFlashEnd = LampsFlash.All;
+        [Space(10, order = 0)]
+        [Tooltip("Before spin")] [SerializeField] private LampsFlash lampsFlashAtStart = LampsFlash.Random;
+        [Tooltip("During spin")] [SerializeField] private LampsFlash lampsFlashDuringSpin = LampsFlash.Sequence;
+        [Tooltip("After spin")] [SerializeField] private LampsFlash lampsFlashEnd = LampsFlash.All;
       
         [Header("Additional options")]
-        [Space(16, order = 0)]
-        [Tooltip("Sector light")]
-        [SerializeField]
+        [Space(10, order = 0)]
+        [Tooltip("Sector light")] [SerializeField]
         private int lightBlinkCount = 4;
-        [Tooltip("Help arrow")]
-        [SerializeField]
-        private int arrowBlinkCount = 2;
-        [SerializeField]
-        private AudioClip spinSound;
+        [Tooltip("Help arrow")] [SerializeField] private int arrowBlinkCount = 2;
+        [SerializeField] private AudioClip spinSound;
 
         [Header("Result event, after spin")]
-        [Space(16, order = 0)]
-        [SerializeField]
-        private UnityEvent resultEvent;
+        [Space(10, order = 0)]
+        [SerializeField] private UnityEvent resultEvent;
 
         [Header("Simulation, only for test")] 
-        [Space(32, order = 0)]
-        [SerializeField]
-        private bool simulate;
-        [SerializeField]
-        private int simPos;
+        [Space(10, order = 0)] [SerializeField] private bool simulate;
+        [SerializeField] private int simPos;
 
         #endregion
 
@@ -111,12 +106,16 @@ namespace MkeyFW
         private void Start()
         {
             m_Sectors = GetComponentsInChildren<Sector>();
-            m_SectorsCount = m_Sectors?.Length ?? 0;
+            m_Sectors = m_Sectors.OrderBy(_S => _S.transform.GetSiblingIndex()).ToArray();
+
+            int k = 0;
+            foreach (var sector in m_Sectors)
+                sector.Init(sectorsMoney[k++]);
+
+            m_SectorsCount = (int) m_Sectors?.Length;
             Debug.Log("sectorsCount: " + m_SectorsCount);
             if (m_SectorsCount > 0)
-            {
                 m_SectorAngleDeg = 360f / m_SectorsCount;
-            }
             if (pointerAnimator)
             {
                 pointerAnimator.enabled = false;
@@ -176,17 +175,10 @@ namespace MkeyFW
                 if (sectorLight) SectorLightShow(null);
 
                 if (m_AudioSource) m_AudioSource.Stop();
-
-                if (m_AudioSource && m_Sectors[m_CurrSector] && m_Sectors[m_CurrSector].HitSound)
-                {
-                    m_AudioSource.clip = m_Sectors[m_CurrSector].HitSound;
-                    m_AudioSource.Play();
-                    m_AudioSource.loop = false;
-                }
             });
         }
         
-        public int GetWin(out bool _IsBigWin)
+        public long GetWin(out bool _IsBigWin)
         {
             int res = 0;
             _IsBigWin = false;
@@ -341,14 +333,11 @@ namespace MkeyFW
         
         private void UpdateRand()
         {
-            var distributions = new Dictionary<int, double>
-            {
-                {0, 300}, {1, 500}, {2, 25}, {3, 300}, {4, 200}, {5, 100},
-                {6, 100}, {7, 1}, {8, 1000}, {9, 30}, {10, 50}, {11, 20}
-            };
+            int k = 0;
+            var distributions = sectorsMoney.
+                ToDictionary(_S => k++, _S => _S.probability);
             var randGenerator = new WheelRandomNumberGenerator(distributions);
             m_Rand = randGenerator.GetDistributedRandomNumber();
-            //m_Rand = UnityEngine.Random.Range(0, m_SectorsCount);
         }
 
         private void CancelSpin()
@@ -388,7 +377,7 @@ namespace MkeyFW
         /// </summary>
         private void CheckResult()
         {
-            int coins = 0;
+            long coins = 0;
             bool isBigWin = false;
 
             if (m_Sectors != null && m_CurrSector >= 0 && m_CurrSector < m_Sectors.Length)
