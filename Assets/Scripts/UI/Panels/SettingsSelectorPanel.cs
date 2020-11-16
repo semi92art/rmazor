@@ -79,13 +79,18 @@ namespace UI.Panels
                     m_Content,
                     sspiRect),
                 "setting_items", "settings_selector_item");
-            
+
+            var selectorItems = new List<SettingSelectorItem>();
             foreach (var item in m_Items)
             {
                 var sspiClone = sspi.Clone();
                 SettingSelectorItem si = sspiClone.GetComponent<SettingSelectorItem>();
-                si.Init(item, m_Select, m_ToggleGroup);
+                si.Init(item, m_Select, item == m_DefaultValue);
+                selectorItems.Add(si);
             }
+
+            foreach (var selItem in selectorItems)
+                selItem.SetItems(selectorItems);
             
             Object.Destroy(sspi);
         }

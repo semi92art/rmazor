@@ -1,5 +1,8 @@
-﻿using Extensions;
+﻿using Constants;
+using Entities;
+using Extensions;
 using Helpers;
+using TMPro;
 using UI.Entities;
 using UI.Factories;
 using UI.Managers;
@@ -18,6 +21,10 @@ namespace UI.Panels
         private GameObject m_Wheel;
         private WheelController m_WheelController;
         private Button m_SpinButton;
+        private TextMeshProUGUI m_Title;
+        private Image m_WatchAdImage;
+        private GameObject m_WatchAdBackground;
+        private bool m_IsLocked;
         
         #endregion
         
@@ -61,6 +68,10 @@ namespace UI.Panels
                 "wheel_of_fortune", "spin_button");
             m_SpinButton = button.GetComponent<Button>();
             
+            m_Title = button.GetCompItem<TextMeshProUGUI>("title");
+            m_WatchAdImage = button.GetCompItem<Image>("watch_ad_image");
+            m_WatchAdBackground = button.GetContentItem("watch_ad_background");
+            
             return rTr;
         }
 
@@ -72,16 +83,43 @@ namespace UI.Panels
                 "wheel_main");
             m_WheelController = m_Wheel.GetCompItem<WheelController>("wheel_controller");
             SpriteRenderer background = m_Wheel.GetCompItem<SpriteRenderer>("background");
-            float width = background.bounds.size.x;
-            float height = background.bounds.size.y;
             var cameraBounds = GameUtils.GetVisibleBounds();
             background.transform.localScale = new Vector3(
-                cameraBounds.size.x * 2f / width,
-                cameraBounds.size.y * 2f / height);
+                cameraBounds.size.x * 2f / background.bounds.size.x,
+                cameraBounds.size.y * 2f / background.bounds.size.y);
             
-            m_SpinButton.SetOnClick(m_WheelController.StartSpin);
+
+            m_IsLocked = CheckIfWofSpinedToday();
+            
+            
+            m_SpinButton.SetOnClick(StartSpinOrWatchAd);
             
             m_WheelController.Init(m_DialogViewer);
+        }
+
+        private void StartSpinOrWatchAd()
+        {
+            if (!m_IsLocked)
+            {
+                Coroutines.Run(Coroutines.Action(() => m_WheelController.StartSpin()));
+                SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, System.DateTime.Now.Date);
+            }
+            else
+            {
+                SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, System.DateTime.Now.Date.AddDays(-1));
+                m_IsLocked = CheckIfWofSpinedToday();
+            }
+        }
+        
+        private bool CheckIfWofSpinedToday()
+        {
+            System.DateTime lastDate = SaveUtils.GetValue<System.DateTime>(SaveKey.WheelOfFortuneLastDate);
+            bool yes = lastDate == System.DateTime.Now.Date;
+            m_Title.text = yes ? "Watch Ad" : "Spin";
+            m_Title.alignment = yes ? TextAlignmentOptions.Right : TextAlignmentOptions.Center;
+            m_WatchAdImage.enabled = yes;
+            m_WatchAdBackground.SetActive(yes);
+            return yes;
         }
 
         private void OnPanelClose()

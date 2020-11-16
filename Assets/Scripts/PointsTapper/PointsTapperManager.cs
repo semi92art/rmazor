@@ -42,20 +42,6 @@ namespace PointsTapper
         private LeanFingerDown m_LeanFingerDown;
 
         #endregion
-
-        #region engine methods
-
-        protected override void Start_()
-        {
-            
-        }
-
-        protected override void Update_()
-        {
-            
-        }
-
-        #endregion
         
         #region nonpublic methods
 

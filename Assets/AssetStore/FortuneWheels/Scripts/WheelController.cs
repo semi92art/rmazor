@@ -41,8 +41,6 @@ namespace MkeyFW
         [SerializeField] private Transform Reel;
         [SerializeField] private Animator pointerAnimator;
         [SerializeField] private LampsController lampsController;
-        [SerializeField] private SpinButton spinButton;
-        [SerializeField] private ArrowBeviour arrowBeviour;
         [SerializeField] private SpriteRenderer sectorLight;
 
         [Header("Spin options")]
@@ -113,7 +111,6 @@ namespace MkeyFW
                 sector.Init(sectorsMoney[k++]);
 
             m_SectorsCount = (int) m_Sectors?.Length;
-            Debug.Log("sectorsCount: " + m_SectorsCount);
             if (m_SectorsCount > 0)
                 m_SectorAngleDeg = 360f / m_SectorsCount;
             if (pointerAnimator)
@@ -125,8 +122,6 @@ namespace MkeyFW
             if (lampsController) 
                 lampsController.lampFlash = lampsFlashAtStart;
             UpdateRand();
-            if (arrowBeviour)
-                arrowBeviour.Show(arrowBlinkCount,0.1f);
             m_AudioSource = GetComponent<AudioSource>();
         }
 
@@ -151,13 +146,10 @@ namespace MkeyFW
         
         public void StartSpin()
         {
-            if (arrowBeviour) 
-                arrowBeviour.CancelTween();
             if (m_Ts != null)
                 return;
             Debug.Log("rand: " + m_Rand);
             m_NextSector = m_Rand;
-            if (spinButton) spinButton.interactable = false;
             CancelLight();
             
             if (m_AudioSource) m_AudioSource.Stop();
@@ -170,10 +162,7 @@ namespace MkeyFW
             
             RotateWheel(() =>
             {
-                if (spinButton) spinButton.interactable = true;
-                if (arrowBeviour) arrowBeviour.Show(arrowBlinkCount, 3f);
                 if (sectorLight) SectorLightShow(null);
-
                 if (m_AudioSource) m_AudioSource.Stop();
             });
         }

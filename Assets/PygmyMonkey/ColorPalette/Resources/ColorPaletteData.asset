@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_currentPaletteIndex: 0
   colorPaletteList:
-  - name: Default
+  - name: UI
     showDetails: 1
     colorInfoList:
     - name: Image Main Background
@@ -39,4 +39,12 @@ MonoBehaviour:
       color: {r: 1, g: 0, b: 0, a: 1}
     - name: Text PlaceHolder
       color: {r: 0.61960787, g: 0.61960787, b: 0.61960787, a: 1}
+    colorList: []
+  - name: Buffer
+    showDetails: 1
+    colorInfoList:
+    - name: Random
+      color: {r: 0.7254902, g: 0.7137255, b: 0.64705884, a: 1}
+    - name: Random
+      color: {r: 0.7568628, g: 0.7490196, b: 0.6901961, a: 1}
     colorList: []

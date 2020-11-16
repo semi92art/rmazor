@@ -87,7 +87,6 @@ namespace MkeyFW
             }
 
             MoneyToBank();
-            SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, System.DateTime.Now.Date);
         }
         
         #endregion

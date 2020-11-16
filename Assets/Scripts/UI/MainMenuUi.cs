@@ -2,6 +2,7 @@
 using Entities;
 using Extensions;
 using Helpers;
+using Lean.Touch;
 using Network;
 using UI.Entities;
 using UI.Factories;
@@ -25,11 +26,6 @@ namespace UI
         private RectTransform m_GameLogoContainer;
         private Animator m_DailyBonusAnimator;
         private UiCategory m_CurrentCategory;
-        private Image m_WofBackground;
-        private Image m_WofBorder;
-        private Button m_WofButton;
-        private Button m_WofAdsButton;
-
         private Button m_SelectGameButton;
         private Image m_GameLogo;
 
@@ -55,13 +51,26 @@ namespace UI
             InitBankMiniPanel();
             CheckIfDailyBonusNotChosenToday();
             m_DialogViewer.AddNotDialogItem(m_MainMenu, UiCategory.MainMenu);
-            UiManager.Instance.OnCurrentCategoryChanged += (_Prev, _New) =>
-            {
-                if (_Prev == UiCategory.WheelOfFortune && m_WofButton != null)
-                    CheckIfWofSpinedToday();
-            };
             SoundManager.Instance.PlayClip("main_menu_theme", true, 0f);
-            LocalizationManager a = LocalizationManager.Instance;
+        }
+        
+        private void InitTouchSystem()
+        {
+            var touchSystemObj = new GameObject("Main Touch System");
+            var leanTouch = touchSystemObj.AddComponent<LeanTouch>();
+            var mts = leanTouch;
+            mts.TapThreshold = 0.5f;
+            mts.SwipeThreshold = 50f;
+            mts.ReferenceDpi = 200;
+            mts.GuiLayers = LayerMask.GetMask(LayerNames.Touchable);
+            mts.RecordFingers = true;
+            mts.RecordThreshold = 5f;
+            mts.RecordLimit = 0f;
+            mts.SimulateMultiFingers = true;
+            mts.PinchTwistKey = KeyCode.LeftControl;
+            mts.MovePivotKey = KeyCode.LeftAlt;
+            mts.MultiDragKey = KeyCode.LeftAlt;
+            mts.FingerTexture = PrefabInitializer.GetObject<Texture2D>("icons", "finger_texture");
         }
 
         private void InitBankMiniPanel()
@@ -223,17 +232,7 @@ namespace UI
                     rTrLite),
                 "main_menu_buttons",
                 "wheel_of_fortune_button_2");
-            m_WofButton = wofButton.GetComponent<Button>();
-            m_WofButton.SetOnClick(OnWheelOfFortuneButtonClick);
-            m_WofBackground = wofButton.GetCompItem<Image>("background");
-            m_WofBorder = wofButton.GetCompItem<Image>("border");
-            m_WofAdsButton = wofButton.GetCompItem<Button>("watch_ad_button");
-            m_WofAdsButton.SetOnClick(() =>
-            {
-                SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, System.DateTime.Now.Date.AddDays(-1));
-                CheckIfWofSpinedToday();
-            });
-            CheckIfWofSpinedToday();
+            wofButton.GetComponent<Button>().SetOnClick(OnWheelOfFortuneButtonClick);
         }
 
         private void InitSmallButtons()
@@ -259,20 +258,6 @@ namespace UI
                 AnimKeys.Stop : AnimKeys.Anim);
         }
 
-        private void CheckIfWofSpinedToday()
-        {
-            System.DateTime lastDate = SaveUtils.GetValue<System.DateTime>(SaveKey.WheelOfFortuneLastDate);
-            bool done = lastDate == System.DateTime.Now.Date;
-            m_WofButton.interactable = !done;
-            string color = done ? "gray" : "purple";
-            m_WofBackground.sprite = PrefabInitializer.GetObject<Sprite>(
-                "button_sprites", $"rect_background_{color}");
-            if (ColorUtility.TryParseHtmlString($"#{(!done ? "894089" : "8A8A8A")}", out Color borderColor))
-                m_WofBorder.color = borderColor;
-            
-            m_WofAdsButton.gameObject.SetActive(done);
-        }
-        
         #region event methods
 
         private void OnOpenSelectGamePanel()

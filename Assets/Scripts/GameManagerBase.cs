@@ -18,9 +18,7 @@ public abstract class GameManagerBase : MonoBehaviour, IGameManager
     #endregion
 
     #region protected methods
-    protected abstract void Start_();
-    protected abstract void Update_();
-
+    
     protected virtual void InitTouchSystem()
     {
         var touchSystemObj = new GameObject("Main Touch System");
@@ -44,16 +42,10 @@ public abstract class GameManagerBase : MonoBehaviour, IGameManager
     
     #region engine methods
     
-    private void Start()
+    protected virtual void Start()
     {
-        Start_();
         InitTouchSystem();
     }
-
-    private void Update()
-    {
-        Update_();
-    }
-
+    
     #endregion
 }

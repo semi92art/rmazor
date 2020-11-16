@@ -45,7 +45,7 @@ namespace UI.Panels
         private const float IncomeAnimDeltaTime = 0.1f;
         private const int IncomeCoinsAnimOnScreen = 3;
         private const int PoolSize = 8;
-        private const float SymbolWidth = 18;
+        private const float SymbolWidth = 19;
         
         private readonly List<CoinAnimObject> m_CoinsPool = new List<CoinAnimObject>(PoolSize);
         private readonly Image m_GoldIcon;
