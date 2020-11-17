@@ -27,6 +27,7 @@ public static class LevelLoader
     
     private static void LoadGame(int _GameId)
     {
+        Debug.Log(_GameId);
         switch (_GameId)
         {
             case 1:
@@ -39,7 +40,8 @@ public static class LevelLoader
                 Debug.Log(WasNotMadeMessage);
                 break;
             case 4:
-                Debug.Log(WasNotMadeMessage);
+                Debug.Log("PathFinder WIP");
+                SceneManager.LoadScene(SceneNames.PathFinder);
                 break;
             case 5:
                 Debug.Log(WasNotMadeMessage);
