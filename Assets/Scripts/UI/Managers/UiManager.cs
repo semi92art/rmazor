@@ -94,13 +94,13 @@ namespace UI.Managers
                     SaveUtils.PutValue(SaveKey.SettingDebug, debugOn);
                     DebugConsole = DebugConsoleView.Create();
                     DebugConsole.SetActive(debugOn);
-#if !UNITY_EDITOR
+//#if !UNITY_EDITOR
                     DebugReporter = PrefabInitializer.InitPrefab(
                         null,
                         "debug_console",
                         "reporter");
                     DebugReporter.SetActive(debugOn);
-#endif
+//#endif
                 }
 #endif
                 if (_Scene.name == SceneNames.Main)
