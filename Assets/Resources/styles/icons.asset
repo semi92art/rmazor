@@ -20,3 +20,7 @@ MonoBehaviour:
       name: icon_back
     - item: {fileID: 2800000, guid: 25c48be3a87ea0f489a6d41c9c9a2194, type: 3}
       name: finger_texture
+    - item: {fileID: 21300000, guid: 7af5957e7f72e454491c722a37daec46, type: 3}
+      name: icon_life_enabled
+    - item: {fileID: 21300000, guid: 6a8f01446c5568647b1886fd1e790fe9, type: 3}
+      name: icon_life_disabled

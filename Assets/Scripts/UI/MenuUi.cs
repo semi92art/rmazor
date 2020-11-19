@@ -1,4 +1,5 @@
 ﻿using Constants;
+using DialogViewers;
 using Extensions;
 using Helpers;
 using Managers;
@@ -31,7 +32,7 @@ namespace UI
         private MenuUi(bool _OnStart)
         {
             CreateCanvas();
-            CreateDialogContainer();
+            CreateDialogViewer();
             CreateBackground();
             CreateTransitionRenderer();
             if (_OnStart)
@@ -92,15 +93,9 @@ namespace UI
                 UiCategory.Countries);
         }
     
-        private void CreateDialogContainer()
+        private void CreateDialogViewer()
         {
-            var dialogPanelObj = PrefabInitializer.InitUiPrefab(
-                UiFactory.UiRectTransform(
-                    m_Canvas.RTransform(),
-                    RtrLites.FullFill),
-                "main_menu",
-                "dialog_viewer");
-            m_DialogViewer = dialogPanelObj.GetComponent<DefaultDialogViewer>();
+            m_DialogViewer = MainMenuDialogViewer.Create(m_Canvas.RTransform());
         }
 
         private void CreateTransitionRenderer()
@@ -118,7 +113,7 @@ namespace UI
 
             Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
             {
-                float delayAnyway = 2f;
+                float delayAnyway = 1f;
                 bool isSuccess = false;
                 float startTime = Time.time;
                 Coroutines.Run(Coroutines.DoWhile(

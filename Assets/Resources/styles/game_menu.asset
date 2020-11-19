@@ -10,10 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c1600272214c7aa418cb76f5cc38aecb, type: 3}
-  m_Name: game_point_clicker
+  m_Name: game_menu
   m_EditorClassIdentifier: 
   prefabs:
     array:
-    - item: {fileID: 2406050865930875597, guid: b1f45c90782eb574e82d754a89c1bd9a,
-        type: 3}
-      name: point_default
+    - item: {fileID: 724185754087932410, guid: d23df7bc0063d1e478f00ab34dd65812, type: 3}
+      name: lifes_panel

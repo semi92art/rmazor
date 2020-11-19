@@ -1,4 +1,5 @@
 ﻿using Constants;
+using DialogViewers;
 using Entities;
 using Extensions;
 using Helpers;
@@ -18,7 +19,7 @@ namespace UI
     {
         private static bool _isDailyBonusClicked;
         
-        private IDialogViewer m_DialogViewer;
+        private readonly IDialogViewer m_DialogViewer;
         private IMiniPanel m_BankMiniPanel;
         
         private RectTransform m_Parent;
@@ -85,7 +86,7 @@ namespace UI
             m_MainMenu = UiFactory.UiRectTransform(
                 _Parent,
                 "Main Menu",
-                UiAnchor.Create(Vector2.zero, Vector2.one),
+                UiAnchor.Create(0, 0, 1, 1),
                 Vector2.zero,
                 Vector2.one * 0.5f,
                 Vector2.zero);
@@ -298,7 +299,7 @@ namespace UI
         private void OnPlayButtonClick()
         {
             SoundManager.Instance.PlayMenuButtonClick();
-            LevelLoader.LoadLevel();
+            LevelLoader.LoadLevel(1);
         }
 
         private void OnRatingsClick()

@@ -16,4 +16,9 @@ MonoBehaviour:
     array:
     - item: {fileID: 2406050865930875597, guid: b1f45c90782eb574e82d754a89c1bd9a,
         type: 3}
-      name: point
+      name: point_normal
+    - item: {fileID: 21300000, guid: ce9d690597193f745a67b4e1566d3296, type: 3}
+      name: background
+    - item: {fileID: 2406050865930875597, guid: b1d5b53767e4e05459536eff6b67ba4c,
+        type: 3}
+      name: point_bad

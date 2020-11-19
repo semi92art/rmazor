@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public static class LevelLoader
 {
     private const string WasNotMadeMessage = "Game was not made";
+    private static int _level;
 
     static LevelLoader()
     {
@@ -19,9 +20,10 @@ public static class LevelLoader
         LoadGame(GameClient.Instance.GameId);
     }
 
-    public static void LoadLevel()
+    public static void LoadLevel(int _Level)
     {
         SoundManager.Instance.StopPlayingClips();
+        _level = _Level;
         SceneManager.LoadScene(SceneNames.Level);
     }
     
@@ -30,7 +32,7 @@ public static class LevelLoader
         switch (_GameId)
         {
             case 1:
-                PointsTapper.PointsTapperManager.Instance.Init();
+                PointsTapper.PointsTapperManager.Instance.Init(_level);
                 break;
             case 2:
                 Debug.Log(WasNotMadeMessage);

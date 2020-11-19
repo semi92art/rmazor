@@ -91,7 +91,7 @@ namespace Extensions
         {
             var tr = _Object.transform;
             GameObject cloned = Object.Instantiate(_Object, tr.position, tr.rotation, tr.parent);
-            cloned.name = $"{_Object.name} (Clone)";
+            cloned.name = _Object.name;
             return cloned;
         }
 

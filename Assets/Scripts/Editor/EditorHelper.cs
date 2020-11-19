@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Constants;
 using Entities;
 using Managers;
@@ -15,8 +17,7 @@ using Utils;
 public class EditorHelper : EditorWindow
 {
     private int m_DailyBonusIndex;
-    private long m_Gold;
-    private long m_Diamonds;
+    private Dictionary<MoneyType, long> m_Money = new Dictionary<MoneyType, long>();
     private int m_TestUsersNum;
     private bool m_IsGuest;
     private string m_TestUrl;
@@ -47,16 +48,28 @@ public class EditorHelper : EditorWindow
 
         GUILayout.EndHorizontal();
         GUILayout.Space(10);
-        GUILayout.BeginHorizontal();
 
-        if (GUILayout.Button("Set Money"))
-            SetMoney(m_Gold, m_Diamonds);
-        GUILayout.Label("gold: ");
-        m_Gold = EditorGUILayout.LongField(m_Gold);
-        GUILayout.Label("diamonds: ");
-        m_Diamonds = EditorGUILayout.LongField(m_Diamonds);
+        if (Application.isPlaying)
+        {
+            GUILayout.BeginHorizontal();
+            var money = m_Money.CloneAlt();
+            foreach (var kvp in m_Money)
+            {
+                GUILayout.Label($"{kvp.Key}:");
+                money[kvp.Key] = EditorGUILayout.LongField(money[kvp.Key]);
+            }
 
-        GUILayout.EndHorizontal();
+            m_Money = money;
+            GUILayout.EndHorizontal();
+            
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Get From Bank"))
+                GetMoneyFromBank();
+            if (GUILayout.Button("Set Money"))
+                SetMoney();
+            GUILayout.EndHorizontal();
+        }
+
         EditorUtils.DrawUiLine(Color.gray);
         GUI.enabled = true;
 
@@ -129,14 +142,17 @@ public class EditorHelper : EditorWindow
         SaveUtils.PutValue(SaveKey.DailyBonusLastItemClickedDay, m_DailyBonusIndex);
     }
 
-    private void SetMoney(long _Gold, long _Diamonds)
+    private void GetMoneyFromBank()
     {
-        var money = new Dictionary<MoneyType, long>
-        {
-            {MoneyType.Gold, _Gold},
-            {MoneyType.Diamonds, _Diamonds}
-        };
-        MoneyManager.Instance.SetMoney(money);
+        var bank = MoneyManager.Instance.GetBank();
+        Coroutines.Run(Coroutines.WaitWhile(
+            () =>  m_Money = bank.Money,
+            () => !bank.Loaded));
+    }
+    
+    private void SetMoney()
+    {
+        MoneyManager.Instance.SetMoney(m_Money);
     }
 
     private void PrintCommonInfo()

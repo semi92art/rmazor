@@ -6,5 +6,6 @@ namespace Network.PacketArgs
         public int AccountId { get; set; }
         public long Gold { get; set; }
         public long Diamonds { get; set; }
+        public long Lifes { get; set; }
     }
 }

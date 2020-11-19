@@ -119,11 +119,15 @@ namespace Managers
             var bank = GetMoneyLocal();
             if (GameClient.Instance.LastConnectionSucceeded)
             {
+                var tGold = MoneyType.Gold;
+                var tDiamonds = MoneyType.Diamonds;
+                var tLifes = MoneyType.Lifes;
                 var profPacket = new SetProfilePacket(new SetProfileRequestArgs
                 {
                     AccountId = GameClient.Instance.AccountId,
-                    Gold = _Money.ContainsKey(MoneyType.Gold) ? _Money[MoneyType.Gold] : bank.Money[MoneyType.Gold],
-                    Diamonds = _Money.ContainsKey(MoneyType.Diamonds) ? _Money[MoneyType.Diamonds] : bank.Money[MoneyType.Diamonds]
+                    Gold = _Money.ContainsKey(tGold) ? _Money[tGold] : bank.Money[tGold],
+                    Diamonds = _Money.ContainsKey(tDiamonds) ? _Money[tDiamonds] : bank.Money[tDiamonds],
+                    Lifes = _Money.ContainsKey(tLifes) ? _Money[tLifes] : bank.Money[tLifes]
                 });
                 profPacket.OnFail(() => Debug.LogError(profPacket.ErrorMessage));
                 GameClient.Instance.Send(profPacket);    
@@ -211,7 +215,8 @@ namespace Managers
     public enum MoneyType
     {
         Gold,
-        Diamonds
+        Diamonds,
+        Lifes
     }
 
     #endregion

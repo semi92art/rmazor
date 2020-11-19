@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1416b21ef49ec4915ad4c2149698a521, type: 3}
   m_Name: ColorPaletteData
   m_EditorClassIdentifier: 
-  m_currentPaletteIndex: 0
+  m_currentPaletteIndex: 1
   colorPaletteList:
   - name: UI
     showDetails: 1
@@ -39,6 +39,14 @@ MonoBehaviour:
       color: {r: 1, g: 0, b: 0, a: 1}
     - name: Text PlaceHolder
       color: {r: 0.61960787, g: 0.61960787, b: 0.61960787, a: 1}
+    colorList: []
+  - name: Points Tapper
+    showDetails: 1
+    colorInfoList:
+    - name: Background
+      color: {r: 0.20392159, g: 0.38431376, b: 0.42352945, a: 1}
+    - name: Stats Panel Background
+      color: {r: 0, g: 0, b: 0, a: 0.42745098}
     colorList: []
   - name: Buffer
     showDetails: 1

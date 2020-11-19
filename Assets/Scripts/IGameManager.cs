@@ -1,4 +1,9 @@
-﻿public interface IGameManager
+﻿
+using UI;
+
+public interface IGameManager
 {
-    void Init();
+    ILevelController LevelController { get; }
+    IGameMenuUi GameMenuUi { get; }
+    void Init(int _Level);
 }
