@@ -1,4 +1,5 @@
-﻿using Constants;
+﻿using Boo.Lang;
+using Constants;
 using DialogViewers;
 using Extensions;
 using Helpers;
@@ -7,6 +8,7 @@ using UI.Entities;
 using UI.Factories;
 using UnityEngine;
 using UnityEngine.UI;
+using Utils;
 
 namespace UI.Panels
 {
@@ -14,14 +16,14 @@ namespace UI.Panels
     {
         void MinusLife();
         void PlusLife();
-        void SetLifes(int _Count);
+        void SetLifes(long _Count);
     }
     
     public class LifesPanel : ILifesPanel
     {
         #region protected members
         
-        protected readonly IDialogViewer DialogViewer;
+        protected readonly IGameDialogViewer DialogViewer;
         protected readonly RectTransform Panel;
         protected readonly Image LifeIcon;
         protected readonly TextMeshProUGUI LifesCountText;
@@ -29,13 +31,36 @@ namespace UI.Panels
         protected readonly Sprite LifeEnabled;
         protected readonly Sprite LifeDisabled;
         
-        protected int LifesCount
+        protected long LifesCount
         {
             get => m_LifesCount;
             set
             {
+                long diff = m_LifesCount - value; 
                 m_LifesCount = value;
                 SetLifesCountTextAndIcon();
+
+                if (diff >= 0)
+                    return;
+                var brokens = new List<GameObject>();
+                Coroutines.Run(Coroutines.Repeat(
+                    () =>
+                    {
+                        GameObject go = Object.Instantiate(
+                            LifeBrokenAnimator.gameObject,
+                            LifeBrokenAnimator.transform.parent);
+                        brokens.Add(go);
+                        Animator anim = go.GetComponent<Animator>();
+                        anim.SetTrigger(AkBrokenLife);
+                    },
+                    0.1f,
+                    diff,
+                    null,
+                    () =>
+                    {
+                        foreach (var broken in brokens)
+                            Object.Destroy(broken);
+                    }));
             }
         }
         
@@ -43,14 +68,14 @@ namespace UI.Panels
         
         #region private members
         
-        private int m_LifesCount;
+        private long m_LifesCount;
         private int AkBrokenLife => AnimKeys.Anim;
         
         #endregion
         
         #region constructor
         
-        protected LifesPanel(RectTransform _Parent, IDialogViewer _DialogViewer)
+        protected LifesPanel(RectTransform _Parent, IGameDialogViewer _DialogViewer)
         {
             DialogViewer = _DialogViewer;
             var go = PrefabInitializer.InitUiPrefab(
@@ -73,7 +98,7 @@ namespace UI.Panels
 
         #region api
 
-        public static ILifesPanel Create(RectTransform _Parent, IDialogViewer _DialogViewer)
+        public static ILifesPanel Create(RectTransform _Parent, IGameDialogViewer _DialogViewer)
         {
             return new LifesPanel(_Parent, _DialogViewer);
         }
@@ -99,7 +124,7 @@ namespace UI.Panels
             LifesCount++;
         }
 
-        public void SetLifes(int _Count)
+        public void SetLifes(long _Count)
         {
             LifesCount = _Count;
         }

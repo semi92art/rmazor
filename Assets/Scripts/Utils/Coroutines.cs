@@ -312,13 +312,14 @@ namespace Utils
             Action _Action,
             float _RepeatDelta,
             float _RepeatTime,
+            Func<bool> _DoStop = null,
             Action _OnFinish = null)
         {
             if (_Action == null)
                 yield break;
             
             float startTime = Time.time;
-            while (Time.time - startTime < _RepeatTime)
+            while (Time.time - startTime < _RepeatTime && !_DoStop())
             {
                 _Action();
                 yield return new WaitForSeconds(_RepeatDelta);
@@ -330,16 +331,21 @@ namespace Utils
         public static IEnumerator Repeat(
             Action _Action,
             float _RepeatDelta,
-            Func<bool> _DoStop)
+            int _RepeatCount,
+            Func<bool> _DoStop = null,
+            Action _OnFinish = null)
         {
-            if (_Action == null || _DoStop == null)
+            if (_Action == null)
                 yield break;
-            
-            while (!_DoStop())
+            float repeatTime = _RepeatDelta * _RepeatCount;
+            float startTime = Time.time;
+            while (Time.time - startTime < repeatTime && !_DoStop())
             {
                 _Action();
                 yield return new WaitForSeconds(_RepeatDelta);
             }
+            
+            _OnFinish?.Invoke();
         }
     }
 }

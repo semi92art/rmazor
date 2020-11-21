@@ -7,9 +7,19 @@ namespace DialogViewers
     public interface IDialogViewer
     {
         RectTransform DialogContainer { get; }
-        void Show(IDialogPanel _ItemTo, bool _HidePrevious = true);
         void Back();
-        void AddNotDialogItem(RectTransform _Item, UiCategory _Categories);
         void RemoveNotDialogItem(RectTransform _Item);
+    }
+    
+    public interface IMenuDialogViewer : IDialogViewer
+    {
+        void Show(IMenuDialogPanel _ItemTo, bool _HidePrevious = true);
+        void AddNotDialogItem(RectTransform _Item, MenuUiCategory _Categories);
+    }
+
+    public interface IGameDialogViewer : IDialogViewer
+    {
+        void Show(IGameDialogPanel _ItemTo, bool _HidePrevious = true);
+        void AddNotDialogItem(RectTransform _Item, GameUiCategory _Categories);
     }
 }

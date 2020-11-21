@@ -10,7 +10,7 @@ using Utils;
 namespace UI.Managers
 {
     [Flags]
-    public enum UiCategory : int
+    public enum MenuUiCategory
     {
         Nothing = 0,
         Loading = 1,
@@ -18,11 +18,21 @@ namespace UI.Managers
         SelectGame = 4,
         DailyBonus = 8,
         WheelOfFortune = 16,
-        Profile= 32,
+        Profile = 32,
         Login = 64,
         Shop = 128,
         Settings = 256,
         Countries = 512
+    }
+
+    [Flags]
+    public enum GameUiCategory
+    {
+        Nothing = 0,
+        GameStart = 1,
+        MainMenu = 2,
+        Settings = 4,
+        LevelResults = 8
     }
     
     public class UiManager : MonoBehaviour, ISingleton
@@ -35,7 +45,7 @@ namespace UI.Managers
 
         #region types
 
-        public delegate void UiStateHandler(UiCategory _Prev, UiCategory _New);
+        public delegate void UiStateHandler(MenuUiCategory _Prev, MenuUiCategory _New);
 
         #endregion
         
@@ -43,7 +53,7 @@ namespace UI.Managers
         
         public event UiStateHandler OnCurrentCategoryChanged;
         
-        public UiCategory CurrentCategory
+        public MenuUiCategory CurrentCategory
         {
             get => m_CurrentCategory;
             set
@@ -70,7 +80,7 @@ namespace UI.Managers
 
         #region private members
 
-        private UiCategory m_CurrentCategory = UiCategory.Nothing;
+        private MenuUiCategory m_CurrentCategory = MenuUiCategory.Nothing;
         private string m_PrevScene;
 
         #endregion

@@ -2,6 +2,7 @@
 using Constants;
 using Helpers;
 using Lean.Touch;
+using Managers;
 using UnityEngine;
 using Utils;
 using ColorUtils = Utils.ColorUtils;
@@ -39,17 +40,21 @@ namespace PointsTapper
         
         #region api
 
-        public bool DoInstantiate { get; set; } = true;
+        public bool DoInstantiate { get; set; }
 
-        public override void Init(int _Level)
+        public override void Init(int _Level, long _LifesOnStart)
         {
-            base.Init(_Level);
+            LevelController = new PointsTapperLevelControllerBasedOnTime();
+            base.Init(_Level, _LifesOnStart);
             m_PointItemsGenerator = new PointItemsGenerator();
             SpriteRenderer background = new GameObject().AddComponent<SpriteRenderer>();
-            background.sprite = PrefabInitializer.GetObject<Sprite>("points_clicker", "background");
+            background.sprite = PrefabInitializer.GetObject<Sprite>("points_tapper", "background");
             GameUtils.FillByCameraRect(background);
             background.color = ColorUtils.GetColorFromPalette("Points Tapper", "Background");
-            background.sortingOrder = -3;
+            background.sortingOrder = SortingOrders.Background;
+
+            var args = new LevelStateChangedArgs {Level = _Level, LifesLeft = _LifesOnStart};
+            GameMenuUi.OnGameStarted(args, () => OnLevelStarted(args));
         }
 
 #if UNITY_EDITOR
@@ -58,15 +63,23 @@ namespace PointsTapper
             m_PointItemsGenerator.ActivateItem(_PointType, _Radius);
         }
 #endif
-        
-        protected override void OnLevelStarted(LevelChangedArgs _Args)
+
+        protected override void OnLifesChanged(LifeEventArgs _Args)
         {
+            GameMenuUi.OnLifesChanged(_Args);
+        }
+
+        protected override void OnLevelStarted(LevelStateChangedArgs _Args)
+        {
+            DoInstantiate = true;
             if (m_PointItemsGenerator is IOnLevelStartedFinished olc)
                 olc.OnLevelStarted(_Args);
+            GameMenuUi.OnLevelStarted(_Args);
         }
         
-        protected override void OnLevelFinished(LevelChangedArgs _Args)
+        protected override void OnLevelFinished(LevelStateChangedArgs _Args)
         {
+            DoInstantiate = false;
             if (m_PointItemsGenerator is IOnLevelStartedFinished olc)
                 olc.OnLevelFinished(_Args);
         }
@@ -102,7 +115,7 @@ namespace PointsTapper
         {
             base.Start();
             GameMenuUi = new PointsTapperGameMenuUi();
-            LevelController.StartLevel();
+            LevelController.StartLevel(() => true);
         }
 
         private void Update()

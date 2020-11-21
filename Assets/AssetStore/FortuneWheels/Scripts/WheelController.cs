@@ -92,7 +92,7 @@ namespace MkeyFW
         private TweenSeq m_LightTs;
         private AudioSource m_AudioSource;
         private float m_RotDirF;
-        private IDialogViewer m_DialogViewer;
+        private IMenuDialogViewer m_MenuDialogViewer;
 		#endregion
  
         #region engine methods
@@ -140,9 +140,9 @@ namespace MkeyFW
         
         #region api
 
-        public void Init(IDialogViewer _DialogViewer)
+        public void Init(IMenuDialogViewer _MenuDialogViewer)
         {
-            m_DialogViewer = _DialogViewer;
+            m_MenuDialogViewer = _MenuDialogViewer;
         }
         
         public void StartSpin()
@@ -381,7 +381,7 @@ namespace MkeyFW
                 }
 
                 Coroutines.Run(Coroutines.Delay(
-                    () => m_DialogViewer.Back(),
+                    () => m_MenuDialogViewer.Back(),
                     2f));
             }
             Debug.Log($"Coins: {coins}; IsBigWin: {isBigWin}");

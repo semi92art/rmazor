@@ -12,7 +12,7 @@ namespace PointsTapper
     public class PointItem : MonoBehaviour, IActivated
     {
         #region serialized fields
-
+        
         [SerializeField] private Disc timer;
         [SerializeField] private Disc background;
         [SerializeField] private Disc border;

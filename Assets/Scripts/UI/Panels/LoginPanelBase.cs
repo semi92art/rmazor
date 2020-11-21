@@ -5,11 +5,11 @@ using UnityEngine;
 
 namespace UI.Panels
 {
-    public abstract class LoginPanelBase: IDialogPanel
+    public abstract class LoginPanelBase: IMenuDialogPanel
     {
         #region protected members
         
-        protected readonly IDialogViewer m_DialogViewer;
+        protected readonly IMenuDialogViewer MenuDialogViewer;
         protected TMP_InputField m_LoginInputField;
         protected TMP_InputField m_PasswordInputField;
         protected TextMeshProUGUI m_LoginErrorHandler;
@@ -17,21 +17,21 @@ namespace UI.Panels
         
         #endregion
 
-        protected LoginPanelBase(IDialogViewer _DialogViewer)
+        protected LoginPanelBase(IMenuDialogViewer _MenuDialogViewer)
         {
-            m_DialogViewer = _DialogViewer;
+            MenuDialogViewer = _MenuDialogViewer;
         }
         
         
         #region api
 
-        public UiCategory Category => UiCategory.Login;
+        public MenuUiCategory Category => MenuUiCategory.Login;
         public RectTransform Panel { get; private set; }
 
         public void Show()
         {
             Panel = Create();
-            m_DialogViewer.Show( this);
+            MenuDialogViewer.Show( this);
         }
 
         #endregion

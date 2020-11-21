@@ -12,7 +12,7 @@ using Utils;
 
 namespace UI.Panels
 {
-    public class ShopPanel : IDialogPanel
+    public class ShopPanel : IMenuDialogPanel
     {
         #region private members
         
@@ -29,24 +29,24 @@ namespace UI.Panels
             new ShopItemProps("500", "79.99$", "180$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_8_icon"))
         };
 
-        private readonly IDialogViewer m_DialogViewer;
+        private readonly IMenuDialogViewer m_MenuDialogViewer;
         
         #endregion
         
         #region api
 
-        public UiCategory Category => UiCategory.Shop;
+        public MenuUiCategory Category => MenuUiCategory.Shop;
         public RectTransform Panel { get; private set; }
 
-        public ShopPanel(IDialogViewer _DialogViewer)
+        public ShopPanel(IMenuDialogViewer _MenuDialogViewer)
         {
-            m_DialogViewer = _DialogViewer;
+            m_MenuDialogViewer = _MenuDialogViewer;
         }
 
         public void Show()
         {
             Panel = Create();
-            m_DialogViewer.Show(this);
+            m_MenuDialogViewer.Show(this);
         }
         
         #endregion
@@ -57,7 +57,7 @@ namespace UI.Panels
         {
             GameObject shopPanel = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_DialogViewer.DialogContainer,
+                    m_MenuDialogViewer.DialogContainer,
                     RtrLites.FullFill),
                 "main_menu",
                 "shop_panel");

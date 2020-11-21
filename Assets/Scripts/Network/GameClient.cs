@@ -182,7 +182,9 @@ namespace Network
                         }
                     );
                 Send(testPacket);
-            }, 5f, () => false));
+            }, 5f,
+                float.MaxValue,
+                () => false));
             m_ConnectionTestStarted = true;
         }
 

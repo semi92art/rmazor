@@ -4,20 +4,20 @@ using UnityEngine;
 
 namespace Managers
 {
-    public class ChildOrderManager : MonoBehaviour, ISingleton
+    public class HierarchyOrderManager : MonoBehaviour, ISingleton
     {
         #region singleton
         
-        private static ChildOrderManager _instance;
+        private static HierarchyOrderManager _instance;
         
-        public static ChildOrderManager Instance
+        public static HierarchyOrderManager Instance
         {
             get
             {
                 if (_instance == null)
                 {
-                    GameObject go = new GameObject("ChildOrderManager");
-                    _instance = go.AddComponent<ChildOrderManager>();
+                    GameObject go = new GameObject("Hierarchy Order Manager");
+                    _instance = go.AddComponent<HierarchyOrderManager>();
                 }
                     
                 return _instance;
@@ -69,7 +69,6 @@ namespace Managers
         }
 
         #endregion
-
         
         #region engine methods
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Extensions;
 using Helpers;
+using Managers;
 using UI;
 using UI.Entities;
 using UI.Factories;
@@ -14,7 +15,7 @@ using Utils;
 
 namespace DialogViewers
 {
-    public class MainMenuDialogViewer : MonoBehaviour, IDialogViewer, IActionExecuter
+    public class MainMenuDialogViewer : MonoBehaviour, IMenuDialogViewer, IActionExecuter
     {
         #region types
     
@@ -32,21 +33,21 @@ namespace DialogViewers
 
         private class PanelAndVisibility
         {
-            public IDialogPanel DialogPanel { get; }
+            public IMenuDialogPanel MenuDialogPanel { get; }
             public bool IsHidden { get; set; }
 
-            public PanelAndVisibility(IDialogPanel _DialogPanel)
+            public PanelAndVisibility(IMenuDialogPanel _MenuDialogPanel)
             {
-                DialogPanel = _DialogPanel;
+                MenuDialogPanel = _MenuDialogPanel;
             }
         }
 
         private class UiCategoriesVis
         {
-            public UiCategory Categories { get; }
+            public MenuUiCategory Categories { get; }
             public bool IsVisible { get; set; }
 
-            public UiCategoriesVis(UiCategory _Categories, bool _IsVisible)
+            public UiCategoriesVis(MenuUiCategory _Categories, bool _IsVisible)
             {
                 Categories = _Categories;
                 IsVisible = _IsVisible;
@@ -73,7 +74,7 @@ namespace DialogViewers
         private Sprite m_IconClose;
         private Button m_CloseButton;
         private Image m_CloseButtonIcon;
-        private IDialogPanel m_FromTemp;
+        private IMenuDialogPanel m_FromTemp;
         private float m_TransitionTime = 0.2f;
     
 
@@ -118,7 +119,7 @@ namespace DialogViewers
         public Action Action { get; set; }
         public RectTransform DialogContainer => dialogContainer;
 
-        public static IDialogViewer Create(RectTransform _Parent)
+        public static IMenuDialogViewer Create(RectTransform _Parent)
         {
             var dialogPanelObj = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
@@ -129,7 +130,7 @@ namespace DialogViewers
             return dialogPanelObj.GetComponent<MainMenuDialogViewer>();
         }
 
-        public void Show(IDialogPanel _ItemTo, bool _HidePrevious = true)
+        public void Show(IMenuDialogPanel _ItemTo, bool _HidePrevious = true)
         {
             var to = new PanelAndVisibility(_ItemTo);
             ShowCore(to, _HidePrevious, false);
@@ -140,7 +141,7 @@ namespace DialogViewers
             ShowCore(m_PanelStack.GetItem(1), true, true);
         }
 
-        public void AddNotDialogItem(RectTransform _Item, UiCategory _Categories)
+        public void AddNotDialogItem(RectTransform _Item, MenuUiCategory _Categories)
         {
             if (m_NotDialogs.ContainsKey(_Item))
                 return;
@@ -171,10 +172,10 @@ namespace DialogViewers
             if (itemFrom == null && _ItemTo == null)
                 return;
 
-            var fromPanel = itemFrom?.DialogPanel.Panel;
-            var toPanel = _ItemTo?.DialogPanel.Panel;
+            var fromPanel = itemFrom?.MenuDialogPanel.Panel;
+            var toPanel = _ItemTo?.MenuDialogPanel.Panel;
         
-            UiManager.Instance.CurrentCategory = _ItemTo?.DialogPanel?.Category ?? UiCategory.MainMenu;
+            UiManager.Instance.CurrentCategory = _ItemTo?.MenuDialogPanel?.Category ?? MenuUiCategory.MainMenu;
             var cat = UiManager.Instance.CurrentCategory;
         
             if (itemFrom != null && _HidePrevious)
@@ -189,7 +190,7 @@ namespace DialogViewers
                         if (!_GoBack)
                             return;
                         Destroy(fromPanel.gameObject);
-                        var monobeh = itemFrom.DialogPanel as MonoBehaviour;
+                        var monobeh = itemFrom.MenuDialogPanel as MonoBehaviour;
                         if (monobeh != null)
                             Destroy(monobeh.gameObject);
                     }));
@@ -263,7 +264,7 @@ namespace DialogViewers
             while(m_PanelStack.Any())
                 list.Add(m_PanelStack.Pop());
             foreach (var monobeh in from item in list 
-                where item != null select item.DialogPanel as MonoBehaviour)
+                where item != null select item.MenuDialogPanel as MonoBehaviour)
                 Destroy(monobeh);
         }
     

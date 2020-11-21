@@ -12,11 +12,11 @@ using Utils;
 
 namespace UI.Panels
 {
-    public class CountriesPanel : MonoBehaviour, IDialogPanel
+    public class CountriesPanel : MonoBehaviour, IMenuDialogPanel
     {
         #region private members
         
-        private IDialogViewer m_DialogViewer;
+        private IMenuDialogViewer m_MenuDialogViewer;
         private System.Action<string> m_Select;
         private string m_DefaultValue;
         private RectTransform m_Content;
@@ -38,15 +38,15 @@ namespace UI.Panels
         
         #region api
         
-        public UiCategory Category => UiCategory.Countries;
+        public MenuUiCategory Category => MenuUiCategory.Countries;
         public RectTransform Panel { get; private set; }
 
         public void Init(
-            IDialogViewer _DialogViewer,
+            IMenuDialogViewer _MenuDialogViewer,
             string _Value,
             System.Action<string> _Select)
         {
-            m_DialogViewer = _DialogViewer;
+            m_MenuDialogViewer = _MenuDialogViewer;
             m_DefaultValue = _Value;
             m_Select = _Select;
         }
@@ -54,14 +54,14 @@ namespace UI.Panels
         public void Show()
         {
             Panel = Create();
-            m_DialogViewer.Show(this);
+            m_MenuDialogViewer.Show(this);
         }
         
         private RectTransform Create()
         {
             var sp = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_DialogViewer.DialogContainer,
+                    m_MenuDialogViewer.DialogContainer,
                     RtrLites.FullFill),
                 "main_menu", "settings_selector_panel");
             

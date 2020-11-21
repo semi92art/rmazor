@@ -55,10 +55,10 @@ namespace PointsTapper
             switch (_Type)
             {
                 case PointType.Normal:
-                    result = PrefabInitializer.GetPrefab("points_clicker", "point_normal");
+                    result = PrefabInitializer.GetPrefab("points_tapper", "point_normal");
                     break;
                 case PointType.Bad:
-                    result = PrefabInitializer.GetPrefab("points_clicker", "point_bad");
+                    result = PrefabInitializer.GetPrefab("points_tapper", "point_bad");
                     break;
                 default:
                     throw new InvalidEnumArgumentExceptionEx(_Type);

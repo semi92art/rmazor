@@ -10,11 +10,11 @@ using UnityEngine;
 
 namespace UI.Panels
 {
-    public class SettingsPanel : IDialogPanel
+    public class SettingsPanel : IMenuDialogPanel
     {
         #region private members
         
-        private readonly IDialogViewer m_DialogViewer;
+        private readonly IMenuDialogViewer m_MenuDialogViewer;
         private RectTransform m_Content;
 
         private RectTransformLite SettingItemRectLite => new RectTransformLite
@@ -29,18 +29,18 @@ namespace UI.Panels
         
         #region api
         
-        public UiCategory Category => UiCategory.Settings;
+        public MenuUiCategory Category => MenuUiCategory.Settings;
         public RectTransform Panel { get; private set; }
 
-        public SettingsPanel(IDialogViewer _DialogViewer)
+        public SettingsPanel(IMenuDialogViewer _MenuDialogViewer)
         {
-            m_DialogViewer = _DialogViewer;
+            m_MenuDialogViewer = _MenuDialogViewer;
         }
         
         public void Show()
         {
             Panel = Create();
-            m_DialogViewer.Show(this);
+            m_MenuDialogViewer.Show(this);
         }
         
         #endregion
@@ -51,7 +51,7 @@ namespace UI.Panels
         {
             GameObject sp = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_DialogViewer.DialogContainer,
+                    m_MenuDialogViewer.DialogContainer,
                     RtrLites.FullFill),
                 "main_menu", "settings_panel");
 
@@ -83,7 +83,7 @@ namespace UI.Panels
                 case SettingType.InPanelSelector:
                     var itemSelector = CreateInPanelSelectorSetting();
                     itemSelector.Init(
-                        m_DialogViewer,
+                        m_MenuDialogViewer,
                         () => (string)_Setting.Get(),
                         _Setting.Name,
                         () => _Setting.Values,

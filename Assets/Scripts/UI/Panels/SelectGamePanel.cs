@@ -12,11 +12,11 @@ using UnityEngine;
 
 namespace UI.Panels
 {
-    public class SelectGamePanel : IDialogPanel
+    public class SelectGamePanel : IMenuDialogPanel
     {
         #region private members
         
-        private readonly IDialogViewer m_DialogViewer;
+        private readonly IMenuDialogViewer m_MenuDialogViewer;
 
         private readonly List<ChooseGameItemProps> m_CgiPropsList = new List<ChooseGameItemProps>
         {
@@ -33,19 +33,19 @@ namespace UI.Panels
 
         #region api
 
-        public UiCategory Category => UiCategory.SelectGame;
+        public MenuUiCategory Category => MenuUiCategory.SelectGame;
         public RectTransform Panel { get; private set; }
         
-        public SelectGamePanel(IDialogViewer _DialogViewer, System.Action<int> _SelectGame)
+        public SelectGamePanel(IMenuDialogViewer _MenuDialogViewer, System.Action<int> _SelectGame)
         {
-            m_DialogViewer = _DialogViewer;
+            m_MenuDialogViewer = _MenuDialogViewer;
             m_SelectGame = _SelectGame;
         }
 
         public void Show()
         {
             Panel = Create();
-            m_DialogViewer.Show(this);
+            m_MenuDialogViewer.Show(this);
         }
 
         #endregion
@@ -56,7 +56,7 @@ namespace UI.Panels
         {
             GameObject selectGamePanel = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_DialogViewer.DialogContainer,
+                    m_MenuDialogViewer.DialogContainer,
                     RtrLites.FullFill),
                 "main_menu",
                 "select_game_panel");
@@ -80,7 +80,7 @@ namespace UI.Panels
                 {
                     GameClient.Instance.GameId = cgiProps.GameId;
                     m_SelectGame.Invoke(cgiProps.GameId);
-                    m_DialogViewer.Back();
+                    m_MenuDialogViewer.Back();
                 };
                 cgi.Init(cgiProps);
             }

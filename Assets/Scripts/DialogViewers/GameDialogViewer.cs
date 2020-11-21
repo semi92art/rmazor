@@ -7,11 +7,19 @@ using UnityEngine;
 
 namespace DialogViewers
 {
-    public class GameDialogViewer : MonoBehaviour, IDialogViewer
+    public class GameDialogViewer : MonoBehaviour, IGameDialogViewer
     {
-        public RectTransform DialogContainer { get; }
+        #region serialized fields
+        
+        public RectTransform dialogContainer;
+        
+        #endregion
 
-        public static IDialogViewer Create(RectTransform _Parent)
+        #region api
+
+        public RectTransform DialogContainer => dialogContainer;
+
+        public static IGameDialogViewer Create(RectTransform _Parent)
         {
             var dialogPanelObj = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
@@ -19,10 +27,10 @@ namespace DialogViewers
                     RtrLites.FullFill),
                 "dialog_viewers",
                 "game_viewer");
-            return dialogPanelObj.GetComponent<MainMenuDialogViewer>();
+            return dialogPanelObj.GetComponent<GameDialogViewer>();
         }
 
-        public void Show(IDialogPanel _ItemTo, bool _HidePrevious = true)
+        public void Show(IGameDialogPanel _ItemTo, bool _HidePrevious = true)
         {
             throw new System.NotImplementedException();
         }
@@ -32,7 +40,7 @@ namespace DialogViewers
             throw new System.NotImplementedException();
         }
 
-        public void AddNotDialogItem(RectTransform _Item, UiCategory _Categories)
+        public void AddNotDialogItem(RectTransform _Item, GameUiCategory _Categories)
         {
             throw new System.NotImplementedException();
         }
@@ -41,5 +49,9 @@ namespace DialogViewers
         {
             throw new System.NotImplementedException();
         }
+
+        #endregion
+
+        
     }
 }

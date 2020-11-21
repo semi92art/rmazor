@@ -21,7 +21,7 @@ namespace UI
 
         private Canvas m_Canvas;
         private ILoadingPanel m_LoadingPanel;
-        private IDialogViewer m_DialogViewer;
+        private IMenuDialogViewer m_MenuDialogViewer;
         private ITransitionRenderer m_TransitionRenderer;
         private RectTransform m_Background;
 
@@ -81,21 +81,21 @@ namespace UI
                 "background_panel");
             m_Background = go.RTransform();
         
-            m_DialogViewer.AddNotDialogItem(m_Background, 
-                UiCategory.Loading |
-                UiCategory.Profile |
-                UiCategory.Settings |
-                UiCategory.Shop |
-                UiCategory.DailyBonus |
-                UiCategory.MainMenu |
-                UiCategory.SelectGame |
-                UiCategory.Login |
-                UiCategory.Countries);
+            m_MenuDialogViewer.AddNotDialogItem(m_Background, 
+                MenuUiCategory.Loading |
+                MenuUiCategory.Profile |
+                MenuUiCategory.Settings |
+                MenuUiCategory.Shop |
+                MenuUiCategory.DailyBonus |
+                MenuUiCategory.MainMenu |
+                MenuUiCategory.SelectGame |
+                MenuUiCategory.Login |
+                MenuUiCategory.Countries);
         }
     
         private void CreateDialogViewer()
         {
-            m_DialogViewer = MainMenuDialogViewer.Create(m_Canvas.RTransform());
+            m_MenuDialogViewer = MainMenuDialogViewer.Create(m_Canvas.RTransform());
         }
 
         private void CreateTransitionRenderer()
@@ -108,7 +108,7 @@ namespace UI
 
         private void CreateLoadingPanel()
         {
-            m_LoadingPanel = new LoadingPanel(m_DialogViewer);
+            m_LoadingPanel = new LoadingPanel(m_MenuDialogViewer);
             m_LoadingPanel.Show();
 
             Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
@@ -197,7 +197,7 @@ namespace UI
         {
             MainMenuUi.Create(
                 m_Canvas.RTransform(),
-                m_DialogViewer);
+                m_MenuDialogViewer);
         }
 
         private GameObject CreateLoadingTransitionPanel()

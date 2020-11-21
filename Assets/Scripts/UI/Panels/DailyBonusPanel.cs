@@ -13,7 +13,7 @@ using Utils;
 
 namespace UI.Panels
 {
-    public class DailyBonusPanel : IDialogPanel
+    public class DailyBonusPanel : IMenuDialogPanel
     {
         #region private members
         
@@ -29,7 +29,7 @@ namespace UI.Panels
         };
 
         private RectTransform m_Panel;
-        private readonly IDialogViewer m_DialogViewer;
+        private readonly IMenuDialogViewer m_MenuDialogViewer;
         private readonly IActionExecuter m_ActionExecuter;
         private RectTransform m_Content;
         
@@ -37,19 +37,19 @@ namespace UI.Panels
         
         #region api
 
-        public UiCategory Category => UiCategory.DailyBonus;
+        public MenuUiCategory Category => MenuUiCategory.DailyBonus;
         public RectTransform Panel { get; private set; }
 
-        public DailyBonusPanel(IDialogViewer _DialogViewer, IActionExecuter _ActionExecuter)
+        public DailyBonusPanel(IMenuDialogViewer _MenuDialogViewer, IActionExecuter _ActionExecuter)
         {
-            m_DialogViewer = _DialogViewer;
+            m_MenuDialogViewer = _MenuDialogViewer;
             m_ActionExecuter = _ActionExecuter;
         }
         
         public void Show()
         {
             Panel = Create();
-            m_DialogViewer.Show( this);
+            m_MenuDialogViewer.Show( this);
         }
         
         #endregion
@@ -60,7 +60,7 @@ namespace UI.Panels
         {
             GameObject dailyBonusPanel = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_DialogViewer.DialogContainer,
+                    m_MenuDialogViewer.DialogContainer,
                     RtrLites.FullFill),
                 "main_menu",
                 "daily_bonus_panel");
@@ -97,7 +97,7 @@ namespace UI.Panels
 
                 dbProps.Click = () =>
                 {
-                    m_DialogViewer.Back();
+                    m_MenuDialogViewer.Back();
                 };
                 
                 dbi.Init(dbProps, m_ActionExecuter);

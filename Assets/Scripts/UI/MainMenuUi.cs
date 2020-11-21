@@ -4,6 +4,7 @@ using Entities;
 using Extensions;
 using Helpers;
 using Lean.Touch;
+using Managers;
 using Network;
 using UI.Entities;
 using UI.Factories;
@@ -15,34 +16,34 @@ using Utils;
 
 namespace UI
 {
-    public class MainMenuUi
+    public class MainMenuUi : DI.ContainerObject
     {
         private static bool _isDailyBonusClicked;
         
-        private readonly IDialogViewer m_DialogViewer;
+        private readonly IMenuDialogViewer m_MenuDialogViewer;
         private IMiniPanel m_BankMiniPanel;
         
         private RectTransform m_Parent;
         private RectTransform m_MainMenu;
         private RectTransform m_GameLogoContainer;
         private Animator m_DailyBonusAnimator;
-        private UiCategory m_CurrentCategory;
+        private MenuUiCategory m_CurrentCategory;
         private Button m_SelectGameButton;
         private Image m_GameLogo;
 
         public static MainMenuUi Create(
             RectTransform _Parent,
-            IDialogViewer _DialogViewer)
+            IMenuDialogViewer _MenuDialogViewer)
         {
-            return new MainMenuUi(_Parent, _DialogViewer);
+            return new MainMenuUi(_Parent, _MenuDialogViewer);
         }
 
         private MainMenuUi(
             RectTransform _Parent,
-            IDialogViewer _DialogViewer)
+            IMenuDialogViewer _MenuDialogViewer)
         {
-            m_DialogViewer = _DialogViewer;
-            UiManager.Instance.CurrentCategory = UiCategory.MainMenu;
+            m_MenuDialogViewer = _MenuDialogViewer;
+            UiManager.Instance.CurrentCategory = MenuUiCategory.MainMenu;
             InitContainers(_Parent);
             InitSelectGameButton();
             SetGameLogo(GameClient.Instance.GameId);
@@ -51,7 +52,7 @@ namespace UI
             InitSmallButtons();
             InitBankMiniPanel();
             CheckIfDailyBonusNotChosenToday();
-            m_DialogViewer.AddNotDialogItem(m_MainMenu, UiCategory.MainMenu);
+            m_MenuDialogViewer.AddNotDialogItem(m_MainMenu, MenuUiCategory.MainMenu);
             SoundManager.Instance.PlayClip("main_menu_theme", true, 0f);
         }
         
@@ -76,7 +77,7 @@ namespace UI
 
         private void InitBankMiniPanel()
         {
-            m_BankMiniPanel = new BankMiniPanel(m_Parent, m_DialogViewer);
+            m_BankMiniPanel = new BankMiniPanel(m_Parent, m_MenuDialogViewer);
             m_BankMiniPanel.Show();
         }
 
@@ -264,42 +265,42 @@ namespace UI
         private void OnOpenSelectGamePanel()
         {
             SoundManager.Instance.PlayMenuButtonClick();
-            IDialogPanel selectGame = new SelectGamePanel(m_DialogViewer, SetGameLogo);
+            IMenuDialogPanel selectGame = new SelectGamePanel(m_MenuDialogViewer, SetGameLogo);
             selectGame.Show();
         }
         
         private void OnProfileButtonClick()
         {
             SoundManager.Instance.PlayMenuButtonClick();
-            IDialogPanel profile = new ProfilePanel(m_DialogViewer);
+            IMenuDialogPanel profile = new ProfilePanel(m_MenuDialogViewer);
             profile.Show();
         }
 
         private void OnSettingsButtonClick()
         {
             SoundManager.Instance.PlayMenuButtonClick();
-            IDialogPanel settings = new SettingsPanel(m_DialogViewer);
+            IMenuDialogPanel settings = new SettingsPanel(m_MenuDialogViewer);
             settings.Show();
         }
 
         private void OnLoginButtonClick()
         {
             SoundManager.Instance.PlayMenuButtonClick();
-            IDialogPanel login = new LoginPanel(m_DialogViewer);
+            IMenuDialogPanel login = new LoginPanel(m_MenuDialogViewer);
             login.Show();
         }
 
         private void OnShopButtonClick()
         {
             SoundManager.Instance.PlayMenuButtonClick();
-            IDialogPanel shop = new ShopPanel(m_DialogViewer);
+            IMenuDialogPanel shop = new ShopPanel(m_MenuDialogViewer);
             shop.Show();
         }
 
         private void OnPlayButtonClick()
         {
             SoundManager.Instance.PlayMenuButtonClick();
-            LevelLoader.LoadLevel(1);
+            LevelLoader.LoadLevel(1, 100);
         }
 
         private void OnRatingsClick()
@@ -311,15 +312,15 @@ namespace UI
         private void OnDailyBonusButtonClick()
         {
             SoundManager.Instance.PlayMenuButtonClick();
-            IDialogPanel dailyBonus = new DailyBonusPanel(
-                m_DialogViewer, (IActionExecuter)m_BankMiniPanel);
+            IMenuDialogPanel dailyBonus = new DailyBonusPanel(
+                m_MenuDialogViewer, (IActionExecuter)m_BankMiniPanel);
             dailyBonus.Show();
         }
 
         private void OnWheelOfFortuneButtonClick()
         {
             SoundManager.Instance.PlayMenuButtonClick();
-            IDialogPanel wheelOfFortune = new WheelOfFortunePanel(m_DialogViewer);
+            IMenuDialogPanel wheelOfFortune = new WheelOfFortunePanel(m_MenuDialogViewer);
             wheelOfFortune.Show();
         }
         

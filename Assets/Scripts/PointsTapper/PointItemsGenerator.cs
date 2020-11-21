@@ -14,8 +14,8 @@ namespace PointsTapper
 
     public interface IOnLevelStartedFinished
     {
-        void OnLevelStarted(LevelChangedArgs _Args);
-        void OnLevelFinished(LevelChangedArgs _Args);
+        void OnLevelStarted(LevelStateChangedArgs _Args);
+        void OnLevelFinished(LevelStateChangedArgs _Args);
     }
 
     public interface IOnDrawGizmos
@@ -75,13 +75,13 @@ namespace PointsTapper
             pool.Activate(item, m_PositionGenerator.Next(_Radius + 1f));
         }
 
-        public void OnLevelStarted(LevelChangedArgs _Args)
+        public void OnLevelStarted(LevelStateChangedArgs _Args)
         {
             m_CurrentLevel = _Args.Level;
             m_IsLevelInProcess = true;
         }
 
-        public void OnLevelFinished(LevelChangedArgs _Args)
+        public void OnLevelFinished(LevelStateChangedArgs _Args)
         {
             m_IsLevelInProcess = false;
         }

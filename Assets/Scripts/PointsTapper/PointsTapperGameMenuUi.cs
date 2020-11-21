@@ -4,6 +4,6 @@ namespace PointsTapper
 {
     public class PointsTapperGameMenuUi : GameMenuUiBase
     {
-        
+
     }
 }

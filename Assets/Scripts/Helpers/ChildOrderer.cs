@@ -11,13 +11,13 @@ namespace Helpers
         private bool m_FromBehindCheck;
         private void Start()
         {
-            ChildOrderManager.Instance.Add(transform, order, fromBehind);
+            HierarchyOrderManager.Instance.Add(transform, order, fromBehind);
         }
 
         private void Update()
         {
             if (order != m_OrderCheck || fromBehind != m_FromBehindCheck)
-                ChildOrderManager.Instance.UpdateOrdering(transform, order, fromBehind);
+                HierarchyOrderManager.Instance.UpdateOrdering(transform, order, fromBehind);
             
             m_FromBehindCheck = fromBehind;
             m_OrderCheck = order;

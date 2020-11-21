@@ -71,7 +71,7 @@ namespace UI.Panels
         
         public Action Action { get; set; }
         
-        public BankMiniPanel(RectTransform _Parent, IDialogViewer _DialogViewer)
+        public BankMiniPanel(RectTransform _Parent, IMenuDialogViewer _MenuDialogViewer)
         {
             var go = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
@@ -95,7 +95,7 @@ namespace UI.Panels
             m_PlusButton.SetOnClick(() =>
             {
                 SoundManager.Instance.PlayMenuButtonClick();
-                IDialogPanel shopPanel = new ShopPanel(_DialogViewer);
+                IMenuDialogPanel shopPanel = new ShopPanel(_MenuDialogViewer);
                 shopPanel.Show();
             });
 
@@ -107,7 +107,7 @@ namespace UI.Panels
         public void Show()
         {
             var bank = MoneyManager.Instance.GetBank();
-            m_Animator.SetTrigger(UiManager.Instance.CurrentCategory == UiCategory.MainMenu ?
+            m_Animator.SetTrigger(UiManager.Instance.CurrentCategory == MenuUiCategory.MainMenu ?
                 AkShowInMm : AkShowInDlg);
             m_IsShowing = true;
             m_BankMiniPanel.sizeDelta = m_BankMiniPanel.sizeDelta.SetX(100);
@@ -212,7 +212,7 @@ namespace UI.Panels
                 },
                 IncomeAnimDeltaTime,
                 IncomeAnimTime,
-                () =>
+                _OnFinish:() =>
                 {
                     Coroutines.Run(Coroutines.WaitWhile(() =>
                     {
@@ -324,7 +324,7 @@ namespace UI.Panels
             SetPanelWidth(GetPanelWidth(_MaxTextLength));
         }
         
-        private void CurrentCategoryChanged(UiCategory _Prev, UiCategory _New)
+        private void CurrentCategoryChanged(MenuUiCategory _Prev, MenuUiCategory _New)
         {
             if (m_Animator == null)
             {
@@ -334,88 +334,88 @@ namespace UI.Panels
                 return;
             }
             
-            if (_Prev == _New || _Prev == UiCategory.Nothing || _New == UiCategory.Nothing)
+            if (_Prev == _New || _Prev == MenuUiCategory.Nothing || _New == MenuUiCategory.Nothing)
                 return;
             m_PlusButton.interactable = true;
             m_IsShowing = true;
             int trigger = -1;
             switch (_New)
             {
-                case UiCategory.Settings:
-                case UiCategory.Loading:
-                case UiCategory.SelectGame:
+                case MenuUiCategory.Settings:
+                case MenuUiCategory.Loading:
+                case MenuUiCategory.SelectGame:
                     m_IsShowing = false;
-                    trigger = _Prev == UiCategory.MainMenu ? AkHideInMm : AkHideInDlg;
+                    trigger = _Prev == MenuUiCategory.MainMenu ? AkHideInMm : AkHideInDlg;
                     break;
-                case UiCategory.Login:
-                case UiCategory.Countries:
+                case MenuUiCategory.Login:
+                case MenuUiCategory.Countries:
                     m_IsShowing = false;
-                    trigger = _Prev == UiCategory.MainMenu ? AkHideInMm : AkHideInDlg;
-                    if (_Prev == UiCategory.Countries || _Prev == UiCategory.Login)
+                    trigger = _Prev == MenuUiCategory.MainMenu ? AkHideInMm : AkHideInDlg;
+                    if (_Prev == MenuUiCategory.Countries || _Prev == MenuUiCategory.Login)
                         trigger = -1;
                     break;
-                case UiCategory.Shop:
+                case MenuUiCategory.Shop:
                     m_PlusButton.interactable = false;
                     switch (_Prev)
                     {
-                        case UiCategory.MainMenu:
+                        case MenuUiCategory.MainMenu:
                             trigger = AkFromMmToDlg;
                             break;
-                        case UiCategory.Settings:
-                        case UiCategory.Loading:
-                        case UiCategory.SelectGame:
-                        case UiCategory.Login:
-                        case UiCategory.Countries:
+                        case MenuUiCategory.Settings:
+                        case MenuUiCategory.Loading:
+                        case MenuUiCategory.SelectGame:
+                        case MenuUiCategory.Login:
+                        case MenuUiCategory.Countries:
                             trigger = AkShowInDlg;
                             break;
-                        case UiCategory.Profile:
-                        case UiCategory.WheelOfFortune:
-                        case UiCategory.DailyBonus:
+                        case MenuUiCategory.Profile:
+                        case MenuUiCategory.WheelOfFortune:
+                        case MenuUiCategory.DailyBonus:
                             // Do nothing
                             break;
                         default:
                             throw new NotImplementedException();
                     }
                     break;
-                case UiCategory.Profile:
-                case UiCategory.WheelOfFortune:
-                case UiCategory.DailyBonus:
+                case MenuUiCategory.Profile:
+                case MenuUiCategory.WheelOfFortune:
+                case MenuUiCategory.DailyBonus:
                     switch (_Prev)
                     {
-                        case UiCategory.MainMenu:
+                        case MenuUiCategory.MainMenu:
                             trigger = AkFromMmToDlg;
                             break;
-                        case UiCategory.Settings:
-                        case UiCategory.Loading:
-                        case UiCategory.SelectGame:
-                        case UiCategory.Login:
-                        case UiCategory.Countries:
+                        case MenuUiCategory.Settings:
+                        case MenuUiCategory.Loading:
+                        case MenuUiCategory.SelectGame:
+                        case MenuUiCategory.Login:
+                        case MenuUiCategory.Countries:
                             trigger = AkShowInDlg;
                             break;
-                        case UiCategory.Profile:
-                        case UiCategory.WheelOfFortune:
-                        case UiCategory.Shop:
-                        case UiCategory.DailyBonus:
+                        case MenuUiCategory.Profile:
+                        case MenuUiCategory.WheelOfFortune:
+                        case MenuUiCategory.Shop:
+                        case MenuUiCategory.DailyBonus:
                             // Do nothing
                             break;
                         default:
                             throw new NotImplementedException();
                     }
                     break;
-                case UiCategory.MainMenu:
+                case MenuUiCategory.MainMenu:
                     switch (_Prev)
                     {
-                        case UiCategory.Settings:
-                        case UiCategory.Loading:
-                        case UiCategory.SelectGame:
-                        case UiCategory.Login:
-                        case UiCategory.Countries:
+                        case MenuUiCategory.Settings:
+                        case MenuUiCategory.Loading:
+                        case MenuUiCategory.SelectGame:
+                        case MenuUiCategory.Login:
+                        case MenuUiCategory.Countries:
                             trigger = AkShowInMm;
                             break;
-                        case UiCategory.Profile:
-                        case UiCategory.Shop:
-                        case UiCategory.DailyBonus:
-                        case UiCategory.WheelOfFortune:
+                        case MenuUiCategory.Profile:
+                        case MenuUiCategory.Shop:
+                        case MenuUiCategory.DailyBonus:
+                        case MenuUiCategory.WheelOfFortune:
                             trigger = AkFromDlgToMm;
                             break;
                         default:

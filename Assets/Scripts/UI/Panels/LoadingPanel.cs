@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace UI.Panels
 {
-    public interface ILoadingPanel : IDialogPanel
+    public interface ILoadingPanel : IMenuDialogPanel
     {
         bool DoLoading { get; set; }
         void Hide();
@@ -19,13 +19,13 @@ namespace UI.Panels
         #region private members
 
         private LoadingPanelView m_View;
-        private IDialogViewer m_DialogViewer;
+        private IMenuDialogViewer m_MenuDialogViewer;
         
         #endregion
         
         #region public api
 
-        public UiCategory Category => UiCategory.Loading;
+        public MenuUiCategory Category => MenuUiCategory.Loading;
         public RectTransform Panel { get; private set; }
     
         public bool DoLoading
@@ -34,20 +34,20 @@ namespace UI.Panels
             set => m_View.DoLoading = value;
         }
 
-        public LoadingPanel(IDialogViewer _DialogViewer)
+        public LoadingPanel(IMenuDialogViewer _MenuDialogViewer)
         {
-            m_DialogViewer = _DialogViewer;
+            m_MenuDialogViewer = _MenuDialogViewer;
         }
 
         public void Show()
         {
-            Panel = Create(m_DialogViewer);
-            m_DialogViewer.Show(this);
+            Panel = Create(m_MenuDialogViewer);
+            m_MenuDialogViewer.Show(this);
         }
         
         public void Hide()
         {
-            m_DialogViewer.Back();
+            m_MenuDialogViewer.Back();
         }
     
         #endregion
@@ -55,11 +55,11 @@ namespace UI.Panels
         #region private methods
         
         private RectTransform Create(
-            IDialogViewer _DialogViewer)
+            IMenuDialogViewer _MenuDialogViewer)
         {
             GameObject prefab = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    _DialogViewer.DialogContainer,
+                    _MenuDialogViewer.DialogContainer,
                     RtrLites.FullFill),
                 "loading_panel", "loading_panel");
             m_View = prefab.GetComponent<LoadingPanelView>();

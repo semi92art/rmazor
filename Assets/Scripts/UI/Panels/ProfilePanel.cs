@@ -13,11 +13,11 @@ using Utils;
 
 namespace UI.Panels
 {
-    public class ProfilePanel : IDialogPanel
+    public class ProfilePanel : IMenuDialogPanel
     {
         #region private members
         
-        private IDialogViewer m_DialogViewer;
+        private IMenuDialogViewer m_MenuDialogViewer;
         private TextMeshProUGUI m_WorldRankNum;
         private TextMeshProUGUI m_CountryRankNum;
         
@@ -25,18 +25,18 @@ namespace UI.Panels
         
         #region api
         
-        public UiCategory Category => UiCategory.Profile;
+        public MenuUiCategory Category => MenuUiCategory.Profile;
         public RectTransform Panel { get; private set; }
 
-        public ProfilePanel(IDialogViewer _DialogViewer)
+        public ProfilePanel(IMenuDialogViewer _MenuDialogViewer)
         {
-            m_DialogViewer = _DialogViewer;
+            m_MenuDialogViewer = _MenuDialogViewer;
         }
         
         public void Show()
         {
             Panel = Create();
-            m_DialogViewer.Show(this);
+            m_MenuDialogViewer.Show(this);
         }
         
         #endregion
@@ -47,7 +47,7 @@ namespace UI.Panels
         {
             GameObject pp = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_DialogViewer.DialogContainer,
+                    m_MenuDialogViewer.DialogContainer,
                     RtrLites.FullFill),
                 "main_menu", "profile_panel");
             GameObject infoContainer = pp.GetContentItem("info_container");

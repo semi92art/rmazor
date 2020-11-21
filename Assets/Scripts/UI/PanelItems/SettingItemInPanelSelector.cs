@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using DialogViewers;
 using Extensions;
+using Managers;
 using TMPro;
 using UI.Panels;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace UI.PanelItems
         public TextMeshProUGUI setting;
 
         public void Init(
-            IDialogViewer _DialogViewer,
+            IMenuDialogViewer _MenuDialogViewer,
             System.Func<string> _Value,
             string _Name,
             System.Func<List<string>> _ListOfItems,
@@ -31,8 +32,8 @@ namespace UI.PanelItems
                 if (items == null)
                     return;
                 
-                IDialogPanel selectorPanel = new SettingsSelectorPanel(
-                    _DialogViewer,
+                IMenuDialogPanel selectorPanel = new SettingsSelectorPanel(
+                    _MenuDialogViewer,
                     _Value?.Invoke(),
                     items, 
                     _Select);

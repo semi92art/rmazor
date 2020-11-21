@@ -3,19 +3,23 @@ using Extensions;
 using UI.Factories;
 using UI.Panels;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace UI
 {
     public interface IGameMenuUi
     {
-        ILifesPanel LifesPanel { get; }
+        void OnGameStarted(LevelStateChangedArgs _Args, UnityAction _StartGame);
+        void OnLevelStarted(LevelStateChangedArgs _Args);
+        void OnLevelFinished(LevelStateChangedArgs _Args);
+        void OnLifesChanged(LifeEventArgs _Args);
     }
     
     public abstract class GameMenuUiBase : IGameMenuUi
     {
-        public ILifesPanel LifesPanel { get; protected set; }
-        protected IDialogViewer DialogViewer;
+        protected ILifesPanel LifesPanel;
+        protected IGameDialogViewer GameDialogViewer;
         protected Canvas Canvas;
         
         protected GameMenuUiBase()
@@ -44,12 +48,33 @@ namespace UI
         
         protected virtual void CreateDialogViewer()
         {
-            DialogViewer = GameDialogViewer.Create(Canvas.RTransform());
+            GameDialogViewer = DialogViewers.GameDialogViewer.Create(Canvas.RTransform());
         }
 
         protected virtual void CreateStatsPanel()
         {
-            LifesPanel = Panels.LifesPanel.Create(Canvas.RTransform(), DialogViewer);
+            LifesPanel = Panels.LifesPanel.Create(Canvas.RTransform(), GameDialogViewer);
+        }
+        
+        public virtual void OnGameStarted(LevelStateChangedArgs _Args, UnityAction _StartGame)
+        {
+            IGameDialogPanel gameStartPanel = new GameStartPanel(GameDialogViewer, _StartGame);
+            GameDialogViewer.Show(gameStartPanel);
+        }
+
+        public virtual void OnLevelStarted(LevelStateChangedArgs _Args)
+        {
+            
+        }
+
+        public virtual void OnLevelFinished(LevelStateChangedArgs _Args)
+        {
+            
+        }
+
+        public virtual void OnLifesChanged(LifeEventArgs _Args)
+        {
+            LifesPanel.SetLifes(_Args.Lifes);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Constants;
+using Managers;
 using Network;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -7,6 +8,7 @@ public static class LevelLoader
 {
     private const string WasNotMadeMessage = "Game was not made";
     private static int _level;
+    private static long _lifesOnStart;
 
     static LevelLoader()
     {
@@ -20,10 +22,11 @@ public static class LevelLoader
         LoadGame(GameClient.Instance.GameId);
     }
 
-    public static void LoadLevel(int _Level)
+    public static void LoadLevel(int _Level, long _LifesOnStart)
     {
         SoundManager.Instance.StopPlayingClips();
         _level = _Level;
+        _lifesOnStart = _LifesOnStart;
         SceneManager.LoadScene(SceneNames.Level);
     }
     
@@ -32,7 +35,7 @@ public static class LevelLoader
         switch (_GameId)
         {
             case 1:
-                PointsTapper.PointsTapperManager.Instance.Init(_level);
+                PointsTapper.PointsTapperManager.Instance.Init(_level, _lifesOnStart);
                 break;
             case 2:
                 Debug.Log(WasNotMadeMessage);
