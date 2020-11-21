@@ -43,7 +43,7 @@ namespace UI
             IMenuDialogViewer _MenuDialogViewer)
         {
             m_MenuDialogViewer = _MenuDialogViewer;
-            UiManager.Instance.CurrentCategory = MenuUiCategory.MainMenu;
+            UiManager.Instance.CurrentMenuCategory = MenuUiCategory.MainMenu;
             InitContainers(_Parent);
             InitSelectGameButton();
             SetGameLogo(GameClient.Instance.GameId);

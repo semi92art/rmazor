@@ -38,6 +38,8 @@ namespace Managers
             if (LifesController == null)
                 LifesController = new DefaultLifesController();
             LifesController.OnLifesChanged += OnLifesChanged;
+            LifesController.Init(_LifesOnStart);
+            
         }
         
         #endregion

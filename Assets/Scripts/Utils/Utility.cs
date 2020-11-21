@@ -11,6 +11,8 @@ namespace Utils
 {
     public static class Utility
     {
+        public const float SymbolWidth = 19;
+        
         public static readonly System.Random RandomGen = new System.Random(); 
         
         public static T[] EnumToList<T>() where T : Enum

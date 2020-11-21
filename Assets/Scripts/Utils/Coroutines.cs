@@ -331,7 +331,7 @@ namespace Utils
         public static IEnumerator Repeat(
             Action _Action,
             float _RepeatDelta,
-            int _RepeatCount,
+            long _RepeatCount,
             Func<bool> _DoStop = null,
             Action _OnFinish = null)
         {

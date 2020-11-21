@@ -7,18 +7,15 @@ using UnityEngine;
 
 namespace DialogViewers
 {
-    public class GameDialogViewer : MonoBehaviour, IGameDialogViewer
+    public class GameDialogViewer : DialogViewerBase, IGameDialogViewer
     {
-        #region serialized fields
-        
-        public RectTransform dialogContainer;
+        #region nonpublic members
+        protected override float TransitionTime => 0.05f;
         
         #endregion
-
+        
         #region api
-
-        public RectTransform DialogContainer => dialogContainer;
-
+        
         public static IGameDialogViewer Create(RectTransform _Parent)
         {
             var dialogPanelObj = PrefabInitializer.InitUiPrefab(
@@ -32,26 +29,18 @@ namespace DialogViewers
 
         public void Show(IGameDialogPanel _ItemTo, bool _HidePrevious = true)
         {
-            throw new System.NotImplementedException();
+            var to = new Panel(_ItemTo);
+            ShowCore(to, _HidePrevious, false, GameUiCategoryType);
         }
-        
-        public void Back()
-        {
-            throw new System.NotImplementedException();
-        }
-
+ 
         public void AddNotDialogItem(RectTransform _Item, GameUiCategory _Categories)
         {
-            throw new System.NotImplementedException();
-        }
-
-        public void RemoveNotDialogItem(RectTransform _Item)
-        {
-            throw new System.NotImplementedException();
+            if (NotDialogs.ContainsKey(_Item))
+                return;
+            NotDialogs.Add(_Item, new VisibleInCategories(_Categories, _Item.gameObject.activeSelf));
+            GraphicsAlphas.Add(_Item.GetInstanceID(), new GraphicAlphas(_Item));
         }
 
         #endregion
-
-        
     }
 }

@@ -15,7 +15,7 @@ namespace UI.Panels
 {
     public class LoginPanel : LoginPanelBase
     {
-        public LoginPanel(IMenuDialogViewer _MenuDialogViewer) : base(_MenuDialogViewer) { }
+        public LoginPanel(IMenuDialogViewer _DialogViewer) : base(_DialogViewer) { }
         
         #region protected methods
 
@@ -23,7 +23,7 @@ namespace UI.Panels
         {
             GameObject lp = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    MenuDialogViewer.DialogContainer,
+                    DialogViewer.DialogContainer,
                     RtrLites.FullFill),
                 "main_menu", "login_panel");
 
@@ -89,7 +89,7 @@ namespace UI.Panels
                 GameClient.Instance.PasswordHash = packet.Response.PasswordHash;
                 GameClient.Instance.AccountId = packet.Response.Id;
                 MoneyManager.Instance.GetBank(true);
-                MenuDialogViewer.Back();       
+                DialogViewer.Back();       
             });
             packet.OnFail(() =>
             {
@@ -125,7 +125,7 @@ namespace UI.Panels
         private void Registration()
         {
             SoundManager.Instance.PlayMenuButtonClick();
-            IMenuDialogPanel regPanel = new RegistrationPanel(MenuDialogViewer);
+            IMenuDialogPanel regPanel = new RegistrationPanel(DialogViewer);
             regPanel.Show();
         }
 
@@ -142,7 +142,7 @@ namespace UI.Panels
                 GameClient.Instance.PasswordHash = string.Empty;
                 GameClient.Instance.AccountId = packet.Response.Id;
                 MoneyManager.Instance.GetBank(true);
-                MenuDialogViewer.Back();       
+                DialogViewer.Back();       
             });
             packet.OnFail(() =>
             {

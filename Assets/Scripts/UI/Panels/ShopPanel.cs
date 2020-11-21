@@ -29,7 +29,7 @@ namespace UI.Panels
             new ShopItemProps("500", "79.99$", "180$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_8_icon"))
         };
 
-        private readonly IMenuDialogViewer m_MenuDialogViewer;
+        private readonly IMenuDialogViewer m_DialogViewer;
         
         #endregion
         
@@ -38,15 +38,15 @@ namespace UI.Panels
         public MenuUiCategory Category => MenuUiCategory.Shop;
         public RectTransform Panel { get; private set; }
 
-        public ShopPanel(IMenuDialogViewer _MenuDialogViewer)
+        public ShopPanel(IMenuDialogViewer _DialogViewer)
         {
-            m_MenuDialogViewer = _MenuDialogViewer;
+            m_DialogViewer = _DialogViewer;
         }
 
         public void Show()
         {
             Panel = Create();
-            m_MenuDialogViewer.Show(this);
+            m_DialogViewer.Show(this);
         }
         
         #endregion
@@ -57,7 +57,7 @@ namespace UI.Panels
         {
             GameObject shopPanel = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_MenuDialogViewer.DialogContainer,
+                    m_DialogViewer.DialogContainer,
                     RtrLites.FullFill),
                 "main_menu",
                 "shop_panel");

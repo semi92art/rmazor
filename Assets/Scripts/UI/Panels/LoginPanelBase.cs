@@ -9,7 +9,7 @@ namespace UI.Panels
     {
         #region protected members
         
-        protected readonly IMenuDialogViewer MenuDialogViewer;
+        protected readonly IMenuDialogViewer DialogViewer;
         protected TMP_InputField m_LoginInputField;
         protected TMP_InputField m_PasswordInputField;
         protected TextMeshProUGUI m_LoginErrorHandler;
@@ -17,9 +17,9 @@ namespace UI.Panels
         
         #endregion
 
-        protected LoginPanelBase(IMenuDialogViewer _MenuDialogViewer)
+        protected LoginPanelBase(IMenuDialogViewer _DialogViewer)
         {
-            MenuDialogViewer = _MenuDialogViewer;
+            DialogViewer = _DialogViewer;
         }
         
         
@@ -31,7 +31,7 @@ namespace UI.Panels
         public void Show()
         {
             Panel = Create();
-            MenuDialogViewer.Show( this);
+            DialogViewer.Show( this);
         }
 
         #endregion

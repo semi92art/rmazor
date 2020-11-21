@@ -59,7 +59,7 @@ namespace UI
         public virtual void OnGameStarted(LevelStateChangedArgs _Args, UnityAction _StartGame)
         {
             IGameDialogPanel gameStartPanel = new GameStartPanel(GameDialogViewer, _StartGame);
-            GameDialogViewer.Show(gameStartPanel);
+            gameStartPanel.Show();
         }
 
         public virtual void OnLevelStarted(LevelStateChangedArgs _Args)

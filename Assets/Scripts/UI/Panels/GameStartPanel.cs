@@ -1,11 +1,11 @@
-﻿using DialogViewers;
+﻿using Constants;
+using DialogViewers;
 using Extensions;
 using Helpers;
 using UI.Factories;
 using UI.Managers;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
 namespace UI.Panels
 {
@@ -13,9 +13,9 @@ namespace UI.Panels
     {
         #region nonpublic members
         
-        private readonly IGameDialogViewer m_GameDialogViewer;
+        private readonly IGameDialogViewer m_DialogViewer;
         private readonly UnityAction m_StartGame;
-        
+
         #endregion
 
         #region api
@@ -23,15 +23,16 @@ namespace UI.Panels
         public GameUiCategory Category => GameUiCategory.GameStart;
         public RectTransform Panel { get; private set; }
 
-        public GameStartPanel(IGameDialogViewer _GameDialogViewer, UnityAction _StartGame)
+        public GameStartPanel(IGameDialogViewer _DialogViewer, UnityAction _StartGame)
         {
-            m_GameDialogViewer = _GameDialogViewer;
+            m_DialogViewer = _DialogViewer;
             m_StartGame = _StartGame;
         }
 
         public void Show()
         {
             Panel = Create();
+            m_DialogViewer.Show(this);
         }
 
         #endregion
@@ -42,13 +43,12 @@ namespace UI.Panels
         {
             GameObject gsp = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_GameDialogViewer.DialogContainer,
+                    m_DialogViewer.DialogContainer,
                     RtrLites.FullFill),
                 "game_menu", "start_game_panel");
 
-            Button startGameButton = gsp.GetCompItem<Button>("start_game_button");
-            startGameButton.SetOnClick(m_StartGame);
-
+            GameStartPanelView view = gsp.GetCompItem<GameStartPanelView>("view");
+            view.StartCountdown(m_StartGame);
             return gsp.RTransform();
         }
         

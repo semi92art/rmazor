@@ -39,28 +39,10 @@ namespace UI.Panels
                 long diff = m_LifesCount - value; 
                 m_LifesCount = value;
                 SetLifesCountTextAndIcon();
-
+                SetPanelWidth();
                 if (diff >= 0)
                     return;
-                var brokens = new List<GameObject>();
-                Coroutines.Run(Coroutines.Repeat(
-                    () =>
-                    {
-                        GameObject go = Object.Instantiate(
-                            LifeBrokenAnimator.gameObject,
-                            LifeBrokenAnimator.transform.parent);
-                        brokens.Add(go);
-                        Animator anim = go.GetComponent<Animator>();
-                        anim.SetTrigger(AkBrokenLife);
-                    },
-                    0.1f,
-                    diff,
-                    null,
-                    () =>
-                    {
-                        foreach (var broken in brokens)
-                            Object.Destroy(broken);
-                    }));
+                AnimateBrokenLifes(diff);
             }
         }
         
@@ -135,8 +117,39 @@ namespace UI.Panels
         
         private void SetLifesCountTextAndIcon()
         {
-            LifesCountText.text = $"{m_LifesCount}";
+            LifesCountText.text = m_LifesCount.ToNumeric();
             LifeIcon.sprite = LifesCount > 0 ? LifeEnabled : LifeDisabled;
+        }
+
+        private void AnimateBrokenLifes(long _BrokenLifesCount)
+        {
+            var brokens = new List<GameObject>();
+            Coroutines.Run(Coroutines.Repeat(
+                () =>
+                {
+                    GameObject go = Object.Instantiate(
+                        LifeBrokenAnimator.gameObject,
+                        LifeBrokenAnimator.transform.parent);
+                    brokens.Add(go);
+                    Animator anim = go.GetComponent<Animator>();
+                    anim.SetTrigger(AkBrokenLife);
+                },
+                0.1f,
+                _BrokenLifesCount,
+                null,
+                () =>
+                {
+                    foreach (var broken in brokens)
+                        Object.Destroy(broken);
+                }));
+        }
+
+        private void SetPanelWidth()
+        {
+            float textWidth = (Utility.SymbolWidth + 3) * m_LifesCount.ToNumeric().Length;
+            var textRtr = LifesCountText.RTransform();
+            textRtr.sizeDelta = textRtr.sizeDelta.SetX(textWidth);
+            Panel.sizeDelta = Panel.sizeDelta.SetX(textWidth + LifeIcon.RTransform().sizeDelta.x + 40);
         }
         
         #endregion

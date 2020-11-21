@@ -47,7 +47,7 @@ GameObject:
   - component: {fileID: 8989310466400633966}
   - component: {fileID: 218986232838603529}
   - component: {fileID: 5423631203788003890}
-  - component: {fileID: 4582374747883009921}
+  - component: {fileID: 1255421813386434255}
   m_Layer: 0
   m_Name: Game Dialog Viewer
   m_TagString: Untagged
@@ -126,7 +126,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   order: 2
   fromBehind: 1
---- !u!114 &4582374747883009921
+--- !u!114 &1255421813386434255
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -138,3 +138,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e67e3c297e9417dbb1646c7b4eb508d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  background: {fileID: 218986232838603529}
+  dialogContainer: {fileID: 1304984785688590148}

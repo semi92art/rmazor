@@ -19,7 +19,7 @@ namespace UI.Panels
         #region private members
 
         private LoadingPanelView m_View;
-        private IMenuDialogViewer m_MenuDialogViewer;
+        private IMenuDialogViewer m_DialogViewer;
         
         #endregion
         
@@ -34,20 +34,20 @@ namespace UI.Panels
             set => m_View.DoLoading = value;
         }
 
-        public LoadingPanel(IMenuDialogViewer _MenuDialogViewer)
+        public LoadingPanel(IMenuDialogViewer _DialogViewer)
         {
-            m_MenuDialogViewer = _MenuDialogViewer;
+            m_DialogViewer = _DialogViewer;
         }
 
         public void Show()
         {
-            Panel = Create(m_MenuDialogViewer);
-            m_MenuDialogViewer.Show(this);
+            Panel = Create(m_DialogViewer);
+            m_DialogViewer.Show(this);
         }
         
         public void Hide()
         {
-            m_MenuDialogViewer.Back();
+            m_DialogViewer.Back();
         }
     
         #endregion

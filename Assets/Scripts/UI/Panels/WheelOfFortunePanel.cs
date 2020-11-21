@@ -18,7 +18,7 @@ namespace UI.Panels
     {
         #region private members
 
-        private readonly IMenuDialogViewer m_MenuDialogViewer;
+        private readonly IMenuDialogViewer m_DialogViewer;
         private GameObject m_Wheel;
         private WheelController m_WheelController;
         private Button m_SpinButton;
@@ -34,10 +34,10 @@ namespace UI.Panels
         public MenuUiCategory Category => MenuUiCategory.WheelOfFortune;
         public RectTransform Panel { get; private set; }
 
-        public WheelOfFortunePanel(IMenuDialogViewer _MenuDialogViewer)
+        public WheelOfFortunePanel(IMenuDialogViewer _DialogViewer)
         {
-            m_MenuDialogViewer = _MenuDialogViewer;
-            UiManager.Instance.OnCurrentCategoryChanged += (_Prev, _New) =>
+            m_DialogViewer = _DialogViewer;
+            UiManager.Instance.OnCurrentMenuCategoryChanged += (_Prev, _New) =>
             {
                 if (_New != Category)
                     OnPanelClose();
@@ -48,7 +48,7 @@ namespace UI.Panels
         {
             Panel = Create();
             InstantiateWheel();
-            m_MenuDialogViewer.Show(this);
+            m_DialogViewer.Show(this);
         }
 
         private RectTransform Create()
@@ -56,7 +56,7 @@ namespace UI.Panels
             var go = new GameObject("Wheel Of Fortune Panel");
 
             var rTr = go.AddComponent<RectTransform>();
-            rTr.SetParent(m_MenuDialogViewer.DialogContainer);
+            rTr.SetParent(m_DialogViewer.DialogContainer);
             rTr.Set(RtrLites.FullFill);
             rTr.localScale = Vector3.one;
             
@@ -95,7 +95,7 @@ namespace UI.Panels
             
             m_SpinButton.SetOnClick(StartSpinOrWatchAd);
             
-            m_WheelController.Init(m_MenuDialogViewer);
+            m_WheelController.Init(m_DialogViewer);
         }
 
         private void StartSpinOrWatchAd()
@@ -125,10 +125,10 @@ namespace UI.Panels
 
         private void OnPanelClose()
         {
-            IActionExecuter actionExecuter = (IActionExecuter) m_MenuDialogViewer;
+            IActionExecuter actionExecuter = (IActionExecuter) m_DialogViewer;
             actionExecuter.Action = () =>
             {
-                if (m_Wheel != null && UiManager.Instance.CurrentCategory == MenuUiCategory.MainMenu)
+                if (m_Wheel != null && UiManager.Instance.CurrentMenuCategory == MenuUiCategory.MainMenu)
                     Object.Destroy(m_Wheel);    
             };
         }

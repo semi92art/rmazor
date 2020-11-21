@@ -46,7 +46,6 @@ namespace UI.Panels
         private const float IncomeAnimDeltaTime = 0.1f;
         private const int IncomeCoinsAnimOnScreen = 3;
         private const int PoolSize = 8;
-        private const float SymbolWidth = 19;
         
         private readonly List<CoinAnimObject> m_CoinsPool = new List<CoinAnimObject>(PoolSize);
         private readonly Image m_GoldIcon;
@@ -101,13 +100,13 @@ namespace UI.Panels
 
             MoneyManager.Instance.OnMoneyCountChanged += MoneyCountChanged;
             MoneyManager.Instance.OnIncome += Income;
-            UiManager.Instance.OnCurrentCategoryChanged += CurrentCategoryChanged;
+            UiManager.Instance.OnCurrentMenuCategoryChanged += CurrentMenuCategoryChanged;
         }
 
         public void Show()
         {
             var bank = MoneyManager.Instance.GetBank();
-            m_Animator.SetTrigger(UiManager.Instance.CurrentCategory == MenuUiCategory.MainMenu ?
+            m_Animator.SetTrigger(UiManager.Instance.CurrentMenuCategory == MenuUiCategory.MainMenu ?
                 AkShowInMm : AkShowInDlg);
             m_IsShowing = true;
             m_BankMiniPanel.sizeDelta = m_BankMiniPanel.sizeDelta.SetX(100);
@@ -288,7 +287,7 @@ namespace UI.Panels
 
         private float GetTextWidth(int _TextLength)
         {
-            return _TextLength * SymbolWidth;
+            return _TextLength * Utility.SymbolWidth;
         }
         
         private void SetMoneyText(Dictionary<MoneyType, long> _Money)
@@ -324,13 +323,13 @@ namespace UI.Panels
             SetPanelWidth(GetPanelWidth(_MaxTextLength));
         }
         
-        private void CurrentCategoryChanged(MenuUiCategory _Prev, MenuUiCategory _New)
+        private void CurrentMenuCategoryChanged(MenuUiCategory _Prev, MenuUiCategory _New)
         {
             if (m_Animator == null)
             {
                 MoneyManager.Instance.OnMoneyCountChanged -= MoneyCountChanged;
                 MoneyManager.Instance.OnIncome -= Income;
-                UiManager.Instance.OnCurrentCategoryChanged -= CurrentCategoryChanged;
+                UiManager.Instance.OnCurrentMenuCategoryChanged -= CurrentMenuCategoryChanged;
                 return;
             }
             

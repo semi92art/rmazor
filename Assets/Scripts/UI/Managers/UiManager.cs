@@ -30,7 +30,7 @@ namespace UI.Managers
     {
         Nothing = 0,
         GameStart = 1,
-        MainMenu = 2,
+        Game = 2,
         Settings = 4,
         LevelResults = 8
     }
@@ -45,21 +45,45 @@ namespace UI.Managers
 
         #region types
 
-        public delegate void UiStateHandler(MenuUiCategory _Prev, MenuUiCategory _New);
+        public delegate void MenuUiStateHandler(MenuUiCategory _Prev, MenuUiCategory _New);
+        public delegate void GameUiStateHandler(GameUiCategory _Prev, GameUiCategory _New);
+
+        #endregion
+        
+        #region private members
+
+        private MenuUiCategory m_CurrentMenuCategory = MenuUiCategory.Nothing;
+        private GameUiCategory m_CurrentGameCategory = GameUiCategory.Nothing;
+        private string m_PrevScene;
 
         #endregion
         
         #region api
         
-        public event UiStateHandler OnCurrentCategoryChanged;
+        public event MenuUiStateHandler OnCurrentMenuCategoryChanged;
+        public event GameUiStateHandler OnCurrentGameCategoryChanged;
         
-        public MenuUiCategory CurrentCategory
+        public MenuUiCategory CurrentMenuCategory
         {
-            get => m_CurrentCategory;
+            get => m_CurrentMenuCategory;
             set
             {
-                OnCurrentCategoryChanged?.Invoke(m_CurrentCategory, value);
-                m_CurrentCategory = value;
+                OnCurrentMenuCategoryChanged?.Invoke(m_CurrentMenuCategory, value);
+                m_CurrentMenuCategory = value;
+                if (value != MenuUiCategory.Nothing)
+                    OnCurrentGameCategoryChanged = null;
+            }
+        }
+        
+        public GameUiCategory CurrentGameCategory
+        {
+            get => m_CurrentGameCategory;
+            set
+            {
+                OnCurrentGameCategoryChanged?.Invoke(m_CurrentGameCategory, value);
+                m_CurrentGameCategory = value;
+                if (value != GameUiCategory.Nothing)
+                    OnCurrentMenuCategoryChanged = null;
             }
         }
 
@@ -69,22 +93,17 @@ namespace UI.Managers
             set => SaveUtils.PutValue(SaveKey.ColorScheme, value);
         }
         
-        #if DEBUG
+#if DEBUG
         
         public GameObject DebugConsole { get; private set; }
+#if !UNITY_EDITOR
         public GameObject DebugReporter { get; private set; }
+#endif
         
-        #endif
+#endif
         
         #endregion
-
-        #region private members
-
-        private MenuUiCategory m_CurrentCategory = MenuUiCategory.Nothing;
-        private string m_PrevScene;
-
-        #endregion
-
+        
         #region engine methods
         
         private void Awake()

@@ -17,7 +17,7 @@ namespace UI.Panels
     {
         #region private members
         
-        private IMenuDialogViewer m_MenuDialogViewer;
+        private IMenuDialogViewer m_DialogViewer;
         private TextMeshProUGUI m_WorldRankNum;
         private TextMeshProUGUI m_CountryRankNum;
         
@@ -28,15 +28,15 @@ namespace UI.Panels
         public MenuUiCategory Category => MenuUiCategory.Profile;
         public RectTransform Panel { get; private set; }
 
-        public ProfilePanel(IMenuDialogViewer _MenuDialogViewer)
+        public ProfilePanel(IMenuDialogViewer _DialogViewer)
         {
-            m_MenuDialogViewer = _MenuDialogViewer;
+            m_DialogViewer = _DialogViewer;
         }
         
         public void Show()
         {
             Panel = Create();
-            m_MenuDialogViewer.Show(this);
+            m_DialogViewer.Show(this);
         }
         
         #endregion
@@ -47,7 +47,7 @@ namespace UI.Panels
         {
             GameObject pp = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_MenuDialogViewer.DialogContainer,
+                    m_DialogViewer.DialogContainer,
                     RtrLites.FullFill),
                 "main_menu", "profile_panel");
             GameObject infoContainer = pp.GetContentItem("info_container");

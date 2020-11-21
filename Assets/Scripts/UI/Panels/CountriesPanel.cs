@@ -16,7 +16,7 @@ namespace UI.Panels
     {
         #region private members
         
-        private IMenuDialogViewer m_MenuDialogViewer;
+        private IMenuDialogViewer m_DialogViewer;
         private System.Action<string> m_Select;
         private string m_DefaultValue;
         private RectTransform m_Content;
@@ -42,11 +42,11 @@ namespace UI.Panels
         public RectTransform Panel { get; private set; }
 
         public void Init(
-            IMenuDialogViewer _MenuDialogViewer,
+            IMenuDialogViewer _DialogViewer,
             string _Value,
             System.Action<string> _Select)
         {
-            m_MenuDialogViewer = _MenuDialogViewer;
+            m_DialogViewer = _DialogViewer;
             m_DefaultValue = _Value;
             m_Select = _Select;
         }
@@ -54,14 +54,14 @@ namespace UI.Panels
         public void Show()
         {
             Panel = Create();
-            m_MenuDialogViewer.Show(this);
+            m_DialogViewer.Show(this);
         }
         
         private RectTransform Create()
         {
             var sp = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_MenuDialogViewer.DialogContainer,
+                    m_DialogViewer.DialogContainer,
                     RtrLites.FullFill),
                 "main_menu", "settings_selector_panel");
             

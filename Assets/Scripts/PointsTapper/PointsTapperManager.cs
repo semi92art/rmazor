@@ -45,7 +45,6 @@ namespace PointsTapper
         public override void Init(int _Level, long _LifesOnStart)
         {
             LevelController = new PointsTapperLevelControllerBasedOnTime();
-            base.Init(_Level, _LifesOnStart);
             m_PointItemsGenerator = new PointItemsGenerator();
             SpriteRenderer background = new GameObject().AddComponent<SpriteRenderer>();
             background.sprite = PrefabInitializer.GetObject<Sprite>("points_tapper", "background");
@@ -54,7 +53,9 @@ namespace PointsTapper
             background.sortingOrder = SortingOrders.Background;
 
             var args = new LevelStateChangedArgs {Level = _Level, LifesLeft = _LifesOnStart};
+            GameMenuUi = new PointsTapperGameMenuUi();
             GameMenuUi.OnGameStarted(args, () => OnLevelStarted(args));
+            base.Init(_Level, _LifesOnStart);
         }
 
 #if UNITY_EDITOR
@@ -114,7 +115,6 @@ namespace PointsTapper
         protected override void Start()
         {
             base.Start();
-            GameMenuUi = new PointsTapperGameMenuUi();
             LevelController.StartLevel(() => true);
         }
 

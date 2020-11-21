@@ -17,7 +17,7 @@ namespace UI.Panels
     {
         private const string TestUserPrefix = "test";
         
-        public RegistrationPanel(IMenuDialogViewer _MenuDialogViewer) : base(_MenuDialogViewer)
+        public RegistrationPanel(IMenuDialogViewer _DialogViewer) : base(_DialogViewer)
         { }
         
         #region private members
@@ -34,7 +34,7 @@ namespace UI.Panels
         {
             GameObject rp = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    MenuDialogViewer.DialogContainer,
+                    DialogViewer.DialogContainer,
                     RtrLites.FullFill),
                 "main_menu", "register_panel");
             
@@ -101,8 +101,8 @@ namespace UI.Panels
                 m_RegisteredSuccessfully.enabled = true;
                 Coroutines.Run(Coroutines.Delay(() =>
                 {
-                    MenuDialogViewer.Back();
-                    MenuDialogViewer.Back();
+                    DialogViewer.Back();
+                    DialogViewer.Back();
                 }, 1f));
                 
             }).OnFail(() =>

@@ -14,7 +14,7 @@ namespace UI.Panels
     {
         #region private members
         
-        private readonly IMenuDialogViewer m_MenuDialogViewer;
+        private readonly IMenuDialogViewer m_DialogViewer;
         private RectTransform m_Content;
 
         private RectTransformLite SettingItemRectLite => new RectTransformLite
@@ -32,15 +32,15 @@ namespace UI.Panels
         public MenuUiCategory Category => MenuUiCategory.Settings;
         public RectTransform Panel { get; private set; }
 
-        public SettingsPanel(IMenuDialogViewer _MenuDialogViewer)
+        public SettingsPanel(IMenuDialogViewer _DialogViewer)
         {
-            m_MenuDialogViewer = _MenuDialogViewer;
+            m_DialogViewer = _DialogViewer;
         }
         
         public void Show()
         {
             Panel = Create();
-            m_MenuDialogViewer.Show(this);
+            m_DialogViewer.Show(this);
         }
         
         #endregion
@@ -51,7 +51,7 @@ namespace UI.Panels
         {
             GameObject sp = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_MenuDialogViewer.DialogContainer,
+                    m_DialogViewer.DialogContainer,
                     RtrLites.FullFill),
                 "main_menu", "settings_panel");
 
@@ -83,7 +83,7 @@ namespace UI.Panels
                 case SettingType.InPanelSelector:
                     var itemSelector = CreateInPanelSelectorSetting();
                     itemSelector.Init(
-                        m_MenuDialogViewer,
+                        m_DialogViewer,
                         () => (string)_Setting.Get(),
                         _Setting.Name,
                         () => _Setting.Values,
