@@ -10,15 +10,15 @@ namespace UI
 {
     public interface IGameMenuUi
     {
+        ILifesPanel LifesPanel { get; }
         void OnGameStarted(LevelStateChangedArgs _Args, UnityAction _StartGame);
         void OnLevelStarted(LevelStateChangedArgs _Args);
         void OnLevelFinished(LevelStateChangedArgs _Args);
-        void OnLifesChanged(LifeEventArgs _Args);
     }
     
     public abstract class GameMenuUiBase : IGameMenuUi
     {
-        protected ILifesPanel LifesPanel;
+        public ILifesPanel LifesPanel { get; protected set; }
         protected IGameDialogViewer GameDialogViewer;
         protected Canvas Canvas;
         
@@ -64,17 +64,12 @@ namespace UI
 
         public virtual void OnLevelStarted(LevelStateChangedArgs _Args)
         {
-            
+            // TODO
         }
 
         public virtual void OnLevelFinished(LevelStateChangedArgs _Args)
         {
-            
-        }
-
-        public virtual void OnLifesChanged(LifeEventArgs _Args)
-        {
-            LifesPanel.SetLifes(_Args.Lifes);
+            // TODO
         }
     }
 }

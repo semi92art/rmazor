@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using Constants;
 using Helpers;
 using Lean.Touch;
 using Managers;
 using UnityEngine;
+using UnityEngine.Events;
 using Utils;
 using ColorUtils = Utils.ColorUtils;
 #if UNITY_EDITOR
@@ -45,7 +47,11 @@ namespace PointsTapper
         public override void Init(int _Level, long _LifesOnStart)
         {
             LevelController = new PointsTapperLevelControllerBasedOnTime();
-            m_PointItemsGenerator = new PointItemsGenerator();
+            m_PointItemsGenerator = new PointItemsGenerator(new Dictionary<PointType, UnityAction>
+            {
+                {PointType.Normal, () => Debug.Log("Normal point tapped")},
+                {PointType.Bad, () => LifesController.MinusOneLife()}
+            });
             SpriteRenderer background = new GameObject().AddComponent<SpriteRenderer>();
             background.sprite = PrefabInitializer.GetObject<Sprite>("points_tapper", "background");
             GameUtils.FillByCameraRect(background);
@@ -64,12 +70,7 @@ namespace PointsTapper
             m_PointItemsGenerator.ActivateItem(_PointType, _Radius);
         }
 #endif
-
-        protected override void OnLifesChanged(LifeEventArgs _Args)
-        {
-            GameMenuUi.OnLifesChanged(_Args);
-        }
-
+        
         protected override void OnLevelStarted(LevelStateChangedArgs _Args)
         {
             DoInstantiate = true;

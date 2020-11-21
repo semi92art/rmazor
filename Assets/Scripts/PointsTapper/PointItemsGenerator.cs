@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 using Utils;
 
 namespace PointsTapper
@@ -43,12 +44,19 @@ namespace PointsTapper
         
         #region api
         
-        public PointItemsGenerator()
+        public PointItemsGenerator(Dictionary<PointType, UnityAction> _Actions)
         {
+            var normalsPool = new PointsPool(PointType.Normal, 20);
+            foreach (var item in normalsPool)
+                item.SetOnTapped(() => _Actions[PointType.Normal]?.Invoke());
+            var badsPool = new PointsPool(PointType.Bad, 20);
+            foreach (var item in badsPool)
+                item.SetOnTapped(() => _Actions[PointType.Bad]?.Invoke());
+            
             Pools = new Dictionary<PointType, ISpawnPool<PointItem>>
             {
-                {PointType.Normal, new PointsPool(PointType.Normal, 20)},
-                {PointType.Bad, new PointsPool(PointType.Bad, 20)}
+                {PointType.Normal, normalsPool},
+                {PointType.Bad, badsPool}
             };
             m_Margin = new Vector4(2f, 2f, 4f, 2f);
             m_PositionGenerator = new RandomPositionGenerator(Pools.Values.ToList(), m_Margin);

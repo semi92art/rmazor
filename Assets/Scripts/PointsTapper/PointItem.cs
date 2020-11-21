@@ -2,6 +2,7 @@
 using Lean.Touch;
 using UnityEngine;
 using Shapes;
+using UnityEngine.Events;
 using Utils;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -27,7 +28,7 @@ namespace PointsTapper
         private static Vector3 DefaultPosition => new Vector3(-1e5f, 0, 0); 
         private static int AkActivate => AnimKeys.Anim;
         private static int AkDeactivate => AnimKeys.Stop;
-        private System.Action<bool, PointItem> m_OnActivated;
+        private UnityAction m_Tapped;
         
         #endregion
         
@@ -47,15 +48,21 @@ namespace PointsTapper
 
         public float ExistenceTime { get; set; } = 4f;
         
-        public void SetOnActivated(System.Action<bool, PointItem> _OnActivated)
+        public void SetOnTapped(UnityAction _Tapped)
         {
-            m_OnActivated = _OnActivated;
+            m_Tapped = _Tapped;
         }
         
         public void Activate()
         {
             timer.AngRadiansStart = 90f * Mathf.Deg2Rad;
             animator.SetTrigger(AkActivate);
+        }
+
+        public void Tap()
+        {
+            m_Tapped?.Invoke();
+            Deactivate();
         }
 
         public void Deactivate()
@@ -70,7 +77,6 @@ namespace PointsTapper
         public void ActivationFinished()
         {
             Activated = true;
-            m_OnActivated?.Invoke(true, this);
 
             Coroutines.Run(Coroutines.Lerp(
                 90f, 
@@ -84,7 +90,6 @@ namespace PointsTapper
         public void DeactivationFinished()
         {
             Activated = false;
-            m_OnActivated?.Invoke(false, this);
             transform.position = DefaultPosition;
         }
         

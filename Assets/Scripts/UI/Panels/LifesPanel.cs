@@ -14,8 +14,6 @@ namespace UI.Panels
 {
     public interface ILifesPanel : IMiniPanel
     {
-        void MinusLife();
-        void PlusLife();
         void SetLifes(long _Count);
     }
     
@@ -40,7 +38,7 @@ namespace UI.Panels
                 m_LifesCount = value;
                 SetLifesCountTextAndIcon();
                 SetPanelWidth();
-                if (diff >= 0)
+                if (diff <= 0)
                     return;
                 AnimateBrokenLifes(diff);
             }
@@ -95,17 +93,6 @@ namespace UI.Panels
             Panel.gameObject.SetActive(false);
         }
 
-        public void MinusLife()
-        {
-            LifesCount--;
-            LifeBrokenAnimator.SetTrigger(AkBrokenLife);
-        }
-
-        public void PlusLife()
-        {
-            LifesCount++;
-        }
-
         public void SetLifes(long _Count)
         {
             LifesCount = _Count;
@@ -123,30 +110,22 @@ namespace UI.Panels
 
         private void AnimateBrokenLifes(long _BrokenLifesCount)
         {
-            var brokens = new List<GameObject>();
             Coroutines.Run(Coroutines.Repeat(
                 () =>
                 {
                     GameObject go = Object.Instantiate(
                         LifeBrokenAnimator.gameObject,
                         LifeBrokenAnimator.transform.parent);
-                    brokens.Add(go);
                     Animator anim = go.GetComponent<Animator>();
                     anim.SetTrigger(AkBrokenLife);
                 },
                 0.1f,
-                _BrokenLifesCount,
-                null,
-                () =>
-                {
-                    foreach (var broken in brokens)
-                        Object.Destroy(broken);
-                }));
+                _BrokenLifesCount));
         }
 
         private void SetPanelWidth()
         {
-            float textWidth = (Utility.SymbolWidth + 3) * m_LifesCount.ToNumeric().Length;
+            float textWidth = (Utility.SymbolWidth + 4) * m_LifesCount.ToNumeric().Length;
             var textRtr = LifesCountText.RTransform();
             textRtr.sizeDelta = textRtr.sizeDelta.SetX(textWidth);
             Panel.sizeDelta = Panel.sizeDelta.SetX(textWidth + LifeIcon.RTransform().sizeDelta.x + 40);

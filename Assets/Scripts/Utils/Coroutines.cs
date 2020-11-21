@@ -339,7 +339,7 @@ namespace Utils
                 yield break;
             float repeatTime = _RepeatDelta * _RepeatCount;
             float startTime = Time.time;
-            while (Time.time - startTime < repeatTime && !_DoStop())
+            while (Time.time - startTime < repeatTime && (_DoStop == null || !_DoStop()))
             {
                 _Action();
                 yield return new WaitForSeconds(_RepeatDelta);

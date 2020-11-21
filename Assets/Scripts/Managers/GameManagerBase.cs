@@ -65,7 +65,10 @@ namespace Managers
             mts.FingerTexture = PrefabInitializer.GetObject<Texture2D>("icons", "finger_texture");
         }
 
-        protected abstract void OnLifesChanged(LifeEventArgs _Args);
+        protected virtual void OnLifesChanged(LifeEventArgs _Args)
+        {
+            GameMenuUi.LifesPanel.SetLifes(_Args.Lifes);
+        }
         protected abstract void OnLevelStarted(LevelStateChangedArgs _Args);
         protected abstract void OnLevelFinished(LevelStateChangedArgs _Args);
     
