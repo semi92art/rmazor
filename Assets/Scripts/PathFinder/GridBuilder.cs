@@ -59,11 +59,14 @@ public class GridBuilder : MonoBehaviour
         float offset = 0;
         if (_GridPos.y % 2 != 0)
         {
-            offset = m_hexWidth / 2;
+            offset = m_hexWidth /2 ;
         }
 
-        float x = initPos.x + offset + _GridPos.x * m_hexWidth;
-        float y = initPos.z - _GridPos.y * m_hexHeight * 1.75f;
+        //float x = initPos.x + offset + _GridPos.x * m_hexWidth;
+        float x = initPos.x + (offset* 1.75f)+ _GridPos.x*m_hexWidth* 1.75f;
+        //float y = initPos.z - _GridPos.y * m_hexHeight * 1.75f;
+        float y = initPos.z - _GridPos.y * m_hexHeight * 1.55f;
+
         return new Vector3(x, y, 0);
     }
 

@@ -361,6 +361,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   line: {fileID: 5474330047029030475, guid: eb1e27c5f8562924d83056a4d7159c0f, type: 3}
   gridWidthInHexes: 4
-  gridHeightInHexes: 11
+  gridHeightInHexes: 5
   originTileTb: {fileID: 0}
   destinationTileTb: {fileID: 0}
