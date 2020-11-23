@@ -52,6 +52,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c58f2da98bae4faf96c71997d03fd9aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pointType: 1
   timer: {fileID: 2406050865930875632}
   background: {fileID: 3617688679848334451}
   border: {fileID: 2406050866417208389}

@@ -29,10 +29,11 @@ namespace UI.Managers
     public enum GameUiCategory
     {
         Nothing = 0,
-        GameStart = 1,
-        Game = 2,
-        Settings = 4,
-        LevelResults = 8
+        LevelStart = 1,
+        Countdown = 2,
+        Game = 4,
+        LevelFinish = 8,
+        Settings = 16
     }
     
     public class UiManager : MonoBehaviour, ISingleton

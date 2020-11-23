@@ -16,7 +16,7 @@ using Utils;
 
 namespace UI
 {
-    public class MainMenuUi : DI.ContainerObject
+    public class MainMenuUi : DI.DiObject
     {
         private static bool _isDailyBonusClicked;
         
@@ -93,9 +93,9 @@ namespace UI
                 Vector2.zero);
 
             var activeStateWatcher = m_MainMenu.gameObject.AddComponent<ActiveStateWatcher>();
-            activeStateWatcher.ActiveStateChanged += _Args =>
+            activeStateWatcher.OnActiveStateChanged += _Value =>
             {
-                if (_Args.Value)
+                if (_Value)
                     CheckIfDailyBonusNotChosenToday();
             };
 
@@ -300,7 +300,7 @@ namespace UI
         private void OnPlayButtonClick()
         {
             SoundManager.Instance.PlayMenuButtonClick();
-            LevelLoader.LoadLevel(1, 100);
+            LevelLoader.LoadLevel(1);
         }
 
         private void OnRatingsClick()

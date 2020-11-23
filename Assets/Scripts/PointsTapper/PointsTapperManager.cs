@@ -35,21 +35,22 @@ namespace PointsTapper
         #endregion
         
         #region private members
-        
+
+        private const float LevelDuration = 30f;
         private IPointItemsGenerator m_PointItemsGenerator;
-        
+
         #endregion
         
         #region api
 
-        public bool DoInstantiate { get; set; }
+        public bool DoInstantiate { set => m_PointItemsGenerator.DoInstantiate = value; }
 
-        public override void Init(int _Level, long _LifesOnStart)
+        public override void Init(int _Level)
         {
-            LevelController = new PointsTapperLevelControllerBasedOnTime();
-            m_PointItemsGenerator = new PointItemsGenerator(new Dictionary<PointType, UnityAction>
+            m_PointItemsGenerator = new PointItemsGenerator(
+                new Dictionary<PointType, UnityAction>
             {
-                {PointType.Normal, () => Debug.Log("Normal point tapped")},
+                {PointType.Default, () => MainScoreController.Score++},
                 {PointType.Bad, () => LifesController.MinusOneLife()}
             });
             SpriteRenderer background = new GameObject().AddComponent<SpriteRenderer>();
@@ -57,11 +58,15 @@ namespace PointsTapper
             GameUtils.FillByCameraRect(background);
             background.color = ColorUtils.GetColorFromPalette("Points Tapper", "Background");
             background.sortingOrder = SortingOrders.Background;
-
-            var args = new LevelStateChangedArgs {Level = _Level, LifesLeft = _LifesOnStart};
             GameMenuUi = new PointsTapperGameMenuUi();
-            GameMenuUi.OnGameStarted(args, () => OnLevelStarted(args));
-            base.Init(_Level, _LifesOnStart);
+            base.Init(_Level);
+            
+            LevelController.Level = _Level;
+            LevelController.BeforeStartLevel();
+            
+            ((ILevelControllerBasedOnTime) LevelController)
+                .CountdownController.OnTimeChange +=
+                GameMenuUi.StatsPanel.SetTime;
         }
 
 #if UNITY_EDITOR
@@ -70,21 +75,6 @@ namespace PointsTapper
             m_PointItemsGenerator.ActivateItem(_PointType, _Radius);
         }
 #endif
-        
-        protected override void OnLevelStarted(LevelStateChangedArgs _Args)
-        {
-            DoInstantiate = true;
-            if (m_PointItemsGenerator is IOnLevelStartedFinished olc)
-                olc.OnLevelStarted(_Args);
-            GameMenuUi.OnLevelStarted(_Args);
-        }
-        
-        protected override void OnLevelFinished(LevelStateChangedArgs _Args)
-        {
-            DoInstantiate = false;
-            if (m_PointItemsGenerator is IOnLevelStartedFinished olc)
-                olc.OnLevelFinished(_Args);
-        }
         
         #endregion
 
@@ -108,30 +98,61 @@ namespace PointsTapper
             lfd.OnFinger.AddListener(ls.SelectScreenPosition);
             base.InitTouchSystem();
         }
+        
+        protected override void OnBeforeLevelStarted(LevelStateChangedArgs _Args)
+        {
+            MainScoreController.Score = 0;
+            MainScoreController.NecessaryScore = GetNecessaryScore(_Args.Level);
+            DoInstantiate = false;
+            
+            GameMenuUi.OnBeforeLevelStarted(
+                _Args, 
+                _Lifes =>
+                {
+                    LifesController.SetLifesWithoutNotification(_Lifes);
+                    GameMenuUi.StatsPanel.SetLifes(_Lifes, false);
+                }, 
+                () =>  ((ILevelControllerBasedOnTime) LevelController)
+                    .StartLevel(LevelDuration, null));
+        }
+        
+        protected override void OnLevelStarted(LevelStateChangedArgs _Args)
+        {
+            DoInstantiate = true;
+            ((IOnLevelStartedFinished)m_PointItemsGenerator).OnLevelStarted(_Args);
+            base.OnLevelStarted(_Args);
+        }
+        
+        protected override void OnLevelFinished(LevelStateChangedArgs _Args)
+        {
+            DoInstantiate = false;
+            ((IOnLevelStartedFinished)m_PointItemsGenerator).OnLevelFinished(_Args);
+            base.OnLevelFinished(_Args);
+        }
+
+        private int GetNecessaryScore(int _Level)
+        {
+            // TODO
+            return 30;
+        }
 
         #endregion
 
         #region engine methods
-
-        protected override void Start()
-        {
-            base.Start();
-            LevelController.StartLevel(() => true);
-        }
-
-        private void Update()
-        {
-            if (DoInstantiate)
-                m_PointItemsGenerator.GenerateItemsOnUpdate();
-        }
-
+        
         private void OnDrawGizmos()
         {
 #if UNITY_EDITOR
-            
-            if (m_PointItemsGenerator is IOnDrawGizmos odg)
-                odg.OnDrawGizmos();
+            ((IOnDrawGizmos)m_PointItemsGenerator).DrawGizmos();
 #endif
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            ((ILevelControllerBasedOnTime) LevelController)
+                .CountdownController.OnTimeChange -=
+                GameMenuUi.StatsPanel.SetTime;
         }
 
         #endregion
@@ -155,7 +176,7 @@ namespace PointsTapper
             
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Normal"))
-                m_Manager.GenerateItem(PointType.Normal, m_Radius);
+                m_Manager.GenerateItem(PointType.Default, m_Radius);
             if (GUILayout.Button("Bad"))
                 m_Manager.GenerateItem(PointType.Bad, m_Radius);
             GUILayout.Label("Radius: ");

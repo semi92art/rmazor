@@ -57,6 +57,7 @@ namespace Managers
                 {
                     result.Money.Add(MoneyType.Gold, profPacket.Response.Gold);
                     result.Money.Add(MoneyType.Diamonds, profPacket.Response.Diamonds);
+                    result.Money.Add(MoneyType.Lifes, profPacket.Response.Lifes);
                     result.Loaded = true;
                     SetMoneyLocal(result);
                 }).OnFail(() =>
@@ -92,7 +93,7 @@ namespace Managers
         public bool TryMinusMoney(Dictionary<MoneyType, int> _Money)
         {
             var inBank = GetBank();
-            var mts = new [] {MoneyType.Gold, MoneyType.Diamonds};
+            var mts = new [] {MoneyType.Gold, MoneyType.Diamonds, MoneyType.Lifes};
             foreach (var mt in mts)
             {
                 if (!_Money.ContainsKey(mt))

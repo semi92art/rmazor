@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Utils
 {
@@ -69,8 +70,14 @@ namespace Utils
 
         public static bool CirclesIntersect(Vector2 _X0Y0, float _R0, Vector2 _X1Y1, float _R1)
         {
-            float a = Mathf.Pow(_X0Y0.x - _X1Y1.x, 2) + Mathf.Pow(_X0Y0.y - _X1Y1.y, 2);
-            return a > Mathf.Pow(_R0 - _R1, 2) && a < Mathf.Pow(_R0 + _R1, 2);
+            float a = MathUtils.Pow2(_X0Y0.x - _X1Y1.x) + MathUtils.Pow2(_X0Y0.y - _X1Y1.y);
+            return a > MathUtils.Pow2(_R0 - _R1) && a < MathUtils.Pow2(_R0 + _R1);
+        }
+
+        public static bool CircleIsInsideOfOtherCircle(Vector2 _X0Y0, float _R0, Vector2 _X1Y1, float _R1)
+        {
+            float dist = MathUtils.Pow2(_X0Y0.x - _X1Y1.x) + MathUtils.Pow2(_X0Y0.y - _X1Y1.y);
+            return dist < MathUtils.Pow2(_R0 - _R1);
         }
     }
 }

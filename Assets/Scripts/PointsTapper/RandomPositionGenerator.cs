@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Utils;
 
@@ -26,19 +27,19 @@ namespace PointsTapper
                 bool intersects = false;
                 Vector2 pos = RandomPositionInMarginRect(_Indent);
                 foreach (var pool in m_Pools)
+                foreach (var point in pool.Where(_P => _P.Activated))
                 {
-                    foreach (var point in pool)
-                    {
-                        if (!point.Activated)
-                            continue;
-                        var dscPos = point.transform.position;
-                        if (!GeometryUtils.CirclesIntersect(
-                            pos, _Indent, dscPos, point.Radius))
-                            continue;
-                        intersects = true;
-                        break;
-                    }
+                    var dscPos = point.transform.position;
+                    bool pointIntersects = GeometryUtils.CirclesIntersect(
+                        pos, _Indent, dscPos, point.Radius);
+                    bool pointIsInsideOfAnother = GeometryUtils.CircleIsInsideOfOtherCircle(
+                        pos, _Indent, dscPos, point.Radius);
+                    if (!pointIntersects && !pointIsInsideOfAnother)
+                        continue;
+                    intersects = true;
+                    break;
                 }
+
                 if (intersects) 
                     continue;
 

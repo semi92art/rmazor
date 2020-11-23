@@ -8,12 +8,6 @@ using Object = UnityEngine.Object;
 
 namespace PointsTapper
 {
-    public enum PointType
-    {
-        Normal,
-        Bad
-    }
-    
     public class PointsPool : SpawnPool<PointItem>
     {
         #region api
@@ -54,8 +48,8 @@ namespace PointsTapper
             GameObject result;
             switch (_Type)
             {
-                case PointType.Normal:
-                    result = PrefabInitializer.GetPrefab("points_tapper", "point_normal");
+                case PointType.Default:
+                    result = PrefabInitializer.GetPrefab("points_tapper", "point_default");
                     break;
                 case PointType.Bad:
                     result = PrefabInitializer.GetPrefab("points_tapper", "point_bad");

@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 2406050865930875638}
   - component: {fileID: 313178464}
   m_Layer: 0
-  m_Name: Point Normal
+  m_Name: Point Default
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -52,6 +52,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c58f2da98bae4faf96c71997d03fd9aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pointType: 0
   timer: {fileID: 2406050865930875632}
   background: {fileID: 3617688679848334451}
   border: {fileID: 2406050866417208389}
@@ -645,8 +646,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 54d28b925f1ce8e4689cb623577b9e9f, type: 3}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Sprite: {fileID: 21300000, guid: a18baa957bdfb9a4884d37ed6c3a7c7f, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -704,7 +705,7 @@ MonoBehaviour:
   meshOutOfDate: 1
   blendMode: 1
   scaleMode: 0
-  color: {r: 1, g: 1, b: 1, a: 1}
+  color: {r: 0.34963512, g: 0.764151, b: 0.39089593, a: 1}
   zTest: 4
   zOffsetFactor: 0
   zOffsetUnits: 0

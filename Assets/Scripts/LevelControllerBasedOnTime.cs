@@ -1,57 +1,78 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Managers;
-using Utils;
 
 public interface ILevelController
 {
     int Level { get; set; }
     Dictionary<MoneyType, long> Revenue { get; }
     int LifesLeft { get; set; }
+    event LevelStateHandler OnLevelBeforeStarted;
     event LevelStateHandler OnLevelStarted;
     event LevelStateHandler OnLevelFinished;
-    void StartLevel(Func<bool> _Predicate = null);
-    void FinishLevel(Func<bool> _Predicate = null);
+    void BeforeStartLevel();
+    void StartLevel();
+    void FinishLevel();
 }
 
-public class LevelControllerBasedOnTime : DI.ContainerObject, ILevelController
+public interface ILevelControllerBasedOnTime : ILevelController
 {
-    protected ITimeController TimeController;
+    ICountdownController CountdownController { get; }
+    void StartLevel(float _Duration, System.Func<bool> _StopPredicate);
+}
+
+public class LevelControllerBasedOnTime : DI.DiObject, ILevelControllerBasedOnTime
+{
+    public ICountdownController CountdownController { get; }
     
     public int Level { get; set; }
     public Dictionary<MoneyType, long> Revenue { get; } = new Dictionary<MoneyType, long>();
     public int LifesLeft { get; set; }
+    
+    public event LevelStateHandler OnLevelBeforeStarted;
     public event LevelStateHandler OnLevelStarted;
     public event LevelStateHandler OnLevelFinished;
 
     public LevelControllerBasedOnTime()
     {
-        if (TimeController == null)
-            TimeController = new DefaultTimeController();
-        TimeController.OnTimeFinished += () => FinishLevel();
+        CountdownController = new CountdownController();
+        CountdownController.OnTimeChange += TimeChanged;
     }
         
-    public virtual void StartLevel(Func<bool> _Predicate = null)
+    public void StartLevel(float _Duration, System.Func<bool> _StopPredicate)
     {
-        Coroutines.Run(Coroutines.WaitWhile(() =>
+        CountdownController.StartCountdown(_Duration, _StopPredicate);
+        StartLevel();
+    }
+
+    public void BeforeStartLevel()
+    {
+        OnLevelBeforeStarted?.Invoke(new LevelStateChangedArgs
         {
-            OnLevelStarted?.Invoke(new LevelStateChangedArgs
-            {
-                Level = Level,
-                LifesLeft = LifesLeft,
-                Revenue = Revenue
-            });
-        }, () => _Predicate?.Invoke() ?? true));
+            Level = Level,
+            Revenue = Revenue
+        });
+    }
+
+    public void StartLevel()
+    {
+        OnLevelStarted?.Invoke(new LevelStateChangedArgs
+        {
+            Level = Level,
+            Revenue = Revenue
+        });
     }
         
-    public virtual void FinishLevel(Func<bool> _Predicate = null)
+    public void FinishLevel()
     {
-        Coroutines.Run(Coroutines.WaitWhile(() =>
-        {
-            OnLevelFinished?.Invoke(new LevelStateChangedArgs{
-                Level = Level,
-                LifesLeft = LifesLeft,
-                Revenue = Revenue});
-        }, () => _Predicate?.Invoke() ?? true));
+        CountdownController.StopCountdown();
+        OnLevelFinished?.Invoke(new LevelStateChangedArgs{
+            Level = Level,
+            Revenue = Revenue});
+    }
+
+    private void TimeChanged(float _Time)
+    {
+        if (_Time <= 0)
+            FinishLevel();
     }
 }

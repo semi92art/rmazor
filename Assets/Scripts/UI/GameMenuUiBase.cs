@@ -10,15 +10,15 @@ namespace UI
 {
     public interface IGameMenuUi
     {
-        ILifesPanel LifesPanel { get; }
-        void OnGameStarted(LevelStateChangedArgs _Args, UnityAction _StartGame);
+        IStatsPanel StatsPanel { get; }
+        void OnBeforeLevelStarted(LevelStateChangedArgs _Args, UnityAction<long> _GetLifes, UnityAction _StartLevel);
         void OnLevelStarted(LevelStateChangedArgs _Args);
         void OnLevelFinished(LevelStateChangedArgs _Args);
     }
     
     public abstract class GameMenuUiBase : IGameMenuUi
     {
-        public ILifesPanel LifesPanel { get; protected set; }
+        public IStatsPanel StatsPanel { get; protected set; }
         protected IGameDialogViewer GameDialogViewer;
         protected Canvas Canvas;
         
@@ -45,21 +45,21 @@ namespace UI
                 true,
                 GraphicRaycaster.BlockingObjects.None);
         }
+
+        protected virtual void CreateStatsPanel()
+        {
+            StatsPanel = Panels.StatsPanel.Create(Canvas.RTransform(), StatsPanelPosition.Top);
+        }
         
         protected virtual void CreateDialogViewer()
         {
             GameDialogViewer = DialogViewers.GameDialogViewer.Create(Canvas.RTransform());
         }
 
-        protected virtual void CreateStatsPanel()
+        public virtual void OnBeforeLevelStarted(LevelStateChangedArgs _Args, UnityAction<long> _GetLifes, UnityAction _StartLevel)
         {
-            LifesPanel = Panels.LifesPanel.Create(Canvas.RTransform(), GameDialogViewer);
-        }
-        
-        public virtual void OnGameStarted(LevelStateChangedArgs _Args, UnityAction _StartGame)
-        {
-            IGameDialogPanel gameStartPanel = new GameStartPanel(GameDialogViewer, _StartGame);
-            gameStartPanel.Show();
+            IGameDialogPanel startLevelPanel = new LevelStartPanel(GameDialogViewer, _Args.Level, _GetLifes, _StartLevel);
+            startLevelPanel.Show();
         }
 
         public virtual void OnLevelStarted(LevelStateChangedArgs _Args)

@@ -202,6 +202,11 @@ namespace Utils
         {
             return ((long) _Value).ToNumeric();
         }
+
+        public static string ToTimer(this float _Value)
+        {
+            return $"{_Value:f1}";
+        }
         
         public static bool IsFullyVisibleFrom(this RectTransform _Item, RectTransform _Rect)
         {

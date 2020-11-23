@@ -21,6 +21,7 @@ public interface ILifesController
     long Lifes { get; }
     void MinusOneLife();
     void PlusOneLife();
+    void SetLifesWithoutNotification(long _Lifes);
 }
 
 public class DefaultLifesController : ILifesController
@@ -39,7 +40,7 @@ public class DefaultLifesController : ILifesController
         get => m_Lifes;
         protected set
         {
-            m_Lifes = value;
+            m_Lifes = Math.Max(0, value);
             OnLifesChanged?.Invoke(new LifeEventArgs(m_Lifes));
         }
     }
@@ -51,5 +52,10 @@ public class DefaultLifesController : ILifesController
     public void PlusOneLife()
     {
         Lifes++;
+    }
+
+    public void SetLifesWithoutNotification(long _Lifes)
+    {
+        m_Lifes = Math.Max(0, _Lifes);
     }
 }

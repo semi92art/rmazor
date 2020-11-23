@@ -9,8 +9,8 @@ namespace PointsTapper
     public interface IPointItemsGenerator
     {
         Dictionary<PointType, ISpawnPool<PointItem>> Pools { get; }
-        void GenerateItemsOnUpdate();
         void ActivateItem(PointType _PointType, float _Radius);
+        bool DoInstantiate { get; set; }
     }
 
     public interface IOnLevelStartedFinished
@@ -21,14 +21,15 @@ namespace PointsTapper
 
     public interface IOnDrawGizmos
     {
-        void OnDrawGizmos();
+        void DrawGizmos();
     }
     
-    public class PointItemsGenerator : IPointItemsGenerator, IOnLevelStartedFinished, IOnDrawGizmos
+    public class PointItemsGenerator : DI.DiObject, IPointItemsGenerator, IOnLevelStartedFinished, IOnDrawGizmos
     {
         #region public properties
 
         public Dictionary<PointType, ISpawnPool<PointItem>> Pools { get; }
+        public bool DoInstantiate { get; set; }
 
         #endregion
         
@@ -44,32 +45,45 @@ namespace PointsTapper
         
         #region api
         
-        public PointItemsGenerator(Dictionary<PointType, UnityAction> _Actions)
+        public PointItemsGenerator(
+            Dictionary<PointType, UnityAction> _TapActions = null,
+            Dictionary<PointType, UnityAction> _NotTappedActions = null)
         {
-            var normalsPool = new PointsPool(PointType.Normal, 20);
-            foreach (var item in normalsPool)
-                item.SetOnTapped(() => _Actions[PointType.Normal]?.Invoke());
-            var badsPool = new PointsPool(PointType.Bad, 20);
-            foreach (var item in badsPool)
-                item.SetOnTapped(() => _Actions[PointType.Bad]?.Invoke());
-            
             Pools = new Dictionary<PointType, ISpawnPool<PointItem>>
             {
-                {PointType.Normal, normalsPool},
-                {PointType.Bad, badsPool}
+                {PointType.Default, new PointsPool(PointType.Default, 30)},
+                {PointType.Bad, new PointsPool(PointType.Bad, 30)}
             };
+
+            foreach (var kvp in Pools)
+            {
+                if (kvp.Value == null)
+                    continue;
+                foreach (var item in kvp.Value)
+                {
+                    item.SetActions(
+                        () => _TapActions?[kvp.Key]?.Invoke(),
+                        () => _NotTappedActions?[kvp.Key]?.Invoke());
+                }
+            }
+            
+            
             m_Margin = new Vector4(2f, 2f, 4f, 2f);
             m_PositionGenerator = new RandomPositionGenerator(Pools.Values.ToList(), m_Margin);
         }
         
-        public void GenerateItemsOnUpdate()
+        [DI.Update]
+        private void GenerateItemsOnUpdate()
         {
+            if (!DoInstantiate)
+                return;
+            
             if (!m_IsLevelInProcess)
                 return;
             
-            // if (m_CurrentLevel <= 3)
-            //     GenerateOnLevels1_3();
-            // else if (m_CurrentLevel <= 10)
+            if (m_CurrentLevel <= 3)
+                GenerateOnLevels1_3();
+            else if (m_CurrentLevel <= 10)
                 GenerateOnLevels4_10();
         }
 
@@ -92,11 +106,17 @@ namespace PointsTapper
         public void OnLevelFinished(LevelStateChangedArgs _Args)
         {
             m_IsLevelInProcess = false;
+            foreach (var pool in Pools.Values)
+            foreach (var item in pool)
+            {
+                if (item.Activated)
+                    item.Deactivate();
+            }
         }
 
 #if UNITY_EDITOR
         
-        public void OnDrawGizmos()
+        public void DrawGizmos()
         {
             var bounds = GameUtils.GetVisibleBounds();
             var topLeft = new Vector3(
@@ -129,31 +149,31 @@ namespace PointsTapper
         private void GenerateOnLevels1_3()
         {
             float minTime = 0.5f;
-            float maxTime = 3f;
-            float minRadius = 2f;
-            float maxRadius = 4f;
+            float maxTime = 2f;
+            float minRadius = 3f;
+            float maxRadius = 3f;
 
             float dt = minTime + Utility.RandomGen.NextFloat() * (maxTime - minTime);
             if (Time.time < m_CurrentTime + dt)
                 return;
             m_CurrentTime = Time.time;
             float radius = minRadius + Utility.RandomGen.NextFloat() * (maxRadius - minRadius);
-            ActivateItem(PointType.Normal, radius);
+            ActivateItem(PointType.Default, radius);
         }
 
         private void GenerateOnLevels4_10()
         {
             float minTime = 0.5f;
             float maxTime = 3f;
-            float minRadius = 2f;
-            float maxRadius = 4f;
+            float minRadius = 3f;
+            float maxRadius = 3f;
 
             float dt = minTime + Utility.RandomGen.NextFloat() * (maxTime - minTime);
             if (Time.time < m_CurrentTime + dt)
                 return;
             m_CurrentTime = Time.time;
 
-            PointType pt = Utility.RandomGen.NextFloat() < 0.7f ? PointType.Normal : PointType.Bad;
+            PointType pt = Utility.RandomGen.NextFloat() < 0.7f ? PointType.Default : PointType.Bad;
             
             float radius = minRadius + Utility.RandomGen.NextFloat() * (maxRadius - minRadius);
             ActivateItem(pt, radius);

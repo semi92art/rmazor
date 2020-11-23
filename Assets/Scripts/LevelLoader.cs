@@ -8,7 +8,6 @@ public static class LevelLoader
 {
     private const string WasNotMadeMessage = "Game was not made";
     private static int _level;
-    private static long _lifesOnStart;
 
     static LevelLoader()
     {
@@ -22,11 +21,10 @@ public static class LevelLoader
         LoadGame(GameClient.Instance.GameId);
     }
 
-    public static void LoadLevel(int _Level, long _LifesOnStart)
+    public static void LoadLevel(int _Level)
     {
         SoundManager.Instance.StopPlayingClips();
         _level = _Level;
-        _lifesOnStart = _LifesOnStart;
         SceneManager.LoadScene(SceneNames.Level);
     }
     
@@ -35,7 +33,7 @@ public static class LevelLoader
         switch (_GameId)
         {
             case 1:
-                PointsTapper.PointsTapperManager.Instance.Init(_level, _lifesOnStart);
+                PointsTapper.PointsTapperManager.Instance.Init(_level);
                 break;
             case 2:
                 Debug.Log(WasNotMadeMessage);

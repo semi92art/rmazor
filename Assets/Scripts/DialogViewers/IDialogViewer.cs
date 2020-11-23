@@ -9,6 +9,7 @@ namespace DialogViewers
         RectTransform DialogContainer { get; }
         void Back();
         void RemoveNotDialogItem(RectTransform _Item);
+        void CloseAll();
     }
     
     public interface IMenuDialogViewer : IDialogViewer

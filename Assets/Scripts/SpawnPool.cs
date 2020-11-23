@@ -118,7 +118,6 @@ public class SpawnPool<T> : ISpawnPool<T> where T : Component, IActivated
     public T LastActive => GetFirstOrLastActiveOrInactive(false, true);
     public T LastInactive => GetFirstOrLastActiveOrInactive(false, false);
     
-
     public virtual void Activate(T _Item, Vector3 _Position, Func<bool> _Predicate = null, Action _OnFinish = null)
     {
         Activate(IndexOf(_Item), _Position, _Predicate, _OnFinish);

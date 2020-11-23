@@ -50,8 +50,10 @@ namespace UI.Panels
         private readonly List<CoinAnimObject> m_CoinsPool = new List<CoinAnimObject>(PoolSize);
         private readonly Image m_GoldIcon;
         private readonly Image m_DiamondIcon;
+        private readonly Image m_LifesIcon;
         private readonly TextMeshProUGUI m_GoldCount;
         private readonly TextMeshProUGUI m_DiamondsCount;
+        private readonly TextMeshProUGUI m_LifesCount;
         private readonly Button m_PlusButton;
         private readonly Animator m_Animator;
         private readonly RectTransform m_BankMiniPanel;
@@ -78,18 +80,21 @@ namespace UI.Panels
                     UiAnchor.Create(1, 1, 1, 1),
                     Vector2.up  * -206f,
                     new Vector2(1f, 0.5f), 
-                    new Vector2(349f, 100f)),
+                    new Vector2(103f, 120f)),
                 "main_menu", "bank_mini_panel");
             m_GoldIcon = go.GetCompItem<Image>("gold_icon");
             m_DiamondIcon = go.GetCompItem<Image>("diamond_icon");
+            m_LifesIcon = go.GetCompItem<Image>("lifes_icon");
             m_GoldCount = go.GetCompItem<TextMeshProUGUI>("gold_count_text");
             m_DiamondsCount = go.GetCompItem<TextMeshProUGUI>("diamonds_count_text");
+            m_LifesCount = go.GetCompItem<TextMeshProUGUI>("lifes_count_text");
             m_PlusButton = go.GetCompItem<Button>("plus_money_button");
             m_Animator = go.GetCompItem<Animator>("animator");
             m_BankMiniPanel = go.RTransform();
 
             m_GoldCount.text = string.Empty;
             m_DiamondsCount.text = string.Empty;
+            m_LifesCount.text = string.Empty;
             
             m_PlusButton.SetOnClick(() =>
             {
@@ -182,6 +187,8 @@ namespace UI.Panels
             Vector3 to = m_GoldIcon.transform.position;
             if (_Income.ContainsKey(MoneyType.Diamonds) && _Income[MoneyType.Diamonds] > 0)
                 to = m_DiamondIcon.transform.position;
+            else if (_Income.ContainsKey(MoneyType.Lifes) && _Income[MoneyType.Lifes] > 0)
+                to = m_LifesIcon.transform.position;
             
             Dictionary<int, bool> finishedDict = new Dictionary<int, bool>();
             int coroutineIndex = 0;
@@ -225,30 +232,30 @@ namespace UI.Panels
 
         private void AnimateTextIncome(Dictionary<MoneyType, long> _Income)
         {
-            MoneyType moneyType = MoneyType.Gold;
-            if (_Income.ContainsKey(MoneyType.Diamonds) && _Income[MoneyType.Diamonds] > 0)
-                moneyType = MoneyType.Diamonds;
-            
+            MoneyType moneyType = _Income.ToList().First(_Kvp => _Kvp.Value > 0).Key;
             var currMoney = MoneyManager.Instance.GetBank();
             if (_Income.ContainsKey(moneyType))
             {
                 Coroutines.Run(Coroutines.WaitWhile(() =>
                 {
-                    int maxCountTextLength = Mathf.Max(m_GoldCount.text.Length, m_DiamondsCount.text.Length);
+                    int maxCountTextLength = MathUtils.Max(
+                        m_GoldCount.text.Length,
+                        m_DiamondsCount.text.Length,
+                        m_LifesCount.text.Length);
                     int newMaxCountTextLength =
                         Mathf.Max((currMoney.Money[moneyType] + _Income[moneyType]).ToNumeric().Length, maxCountTextLength);
                            
                     if (Mathf.Abs(newMaxCountTextLength - maxCountTextLength) > float.Epsilon)
                     {
                         float currentPanelWidth = m_BankMiniPanel.sizeDelta.x;
-                        float newPanelWidth = m_GoldIcon.RTransform().rect.width + 
-                                              GetTextWidth(newMaxCountTextLength) +
-                                              m_PlusButton.RTransform().rect.width + 40;
-                        m_GoldCount.rectTransform.sizeDelta =
+                        float newPanelWidth = GetPanelWidth(newMaxCountTextLength);
+                        // float newPanelWidth = m_GoldIcon.RTransform().rect.width + 
+                        //                       GetTextWidth(newMaxCountTextLength) +
+                        //                       m_PlusButton.RTransform().rect.width + 40;
+                        m_GoldCount.rectTransform.sizeDelta = m_DiamondsCount.rectTransform.sizeDelta = 
+                            m_LifesCount.rectTransform.sizeDelta =
                             m_GoldCount.rectTransform.sizeDelta.SetX(GetTextWidth(newMaxCountTextLength));
-                        m_DiamondsCount.rectTransform.sizeDelta =
-                            m_DiamondsCount.rectTransform.sizeDelta.SetX(GetTextWidth(newMaxCountTextLength));
-                    
+                        
                         Coroutines.Run(Coroutines.Lerp(
                             currentPanelWidth, 
                             newPanelWidth,
@@ -296,6 +303,8 @@ namespace UI.Panels
             SetTextWidth(m_GoldCount);
             m_DiamondsCount.text = _Money[MoneyType.Diamonds].ToNumeric();
             SetTextWidth(m_DiamondsCount);
+            m_LifesCount.text = _Money[MoneyType.Lifes].ToNumeric();
+            SetTextWidth(m_LifesCount);
             SetPanelWidth();
         }
 
@@ -306,8 +315,10 @@ namespace UI.Panels
         }
         private float GetPanelWidth(int? _MaxTextLength)
         {
-            int textLength = _MaxTextLength ?? 
-                             Mathf.Max(m_GoldCount.text.Length, m_DiamondsCount.text.Length);
+            int textLength = _MaxTextLength ?? MathUtils.Max(
+                                 m_GoldCount.text.Length, 
+                                 m_DiamondsCount.text.Length,
+                                 m_LifesCount.text.Length);
             return m_GoldIcon.RTransform().rect.width + 
                                   GetTextWidth(textLength) +
                                   m_PlusButton.RTransform().rect.width + 40;

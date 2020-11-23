@@ -1,8 +1,8 @@
 ﻿namespace DI
 {
-    public class ContainerObject
+    public class DiObject
     {
-        public ContainerObject()
+        protected DiObject()
         {
             ContainersManager.Instance.RegisterObject(this);
         }

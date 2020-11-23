@@ -38,6 +38,7 @@ namespace DI
                     
                 return _instance;
             }
+            set => _instance = value;
         }
         
         #endregion

@@ -10,10 +10,19 @@ using UnityEditor;
 
 namespace PointsTapper
 {
+    public enum PointType
+    {
+        Default,
+        Bad,
+        Unknown,
+        Bonus
+    }
+    
     public class PointItem : MonoBehaviour, IActivated
     {
         #region serialized fields
-        
+
+        [SerializeField] private PointType pointType;
         [SerializeField] private Disc timer;
         [SerializeField] private Disc background;
         [SerializeField] private Disc border;
@@ -28,7 +37,9 @@ namespace PointsTapper
         private static Vector3 DefaultPosition => new Vector3(-1e5f, 0, 0); 
         private static int AkActivate => AnimKeys.Anim;
         private static int AkDeactivate => AnimKeys.Stop;
-        private UnityAction m_Tapped;
+        private UnityAction m_TapAction;
+        private UnityAction m_NotTappedAction;
+        private bool m_IsTapped;
         
         #endregion
         
@@ -48,26 +59,31 @@ namespace PointsTapper
 
         public float ExistenceTime { get; set; } = 4f;
         
-        public void SetOnTapped(UnityAction _Tapped)
+        public void SetActions(UnityAction _TapAction, UnityAction _NotTappedAction)
         {
-            m_Tapped = _Tapped;
+            m_TapAction = _TapAction;
+            m_NotTappedAction = _NotTappedAction;
         }
         
         public void Activate()
         {
+            m_IsTapped = false;
             timer.AngRadiansStart = 90f * Mathf.Deg2Rad;
             animator.SetTrigger(AkActivate);
         }
 
         public void Tap()
         {
-            m_Tapped?.Invoke();
+            m_IsTapped = true;
+            m_TapAction?.Invoke();
             Deactivate();
         }
 
         public void Deactivate()
         {
-            Deactivate(null);
+            if (!m_IsTapped)
+                m_NotTappedAction?.Invoke();
+            animator.SetTrigger(AkDeactivate);
         }
 
         #endregion
@@ -83,7 +99,7 @@ namespace PointsTapper
                 -270f, 
                 ExistenceTime,
                 _Value => border.AngRadiansStart = _Value * Mathf.Deg2Rad, 
-                () => Deactivate(null),
+                Deactivate,
                 () => !Activated));
         }
 
@@ -107,15 +123,6 @@ namespace PointsTapper
             transform.position = DefaultPosition;
         }
 
-        #endregion
-        
-        #region private methods
-        
-        protected void Deactivate(LeanFinger _Finger)
-        {
-            animator.SetTrigger(AkDeactivate);
-        }
-        
         #endregion
     }
 

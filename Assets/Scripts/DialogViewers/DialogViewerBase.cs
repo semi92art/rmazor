@@ -110,6 +110,28 @@ namespace DialogViewers
             NotDialogs.Remove(_Item);
             GraphicsAlphas.Remove(_Item.GetInstanceID());
         }
+
+        public void CloseAll()
+        {
+            if (!PanelStack.Any())
+                return;
+            var lastPanel = PanelStack.Pop();
+            int uiCategoryType = lastPanel.GameDialogPanel != null ? GameUiCategoryType : MenuUiCategoryType;
+            var panelsToDestroy = new List<Panel>();
+            while (PanelStack.Count > 0)
+                panelsToDestroy.Add(PanelStack.Pop());
+            
+            foreach (var pan in panelsToDestroy
+                .Where(_Panel => _Panel != null)
+                .Select(_Panel => (IDialogPanel)_Panel.GameDialogPanel ?? _Panel.MenuDialogPanel)
+                .Where(_Panel => _Panel != null))
+            {
+                Destroy(pan.Panel.gameObject);
+            }
+            
+            ShowCore(null, true, true, uiCategoryType);
+        }
+
         public System.Action Action { get; set; }
         
         #endregion

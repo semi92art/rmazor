@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class GameStartPanelView : MonoBehaviour
+public class CountdownPanelView : MonoBehaviour
 {
     #region serialized fields
     
@@ -14,11 +14,11 @@ public class GameStartPanelView : MonoBehaviour
 
     #region api
 
-    private UnityAction m_StartGame;
+    private UnityAction m_CountdownFinish;
 
-    public void StartCountdown(UnityAction _StartGame)
+    public void StartCountdown(UnityAction _CountdownFinish)
     {
-        m_StartGame = _StartGame;
+        m_CountdownFinish = _CountdownFinish;
         animator.SetTrigger(AnimKeys.Anim);
     }
 
@@ -44,7 +44,7 @@ public class GameStartPanelView : MonoBehaviour
     public void StartGame()
     {
         SetEmpty();
-        m_StartGame?.Invoke();
+        m_CountdownFinish?.Invoke();
     }
 
     public void SetEmpty()

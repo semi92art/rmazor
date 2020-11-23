@@ -9,24 +9,24 @@ using UnityEngine.Events;
 
 namespace UI.Panels
 {
-    public class GameStartPanel : IGameDialogPanel
+    public class CountdownPanel : IGameDialogPanel
     {
         #region nonpublic members
         
         private readonly IGameDialogViewer m_DialogViewer;
-        private readonly UnityAction m_StartGame;
+        private readonly UnityAction m_OnCountdownFinish;
 
         #endregion
 
         #region api
 
-        public GameUiCategory Category => GameUiCategory.GameStart;
+        public GameUiCategory Category => GameUiCategory.Countdown;
         public RectTransform Panel { get; private set; }
 
-        public GameStartPanel(IGameDialogViewer _DialogViewer, UnityAction _StartGame)
+        public CountdownPanel(IGameDialogViewer _DialogViewer, UnityAction _OnCountdownFinish)
         {
             m_DialogViewer = _DialogViewer;
-            m_StartGame = _StartGame;
+            m_OnCountdownFinish = _OnCountdownFinish;
         }
 
         public void Show()
@@ -41,15 +41,16 @@ namespace UI.Panels
         
         private RectTransform Create()
         {
-            GameObject gsp = PrefabInitializer.InitUiPrefab(
+            GameObject cp = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_DialogViewer.DialogContainer,
                     RtrLites.FullFill),
-                "game_menu", "start_game_panel");
+                "game_menu", "countdown_panel");
 
-            GameStartPanelView view = gsp.GetCompItem<GameStartPanelView>("view");
-            view.StartCountdown(m_StartGame);
-            return gsp.RTransform();
+            CountdownPanelView view = cp.GetCompItem<CountdownPanelView>("view");
+
+            view.StartCountdown(() => m_OnCountdownFinish?.Invoke());
+            return cp.RTransform();
         }
         
         #endregion

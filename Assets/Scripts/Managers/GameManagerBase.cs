@@ -1,4 +1,5 @@
-﻿using Constants;
+﻿using System;
+using Constants;
 using Helpers;
 using Lean.Touch;
 using UI;
@@ -10,8 +11,9 @@ namespace Managers
     {
         ILevelController LevelController { get; }
         ILifesController LifesController { get; }
+        IScoreController MainScoreController { get; }
         IGameMenuUi GameMenuUi { get; }
-        void Init(int _Level, long _LifesOnStart);
+        void Init(int _Level);
     }
 
     public abstract class GameManagerBase : MonoBehaviour, IGameManager, ISingleton
@@ -26,20 +28,28 @@ namespace Managers
     
         public ILevelController LevelController { get; protected set; }
         public ILifesController LifesController { get; protected set; }
+        public IScoreController MainScoreController { get; protected set; }
         public IGameMenuUi GameMenuUi { get; protected set; }
 
-        public virtual void Init(int _Level, long _LifesOnStart)
+        public virtual void Init(int _Level)
         {
             if (LevelController == null)
                 LevelController = new LevelControllerBasedOnTime();
             LevelController.Level = _Level;
+            LevelController.OnLevelBeforeStarted += OnBeforeLevelStarted;
             LevelController.OnLevelStarted += OnLevelStarted;
             LevelController.OnLevelFinished += OnLevelFinished;
+            
             if (LifesController == null)
                 LifesController = new DefaultLifesController();
             LifesController.OnLifesChanged += OnLifesChanged;
-            LifesController.Init(_LifesOnStart);
+            LifesController.Init(5);
             
+            if (MainScoreController == null)
+                MainScoreController = new ScoreController();
+            MainScoreController.OnScoreChanged += OnScoreChanged;
+            MainScoreController.OnNecessaryScoreChanged += OnNecessaryScoreChanged;
+            MainScoreController.OnNecessaryScoreReached += OnNecessaryScoreReached;
         }
         
         #endregion
@@ -67,10 +77,45 @@ namespace Managers
 
         protected virtual void OnLifesChanged(LifeEventArgs _Args)
         {
-            GameMenuUi.LifesPanel.SetLifes(_Args.Lifes);
+            GameMenuUi.StatsPanel.SetLifes(_Args.Lifes);
         }
-        protected abstract void OnLevelStarted(LevelStateChangedArgs _Args);
-        protected abstract void OnLevelFinished(LevelStateChangedArgs _Args);
+
+        protected virtual void OnBeforeLevelStarted(LevelStateChangedArgs _Args)
+        {
+            GameMenuUi.OnBeforeLevelStarted(
+                _Args, 
+                _Lifes =>
+                {
+                    LifesController.SetLifesWithoutNotification(_Lifes);
+                    GameMenuUi.StatsPanel.SetLifes(_Lifes, false);
+                }, 
+                () => LevelController.StartLevel());
+        }
+
+        protected virtual void OnLevelStarted(LevelStateChangedArgs _Args)
+        {
+            GameMenuUi.OnLevelStarted(_Args);
+        }
+
+        protected virtual void OnLevelFinished(LevelStateChangedArgs _Args)
+        {
+            GameMenuUi.OnLevelFinished(_Args);
+        }
+
+        protected virtual void OnScoreChanged(int _Score)
+        {
+            GameMenuUi.StatsPanel.SetScore(_Score);
+        }
+        
+        protected virtual void OnNecessaryScoreChanged(int _Score)
+        {
+            GameMenuUi.StatsPanel.SetNecessaryScore(_Score);
+        }
+
+        protected virtual void OnNecessaryScoreReached()
+        {
+            LevelController.FinishLevel();
+        }
     
         #endregion
     
@@ -80,7 +125,18 @@ namespace Managers
         {
             InitTouchSystem();
         }
-    
+
+        protected virtual void OnDestroy()
+        {
+            LevelController.OnLevelBeforeStarted -= OnBeforeLevelStarted;
+            LevelController.OnLevelStarted -= OnLevelStarted;
+            LevelController.OnLevelFinished -= OnLevelFinished;
+            LifesController.OnLifesChanged -= OnLifesChanged;
+            MainScoreController.OnScoreChanged -= OnScoreChanged;
+            MainScoreController.OnNecessaryScoreChanged -= OnNecessaryScoreChanged;
+            MainScoreController.OnNecessaryScoreReached -= OnNecessaryScoreReached;
+        }
+
         #endregion
     }
 }
