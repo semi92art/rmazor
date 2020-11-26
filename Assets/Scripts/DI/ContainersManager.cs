@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Exceptions;
 using UnityEngine;
+using Utils;
 
 namespace DI
 {
@@ -29,13 +30,11 @@ namespace DI
         {
             get
             {
-                if (_instance == null)
-                {
-                    GameObject go = new GameObject("Containers Manager");
-                    _instance = go.AddComponent<ContainersManager>();
-                    DontDestroyOnLoad(go);
-                }
-                    
+                if (_instance is ContainersManager ptm && !ptm.IsNull()) 
+                    return _instance;
+                GameObject go = new GameObject("Containers Manager");
+                _instance = go.AddComponent<ContainersManager>();
+                DontDestroyOnLoad(go);
                 return _instance;
             }
             set => _instance = value;

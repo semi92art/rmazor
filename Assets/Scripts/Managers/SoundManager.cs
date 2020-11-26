@@ -16,11 +16,10 @@ namespace Managers
         {
             get
             {
-                if (_instance == null)
-                {
-                    var obj = new GameObject("Sound Manager");
-                    _instance = obj.AddComponent<SoundManager>();
-                }
+                if (_instance is SoundManager ptm && !ptm.IsNull())
+                    return _instance;
+                var obj = new GameObject("Sound Manager");
+                _instance = obj.AddComponent<SoundManager>();
                 return _instance;
             }
         }

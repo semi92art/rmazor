@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Utils;
 
 namespace Managers
 {
@@ -14,12 +15,11 @@ namespace Managers
         {
             get
             {
-                if (_instance == null)
-                {
-                    GameObject go = new GameObject("Hierarchy Order Manager");
-                    _instance = go.AddComponent<HierarchyOrderManager>();
-                }
-                    
+                if (_instance is HierarchyOrderManager ptm && !ptm.IsNull())
+                    return _instance;
+                var go = new GameObject("Hierarchy Order Manager");
+                _instance = go.AddComponent<HierarchyOrderManager>();
+
                 return _instance;
             }
         }

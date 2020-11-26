@@ -13,7 +13,12 @@ namespace Utils
     {
         public const float SymbolWidth = 19;
         
-        public static readonly System.Random RandomGen = new System.Random(); 
+        public static readonly System.Random RandomGen = new System.Random();
+
+        public static bool IsNull<T>(this T _Item) where T : Component
+        {
+            return _Item == null || _Item.ToString() == "null";
+        }
         
         public static T[] EnumToList<T>() where T : Enum
         {

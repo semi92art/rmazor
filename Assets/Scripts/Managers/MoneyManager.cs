@@ -19,12 +19,10 @@ namespace Managers
         {
             get
             {
-                if (_instance == null)
-                {
-                    var obj = new GameObject("Money Manager");
-                    _instance = obj.AddComponent<MoneyManager>();
-                }
-
+                if (_instance is MoneyManager ptm && !ptm.IsNull())
+                    return _instance;
+                var obj = new GameObject("Money Manager");
+                _instance = obj.AddComponent<MoneyManager>();
                 return _instance;
             }
         }

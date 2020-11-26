@@ -24,7 +24,7 @@ namespace PointsTapper
         {
             get
             {
-                if (_instance != null) 
+                if (_instance is PointsTapperManager ptm && !ptm.IsNull()) 
                     return _instance;
                 var go = new GameObject("Game Manager");
                 _instance = go.AddComponent<PointsTapperManager>();
