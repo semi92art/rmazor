@@ -180,7 +180,7 @@ namespace DebugConsole
 
         private void CreatePositions()
         {
-            GameObject canvas = GameObject.Find("Canvas");
+            GameObject canvas = GameObject.Find("DebugConsoleCanvas");
             RectTransform canvasRectTransform = canvas.RTransform();
             float screenWidth = canvasRectTransform.sizeDelta.x;
             float screenHeight = canvasRectTransform.sizeDelta.y;
