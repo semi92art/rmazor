@@ -62,38 +62,27 @@ namespace UI.Panels
 
         private RectTransform Create()
         {
-            var rtrLite = new RectTransformLite
-            {
-                Anchor = UiAnchor.Create(0, 0, 1, 1),
-                AnchoredPosition = Vector2.zero,
-                Pivot = Vector2.one * 0.5f,
-                SizeDelta = Vector2.up * -504f
-            };
-            
-            GameObject lsp = PrefabInitializer.InitUiPrefab(
+            GameObject go = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_DialogViewer.DialogContainer,
                     RtrLites.FullFill),
                 "game_menu", "level_start_panel");
 
-            TextMeshProUGUI levelText = lsp.GetCompItem<TextMeshProUGUI>("level_text");
-            TextMeshProUGUI startButtonText = lsp.GetCompItem<TextMeshProUGUI>("start_button_text");
-            TextMeshProUGUI goToMainMenuButtonText = lsp.GetCompItem<TextMeshProUGUI>("go_to_main_menu_button_text");
-            m_LifesAvailableText = lsp.GetCompItem<TextMeshProUGUI>("lifes_available_text");
-            m_StartWithLifesText = lsp.GetCompItem<TextMeshProUGUI>("start_with_lifes_text");
-            m_TakeOneMoreText = lsp.GetCompItem<TextMeshProUGUI>("take_one_more_text");
+            TextMeshProUGUI levelText = go.GetCompItem<TextMeshProUGUI>("level_text");
+            TextMeshProUGUI startButtonText = go.GetCompItem<TextMeshProUGUI>("start_button_text");
+            m_LifesAvailableText = go.GetCompItem<TextMeshProUGUI>("lifes_available_text");
+            m_StartWithLifesText = go.GetCompItem<TextMeshProUGUI>("start_with_lifes_text");
+            m_TakeOneMoreText = go.GetCompItem<TextMeshProUGUI>("take_one_more_text");
 
-            m_TakeOneMoreButton = lsp.GetCompItem<Button>("take_one_more_button");
-            Button startButton = lsp.GetCompItem<Button>("start_button");
-            Button goToMainMenuButton = lsp.GetCompItem<Button>("go_to_main_menu_button");
+            m_TakeOneMoreButton = go.GetCompItem<Button>("take_one_more_button");
+            Button startButton = go.GetCompItem<Button>("start_button");
 
             levelText.text = $"Level {m_Level}";
             SetStartLifes();
             m_TakeOneMoreButton.SetOnClick(OnTakeOneMoreLifeButtonClick);
             startButton.SetOnClick(OnStartButtonClick);
-            goToMainMenuButton.SetOnClick(OnGoToMainMenuButtonClick);
             AlignTexts();
-            return lsp.RTransform();
+            return go.RTransform();
         }
         
         #endregion
@@ -138,11 +127,6 @@ namespace UI.Panels
                 m_StartLevel?.Invoke();
             });
             countdownPanel.Show();
-        }
-
-        private void OnGoToMainMenuButtonClick()
-        {
-            SceneManager.LoadScene(SceneNames.Main);
         }
 
         private void CheckForAvailableLifesAndSetTexts()

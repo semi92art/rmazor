@@ -6,8 +6,7 @@ using UnityEngine.Events;
 public class CountdownPanelView : MonoBehaviour
 {
     #region serialized fields
-    
-    [SerializeField] private TextMeshProUGUI text;
+
     [SerializeField] private Animator animator;
     
     #endregion
@@ -26,31 +25,10 @@ public class CountdownPanelView : MonoBehaviour
     
     #region for animator
 
-    public void SetThree()
-    {
-        text.text = "3";
-    }
-
-    public void SetTwo()
-    {
-        text.text = "2";
-    }
-
-    public void SetOne()
-    {
-        text.text = "1";
-    }
-
     public void StartGame()
     {
-        SetEmpty();
         m_CountdownFinish?.Invoke();
     }
 
-    public void SetEmpty()
-    {
-        text.text = string.Empty;
-    }
-    
     #endregion
 }

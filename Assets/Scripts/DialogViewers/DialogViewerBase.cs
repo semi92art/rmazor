@@ -129,6 +129,7 @@ namespace DialogViewers
                 Destroy(pan.Panel.gameObject);
             }
             
+            PanelStack.Push(lastPanel);
             ShowCore(null, true, true, uiCategoryType);
         }
 

@@ -230,7 +230,8 @@ GameObject:
   - component: {fileID: 5056522370529272027}
   - component: {fileID: 8343998058642347087}
   m_Layer: 0
-  m_Name: TMP SubMeshUI [Calibri Bold SDF Material + LiberationSans SDF Atlas]
+  m_Name: TMP SubMeshUI [Fulbo Argenta Cirillic 2 SDF Material + LiberationSans SDF
+    Atlas]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -358,8 +359,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Setting Item
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: a78edb6e2dbd3d64f9b8afdf253efc6d, type: 2}
-  m_sharedMaterial: {fileID: -6244546566258496937, guid: a78edb6e2dbd3d64f9b8afdf253efc6d,
+  m_fontAsset: {fileID: 11400000, guid: 4829f278ac4f5fc498de060344d449b1, type: 2}
+  m_sharedMaterial: {fileID: -415713865528644698, guid: 4829f278ac4f5fc498de060344d449b1,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}

@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Constants;
 using Entities;
 using Managers;
 using Network;
 using Network.PacketArgs;
 using Network.Packets;
-using UI;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -22,8 +19,9 @@ public class EditorHelper : EditorWindow
     private bool m_IsGuest;
     private string m_TestUrl;
     private string m_TestUrlCheck;
-    private int m_GameId ;
+    private int m_GameId;
     private int m_GameIdCheck;
+    private int m_Level = 1;
     private readonly string[] m_DailyBonusOptions = { "1", "2", "3", "4", "5", "6", "7" };
 
     [MenuItem("Tools/Helper")]
@@ -36,19 +34,17 @@ public class EditorHelper : EditorWindow
     {
         GUI.enabled = Application.isPlaying;
         if (!GUI.enabled)
-            GUILayout.Label("available only in play mode:");
+            GUILayout.Label("Available only in play mode:");
         if (GUI.enabled)
             GUILayout.Space(10);
+        
         GUILayout.BeginHorizontal();
-
         if (GUILayout.Button("Enable Daily Bonus"))
             EnableDailyBonus();
         GUILayout.Label("Day:");
         m_DailyBonusIndex = EditorGUILayout.Popup(m_DailyBonusIndex, m_DailyBonusOptions);
-
         GUILayout.EndHorizontal();
-        GUILayout.Space(10);
-
+        
         if (Application.isPlaying)
         {
             GUILayout.BeginHorizontal();
@@ -58,7 +54,6 @@ public class EditorHelper : EditorWindow
                 GUILayout.Label($"{kvp.Key}:");
                 money[kvp.Key] = EditorGUILayout.LongField(money[kvp.Key]);
             }
-
             m_Money = money;
             GUILayout.EndHorizontal();
             
@@ -70,6 +65,19 @@ public class EditorHelper : EditorWindow
             GUILayout.EndHorizontal();
         }
 
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("Start Level:"))
+            LevelLoader.LoadLevel(m_Level);
+        m_Level = EditorGUILayout.IntField(m_Level);
+        GUILayout.EndHorizontal();
+        
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("Pause game"))
+            Time.timeScale = 0;
+        if (GUILayout.Button("Continue game"))
+            Time.timeScale = 1;
+        GUILayout.EndHorizontal();
+        
         EditorUtils.DrawUiLine(Color.gray);
         GUI.enabled = true;
 
@@ -84,6 +92,7 @@ public class EditorHelper : EditorWindow
         GUILayout.Label("count: ");
         m_TestUsersNum = EditorGUILayout.IntField(m_TestUsersNum);
         GUILayout.EndHorizontal();
+        
         if (GUILayout.Button("Delete all test users"))
             DeleteAllTestUsers();
 
@@ -92,11 +101,12 @@ public class EditorHelper : EditorWindow
             SaveUtils.PutValue(SaveKey.GameId, m_GameId);
         m_GameId = EditorGUILayout.IntField(m_GameId);
         GUILayout.EndHorizontal();
-        
+
         GUILayout.BeginHorizontal();
         GUILayout.Label("Debug Server Url:");
         m_TestUrl = EditorGUILayout.TextField(m_TestUrl);
         GUILayout.EndHorizontal();
+        
         if (GUILayout.Button("Set Default Url"))
             m_TestUrl = @"http://77.37.152.15:7000";
         if (GUILayout.Button("Delete All Settings"))
@@ -104,6 +114,7 @@ public class EditorHelper : EditorWindow
         if (GUILayout.Button("Set Default Materal Props"))
             SetDefaultMaterialProps();
         EditorUtils.DrawUiLine(Color.gray);
+        
         GUILayout.BeginHorizontal();
         if (GUILayout.Button(SceneNames.Preload))
             LoadScene($"Assets/Scenes/{SceneNames.Preload}.unity");
@@ -112,8 +123,7 @@ public class EditorHelper : EditorWindow
         if (GUILayout.Button(SceneNames.Level))
             LoadScene($"Assets/Scenes/{SceneNames.Level}.unity");
         GUILayout.EndHorizontal();
-    
-
+        
         UpdateTestUrl();
         UpdateGameId();
     }
@@ -167,7 +177,6 @@ public class EditorHelper : EditorWindow
         GameClient.Instance.Init(true);
         int gameId = 1;
         System.Random randGen = new System.Random();
-        int cCount = Countries.Keys.Count;
         for (int i = 0; i < _Count; i++)
         {
             var packet = new RegisterUserPacket(
@@ -176,8 +185,7 @@ public class EditorHelper : EditorWindow
                     Name = m_IsGuest ? string.Empty : $"test_{Utility.GetUniqueId()}",
                     PasswordHash = Utility.GetMD5Hash("1"),
                     DeviceId = m_IsGuest ? $"test_{Utility.GetUniqueId()}" : string.Empty,
-                    GameId = gameId,
-                    CountryKey = Countries.Keys[randGen.Next(0, cCount)]
+                    GameId = gameId
                 });
             int ii = i;
             packet.OnSuccess(() =>

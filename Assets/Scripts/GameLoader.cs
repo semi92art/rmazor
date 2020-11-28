@@ -1,6 +1,9 @@
-﻿using DI;
+﻿using Constants;
+using DI;
 using Managers;
 using Network;
+using PointsTapper;
+using UI.Panels;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -17,6 +20,8 @@ public class GameLoader : MonoBehaviour, ISingleton
             if (containersManager == null) 
                 return;
             Destroy(containersManager.gameObject);
+
+            TimeOrLifesEndedPanel.TimesPanelCalled = 0;
         };
         
         GoogleAdsManager.Instance.Init();

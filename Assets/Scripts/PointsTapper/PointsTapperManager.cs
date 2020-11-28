@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Constants;
 using Helpers;
 using Lean.Touch;
@@ -35,8 +34,7 @@ namespace PointsTapper
         #endregion
         
         #region private members
-
-        private const float LevelDuration = 30f;
+        
         private IPointItemsGenerator m_PointItemsGenerator;
 
         #endregion
@@ -51,7 +49,8 @@ namespace PointsTapper
                 new Dictionary<PointType, UnityAction>
             {
                 {PointType.Default, () => MainScoreController.Score++},
-                {PointType.Bad, () => LifesController.MinusOneLife()}
+                {PointType.Bad, () => LifesController.MinusOneLife()},
+                {PointType.BonusGold, () => RevenueController.AddRevenue(MoneyType.Gold, 300)}
             });
             SpriteRenderer background = new GameObject().AddComponent<SpriteRenderer>();
             background.sprite = PrefabInitializer.GetObject<Sprite>("points_tapper", "background");
@@ -60,13 +59,6 @@ namespace PointsTapper
             background.sortingOrder = SortingOrders.Background;
             GameMenuUi = new PointsTapperGameMenuUi();
             base.Init(_Level);
-            
-            LevelController.Level = _Level;
-            LevelController.BeforeStartLevel();
-            
-            ((ILevelControllerBasedOnTime) LevelController)
-                .CountdownController.OnTimeChange +=
-                GameMenuUi.StatsPanel.SetTime;
         }
 
 #if UNITY_EDITOR
@@ -101,19 +93,8 @@ namespace PointsTapper
         
         protected override void OnBeforeLevelStarted(LevelStateChangedArgs _Args)
         {
-            MainScoreController.Score = 0;
-            MainScoreController.NecessaryScore = GetNecessaryScore(_Args.Level);
             DoInstantiate = false;
-            
-            GameMenuUi.OnBeforeLevelStarted(
-                _Args, 
-                _Lifes =>
-                {
-                    LifesController.SetLifesWithoutNotification(_Lifes);
-                    GameMenuUi.StatsPanel.SetLifes(_Lifes, false);
-                }, 
-                () =>  ((ILevelControllerBasedOnTime) LevelController)
-                    .StartLevel(LevelDuration, null));
+            base.OnBeforeLevelStarted(_Args);
         }
         
         protected override void OnLevelStarted(LevelStateChangedArgs _Args)
@@ -129,32 +110,57 @@ namespace PointsTapper
             ((IOnLevelStartedFinished)m_PointItemsGenerator).OnLevelFinished(_Args);
             base.OnLevelFinished(_Args);
         }
-
-        private int GetNecessaryScore(int _Level)
+        
+        protected override void OnTimeEnded()
         {
-            // TODO
-            return 30;
+            DoInstantiate = false;
+            ((IOnLevelStartedFinished)m_PointItemsGenerator).OnLevelFinished(null);
+            base.OnTimeEnded();
+        }
+
+        protected override void OnLifesEnded()
+        {
+            DoInstantiate = false;
+            ((IOnLevelStartedFinished)m_PointItemsGenerator).OnLevelFinished(null);
+            base.OnLifesEnded();
+        }
+        
+        protected override float LevelDuration(int _Level)
+        {
+            if (_Level < 5)
+                return 20f;
+            if (_Level < 10)
+                return 25f;
+            if (_Level < 20)
+                return 30f;
+            if (_Level < 50)
+                return 40f;
+            return 60f;
+        }
+        
+        protected override int NecessaryScore(int _Level)
+        {
+            if (_Level < 5)
+                return 10;
+            if (_Level < 10)
+                return 15;
+            if (_Level < 20)
+                return 20;
+            if (_Level < 50)
+                return 30;
+            return 40;
         }
 
         #endregion
 
         #region engine methods
-        
-        private void OnDrawGizmos()
-        {
-#if UNITY_EDITOR
-            ((IOnDrawGizmos)m_PointItemsGenerator).DrawGizmos();
-#endif
-        }
 
         protected override void OnDestroy()
         {
+            m_PointItemsGenerator.ClearAllPoints();
             base.OnDestroy();
-            ((ILevelControllerBasedOnTime) LevelController)
-                .CountdownController.OnTimeChange -=
-                GameMenuUi.StatsPanel.SetTime;
         }
-
+        
         #endregion
     }
     

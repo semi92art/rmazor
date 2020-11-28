@@ -1,4 +1,6 @@
-﻿using Constants;
+﻿using System;
+using System.Collections;
+using Constants;
 using Lean.Touch;
 using UnityEngine;
 using Shapes;
@@ -14,8 +16,9 @@ namespace PointsTapper
     {
         Default,
         Bad,
-        Unknown,
-        Bonus
+        BonusGold,
+        BonusDiamonds,
+        Unknown
     }
     
     public class PointItem : MonoBehaviour, IActivated
@@ -39,12 +42,32 @@ namespace PointsTapper
         private static int AkDeactivate => AnimKeys.Stop;
         private UnityAction m_TapAction;
         private UnityAction m_NotTappedAction;
+        private Coroutine m_ExistenceCoroutine;
         private bool m_IsTapped;
+        private bool m_Activated;
         
         #endregion
         
         #region api
-        public bool Activated { get; set; }
+
+        public bool Activated
+        {
+            get => m_Activated;
+            set
+            {
+                if (m_Activated == value)
+                    return;
+                ForceActivate(value);
+            }
+        }
+
+        public void ForceActivate(bool _Active)
+        {
+            if (_Active)
+                Activate();
+            else
+                DeactivateWithoutNotification();
+        }
 
         public float Radius
         {
@@ -65,24 +88,29 @@ namespace PointsTapper
             m_NotTappedAction = _NotTappedAction;
         }
         
-        public void Activate()
-        {
-            m_IsTapped = false;
-            timer.AngRadiansStart = 90f * Mathf.Deg2Rad;
-            animator.SetTrigger(AkActivate);
-        }
-
-        public void Tap()
+        public virtual void Tap()
         {
             m_IsTapped = true;
             m_TapAction?.Invoke();
             Deactivate();
         }
-
-        public void Deactivate()
+        
+        protected virtual void Activate()
+        {
+            m_IsTapped = false;
+            border.AngRadiansStart = 90f * Mathf.Deg2Rad;
+            animator.SetTrigger(AkActivate);
+        }
+        
+        protected virtual void Deactivate()
         {
             if (!m_IsTapped)
                 m_NotTappedAction?.Invoke();
+            animator.SetTrigger(AkDeactivate);
+        }
+
+        protected virtual void DeactivateWithoutNotification()
+        {
             animator.SetTrigger(AkDeactivate);
         }
 
@@ -92,21 +120,26 @@ namespace PointsTapper
 
         public void ActivationFinished()
         {
-            Activated = true;
+            m_Activated = true;
 
-            Coroutines.Run(Coroutines.Lerp(
-                90f, 
-                -270f, 
-                ExistenceTime,
-                _Value => border.AngRadiansStart = _Value * Mathf.Deg2Rad, 
-                Deactivate,
-                () => !Activated));
+            m_ExistenceCoroutine = Coroutines.Run(Coroutines.Delay(() =>
+            {
+                Coroutines.Run(Coroutines.Lerp(
+                    90f,
+                    -270f,
+                    ExistenceTime,
+                    _Value => border.AngRadiansStart = _Value * Mathf.Deg2Rad,
+                    Deactivate,
+                    () => !m_Activated));
+            }, 0.5f));
         }
 
         public void DeactivationFinished()
         {
-            Activated = false;
+            m_Activated = false;
             transform.position = DefaultPosition;
+            enabled = false;
+            gameObject.SetActive(false);
         }
         
         #endregion
@@ -121,6 +154,12 @@ namespace PointsTapper
             background.AngRadiansStart = Mathf.Deg2Rad * 90f;
             background.AngRadiansEnd = Mathf.Deg2Rad * -270f;
             transform.position = DefaultPosition;
+        }
+
+        private void OnDestroy()
+        {
+            Coroutines.Stop(m_ExistenceCoroutine);
+            Activated = false;
         }
 
         #endregion
@@ -144,9 +183,9 @@ namespace PointsTapper
             GUI.enabled = Application.isPlaying;
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Activate"))
-                m_Item.Activate();
+                m_Item.Activated = true;
             if (GUILayout.Button("Deactivate"))
-                m_Item.Deactivate();
+                m_Item.Activated = false;
             GUILayout.EndHorizontal();
         }
     }

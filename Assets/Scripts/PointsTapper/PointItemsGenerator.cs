@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
@@ -8,9 +9,10 @@ namespace PointsTapper
 {
     public interface IPointItemsGenerator
     {
-        Dictionary<PointType, ISpawnPool<PointItem>> Pools { get; }
+        Dictionary<PointType, PointsPool> Pools { get; }
         void ActivateItem(PointType _PointType, float _Radius);
         bool DoInstantiate { get; set; }
+        void ClearAllPoints();
     }
 
     public interface IOnLevelStartedFinished
@@ -19,18 +21,13 @@ namespace PointsTapper
         void OnLevelFinished(LevelStateChangedArgs _Args);
     }
 
-    public interface IOnDrawGizmos
-    {
-        void DrawGizmos();
-    }
-    
-    public class PointItemsGenerator : DI.DiObject, IPointItemsGenerator, IOnLevelStartedFinished, IOnDrawGizmos
+    public class PointItemsGenerator : DI.DiObject, IPointItemsGenerator, IOnLevelStartedFinished
     {
         #region public properties
 
-        public Dictionary<PointType, ISpawnPool<PointItem>> Pools { get; }
+        public Dictionary<PointType, PointsPool> Pools { get; }
         public bool DoInstantiate { get; set; }
-
+        
         #endregion
         
         #region nonpublic members
@@ -49,10 +46,11 @@ namespace PointsTapper
             Dictionary<PointType, UnityAction> _TapActions = null,
             Dictionary<PointType, UnityAction> _NotTappedActions = null)
         {
-            Pools = new Dictionary<PointType, ISpawnPool<PointItem>>
+            Pools = new Dictionary<PointType, PointsPool>
             {
                 {PointType.Default, new PointsPool(PointType.Default, 30)},
-                {PointType.Bad, new PointsPool(PointType.Bad, 30)}
+                {PointType.Bad, new PointsPool(PointType.Bad, 30)},
+                {PointType.BonusGold, new PointsPool(PointType.BonusGold, 30)}
             };
 
             foreach (var kvp in Pools)
@@ -108,14 +106,20 @@ namespace PointsTapper
             m_IsLevelInProcess = false;
             foreach (var pool in Pools.Values)
             foreach (var item in pool)
+                item.ForceActivate(false);
+        }
+        
+        public void ClearAllPoints()
+        {
+            foreach (var pool in Pools.Values.ToList())
             {
-                if (item.Activated)
-                    item.Deactivate();
+                pool.Clear();
             }
         }
 
 #if UNITY_EDITOR
         
+        // TODO make attribute
         public void DrawGizmos()
         {
             var bounds = GameUtils.GetVisibleBounds();
@@ -148,35 +152,36 @@ namespace PointsTapper
 
         private void GenerateOnLevels1_3()
         {
-            float minTime = 0.5f;
-            float maxTime = 2f;
-            float minRadius = 3f;
-            float maxRadius = 3f;
-
+            float minTime = 1f;
+            float maxTime = 3f;
+            
             float dt = minTime + Utility.RandomGen.NextFloat() * (maxTime - minTime);
             if (Time.time < m_CurrentTime + dt)
                 return;
             m_CurrentTime = Time.time;
-            float radius = minRadius + Utility.RandomGen.NextFloat() * (maxRadius - minRadius);
-            ActivateItem(PointType.Default, radius);
+            PointType pt = Utility.RandomGen.NextFloat() < 0.8f ? PointType.Default : PointType.BonusGold;
+            ActivateItem(pt, 3f);
         }
 
         private void GenerateOnLevels4_10()
         {
             float minTime = 0.5f;
             float maxTime = 3f;
-            float minRadius = 3f;
-            float maxRadius = 3f;
-
+            
             float dt = minTime + Utility.RandomGen.NextFloat() * (maxTime - minTime);
             if (Time.time < m_CurrentTime + dt)
                 return;
             m_CurrentTime = Time.time;
 
-            PointType pt = Utility.RandomGen.NextFloat() < 0.7f ? PointType.Default : PointType.Bad;
-            
-            float radius = minRadius + Utility.RandomGen.NextFloat() * (maxRadius - minRadius);
-            ActivateItem(pt, radius);
+            float rand = Utility.RandomGen.NextFloat();
+
+            PointType pt;
+
+            if (rand < 0.6f) pt = PointType.Default;
+            else if (rand < 0.8f) pt = PointType.Bad;
+            else pt = PointType.BonusGold;
+
+            ActivateItem(pt, 3f);
         }
 
         #endregion

@@ -10,23 +10,29 @@ namespace UI
 {
     public interface IGameMenuUi
     {
-        IStatsPanel StatsPanel { get; }
+        IStatsMiniPanel StatsMiniPanel { get; }
+        IRevenueMiniPanel RevenueMiniPanel { get; }
         void OnBeforeLevelStarted(LevelStateChangedArgs _Args, UnityAction<long> _GetLifes, UnityAction _StartLevel);
         void OnLevelStarted(LevelStateChangedArgs _Args);
         void OnLevelFinished(LevelStateChangedArgs _Args);
+        void OnTimeEnded(UnityAction<float> _SetAdditionalTime, UnityAction _Continue);
+        void OnLifesEnded(UnityAction<long> _SetAdditionalLifes, UnityAction _Continue);
     }
     
     public abstract class GameMenuUiBase : IGameMenuUi
     {
-        public IStatsPanel StatsPanel { get; protected set; }
-        protected IGameDialogViewer GameDialogViewer;
+        public IStatsMiniPanel StatsMiniPanel { get; protected set; }
+        public IRevenueMiniPanel RevenueMiniPanel { get; protected set; }
+        
+        protected IGameDialogViewer DialogViewer;
         protected Canvas Canvas;
         
         protected GameMenuUiBase()
         {
             CreateCanvas();
             CreateDialogViewer();
-            CreateStatsPanel();
+            CreateStatsMiniPanel();
+            CreateRevenueMiniPanel();
         }
         
         protected virtual void CreateCanvas()
@@ -46,19 +52,29 @@ namespace UI
                 GraphicRaycaster.BlockingObjects.None);
         }
 
-        protected virtual void CreateStatsPanel()
+        protected virtual void CreateStatsMiniPanel()
         {
-            StatsPanel = Panels.StatsPanel.Create(Canvas.RTransform(), StatsPanelPosition.Top);
+            StatsMiniPanel = Panels.StatsMiniPanel.Create(Canvas.RTransform(), StatsPanelPosition.Top);
         }
         
         protected virtual void CreateDialogViewer()
         {
-            GameDialogViewer = DialogViewers.GameDialogViewer.Create(Canvas.RTransform());
+            DialogViewer = GameDialogViewer.Create(Canvas.RTransform());
         }
 
-        public virtual void OnBeforeLevelStarted(LevelStateChangedArgs _Args, UnityAction<long> _GetLifes, UnityAction _StartLevel)
+        protected virtual void CreateRevenueMiniPanel()
         {
-            IGameDialogPanel startLevelPanel = new LevelStartPanel(GameDialogViewer, _Args.Level, _GetLifes, _StartLevel);
+            RevenueMiniPanel = Panels.RevenueMiniPanel.Create(Canvas.RTransform(), RevenuePanelPosition.TopRight);
+            RevenueMiniPanel.Hide();
+        }
+
+        public virtual void OnBeforeLevelStarted(
+            LevelStateChangedArgs _Args,
+            UnityAction<long> _GetLifes,
+            UnityAction _StartLevel)
+        {
+            IGameDialogPanel startLevelPanel = new LevelStartPanel(
+                DialogViewer, _Args.Level, _GetLifes, _StartLevel);
             startLevelPanel.Show();
         }
 
@@ -70,6 +86,40 @@ namespace UI
         public virtual void OnLevelFinished(LevelStateChangedArgs _Args)
         {
             // TODO
+        }
+
+        public virtual void OnTimeEnded(UnityAction<float> _SetAdditionalTime, UnityAction _Continue)
+        {
+            if (TimeOrLifesEndedPanel.TimesPanelCalled < TimeOrLifesEndedPanel.TimesCanTimeOrLifeBeAdded)
+            {
+                IGameDialogPanel timeFinishedPanel = new TimeOrLifesEndedPanel(
+                    DialogViewer,
+                    true,
+                    _Continue,
+                    _SetAdditionalTime);
+                timeFinishedPanel.Show();
+            }
+            else
+            {
+                // TODO show game results panel
+            }
+        }
+
+        public void OnLifesEnded(UnityAction<long> _SetAdditionalLifes, UnityAction _Continue)
+        {
+            if (TimeOrLifesEndedPanel.TimesPanelCalled < TimeOrLifesEndedPanel.TimesCanTimeOrLifeBeAdded)
+            {
+                IGameDialogPanel timeFinishedPanel = new TimeOrLifesEndedPanel(
+                    DialogViewer,
+                    false,
+                    _Continue,
+                    _SetAdditionalLife: _SetAdditionalLifes);
+                timeFinishedPanel.Show();
+            }
+            else
+            {
+                // TODO show game results panel
+            }
         }
     }
 }

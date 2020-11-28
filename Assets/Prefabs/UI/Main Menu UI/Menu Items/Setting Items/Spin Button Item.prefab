@@ -248,8 +248,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 572b4cae3cb141f7b7cd3a7c08ad2df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toggle: {fileID: 0}
+  trigger: {fileID: 0}
   title: {fileID: 7033620513697884526}
+  animator: {fileID: 0}
 --- !u!114 &1617924211302417492
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -387,7 +388,8 @@ GameObject:
   - component: {fileID: 5056522370529272027}
   - component: {fileID: 8343998058642347087}
   m_Layer: 0
-  m_Name: TMP SubMeshUI [Calibri Bold SDF Material + LiberationSans SDF Atlas]
+  m_Name: TMP SubMeshUI [Fulbo Argenta Cirillic 2 SDF Material + LiberationSans SDF
+    Atlas]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -444,7 +446,7 @@ MonoBehaviour:
   m_material: {fileID: 0}
   m_sharedMaterial: {fileID: 0}
   m_isDefaultMaterial: 0
-  m_padding: 8.5625
+  m_padding: 1.25
   m_canvasRenderer: {fileID: 5056522370529272027}
   m_TextComponent: {fileID: 7033620513697884526}
   m_materialReferenceIndex: 1
@@ -515,8 +517,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Watch Ad
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: a78edb6e2dbd3d64f9b8afdf253efc6d, type: 2}
-  m_sharedMaterial: {fileID: -6244546566258496937, guid: a78edb6e2dbd3d64f9b8afdf253efc6d,
+  m_fontAsset: {fileID: 11400000, guid: 4829f278ac4f5fc498de060344d449b1, type: 2}
+  m_sharedMaterial: {fileID: -415713865528644698, guid: 4829f278ac4f5fc498de060344d449b1,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}

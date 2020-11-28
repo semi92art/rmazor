@@ -8,7 +8,7 @@ using Object = UnityEngine.Object;
 
 namespace PointsTapper
 {
-    public class PointsPool : SpawnPool<PointItem>
+    public class PointsPool : ActivatedMonoBehavioursSpawnPool<PointItem>
     {
         #region api
 
@@ -24,16 +24,10 @@ namespace PointsTapper
             }
             Object.Destroy(prefab);
         }
-        
-        public override void Activate(PointItem _Item, Vector3 _Position, Func<bool> _Predicate = null, Action _OnFinish = null)
-        {
-            base.Activate(_Item, _Position, _Predicate, _OnFinish);
-            _Item.Activate();
-        }
 
         public override void Deactivate(PointItem _Item, Func<bool> _Predicate = null, Action _OnFinish = null)
         {
-            _Item.Deactivate();
+            _Item.Activated = false;
             Coroutines.Run(Coroutines.WaitWhile(
                 () => base.Deactivate(_Item, _Predicate, _OnFinish),
                 () => _Item.Activated));
@@ -53,6 +47,15 @@ namespace PointsTapper
                     break;
                 case PointType.Bad:
                     result = PrefabInitializer.GetPrefab("points_tapper", "point_bad");
+                    break;
+                case PointType.BonusGold:
+                    result = PrefabInitializer.GetPrefab("points_tapper", "point_bonus_gold");
+                    break;
+                case PointType.BonusDiamonds:
+                    result = PrefabInitializer.GetPrefab("points_tapper", "point_bonus_diamonds");
+                    break;
+                case PointType.Unknown:
+                    result = PrefabInitializer.GetPrefab("points_tapper", "point_unknown");
                     break;
                 default:
                     throw new InvalidEnumArgumentExceptionEx(_Type);

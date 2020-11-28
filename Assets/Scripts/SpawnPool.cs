@@ -9,10 +9,13 @@ using Object = UnityEngine.Object;
 public interface IActivated
 {
     bool Activated { get; set; }
+    void ForceActivate(bool _Active);
 }
 
 public interface ISpawnPool<T> : IList<T>
 {
+    int CountActivated { get; }
+    int CountDeactivated { get; }
     T FirstActive { get; }
     T FirstInactive { get; }
     T LastActive { get; }
@@ -21,11 +24,15 @@ public interface ISpawnPool<T> : IList<T>
     void Deactivate(T _Item, Func<bool> _Predicate = null, Action _OnFinish = null);
 }
 
-public class SpawnPool<T> : ISpawnPool<T> where T : Component, IActivated
+/// <summary>
+/// Spawn pool for Component objects
+/// </summary>
+/// <typeparam name="T">Type, inherited from Component</typeparam>
+public class ComponentsSpawnPool<T> : ISpawnPool<T> where T : Component
 {
-    #region private members
+    #region nonpublic members
 
-    private readonly List<T> m_Collection = new List<T>();
+    protected readonly List<T> Collection = new List<T>();
 
     #endregion
     
@@ -33,13 +40,13 @@ public class SpawnPool<T> : ISpawnPool<T> where T : Component, IActivated
     
     #region inherited interface
     
-    public int Count => m_Collection.Count;
+    public int Count => Collection.Count;
     
     public bool IsReadOnly => false;
     
     public IEnumerator<T> GetEnumerator()
     {
-        return m_Collection.GetEnumerator();
+        return Collection.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
@@ -51,8 +58,8 @@ public class SpawnPool<T> : ISpawnPool<T> where T : Component, IActivated
     {
         if (_Item == null)
             return;
-        m_Collection.Add(_Item);
-        Activate(m_Collection.Last(), default, false);
+        Collection.Add(_Item);
+        Activate(Collection.Last(), default, false);
     }
 
     public void AddRange(IEnumerable<T> _Items)
@@ -63,19 +70,19 @@ public class SpawnPool<T> : ISpawnPool<T> where T : Component, IActivated
 
     public void Clear()
     {
-        foreach (var item in m_Collection.ToArray())
+        foreach (var item in Collection.ToArray())
             Object.Destroy(item);
-        m_Collection.Clear();
+        Collection.Clear();
     }
 
     public bool Contains(T _Item)
     {
-        return m_Collection.Contains(_Item);
+        return Collection.Contains(_Item);
     }
 
     public void CopyTo(T[] _Array, int _ArrayIndex)
     {
-        m_Collection.ToList().CopyTo(_Array, _ArrayIndex);
+        Collection.ToList().CopyTo(_Array, _ArrayIndex);
     }
 
     public bool Remove(T _Item)
@@ -83,36 +90,38 @@ public class SpawnPool<T> : ISpawnPool<T> where T : Component, IActivated
         if (!Contains( _Item))
             return false;
         Object.Destroy(_Item);
-        return m_Collection.Remove(m_Collection[IndexOf(_Item)]);
+        return Collection.Remove(Collection[IndexOf(_Item)]);
     }
     
     public int IndexOf(T _Item)
     {
-        return m_Collection.ToList().IndexOf(_Item);
+        return Collection.ToList().IndexOf(_Item);
     }
 
     public void Insert(int _Index, T _Item)
     {
         if (_Item == null)
             return;
-        m_Collection.Insert(_Index, _Item);
-        Activate(m_Collection[_Index], default, false);
+        Collection.Insert(_Index, _Item);
+        Activate(Collection[_Index], default, false);
     }
 
     public void RemoveAt(int _Index)
     {
-        Object.Destroy(m_Collection[_Index]);
-        m_Collection.RemoveAt(_Index);
+        Object.Destroy(Collection[_Index]);
+        Collection.RemoveAt(_Index);
     }
 
     public T this[int _Index]
     {
-        get => m_Collection[_Index];
-        set => m_Collection[_Index] = value;
+        get => Collection[_Index];
+        set => Collection[_Index] = value;
     }
     
     #endregion
 
+    public virtual int CountActivated => Collection.Count(_Item => _Item.gameObject.activeSelf);
+    public int CountDeactivated => Collection.Count - CountActivated;
     public T FirstActive => GetFirstOrLastActiveOrInactive(true, true);
     public T FirstInactive => GetFirstOrLastActiveOrInactive(true, false);
     public T LastActive => GetFirstOrLastActiveOrInactive(false, true);
@@ -130,7 +139,7 @@ public class SpawnPool<T> : ISpawnPool<T> where T : Component, IActivated
     
     #endregion
     
-    #region private methods
+    #region nonpublic methods
     
     private void Activate(int _Index, Vector3 _Position, Func<bool> _Predicate = null, Action _OnFinish = null)
     {
@@ -155,26 +164,92 @@ public class SpawnPool<T> : ISpawnPool<T> where T : Component, IActivated
     
     private void ActivateOrDeactivate(int _Index, Vector3 _Position, bool _Activate)
     {
-        if (!Utility.IsInRange(_Index, 0, m_Collection.Count - 1))
+        if (!Utility.IsInRange(_Index, 0, Collection.Count - 1))
             return;
-        var item = m_Collection[_Index];
+        var item = Collection[_Index];
         Activate(item, _Position, _Activate);
     }
 
-    private void Activate(T _Item, Vector3 _Position, bool _Active)
+    protected virtual void Activate(T _Item, Vector3 _Position, bool _Active)
+    {
+        if (_Item == null || _Item.gameObject.activeSelf == _Active)
+            return;
+        _Item.gameObject.SetActive(_Active);
+        _Item.transform.position = _Position;
+    }
+
+    protected virtual T GetFirstOrLastActiveOrInactive(bool _First, bool _Active)
+    {
+        var collection = _First ? Collection : Collection.ToArray().Reverse();
+        return collection.FirstOrDefault(_Item =>
+        {
+            var go = _Item.gameObject;
+            return _Active ? go.activeSelf : !go.activeSelf;
+        });
+    }
+    
+    #endregion
+}
+
+/// <summary>
+/// Spawn pool for Behaviour objects
+/// </summary>
+/// <typeparam name="T">Type, inherited from Behaviour</typeparam>
+public class BehavioursSpawnPool<T> : ComponentsSpawnPool<T> where T : Behaviour
+{
+    #region api
+    
+    public override int CountActivated => Collection.ToArray().Count(_Item => _Item.enabled);
+
+    #endregion
+    
+    #region nonpublic methods
+    
+    protected override void Activate(T _Item, Vector3 _Position, bool _Active)
+    {
+        if (_Item == null || _Item.enabled == _Active)
+            return;
+        _Item.gameObject.SetActive(_Active);
+        _Item.enabled = _Active;
+        _Item.transform.position = _Position;
+    }
+
+    protected override T GetFirstOrLastActiveOrInactive(bool _First, bool _Active)
+    {
+        var collection = _First ? Collection : Collection.ToArray().Reverse();
+        return collection.FirstOrDefault(_Item => _Active ? _Item.enabled : !_Item.enabled);
+    }
+    
+    #endregion
+}
+
+/// <summary>
+/// Spawn pool for MonoBehaviour object with implemented IActiveted interface
+/// </summary>
+/// <typeparam name="T">MonoBehaviour type with implemented IActivated interface</typeparam>
+public class ActivatedMonoBehavioursSpawnPool<T> : BehavioursSpawnPool<T> where T : MonoBehaviour, IActivated
+{
+    #region api
+    
+    public override int CountActivated => Collection.ToArray().Count(_Item => _Item.Activated);
+
+    #endregion
+    
+    #region nonpublic methods
+    
+    protected override void Activate(T _Item, Vector3 _Position, bool _Active)
     {
         if (_Item == null || _Item.Activated == _Active)
             return;
         _Item.gameObject.SetActive(_Active);
-        if (_Item is Behaviour beh)
-            beh.enabled = _Active;
+        _Item.enabled = _Active;
         _Item.Activated = _Active;
         _Item.transform.position = _Position;
     }
 
-    private T GetFirstOrLastActiveOrInactive(bool _First, bool _Active)
+    protected override T GetFirstOrLastActiveOrInactive(bool _First, bool _Active)
     {
-        var collection = _First ? m_Collection : m_Collection.ToArray().Reverse();
+        var collection = _First ? Collection : Collection.ToArray().Reverse();
         return collection.FirstOrDefault(_Item => _Active ? _Item.Activated : !_Item.Activated);
     }
 

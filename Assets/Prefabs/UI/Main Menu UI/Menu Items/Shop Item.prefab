@@ -91,7 +91,7 @@ MonoBehaviour:
   size: 50
   offsetAngle: 90
   offsetDistance: 4
-  offset: {x: 0, y: 0}
+  offset: {x: 0.00000023841858, y: -3.9999998}
   color: {r: 0, g: 0, b: 0, a: 1}
   blendMode: 0
   shadowAsSibling: 0
@@ -112,7 +112,8 @@ GameObject:
   - component: {fileID: 3209277441939535684}
   - component: {fileID: 1202524849029981272}
   m_Layer: 0
-  m_Name: TMP SubMeshUI [Calibri Bold SDF Material + LiberationSans SDF Atlas]
+  m_Name: TMP SubMeshUI [Fulbo Argenta Cirillic 2 SDF Material + LiberationSans SDF
+    Atlas]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -203,7 +204,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7178278534515838149}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
@@ -278,7 +279,7 @@ RectTransform:
   m_Children:
   - {fileID: 2530497101982857289}
   m_Father: {fileID: 7178278534515838149}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -314,8 +315,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 9.99$ <color=#F33B3B><s>20$</s>
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 82c80146d36240340bc3cd573b82a0ef, type: 2}
-  m_sharedMaterial: {fileID: 9188596180524146618, guid: 82c80146d36240340bc3cd573b82a0ef,
+  m_fontAsset: {fileID: 11400000, guid: 4829f278ac4f5fc498de060344d449b1, type: 2}
+  m_sharedMaterial: {fileID: -415713865528644698, guid: 4829f278ac4f5fc498de060344d449b1,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -389,7 +390,7 @@ MonoBehaviour:
     linkCount: 0
     lineCount: 1
     pageCount: 1
-    materialCount: 1
+    materialCount: 2
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
@@ -440,9 +441,9 @@ RectTransform:
   - {fileID: 607719287124939790}
   - {fileID: 4504059518290370104}
   - {fileID: 1118277078102662327}
+  - {fileID: 4306067136900329258}
   - {fileID: 6231041849749265180}
   - {fileID: 5267880576422991470}
-  - {fileID: 4306067136900329258}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -498,7 +499,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 4185812958595626238}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -597,7 +598,7 @@ RectTransform:
   m_Children:
   - {fileID: 3150394739400871940}
   m_Father: {fileID: 7178278534515838149}
-  m_RootOrder: 5
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -633,8 +634,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 30,000
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: a78edb6e2dbd3d64f9b8afdf253efc6d, type: 2}
-  m_sharedMaterial: {fileID: -6244546566258496937, guid: a78edb6e2dbd3d64f9b8afdf253efc6d,
+  m_fontAsset: {fileID: 11400000, guid: 4829f278ac4f5fc498de060344d449b1, type: 2}
+  m_sharedMaterial: {fileID: -415713865528644698, guid: 4829f278ac4f5fc498de060344d449b1,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -826,7 +827,8 @@ GameObject:
   - component: {fileID: 606265229989742322}
   - component: {fileID: 7742826751773553535}
   m_Layer: 0
-  m_Name: TMP SubMeshUI [Calibri Bold SDF Material + LiberationSans SDF Atlas]
+  m_Name: TMP SubMeshUI [Fulbo Argenta Cirillic 2 SDF Material + LiberationSans SDF
+    Atlas]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -883,7 +885,7 @@ MonoBehaviour:
   m_material: {fileID: 0}
   m_sharedMaterial: {fileID: 0}
   m_isDefaultMaterial: 0
-  m_padding: 0
+  m_padding: 8.5625
   m_canvasRenderer: {fileID: 606265229989742322}
   m_TextComponent: {fileID: 3595652779965104956}
   m_materialReferenceIndex: 1

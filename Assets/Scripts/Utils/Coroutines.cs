@@ -23,6 +23,18 @@ namespace Utils
         {
             return CoroutineRunner.StartCoroutine(_Coroutine);
         }
+
+        public static void Stop(IEnumerator _Coroutine)
+        {
+            if (_Coroutine != null)
+                CoroutineRunner.StopCoroutine(_Coroutine);
+        }
+
+        public static void Stop(Coroutine _Coroutine)
+        {
+            if (_Coroutine != null)
+                CoroutineRunner.StopCoroutine(_Coroutine);
+        }
     
         public static IEnumerator Action(Action _Action)
         {
@@ -39,25 +51,28 @@ namespace Utils
 
         public static IEnumerator Delay(
             Action _OnDelay,
-            float  _Delay
+            float  _Delay,
+            Func<bool> _OnBreak = null
         )
         {
             if (_Delay > float.Epsilon)
                 yield return new WaitForSeconds(_Delay);
-
+            if (_OnBreak != null && _OnBreak())
+                yield break;
             _OnDelay?.Invoke();
         }
-    
+
         public static IEnumerator WaitWhile(
             Action _Action,
-            Func<bool> _Predicate)
+            Func<bool> _Predicate,
+            Func<bool> _OnBreak = null)
         {
             if (_Action == null || _Predicate == null)
                 yield break;
-        
             while (_Predicate())
                 yield return new WaitForEndOfFrame();
-            
+            if (_OnBreak != null && _OnBreak())
+                yield break;
             _Action();
         }
 
@@ -216,12 +231,12 @@ namespace Utils
             float currTime = Time.time;
             while (Time.time < currTime + _Time)
             {
-                float timeCoeff = 1 - (currTime + _Time - Time.time) / _Time;
-                float newVal = Mathf.Lerp(_From, _To, timeCoeff);
-                _Result(newVal);
                 bool? isBreak = _OnBreak?.Invoke();
                 if (isBreak.HasValue && isBreak.Value)
                     yield break;
+                float timeCoeff = 1 - (currTime + _Time - Time.time) / _Time;
+                float newVal = Mathf.Lerp(_From, _To, timeCoeff);
+                _Result(newVal);
                 yield return new WaitForEndOfFrame();
             }
             

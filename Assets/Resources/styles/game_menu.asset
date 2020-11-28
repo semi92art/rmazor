@@ -24,3 +24,9 @@ MonoBehaviour:
     - item: {fileID: 7871151746907996052, guid: 7b32fc6e8c6fc9e49a32a55b65893c19,
         type: 3}
       name: level_start_panel
+    - item: {fileID: 7974699380227580742, guid: 277b53f0ab97c18428b765bf58fb9c12,
+        type: 3}
+      name: time_or_lifes_ended_panel
+    - item: {fileID: 9175084803188964620, guid: 3a377886802b82e48aac0c8d6c8d870b,
+        type: 3}
+      name: revenue_mini_panel_top_right

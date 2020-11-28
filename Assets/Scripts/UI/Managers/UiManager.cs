@@ -32,8 +32,9 @@ namespace UI.Managers
         LevelStart = 1,
         Countdown = 2,
         Game = 4,
-        LevelFinish = 8,
-        Settings = 16
+        TimeEnded = 8,
+        LevelFinish = 16,
+        Settings = 32
     }
     
     public class UiManager : MonoBehaviour, ISingleton

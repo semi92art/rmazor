@@ -22,3 +22,6 @@ MonoBehaviour:
     - item: {fileID: 2406050865930875597, guid: b1d5b53767e4e05459536eff6b67ba4c,
         type: 3}
       name: point_bad
+    - item: {fileID: 2406050865930875597, guid: 3f95b0774814fee4888716b20a76b754,
+        type: 3}
+      name: point_bonus_gold

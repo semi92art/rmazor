@@ -39,11 +39,6 @@ namespace Utils
             return Resources.Load<UIStyleObject>($"styles/{_StyleName}");
         }
 
-        public static Sprite GetCountry(string _Key)
-        {
-            return Resources.Load<Sprite>($"countries/{_Key}");
-        }
-
         public static TextAsset GetText(string _Path)
         {
             return Resources.Load<TextAsset>(_Path);

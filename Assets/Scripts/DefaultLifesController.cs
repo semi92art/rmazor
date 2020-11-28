@@ -1,6 +1,4 @@
 ﻿using System;
-using Managers;
-using Utils;
 
 public class LifeEventArgs : EventArgs
 {
@@ -17,10 +15,11 @@ public delegate void LifesChangedEventHandler(LifeEventArgs _Args);
 public interface ILifesController
 {
     event LifesChangedEventHandler OnLifesChanged;
+    event NoArgsHandler OnLifesEnded;
     void Init(long _LifesOnStart);
     long Lifes { get; }
     void MinusOneLife();
-    void PlusOneLife();
+    void PlusLifes(long _Count);
     void SetLifesWithoutNotification(long _Lifes);
 }
 
@@ -29,6 +28,7 @@ public class DefaultLifesController : ILifesController
     private long m_Lifes;
     
     public event LifesChangedEventHandler OnLifesChanged;
+    public event NoArgsHandler OnLifesEnded;
 
     public void Init(long _LifesOnStart)
     {
@@ -42,6 +42,8 @@ public class DefaultLifesController : ILifesController
         {
             m_Lifes = Math.Max(0, value);
             OnLifesChanged?.Invoke(new LifeEventArgs(m_Lifes));
+            if (m_Lifes <= 0)
+                OnLifesEnded?.Invoke();
         }
     }
     public void MinusOneLife()
@@ -49,9 +51,9 @@ public class DefaultLifesController : ILifesController
         Lifes--;
     }
 
-    public void PlusOneLife()
+    public void PlusLifes(long _Count)
     {
-        Lifes++;
+        Lifes += _Count;
     }
 
     public void SetLifesWithoutNotification(long _Lifes)

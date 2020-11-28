@@ -25,7 +25,8 @@ namespace UI.PanelItems
                 onToggle.isOn = true;
             else
                 offToggle.isOn = true;
-
+            string s;
+            
             offText.text = "Off";
             onText.text = "On";
 
