@@ -7,7 +7,6 @@ public interface ILevelController
     ICountdownController CountdownController { get; }
     int Level { get; set; }
     void StartLevel(float? _Duration, System.Func<bool> _StopPredicate);
-    int LifesLeft { get; set; }
     event LevelStateHandler OnLevelBeforeStarted;
     event LevelStateHandler OnLevelStarted;
     event LevelStateHandler OnLevelFinished;
@@ -22,8 +21,7 @@ public class DefaultLevelController : ILevelController
     
     public int Level { get; set; }
     public Dictionary<MoneyType, long> Revenue { get; } = new Dictionary<MoneyType, long>();
-    public int LifesLeft { get; set; }
-    
+
     public event LevelStateHandler OnLevelBeforeStarted;
     public event LevelStateHandler OnLevelStarted;
     public event LevelStateHandler OnLevelFinished;

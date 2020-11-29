@@ -1,4 +1,5 @@
-﻿using DialogViewers;
+﻿using Constants;
+using DialogViewers;
 using Extensions;
 using Helpers;
 using Network;
@@ -104,13 +105,15 @@ namespace UI.Panels
             {
                 Global = true,
                 AccountId = GameClient.Instance.AccountId,
-                GameId = GameClient.Instance.GameId
+                GameId = GameClient.Instance.GameId,
+                Type = ScoreTypes.MaxLevel
             });
             var countryPacket = new RankPacket(new RankRequestArgs
             {
                 Global = false,
                 AccountId = GameClient.Instance.AccountId,
-                GameId = GameClient.Instance.GameId
+                GameId = GameClient.Instance.GameId,
+                Type = ScoreTypes.MaxLevel
             });
             
             globalPacket.OnSuccess(() =>

@@ -76,8 +76,8 @@ namespace Helpers
         private Vector2 RandomPositionInMarginRect()
         {
             var bounds = GameUtils.GetVisibleBounds();
-            float x = Utility.RandomGen.NextFloatAlt() * (bounds.size.x - horMargin);
-            float y = bottomMargin * 0.5f - topMargin * 0.5f + Utility.RandomGen.NextFloatAlt() *
+            float x = CommonUtils.RandomGen.NextFloatAlt() * (bounds.size.x - horMargin);
+            float y = bottomMargin * 0.5f - topMargin * 0.5f + CommonUtils.RandomGen.NextFloatAlt() *
                       (bounds.size.y - topMargin * 0.5f - bottomMargin * 0.5f);
             return new Vector2(x, y);
         }

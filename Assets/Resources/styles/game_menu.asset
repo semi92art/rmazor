@@ -30,3 +30,6 @@ MonoBehaviour:
     - item: {fileID: 9175084803188964620, guid: 3a377886802b82e48aac0c8d6c8d870b,
         type: 3}
       name: revenue_mini_panel_top_right
+    - item: {fileID: 7871151746907996052, guid: 0a255cf32a7d4c24ebceea6e73887b87,
+        type: 3}
+      name: level_finish_panel

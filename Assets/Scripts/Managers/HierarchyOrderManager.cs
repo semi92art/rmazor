@@ -60,12 +60,11 @@ namespace Managers
                 FromBehind = _FromBehind,
                 Order = _Order
             });
-            
-            if (!ChildCountDict.ContainsKey(_Item.parent))
-            {
-                var parent = _Item.parent;
-                ChildCountDict.Add(parent, parent.childCount);
-            }
+
+            if (ChildCountDict.ContainsKey(_Item.parent)) 
+                return;
+            var parent = _Item.parent;
+            ChildCountDict.Add(parent, parent.childCount);
         }
 
         #endregion

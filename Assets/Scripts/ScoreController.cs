@@ -30,7 +30,7 @@ public class ScoreController : IScoreController
         {
             m_Score = value;
             OnScoreChanged?.Invoke(value);
-            if (m_Score >= m_NecessaryScore)
+            if (m_Score >= m_NecessaryScore && m_NecessaryScore != 0)
                 OnNecessaryScoreReached?.Invoke();
         }
     }

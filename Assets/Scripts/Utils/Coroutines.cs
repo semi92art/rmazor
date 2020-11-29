@@ -5,6 +5,7 @@ using System.Linq;
 using Extensions;
 using Helpers;
 using LeTai.TrueShadow;
+using Network;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,7 +13,7 @@ namespace Utils
 {
     public static class Coroutines
     {
-        private static readonly DontDestroyOnLoad CoroutineRunner;
+        private static DontDestroyOnLoad CoroutineRunner;
 
         static Coroutines()
         {
@@ -21,6 +22,8 @@ namespace Utils
         
         public static Coroutine Run(IEnumerator _Coroutine)
         {
+            if (GameClient.Instance.IsTestMode)
+                CoroutineRunner = GameObject.Find("CoroutinesRunner").GetComponent<DontDestroyOnLoad>();
             return CoroutineRunner.StartCoroutine(_Coroutine);
         }
 

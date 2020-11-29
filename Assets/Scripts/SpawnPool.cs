@@ -164,7 +164,7 @@ public class ComponentsSpawnPool<T> : ISpawnPool<T> where T : Component
     
     private void ActivateOrDeactivate(int _Index, Vector3 _Position, bool _Activate)
     {
-        if (!Utility.IsInRange(_Index, 0, Collection.Count - 1))
+        if (!CommonUtils.IsInRange(_Index, 0, Collection.Count - 1))
             return;
         var item = Collection[_Index];
         Activate(item, _Position, _Activate);

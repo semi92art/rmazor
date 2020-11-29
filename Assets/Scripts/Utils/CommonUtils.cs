@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Utils
 {
-    public static class Utility
+    public static class CommonUtils
     {
         public const float SymbolWidth = 19;
         
@@ -29,6 +29,17 @@ namespace Utils
         public static bool CheckForMainServerInternetConnection()
         {
             return CheckForConnection("77.37.152.15");
+        }
+
+        public static void SetEvenIfNotContainKey<T1, T2>(
+            this Dictionary<T1, T2> _Dictionary,
+            T1 _Key,
+            T2 _Value)
+        {
+            if (_Dictionary.ContainsKey(_Key))
+                _Dictionary[_Key] = _Value;
+            else
+                _Dictionary.Add(_Key, _Value);
         }
 
         /// <summary>

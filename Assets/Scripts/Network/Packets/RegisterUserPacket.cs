@@ -8,15 +8,15 @@ namespace Network.Packets
         public override string Url => $"{GameClient.Instance.BaseUrl}/api/accounts/register";
         public RegisterUserPacketResponseArgs Response { get; private set; }
         
-        private readonly RegisterUserUserPacketRequestArgs m_Request;
+        private readonly RegisterUserPacketRequestArgs m_Request;
         private RegisterUserPacketResponseArgs m_Response;
 
-        public RegisterUserPacket(RegisterUserUserPacketRequestArgs _Request) : base(_Request)
+        public RegisterUserPacket(RegisterUserPacketRequestArgs _Request) : base(_Request)
         { }
 
         public override void DeserializeResponse(string _Json)
         {
-            if (Utils.Utility.IsInRange(ResponseCode, 200, 299))
+            if (Utils.CommonUtils.IsInRange(ResponseCode, 200, 299))
                 Response = GameClient.Instance.Deserialize<RegisterUserPacketResponseArgs>(_Json);
             base.DeserializeResponse(_Json);
         }

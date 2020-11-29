@@ -81,7 +81,7 @@ namespace UI.Panels
             var packet = new LoginUserPacket(new LoginUserPacketRequestArgs
             {
                 Name = m_LoginInputField.text,
-                PasswordHash = Utility.GetMD5Hash(m_PasswordInputField.text)
+                PasswordHash = CommonUtils.GetMD5Hash(m_PasswordInputField.text)
             });
             packet.OnSuccess(() =>
             {

@@ -153,13 +153,13 @@ namespace PointsTapper
         private void GenerateOnLevels1_3()
         {
             float minTime = 1f;
-            float maxTime = 3f;
+            float maxTime = 1.5f;
             
-            float dt = minTime + Utility.RandomGen.NextFloat() * (maxTime - minTime);
+            float dt = minTime + CommonUtils.RandomGen.NextFloat() * (maxTime - minTime);
             if (Time.time < m_CurrentTime + dt)
                 return;
             m_CurrentTime = Time.time;
-            PointType pt = Utility.RandomGen.NextFloat() < 0.8f ? PointType.Default : PointType.BonusGold;
+            PointType pt = CommonUtils.RandomGen.NextFloat() < 0.8f ? PointType.Default : PointType.BonusGold;
             ActivateItem(pt, 3f);
         }
 
@@ -168,12 +168,12 @@ namespace PointsTapper
             float minTime = 0.5f;
             float maxTime = 3f;
             
-            float dt = minTime + Utility.RandomGen.NextFloat() * (maxTime - minTime);
+            float dt = minTime + CommonUtils.RandomGen.NextFloat() * (maxTime - minTime);
             if (Time.time < m_CurrentTime + dt)
                 return;
             m_CurrentTime = Time.time;
 
-            float rand = Utility.RandomGen.NextFloat();
+            float rand = CommonUtils.RandomGen.NextFloat();
 
             PointType pt;
 

@@ -11,7 +11,6 @@ namespace Entities
         public static SaveKey AccountId => new SaveKey("account_id", typeof(int));
         public static SaveKey Login => new SaveKey("login", typeof(string));
         public static SaveKey PasswordHash => new SaveKey("password_hash", typeof(string));
-        public static SaveKey Score(int _Id) => new SaveKey("score_", _Id.ToString(), typeof(Score));
         public static SaveKey GameId => new SaveKey("game_id", typeof(int));
         public static SaveKey LastConnectionSucceeded => new SaveKey("last_connection_succeeded", typeof(bool));
         public static SaveKey DailyBonusLastDate => new SaveKey("daily_bonus_last_date", typeof(System.DateTime));
@@ -20,8 +19,8 @@ namespace Entities
         public static SaveKey SettingSoundOn => new SaveKey("sound_on", typeof(bool));
         public static SaveKey SettingLanguage => new SaveKey("language", typeof(Language));
         public static SaveKey Money => new SaveKey("money", typeof(Dictionary<MoneyType, long>));
+        public static SaveKey Scores => new SaveKey("scores", typeof(Dictionary<string, int>));
         public static SaveKey WheelOfFortuneLastDate => new SaveKey("wheel_of_fortune_last_date", typeof(System.DateTime));
-        public static SaveKey CountryKey => new SaveKey("country_key", typeof(string));
         public static SaveKey ColorScheme => new SaveKey("color_scheme", typeof(string));
 #if DEBUG
         public static SaveKey DebugServerUrl => new SaveKey("debug_server_url", typeof(string));

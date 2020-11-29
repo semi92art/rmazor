@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Network;
+using UnityEngine;
 
 namespace Helpers
 {
@@ -6,7 +7,8 @@ namespace Helpers
     {
         private void Awake()
         {
-            DontDestroyOnLoad(gameObject);
+            if (!GameClient.Instance.IsTestMode)
+                DontDestroyOnLoad(gameObject);
         }
     }
 }

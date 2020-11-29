@@ -87,10 +87,10 @@ namespace UI.Panels
             if (!CheckForInputErrors())
                 return;
             
-            var packet = new RegisterUserPacket(new RegisterUserUserPacketRequestArgs
+            var packet = new RegisterUserPacket(new RegisterUserPacketRequestArgs
             {
                 Name = m_LoginInputField.text,
-                PasswordHash = Utility.GetMD5Hash(m_PasswordInputField.text)
+                PasswordHash = CommonUtils.GetMD5Hash(m_PasswordInputField.text)
             });
             packet.OnSuccess(() =>
             {

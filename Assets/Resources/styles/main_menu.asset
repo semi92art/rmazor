@@ -56,9 +56,6 @@ MonoBehaviour:
     - item: {fileID: 4929242845806425626, guid: 7bbb09f06d17654488940008edd7f655,
         type: 3}
       name: bank_mini_panel
-    - item: {fileID: 2929232023256113801, guid: ea73ead09d2273147a95d6262c0b55f7,
-        type: 3}
-      name: country_select_item
     - item: {fileID: 6983513774095860461, guid: 30934413214a0ef4595b2f47cbcb96c9,
         type: 3}
       name: profile_panel

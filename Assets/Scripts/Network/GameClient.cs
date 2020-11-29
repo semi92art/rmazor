@@ -1,12 +1,17 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Entities;
+using Helpers;
+using Network.PacketArgs;
 using Network.Packets;
 using UnityEngine;
 using UnityEngine.Networking;
 using Newtonsoft.Json;
+using UnityEngine.Assertions;
+using UnityEngine.TestTools;
 using Utils;
 
 namespace Network
@@ -65,12 +70,6 @@ namespace Network
             set => SaveUtils.PutValue(SaveKey.PasswordHash, value);
         }
 
-        public string CountryKey
-        {
-            get => SaveUtils.GetValue<string>(SaveKey.CountryKey);
-            set => SaveUtils.PutValue(SaveKey.CountryKey, value);
-        }
-
         public int GameId
         {
             get => SaveUtils.GetValue<int>(SaveKey.GameId);
@@ -99,7 +98,8 @@ namespace Network
 #elif DEBUG
             m_ServerName = "Debug";
 #endif
-            
+            if (GameId == 0)
+                GameId = 1; // TODO set start game id by build
             m_ServerBaseUrls = new Dictionary<string, string>
             {
                 {"Ubuntu1", @"http://77.37.152.15:7000"},
@@ -137,6 +137,8 @@ namespace Network
         {
             return JsonConvert.DeserializeObject<T>(_Json);
         }
+
+        public bool IsTestMode => m_ServerName == "TestRunner";
 
         #endregion
         
@@ -187,7 +189,7 @@ namespace Network
                 () => false));
             m_ConnectionTestStarted = true;
         }
-
+        
         #endregion
     }
 }

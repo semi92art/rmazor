@@ -137,6 +137,13 @@ namespace UI.Panels
             throw new NotImplementedException();
         }
         
+        public void UnregisterFromEvents()
+        {
+            MoneyManager.Instance.OnMoneyCountChanged -= MoneyCountChanged;
+            MoneyManager.Instance.OnIncome -= Income;
+            UiManager.Instance.OnCurrentMenuCategoryChanged -= CurrentMenuCategoryChanged;
+        }
+        
         #endregion
         
         #region private methods and destructor
@@ -283,18 +290,18 @@ namespace UI.Panels
         
         private void MoneyCountChanged(BankEventArgs _Args)
         {
-            SetMoneyText(_Args.Bank.Money);
+            SetMoneyText(_Args.BankEntity.Money);
         }
         
         private void Income(IncomeEventArgs _Args)
         {
             if (m_IsShowing)
-                AnimateIncome(_Args.Bank.Money, _Args.From);
+                AnimateIncome(_Args.BankEntity.Money, _Args.From);
         }
 
         private float GetTextWidth(int _TextLength)
         {
-            return _TextLength * Utility.SymbolWidth;
+            return _TextLength * CommonUtils.SymbolWidth;
         }
         
         private void SetMoneyText(Dictionary<MoneyType, long> _Money)
@@ -336,14 +343,6 @@ namespace UI.Panels
         
         private void CurrentMenuCategoryChanged(MenuUiCategory _Prev, MenuUiCategory _New)
         {
-            if (m_Animator == null)
-            {
-                MoneyManager.Instance.OnMoneyCountChanged -= MoneyCountChanged;
-                MoneyManager.Instance.OnIncome -= Income;
-                UiManager.Instance.OnCurrentMenuCategoryChanged -= CurrentMenuCategoryChanged;
-                return;
-            }
-            
             if (_Prev == _New || _Prev == MenuUiCategory.Nothing || _New == MenuUiCategory.Nothing)
                 return;
             m_PlusButton.interactable = true;

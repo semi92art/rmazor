@@ -145,15 +145,17 @@ namespace UI
                             {
                                 Debug.LogWarning(loginPacket.ErrorMessage);
                                 var registerPacket = new RegisterUserPacket(
-                                    new RegisterUserUserPacketRequestArgs
+                                    new RegisterUserPacketRequestArgs
                                     {
-                                        DeviceId = GameClient.Instance.DeviceId
+                                        DeviceId = GameClient.Instance.DeviceId,
+                                        GameId = 1 // TODO game id depends of build
                                     });
                                 registerPacket.OnSuccess(() =>
                                     {
                                         Debug.Log("Register by DeviceId successfully");
                                         GameClient.Instance.AccountId = registerPacket.Response.Id;
                                         MoneyManager.Instance.GetBank(true);
+                                        ScoreManager.Instance.GetScores(true);
                                         LoadMainMenu();
                                     })
                                     .OnFail(() => { Debug.LogError(loginPacket.ErrorMessage); });

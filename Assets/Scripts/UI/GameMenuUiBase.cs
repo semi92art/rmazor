@@ -1,9 +1,12 @@
-﻿using DialogViewers;
+﻿using System.Collections.Generic;
+using DialogViewers;
 using Extensions;
+using Managers;
 using UI.Factories;
 using UI.Panels;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
 
 namespace UI
@@ -12,11 +15,18 @@ namespace UI
     {
         IStatsMiniPanel StatsMiniPanel { get; }
         IRevenueMiniPanel RevenueMiniPanel { get; }
-        void OnBeforeLevelStarted(LevelStateChangedArgs _Args, UnityAction<long> _GetLifes, UnityAction _StartLevel);
+        void OnBeforeLevelStarted(LevelStateChangedArgs _Args,
+            UnityAction<long> _GetLifes, UnityAction _StartLevel);
         void OnLevelStarted(LevelStateChangedArgs _Args);
-        void OnLevelFinished(LevelStateChangedArgs _Args);
+        void OnLevelFinished(
+            LevelStateChangedArgs _Args,
+            Dictionary<MoneyType, long> _Revenue,
+            UnityAction<Dictionary<MoneyType, long>> _SetNewRevenue,
+            UnityAction _Finish,
+            bool _IsPersonalBest);
         void OnTimeEnded(UnityAction<float> _SetAdditionalTime, UnityAction _Continue);
         void OnLifesEnded(UnityAction<long> _SetAdditionalLifes, UnityAction _Continue);
+        void OnRevenueIncome(MoneyType _MoneyType, long _Revenue);
     }
     
     public abstract class GameMenuUiBase : IGameMenuUi
@@ -54,7 +64,8 @@ namespace UI
 
         protected virtual void CreateStatsMiniPanel()
         {
-            StatsMiniPanel = Panels.StatsMiniPanel.Create(Canvas.RTransform(), StatsPanelPosition.Top);
+            StatsMiniPanel = Panels.StatsMiniPanel.Create(
+                Canvas.RTransform(), StatsPanelPosition.Top);
         }
         
         protected virtual void CreateDialogViewer()
@@ -64,7 +75,8 @@ namespace UI
 
         protected virtual void CreateRevenueMiniPanel()
         {
-            RevenueMiniPanel = Panels.RevenueMiniPanel.Create(Canvas.RTransform(), RevenuePanelPosition.TopRight);
+            RevenueMiniPanel = Panels.RevenueMiniPanel.Create(
+                Canvas.RTransform(), RevenuePanelPosition.TopRight);
             RevenueMiniPanel.Hide();
         }
 
@@ -80,46 +92,49 @@ namespace UI
 
         public virtual void OnLevelStarted(LevelStateChangedArgs _Args)
         {
-            // TODO
+            RevenueMiniPanel.ClearRevenue();
         }
 
-        public virtual void OnLevelFinished(LevelStateChangedArgs _Args)
+        public virtual void OnLevelFinished(
+            LevelStateChangedArgs _Args, 
+            Dictionary<MoneyType, long> _Revenue,
+            UnityAction<Dictionary<MoneyType, long>> _SetNewRevenue,
+            UnityAction _Finish,
+            bool _IsPersonalBest)
         {
-            // TODO
+            IGameDialogPanel levelFinishPanel = new LevelFinishPanel(
+                DialogViewer,
+                _Args.Level,
+                _Revenue,
+                _SetNewRevenue,
+                _Finish,
+                _IsPersonalBest);
+            levelFinishPanel.Show();
         }
 
         public virtual void OnTimeEnded(UnityAction<float> _SetAdditionalTime, UnityAction _Continue)
         {
-            if (TimeOrLifesEndedPanel.TimesPanelCalled < TimeOrLifesEndedPanel.TimesCanTimeOrLifeBeAdded)
-            {
-                IGameDialogPanel timeFinishedPanel = new TimeOrLifesEndedPanel(
-                    DialogViewer,
-                    true,
-                    _Continue,
-                    _SetAdditionalTime);
+            IGameDialogPanel timeFinishedPanel = new TimeOrLifesEndedPanel(
+                DialogViewer,
+                true,
+                _Continue,
+                _SetAdditionalTime);
                 timeFinishedPanel.Show();
-            }
-            else
-            {
-                // TODO show game results panel
-            }
         }
 
-        public void OnLifesEnded(UnityAction<long> _SetAdditionalLifes, UnityAction _Continue)
+        public virtual void OnLifesEnded(UnityAction<long> _SetAdditionalLifes, UnityAction _Continue)
         {
-            if (TimeOrLifesEndedPanel.TimesPanelCalled < TimeOrLifesEndedPanel.TimesCanTimeOrLifeBeAdded)
-            {
-                IGameDialogPanel timeFinishedPanel = new TimeOrLifesEndedPanel(
-                    DialogViewer,
-                    false,
-                    _Continue,
-                    _SetAdditionalLife: _SetAdditionalLifes);
-                timeFinishedPanel.Show();
-            }
-            else
-            {
-                // TODO show game results panel
-            }
+            IGameDialogPanel timeFinishedPanel = new TimeOrLifesEndedPanel(
+                DialogViewer,
+                false,
+                _Continue,
+                _SetAdditionalLife: _SetAdditionalLifes);
+            timeFinishedPanel.Show();
+        }
+
+        public virtual void OnRevenueIncome(MoneyType _MoneyType, long _Revenue)
+        {
+            RevenueMiniPanel.PlusRevenue(_MoneyType, _Revenue);
         }
     }
 }

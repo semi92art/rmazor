@@ -1,16 +1,12 @@
-﻿using Constants;
-using DialogViewers;
+﻿using DialogViewers;
 using Extensions;
 using Helpers;
 using Managers;
-using Network;
 using TMPro;
-using UI.Entities;
 using UI.Factories;
 using UI.Managers;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Utils;
 
@@ -131,8 +127,11 @@ namespace UI.Panels
 
         private void CheckForAvailableLifesAndSetTexts()
         {
-            SetLivesCountTexts(m_AvailableLifes.Value, m_StartLifes);
-            if (m_AvailableLifes.Value == 0 || m_StartLifes == 5)
+            if (!m_AvailableLifes.HasValue)
+                return;
+            long avLifes = m_AvailableLifes.Value;
+            SetLivesCountTexts(avLifes, m_StartLifes);
+            if (avLifes == 0 || m_StartLifes == 5)
             {
                 m_TakeOneMoreButton.gameObject.SetActive(false);
                 m_TakeOneMoreText.gameObject.SetActive(false);

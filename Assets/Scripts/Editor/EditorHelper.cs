@@ -22,7 +22,6 @@ public class EditorHelper : EditorWindow
     private int m_GameId;
     private int m_GameIdCheck;
     private int m_Level = 1;
-    private readonly string[] m_DailyBonusOptions = { "1", "2", "3", "4", "5", "6", "7" };
 
     [MenuItem("Tools/Helper")]
     public static void ShowWindow()
@@ -42,7 +41,8 @@ public class EditorHelper : EditorWindow
         if (GUILayout.Button("Enable Daily Bonus"))
             EnableDailyBonus();
         GUILayout.Label("Day:");
-        m_DailyBonusIndex = EditorGUILayout.Popup(m_DailyBonusIndex, m_DailyBonusOptions);
+        m_DailyBonusIndex = EditorGUILayout.Popup(
+            m_DailyBonusIndex, new[] { "1", "2", "3", "4", "5", "6", "7" });
         GUILayout.EndHorizontal();
         
         if (Application.isPlaying)
@@ -111,7 +111,7 @@ public class EditorHelper : EditorWindow
             m_TestUrl = @"http://77.37.152.15:7000";
         if (GUILayout.Button("Delete All Settings"))
             PlayerPrefs.DeleteAll();
-        if (GUILayout.Button("Set Default Materal Props"))
+        if (GUILayout.Button("Set Default Material Props"))
             SetDefaultMaterialProps();
         EditorUtils.DrawUiLine(Color.gray);
         
@@ -180,11 +180,11 @@ public class EditorHelper : EditorWindow
         for (int i = 0; i < _Count; i++)
         {
             var packet = new RegisterUserPacket(
-                new RegisterUserUserPacketRequestArgs
+                new RegisterUserPacketRequestArgs
                 {
-                    Name = m_IsGuest ? string.Empty : $"test_{Utility.GetUniqueId()}",
-                    PasswordHash = Utility.GetMD5Hash("1"),
-                    DeviceId = m_IsGuest ? $"test_{Utility.GetUniqueId()}" : string.Empty,
+                    Name = m_IsGuest ? string.Empty : $"test_{CommonUtils.GetUniqueId()}",
+                    PasswordHash = CommonUtils.GetMD5Hash("1"),
+                    DeviceId = m_IsGuest ? $"test_{CommonUtils.GetUniqueId()}" : string.Empty,
                     GameId = gameId
                 });
             int ii = i;
@@ -204,8 +204,8 @@ public class EditorHelper : EditorWindow
                                 AccountId = packet.Response.Id,
                                 GameId = gameId,
                                 LastUpdateTime = System.DateTime.Now,
-                                Points = randGen.Next(0, 500),
-                                Type = 1
+                                Points = randGen.Next(0, 100),
+                                Type = ScoreTypes.MaxLevel
                             });
 
                             int iiii = iii;

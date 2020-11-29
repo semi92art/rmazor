@@ -18,8 +18,9 @@ namespace UI
 {
     public class MainMenuUi : DI.DiObject
     {
-        private static bool _isDailyBonusClicked;
+        #region nonpublic members
         
+        private static bool _isDailyBonusClicked;
         private readonly IMenuDialogViewer m_MenuDialogViewer;
         private IMiniPanel m_BankMiniPanel;
         
@@ -30,6 +31,10 @@ namespace UI
         private MenuUiCategory m_CurrentCategory;
         private Button m_SelectGameButton;
         private Image m_GameLogo;
+        
+        #endregion
+
+        #region factory method and constructor
 
         public static MainMenuUi Create(
             RectTransform _Parent,
@@ -37,7 +42,7 @@ namespace UI
         {
             return new MainMenuUi(_Parent, _MenuDialogViewer);
         }
-
+        
         private MainMenuUi(
             RectTransform _Parent,
             IMenuDialogViewer _MenuDialogViewer)
@@ -55,25 +60,10 @@ namespace UI
             m_MenuDialogViewer.AddNotDialogItem(m_MainMenu, MenuUiCategory.MainMenu);
             SoundManager.Instance.PlayClip("main_menu_theme", true, 0f);
         }
+
+        #endregion
         
-        private void InitTouchSystem()
-        {
-            var touchSystemObj = new GameObject("Main Touch System");
-            var leanTouch = touchSystemObj.AddComponent<LeanTouch>();
-            var mts = leanTouch;
-            mts.TapThreshold = 0.5f;
-            mts.SwipeThreshold = 50f;
-            mts.ReferenceDpi = 200;
-            mts.GuiLayers = LayerMask.GetMask(LayerNames.Touchable);
-            mts.RecordFingers = true;
-            mts.RecordThreshold = 5f;
-            mts.RecordLimit = 0f;
-            mts.SimulateMultiFingers = true;
-            mts.PinchTwistKey = KeyCode.LeftControl;
-            mts.MovePivotKey = KeyCode.LeftAlt;
-            mts.MultiDragKey = KeyCode.LeftAlt;
-            mts.FingerTexture = PrefabInitializer.GetObject<Texture2D>("icons", "finger_texture");
-        }
+        #region nonpublic methods
 
         private void InitBankMiniPanel()
         {
@@ -259,6 +249,8 @@ namespace UI
             m_DailyBonusAnimator.SetTrigger(lastDate.Date == System.DateTime.Now.Date ?
                 AnimKeys.Stop : AnimKeys.Anim);
         }
+        
+        #endregion
 
         #region event methods
 
@@ -300,6 +292,7 @@ namespace UI
         private void OnPlayButtonClick()
         {
             SoundManager.Instance.PlayMenuButtonClick();
+            (m_BankMiniPanel as BankMiniPanel)?.UnregisterFromEvents();
             LevelLoader.LoadLevel(1);
         }
 

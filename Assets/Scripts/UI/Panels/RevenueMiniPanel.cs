@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Constants;
+using Entities;
 using Extensions;
 using Helpers;
 using Managers;
@@ -17,6 +18,7 @@ namespace UI.Panels
     public interface IRevenueMiniPanel : IMiniPanel
     {
         void PlusRevenue(MoneyType _MoneyType, long _Revenue);
+        void ClearRevenue();
     }
     
     public enum RevenuePanelPosition
@@ -33,9 +35,15 @@ namespace UI.Panels
         
         private readonly RectTransform m_Panel;
         private readonly TextMeshProUGUI m_BankMoney;
-        private readonly TextMeshProUGUI m_Revenue;
+        private readonly TextMeshProUGUI m_RevenueText;
         private readonly Image m_RevenueIcon;
         private readonly Dictionary<string, bool> m_Coroutines = new Dictionary<string, bool>();
+        private readonly Dictionary<MoneyType, long> m_Revenue = new Dictionary<MoneyType, long>
+        {
+            {MoneyType.Gold, 0},
+            {MoneyType.Diamonds, 0},
+            {MoneyType.Lifes, 0}
+        };
 
         private MoneyType m_LastRevenueType;
         private long m_LastRevenue;
@@ -64,7 +72,7 @@ namespace UI.Panels
                 "game_menu", prefabName);
             m_Panel = go.RTransform();
             m_BankMoney = go.GetCompItem<TextMeshProUGUI>("bank_money");
-            m_Revenue = go.GetCompItem<TextMeshProUGUI>("revenue");
+            m_RevenueText = go.GetCompItem<TextMeshProUGUI>("revenue");
             m_RevenueIcon = go.GetCompItem<Image>("revenue_icon");
         }
         
@@ -93,32 +101,34 @@ namespace UI.Panels
             CheckForLastRevenueFinished();
             m_LastRevenueType = _MoneyType;
             m_LastRevenue = _Revenue;
-            var bank = MoneyManager.Instance.GetBank();
-            
-            string newHash = Md5.GetMd5String(BitConverter.GetBytes(Utility.RandomGen.NextDouble()));
+
+            string newHash = Md5.GetMd5String(BitConverter.GetBytes(CommonUtils.RandomGen.NextDouble()));
             m_Coroutines.Add(newHash, true);
 
             if (!string.IsNullOrEmpty(m_LastCoroutineHash))
                 m_Coroutines[m_LastCoroutineHash] = false;
             m_LastCoroutineHash = newHash;
             
-            Coroutines.Run(Coroutines.WaitWhile(() =>
+            m_BankMoney.text = m_Revenue[_MoneyType].ToNumeric();
+            m_RevenueText.text = "+ " + _Revenue.ToNumeric();
+            m_RevenueIcon.sprite = PrefabInitializer.GetObject<Sprite>("coins",
+                _MoneyType == MoneyType.Gold ? "gold_coin_0" : "diamond_coin_0");
+            Show();
+            m_RevenueShowing = true;
+            Coroutines.Run(Coroutines.Delay(() =>
             {
-                m_BankMoney.text = bank.Money[_MoneyType].ToNumeric();
-                m_Revenue.text = "+ " + _Revenue.ToNumeric();
-                m_RevenueIcon.sprite = PrefabInitializer.GetObject<Sprite>("coins",
-                    _MoneyType == MoneyType.Gold ? "gold_coin_0" : "diamond_coin_0");
-                Show();
-                m_RevenueShowing = true;
-                Coroutines.Run(Coroutines.Delay(() =>
-                {
-                    m_BankMoney.text = (bank.Money[_MoneyType] + _Revenue).ToNumeric();
-                    Coroutines.Run(Coroutines.Delay(
-                        FinishAnimate, 0.5f, 
-                        () => !m_Coroutines[newHash]));
-                },
-                0.2f, () => !m_Coroutines[newHash]));
-            }, () => !bank.Loaded, () => !m_Coroutines[newHash]));
+                m_BankMoney.text = (m_Revenue[_MoneyType] + _Revenue).ToNumeric();
+                Coroutines.Run(Coroutines.Delay(
+                    FinishAnimate, 0.5f, 
+                    () => !m_Coroutines[newHash]));
+            },
+            0.2f, () => !m_Coroutines[newHash]));
+        }
+
+        public void ClearRevenue()
+        {
+            foreach (var mt in CommonUtils.EnumToList<MoneyType>())
+                m_Revenue[mt] = 0;
         }
         
         #endregion
@@ -128,20 +138,20 @@ namespace UI.Panels
         private void FinishAnimate()
         {
             m_RevenueShowing = false;
-            RevenueToBank();
+            RevenueToTempBank();
             Hide();
         }
 
-        private void RevenueToBank()
+        private void RevenueToTempBank()
         {
-            MoneyManager.Instance.PlusMoney(new Dictionary<MoneyType, long>{{m_LastRevenueType, m_LastRevenue}});
+            m_Revenue[m_LastRevenueType] += m_LastRevenue;
         }
 
         private void CheckForLastRevenueFinished()
         {
             if (!m_RevenueShowing) 
                 return;
-            RevenueToBank();
+            RevenueToTempBank();
         }
         
         #endregion

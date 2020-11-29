@@ -1,8 +1,14 @@
-﻿using Constants;
+﻿using System;
+using Constants;
 using Helpers;
 using Lean.Touch;
+using Network;
+using Network.PacketArgs;
+using Network.Packets;
 using UI;
+using UI.Panels;
 using UnityEngine;
+using Utils;
 
 namespace Managers
 {
@@ -103,7 +109,35 @@ namespace Managers
 
         protected virtual void OnLevelFinished(LevelStateChangedArgs _Args)
         {
-            GameMenuUi.OnLevelFinished(_Args);
+            var scores = ScoreManager.Instance.GetScores();
+            Coroutines.Run(Coroutines.WaitWhile(() =>
+            {
+                if (scores.Scores[ScoreTypes.MaxLevel] < LevelController.Level)
+                {
+                    IPacket scorePacket = new SetScorePacket(new SetScoreRequestArgs
+                    {
+                        AccountId = GameClient.Instance.AccountId,
+                        GameId = GameClient.Instance.GameId,
+                        LastUpdateTime = DateTime.Now,
+                        Points = LevelController.Level,
+                        Type = ScoreTypes.MaxLevel
+                    });
+                    scorePacket.OnFail(() => Debug.LogError(scorePacket.ErrorMessage));
+                    GameClient.Instance.Send(scorePacket);
+                }
+                
+                GameMenuUi.OnLevelFinished(_Args, RevenueController.TotalRevenue,
+                    _NewRevenue =>
+                        RevenueController.TotalRevenue = _NewRevenue,
+                    () =>
+                    {
+                        LevelController.Level++;
+                        MoneyManager.Instance.PlusMoney(RevenueController.TotalRevenue);
+                        RevenueController.TotalRevenue.Clear();
+                        LevelController.BeforeStartLevel();
+                    },
+                    LevelController.Level > scores.Scores[ScoreTypes.MaxLevel]);
+            }, () => !scores.Loaded));
         }
 
         protected virtual void OnScoreChanged(int _Score)
@@ -143,7 +177,7 @@ namespace Managers
         
         protected virtual void OnRevenueIncome(MoneyType _MoneyType, long _Revenue)
         {
-            GameMenuUi.RevenueMiniPanel.PlusRevenue(_MoneyType, _Revenue);
+            GameMenuUi.OnRevenueIncome(_MoneyType, _Revenue);
         }
         
         protected abstract float LevelDuration(int _Level);

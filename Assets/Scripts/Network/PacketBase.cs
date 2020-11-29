@@ -2,7 +2,7 @@
 using Network.PacketArgs;
 using Newtonsoft.Json;
 using UnityEngine;
-using Utility = Utils.Utility;
+using Utils;
 
 namespace Network
 {
@@ -117,14 +117,14 @@ namespace Network
         public virtual void DeserializeResponse(string _Json)
         {
             ResponseRaw = _Json;
-            if (!Utility.IsInRange(ResponseCode, 200, 299))
+            if (!CommonUtils.IsInRange(ResponseCode, 200, 299))
                 m_ErrorMessage = JsonConvert.DeserializeObject<ErrorResponseArgs>(_Json);
             
-            if (Utility.IsInRange(ResponseCode, 200, 299))
+            if (CommonUtils.IsInRange(ResponseCode, 200, 299))
                 InvokeSuccess();
-            else if (Utility.IsInRange(ResponseCode, 300, 399))
+            else if (CommonUtils.IsInRange(ResponseCode, 300, 399))
                 InvokeCancel();
-            else if (Utility.IsInRange(ResponseCode, 400, 599) || ResponseCode == 0)
+            else if (CommonUtils.IsInRange(ResponseCode, 400, 599) || ResponseCode == 0)
                 InvokeFail();
 
             IsDone = true;

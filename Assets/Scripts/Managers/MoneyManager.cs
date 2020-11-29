@@ -21,15 +21,17 @@ namespace Managers
             {
                 if (_instance is MoneyManager ptm && !ptm.IsNull())
                     return _instance;
-                var obj = new GameObject("Money Manager");
-                _instance = obj.AddComponent<MoneyManager>();
+                var go = new GameObject("Money Manager");
+                _instance = go.AddComponent<MoneyManager>();
+                if (!GameClient.Instance.IsTestMode)
+                    DontDestroyOnLoad(go);
                 return _instance;
             }
         }
     
         #endregion
     
-        #region private members
+        #region nonpublic members
     
         private bool m_IsMoneySavedLocal;
     
@@ -41,9 +43,9 @@ namespace Managers
         public event MoneyEventHandler OnMoneyCountChanged;
         public event IncomeEventHandler OnIncome;
     
-        public Bank GetBank(bool _ForcedFromServer = false)
+        public BankEntity GetBank(bool _ForcedFromServer = false)
         {
-            var result = new Bank();
+            var result = new BankEntity();
             if ((!m_IsMoneySavedLocal || _ForcedFromServer)
                 && GameClient.Instance.LastConnectionSucceeded)
             {
@@ -67,25 +69,20 @@ namespace Managers
                 GameClient.Instance.Send(profPacket);
             }
             else
-            {
                 result = GetMoneyLocal();
-            }
-        
             return result;
         }
     
         public void PlusMoney(Dictionary<MoneyType, long> _Money)
         {
             var inBank = GetBank();
-            foreach (var kvp in _Money)
+            Coroutines.Run(Coroutines.WaitWhile(() =>
             {
-                if (inBank.Money.ContainsKey(kvp.Key))
+                foreach (var kvp in _Money
+                    .Where(_Kvp => inBank.Money.ContainsKey(_Kvp.Key)))
                     inBank.Money[kvp.Key] += _Money[kvp.Key];
-                else
-                    inBank.Money.Add(kvp.Key, kvp.Value);
-            }
-            
-            SetMoney(inBank.Money);
+                SetMoney(inBank.Money);
+            }, () => !inBank.Loaded));
         }
 
         public bool TryMinusMoney(Dictionary<MoneyType, int> _Money)
@@ -137,7 +134,7 @@ namespace Managers
 
         public void SetIncome(Dictionary<MoneyType, long> _Money, RectTransform _From)
         {
-            var bank = new Bank
+            var bank = new BankEntity
             {
                 Money = _Money,
                 Loaded = true
@@ -148,36 +145,29 @@ namespace Managers
     
         #endregion
     
-        #region private methods
+        #region nonpublic methods
 
-        private Bank GetMoneyLocal(Bank _Bank = null)
+        private BankEntity GetMoneyLocal(BankEntity _BankEntity = null)
         {
             var currentMoney = SaveUtils.GetValue<Dictionary<MoneyType, long>>(SaveKey.Money);
-            if (_Bank == null)
-                return new Bank
+            if (_BankEntity == null)
+                return new BankEntity
                 {
                     Money = currentMoney,
                     Loaded = true
                 };
-            _Bank.Money = currentMoney;
-            _Bank.Loaded = true;
-            return _Bank;
+            _BankEntity.Money = currentMoney;
+            _BankEntity.Loaded = true;
+            return _BankEntity;
         }
 
-        private void SetMoneyLocal(Bank _Bank)
+        private void SetMoneyLocal(BankEntity _BankEntity)
         {
-            var currentMoney = SaveUtils.GetValue<Dictionary<MoneyType, long>>(SaveKey.Money);
-            if (currentMoney == null)
-                currentMoney = new Dictionary<MoneyType, long>();
-            foreach (var key in _Bank.Money.Keys)
-            {
-                if (currentMoney.ContainsKey(key))
-                    currentMoney[key] = _Bank.Money[key];
-                else
-                    currentMoney.Add(key, _Bank.Money[key]);
-            }
+            var currentMoney = GetMoneyLocal().Money ?? 
+                               new Dictionary<MoneyType, long>();
+            foreach (var key in _BankEntity.Money.Keys)
+                currentMoney.SetEvenIfNotContainKey(key, _BankEntity.Money[key]);
             SaveUtils.PutValue(SaveKey.Money, currentMoney);
-
             m_IsMoneySavedLocal = true;
             OnMoneyCountChanged?.Invoke(new BankEventArgs(GetMoneyLocal()));
         }
@@ -193,11 +183,11 @@ namespace Managers
 
     public class BankEventArgs
     {
-        public Bank Bank { get; }
+        public BankEntity BankEntity { get; }
 
-        public BankEventArgs(Bank _Bank)
+        public BankEventArgs(BankEntity _BankEntity)
         {
-            Bank = _Bank;
+            BankEntity = _BankEntity;
         }
     }
 
@@ -205,7 +195,7 @@ namespace Managers
     {
         public RectTransform From { get; }
     
-        public IncomeEventArgs(Bank _Bank, RectTransform _From) : base(_Bank)
+        public IncomeEventArgs(BankEntity _BankEntity, RectTransform _From) : base(_BankEntity)
         {
             From = _From;
         }
