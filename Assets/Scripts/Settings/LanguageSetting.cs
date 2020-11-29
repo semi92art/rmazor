@@ -8,7 +8,7 @@ namespace Settings
 {
     public class LanguageSetting : ISetting
     {
-        public string Name => "Language";
+        public string Name => LeanLocalization.GetTranslationText("Language");
         public SettingType Type => SettingType.InPanelSelector;
 
         public List<string> Values => m_LangNames.Values.OrderBy(_Item => _Item).ToList();

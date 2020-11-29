@@ -10,6 +10,7 @@ using UI.Factories;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils;
+using Lean.Localization;
 
 namespace UI.Panels
 {
@@ -47,11 +48,26 @@ namespace UI.Panels
             TextMeshProUGUI registerButtonText = rp.GetCompItem<TextMeshProUGUI>("register_button_text");
             
             m_LoginInputField = rp.GetCompItem<TMP_InputField>("login_input_field");
+            LeanLocalizedTextMeshProUGUI loginInputFieldLocalization = m_LoginInputField.transform.Find("Text Area")
+                .gameObject.transform.Find("Placeholder").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
+            loginInputFieldLocalization.TranslationName = "EnterLogin";
+            
             m_PasswordInputField = rp.GetCompItem<TMP_InputField>("password_input_field");
             m_PasswordInputField.contentType = TMP_InputField.ContentType.Password;
+            LeanLocalizedTextMeshProUGUI passwordInputFieldLocalization = m_PasswordInputField.transform.Find("Text Area")
+                .gameObject.transform.Find("Placeholder").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
+            passwordInputFieldLocalization.TranslationName = "EnterPassword";
+            
             m_RepeatPasswordInputField = rp.GetCompItem<TMP_InputField>("repeat_password_input_field");
             m_RepeatPasswordInputField.contentType = TMP_InputField.ContentType.Password;
+            LeanLocalizedTextMeshProUGUI repeatPasswordInputFieldLocalization = m_RepeatPasswordInputField.transform.Find("Text Area")
+                .gameObject.transform.Find("Placeholder").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
+            repeatPasswordInputFieldLocalization.TranslationName = "RepeatPassword";
+            
             Button registerButton = rp.GetCompItem<Button>("register_button");
+            LeanLocalizedTextMeshProUGUI registrationButtonLocalization = registerButton.transform.Find("Background")
+                .gameObject.transform.Find("Text").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
+            registrationButtonLocalization.TranslationName = "Registration";
 
             registerButton.SetOnClick(Register);
 
@@ -110,10 +126,10 @@ namespace UI.Panels
                 switch (packet.ErrorMessage.Id)
                 {
                     case ServerErrorCodes.AccountWithThisNameAlreadyExist:
-                        SetLoginError("user with this login already exists");
+                        SetLoginError(LeanLocalization.GetTranslationText("UserExists"));
                         break;
                     default:
-                        SetLoginError("login fail. try again later");
+                        SetLoginError(LeanLocalization.GetTranslationText("LoginFail"));
                         break;
                 }
             });
@@ -124,21 +140,21 @@ namespace UI.Panels
         private bool CheckForInputErrors()
         {
             if (string.IsNullOrEmpty(m_LoginInputField.text))
-                SetLoginError("field is empty");
+                SetLoginError(LeanLocalization.GetTranslationText("FieldIsEmpty"));
             if (string.IsNullOrEmpty(m_PasswordInputField.text))
-                SetPasswordError("field is empty");
+                SetPasswordError(LeanLocalization.GetTranslationText("FieldIsEmpty"));
             if (string.IsNullOrEmpty(m_RepeatPasswordInputField.text))
-                SetRepeatPasswordError("field is empty");
+                SetRepeatPasswordError(LeanLocalization.GetTranslationText("FieldIsEmpty"));
             if (!IsNoError())
                 return false;
             if (m_LoginInputField.text.Length > 20)
-                SetLoginError("maximum name length: 20 symbols");
+                SetLoginError(LeanLocalization.GetTranslationText("MaxNameLength"));
             if (m_PasswordInputField.text != m_RepeatPasswordInputField.text)
-                SetRepeatPasswordError("passwords do not match");
+                SetRepeatPasswordError(LeanLocalization.GetTranslationText("PasswordsDoNotMatch"));
             if (!IsNoError())
                 return false;
             if (m_LoginInputField.text.StartsWith(TestUserPrefix))
-                SetLoginError("name is unavailable");
+                SetLoginError(LeanLocalization.GetTranslationText("NameIsUnavailable"));
             return true;
         }
         

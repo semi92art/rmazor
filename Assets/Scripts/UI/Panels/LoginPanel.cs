@@ -1,6 +1,7 @@
 ﻿using DialogViewers;
 using Extensions;
 using Helpers;
+using Lean.Localization;
 using Managers;
 using Network;
 using Network.PacketArgs;
@@ -37,14 +38,40 @@ namespace UI.Panels
             TextMeshProUGUI logoutButtonText = lp.GetCompItem<TextMeshProUGUI>("logout_button_text");
             
             m_LoginInputField = lp.GetCompItem<TMP_InputField>("login_input_field");
+            LeanLocalizedTextMeshProUGUI loginInputFieldLocalization = m_LoginInputField.transform.Find("Text Area")
+                .gameObject.transform.Find("Placeholder").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
+            loginInputFieldLocalization.TranslationName = "EnterLogin";
+            
             m_PasswordInputField = lp.GetCompItem<TMP_InputField>("password_input_field");
             m_PasswordInputField.contentType = TMP_InputField.ContentType.Password;
+            LeanLocalizedTextMeshProUGUI passwordInputFieldLocalization = m_PasswordInputField.transform.Find("Text Area")
+                .gameObject.transform.Find("Placeholder").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
+            passwordInputFieldLocalization.TranslationName = "EnterPassword";
             
             Button loginButton = lp.GetCompItem<Button>("login_button");
+            LeanLocalizedTextMeshProUGUI loginButtonLocalization = loginButton.transform.Find("Background")
+                .gameObject.transform.Find("Text").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
+            loginButtonLocalization.TranslationName = "Login";
+            
             Button loginAppleButton = lp.GetCompItem<Button>("login_apple_button");
+            LeanLocalizedTextMeshProUGUI loginAppleButtonLocalization = loginAppleButton.transform.Find("Background")
+                .gameObject.transform.Find("Text").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
+            loginAppleButtonLocalization.TranslationName = "LoginWithApple";
+            
             Button loginGoogleButton = lp.GetCompItem<Button>("login_google_button");
+            LeanLocalizedTextMeshProUGUI loginGoogleButtonLocalization = loginGoogleButton.transform.Find("Background")
+                .gameObject.transform.Find("Text").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
+            loginGoogleButtonLocalization.TranslationName = "LoginWithGoogle";
+            
             Button registrationButton = lp.GetCompItem<Button>("register_button");
+            LeanLocalizedTextMeshProUGUI registrationButtonLocalization = registrationButton.transform.Find("Background")
+                .gameObject.transform.Find("Text").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
+            registrationButtonLocalization.TranslationName = "Registration";
+            
             Button logoutButton = lp.GetCompItem<Button>("logout_button");
+            LeanLocalizedTextMeshProUGUI logoutButtonLocalization = logoutButton.transform.Find("Background")
+                .gameObject.transform.Find("Text").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
+            logoutButtonLocalization.TranslationName = "Logout";
             
             loginButton.SetOnClick(Login);
             loginAppleButton.SetOnClick(LoginWithApple);
@@ -72,9 +99,11 @@ namespace UI.Panels
             SoundManager.Instance.PlayUiButtonClick();
             CleanErrorHandlers();
             if (string.IsNullOrEmpty(m_LoginInputField.text))
-                SetLoginError("field is empty");
+                //TODO get translation name from localization
+            
+                SetLoginError(LeanLocalization.GetTranslationText("FieldIsEmpty"));
             if (string.IsNullOrEmpty(m_PasswordInputField.text))
-                SetPasswordError("field is empty");
+                SetPasswordError(LeanLocalization.GetTranslationText("FieldIsEmpty"));
             if (!IsNoError())
                 return;
             
@@ -96,13 +125,13 @@ namespace UI.Panels
                 switch (packet.ErrorMessage.Id)
                 {
                     case ServerErrorCodes.AccountWithThisNameAlreadyExist:
-                        SetLoginError("user with this login already exists");
+                        SetLoginError(LeanLocalization.GetTranslationText("UserExists"));
                         break;
                     case ServerErrorCodes.WrongLoginOrPassword:
-                        SetLoginError("wrong login or password");
+                        SetLoginError(LeanLocalization.GetTranslationText("WrongLoginOrPassword"));
                         break;
                     default:
-                        SetLoginError("login fail. try again later");
+                        SetLoginError(LeanLocalization.GetTranslationText("LoginFail"));
                         break;
                 }
             });
