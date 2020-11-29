@@ -59,6 +59,7 @@ namespace UI
             CheckIfDailyBonusNotChosenToday();
             m_MenuDialogViewer.AddNotDialogItem(m_MainMenu, MenuUiCategory.MainMenu);
             SoundManager.Instance.PlayClip("main_menu_theme", true, 0f);
+            LocalizationManager a = LocalizationManager.Instance;
         }
 
         #endregion
