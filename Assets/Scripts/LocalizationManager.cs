@@ -20,7 +20,7 @@ public class LocalizationManager : ISingleton
     #region private members
 
     private GameObject m_LocalizationObject;
-   
+
     #endregion
 
     #region api
@@ -75,7 +75,7 @@ public class LocalizationManager : ISingleton
         portCsv.Source = Resources.Load<TextAsset>("texts/Portugal");
         portCsv.Language = "Portugal";
         
-        localization.SetCurrentLanguage(SaveUtils.GetValue<Language>(SaveKey.SettingLanguage).ToString());    
+        localization.SetCurrentLanguage(SaveUtils.GetValue<Language>(SaveKey.SettingLanguage).ToString());
     }
    
     #endregion

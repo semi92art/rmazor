@@ -265,8 +265,7 @@ public class EditorHelper : EditorWindow
         {
             if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
                 EditorSceneManager.OpenScene(_Name);    
-        }
-        
+        }       
     }
 }
 

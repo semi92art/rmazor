@@ -107,6 +107,14 @@ namespace UI
             rImage.texture = m_TransitionRenderer.Texture;
         }
 
+        private void CreateTransitionRenderer()
+        {
+            var transitionPanelObj = CreateLoadingTransitionPanel();
+            m_TransitionRenderer = CircleTransparentTransitionRenderer.Create();
+            RawImage rImage = transitionPanelObj.GetCompItem<RawImage>("raw_image");
+            rImage.texture = m_TransitionRenderer.Texture;
+        }
+
         private void CreateLoadingPanel()
         {
             m_LoadingPanel = new LoadingPanel(m_MenuDialogViewer);
@@ -115,6 +123,7 @@ namespace UI
             Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
             {
                 float delayAnyway = 1f;
+
                 bool isSuccess = false;
                 float startTime = UiTimeProvider.Instance.Time;
                 Coroutines.Run(Coroutines.DoWhile(
