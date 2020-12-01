@@ -11,16 +11,4 @@ namespace DialogViewers
         void RemoveNotDialogItem(RectTransform _Item);
         void CloseAll();
     }
-    
-    public interface IMenuDialogViewer : IDialogViewer
-    {
-        void Show(IMenuDialogPanel _ItemTo, bool _HidePrevious = true);
-        void AddNotDialogItem(RectTransform _Item, MenuUiCategory _Categories);
-    }
-
-    public interface IGameDialogViewer : IDialogViewer
-    {
-        void Show(IGameDialogPanel _ItemTo, bool _HidePrevious = true);
-        void AddNotDialogItem(RectTransform _Item, GameUiCategory _Categories);
-    }
 }

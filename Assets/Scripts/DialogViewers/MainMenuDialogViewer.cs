@@ -12,6 +12,12 @@ using Utils;
 
 namespace DialogViewers
 {
+    public interface IMenuDialogViewer : IDialogViewer
+    {
+        void Show(IMenuDialogPanel _ItemTo, bool _HidePrevious = true);
+        void AddNotDialogItem(RectTransform _Item, MenuUiCategory _Categories);
+    }
+    
     public class MainMenuDialogViewer : DialogViewerBase, IMenuDialogViewer
     {
         #region nonpublic members
@@ -20,7 +26,6 @@ namespace DialogViewers
         private Sprite m_IconClose;
         private Button m_CloseButton;
         private Image m_CloseButtonIcon;
-        protected override float TransitionTime => 0.2f;
 
         #endregion
     

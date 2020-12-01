@@ -1,5 +1,4 @@
 ﻿using Constants;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -30,5 +29,14 @@ public class CountdownPanelView : MonoBehaviour
         m_CountdownFinish?.Invoke();
     }
 
+    #endregion
+    
+    #region engine methods
+
+    private void Update()
+    {
+        animator.speed = GameTimeProvider.Instance.Pause ? 0 : 1;
+    }
+    
     #endregion
 }

@@ -42,6 +42,11 @@ namespace Utils
                 _Dictionary.Add(_Key, _Value);
         }
 
+        public static string Shortened(this string _Text, int _Length, bool _Ellipsis = true)
+        {
+            return _Text.Substring(0, _Length) + (_Ellipsis ? "..." : string.Empty);
+        }
+
         /// <summary>
         /// Generates random float value in range of 0.0 and 1.0
         /// </summary>

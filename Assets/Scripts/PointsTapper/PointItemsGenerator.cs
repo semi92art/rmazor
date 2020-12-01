@@ -156,9 +156,9 @@ namespace PointsTapper
             float maxTime = 1.5f;
             
             float dt = minTime + CommonUtils.RandomGen.NextFloat() * (maxTime - minTime);
-            if (Time.time < m_CurrentTime + dt)
+            if (GameTimeProvider.Instance.Time < m_CurrentTime + dt)
                 return;
-            m_CurrentTime = Time.time;
+            m_CurrentTime = GameTimeProvider.Instance.Time;
             PointType pt = CommonUtils.RandomGen.NextFloat() < 0.8f ? PointType.Default : PointType.BonusGold;
             ActivateItem(pt, 3f);
         }
@@ -169,9 +169,9 @@ namespace PointsTapper
             float maxTime = 3f;
             
             float dt = minTime + CommonUtils.RandomGen.NextFloat() * (maxTime - minTime);
-            if (Time.time < m_CurrentTime + dt)
+            if (GameTimeProvider.Instance.Time < m_CurrentTime + dt)
                 return;
-            m_CurrentTime = Time.time;
+            m_CurrentTime = GameTimeProvider.Instance.Time;
 
             float rand = CommonUtils.RandomGen.NextFloat();
 

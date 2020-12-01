@@ -6,6 +6,7 @@ using Extensions;
 using Helpers;
 using Managers;
 using TMPro;
+using UI.Entities;
 using UI.Factories;
 using UI.Managers;
 using UnityEngine;
@@ -30,7 +31,8 @@ namespace UI.Panels
         private TextMeshProUGUI m_GoldCountRevenueText;
         private TextMeshProUGUI m_DiamondsCountRevenueText;
         private TextMeshProUGUI m_LifesCountRevenueText;
-        
+        private Button m_X2Button;
+
         #endregion
         
         #region api
@@ -78,9 +80,24 @@ namespace UI.Panels
             m_GoldCountRevenueText = go.GetCompItem<TextMeshProUGUI>("gold_count_revenue_text"); 
             m_DiamondsCountRevenueText = go.GetCompItem<TextMeshProUGUI>("diamonds_count_revenue_text"); 
             m_LifesCountRevenueText = go.GetCompItem<TextMeshProUGUI>("lifes_count_revenue_text");
-            Button x2Button = go.GetCompItem<Button>("x2_button");
+            m_X2Button = go.GetCompItem<Button>("x2_button");
             Button continueButton = go.GetCompItem<Button>("continue_button");
             var continueButtonText = go.GetCompItem<TextMeshProUGUI>("continue_button_text");
+            var resultsPanel = go.GetCompItem<RectTransform>("results_panel");
+
+            // if (!m_IsPersonalBest)
+            // {
+            //     resultsPanel.Set(
+            //         UiAnchor.Create(0, 1, 1, 1),
+            //         new Vector2(0, -225),
+            //         Vector2.one * 0.5f,
+            //         new Vector2(-103, 208));
+            //     personalBestText.RTransform().Set(
+            //         UiAnchor.Create(0, 1, 1, 1),
+            //         Vector2.up * -111f,
+            //         Vector2.one * 0.5f,
+            //         new Vector2(-116f, 36f));
+            // }
 
 
             levelFinishedText.text = $"Level {m_Level} finished!";
@@ -90,7 +107,7 @@ namespace UI.Panels
             SetRevenueCountsText();
             
             personalBestText.enabled = m_IsPersonalBest;
-            x2Button.SetOnClick(OnX2ButtonClick);
+            m_X2Button.SetOnClick(OnX2ButtonClick);
             continueButton.SetOnClick(OnContinueButtonClick);
             
             return go.RTransform();
@@ -102,6 +119,7 @@ namespace UI.Panels
                 m_Revenue[kvp.Key] = (long)(m_Revenue[kvp.Key] * m_MultiplyCoefficient);
             m_SetNewRevenue?.Invoke(m_Revenue);
             SetRevenueCountsText();
+            m_X2Button.gameObject.SetActive(false);
         }
 
         private void OnContinueButtonClick()

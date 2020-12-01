@@ -129,9 +129,10 @@ namespace PointsTapper
                     -270f,
                     ExistenceTime,
                     _Value => border.AngRadiansStart = _Value * Mathf.Deg2Rad,
+                    GameTimeProvider.Instance,
                     Deactivate,
                     () => !m_Activated));
-            }, 0.5f));
+            }, 0.3f));
         }
 
         public void DeactivationFinished()

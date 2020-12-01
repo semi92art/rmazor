@@ -33,3 +33,9 @@ MonoBehaviour:
     - item: {fileID: 7871151746907996052, guid: 0a255cf32a7d4c24ebceea6e73887b87,
         type: 3}
       name: level_finish_panel
+    - item: {fileID: 2639163339213185966, guid: a52b663872f77234da63bc9367e640eb,
+        type: 3}
+      name: game_menu_panel
+    - item: {fileID: 2601192048318346412, guid: 652a78fc15a48e84a9ebfec3ae4b6922,
+        type: 3}
+      name: game_menu_button

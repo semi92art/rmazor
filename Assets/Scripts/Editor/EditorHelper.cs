@@ -73,9 +73,19 @@ public class EditorHelper : EditorWindow
         
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("Pause game"))
-            Time.timeScale = 0;
+        {
+            if (EditorSceneManager.GetActiveScene().name == SceneNames.Main)
+                UiTimeProvider.Instance.Pause = true;
+            else if (EditorSceneManager.GetActiveScene().name == SceneNames.Level)
+                GameTimeProvider.Instance.Pause = true;
+        }
         if (GUILayout.Button("Continue game"))
-            Time.timeScale = 1;
+        {
+            if (EditorSceneManager.GetActiveScene().name == SceneNames.Main)
+                UiTimeProvider.Instance.Pause = false;
+            else if (EditorSceneManager.GetActiveScene().name == SceneNames.Level)
+                GameTimeProvider.Instance.Pause = false;
+        }
         GUILayout.EndHorizontal();
         
         EditorUtils.DrawUiLine(Color.gray);
@@ -106,9 +116,12 @@ public class EditorHelper : EditorWindow
         GUILayout.Label("Debug Server Url:");
         m_TestUrl = EditorGUILayout.TextField(m_TestUrl);
         GUILayout.EndHorizontal();
-        
+
         if (GUILayout.Button("Set Default Url"))
+        {
             m_TestUrl = @"http://77.37.152.15:7000";
+            UpdateTestUrl(true);
+        }
         if (GUILayout.Button("Delete All Settings"))
             PlayerPrefs.DeleteAll();
         if (GUILayout.Button("Set Default Material Props"))
@@ -128,9 +141,9 @@ public class EditorHelper : EditorWindow
         UpdateGameId();
     }
 
-    private void UpdateTestUrl()
+    private void UpdateTestUrl(bool _Forced = false)
     {
-        if (m_TestUrl != m_TestUrlCheck)
+        if (m_TestUrl != m_TestUrlCheck || _Forced)
             SaveUtils.PutValue(SaveKey.DebugServerUrl, m_TestUrl);
         if (string.IsNullOrEmpty(m_TestUrl))
             m_TestUrl = SaveUtils.GetValue<string>(SaveKey.DebugServerUrl);

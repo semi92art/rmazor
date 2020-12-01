@@ -55,7 +55,7 @@ public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRen
     public void StartTransition(bool _Fast = false)
     {
         AnimationCurve ac = _Fast ? fastCurve : curve;
-        float startTime = Time.time;
+        float startTime = UiTimeProvider.Instance.Time;
         bool doEvent = false;
         
         Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
@@ -63,7 +63,7 @@ public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRen
             m_Material.SetFloat(AlphaCoeff, -1);
             Coroutines.Run(Coroutines.DoWhile(() =>
                 {
-                    float dt = Time.time - startTime;
+                    float dt = UiTimeProvider.Instance.Time - startTime;
                     m_Material.SetFloat(AlphaCoeff, ac.Evaluate(dt));
                     if (!doEvent && dt > ac.keys.Last().time * 0.5f)
                     {
@@ -76,8 +76,7 @@ public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRen
                     TransitionAction = null;
                     m_Material.SetFloat(AlphaCoeff, ac.keys.Last().value);
                 },
-                () => Time.time - startTime < ac.keys.Last().time,
-                () => true));
+                () => UiTimeProvider.Instance.Time - startTime < ac.keys.Last().time));
         }));
     }
 }

@@ -1,8 +1,6 @@
-﻿using Constants;
-using DI;
+﻿using DI;
 using Managers;
 using Network;
-using PointsTapper;
 using UI.Panels;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -15,12 +13,7 @@ public class GameLoader : MonoBehaviour, ISingleton
     {
         SceneManager.sceneLoaded += (_Scene, _Mode) =>
         {
-            ContainersManager.Instance = null;
-            var containersManager = FindObjectOfType<ContainersManager>();
-            if (containersManager == null) 
-                return;
-            Destroy(containersManager.gameObject);
-
+            ContainersManager.Instance.Clear();
             TimeOrLifesEndedPanel.TimesPanelCalled = 0;
         };
         

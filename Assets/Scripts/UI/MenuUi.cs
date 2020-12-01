@@ -115,12 +115,11 @@ namespace UI
             {
                 float delayAnyway = 1f;
                 bool isSuccess = false;
-                float startTime = Time.time;
+                float startTime = UiTimeProvider.Instance.Time;
                 Coroutines.Run(Coroutines.DoWhile(
-                    () => delayAnyway = Mathf.Max(2f - (Time.time - startTime), 0),
+                    () => delayAnyway = Mathf.Max(2f - (UiTimeProvider.Instance.Time - startTime), 0),
                     null,
-                    () => !isSuccess,
-                    () => true));
+                    () => !isSuccess));
 
                 Coroutines.Run(Coroutines.Delay(
                     () =>

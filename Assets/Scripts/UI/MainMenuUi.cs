@@ -240,7 +240,6 @@ namespace UI
                 "settings_button_small");
             
             settingsButtonSmall.GetComponent<Button>().SetOnClick(OnSettingsButtonClick);
-            settingsButtonSmall.SetParent(m_MainMenu);
         }
 
         private void CheckIfDailyBonusNotChosenToday()

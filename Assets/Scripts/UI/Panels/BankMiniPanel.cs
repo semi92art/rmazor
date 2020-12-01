@@ -123,8 +123,9 @@ namespace UI.Panels
                 Coroutines.Run(Coroutines.Lerp(
                     m_BankMiniPanel.sizeDelta.x, 
                     GetPanelWidth(maxTextLength),
-                    0.3f, 
+                    0.3f,
                     SetPanelWidth,
+                    UiTimeProvider.Instance,
                     () =>
                     {
                         SetMoneyText(bank.Money);
@@ -215,6 +216,7 @@ namespace UI.Panels
                         _From.position,
                         to,
                         IncomeAnimDeltaTime * IncomeCoinsAnimOnScreen,
+                        UiTimeProvider.Instance,
                         () =>
                         {
                             coin.IsBusy = false;
@@ -225,6 +227,7 @@ namespace UI.Panels
                 },
                 IncomeAnimDeltaTime,
                 IncomeAnimTime,
+                UiTimeProvider.Instance,
                 _OnFinish:() =>
                 {
                     Coroutines.Run(Coroutines.WaitWhile(() =>
@@ -256,9 +259,7 @@ namespace UI.Panels
                     {
                         float currentPanelWidth = m_BankMiniPanel.sizeDelta.x;
                         float newPanelWidth = GetPanelWidth(newMaxCountTextLength);
-                        // float newPanelWidth = m_GoldIcon.RTransform().rect.width + 
-                        //                       GetTextWidth(newMaxCountTextLength) +
-                        //                       m_PlusButton.RTransform().rect.width + 40;
+
                         m_GoldCount.rectTransform.sizeDelta = m_DiamondsCount.rectTransform.sizeDelta = 
                             m_LifesCount.rectTransform.sizeDelta =
                             m_GoldCount.rectTransform.sizeDelta.SetX(GetTextWidth(newMaxCountTextLength));
@@ -270,7 +271,8 @@ namespace UI.Panels
                             _Width =>
                             {
                                 m_BankMiniPanel.sizeDelta = m_BankMiniPanel.sizeDelta.SetX(_Width);
-                            }));
+                            }, UiTimeProvider.Instance));
+                            
                     }
                     
                     Coroutines.Run(Coroutines.Lerp(
@@ -283,7 +285,7 @@ namespace UI.Panels
                                 m_GoldCount.text = _Value.ToNumeric();
                             else if (moneyType == MoneyType.Diamonds)
                                 m_DiamondsCount.text = _Value.ToNumeric();
-                        }));
+                        }, UiTimeProvider.Instance));
                 }, () => !currMoney.Loaded));
             }
         }

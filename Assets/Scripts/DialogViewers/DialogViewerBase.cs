@@ -88,7 +88,8 @@ namespace DialogViewers
         
         protected readonly Dictionary<int, GraphicAlphas> GraphicsAlphas = 
             new Dictionary<int, GraphicAlphas>();
-        protected abstract float TransitionTime { get; }
+
+        protected virtual float TransitionTime => 0.2f;
         
         #endregion
 
@@ -139,7 +140,7 @@ namespace DialogViewers
         
         #region engine methods
         
-        protected void Update()
+        protected virtual void Update()
         {
             if (Input.GetKeyDown(KeyCode.Escape))
                 Back();

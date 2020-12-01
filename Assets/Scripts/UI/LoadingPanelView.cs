@@ -71,7 +71,7 @@ namespace UI
             m_Indicator.Rotate(Vector3.back, Time.deltaTime * speed);
             m_Indicator2.Rotate(Vector3.forward, Time.deltaTime * speed);
 
-            int time = Mathf.FloorToInt(Time.time * 5f);
+            int time = Mathf.FloorToInt(UiTimeProvider.Instance.Time * 5f);
             if (time % 2 == 0 && time != m_TimePrev)
             {
                 CommonUtils.IncWithOverflow(ref m_PointsState, 4);

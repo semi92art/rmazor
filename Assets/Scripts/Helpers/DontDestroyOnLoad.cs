@@ -7,8 +7,7 @@ namespace Helpers
     {
         private void Awake()
         {
-            if (!GameClient.Instance.IsTestMode)
-                DontDestroyOnLoad(gameObject);
+            DontDestroyOnLoad(gameObject);
         }
     }
 }

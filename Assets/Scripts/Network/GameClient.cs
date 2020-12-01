@@ -186,6 +186,7 @@ namespace Network
                 Send(testPacket);
             }, 5f,
                 float.MaxValue,
+                UiTimeProvider.Instance,
                 () => false));
             m_ConnectionTestStarted = true;
         }

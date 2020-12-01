@@ -20,7 +20,7 @@ namespace Managers
     public abstract class GameManagerBase : MonoBehaviour, IGameManager, ISingleton
     {
         #region nonpublic members
-    
+        
         protected ILevelController LevelController;
         protected ILifesController LifesController;
         protected IScoreController MainScoreController;
@@ -34,6 +34,7 @@ namespace Managers
         
         public virtual void Init(int _Level)
         {
+            new GameTimeProvider();
             if (LevelController == null)
                 LevelController = new DefaultLevelController();
             LevelController.Level = _Level;

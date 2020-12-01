@@ -70,7 +70,6 @@ namespace UI.Panels
 
             m_TimeOrLifesEndedText = go.GetCompItem<TextMeshProUGUI>("time_or_lifes_ended_text");
             m_AddSecsOrLifeMoreText = go.GetCompItem<TextMeshProUGUI>("add_secs_or_life_more_text");
-            TextMeshProUGUI finishButtonText = go.GetCompItem<TextMeshProUGUI>("finish_button_text");
 
             Button addSecsOrLifeMoreButton = go.GetCompItem<Button>("add_secs_or_life_more_button");
             m_FinishButton = go.GetCompItem<Button>("finish_button");

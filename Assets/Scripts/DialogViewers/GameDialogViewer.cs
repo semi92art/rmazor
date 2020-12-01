@@ -1,20 +1,26 @@
-﻿using Helpers;
+﻿using System.Linq;
+using Helpers;
 using UI;
 using UI.Factories;
 using UI.Managers;
 using UI.Panels;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 
 namespace DialogViewers
 {
+    public interface IGameDialogViewer : IDialogViewer
+    {
+        void Show(IGameDialogPanel _ItemTo, bool _HidePrevious = true);
+        void AddNotDialogItem(RectTransform _Item, GameUiCategory _Categories);
+        IGameDialogPanel Last { get; }
+    }
+    
     public class GameDialogViewer : DialogViewerBase, IGameDialogViewer
     {
-        #region nonpublic members
-        protected override float TransitionTime => 0.05f;
-        
-        #endregion
-        
         #region api
+
+        public IGameDialogPanel Last => PanelStack.Any() ? PanelStack.Peek().GameDialogPanel : null;
         
         public static IGameDialogViewer Create(RectTransform _Parent)
         {
@@ -41,6 +47,15 @@ namespace DialogViewers
             GraphicsAlphas.Add(_Item.GetInstanceID(), new GraphicAlphas(_Item));
         }
 
+        #endregion
+        
+        #region engine methods
+
+        protected override void Update()
+        {
+            //Do nothing
+        }
+        
         #endregion
     }
 }

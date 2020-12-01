@@ -35,7 +35,7 @@ public class CountdownController : DI.DiObject, ICountdownController
     
     public void StartCountdown(System.Func<bool> _StopPredicate)
     {
-        m_StartTime = Time.time;
+        m_StartTime = GameTimeProvider.Instance.Time;
         m_StopPredicate = _StopPredicate;
         m_DoUpdate = true;
     }
@@ -48,7 +48,7 @@ public class CountdownController : DI.DiObject, ICountdownController
     [DI.Update]
     private void OnUpdate()
     {
-        float timerLeft = m_Duration - (Time.time - m_StartTime);
+        float timerLeft = m_Duration - (GameTimeProvider.Instance.Time - m_StartTime);
         if (!m_DoUpdate)
             return;
         if (m_StopPredicate != null && m_StopPredicate() || timerLeft < 0)

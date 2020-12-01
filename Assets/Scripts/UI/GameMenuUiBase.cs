@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using DialogViewers;
 using Extensions;
+using Helpers;
 using Managers;
+using UI.Entities;
 using UI.Factories;
 using UI.Panels;
 using UnityEngine;
@@ -29,21 +31,35 @@ namespace UI
         void OnRevenueIncome(MoneyType _MoneyType, long _Revenue);
     }
     
-    public abstract class GameMenuUiBase : IGameMenuUi
+    public abstract class GameMenuUiBase : DI.DiObject, IGameMenuUi
     {
+        #region api properties
         public IStatsMiniPanel StatsMiniPanel { get; protected set; }
         public IRevenueMiniPanel RevenueMiniPanel { get; protected set; }
+        
+        #endregion
+        
+        #region nonpublic members
         
         protected IGameDialogViewer DialogViewer;
         protected Canvas Canvas;
         
+        #endregion
+
+        #region constructor
+
         protected GameMenuUiBase()
         {
             CreateCanvas();
             CreateDialogViewer();
             CreateStatsMiniPanel();
             CreateRevenueMiniPanel();
+            CreateGameMenuButton();
         }
+
+        #endregion
+        
+        #region nonpublic methods
         
         protected virtual void CreateCanvas()
         {
@@ -79,6 +95,45 @@ namespace UI
                 Canvas.RTransform(), RevenuePanelPosition.TopRight);
             RevenueMiniPanel.Hide();
         }
+        
+        protected virtual void CreateGameMenuButton()
+        {
+            var settingsButtonSmall = PrefabInitializer.InitUiPrefab(
+                UiFactory.UiRectTransform(
+                    Canvas.RTransform(),
+                    UiAnchor.Create(1, 0, 1, 0),
+                    new Vector2(-43, 35),
+                    Vector2.one * 0.5f,
+                    new Vector2(63, 54)),
+                "game_menu",
+                "game_menu_button");
+            
+            settingsButtonSmall.GetComponent<Button>().SetOnClick(OnGameMenuButtonClick);
+        }
+        
+        protected virtual void OnGameMenuButtonClick()
+        {
+            if (!GameMenuPanel.PanelState.HasFlag(PanelState.Showing))
+            {
+                GameTimeProvider.Instance.Pause = true;
+                IGameDialogPanel gameMenuPanel = new GameMenuPanel(DialogViewer,
+                    () => GameTimeProvider.Instance.Pause = false);
+                gameMenuPanel.Show();
+            }
+            else
+                GameMenuPanel.PanelState |= PanelState.NeedToClose;
+        }
+
+        [DI.Update]
+        protected virtual void OnUpdate()
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+                OnGameMenuButtonClick();
+        }
+        
+        #endregion
+        
+        #region api methods
 
         public virtual void OnBeforeLevelStarted(
             LevelStateChangedArgs _Args,
@@ -136,5 +191,7 @@ namespace UI
         {
             RevenueMiniPanel.PlusRevenue(_MoneyType, _Revenue);
         }
+
+        #endregion
     }
 }

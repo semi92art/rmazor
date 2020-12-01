@@ -78,20 +78,23 @@ namespace Utils
                 yield break;
             _Action();
         }
-
+        
         public static IEnumerator DoWhile(
             Action _Action,
             Action _FinishAction,
             Func<bool> _Predicate,
-            Func<bool> _WaitEndOfFrame)
+            Func<bool> _Pause = null,
+            bool _WaitEndOfFrame = true)
         {
             if (_Action == null || _Predicate == null)
                 yield break;
 
             while (_Predicate.Invoke())
             {
+                if (_Pause != null && _Pause())
+                    continue;
                 _Action();
-                if (_WaitEndOfFrame.Invoke())
+                if (_WaitEndOfFrame)
                     yield return new WaitForEndOfFrame();
             }
         
@@ -136,13 +139,13 @@ namespace Utils
                 }
             }
             
-            float currTime = Time.time;
+            float currTime = UiTimeProvider.Instance.Time;
             if (!_Disappear && other != null)
             {
-                while (Time.time < currTime + _Time)
+                while (UiTimeProvider.Instance.Time < currTime + _Time)
                 {
-                    float timeCoeff = (currTime + _Time - Time.time) / _Time;
-                    float alphaCoeff = _Disappear ? timeCoeff : 1 - timeCoeff;
+                    float timeCoeff = (currTime + _Time - UiTimeProvider.Instance.Time) / _Time;
+                    float alphaCoeff = 1 - timeCoeff;
                     
                     foreach (var ga in other)
                     {
@@ -150,7 +153,6 @@ namespace Utils
                         if (graphic.IsAlive())
                             ga.Key.color = ga.Key.color.SetAlpha(ga.Value * alphaCoeff);
                     }
-                    
                     yield return new WaitForEndOfFrame();
                 } 
             }
@@ -160,12 +162,11 @@ namespace Utils
                 button.Key.enabled = button.Value;
 
             float shadowBackgrTime = 0.3f;    
-            currTime = Time.time;
+            currTime = UiTimeProvider.Instance.Time;
             if (!_Disappear && backgroundShadows != null)
-                while (Time.time < currTime + shadowBackgrTime)
+                while (UiTimeProvider.Instance.Time < currTime + shadowBackgrTime)
                 {
-                    yield return new WaitForEndOfFrame();
-                    float timeCoeff = (currTime + shadowBackgrTime - Time.time) / shadowBackgrTime;
+                    float timeCoeff = (currTime + shadowBackgrTime - UiTimeProvider.Instance.Time) / shadowBackgrTime;
                     float alphaCoeff = 1 - timeCoeff;
                     
                     foreach (var ga in backgroundShadows)
@@ -174,7 +175,6 @@ namespace Utils
                         if (graphic.IsAlive())
                             ga.Key.color = ga.Key.color.SetAlpha(ga.Value * alphaCoeff);
                     }
-                
                     yield return new WaitForEndOfFrame();
                 }
             
@@ -196,6 +196,7 @@ namespace Utils
             long _To,
             float _Time,
             Action<long> _Result,
+            ITimeProvider _TimeProvider,
             Action _OnFinish = null,
             Func<bool> _OnBreak = null)
         {
@@ -203,10 +204,10 @@ namespace Utils
                 yield break;
             _Result(_From);
 
-            float currTime = Time.time;
-            while (Time.time < currTime + _Time)
+            float currTime = _TimeProvider.Time;
+            while (_TimeProvider.Time < currTime + _Time)
             {
-                float timeCoeff = 1 - (currTime + _Time - Time.time) / _Time;
+                float timeCoeff = 1 - (currTime + _Time - _TimeProvider.Time) / _Time;
                 long newVal = MathUtils.Lerp(_From, _To, timeCoeff);
                 _Result(newVal);
                 bool? isBreak = _OnBreak?.Invoke();
@@ -224,6 +225,7 @@ namespace Utils
             float _To,
             float _Time,
             Action<float> _Result,
+            ITimeProvider _TimeProvider,
             Action _OnFinish = null,
             Func<bool> _OnBreak = null)
         {
@@ -231,13 +233,18 @@ namespace Utils
                 yield break;
             _Result(_From);
 
-            float currTime = Time.time;
-            while (Time.time < currTime + _Time)
+            float currTime = _TimeProvider.Time;
+            while (_TimeProvider.Time < currTime + _Time)
             {
-                bool? isBreak = _OnBreak?.Invoke();
-                if (isBreak.HasValue && isBreak.Value)
+                if (_OnBreak != null && _OnBreak())
                     yield break;
-                float timeCoeff = 1 - (currTime + _Time - Time.time) / _Time;
+                if (_TimeProvider.Pause)
+                {
+                    yield return new WaitForEndOfFrame();
+                    continue;
+                }
+                
+                float timeCoeff = 1 - (currTime + _Time - _TimeProvider.Time) / _Time;
                 float newVal = Mathf.Lerp(_From, _To, timeCoeff);
                 _Result(newVal);
                 yield return new WaitForEndOfFrame();
@@ -252,16 +259,17 @@ namespace Utils
             int _To,
             float _Time,
             Action<int> _Result,
+            ITimeProvider _TimeProvider,
             Action _OnFinish = null)
         {
             if (_Result == null)
                 yield break;
             _Result(_From);
 
-            float currTime = Time.time;
-            while (Time.time < currTime + _Time)
+            float currTime = _TimeProvider.Time;
+            while (_TimeProvider.Time < currTime + _Time)
             {
-                float timeCoeff = 1 - (currTime + _Time - Time.time) / _Time;
+                float timeCoeff = 1 - (currTime + _Time - _TimeProvider.Time) / _Time;
                 int newVal = Mathf.RoundToInt(Mathf.Lerp(_From, _To, timeCoeff));
                 _Result(newVal);
                 yield return new WaitForEndOfFrame();
@@ -276,16 +284,17 @@ namespace Utils
             Color _To,
             float _Time,
             Action<Color> _Result,
+            ITimeProvider _TimeProvider,
             Action _OnFinish = null)
         {
             if (_Result == null)
                 yield break;
             _Result(_From);
 
-            float currTime = Time.time;
-            while (Time.time < currTime + _Time)
+            float currTime = _TimeProvider.Time;
+            while (_TimeProvider.Time < currTime + _Time)
             {
-                float timeCoeff = 1 - (currTime + _Time - Time.time) / _Time;
+                float timeCoeff = 1 - (currTime + _Time - _TimeProvider.Time) / _Time;
                 float r = Mathf.Lerp(_From.r, _To.r, timeCoeff);
                 float g = Mathf.Lerp(_From.g, _To.g, timeCoeff);
                 float b = Mathf.Lerp(_From.b, _To.b, timeCoeff);
@@ -304,6 +313,7 @@ namespace Utils
             Vector3 _From,
             Vector3 _To,
             float _Time,
+            ITimeProvider _TimeProvider,
             Action _OnFinish = null)
         {
             if (_Item == null)
@@ -311,10 +321,10 @@ namespace Utils
             
             _Item.position = _From;
             
-            float currTime = Time.time;
-            while (Time.time < currTime + _Time)
+            float currTime = _TimeProvider.Time;
+            while (_TimeProvider.Time < currTime + _Time)
             {
-                float timeCoeff = 1 - (currTime + _Time - Time.time) / _Time;
+                float timeCoeff = 1 - (currTime + _Time - _TimeProvider.Time) / _Time;
                 Vector3 newPos = Vector3.Lerp(_From, _To, timeCoeff);
                 if (_Item != null)
                     _Item.position = newPos;
@@ -330,14 +340,15 @@ namespace Utils
             Action _Action,
             float _RepeatDelta,
             float _RepeatTime,
+            ITimeProvider _TimeProvider,
             Func<bool> _DoStop = null,
             Action _OnFinish = null)
         {
             if (_Action == null)
                 yield break;
             
-            float startTime = Time.time;
-            while (Time.time - startTime < _RepeatTime && !_DoStop())
+            float startTime = _TimeProvider.Time;
+            while (_TimeProvider.Time - startTime < _RepeatTime && !_DoStop())
             {
                 _Action();
                 yield return new WaitForSeconds(_RepeatDelta);
@@ -350,14 +361,15 @@ namespace Utils
             Action _Action,
             float _RepeatDelta,
             long _RepeatCount,
+            ITimeProvider _TimeProvider,
             Func<bool> _DoStop = null,
             Action _OnFinish = null)
         {
             if (_Action == null)
                 yield break;
             float repeatTime = _RepeatDelta * _RepeatCount;
-            float startTime = Time.time;
-            while (Time.time - startTime < repeatTime && (_DoStop == null || !_DoStop()))
+            float startTime = _TimeProvider.Time;
+            while (_TimeProvider.Time - startTime < repeatTime && (_DoStop == null || !_DoStop()))
             {
                 _Action();
                 yield return new WaitForSeconds(_RepeatDelta);
