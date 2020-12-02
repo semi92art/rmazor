@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DialogViewers;
 using Extensions;
 using Helpers;
 using Managers;
 using TMPro;
-using UI.Entities;
 using UI.Factories;
 using UI.Managers;
 using UnityEngine;
@@ -100,11 +98,14 @@ namespace UI.Panels
 
         private void OnX2ButtonClick()
         {
-            foreach (var kvp in m_Revenue.ToArray())
-                m_Revenue[kvp.Key] = (long)(m_Revenue[kvp.Key] * m_MultiplyCoefficient);
-            m_SetNewRevenue?.Invoke(m_Revenue);
-            SetRevenueCountsText();
-            m_X2Button.gameObject.SetActive(false);
+            GoogleAdsManager.Instance.ShowRewardedAd(() =>
+            {
+                foreach (var kvp in m_Revenue.ToArray())
+                    m_Revenue[kvp.Key] = (long) (m_Revenue[kvp.Key] * m_MultiplyCoefficient);
+                m_SetNewRevenue?.Invoke(m_Revenue);
+                SetRevenueCountsText();
+                m_X2Button.gameObject.SetActive(false);
+            });
         }
 
         private void OnContinueButtonClick()

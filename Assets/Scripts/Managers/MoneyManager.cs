@@ -39,7 +39,7 @@ namespace Managers
     
         #region api
 
-        public const long MaxMoneyCount = 999999999999999;
+        public const long MaxMoneyCount = 999999999999;
         public event MoneyEventHandler OnMoneyCountChanged;
         public event IncomeEventHandler OnIncome;
     

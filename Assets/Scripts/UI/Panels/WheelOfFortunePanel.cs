@@ -3,6 +3,7 @@ using DialogViewers;
 using Entities;
 using Extensions;
 using Helpers;
+using Managers;
 using TMPro;
 using UI.Entities;
 using UI.Factories;
@@ -90,11 +91,8 @@ namespace UI.Panels
                 cameraBounds.size.y * 2f / background.bounds.size.y);
             
 
-            m_IsLocked = CheckIfWofSpinedToday();
-            
-            
+            m_IsLocked = CheckIfWofSpinToday();
             m_SpinButton.SetOnClick(StartSpinOrWatchAd);
-            
             m_WheelController.Init(m_DialogViewer);
         }
 
@@ -107,12 +105,15 @@ namespace UI.Panels
             }
             else
             {
-                SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, System.DateTime.Now.Date.AddDays(-1));
-                m_IsLocked = CheckIfWofSpinedToday();
+                GoogleAdsManager.Instance.ShowRewardedAd(() =>
+                {
+                    SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, System.DateTime.Now.Date.AddDays(-1));
+                    m_IsLocked = CheckIfWofSpinToday();
+                });
             }
         }
         
-        private bool CheckIfWofSpinedToday()
+        private bool CheckIfWofSpinToday()
         {
             System.DateTime lastDate = SaveUtils.GetValue<System.DateTime>(SaveKey.WheelOfFortuneLastDate);
             bool yes = lastDate == System.DateTime.Now.Date;

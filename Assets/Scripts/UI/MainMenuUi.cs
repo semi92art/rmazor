@@ -3,9 +3,9 @@ using DialogViewers;
 using Entities;
 using Extensions;
 using Helpers;
-using Lean.Touch;
 using Managers;
 using Network;
+using TMPro;
 using UI.Entities;
 using UI.Factories;
 using UI.Managers;
@@ -156,6 +156,12 @@ namespace UI
                 "main_menu_buttons",
                 "play_button");
             playButton.GetComponent<Button>().SetOnClick(OnPlayButtonClick);
+            var bestLevelText = playButton.GetCompItem<TextMeshProUGUI>("best_level_text");
+            var scores = ScoreManager.Instance.GetScores();
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => bestLevelText.text = $"Best: {scores.Scores[ScoreTypes.MaxLevel].ToNumeric()} lev.",
+                () => !scores.Loaded));
+            
             
             var ratingsButton = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(

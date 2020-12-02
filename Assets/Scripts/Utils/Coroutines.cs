@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Extensions;
 using Helpers;
+using LeTai;
 using LeTai.TrueShadow;
 using Network;
 using UnityEngine;
@@ -22,8 +23,10 @@ namespace Utils
         
         public static Coroutine Run(IEnumerator _Coroutine)
         {
-            if (GameClient.Instance.IsTestMode)
+#if UNITY_EDITOR
+            if (GameClient.Instance.IsTestMode && CoroutineRunner == null)
                 CoroutineRunner = GameObject.Find("CoroutinesRunner").GetComponent<DontDestroyOnLoad>();
+#endif
             return CoroutineRunner.StartCoroutine(_Coroutine);
         }
 
@@ -106,7 +109,8 @@ namespace Utils
             Dictionary<Graphic, float> _GraphicsAndAlphas,
             float _Time,
             bool _Disappear = false,
-            Action _OnFinish = null)
+            Action _OnFinish = null,
+            bool _ShadowsAfterOther = false)
         {
             if (_Item == null)
                 yield break;
@@ -114,70 +118,68 @@ namespace Utils
             var graphicsAndAlphas = _GraphicsAndAlphas.CloneAlt();
             
             _Item.gameObject.SetActive(true);
-            var buttons = _Item.GetComponentsInChildrenEnabled<Button>();
-            foreach (var button in buttons)
+            var selectables = _Item.GetComponentsInChildrenEnabled<Selectable>();
+            foreach (var button in selectables)
                 button.Key.enabled = false;
 
+            //group graphic elements by background and foreground criteria 
             var groups = 
                 graphicsAndAlphas.GroupBy(_Ga =>
                     _Ga.Key != null && _Ga.Key.GetComponent<TrueShadow>() != null && _Ga.Key.GetComponent<TrueShadow>().isBackground);
             var enumerable = groups as IGrouping<bool, KeyValuePair<Graphic, float>>[] ?? groups.ToArray();
+            
+            //get background shadows group
             var backgroundShadows = enumerable
                 .FirstOrDefault(_G => _G.Key)
                 ?.ToList();
-            var other = enumerable
+            
+            //get foreground group
+            var foreground = enumerable
                 .FirstOrDefault(_G => !_G.Key)
                 ?.ToList();
             
+            //before start transition, make background shadows transparent
             if (backgroundShadows != null)
-            {
-                foreach (var ga in backgroundShadows)
-                {
-                    var graphic = ga.Key;
-                    if (graphic.IsAlive())
-                        ga.Key.color = ga.Key.color.SetAlpha(0);
-                }
-            }
-            
+                foreach (var ga in from ga 
+                    in backgroundShadows let graphic = ga.Key where graphic.IsAlive() select ga)
+                    ga.Key.color = ga.Key.color.SetAlpha(0);
+                
+            //do transition for foreground graphic elements
             float currTime = UiTimeProvider.Instance.Time;
-            if (!_Disappear && other != null)
-            {
+            if (!_Disappear && foreground != null)
                 while (UiTimeProvider.Instance.Time < currTime + _Time)
                 {
                     float timeCoeff = (currTime + _Time - UiTimeProvider.Instance.Time) / _Time;
                     float alphaCoeff = 1 - timeCoeff;
-                    
-                    foreach (var ga in other)
-                    {
-                        var graphic = ga.Key;
-                        if (graphic.IsAlive())
-                            ga.Key.color = ga.Key.color.SetAlpha(ga.Value * alphaCoeff);
-                    }
+                    var collection = foreground;
+                    if (backgroundShadows != null && !_ShadowsAfterOther)
+                        collection = collection.Concat(backgroundShadows).ToList();
+                    foreach (var ga in from ga 
+                        in collection let graphic = ga.Key where graphic.IsAlive() select ga)
+                        ga.Key.color = ga.Key.color.SetAlpha(ga.Value * alphaCoeff);
                     yield return new WaitForEndOfFrame();
                 } 
-            }
             
-            foreach (var button in buttons
+            //enable selectable elements (buttons, toggles, etc.)
+            foreach (var button in selectables
                 .Where(_Button => _Button.Key.IsAlive()))
                 button.Key.enabled = button.Value;
 
+            //do transition for background shadows after other transitions only if _ShadowsAfterOther == true
             float shadowBackgrTime = 0.3f;    
             currTime = UiTimeProvider.Instance.Time;
-            if (!_Disappear && backgroundShadows != null)
+            if (!_Disappear && backgroundShadows != null && _ShadowsAfterOther)
                 while (UiTimeProvider.Instance.Time < currTime + shadowBackgrTime)
                 {
                     float timeCoeff = (currTime + shadowBackgrTime - UiTimeProvider.Instance.Time) / shadowBackgrTime;
                     float alphaCoeff = 1 - timeCoeff;
-                    
-                    foreach (var ga in backgroundShadows)
-                    {
-                        var graphic = ga.Key;
-                        if (graphic.IsAlive())
-                            ga.Key.color = ga.Key.color.SetAlpha(ga.Value * alphaCoeff);
-                    }
+                    foreach (var ga in from ga
+                        in backgroundShadows let graphic = ga.Key where graphic.IsAlive() select ga)
+                        ga.Key.color = ga.Key.color.SetAlpha(ga.Value * alphaCoeff);
                     yield return new WaitForEndOfFrame();
                 }
             
+            //set color alphas to finish values for all graphic elements
             foreach (var ga in graphicsAndAlphas.ToList())
             {
                 var graphic = ga.Key;

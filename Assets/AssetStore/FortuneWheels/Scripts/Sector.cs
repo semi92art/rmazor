@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Entities;
+using Exceptions;
 using Helpers;
 using Managers;
 using UnityEngine;
@@ -39,8 +41,10 @@ namespace MkeyFW
                         return Coins >= 1000000;
                     case MoneyType.Diamonds:
                         return Coins >= 100;
+                    case MoneyType.Lifes:
+                        return Coins >= 10;
                     default:
-                        throw new System.NotImplementedException();
+                        throw new InvalidEnumArgumentExceptionEx(m_MoneyType);
                 }
             }
         }
@@ -49,22 +53,28 @@ namespace MkeyFW
         {
             m_MoneyType = _SectorMoney.type;
             Coins = _SectorMoney.count;
+            string styleName;
             string iconName;
             switch (m_MoneyType)
             {
                 case MoneyType.Gold:
+                    styleName = "coins";
                     iconName = "gold_coin_0";
                     break;
                 case MoneyType.Diamonds:
+                    styleName = "coins";
                     iconName = "diamond_coin_0";
                     break;
+                case MoneyType.Lifes:
+                    styleName = "icons";
+                    iconName = "icon_life";
+                    break;
                 default:
-                    throw new System.NotImplementedException();
+                    throw new InvalidEnumArgumentExceptionEx(m_MoneyType);
             }
 
-            icon.sprite = PrefabInitializer.GetObject<Sprite>("coins", iconName);
+            icon.sprite = PrefabInitializer.GetObject<Sprite>(styleName, iconName);
         }
-        
         
         /// <summary>
         /// Instantiate all prefabs and invoke hit event
@@ -72,20 +82,19 @@ namespace MkeyFW
         /// <param name="_Position"></param>
         public void PlayHit(Vector3 _Position)
         {
-            if (hitPrefabs != null)
+            if (hitPrefabs == null)
             {
-                foreach (var item in hitPrefabs)
-                {
-                    if (item)
-                    {
-                        Transform partT = Instantiate(item).transform;
-                        partT.position = _Position;
-                        if (this && partT) 
-                            Destroy(partT.gameObject, DestroyTime);
-                    }
-                }
+                MoneyToBank();
+                return;
             }
-
+            
+            foreach (var partT in from item in hitPrefabs 
+                where item select Instantiate(item).transform)
+            {
+                partT.position = _Position;
+                if (this && partT) 
+                    Destroy(partT.gameObject, DestroyTime);
+            }
             MoneyToBank();
         }
         
