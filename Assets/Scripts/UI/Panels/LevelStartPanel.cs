@@ -65,7 +65,6 @@ namespace UI.Panels
                 "game_menu", "level_start_panel");
 
             TextMeshProUGUI levelText = go.GetCompItem<TextMeshProUGUI>("level_text");
-            TextMeshProUGUI startButtonText = go.GetCompItem<TextMeshProUGUI>("start_button_text");
             m_LifesAvailableText = go.GetCompItem<TextMeshProUGUI>("lifes_available_text");
             m_StartWithLifesText = go.GetCompItem<TextMeshProUGUI>("start_with_lifes_text");
             m_TakeOneMoreText = go.GetCompItem<TextMeshProUGUI>("take_one_more_text");
@@ -77,7 +76,6 @@ namespace UI.Panels
             SetStartLifes();
             m_TakeOneMoreButton.SetOnClick(OnTakeOneMoreLifeButtonClick);
             startButton.SetOnClick(OnStartButtonClick);
-            AlignTexts();
             return go.RTransform();
         }
         
@@ -101,18 +99,23 @@ namespace UI.Panels
 
         private void OnTakeOneMoreLifeButtonClick()
         {
-            var bank = MoneyManager.Instance.GetBank();
-            Coroutines.Run(Coroutines.WaitWhile(() =>
-                {
-                    if (!m_AvailableLifes.HasValue)
-                        m_AvailableLifes = bank.Money[MoneyType.Lifes];
-                    if (m_AvailableLifes <= 0) 
-                        return;
-                    m_StartLifes++;
-                    m_AvailableLifes--;
-                    CheckForAvailableLifesAndSetTexts();
-                },
-                () => !bank.Loaded));
+            bool shown = GoogleAdsManager.Instance.ShowRewardedAd(() =>
+            {
+                var bank = MoneyManager.Instance.GetBank();
+                Coroutines.Run(Coroutines.WaitWhile(() =>
+                    {
+                        if (!m_AvailableLifes.HasValue)
+                            m_AvailableLifes = bank.Money[MoneyType.Lifes];
+                        if (m_AvailableLifes <= 0)
+                            return;
+                        m_StartLifes++;
+                        m_AvailableLifes--;
+                        CheckForAvailableLifesAndSetTexts();
+                    },
+                    () => !bank.Loaded));
+            });
+            if (!shown)
+                Debug.LogError("Rewarded ad was not loaded!");
         }
         
         private void OnStartButtonClick()
@@ -145,11 +148,6 @@ namespace UI.Panels
             m_StartWithLifesText.text = $"Start with lifes: {_OnStart}";
         }
 
-        private void AlignTexts()
-        {
-            // TODO
-        }
-        
         #endregion
     }
 }

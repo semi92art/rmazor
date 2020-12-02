@@ -82,29 +82,14 @@ namespace UI.Panels
             m_LifesCountRevenueText = go.GetCompItem<TextMeshProUGUI>("lifes_count_revenue_text");
             m_X2Button = go.GetCompItem<Button>("x2_button");
             Button continueButton = go.GetCompItem<Button>("continue_button");
-            var continueButtonText = go.GetCompItem<TextMeshProUGUI>("continue_button_text");
-            var resultsPanel = go.GetCompItem<RectTransform>("results_panel");
-
-            // if (!m_IsPersonalBest)
-            // {
-            //     resultsPanel.Set(
-            //         UiAnchor.Create(0, 1, 1, 1),
-            //         new Vector2(0, -225),
-            //         Vector2.one * 0.5f,
-            //         new Vector2(-103, 208));
-            //     personalBestText.RTransform().Set(
-            //         UiAnchor.Create(0, 1, 1, 1),
-            //         Vector2.up * -111f,
-            //         Vector2.one * 0.5f,
-            //         new Vector2(-116f, 36f));
-            // }
-
-
             levelFinishedText.text = $"Level {m_Level} finished!";
-            personalBestText.text = "Personal best!";
             revenueText.text = "Revenue:";
-            
             SetRevenueCountsText();
+
+            if (m_Revenue == null 
+                || !m_Revenue.Any() 
+                || m_Revenue.All(_Revenue => _Revenue.Value == 0))
+                m_X2Button.gameObject.SetActive(false);
             
             personalBestText.enabled = m_IsPersonalBest;
             m_X2Button.SetOnClick(OnX2ButtonClick);

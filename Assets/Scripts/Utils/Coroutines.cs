@@ -348,7 +348,9 @@ namespace Utils
                 yield break;
             
             float startTime = _TimeProvider.Time;
-            while (_TimeProvider.Time - startTime < _RepeatTime && !_DoStop())
+            
+            while (_TimeProvider.Time - startTime < _RepeatTime 
+                   && (_DoStop == null || !_DoStop()))
             {
                 _Action();
                 yield return new WaitForSeconds(_RepeatDelta);
@@ -369,7 +371,8 @@ namespace Utils
                 yield break;
             float repeatTime = _RepeatDelta * _RepeatCount;
             float startTime = _TimeProvider.Time;
-            while (_TimeProvider.Time - startTime < repeatTime && (_DoStop == null || !_DoStop()))
+            while (_TimeProvider.Time - startTime < repeatTime 
+                   && (_DoStop == null || !_DoStop()))
             {
                 _Action();
                 yield return new WaitForSeconds(_RepeatDelta);

@@ -254,6 +254,7 @@ public class EditorHelper : EditorWindow
         string matPath = @"Assets\Materials\CircleTransparentTransition.mat";
         var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
         mat.SetFloat(CircleTransparentTransitionRenderer.AlphaCoeff, -1);
+        AssetDatabase.SaveAssets();
     }
 
     private void LoadScene(string _Name)
