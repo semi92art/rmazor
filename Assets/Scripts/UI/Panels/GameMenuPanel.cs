@@ -50,7 +50,9 @@ namespace UI.Panels
             PanelState = PanelState.Showing;
             m_Initialized = true;
         }
-        
+
+        public void OnEnable() { }
+
         #endregion
         
         #region nonpublic methods

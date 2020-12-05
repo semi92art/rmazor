@@ -90,7 +90,8 @@ namespace UI
                 MenuUiCategory.MainMenu |
                 MenuUiCategory.SelectGame |
                 MenuUiCategory.Login |
-                MenuUiCategory.Countries);
+                MenuUiCategory.PlusLifes |
+                MenuUiCategory.PlusMoney);
         }
     
         private void CreateDialogViewer()

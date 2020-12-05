@@ -1,4 +1,5 @@
-﻿using Extensions;
+﻿using Constants;
+using Extensions;
 using Helpers;
 using Managers;
 using UI;
@@ -21,11 +22,20 @@ namespace DialogViewers
     public class MainMenuDialogViewer : DialogViewerBase, IMenuDialogViewer
     {
         #region nonpublic members
+
+        private static int AkEnableGoBackButton => AnimKeys.Anim;
+        private static int AkEnableCloseButton => AnimKeys.Anim2;
+        private static int AkDisableGoBackButton => AnimKeys.Stop;
+        private static int AkDisableCloseButton => AnimKeys.Stop2;
+        private static int AkDisableBothButtons => AnimKeys.Stop3;
+        private static int AkState => AnimKeys.State;
+        private const int AkStateBothButtonsDisabled = 0;
+        private const int AkStateGoBackButtonEnabled = 1;
+        private const int AkStateBothButtonsEnabled = 2;
         
-        private Sprite m_IconBack;
-        private Sprite m_IconClose;
+        private Button m_GoBackButton;
         private Button m_CloseButton;
-        private Image m_CloseButtonIcon;
+        private Animator m_ButtonsAnim;
 
         #endregion
     
@@ -33,26 +43,20 @@ namespace DialogViewers
 
         private void Start()
         {
-            GameObject go = PrefabInitializer.InitUiPrefab(
-                UiFactory.UiRectTransform(
-                    gameObject.RTransform(),
-                    UiAnchor.Create(0.5f, 0.5f, 0.5f, 0.5f),
-                    new Vector2(0, -418f),
-                    Vector2.one * 0.5f,
-                    Vector2.one * 60f),
-                "main_menu_buttons", "dialog_close_button");
-            m_CloseButton = go.GetCompItem<Button>("button");
-            m_CloseButtonIcon = go.GetCompItem<Image>("close_icon");
-            m_CloseButton.SetOnClick(() =>
+            m_GoBackButton = gameObject.GetCompItem<Button>("go_back_button");
+            m_CloseButton = gameObject.GetCompItem<Button>("close_button");
+            m_ButtonsAnim = gameObject.GetCompItem<Animator>("buttons_animator");
+            
+            m_GoBackButton.SetOnClick(() =>
             {
-                SoundManager.Instance.PlayMenuButtonClick();
+                SoundManager.Instance.PlayUiButtonClick();
                 Back();
             });
-            GraphicsAlphas.Add(m_CloseButton.RTransform().GetInstanceID(), new GraphicAlphas(m_CloseButton.RTransform()));
-            m_CloseButton.RTransform().gameObject.SetActive(false);
-
-            m_IconBack = PrefabInitializer.GetObject<Sprite>("icons", "icon_back");
-            m_IconClose = PrefabInitializer.GetObject<Sprite>("icons", "icon_close");
+            m_CloseButton.SetOnClick(() =>
+            {
+                SoundManager.Instance.PlayUiButtonClick();
+                CloseAll();
+            });
         }
         
         #endregion
@@ -86,7 +90,8 @@ namespace DialogViewers
 
         #endregion
 
-        #region private methods
+        #region nonpublic methods
+        
         protected override void FinishShowing(
             Panel _ItemFrom,
             Panel _ItemTo,
@@ -94,23 +99,43 @@ namespace DialogViewers
             RectTransform _PanelTo,
             int _UiCategoryType)
         {
-            if (m_CloseButton != null && (_ItemFrom == null || _PanelTo == null))
-            {
-                StartCoroutine(Coroutines.DoTransparentTransition(m_CloseButton.RTransform(),
-                    GraphicsAlphas[m_CloseButton.RTransform().GetInstanceID()].Alphas, TransitionTime, _GoBack));
-            }
-            
             base.FinishShowing(_ItemFrom, _ItemTo, _GoBack, _PanelTo, _UiCategoryType);
-            
-            SetCloseButtonIcon();
+            SetBackAndCloseButtonsState(_GoBack, _PanelTo == null);
         }
 
-        private void SetCloseButtonIcon()
+        private void SetBackAndCloseButtonsState(bool _GoBack, bool _CloseAll)
         {
-            if (m_CloseButton == null)
+            if (m_GoBackButton == null || m_CloseButton == null)
                 return;
-            m_CloseButtonIcon.sprite = PanelStack.GetItem(1) == null ? 
-                m_IconClose : m_IconBack;
+            int state = m_ButtonsAnim.GetInteger(AkState);
+            switch (state)
+            {
+                case AkStateBothButtonsDisabled:
+                    if (!_CloseAll)
+                    {
+                        m_ButtonsAnim.SetTrigger(AkEnableGoBackButton);
+                        m_ButtonsAnim.SetInteger(AkState, AkStateGoBackButtonEnabled);    
+                    }
+                    break;
+                case AkStateGoBackButtonEnabled:
+                    m_ButtonsAnim.SetTrigger(_GoBack ? AkDisableGoBackButton : AkEnableCloseButton);
+                    m_ButtonsAnim.SetInteger(AkState, _GoBack ?
+                        AkStateBothButtonsDisabled : AkStateBothButtonsEnabled);
+                    break;
+                case AkStateBothButtonsEnabled:
+                    int? trigger = null;
+                    if (_CloseAll) trigger = AkDisableBothButtons;
+                    else if (_GoBack) trigger = AkDisableCloseButton;
+                    int? newState;
+                    if (_CloseAll) newState = AkStateBothButtonsDisabled;
+                    else if (_GoBack) newState = AkStateGoBackButtonEnabled;
+                    else newState = AkStateBothButtonsEnabled;
+
+                    if (trigger.HasValue)
+                        m_ButtonsAnim.SetTrigger(trigger.Value);
+                    m_ButtonsAnim.SetInteger(AkState, newState.Value);
+                    break;
+            }
         }
 
         #endregion

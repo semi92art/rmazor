@@ -32,7 +32,7 @@ namespace UI.PanelItems
 
             void SoundAction(bool _On)
             {
-                if (_On) SoundManager.Instance.PlayMenuButtonClick();
+                if (_On) SoundManager.Instance.PlayUiButtonClick();
             }
 
             offToggle.onValueChanged.AddListener(SoundAction);

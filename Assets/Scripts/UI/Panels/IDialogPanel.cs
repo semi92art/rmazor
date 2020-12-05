@@ -7,6 +7,7 @@ namespace UI.Panels
     {
         RectTransform Panel { get; }
         void Show();
+        void OnEnable();
     }
     
     public interface IMenuDialogPanel : IDialogPanel

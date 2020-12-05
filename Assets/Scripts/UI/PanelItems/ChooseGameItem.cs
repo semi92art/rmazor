@@ -19,7 +19,7 @@ namespace UI.PanelItems
             button.interactable = !_Props.IsComingSoon;
             button.SetOnClick(() =>
             {
-                SoundManager.Instance.PlayMenuButtonClick();
+                SoundManager.Instance.PlayUiButtonClick();
                 _Props.Click?.Invoke();
             });
             comingSoonLabel.enabled = _Props.IsComingSoon;

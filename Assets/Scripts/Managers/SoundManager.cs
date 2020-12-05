@@ -28,7 +28,7 @@ namespace Managers
     
         #region factory
 
-        public void PlayMenuButtonClick()
+        public void PlayUiButtonClick()
         {
             PlayClip("button_click", false);
         }

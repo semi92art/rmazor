@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Constants;
 using DialogViewers;
+using Exceptions;
 using Extensions;
 using Helpers;
 using Managers;
@@ -54,9 +55,12 @@ namespace UI.Panels
         private readonly TextMeshProUGUI m_GoldCount;
         private readonly TextMeshProUGUI m_DiamondsCount;
         private readonly TextMeshProUGUI m_LifesCount;
-        private readonly Button m_PlusButton;
+        private readonly Button m_PlusMoneyButton;
+        private readonly Button m_PlusLifesButton;
         private readonly Animator m_Animator;
         private readonly RectTransform m_BankMiniPanel;
+        private readonly RectTransform m_MoneyPanel;
+        private readonly RectTransform m_LifesPanel;
         private bool m_IsShowing;
 
         private static int AkShowInMm => AnimKeys.Anim2;
@@ -72,7 +76,7 @@ namespace UI.Panels
         
         public Action Action { get; set; }
         
-        public BankMiniPanel(RectTransform _Parent, IMenuDialogViewer _MenuDialogViewer)
+        public BankMiniPanel(RectTransform _Parent, IMenuDialogViewer _DialogViewer)
         {
             var go = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
@@ -88,18 +92,28 @@ namespace UI.Panels
             m_GoldCount = go.GetCompItem<TextMeshProUGUI>("gold_count_text");
             m_DiamondsCount = go.GetCompItem<TextMeshProUGUI>("diamonds_count_text");
             m_LifesCount = go.GetCompItem<TextMeshProUGUI>("lifes_count_text");
-            m_PlusButton = go.GetCompItem<Button>("plus_money_button");
+            m_PlusMoneyButton = go.GetCompItem<Button>("plus_money_button");
+            m_PlusLifesButton = go.GetCompItem<Button>("plus_lifes_button");
             m_Animator = go.GetCompItem<Animator>("animator");
             m_BankMiniPanel = go.RTransform();
+            m_MoneyPanel = go.GetCompItem<RectTransform>("money_panel");
+            m_LifesPanel = go.GetCompItem<RectTransform>("lifes_panel");
 
             m_GoldCount.text = string.Empty;
             m_DiamondsCount.text = string.Empty;
             m_LifesCount.text = string.Empty;
             
-            m_PlusButton.SetOnClick(() =>
+            m_PlusMoneyButton.SetOnClick(() =>
             {
-                SoundManager.Instance.PlayMenuButtonClick();
-                IMenuDialogPanel shopPanel = new ShopPanel(_MenuDialogViewer);
+                SoundManager.Instance.PlayUiButtonClick();
+                IMenuDialogPanel shopPanel = new PlusMoneyPanel(_DialogViewer, this);
+                shopPanel.Show();
+            });
+            
+            m_PlusLifesButton.SetOnClick(() =>
+            {
+                SoundManager.Instance.PlayUiButtonClick();
+                IMenuDialogPanel shopPanel = new PlusLifesPanel(_DialogViewer);
                 shopPanel.Show();
             });
 
@@ -115,21 +129,28 @@ namespace UI.Panels
                 AkShowInMm : AkShowInDlg);
             m_IsShowing = true;
             m_BankMiniPanel.sizeDelta = m_BankMiniPanel.sizeDelta.SetX(100);
+            m_MoneyPanel.sizeDelta = m_MoneyPanel.sizeDelta.SetX(100);
+            m_LifesPanel.sizeDelta = m_LifesPanel.sizeDelta.SetX(100);
 
             Coroutines.Run(Coroutines.WaitWhile(() =>
             {
-                int maxTextLength = bank.Money.Max(
-                    _Kvp => _Kvp.Value).ToNumeric().Length;
+                int maxMoneyTextLength = bank.Money
+                    .Where(_Kvp => _Kvp.Key != MoneyType.Lifes)
+                    .Max(_Kvp => _Kvp.Value).ToNumeric().Length;
+                
                 Coroutines.Run(Coroutines.Lerp(
-                    m_BankMiniPanel.sizeDelta.x, 
-                    GetPanelWidth(maxTextLength),
+                    m_MoneyPanel.sizeDelta.x, 
+                    GetMoneyPanelWidth(maxMoneyTextLength),
                     0.3f,
-                    SetPanelWidth,
-                    UiTimeProvider.Instance,
-                    () =>
-                    {
-                        SetMoneyText(bank.Money);
-                    }));
+                    SetMoneyPanelWidth,
+                    UiTimeProvider.Instance));
+                
+                Coroutines.Run(Coroutines.Lerp(
+                    m_LifesPanel.sizeDelta.x, 
+                    GetLifesPanelWidth(bank.Money[MoneyType.Lifes].ToNumeric().Length),
+                    0.3f,
+                    SetLifesPanelWidth,
+                    UiTimeProvider.Instance));
             }, () => !bank.Loaded));
         }
 
@@ -173,7 +194,7 @@ namespace UI.Panels
             
             for (int i = 0; i < PoolSize; i++)
             {
-                GameObject item = new GameObject($"coin_{i}");
+                var item = new GameObject($"coin_{i}");
                 Image coinIcon = item.AddComponent<Image>();
                 coinIcon.raycastTarget = false;
                 coinIcon.sprite = sprites[i % spriteCount];
@@ -208,7 +229,7 @@ namespace UI.Panels
                     if (coin == null)
                         return;
                     coin.IsBusy = true;
-                    coin.Item.gameObject.SetActive(true);
+                    coin.Item.SetGoActive(true);
                     finishedDict.Add(coroutineIndex, false);
                     int cI = coroutineIndex++;
                     Coroutines.Run(Coroutines.Lerp(
@@ -221,7 +242,7 @@ namespace UI.Panels
                         {
                             coin.IsBusy = false;
                             if (coin.Item != null)
-                                coin.Item.gameObject.SetActive(false);
+                                coin.Item.SetGoActive(false);
                             finishedDict[cI] = true;
                         }));
                 },
@@ -246,23 +267,42 @@ namespace UI.Panels
             var currMoney = MoneyManager.Instance.GetBank();
             if (_Income.ContainsKey(moneyType))
             {
+                bool isMoney;
+                switch (moneyType)
+                {
+                    case MoneyType.Gold:
+                    case MoneyType.Diamonds:
+                        isMoney = true;
+                        break;
+                    default:
+                        throw new InvalidEnumArgumentExceptionEx(moneyType);
+                }
+                
                 Coroutines.Run(Coroutines.WaitWhile(() =>
                 {
-                    int maxCountTextLength = MathUtils.Max(
-                        m_GoldCount.text.Length,
-                        m_DiamondsCount.text.Length,
-                        m_LifesCount.text.Length);
-                    int newMaxCountTextLength =
-                        Mathf.Max((currMoney.Money[moneyType] + _Income[moneyType]).ToNumeric().Length, maxCountTextLength);
-                           
-                    if (Mathf.Abs(newMaxCountTextLength - maxCountTextLength) > float.Epsilon)
-                    {
-                        float currentPanelWidth = m_BankMiniPanel.sizeDelta.x;
-                        float newPanelWidth = GetPanelWidth(newMaxCountTextLength);
+                    int maxTextLength = isMoney ? Mathf.Max(m_GoldCount.text.Length,
+                        m_DiamondsCount.text.Length) : m_LifesCount.text.Length;
 
-                        m_GoldCount.rectTransform.sizeDelta = m_DiamondsCount.rectTransform.sizeDelta = 
+                    int newMaxCountTextLength =
+                        Mathf.Max((currMoney.Money[moneyType] + _Income[moneyType]).ToNumeric().Length, maxTextLength);
+                           
+                    if (Mathf.Abs(newMaxCountTextLength - maxTextLength) > float.Epsilon)
+                    {
+                        float currentPanelWidth = isMoney ? m_MoneyPanel.sizeDelta.x : m_LifesPanel.sizeDelta.x;
+                        float newPanelWidth = isMoney
+                            ? GetMoneyPanelWidth(newMaxCountTextLength)
+                            : GetLifesPanelWidth(newMaxCountTextLength);
+
+                        if (isMoney)
+                        {
+                            m_GoldCount.rectTransform.sizeDelta = m_DiamondsCount.rectTransform.sizeDelta =
+                                m_GoldCount.rectTransform.sizeDelta.SetX(GetTextWidth(newMaxCountTextLength));    
+                        }
+                        else
+                        {
                             m_LifesCount.rectTransform.sizeDelta =
-                            m_GoldCount.rectTransform.sizeDelta.SetX(GetTextWidth(newMaxCountTextLength));
+                                m_LifesCount.rectTransform.sizeDelta.SetX(GetTextWidth(newMaxCountTextLength));    
+                        }
                         
                         Coroutines.Run(Coroutines.Lerp(
                             currentPanelWidth, 
@@ -270,9 +310,11 @@ namespace UI.Panels
                             0.3f, 
                             _Width =>
                             {
-                                m_BankMiniPanel.sizeDelta = m_BankMiniPanel.sizeDelta.SetX(_Width);
+                                if (isMoney)
+                                    m_MoneyPanel.sizeDelta = m_MoneyPanel.sizeDelta.SetX(_Width);
+                                else
+                                    m_LifesPanel.sizeDelta = m_LifesPanel.sizeDelta.SetX(_Width);
                             }, UiTimeProvider.Instance));
-                            
                     }
                     
                     Coroutines.Run(Coroutines.Lerp(
@@ -285,6 +327,8 @@ namespace UI.Panels
                                 m_GoldCount.text = _Value.ToNumeric();
                             else if (moneyType == MoneyType.Diamonds)
                                 m_DiamondsCount.text = _Value.ToNumeric();
+                            else if (moneyType == MoneyType.Lifes)
+                                m_LifesCount.text = _Value.ToNumeric();
                         }, UiTimeProvider.Instance));
                 }, () => !currMoney.Loaded));
             }
@@ -293,6 +337,7 @@ namespace UI.Panels
         private void MoneyCountChanged(BankEventArgs _Args)
         {
             SetMoneyText(_Args.BankEntity.Money);
+            SetLifesText(_Args.BankEntity.Money);
         }
         
         private void Income(IncomeEventArgs _Args)
@@ -312,9 +357,14 @@ namespace UI.Panels
             SetTextWidth(m_GoldCount);
             m_DiamondsCount.text = _Money[MoneyType.Diamonds].ToNumeric();
             SetTextWidth(m_DiamondsCount);
+            SetMoneyPanelWidth();
+        }
+
+        private void SetLifesText(Dictionary<MoneyType, long> _Money)
+        {
             m_LifesCount.text = _Money[MoneyType.Lifes].ToNumeric();
             SetTextWidth(m_LifesCount);
-            SetPanelWidth();
+            SetLifesPanelWidth();
         }
 
         private void SetTextWidth(TextMeshProUGUI _Text)
@@ -322,32 +372,56 @@ namespace UI.Panels
             _Text.rectTransform.sizeDelta = 
                 _Text.rectTransform.sizeDelta.SetX(GetTextWidth(_Text.text.Length));
         }
-        private float GetPanelWidth(int? _MaxTextLength)
+        
+        private float GetMoneyPanelWidth(int? _MaxTextLength)
         {
             int textLength = _MaxTextLength ?? MathUtils.Max(
                                  m_GoldCount.text.Length, 
-                                 m_DiamondsCount.text.Length,
-                                 m_LifesCount.text.Length);
+                                 m_DiamondsCount.text.Length);
             return m_GoldIcon.RTransform().rect.width + 
                                   GetTextWidth(textLength) +
-                                  m_PlusButton.RTransform().rect.width + 40;
+                                  m_PlusMoneyButton.RTransform().rect.width + 40;
         }
 
-        private void SetPanelWidth(float _Width)
+        private float GetLifesPanelWidth(int? _TextLength)
         {
-            m_BankMiniPanel.sizeDelta = m_BankMiniPanel.sizeDelta.SetX(_Width);
+            int textLength = _TextLength ?? m_LifesCount.text.Length;
+            return m_LifesIcon.RTransform().rect.width +
+                   GetTextWidth(textLength) +
+                   m_PlusLifesButton.RTransform().rect.width + 70;
+        }
+
+        private void SetMoneyPanelWidth(float _Width)
+        {
+            m_BankMiniPanel.sizeDelta = m_MoneyPanel.sizeDelta.SetX(_Width);
+            m_MoneyPanel.sizeDelta = m_MoneyPanel.sizeDelta.SetX(_Width);
+            m_MoneyPanel.anchoredPosition = m_MoneyPanel.anchoredPosition.SetX(0);
+        }
+
+        private void SetLifesPanelWidth(float _Width)
+        {
+            m_LifesPanel.sizeDelta = m_LifesPanel.sizeDelta.SetX(_Width);
+            m_LifesPanel.anchoredPosition = m_LifesPanel.anchoredPosition.SetX(0);
         }
         
-        private void SetPanelWidth(int? _MaxTextLength = null)
+        private void SetMoneyPanelWidth(int? _MaxTextLength = null)
         {
-            SetPanelWidth(GetPanelWidth(_MaxTextLength));
+            SetMoneyPanelWidth(GetMoneyPanelWidth(_MaxTextLength));
+        }
+
+        private void SetLifesPanelWidth(int? _TextLength = null)
+        {
+            SetLifesPanelWidth(GetLifesPanelWidth(_TextLength));
         }
         
         private void CurrentMenuCategoryChanged(MenuUiCategory _Prev, MenuUiCategory _New)
         {
             if (_Prev == _New || _Prev == MenuUiCategory.Nothing || _New == MenuUiCategory.Nothing)
                 return;
-            m_PlusButton.interactable = true;
+
+            m_PlusMoneyButton.interactable = _New != MenuUiCategory.PlusMoney && _New != MenuUiCategory.Shop;
+            m_PlusLifesButton.interactable = _New != MenuUiCategory.PlusLifes && _New != MenuUiCategory.Shop;
+            
             m_IsShowing = true;
             int trigger = -1;
             switch (_New)
@@ -355,18 +429,13 @@ namespace UI.Panels
                 case MenuUiCategory.Settings:
                 case MenuUiCategory.Loading:
                 case MenuUiCategory.SelectGame:
-                    m_IsShowing = false;
-                    trigger = _Prev == MenuUiCategory.MainMenu ? AkHideInMm : AkHideInDlg;
-                    break;
                 case MenuUiCategory.Login:
-                case MenuUiCategory.Countries:
                     m_IsShowing = false;
                     trigger = _Prev == MenuUiCategory.MainMenu ? AkHideInMm : AkHideInDlg;
-                    if (_Prev == MenuUiCategory.Countries || _Prev == MenuUiCategory.Login)
-                        trigger = -1;
                     break;
                 case MenuUiCategory.Shop:
-                    m_PlusButton.interactable = false;
+                case MenuUiCategory.PlusMoney:
+                case MenuUiCategory.PlusLifes:
                     switch (_Prev)
                     {
                         case MenuUiCategory.MainMenu:
@@ -376,12 +445,14 @@ namespace UI.Panels
                         case MenuUiCategory.Loading:
                         case MenuUiCategory.SelectGame:
                         case MenuUiCategory.Login:
-                        case MenuUiCategory.Countries:
                             trigger = AkShowInDlg;
                             break;
                         case MenuUiCategory.Profile:
                         case MenuUiCategory.WheelOfFortune:
                         case MenuUiCategory.DailyBonus:
+                        case MenuUiCategory.Shop:
+                        case MenuUiCategory.PlusMoney:
+                        case MenuUiCategory.PlusLifes:
                             // Do nothing
                             break;
                         default:
@@ -400,13 +471,14 @@ namespace UI.Panels
                         case MenuUiCategory.Loading:
                         case MenuUiCategory.SelectGame:
                         case MenuUiCategory.Login:
-                        case MenuUiCategory.Countries:
                             trigger = AkShowInDlg;
                             break;
                         case MenuUiCategory.Profile:
                         case MenuUiCategory.WheelOfFortune:
                         case MenuUiCategory.Shop:
                         case MenuUiCategory.DailyBonus:
+                        case MenuUiCategory.PlusMoney:
+                        case MenuUiCategory.PlusLifes:
                             // Do nothing
                             break;
                         default:
@@ -420,13 +492,14 @@ namespace UI.Panels
                         case MenuUiCategory.Loading:
                         case MenuUiCategory.SelectGame:
                         case MenuUiCategory.Login:
-                        case MenuUiCategory.Countries:
                             trigger = AkShowInMm;
                             break;
                         case MenuUiCategory.Profile:
                         case MenuUiCategory.Shop:
                         case MenuUiCategory.DailyBonus:
                         case MenuUiCategory.WheelOfFortune:
+                        case MenuUiCategory.PlusMoney:
+                        case MenuUiCategory.PlusLifes:
                             trigger = AkFromDlgToMm;
                             break;
                         default:

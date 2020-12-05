@@ -45,7 +45,7 @@ namespace UI.PanelItems
         {
             if (!m_IsInitialized) 
                 return;
-            SoundManager.Instance.PlayMenuButtonClick();
+            SoundManager.Instance.PlayUiButtonClick();
             m_OnSelect?.Invoke(title.text);
 
             foreach (var item in m_Items.ToArray())

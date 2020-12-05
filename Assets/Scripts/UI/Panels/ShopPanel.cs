@@ -14,7 +14,7 @@ namespace UI.Panels
 {
     public class ShopPanel : IMenuDialogPanel
     {
-        #region private members
+        #region nonpublic members
         
         private readonly List<ShopItemProps> m_ShopItemPropsList = new List<ShopItemProps>
         {
@@ -48,20 +48,22 @@ namespace UI.Panels
             Panel = Create();
             m_DialogViewer.Show(this);
         }
-        
+
+        public void OnEnable() { }
+
         #endregion
         
-        #region private methods
+        #region nonpublic methods
         
         private RectTransform Create()
         {
-            GameObject shopPanel = PrefabInitializer.InitUiPrefab(
+            GameObject go = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_DialogViewer.DialogContainer,
                     RtrLites.FullFill),
                 "main_menu",
                 "shop_panel");
-            RectTransform content = shopPanel.GetCompItem<RectTransform>("content");
+            RectTransform content = go.GetCompItem<RectTransform>("content");
             
             GameObject shopItem = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
@@ -85,7 +87,7 @@ namespace UI.Panels
             Object.Destroy(shopItem);
 
             content.anchoredPosition = content.anchoredPosition.SetY(0);
-            return shopPanel.RTransform();
+            return go.RTransform();
         }
         
         #endregion

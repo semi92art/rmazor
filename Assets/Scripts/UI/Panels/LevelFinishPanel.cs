@@ -59,7 +59,9 @@ namespace UI.Panels
             Panel = Create();
             m_DialogViewer.Show(this);
         }
-        
+
+        public void OnEnable() { }
+
         #endregion
 
         #region nonpublic methods

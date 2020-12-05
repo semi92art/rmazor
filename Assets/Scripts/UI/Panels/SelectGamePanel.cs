@@ -48,6 +48,8 @@ namespace UI.Panels
             m_DialogViewer.Show(this);
         }
 
+        public void OnEnable() { }
+
         #endregion
         
         #region private methods

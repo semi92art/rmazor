@@ -52,6 +52,8 @@ namespace UI.Panels
             m_DialogViewer.Show(this);
         }
 
+        public void OnEnable() { }
+
         private RectTransform Create()
         {
             var go = new GameObject("Wheel Of Fortune Panel");

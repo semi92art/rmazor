@@ -34,6 +34,8 @@ namespace UI.Panels
             DialogViewer.Show( this);
         }
 
+        public void OnEnable() { }
+
         #endregion
         
         #region protected methods

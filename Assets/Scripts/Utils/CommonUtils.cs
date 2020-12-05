@@ -19,7 +19,18 @@ namespace Utils
         {
             return _Item == null || _Item.ToString() == "null";
         }
-        
+
+        public static void SetGoActive<T>(this T _Item, bool _Active) where T : Component
+        {
+            _Item.gameObject.SetActive(false);
+        }
+
+        public static void SetGoActive<T>(bool _Active, params T[] _Items) where T : Component
+        {
+            foreach (var item in _Items)
+                item.gameObject.SetActive(_Active);
+        }
+
         public static T[] EnumToList<T>() where T : Enum
         {
             return Enum.GetValues(typeof(T))

@@ -98,12 +98,12 @@ namespace UI.Panels
         
         public void Show()
         {
-            m_Panel.gameObject.SetActive(true);
+            m_Panel.SetGoActive(true);
         }
 
         public void Hide()
         {
-            m_Panel.gameObject.SetActive(false);
+            m_Panel.SetGoActive(false);
         }
 
         public void SetLifes(long _Count, bool _AnimateIfDecrease = true)

@@ -52,6 +52,8 @@ namespace UI.Panels
             m_DialogViewer.Show(this);
         }
 
+        public void OnEnable() { }
+
         #endregion
         
         #region private methods
@@ -135,10 +137,8 @@ namespace UI.Panels
             long avLifes = m_AvailableLifes.Value;
             SetLivesCountTexts(avLifes, m_StartLifes);
             if (avLifes == 0 || m_StartLifes == 5)
-            {
-                m_TakeOneMoreButton.gameObject.SetActive(false);
-                m_TakeOneMoreText.gameObject.SetActive(false);
-            }
+                CommonUtils.SetGoActive(false, (Component)m_TakeOneMoreButton, m_TakeOneMoreText);
+            
             m_GetLifes?.Invoke(m_StartLifes);
         }
         

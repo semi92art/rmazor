@@ -261,55 +261,55 @@ namespace UI
 
         private void OnOpenSelectGamePanel()
         {
-            SoundManager.Instance.PlayMenuButtonClick();
+            SoundManager.Instance.PlayUiButtonClick();
             IMenuDialogPanel selectGame = new SelectGamePanel(m_MenuDialogViewer, SetGameLogo);
             selectGame.Show();
         }
         
         private void OnProfileButtonClick()
         {
-            SoundManager.Instance.PlayMenuButtonClick();
+            SoundManager.Instance.PlayUiButtonClick();
             IMenuDialogPanel profile = new ProfilePanel(m_MenuDialogViewer);
             profile.Show();
         }
 
         private void OnSettingsButtonClick()
         {
-            SoundManager.Instance.PlayMenuButtonClick();
+            SoundManager.Instance.PlayUiButtonClick();
             IMenuDialogPanel settings = new SettingsPanel(m_MenuDialogViewer);
             settings.Show();
         }
 
         private void OnLoginButtonClick()
         {
-            SoundManager.Instance.PlayMenuButtonClick();
+            SoundManager.Instance.PlayUiButtonClick();
             IMenuDialogPanel login = new LoginPanel(m_MenuDialogViewer);
             login.Show();
         }
 
         private void OnShopButtonClick()
         {
-            SoundManager.Instance.PlayMenuButtonClick();
+            SoundManager.Instance.PlayUiButtonClick();
             IMenuDialogPanel shop = new ShopPanel(m_MenuDialogViewer);
             shop.Show();
         }
 
         private void OnPlayButtonClick()
         {
-            SoundManager.Instance.PlayMenuButtonClick();
+            SoundManager.Instance.PlayUiButtonClick();
             (m_BankMiniPanel as BankMiniPanel)?.UnregisterFromEvents();
             LevelLoader.LoadLevel(1);
         }
 
         private void OnRatingsClick()
         {
-            SoundManager.Instance.PlayMenuButtonClick();
+            SoundManager.Instance.PlayUiButtonClick();
             // TODO
         }
 
         private void OnDailyBonusButtonClick()
         {
-            SoundManager.Instance.PlayMenuButtonClick();
+            SoundManager.Instance.PlayUiButtonClick();
             IMenuDialogPanel dailyBonus = new DailyBonusPanel(
                 m_MenuDialogViewer, (IActionExecuter)m_BankMiniPanel);
             dailyBonus.Show();
@@ -317,7 +317,7 @@ namespace UI
 
         private void OnWheelOfFortuneButtonClick()
         {
-            SoundManager.Instance.PlayMenuButtonClick();
+            SoundManager.Instance.PlayUiButtonClick();
             IMenuDialogPanel wheelOfFortune = new WheelOfFortunePanel(m_MenuDialogViewer);
             wheelOfFortune.Show();
         }

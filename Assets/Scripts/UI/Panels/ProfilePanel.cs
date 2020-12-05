@@ -39,7 +39,9 @@ namespace UI.Panels
             Panel = Create();
             m_DialogViewer.Show(this);
         }
-        
+
+        public void OnEnable() { }
+
         #endregion
         
         #region private methods
@@ -55,22 +57,16 @@ namespace UI.Panels
             TextMeshProUGUI toSeeMessage = pp.GetCompItem<TextMeshProUGUI>("to_see_message");
 
             TextMeshProUGUI user = pp.GetCompItem<TextMeshProUGUI>("user_text");
-            TextMeshProUGUI bestResultTitle = pp.GetCompItem<TextMeshProUGUI>("best_result_title");
-            TextMeshProUGUI bestResultNum = pp.GetCompItem<TextMeshProUGUI>("best_result_number");
-            TextMeshProUGUI worldRankTitle = pp.GetCompItem<TextMeshProUGUI>("world_rank_title");
             m_WorldRankNum = pp.GetCompItem<TextMeshProUGUI>("world_rank_number");
             Button worldRankListButton = pp.GetCompItem<Button>("world_rank_list_button");
-            TextMeshProUGUI countryRankTitle = pp.GetCompItem<TextMeshProUGUI>("country_rank_title");
             m_CountryRankNum = pp.GetCompItem<TextMeshProUGUI>("country_rank_number");
             Button countryRankListButton = pp.GetCompItem<Button>("country_rank_list_button");
-            TextMeshProUGUI gamesPlayedTitle = pp.GetCompItem<TextMeshProUGUI>("games_played_title");
+            TextMeshProUGUI bestResultNum = pp.GetCompItem<TextMeshProUGUI>("best_result_number");
             TextMeshProUGUI gamesPlayedNum = pp.GetCompItem<TextMeshProUGUI>("games_played_number");
-            TextMeshProUGUI levelsPlayedTitle = pp.GetCompItem<TextMeshProUGUI>("levels_played_title");
             TextMeshProUGUI levelsPlayedNum = pp.GetCompItem<TextMeshProUGUI>("levels_played_number");
-            TextMeshProUGUI awardsTitle = pp.GetCompItem<TextMeshProUGUI>("awards_title");
 
             bool isLogined = !string.IsNullOrEmpty(GameClient.Instance.Login);
-            toSeeMessage.gameObject.SetActive(!isLogined);
+            toSeeMessage.SetGoActive(!isLogined);
             infoContainer.SetActive(isLogined);
 
             if (!isLogined)

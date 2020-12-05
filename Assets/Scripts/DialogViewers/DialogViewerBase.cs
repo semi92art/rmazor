@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Exceptions;
 using Extensions;
 using UI.Managers;
 using UI.Panels;
@@ -163,19 +164,22 @@ namespace DialogViewers
             RectTransform toPanel = null;
             MenuUiCategory menuCat = MenuUiCategory.Nothing;
             GameUiCategory gameCat = GameUiCategory.Nothing;
-            if (_UiCategoryType == MenuUiCategoryType)
+            switch (_UiCategoryType)
             {
-                fromPanel = itemFrom?.MenuDialogPanel.Panel;
-                toPanel = _ItemTo?.MenuDialogPanel.Panel;
-                UiManager.Instance.CurrentMenuCategory = menuCat = 
-                    _ItemTo?.MenuDialogPanel?.Category ?? MenuUiCategory.MainMenu;
-            }
-            else if (_UiCategoryType == GameUiCategoryType)
-            {
-                fromPanel = itemFrom?.GameDialogPanel.Panel;
-                toPanel = _ItemTo?.GameDialogPanel.Panel;
-                UiManager.Instance.CurrentGameCategory = gameCat =
-                    _ItemTo?.GameDialogPanel?.Category ?? GameUiCategory.Game;
+                case MenuUiCategoryType:
+                    fromPanel = itemFrom?.MenuDialogPanel.Panel;
+                    toPanel = _ItemTo?.MenuDialogPanel.Panel;
+                    UiManager.Instance.CurrentMenuCategory = menuCat = 
+                        _ItemTo?.MenuDialogPanel?.Category ?? MenuUiCategory.MainMenu;
+                    break;
+                case GameUiCategoryType:
+                    fromPanel = itemFrom?.GameDialogPanel.Panel;
+                    toPanel = _ItemTo?.GameDialogPanel.Panel;
+                    UiManager.Instance.CurrentGameCategory = gameCat =
+                        _ItemTo?.GameDialogPanel?.Category ?? GameUiCategory.Game;
+                    break;
+                default:
+                    throw new InvalidEnumArgumentExceptionEx(_UiCategoryType);
             }
 
             if (itemFrom != null && fromPanel != null && _HidePrevious)
@@ -204,6 +208,17 @@ namespace DialogViewers
                 StartCoroutine(Coroutines.DoTransparentTransition(
                     toPanel, GraphicsAlphas[instId].Alphas, TransitionTime, false, 
                     () => background.enabled = true));
+                switch (_UiCategoryType)
+                {
+                    case MenuUiCategoryType:
+                        _ItemTo.MenuDialogPanel.OnEnable();
+                        break;
+                    case GameUiCategoryType:
+                        _ItemTo.GameDialogPanel.OnEnable();
+                        break;
+                    default:
+                        throw new InvalidEnumArgumentExceptionEx(_UiCategoryType);
+                }
             }
 
             if (NotDialogs != null && NotDialogs.Any())

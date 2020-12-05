@@ -85,7 +85,17 @@ namespace Managers
             }, () => !inBank.Loaded));
         }
 
-        public bool TryMinusMoney(Dictionary<MoneyType, int> _Money)
+        public void PlusMoney(MoneyType _MoneyType, long _Value)
+        {
+            var inBank = GetBank();
+            Coroutines.Run(Coroutines.WaitWhile(() =>
+            {
+                inBank.Money[_MoneyType] += _Value;
+                SetMoney(inBank.Money);
+            }, () => !inBank.Loaded));
+        }
+
+        public bool TryMinusMoney(Dictionary<MoneyType, long> _Money)
         {
             var inBank = GetBank();
             var mts = new [] {MoneyType.Gold, MoneyType.Diamonds, MoneyType.Lifes};

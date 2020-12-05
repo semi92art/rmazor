@@ -44,7 +44,9 @@ namespace UI.Panels
             Panel = Create(m_DialogViewer);
             m_DialogViewer.Show(this);
         }
-        
+
+        public void OnEnable() { }
+
         public void Hide()
         {
             m_DialogViewer.Back();

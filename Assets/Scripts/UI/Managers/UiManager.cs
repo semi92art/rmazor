@@ -2,7 +2,6 @@
 using Constants;
 using DebugConsole;
 using Entities;
-using Helpers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;
@@ -22,7 +21,8 @@ namespace UI.Managers
         Login = 64,
         Shop = 128,
         Settings = 256,
-        Countries = 512
+        PlusMoney = 512,
+        PlusLifes = 1024
     }
 
     [Flags]

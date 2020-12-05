@@ -88,7 +88,7 @@ namespace UI.Panels
         public void Show()
         {
             m_RevenueShowing = true;
-            m_Panel.gameObject.SetActive(true);
+            m_Panel.SetGoActive(true);
         }
 
         public void Hide()
