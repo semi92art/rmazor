@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Lean.Localization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,7 +24,7 @@ namespace UI
         private Transform m_Indicator;
         private Transform m_Indicator2;
         private bool m_DoLoading;
-        private string m_LoadingText = "Loading";
+        private string m_LoadingText = LeanLocalization.GetTranslationText("Loading");
         private int m_PointsState;
         private int m_TimePrev;
         
@@ -75,6 +76,7 @@ namespace UI
             if (time % 2 == 0 && time != m_TimePrev)
             {
                 CommonUtils.IncWithOverflow(ref m_PointsState, 4);
+                m_LoadingText = LeanLocalization.GetTranslationText("Loading");
                 loading.text = m_LoadingText + string.Concat(Enumerable.Repeat(".", m_PointsState));
             }
 

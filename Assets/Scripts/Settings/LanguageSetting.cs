@@ -2,13 +2,15 @@
 using System.Linq;
 using Entities;
 using Lean.Localization;
+using UI.Panels;
+using UnityEngine;
 using Utils;
 
 namespace Settings
 {
     public class LanguageSetting : ISetting
     {
-        public string Name => "Language";
+        public string Name => LeanLocalization.GetTranslationText("Language");
         public SettingType Type => SettingType.InPanelSelector;
 
         public List<string> Values => m_LangNames.Values.OrderBy(_Item => _Item).ToList();
@@ -37,6 +39,7 @@ namespace Settings
                 .FirstOrDefault(_Kvp => _Kvp.Value == langName).Key;
             SaveUtils.PutValue(SaveKey.SettingLanguage, lang);
             LeanLocalization.CurrentLanguage = lang.ToString();
+            SettingsPanel.UpdateSetting();
         }
     }
 }

@@ -2,12 +2,14 @@
 using Constants;
 using Entities;
 using Extensions;
+using Lean.Localization;
 using Managers;
 using TMPro;
 using UI.Panels;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils;
+
 
 namespace UI.PanelItems
 {
@@ -25,7 +27,7 @@ namespace UI.PanelItems
         public void Init(DailyBonusProps _Props, IActionExecuter _ActionExecuter)
         {
             icon.sprite = _Props.Icon;
-            day.text = $"Day {_Props.Day}";
+            day.text = $"{LeanLocalization.GetTranslationText("Day")} {_Props.Day}";
             price.text = _Props.Gold != 0 ? $"{_Props.Gold}" : $"{_Props.Diamonds}";
             button.interactable = _Props.IsActive;
             if (_Props.IsActive)

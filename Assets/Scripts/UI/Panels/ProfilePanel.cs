@@ -102,14 +102,14 @@ namespace UI.Panels
                 Global = true,
                 AccountId = GameClient.Instance.AccountId,
                 GameId = GameClient.Instance.GameId,
-                Type = ScoreTypes.MaxLevel
+                Type = ScoreTypes.MaxScore
             });
             var countryPacket = new RankPacket(new RankRequestArgs
             {
                 Global = false,
                 AccountId = GameClient.Instance.AccountId,
                 GameId = GameClient.Instance.GameId,
-                Type = ScoreTypes.MaxLevel
+                Type = ScoreTypes.MaxScore
             });
             
             globalPacket.OnSuccess(() =>

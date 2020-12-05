@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Entities;
 using Managers;
+using Lean.Localization;
 using UnityEngine;
 using Utils;
 
@@ -8,7 +9,7 @@ namespace Settings
 {
     public class SoundSetting : ISetting
     {
-        public string Name => "Sound";
+        public string Name => LeanLocalization.GetTranslationText("Sound");
         public SettingType Type => SettingType.OnOff;
         public List<string> Values => null;
         public object Min => null;

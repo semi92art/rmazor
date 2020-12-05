@@ -105,7 +105,7 @@ namespace UI.Managers
 #endif
         
         #endregion
-        
+
         #region engine methods
         
         private void Awake()

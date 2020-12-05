@@ -113,7 +113,7 @@ namespace Managers
             var scores = ScoreManager.Instance.GetScores();
             Coroutines.Run(Coroutines.WaitWhile(() =>
             {
-                if (scores.Scores[ScoreTypes.MaxLevel] < LevelController.Level)
+                if (scores.Scores[ScoreTypes.MaxScore] < LevelController.Level)
                 {
                     IPacket scorePacket = new SetScorePacket(new SetScoreRequestArgs
                     {
@@ -121,7 +121,7 @@ namespace Managers
                         GameId = GameClient.Instance.GameId,
                         LastUpdateTime = DateTime.Now,
                         Points = LevelController.Level,
-                        Type = ScoreTypes.MaxLevel
+                        Type = ScoreTypes.MaxScore
                     });
                     scorePacket.OnFail(() => Debug.LogError(scorePacket.ErrorMessage));
                     GameClient.Instance.Send(scorePacket);
@@ -137,7 +137,7 @@ namespace Managers
                         RevenueController.TotalRevenue.Clear();
                         LevelController.BeforeStartLevel();
                     },
-                    LevelController.Level > scores.Scores[ScoreTypes.MaxLevel]);
+                    LevelController.Level > scores.Scores[ScoreTypes.MaxScore]);
             }, () => !scores.Loaded));
         }
 
