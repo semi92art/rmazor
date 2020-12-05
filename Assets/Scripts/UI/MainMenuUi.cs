@@ -157,10 +157,16 @@ namespace UI
                 "main_menu_buttons",
                 "play_button");
             playButton.GetComponent<Button>().SetOnClick(OnPlayButtonClick);
-            var bestLevelText = playButton.GetCompItem<TextMeshProUGUI>("best_level_text");
+            var bestScoreText = playButton.GetCompItem<TextMeshProUGUI>("best_score_text");
             var scores = ScoreManager.Instance.GetScores();
             Coroutines.Run(Coroutines.WaitWhile(
-                () => bestLevelText.text = $"Best: {scores.Scores[ScoreTypes.MaxLevel].ToNumeric()} lev.",
+                () =>
+                {
+                    long maxScore = 0;
+                    if (scores.Scores.ContainsKey(ScoreTypes.MaxScore))
+                        maxScore = scores.Scores[ScoreTypes.MaxScore];
+                    bestScoreText.text = $"Best: {maxScore.ToNumeric()}";
+                },
                 () => !scores.Loaded));
             
             
@@ -195,11 +201,13 @@ namespace UI
                 SizeDelta = Vector2.one * 100f
             };
 
-            var loginButton = PrefabInitializer.InitUiPrefab(
-                UiFactory.UiRectTransform(contentRtr, rTrLite),
+            var wofButton = PrefabInitializer.InitUiPrefab(
+                UiFactory.UiRectTransform(
+                    contentRtr,
+                    rTrLite),
                 "main_menu_buttons",
-                "login_button");
-            loginButton.GetComponent<Button>().SetOnClick(OnLoginButtonClick);
+                "wheel_of_fortune_button_2");
+            wofButton.GetComponent<Button>().SetOnClick(OnWheelOfFortuneButtonClick);
 
             var dailyBonusButton = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(contentRtr, rTrLite),
@@ -225,13 +233,11 @@ namespace UI
                 "bottom_buttons_scroll_view");
             contentRtr = go.GetCompItem<RectTransform>("content");
             
-            var wofButton = PrefabInitializer.InitUiPrefab(
-                UiFactory.UiRectTransform(
-                    contentRtr,
-                    rTrLite),
+            var loginButton = PrefabInitializer.InitUiPrefab(
+                UiFactory.UiRectTransform(contentRtr, rTrLite),
                 "main_menu_buttons",
-                "wheel_of_fortune_button_2");
-            wofButton.GetComponent<Button>().SetOnClick(OnWheelOfFortuneButtonClick);
+                "login_button");
+            loginButton.GetComponent<Button>().SetOnClick(OnLoginButtonClick);
         }
 
         private void InitSmallButtons()

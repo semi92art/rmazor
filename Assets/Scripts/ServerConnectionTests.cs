@@ -121,7 +121,7 @@ public class ServerConnectionTests
                 {
                     AccountId = 1,
                     GameId = 1,
-                    Type = ScoreTypes.MaxLevel
+                    Type = ScoreTypes.MaxScore
                 })
             .OnSuccess(() => requestSuccess = true);
         GameClient.Instance.Send(packet);
@@ -178,7 +178,7 @@ public class ServerConnectionTests
                     AccountId = 1,
                     GameId = 1,
                     Points = Mathf.RoundToInt(Random.value * 100),
-                    Type = ScoreTypes.MaxLevel
+                    Type = ScoreTypes.MaxScore
                 })
             .OnSuccess(() => requestSuccess = true);
         GameClient.Instance.Send(packet);

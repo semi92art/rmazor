@@ -155,9 +155,11 @@ namespace UI
                                     {
                                         Debug.Log("Register by DeviceId successfully");
                                         GameClient.Instance.AccountId = registerPacket.Response.Id;
-                                        MoneyManager.Instance.GetBank(true);
-                                        ScoreManager.Instance.GetScores(true);
-                                        LoadMainMenu();
+                                        var bank = MoneyManager.Instance.GetBank(true);
+                                        var scores = ScoreManager.Instance.GetScores(true);
+                                        Coroutines.Run(Coroutines.WaitWhile(
+                                            () => LoadMainMenu(),
+                                            () => !bank.Loaded || !scores.Loaded));
                                     })
                                     .OnFail(() => { Debug.LogError(loginPacket.ErrorMessage); });
                                 GameClient.Instance.Send(registerPacket);

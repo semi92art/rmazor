@@ -120,6 +120,11 @@ namespace UI.Panels
             MoneyManager.Instance.OnMoneyCountChanged += MoneyCountChanged;
             MoneyManager.Instance.OnIncome += Income;
             UiManager.Instance.OnCurrentMenuCategoryChanged += CurrentMenuCategoryChanged;
+
+            var bank = MoneyManager.Instance.GetBank();
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => SetMoney(bank.Money),
+                () => !bank.Loaded));
         }
 
         public void Show()
@@ -336,8 +341,13 @@ namespace UI.Panels
         
         private void MoneyCountChanged(BankEventArgs _Args)
         {
-            SetMoneyText(_Args.BankEntity.Money);
-            SetLifesText(_Args.BankEntity.Money);
+            SetMoney(_Args.BankEntity.Money);
+        }
+
+        private void SetMoney(Dictionary<MoneyType, long> _Money)
+        {
+            SetMoneyText(_Money);
+            SetLifesText(_Money);
         }
         
         private void Income(IncomeEventArgs _Args)

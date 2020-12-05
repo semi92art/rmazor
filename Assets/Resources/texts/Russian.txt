@@ -25,3 +25,4 @@ Loading = загрузка
 Day = День
 Tomorrow = Завтра
 MoneySymbol = ₽
+WatchAd = Смотреть рекламу

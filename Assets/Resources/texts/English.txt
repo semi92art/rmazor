@@ -25,3 +25,4 @@ Loading = loading
 Day = Day
 Tomorrow = Tomorrow
 MoneySymbol = $
+WatchAd = Watch Ad

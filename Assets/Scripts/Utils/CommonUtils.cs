@@ -22,7 +22,7 @@ namespace Utils
 
         public static void SetGoActive<T>(this T _Item, bool _Active) where T : Component
         {
-            _Item.gameObject.SetActive(false);
+            _Item.gameObject.SetActive(_Active);
         }
 
         public static void SetGoActive<T>(bool _Active, params T[] _Items) where T : Component

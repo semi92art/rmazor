@@ -8,5 +8,5 @@
 АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЬЫЭЮЯ
 abcdefghijklmnopqrstuvwxyz
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
-áâãàçéêíóôõú
-ÁÂÃÀÇÉÊÍÓÔÕÚ
+áâãàçéêíóôõúñ
+ÁÂÃÀÇÉÊÍÓÔÕÚÑ

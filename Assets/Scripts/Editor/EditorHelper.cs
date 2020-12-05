@@ -122,8 +122,13 @@ public class EditorHelper : EditorWindow
             m_TestUrl = @"http://77.37.152.15:7000";
             UpdateTestUrl(true);
         }
+
         if (GUILayout.Button("Delete All Settings"))
+        {
             PlayerPrefs.DeleteAll();
+            UpdateTestUrl(true);
+        }
+        
         if (GUILayout.Button("Set Default Material Props"))
             SetDefaultMaterialProps();
         EditorUtils.DrawUiLine(Color.gray);
@@ -218,7 +223,7 @@ public class EditorHelper : EditorWindow
                                 GameId = gameId,
                                 LastUpdateTime = System.DateTime.Now,
                                 Points = randGen.Next(0, 100),
-                                Type = ScoreTypes.MaxLevel
+                                Type = ScoreTypes.MaxScore
                             });
 
                             int iiii = iii;
@@ -239,13 +244,13 @@ public class EditorHelper : EditorWindow
 
     private void DeleteAllTestUsers()
     {
+        GameClient.Instance.Init(true);
         IPacket packet = new DeleteTestUsersPacket();
         packet.OnSuccess(() =>
             {
                 Debug.Log("All test users deleted");
             })
             .OnFail(() => Debug.Log($"Failed to delete test users: {packet.ErrorMessage}"));
-        GameClient.Instance.Init(true);
         GameClient.Instance.Send(packet);
     }
 
