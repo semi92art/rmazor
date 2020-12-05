@@ -149,7 +149,8 @@ GameObject:
   - component: {fileID: 2639100807201644887}
   - component: {fileID: 3623839488149442330}
   m_Layer: 0
-  m_Name: TMP SubMeshUI [Fulbo Argenta SDF 2 Material + LiberationSans SDF Atlas]
+  m_Name: TMP SubMeshUI [Fulbo Argenta Cirillic 2 SDF Material + LiberationSans SDF
+    Atlas]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -379,8 +380,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: SELECT GAME
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: cf0262b8ca6afe840ac2d7aefd342639, type: 2}
-  m_sharedMaterial: {fileID: 4317000356838365217, guid: cf0262b8ca6afe840ac2d7aefd342639,
+  m_fontAsset: {fileID: 11400000, guid: 4829f278ac4f5fc498de060344d449b1, type: 2}
+  m_sharedMaterial: {fileID: -415713865528644698, guid: 4829f278ac4f5fc498de060344d449b1,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -412,7 +413,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 33
   m_textAlignment: 258
   m_characterSpacing: 0
   m_wordSpacing: 0

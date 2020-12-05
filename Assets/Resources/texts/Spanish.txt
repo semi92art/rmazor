@@ -21,3 +21,7 @@ LoginFail = carga fallida. inténtalo de nuevo más tarde
 MaxNameLength = longitud máxima del nombre: 20 símbolos
 PasswordsDoNotMatch = las contraseñas no coinciden
 NameIsUnavailable = el nombre no está disponible
+Loading = cargando
+Day = día
+Tomorrow = Mañana
+MoneySymbol = €

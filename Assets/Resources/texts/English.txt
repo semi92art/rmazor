@@ -21,3 +21,7 @@ LoginFail = login fail. try again later
 MaxNameLength = maximum name length: 20 symbols
 PasswordsDoNotMatch = passwords do not match
 NameIsUnavailable = name is unavailable
+Loading = loading
+Day = Day
+Tomorrow = Tomorrow
+MoneySymbol = $

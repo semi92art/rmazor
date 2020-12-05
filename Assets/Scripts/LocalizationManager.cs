@@ -1,4 +1,5 @@
-﻿using Entities;
+﻿using System.IO;
+using Entities;
 using UnityEngine;
 using Lean.Localization;
 using Utils;
@@ -19,7 +20,7 @@ public class LocalizationManager : ISingleton
     
     #region private members
 
-    private GameObject m_LocalizationObject;
+    private GameObject m_localizationObject;
 
     #endregion
 
@@ -27,11 +28,11 @@ public class LocalizationManager : ISingleton
 
     public void Init()
     {
-        if (m_LocalizationObject != null)
+        if (m_localizationObject != null)
             return;
-        m_LocalizationObject = new GameObject("Localization");
-        Object.DontDestroyOnLoad(m_LocalizationObject);
-        LeanLocalization localization = m_LocalizationObject.AddComponent<LeanLocalization>();
+        m_localizationObject = new GameObject("Localization");
+        Object.DontDestroyOnLoad(m_localizationObject);
+        LeanLocalization localization = m_localizationObject.AddComponent<LeanLocalization>();
         //add languages in list
         string[] cultres = {"en", "en-GB"};
         localization.AddLanguage("English", cultres);
@@ -46,33 +47,33 @@ public class LocalizationManager : ISingleton
         
         //Create readers from localization files
         GameObject englishCsv = new GameObject("englishCSV");
-        englishCsv.transform.SetParent(m_LocalizationObject.transform);
+        englishCsv.transform.SetParent(m_localizationObject.transform);
         LeanLanguageCSV engCsv = englishCsv.AddComponent<LeanLanguageCSV>();
-        engCsv.Source = Resources.Load<TextAsset>("texts/English");
+        engCsv.Source = Resources.Load<TextAsset>("Texts/English");
         engCsv.Language = "English";
         
         GameObject russianCsv = new GameObject("russianCSV");
-        russianCsv.transform.SetParent(m_LocalizationObject.transform);
+        russianCsv.transform.SetParent(m_localizationObject.transform);
         LeanLanguageCSV rusCsv = russianCsv.AddComponent<LeanLanguageCSV>();
-        rusCsv.Source = Resources.Load<TextAsset>("texts/Russian");
+        rusCsv.Source = Resources.Load<TextAsset>("Texts/Russian");
         rusCsv.Language = "Russian";
         
         GameObject germanCsv = new GameObject("germanCSV");
-        germanCsv.transform.SetParent(m_LocalizationObject.transform);
+        germanCsv.transform.SetParent(m_localizationObject.transform);
         LeanLanguageCSV gerCsv = germanCsv.AddComponent<LeanLanguageCSV>();
-        gerCsv.Source = Resources.Load<TextAsset>("texts/German");
+        gerCsv.Source = Resources.Load<TextAsset>("Texts/German");
         gerCsv.Language = "German";
         
         GameObject spanishCsv = new GameObject("spanishCSV");
-        spanishCsv.transform.SetParent(m_LocalizationObject.transform);
+        spanishCsv.transform.SetParent(m_localizationObject.transform);
         LeanLanguageCSV spCsv = spanishCsv.AddComponent<LeanLanguageCSV>();
-        spCsv.Source = Resources.Load<TextAsset>("texts/Spanish");
+        spCsv.Source = Resources.Load<TextAsset>("Texts/Spanish");
         spCsv.Language = "Spanish";
         
         GameObject portugalCsv = new GameObject("portugalCSV");
-        portugalCsv.transform.SetParent(m_LocalizationObject.transform);
+        portugalCsv.transform.SetParent(m_localizationObject.transform);
         LeanLanguageCSV portCsv = portugalCsv.AddComponent<LeanLanguageCSV>();
-        portCsv.Source = Resources.Load<TextAsset>("texts/Portugal");
+        portCsv.Source = Resources.Load<TextAsset>("Texts/Portugal");
         portCsv.Language = "Portugal";
         
         localization.SetCurrentLanguage(SaveUtils.GetValue<Language>(SaveKey.SettingLanguage).ToString());

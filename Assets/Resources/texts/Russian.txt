@@ -21,3 +21,7 @@ LoginFail = вход не выполнен. попробуйте позде
 MaxNameLength = максимальная длина в имени: 20 символов
 PasswordsDoNotMatch = пароли не совпадают
 NameIsUnavailable = имя недоступно
+Loading = загрузка
+Day = День
+Tomorrow = Завтра
+MoneySymbol = ₽

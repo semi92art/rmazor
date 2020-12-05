@@ -21,3 +21,7 @@ LoginFail = falha de login. tente mais tarde
 MaxNameLength = comprimento máximo do nome: 20 símbolos
 PasswordsDoNotMatch = as senhas não coincidem
 NameIsUnavailable = nome indisponível
+Loading = carregando
+Day = dia
+Tomorrow = Amanhã
+MoneySymbol = €

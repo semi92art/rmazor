@@ -21,3 +21,7 @@ LoginFail = anmeldungsfehler. versuchen Sie es später erneut
 MaxNameLength = maximale Namenslänge: 20 Symbole
 PasswordsDoNotMatch = passwörter stimmen nicht überein
 NameIsUnavailable = name ist nicht verfügbar
+Loading = beladung
+Day = Tag
+Tomorrow = Morgen
+MoneySymbol = €

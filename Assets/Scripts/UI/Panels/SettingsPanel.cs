@@ -1,7 +1,10 @@
 ﻿using DialogViewers;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Extensions;
 using Helpers;
 using Settings;
+using TMPro;
 using UI.Entities;
 using UI.Factories;
 using UI.Managers;
@@ -16,7 +19,8 @@ namespace UI.Panels
         
         private readonly IMenuDialogViewer m_DialogViewer;
         private RectTransform m_Content;
-
+        public static List<GameObject> SettingGOList = new List<GameObject>();
+        public static List<ISetting> SettingList = new List<ISetting>();
         private RectTransformLite SettingItemRectLite => new RectTransformLite
         {
             Anchor = UiAnchor.Create(0, 1, 0, 1),
@@ -62,13 +66,18 @@ namespace UI.Panels
             return sp.RTransform();
         }
         
+        
         private void InitSettingItems()
         {
-            InitSettingItem(new SoundSetting());
-            InitSettingItem(new LanguageSetting());
+            SettingList.Add(new SoundSetting());
+            SettingList.Add(new LanguageSetting());
             #if DEBUG
-            InitSettingItem(new DebugSetting());
+            SettingList.Add(new DebugSetting());
             #endif
+            foreach (ISetting setting  in SettingList)
+            {
+                InitSettingItem(setting);
+            }
         }
         
         private void InitSettingItem(ISetting _Setting)
@@ -106,6 +115,15 @@ namespace UI.Panels
             }
         }
 
+        public static void UpdateSetting()
+        {
+            for (int i = 0; i < SettingList.Count; i++)
+            {
+                TextMeshProUGUI tmp = SettingGOList[i].transform.Find("Title").GetComponent<TextMeshProUGUI>();
+                tmp.text = SettingList[i].Name;
+            }
+        }
+
         private SettingItemOnOff CreateOnOffSetting()
         {
             GameObject obj = PrefabInitializer.InitUiPrefab(
@@ -113,6 +131,7 @@ namespace UI.Panels
                     m_Content,
                     SettingItemRectLite),
                 "setting_items", "on_off_item");
+            SettingGOList.Add(obj);
             return obj.GetComponent<SettingItemOnOff>();
         }
 
@@ -123,6 +142,7 @@ namespace UI.Panels
                     m_Content,
                     SettingItemRectLite),
                 "setting_items", "in_panel_selector_item");
+            SettingGOList.Add(obj);
             return obj.GetComponent<SettingItemInPanelSelector>();
         }
 
@@ -134,6 +154,7 @@ namespace UI.Panels
                     m_Content,
                     SettingItemRectLite),
                 "setting_items", "slider_item");
+            SettingGOList.Add(obj);
             return obj.GetComponent<SettingItemSlider>();
         }
         
