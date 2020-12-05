@@ -44,11 +44,6 @@ namespace Utils
             return Resources.Load<TextAsset>(_Path);
         }
 
-        public static TextAsset GetText(string _Path)
-        {
-            return Resources.Load<TextAsset>(_Path);
-        }
-
         #endregion
         
         #region private methods

@@ -107,14 +107,6 @@ namespace UI
             rImage.texture = m_TransitionRenderer.Texture;
         }
 
-        private void CreateTransitionRenderer()
-        {
-            var transitionPanelObj = CreateLoadingTransitionPanel();
-            m_TransitionRenderer = CircleTransparentTransitionRenderer.Create();
-            RawImage rImage = transitionPanelObj.GetCompItem<RawImage>("raw_image");
-            rImage.texture = m_TransitionRenderer.Texture;
-        }
-
         private void CreateLoadingPanel()
         {
             m_LoadingPanel = new LoadingPanel(m_MenuDialogViewer);
