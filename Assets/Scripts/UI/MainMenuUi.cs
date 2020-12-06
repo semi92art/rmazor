@@ -11,6 +11,7 @@ using UI.Factories;
 using UI.Managers;
 using UI.Panels;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.UI;
 using Utils;
 
@@ -289,6 +290,8 @@ namespace UI
 
         private void OnShopButtonClick()
         {
+            AnalyticsResult analyticsResult = Analytics.CustomEvent("ShopPressed");
+            Debug.Log("ShopPressed"+analyticsResult);
             SoundManager.Instance.PlayMenuButtonClick();
             IMenuDialogPanel shop = new ShopPanel(m_MenuDialogViewer);
             shop.Show();
@@ -296,6 +299,8 @@ namespace UI
 
         private void OnPlayButtonClick()
         {
+            AnalyticsResult analyticsResult = Analytics.CustomEvent("PlayPressed");
+            Debug.Log("PlayPressed"+analyticsResult);
             SoundManager.Instance.PlayMenuButtonClick();
             (m_BankMiniPanel as BankMiniPanel)?.UnregisterFromEvents();
             LevelLoader.LoadLevel(1);
@@ -309,6 +314,8 @@ namespace UI
 
         private void OnDailyBonusButtonClick()
         {
+            AnalyticsResult analyticsResult = Analytics.CustomEvent("BonusPressed");
+            Debug.Log("BonusPressed"+analyticsResult);
             SoundManager.Instance.PlayMenuButtonClick();
             IMenuDialogPanel dailyBonus = new DailyBonusPanel(
                 m_MenuDialogViewer, (IActionExecuter)m_BankMiniPanel);
@@ -317,6 +324,8 @@ namespace UI
 
         private void OnWheelOfFortuneButtonClick()
         {
+            AnalyticsResult analyticsResult = Analytics.CustomEvent("WheelPressed");
+            Debug.Log("WheelPressed"+analyticsResult);
             SoundManager.Instance.PlayMenuButtonClick();
             IMenuDialogPanel wheelOfFortune = new WheelOfFortunePanel(m_MenuDialogViewer);
             wheelOfFortune.Show();
