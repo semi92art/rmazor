@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabs:
     array:
-    - item: {fileID: 8300000, guid: 6458b05cb74a7be4d9dc61b8f47ae780, type: 3}
-      name: main_menu_theme
     - item: {fileID: 8300000, guid: 80b66569f09c74c4bb633455893624a6, type: 3}
-      name: button_click
+      name: ui_button_click
+  bundles:
+    array:
+    - name: main_menu_theme

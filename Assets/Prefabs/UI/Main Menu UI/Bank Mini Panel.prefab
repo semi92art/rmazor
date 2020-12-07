@@ -169,6 +169,7 @@ GameObject:
   - component: {fileID: 1733971579974445424}
   - component: {fileID: 1560853324597563445}
   - component: {fileID: 8932562405395229982}
+  - component: {fileID: 1645455054576680714}
   m_Layer: 0
   m_Name: Plus Money Button
   m_TagString: Untagged
@@ -275,6 +276,25 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!95 &1645455054576680714
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2210710288107021023}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 198265b7793ba9d47a861862b98848c8, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &2531732918804927597
 GameObject:
   m_ObjectHideFlags: 0
@@ -287,6 +307,7 @@ GameObject:
   - component: {fileID: 3307686033125465985}
   - component: {fileID: 6333368426291225623}
   - component: {fileID: 2820573611922844019}
+  - component: {fileID: 7416778994835618445}
   m_Layer: 0
   m_Name: Plus Lifes Button
   m_TagString: Untagged
@@ -393,6 +414,25 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!95 &7416778994835618445
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2531732918804927597}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 198265b7793ba9d47a861862b98848c8, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &3198052089266142576
 GameObject:
   m_ObjectHideFlags: 0

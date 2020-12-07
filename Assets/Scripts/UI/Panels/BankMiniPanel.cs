@@ -61,6 +61,8 @@ namespace UI.Panels
         private readonly RectTransform m_BankMiniPanel;
         private readonly RectTransform m_MoneyPanel;
         private readonly RectTransform m_LifesPanel;
+        private readonly Animator m_PlusMoneyButtonAnim;
+        private readonly Animator m_PlusLifesButtonAnim;
         private bool m_IsShowing;
 
         private static int AkShowInMm => AnimKeys.Anim2;
@@ -69,6 +71,8 @@ namespace UI.Panels
         private static int AkFromDlgToMm => AnimKeys.Anim3;
         private static int AkHideInMm => AnimKeys.Stop;
         private static int AkHideInDlg => AnimKeys.Stop;
+        private static int AkPlusButtonAnim => AnimKeys.Anim;
+        private static int AkPlusButtonStop => AnimKeys.Stop;
         
         #endregion
 
@@ -98,6 +102,8 @@ namespace UI.Panels
             m_BankMiniPanel = go.RTransform();
             m_MoneyPanel = go.GetCompItem<RectTransform>("money_panel");
             m_LifesPanel = go.GetCompItem<RectTransform>("lifes_panel");
+            m_PlusMoneyButtonAnim = m_PlusMoneyButton.GetComponent<Animator>();
+            m_PlusLifesButtonAnim = m_PlusLifesButton.GetComponent<Animator>();
 
             m_GoldCount.text = string.Empty;
             m_DiamondsCount.text = string.Empty;
@@ -348,6 +354,15 @@ namespace UI.Panels
         {
             SetMoneyText(_Money);
             SetLifesText(_Money);
+            bool moneyNotEnough = _Money[MoneyType.Gold] < PlusLifesPanel.OneLifePrice[MoneyType.Gold] || 
+                                  _Money[MoneyType.Diamonds] < PlusLifesPanel.OneLifePrice[MoneyType.Diamonds];
+            bool lifesNotEnough = _Money[MoneyType.Lifes] < 10;
+            m_PlusMoneyButtonAnim.SetTrigger(moneyNotEnough ? AkPlusButtonAnim : AkPlusButtonStop);
+            Coroutines.Run(Coroutines.Delay(
+                () => m_PlusLifesButtonAnim.SetTrigger(lifesNotEnough ? 
+                    AkPlusButtonAnim : AkPlusButtonStop),
+                2.5f));
+
         }
         
         private void Income(IncomeEventArgs _Args)

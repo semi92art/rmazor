@@ -13,7 +13,7 @@ namespace UI.Entities
     [System.Serializable]
     public class PrefabsList : ReorderableArray<Prefab>
     { }
-    
+
     [CreateAssetMenu(fileName = "new_style", menuName = "Style", order = 1)]
     public class UIStyleObject : ScriptableObject
     {

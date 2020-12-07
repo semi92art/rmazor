@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Constants;
 using Entities;
 using Helpers;
 using UnityEngine;
@@ -30,7 +31,7 @@ namespace Managers
 
         public void PlayUiButtonClick()
         {
-            PlayClip("button_click", false);
+            PlayClip("ui_button_click", false);
         }
     
         #endregion
@@ -49,27 +50,10 @@ namespace Managers
             SaveUtils.PutValue(SaveKey.SettingSoundOn, _IsOn);
         }
 
-        public void PlayClip(string _ClipName, bool _Cycling, float? _Volume = null)
+        public void PlayClip(string _Name, bool _Cycling, float? _Volume = null)
         {
-            AudioClip clip = PrefabInitializer.GetObject<AudioClip>("sounds",_ClipName);
-            GameObject go = new GameObject($"AudioClip_{clip.name}");
-            AudioSource audioSource = go.AddComponent<AudioSource>();
-            audioSource.clip = clip;
-            audioSource.volume = (_Volume ?? 1f) * (SaveUtils.GetValue<bool>(SaveKey.SettingSoundOn) ? 1 : 0);
-            audioSource.loop = _Cycling;
-            m_clipDictionary.Add(go,audioSource);
-
-            Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
-            {
-                Coroutines.Run(Coroutines.WaitWhile(() =>
-                {
-                    m_clipDictionary.Remove(go);
-                    Destroy(go);
-                }, () => audioSource.isPlaying));
-            }));
-            
-        
-            audioSource.Play();
+            AudioClip clip = PrefabInitializer.GetObject<AudioClip>("sounds", _Name);
+            PlayClipCore(clip, _Cycling, _Volume);
         }
 
         public void SwitchSoundInActualClips(bool _IsOn)
@@ -85,6 +69,30 @@ namespace Managers
                 clip.Stop();
         }
 
+        #endregion
+        
+        #region nonpublic methods
+
+        private void PlayClipCore(AudioClip _Clip, bool _Cycling, float? _Volume = null)
+        {
+            GameObject go = new GameObject($"AudioClip_{_Clip.name}");
+            AudioSource audioSource = go.AddComponent<AudioSource>();
+            audioSource.clip = _Clip;
+            audioSource.volume = (_Volume ?? 1f) * (SaveUtils.GetValue<bool>(SaveKey.SettingSoundOn) ? 1 : 0);
+            audioSource.loop = _Cycling;
+            m_clipDictionary.Add(go, audioSource);
+
+            Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
+            {
+                Coroutines.Run(Coroutines.WaitWhile(() =>
+                {
+                    m_clipDictionary.Remove(go);
+                    Destroy(go);
+                }, () => audioSource.isPlaying));
+            }));
+            audioSource.Play();
+        }
+        
         #endregion
     }
 }

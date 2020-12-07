@@ -8,6 +8,8 @@ using LeTai;
 using LeTai.TrueShadow;
 using Network;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace Utils
@@ -382,5 +384,34 @@ namespace Utils
             
             _OnFinish?.Invoke();
         }
+        //
+        // public static IEnumerator LoadBundle<T>(string _Name, UnityAction<T> _OnFinish) where T : UnityEngine.Object
+        // {
+        //     while (!Caching.ready)
+        //         yield return null;
+        //
+        //     string uriPath = BundlePathTransformer.GetRealBundlePath<T>(_Name);
+        //     Uri uri = new Uri(uriPath);
+        //
+        //     
+        //     using (var request = UnityWebRequestAssetBundle.GetAssetBundle(uri))
+        //     {
+        //         yield return request.SendWebRequest();
+        //
+        //         if (request.isNetworkError || request.isHttpError)
+        //         {
+        //             Debug.LogError(request.error);
+        //             yield break;
+        //         }
+        //
+        //         AssetBundle bundle = DownloadHandlerAssetBundle.GetContent(request);
+        //         var req = bundle.LoadAssetAsync<T>(_Name);
+        //         while (!req.isDone)
+        //             yield return null;
+        //         T asset = (T)req.asset;
+        //         _OnFinish?.Invoke(asset);
+        //         Debug.Log($"Asset {_Name} of type {typeof(T).Name} loaded from bundle");
+        //     }
+        // }
     }
 }

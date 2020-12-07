@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using Exceptions;
 using UI;
 using UI.Entities;
 using UnityEngine;
@@ -48,33 +50,22 @@ namespace Utils
         
         #region private methods
     
-        private static XElement FromResources(string path)
+        private static XElement FromResources(string _Path)
         {
-            TextAsset textAsset = Resources.Load<TextAsset>(path);
+            TextAsset textAsset = Resources.Load<TextAsset>(_Path);
             using (MemoryStream ms = new MemoryStream(textAsset.bytes))
                 return XDocument.Load(ms).Element("data");
         }
 
-        private static string GetAdsNodeValue(string type)
+        private static string GetAdsNodeValue(string _Type)
         {
-            return m_Ads.Elements("ad").Where(el =>
+            return m_Ads.Elements("ad").Where(_El =>
             {
-                XAttribute typeAttr = el.Attribute("type");
-                return el.Attribute("os")?.Value == GetOsName() && typeAttr != null && typeAttr.Value == type;
-            }).Select(el => el.Value).FirstOrDefault();
+                XAttribute typeAttr = _El.Attribute("type");
+                return _El.Attribute("os")?.Value == CommonUtils.GetOsName() && typeAttr != null && typeAttr.Value == _Type;
+            }).Select(_Elem => _Elem.Value).FirstOrDefault();
         }
-
-        private static string GetOsName()
-        {
-#if UNITY_ANDROID || UNITY_EDITOR
-            return "android";
-#elif UNITY_IOS
-        return "ios";
-#else
-            return string.Empty;
-#endif
-        }
-    
+        
         #endregion
     }
 }

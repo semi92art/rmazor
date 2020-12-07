@@ -19,6 +19,7 @@ public class GameLoader : MonoBehaviour, ISingleton
         
         GoogleAdsManager.Instance.Init();
         GameClient.Instance.Init();
+        AssetBundleManager.Instance.Init();
         SceneManager.LoadScene(1);
     }
     

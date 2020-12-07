@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using Constants;
-using Lean.Touch;
+﻿using Constants;
 using UnityEngine;
 using Shapes;
 using UnityEngine.Events;
@@ -166,7 +163,7 @@ namespace PointsTapper
         #endregion
     }
 
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
 
     [CustomEditor(typeof(PointItem))]
     public class PointItemEditor : Editor
@@ -190,5 +187,6 @@ namespace PointsTapper
             GUILayout.EndHorizontal();
         }
     }
-}
+    
 #endif
+}

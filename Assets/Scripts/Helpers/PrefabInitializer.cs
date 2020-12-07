@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Extensions;
+using Managers;
 using UI.Entities;
 using UI.Factories;
 using UnityEngine;
@@ -46,6 +47,7 @@ namespace Helpers
         {
             UIStyleObject style = ResLoader.GetStyle(_Style);
             GameObject prefab = style.prefabs.FirstOrDefault(p => p.name == _Prefab).item as GameObject;
+            
             if (prefab == null)
             {
                 Debug.LogError($"Prefab of style {_Style} with name {_Prefab} was not set");
@@ -63,8 +65,11 @@ namespace Helpers
             string _Name) where T : Object
         {
             UIStyleObject style = ResLoader.GetStyle(_Style);
-            T content = style.prefabs.FirstOrDefault(p => p.name == _Name).item as T;
+            T content = style.prefabs.FirstOrDefault(_P => _P.name == _Name)?.item as T;
 
+            if (content == null)
+                content = AssetBundleManager.Instance.GetAsset<T>(_Name, _Style);
+            
             if (content == null)
                 Debug.LogError($"Content of style {_Style} with name {_Name} was not set");
             

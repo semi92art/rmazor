@@ -11,7 +11,7 @@ namespace Utils
             Vector2 gameViewSize = GetMainGameViewSize();
             aspectRatio = gameViewSize.x / gameViewSize.y;
 #else
-            aspectRatio = Screen.width / Screen.height
+            aspectRatio = Screen.width / Screen.height;
 #endif
             float vertExtent = Camera.main.orthographicSize;    
             float horzExtent = vertExtent * aspectRatio;

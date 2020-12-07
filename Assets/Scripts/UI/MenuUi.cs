@@ -121,7 +121,7 @@ namespace UI
                 Coroutines.Run(Coroutines.DoWhile(
                     () => delayAnyway = Mathf.Max(2f - (UiTimeProvider.Instance.Time - startTime), 0),
                     null,
-                    () => !isSuccess));
+                    () => !isSuccess || !AssetBundleManager.Instance.Initialized));
 
                 Coroutines.Run(Coroutines.Delay(
                     () =>

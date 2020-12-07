@@ -26,9 +26,11 @@ namespace UI.Panels
         private Button m_Plus100Button;
         private Button m_ExchangeButton;
         private Button m_ResetButton;
-        private int m_LifesCount;
+        private Image m_GoldWarningIcon;
+        private Image m_DiamondsWarningIcon;
+        private int m_LifesCount = 1;
         
-        private readonly Dictionary<MoneyType, long> m_OneLifePrice = new Dictionary<MoneyType, long>
+        public static readonly Dictionary<MoneyType, long> OneLifePrice = new Dictionary<MoneyType, long>
         {
             {MoneyType.Gold, 1000}, {MoneyType.Diamonds, 10}
         };
@@ -55,12 +57,7 @@ namespace UI.Panels
 
         public void OnEnable()
         {
-            var bank = MoneyManager.Instance.GetBank();
-            Coroutines.Run(Coroutines.WaitWhile(() =>
-            {
-                m_Money = bank.Money;
-                UpdatePanelState();
-            }, () => !bank.Loaded));
+            GetBank();
         }
 
         #endregion
@@ -85,6 +82,8 @@ namespace UI.Panels
             m_ExchangeButton = go.GetCompItem<Button>("exchange_button");
             m_ResetButton = go.GetCompItem<Button>("reset_button");
             Button shopButton = go.GetCompItem<Button>("shop_button");
+            m_GoldWarningIcon = go.GetCompItem<Image>("gold_warning_icon");
+            m_DiamondsWarningIcon = go.GetCompItem<Image>("diamonds_warning_icon");
             
             m_Plus1Button.SetOnClick(OnPlus1ButtonClick);
             m_Plus10Button.SetOnClick(OnPlus10ButtonClick);
@@ -116,7 +115,7 @@ namespace UI.Panels
         
         private void OnExchangeButtonClick()
         {
-            var pricesTemp = m_OneLifePrice
+            var pricesTemp = OneLifePrice
                 .CloneAlt()
                 .ToDictionary(_P => _P.Key,
                     _P => _P.Value * m_LifesCount);
@@ -127,7 +126,7 @@ namespace UI.Panels
                 Debug.LogError("Not enough money to buy lifes");
 
             m_LifesCount = 0;
-            UpdatePanelState();
+            GetBank();
         }
         
         private void OnResetButtonClick()
@@ -140,9 +139,11 @@ namespace UI.Panels
         {
             m_Plus100Button.interactable = IsMoneyEnough(m_LifesCount + 100);
             m_Plus10Button.interactable = IsMoneyEnough(m_LifesCount + 10);
-            m_Plus1Button.interactable = IsMoneyEnough(m_LifesCount + 1);
-            m_ExchangeButton.interactable = m_LifesCount > 0;
+            m_Plus1Button.interactable = m_LifesCount == 0 || IsMoneyEnough(m_LifesCount + 1);
+            m_ExchangeButton.interactable = m_LifesCount > 0 && IsMoneyEnough(1);
             m_ResetButton.interactable = m_LifesCount > 0;
+            m_GoldWarningIcon.SetGoActive(m_LifesCount > 0 && !IsMoneyEnoughForOneLife(MoneyType.Gold));
+            m_DiamondsWarningIcon.SetGoActive(m_LifesCount > 0 && !IsMoneyEnoughForOneLife(MoneyType.Diamonds));
             SetTexts();
         }
 
@@ -156,18 +157,33 @@ namespace UI.Panels
         private bool IsMoneyEnough(long _LifesCount)
         {
             var moneyTemp = m_Money.CloneAlt();
-            var pricesTemp = m_OneLifePrice
+            var pricesTemp = OneLifePrice
                 .CloneAlt()
                 .ToDictionary(_Price => _Price.Key,
                     _Price => _Price.Value * _LifesCount);
             return pricesTemp.All(_Kvp => _Kvp.Value <= moneyTemp[_Kvp.Key]);
         }
+        
+        private bool IsMoneyEnoughForOneLife(MoneyType _MoneyType)
+        {
+            return OneLifePrice[_MoneyType] <= m_Money[_MoneyType];
+        }
 
         private void SetTexts()
         {
-            m_GoldCountText.text = (m_OneLifePrice[MoneyType.Gold] * m_LifesCount).ToNumeric();
-            m_DiamondsCountText.text = (m_OneLifePrice[MoneyType.Diamonds] * m_LifesCount).ToNumeric();
+            m_GoldCountText.text = (OneLifePrice[MoneyType.Gold] * m_LifesCount).ToNumeric();
+            m_DiamondsCountText.text = (OneLifePrice[MoneyType.Diamonds] * m_LifesCount).ToNumeric();
             m_LifesCountText.text = m_LifesCount.ToNumeric();
+        }
+
+        private void GetBank()
+        {
+            var bank = MoneyManager.Instance.GetBank();
+            Coroutines.Run(Coroutines.WaitWhile(() =>
+            {
+                m_Money = bank.Money;
+                UpdatePanelState();
+            }, () => !bank.Loaded));
         }
 
         #endregion

@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Boo.Lang;
+﻿using System.Collections.Generic;
 using DialogViewers;
 using Entities;
 using Extensions;

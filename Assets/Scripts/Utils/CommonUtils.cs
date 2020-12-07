@@ -19,6 +19,16 @@ namespace Utils
         {
             return _Item == null || _Item.ToString() == "null";
         }
+        
+        public static string GetOsName()
+        {
+#if UNITY_ANDROID
+            return "Android";
+#elif UNITY_IPHONE
+            return "iOS";
+#endif
+            throw new NotImplementedException();
+        }
 
         public static void SetGoActive<T>(this T _Item, bool _Active) where T : Component
         {

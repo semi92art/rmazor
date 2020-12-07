@@ -83,7 +83,6 @@ namespace Network
             get => SaveUtils.GetValue<bool>(SaveKey.LastConnectionSucceeded);
             private set => SaveUtils.PutValue(SaveKey.LastConnectionSucceeded, value);
         }
-        
 
         #endregion
         
@@ -103,9 +102,12 @@ namespace Network
             m_ServerBaseUrls = new Dictionary<string, string>
             {
                 {"Ubuntu1", @"http://77.37.152.15:7000"},
+#if AZURE
                 {"Azure", @"https://clickersapi.azurewebsites.net"},
+#elif UNITY_EDITOR
                 {"Debug", SaveUtils.GetValue<string>(SaveKey.DebugServerUrl)},
                 {"TestRunner", SaveUtils.GetValue<string>(SaveKey.DebugServerUrl)}
+#endif
             };
             
             if (_TestMode)

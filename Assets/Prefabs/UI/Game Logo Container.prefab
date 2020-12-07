@@ -104,6 +104,7 @@ GameObject:
   - component: {fileID: 6785708737498617638}
   - component: {fileID: 2472493921268134875}
   - component: {fileID: 6082656135791325133}
+  - component: {fileID: 3721328353687737304}
   m_Layer: 0
   m_Name: logo
   m_TagString: Untagged
@@ -192,3 +193,22 @@ MonoBehaviour:
   colorBleedMode: 0
   modifiedFromInspector: 0
   bakedShadows: []
+--- !u!95 &3721328353687737304
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5634475570212466337}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 20df3d4bf2a5dad4c85559f4caad6e2e, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

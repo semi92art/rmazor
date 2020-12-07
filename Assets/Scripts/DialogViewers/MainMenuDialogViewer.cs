@@ -125,10 +125,10 @@ namespace DialogViewers
                 case AkStateBothButtonsEnabled:
                     int? trigger = null;
                     if (_CloseAll) trigger = AkDisableBothButtons;
-                    else if (_GoBack) trigger = AkDisableCloseButton;
+                    else if (_GoBack && PanelStack.GetItem(1) == null) trigger = AkDisableCloseButton;
                     int? newState;
                     if (_CloseAll) newState = AkStateBothButtonsDisabled;
-                    else if (_GoBack) newState = AkStateGoBackButtonEnabled;
+                    else if (_GoBack && PanelStack.GetItem(1) == null) newState = AkStateGoBackButtonEnabled;
                     else newState = AkStateBothButtonsEnabled;
 
                     if (trigger.HasValue)
