@@ -11,21 +11,23 @@ public static class CreateAssetBundles
 {
     private const string GitDirectory = "../bundles";
     private const string GitRepo = "https://semi92art:Anthony_1980@github.com/semi92art/bundles.git";
+    private const string ProgressBarTitle = "Building Bundles";
     private static string BundlesPath => $"Assets/AssetBundles/{GetOsBundleSubPath()}";
     
     [MenuItem("Tools/AssetBundles/Build")]
     public static void BuildAllAssetBundles()
     {
-        Debug.Log("Building Asset Bundles...");
+        EditorUtility.DisplayProgressBar(ProgressBarTitle, "Starting build...", 0f);
         if (!Directory.Exists(BundlesPath))
             Directory.CreateDirectory(BundlesPath);
         BuildPipeline.BuildAssetBundles(BundlesPath,
             BuildAssetBundleOptions.None, EditorUserBuildSettings.activeBuildTarget);
 
-        Debug.Log("Copy Bundles to git folder...");
+        EditorUtility.ClearProgressBar();
+        EditorUtility.DisplayProgressBar(ProgressBarTitle, "Copy bundles to git folder...", 10f);
         CopyBundlesToGitFolder();
         
-        Debug.Log("Executing git...");
+        EditorUtility.DisplayProgressBar(ProgressBarTitle, "Staging in git...", 20f);
         string unstagedFiles = RunGitCommand("ls-files --others --exclude-standard");
         if (!string.IsNullOrEmpty(unstagedFiles))
             Debug.Log($"New Files: {unstagedFiles}");
@@ -45,9 +47,12 @@ public static class CreateAssetBundles
             Debug.Log("No new bundles to push");
 
         RunGitCommand($"stage {fileNamesText}");
+        EditorUtility.DisplayProgressBar(ProgressBarTitle, "Commit in git...", 50f);
         RunGitCommand("commit -m 'UnityBuild'");
+        EditorUtility.DisplayProgressBar(ProgressBarTitle, "Pushing to remote repository...", 70f);
         RunGitCommand($"remote set-url origin {GitRepo}");
         RunGitCommand("push origin HEAD");
+        EditorUtility.ClearProgressBar();
     }
 
     private static string GetOsBundleSubPath()
@@ -129,8 +134,23 @@ public static class CreateAssetBundles
             .Select(_FileName => _FileName + ".unity3d")
             .ToArray();
 
-        for (int i = 0; i < fileNames.Length; i++)
+        for (int i = 0; i < newFileNames.Length; i++)
+        {
+            var fInfo = new FileInfo(newFileNames[i]);
+            if (!Directory.Exists(fInfo.DirectoryName) && !string.IsNullOrEmpty(fInfo.DirectoryName))
+                Directory.CreateDirectory(fInfo.DirectoryName);
+            string versionFileName = fInfo.FullName + ".version";
+            if (!File.Exists(versionFileName))
+                File.WriteAllText(versionFileName, "0");
+            else
+            {
+                if (int.TryParse(File.ReadAllText(versionFileName), out int ver))
+                    File.WriteAllText(versionFileName, $"{++ver}");
+                else
+                    Debug.LogError($"Cannot read version from existing file {versionFileName}");
+            }
             File.Copy(fileNames[i], newFileNames[i], true);
+        }
     }
 }
 

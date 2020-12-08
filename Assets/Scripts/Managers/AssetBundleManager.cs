@@ -70,13 +70,24 @@ namespace Managers
         {
             while (!Caching.ready)
                 yield return null;
-            using (var request = UnityWebRequestAssetBundle.GetAssetBundle(
-                GetRemotePath(_BundleName), Hash128.Compute(_BundleName)))
+            
+            using (var bundleVersionRequest = UnityWebRequest.Get(GetRemotePath($"{_BundleName}.unity3d.version")))
             {
-                yield return request.SendWebRequest();
-                m_Bundles.Add(_BundleName, DownloadHandlerAssetBundle.GetContent(request));
-                if (m_Bundles[_BundleName] == null)
-                    Debug.LogError($"Failed to load bundle {_BundleName} from remote server");
+                yield return bundleVersionRequest.SendWebRequest();
+                string version = bundleVersionRequest.downloadHandler.text;
+                if (bundleVersionRequest.isHttpError || bundleVersionRequest.isNetworkError)
+                {
+                    Debug.LogError(bundleVersionRequest.error);
+                    yield break;
+                }
+                using (var bundleRequest = UnityWebRequestAssetBundle.GetAssetBundle(
+                    GetRemotePath($"{_BundleName}.unity3d"), Hash128.Compute(version)))
+                {
+                    yield return bundleRequest.SendWebRequest();
+                    m_Bundles.Add(_BundleName, DownloadHandlerAssetBundle.GetContent(bundleRequest));
+                    if (m_Bundles[_BundleName] == null)
+                        Debug.LogError($"Failed to load bundle {_BundleName} from remote server");
+                }
             }
         }
 
