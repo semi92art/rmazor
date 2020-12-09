@@ -8,6 +8,7 @@
 - Бесплатная музыка:
 	1. [Инструментал](https://freemusicarchive.org/home)
 	2. [Биты](https://getbeat.ru/)
+	3. [Игровые биты](https://www.dl-sounds.com/royalty-free/category/game-film/video-game/)
 
 ---
 
