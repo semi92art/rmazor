@@ -5,6 +5,9 @@
 - [Логи RestAPI на сервере](http://77.37.152.15:9000/#/home), Логин: `vip_admin`, Пароль: `anthony1980`
 - [Zeplin](https://zpl.io/aXB9Rzx)
 - [Некоторые загруженные ассеты из AssetStore](https://drive.google.com/drive/folders/1WS0G3Cg22T_qDrtIQ8yk-yeF7XMPsZZt?usp=sharing)
+- Бесплатная музыка:
+	1. [Инструментал](https://freemusicarchive.org/home)
+	2. [Биты](https://getbeat.ru/)
 
 ---
 
