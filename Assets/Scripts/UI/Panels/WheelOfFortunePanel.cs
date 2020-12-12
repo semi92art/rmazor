@@ -5,6 +5,7 @@ using DialogViewers;
 using Entities;
 using Extensions;
 using Helpers;
+using Lean.Localization;
 using Managers;
 using TMPro;
 using UI.Entities;
@@ -135,7 +136,7 @@ namespace UI.Panels
         {
             System.DateTime lastDate = SaveUtils.GetValue<System.DateTime>(SaveKey.WheelOfFortuneLastDate);
             bool yes = lastDate == System.DateTime.Now.Date;
-            m_Title.text = yes ? "Watch Ad" : "Spin";
+            m_Title.text = yes ? LeanLocalization.GetTranslationText("WatchAd") : LeanLocalization.GetTranslationText("Spin");
             m_Title.alignment = yes ? TextAlignmentOptions.Right : TextAlignmentOptions.Center;
             m_WatchAdImage.enabled = yes;
             m_WatchAdBackground.SetActive(yes);

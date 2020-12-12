@@ -293,6 +293,7 @@ GameObject:
   - component: {fileID: 2216157986422335577}
   - component: {fileID: 886377946887252457}
   - component: {fileID: 8097054636967916024}
+  - component: {fileID: 4466617465292868173}
   m_Layer: 0
   m_Name: Title
   m_TagString: Untagged
@@ -440,6 +441,20 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4466617465292868173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2317325563854837198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81eed60ad983fa5499e91759a5e9f75d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  translationName: Shop
+  FallbackText: shop
 --- !u!1 &2372507869530043840
 GameObject:
   m_ObjectHideFlags: 0
@@ -1059,6 +1074,7 @@ GameObject:
   - component: {fileID: 4882465389984162903}
   - component: {fileID: 6643074987195202506}
   - component: {fileID: 5737446374147822380}
+  - component: {fileID: 8817946904130957883}
   m_Layer: 0
   m_Name: Title
   m_TagString: Untagged
@@ -1188,7 +1204,7 @@ MonoBehaviour:
     spaceCount: 2
     wordCount: 3
     linkCount: 0
-    lineCount: 2
+    lineCount: 1
     pageCount: 1
     materialCount: 2
   m_isUsingLegacyAnimationComponent: 0
@@ -1206,6 +1222,20 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &8817946904130957883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5375347265288041521}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81eed60ad983fa5499e91759a5e9f75d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  translationName: WheelOfFortune
+  FallbackText: wheel of fortune
 --- !u!1 &5517132233500100686
 GameObject:
   m_ObjectHideFlags: 0
@@ -1390,6 +1420,7 @@ GameObject:
   - component: {fileID: 9048537501061372324}
   - component: {fileID: 685722048615830271}
   - component: {fileID: 1871445575436112439}
+  - component: {fileID: 9084030717100240790}
   m_Layer: 0
   m_Name: Title
   m_TagString: Untagged
@@ -1537,6 +1568,20 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &9084030717100240790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5865059866315892280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81eed60ad983fa5499e91759a5e9f75d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  translationName: DailyBonus
+  FallbackText: daily bonus
 --- !u!1 &6130416741673789242
 GameObject:
   m_ObjectHideFlags: 0
@@ -1577,10 +1622,10 @@ RectTransform:
   m_Father: {fileID: 6819852369051306309}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 180, y: -429.28543}
-  m_SizeDelta: {x: 340, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3441650872699566798
 CanvasRenderer:
@@ -2255,10 +2300,10 @@ RectTransform:
   m_Father: {fileID: 6819852369051306309}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 180, y: -290}
-  m_SizeDelta: {x: 340, y: 158.57086}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 158.57086}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4230960863157507259
 CanvasRenderer:
@@ -2705,10 +2750,10 @@ RectTransform:
   m_Father: {fileID: 6819852369051306309}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 180, y: -539.2854}
-  m_SizeDelta: {x: 340, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7024174401344387302
 CanvasRenderer:
