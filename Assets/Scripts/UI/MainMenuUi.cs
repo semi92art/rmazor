@@ -188,7 +188,7 @@ namespace UI
                     long maxScore = 0;
                     if (scores.Scores.ContainsKey(ScoreTypes.MaxScore))
                         maxScore = scores.Scores[ScoreTypes.MaxScore];
-                    bestScoreText.text = LeanLocalization.GetTranslationText("Best") + $": {maxScore.ToNumeric()}";
+                    bestScoreText.text = $" {maxScore.ToNumeric()}";
                 },
                 () => !scores.Loaded));
             

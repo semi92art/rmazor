@@ -10,3 +10,5 @@ abcdefghijklmnopqrstuvwxyz
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
 áâãàçéêíóôõúñ
 ÁÂÃÀÇÉÊÍÓÔÕÚÑ
+ßäöü
+ÄÖÜ
