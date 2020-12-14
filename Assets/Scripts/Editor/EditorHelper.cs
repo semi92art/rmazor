@@ -19,14 +19,23 @@ public class EditorHelper : EditorWindow
     private bool m_IsGuest;
     private string m_TestUrl;
     private string m_TestUrlCheck;
-    private int m_GameId;
+    private int m_GameId = -1;
     private int m_GameIdCheck;
-    private int m_Level = 1;
+    private int m_Level = -1;
+    private int m_Quality = -1;
+    private int m_QualityCheck;
 
     [MenuItem("Tools/Helper")]
     public static void ShowWindow()
     {
         GetWindow<EditorHelper>("Helper");
+    }
+
+    private void OnEnable()
+    {
+        UpdateTestUrl();
+        UpdateGameId();
+        UpdateQuality();
     }
 
     private void OnGUI()
@@ -142,26 +151,42 @@ public class EditorHelper : EditorWindow
             LoadScene($"Assets/Scenes/{SceneNames.Level}.unity");
         GUILayout.EndHorizontal();
         
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Quality:");
+        m_Quality = EditorGUILayout.Popup(
+            m_Quality, new[] { "Normal", "Good" });
+        GUILayout.EndHorizontal();
+        
         UpdateTestUrl();
         UpdateGameId();
+        UpdateQuality();
     }
 
     private void UpdateTestUrl(bool _Forced = false)
     {
-        if (m_TestUrl != m_TestUrlCheck || _Forced)
-            SaveUtils.PutValue(SaveKey.DebugServerUrl, m_TestUrl);
         if (string.IsNullOrEmpty(m_TestUrl))
-            m_TestUrl = SaveUtils.GetValue<string>(SaveKey.DebugServerUrl);
+            m_TestUrl = SaveUtils.GetValue<string>(SaveKeyDebug.ServerUrl);
+        if (m_TestUrl != m_TestUrlCheck || _Forced)
+            SaveUtils.PutValue(SaveKeyDebug.ServerUrl, m_TestUrl);
         m_TestUrlCheck = m_TestUrl;
     }
 
     private void UpdateGameId()
     {
+        if (m_GameId == -1)
+            m_GameId = SaveUtils.GetValue<int>(SaveKey.GameId);
         if (m_GameId != m_GameIdCheck)
             SaveUtils.PutValue(SaveKey.GameId, m_GameId);
-        if (m_GameId == 0)
-            m_GameId = SaveUtils.GetValue<int>(SaveKey.GameId);
         m_GameIdCheck = m_GameId;
+    }
+
+    private void UpdateQuality()
+    {
+        if (m_Quality == -1)
+            m_Quality = SaveUtils.GetValue<bool>(SaveKeyDebug.GoodQuality) ? 1 : 0;
+        if (m_Quality != m_QualityCheck)
+            SaveUtils.PutValue(SaveKeyDebug.GoodQuality, m_Quality != 0);
+        m_QualityCheck = m_Quality;
     }
 
     private void EnableDailyBonus()

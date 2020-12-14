@@ -5,11 +5,29 @@ namespace Extensions
 {
     public static class TextExtensions
     {
+        public static string GetFileName(this string _Path, bool _WithExtension)
+        {
+            _Path =  _Path.Replace('/', '\\');
+            string nameWithExtension = _Path.Substring(_Path.LastIndexOf('\\') + 1,
+                    _Path.Length - 1 - _Path.LastIndexOf('\\'));
+            return _WithExtension ? nameWithExtension : 
+                nameWithExtension.Split('.')[0];
+        }
+        
+        public static bool EqualsIgnoreCase(this string _Text, string _Other)
+        {
+            return string.Compare(_Text, _Other, StringComparison.OrdinalIgnoreCase) == 0;
+        }
+        
         public static string FirstCharToUpper(this string _Text)
         {
             return _Text.FirstCharTo(true);
         }
-
+/// <summary>
+/// //yjf
+/// </summary>
+/// <param name="_Text"></param>
+/// <returns></returns>
         public static string FirstCharToLower(this string _Text)
         {
             return _Text.FirstCharTo(false);

@@ -1,0 +1,167 @@
+{
+    "m_SelectedDeviceId": "10a78098",
+    "m_SelectedPackage": {
+        "deviceId": "10a78098",
+        "name": "com.MinigamesCo.MinigamesCollection",
+        "processId": 26927,
+        "exited": false
+    },
+    "m_SelectedPriority": 0,
+    "m_KnownPackagesForSerialization": [
+        {
+            "deviceId": "10a78098",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 20829,
+            "exited": true
+        },
+        {
+            "deviceId": "10a78098",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 23609,
+            "exited": true
+        },
+        {
+            "deviceId": "10a78098",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 24653,
+            "exited": true
+        },
+        {
+            "deviceId": "10a78098",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 25242,
+            "exited": true
+        },
+        {
+            "deviceId": "10a78098",
+            "name": "com.miui.home",
+            "processId": 2448,
+            "exited": false
+        },
+        {
+            "deviceId": "10a78098",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 30439,
+            "exited": true
+        },
+        {
+            "deviceId": "10a78098",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 26927,
+            "exited": false
+        },
+        {
+            "deviceId": "IFPVPBKVDE95KFPN",
+            "name": "com.miui.home",
+            "processId": 1653,
+            "exited": false
+        },
+        {
+            "deviceId": "IFPVPBKVDE95KFPN",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 18372,
+            "exited": true
+        },
+        {
+            "deviceId": "IFPVPBKVDE95KFPN",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 20272,
+            "exited": true
+        },
+        {
+            "deviceId": "IFPVPBKVDE95KFPN",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 24639,
+            "exited": false
+        },
+        {
+            "deviceId": "IFPVPBKVDE95KFPN",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 6732,
+            "exited": false
+        },
+        {
+            "deviceId": "IFPVPBKVDE95KFPN",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 14341,
+            "exited": true
+        },
+        {
+            "deviceId": "IFPVPBKVDE95KFPN",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 18983,
+            "exited": true
+        },
+        {
+            "deviceId": "5b986a43",
+            "name": "com.android.settings",
+            "processId": 5623,
+            "exited": true
+        },
+        {
+            "deviceId": "5b986a43",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 30455,
+            "exited": true
+        },
+        {
+            "deviceId": "5b986a43",
+            "name": "com.miui.home",
+            "processId": 29351,
+            "exited": false
+        }
+    ],
+    "m_Tags": {
+        "m_Entries": [
+            {
+                "m_Name": "Filter by all listed tags",
+                "m_Selected": false
+            },
+            {
+                "m_Name": "No Filter",
+                "m_Selected": true
+            },
+            {
+                "m_Name": "",
+                "m_Selected": false
+            },
+            {
+                "m_Name": "Tag Control...",
+                "m_Selected": false
+            },
+            {
+                "m_Name": "",
+                "m_Selected": false
+            },
+            {
+                "m_Name": "Unity",
+                "m_Selected": false
+            },
+            {
+                "m_Name": "CRASH",
+                "m_Selected": false
+            }
+        ]
+    },
+    "m_MemoryViewerState": {
+        "MemoryWindowHeight": 300.0,
+        "MemoryWindowWidth": 170.0,
+        "MemoryTypeEnabled": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+        ],
+        "MemoryGroup": 1,
+        "Behavior": 1
+    },
+    "m_Filter": "",
+    "m_FilterIsRegularExpression": true,
+    "m_SymbolPaths": []
+}

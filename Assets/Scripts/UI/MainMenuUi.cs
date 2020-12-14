@@ -52,8 +52,8 @@ namespace UI
             InitContainers(_Parent);
             InitSelectGameButton();
             SetGameLogo(GameClient.Instance.GameId);
-            InitCenterButtonsScrollView();
-            InitBottomButtonsScrollView();
+            InitCenterButtonsGroup();
+            InitBottomButtonsGroup();
             InitSmallButtons();
             InitBankMiniPanel();
             CheckIfDailyBonusNotChosenToday();
@@ -130,7 +130,7 @@ namespace UI
                     "game_logos", $"game_logo_{GameClient.Instance.GameId}");
         }
 
-        private void InitCenterButtonsScrollView()
+        private void InitCenterButtonsGroup()
         {
             GameObject centerButtonsScrollView = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
@@ -139,7 +139,7 @@ namespace UI
                     Vector2.up * -65f,
                     Vector2.one * 0.5f,
                     new Vector2(280, 360)),
-                "main_menu", "center_buttons_scroll_view");
+                "main_menu", "center_buttons_group");
             
             RectTransform content = centerButtonsScrollView.GetCompItem<RectTransform>("content");
             var rtrLite = new RectTransformLite
@@ -180,7 +180,7 @@ namespace UI
             
         }
 
-        private void InitBottomButtonsScrollView()
+        private void InitBottomButtonsGroup()
         {
             var go = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
@@ -190,7 +190,7 @@ namespace UI
                     Vector2.one * 0.5f,
                     Vector2.up * 100f),
                 "main_menu",
-                "bottom_buttons_scroll_view");
+                "bottom_buttons_group");
             RectTransform contentRtr = go.GetCompItem<RectTransform>("content");
             
             var rTrLite = new RectTransformLite
@@ -230,7 +230,7 @@ namespace UI
                     Vector2.one * 0.5f,
                     Vector2.up * 100f),
                 "main_menu",
-                "bottom_buttons_scroll_view");
+                "bottom_buttons_group");
             contentRtr = go.GetCompItem<RectTransform>("content");
             
             var loginButton = PrefabInitializer.InitUiPrefab(
@@ -258,7 +258,7 @@ namespace UI
         private void CheckIfDailyBonusNotChosenToday()
         {
             System.DateTime lastDate = SaveUtils.GetValue<System.DateTime>(SaveKey.DailyBonusLastDate);
-            m_DailyBonusAnimator.SetTrigger(lastDate.Date == System.DateTime.Now.Date ?
+            m_DailyBonusAnimator?.SetTrigger(lastDate.Date == System.DateTime.Now.Date ?
                 AnimKeys.Stop : AnimKeys.Anim);
         }
         

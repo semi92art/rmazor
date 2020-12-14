@@ -16,22 +16,23 @@ namespace Settings
 
         public object Get()
         {
-#if DEBUG
-            return SaveUtils.GetValue<bool>(SaveKey.SettingDebug);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            return SaveUtils.GetValue<bool>(SaveKeyDebug.DebugUtilsOn);
 #endif
             return null;
         }
 
         public void Put(object _Parameter)
         {
-#if DEBUG
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             bool debugOn = (bool) _Parameter;
-            SaveUtils.PutValue(SaveKey.SettingDebug, debugOn);
+            SaveUtils.PutValue(SaveKeyDebug.DebugUtilsOn, debugOn);
             UiManager.Instance.DebugConsole.SetActive(debugOn);
-#if !UNITY_EDITOR
+    #if DEVELOPMENT_BUILD
             UiManager.Instance.DebugReporter.SetActive(debugOn);
+    #endif 
 #endif
-#endif
+
         }
     }
 }

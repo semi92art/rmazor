@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using Exceptions;
-using UI;
+using Extensions;
 using UI.Entities;
 using UnityEngine;
 
@@ -53,17 +52,16 @@ namespace Utils
         private static XElement FromResources(string _Path)
         {
             TextAsset textAsset = Resources.Load<TextAsset>(_Path);
-            using (MemoryStream ms = new MemoryStream(textAsset.bytes))
+            using (var ms = new MemoryStream(textAsset.bytes))
                 return XDocument.Load(ms).Element("data");
         }
 
         private static string GetAdsNodeValue(string _Type)
         {
-            return m_Ads.Elements("ad").Where(_El =>
-            {
-                XAttribute typeAttr = _El.Attribute("type");
-                return _El.Attribute("os")?.Value == CommonUtils.GetOsName() && typeAttr != null && typeAttr.Value == _Type;
-            }).Select(_Elem => _Elem.Value).FirstOrDefault();
+            Func<string, string, bool> compareOsNames = (_S1, _S2) => _S1.EqualsIgnoreCase(_S2);
+            return m_Ads.Elements("ad")
+                .First(_El => _El.Attribute("os").Value.EqualsIgnoreCase(CommonUtils.GetOsName())
+                && _El.Attribute("type")?.Value == _Type).Value;
         }
         
         #endregion

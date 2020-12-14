@@ -2,6 +2,8 @@
 using Constants;
 using DebugConsole;
 using Entities;
+using Extensions;
+using Helpers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;
@@ -95,15 +97,13 @@ namespace UI.Managers
             set => SaveUtils.PutValue(SaveKey.ColorScheme, value);
         }
         
-#if DEBUG
-        
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
         public GameObject DebugConsole { get; private set; }
-#if !UNITY_EDITOR
+#endif
+#if DEVELOPMENT_BUILD
         public GameObject DebugReporter { get; private set; }
 #endif
-        
-#endif
-        
+
         #endregion
 
         #region engine methods
@@ -117,16 +117,17 @@ namespace UI.Managers
 
             SceneManager.sceneLoaded += (_Scene, _) =>
             {
-                bool onStart = String.Compare(m_PrevScene, 
-                                              SceneNames.Preload, StringComparison.OrdinalIgnoreCase) == 0;
-#if DEBUG
+                bool onStart = m_PrevScene.EqualsIgnoreCase(SceneNames.Preload);
+                
                 if (onStart)
                 {
-                    bool debugOn = SaveUtils.GetValue<bool>(SaveKey.SettingDebug);
-                    SaveUtils.PutValue(SaveKey.SettingDebug, debugOn);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                    bool debugOn = SaveUtils.GetValue<bool>(SaveKeyDebug.DebugUtilsOn);
+                    SaveUtils.PutValue(SaveKeyDebug.DebugUtilsOn, debugOn);
                     DebugConsole = DebugConsoleView.Create();
                     DebugConsole.SetActive(debugOn);
-#if !UNITY_EDITOR
+#endif
+#if DEVELOPMENT_BUILD
                     DebugReporter = PrefabInitializer.InitPrefab(
                         null,
                         "debug_console",
@@ -134,8 +135,8 @@ namespace UI.Managers
                     DebugReporter.SetActive(debugOn);
 #endif
                 }
-#endif
-                if (String.Compare(_Scene.name, SceneNames.Main, StringComparison.OrdinalIgnoreCase) == 0)
+                
+                if (_Scene.name.EqualsIgnoreCase(SceneNames.Main))
                 {
                     if (onStart)
                         LocalizationManager.Instance.Init();

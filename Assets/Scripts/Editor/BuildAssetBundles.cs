@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using Debug = UnityEngine.Debug;
 
-public static class CreateAssetBundles
+public static class BuildAssetBundles
 {
     private const string GitDirectory = "../bundles";
     private const string GitRepo = "https://semi92art:Anthony_1980@github.com/semi92art/bundles.git";

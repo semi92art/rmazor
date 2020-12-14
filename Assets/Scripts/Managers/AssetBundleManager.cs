@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Extensions;
 using Network;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -11,6 +13,22 @@ namespace Managers
 {
     public class AssetBundleManager : MonoBehaviour
     {
+        #region types
+
+        private class AssetInfo
+        {
+            public string Name { get; }
+            public object Asset { get; }
+
+            public AssetInfo(string _Name, object _Asset)
+            {
+                Name = _Name;
+                Asset = _Asset;
+            }
+        }
+        
+        #endregion
+        
         #region singleton
     
         private static AssetBundleManager _instance;
@@ -38,9 +56,8 @@ namespace Managers
 
         public T GetAsset<T>(string _AssetName, string _BundleName) where T : Object
         {
-            if (typeof(T) == typeof(AudioClip))
-                return m_Bundles[_BundleName].LoadAsset<T>(_AssetName);
-            throw new NotImplementedException();
+            return m_Bundles[_BundleName].FirstOrDefault(
+                _Info => _Info.Name.GetFileName(false) == _AssetName)?.Asset as T;
         }
         
         #endregion
@@ -49,7 +66,7 @@ namespace Managers
 
         private readonly string[] m_BundleNames = {"sounds"};
         private const string BundlesUri = "https://raw.githubusercontent.com/semi92art/bundles/main/mgc";
-        private readonly Dictionary<string, AssetBundle> m_Bundles = new Dictionary<string, AssetBundle>();
+        private readonly Dictionary<string, List<AssetInfo>> m_Bundles = new Dictionary<string, List<AssetInfo>>();
         
         #endregion
         
@@ -71,7 +88,8 @@ namespace Managers
             while (!Caching.ready)
                 yield return null;
             
-            using (var bundleVersionRequest = UnityWebRequest.Get(GetRemotePath($"{_BundleName}.unity3d.version")))
+            using (var bundleVersionRequest = UnityWebRequest.Get(
+                GetRemotePath($"{_BundleName}.unity3d.version")))
             {
                 yield return bundleVersionRequest.SendWebRequest();
                 string version = bundleVersionRequest.downloadHandler.text;
@@ -84,9 +102,19 @@ namespace Managers
                     GetRemotePath($"{_BundleName}.unity3d"), Hash128.Compute(version)))
                 {
                     yield return bundleRequest.SendWebRequest();
-                    m_Bundles.Add(_BundleName, DownloadHandlerAssetBundle.GetContent(bundleRequest));
-                    if (m_Bundles[_BundleName] == null)
+                    var loadedBundle = DownloadHandlerAssetBundle.GetContent(bundleRequest);
+
+                    if (loadedBundle == null)
+                    {
                         Debug.LogError($"Failed to load bundle {_BundleName} from remote server");
+                        yield break;
+                    }
+                    
+                    m_Bundles.Add(_BundleName, new List<AssetInfo>());
+                    var cachedAssets = m_Bundles[_BundleName];
+                    cachedAssets.AddRange(from assetName in loadedBundle.GetAllAssetNames() 
+                        let asset = loadedBundle.LoadAsset(assetName) 
+                        select new AssetInfo(assetName, asset));
                 }
             }
         }

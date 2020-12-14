@@ -134,52 +134,69 @@ namespace Utils
             var backgroundShadows = enumerable
                 .FirstOrDefault(_G => _G.Key)
                 ?.ToList();
+
+            if (!GraphicUtils.IsGoodQuality() && backgroundShadows != null)
+            {
+                foreach (var shadow in backgroundShadows)
+                    shadow.Key.GetComponent<TrueShadow>().enabled = false;
+                backgroundShadows.Clear();
+                backgroundShadows = null;
+            }
+
+            if (GraphicUtils.IsGoodQuality())
+            {
+                //get foreground group
+                var foreground = enumerable
+                    .FirstOrDefault(_G => !_G.Key)
+                    ?.ToList();
             
-            //get foreground group
-            var foreground = enumerable
-                .FirstOrDefault(_G => !_G.Key)
-                ?.ToList();
-            
-            //before start transition, make background shadows transparent
-            if (backgroundShadows != null)
-                foreach (var ga in from ga 
-                    in backgroundShadows let graphic = ga.Key where graphic.IsAlive() select ga)
-                    ga.Key.color = ga.Key.color.SetAlpha(0);
-                
-            //do transition for foreground graphic elements
-            float currTime = UiTimeProvider.Instance.Time;
-            if (!_Disappear && foreground != null)
-                while (UiTimeProvider.Instance.Time < currTime + _Time)
-                {
-                    float timeCoeff = (currTime + _Time - UiTimeProvider.Instance.Time) / _Time;
-                    float alphaCoeff = 1 - timeCoeff;
-                    var collection = foreground;
-                    if (backgroundShadows != null && !_ShadowsAfterOther)
-                        collection = collection.Concat(backgroundShadows).ToList();
+                //before start transition, make background shadows transparent
+                if (backgroundShadows != null)
                     foreach (var ga in from ga 
-                        in collection let graphic = ga.Key where graphic.IsAlive() select ga)
-                        ga.Key.color = ga.Key.color.SetAlpha(ga.Value * alphaCoeff);
-                    yield return new WaitForEndOfFrame();
-                } 
-            
+                        in backgroundShadows let graphic = ga.Key where graphic.IsAlive() select ga)
+                        ga.Key.color = ga.Key.color.SetAlpha(0);
+                
+                //do transition for foreground graphic elements
+                float currTime = UiTimeProvider.Instance.Time;
+                if (!_Disappear && foreground != null && GraphicUtils.IsGoodQuality())
+                    while (UiTimeProvider.Instance.Time < currTime + _Time)
+                    {
+                        float timeCoeff = (currTime + _Time - UiTimeProvider.Instance.Time) / _Time;
+                        float alphaCoeff = 1 - timeCoeff;
+                        var collection = foreground;
+                        if (backgroundShadows != null && !_ShadowsAfterOther)
+                            collection = collection.Concat(backgroundShadows).ToList();
+                        foreach (var ga in from ga 
+                            in collection let graphic = ga.Key where graphic.IsAlive() select ga)
+                            ga.Key.color = ga.Key.color.SetAlpha(ga.Value * alphaCoeff);
+                        yield return new WaitForEndOfFrame();
+                    } 
+            }
+
             //enable selectable elements (buttons, toggles, etc.)
             foreach (var button in selectables
                 .Where(_Button => _Button.Key.IsAlive()))
                 button.Key.enabled = button.Value;
 
-            //do transition for background shadows after other transitions only if _ShadowsAfterOther == true
-            float shadowBackgrTime = 0.3f;    
-            currTime = UiTimeProvider.Instance.Time;
-            if (!_Disappear && backgroundShadows != null && _ShadowsAfterOther)
-                while (UiTimeProvider.Instance.Time < currTime + shadowBackgrTime)
-                {
-                    float timeCoeff = (currTime + shadowBackgrTime - UiTimeProvider.Instance.Time) / shadowBackgrTime;
-                    float alphaCoeff = 1 - timeCoeff;
-                    foreach (var ga in from ga
-                        in backgroundShadows let graphic = ga.Key where graphic.IsAlive() select ga)
-                        ga.Key.color = ga.Key.color.SetAlpha(ga.Value * alphaCoeff);
-                    yield return new WaitForEndOfFrame();
-                }
+
+            if (GraphicUtils.IsGoodQuality())
+            {
+                //do transition for background shadows after other transitions only if _ShadowsAfterOther == true
+                float shadowBackgrTime = 0.3f;    
+                float currTime = UiTimeProvider.Instance.Time;
+                if (!_Disappear && backgroundShadows != null && _ShadowsAfterOther)
+                    while (UiTimeProvider.Instance.Time < currTime + shadowBackgrTime)
+                    {
+                        float timeCoeff = (currTime + shadowBackgrTime - UiTimeProvider.Instance.Time) / shadowBackgrTime;
+                        float alphaCoeff = 1 - timeCoeff;
+                        foreach (var ga in from ga
+                            in backgroundShadows let graphic = ga.Key where graphic.IsAlive() select ga)
+                            ga.Key.color = ga.Key.color.SetAlpha(ga.Value * alphaCoeff);
+                        yield return new WaitForEndOfFrame();
+                    }
+            }
+
+            
             
             //set color alphas to finish values for all graphic elements
             foreach (var ga in graphicsAndAlphas.ToList())
@@ -384,34 +401,5 @@ namespace Utils
             
             _OnFinish?.Invoke();
         }
-        //
-        // public static IEnumerator LoadBundle<T>(string _Name, UnityAction<T> _OnFinish) where T : UnityEngine.Object
-        // {
-        //     while (!Caching.ready)
-        //         yield return null;
-        //
-        //     string uriPath = BundlePathTransformer.GetRealBundlePath<T>(_Name);
-        //     Uri uri = new Uri(uriPath);
-        //
-        //     
-        //     using (var request = UnityWebRequestAssetBundle.GetAssetBundle(uri))
-        //     {
-        //         yield return request.SendWebRequest();
-        //
-        //         if (request.isNetworkError || request.isHttpError)
-        //         {
-        //             Debug.LogError(request.error);
-        //             yield break;
-        //         }
-        //
-        //         AssetBundle bundle = DownloadHandlerAssetBundle.GetContent(request);
-        //         var req = bundle.LoadAssetAsync<T>(_Name);
-        //         while (!req.isDone)
-        //             yield return null;
-        //         T asset = (T)req.asset;
-        //         _OnFinish?.Invoke(asset);
-        //         Debug.Log($"Asset {_Name} of type {typeof(T).Name} loaded from bundle");
-        //     }
-        // }
     }
 }

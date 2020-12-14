@@ -197,7 +197,7 @@ namespace DialogViewers
                         var monobeh = itemFrom.MenuDialogPanel as MonoBehaviour;
                         if (monobeh != null)
                             Destroy(monobeh.gameObject);
-                    }));
+                    }, true));
             }
 
             if (toPanel != null)
@@ -207,7 +207,7 @@ namespace DialogViewers
                     GraphicsAlphas.Add(instId, new GraphicAlphas(toPanel));
                 StartCoroutine(Coroutines.DoTransparentTransition(
                     toPanel, GraphicsAlphas[instId].Alphas, TransitionTime, false, 
-                    () => background.enabled = true));
+                    () => background.enabled = true, true));
                 switch (_UiCategoryType)
                 {
                     case MenuUiCategoryType:
@@ -253,7 +253,7 @@ namespace DialogViewers
                             {
                                 Action?.Invoke();
                                 Action = null;
-                            }));
+                            }, true));
                     }
                 }
             }

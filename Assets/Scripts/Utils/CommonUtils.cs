@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
+using Entities;
 using UnityEngine;
 
 namespace Utils
@@ -14,6 +15,16 @@ namespace Utils
         public const float SymbolWidth = 19;
         
         public static readonly System.Random RandomGen = new System.Random();
+
+#if UNITY_ANDROID
+        public static int GetAndroidSdkLevel() 
+        {
+            using (var version = new AndroidJavaClass("android.os.Build$VERSION")) 
+            {
+                return version.GetStatic<int>("SDK_INT");
+            }
+        }
+#endif
 
         public static bool IsNull<T>(this T _Item) where T : Component
         {
@@ -238,6 +249,11 @@ namespace Utils
         public static string ToNumeric(this long _Value)
         {
             return _Value.ToString("N0", CultureInfo.CreateSpecificCulture("en-US"));
+        }
+
+        public static string ToNumeric(this ulong _Value)
+        {
+            return ToNumeric((long) _Value);
         }
 
         public static string ToNumeric(this int _Value)

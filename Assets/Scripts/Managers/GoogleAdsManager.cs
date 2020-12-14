@@ -23,9 +23,9 @@ namespace Managers
             
             m_AdRequest = new AdRequest.Builder().Build();
             m_RewardedAd = new RewardedAd(ResLoader.GoogleAdsRewardId);
-            m_RewardedAd.LoadAd(m_AdRequest);
-            m_RewardedAd.OnPaidEvent += (_, _Args) => m_OnRewardedAdPaid?.Invoke();
-            m_RewardedAd.OnAdClosed += (_, _Args) => m_RewardedAd.LoadAd(m_AdRequest);
+            //m_RewardedAd.LoadAd(m_AdRequest);
+            //m_RewardedAd.OnPaidEvent += (_, _Args) => m_OnRewardedAdPaid?.Invoke();
+            //m_RewardedAd.OnAdClosed += (_, _Args) => m_RewardedAd.LoadAd(m_AdRequest);
         }
 
         public bool ShowRewardedAd(UnityAction _OnPaid)

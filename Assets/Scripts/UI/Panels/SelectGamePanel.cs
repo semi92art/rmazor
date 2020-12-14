@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Constants;
 using DialogViewers;
 using Extensions;
 using Helpers;
@@ -17,17 +18,7 @@ namespace UI.Panels
         #region private members
         
         private readonly IMenuDialogViewer m_DialogViewer;
-
-        private readonly List<ChooseGameItemProps> m_CgiPropsList = new List<ChooseGameItemProps>
-        {
-            new ChooseGameItemProps(1, false, true),
-            new ChooseGameItemProps(2, false, true),
-            new ChooseGameItemProps(3, false, false),
-            new ChooseGameItemProps(4, false, true),
-            new ChooseGameItemProps(5, false, false)
-        };
-        
-        private System.Action<int> m_SelectGame;
+        private readonly System.Action<int> m_SelectGame;
         
         #endregion
 
@@ -74,7 +65,7 @@ namespace UI.Panels
                 "main_menu",
                 "select_game_item");
             
-            foreach (var cgiProps in m_CgiPropsList.Where(_Props => _Props.IsVisible))
+            foreach (var cgiProps in GetAllCgiProps().Where(_Props => _Props.IsVisible))
             {
                 var cgiObjClone = cgiObj.Clone();
                 ChooseGameItem cgi = cgiObjClone.GetComponent<ChooseGameItem>();
@@ -90,7 +81,15 @@ namespace UI.Panels
             Object.Destroy(cgiObj);
             return selectGamePanel.RTransform();
         }
-        
+
+        private ChooseGameItemProps[] GetAllCgiProps()
+        {
+            var infos = GameInfo.Infos;
+            return infos
+                .Select(_Info => new ChooseGameItemProps(
+                    _Info.GameId, _Info.ComingSoon, _Info.Available))
+                .ToArray();
+        }
         
         
         #endregion

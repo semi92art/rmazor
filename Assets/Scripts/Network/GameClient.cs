@@ -90,23 +90,20 @@ namespace Network
         
         public void Init(bool _TestMode = false)
         {
-#if AZURE
-            m_ServerName = "Azure";
-#elif RELEASE
-            m_ServerName = "Ubuntu1";
-#elif DEBUG
+#if UNITY_EDITOR
             m_ServerName = "Debug";
+#else
+            m_ServerName = "Ubuntu1";
 #endif
+
             if (GameId == 0)
-                GameId = 1; // TODO set start game id by build
+                SaveGameIdOnFirstStart();
             m_ServerBaseUrls = new Dictionary<string, string>
             {
                 {"Ubuntu1", @"http://77.37.152.15:7000"},
-#if AZURE
-                {"Azure", @"https://clickersapi.azurewebsites.net"},
-#elif UNITY_EDITOR
-                {"Debug", SaveUtils.GetValue<string>(SaveKey.DebugServerUrl)},
-                {"TestRunner", SaveUtils.GetValue<string>(SaveKey.DebugServerUrl)}
+#if UNITY_EDITOR
+                {"Debug", SaveUtils.GetValue<string>(SaveKeyDebug.ServerUrl)},
+                {"TestRunner", SaveUtils.GetValue<string>(SaveKeyDebug.ServerUrl)}
 #endif
             };
             
@@ -192,6 +189,22 @@ namespace Network
                 () => false));
             m_ConnectionTestStarted = true;
         }
+
+        private void SaveGameIdOnFirstStart()
+        {
+#if GAME_1
+                GameId = 1;
+#elif GAME_2
+                GameId = 2;
+#elif GAME_3
+                GameId = 3;
+#elif GAME_4
+                GameId = 4;
+#elif GAME_5
+                GameId = 5;
+#endif
+        }
+        
         
         #endregion
     }
