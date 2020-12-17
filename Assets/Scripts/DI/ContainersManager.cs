@@ -35,7 +35,7 @@ namespace DI
                     return _instance;
                 GameObject go = new GameObject("Containers Manager");
                 _instance = go.AddComponent<ContainersManager>();
-                if (!GameClient.Instance.IsTestMode)
+                if (!GameClient.Instance.IsModuleTestsMode)
                     DontDestroyOnLoad(go);
                 return _instance;
             }

@@ -1,5 +1,7 @@
-﻿using Constants;
+﻿using System.Collections.Generic;
+using Constants;
 using DialogViewers;
+using Entities;
 using Extensions;
 using Helpers;
 using Managers;
@@ -15,7 +17,7 @@ using Utils;
 
 namespace UI
 {
-    public class MenuUi
+    public class MenuUi : GameObservable
     {
         #region private fields
 
@@ -23,14 +25,16 @@ namespace UI
         private ILoadingPanel m_LoadingPanel;
         private IMenuDialogViewer m_MenuDialogViewer;
         private ITransitionRenderer m_TransitionRenderer;
+        private readonly IEnumerable<IGameObserver> m_Observers;
         private RectTransform m_Background;
 
         #endregion
 
         #region constructor
 
-        private MenuUi(bool _OnStart)
+        private MenuUi(bool _OnStart, IEnumerable<IGameObserver> _Observers)
         {
+            m_Observers = _Observers;
             CreateCanvas();
             CreateDialogViewer();
             CreateBackground();
@@ -45,9 +49,9 @@ namespace UI
     
         #region factory
 
-        public static MenuUi Create(bool _OnStart)
+        public static MenuUi Create(bool _OnStart, IEnumerable<IGameObserver> _Observers)
         {
-            return new MenuUi(_OnStart);
+            return new MenuUi(_OnStart, _Observers);
         }
     
         #endregion
@@ -96,7 +100,8 @@ namespace UI
     
         private void CreateDialogViewer()
         {
-            m_MenuDialogViewer = MainMenuDialogViewer.Create(m_Canvas.RTransform());
+            m_MenuDialogViewer = MainMenuDialogViewer.Create(
+                m_Canvas.RTransform(), m_Observers);
         }
 
         private void CreateTransitionRenderer()
@@ -202,7 +207,7 @@ namespace UI
         {
             MainMenuUi.Create(
                 m_Canvas.RTransform(),
-                m_MenuDialogViewer);
+                m_MenuDialogViewer, m_Observers);
         }
 
         private GameObject CreateLoadingTransitionPanel()

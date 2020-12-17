@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using Constants;
 using DebugConsole;
 using Entities;
 using Extensions;
 using Helpers;
+using Managers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;
@@ -99,11 +101,11 @@ namespace UI.Managers
         
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         public GameObject DebugConsole { get; private set; }
-#endif
 #if DEVELOPMENT_BUILD
         public GameObject DebugReporter { get; private set; }
 #endif
-
+#endif
+        
         #endregion
 
         #region engine methods
@@ -112,6 +114,13 @@ namespace UI.Managers
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+
+            var observers = new List<IGameObserver>
+            {
+                AdsManager.Instance,
+                new UiSoundController(),
+            };
+            
             if (string.IsNullOrEmpty(ColorScheme))
                 ColorScheme = "Default";
 
@@ -124,7 +133,7 @@ namespace UI.Managers
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                     bool debugOn = SaveUtils.GetValue<bool>(SaveKeyDebug.DebugUtilsOn);
                     SaveUtils.PutValue(SaveKeyDebug.DebugUtilsOn, debugOn);
-                    DebugConsole = DebugConsoleView.Create();
+                    DebugConsole = DebugConsoleView.Create(observers);
                     DebugConsole.SetActive(debugOn);
 #endif
 #if DEVELOPMENT_BUILD
@@ -140,7 +149,7 @@ namespace UI.Managers
                 {
                     if (onStart)
                         LocalizationManager.Instance.Init();
-                    MenuUi.Create(onStart);
+                    MenuUi.Create(onStart, observers);
                 }
 
                 m_PrevScene = _Scene.name;

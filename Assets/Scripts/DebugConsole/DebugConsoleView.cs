@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Entities;
 using Extensions;
 using Helpers;
 using UI;
@@ -14,7 +15,7 @@ namespace DebugConsole
         
 #region factory
 
-        public static GameObject Create()
+        public static GameObject Create(IEnumerable<IGameObserver> _Observers)
         {
             Canvas canvas = UiFactory.UiCanvas(
                 "DebugConsoleCanvas",
@@ -64,6 +65,7 @@ namespace DebugConsole
         private int m_CurrentCommand;
         private int m_Index;
         private bool m_IsVisible;
+        
 
         #endregion
 

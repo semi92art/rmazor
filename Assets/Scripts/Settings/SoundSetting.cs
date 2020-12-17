@@ -7,7 +7,7 @@ using Utils;
 
 namespace Settings
 {
-    public class SoundSetting : ISetting
+    public class SoundSetting : GameObservable, ISetting
     {
         public string Name => LeanLocalization.GetTranslationText("Sound");
         public SettingType Type => SettingType.OnOff;
@@ -23,8 +23,7 @@ namespace Settings
         public void Put(object _Parameter)
         {
             bool volumeOn = (bool) _Parameter;
-            SoundManager.Instance.SwitchSound(volumeOn);
-            SoundManager.Instance.SwitchSoundInActualClips(volumeOn);
+            Notify(this, 0, volumeOn);
             Debug.Log(volumeOn.ToString());
         }
     }

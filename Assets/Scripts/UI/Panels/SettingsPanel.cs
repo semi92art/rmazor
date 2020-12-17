@@ -1,6 +1,6 @@
 ﻿using DialogViewers;
-﻿using System.Collections;
 using System.Collections.Generic;
+using Entities;
 using Extensions;
 using Helpers;
 using Settings;
@@ -13,14 +13,15 @@ using UnityEngine;
 
 namespace UI.Panels
 {
-    public class SettingsPanel : IMenuDialogPanel
+    public class SettingsPanel : GameObservable, IMenuDialogPanel
     {
         #region private members
         
         private readonly IMenuDialogViewer m_DialogViewer;
         private RectTransform m_Content;
-        public static List<GameObject> settingGoList;
-        public static List<ISetting> settingList;
+        private static List<GameObject> _settingGoList;
+        private static List<ISetting> _settingList;
+        
         private RectTransformLite SettingItemRectLite => new RectTransformLite
         {
             Anchor = UiAnchor.Create(0, 1, 0, 1),
@@ -36,8 +37,9 @@ namespace UI.Panels
         public MenuUiCategory Category => MenuUiCategory.Settings;
         public RectTransform Panel { get; private set; }
 
-        public SettingsPanel(IMenuDialogViewer _DialogViewer)
+        public SettingsPanel(IMenuDialogViewer _DialogViewer, IEnumerable<IGameObserver> _Observers)
         {
+            AddObservers(_Observers);
             m_DialogViewer = _DialogViewer;
         }
         
@@ -60,8 +62,8 @@ namespace UI.Panels
                     m_DialogViewer.DialogContainer,
                     RtrLites.FullFill),
                 "main_menu", "settings_panel");
-            settingGoList = new List<GameObject>();
-            settingList = new List<ISetting>();
+            _settingGoList = new List<GameObject>();
+            _settingList = new List<ISetting>();
             m_Content = sp.GetCompItem<RectTransform>("content");
             InitSettingItems();
             return sp.RTransform();
@@ -70,12 +72,14 @@ namespace UI.Panels
         
         private void InitSettingItems()
         {
-            settingList.Add(new SoundSetting());
-            settingList.Add(new LanguageSetting());
+            var soundSetting = new SoundSetting();
+            soundSetting.AddObservers(GetObservers());
+            _settingList.Add(soundSetting);
+            _settingList.Add(new LanguageSetting());
             #if DEBUG
-            settingList.Add(new DebugSetting());
+            _settingList.Add(new DebugSetting());
             #endif
-            foreach (ISetting setting  in settingList)
+            foreach (ISetting setting  in _settingList)
             {
                 InitSettingItem(setting);
             }
@@ -87,10 +91,13 @@ namespace UI.Panels
             {
                 case SettingType.OnOff:
                     var itemOnOff = CreateOnOffSetting();
-                    itemOnOff.Init((bool)_Setting.Get(), _Setting.Name, _IsOn =>
+                    itemOnOff.Init(
+                        (bool)_Setting.Get(),
+                        _Setting.Name, 
+                        _IsOn =>
                     {
                         _Setting.Put(_IsOn);
-                    });
+                    }, GetObservers());
                     break;
                 case SettingType.InPanelSelector:
                     var itemSelector = CreateInPanelSelectorSetting();
@@ -103,7 +110,7 @@ namespace UI.Panels
                         {
                             itemSelector.setting.text = _Value;
                             _Setting.Put(_Value);
-                        });
+                        }, GetObservers());
                     break;
                 case SettingType.Slider:
                     var itemSlider = CreateSliderSetting();
@@ -118,10 +125,10 @@ namespace UI.Panels
 
         public static void UpdateSetting()
         {
-            for (int i = 0; i < settingList.Count; i++)
+            for (int i = 0; i < _settingList.Count; i++)
             {
-                TextMeshProUGUI tmp = settingGoList[i].transform.Find("Title").GetComponent<TextMeshProUGUI>();
-                tmp.text = settingList[i].Name;
+                TextMeshProUGUI tmp = _settingGoList[i].transform.Find("Title").GetComponent<TextMeshProUGUI>();
+                tmp.text = _settingList[i].Name;
             }
         }
 
@@ -132,7 +139,7 @@ namespace UI.Panels
                     m_Content,
                     SettingItemRectLite),
                 "setting_items", "on_off_item");
-            settingGoList.Add(obj);
+            _settingGoList.Add(obj);
             return obj.GetComponent<SettingItemOnOff>();
         }
 
@@ -143,7 +150,7 @@ namespace UI.Panels
                     m_Content,
                     SettingItemRectLite),
                 "setting_items", "in_panel_selector_item");
-            settingGoList.Add(obj);
+            _settingGoList.Add(obj);
             return obj.GetComponent<SettingItemInPanelSelector>();
         }
 
@@ -155,7 +162,7 @@ namespace UI.Panels
                     m_Content,
                     SettingItemRectLite),
                 "setting_items", "slider_item");
-            settingGoList.Add(obj);
+            _settingGoList.Add(obj);
             return obj.GetComponent<SettingItemSlider>();
         }
         

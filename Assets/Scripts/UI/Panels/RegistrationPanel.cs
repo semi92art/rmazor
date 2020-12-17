@@ -1,4 +1,6 @@
-﻿using DialogViewers;
+﻿using System.Collections.Generic;
+using DialogViewers;
+using Entities;
 using Extensions;
 using Helpers;
 using Managers;
@@ -16,9 +18,16 @@ namespace UI.Panels
 {
     public class RegistrationPanel : LoginPanelBase
     {
+        #region notify ids
+
+        public const int NotifyIdRegisterButtonClick = 0;
+        
+        #endregion
+        
         private const string TestUserPrefix = "test";
         
-        public RegistrationPanel(IMenuDialogViewer _DialogViewer) : base(_DialogViewer)
+        public RegistrationPanel(IMenuDialogViewer _DialogViewer
+            , IEnumerable<IGameObserver> _Observers) : base(_DialogViewer, _Observers)
         { }
         
         #region private members
@@ -69,7 +78,7 @@ namespace UI.Panels
                 .gameObject.transform.Find("Text").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
             registrationButtonLocalization.TranslationName = "Registration";
 
-            registerButton.SetOnClick(Register);
+            registerButton.SetOnClick(OnRegisterButtonClick);
 
             CleanErrorHandlers();
             
@@ -96,9 +105,9 @@ namespace UI.Panels
         
         #region event functions
 
-        private void Register()
+        private void OnRegisterButtonClick()
         {
-            SoundManager.Instance.PlayUiButtonClick();
+            Notify(this, NotifyIdRegisterButtonClick);
             CleanErrorHandlers();
             if (!CheckForInputErrors())
                 return;

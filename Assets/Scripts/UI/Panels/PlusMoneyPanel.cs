@@ -1,4 +1,7 @@
-﻿using DialogViewers;
+﻿using System.Collections.Generic;
+using Constants;
+using DialogViewers;
+using Entities;
 using Extensions;
 using Helpers;
 using Managers;
@@ -9,8 +12,16 @@ using UnityEngine.UI;
 
 namespace UI.Panels
 {
-    public class PlusMoneyPanel : IMenuDialogPanel
+    public class PlusMoneyPanel : GameObservable, IMenuDialogPanel
     {
+        #region notify ids
+
+        public const int NotifyIdShopButtonClick = 0;
+        public const int NotifyIdDailyBonusButtonClick = 1;
+        public const int NotifyIdWheelOfFortuneButtonClick = 2;
+        
+        #endregion
+        
         #region nonpublic members
 
         private readonly IMenuDialogViewer m_DialogViewer;
@@ -23,8 +34,12 @@ namespace UI.Panels
         public MenuUiCategory Category => MenuUiCategory.PlusMoney;
         public RectTransform Panel { get; private set; }
 
-        public PlusMoneyPanel(IMenuDialogViewer _DialogViewer, IActionExecuter _ActionExecutor)
+        public PlusMoneyPanel(
+            IMenuDialogViewer _DialogViewer,
+            IActionExecuter _ActionExecutor,
+            IEnumerable<IGameObserver> _Observers)
         {
+            AddObservers(_Observers);
             m_DialogViewer = _DialogViewer;
             m_ActionExecutor = _ActionExecutor;
         }
@@ -59,22 +74,24 @@ namespace UI.Panels
 
         private void OnShopButtonClick()
         {
-            SoundManager.Instance.PlayUiButtonClick();
-            IMenuDialogPanel shopPanel = new ShopPanel(m_DialogViewer);
+            Notify(this, NotifyIdShopButtonClick);
+            IMenuDialogPanel shopPanel = new ShopPanel(m_DialogViewer, GetObservers());
             shopPanel.Show();
         }
 
         private void OnDailyBonusButtonClick()
         {
-            SoundManager.Instance.PlayUiButtonClick();
-            IMenuDialogPanel shopPanel = new DailyBonusPanel(m_DialogViewer, m_ActionExecutor);
+            Notify(this, NotifyIdDailyBonusButtonClick);
+            IMenuDialogPanel shopPanel = new DailyBonusPanel(
+                m_DialogViewer, m_ActionExecutor, GetObservers());
             shopPanel.Show();
         }
 
         private void OnWheelOfFortuneButtonClick()
         {
-            SoundManager.Instance.PlayUiButtonClick();
-            IMenuDialogPanel shopPanel = new WheelOfFortunePanel(m_DialogViewer);
+            Notify(this, NotifyIdWheelOfFortuneButtonClick);
+            IMenuDialogPanel shopPanel = new WheelOfFortunePanel(
+                m_DialogViewer, GetObservers());
             shopPanel.Show();
         }
 

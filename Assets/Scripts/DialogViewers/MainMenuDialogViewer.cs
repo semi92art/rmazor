@@ -1,4 +1,7 @@
-﻿using Constants;
+﻿using System.Collections;
+using System.Collections.Generic;
+using Constants;
+using Entities;
 using Extensions;
 using Helpers;
 using Managers;
@@ -36,6 +39,7 @@ namespace DialogViewers
         private Button m_GoBackButton;
         private Button m_CloseButton;
         private Animator m_ButtonsAnim;
+        private ObserverNotifyer m_Notifyer;
 
         #endregion
     
@@ -49,12 +53,12 @@ namespace DialogViewers
             
             m_GoBackButton.SetOnClick(() =>
             {
-                SoundManager.Instance.PlayUiButtonClick();
+                m_Notifyer.RaiseNotify(this, CommonNotifyIds.UiButtonClick);
                 Back();
             });
             m_CloseButton.SetOnClick(() =>
             {
-                SoundManager.Instance.PlayUiButtonClick();
+                m_Notifyer.RaiseNotify(this, CommonNotifyIds.UiButtonClick);
                 CloseAll();
             });
         }
@@ -63,15 +67,21 @@ namespace DialogViewers
 
         #region api
 
-        public static IMenuDialogViewer Create(RectTransform _Parent)
+        public static IMenuDialogViewer Create(
+            RectTransform _Parent,
+            IEnumerable<IGameObserver> _Observers)
         {
-            var dialogPanelObj = PrefabInitializer.InitUiPrefab(
+            var go = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     _Parent,
                     RtrLites.FullFill),
                 "dialog_viewers",
                 "main_menu_viewer");
-            return dialogPanelObj.GetComponent<MainMenuDialogViewer>();
+            var result = go.GetComponent<MainMenuDialogViewer>();
+            if (result.m_Notifyer == null)
+                result.m_Notifyer = new ObserverNotifyer();
+            result.m_Notifyer.AddObservers(_Observers);
+            return result;
         }
 
         public void Show(IMenuDialogPanel _ItemTo, bool _HidePrevious = true)

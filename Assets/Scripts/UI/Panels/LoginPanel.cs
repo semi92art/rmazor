@@ -1,4 +1,6 @@
-﻿using DialogViewers;
+﻿using System.Collections.Generic;
+using DialogViewers;
+using Entities;
 using Extensions;
 using Helpers;
 using Lean.Localization;
@@ -16,7 +18,18 @@ namespace UI.Panels
 {
     public class LoginPanel : LoginPanelBase
     {
-        public LoginPanel(IMenuDialogViewer _DialogViewer) : base(_DialogViewer) { }
+        #region notify message ids
+        
+        public const int NotifyIdLoginButtonClick = 0;
+        public const int NotifyIdLoginWithGoogleButtonClick = 1;
+        public const int NotifyIdLoginWithAppleButtonClick = 2;
+        public const int NotifyIdRegistrationButtonClick = 3;
+        public const int NotifyIdLogoutButtonClick = 4;
+        
+        #endregion
+        
+        public LoginPanel(IMenuDialogViewer _DialogViewer,
+            IEnumerable<IGameObserver> _Observers) : base(_DialogViewer, _Observers) { }
         
         #region protected methods
 
@@ -73,10 +86,10 @@ namespace UI.Panels
                 .gameObject.transform.Find("Text").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
             logoutButtonLocalization.TranslationName = "Logout";
             
-            loginButton.SetOnClick(Login);
-            loginAppleButton.SetOnClick(LoginWithApple);
-            loginGoogleButton.SetOnClick(LoginWithGoogle);
-            registrationButton.SetOnClick(Registration);
+            loginButton.SetOnClick(OnLoginButtonClick);
+            loginAppleButton.SetOnClick(OnLoginWithAppleButtonClick);
+            loginGoogleButton.SetOnClick(OnLoginWithGoogleButtonClick);
+            registrationButton.SetOnClick(OnRegistrationButtonClick);
             logoutButton.SetOnClick(Logout);
             
             //TODO when apple login function will be ready, delete line below
@@ -94,9 +107,9 @@ namespace UI.Panels
         
         #region event functions
 
-        private void Login()
+        private void OnLoginButtonClick()
         {
-            SoundManager.Instance.PlayUiButtonClick();
+            Notify(this, NotifyIdLoginButtonClick);
             CleanErrorHandlers();
             if (string.IsNullOrEmpty(m_LoginInputField.text))
                 //TODO get translation name from localization
@@ -139,28 +152,28 @@ namespace UI.Panels
             GameClient.Instance.Send(packet);
         }
 
-        private void LoginWithApple()
+        private void OnLoginWithGoogleButtonClick()
         {
-            SoundManager.Instance.PlayUiButtonClick();
+            Notify(this, NotifyIdLoginWithGoogleButtonClick);
             // TODO
         }
-
-        private void LoginWithGoogle()
+        
+        private void OnLoginWithAppleButtonClick()
         {
-            SoundManager.Instance.PlayUiButtonClick();
+            Notify(this, NotifyIdLoginWithAppleButtonClick);
             // TODO
         }
-
-        private void Registration()
+        
+        private void OnRegistrationButtonClick()
         {
-            SoundManager.Instance.PlayUiButtonClick();
-            IMenuDialogPanel regPanel = new RegistrationPanel(DialogViewer);
+            Notify(this, NotifyIdRegistrationButtonClick);
+            IMenuDialogPanel regPanel = new RegistrationPanel(DialogViewer, GetObservers());
             regPanel.Show();
         }
 
         private void Logout()
         {
-            SoundManager.Instance.PlayUiButtonClick();
+            Notify(this, NotifyIdLogoutButtonClick);
             var packet = new LoginUserPacket(new LoginUserPacketRequestArgs
             {
                 DeviceId = GameClient.Instance.DeviceId

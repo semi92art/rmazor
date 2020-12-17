@@ -1,4 +1,6 @@
-﻿using Constants;
+﻿using System.Collections;
+using System.Collections.Generic;
+using Constants;
 using DialogViewers;
 using Entities;
 using Extensions;
@@ -9,14 +11,22 @@ using UI.Entities;
 using UI.Factories;
 using UI.Managers;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using Utils;
 using WheelController = MkeyFW.WheelController;
 
 namespace UI.Panels
 {
-    public class WheelOfFortunePanel : IMenuDialogPanel
+    public class WheelOfFortunePanel : GameObservable, IMenuDialogPanel
     {
+        #region notify ids
+
+        public const int NotifyIdWatchAdButtonClick = 0;
+        public const int NotifyIdSpinButtonClick = 1;
+        
+        #endregion
+        
         #region private members
 
         private readonly IMenuDialogViewer m_DialogViewer;
@@ -35,9 +45,12 @@ namespace UI.Panels
         public MenuUiCategory Category => MenuUiCategory.WheelOfFortune;
         public RectTransform Panel { get; private set; }
 
-        public WheelOfFortunePanel(IMenuDialogViewer _DialogViewer)
+        public WheelOfFortunePanel(
+            IMenuDialogViewer _DialogViewer,
+            IEnumerable<IGameObserver> _Observers)
         {
             m_DialogViewer = _DialogViewer;
+            AddObservers(_Observers);
             UiManager.Instance.OnCurrentMenuCategoryChanged += (_Prev, _New) =>
             {
                 if (_New != Category)
@@ -102,17 +115,20 @@ namespace UI.Panels
         {
             if (!m_IsLocked)
             {
+                Notify(this, NotifyIdSpinButtonClick);
                 Coroutines.Run(Coroutines.Action(() => m_WheelController.StartSpin()));
                 SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, System.DateTime.Now.Date);
             }
             else
             {
-                GoogleAdsManager.Instance.ShowRewardedAd(() =>
-                {
-                    SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, System.DateTime.Now.Date.AddDays(-1));
-                    m_IsLocked = CheckIfWofSpinToday();
-                });
+                Notify(this, NotifyIdWatchAdButtonClick, (UnityAction)WatchAdFinishAction);
             }
+        }
+
+        private void WatchAdFinishAction()
+        {
+            SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, System.DateTime.Now.Date.AddDays(-1));
+            m_IsLocked = CheckIfWofSpinToday();
         }
         
         private bool CheckIfWofSpinToday()

@@ -1,8 +1,10 @@
-﻿namespace DI
+﻿using Entities;
+
+namespace DI
 {
-    public class DiObject
+    public class DiObject : GameObservable
     {
-        protected bool m_WasUnregistered;
+        private bool m_WasUnregistered;
         
         protected DiObject()
         {

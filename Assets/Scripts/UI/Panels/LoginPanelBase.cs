@@ -1,11 +1,13 @@
-﻿using DialogViewers;
+﻿using System.Collections.Generic;
+using DialogViewers;
+using Entities;
 using TMPro;
 using UI.Managers;
 using UnityEngine;
 
 namespace UI.Panels
 {
-    public abstract class LoginPanelBase: IMenuDialogPanel
+    public abstract class LoginPanelBase: GameObservable, IMenuDialogPanel
     {
         #region protected members
         
@@ -17,9 +19,11 @@ namespace UI.Panels
         
         #endregion
 
-        protected LoginPanelBase(IMenuDialogViewer _DialogViewer)
+        protected LoginPanelBase(IMenuDialogViewer _DialogViewer,
+            IEnumerable<IGameObserver> _Observers)
         {
             DialogViewer = _DialogViewer;
+            AddObservers(_Observers);
         }
         
         

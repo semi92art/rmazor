@@ -11,7 +11,7 @@ using Object = UnityEngine.Object;
 
 namespace Managers
 {
-    public class AssetBundleManager : MonoBehaviour
+    public class AssetBundleManager : MonoBehaviour, ISingleton
     {
         #region types
 
@@ -41,7 +41,7 @@ namespace Managers
                     return _instance;
                 var go = new GameObject("Asset Bundle Manager");
                 _instance = go.AddComponent<AssetBundleManager>();
-                if (!GameClient.Instance.IsTestMode)
+                if (!GameClient.Instance.IsModuleTestsMode)
                     DontDestroyOnLoad(go);
                 return _instance;
             }

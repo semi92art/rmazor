@@ -1,5 +1,7 @@
-﻿using Constants;
+﻿using System.Collections.Generic;
+using Constants;
 using DialogViewers;
+using Entities;
 using Extensions;
 using Helpers;
 using Network;
@@ -14,11 +16,11 @@ using Utils;
 
 namespace UI.Panels
 {
-    public class ProfilePanel : IMenuDialogPanel
+    public class ProfilePanel : GameObservable, IMenuDialogPanel
     {
         #region private members
         
-        private IMenuDialogViewer m_DialogViewer;
+        private readonly IMenuDialogViewer m_DialogViewer;
         private TextMeshProUGUI m_WorldRankNum;
         private TextMeshProUGUI m_CountryRankNum;
         
@@ -29,8 +31,9 @@ namespace UI.Panels
         public MenuUiCategory Category => MenuUiCategory.Profile;
         public RectTransform Panel { get; private set; }
 
-        public ProfilePanel(IMenuDialogViewer _DialogViewer)
+        public ProfilePanel(IMenuDialogViewer _DialogViewer, IEnumerable<IGameObserver> _Observers)
         {
+            AddObservers(_Observers);
             m_DialogViewer = _DialogViewer;
         }
         

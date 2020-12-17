@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Constants;
 using DialogViewers;
+using Entities;
 using Exceptions;
 using Extensions;
 using Helpers;
@@ -29,7 +30,7 @@ namespace UI.Panels
         Action Action { get; set; }
     }
     
-    public class BankMiniPanel : IMiniPanel, IActionExecuter
+    public class BankMiniPanel : GameObservable, IMiniPanel, IActionExecuter
     {
         #region types
 
@@ -111,14 +112,14 @@ namespace UI.Panels
             
             m_PlusMoneyButton.SetOnClick(() =>
             {
-                SoundManager.Instance.PlayUiButtonClick();
-                IMenuDialogPanel shopPanel = new PlusMoneyPanel(_DialogViewer, this);
+                Notify(this, CommonNotifyIds.UiButtonClick);
+                IMenuDialogPanel shopPanel = new PlusMoneyPanel(_DialogViewer, this, GetObservers());
                 shopPanel.Show();
             });
             
             m_PlusLifesButton.SetOnClick(() =>
             {
-                SoundManager.Instance.PlayUiButtonClick();
+                Notify(this, CommonNotifyIds.UiButtonClick);
                 IMenuDialogPanel shopPanel = new PlusLifesPanel(_DialogViewer);
                 shopPanel.Show();
             });

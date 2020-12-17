@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DialogViewers;
+using Entities;
 using Extensions;
 using Helpers;
 using Managers;

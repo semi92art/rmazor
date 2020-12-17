@@ -1,4 +1,5 @@
-﻿using Constants;
+﻿using System.Collections.Generic;
+using Constants;
 using DialogViewers;
 using Entities;
 using Extensions;
@@ -18,6 +19,21 @@ namespace UI
 {
     public class MainMenuUi : DI.DiObject
     {
+        #region notify ids
+
+        public const int NotifyIdMainMenuLoaded = 0;
+        public const int NotifyIdSelectGamePanelButtonClick = 1;
+        public const int NotifyIdProfileButtonClick = 2;
+        public const int NotifyIdSettingsButtonClick = 3;
+        public const int NotifyIdLoginButtonClick = 4;
+        public const int NotifyIdShopButtonClick = 5;
+        public const int NotifyIdPlayButtonClick = 6;
+        public const int NotifyIdRatingsButtonClick = 7;
+        public const int NotifyIdDailyBonusButtonClick = 8;
+        public const int NotifyIdWheelOfFortuneButtonClick = 9;
+        
+        #endregion
+        
         #region nonpublic members
         
         private static bool _isDailyBonusClicked;
@@ -31,22 +47,25 @@ namespace UI
         private MenuUiCategory m_CurrentCategory;
         private Button m_SelectGameButton;
         private Image m_GameLogo;
-        
+
         #endregion
 
         #region factory method and constructor
 
         public static MainMenuUi Create(
             RectTransform _Parent,
-            IMenuDialogViewer _MenuDialogViewer)
+            IMenuDialogViewer _MenuDialogViewer, 
+            IEnumerable<IGameObserver> _Observers)
         {
-            return new MainMenuUi(_Parent, _MenuDialogViewer);
+            return new MainMenuUi(_Parent, _MenuDialogViewer, _Observers);
         }
         
         private MainMenuUi(
             RectTransform _Parent,
-            IMenuDialogViewer _MenuDialogViewer)
+            IMenuDialogViewer _MenuDialogViewer,
+            IEnumerable<IGameObserver> _Observers)
         {
+            AddObservers(_Observers);
             m_MenuDialogViewer = _MenuDialogViewer;
             UiManager.Instance.CurrentMenuCategory = MenuUiCategory.MainMenu;
             InitContainers(_Parent);
@@ -58,8 +77,7 @@ namespace UI
             InitBankMiniPanel();
             CheckIfDailyBonusNotChosenToday();
             m_MenuDialogViewer.AddNotDialogItem(m_MainMenu, MenuUiCategory.MainMenu);
-            SoundManager.Instance.PlayClip("main_menu_theme", true, 0.1f);
-            var a = LocalizationManager.Instance;
+            Notify(this, NotifyIdMainMenuLoaded);
         }
 
         #endregion
@@ -69,6 +87,10 @@ namespace UI
         private void InitBankMiniPanel()
         {
             m_BankMiniPanel = new BankMiniPanel(m_Parent, m_MenuDialogViewer);
+            if (m_BankMiniPanel is IGameObservable observable)
+            {
+                observable.AddObserver(new UiSoundController());
+            }
             m_BankMiniPanel.Show();
         }
 
@@ -121,7 +143,7 @@ namespace UI
                 "main_menu_buttons",
                 "select_game_button");
             m_SelectGameButton = go.GetCompItem<Button>("button");
-            m_SelectGameButton.SetOnClick(OnOpenSelectGamePanel);
+            m_SelectGameButton.SetOnClick(OnSelectGamePanelButtonClick);
         }
 
         private void SetGameLogo(int _GameId)
@@ -176,7 +198,7 @@ namespace UI
                     rtrLite),
                 "main_menu_buttons",
                 "ratings_button");
-            ratingsButton.GetComponent<Button>().SetOnClick(OnRatingsClick);
+            ratingsButton.GetComponent<Button>().SetOnClick(OnRatingsButtonClick);
             
         }
 
@@ -258,74 +280,78 @@ namespace UI
         private void CheckIfDailyBonusNotChosenToday()
         {
             System.DateTime lastDate = SaveUtils.GetValue<System.DateTime>(SaveKey.DailyBonusLastDate);
-            m_DailyBonusAnimator?.SetTrigger(lastDate.Date == System.DateTime.Now.Date ?
-                AnimKeys.Stop : AnimKeys.Anim);
+            if (m_DailyBonusAnimator.IsNull())
+                m_DailyBonusAnimator.SetTrigger(
+                    lastDate.Date == System.DateTime.Now.Date ?
+                    AnimKeys.Stop : AnimKeys.Anim);
         }
         
         #endregion
 
         #region event methods
 
-        private void OnOpenSelectGamePanel()
+        private void OnSelectGamePanelButtonClick()
         {
-            SoundManager.Instance.PlayUiButtonClick();
-            IMenuDialogPanel selectGame = new SelectGamePanel(m_MenuDialogViewer, SetGameLogo);
+            Notify(this, NotifyIdSelectGamePanelButtonClick);
+            IMenuDialogPanel selectGame = new SelectGamePanel(
+                m_MenuDialogViewer, SetGameLogo, GetObservers());
             selectGame.Show();
         }
         
         private void OnProfileButtonClick()
         {
-            SoundManager.Instance.PlayUiButtonClick();
-            IMenuDialogPanel profile = new ProfilePanel(m_MenuDialogViewer);
+            Notify(this, NotifyIdProfileButtonClick);
+            IMenuDialogPanel profile = new ProfilePanel(m_MenuDialogViewer, GetObservers());
             profile.Show();
         }
 
         private void OnSettingsButtonClick()
         {
-            SoundManager.Instance.PlayUiButtonClick();
-            IMenuDialogPanel settings = new SettingsPanel(m_MenuDialogViewer);
+            Notify(this, NotifyIdSettingsButtonClick);
+            IMenuDialogPanel settings = new SettingsPanel(m_MenuDialogViewer, GetObservers());
             settings.Show();
         }
 
         private void OnLoginButtonClick()
         {
-            SoundManager.Instance.PlayUiButtonClick();
-            IMenuDialogPanel login = new LoginPanel(m_MenuDialogViewer);
+            Notify(this, NotifyIdPlayButtonClick);
+            IMenuDialogPanel login = new LoginPanel(m_MenuDialogViewer, GetObservers());
             login.Show();
         }
 
         private void OnShopButtonClick()
         {
-            SoundManager.Instance.PlayUiButtonClick();
-            IMenuDialogPanel shop = new ShopPanel(m_MenuDialogViewer);
+            Notify(this, NotifyIdShopButtonClick);
+            IMenuDialogPanel shop = new ShopPanel(m_MenuDialogViewer, GetObservers());
             shop.Show();
         }
 
         private void OnPlayButtonClick()
         {
-            SoundManager.Instance.PlayUiButtonClick();
+            Notify(this, NotifyIdPlayButtonClick);
             (m_BankMiniPanel as BankMiniPanel)?.UnregisterFromEvents();
             LevelLoader.LoadLevel(1);
         }
 
-        private void OnRatingsClick()
+        private void OnRatingsButtonClick()
         {
-            SoundManager.Instance.PlayUiButtonClick();
+            Notify(this, NotifyIdRatingsButtonClick);
             // TODO
         }
 
         private void OnDailyBonusButtonClick()
         {
-            SoundManager.Instance.PlayUiButtonClick();
+            Notify(this, NotifyIdDailyBonusButtonClick);
             IMenuDialogPanel dailyBonus = new DailyBonusPanel(
-                m_MenuDialogViewer, (IActionExecuter)m_BankMiniPanel);
+                m_MenuDialogViewer, (IActionExecuter)m_BankMiniPanel, GetObservers());
             dailyBonus.Show();
         }
 
         private void OnWheelOfFortuneButtonClick()
         {
-            SoundManager.Instance.PlayUiButtonClick();
-            IMenuDialogPanel wheelOfFortune = new WheelOfFortunePanel(m_MenuDialogViewer);
+            Notify(this, NotifyIdWheelOfFortuneButtonClick);
+            IMenuDialogPanel wheelOfFortune = new WheelOfFortunePanel(
+                m_MenuDialogViewer, GetObservers());
             wheelOfFortune.Show();
         }
         

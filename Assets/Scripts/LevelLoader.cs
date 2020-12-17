@@ -23,7 +23,6 @@ public static class LevelLoader
 
     public static void LoadLevel(int _Level)
     {
-        SoundManager.Instance.StopPlayingClips();
         _level = _Level;
         SceneManager.LoadScene(SceneNames.Level);
     }

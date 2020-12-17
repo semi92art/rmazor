@@ -2,8 +2,10 @@
 using System.Linq;
 using Constants;
 using DialogViewers;
+using Entities;
 using Extensions;
 using Helpers;
+using Managers;
 using Network;
 using UI.Entities;
 using UI.Factories;
@@ -13,13 +15,13 @@ using UnityEngine;
 
 namespace UI.Panels
 {
-    public class SelectGamePanel : IMenuDialogPanel
+    public class SelectGamePanel : GameObservable, IMenuDialogPanel
     {
         #region private members
         
         private readonly IMenuDialogViewer m_DialogViewer;
         private readonly System.Action<int> m_SelectGame;
-        
+
         #endregion
 
         #region api
@@ -27,10 +29,14 @@ namespace UI.Panels
         public MenuUiCategory Category => MenuUiCategory.SelectGame;
         public RectTransform Panel { get; private set; }
         
-        public SelectGamePanel(IMenuDialogViewer _DialogViewer, System.Action<int> _SelectGame)
+        public SelectGamePanel(
+            IMenuDialogViewer _DialogViewer, 
+            System.Action<int> _SelectGame,
+            IEnumerable<IGameObserver> _Observers)
         {
             m_DialogViewer = _DialogViewer;
             m_SelectGame = _SelectGame;
+            AddObservers(_Observers);
         }
 
         public void Show()
@@ -75,7 +81,7 @@ namespace UI.Panels
                     m_SelectGame.Invoke(cgiProps.GameId);
                     m_DialogViewer.Back();
                 };
-                cgi.Init(cgiProps);
+                cgi.Init(cgiProps, GetObservers());
             }
             
             Object.Destroy(cgiObj);

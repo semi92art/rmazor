@@ -23,7 +23,7 @@ namespace Managers
                     return _instance;
                 var go = new GameObject("Money Manager");
                 _instance = go.AddComponent<MoneyManager>();
-                if (!GameClient.Instance.IsTestMode)
+                if (!GameClient.Instance.IsModuleTestsMode)
                     DontDestroyOnLoad(go);
                 return _instance;
             }

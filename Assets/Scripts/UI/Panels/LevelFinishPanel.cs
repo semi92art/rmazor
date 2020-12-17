@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DialogViewers;
+using Entities;
 using Extensions;
 using Helpers;
 using Managers;
@@ -14,8 +15,15 @@ using Utils;
 
 namespace UI.Panels
 {
-    public class LevelFinishPanel : IGameDialogPanel
+    public class LevelFinishPanel : GameObservable, IGameDialogPanel
     {
+        #region notify ids
+
+        public const int NotifyIdWatchAdButtonClick = 0;
+        public const int NotifyIdContinueButtonClick = 1;
+
+        #endregion
+        
         #region nonpublic members
 
         private readonly IGameDialogViewer m_DialogViewer;
@@ -100,18 +108,21 @@ namespace UI.Panels
 
         private void OnX2ButtonClick()
         {
-            GoogleAdsManager.Instance.ShowRewardedAd(() =>
-            {
-                foreach (var kvp in m_Revenue.ToArray())
-                    m_Revenue[kvp.Key] = (long) (m_Revenue[kvp.Key] * m_MultiplyCoefficient);
-                m_SetNewRevenue?.Invoke(m_Revenue);
-                SetRevenueCountsText();
-                m_X2Button.gameObject.SetActive(false);
-            });
+            Notify(this, NotifyIdWatchAdButtonClick, (UnityAction)WatchAdFinishAction);
+        }
+
+        private void WatchAdFinishAction()
+        {
+            foreach (var kvp in m_Revenue.ToArray())
+                m_Revenue[kvp.Key] = (long) (m_Revenue[kvp.Key] * m_MultiplyCoefficient);
+            m_SetNewRevenue?.Invoke(m_Revenue);
+            SetRevenueCountsText();
+            m_X2Button.gameObject.SetActive(false);
         }
 
         private void OnContinueButtonClick()
         {
+            Notify(this, NotifyIdContinueButtonClick, m_Level);
             m_FinishLevel?.Invoke();
         }
 

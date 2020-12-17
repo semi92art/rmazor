@@ -1,12 +1,14 @@
-﻿using Managers;
+﻿using System.Collections;
+using System.Collections.Generic;
+using Constants;
+using Entities;
 using TMPro;
-using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace UI.PanelItems
 {
-    public class SettingItemOnOff : MonoBehaviour
+    public class SettingItemOnOff : MenuItemBase
     {
         public TextMeshProUGUI title;
         public Toggle offToggle;
@@ -14,8 +16,13 @@ namespace UI.PanelItems
         public Toggle onToggle;
         public TextMeshProUGUI onText;
 
-        public void Init(bool _IsOn, string _Name, UnityAction<bool> _Action)
+        public void Init(
+            bool _IsOn, 
+            string _Name,
+            UnityAction<bool> _Action,
+            IEnumerable<IGameObserver> _Observers)
         {
+            base.Init(_Observers);
             name = $"{_Name} Setting";
             title.text = _Name;
             ToggleGroup tg = gameObject.AddComponent<ToggleGroup>();
@@ -25,18 +32,14 @@ namespace UI.PanelItems
                 onToggle.isOn = true;
             else
                 offToggle.isOn = true;
-            string s;
-            
+
             offText.text = "Off";
             onText.text = "On";
 
-            void SoundAction(bool _On)
-            {
-                if (_On) SoundManager.Instance.PlayUiButtonClick();
-            }
-
-            offToggle.onValueChanged.AddListener(SoundAction);
-            onToggle.onValueChanged.AddListener(SoundAction);
+            onToggle.onValueChanged.AddListener(_V =>
+                Notifyer.RaiseNotify(this, CommonNotifyIds.UiButtonClick));
+            offToggle.onValueChanged.AddListener(_V =>
+                Notifyer.RaiseNotify(this, CommonNotifyIds.UiButtonClick));
             onToggle.onValueChanged.AddListener(_Action);
         }
     }

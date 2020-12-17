@@ -26,7 +26,7 @@ namespace Utils
         public static Coroutine Run(IEnumerator _Coroutine)
         {
 #if UNITY_EDITOR
-            if (GameClient.Instance.IsTestMode && CoroutineRunner == null)
+            if (GameClient.Instance.IsModuleTestsMode && CoroutineRunner == null)
                 CoroutineRunner = GameObject.Find("CoroutinesRunner").GetComponent<DontDestroyOnLoad>();
 #endif
             return CoroutineRunner.StartCoroutine(_Coroutine);

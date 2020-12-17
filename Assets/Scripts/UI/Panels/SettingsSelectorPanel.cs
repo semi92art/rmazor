@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DialogViewers;
+using Entities;
 using Extensions;
 using Helpers;
 using UI.Entities;
@@ -11,7 +12,7 @@ using UnityEngine.UI;
 
 namespace UI.Panels
 {
-    public class SettingsSelectorPanel : IMenuDialogPanel
+    public class SettingsSelectorPanel : GameObservable, IMenuDialogPanel
     {
         #region private members
         
@@ -33,8 +34,10 @@ namespace UI.Panels
             IMenuDialogViewer _DialogViewer,
             string _Value,
             List<string> _Items,
-            System.Action<string> _Select)
+            System.Action<string> _Select, 
+            IEnumerable<IGameObserver> _Observers)
         {
+            AddObservers(_Observers);
             m_DialogViewer = _DialogViewer;
             m_DefaultValue = _Value;
             m_Items = _Items;
@@ -88,7 +91,7 @@ namespace UI.Panels
             {
                 var sspiClone = sspi.Clone();
                 SettingSelectorItem si = sspiClone.GetComponent<SettingSelectorItem>();
-                si.Init(item, m_Select, item == m_DefaultValue);
+                si.Init(item, m_Select, item == m_DefaultValue, GetObservers());
                 selectorItems.Add(si);
             }
 

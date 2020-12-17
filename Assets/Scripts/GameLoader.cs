@@ -17,8 +17,8 @@ public class GameLoader : MonoBehaviour, ISingleton
             TimeOrLifesEndedPanel.TimesPanelCalled = 0;
         };
         
-        GoogleAdsManager.Instance.Init();
         GameClient.Instance.Init();
+        AdsManager.Instance.Init();
         AssetBundleManager.Instance.Init();
         SceneManager.LoadScene(1);
     }

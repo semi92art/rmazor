@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Constants;
+using Entities;
 using Managers;
 using TMPro;
 using UnityEngine;
@@ -10,7 +11,7 @@ using Entry = UnityEngine.EventSystems.EventTrigger.Entry;
 
 namespace UI.PanelItems
 {
-    public class SettingSelectorItem : MonoBehaviour
+    public class SettingSelectorItem : MenuItemBase
     {
         [SerializeField] private EventTrigger trigger;
         [SerializeField] private TextMeshProUGUI title;
@@ -25,8 +26,13 @@ namespace UI.PanelItems
             m_Items = _Items;
         }
         
-        public void Init(string _Text, System.Action<string> _Select, bool _IsOn)
+        public void Init(
+            string _Text,
+            System.Action<string> _Select,
+            bool _IsOn,
+            IEnumerable<IGameObserver> _Observers)
         {
+            base.Init(_Observers);
             title.text = _Text;
             name = $"{_Text} Setting";
             m_OnSelect = _Select;
@@ -45,7 +51,7 @@ namespace UI.PanelItems
         {
             if (!m_IsInitialized) 
                 return;
-            SoundManager.Instance.PlayUiButtonClick();
+            Notifyer.RaiseNotify(this, CommonNotifyIds.UiButtonClick);
             m_OnSelect?.Invoke(title.text);
 
             foreach (var item in m_Items.ToArray())

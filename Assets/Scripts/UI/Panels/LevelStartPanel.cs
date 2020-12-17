@@ -1,4 +1,6 @@
-﻿using DialogViewers;
+﻿using Constants;
+using DialogViewers;
+using Entities;
 using Extensions;
 using Helpers;
 using Managers;
@@ -12,7 +14,7 @@ using Utils;
 
 namespace UI.Panels
 {
-    public class LevelStartPanel : IGameDialogPanel
+    public class LevelStartPanel : GameObservable, IGameDialogPanel
     {
         #region nonpublic members
         
@@ -101,23 +103,23 @@ namespace UI.Panels
 
         private void OnTakeOneMoreLifeButtonClick()
         {
-            bool shown = GoogleAdsManager.Instance.ShowRewardedAd(() =>
-            {
-                var bank = MoneyManager.Instance.GetBank();
-                Coroutines.Run(Coroutines.WaitWhile(() =>
-                    {
-                        if (!m_AvailableLifes.HasValue)
-                            m_AvailableLifes = bank.Money[MoneyType.Lifes];
-                        if (m_AvailableLifes <= 0)
-                            return;
-                        m_StartLifes++;
-                        m_AvailableLifes--;
-                        CheckForAvailableLifesAndSetTexts();
-                    },
-                    () => !bank.Loaded));
-            });
-            if (!shown)
-                Debug.LogError("Rewarded ad was not loaded!");
+            Notify(this, CommonNotifyIds.WatchAdUiButtonClick, (UnityAction)OnWatchAdFinishAction);
+        }
+
+        private void OnWatchAdFinishAction()
+        {
+            var bank = MoneyManager.Instance.GetBank();
+            Coroutines.Run(Coroutines.WaitWhile(() =>
+                {
+                    if (!m_AvailableLifes.HasValue)
+                        m_AvailableLifes = bank.Money[MoneyType.Lifes];
+                    if (m_AvailableLifes <= 0)
+                        return;
+                    m_StartLifes++;
+                    m_AvailableLifes--;
+                    CheckForAvailableLifesAndSetTexts();
+                },
+                () => !bank.Loaded));
         }
         
         private void OnStartButtonClick()

@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Constants;
 using DialogViewers;
+using Entities;
 using Extensions;
 using Managers;
 using TMPro;
@@ -9,7 +12,7 @@ using UnityEngine.UI;
 
 namespace UI.PanelItems
 {
-    public class SettingItemInPanelSelector : MonoBehaviour
+    public class SettingItemInPanelSelector : MenuItemBase
     {
         public TextMeshProUGUI title;
         public Button button;
@@ -20,25 +23,27 @@ namespace UI.PanelItems
             System.Func<string> _Value,
             string _Name,
             System.Func<List<string>> _ListOfItems,
-            System.Action<string> _Select)
+            System.Action<string> _Select,
+            IEnumerable<IGameObserver> _Observers)
         {
+            var observers = _Observers.ToArray();
+            base.Init(observers);
             setting.text = _Value?.Invoke();
             name = $"{_Name} Setting";
             title.text = _Name;
             button.SetOnClick(() =>
             {
-                SoundManager.Instance.PlayUiButtonClick();
+                Notifyer.RaiseNotify(this, CommonNotifyIds.UiButtonClick);
                 var items = _ListOfItems?.Invoke();
                 if (items == null)
                     return;
-                
                 IMenuDialogPanel selectorPanel = new SettingsSelectorPanel(
                     _MenuDialogViewer,
                     _Value?.Invoke(),
                     items, 
-                    _Select);
+                    _Select, 
+                    observers);
                 selectorPanel.Show();
-                
             });
         }
     }

@@ -1,25 +1,28 @@
-﻿using Extensions;
+﻿using System.Collections.Generic;
+using Constants;
+using Entities;
+using Extensions;
 using Helpers;
-using Managers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI.PanelItems
 {
-    public class ChooseGameItem : MonoBehaviour
+    public class ChooseGameItem : MenuItemBase
     {
         public Button button;
         public Image icon;
         public TextMeshProUGUI comingSoonLabel;
-    
-        public void Init(ChooseGameItemProps _Props)
+        
+        public void Init(ChooseGameItemProps _Props, IEnumerable<IGameObserver> _Observers)
         {
+            base.Init(_Observers);
             icon.sprite = GetLogo(_Props.GameId);
             button.interactable = !_Props.IsComingSoon;
             button.SetOnClick(() =>
             {
-                SoundManager.Instance.PlayUiButtonClick();
+                Notifyer.RaiseNotify(this, CommonNotifyIds.UiButtonClick);
                 _Props.Click?.Invoke();
             });
             comingSoonLabel.enabled = _Props.IsComingSoon;

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Constants;
 using DialogViewers;
 using Entities;
 using Extensions;
@@ -12,7 +13,7 @@ using Utils;
 
 namespace UI.Panels
 {
-    public class DailyBonusPanel : IMenuDialogPanel
+    public class DailyBonusPanel : GameObservable, IMenuDialogPanel
     {
         #region private members
         
@@ -39,10 +40,14 @@ namespace UI.Panels
         public MenuUiCategory Category => MenuUiCategory.DailyBonus;
         public RectTransform Panel { get; private set; }
 
-        public DailyBonusPanel(IMenuDialogViewer _DialogViewer, IActionExecuter _ActionExecutor)
+        public DailyBonusPanel(
+            IMenuDialogViewer _DialogViewer, 
+            IActionExecuter _ActionExecutor,
+            IEnumerable<IGameObserver> _Observers)
         {
             m_DialogViewer = _DialogViewer;
             m_ActionExecutor = _ActionExecutor;
+            AddObservers(_Observers);
         }
         
         public void Show()
@@ -98,6 +103,7 @@ namespace UI.Panels
 
                 dbProps.Click = () =>
                 {
+                    Notify(this, CommonNotifyIds.UiButtonClick, dbProps.Day);
                     m_DialogViewer.Back();
                 };
                 

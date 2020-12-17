@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Constants;
 using DialogViewers;
+using Entities;
 using Extensions;
 using Helpers;
 using Managers;
@@ -13,8 +15,19 @@ using Utils;
 
 namespace UI.Panels
 {
-    public class PlusLifesPanel : IMenuDialogPanel
+    public class PlusLifesPanel : GameObservable, IMenuDialogPanel
     {
+        #region notify ids
+
+        public const int NotifyIdPlus1LifeButtonClick = 0;
+        public const int NotifyIdPlus10LifesButtonClick = 1;
+        public const int NotifyIdPlus100LifesButtonClick = 2;
+        public const int NotifyIdExchangeButtonClick = 3;
+        public const int NotifyIdResetButtonClick = 4;
+        public const int NotifyIdShopButtonClick = 5;
+        
+        #endregion
+        
         #region nonpublic members
         
         private readonly IMenuDialogViewer m_DialogViewer;
@@ -97,24 +110,28 @@ namespace UI.Panels
 
         private void OnPlus1ButtonClick()
         {
+            Notify(this, NotifyIdPlus1LifeButtonClick);
             m_LifesCount++;
             UpdatePanelState();
         }
 
         private void OnPlus10ButtonClick()
         {
+            Notify(this, NotifyIdPlus10LifesButtonClick);
             m_LifesCount += 10;
             UpdatePanelState();
         }
 
         private void OnPlus100ButtonClick()
         {
+            Notify(this, NotifyIdPlus100LifesButtonClick);
             m_LifesCount += 100;
             UpdatePanelState();
         }
         
         private void OnExchangeButtonClick()
         {
+            Notify(this, NotifyIdExchangeButtonClick);
             var pricesTemp = OneLifePrice
                 .CloneAlt()
                 .ToDictionary(_P => _P.Key,
@@ -131,10 +148,18 @@ namespace UI.Panels
         
         private void OnResetButtonClick()
         {
+            Notify(this, NotifyIdResetButtonClick);
             m_LifesCount = 0;
             UpdatePanelState();
         }
-
+        
+        private void OnShopButtonClick()
+        {
+            Notify(this, NotifyIdShopButtonClick);
+            IMenuDialogPanel shopPanel = new ShopPanel(m_DialogViewer, GetObservers());
+            shopPanel.Show();
+        }
+        
         private void UpdatePanelState()
         {
             m_Plus100Button.interactable = IsMoneyEnough(m_LifesCount + 100);
@@ -145,13 +170,6 @@ namespace UI.Panels
             m_GoldWarningIcon.SetGoActive(m_LifesCount > 0 && !IsMoneyEnoughForOneLife(MoneyType.Gold));
             m_DiamondsWarningIcon.SetGoActive(m_LifesCount > 0 && !IsMoneyEnoughForOneLife(MoneyType.Diamonds));
             SetTexts();
-        }
-
-        private void OnShopButtonClick()
-        {
-            SoundManager.Instance.PlayUiButtonClick();
-            IMenuDialogPanel shopPanel = new ShopPanel(m_DialogViewer);
-            shopPanel.Show();
         }
 
         private bool IsMoneyEnough(long _LifesCount)

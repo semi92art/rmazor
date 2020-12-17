@@ -48,7 +48,7 @@ namespace Network
         
         #endregion
         
-        #region public properties
+        #region api
 
         public string BaseUrl => m_ServerBaseUrls[m_ServerName];
 
@@ -83,11 +83,9 @@ namespace Network
             get => SaveUtils.GetValue<bool>(SaveKey.LastConnectionSucceeded);
             private set => SaveUtils.PutValue(SaveKey.LastConnectionSucceeded, value);
         }
+        
+        public bool IsModuleTestsMode => m_ServerName == "TestRunner";
 
-        #endregion
-        
-        #region api
-        
         public void Init(bool _TestMode = false)
         {
 #if UNITY_EDITOR
@@ -136,8 +134,6 @@ namespace Network
         {
             return JsonConvert.DeserializeObject<T>(_Json);
         }
-
-        public bool IsTestMode => m_ServerName == "TestRunner";
 
         #endregion
         

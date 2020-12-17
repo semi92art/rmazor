@@ -25,7 +25,7 @@ namespace Managers
                     return _instance;
                 var go = new GameObject("Hierarchy Order Manager");
                 _instance = go.AddComponent<HierarchyOrderManager>();
-                if (!GameClient.Instance.IsTestMode)
+                if (!GameClient.Instance.IsModuleTestsMode)
                     DontDestroyOnLoad(go);
                 return _instance;
             }

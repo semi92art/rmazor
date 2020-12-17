@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace UI.PanelItems
 {
-    public class SettingItemSlider : MonoBehaviour
+    public class SettingItemSlider : MenuItemBase
     {
         public TextMeshProUGUI title;
         public Slider slider;
