@@ -4,6 +4,7 @@ using DialogViewers;
 using Entities;
 using Extensions;
 using Helpers;
+using Lean.Localization;
 using Managers;
 using Network;
 using TMPro;
@@ -187,7 +188,7 @@ namespace UI
                     long maxScore = 0;
                     if (scores.Scores.ContainsKey(ScoreTypes.MaxScore))
                         maxScore = scores.Scores[ScoreTypes.MaxScore];
-                    bestScoreText.text = $"Best: {maxScore.ToNumeric()}";
+                    bestScoreText.text = $" {maxScore.ToNumeric()}";
                 },
                 () => !scores.Loaded));
             

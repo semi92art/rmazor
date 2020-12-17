@@ -1566,6 +1566,7 @@ GameObject:
   - component: {fileID: 3574501769536950}
   - component: {fileID: 6839789611916044801}
   - component: {fileID: 2978975245690021882}
+  - component: {fileID: 1390943550256997836}
   m_Layer: 0
   m_Name: Title
   m_TagString: Untagged
@@ -1589,8 +1590,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 10.9, y: -39.5}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 0, y: -39.5}
+  m_SizeDelta: {x: 350.30005, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6839789611916044801
 CanvasRenderer:
@@ -1655,7 +1656,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_textAlignment: 257
+  m_textAlignment: 258
   m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -1712,6 +1713,20 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &1390943550256997836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2372919806767403396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81eed60ad983fa5499e91759a5e9f75d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  translationName: Exchange
+  FallbackText: Exchange
 --- !u!1 &2471409887187338952
 GameObject:
   m_ObjectHideFlags: 0
@@ -2030,6 +2045,7 @@ GameObject:
   - component: {fileID: 449732096730917189}
   - component: {fileID: 6128798506009955152}
   - component: {fileID: 1358225188948625219}
+  - component: {fileID: 7289957953443992542}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -2176,6 +2192,20 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &7289957953443992542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2886276272225437040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81eed60ad983fa5499e91759a5e9f75d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  translationName: Reset
+  FallbackText: reset
 --- !u!1 &3064543932967698123
 GameObject:
   m_ObjectHideFlags: 0
@@ -2494,6 +2524,9 @@ GameObject:
   - component: {fileID: 6103416629336070958}
   - component: {fileID: 6966111981911837871}
   - component: {fileID: 5368474195214013443}
+  - component: {fileID: 7959891292435058687}
+  - component: {fileID: 5694581261237390370}
+  - component: {fileID: 9147497653488787192}
   m_Layer: 0
   m_Name: For Text
   m_TagString: Untagged
@@ -2641,6 +2674,81 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!23 &7959891292435058687
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3738855901472117870}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10100, guid: 0000000000000000e000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!102 &5694581261237390370
+TextMesh:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3738855901472117870}
+  m_Text: 
+  m_OffsetZ: 0
+  m_CharacterSize: 1
+  m_LineSpacing: 1
+  m_Anchor: 0
+  m_Alignment: 0
+  m_TabSize: 4
+  m_FontSize: 0
+  m_FontStyle: 0
+  m_RichText: 1
+  m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Color:
+    serializedVersion: 2
+    rgba: 4294967295
+--- !u!114 &9147497653488787192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3738855901472117870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81eed60ad983fa5499e91759a5e9f75d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  translationName: For
+  FallbackText: for
 --- !u!1 &4189047406068000288
 GameObject:
   m_ObjectHideFlags: 0
@@ -2926,6 +3034,7 @@ GameObject:
   - component: {fileID: 4096701149157478650}
   - component: {fileID: 4895594284491223488}
   - component: {fileID: 4037004017839515321}
+  - component: {fileID: 2607566407683964534}
   m_Layer: 0
   m_Name: Or Go To Text
   m_TagString: Untagged
@@ -2951,7 +3060,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: -633.39996}
-  m_SizeDelta: {x: 200, y: 50}
+  m_SizeDelta: {x: 428.37646, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4895594284491223488
 CanvasRenderer:
@@ -3073,6 +3182,20 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &2607566407683964534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4836099034085995722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81eed60ad983fa5499e91759a5e9f75d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  translationName: OrGoTo
+  FallbackText: 'or go to:'
 --- !u!1 &5386909804385757354
 GameObject:
   m_ObjectHideFlags: 0
@@ -3084,6 +3207,7 @@ GameObject:
   - component: {fileID: 567388248409888073}
   - component: {fileID: 5694088622973610013}
   - component: {fileID: 7128508710724211822}
+  - component: {fileID: 4175995409609809583}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -3230,6 +3354,20 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4175995409609809583
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5386909804385757354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81eed60ad983fa5499e91759a5e9f75d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  translationName: Exchange
+  FallbackText: exchange
 --- !u!1 &5406876689697586497
 GameObject:
   m_ObjectHideFlags: 0
@@ -3334,6 +3472,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3312d7739989d2b4e91e6319e9a96d76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Padding: {x: 0, y: 0, z: 0, w: 0}
+  m_Softness: {x: 0, y: 0}
 --- !u!1 &5472549851544849725
 GameObject:
   m_ObjectHideFlags: 0
@@ -4028,6 +4168,7 @@ GameObject:
   - component: {fileID: 7909562588664889086}
   - component: {fileID: 2283033257068108391}
   - component: {fileID: 8625037962254396242}
+  - component: {fileID: 2867191095414890942}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -4175,6 +4316,20 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &2867191095414890942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6019277156705865009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81eed60ad983fa5499e91759a5e9f75d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  translationName: Shop
+  FallbackText: shop
 --- !u!1 &6034151437510723364
 GameObject:
   m_ObjectHideFlags: 0
@@ -4565,7 +4720,7 @@ MonoBehaviour:
   size: 7.65
   offsetAngle: 90
   offsetDistance: 4
-  offset: {x: 0, y: 0}
+  offset: {x: 0.0000002384186, y: -4}
   color: {r: 0, g: 0, b: 0, a: 0.27058825}
   blendMode: 0
   shadowAsSibling: 0
@@ -5756,7 +5911,7 @@ MonoBehaviour:
   size: 7.65
   offsetAngle: 90
   offsetDistance: 4
-  offset: {x: 0, y: 0}
+  offset: {x: 0.0000002384186, y: -4}
   color: {r: 0, g: 0, b: 0, a: 0.27058825}
   blendMode: 0
   shadowAsSibling: 0

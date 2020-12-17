@@ -164,8 +164,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 3
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4829f278ac4f5fc498de060344d449b1, type: 2}
-  m_sharedMaterial: {fileID: -415713865528644698, guid: 4829f278ac4f5fc498de060344d449b1,
+  m_fontAsset: {fileID: 11400000, guid: 84b7673e76a9a644d96ab1e31453112d, type: 2}
+  m_sharedMaterial: {fileID: 6299018223239539106, guid: 84b7673e76a9a644d96ab1e31453112d,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -321,8 +321,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 1
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4829f278ac4f5fc498de060344d449b1, type: 2}
-  m_sharedMaterial: {fileID: -415713865528644698, guid: 4829f278ac4f5fc498de060344d449b1,
+  m_fontAsset: {fileID: 11400000, guid: 84b7673e76a9a644d96ab1e31453112d, type: 2}
+  m_sharedMaterial: {fileID: 6299018223239539106, guid: 84b7673e76a9a644d96ab1e31453112d,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -389,13 +389,13 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 2782757938633229462}
-    characterCount: 1
+    characterCount: 0
     spriteCount: 0
     spaceCount: 0
-    wordCount: 1
+    wordCount: 0
     linkCount: 0
-    lineCount: 1
-    pageCount: 1
+    lineCount: 0
+    pageCount: 0
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
@@ -478,8 +478,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 2
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4829f278ac4f5fc498de060344d449b1, type: 2}
-  m_sharedMaterial: {fileID: -415713865528644698, guid: 4829f278ac4f5fc498de060344d449b1,
+  m_fontAsset: {fileID: 11400000, guid: 84b7673e76a9a644d96ab1e31453112d, type: 2}
+  m_sharedMaterial: {fileID: 6299018223239539106, guid: 84b7673e76a9a644d96ab1e31453112d,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -546,13 +546,13 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 251145388842269507}
-    characterCount: 1
+    characterCount: 0
     spriteCount: 0
     spaceCount: 0
-    wordCount: 1
+    wordCount: 0
     linkCount: 0
-    lineCount: 1
-    pageCount: 1
+    lineCount: 0
+    pageCount: 0
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0

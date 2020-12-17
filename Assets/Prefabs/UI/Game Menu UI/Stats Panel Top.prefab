@@ -406,7 +406,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 31.3, y: 0}
+  m_AnchoredPosition: {x: 31.300049, y: 0}
   m_SizeDelta: {x: 53.0354, y: -15.969238}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5950169951570263050
@@ -532,7 +532,7 @@ GameObject:
   - component: {fileID: 3408878757440907052}
   - component: {fileID: 6974068516915432360}
   m_Layer: 5
-  m_Name: TMP SubMeshUI [Fulbo Argenta Cirillic 2 SDF Material + LiberationSans SDF
+  m_Name: TMP SubMeshUI [Fulbo Argenta SDF Cirillic Material + LiberationSans SDF
     Atlas]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1624,8 +1624,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 29/30
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4829f278ac4f5fc498de060344d449b1, type: 2}
-  m_sharedMaterial: {fileID: -415713865528644698, guid: 4829f278ac4f5fc498de060344d449b1,
+  m_fontAsset: {fileID: 11400000, guid: 84b7673e76a9a644d96ab1e31453112d, type: 2}
+  m_sharedMaterial: {fileID: 6299018223239539106, guid: 84b7673e76a9a644d96ab1e31453112d,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -2062,8 +2062,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 30.0
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4829f278ac4f5fc498de060344d449b1, type: 2}
-  m_sharedMaterial: {fileID: -415713865528644698, guid: 4829f278ac4f5fc498de060344d449b1,
+  m_fontAsset: {fileID: 11400000, guid: 84b7673e76a9a644d96ab1e31453112d, type: 2}
+  m_sharedMaterial: {fileID: 6299018223239539106, guid: 84b7673e76a9a644d96ab1e31453112d,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}

@@ -160,8 +160,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Take 1 more (max = 5):'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4829f278ac4f5fc498de060344d449b1, type: 2}
-  m_sharedMaterial: {fileID: -415713865528644698, guid: 4829f278ac4f5fc498de060344d449b1,
+  m_fontAsset: {fileID: 11400000, guid: 84b7673e76a9a644d96ab1e31453112d, type: 2}
+  m_sharedMaterial: {fileID: 6299018223239539106, guid: 84b7673e76a9a644d96ab1e31453112d,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -548,8 +548,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Level 1
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4829f278ac4f5fc498de060344d449b1, type: 2}
-  m_sharedMaterial: {fileID: -415713865528644698, guid: 4829f278ac4f5fc498de060344d449b1,
+  m_fontAsset: {fileID: 11400000, guid: 84b7673e76a9a644d96ab1e31453112d, type: 2}
+  m_sharedMaterial: {fileID: 6299018223239539106, guid: 84b7673e76a9a644d96ab1e31453112d,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -725,7 +725,7 @@ GameObject:
   - component: {fileID: 4893111269599792604}
   - component: {fileID: 7512829276836999233}
   m_Layer: 0
-  m_Name: TMP SubMeshUI [Fulbo Argenta Cirillic 2 SDF Material + LiberationSans SDF
+  m_Name: TMP SubMeshUI [Fulbo Argenta SDF Cirillic Material + LiberationSans SDF
     Atlas]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -944,8 +944,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Lifes Available: 50'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4829f278ac4f5fc498de060344d449b1, type: 2}
-  m_sharedMaterial: {fileID: -415713865528644698, guid: 4829f278ac4f5fc498de060344d449b1,
+  m_fontAsset: {fileID: 11400000, guid: 84b7673e76a9a644d96ab1e31453112d, type: 2}
+  m_sharedMaterial: {fileID: 6299018223239539106, guid: 84b7673e76a9a644d96ab1e31453112d,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1163,7 +1163,7 @@ GameObject:
   - component: {fileID: 4330329615019198999}
   - component: {fileID: 5523194485623824071}
   m_Layer: 0
-  m_Name: TMP SubMeshUI [Fulbo Argenta Cirillic 2 SDF Material + LiberationSans SDF
+  m_Name: TMP SubMeshUI [Fulbo Argenta SDF Cirillic Material + LiberationSans SDF
     Atlas]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1291,8 +1291,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Start
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4829f278ac4f5fc498de060344d449b1, type: 2}
-  m_sharedMaterial: {fileID: -415713865528644698, guid: 4829f278ac4f5fc498de060344d449b1,
+  m_fontAsset: {fileID: 11400000, guid: 84b7673e76a9a644d96ab1e31453112d, type: 2}
+  m_sharedMaterial: {fileID: 6299018223239539106, guid: 84b7673e76a9a644d96ab1e31453112d,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1394,7 +1394,7 @@ GameObject:
   - component: {fileID: 7647024261543257878}
   - component: {fileID: 1608373280853634265}
   m_Layer: 0
-  m_Name: TMP SubMeshUI [Fulbo Argenta Cirillic 2 SDF Material + LiberationSans SDF
+  m_Name: TMP SubMeshUI [Fulbo Argenta SDF Cirillic Material + LiberationSans SDF
     Atlas]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1888,7 +1888,7 @@ GameObject:
   - component: {fileID: 6655766342950287235}
   - component: {fileID: 8154602425470495498}
   m_Layer: 0
-  m_Name: TMP SubMeshUI [Fulbo Argenta Cirillic 2 SDF Material + LiberationSans SDF
+  m_Name: TMP SubMeshUI [Fulbo Argenta SDF Cirillic Material + LiberationSans SDF
     Atlas]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2017,8 +2017,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Start with lifes: 3'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4829f278ac4f5fc498de060344d449b1, type: 2}
-  m_sharedMaterial: {fileID: -415713865528644698, guid: 4829f278ac4f5fc498de060344d449b1,
+  m_fontAsset: {fileID: 11400000, guid: 84b7673e76a9a644d96ab1e31453112d, type: 2}
+  m_sharedMaterial: {fileID: 6299018223239539106, guid: 84b7673e76a9a644d96ab1e31453112d,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
