@@ -24,3 +24,13 @@ MonoBehaviour:
       name: icon_life_enabled
     - item: {fileID: 21300000, guid: 6a8f01446c5568647b1886fd1e790fe9, type: 3}
       name: icon_life_disabled
+    - item: {fileID: 21300000, guid: 6a8f01446c5568647b1886fd1e790fe9, type: 3}
+      name: icon_life_disabled
+    - item: {fileID: 21300000, guid: 68c8f87274b316548b0c04a3c72896bc, type: 3}
+      name: icon_wof
+    - item: {fileID: 21300000, guid: 741e236cc25104143a7d108c5bf4d241, type: 3}
+      name: icon_daily_bonus
+    - item: {fileID: 21300000, guid: 68d0d043197159e479bbbb738c6a52f4, type: 3}
+      name: icon_shop
+    - item: {fileID: 21300000, guid: 65fd4d530d54bed4da013596e6c00afe, type: 3}
+      name: icon_login

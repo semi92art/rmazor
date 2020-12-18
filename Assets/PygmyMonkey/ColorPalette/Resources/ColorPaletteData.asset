@@ -56,3 +56,15 @@ MonoBehaviour:
     - name: Random
       color: {r: 0.7568628, g: 0.7490196, b: 0.6901961, a: 1}
     colorList: []
+  - name: Main Menu Bottom Group Buttons
+    showDetails: 1
+    colorInfoList:
+    - name: Login
+      color: {r: 0.427451, g: 0.427451, b: 0.8431373, a: 1}
+    - name: Wheel Of Fortune
+      color: {r: 0.5372549, g: 0.2509804, b: 0.5372549, a: 1}
+    - name: Daily Bonus
+      color: {r: 0.5882353, g: 0.8431373, b: 0.33333334, a: 1}
+    - name: Shop
+      color: {r: 0.9058824, g: 0.2901961, b: 0.2901961, a: 1}
+    colorList: []

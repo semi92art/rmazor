@@ -2,6 +2,7 @@
 using DialogViewers;
 using Settings;
 using UI;
+using UI.PanelItems;
 using UI.Panels;
 
 namespace Controllers
@@ -24,6 +25,9 @@ namespace Controllers
                 case PlusLifesPanel _:
                 case PlusMoneyPanel _:
                     PlayUiButtonClick();
+                    break;
+                case SettingItemInPanelSelector _:
+                    // do not play because of duplicating sounds with panel inner selection
                     break;
                 default:
                     if (_NotifyMessage == CommonNotifyMessages.UiButtonClick)

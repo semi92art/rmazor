@@ -18,3 +18,11 @@ MonoBehaviour:
       name: rect_background_gray
     - item: {fileID: 21300000, guid: bdbd7163ab88ae8489563677f1268ddc, type: 3}
       name: rect_background_purple
+    - item: {fileID: 21300000, guid: bdbd7163ab88ae8489563677f1268ddc, type: 3}
+      name: wof_button_background
+    - item: {fileID: 21300000, guid: 0c3ea1ae1f4278244ad7409b84c86ba5, type: 3}
+      name: daily_bonus_button_background
+    - item: {fileID: 21300000, guid: b76ec5813a8e13a4798f43d277301b2b, type: 3}
+      name: shop_button_background
+    - item: {fileID: 21300000, guid: 6576d9ea82363a04e9876c278d1fe672, type: 3}
+      name: login_button_background

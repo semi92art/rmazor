@@ -13,6 +13,7 @@ using UI.Factories;
 using UI.Managers;
 using UI.Panels;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using Utils;
 
@@ -72,7 +73,7 @@ namespace UI
             InitSelectGameButton();
             SetGameLogo(GameClient.Instance.GameId);
             InitCenterButtonsGroup();
-            InitBottomButtonsGroup();
+            InitBottomButtonsGroups();
             InitSmallButtons();
             InitBankMiniPanel();
             CheckIfDailyBonusNotChosenToday();
@@ -201,9 +202,18 @@ namespace UI
             
         }
 
-        private void InitBottomButtonsGroup()
+        private void InitBottomButtonsGroups()
         {
-            var go = PrefabInitializer.InitUiPrefab(
+            string paletteName = "Main Menu Bottom Group Buttons";
+            var buttonRtrLite = new RectTransformLite
+            {
+                Anchor = UiAnchor.Create(1, 0, 1, 0),
+                AnchoredPosition = Vector2.zero,
+                Pivot = Vector2.one * 0.5f,
+                SizeDelta = Vector2.one * 100f
+            };
+            
+            var firstGroupObj = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_MainMenu,
                     UiAnchor.Create(0, 0, 1, 0),
@@ -212,38 +222,9 @@ namespace UI
                     Vector2.up * 100f),
                 "main_menu",
                 "bottom_buttons_group");
-            RectTransform contentRtr = go.GetCompItem<RectTransform>("content");
+            var firstGroupContent = firstGroupObj.GetCompItem<RectTransform>("content");
             
-            var rTrLite = new RectTransformLite
-            {
-                Anchor = UiAnchor.Create(1, 0, 1, 0),
-                AnchoredPosition = Vector2.zero,
-                Pivot = Vector2.one * 0.5f,
-                SizeDelta = Vector2.one * 100f
-            };
-
-            var wofButton = PrefabInitializer.InitUiPrefab(
-                UiFactory.UiRectTransform(
-                    contentRtr,
-                    rTrLite),
-                "main_menu_buttons",
-                "wheel_of_fortune_button_2");
-            wofButton.GetComponent<Button>().SetOnClick(OnWheelOfFortuneButtonClick);
-
-            var dailyBonusButton = PrefabInitializer.InitUiPrefab(
-                UiFactory.UiRectTransform(contentRtr, rTrLite),
-                "main_menu_buttons",
-                "daily_bonus_button_2");
-            dailyBonusButton.GetCompItem<Button>("button").SetOnClick(OnDailyBonusButtonClick);
-            m_DailyBonusAnimator = dailyBonusButton.GetCompItem<Animator>("animator");
-
-            var shopButton = PrefabInitializer.InitUiPrefab(
-                UiFactory.UiRectTransform(contentRtr, rTrLite),
-                "main_menu_buttons",
-                "shop_button");
-            shopButton.GetComponent<Button>().SetOnClick(OnShopButtonClick);
-            
-            go = PrefabInitializer.InitUiPrefab(
+            var secondGroupObj = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_MainMenu,
                     UiAnchor.Create(0, 0, 1, 0),
@@ -252,13 +233,94 @@ namespace UI
                     Vector2.up * 100f),
                 "main_menu",
                 "bottom_buttons_group");
-            contentRtr = go.GetCompItem<RectTransform>("content");
+            var secondGroupContent = secondGroupObj.GetCompItem<RectTransform>("content");
             
-            var loginButton = PrefabInitializer.InitUiPrefab(
-                UiFactory.UiRectTransform(contentRtr, rTrLite),
+            var temp = PrefabInitializer.InitUiPrefab(
+                UiFactory.UiRectTransform(
+                    firstGroupContent,
+                    buttonRtrLite),
                 "main_menu_buttons",
-                "login_button");
-            loginButton.GetComponent<Button>().SetOnClick(OnLoginButtonClick);
+                "bottom_group_button_template");
+
+            
+            // Wheel of fortune button
+            InitBottomGroupButton(
+                "Wheel Of Fortune Button",
+                firstGroupContent,
+                temp,
+                PrefabInitializer.GetObject<Sprite>(
+                    "button_sprites", "wof_button_background"),
+                PrefabInitializer.GetObject<Sprite>(
+                    "icons", "icon_wof"),
+                ColorUtils.GetColorFromPalette(paletteName, "Wheel Of Fortune"),
+                "Wheel",
+                OnWheelOfFortuneButtonClick);
+            
+            // Daily bonus button
+            var dailyBonusButton = InitBottomGroupButton(
+                "Daily Bonus Button",
+                firstGroupContent,
+                temp,
+                PrefabInitializer.GetObject<Sprite>(
+                    "button_sprites", "daily_bonus_button_background"),
+                PrefabInitializer.GetObject<Sprite>(
+                    "icons", "icon_daily_bonus"),
+                ColorUtils.GetColorFromPalette(paletteName, "Daily Bonus"),
+                "Bonus",
+                OnDailyBonusButtonClick);
+            m_DailyBonusAnimator = dailyBonusButton.GetCompItem<Animator>("animator");
+            
+            // Shop button
+            InitBottomGroupButton(
+                "Shop Button",
+                firstGroupContent,
+                temp,
+                PrefabInitializer.GetObject<Sprite>(
+                    "button_sprites", "shop_button_background"),
+                PrefabInitializer.GetObject<Sprite>(
+                    "icons", "icon_shop"),
+                ColorUtils.GetColorFromPalette(paletteName, "Shop"),
+                "Shop",
+                OnShopButtonClick);
+
+            // Login button
+            InitBottomGroupButton(
+                "Login Button",
+                secondGroupContent,
+                temp,
+                PrefabInitializer.GetObject<Sprite>(
+                    "button_sprites", "login_button_background"),
+                PrefabInitializer.GetObject<Sprite>(
+                    "icons", "icon_login"),
+                ColorUtils.GetColorFromPalette(paletteName, "Login"),
+                "Login",
+                OnLoginButtonClick);
+            
+            Object.Destroy(temp);
+        }
+
+        private GameObject InitBottomGroupButton(
+            string _Name,
+            RectTransform _Parent,
+            GameObject _ButtonObjectTemplate,
+            Sprite _Background,
+            Sprite _Icon,
+            Color _BorderColor,
+            string _TitleLocalizationKey,
+            UnityAction _Action)
+        {
+            var go = Object.Instantiate(_ButtonObjectTemplate);
+            go.name = _Name;
+            go.SetParent(_Parent);
+            go.RTransform().localScale = Vector3.one;
+            go.GetCompItem<Image>("background").sprite = _Background;
+            go.GetCompItem<Image>("icon").sprite = _Icon;
+            go.GetCompItem<Image>("border").color = _BorderColor;
+            var localized = go.GetCompItem<TextMeshProUGUI>("title").gameObject
+                .AddComponent<LeanLocalizedTextMeshProUGUI>();
+            localized.TranslationName = _TitleLocalizationKey;
+            go.GetCompItem<Button>("button").SetOnClick(_Action);
+            return go;
         }
 
         private void InitSmallButtons()

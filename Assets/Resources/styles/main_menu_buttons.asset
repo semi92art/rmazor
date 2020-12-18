@@ -14,15 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabs:
     array:
-    - item: {fileID: 2179170755173712733, guid: e161c83902e6dd24a8c6df3df6c8da64,
-        type: 3}
-      name: profile_button
     - item: {fileID: 1020629676104538080, guid: d83106e4e643a6046a0ef01e36e1d8dc,
         type: 3}
       name: settings_button
-    - item: {fileID: 4879237508897305277, guid: 36a3e3b760815e6458c0d631896ffc14,
-        type: 3}
-      name: login_button
     - item: {fileID: 6592728042775572582, guid: 5eef98311fa7f15408a5a3490aafbdb3,
         type: 3}
       name: play_button
@@ -32,26 +26,14 @@ MonoBehaviour:
     - item: {fileID: 2601192048318346412, guid: 7e959f70d47cecc48959d0790bfa9bb6,
         type: 3}
       name: settings_button_small
-    - item: {fileID: 8386160222170283250, guid: 29a8a3e993182f446a02144bd6282509,
-        type: 3}
-      name: shop_button
-    - item: {fileID: 6244953112480298204, guid: 114ada975f3894243a8bd4bfd0a7258b,
-        type: 3}
-      name: daily_bonus_button
-    - item: {fileID: 4879237508897305277, guid: 3bd31d9bf1cfe574d8426abb042b36c4,
-        type: 3}
-      name: daily_bonus_button_2
-    - item: {fileID: 1265648874968835986, guid: cb41abc870ea98b47a133ae93ce0e6ee,
-        type: 3}
-      name: wheel_of_fortune_button
     - item: {fileID: 5541025160145569569, guid: 80bb05ea1757fad4b97a0dd009723495,
         type: 3}
       name: dialog_close_button
     - item: {fileID: 2669723317995466324, guid: 815b44f26b8e0e84ba878a0716bfbffa,
         type: 3}
       name: watch_ad_button
-    - item: {fileID: 8386160222170283250, guid: 9e4ce206e2c55fd45a8b23d436498748,
-        type: 3}
-      name: wheel_of_fortune_button_2
     - item: {fileID: 925053068623849952, guid: e6562c47e8724f94a90349fd5057a674, type: 3}
       name: ratings_button
+    - item: {fileID: 4879237508897305277, guid: 4b69c59c60a82fb47acc0e971985e9d7,
+        type: 3}
+      name: bottom_group_button_template
