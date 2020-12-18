@@ -37,9 +37,8 @@ namespace UI.Panels
         public MenuUiCategory Category => MenuUiCategory.Settings;
         public RectTransform Panel { get; private set; }
 
-        public SettingsPanel(IMenuDialogViewer _DialogViewer, IEnumerable<IGameObserver> _Observers)
+        public SettingsPanel(IMenuDialogViewer _DialogViewer)
         {
-            AddObservers(_Observers);
             m_DialogViewer = _DialogViewer;
         }
         
@@ -53,7 +52,7 @@ namespace UI.Panels
 
         #endregion
 
-        #region private methods
+        #region nonpublic methods
         
         private RectTransform Create()
         {

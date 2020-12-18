@@ -37,7 +37,7 @@ namespace Network
         
         #endregion
         
-        #region private members
+        #region nonpublic members
         
         private readonly Dictionary<int, IPacket> m_Packets = new Dictionary<int, IPacket>();
         private string m_ServerName;
@@ -137,7 +137,7 @@ namespace Network
 
         #endregion
         
-        #region private methods
+        #region nonpublic methods
         
         private void SendCore(IPacket _Packet)
         {

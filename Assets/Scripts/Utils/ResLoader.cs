@@ -9,11 +9,11 @@ using UnityEngine;
 
 namespace Utils
 {
-    public class ResLoader
+    public static class ResLoader
     {
-        #region private fields
+        #region nonpublic members
 
-        private static XElement m_Ads;
+        private static readonly XElement Ads;
 
         #endregion
     
@@ -21,7 +21,7 @@ namespace Utils
 
         static ResLoader()
         {
-            m_Ads = FromResources(@"configs\ads");
+            Ads = FromResources(@"configs\ads");
         }
     
         #endregion
@@ -33,7 +33,7 @@ namespace Utils
         public static string GoogleAdsFullscreenId => GetAdsNodeValue("fullscreen");
         public static string GoogleAdsRewardId => GetAdsNodeValue("reward");
         public static string GoogleAdsNativeAdId => GetAdsNodeValue("native");
-        public static List<string> GoogleTestDeviceIds => m_Ads.Elements("test_device").Select(_El => _El.Value).ToList();
+        public static List<string> GoogleTestDeviceIds => Ads.Elements("test_device").Select(_El => _El.Value).ToList();
 
         public static UIStyleObject GetStyle(string _StyleName)
         {
@@ -47,7 +47,7 @@ namespace Utils
 
         #endregion
         
-        #region private methods
+        #region nonpublic methods
     
         private static XElement FromResources(string _Path)
         {
@@ -59,7 +59,7 @@ namespace Utils
         private static string GetAdsNodeValue(string _Type)
         {
             Func<string, string, bool> compareOsNames = (_S1, _S2) => _S1.EqualsIgnoreCase(_S2);
-            return m_Ads.Elements("ad")
+            return Ads.Elements("ad")
                 .First(_El => _El.Attribute("os").Value.EqualsIgnoreCase(CommonUtils.GetOsName())
                 && _El.Attribute("type")?.Value == _Type).Value;
         }

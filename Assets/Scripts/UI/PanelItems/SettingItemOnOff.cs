@@ -20,7 +20,7 @@ namespace UI.PanelItems
             bool _IsOn, 
             string _Name,
             UnityAction<bool> _Action,
-            IEnumerable<IGameObserver> _Observers)
+            IEnumerable<GameObserver> _Observers)
         {
             base.Init(_Observers);
             name = $"{_Name} Setting";
@@ -37,9 +37,9 @@ namespace UI.PanelItems
             onText.text = "On";
 
             onToggle.onValueChanged.AddListener(_V =>
-                Notifyer.RaiseNotify(this, CommonNotifyIds.UiButtonClick));
+                Notifyer.RaiseNotify(this, CommonNotifyMessages.UiButtonClick));
             offToggle.onValueChanged.AddListener(_V =>
-                Notifyer.RaiseNotify(this, CommonNotifyIds.UiButtonClick));
+                Notifyer.RaiseNotify(this, CommonNotifyMessages.UiButtonClick));
             onToggle.onValueChanged.AddListener(_Action);
         }
     }

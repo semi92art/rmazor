@@ -16,10 +16,10 @@ namespace UI.Panels
     
     public class LoadingPanel : ILoadingPanel
     {
-        #region private members
+        #region nonpublic members
 
+        private readonly IMenuDialogViewer m_DialogViewer;
         private LoadingPanelView m_View;
-        private IMenuDialogViewer m_DialogViewer;
         
         #endregion
         
@@ -54,7 +54,7 @@ namespace UI.Panels
     
         #endregion
         
-        #region private methods
+        #region nonpublic methods
         
         private RectTransform Create(
             IMenuDialogViewer _MenuDialogViewer)

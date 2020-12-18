@@ -1,18 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Constants;
 using Entities;
 using Extensions;
 using Helpers;
-using Managers;
 using UI;
-using UI.Entities;
 using UI.Factories;
 using UI.Managers;
 using UI.Panels;
 using UnityEngine;
 using UnityEngine.UI;
-using Utils;
 
 namespace DialogViewers
 {
@@ -53,12 +49,12 @@ namespace DialogViewers
             
             m_GoBackButton.SetOnClick(() =>
             {
-                m_Notifyer.RaiseNotify(this, CommonNotifyIds.UiButtonClick);
+                m_Notifyer.RaiseNotify(this, CommonNotifyMessages.UiButtonClick);
                 Back();
             });
             m_CloseButton.SetOnClick(() =>
             {
-                m_Notifyer.RaiseNotify(this, CommonNotifyIds.UiButtonClick);
+                m_Notifyer.RaiseNotify(this, CommonNotifyMessages.UiButtonClick);
                 CloseAll();
             });
         }
@@ -69,7 +65,7 @@ namespace DialogViewers
 
         public static IMenuDialogViewer Create(
             RectTransform _Parent,
-            IEnumerable<IGameObserver> _Observers)
+            IEnumerable<GameObserver> _Observers)
         {
             var go = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
@@ -78,8 +74,7 @@ namespace DialogViewers
                 "dialog_viewers",
                 "main_menu_viewer");
             var result = go.GetComponent<MainMenuDialogViewer>();
-            if (result.m_Notifyer == null)
-                result.m_Notifyer = new ObserverNotifyer();
+            result.m_Notifyer = new ObserverNotifyer();
             result.m_Notifyer.AddObservers(_Observers);
             return result;
         }

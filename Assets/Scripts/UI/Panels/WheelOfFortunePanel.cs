@@ -21,10 +21,10 @@ namespace UI.Panels
 {
     public class WheelOfFortunePanel : GameObservable, IMenuDialogPanel
     {
-        #region notify ids
+        #region notify messages
 
-        public const int NotifyIdWatchAdButtonClick = 0;
-        public const int NotifyIdSpinButtonClick = 1;
+        public const string NotifyMessageWatchAdButtonClick = nameof(NotifyMessageWatchAdButtonClick);
+        public const string NotifyMessageSpinButtonClick = nameof(NotifyMessageSpinButtonClick);
         
         #endregion
         
@@ -47,11 +47,9 @@ namespace UI.Panels
         public RectTransform Panel { get; private set; }
 
         public WheelOfFortunePanel(
-            IMenuDialogViewer _DialogViewer,
-            IEnumerable<IGameObserver> _Observers)
+            IMenuDialogViewer _DialogViewer)
         {
             m_DialogViewer = _DialogViewer;
-            AddObservers(_Observers);
             UiManager.Instance.OnCurrentMenuCategoryChanged += (_Prev, _New) =>
             {
                 if (_New != Category)
@@ -116,13 +114,13 @@ namespace UI.Panels
         {
             if (!m_IsLocked)
             {
-                Notify(this, NotifyIdSpinButtonClick);
+                Notify(this, NotifyMessageSpinButtonClick);
                 Coroutines.Run(Coroutines.Action(() => m_WheelController.StartSpin()));
                 SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, System.DateTime.Now.Date);
             }
             else
             {
-                Notify(this, NotifyIdWatchAdButtonClick, (UnityAction)WatchAdFinishAction);
+                Notify(this, NotifyMessageWatchAdButtonClick, (UnityAction)WatchAdFinishAction);
             }
         }
 

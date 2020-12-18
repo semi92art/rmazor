@@ -20,18 +20,18 @@ namespace UI
 {
     public class MainMenuUi : DI.DiObject
     {
-        #region notify ids
+        #region notify messages
 
-        public const int NotifyIdMainMenuLoaded = 0;
-        public const int NotifyIdSelectGamePanelButtonClick = 1;
-        public const int NotifyIdProfileButtonClick = 2;
-        public const int NotifyIdSettingsButtonClick = 3;
-        public const int NotifyIdLoginButtonClick = 4;
-        public const int NotifyIdShopButtonClick = 5;
-        public const int NotifyIdPlayButtonClick = 6;
-        public const int NotifyIdRatingsButtonClick = 7;
-        public const int NotifyIdDailyBonusButtonClick = 8;
-        public const int NotifyIdWheelOfFortuneButtonClick = 9;
+        public const string NotifyMessageMainMenuLoaded = nameof(NotifyMessageMainMenuLoaded);
+        public const string NotifyMessageSelectGamePanelButtonClick = nameof(NotifyMessageSelectGamePanelButtonClick);
+        public const string NotifyMessageProfileButtonClick = nameof(NotifyMessageProfileButtonClick);
+        public const string NotifyMessageSettingsButtonClick = nameof(NotifyMessageSettingsButtonClick);
+        public const string NotifyMessageLoginButtonClick = nameof(NotifyMessageLoginButtonClick);
+        public const string NotifyMessageShopButtonClick = nameof(NotifyMessageShopButtonClick);
+        public const string NotifyMessagePlayButtonClick = nameof(NotifyMessagePlayButtonClick);
+        public const string NotifyMessageRatingsButtonClick  = nameof(NotifyMessageRatingsButtonClick);
+        public const string NotifyMessageDailyBonusButtonClick = nameof(NotifyMessageDailyBonusButtonClick);
+        public const string NotifyMessageWheelOfFortuneButtonClick = nameof(NotifyMessageWheelOfFortuneButtonClick);
         
         #endregion
         
@@ -39,9 +39,9 @@ namespace UI
         
         private static bool _isDailyBonusClicked;
         private readonly IMenuDialogViewer m_MenuDialogViewer;
-        private IMiniPanel m_BankMiniPanel;
+        private readonly RectTransform m_Parent;
         
-        private RectTransform m_Parent;
+        private IMiniPanel m_BankMiniPanel;
         private RectTransform m_MainMenu;
         private RectTransform m_GameLogoContainer;
         private Animator m_DailyBonusAnimator;
@@ -51,25 +51,24 @@ namespace UI
 
         #endregion
 
-        #region factory method and constructor
-
-        public static MainMenuUi Create(
-            RectTransform _Parent,
-            IMenuDialogViewer _MenuDialogViewer, 
-            IEnumerable<IGameObserver> _Observers)
-        {
-            return new MainMenuUi(_Parent, _MenuDialogViewer, _Observers);
-        }
+        #region constructor
         
-        private MainMenuUi(
+        public MainMenuUi(
             RectTransform _Parent,
-            IMenuDialogViewer _MenuDialogViewer,
-            IEnumerable<IGameObserver> _Observers)
+            IMenuDialogViewer _MenuDialogViewer)
         {
-            AddObservers(_Observers);
             m_MenuDialogViewer = _MenuDialogViewer;
             UiManager.Instance.CurrentMenuCategory = MenuUiCategory.MainMenu;
-            InitContainers(_Parent);
+            m_Parent = _Parent;
+        }
+
+        #endregion
+        
+        #region api
+
+        public void Show()
+        {
+            InitContainers(m_Parent);
             InitSelectGameButton();
             SetGameLogo(GameClient.Instance.GameId);
             InitCenterButtonsGroup();
@@ -78,26 +77,25 @@ namespace UI
             InitBankMiniPanel();
             CheckIfDailyBonusNotChosenToday();
             m_MenuDialogViewer.AddNotDialogItem(m_MainMenu, MenuUiCategory.MainMenu);
-            Notify(this, NotifyIdMainMenuLoaded);
+            Notify(this, NotifyMessageMainMenuLoaded);
         }
-
+        
         #endregion
         
         #region nonpublic methods
 
         private void InitBankMiniPanel()
         {
-            m_BankMiniPanel = new BankMiniPanel(m_Parent, m_MenuDialogViewer);
-            if (m_BankMiniPanel is IGameObservable observable)
-            {
-                observable.AddObserver(new UiSoundController());
-            }
-            m_BankMiniPanel.Show();
+            var bmp = new BankMiniPanel(m_Parent, m_MenuDialogViewer);
+            bmp.AddObservers(GetObservers());
+            bmp.Init();
+            bmp.Show();
+            m_BankMiniPanel = bmp;
         }
 
         private void InitContainers(RectTransform _Parent)
         {
-            m_Parent = _Parent;
+            
             m_MainMenu = UiFactory.UiRectTransform(
                 _Parent,
                 "Main Menu",
@@ -293,67 +291,72 @@ namespace UI
 
         private void OnSelectGamePanelButtonClick()
         {
-            Notify(this, NotifyIdSelectGamePanelButtonClick);
-            IMenuDialogPanel selectGame = new SelectGamePanel(
-                m_MenuDialogViewer, SetGameLogo, GetObservers());
-            selectGame.Show();
+            Notify(this, NotifyMessageSelectGamePanelButtonClick);
+            var selectGamePanel = new SelectGamePanel(m_MenuDialogViewer, SetGameLogo);
+            selectGamePanel.AddObservers(GetObservers());
+            selectGamePanel.Show();
         }
         
         private void OnProfileButtonClick()
         {
-            Notify(this, NotifyIdProfileButtonClick);
-            IMenuDialogPanel profile = new ProfilePanel(m_MenuDialogViewer, GetObservers());
-            profile.Show();
+            Notify(this, NotifyMessageProfileButtonClick);
+            var profilePanel = new ProfilePanel(m_MenuDialogViewer);
+            profilePanel.AddObservers(GetObservers());
+            profilePanel.Show();
         }
 
         private void OnSettingsButtonClick()
         {
-            Notify(this, NotifyIdSettingsButtonClick);
-            IMenuDialogPanel settings = new SettingsPanel(m_MenuDialogViewer, GetObservers());
-            settings.Show();
+            Notify(this, NotifyMessageSettingsButtonClick);
+            var settingsPanel = new SettingsPanel(m_MenuDialogViewer);
+            settingsPanel.AddObservers(GetObservers());
+            settingsPanel.Show();
         }
 
         private void OnLoginButtonClick()
         {
-            Notify(this, NotifyIdPlayButtonClick);
-            IMenuDialogPanel login = new LoginPanel(m_MenuDialogViewer, GetObservers());
-            login.Show();
+            Notify(this, NotifyMessageLoginButtonClick);
+            var loginPanel = new LoginPanel(m_MenuDialogViewer);
+            loginPanel.AddObservers(GetObservers());
+            loginPanel.Show();
         }
 
         private void OnShopButtonClick()
         {
-            Notify(this, NotifyIdShopButtonClick);
-            IMenuDialogPanel shop = new ShopPanel(m_MenuDialogViewer, GetObservers());
+            Notify(this, NotifyMessageShopButtonClick);
+            var shop = new ShopPanel(m_MenuDialogViewer);
+            shop.AddObservers(GetObservers());
             shop.Show();
         }
 
         private void OnPlayButtonClick()
         {
-            Notify(this, NotifyIdPlayButtonClick);
+            Notify(this, NotifyMessagePlayButtonClick);
             (m_BankMiniPanel as BankMiniPanel)?.UnregisterFromEvents();
             LevelLoader.LoadLevel(1);
         }
 
         private void OnRatingsButtonClick()
         {
-            Notify(this, NotifyIdRatingsButtonClick);
+            Notify(this, NotifyMessageRatingsButtonClick);
             // TODO
         }
 
         private void OnDailyBonusButtonClick()
         {
-            Notify(this, NotifyIdDailyBonusButtonClick);
-            IMenuDialogPanel dailyBonus = new DailyBonusPanel(
-                m_MenuDialogViewer, (IActionExecuter)m_BankMiniPanel, GetObservers());
-            dailyBonus.Show();
+            Notify(this, NotifyMessageDailyBonusButtonClick);
+            var dailyBonusPanel = new DailyBonusPanel(
+                m_MenuDialogViewer, (IActionExecuter)m_BankMiniPanel);
+            dailyBonusPanel.AddObservers(GetObservers());
+            dailyBonusPanel.Show();
         }
 
         private void OnWheelOfFortuneButtonClick()
         {
-            Notify(this, NotifyIdWheelOfFortuneButtonClick);
-            IMenuDialogPanel wheelOfFortune = new WheelOfFortunePanel(
-                m_MenuDialogViewer, GetObservers());
-            wheelOfFortune.Show();
+            Notify(this, NotifyMessageWheelOfFortuneButtonClick);
+            var wofPanel = new WheelOfFortunePanel(m_MenuDialogViewer);
+            wofPanel.AddObservers(GetObservers());
+            wofPanel.Show();
         }
         
         #endregion

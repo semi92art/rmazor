@@ -46,10 +46,9 @@ namespace UI.Panels
         public MenuUiCategory Category => MenuUiCategory.Shop;
         public RectTransform Panel { get; private set; }
 
-        public ShopPanel(IMenuDialogViewer _DialogViewer, IEnumerable<IGameObserver> _Observers)
+        public ShopPanel(IMenuDialogViewer _DialogViewer)
         {
             m_DialogViewer = _DialogViewer;
-            AddObservers(_Observers);
         }
 
         public void Show()

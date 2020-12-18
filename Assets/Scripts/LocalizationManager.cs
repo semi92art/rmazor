@@ -18,7 +18,7 @@ public class LocalizationManager : ISingleton
     
     #endregion
     
-    #region private members
+    #region nonpublic members
 
     private GameObject m_localizationObject;
 

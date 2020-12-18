@@ -1,6 +1,4 @@
-﻿using UI.Managers;
-using UI.Panels;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace DialogViewers
 {

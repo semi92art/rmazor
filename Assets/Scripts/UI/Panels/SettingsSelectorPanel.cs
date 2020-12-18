@@ -34,10 +34,8 @@ namespace UI.Panels
             IMenuDialogViewer _DialogViewer,
             string _Value,
             List<string> _Items,
-            System.Action<string> _Select, 
-            IEnumerable<IGameObserver> _Observers)
+            System.Action<string> _Select)
         {
-            AddObservers(_Observers);
             m_DialogViewer = _DialogViewer;
             m_DefaultValue = _Value;
             m_Items = _Items;
@@ -54,7 +52,7 @@ namespace UI.Panels
 
         #endregion
 
-        #region private methods
+        #region nonpublic methods
         
         private RectTransform Create()
         {

@@ -15,7 +15,7 @@ namespace DebugConsole
         
 #region factory
 
-        public static GameObject Create(IEnumerable<IGameObserver> _Observers)
+        public static GameObject Create()
         {
             Canvas canvas = UiFactory.UiCanvas(
                 "DebugConsoleCanvas",
@@ -55,7 +55,7 @@ namespace DebugConsole
 
         #endregion
 
-        #region private fields
+        #region nonpublic members
 
         private readonly DebugConsoleController m_DebugConsole = new DebugConsoleController();
         private Vector3 m_SwipeFirstPosition;
@@ -178,7 +178,7 @@ namespace DebugConsole
 
         #endregion
 
-        #region private methods
+        #region nonpublic methods
 
         private void CreatePositions()
         {

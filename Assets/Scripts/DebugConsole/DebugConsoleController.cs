@@ -77,7 +77,7 @@ namespace DebugConsole
 
         #endregion
 
-        #region private methods
+        #region nonpublic methods
 
         private void RegisterCommand(string _Command, CommandHandler _Handler, string _Help)
         {

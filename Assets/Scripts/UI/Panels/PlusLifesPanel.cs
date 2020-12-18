@@ -17,14 +17,14 @@ namespace UI.Panels
 {
     public class PlusLifesPanel : GameObservable, IMenuDialogPanel
     {
-        #region notify ids
+        #region notify messages
 
-        public const int NotifyIdPlus1LifeButtonClick = 0;
-        public const int NotifyIdPlus10LifesButtonClick = 1;
-        public const int NotifyIdPlus100LifesButtonClick = 2;
-        public const int NotifyIdExchangeButtonClick = 3;
-        public const int NotifyIdResetButtonClick = 4;
-        public const int NotifyIdShopButtonClick = 5;
+        public const string NotifyMessagePlus1LifeButtonClick = nameof(NotifyMessagePlus1LifeButtonClick);
+        public const string NotifyMessagePlus10LifesButtonClick = nameof(NotifyMessagePlus10LifesButtonClick);
+        public const string NotifyMessagePlus100LifesButtonClick = nameof(NotifyMessagePlus100LifesButtonClick);
+        public const string NotifyMessageExchangeButtonClick = nameof(NotifyMessageExchangeButtonClick);
+        public const string NotifyMessageResetButtonClick = nameof(NotifyMessageResetButtonClick);
+        public const string NotifyMessageShopButtonClick = nameof(NotifyMessageShopButtonClick);
         
         #endregion
         
@@ -110,28 +110,28 @@ namespace UI.Panels
 
         private void OnPlus1ButtonClick()
         {
-            Notify(this, NotifyIdPlus1LifeButtonClick);
+            Notify(this, NotifyMessagePlus1LifeButtonClick);
             m_LifesCount++;
             UpdatePanelState();
         }
 
         private void OnPlus10ButtonClick()
         {
-            Notify(this, NotifyIdPlus10LifesButtonClick);
+            Notify(this, NotifyMessagePlus10LifesButtonClick);
             m_LifesCount += 10;
             UpdatePanelState();
         }
 
         private void OnPlus100ButtonClick()
         {
-            Notify(this, NotifyIdPlus100LifesButtonClick);
+            Notify(this, NotifyMessagePlus100LifesButtonClick);
             m_LifesCount += 100;
             UpdatePanelState();
         }
         
         private void OnExchangeButtonClick()
         {
-            Notify(this, NotifyIdExchangeButtonClick);
+            Notify(this, NotifyMessageExchangeButtonClick);
             var pricesTemp = OneLifePrice
                 .CloneAlt()
                 .ToDictionary(_P => _P.Key,
@@ -148,15 +148,16 @@ namespace UI.Panels
         
         private void OnResetButtonClick()
         {
-            Notify(this, NotifyIdResetButtonClick);
+            Notify(this, NotifyMessageResetButtonClick);
             m_LifesCount = 0;
             UpdatePanelState();
         }
         
         private void OnShopButtonClick()
         {
-            Notify(this, NotifyIdShopButtonClick);
-            IMenuDialogPanel shopPanel = new ShopPanel(m_DialogViewer, GetObservers());
+            Notify(this, NotifyMessageShopButtonClick);
+            var shopPanel = new ShopPanel(m_DialogViewer);
+            shopPanel.AddObservers(GetObservers());
             shopPanel.Show();
         }
         

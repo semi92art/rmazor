@@ -19,7 +19,7 @@ namespace UI
         
         #endregion
         
-        #region private fields
+        #region nonpublic members
         
         private Transform m_Indicator;
         private Transform m_Indicator2;
@@ -62,7 +62,7 @@ namespace UI
         
         #endregion
         
-        #region private methods
+        #region nonpublic methods
         
         private void IndicateLoading()
         {

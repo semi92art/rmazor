@@ -15,14 +15,14 @@ namespace UI.PanelItems
         public Image icon;
         public TextMeshProUGUI comingSoonLabel;
         
-        public void Init(ChooseGameItemProps _Props, IEnumerable<IGameObserver> _Observers)
+        public void Init(ChooseGameItemProps _Props, IEnumerable<GameObserver> _Observers)
         {
             base.Init(_Observers);
             icon.sprite = GetLogo(_Props.GameId);
             button.interactable = !_Props.IsComingSoon;
             button.SetOnClick(() =>
             {
-                Notifyer.RaiseNotify(this, CommonNotifyIds.UiButtonClick);
+                Notifyer.RaiseNotify(this, CommonNotifyMessages.UiButtonClick);
                 _Props.Click?.Invoke();
             });
             comingSoonLabel.enabled = _Props.IsComingSoon;

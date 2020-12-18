@@ -1,45 +1,60 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Managers;
 
 namespace Entities
 {
-    public interface IGameObserver
-    {
-        void OnNotify(object _Sender, int _NotifyId, params object[] _Args);
-    }
-    
+
     public interface IGameObservable
     {
-        void AddObserver(IGameObserver _Observer);
-        void AddObservers(IEnumerable<IGameObserver> _Observers);
-        void RemoveObserver(IGameObserver _Observer);
+        void AddObserver(GameObserver _Observer);
+        void AddObservers(IEnumerable<GameObserver> _Observers);
+        void RemoveObserver(GameObserver _Observer);
     }
 
-    public class GameObservable : IGameObservable
+    public abstract class GameObserver
     {
-        private readonly List<IGameObserver> m_Observers = new List<IGameObserver>();
-        
-        protected void Notify(object _Sender, int _NotifyId, params object[] _Args)
+        protected abstract void OnNotify(object _Sender, string _NotifyMessage, params object[] _Args);
+    }
+
+    public abstract class GameObservable : IGameObservable
+    {
+        private readonly List<GameObserver> m_Observers = new List<GameObserver>();
+
+        protected GameObservable()
         {
+            if (!m_Observers.Contains(AdsManager.Instance))
+                m_Observers.Add(AdsManager.Instance);
+            if (!m_Observers.Contains(AnalyticsManager.Instance))
+                m_Observers.Add(AnalyticsManager.Instance);
+        }
+        
+        protected void Notify(object _Sender, string _NotifyMessage, params object[] _Args)
+        {
+            MethodInfo mInfoOnNotify = typeof(GameObserver).GetMethod("OnNotify",
+                BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var observer in m_Observers)
-                observer.OnNotify(_Sender, _NotifyId, _Args);
+                mInfoOnNotify?.Invoke(observer, new[] {_Sender, _NotifyMessage, _Args});
         }
 
-        public void AddObserver(IGameObserver _Observer)
+        public void AddObserver(GameObserver _Observer)
         {
             m_Observers.Add(_Observer);
         }
 
-        public void AddObservers(IEnumerable<IGameObserver> _Observers)
+        public void AddObservers(IEnumerable<GameObserver> _Observers)
         {
             m_Observers.AddRange(_Observers);
         }
 
-        public void RemoveObserver(IGameObserver _Observer)
+        public void RemoveObserver(GameObserver _Observer)
         {
             m_Observers.Remove(_Observer);
         }
 
-        protected List<IGameObserver> GetObservers()
+        protected List<GameObserver> GetObservers()
         {
             return m_Observers;
         }
@@ -47,9 +62,9 @@ namespace Entities
     
     public class ObserverNotifyer : GameObservable
     {
-        public void RaiseNotify(object _Sender, int _NotifyId, params object[] _Args)
+        public void RaiseNotify(object _Sender, string _NotifyMessage, params object[] _Args)
         {
-            Notify(_Sender, _NotifyId, _Args);
+            Notify(_Sender, _NotifyMessage, _Args);
         }
     }
 }

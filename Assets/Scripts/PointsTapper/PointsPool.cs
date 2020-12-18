@@ -35,7 +35,7 @@ namespace PointsTapper
         
         #endregion
 
-        #region private methods
+        #region nonpublic methods
 
         private GameObject GetPrefab(PointType _Type)
         {

@@ -8,36 +8,29 @@ using Utils;
 
 namespace Managers
 {
-    public class AdsManager : MonoBehaviour, IGameObserver, ISingleton
+    public class AdsManager : GameObserver, ISingleton
     {
         #region singleton
     
         private static AdsManager _instance;
-
-        public static AdsManager Instance
-        {
-            get
-            {
-                if (_instance is AdsManager ptm && !ptm.IsNull())
-                    return _instance;
-                var go = new GameObject("Ads Controller");
-                _instance = go.AddComponent<AdsManager>();
-                if (!GameClient.Instance.IsModuleTestsMode)
-                    DontDestroyOnLoad(go);
-                return _instance;
-            }
-        }
+        public static AdsManager Instance => _instance ?? (_instance = new AdsManager());
     
         #endregion
-        
+
+        #region nonpublic members
+
         private RewardedAd m_RewardedAd;
         private AdRequest m_AdRequest;
         private UnityAction m_OnPaid;
 
+        #endregion
+
+        #region api
+
         public void Init()
         {
             new RequestConfiguration
-                .Builder()
+                    .Builder()
                 .SetTestDeviceIds(ResLoader.GoogleTestDeviceIds)
                 .build();
             MobileAds.Initialize(_InitStatus => { });
@@ -49,17 +42,21 @@ namespace Managers
             m_RewardedAd.OnAdClosed += (_, _Args) => m_RewardedAd.LoadAd(m_AdRequest);
         }
 
-        public void OnNotify(object _Sender, int _NotifyId, params object[] _Args)
+        protected override void OnNotify(object _Sender, string _NotifyMessage, params object[] _Args)
         {
             switch (_Sender)
             {
                 case WheelOfFortunePanel _:
-                    if (_NotifyId == WheelOfFortunePanel.NotifyIdWatchAdButtonClick)
+                    if (_NotifyMessage == WheelOfFortunePanel.NotifyMessageWatchAdButtonClick)
                         ShowRewardedAd(_Args[0] as UnityAction);
                     break;
             }
         }
-        
+
+        #endregion
+
+        #region nonpublic methods
+
         private void ShowRewardedAd(UnityAction _OnPaid)
         {
             m_OnPaid = _OnPaid;
@@ -68,5 +65,8 @@ namespace Managers
             else
                 m_RewardedAd.LoadAd(m_AdRequest);
         }
+
+        #endregion
+        
     }
 }

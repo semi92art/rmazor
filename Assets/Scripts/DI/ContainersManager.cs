@@ -43,7 +43,7 @@ namespace DI
         
         #endregion
 
-        #region private members
+        #region nonpublic members
 
         private readonly UpdateMethodsDict m_UpdateMethods = new UpdateMethodsDict();
         private readonly UpdateMethodsDict m_FixedUpdateMethods = new UpdateMethodsDict();
@@ -99,7 +99,7 @@ namespace DI
 
         #endregion
 
-        #region private methods
+        #region nonpublic methods
         
         private void InvokeUpdateMethods(UpdateMethodsDict _Dictionary)
         {

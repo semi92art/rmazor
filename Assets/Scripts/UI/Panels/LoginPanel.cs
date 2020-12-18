@@ -20,16 +20,15 @@ namespace UI.Panels
     {
         #region notify message ids
         
-        public const int NotifyIdLoginButtonClick = 0;
-        public const int NotifyIdLoginWithGoogleButtonClick = 1;
-        public const int NotifyIdLoginWithAppleButtonClick = 2;
-        public const int NotifyIdRegistrationButtonClick = 3;
-        public const int NotifyIdLogoutButtonClick = 4;
+        public const string NotifyMessageLoginButtonClick = nameof(NotifyMessageLoginButtonClick);
+        public const string NotifyMessageLoginWithGoogleButtonClick = nameof(NotifyMessageLoginWithGoogleButtonClick);
+        public const string NotifyMessageLoginWithAppleButtonClick = nameof(NotifyMessageLoginWithAppleButtonClick);
+        public const string NotifyMessageRegistrationButtonClick = nameof(NotifyMessageRegistrationButtonClick);
+        public const string NotifyMessageLogoutButtonClick = nameof(NotifyMessageLogoutButtonClick);
         
         #endregion
         
-        public LoginPanel(IMenuDialogViewer _DialogViewer,
-            IEnumerable<IGameObserver> _Observers) : base(_DialogViewer, _Observers) { }
+        public LoginPanel(IMenuDialogViewer _DialogViewer) : base(_DialogViewer) { }
         
         #region protected methods
 
@@ -109,7 +108,7 @@ namespace UI.Panels
 
         private void OnLoginButtonClick()
         {
-            Notify(this, NotifyIdLoginButtonClick);
+            Notify(this, NotifyMessageLoginButtonClick);
             CleanErrorHandlers();
             if (string.IsNullOrEmpty(m_LoginInputField.text))
                 //TODO get translation name from localization
@@ -154,26 +153,27 @@ namespace UI.Panels
 
         private void OnLoginWithGoogleButtonClick()
         {
-            Notify(this, NotifyIdLoginWithGoogleButtonClick);
+            Notify(this, NotifyMessageLoginWithGoogleButtonClick);
             // TODO
         }
         
         private void OnLoginWithAppleButtonClick()
         {
-            Notify(this, NotifyIdLoginWithAppleButtonClick);
+            Notify(this, NotifyMessageLoginWithAppleButtonClick);
             // TODO
         }
         
         private void OnRegistrationButtonClick()
         {
-            Notify(this, NotifyIdRegistrationButtonClick);
-            IMenuDialogPanel regPanel = new RegistrationPanel(DialogViewer, GetObservers());
+            Notify(this, NotifyMessageRegistrationButtonClick);
+            var regPanel = new RegistrationPanel(DialogViewer);
+            regPanel.AddObservers(GetObservers());
             regPanel.Show();
         }
 
         private void Logout()
         {
-            Notify(this, NotifyIdLogoutButtonClick);
+            Notify(this, NotifyMessageLogoutButtonClick);
             var packet = new LoginUserPacket(new LoginUserPacketRequestArgs
             {
                 DeviceId = GameClient.Instance.DeviceId

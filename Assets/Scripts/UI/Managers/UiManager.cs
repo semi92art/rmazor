@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Constants;
+using Controllers;
 using DebugConsole;
 using Entities;
 using Extensions;
@@ -56,7 +57,7 @@ namespace UI.Managers
 
         #endregion
         
-        #region private members
+        #region nonpublic members
 
         private MenuUiCategory m_CurrentMenuCategory = MenuUiCategory.Nothing;
         private GameUiCategory m_CurrentGameCategory = GameUiCategory.Nothing;
@@ -115,12 +116,6 @@ namespace UI.Managers
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
-            var observers = new List<IGameObserver>
-            {
-                AdsManager.Instance,
-                new UiSoundController(),
-            };
-            
             if (string.IsNullOrEmpty(ColorScheme))
                 ColorScheme = "Default";
 
@@ -133,7 +128,7 @@ namespace UI.Managers
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                     bool debugOn = SaveUtils.GetValue<bool>(SaveKeyDebug.DebugUtilsOn);
                     SaveUtils.PutValue(SaveKeyDebug.DebugUtilsOn, debugOn);
-                    DebugConsole = DebugConsoleView.Create(observers);
+                    DebugConsole = DebugConsoleView.Create();
                     DebugConsole.SetActive(debugOn);
 #endif
 #if DEVELOPMENT_BUILD
@@ -149,7 +144,9 @@ namespace UI.Managers
                 {
                     if (onStart)
                         LocalizationManager.Instance.Init();
-                    MenuUi.Create(onStart, observers);
+                    var menuUi = new MenuUi(onStart);
+                    menuUi.AddObserver(new MenuUiSoundController());
+                    menuUi.Init();
                 }
 
                 m_PrevScene = _Scene.name;

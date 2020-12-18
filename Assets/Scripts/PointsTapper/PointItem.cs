@@ -32,7 +32,7 @@ namespace PointsTapper
 
         #endregion
         
-        #region private members
+        #region nonpublic members
 
         private static Vector3 DefaultPosition => new Vector3(-1e5f, 0, 0); 
         private static int AkActivate => AnimKeys.Anim;

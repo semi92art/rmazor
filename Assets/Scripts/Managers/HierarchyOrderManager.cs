@@ -33,7 +33,7 @@ namespace Managers
         
         #endregion
         
-        #region private members
+        #region nonpublic members
         
         public readonly List<OrderItem> OrderItems = new List<OrderItem>();
         private readonly Dictionary<Transform, int> m_ChildCountDict = new Dictionary<Transform, int>();
@@ -104,7 +104,7 @@ namespace Managers
         
         #endregion
         
-        #region private methods
+        #region nonpublic methods
 
         private void UpdateOrdering(IGrouping<Transform, OrderItem> _Group)
         {

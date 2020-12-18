@@ -36,7 +36,7 @@ namespace Network
 
         #endregion
         
-        #region private fields
+        #region nonpublic members
 
         private ErrorResponseArgs m_ErrorMessage;
         private Action m_Success;
@@ -54,7 +54,7 @@ namespace Network
 
         #endregion
         
-        #region private methods
+        #region nonpublic methods
         
         private void InvokeSuccess()
         {

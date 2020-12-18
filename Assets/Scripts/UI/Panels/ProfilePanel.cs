@@ -31,9 +31,8 @@ namespace UI.Panels
         public MenuUiCategory Category => MenuUiCategory.Profile;
         public RectTransform Panel { get; private set; }
 
-        public ProfilePanel(IMenuDialogViewer _DialogViewer, IEnumerable<IGameObserver> _Observers)
+        public ProfilePanel(IMenuDialogViewer _DialogViewer)
         {
-            AddObservers(_Observers);
             m_DialogViewer = _DialogViewer;
         }
         
@@ -47,7 +46,7 @@ namespace UI.Panels
 
         #endregion
         
-        #region private methods
+        #region nonpublic methods
 
         private RectTransform Create()
         {

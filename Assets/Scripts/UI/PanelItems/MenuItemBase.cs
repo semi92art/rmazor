@@ -8,7 +8,7 @@ namespace UI.PanelItems
     {
         protected ObserverNotifyer Notifyer;
 
-        protected void Init(IEnumerable<IGameObserver> _Observers)
+        protected void Init(IEnumerable<GameObserver> _Observers)
         {
             Notifyer = new ObserverNotifyer();
             Notifyer.AddObservers(_Observers);

@@ -58,7 +58,7 @@ namespace UI.Panels
 
         #endregion
         
-        #region private methods
+        #region nonpublic methods
 
         private RectTransform Create()
         {
@@ -85,7 +85,7 @@ namespace UI.Panels
         
         #endregion
         
-        #region private methods
+        #region nonpublic methods
 
         private void SetStartLifes()
         {
@@ -103,7 +103,7 @@ namespace UI.Panels
 
         private void OnTakeOneMoreLifeButtonClick()
         {
-            Notify(this, CommonNotifyIds.WatchAdUiButtonClick, (UnityAction)OnWatchAdFinishAction);
+            Notify(this, CommonNotifyMessages.WatchAdUiButtonClick, (UnityAction)OnWatchAdFinishAction);
         }
 
         private void OnWatchAdFinishAction()

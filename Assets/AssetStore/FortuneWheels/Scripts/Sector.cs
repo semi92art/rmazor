@@ -21,7 +21,7 @@ namespace MkeyFW
         
         #endregion
 
-        #region private members
+        #region nonpublic members
         
         private const float DestroyTime = 3f;
         private MoneyType m_MoneyType;
@@ -115,7 +115,7 @@ namespace MkeyFW
         
         #endregion
 
-        #region private methods
+        #region nonpublic methods
         
         private void RefreshText()
         {

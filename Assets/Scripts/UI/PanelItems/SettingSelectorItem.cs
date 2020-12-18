@@ -30,7 +30,7 @@ namespace UI.PanelItems
             string _Text,
             System.Action<string> _Select,
             bool _IsOn,
-            IEnumerable<IGameObserver> _Observers)
+            IEnumerable<GameObserver> _Observers)
         {
             base.Init(_Observers);
             title.text = _Text;
@@ -51,7 +51,7 @@ namespace UI.PanelItems
         {
             if (!m_IsInitialized) 
                 return;
-            Notifyer.RaiseNotify(this, CommonNotifyIds.UiButtonClick);
+            Notifyer.RaiseNotify(this, CommonNotifyMessages.UiButtonClick);
             m_OnSelect?.Invoke(title.text);
 
             foreach (var item in m_Items.ToArray())

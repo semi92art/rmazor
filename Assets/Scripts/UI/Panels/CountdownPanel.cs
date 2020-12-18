@@ -38,7 +38,7 @@ namespace UI.Panels
 
         #endregion
         
-        #region private methods
+        #region nonpublic methods
         
         private RectTransform Create()
         {

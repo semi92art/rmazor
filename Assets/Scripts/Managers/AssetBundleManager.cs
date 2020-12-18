@@ -81,7 +81,7 @@ namespace Managers
         
         #endregion
 
-        #region private methods
+        #region nonpublic methods
         
         private IEnumerator LoadBundle(string _BundleName)
         {

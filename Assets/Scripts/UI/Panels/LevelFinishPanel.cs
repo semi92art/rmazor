@@ -17,10 +17,10 @@ namespace UI.Panels
 {
     public class LevelFinishPanel : GameObservable, IGameDialogPanel
     {
-        #region notify ids
+        #region notify messages
 
-        public const int NotifyIdWatchAdButtonClick = 0;
-        public const int NotifyIdContinueButtonClick = 1;
+        public const string NotifyMessageWatchAdButtonClick = nameof(NotifyMessageWatchAdButtonClick);
+        public const string NotifyMessageContinueButtonClick = nameof(NotifyMessageContinueButtonClick);
 
         #endregion
         
@@ -108,7 +108,7 @@ namespace UI.Panels
 
         private void OnX2ButtonClick()
         {
-            Notify(this, NotifyIdWatchAdButtonClick, (UnityAction)WatchAdFinishAction);
+            Notify(this, NotifyMessageWatchAdButtonClick, (UnityAction)WatchAdFinishAction);
         }
 
         private void WatchAdFinishAction()
@@ -122,7 +122,7 @@ namespace UI.Panels
 
         private void OnContinueButtonClick()
         {
-            Notify(this, NotifyIdContinueButtonClick, m_Level);
+            Notify(this, NotifyMessageContinueButtonClick, m_Level);
             m_FinishLevel?.Invoke();
         }
 

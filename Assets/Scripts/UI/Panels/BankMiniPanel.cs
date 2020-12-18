@@ -42,28 +42,30 @@ namespace UI.Panels
         
         #endregion
         
-        #region private members
+        #region nonpublic members
 
         private const float IncomeAnimTime = 2f;
         private const float IncomeAnimDeltaTime = 0.1f;
         private const int IncomeCoinsAnimOnScreen = 3;
         private const int PoolSize = 8;
-        
-        private readonly List<CoinAnimObject> m_CoinsPool = new List<CoinAnimObject>(PoolSize);
-        private readonly Image m_GoldIcon;
-        private readonly Image m_DiamondIcon;
-        private readonly Image m_LifesIcon;
-        private readonly TextMeshProUGUI m_GoldCount;
-        private readonly TextMeshProUGUI m_DiamondsCount;
-        private readonly TextMeshProUGUI m_LifesCount;
-        private readonly Button m_PlusMoneyButton;
-        private readonly Button m_PlusLifesButton;
-        private readonly Animator m_Animator;
-        private readonly RectTransform m_BankMiniPanel;
-        private readonly RectTransform m_MoneyPanel;
-        private readonly RectTransform m_LifesPanel;
-        private readonly Animator m_PlusMoneyButtonAnim;
-        private readonly Animator m_PlusLifesButtonAnim;
+
+        private readonly IMenuDialogViewer m_DialogViewer;
+        private readonly RectTransform m_Parent;
+        private List<CoinAnimObject> m_CoinsPool = new List<CoinAnimObject>(PoolSize);
+        private Image m_GoldIcon;
+        private Image m_DiamondIcon;
+        private Image m_LifesIcon;
+        private TextMeshProUGUI m_GoldCount;
+        private TextMeshProUGUI m_DiamondsCount;
+        private TextMeshProUGUI m_LifesCount;
+        private Button m_PlusMoneyButton;
+        private Button m_PlusLifesButton;
+        private Animator m_Animator;
+        private RectTransform m_BankMiniPanel;
+        private RectTransform m_MoneyPanel;
+        private RectTransform m_LifesPanel;
+        private Animator m_PlusMoneyButtonAnim;
+        private Animator m_PlusLifesButtonAnim;
         private bool m_IsShowing;
 
         private static int AkShowInMm => AnimKeys.Anim2;
@@ -83,9 +85,15 @@ namespace UI.Panels
         
         public BankMiniPanel(RectTransform _Parent, IMenuDialogViewer _DialogViewer)
         {
+            m_Parent = _Parent;
+            m_DialogViewer = _DialogViewer;
+        }
+
+        public void Init()
+        {
             var go = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    _Parent,
+                    m_Parent,
                     UiAnchor.Create(1, 1, 1, 1),
                     Vector2.up  * -206f,
                     new Vector2(1f, 0.5f), 
@@ -112,16 +120,18 @@ namespace UI.Panels
             
             m_PlusMoneyButton.SetOnClick(() =>
             {
-                Notify(this, CommonNotifyIds.UiButtonClick);
-                IMenuDialogPanel shopPanel = new PlusMoneyPanel(_DialogViewer, this, GetObservers());
-                shopPanel.Show();
+                Notify(this, CommonNotifyMessages.UiButtonClick);
+                var plusMoneyPanel = new PlusMoneyPanel(m_DialogViewer, this);
+                plusMoneyPanel.AddObservers(GetObservers());
+                plusMoneyPanel.Show();
             });
             
             m_PlusLifesButton.SetOnClick(() =>
             {
-                Notify(this, CommonNotifyIds.UiButtonClick);
-                IMenuDialogPanel shopPanel = new PlusLifesPanel(_DialogViewer);
-                shopPanel.Show();
+                Notify(this, CommonNotifyMessages.UiButtonClick);
+                var plusLifesPanel = new PlusLifesPanel(m_DialogViewer);
+                plusLifesPanel.AddObservers(GetObservers());
+                plusLifesPanel.Show();
             });
 
             MoneyManager.Instance.OnMoneyCountChanged += MoneyCountChanged;
@@ -180,7 +190,7 @@ namespace UI.Panels
         
         #endregion
         
-        #region private methods and destructor
+        #region nonpublic methods and destructor
 
         private void AnimateIncome(Dictionary<MoneyType, long> _Income, RectTransform _From)
         {

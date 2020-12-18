@@ -33,7 +33,7 @@ namespace PointsTapper
         
         #endregion
         
-        #region private members
+        #region nonpublic members
         
         private IPointItemsGenerator m_PointItemsGenerator;
 

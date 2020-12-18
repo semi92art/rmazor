@@ -42,12 +42,10 @@ namespace UI.Panels
 
         public DailyBonusPanel(
             IMenuDialogViewer _DialogViewer, 
-            IActionExecuter _ActionExecutor,
-            IEnumerable<IGameObserver> _Observers)
+            IActionExecuter _ActionExecutor)
         {
             m_DialogViewer = _DialogViewer;
             m_ActionExecutor = _ActionExecutor;
-            AddObservers(_Observers);
         }
         
         public void Show()
@@ -60,7 +58,7 @@ namespace UI.Panels
 
         #endregion
         
-        #region private methods
+        #region nonpublic methods
         
         private RectTransform Create()
         {
@@ -103,7 +101,7 @@ namespace UI.Panels
 
                 dbProps.Click = () =>
                 {
-                    Notify(this, CommonNotifyIds.UiButtonClick, dbProps.Day);
+                    Notify(this, CommonNotifyMessages.UiButtonClick, dbProps.Day);
                     m_DialogViewer.Back();
                 };
                 

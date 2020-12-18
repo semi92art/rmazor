@@ -18,16 +18,15 @@ namespace UI.Panels
 {
     public class RegistrationPanel : LoginPanelBase
     {
-        #region notify ids
+        #region notify messages
 
-        public const int NotifyIdRegisterButtonClick = 0;
+        public const string NotifyMessageRegisterButtonClick = nameof(NotifyMessageRegisterButtonClick);
         
         #endregion
         
         private const string TestUserPrefix = "test";
         
-        public RegistrationPanel(IMenuDialogViewer _DialogViewer
-            , IEnumerable<IGameObserver> _Observers) : base(_DialogViewer, _Observers)
+        public RegistrationPanel(IMenuDialogViewer _DialogViewer) : base(_DialogViewer)
         { }
         
         #region private members
@@ -107,7 +106,7 @@ namespace UI.Panels
 
         private void OnRegisterButtonClick()
         {
-            Notify(this, NotifyIdRegisterButtonClick);
+            Notify(this, NotifyMessageRegisterButtonClick);
             CleanErrorHandlers();
             if (!CheckForInputErrors())
                 return;

@@ -16,9 +16,9 @@ namespace UI.Panels
     {
         #region notify ids
 
-        public const int NotifyIdShopButtonClick = 0;
-        public const int NotifyIdDailyBonusButtonClick = 1;
-        public const int NotifyIdWheelOfFortuneButtonClick = 2;
+        public const string NotifyMessageShopButtonClick = nameof(NotifyMessageShopButtonClick);
+        public const string NotifyMessageDailyBonusButtonClick = nameof(NotifyMessageDailyBonusButtonClick);
+        public const string NotifyMessageWheelOfFortuneButtonClick = nameof(NotifyMessageWheelOfFortuneButtonClick);
         
         #endregion
         
@@ -36,10 +36,8 @@ namespace UI.Panels
 
         public PlusMoneyPanel(
             IMenuDialogViewer _DialogViewer,
-            IActionExecuter _ActionExecutor,
-            IEnumerable<IGameObserver> _Observers)
+            IActionExecuter _ActionExecutor)
         {
-            AddObservers(_Observers);
             m_DialogViewer = _DialogViewer;
             m_ActionExecutor = _ActionExecutor;
         }
@@ -74,24 +72,25 @@ namespace UI.Panels
 
         private void OnShopButtonClick()
         {
-            Notify(this, NotifyIdShopButtonClick);
-            IMenuDialogPanel shopPanel = new ShopPanel(m_DialogViewer, GetObservers());
+            Notify(this, NotifyMessageShopButtonClick);
+            var shopPanel = new ShopPanel(m_DialogViewer);
+            shopPanel.AddObservers(GetObservers());
             shopPanel.Show();
         }
 
         private void OnDailyBonusButtonClick()
         {
-            Notify(this, NotifyIdDailyBonusButtonClick);
-            IMenuDialogPanel shopPanel = new DailyBonusPanel(
-                m_DialogViewer, m_ActionExecutor, GetObservers());
+            Notify(this, NotifyMessageDailyBonusButtonClick);
+            var shopPanel = new DailyBonusPanel(m_DialogViewer, m_ActionExecutor);
+            shopPanel.AddObservers(GetObservers());
             shopPanel.Show();
         }
 
         private void OnWheelOfFortuneButtonClick()
         {
-            Notify(this, NotifyIdWheelOfFortuneButtonClick);
-            IMenuDialogPanel shopPanel = new WheelOfFortunePanel(
-                m_DialogViewer, GetObservers());
+            Notify(this, NotifyMessageWheelOfFortuneButtonClick);
+            var shopPanel = new WheelOfFortunePanel(m_DialogViewer);
+            shopPanel.AddObservers(GetObservers());
             shopPanel.Show();
         }
 

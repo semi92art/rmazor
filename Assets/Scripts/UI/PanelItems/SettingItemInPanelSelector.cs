@@ -24,7 +24,7 @@ namespace UI.PanelItems
             string _Name,
             System.Func<List<string>> _ListOfItems,
             System.Action<string> _Select,
-            IEnumerable<IGameObserver> _Observers)
+            IEnumerable<GameObserver> _Observers)
         {
             var observers = _Observers.ToArray();
             base.Init(observers);
@@ -33,16 +33,16 @@ namespace UI.PanelItems
             title.text = _Name;
             button.SetOnClick(() =>
             {
-                Notifyer.RaiseNotify(this, CommonNotifyIds.UiButtonClick);
+                Notifyer.RaiseNotify(this, CommonNotifyMessages.UiButtonClick);
                 var items = _ListOfItems?.Invoke();
                 if (items == null)
                     return;
-                IMenuDialogPanel selectorPanel = new SettingsSelectorPanel(
+                var selectorPanel = new SettingsSelectorPanel(
                     _MenuDialogViewer,
                     _Value?.Invoke(),
                     items, 
-                    _Select, 
-                    observers);
+                    _Select);
+                selectorPanel.AddObservers(observers);
                 selectorPanel.Show();
             });
         }

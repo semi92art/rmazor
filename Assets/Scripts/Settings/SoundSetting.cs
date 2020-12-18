@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Constants;
 using Entities;
 using Managers;
 using Lean.Localization;
@@ -23,7 +24,7 @@ namespace Settings
         public void Put(object _Parameter)
         {
             bool volumeOn = (bool) _Parameter;
-            Notify(this, 0, volumeOn);
+            Notify(this, CommonNotifyMessages.UiButtonClick, volumeOn);
             Debug.Log(volumeOn.ToString());
         }
     }

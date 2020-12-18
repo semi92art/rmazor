@@ -79,7 +79,7 @@ namespace MkeyFW
 
         #endregion
 
-		#region private members
+		#region nonpublic members
         
         private Sector[] m_Sectors;
         private int m_Rand;
@@ -182,7 +182,7 @@ namespace MkeyFW
 
         #endregion
         
-        #region private methods
+        #region nonpublic methods
         
         private void RotateWheel(Action _RotCallBack)
         {

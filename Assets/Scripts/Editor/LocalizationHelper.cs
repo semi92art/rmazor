@@ -17,7 +17,7 @@ public class LocalizationHelper : EditorWindow
     
     #endregion
     
-    #region private members
+    #region nonpublic members
     
     private Dictionary<string, KeyValues> m_LocalizedDict;
     private Dictionary<Language, TextAsset> m_Assets;

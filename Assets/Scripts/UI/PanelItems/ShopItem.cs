@@ -18,16 +18,16 @@ namespace UI.PanelItems
 
         private ShopItemProps m_Props;
 
-        public void Init(ShopItemProps _Props, IEnumerable<IGameObserver> _Observers)
+        public void Init(ShopItemProps _Props, IEnumerable<GameObserver> _Observers)
         {
+            base.Init(_Observers);
             icon.sprite = _Props.Icon;
             price.text = $"{_Props.DiscountPrice} <color=#F33B3B><s>{_Props.Price}</s>";
             amount.text = _Props.Amount;
-            base.Init(_Observers);
             if (_Props.Click != null)
                 button.SetOnClick(() =>
                 {
-                    Notifyer.RaiseNotify(this, CommonNotifyIds.UiButtonClick, _Props.Id);
+                    Notifyer.RaiseNotify(this, CommonNotifyMessages.UiButtonClick, _Props.Id);
                     _Props.Click?.Invoke();
                 });
         }

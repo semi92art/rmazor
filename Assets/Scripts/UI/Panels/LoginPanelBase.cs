@@ -19,11 +19,9 @@ namespace UI.Panels
         
         #endregion
 
-        protected LoginPanelBase(IMenuDialogViewer _DialogViewer,
-            IEnumerable<IGameObserver> _Observers)
+        protected LoginPanelBase(IMenuDialogViewer _DialogViewer)
         {
             DialogViewer = _DialogViewer;
-            AddObservers(_Observers);
         }
         
         
