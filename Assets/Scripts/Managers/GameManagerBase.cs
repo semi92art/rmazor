@@ -1,6 +1,6 @@
 ﻿using System;
 using Constants;
-using Helpers;
+using GameHelpers;
 using Lean.Touch;
 using Network;
 using Network.PacketArgs;

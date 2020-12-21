@@ -2,7 +2,7 @@
 using Constants;
 using Entities;
 using Extensions;
-using Helpers;
+using GameHelpers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

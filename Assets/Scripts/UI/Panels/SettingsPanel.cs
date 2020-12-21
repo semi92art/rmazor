@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Entities;
 using Extensions;
-using Helpers;
+using GameHelpers;
 using Settings;
 using TMPro;
 using UI.Entities;

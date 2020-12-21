@@ -6,7 +6,7 @@ using UI.Factories;
 using UnityEngine;
 using Utils;
 
-namespace Helpers
+namespace GameHelpers
 {
     public static class PrefabInitializer
     {

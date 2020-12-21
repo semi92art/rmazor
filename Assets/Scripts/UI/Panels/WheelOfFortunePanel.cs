@@ -4,7 +4,7 @@ using Constants;
 using DialogViewers;
 using Entities;
 using Extensions;
-using Helpers;
+using GameHelpers;
 using Lean.Localization;
 using Managers;
 using TMPro;
@@ -100,9 +100,13 @@ namespace UI.Panels
             m_WheelController = m_Wheel.GetCompItem<WheelController>("wheel_controller");
             SpriteRenderer background = m_Wheel.GetCompItem<SpriteRenderer>("background");
             var cameraBounds = GameUtils.GetVisibleBounds();
-            background.transform.localScale = new Vector3(
-                cameraBounds.size.x * 2f / background.bounds.size.x,
-                cameraBounds.size.y * 2f / background.bounds.size.y);
+            var tr = background.transform;
+            var lScale = tr.localScale;
+            var bounds = background.bounds;
+            tr.localScale = new Vector3(
+                cameraBounds.size.x * 2f * lScale.x / bounds.size.x,
+                cameraBounds.size.y * 2f * lScale.y / bounds.size.y);
+            tr.position = tr.position.SetY(cameraBounds.center.y);
             
 
             m_IsLocked = CheckIfWofSpinToday();

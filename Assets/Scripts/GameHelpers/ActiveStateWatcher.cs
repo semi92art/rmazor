@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Helpers
+namespace GameHelpers
 {
     public class ActiveStateWatcher : MonoBehaviour
     {

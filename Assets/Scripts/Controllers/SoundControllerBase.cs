@@ -3,7 +3,7 @@ using System.Linq;
 using Constants;
 using DialogViewers;
 using Entities;
-using Helpers;
+using GameHelpers;
 using Settings;
 using UI;
 using UI.Panels;

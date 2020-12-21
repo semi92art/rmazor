@@ -1,14 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using Constants;
 using Entities;
 using Managers;
 using Network;
 using Network.PacketArgs;
 using Network.Packets;
+using PygmyMonkey.ColorPalette;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Unity.Android.Logcat;
 using Utils;
 
 public class EditorHelper : EditorWindow
@@ -25,10 +29,33 @@ public class EditorHelper : EditorWindow
     private int m_Quality = -1;
     private int m_QualityCheck;
 
-    [MenuItem("Tools/Helper")]
+    [MenuItem("Tools/Helper", false, 0)]
     public static void ShowWindow()
     {
         GetWindow<EditorHelper>("Helper");
+    }
+    
+    [MenuItem("Tools/Profiler",false, 3)]
+    public static void ShowProfilerWindow()
+    {
+        Type tProfiler = typeof(Editor).Assembly.GetType("UnityEditor.ProfilerWindow");
+        GetWindow(tProfiler, false);
+    }
+    
+    [MenuItem("Tools/Android Logcat",false, 4)]
+    public static void ShowAndroidLogcatWindow()
+    {
+        Type tLogcat = typeof(ColumnData).Assembly.GetType("Unity.Android.Logcat.AndroidLogcatConsoleWindow");
+        MethodInfo mInfoShow = tLogcat?.GetMethod("ShowWindow",
+            BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+        mInfoShow?.Invoke(null, null);
+    }
+    
+    [MenuItem("Tools/Color Palette", false, 5)]
+    private static void ShowColorPaletteWindow()
+    {
+        EditorWindow window = ColorPaletteWindow.createWindow<ColorPaletteWindow>("Color Palette");
+        window.minSize = new Vector2(280, 500);
     }
 
     private void OnEnable()

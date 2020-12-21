@@ -1,25 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Reflection;
+using DebugConsole;
 using Managers;
 
 namespace Entities
 {
-
-    public interface IGameObservable
-    {
-        void AddObserver(GameObserver _Observer);
-        void AddObservers(IEnumerable<GameObserver> _Observers);
-        void RemoveObserver(GameObserver _Observer);
-    }
-
     public abstract class GameObserver
     {
         protected abstract void OnNotify(object _Sender, string _NotifyMessage, params object[] _Args);
     }
 
-    public abstract class GameObservable : IGameObservable
+    public abstract class GameObservable
     {
         private readonly List<GameObserver> m_Observers = new List<GameObserver>();
 
@@ -29,6 +20,10 @@ namespace Entities
                 m_Observers.Add(AdsManager.Instance);
             if (!m_Observers.Contains(AnalyticsManager.Instance))
                 m_Observers.Add(AnalyticsManager.Instance);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (!m_Observers.Contains(DebugConsoleView.Instance.Controller))
+                m_Observers.Add(DebugConsoleView.Instance.Controller);
+#endif
         }
         
         protected void Notify(object _Sender, string _NotifyMessage, params object[] _Args)
@@ -54,7 +49,7 @@ namespace Entities
             m_Observers.Remove(_Observer);
         }
 
-        protected List<GameObserver> GetObservers()
+        public List<GameObserver> GetObservers()
         {
             return m_Observers;
         }

@@ -2,7 +2,7 @@
 using Constants;
 using Entities;
 using Extensions;
-using Helpers;
+using GameHelpers;
 using UI;
 using UI.Factories;
 using UI.Managers;

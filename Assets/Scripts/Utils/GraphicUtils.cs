@@ -15,5 +15,15 @@ namespace Utils
             return true;
 #endif
         }
+
+        public static int GetMenuTargetFps()
+        {
+            return IsGoodQuality() ? 60 : 30;
+        }
+
+        public static int GetGameTargetFps()
+        {
+            return IsGoodQuality() ? 120 : 60;
+        }
     }
 }

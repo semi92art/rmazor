@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Extensions;
-using Helpers;
+using GameHelpers;
 using LeTai;
 using LeTai.TrueShadow;
 using Network;

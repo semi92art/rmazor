@@ -2,7 +2,7 @@
 using Constants;
 using DialogViewers;
 using Extensions;
-using Helpers;
+using GameHelpers;
 using TMPro;
 using UI.Factories;
 using UI.Managers;

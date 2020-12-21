@@ -1,7 +1,7 @@
 ﻿using Managers;
 using UnityEngine;
 
-namespace Helpers
+namespace GameHelpers
 {
     public class ChildOrderer : MonoBehaviour
     {

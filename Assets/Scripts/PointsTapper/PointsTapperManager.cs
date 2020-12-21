@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Constants;
-using Helpers;
+using GameHelpers;
 using Lean.Touch;
 using Managers;
 using UnityEngine;

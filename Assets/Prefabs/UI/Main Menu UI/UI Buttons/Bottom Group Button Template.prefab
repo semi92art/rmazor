@@ -87,7 +87,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52c162dc854d2f24fa639ba0623de5ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isBackground: 0
+  isBackground: 1
   size: 40
   offsetAngle: 90
   offsetDistance: 3
@@ -98,7 +98,7 @@ MonoBehaviour:
   cutout: 0
   baked: 0
   colorBleedMode: 0
-  modifiedFromInspector: 0
+  modifiedFromInspector: 1
   bakedShadows: []
 --- !u!1 &2672982546452191793
 GameObject:
@@ -187,6 +187,7 @@ GameObject:
   - component: {fileID: 8342116114642455450}
   - component: {fileID: 8233777961200121430}
   - component: {fileID: 4617191531462103729}
+  - component: {fileID: 1227027123669343645}
   m_Layer: 5
   m_Name: Bottom Group Button Template
   m_TagString: Untagged
@@ -273,7 +274,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 3
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -324,6 +325,25 @@ MonoBehaviour:
       name: icon
     - item: {fileID: 2672982546452191793}
       name: border
+--- !u!95 &1227027123669343645
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4879237508897305277}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 13fba0a07e6b4a64387f9571b4d65adc, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &6531142218839317067
 GameObject:
   m_ObjectHideFlags: 0

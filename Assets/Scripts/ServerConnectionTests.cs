@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Threading.Tasks;
 using Constants;
-using Helpers;
+using GameHelpers;
 using Network;
 using Network.PacketArgs;
 using Network.Packets;

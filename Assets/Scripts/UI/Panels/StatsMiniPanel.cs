@@ -1,6 +1,6 @@
 ﻿using Constants;
 using Extensions;
-using Helpers;
+using GameHelpers;
 using TMPro;
 using UI.Entities;
 using UI.Factories;

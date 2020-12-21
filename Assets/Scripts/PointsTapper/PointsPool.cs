@@ -1,7 +1,7 @@
 ﻿using System;
 using Exceptions;
 using Extensions;
-using Helpers;
+using GameHelpers;
 using UnityEngine;
 using Utils;
 using Object = UnityEngine.Object;

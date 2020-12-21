@@ -212,6 +212,7 @@ GameObject:
   - component: {fileID: 5837870622062038480}
   - component: {fileID: 5924189618105684293}
   - component: {fileID: 1876650279693529376}
+  - component: {fileID: 1965931440289366887}
   m_Layer: 0
   m_Name: Logo
   m_TagString: Untagged
@@ -275,6 +276,31 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1965931440289366887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5391653930971433688}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52c162dc854d2f24fa639ba0623de5ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isBackground: 1
+  size: 32
+  offsetAngle: 60.860313
+  offsetDistance: 24.16
+  offset: {x: 11.764489, y: -21.10219}
+  color: {r: 0, g: 0, b: 0, a: 0.3529412}
+  blendMode: 0
+  shadowAsSibling: 0
+  cutout: 0
+  baked: 0
+  colorBleedMode: 0
+  modifiedFromInspector: 0
+  bakedShadows: []
 --- !u!1 &7923727590796012467
 GameObject:
   m_ObjectHideFlags: 0

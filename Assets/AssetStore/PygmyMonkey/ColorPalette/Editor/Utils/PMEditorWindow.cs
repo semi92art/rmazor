@@ -5,7 +5,7 @@ namespace PygmyMonkey.ColorPalette.Utils
 {
 	public abstract class PMEditorWindow : EditorWindow
 	{
-		protected static EditorWindow createWindow<T>(string productName) where T : EditorWindow
+		public static EditorWindow createWindow<T>(string productName) where T : EditorWindow
 		{
 			#if UNITY_4_0 || UNITY_4_1 || UNITY_4_2 || UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_6 || UNITY_5_0
 			T window = (T)EditorWindow.GetWindow(typeof(T), false, " " + productName);

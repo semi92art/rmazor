@@ -14,7 +14,6 @@ public static class BuildAssetBundles
     private const string ProgressBarTitle = "Building Bundles";
     private static string BundlesPath => $"Assets/AssetBundles/{GetOsBundleSubPath()}";
     
-    [MenuItem("Tools/AssetBundles/Build")]
     public static void BuildAllAssetBundles()
     {
         EditorUtility.DisplayProgressBar(ProgressBarTitle, "Starting build...", 0f);

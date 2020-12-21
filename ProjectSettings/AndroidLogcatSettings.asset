@@ -1,37 +1,13 @@
 {
-    "m_SelectedDeviceId": "10a78098",
+    "m_SelectedDeviceId": "5b986a43",
     "m_SelectedPackage": {
-        "deviceId": "10a78098",
+        "deviceId": "5b986a43",
         "name": "com.MinigamesCo.MinigamesCollection",
-        "processId": 26927,
+        "processId": 3143,
         "exited": false
     },
     "m_SelectedPriority": 0,
     "m_KnownPackagesForSerialization": [
-        {
-            "deviceId": "10a78098",
-            "name": "com.MinigamesCo.MinigamesCollection",
-            "processId": 20829,
-            "exited": true
-        },
-        {
-            "deviceId": "10a78098",
-            "name": "com.MinigamesCo.MinigamesCollection",
-            "processId": 23609,
-            "exited": true
-        },
-        {
-            "deviceId": "10a78098",
-            "name": "com.MinigamesCo.MinigamesCollection",
-            "processId": 24653,
-            "exited": true
-        },
-        {
-            "deviceId": "10a78098",
-            "name": "com.MinigamesCo.MinigamesCollection",
-            "processId": 25242,
-            "exited": true
-        },
         {
             "deviceId": "10a78098",
             "name": "com.miui.home",
@@ -41,44 +17,44 @@
         {
             "deviceId": "10a78098",
             "name": "com.MinigamesCo.MinigamesCollection",
-            "processId": 30439,
+            "processId": 29621,
             "exited": true
         },
         {
             "deviceId": "10a78098",
             "name": "com.MinigamesCo.MinigamesCollection",
-            "processId": 26927,
-            "exited": false
-        },
-        {
-            "deviceId": "IFPVPBKVDE95KFPN",
-            "name": "com.miui.home",
-            "processId": 1653,
-            "exited": false
-        },
-        {
-            "deviceId": "IFPVPBKVDE95KFPN",
-            "name": "com.MinigamesCo.MinigamesCollection",
-            "processId": 18372,
+            "processId": 860,
             "exited": true
         },
         {
-            "deviceId": "IFPVPBKVDE95KFPN",
+            "deviceId": "10a78098",
             "name": "com.MinigamesCo.MinigamesCollection",
-            "processId": 20272,
+            "processId": 3770,
             "exited": true
         },
         {
-            "deviceId": "IFPVPBKVDE95KFPN",
+            "deviceId": "10a78098",
             "name": "com.MinigamesCo.MinigamesCollection",
-            "processId": 24639,
+            "processId": 6435,
+            "exited": true
+        },
+        {
+            "deviceId": "10a78098",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 9145,
+            "exited": true
+        },
+        {
+            "deviceId": "10a78098",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 13808,
             "exited": false
         },
         {
             "deviceId": "IFPVPBKVDE95KFPN",
             "name": "com.MinigamesCo.MinigamesCollection",
             "processId": 6732,
-            "exited": false
+            "exited": true
         },
         {
             "deviceId": "IFPVPBKVDE95KFPN",
@@ -91,6 +67,24 @@
             "name": "com.MinigamesCo.MinigamesCollection",
             "processId": 18983,
             "exited": true
+        },
+        {
+            "deviceId": "IFPVPBKVDE95KFPN",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 11118,
+            "exited": true
+        },
+        {
+            "deviceId": "IFPVPBKVDE95KFPN",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 14266,
+            "exited": true
+        },
+        {
+            "deviceId": "IFPVPBKVDE95KFPN",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 24965,
+            "exited": false
         },
         {
             "deviceId": "5b986a43",
@@ -108,6 +102,30 @@
             "deviceId": "5b986a43",
             "name": "com.miui.home",
             "processId": 29351,
+            "exited": true
+        },
+        {
+            "deviceId": "5b986a43",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 28631,
+            "exited": true
+        },
+        {
+            "deviceId": "5b986a43",
+            "name": "com.miui.home",
+            "processId": 23472,
+            "exited": false
+        },
+        {
+            "deviceId": "5b986a43",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 3143,
+            "exited": false
+        },
+        {
+            "deviceId": "RF8N31WJYAL",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 3993,
             "exited": false
         }
     ],

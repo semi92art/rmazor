@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Extensions;
-using Helpers;
+using GameHelpers;
 using UI;
 using UnityEngine;
 using Utils;

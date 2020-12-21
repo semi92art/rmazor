@@ -1,11 +1,12 @@
 ﻿using Extensions;
+using UnityEditor;
 using UnityEngine;
 using Utils;
 #if UNITY_EDITOR
-using UnityEditor;
+
 #endif
 
-namespace Helpers
+namespace GameHelpers
 {
     public class TransformHelper : MonoBehaviour
     {

@@ -1,18 +1,17 @@
-﻿using System;
+﻿#if UNITY_EDITOR || DEVELOPMENT_BUILD
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Constants;
 using Entities;
 using Lean.Localization;
-using Managers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-//using Boo.Lang;
-
 namespace DebugConsole
 {
-    public class DebugConsoleController
+    public class DebugConsoleController : GameObserver
     {
         #region Event declarations
 
@@ -24,20 +23,20 @@ namespace DebugConsole
         #endregion
 
         #region types
-
+        
         private delegate void CommandHandler(string[] _Args);
 
         private class CommandRegistration
         {
             public string Command { get; }
             public CommandHandler Handler { get; }
-            public string Help { get; }
+            public string Description { get; }
 
-            public CommandRegistration(string _Command, CommandHandler _Handler, string _Help)
+            public CommandRegistration(string _Command, CommandHandler _Handler, string _Description)
             {
                 Command = _Command;
                 Handler = _Handler;
-                Help = _Help;
+                Description = _Description;
             }
         }
 
@@ -66,24 +65,26 @@ namespace DebugConsole
 
         public DebugConsoleController()
         {
-            //When adding commands, you must add a call below to registerCommand() with its name, implementation method, and help text.
+            // When adding commands, you must add a call below to registerCommand() with its name,
+            // implementation method, and description text.
             RegisterCommand("help", Help, "Print command list.");
             RegisterCommand("restart", Restart, "Restart game.");
             RegisterCommand("load", Load, "Reload specified level.");
             RegisterCommand("reload", Reload, "Reload current level.");
             RegisterCommand("clc", ClearConsole, "Clear console.");
-            RegisterCommand("set_lang",SetLanguage,"set language");
+            RegisterCommand("set_lang", SetLanguage,"set language");
+            RegisterCommand("targfps", SetTargetFps, "Set target frame rate");
         }
 
         #endregion
 
         #region nonpublic methods
-
-        private void RegisterCommand(string _Command, CommandHandler _Handler, string _Help)
+        
+        private void RegisterCommand(string _Command, CommandHandler _Handler, string _Description)
         {
-            m_Commands.Add(_Command, new CommandRegistration(_Command, _Handler, _Help));
+            m_Commands.Add(_Command, new CommandRegistration(_Command, _Handler, _Description));
         }
-
+        
         private void AppendLogLine(string _Line)
         {
             Debug.Log(_Line);
@@ -93,19 +94,17 @@ namespace DebugConsole
             m_Scrollback.Enqueue(_Line);
 
             Log = m_Scrollback.ToArray();
-            if (LogChanged != null)
-                LogChanged(Log);
+            LogChanged?.Invoke(Log);
         }
 
         private void RunCommand(string _Command, string[] _Args)
         {
-            CommandRegistration reg = null;
-            if (!m_Commands.TryGetValue(_Command, out reg))
-                AppendLogLine(string.Format("Unknown command '{0}', type 'help' for list.", _Command));
+            if (!m_Commands.TryGetValue(_Command, out var reg))
+                AppendLogLine($"Unknown command '{_Command}', type 'help' for list.");
             else
             {
                 if (reg.Handler == null)
-                    AppendLogLine(string.Format("Unable to process command '{0}', handler was null.", _Command));
+                    AppendLogLine($"Unable to process command '{_Command}', handler was null.");
                 else
                     reg.Handler(_Args);
             }
@@ -134,6 +133,21 @@ namespace DebugConsole
             parmChars.CopyTo(parmCharsArr, 0);
             return (new string(parmCharsArr)).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
         }
+        
+        protected override void OnNotify(object _Sender, string _NotifyMessage, params object[] _Args)
+        {
+            if (_NotifyMessage != CommonNotifyMessages.RegisterCommand || _Args.Length < 3)
+                return;
+
+            var command = _Args[0] as string;
+            var handler = _Args[1] as CommandHandler;
+            string description = string.Empty;
+            if (_Args.Length > 2)
+                description = _Args[2] as string;
+            
+            if (!string.IsNullOrEmpty(command) && handler != null)
+                RegisterCommand(command, handler, description);
+        }
 
         #endregion
 
@@ -160,7 +174,7 @@ namespace DebugConsole
 
         #endregion
 
-        #region Command handlers
+        #region internal command handlers
         //Implement new commands in this region of the file.
 
         private void Reload(string[] _Args)
@@ -178,7 +192,7 @@ namespace DebugConsole
                 Debug.Log("Print: command list");
                 AppendLogLine("Current command list:");
                 foreach (KeyValuePair<string, CommandRegistration> kvp in m_Commands)
-                    AppendLogLine($"{kvp.Key}: {kvp.Value.Help}");
+                    AppendLogLine($"{kvp.Key}: {kvp.Value.Description}");
             }
             else if (_Args.Any(_Arg => _Arg == "woodpecker"))
                 AppendLogLine("Work is filled up, woodpeckers!");
@@ -228,14 +242,14 @@ namespace DebugConsole
             }
         }
         
-        void ClearConsole(string[] _Args)
+        private void ClearConsole(string[] _Args)
         {
             Array.Clear(Log, 0, Log.Length);
             m_Scrollback.Clear();
             LogChanged?.Invoke(Log);
         }
 
-        void SetLanguage(string[] _Args)
+        private void SetLanguage(string[] _Args)
         {
             if (_Args.Length == 0)
                 AppendLogLine("Specify language");
@@ -257,6 +271,19 @@ namespace DebugConsole
                 }
             }  
         }
+
+        private void SetTargetFps(string[] _Args)
+        {
+            if (_Args == null || !int.TryParse(_Args[0], out int fps)) 
+                return;
+            if (fps >= 5 && fps <= 120)
+                Application.targetFrameRate = fps;
+            else
+                AppendLogLine("Target FPS must be in range [5,120]");
+        }
+
         #endregion
     }
 }
+
+#endif

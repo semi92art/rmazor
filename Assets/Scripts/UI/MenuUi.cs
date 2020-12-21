@@ -3,7 +3,7 @@ using Constants;
 using DialogViewers;
 using Entities;
 using Extensions;
-using Helpers;
+using GameHelpers;
 using Managers;
 using Network;
 using Network.PacketArgs;
@@ -22,6 +22,7 @@ namespace UI
         #region nonpublic members
 
         private readonly bool m_OnStart;
+        private MainMenuUi m_MainMenuUi;
         private Canvas m_Canvas;
         private ILoadingPanel m_LoadingPanel;
         private IMenuDialogViewer m_MenuDialogViewer;
@@ -43,10 +44,12 @@ namespace UI
             CreateDialogViewer();
             CreateBackground();
             CreateTransitionRenderer();
+            
+            PreloadMainMenu();
             if (m_OnStart)
                 CreateLoadingPanel();
             else
-                LoadMainMenu(false);
+                ShowMainMenu(false);
         }
 
         #endregion
@@ -137,7 +140,7 @@ namespace UI
                                 isSuccess = true;
                                 Debug.Log("Login successfully");
                                 GameClient.Instance.AccountId = loginPacket.Response.Id;
-                                LoadMainMenu();
+                                ShowMainMenu(true);
                             }
                         );
                         loginPacket.OnFail(() =>
@@ -158,7 +161,7 @@ namespace UI
                                         var bank = MoneyManager.Instance.GetBank(true);
                                         var scores = ScoreManager.Instance.GetScores(true);
                                         Coroutines.Run(Coroutines.WaitWhile(
-                                            () => LoadMainMenu(),
+                                            () => ShowMainMenu(true),
                                             () => !bank.Loaded || !scores.Loaded));
                                     })
                                     .OnFail(() => { Debug.LogError(loginPacket.ErrorMessage); });
@@ -167,12 +170,12 @@ namespace UI
                             else if (loginPacket.ErrorMessage.Id == RequestErrorCodes.WrongLoginOrPassword)
                             {
                                 Debug.LogError("Login failed: Wrong login or password");
-                                LoadMainMenu();
+                                ShowMainMenu(true);
                             }
                             else
                             {
                                 Debug.LogError(loginPacket.ErrorMessage);
-                                LoadMainMenu();
+                                ShowMainMenu(true);
                             }
                         });
                         GameClient.Instance.Send(loginPacket);
@@ -181,7 +184,7 @@ namespace UI
             }));
         }
 
-        private void LoadMainMenu(bool _OnStart = true)
+        private void ShowMainMenu(bool _OnStart)
         {
             if (_OnStart)
             {
@@ -189,24 +192,24 @@ namespace UI
                 {
                     m_LoadingPanel.DoLoading = false;
                     m_LoadingPanel.Hide();
-                    LoadMainMenuCore();
+                    m_MainMenuUi.Show();
                 };
                 m_TransitionRenderer.StartTransition();
             }
             else
-                LoadMainMenuCore();
+                m_MainMenuUi.Show();
             
         }
 
-        private void LoadMainMenuCore()
+        private void PreloadMainMenu()
         {
-            var mainMenuUi = new MainMenuUi(
+            m_MainMenuUi = new MainMenuUi(
                 m_Canvas.RTransform(),
                 m_MenuDialogViewer);
-            mainMenuUi.AddObservers(GetObservers());
-            mainMenuUi.Show();
+            m_MainMenuUi.AddObservers(GetObservers());
+            m_MainMenuUi.Init();
         }
-
+        
         private GameObject CreateLoadingTransitionPanel()
         {
             return PrefabInitializer.InitUiPrefab(

@@ -5,8 +5,8 @@
 	<ad type="fullscreen" os="android">ca-app-pub-1763919853958157/3106486476</ad>
 	<ad type="native" os="android">ca-app-pub-1763919853958157/5282768267</ad>
 	<ad type="reward" os="android">ca-app-pub-1763919853958157/3375732170</ad>
-	<test_device>id1</test_device>
-	<test_device>id2</test_device>
-	<test_device>id3</test_device>
-	<test_device>id4</test_device>
+	<test_device>FE989E63CDFFFB64D9E6A288C137E1E2</test_device><!--Xiaomi Mi Mix 2 (Artem)-->
+	<test_device>A7BDF038439EAB9E32977E9485093F43</test_device><!--Xiaomi Redmi Note 2 (Artem)-->
+	<test_device>B648AEC33D2557D0BFD1FD486B3E7678</test_device><!--Xiaomi Redmi Note 5 (Artem)-->
+	<test_device>7D516587810FD383626B5C782FB4078A</test_device><!--Galaxy S10 (Artem)-->
 </data>

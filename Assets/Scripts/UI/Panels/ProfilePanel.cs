@@ -3,7 +3,7 @@ using Constants;
 using DialogViewers;
 using Entities;
 using Extensions;
-using Helpers;
+using GameHelpers;
 using Network;
 using Network.PacketArgs;
 using Network.Packets;

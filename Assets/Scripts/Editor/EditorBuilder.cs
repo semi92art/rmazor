@@ -19,7 +19,7 @@ public class EditorBuilder : EditorWindow
     #endregion
     
 
-    [MenuItem("Tools/Builder")]
+    [MenuItem("Tools/Builder", false, 2)]
     public static void ShowWindow()
     {
         GetWindow<EditorBuilder>("Builder");

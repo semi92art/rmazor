@@ -1,7 +1,6 @@
-﻿using Network;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Helpers
+namespace GameHelpers
 {
     public class DontDestroyOnLoad : MonoBehaviour
     {

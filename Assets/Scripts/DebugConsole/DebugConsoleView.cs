@@ -1,21 +1,44 @@
-﻿using System.Collections.Generic;
-using Entities;
+﻿#if UNITY_EDITOR || DEVELOPMENT_BUILD
+
+using System.Collections.Generic;
 using Extensions;
-using Helpers;
+using GameHelpers;
+using Network;
 using UI;
 using UI.Factories;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.Events;
 using UnityEngine.UI;
+using Utils;
 
 namespace DebugConsole
 {
-    public class DebugConsoleView : MonoBehaviour
+    public class DebugConsoleView : MonoBehaviour, ISingleton
     {
+        #region singleton
         
-#region factory
+        private static DebugConsoleView _instance;
 
-        public static GameObject Create()
+        public static DebugConsoleView Instance
+        {
+            get
+            {
+                if (_instance is DebugConsoleView dcv && !dcv.IsNull())
+                    return _instance;
+                var go = Create();
+                _instance = go.GetComponent<DebugConsoleView>();
+                if (!GameClient.Instance.IsModuleTestsMode)
+                    DontDestroyOnLoad(go);
+                return _instance;
+            }
+        }
+        
+        #endregion
+        
+        
+        #region factory
+
+        private static GameObject Create()
         {
             Canvas canvas = UiFactory.UiCanvas(
                 "DebugConsoleCanvas",
@@ -38,10 +61,10 @@ namespace DebugConsole
                 "debug_console", "console");
         }
 
-#endregion
+        #endregion
     
     
-        #region public fields
+        #region serialized fields
 
         public GameObject viewContainer; //Container for console view, should be a child of this GameObject
         public Text logTextArea;
@@ -50,14 +73,20 @@ namespace DebugConsole
         public Button enterCommand;
         public Button downCommand;
         public Button upCommand;
-        public GameObject ConsoleLog;
-        public GameObject ConsoleScrollBar;
+        public GameObject consoleLog;
+        public GameObject consoleScrollBar;
 
+        #endregion
+        
+        #region public members
+
+        public DebugConsoleController Controller => m_Controller;
+        
         #endregion
 
         #region nonpublic members
 
-        private readonly DebugConsoleController m_DebugConsole = new DebugConsoleController();
+        private readonly DebugConsoleController m_Controller = new DebugConsoleController();
         private Vector3 m_SwipeFirstPosition;
         private Vector3 m_SwipeLastPosition;
         private float m_SwipeDragDistance;
@@ -73,17 +102,17 @@ namespace DebugConsole
 
         private void Start()
         {
-            m_DebugConsole.VisibilityChanged += OnVisibilityChanged;
-            m_DebugConsole.LogChanged += OnLogChanged;
-            UpdateLogStr(m_DebugConsole.Log);
+            m_Controller.VisibilityChanged += OnVisibilityChanged;
+            m_Controller.LogChanged += OnLogChanged;
+            UpdateLogStr(m_Controller.Log);
             m_SwipeDragDistance = Screen.width * 30 * 0.01f;
             //DontDestroyOnLoad(gameObject);
         }
 
         private void OnDestroy()
         {
-            m_DebugConsole.VisibilityChanged -= OnVisibilityChanged;
-            m_DebugConsole.LogChanged -= OnLogChanged;
+            m_Controller.VisibilityChanged -= OnVisibilityChanged;
+            m_Controller.LogChanged -= OnLogChanged;
         }
 
         private void Update()
@@ -139,25 +168,39 @@ namespace DebugConsole
 
         #region public methods
 
-        public void UpCommand()
+        public void RegisterCommand(UnityAction _Action, string _Command, string _Description)
+        {
+            
+        }
+        
+        public void RegisterCommand(UnityAction<string[]> _Action, string _Command, string _Description)
+        {
+            
+        }
+
+        #endregion
+
+        #region nonpublic methods
+        
+        private void UpCommand()
         {
             m_CurrentCommand++;
-            m_Index = m_DebugConsole.CommandHistory.Count - m_CurrentCommand;
-            if (m_Index >= 0 && m_DebugConsole.CommandHistory.Count != 0)
-                inputField.text = m_DebugConsole.CommandHistory[m_Index].ToString();
+            m_Index = m_Controller.CommandHistory.Count - m_CurrentCommand;
+            if (m_Index >= 0 && m_Controller.CommandHistory.Count != 0)
+                inputField.text = m_Controller.CommandHistory[m_Index].ToString();
             else
-                m_CurrentCommand = m_DebugConsole.CommandHistory.Count;
+                m_CurrentCommand = m_Controller.CommandHistory.Count;
 
             inputField.ActivateInputField();
             inputField.Select();
         }
 
-        public void DownCommand()
+        private void DownCommand()
         {
             m_CurrentCommand--;
-            m_Index = m_DebugConsole.CommandHistory.Count - m_CurrentCommand;
-            if (m_Index < m_DebugConsole.CommandHistory.Count)
-                inputField.text = m_DebugConsole.CommandHistory[m_Index].ToString();
+            m_Index = m_Controller.CommandHistory.Count - m_CurrentCommand;
+            if (m_Index < m_Controller.CommandHistory.Count)
+                inputField.text = m_Controller.CommandHistory[m_Index].ToString();
             else
             {
                 inputField.text = "";
@@ -167,18 +210,14 @@ namespace DebugConsole
             inputField.Select();
         }
 
-        public void RunCommand()
+        private void RunCommand()
         {
-            m_DebugConsole.RunCommandString(inputField.text);
+            m_Controller.RunCommandString(inputField.text);
             inputField.text = "";
             inputField.ActivateInputField();
             inputField.Select();
             m_CurrentCommand = 0;
         }
-
-        #endregion
-
-        #region nonpublic methods
 
         private void CreatePositions()
         {
@@ -187,14 +226,14 @@ namespace DebugConsole
             float screenWidth = canvasRectTransform.sizeDelta.x;
             float screenHeight = canvasRectTransform.sizeDelta.y;
             //Log
-            RectTransform logAreaRectTransform = ConsoleLog.RTransform();
+            RectTransform logAreaRectTransform = consoleLog.RTransform();
             logAreaRectTransform.SetLeft(0);
             logAreaRectTransform.SetRight(screenWidth - screenWidth * 0.9f);
             logAreaRectTransform.SetTop(0);
             logAreaRectTransform.SetBottom(screenHeight * 0.1f);
 
             //Scroll
-            RectTransform scrollRectTransform = ConsoleScrollBar.RTransform();
+            RectTransform scrollRectTransform = consoleScrollBar.RTransform();
             scrollRectTransform.SetLeft(screenWidth - screenWidth * 0.1f);
             scrollRectTransform.SetRight(0);
             scrollRectTransform.SetTop(0);
@@ -242,7 +281,7 @@ namespace DebugConsole
 
         private void SetVisibility(bool _Visible)
         {
-            this.m_IsVisible = _Visible;
+            m_IsVisible = _Visible;
             viewContainer.SetActive(_Visible);
             if (inputField.text == "`")
                 inputField.text = "";
@@ -266,3 +305,5 @@ namespace DebugConsole
         #endregion
     }
 }
+
+#endif

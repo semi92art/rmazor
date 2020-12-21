@@ -1,6 +1,4 @@
-﻿using Helpers;
-
-public delegate void ScoreHandler(int _Score);
+﻿public delegate void ScoreHandler(int _Score);
 
 public delegate void NoArgsHandler();
 

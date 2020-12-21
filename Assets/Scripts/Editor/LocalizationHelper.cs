@@ -25,7 +25,7 @@ public class LocalizationHelper : EditorWindow
     
     #endregion
     
-    [MenuItem("Tools/Localization Helper")]
+    [MenuItem("Tools/Localization Helper", false, 1)]
     public static void ShowWindow()
     {
         var window = GetWindow<LocalizationHelper>("Localization Helper");

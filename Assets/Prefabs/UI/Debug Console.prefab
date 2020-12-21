@@ -554,7 +554,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000030517578}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0.000061035156}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6739011661087431243
@@ -576,8 +576,8 @@ MonoBehaviour:
   enterCommand: {fileID: 6739011662065129935}
   downCommand: {fileID: 6739011662083718361}
   upCommand: {fileID: 6739011661270232898}
-  ConsoleLog: {fileID: 6739011660623168635}
-  ConsoleScrollBar: {fileID: 6739011660871602997}
+  consoleLog: {fileID: 6739011660623168635}
+  consoleScrollBar: {fileID: 6739011660871602997}
 --- !u!114 &-8772171984930475344
 MonoBehaviour:
   m_ObjectHideFlags: 0

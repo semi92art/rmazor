@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DebugConsole;
 using Entities;
 using UI;
 using UI.Managers;
@@ -27,10 +28,10 @@ namespace Settings
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             bool debugOn = (bool) _Parameter;
             SaveUtils.PutValue(SaveKeyDebug.DebugUtilsOn, debugOn);
-            UiManager.Instance.DebugConsole.SetActive(debugOn);
-    #if DEVELOPMENT_BUILD
+            DebugConsoleView.Instance.SetGoActive(debugOn);
+#if !UNITY_EDITOR && DEVELOPMENT_BUILD
             UiManager.Instance.DebugReporter.SetActive(debugOn);
-    #endif 
+#endif 
 #endif
 
         }

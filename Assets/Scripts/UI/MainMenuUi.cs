@@ -3,7 +3,7 @@ using Constants;
 using DialogViewers;
 using Entities;
 using Extensions;
-using Helpers;
+using GameHelpers;
 using Lean.Localization;
 using Managers;
 using Network;
@@ -67,7 +67,7 @@ namespace UI
         
         #region api
 
-        public void Show()
+        public void Init()
         {
             InitContainers(m_Parent);
             InitSelectGameButton();
@@ -78,7 +78,13 @@ namespace UI
             InitBankMiniPanel();
             CheckIfDailyBonusNotChosenToday();
             m_MenuDialogViewer.AddNotDialogItem(m_MainMenu, MenuUiCategory.MainMenu);
+            m_MainMenu.SetGoActive(false);
+        }
+        
+        public void Show()
+        {
             Notify(this, NotifyMessageMainMenuLoaded);
+            m_MainMenu.SetGoActive(true);
         }
         
         #endregion
@@ -96,7 +102,6 @@ namespace UI
 
         private void InitContainers(RectTransform _Parent)
         {
-            
             m_MainMenu = UiFactory.UiRectTransform(
                 _Parent,
                 "Main Menu",
@@ -242,7 +247,6 @@ namespace UI
                 "main_menu_buttons",
                 "bottom_group_button_template");
 
-            
             // Wheel of fortune button
             InitBottomGroupButton(
                 "Wheel Of Fortune Button",
@@ -255,9 +259,9 @@ namespace UI
                 ColorUtils.GetColorFromPalette(paletteName, "Wheel Of Fortune"),
                 "Wheel",
                 OnWheelOfFortuneButtonClick);
-            
+
             // Daily bonus button
-            var dailyBonusButton = InitBottomGroupButton(
+            var buttonGo = InitBottomGroupButton(
                 "Daily Bonus Button",
                 firstGroupContent,
                 temp,
@@ -268,8 +272,8 @@ namespace UI
                 ColorUtils.GetColorFromPalette(paletteName, "Daily Bonus"),
                 "Bonus",
                 OnDailyBonusButtonClick);
-            m_DailyBonusAnimator = dailyBonusButton.GetCompItem<Animator>("animator");
-            
+            m_DailyBonusAnimator = buttonGo.GetCompItem<Animator>("animator");
+
             // Shop button
             InitBottomGroupButton(
                 "Shop Button",
@@ -295,7 +299,7 @@ namespace UI
                 ColorUtils.GetColorFromPalette(paletteName, "Login"),
                 "Login",
                 OnLoginButtonClick);
-            
+
             Object.Destroy(temp);
         }
 
@@ -341,7 +345,7 @@ namespace UI
         private void CheckIfDailyBonusNotChosenToday()
         {
             System.DateTime lastDate = SaveUtils.GetValue<System.DateTime>(SaveKey.DailyBonusLastDate);
-            if (m_DailyBonusAnimator.IsNull())
+            if (!m_DailyBonusAnimator.IsNull())
                 m_DailyBonusAnimator.SetTrigger(
                     lastDate.Date == System.DateTime.Now.Date ?
                     AnimKeys.Stop : AnimKeys.Anim);

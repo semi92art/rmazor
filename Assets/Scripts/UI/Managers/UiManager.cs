@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using Constants;
 using Controllers;
 using DebugConsole;
 using Entities;
+using Exceptions;
 using Extensions;
-using Helpers;
-using Managers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;
@@ -94,17 +92,8 @@ namespace UI.Managers
             }
         }
 
-        public string ColorScheme
-        {
-            get => SaveUtils.GetValue<string>(SaveKey.ColorScheme);
-            set => SaveUtils.PutValue(SaveKey.ColorScheme, value);
-        }
-        
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-        public GameObject DebugConsole { get; private set; }
-#if DEVELOPMENT_BUILD
+#if !UNITY_EDITOR && DEVELOPMENT_BUILD
         public GameObject DebugReporter { get; private set; }
-#endif
 #endif
         
         #endregion
@@ -115,42 +104,90 @@ namespace UI.Managers
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            SceneManager.sceneLoaded += OnSceneLoaded;
+            OnCurrentMenuCategoryChanged += OnMenuCategoryChanged;
+            OnCurrentGameCategoryChanged += OnGameCategoryChanged;
+        }
 
-            if (string.IsNullOrEmpty(ColorScheme))
-                ColorScheme = "Default";
-
-            SceneManager.sceneLoaded += (_Scene, _) =>
-            {
-                bool onStart = m_PrevScene.EqualsIgnoreCase(SceneNames.Preload);
+        private void OnSceneLoaded(Scene _Scene, LoadSceneMode _)
+        {
+            bool onStart = m_PrevScene.EqualsIgnoreCase(SceneNames.Preload);
                 
-                if (onStart)
-                {
+            if (onStart)
+            {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                    bool debugOn = SaveUtils.GetValue<bool>(SaveKeyDebug.DebugUtilsOn);
-                    SaveUtils.PutValue(SaveKeyDebug.DebugUtilsOn, debugOn);
-                    DebugConsole = DebugConsoleView.Create();
-                    DebugConsole.SetActive(debugOn);
-#endif
-#if DEVELOPMENT_BUILD
-                    DebugReporter = PrefabInitializer.InitPrefab(
+                bool debugOn = SaveUtils.GetValue<bool>(SaveKeyDebug.DebugUtilsOn);
+                SaveUtils.PutValue(SaveKeyDebug.DebugUtilsOn, debugOn);
+                DebugConsoleView.Instance.SetGoActive(debugOn);
+    #if !UNITY_EDITOR && DEVELOPMENT_BUILD
+                    DebugReporter = GameHelpers.PrefabInitializer.InitPrefab(
                         null,
                         "debug_console",
                         "reporter");
                     DebugReporter.SetActive(debugOn);
+    #endif
 #endif
-                }
+            }
                 
-                if (_Scene.name.EqualsIgnoreCase(SceneNames.Main))
-                {
-                    if (onStart)
-                        LocalizationManager.Instance.Init();
-                    var menuUi = new MenuUi(onStart);
-                    menuUi.AddObserver(new MenuUiSoundController());
-                    menuUi.Init();
-                }
+            if (_Scene.name.EqualsIgnoreCase(SceneNames.Main))
+            {
+                if (onStart)
+                    LocalizationManager.Instance.Init();
+                var menuUi = new MenuUi(onStart);
+                menuUi.AddObserver(new MenuUiSoundController());
+                menuUi.Init();
+            }
 
-                m_PrevScene = _Scene.name;
-            };
+            m_PrevScene = _Scene.name;
+        }
+        
+        private void OnMenuCategoryChanged(MenuUiCategory _, MenuUiCategory _New)
+        {
+            switch (_New)
+            {
+                case MenuUiCategory.Nothing:
+                    // do nothing
+                    break;
+                case MenuUiCategory.WheelOfFortune:
+                    Application.targetFrameRate = GraphicUtils.GetGameTargetFps();
+                    break;
+                case MenuUiCategory.Loading:
+                case MenuUiCategory.MainMenu:
+                case MenuUiCategory.SelectGame:
+                case MenuUiCategory.DailyBonus:
+                case MenuUiCategory.Profile:
+                case MenuUiCategory.Login:
+                case MenuUiCategory.Shop:
+                case MenuUiCategory.Settings:
+                case MenuUiCategory.PlusMoney:
+                case MenuUiCategory.PlusLifes:
+                    Application.targetFrameRate = GraphicUtils.GetMenuTargetFps();
+                    break;
+                default: 
+                    throw new InvalidEnumArgumentExceptionEx(_New);
+            }
+        }
+        
+        private void OnGameCategoryChanged(GameUiCategory _, GameUiCategory _New)
+        {
+            switch (_New)
+            {
+                case GameUiCategory.Nothing:
+                    //do nothing
+                    break;
+                case GameUiCategory.Game:
+                    Application.targetFrameRate = GraphicUtils.GetGameTargetFps();
+                    break;
+                case GameUiCategory.LevelStart:
+                case GameUiCategory.Countdown:
+                case GameUiCategory.TimeEnded:
+                case GameUiCategory.LevelFinish:
+                case GameUiCategory.Settings:
+                    Application.targetFrameRate = GraphicUtils.GetMenuTargetFps();
+                    break;
+                default:
+                    throw new InvalidEnumArgumentExceptionEx(_New);
+            }
         }
         
         #endregion

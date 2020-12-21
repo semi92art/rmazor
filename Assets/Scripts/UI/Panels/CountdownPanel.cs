@@ -1,6 +1,6 @@
 ﻿using DialogViewers;
 using Extensions;
-using Helpers;
+using GameHelpers;
 using UI.Factories;
 using UI.Managers;
 using UnityEngine;

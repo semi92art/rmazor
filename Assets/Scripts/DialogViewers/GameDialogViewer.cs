@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Helpers;
+using GameHelpers;
 using UI;
 using UI.Factories;
 using UI.Managers;

@@ -2,13 +2,14 @@
 using System.Linq;
 using Extensions;
 using Shapes;
+using UnityEditor;
 using UnityEngine;
 using Utils;
 #if UNITY_EDITOR
-using UnityEditor;
+
 #endif
 
-namespace Helpers
+namespace GameHelpers
 {
 
 
