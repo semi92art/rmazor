@@ -7,7 +7,6 @@ using Network;
 using UI;
 using UI.Factories;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 using Utils;
 
@@ -26,7 +25,7 @@ namespace DebugConsole
                 if (_instance is DebugConsoleView dcv && !dcv.IsNull())
                     return _instance;
                 var go = Create();
-                _instance = go.GetComponent<DebugConsoleView>();
+                _instance = Create();
                 if (!GameClient.Instance.IsModuleTestsMode)
                     DontDestroyOnLoad(go);
                 return _instance;
@@ -38,7 +37,7 @@ namespace DebugConsole
         
         #region factory
 
-        private static GameObject Create()
+        private static DebugConsoleView Create()
         {
             Canvas canvas = UiFactory.UiCanvas(
                 "DebugConsoleCanvas",
@@ -58,7 +57,7 @@ namespace DebugConsole
 
             return PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(canvas.RTransform(), RtrLites.FullFill),
-                "debug_console", "console");
+                "debug_console", "console").GetComponent<DebugConsoleView>();
         }
 
         #endregion
@@ -168,12 +167,7 @@ namespace DebugConsole
 
         #region public methods
 
-        public void RegisterCommand(UnityAction _Action, string _Command, string _Description)
-        {
-            
-        }
-        
-        public void RegisterCommand(UnityAction<string[]> _Action, string _Command, string _Description)
+        public void Init()
         {
             
         }

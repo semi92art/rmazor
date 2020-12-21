@@ -1,4 +1,5 @@
-﻿using DI;
+﻿using DebugConsole;
+using DI;
 using Managers;
 using Network;
 using UI.Panels;
@@ -21,6 +22,9 @@ public class GameLoader : MonoBehaviour, ISingleton
         AdsManager.Instance.Init();
         AnalyticsManager.Instance.Init();
         AssetBundleManager.Instance.Init();
+        #if UNITY_EDITOR || DEVELOPMENT_BUILD
+        DebugConsoleView.Instance.Init();
+        #endif
         SceneManager.LoadScene(1);
     }
     
