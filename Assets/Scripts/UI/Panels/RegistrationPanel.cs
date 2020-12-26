@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using DialogViewers;
-using Entities;
+﻿using DialogViewers;
+using Constants;
 using Extensions;
 using GameHelpers;
 using Managers;
@@ -13,6 +12,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Utils;
 using Lean.Localization;
+using UI.Managers;
 
 namespace UI.Panels
 {
@@ -23,46 +23,43 @@ namespace UI.Panels
         public const string NotifyMessageRegisterButtonClick = nameof(NotifyMessageRegisterButtonClick);
         
         #endregion
-        
-        private const string TestUserPrefix = "test";
-        
-        public RegistrationPanel(IMenuDialogViewer _DialogViewer) : base(_DialogViewer)
-        { }
-        
-        #region private members
 
+        #region nonpublic members
+
+        private const string TestUserPrefix = "test";
         private TMP_InputField m_RepeatPasswordInputField;
         private TextMeshProUGUI m_RepeatPasswordErrorHandler;
         private TextMeshProUGUI m_RegisteredSuccessfully;
 
         #endregion
         
-        #region nonpublic methods
+        #region api
         
-        protected override RectTransform Create()
+        public RegistrationPanel(IMenuDialogViewer _DialogViewer) : base(_DialogViewer)
+        { }
+        
+        public override void Init()
         {
             GameObject rp = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    DialogViewer.DialogContainer,
+                    DialogViewer.Container,
                     RtrLites.FullFill),
-                "main_menu", "register_panel");
+                CommonStyleNames.MainMenuDialogPanels, "register_panel");
             
-            m_LoginErrorHandler = rp.GetCompItem<TextMeshProUGUI>("login_error_handler");
-            m_PasswordErrorHandler = rp.GetCompItem<TextMeshProUGUI>("password_error_handler");
+            LoginErrorHandler = rp.GetCompItem<TextMeshProUGUI>("login_error_handler");
+            PasswordErrorHandler = rp.GetCompItem<TextMeshProUGUI>("password_error_handler");
             m_RepeatPasswordErrorHandler = rp.GetCompItem<TextMeshProUGUI>("repeat_password_error_handler");
             m_RegisteredSuccessfully = rp.GetCompItem<TextMeshProUGUI>("registered_successfully");
             m_RegisteredSuccessfully.enabled = false;
-            
-            TextMeshProUGUI registerButtonText = rp.GetCompItem<TextMeshProUGUI>("register_button_text");
-            
-            m_LoginInputField = rp.GetCompItem<TMP_InputField>("login_input_field");
-            LeanLocalizedTextMeshProUGUI loginInputFieldLocalization = m_LoginInputField.transform.Find("Text Area")
+
+            LoginInputField = rp.GetCompItem<TMP_InputField>("login_input_field");
+            LeanLocalizedTextMeshProUGUI loginInputFieldLocalization = LoginInputField.transform.Find("Text Area")
                 .gameObject.transform.Find("Placeholder").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
             loginInputFieldLocalization.TranslationName = "EnterLogin";
             
-            m_PasswordInputField = rp.GetCompItem<TMP_InputField>("password_input_field");
-            m_PasswordInputField.contentType = TMP_InputField.ContentType.Password;
-            LeanLocalizedTextMeshProUGUI passwordInputFieldLocalization = m_PasswordInputField.transform.Find("Text Area")
+            PasswordInputField = rp.GetCompItem<TMP_InputField>("password_input_field");
+            PasswordInputField.contentType = TMP_InputField.ContentType.Password;
+            LeanLocalizedTextMeshProUGUI passwordInputFieldLocalization = PasswordInputField.transform.Find("Text Area")
                 .gameObject.transform.Find("Placeholder").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
             passwordInputFieldLocalization.TranslationName = "EnterPassword";
             
@@ -72,22 +69,21 @@ namespace UI.Panels
                 .gameObject.transform.Find("Placeholder").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
             repeatPasswordInputFieldLocalization.TranslationName = "RepeatPassword";
             
-            Button registerButton = rp.GetCompItem<Button>("register_button");
-            LeanLocalizedTextMeshProUGUI registrationButtonLocalization = registerButton.transform.Find("Background")
-                .gameObject.transform.Find("Text").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
-            registrationButtonLocalization.TranslationName = "Registration";
-
-            registerButton.SetOnClick(OnRegisterButtonClick);
-
+            rp.GetCompItem<Button>("register_button").SetOnClick(OnRegisterButtonClick);
             CleanErrorHandlers();
-            
-            return rp.RTransform();
+            Panel = rp.RTransform();
         }
+        
+        #endregion
+
+        #region nonpublic methods
 
         private void SetRepeatPasswordError(string _Text)
         {
             m_RepeatPasswordErrorHandler.text = _Text;
         }
+
+        public override MenuUiCategory Category => MenuUiCategory.Login;
 
         protected override bool IsNoError()
         {
@@ -100,10 +96,6 @@ namespace UI.Panels
             base.CleanErrorHandlers();
         }
 
-        #endregion
-        
-        #region event functions
-
         private void OnRegisterButtonClick()
         {
             Notify(this, NotifyMessageRegisterButtonClick);
@@ -113,8 +105,8 @@ namespace UI.Panels
             
             var packet = new RegisterUserPacket(new RegisterUserPacketRequestArgs
             {
-                Name = m_LoginInputField.text,
-                PasswordHash = CommonUtils.GetMD5Hash(m_PasswordInputField.text)
+                Name = LoginInputField.text,
+                PasswordHash = CommonUtils.GetMD5Hash(PasswordInputField.text)
             });
             packet.OnSuccess(() =>
             {
@@ -147,21 +139,21 @@ namespace UI.Panels
 
         private bool CheckForInputErrors()
         {
-            if (string.IsNullOrEmpty(m_LoginInputField.text))
+            if (string.IsNullOrEmpty(LoginInputField.text))
                 SetLoginError(LeanLocalization.GetTranslationText("FieldIsEmpty"));
-            if (string.IsNullOrEmpty(m_PasswordInputField.text))
+            if (string.IsNullOrEmpty(PasswordInputField.text))
                 SetPasswordError(LeanLocalization.GetTranslationText("FieldIsEmpty"));
             if (string.IsNullOrEmpty(m_RepeatPasswordInputField.text))
                 SetRepeatPasswordError(LeanLocalization.GetTranslationText("FieldIsEmpty"));
             if (!IsNoError())
                 return false;
-            if (m_LoginInputField.text.Length > 20)
+            if (LoginInputField.text.Length > 20)
                 SetLoginError(LeanLocalization.GetTranslationText("MaxNameLength"));
-            if (m_PasswordInputField.text != m_RepeatPasswordInputField.text)
+            if (PasswordInputField.text != m_RepeatPasswordInputField.text)
                 SetRepeatPasswordError(LeanLocalization.GetTranslationText("PasswordsDoNotMatch"));
             if (!IsNoError())
                 return false;
-            if (m_LoginInputField.text.StartsWith(TestUserPrefix))
+            if (LoginInputField.text.StartsWith(TestUserPrefix))
                 SetLoginError(LeanLocalization.GetTranslationText("NameIsUnavailable"));
             return true;
         }

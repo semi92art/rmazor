@@ -15,7 +15,7 @@ using Utils;
 
 namespace UI.Panels
 {
-    public class LevelFinishPanel : GameObservable, IGameDialogPanel
+    public class LevelFinishPanel : DialogPanelBase, IGameUiCategory
     {
         #region notify messages
 
@@ -44,7 +44,6 @@ namespace UI.Panels
         #region api
         
         public GameUiCategory Category => GameUiCategory.LevelFinish;
-        public RectTransform Panel { get; private set; }
 
         public LevelFinishPanel(
             IGameDialogViewer _DialogViewer,
@@ -62,23 +61,11 @@ namespace UI.Panels
             m_IsPersonalBest = _IsPersonalBest;
         }
         
-        public void Show()
-        {
-            Panel = Create();
-            m_DialogViewer.Show(this);
-        }
-
-        public void OnEnable() { }
-
-        #endregion
-
-        #region nonpublic methods
-
-        private RectTransform Create()
+        public override void Init()
         {
             GameObject go = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_DialogViewer.DialogContainer,
+                    m_DialogViewer.Container,
                     RtrLites.FullFill),
                 "game_menu", "level_finish_panel");
 
@@ -103,8 +90,12 @@ namespace UI.Panels
             m_X2Button.SetOnClick(OnX2ButtonClick);
             continueButton.SetOnClick(OnContinueButtonClick);
             
-            return go.RTransform();
+            Panel = go.RTransform();
         }
+
+        #endregion
+
+        #region nonpublic methods
 
         private void OnX2ButtonClick()
         {

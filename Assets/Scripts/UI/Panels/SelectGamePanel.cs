@@ -15,7 +15,7 @@ using UnityEngine;
 
 namespace UI.Panels
 {
-    public class SelectGamePanel : GameObservable, IMenuDialogPanel
+    public class SelectGamePanel : DialogPanelBase, IMenuUiCategory
     {
         #region private members
         
@@ -27,8 +27,7 @@ namespace UI.Panels
         #region api
 
         public MenuUiCategory Category => MenuUiCategory.SelectGame;
-        public RectTransform Panel { get; private set; }
-        
+
         public SelectGamePanel(
             IMenuDialogViewer _DialogViewer, 
             System.Action<int> _SelectGame)
@@ -37,25 +36,13 @@ namespace UI.Panels
             m_SelectGame = _SelectGame;
         }
 
-        public void Show()
-        {
-            Panel = Create();
-            m_DialogViewer.Show(this);
-        }
-
-        public void OnEnable() { }
-
-        #endregion
-        
-        #region nonpublic methods
-        
-        private RectTransform Create()
+        public override void Init()
         {
             GameObject selectGamePanel = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_DialogViewer.DialogContainer,
+                    m_DialogViewer.Container,
                     RtrLites.FullFill),
-                "main_menu",
+                CommonStyleNames.MainMenuDialogPanels,
                 "select_game_panel");
             RectTransform content = selectGamePanel.GetCompItem<RectTransform>("content");
             
@@ -66,7 +53,7 @@ namespace UI.Panels
                     new Vector2(218f, -43f),
                     Vector2.one * 0.5f,
                     new Vector2(416f, 170f)),
-                "main_menu",
+                CommonStyleNames.MainMenu,
                 "select_game_item");
             
             foreach (var cgiProps in GetAllCgiProps().Where(_Props => _Props.IsVisible))
@@ -83,8 +70,12 @@ namespace UI.Panels
             }
             
             Object.Destroy(cgiObj);
-            return selectGamePanel.RTransform();
+            Panel = selectGamePanel.RTransform();
         }
+
+        #endregion
+        
+        #region nonpublic methods
 
         private ChooseGameItemProps[] GetAllCgiProps()
         {
@@ -94,7 +85,6 @@ namespace UI.Panels
                     _Info.GameId, _Info.ComingSoon, _Info.Available))
                 .ToArray();
         }
-        
         
         #endregion
     }

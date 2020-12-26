@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Constants;
+﻿using Constants;
 using DialogViewers;
 using Entities;
 using Extensions;
@@ -16,7 +15,7 @@ using Utils;
 
 namespace UI.Panels
 {
-    public class ProfilePanel : GameObservable, IMenuDialogPanel
+    public class ProfilePanel : DialogPanelBase, IMenuUiCategory
     {
         #region private members
         
@@ -29,34 +28,20 @@ namespace UI.Panels
         #region api
         
         public MenuUiCategory Category => MenuUiCategory.Profile;
-        public RectTransform Panel { get; private set; }
 
         public ProfilePanel(IMenuDialogViewer _DialogViewer)
         {
             m_DialogViewer = _DialogViewer;
         }
-        
-        public void Show()
-        {
-            Panel = Create();
-            m_DialogViewer.Show(this);
-        }
-
-        public void OnEnable() { }
-
-        #endregion
-        
-        #region nonpublic methods
-
-        private RectTransform Create()
+ 
+        public override void Init()
         {
             GameObject pp = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_DialogViewer.DialogContainer,
+                    m_DialogViewer.Container,
                     RtrLites.FullFill),
-                "main_menu", "profile_panel");
+                CommonStyleNames.MainMenuDialogPanels, "profile_panel");
             GameObject infoContainer = pp.GetContentItem("info_container");
-            TextMeshProUGUI toSeeMessage = pp.GetCompItem<TextMeshProUGUI>("to_see_message");
 
             TextMeshProUGUI user = pp.GetCompItem<TextMeshProUGUI>("user_text");
             m_WorldRankNum = pp.GetCompItem<TextMeshProUGUI>("world_rank_number");
@@ -67,13 +52,6 @@ namespace UI.Panels
             TextMeshProUGUI gamesPlayedNum = pp.GetCompItem<TextMeshProUGUI>("games_played_number");
             TextMeshProUGUI levelsPlayedNum = pp.GetCompItem<TextMeshProUGUI>("levels_played_number");
 
-            bool isLogined = !string.IsNullOrEmpty(GameClient.Instance.Login);
-            toSeeMessage.SetGoActive(!isLogined);
-            infoContainer.SetActive(isLogined);
-
-            if (!isLogined)
-                return pp.RTransform();
-            
             user.text = GameClient.Instance.Login;
             SetRankNums();
             
@@ -81,20 +59,22 @@ namespace UI.Panels
             worldRankListButton.SetOnClick(ShowWorldRankings);
             countryRankListButton.SetOnClick(ShowCountryRankings);
 
-            
-            
-            
-            return pp.RTransform();
+            Panel = pp.RTransform();
         }
+
+        #endregion
+        
+        #region nonpublic methods
+
 
         private void ShowWorldRankings()
         {
-            
+            // TODO
         }
 
         private void ShowCountryRankings()
         {
-            
+            // TODO
         }
 
         private void SetRankNums()

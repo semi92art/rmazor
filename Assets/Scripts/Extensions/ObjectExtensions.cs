@@ -41,10 +41,20 @@ namespace Extensions
         {
             return _Prefab.GetComponent<PrefabContent>().GetItem(_ItemName);
         }
+        
+        public static GameObject GetContentItem(this Component _PrefabComponent, string _ItemName)
+        {
+            return _PrefabComponent.GetComponent<PrefabContent>().GetItem(_ItemName);
+        }
 
         public static T GetCompItem<T>(this GameObject _Prefab, string _ItemName) where T : Component
         {
             return _Prefab.GetComponent<PrefabContent>().GetItemComponent<T>(_ItemName);
+        }
+        
+        public static T GetCompItem<T>(this Component _PrefabComponent, string _ItemName) where T : Component
+        {
+            return _PrefabComponent.GetComponent<PrefabContent>().GetItemComponent<T>(_ItemName);
         }
 
         public static List<Transform> GetChilds(this Transform _Transform, bool _Recursive = false)

@@ -14,7 +14,7 @@ using Utils;
 
 namespace UI.Panels
 {
-    public class LevelStartPanel : GameObservable, IGameDialogPanel
+    public class LevelStartPanel : DialogPanelBase, IGameUiCategory
     {
         #region nonpublic members
         
@@ -34,7 +34,6 @@ namespace UI.Panels
         #region api
 
         public GameUiCategory Category => GameUiCategory.LevelStart;
-        public RectTransform Panel { get; private set; }
 
         public LevelStartPanel(
             IGameDialogViewer _DialogViewer,
@@ -48,23 +47,11 @@ namespace UI.Panels
             m_StartLevel = _StartLevel;
         }
         
-        public void Show()
-        {
-            Panel = Create();
-            m_DialogViewer.Show(this);
-        }
-
-        public void OnEnable() { }
-
-        #endregion
-        
-        #region nonpublic methods
-
-        private RectTransform Create()
+        public override void Init()
         {
             GameObject go = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_DialogViewer.DialogContainer,
+                    m_DialogViewer.Container,
                     RtrLites.FullFill),
                 "game_menu", "level_start_panel");
 
@@ -80,11 +67,12 @@ namespace UI.Panels
             SetStartLifes();
             m_TakeOneMoreButton.SetOnClick(OnTakeOneMoreLifeButtonClick);
             startButton.SetOnClick(OnStartButtonClick);
-            return go.RTransform();
+            Panel = go.RTransform();
         }
-        
+
         #endregion
         
+
         #region nonpublic methods
 
         private void SetStartLifes()
@@ -124,12 +112,14 @@ namespace UI.Panels
         
         private void OnStartButtonClick()
         {
-            IGameDialogPanel countdownPanel = new CountdownPanel(m_DialogViewer, () =>
+            var countdownPanel = new CountdownPanel(
+                m_DialogViewer.Container, () =>
             {
                 m_DialogViewer.CloseAll();
                 m_StartLevel?.Invoke();
             });
-            countdownPanel.Show();
+            countdownPanel.Init();
+            m_DialogViewer.Show(countdownPanel);
         }
 
         private void CheckForAvailableLifesAndSetTexts()

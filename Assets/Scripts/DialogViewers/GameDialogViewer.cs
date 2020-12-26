@@ -11,16 +11,15 @@ namespace DialogViewers
 {
     public interface IGameDialogViewer : IDialogViewer
     {
-        void Show(IGameDialogPanel _ItemTo, bool _HidePrevious = true);
         void AddNotDialogItem(RectTransform _Item, GameUiCategory _Categories);
-        IGameDialogPanel Last { get; }
+        IDialogPanel Last { get; }
     }
     
     public class GameDialogViewer : DialogViewerBase, IGameDialogViewer
     {
         #region api
 
-        public IGameDialogPanel Last => PanelStack.Any() ? PanelStack.Peek().GameDialogPanel : null;
+        public IDialogPanel Last => PanelStack.Any() ? PanelStack.Peek().DialogPanel : null;
         
         public static IGameDialogViewer Create(RectTransform _Parent)
         {
@@ -33,7 +32,7 @@ namespace DialogViewers
             return dialogPanelObj.GetComponent<GameDialogViewer>();
         }
 
-        public void Show(IGameDialogPanel _ItemTo, bool _HidePrevious = true)
+        public override void Show(IDialogPanel _ItemTo, bool _HidePrevious = true)
         {
             var to = new Panel(_ItemTo);
             ShowCore(to, _HidePrevious, false, GameUiCategoryType);

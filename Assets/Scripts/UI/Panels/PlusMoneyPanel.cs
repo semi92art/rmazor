@@ -12,7 +12,7 @@ using UnityEngine.UI;
 
 namespace UI.Panels
 {
-    public class PlusMoneyPanel : GameObservable, IMenuDialogPanel
+    public class PlusMoneyPanel : DialogPanelBase, IMenuUiCategory
     {
         #region notify ids
 
@@ -25,73 +25,69 @@ namespace UI.Panels
         #region nonpublic members
 
         private readonly IMenuDialogViewer m_DialogViewer;
-        private readonly IActionExecuter m_ActionExecutor;
+        private readonly INotificationViewer m_NotificationViewer;
+        private readonly IActionExecutor m_ActionExecutor;
         
         #endregion
 
         #region api
         
         public MenuUiCategory Category => MenuUiCategory.PlusMoney;
-        public RectTransform Panel { get; private set; }
-
+        
         public PlusMoneyPanel(
             IMenuDialogViewer _DialogViewer,
-            IActionExecuter _ActionExecutor)
+            INotificationViewer _NotificationViewer,
+            IActionExecutor _ActionExecutor)
         {
             m_DialogViewer = _DialogViewer;
+            m_NotificationViewer = _NotificationViewer;
             m_ActionExecutor = _ActionExecutor;
         }
         
-        public void Show()
-        {
-            Panel = Create();
-            m_DialogViewer.Show(this);
-        }
-
-        public void OnEnable() { }
-
-        #endregion
-
-        #region nonpublic methods
-
-        private RectTransform Create()
+        public override void Init()
         {
             GameObject go = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_DialogViewer.DialogContainer,
+                    m_DialogViewer.Container,
                     RtrLites.FullFill),
-                "main_menu",
+                CommonStyleNames.MainMenuDialogPanels,
                 "plus_money_panel");
             
             go.GetCompItem<Button>("shop_button").SetOnClick(OnShopButtonClick);
             go.GetCompItem<Button>("daily_bonus_button").SetOnClick(OnDailyBonusButtonClick);
             go.GetCompItem<Button>("wheel_of_fortune_button").SetOnClick(OnWheelOfFortuneButtonClick);
-
-            return go.RTransform();
+            Panel = go.RTransform();
         }
+
+        #endregion
+
+        #region nonpublic methods
 
         private void OnShopButtonClick()
         {
             Notify(this, NotifyMessageShopButtonClick);
-            var shopPanel = new ShopPanel(m_DialogViewer);
-            shopPanel.AddObservers(GetObservers());
-            shopPanel.Show();
+            var panel = new ShopPanel(m_DialogViewer.Container);
+            panel.AddObservers(GetObservers());
+            panel.Init();
+            m_DialogViewer.Show(panel);
         }
 
         private void OnDailyBonusButtonClick()
         {
             Notify(this, NotifyMessageDailyBonusButtonClick);
-            var shopPanel = new DailyBonusPanel(m_DialogViewer, m_ActionExecutor);
-            shopPanel.AddObservers(GetObservers());
-            shopPanel.Show();
+            var panel = new DailyBonusPanel(m_DialogViewer, m_ActionExecutor);
+            panel.AddObservers(GetObservers());
+            panel.Init();
+            m_DialogViewer.Show(panel);
         }
 
         private void OnWheelOfFortuneButtonClick()
         {
             Notify(this, NotifyMessageWheelOfFortuneButtonClick);
-            var shopPanel = new WheelOfFortunePanel(m_DialogViewer);
-            shopPanel.AddObservers(GetObservers());
-            shopPanel.Show();
+            var panel = new WheelOfFortunePanel(m_DialogViewer, m_NotificationViewer);
+            panel.AddObservers(GetObservers());
+            panel.Init();
+            m_DialogViewer.Show(panel);
         }
 
         #endregion

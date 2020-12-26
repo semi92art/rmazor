@@ -6,16 +6,18 @@ namespace UI.Panels
     public interface IDialogPanel
     {
         RectTransform Panel { get; }
-        void Show();
-        void OnEnable();
+        void Init();
+        void OnDialogShow();
+        void OnDialogHide();
+        void OnDialogEnable();
     }
     
-    public interface IMenuDialogPanel : IDialogPanel
+    public interface IMenuUiCategory
     {
         MenuUiCategory Category { get; }
     }
 
-    public interface IGameDialogPanel : IDialogPanel
+    public interface IGameUiCategory
     {
         GameUiCategory Category { get; }
     }

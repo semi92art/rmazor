@@ -12,7 +12,7 @@ using UnityEngine.UI;
 
 namespace UI.Panels
 {
-    public class TimeOrLifesEndedPanel : IGameDialogPanel
+    public class TimeOrLifesEndedPanel : DialogPanelBase, IGameUiCategory
     {
         #region nonpublic members
 
@@ -34,7 +34,6 @@ namespace UI.Panels
         #region api
         
         public GameUiCategory Category => GameUiCategory.TimeEnded;
-        public RectTransform Panel { get; private set; }
 
         public TimeOrLifesEndedPanel(
             IGameDialogViewer _DialogViewer,
@@ -50,24 +49,11 @@ namespace UI.Panels
             m_SetAdditionalLife = _SetAdditionalLife;
         }
         
-        public void Show()
-        {
-            TimesPanelCalled++;
-            Panel = Create();
-            m_DialogViewer.Show(this);
-        }
-
-        public void OnEnable() { }
-
-        #endregion
-        
-        #region nonpublic methods
-
-        private RectTransform Create()
+        public override void Init()
         {
             GameObject go = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_DialogViewer.DialogContainer,
+                    m_DialogViewer.Container,
                     RtrLites.FullFill),
                 "game_menu", "time_or_lifes_ended_panel");
 
@@ -81,8 +67,17 @@ namespace UI.Panels
             m_FinishButton.SetOnClick(OnFinishButtonClick);
 
             SetTexts();
-            return go.RTransform();
+            Panel = go.RTransform();
         }
+        
+        public override void OnDialogShow()
+        {
+            TimesPanelCalled++;
+        }
+
+        #endregion
+        
+        #region nonpublic methods
 
         private void SetTexts()
         {
@@ -94,12 +89,14 @@ namespace UI.Panels
 
         private void Continue()
         {
-            IGameDialogPanel countdownPanel = new CountdownPanel(m_DialogViewer, () =>
+            var countdownPanel = new CountdownPanel(
+                m_DialogViewer.Container, () =>
             {
                 m_DialogViewer.CloseAll();
                 m_Continue?.Invoke();
             });
-            countdownPanel.Show();
+            countdownPanel.Init();
+            m_DialogViewer.Show(countdownPanel);
         }
 
         private void OnFinishButtonClick()

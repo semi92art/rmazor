@@ -34,3 +34,4 @@ Exchange = Austausch
 For = für
 Reset = zurücksetzen
 OrGoTo = oder gehen zu
+Register = Registrieren

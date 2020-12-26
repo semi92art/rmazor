@@ -20,7 +20,7 @@ namespace UI.Panels
         NeedToClose = 2
     }
     
-    public class GameMenuPanel : DI.DiObject, IGameDialogPanel
+    public class GameMenuPanel : DialogPanelBase, IGameUiCategory
     {
         #region nonpublic members
 
@@ -34,7 +34,6 @@ namespace UI.Panels
         
         public static PanelState PanelState { get; set; }
         public GameUiCategory Category => GameUiCategory.Settings;
-        public RectTransform Panel { get; private set; }
 
         public GameMenuPanel(IGameDialogViewer _DialogViewer, UnityAction _Continue)
         {
@@ -42,34 +41,33 @@ namespace UI.Panels
             m_Continue = _Continue;
         }
         
-        public void Show()
+        public override void OnDialogShow()
         {
-            Panel = Create();
-            bool hidePrev = m_DialogViewer.Last == null || m_DialogViewer.Last.Category != GameUiCategory.Countdown;
+            var lastCategory = (m_DialogViewer.Last as IGameUiCategory)?.Category;
+            bool hidePrev = m_DialogViewer.Last == null || lastCategory != GameUiCategory.Countdown;
             m_DialogViewer.Show(this, hidePrev);
             PanelState = PanelState.Showing;
             m_Initialized = true;
         }
 
-        public void OnEnable() { }
-
-        #endregion
-        
-        #region nonpublic methods
-
-        private RectTransform Create()
+        public override void Init()
         {
             GameObject go = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_DialogViewer.DialogContainer,
+                    m_DialogViewer.Container,
                     RtrLites.FullFill),
                 "game_menu", "game_menu_panel");
 
             go.GetCompItem<Button>("exit_yes_button").SetOnClick(OnExitYesButtonClick);
             go.GetCompItem<Button>("exit_no_button").SetOnClick(OnExitNoButtonClick);
-            return go.RTransform();
+            Panel = go.RTransform();
         }
+
+
+        #endregion
         
+        #region nonpublic methods
+
         private void OnExitYesButtonClick()
         {
             SceneManager.LoadScene(SceneNames.Main);

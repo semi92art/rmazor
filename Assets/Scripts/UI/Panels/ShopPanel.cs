@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using DialogViewers;
 using Entities;
 using Extensions;
 using GameHelpers;
@@ -9,10 +8,11 @@ using UI.Managers;
 using UI.PanelItems;
 using UnityEngine;
 using Utils;
+using Constants;
 
 namespace UI.Panels
 {
-    public class ShopPanel : GameObservable, IMenuDialogPanel
+    public class ShopPanel : DialogPanelBase, IMenuUiCategory
     {
         #region nonpublic members
         
@@ -37,39 +37,26 @@ namespace UI.Panels
                 "180$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_8_icon"))
         };
 
-        private readonly IMenuDialogViewer m_DialogViewer;
+        private readonly RectTransform m_Container;
         
         #endregion
         
         #region api
 
         public MenuUiCategory Category => MenuUiCategory.Shop;
-        public RectTransform Panel { get; private set; }
-
-        public ShopPanel(IMenuDialogViewer _DialogViewer)
+        
+        public ShopPanel(RectTransform _Container)
         {
-            m_DialogViewer = _DialogViewer;
+            m_Container = _Container;
         }
 
-        public void Show()
-        {
-            Panel = Create();
-            m_DialogViewer.Show(this);
-        }
-
-        public void OnEnable() { }
-
-        #endregion
-        
-        #region nonpublic methods
-        
-        private RectTransform Create()
+        public override void Init()
         {
             GameObject go = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_DialogViewer.DialogContainer,
+                    m_Container,
                     RtrLites.FullFill),
-                "main_menu",
+                CommonStyleNames.MainMenuDialogPanels,
                 "shop_panel");
             RectTransform content = go.GetCompItem<RectTransform>("content");
             
@@ -80,7 +67,7 @@ namespace UI.Panels
                     new Vector2(218f, -60f),
                     Vector2.one * 0.5f,
                     new Vector2(416f, 100f)),
-                "main_menu",
+                CommonStyleNames.MainMenu,
                 "shop_item");
             
             foreach (var shopItemProps in m_ShopItemPropsList)
@@ -95,9 +82,9 @@ namespace UI.Panels
             Object.Destroy(shopItem);
 
             content.anchoredPosition = content.anchoredPosition.SetY(0);
-            return go.RTransform();
+            Panel = go.RTransform();
         }
-        
+
         #endregion
     }
 }

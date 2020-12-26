@@ -13,7 +13,7 @@ using Utils;
 
 namespace UI.Panels
 {
-    public class DailyBonusPanel : GameObservable, IMenuDialogPanel
+    public class DailyBonusPanel : DialogPanelBase, IMenuUiCategory
     {
         #region private members
         
@@ -30,7 +30,7 @@ namespace UI.Panels
 
         private RectTransform m_Panel;
         private readonly IMenuDialogViewer m_DialogViewer;
-        private readonly IActionExecuter m_ActionExecutor;
+        private readonly IActionExecutor m_ActionExecutor;
         private RectTransform m_Content;
         
         #endregion
@@ -38,42 +38,31 @@ namespace UI.Panels
         #region api
 
         public MenuUiCategory Category => MenuUiCategory.DailyBonus;
-        public RectTransform Panel { get; private set; }
 
         public DailyBonusPanel(
             IMenuDialogViewer _DialogViewer, 
-            IActionExecuter _ActionExecutor)
+            IActionExecutor _ActionExecutor)
         {
             m_DialogViewer = _DialogViewer;
             m_ActionExecutor = _ActionExecutor;
         }
-        
-        public void Show()
-        {
-            Panel = Create();
-            m_DialogViewer.Show( this);
-        }
 
-        public void OnEnable() { }
+        public override void Init()
+        {
+            var go = PrefabInitializer.InitUiPrefab(
+                UiFactory.UiRectTransform(
+                    m_DialogViewer.Container,
+                    RtrLites.FullFill),
+                CommonStyleNames.MainMenuDialogPanels,
+                "daily_bonus_panel");
+            m_Content = go.GetCompItem<RectTransform>("content");
+            CreateItems();
+            Panel = go.RTransform();
+        }
 
         #endregion
         
         #region nonpublic methods
-        
-        private RectTransform Create()
-        {
-            GameObject dailyBonusPanel = PrefabInitializer.InitUiPrefab(
-                UiFactory.UiRectTransform(
-                    m_DialogViewer.DialogContainer,
-                    RtrLites.FullFill),
-                "main_menu",
-                "daily_bonus_panel");
-            m_Content = dailyBonusPanel.GetCompItem<RectTransform>("content");
-
-            CreateItems();
-            return dailyBonusPanel.RTransform();
-        }
-
 
         private void CreateItems()
         {
@@ -84,7 +73,7 @@ namespace UI.Panels
                     new Vector2(218f, -60f),
                     Vector2.one * 0.5f,
                     new Vector2(416f, 100f)),
-                "main_menu",
+                CommonStyleNames.MainMenu,
                 "daily_bonus_item");
             
             int dailyBonusDay = GetCurrentDailyBonusDay();
@@ -107,7 +96,6 @@ namespace UI.Panels
                 
                 dbi.Init(dbProps, m_ActionExecutor);
             }
-            
             Object.Destroy(dbItem);
         }
 

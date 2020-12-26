@@ -43,7 +43,8 @@ namespace UI.PanelItems
                     items, 
                     _Select);
                 selectorPanel.AddObservers(observers);
-                selectorPanel.Show();
+                selectorPanel.Init();
+                _MenuDialogViewer.Show(selectorPanel);
             });
         }
     }

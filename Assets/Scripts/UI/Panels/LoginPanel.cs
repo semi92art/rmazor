@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using DialogViewers;
-using Entities;
+﻿using DialogViewers;
+using Constants;
 using Extensions;
 using GameHelpers;
 using Lean.Localization;
@@ -10,6 +9,7 @@ using Network.PacketArgs;
 using Network.Packets;
 using TMPro;
 using UI.Factories;
+using UI.Managers;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils;
@@ -18,7 +18,7 @@ namespace UI.Panels
 {
     public class LoginPanel : LoginPanelBase
     {
-        #region notify message ids
+        #region notify messages
         
         public const string NotifyMessageLoginButtonClick = nameof(NotifyMessageLoginButtonClick);
         public const string NotifyMessageLoginWithGoogleButtonClick = nameof(NotifyMessageLoginWithGoogleButtonClick);
@@ -28,63 +28,39 @@ namespace UI.Panels
         
         #endregion
         
+        #region api
+
+        public override MenuUiCategory Category => MenuUiCategory.Login;
         public LoginPanel(IMenuDialogViewer _DialogViewer) : base(_DialogViewer) { }
         
-        #region protected methods
-
-        protected override RectTransform Create()
+        public override void Init()
         {
             GameObject lp = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    DialogViewer.DialogContainer,
+                    DialogViewer.Container,
                     RtrLites.FullFill),
-                "main_menu", "login_panel");
+                CommonStyleNames.MainMenuDialogPanels, "login_panel");
 
-            m_LoginErrorHandler = lp.GetCompItem<TextMeshProUGUI>("login_error_handler");
-            m_PasswordErrorHandler = lp.GetCompItem<TextMeshProUGUI>("password_error_handler");
+            LoginErrorHandler = lp.GetCompItem<TextMeshProUGUI>("login_error_handler");
+            PasswordErrorHandler = lp.GetCompItem<TextMeshProUGUI>("password_error_handler");
 
-            TextMeshProUGUI loginButtonText = lp.GetCompItem<TextMeshProUGUI>("login_button_text");
-            TextMeshProUGUI loginAppleButtonText = lp.GetCompItem<TextMeshProUGUI>("login_apple_button_text");
-            TextMeshProUGUI loginGoogleButtonText = lp.GetCompItem<TextMeshProUGUI>("login_google_button_text");
-            TextMeshProUGUI registerButtonText = lp.GetCompItem<TextMeshProUGUI>("register_button_text");
-            TextMeshProUGUI logoutButtonText = lp.GetCompItem<TextMeshProUGUI>("logout_button_text");
-            
-            m_LoginInputField = lp.GetCompItem<TMP_InputField>("login_input_field");
-            LeanLocalizedTextMeshProUGUI loginInputFieldLocalization = m_LoginInputField.transform.Find("Text Area")
+            LoginInputField = lp.GetCompItem<TMP_InputField>("login_input_field");
+            LeanLocalizedTextMeshProUGUI loginInputFieldLocalization = LoginInputField.transform.Find("Text Area")
                 .gameObject.transform.Find("Placeholder").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
             loginInputFieldLocalization.TranslationName = "EnterLogin";
             
-            m_PasswordInputField = lp.GetCompItem<TMP_InputField>("password_input_field");
-            m_PasswordInputField.contentType = TMP_InputField.ContentType.Password;
-            LeanLocalizedTextMeshProUGUI passwordInputFieldLocalization = m_PasswordInputField.transform.Find("Text Area")
+            PasswordInputField = lp.GetCompItem<TMP_InputField>("password_input_field");
+            PasswordInputField.contentType = TMP_InputField.ContentType.Password;
+            LeanLocalizedTextMeshProUGUI passwordInputFieldLocalization = PasswordInputField.transform.Find("Text Area")
                 .gameObject.transform.Find("Placeholder").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
             passwordInputFieldLocalization.TranslationName = "EnterPassword";
             
             Button loginButton = lp.GetCompItem<Button>("login_button");
-            LeanLocalizedTextMeshProUGUI loginButtonLocalization = loginButton.transform.Find("Background")
-                .gameObject.transform.Find("Text").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
-            loginButtonLocalization.TranslationName = "Login";
-            
             Button loginAppleButton = lp.GetCompItem<Button>("login_apple_button");
-            LeanLocalizedTextMeshProUGUI loginAppleButtonLocalization = loginAppleButton.transform.Find("Background")
-                .gameObject.transform.Find("Text").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
-            loginAppleButtonLocalization.TranslationName = "LoginWithApple";
-            
             Button loginGoogleButton = lp.GetCompItem<Button>("login_google_button");
-            LeanLocalizedTextMeshProUGUI loginGoogleButtonLocalization = loginGoogleButton.transform.Find("Background")
-                .gameObject.transform.Find("Text").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
-            loginGoogleButtonLocalization.TranslationName = "LoginWithGoogle";
-            
             Button registrationButton = lp.GetCompItem<Button>("register_button");
-            LeanLocalizedTextMeshProUGUI registrationButtonLocalization = registrationButton.transform.Find("Background")
-                .gameObject.transform.Find("Text").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
-            registrationButtonLocalization.TranslationName = "Registration";
-            
             Button logoutButton = lp.GetCompItem<Button>("logout_button");
-            LeanLocalizedTextMeshProUGUI logoutButtonLocalization = logoutButton.transform.Find("Background")
-                .gameObject.transform.Find("Text").gameObject.AddComponent<LeanLocalizedTextMeshProUGUI>();
-            logoutButtonLocalization.TranslationName = "Logout";
-            
+
             loginButton.SetOnClick(OnLoginButtonClick);
             loginAppleButton.SetOnClick(OnLoginWithAppleButtonClick);
             loginGoogleButton.SetOnClick(OnLoginWithGoogleButtonClick);
@@ -99,30 +75,29 @@ namespace UI.Panels
             loginButton.SetGoActive(!isLogined);
 
             CleanErrorHandlers();
-            return lp.RTransform();
+            Panel = lp.RTransform();
         }
         
         #endregion
         
-        #region event functions
+        #region nonpublic methods
 
         private void OnLoginButtonClick()
         {
             Notify(this, NotifyMessageLoginButtonClick);
             CleanErrorHandlers();
-            if (string.IsNullOrEmpty(m_LoginInputField.text))
-                //TODO get translation name from localization
-            
+            //TODO get translation name from localization
+            if (string.IsNullOrEmpty(LoginInputField.text))
                 SetLoginError(LeanLocalization.GetTranslationText("FieldIsEmpty"));
-            if (string.IsNullOrEmpty(m_PasswordInputField.text))
+            if (string.IsNullOrEmpty(PasswordInputField.text))
                 SetPasswordError(LeanLocalization.GetTranslationText("FieldIsEmpty"));
             if (!IsNoError())
                 return;
             
             var packet = new LoginUserPacket(new LoginUserPacketRequestArgs
             {
-                Name = m_LoginInputField.text,
-                PasswordHash = CommonUtils.GetMD5Hash(m_PasswordInputField.text)
+                Name = LoginInputField.text,
+                PasswordHash = CommonUtils.GetMD5Hash(PasswordInputField.text)
             });
             packet.OnSuccess(() =>
             {
@@ -168,7 +143,8 @@ namespace UI.Panels
             Notify(this, NotifyMessageRegistrationButtonClick);
             var regPanel = new RegistrationPanel(DialogViewer);
             regPanel.AddObservers(GetObservers());
-            regPanel.Show();
+            regPanel.Init();
+            DialogViewer.Show(regPanel);
         }
 
         private void Logout()

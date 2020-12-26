@@ -8,11 +8,11 @@ using UnityEngine.Events;
 
 namespace UI.Panels
 {
-    public class CountdownPanel : IGameDialogPanel
+    public class CountdownPanel : DialogPanelBase, IGameUiCategory
     {
         #region nonpublic members
-        
-        private readonly IGameDialogViewer m_DialogViewer;
+
+        private readonly RectTransform m_Container;
         private readonly UnityAction m_OnCountdownFinish;
 
         #endregion
@@ -20,40 +20,35 @@ namespace UI.Panels
         #region api
 
         public GameUiCategory Category => GameUiCategory.Countdown;
-        public RectTransform Panel { get; private set; }
 
-        public CountdownPanel(IGameDialogViewer _DialogViewer, UnityAction _OnCountdownFinish)
+        public CountdownPanel(RectTransform _Container, UnityAction _OnCountdownFinish)
         {
-            m_DialogViewer = _DialogViewer;
+            m_Container = _Container;
             m_OnCountdownFinish = _OnCountdownFinish;
-        }
-
-        public void Show()
-        {
-            Panel = Create();
-            m_DialogViewer.Show(this);
-        }
-
-        public void OnEnable() { }
-
-        #endregion
-        
-        #region nonpublic methods
-        
-        private RectTransform Create()
-        {
-            GameObject cp = PrefabInitializer.InitUiPrefab(
+            var go = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_DialogViewer.DialogContainer,
+                    m_Container,
                     RtrLites.FullFill),
                 "game_menu", "countdown_panel");
-
-            CountdownPanelView view = cp.GetCompItem<CountdownPanelView>("view");
-
+            var view = go.GetCompItem<CountdownPanelView>("view");
             view.StartCountdown(() => m_OnCountdownFinish?.Invoke());
-            return cp.RTransform();
+            Panel = go.RTransform();
+            go.SetActive(false);
         }
-        
+
+        public override void Init()
+        {
+            var go = PrefabInitializer.InitUiPrefab(
+                UiFactory.UiRectTransform(
+                    m_Container,
+                    RtrLites.FullFill),
+                "game_menu", "countdown_panel");
+            var view = go.GetCompItem<CountdownPanelView>("view");
+            view.StartCountdown(() => m_OnCountdownFinish?.Invoke());
+            Panel = go.RTransform();
+        }
+
         #endregion
+
     }
 }

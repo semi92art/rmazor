@@ -37,6 +37,7 @@ namespace Managers
         
         public readonly List<OrderItem> OrderItems = new List<OrderItem>();
         private readonly Dictionary<Transform, int> m_ChildCountDict = new Dictionary<Transform, int>();
+        private readonly Transform[] m_TempArr = new Transform[20];
         
         #endregion
 
@@ -89,16 +90,23 @@ namespace Managers
 
         private void LateUpdate()
         {
-            var keys = new List<Transform>();
+            Array.Clear(m_TempArr, 0, m_TempArr.Length);
             foreach (var orderItem in OrderItems.Where(_OrderItem => 
                 _OrderItem.Parent.childCount != m_ChildCountDict[_OrderItem.Parent]
-                && !keys.Contains(_OrderItem.Parent)))
+                && !m_TempArr.Contains(_OrderItem.Parent)))
             {
                 m_ChildCountDict[orderItem.Parent] = orderItem.Parent.childCount;
-                keys.Add(orderItem.Parent);
+
+                for (int i = 0; i < m_TempArr.Length; i++)
+                {
+                    if (m_TempArr[i] == null)
+                        m_TempArr[i] = orderItem.Parent;
+                }
+                
                 var group = OrderItems
-                    .GroupBy(_Item => _Item.Parent).FirstOrDefault(_G => _G.Key == orderItem.Parent);
-                UpdateOrdering(@group);
+                    .GroupBy(_Item => _Item.Parent)
+                    .FirstOrDefault(_G => _G.Key == orderItem.Parent);
+                UpdateOrdering(group);
             }
         }
         

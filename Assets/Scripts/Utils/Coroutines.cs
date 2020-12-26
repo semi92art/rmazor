@@ -4,53 +4,51 @@ using System.Collections.Generic;
 using System.Linq;
 using Extensions;
 using GameHelpers;
-using LeTai;
 using LeTai.TrueShadow;
 using Network;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace Utils
 {
     public static class Coroutines
     {
-        private static DontDestroyOnLoad CoroutineRunner;
+        private static DontDestroyOnLoad _coroutineRunner;
 
         static Coroutines()
         {
-            CoroutineRunner = GameObject.Find("CoroutinesRunner").GetComponent<DontDestroyOnLoad>();
+            _coroutineRunner = GameObject.Find("CoroutinesRunner").GetComponent<DontDestroyOnLoad>();
         }
         
         public static Coroutine Run(IEnumerator _Coroutine)
         {
 #if UNITY_EDITOR
-            if (GameClient.Instance.IsModuleTestsMode && CoroutineRunner == null)
-                CoroutineRunner = GameObject.Find("CoroutinesRunner").GetComponent<DontDestroyOnLoad>();
+            if (GameClient.Instance.IsModuleTestsMode && _coroutineRunner == null)
+                _coroutineRunner = GameObject.Find("CoroutinesRunner").GetComponent<DontDestroyOnLoad>();
 #endif
-            return CoroutineRunner.StartCoroutine(_Coroutine);
+            return _coroutineRunner.StartCoroutine(_Coroutine);
         }
 
         public static void Stop(IEnumerator _Coroutine)
         {
             if (_Coroutine != null)
-                CoroutineRunner.StopCoroutine(_Coroutine);
+                _coroutineRunner.StopCoroutine(_Coroutine);
         }
 
         public static void Stop(Coroutine _Coroutine)
         {
             if (_Coroutine != null)
-                CoroutineRunner.StopCoroutine(_Coroutine);
+                _coroutineRunner.StopCoroutine(_Coroutine);
         }
     
-        public static IEnumerator Action(Action _Action)
+        public static IEnumerator Action(UnityAction _Action)
         {
             _Action?.Invoke();
             yield break;
         }
     
-        public static IEnumerator WaitEndOfFrame(Action _Action)
+        public static IEnumerator WaitEndOfFrame(UnityAction _Action)
         {
             yield return new WaitForEndOfFrame();
 
@@ -58,7 +56,7 @@ namespace Utils
         }
 
         public static IEnumerator Delay(
-            Action _OnDelay,
+            UnityAction _OnDelay,
             float  _Delay,
             Func<bool> _OnBreak = null
         )
@@ -71,7 +69,7 @@ namespace Utils
         }
 
         public static IEnumerator WaitWhile(
-            Action _Action,
+            UnityAction _Action,
             Func<bool> _Predicate,
             Func<bool> _OnBreak = null)
         {
@@ -85,8 +83,8 @@ namespace Utils
         }
         
         public static IEnumerator DoWhile(
-            Action _Action,
-            Action _FinishAction,
+            UnityAction _Action,
+            UnityAction _FinishAction,
             Func<bool> _Predicate,
             Func<bool> _Pause = null,
             bool _WaitEndOfFrame = true)
@@ -111,7 +109,7 @@ namespace Utils
             Dictionary<Graphic, float> _GraphicsAndAlphas,
             float _Time,
             bool _Disappear = false,
-            Action _OnFinish = null,
+            UnityAction _OnFinish = null,
             bool _ShadowsAfterOther = false)
         {
             if (_Item == null)
@@ -216,9 +214,9 @@ namespace Utils
             long _From,
             long _To,
             float _Time,
-            Action<long> _Result,
+            UnityAction<long> _Result,
             ITimeProvider _TimeProvider,
-            Action _OnFinish = null,
+            UnityAction _OnFinish = null,
             Func<bool> _OnBreak = null)
         {
             if (_Result == null)
@@ -245,9 +243,9 @@ namespace Utils
             float _From,
             float _To,
             float _Time,
-            Action<float> _Result,
+            UnityAction<float> _Result,
             ITimeProvider _TimeProvider,
-            Action _OnFinish = null,
+            UnityAction _OnFinish = null,
             Func<bool> _OnBreak = null)
         {
             if (_Result == null)
@@ -279,9 +277,9 @@ namespace Utils
             int _From,
             int _To,
             float _Time,
-            Action<int> _Result,
+            UnityAction<int> _Result,
             ITimeProvider _TimeProvider,
-            Action _OnFinish = null)
+            UnityAction _OnFinish = null)
         {
             if (_Result == null)
                 yield break;
@@ -304,9 +302,9 @@ namespace Utils
             Color _From,
             Color _To,
             float _Time,
-            Action<Color> _Result,
+            UnityAction<Color> _Result,
             ITimeProvider _TimeProvider,
-            Action _OnFinish = null)
+            UnityAction _OnFinish = null)
         {
             if (_Result == null)
                 yield break;
@@ -335,7 +333,7 @@ namespace Utils
             Vector3 _To,
             float _Time,
             ITimeProvider _TimeProvider,
-            Action _OnFinish = null)
+            UnityAction _OnFinish = null)
         {
             if (_Item == null)
                 yield break;
@@ -358,12 +356,12 @@ namespace Utils
         }
 
         public static IEnumerator Repeat(
-            Action _Action,
+            UnityAction _Action,
             float _RepeatDelta,
             float _RepeatTime,
             ITimeProvider _TimeProvider,
             Func<bool> _DoStop = null,
-            Action _OnFinish = null)
+            UnityAction _OnFinish = null)
         {
             if (_Action == null)
                 yield break;
@@ -381,12 +379,12 @@ namespace Utils
         }
         
         public static IEnumerator Repeat(
-            Action _Action,
+            UnityAction _Action,
             float _RepeatDelta,
             long _RepeatCount,
             ITimeProvider _TimeProvider,
             Func<bool> _DoStop = null,
-            Action _OnFinish = null)
+            UnityAction _OnFinish = null)
         {
             if (_Action == null)
                 yield break;

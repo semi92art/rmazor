@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Constants;
+﻿using Constants;
 using DialogViewers;
 using Entities;
 using Extensions;
@@ -24,8 +23,9 @@ namespace UI
         private readonly bool m_OnStart;
         private MainMenuUi m_MainMenuUi;
         private Canvas m_Canvas;
-        private ILoadingPanel m_LoadingPanel;
+        private IDialogPanel m_LoadingPanel;
         private IMenuDialogViewer m_MenuDialogViewer;
+        private INotificationViewer m_NotificationViewer;
         private ITransitionRenderer m_TransitionRenderer;
         private RectTransform m_Background;
 
@@ -41,7 +41,7 @@ namespace UI
         public void Init()
         {
             CreateCanvas();
-            CreateDialogViewer();
+            CreateDialogViewers();
             CreateBackground();
             CreateTransitionRenderer();
             
@@ -79,7 +79,7 @@ namespace UI
                 UiFactory.UiRectTransform(
                     m_Canvas.RTransform(),
                     RtrLites.FullFill),
-                "main_menu",
+                CommonStyleNames.MainMenu,
                 "background_panel");
             m_Background = go.RTransform();
         
@@ -96,10 +96,12 @@ namespace UI
                 MenuUiCategory.PlusMoney);
         }
     
-        private void CreateDialogViewer()
+        private void CreateDialogViewers()
         {
             m_MenuDialogViewer = MainMenuDialogViewer.Create(
                 m_Canvas.RTransform(), GetObservers());
+            m_NotificationViewer = MainMenuNotificationViewer.Create(
+                m_Canvas.RTransform());
         }
 
         private void CreateTransitionRenderer()
@@ -113,7 +115,8 @@ namespace UI
         private void CreateLoadingPanel()
         {
             m_LoadingPanel = new LoadingPanel(m_MenuDialogViewer);
-            m_LoadingPanel.Show();
+            m_LoadingPanel.Init();
+            m_MenuDialogViewer.Show(m_LoadingPanel);
 
             Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
             {
@@ -190,8 +193,8 @@ namespace UI
             {
                 m_TransitionRenderer.TransitionAction = (_, _Args) =>
                 {
-                    m_LoadingPanel.DoLoading = false;
-                    m_LoadingPanel.Hide();
+                    (m_LoadingPanel as LoadingPanel).DoLoading = false;
+                    m_MenuDialogViewer.Back();
                     m_MainMenuUi.Show();
                 };
                 m_TransitionRenderer.StartTransition();
@@ -205,7 +208,8 @@ namespace UI
         {
             m_MainMenuUi = new MainMenuUi(
                 m_Canvas.RTransform(),
-                m_MenuDialogViewer);
+                m_MenuDialogViewer,
+                m_NotificationViewer);
             m_MainMenuUi.AddObservers(GetObservers());
             m_MainMenuUi.Init();
         }

@@ -14,7 +14,6 @@ namespace DialogViewers
 {
     public interface IMenuDialogViewer : IDialogViewer
     {
-        void Show(IMenuDialogPanel _ItemTo, bool _HidePrevious = true);
         void AddNotDialogItem(RectTransform _Item, MenuUiCategory _Categories);
     }
     
@@ -79,7 +78,7 @@ namespace DialogViewers
             return result;
         }
 
-        public void Show(IMenuDialogPanel _ItemTo, bool _HidePrevious = true)
+        public override void Show(IDialogPanel _ItemTo, bool _HidePrevious = true)
         {
             var to = new Panel(_ItemTo);
             ShowCore(to, _HidePrevious, false, MenuUiCategoryType);
@@ -141,6 +140,16 @@ namespace DialogViewers
                     m_ButtonsAnim.SetInteger(AkState, newState.Value);
                     break;
             }
+        }
+
+        #endregion
+        
+        #region engine methods
+
+        protected override void Update()
+        {
+            if (!MainMenuNotificationViewer.IsShowing && Input.GetKeyDown(KeyCode.Escape))
+                Back();
         }
 
         #endregion

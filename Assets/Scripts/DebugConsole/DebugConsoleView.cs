@@ -27,7 +27,7 @@ namespace DebugConsole
                 var go = Create();
                 _instance = Create();
                 if (!GameClient.Instance.IsModuleTestsMode)
-                    DontDestroyOnLoad(go);
+                    DontDestroyOnLoad(go.transform.parent);
                 return _instance;
             }
         }

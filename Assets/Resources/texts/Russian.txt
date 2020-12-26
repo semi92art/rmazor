@@ -34,3 +34,4 @@ Exchange = Обмен
 For = на
 Reset = сброс
 OrGoTo = или перейти в
+Register = Зарегистрироваться

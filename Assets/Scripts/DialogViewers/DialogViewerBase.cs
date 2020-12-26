@@ -6,12 +6,13 @@ using Extensions;
 using UI.Managers;
 using UI.Panels;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using Utils;
 
 namespace DialogViewers
 {
-    public abstract class DialogViewerBase : MonoBehaviour, IDialogViewer, IActionExecuter
+    public abstract class DialogViewerBase : MonoBehaviour, IDialogViewer, IActionExecutor
     {
         #region constants
 
@@ -59,17 +60,10 @@ namespace DialogViewers
         
         protected class Panel
         {
-            public IMenuDialogPanel MenuDialogPanel { get; }
-            public IGameDialogPanel GameDialogPanel { get; }
-
-            public Panel(IMenuDialogPanel _DialogPanel)
+            public IDialogPanel DialogPanel { get; }
+            public Panel(IDialogPanel _DialogPanel)
             {
-                MenuDialogPanel = _DialogPanel;
-            }
-            
-            public Panel(IGameDialogPanel _DialogPanel)
-            {
-                GameDialogPanel = _DialogPanel;
+                DialogPanel = _DialogPanel;
             }
         }
         
@@ -97,7 +91,7 @@ namespace DialogViewers
 
         #region api
         
-        public RectTransform DialogContainer => dialogContainer;
+        public RectTransform Container => dialogContainer;
         public virtual void Back()
         {
             int uiCategoryType = MenuUiCategoryType;
@@ -105,6 +99,8 @@ namespace DialogViewers
                 uiCategoryType = GameUiCategoryType;
             ShowCore(PanelStack.GetItem(1), true, true, uiCategoryType);
         }
+
+        public abstract void Show(IDialogPanel _ItemTo, bool _HidePrevious = true);
 
         public virtual void RemoveNotDialogItem(RectTransform _Item)
         {
@@ -119,15 +115,14 @@ namespace DialogViewers
             if (!PanelStack.Any())
                 return;
             var lastPanel = PanelStack.Pop();
-            int uiCategoryType = lastPanel.GameDialogPanel != null ? GameUiCategoryType : MenuUiCategoryType;
+            int uiCategoryType = lastPanel.DialogPanel is IMenuUiCategory ? MenuUiCategoryType : GameUiCategoryType;
             var panelsToDestroy = new List<Panel>();
             while (PanelStack.Count > 0)
                 panelsToDestroy.Add(PanelStack.Pop());
             
             foreach (var pan in panelsToDestroy
                 .Where(_Panel => _Panel != null)
-                .Select(_Panel => (IDialogPanel)_Panel.GameDialogPanel ?? _Panel.MenuDialogPanel)
-                .Where(_Panel => _Panel != null))
+                .Select(_Panel => _Panel.DialogPanel))
             {
                 Destroy(pan.Panel.gameObject);
             }
@@ -136,7 +131,7 @@ namespace DialogViewers
             ShowCore(null, true, true, uiCategoryType);
         }
 
-        public System.Action Action { get; set; }
+        public UnityAction Action { get; set; }
         
         #endregion
         
@@ -150,34 +145,29 @@ namespace DialogViewers
         
         #endregion
 
-        protected virtual void ShowCore(
+        protected void ShowCore(
             Panel _ItemTo,
             bool _HidePrevious,
             bool _GoBack,
             int _UiCategoryType)
         {
             Panel itemFrom = !PanelStack.Any() ? null : PanelStack.Peek();
-   
             if (itemFrom == null && _ItemTo == null)
                 return;
-            
-            RectTransform fromPanel = null;
-            RectTransform toPanel = null;
-            MenuUiCategory menuCat = MenuUiCategory.Nothing;
-            GameUiCategory gameCat = GameUiCategory.Nothing;
+
+            RectTransform fromPanel = itemFrom?.DialogPanel.Panel;
+            RectTransform toPanel = _ItemTo?.DialogPanel.Panel;
+            var menuCat = MenuUiCategory.Nothing;
+            var gameCat = GameUiCategory.Nothing;
             switch (_UiCategoryType)
             {
                 case MenuUiCategoryType:
-                    fromPanel = itemFrom?.MenuDialogPanel.Panel;
-                    toPanel = _ItemTo?.MenuDialogPanel.Panel;
                     UiManager.Instance.CurrentMenuCategory = menuCat = 
-                        _ItemTo?.MenuDialogPanel?.Category ?? MenuUiCategory.MainMenu;
+                        ((IMenuUiCategory)_ItemTo?.DialogPanel)?.Category ?? MenuUiCategory.MainMenu;
                     break;
                 case GameUiCategoryType:
-                    fromPanel = itemFrom?.GameDialogPanel.Panel;
-                    toPanel = _ItemTo?.GameDialogPanel.Panel;
                     UiManager.Instance.CurrentGameCategory = gameCat =
-                        _ItemTo?.GameDialogPanel?.Category ?? GameUiCategory.Game;
+                        ((IGameUiCategory)_ItemTo?.DialogPanel)?.Category ?? GameUiCategory.Game;
                     break;
                 default:
                     throw new InvalidEnumArgumentExceptionEx(_UiCategoryType);
@@ -188,14 +178,14 @@ namespace DialogViewers
                 int instId = fromPanel.GetInstanceID();
                 if (!GraphicsAlphas.ContainsKey(instId))
                     GraphicsAlphas.Add(instId, new GraphicAlphas(fromPanel));
-                StartCoroutine(Coroutines.DoTransparentTransition(
+                Coroutines.Run(Coroutines.DoTransparentTransition(
                     fromPanel, GraphicsAlphas[instId].Alphas, TransitionTime, true,
                     () =>
                     {
                         if (!_GoBack)
                             return;
                         Destroy(fromPanel.gameObject);
-                        var monobeh = itemFrom.MenuDialogPanel as MonoBehaviour;
+                        var monobeh = itemFrom.DialogPanel as MonoBehaviour;
                         if (monobeh != null)
                             Destroy(monobeh.gameObject);
                     }, true));
@@ -209,17 +199,7 @@ namespace DialogViewers
                 StartCoroutine(Coroutines.DoTransparentTransition(
                     toPanel, GraphicsAlphas[instId].Alphas, TransitionTime, false, 
                     () => background.enabled = true, true));
-                switch (_UiCategoryType)
-                {
-                    case MenuUiCategoryType:
-                        _ItemTo.MenuDialogPanel.OnEnable();
-                        break;
-                    case GameUiCategoryType:
-                        _ItemTo.GameDialogPanel.OnEnable();
-                        break;
-                    default:
-                        throw new InvalidEnumArgumentExceptionEx(_UiCategoryType);
-                }
+                _ItemTo.DialogPanel.OnDialogEnable();
             }
 
             if (NotDialogs != null && NotDialogs.Any())
@@ -241,21 +221,20 @@ namespace DialogViewers
                         else if (item.Value.IsVisible && (gameCat & item.Value.GameCategories) == 0)
                             show = false;
                     }
-                    
-                    if (show.HasValue)
-                    {
-                        NotDialogs[item.Key].IsVisible = show.Value;
-                        Coroutines.Run(Coroutines.DoTransparentTransition(
-                            item.Key,
-                            GraphicsAlphas[item.Key.GetInstanceID()].Alphas, 
-                            TransitionTime,
-                            !show.Value,
-                            () =>
-                            {
-                                Action?.Invoke();
-                                Action = null;
-                            }, true));
-                    }
+
+                    if (!show.HasValue) 
+                        continue;
+                    NotDialogs[item.Key].IsVisible = show.Value;
+                    Coroutines.Run(Coroutines.DoTransparentTransition(
+                        item.Key,
+                        GraphicsAlphas[item.Key.GetInstanceID()].Alphas, 
+                        TransitionTime,
+                        !show.Value,
+                        () =>
+                        {
+                            Action?.Invoke();
+                            Action = null;
+                        }, true));
                 }
             }
 
@@ -301,10 +280,7 @@ namespace DialogViewers
                 list.Add(PanelStack.Pop());
             foreach (var monobeh in from item in list
                 where item != null
-                select
-                    (_UiCategoryType == MenuUiCategoryType
-                        ? (IDialogPanel) item.MenuDialogPanel
-                        : (IDialogPanel) item.GameDialogPanel) as MonoBehaviour)
+                select item.DialogPanel as MonoBehaviour)
             {
                 Destroy(monobeh);
             }

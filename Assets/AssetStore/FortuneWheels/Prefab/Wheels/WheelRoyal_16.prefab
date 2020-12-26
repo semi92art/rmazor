@@ -2029,6 +2029,8 @@ MonoBehaviour:
       name: wheel_controller
     - item: {fileID: 599881329017435800}
       name: background
+    - item: {fileID: 599881328459527146}
+      name: wheel
 --- !u!1 &599881327731636187
 GameObject:
   m_ObjectHideFlags: 0

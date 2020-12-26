@@ -19,7 +19,7 @@ using Utils;
 
 namespace UI
 {
-    public class MainMenuUi : DI.DiObject
+    public class MainMenuUi : GameObservable
     {
         #region notify messages
 
@@ -40,6 +40,7 @@ namespace UI
         
         private static bool _isDailyBonusClicked;
         private readonly IMenuDialogViewer m_MenuDialogViewer;
+        private readonly INotificationViewer m_NotificationViewer;
         private readonly RectTransform m_Parent;
         
         private IMiniPanel m_BankMiniPanel;
@@ -56,11 +57,13 @@ namespace UI
         
         public MainMenuUi(
             RectTransform _Parent,
-            IMenuDialogViewer _MenuDialogViewer)
+            IMenuDialogViewer _MenuDialogViewer,
+            INotificationViewer _NotificationViewer)
         {
-            m_MenuDialogViewer = _MenuDialogViewer;
-            UiManager.Instance.CurrentMenuCategory = MenuUiCategory.MainMenu;
             m_Parent = _Parent;
+            m_MenuDialogViewer = _MenuDialogViewer;
+            m_NotificationViewer = _NotificationViewer;
+            UiManager.Instance.CurrentMenuCategory = MenuUiCategory.MainMenu;
         }
 
         #endregion
@@ -93,7 +96,7 @@ namespace UI
 
         private void InitBankMiniPanel()
         {
-            var bmp = new BankMiniPanel(m_Parent, m_MenuDialogViewer);
+            var bmp = new BankMiniPanel(m_Parent, m_MenuDialogViewer, m_NotificationViewer);
             bmp.AddObservers(GetObservers());
             bmp.Init();
             bmp.Show();
@@ -166,7 +169,7 @@ namespace UI
                     Vector2.up * -65f,
                     Vector2.one * 0.5f,
                     new Vector2(280, 360)),
-                "main_menu", "center_buttons_group");
+                CommonStyleNames.MainMenu, "center_buttons_group");
             
             RectTransform content = centerButtonsScrollView.GetCompItem<RectTransform>("content");
             var rtrLite = new RectTransformLite
@@ -225,7 +228,7 @@ namespace UI
                     Vector2.up * 123f,
                     Vector2.one * 0.5f,
                     Vector2.up * 100f),
-                "main_menu",
+                CommonStyleNames.MainMenu,
                 "bottom_buttons_group");
             var firstGroupContent = firstGroupObj.GetCompItem<RectTransform>("content");
             
@@ -236,7 +239,7 @@ namespace UI
                     Vector2.up * 247,
                     Vector2.one * 0.5f,
                     Vector2.up * 100f),
-                "main_menu",
+                CommonStyleNames.MainMenu,
                 "bottom_buttons_group");
             var secondGroupContent = secondGroupObj.GetCompItem<RectTransform>("content");
             
@@ -360,7 +363,8 @@ namespace UI
             Notify(this, NotifyMessageSelectGamePanelButtonClick);
             var selectGamePanel = new SelectGamePanel(m_MenuDialogViewer, SetGameLogo);
             selectGamePanel.AddObservers(GetObservers());
-            selectGamePanel.Show();
+            selectGamePanel.Init();
+            m_MenuDialogViewer.Show(selectGamePanel);
         }
         
         private void OnProfileButtonClick()
@@ -368,7 +372,8 @@ namespace UI
             Notify(this, NotifyMessageProfileButtonClick);
             var profilePanel = new ProfilePanel(m_MenuDialogViewer);
             profilePanel.AddObservers(GetObservers());
-            profilePanel.Show();
+            profilePanel.Init();
+            m_MenuDialogViewer.Show(profilePanel);
         }
 
         private void OnSettingsButtonClick()
@@ -376,7 +381,8 @@ namespace UI
             Notify(this, NotifyMessageSettingsButtonClick);
             var settingsPanel = new SettingsPanel(m_MenuDialogViewer);
             settingsPanel.AddObservers(GetObservers());
-            settingsPanel.Show();
+            settingsPanel.Init();
+            m_MenuDialogViewer.Show(settingsPanel);
         }
 
         private void OnLoginButtonClick()
@@ -384,15 +390,17 @@ namespace UI
             Notify(this, NotifyMessageLoginButtonClick);
             var loginPanel = new LoginPanel(m_MenuDialogViewer);
             loginPanel.AddObservers(GetObservers());
-            loginPanel.Show();
+            loginPanel.Init();
+            m_MenuDialogViewer.Show(loginPanel);
         }
 
         private void OnShopButtonClick()
         {
             Notify(this, NotifyMessageShopButtonClick);
-            var shop = new ShopPanel(m_MenuDialogViewer);
+            var shop = new ShopPanel(m_MenuDialogViewer.Container);
             shop.AddObservers(GetObservers());
-            shop.Show();
+            shop.Init();
+            m_MenuDialogViewer.Show(shop);
         }
 
         private void OnPlayButtonClick()
@@ -412,17 +420,19 @@ namespace UI
         {
             Notify(this, NotifyMessageDailyBonusButtonClick);
             var dailyBonusPanel = new DailyBonusPanel(
-                m_MenuDialogViewer, (IActionExecuter)m_BankMiniPanel);
+                m_MenuDialogViewer, (IActionExecutor)m_BankMiniPanel);
             dailyBonusPanel.AddObservers(GetObservers());
-            dailyBonusPanel.Show();
+            dailyBonusPanel.Init();
+            m_MenuDialogViewer.Show(dailyBonusPanel);
         }
 
         private void OnWheelOfFortuneButtonClick()
         {
             Notify(this, NotifyMessageWheelOfFortuneButtonClick);
-            var wofPanel = new WheelOfFortunePanel(m_MenuDialogViewer);
+            var wofPanel = new WheelOfFortunePanel(m_MenuDialogViewer, m_NotificationViewer);
             wofPanel.AddObservers(GetObservers());
-            wofPanel.Show();
+            wofPanel.Init();
+            m_MenuDialogViewer.Show(wofPanel);
         }
         
         #endregion

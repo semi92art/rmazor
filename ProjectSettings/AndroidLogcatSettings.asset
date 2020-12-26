@@ -3,7 +3,7 @@
     "m_SelectedPackage": {
         "deviceId": "5b986a43",
         "name": "com.MinigamesCo.MinigamesCollection",
-        "processId": 3143,
+        "processId": 10461,
         "exited": false
     },
     "m_SelectedPriority": 0,
@@ -13,18 +13,6 @@
             "name": "com.miui.home",
             "processId": 2448,
             "exited": false
-        },
-        {
-            "deviceId": "10a78098",
-            "name": "com.MinigamesCo.MinigamesCollection",
-            "processId": 29621,
-            "exited": true
-        },
-        {
-            "deviceId": "10a78098",
-            "name": "com.MinigamesCo.MinigamesCollection",
-            "processId": 860,
-            "exited": true
         },
         {
             "deviceId": "10a78098",
@@ -48,6 +36,24 @@
             "deviceId": "10a78098",
             "name": "com.MinigamesCo.MinigamesCollection",
             "processId": 13808,
+            "exited": true
+        },
+        {
+            "deviceId": "10a78098",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 16352,
+            "exited": true
+        },
+        {
+            "deviceId": "10a78098",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 17581,
+            "exited": false
+        },
+        {
+            "deviceId": "10a78098",
+            "name": "com.android.settings",
+            "processId": 2410,
             "exited": false
         },
         {
@@ -88,30 +94,6 @@
         },
         {
             "deviceId": "5b986a43",
-            "name": "com.android.settings",
-            "processId": 5623,
-            "exited": true
-        },
-        {
-            "deviceId": "5b986a43",
-            "name": "com.MinigamesCo.MinigamesCollection",
-            "processId": 30455,
-            "exited": true
-        },
-        {
-            "deviceId": "5b986a43",
-            "name": "com.miui.home",
-            "processId": 29351,
-            "exited": true
-        },
-        {
-            "deviceId": "5b986a43",
-            "name": "com.MinigamesCo.MinigamesCollection",
-            "processId": 28631,
-            "exited": true
-        },
-        {
-            "deviceId": "5b986a43",
             "name": "com.miui.home",
             "processId": 23472,
             "exited": false
@@ -119,7 +101,37 @@
         {
             "deviceId": "5b986a43",
             "name": "com.MinigamesCo.MinigamesCollection",
-            "processId": 3143,
+            "processId": 2775,
+            "exited": true
+        },
+        {
+            "deviceId": "5b986a43",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 3361,
+            "exited": true
+        },
+        {
+            "deviceId": "5b986a43",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 4365,
+            "exited": true
+        },
+        {
+            "deviceId": "5b986a43",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 7229,
+            "exited": true
+        },
+        {
+            "deviceId": "5b986a43",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 9062,
+            "exited": true
+        },
+        {
+            "deviceId": "5b986a43",
+            "name": "com.MinigamesCo.MinigamesCollection",
+            "processId": 10461,
             "exited": false
         },
         {

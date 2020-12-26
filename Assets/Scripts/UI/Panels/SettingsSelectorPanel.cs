@@ -9,10 +9,11 @@ using UI.Managers;
 using UI.PanelItems;
 using UnityEngine;
 using UnityEngine.UI;
+using Constants;
 
 namespace UI.Panels
 {
-    public class SettingsSelectorPanel : GameObservable, IMenuDialogPanel
+    public class SettingsSelectorPanel : DialogPanelBase, IMenuUiCategory
     {
         #region private members
         
@@ -28,8 +29,7 @@ namespace UI.Panels
         #region api
 
         public MenuUiCategory Category => MenuUiCategory.Settings;
-        public RectTransform Panel { get; private set; }
-        
+
         public SettingsSelectorPanel(
             IMenuDialogViewer _DialogViewer,
             string _Value,
@@ -42,32 +42,24 @@ namespace UI.Panels
             m_Select = _Select;
         }
         
-        public void Show()
-        {
-            Panel = Create();
-            m_DialogViewer.Show(this);
-        }
-
-        public void OnEnable() { }
-
-        #endregion
-
-        #region nonpublic methods
-        
-        private RectTransform Create()
+        public override void Init()
         {
             var sp = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_DialogViewer.DialogContainer,
+                    m_DialogViewer.Container,
                     RtrLites.FullFill),
-                "main_menu", "settings_selector_panel");
+                CommonStyleNames.MainMenuDialogPanels, "settings_selector_panel");
 
             m_ToggleGroup = sp.AddComponent<ToggleGroup>();
             m_Content = sp.GetCompItem<RectTransform>("content");
             InitItems();
-            return sp.RTransform();
+            Panel = sp.RTransform();
         }
 
+        #endregion
+
+        #region nonpublic methods
+ 
         private void InitItems()
         {
             RectTransformLite sspiRect = new RectTransformLite

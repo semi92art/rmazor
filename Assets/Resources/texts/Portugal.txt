@@ -34,3 +34,4 @@ Exchange = Troca
 For = por
 Reset = redefinir
 OrGoTo = ou vá para
+Register = Registrar agora

@@ -1,8 +1,7 @@
-﻿using Entities;
-
+﻿
 namespace DI
 {
-    public class DiObject : GameObservable
+    public class DiObject
     {
         private bool m_WasUnregistered;
         

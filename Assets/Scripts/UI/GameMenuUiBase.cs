@@ -117,9 +117,9 @@ namespace UI
             if (!GameMenuPanel.PanelState.HasFlag(PanelState.Showing))
             {
                 GameTimeProvider.Instance.Pause = true;
-                IGameDialogPanel gameMenuPanel = new GameMenuPanel(DialogViewer,
+                var gameMenuPanel = new GameMenuPanel(DialogViewer,
                     () => GameTimeProvider.Instance.Pause = false);
-                gameMenuPanel.Show();
+                gameMenuPanel.OnDialogShow();
             }
             else
                 GameMenuPanel.PanelState |= PanelState.NeedToClose;
@@ -141,9 +141,9 @@ namespace UI
             UnityAction<long> _GetLifes,
             UnityAction _StartLevel)
         {
-            IGameDialogPanel startLevelPanel = new LevelStartPanel(
+            var startLevelPanel = new LevelStartPanel(
                 DialogViewer, _Args.Level, _GetLifes, _StartLevel);
-            startLevelPanel.Show();
+            startLevelPanel.OnDialogShow();
         }
 
         public virtual void OnLevelStarted(LevelStateChangedArgs _Args)
@@ -158,34 +158,34 @@ namespace UI
             UnityAction _Finish,
             bool _IsPersonalBest)
         {
-            IGameDialogPanel levelFinishPanel = new LevelFinishPanel(
+            var levelFinishPanel = new LevelFinishPanel(
                 DialogViewer,
                 _Args.Level,
                 _Revenue,
                 _SetNewRevenue,
                 _Finish,
                 _IsPersonalBest);
-            levelFinishPanel.Show();
+            levelFinishPanel.OnDialogShow();
         }
 
         public virtual void OnTimeEnded(UnityAction<float> _SetAdditionalTime, UnityAction _Continue)
         {
-            IGameDialogPanel timeFinishedPanel = new TimeOrLifesEndedPanel(
+            var timeFinishedPanel = new TimeOrLifesEndedPanel(
                 DialogViewer,
                 true,
                 _Continue,
                 _SetAdditionalTime);
-                timeFinishedPanel.Show();
+                timeFinishedPanel.OnDialogShow();
         }
 
         public virtual void OnLifesEnded(UnityAction<long> _SetAdditionalLifes, UnityAction _Continue)
         {
-            IGameDialogPanel timeFinishedPanel = new TimeOrLifesEndedPanel(
+            var timeFinishedPanel = new TimeOrLifesEndedPanel(
                 DialogViewer,
                 false,
                 _Continue,
                 _SetAdditionalLife: _SetAdditionalLifes);
-            timeFinishedPanel.Show();
+            timeFinishedPanel.OnDialogShow();
         }
 
         public virtual void OnRevenueIncome(MoneyType _MoneyType, long _Revenue)

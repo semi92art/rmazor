@@ -18,6 +18,11 @@ namespace Extensions
         {
             return new Vector3(_V.x, _V.y, _Z);
         }
+
+        public static Vector3 SetXY(this Vector3 _V, float _Val)
+        {
+            return new Vector3(_Val, _Val, _V.z); 
+        }
         
         public static Vector2 SetX(this Vector2 _V, float _X)
         {

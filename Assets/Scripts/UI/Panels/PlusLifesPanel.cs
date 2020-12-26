@@ -15,7 +15,7 @@ using Utils;
 
 namespace UI.Panels
 {
-    public class PlusLifesPanel : GameObservable, IMenuDialogPanel
+    public class PlusLifesPanel : DialogPanelBase, IMenuUiCategory
     {
         #region notify messages
 
@@ -55,35 +55,18 @@ namespace UI.Panels
         #region api
         
         public MenuUiCategory Category => MenuUiCategory.PlusLifes;
-        public RectTransform Panel { get; private set; }
-
         public PlusLifesPanel(IMenuDialogViewer _DialogViewer)
         {
             m_DialogViewer = _DialogViewer;
         }
         
-        public void Show()
-        {
-            Panel = Create();
-            m_DialogViewer.Show(this);
-        }
-
-        public void OnEnable()
-        {
-            GetBank();
-        }
-
-        #endregion
-
-        #region nonpublic methods
-
-        private RectTransform Create()
+        public override void Init()
         {
             GameObject go = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_DialogViewer.DialogContainer,
+                    m_DialogViewer.Container,
                     RtrLites.FullFill),
-                "main_menu",
+                CommonStyleNames.MainMenuDialogPanels,
                 "plus_lifes_panel");
 
             m_GoldCountText = go.GetCompItem<TextMeshProUGUI>("gold_count_text");
@@ -105,8 +88,17 @@ namespace UI.Panels
             m_ResetButton.SetOnClick(OnResetButtonClick);
             shopButton.SetOnClick(OnShopButtonClick);
             
-            return go.RTransform();
+            Panel = go.RTransform();
         }
+
+        public override void OnDialogEnable()
+        {
+            GetBank();
+        }
+
+        #endregion
+
+        #region nonpublic methods
 
         private void OnPlus1ButtonClick()
         {
@@ -156,9 +148,10 @@ namespace UI.Panels
         private void OnShopButtonClick()
         {
             Notify(this, NotifyMessageShopButtonClick);
-            var shopPanel = new ShopPanel(m_DialogViewer);
+            var shopPanel = new ShopPanel(m_DialogViewer.Container);
             shopPanel.AddObservers(GetObservers());
-            shopPanel.Show();
+            shopPanel.Init();
+            m_DialogViewer.Show(shopPanel);
         }
         
         private void UpdatePanelState()

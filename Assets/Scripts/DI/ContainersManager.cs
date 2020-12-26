@@ -4,8 +4,9 @@ using System.Linq;
 using System.Reflection;
 using Network;
 using UnityEngine;
+using UnityEngine.Events;
 using Utils;
-using UpdateMethodsDict = System.Collections.Generic.Dictionary
+using UpdateMethodsDict = System.Collections.Generic.SortedDictionary
     <int, System.Collections.Generic.List<DI.MethodInfoObject>>;
 
 namespace DI
@@ -15,7 +16,7 @@ namespace DI
     public class MethodInfoObject
     {
         public bool DoNotDestroyOnLoad { get; set; }
-        public MethodInfo MethodInfo { get; set; }
+        public Delegate Delegat { get; set; }
         public object Object { get; set; }
     }
         
@@ -103,20 +104,12 @@ namespace DI
         
         private void InvokeUpdateMethods(UpdateMethodsDict _Dictionary)
         {
-            var methodsByOrder = _Dictionary
-                .ToList()
-                .OrderBy(_Kvp => _Kvp.Key)
-                .Select(_Kvp => _Kvp.Value);
-
-            foreach (var methods in methodsByOrder)
-            foreach (var method in methods.ToArray())
+            foreach (var methods in _Dictionary.Values)
+            foreach (var method in methods)
             {
                 if (method.Object == null)
-                {
-                    methods.Remove(method);
                     continue;
-                }
-                method.MethodInfo.Invoke(method.Object, null);
+                method.Delegat.DynamicInvoke(null);
             }
         }
 
@@ -134,13 +127,22 @@ namespace DI
                 var attribute = mInfo.GetCustomAttributes(true).OfType<T>().First();
 
                 if (!dict.ContainsKey(attribute.Order))
-                    dict.Add(attribute.Order, new List<MethodInfoObject>()); 
+                    dict.Add(attribute.Order, new List<MethodInfoObject>());
+
+                var deleg = mInfo.CreateDelegate(typeof(UnityAction), _Object);
                 dict[attribute.Order].Add(new MethodInfoObject
                 {
                     Object = _Object,
-                    MethodInfo = mInfo,
+                    Delegat = deleg,
                     DoNotDestroyOnLoad = attribute.DoNotDestroyOnLoad
                 });
+            }
+            
+            foreach (var itemsList in dict.Values)
+            foreach (var item in itemsList
+                .Where(_Item => _Item.Object == null))
+            {
+                itemsList.Remove(item);
             }
         }
 

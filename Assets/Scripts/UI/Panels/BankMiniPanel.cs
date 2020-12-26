@@ -13,6 +13,7 @@ using UI.Entities;
 using UI.Factories;
 using UI.Managers;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using Utils;
 using Object = UnityEngine.Object;
@@ -25,12 +26,12 @@ namespace UI.Panels
         void Hide();
     }
 
-    public interface IActionExecuter
+    public interface IActionExecutor
     { 
-        Action Action { get; set; }
+        UnityAction Action { get; set; }
     }
     
-    public class BankMiniPanel : GameObservable, IMiniPanel, IActionExecuter
+    public class BankMiniPanel : GameObservable, IMiniPanel, IActionExecutor
     {
         #region types
 
@@ -50,8 +51,10 @@ namespace UI.Panels
         private const int PoolSize = 8;
 
         private readonly IMenuDialogViewer m_DialogViewer;
+        private readonly INotificationViewer m_NotificationViewer;
         private readonly RectTransform m_Parent;
-        private List<CoinAnimObject> m_CoinsPool = new List<CoinAnimObject>(PoolSize);
+        private readonly List<CoinAnimObject> m_CoinsPool = 
+            new List<CoinAnimObject>(PoolSize);
         private Image m_GoldIcon;
         private Image m_DiamondIcon;
         private Image m_LifesIcon;
@@ -81,12 +84,16 @@ namespace UI.Panels
 
         #region api
         
-        public Action Action { get; set; }
+        public UnityAction Action { get; set; }
         
-        public BankMiniPanel(RectTransform _Parent, IMenuDialogViewer _DialogViewer)
+        public BankMiniPanel(
+            RectTransform _Parent,
+            IMenuDialogViewer _DialogViewer,
+            INotificationViewer _NotificationViewer)
         {
             m_Parent = _Parent;
             m_DialogViewer = _DialogViewer;
+            m_NotificationViewer = _NotificationViewer;
         }
 
         public void Init()
@@ -121,9 +128,10 @@ namespace UI.Panels
             m_PlusMoneyButton.SetOnClick(() =>
             {
                 Notify(this, CommonNotifyMessages.UiButtonClick);
-                var plusMoneyPanel = new PlusMoneyPanel(m_DialogViewer, this);
+                var plusMoneyPanel = new PlusMoneyPanel(m_DialogViewer, m_NotificationViewer, this);
                 plusMoneyPanel.AddObservers(GetObservers());
-                plusMoneyPanel.Show();
+                plusMoneyPanel.Init();
+                m_DialogViewer.Show(plusMoneyPanel);
             });
             
             m_PlusLifesButton.SetOnClick(() =>
@@ -131,7 +139,8 @@ namespace UI.Panels
                 Notify(this, CommonNotifyMessages.UiButtonClick);
                 var plusLifesPanel = new PlusLifesPanel(m_DialogViewer);
                 plusLifesPanel.AddObservers(GetObservers());
-                plusLifesPanel.Show();
+                plusLifesPanel.Init();
+                m_DialogViewer.Show(plusLifesPanel);
             });
 
             MoneyManager.Instance.OnMoneyCountChanged += MoneyCountChanged;

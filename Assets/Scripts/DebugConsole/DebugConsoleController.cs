@@ -8,6 +8,7 @@ using Entities;
 using Lean.Localization;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Utils;
 
 namespace DebugConsole
 {
@@ -73,7 +74,8 @@ namespace DebugConsole
             RegisterCommand("reload", Reload, "Reload current level.");
             RegisterCommand("clc", ClearConsole, "Clear console.");
             RegisterCommand("set_lang", SetLanguage,"set language");
-            RegisterCommand("targfps", SetTargetFps, "Set target frame rate");
+            RegisterCommand("target_fps", SetTargetFps, "Set target frame rate");
+            RegisterCommand("wof_spin_enable", EnableSpinButton, "Enable wheel of fortune spin.");
         }
 
         #endregion
@@ -280,6 +282,11 @@ namespace DebugConsole
                 Application.targetFrameRate = fps;
             else
                 AppendLogLine("Target FPS must be in range [5,120]");
+        }
+        
+        private void EnableSpinButton(string[] _Args)
+        {
+            SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, System.DateTime.Now.Date.AddDays(-1));
         }
 
         #endregion

@@ -93,6 +93,7 @@ namespace MkeyFW
         private AudioSource m_AudioSource;
         private float m_RotDirF;
         private IMenuDialogViewer m_MenuDialogViewer;
+        private UnityAction<MoneyType, long> m_SpinFinishAction;
 		#endregion
  
         #region engine methods
@@ -140,9 +141,10 @@ namespace MkeyFW
         
         #region api
 
-        public void Init(IMenuDialogViewer _MenuDialogViewer)
+        public void Init(IMenuDialogViewer _MenuDialogViewer, UnityAction<MoneyType, long> _SpinFinishAction)
         {
             m_MenuDialogViewer = _MenuDialogViewer;
+            m_SpinFinishAction = _SpinFinishAction;
         }
         
         public void StartSpin()
@@ -367,24 +369,12 @@ namespace MkeyFW
         /// </summary>
         private void CheckResult()
         {
-            long coins = 0;
-            bool isBigWin = false;
-
-            if (m_Sectors != null && m_CurrSector >= 0 && m_CurrSector < m_Sectors.Length)
-            {
-                Sector s = m_Sectors[m_CurrSector];
-                if (s != null)
-                {
-                    isBigWin = s.BigWin;
-                    coins = s.Coins;
-                    s.PlayHit(Reel.position);
-                }
-
-                Coroutines.Run(Coroutines.Delay(
-                    () => m_MenuDialogViewer.Back(),
-                    2f));
-            }
-            Debug.Log($"Coins: {coins}; IsBigWin: {isBigWin}");
+            // if (m_Sectors == null || m_CurrSector < 0 || m_CurrSector >= m_Sectors.Length) 
+            //     return;
+            Sector s = m_Sectors[m_CurrSector];
+            s.PlayHit(Reel.position);
+            m_SpinFinishAction?.Invoke(s.MoneyType, s.Coins);
+            Debug.Log($"Coins: {s.Coins}; IsBigWin: {s.BigWin}");
         }
 
         

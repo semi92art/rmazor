@@ -31,6 +31,7 @@ namespace MkeyFW
         #region api
         
         public long Coins { get; private set; }
+        public MoneyType MoneyType => m_MoneyType;
         public bool BigWin 
         {
             get
@@ -83,10 +84,7 @@ namespace MkeyFW
         public void PlayHit(Vector3 _Position)
         {
             if (hitPrefabs == null)
-            {
-                MoneyToBank();
                 return;
-            }
             
             foreach (var partT in from item in hitPrefabs 
                 where item select Instantiate(item).transform)
@@ -95,7 +93,6 @@ namespace MkeyFW
                 if (this && partT) 
                     Destroy(partT.gameObject, DestroyTime);
             }
-            MoneyToBank();
         }
         
         #endregion
@@ -121,13 +118,6 @@ namespace MkeyFW
         {
             text.text = Coins.ToNumeric();
         }
-
-        private void MoneyToBank()
-        {
-            var income = new Dictionary<MoneyType, long> {{m_MoneyType, Coins}};
-            MoneyManager.Instance.PlusMoney(income);
-        }
-        
         #endregion
     }
 }

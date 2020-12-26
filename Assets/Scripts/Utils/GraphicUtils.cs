@@ -1,4 +1,5 @@
 ﻿using Entities;
+using UnityEngine;
 
 namespace Utils
 {
@@ -25,5 +26,33 @@ namespace Utils
         {
             return IsGoodQuality() ? 120 : 60;
         }
+
+        public static float AspectRatio
+        {
+            get
+            {
+                float aspectRatio;
+#if UNITY_EDITOR
+                Vector2 gameViewSize = GetMainGameViewSize();
+                aspectRatio = gameViewSize.x / gameViewSize.y;
+#else
+                aspectRatio = (float)Screen.width / (float)Screen.height;
+#endif
+                return aspectRatio;   
+            }
+        }
+        
+#if UNITY_EDITOR
+        private static Vector2 GetMainGameViewSize()
+        {
+            System.Type t = System.Type.GetType("UnityEditor.GameView,UnityEditor");
+            System.Reflection.MethodInfo getSizeOfMainGameView = 
+                t?.GetMethod(
+                    "GetSizeOfMainGameView",
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            System.Object res = getSizeOfMainGameView?.Invoke(null,null);
+            return (Vector2?) res ?? Vector2.zero;
+        }
+#endif
     }
 }

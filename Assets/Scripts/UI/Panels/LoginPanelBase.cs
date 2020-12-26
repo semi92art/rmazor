@@ -7,15 +7,15 @@ using UnityEngine;
 
 namespace UI.Panels
 {
-    public abstract class LoginPanelBase: GameObservable, IMenuDialogPanel
+    public abstract class LoginPanelBase: DialogPanelBase, IMenuUiCategory
     {
         #region protected members
         
         protected readonly IMenuDialogViewer DialogViewer;
-        protected TMP_InputField m_LoginInputField;
-        protected TMP_InputField m_PasswordInputField;
-        protected TextMeshProUGUI m_LoginErrorHandler;
-        protected TextMeshProUGUI m_PasswordErrorHandler;
+        protected TMP_InputField LoginInputField;
+        protected TMP_InputField PasswordInputField;
+        protected TextMeshProUGUI LoginErrorHandler;
+        protected TextMeshProUGUI PasswordErrorHandler;
         
         #endregion
 
@@ -27,43 +27,32 @@ namespace UI.Panels
         
         #region api
 
-        public MenuUiCategory Category => MenuUiCategory.Login;
-        public RectTransform Panel { get; private set; }
-
-        public void Show()
-        {
-            Panel = Create();
-            DialogViewer.Show( this);
-        }
-
-        public void OnEnable() { }
+        public abstract MenuUiCategory Category { get; }
 
         #endregion
         
         #region protected methods
 
-        protected abstract RectTransform Create();
-        
         protected void SetLoginError(string _Text)
         {
-            m_LoginErrorHandler.text = _Text;
+            LoginErrorHandler.text = _Text;
         }
 
         protected void SetPasswordError(string _Text)
         {
-            m_PasswordErrorHandler.text = _Text;
+            PasswordErrorHandler.text = _Text;
         }
         
         protected virtual bool IsNoError()
         {
-            return string.IsNullOrEmpty(m_LoginErrorHandler.text)
-                   && string.IsNullOrEmpty(m_PasswordErrorHandler.text);
+            return string.IsNullOrEmpty(LoginErrorHandler.text)
+                   && string.IsNullOrEmpty(PasswordErrorHandler.text);
         }
 
         protected virtual void CleanErrorHandlers()
         {
-            m_LoginErrorHandler.text = string.Empty;
-            m_PasswordErrorHandler.text = string.Empty;
+            LoginErrorHandler.text = string.Empty;
+            PasswordErrorHandler.text = string.Empty;
         }
 
         #endregion

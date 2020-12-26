@@ -8,13 +8,7 @@ using UnityEngine;
 
 namespace UI.Panels
 {
-    public interface ILoadingPanel : IMenuDialogPanel
-    {
-        bool DoLoading { get; set; }
-        void Hide();
-    }
-    
-    public class LoadingPanel : ILoadingPanel
+    public class LoadingPanel : DialogPanelBase, IMenuUiCategory
     {
         #region nonpublic members
 
@@ -26,8 +20,7 @@ namespace UI.Panels
         #region public api
 
         public MenuUiCategory Category => MenuUiCategory.Loading;
-        public RectTransform Panel { get; private set; }
-    
+
         public bool DoLoading
         {
             get => m_View.DoLoading;
@@ -39,34 +32,17 @@ namespace UI.Panels
             m_DialogViewer = _DialogViewer;
         }
 
-        public void Show()
-        {
-            Panel = Create(m_DialogViewer);
-            m_DialogViewer.Show(this);
-        }
-
-        public void OnEnable() { }
-
-        public void Hide()
-        {
-            m_DialogViewer.Back();
-        }
-    
-        #endregion
-        
-        #region nonpublic methods
-        
-        private RectTransform Create(
-            IMenuDialogViewer _MenuDialogViewer)
+        public override void Init()
         {
             GameObject prefab = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    _MenuDialogViewer.DialogContainer,
+                    m_DialogViewer.Container,
                     RtrLites.FullFill),
-                "loading_panel", "loading_panel");
+                Constants.CommonStyleNames.MainMenuDialogPanels, "loading_panel");
             m_View = prefab.GetComponent<LoadingPanelView>();
-            return prefab.RTransform();
+            Panel = prefab.RTransform();
         }
+
     
         #endregion
     }

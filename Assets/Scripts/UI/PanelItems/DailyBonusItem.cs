@@ -7,6 +7,7 @@ using Managers;
 using TMPro;
 using UI.Panels;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using Utils;
 
@@ -26,7 +27,7 @@ namespace UI.PanelItems
     
         public void Init(
             DailyBonusProps _Props,
-            IActionExecuter _ActionExecutor)
+            IActionExecutor _ActionExecutor)
         {
             icon.sprite = _Props.Icon;
             day.text = $"{LeanLocalization.GetTranslationText("Day")} {_Props.Day}";
@@ -68,14 +69,14 @@ namespace UI.PanelItems
         public Sprite Icon { get; }
         public bool IsTomorrow { get; set; }
         public bool IsActive { get; set; }
-        public System.Action Click { get; set; }
+        public UnityAction Click { get; set; }
 
         public DailyBonusProps(
             int _Day,
             int _Gold = 0,
             int _Diamonds = 0,
             Sprite _Icon = null,
-            System.Action _Click = null)
+            UnityAction _Click = null)
         {
             Day = _Day;
             Gold = _Gold;

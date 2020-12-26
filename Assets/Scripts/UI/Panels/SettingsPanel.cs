@@ -1,6 +1,5 @@
 ﻿using DialogViewers;
 using System.Collections.Generic;
-using Entities;
 using Extensions;
 using GameHelpers;
 using Settings;
@@ -10,10 +9,11 @@ using UI.Factories;
 using UI.Managers;
 using UI.PanelItems;
 using UnityEngine;
+using Constants;
 
 namespace UI.Panels
 {
-    public class SettingsPanel : GameObservable, IMenuDialogPanel
+    public class SettingsPanel : DialogPanelBase, IMenuUiCategory
     {
         #region private members
         
@@ -35,40 +35,28 @@ namespace UI.Panels
         #region api
         
         public MenuUiCategory Category => MenuUiCategory.Settings;
-        public RectTransform Panel { get; private set; }
 
         public SettingsPanel(IMenuDialogViewer _DialogViewer)
         {
             m_DialogViewer = _DialogViewer;
         }
         
-        public void Show()
+        public override void Init()
         {
-            Panel = Create();
-            m_DialogViewer.Show(this);
-        }
-
-        public void OnEnable() { }
-
-        #endregion
-
-        #region nonpublic methods
-        
-        private RectTransform Create()
-        {
-            GameObject sp = PrefabInitializer.InitUiPrefab(
-                UiFactory.UiRectTransform(
-                    m_DialogViewer.DialogContainer,
-                    RtrLites.FullFill),
-                "main_menu", "settings_panel");
+            var sp = PrefabInitializer.InitUiPrefab(
+                UiFactory.UiRectTransform(m_DialogViewer.Container, RtrLites.FullFill),
+                CommonStyleNames.MainMenuDialogPanels, "settings_panel");
             _settingGoList = new List<GameObject>();
             _settingList = new List<ISetting>();
             m_Content = sp.GetCompItem<RectTransform>("content");
             InitSettingItems();
-            return sp.RTransform();
+            Panel = sp.RTransform();
         }
-        
-        
+
+        #endregion
+
+        #region nonpublic methods
+
         private void InitSettingItems()
         {
             var soundSetting = new SoundSetting();

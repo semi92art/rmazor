@@ -10,7 +10,7 @@ namespace Entities
         protected abstract void OnNotify(object _Sender, string _NotifyMessage, params object[] _Args);
     }
 
-    public abstract class GameObservable
+    public abstract class GameObservable : DI.DiObject
     {
         private readonly List<GameObserver> m_Observers = new List<GameObserver>();
 
