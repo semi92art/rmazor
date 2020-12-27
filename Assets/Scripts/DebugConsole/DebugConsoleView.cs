@@ -93,7 +93,6 @@ namespace DebugConsole
             m_Controller.OnLogChanged += OnLogChanged;
             UpdateLogStr(m_Controller.Log);
             m_SwipeDragDistance = Screen.width * 30 * 0.01f;
-            //DontDestroyOnLoad(gameObject);
         }
 
         private void OnDestroy()
@@ -169,7 +168,7 @@ namespace DebugConsole
             m_CurrentCommand++;
             m_Index = m_Controller.CommandHistory.Count - m_CurrentCommand;
             if (m_Index >= 0 && m_Controller.CommandHistory.Count != 0)
-                inputField.text = m_Controller.CommandHistory[m_Index].ToString();
+                inputField.text = m_Controller.CommandHistory[m_Index];
             else
                 m_CurrentCommand = m_Controller.CommandHistory.Count;
 
@@ -182,7 +181,7 @@ namespace DebugConsole
             m_CurrentCommand--;
             m_Index = m_Controller.CommandHistory.Count - m_CurrentCommand;
             if (m_Index < m_Controller.CommandHistory.Count)
-                inputField.text = m_Controller.CommandHistory[m_Index].ToString();
+                inputField.text = m_Controller.CommandHistory[m_Index];
             else
             {
                 inputField.text = "";
@@ -203,7 +202,7 @@ namespace DebugConsole
 
         private void CreatePositions()
         {
-            GameObject canvas = GameObject.Find("DebugConsoleCanvas");
+            var canvas = GameObject.Find("DebugConsoleCanvas");
             RectTransform canvasRectTransform = canvas.RTransform();
             float screenWidth = canvasRectTransform.sizeDelta.x;
             float screenHeight = canvasRectTransform.sizeDelta.y;
@@ -276,7 +275,6 @@ namespace DebugConsole
 
         private void OnLogChanged(string[] _NewLog)
         {
-            Debug.Log("APPEND!!!");
             UpdateLogStr(_NewLog);
         }
 
