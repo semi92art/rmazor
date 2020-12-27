@@ -183,6 +183,11 @@ public class EditorHelper : EditorWindow
         m_Quality = EditorGUILayout.Popup(
             m_Quality, new[] { "Normal", "Good" });
         GUILayout.EndHorizontal();
+
+        if (GUILayout.Button("Show identifier"))
+        {
+            Debug.Log(Application.identifier);
+        }
         
         UpdateTestUrl();
         UpdateGameId();

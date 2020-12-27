@@ -17,21 +17,8 @@ namespace DebugConsole
         #region singleton
         
         private static DebugConsoleView _instance;
+        public static DebugConsoleView Instance => _instance.IsNull() ? _instance = Create() : _instance;
 
-        public static DebugConsoleView Instance
-        {
-            get
-            {
-                if (_instance is DebugConsoleView dcv && !dcv.IsNull())
-                    return _instance;
-                var go = Create();
-                _instance = Create();
-                if (!GameClient.Instance.IsModuleTestsMode)
-                    DontDestroyOnLoad(go.transform.parent);
-                return _instance;
-            }
-        }
-        
         #endregion
         
         
@@ -53,7 +40,8 @@ namespace DebugConsole
                 true,
                 GraphicRaycaster.BlockingObjects.None);
             
-            DontDestroyOnLoad(canvas);
+            if (!GameClient.Instance.IsModuleTestsMode)
+                DontDestroyOnLoad(canvas);
 
             return PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(canvas.RTransform(), RtrLites.FullFill),
@@ -102,7 +90,7 @@ namespace DebugConsole
         private void Start()
         {
             m_Controller.VisibilityChanged += OnVisibilityChanged;
-            m_Controller.LogChanged += OnLogChanged;
+            m_Controller.OnLogChanged += OnLogChanged;
             UpdateLogStr(m_Controller.Log);
             m_SwipeDragDistance = Screen.width * 30 * 0.01f;
             //DontDestroyOnLoad(gameObject);
@@ -111,7 +99,7 @@ namespace DebugConsole
         private void OnDestroy()
         {
             m_Controller.VisibilityChanged -= OnVisibilityChanged;
-            m_Controller.LogChanged -= OnLogChanged;
+            m_Controller.OnLogChanged -= OnLogChanged;
         }
 
         private void Update()
@@ -288,6 +276,7 @@ namespace DebugConsole
 
         private void OnLogChanged(string[] _NewLog)
         {
+            Debug.Log("APPEND!!!");
             UpdateLogStr(_NewLog);
         }
 

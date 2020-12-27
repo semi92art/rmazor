@@ -74,7 +74,25 @@ namespace Network
             get => SaveUtils.GetValue<int>(SaveKey.GameId);
             set => SaveUtils.PutValue(SaveKey.GameId, value);
         }
-        
+
+        public int DefaultGameId
+        {
+            get
+            {
+#if GAME_1
+                return 1;
+#elif GAME_2
+                return 2;
+#elif GAME_3
+                return 3;
+#elif GAME_4
+                return 4;
+#elif GAME_5
+                return 5;
+#endif
+            }
+        }
+
         public string DeviceId => $"test_{SystemInfo.deviceUniqueIdentifier}";
 
         public bool LastConnectionSucceeded
@@ -94,7 +112,7 @@ namespace Network
 #endif
 
             if (GameId == 0)
-                SaveGameIdOnFirstStart();
+                GameId = DefaultGameId;
             m_ServerBaseUrls = new Dictionary<string, string>
             {
                 {"Ubuntu1", @"http://77.37.152.15:7000"},
@@ -185,22 +203,6 @@ namespace Network
             m_ConnectionTestStarted = true;
         }
 
-        private void SaveGameIdOnFirstStart()
-        {
-#if GAME_1
-                GameId = 1;
-#elif GAME_2
-                GameId = 2;
-#elif GAME_3
-                GameId = 3;
-#elif GAME_4
-                GameId = 4;
-#elif GAME_5
-                GameId = 5;
-#endif
-        }
-        
-        
         #endregion
     }
 }

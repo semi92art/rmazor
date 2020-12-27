@@ -2,22 +2,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Constants;
 using Entities;
-using Lean.Localization;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using Utils;
 
 namespace DebugConsole
 {
     public class DebugConsoleController : GameObserver
     {
-        #region Event declarations
+        #region event declarations
 
         public delegate void LogChangedHandler(string[] _Log);
-        public event LogChangedHandler LogChanged;
+        public event LogChangedHandler OnLogChanged;
         public delegate void VisibilityChangedHandler(bool _Visible);
         public event VisibilityChangedHandler VisibilityChanged;
 
@@ -25,9 +21,9 @@ namespace DebugConsole
 
         #region types
         
-        private delegate void CommandHandler(string[] _Args);
+        public delegate void CommandHandler(string[] _Args);
 
-        private class CommandRegistration
+        public class CommandRegistration
         {
             public string Command { get; }
             public CommandHandler Handler { get; }
@@ -45,63 +41,80 @@ namespace DebugConsole
 
         #region constants
 
-        const int SCROLLBACK_SIZE = 100;
+        private const int ScrollbackSize = 100;
 
         #endregion
 
         #region public properties
         public string[] Log { get; private set; }
-
+        public Queue<string> Scrollback { get; } = new Queue<string>(ScrollbackSize);
+        public Dictionary<string, CommandRegistration> Commands { get;} = new Dictionary<string, CommandRegistration>();
+        public List<string> CommandHistory { get; } = new List<string>();
+        
         #endregion
 
-        #region readonly
-        public readonly List<string> CommandHistory = new List<string>();
-        //public readonly List CommandHistory = new List();
-        private readonly Queue<string> m_Scrollback = new Queue<string>(SCROLLBACK_SIZE);
-        private readonly Dictionary<string, CommandRegistration> m_Commands = new Dictionary<string, CommandRegistration>();
-
-        #endregion
-
-        #region consturctors
+        #region constructor
 
         public DebugConsoleController()
         {
-            // When adding commands, you must add a call below to registerCommand() with its name,
-            // implementation method, and description text.
-            RegisterCommand("help", Help, "Print command list.");
-            RegisterCommand("restart", Restart, "Restart game.");
-            RegisterCommand("load", Load, "Reload specified level.");
-            RegisterCommand("reload", Reload, "Reload current level.");
-            RegisterCommand("clc", ClearConsole, "Clear console.");
-            RegisterCommand("set_lang", SetLanguage,"set language");
-            RegisterCommand("target_fps", SetTargetFps, "Set target frame rate");
-            RegisterCommand("wof_spin_enable", EnableSpinButton, "Enable wheel of fortune spin.");
+            DebugConsoleCommands.Controller = this;
+            DebugConsoleCommands.RegisterCommands();
+        }
+
+        #endregion
+
+        #region public methods
+
+        public void RaiseLogChangedEvent(string[] _Args)
+        {
+            OnLogChanged?.Invoke(_Args);
+        }
+        
+        public void RegisterCommand(string _Command, CommandHandler _Handler, string _Description)
+        {
+            Commands.Add(_Command, new CommandRegistration(_Command, _Handler, _Description));
+        }
+        
+        public void AppendLogLine(string _Line)
+        {
+            Debug.Log(_Line);
+
+            if (Scrollback.Count >= ScrollbackSize)
+                Scrollback.Dequeue();
+            Scrollback.Enqueue(_Line);
+
+            Log = Scrollback.ToArray();
+            OnLogChanged?.Invoke(Log);
+        }
+        
+        public void RunCommandString(string _CommandString)
+        {
+            AppendLogLine("$ " + _CommandString);
+
+            string[] commandSplit = ParseArguments(_CommandString);
+            string[] args = new string[0];
+            if (commandSplit.Length <= 0)
+                return;
+
+            if (commandSplit.Length >= 2)
+            {
+                int numArgs = commandSplit.Length - 1;
+                args = new string[numArgs];
+                Array.Copy(commandSplit, 1, args, 0, numArgs);
+            }
+            RunCommand(commandSplit[0].ToLower(), args);
+            CommandHistory.Add(_CommandString);
         }
 
         #endregion
 
         #region nonpublic methods
         
-        private void RegisterCommand(string _Command, CommandHandler _Handler, string _Description)
-        {
-            m_Commands.Add(_Command, new CommandRegistration(_Command, _Handler, _Description));
-        }
         
-        private void AppendLogLine(string _Line)
-        {
-            Debug.Log(_Line);
-
-            if (m_Scrollback.Count >= SCROLLBACK_SIZE)
-                m_Scrollback.Dequeue();
-            m_Scrollback.Enqueue(_Line);
-
-            Log = m_Scrollback.ToArray();
-            LogChanged?.Invoke(Log);
-        }
 
         private void RunCommand(string _Command, string[] _Args)
         {
-            if (!m_Commands.TryGetValue(_Command, out var reg))
+            if (!Commands.TryGetValue(_Command, out var reg))
                 AppendLogLine($"Unknown command '{_Command}', type 'help' for list.");
             else
             {
@@ -149,144 +162,6 @@ namespace DebugConsole
             
             if (!string.IsNullOrEmpty(command) && handler != null)
                 RegisterCommand(command, handler, description);
-        }
-
-        #endregion
-
-        #region public methods
-
-        public void RunCommandString(string _CommandString)
-        {
-            AppendLogLine("$ " + _CommandString);
-
-            string[] commandSplit = ParseArguments(_CommandString);
-            string[] args = new string[0];
-            if (commandSplit.Length <= 0)
-                return;
-
-            if (commandSplit.Length >= 2)
-            {
-                int numArgs = commandSplit.Length - 1;
-                args = new string[numArgs];
-                Array.Copy(commandSplit, 1, args, 0, numArgs);
-            }
-            RunCommand(commandSplit[0].ToLower(), args);
-            CommandHistory.Add(_CommandString);
-        }
-
-        #endregion
-
-        #region internal command handlers
-        //Implement new commands in this region of the file.
-
-        private void Reload(string[] _Args)
-        {
-            if (_Args.Length == 0)
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-            else if (_Args.Any(_Arg => _Arg == "-h"))
-                AppendLogLine("Reload current level.");
-        }
-
-        private void Help(string[] _Args)
-        {
-            if (_Args.Length == 0)
-            {
-                Debug.Log("Print: command list");
-                AppendLogLine("Current command list:");
-                foreach (KeyValuePair<string, CommandRegistration> kvp in m_Commands)
-                    AppendLogLine($"{kvp.Key}: {kvp.Value.Description}");
-            }
-            else if (_Args.Any(_Arg => _Arg == "woodpecker"))
-                AppendLogLine("Work is filled up, woodpeckers!");
-        }
-
-        private void Restart(string[] _Args)
-        {
-            if (_Args.Length == 0)
-                SceneManager.LoadScene(0);
-            else if (_Args.Any(_Arg => _Arg == "-h"))
-                AppendLogLine("Reload game.");
-        }
-
-        private void Load(string[] _Args)
-        {
-            if (_Args.Length == 0)
-                AppendLogLine("Specify level");
-            else
-            {
-                foreach (string arg in _Args)
-                {
-                    if (arg == "-h")
-                    {
-                        AppendLogLine("Load level:");
-                        AppendLogLine("preload: restart game.");
-                        AppendLogLine("menu: load menu.");
-                        AppendLogLine("level: load field.");
-                        break;
-                    }
-
-                    switch (arg)
-                    {
-                        case "preload":
-                            SceneManager.LoadScene(SceneNames.Preload);
-                            break;
-                        case "menu":
-                            SceneManager.LoadScene(SceneNames.Main);
-                            break;
-                        case "level":
-                            SceneManager.LoadScene(SceneNames.Level);
-                            break;
-                        default:
-                            AppendLogLine("No such level.");
-                            break;
-                    }
-                }
-            }
-        }
-        
-        private void ClearConsole(string[] _Args)
-        {
-            Array.Clear(Log, 0, Log.Length);
-            m_Scrollback.Clear();
-            LogChanged?.Invoke(Log);
-        }
-
-        private void SetLanguage(string[] _Args)
-        {
-            if (_Args.Length == 0)
-                AppendLogLine("Specify language");
-            else
-            {
-                foreach (string arg in _Args)
-                {
-                    if (arg == "-h")
-                    {
-                        AppendLogLine("Current language list:");
-                        foreach (var lang in Enum.GetValues(typeof(Language)))
-                        {
-                            AppendLogLine(lang.ToString());
-                        }
-                        break;
-                    }
-
-                    LeanLocalization.CurrentLanguage = arg;
-                }
-            }  
-        }
-
-        private void SetTargetFps(string[] _Args)
-        {
-            if (_Args == null || !int.TryParse(_Args[0], out int fps)) 
-                return;
-            if (fps >= 5 && fps <= 120)
-                Application.targetFrameRate = fps;
-            else
-                AppendLogLine("Target FPS must be in range [5,120]");
-        }
-        
-        private void EnableSpinButton(string[] _Args)
-        {
-            SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, System.DateTime.Now.Date.AddDays(-1));
         }
 
         #endregion
