@@ -3,41 +3,44 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Shapes;
 
 public class GridBuilder : MonoBehaviour
 {
-    public GameObject gridHex;
     public GameObject line;
     public Tile selectedTile = null;
-    public TileBehaviour originTileTb = null;
-    public TileBehaviour destinationTileTb = null;
 
     public static GridBuilder instanceGridBuilder = null;
 
     //grid size in hexes
     public int gridWidthInHexes = 4;
     public int gridHeightInHexes = 5;
-    //hex size
-    private float m_hexWidth;
-    private float m_hexHeight;
+    
 
     List<GameObject> m_path;
     public Dictionary<Point, TileBehaviour> board;
 
+    public TileBehaviour originTileTb = null;
+    public TileBehaviour destinationTileTb = null;
+    
+    //hex size
+    float m_hexWidth = 1f;
+    float m_hexHeight = 1f;
+    
     private void Awake()
     {
         Debug.Log("GridBuilder ...");
         instanceGridBuilder = this;
-        SetHexSize();
+        //SetHexSize();
         CreateGrid();
         GenerateAndShowPath();
     }
 
     //set hex size depends on HEX-prefabs (need renderer component)
-    void SetHexSize()
+    void SetHexSize(float _Width, float _Height)
     {
-        this.m_hexWidth = this.gridHex.GetComponent<Renderer>().bounds.size.x;
-        this.m_hexHeight = this.gridHex.GetComponent<Renderer>().bounds.size.y;
+        this.m_hexWidth =_Width;
+        this.m_hexHeight = _Height;
     }
 
     //calc the position of first hex
@@ -60,7 +63,7 @@ public class GridBuilder : MonoBehaviour
         }
 
         float x = initPos.x + offset + _GridPos.x * m_hexWidth;
-        float y = initPos.z - _GridPos.y * m_hexHeight * 0.75f;
+        float y = initPos.z - _GridPos.y * m_hexHeight * 1.75f;
         return new Vector3(x, y, 0);
     }
 
@@ -70,7 +73,7 @@ public class GridBuilder : MonoBehaviour
         Vector3 initPos = CalulateInitPos();
         Vector2 gridPos = new Vector2();
         float offset = 0;
-        gridPos.y = Mathf.RoundToInt((initPos.z - _Coord.y) / (m_hexHeight * 0.75f));
+        gridPos.y = Mathf.RoundToInt((initPos.z - _Coord.y) / (m_hexHeight * 1.75f));
         if (gridPos.y % 2 != 0)
             offset = m_hexWidth / 2;
         gridPos.x = Mathf.RoundToInt((_Coord.x - initPos.x - offset) / m_hexWidth);
@@ -87,15 +90,26 @@ public class GridBuilder : MonoBehaviour
         {
             for (float x = 0; x < this.gridWidthInHexes; x++)
             {
-                GameObject hex = (GameObject)Instantiate(this.gridHex);
+                string hexName = String.Format("Hex_{0}_{1}",x,y);
+                GameObject hex = new GameObject(hexName);
                 //current pos
                 Vector2 gridPos = new Vector2(x, y);
                 hex.transform.position = CalcWorldCoord(gridPos);
                 hex.transform.parent = hexGridGameObject.transform;
-
-                var tb = (TileBehaviour)hex.GetComponent("TileBehaviour");
-                tb.tile = new Tile((int)x, (int)y);
-                board.Add(tb.tile.Location, tb);
+                hex.transform.localScale = new Vector3(m_hexWidth,m_hexHeight,0f);
+                
+                MeshCollider meshCollider = hex.AddComponent<MeshCollider>();
+                meshCollider.material = Resources.Load("materials/PathFinder/PMatHex", typeof(PhysicMaterial)) as PhysicMaterial;
+                meshCollider.sharedMesh = Resources.Load("meshes/PathFinder/Hex", typeof(Mesh)) as Mesh;
+                
+                //set beauty
+                RegularPolygon regularPolygon = hex.AddComponent<RegularPolygon>();
+                regularPolygon.Color = new Color(231f/255f,255f/255f,170f/255f);
+                regularPolygon.Sides = 6;
+                
+                TileBehaviour tileBehaviour = hex.AddComponent<TileBehaviour>();
+                tileBehaviour.tile = new Tile((int)x, (int)y);
+                board.Add(tileBehaviour.tile.Location, tileBehaviour);
             }
         }
         int counter = 0;

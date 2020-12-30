@@ -20,10 +20,10 @@ public class CombatController : MonoBehaviour
 
     void selectUnit()
     {
-        GridBuilder.instanceGridBuilder.originTileTb.setPassable();
-        Vector2 positionTile = GridBuilder.instanceGridBuilder.CalcGridPos(selectedUnit.transform.position);
-        Point point = new Point((int)(positionTile.x), (int)positionTile.y);
-        TileBehaviour tb = GridBuilder.instanceGridBuilder.board[point];
-        tb.setAsOrigin();
+        // GridBuilder.instanceGridBuilder.originTileTb.setPassable();
+        // Vector2 positionTile = GridBuilder.instanceGridBuilder.CalcGridPos(selectedUnit.transform.position);
+        // Point point = new Point((int)(positionTile.x), (int)positionTile.y);
+        // TileBehaviour tb = GridBuilder.instanceGridBuilder.board[point];
+        // tb.setAsOrigin();
     }
 }

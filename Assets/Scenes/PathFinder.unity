@@ -359,9 +359,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55e3d210836f1fd4b884f8da8ac52715, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridHex: {fileID: 100000, guid: 69c38b523598b0843b2df5b61b8d8c27, type: 3}
   line: {fileID: 5474330047029030475, guid: eb1e27c5f8562924d83056a4d7159c0f, type: 3}
-  originTileTb: {fileID: 0}
-  destinationTileTb: {fileID: 0}
   gridWidthInHexes: 4
   gridHeightInHexes: 11
+  originTileTb: {fileID: 0}
+  destinationTileTb: {fileID: 0}
