@@ -45,7 +45,7 @@ public static class LevelLoader
                 break;
             case 4:
                 Debug.Log("PathFinder WIP");
-                SceneManager.LoadScene(SceneNames.PathFinder);
+                PathFinder.PathFinderManager.Instance.Init(_level);
                 break;
             case 5:
                 Debug.Log(WasNotMadeMessage);

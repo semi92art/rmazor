@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public static class PathFinder
+public static class PathFinderInGame
 {
     //distance f-ion should return distance between two adjacent nodes
     //estimate should return distance between any node and destination node
