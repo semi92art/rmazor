@@ -169,6 +169,7 @@ GameObject:
   - component: {fileID: 4351689887014737765}
   - component: {fileID: 3701211848015619911}
   - component: {fileID: 4719008432578410783}
+  - component: {fileID: 7358376140495347866}
   m_Layer: 0
   m_Name: Title
   m_TagString: Untagged
@@ -316,6 +317,34 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &7358376140495347866
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3921696094404319236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81eed60ad983fa5499e91759a5e9f75d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  translationName: YourReward
+  FallbackText: 'your reward:'
+--- !u!114 &3120288708939912154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4263383862314843572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81eed60ad983fa5499e91759a5e9f75d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  translationName: Get
+  FallbackText: Get
 --- !u!1 &5263948017276385433
 GameObject:
   m_ObjectHideFlags: 0
@@ -1039,6 +1068,12 @@ GameObject:
 --- !u!224 &1226107034402611275 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5783905720635249993, guid: f3b73ef1410930a49b1de0aba2dc1007,
+    type: 3}
+  m_PrefabInstance: {fileID: 4701914424137266434}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &4263383862314843572 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8820892820649019574, guid: f3b73ef1410930a49b1de0aba2dc1007,
     type: 3}
   m_PrefabInstance: {fileID: 4701914424137266434}
   m_PrefabAsset: {fileID: 0}

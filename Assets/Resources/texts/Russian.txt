@@ -35,3 +35,5 @@ For = на
 Reset = сброс
 OrGoTo = или перейти в
 Register = Зарегистрироваться
+YourReward = ваша награда:
+Get = Получить
