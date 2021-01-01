@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using DebugConsole;
 using Entities;
+using UI.Managers;
 using Utils;
 
 namespace Settings

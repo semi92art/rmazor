@@ -192,19 +192,21 @@ namespace DebugConsole
                 }
             }
 
-            if (inputField.touchScreenKeyboard.status == TouchScreenKeyboard.Status.Visible)
+            if (inputField.touchScreenKeyboard == null)
+                return;
+            switch (inputField.touchScreenKeyboard.status)
             {
-                UpdatePositionsForKeyboard();
-            }
-            else if (inputField.touchScreenKeyboard.status == TouchScreenKeyboard.Status.Done)
-            {
-                CreatePositions();
-                RunCommand();
-            }
-            else if (inputField.touchScreenKeyboard.status == TouchScreenKeyboard.Status.Canceled ||
-                     inputField.touchScreenKeyboard.status == TouchScreenKeyboard.Status.LostFocus)
-            {
-                CreatePositions();
+                case TouchScreenKeyboard.Status.Visible:
+                    UpdatePositionsForKeyboard();
+                    break;
+                case TouchScreenKeyboard.Status.Done:
+                    CreatePositions();
+                    RunCommand();
+                    break;
+                case TouchScreenKeyboard.Status.Canceled:
+                case TouchScreenKeyboard.Status.LostFocus:
+                    CreatePositions();
+                    break;
             }
         }
 
