@@ -1593,7 +1593,6 @@ GameObject:
   - component: {fileID: 7677174431813535147}
   - component: {fileID: 3441650872699566798}
   - component: {fileID: 5797904302603289798}
-  - component: {fileID: 2921823347325031631}
   - component: {fileID: 8866975731764391457}
   - component: {fileID: 2892012686283842000}
   m_Layer: 0
@@ -1678,22 +1677,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &2921823347325031631
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6130416741673789242}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812ef8afd9274fe0a2c6e67996d9c687, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  button: {fileID: 5797904302603289798}
-  icon: {fileID: 8299242933791517453}
-  price: {fileID: 0}
-  amount: {fileID: 1871445575436112439}
 --- !u!95 &8866975731764391457
 Animator:
   serializedVersion: 3
@@ -2271,7 +2254,6 @@ GameObject:
   - component: {fileID: 1142325898898390533}
   - component: {fileID: 4230960863157507259}
   - component: {fileID: 6217463413991121874}
-  - component: {fileID: 1403057643402659622}
   - component: {fileID: 2504467576584495940}
   - component: {fileID: 839942062136026174}
   m_Layer: 0
@@ -2356,22 +2338,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &1403057643402659622
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7621148608963155108}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812ef8afd9274fe0a2c6e67996d9c687, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  button: {fileID: 6217463413991121874}
-  icon: {fileID: 4544174659029304996}
-  price: {fileID: 0}
-  amount: {fileID: 8097054636967916024}
 --- !u!95 &2504467576584495940
 Animator:
   serializedVersion: 3
@@ -2721,7 +2687,6 @@ GameObject:
   - component: {fileID: 2830772755608036149}
   - component: {fileID: 7024174401344387302}
   - component: {fileID: 6973940949948951103}
-  - component: {fileID: 1767178285499162039}
   - component: {fileID: 742874567348726559}
   - component: {fileID: 101486255093199625}
   m_Layer: 0
@@ -2806,22 +2771,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &1767178285499162039
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8877836217167280358}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812ef8afd9274fe0a2c6e67996d9c687, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  button: {fileID: 6973940949948951103}
-  icon: {fileID: 3093180228016389932}
-  price: {fileID: 0}
-  amount: {fileID: 5737446374147822380}
 --- !u!95 &742874567348726559
 Animator:
   serializedVersion: 3

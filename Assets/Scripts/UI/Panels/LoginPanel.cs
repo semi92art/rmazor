@@ -1,5 +1,6 @@
 ﻿using DialogViewers;
 using Constants;
+using Controllers;
 using Extensions;
 using GameHelpers;
 using Lean.Localization;
@@ -66,9 +67,6 @@ namespace UI.Panels
             loginGoogleButton.SetOnClick(OnLoginWithGoogleButtonClick);
             registrationButton.SetOnClick(OnRegistrationButtonClick);
             logoutButton.SetOnClick(Logout);
-            
-            //TODO when apple login function will be ready, delete line below
-            loginAppleButton.gameObject.SetActive(false);
 
             bool isLogined = !string.IsNullOrEmpty(GameClient.Instance.Login);
             logoutButton.SetGoActive(isLogined);
@@ -97,7 +95,7 @@ namespace UI.Panels
             var packet = new LoginUserPacket(new LoginUserPacketRequestArgs
             {
                 Name = LoginInputField.text,
-                PasswordHash = CommonUtils.GetMD5Hash(PasswordInputField.text)
+                PasswordHash = CommonUtils.GetMd5Hash(PasswordInputField.text)
             });
             packet.OnSuccess(() =>
             {
@@ -129,13 +127,23 @@ namespace UI.Panels
         private void OnLoginWithGoogleButtonClick()
         {
             Notify(this, NotifyMessageLoginWithGoogleButtonClick);
-            // TODO
+            var auth = new AuthController();
+#if UNITY_ANDROID
+            auth.AuthenticateWithGoogleOnAndroid();
+#elif UNITY_IPHONE
+            auth.AuthenticateWithGoogleOnIos();
+#endif
         }
         
         private void OnLoginWithAppleButtonClick()
         {
             Notify(this, NotifyMessageLoginWithAppleButtonClick);
-            // TODO
+            var auth = new AuthController();
+#if UNITY_ANDROID
+            auth.AuthenticateWithAppleIdOnAndroid();
+#elif UNITY_IPHONE
+            auth.AuthenticateWithAppleOnIos();
+#endif
         }
         
         private void OnRegistrationButtonClick()

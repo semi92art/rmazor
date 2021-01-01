@@ -35,7 +35,7 @@ public class ServerConnectionTests
 
         //wait 5 seconds before cancel
         bool stopWaiting = false;
-        Task.Run(CommonUtils.WaitForSecs(5f, () => stopWaiting = true));
+        Task.Run(() => CommonUtils.WaitForSecs(5f, () => stopWaiting = true));
 
         //Act
         request.SendWebRequest();

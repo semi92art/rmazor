@@ -155,7 +155,7 @@ namespace UI
                                     new RegisterUserPacketRequestArgs
                                     {
                                         DeviceId = GameClient.Instance.DeviceId,
-                                        GameId = 1 // TODO game id depends of build
+                                        GameId = GameClient.Instance.DefaultGameId
                                     });
                                 registerPacket.OnSuccess(() =>
                                     {
@@ -167,7 +167,7 @@ namespace UI
                                             () => ShowMainMenu(true),
                                             () => !bank.Loaded || !scores.Loaded));
                                     })
-                                    .OnFail(() => { Debug.LogError(loginPacket.ErrorMessage); });
+                                    .OnFail(() => { Debug.LogError(registerPacket.ErrorMessage); });
                                 GameClient.Instance.Send(registerPacket);
                             }
                             else if (loginPacket.ErrorMessage.Id == RequestErrorCodes.WrongLoginOrPassword)

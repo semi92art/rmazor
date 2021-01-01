@@ -1,6 +1,9 @@
 ﻿using Entities;
+using GameHelpers;
 using GoogleMobileAds.Api;
 using Network;
+using Network.PacketArgs;
+using Network.Packets;
 using UI.Panels;
 using UnityEngine;
 using UnityEngine.Events;
@@ -27,6 +30,21 @@ namespace Managers
 
         #region api
 
+        public bool ShowAds
+        {
+            get => SaveUtils.GetValue<bool>(SaveKey.ShowAds);
+            set
+            {
+                SaveUtils.PutValue(SaveKey.ShowAds, value);
+                if (value) return;
+                var packet = new DisableAdsPacket(new AccIdGameId
+                {
+                    AccountId = GameClient.Instance.AccountId
+                });
+                GameClient.Instance.Send(packet);
+            }
+        }
+
         public void Init()
         {
             new RequestConfiguration
@@ -42,17 +60,6 @@ namespace Managers
             m_RewardedAd.OnAdClosed += (_, _Args) => m_RewardedAd.LoadAd(m_AdRequest);
         }
 
-        protected override void OnNotify(object _Sender, string _NotifyMessage, params object[] _Args)
-        {
-            switch (_Sender)
-            {
-                case WheelOfFortunePanel _:
-                    if (_NotifyMessage == WheelOfFortunePanel.NotifyMessageWatchAdButtonClick)
-                        ShowRewardedAd(_Args[0] as UnityAction);
-                    break;
-            }
-        }
-
         #endregion
 
         #region nonpublic methods
@@ -64,6 +71,12 @@ namespace Managers
                 m_RewardedAd.Show();
             else
                 m_RewardedAd.LoadAd(m_AdRequest);
+        }
+        
+        protected override void OnNotify(object _Sender, string _NotifyMessage, params object[] _Args)
+        {
+            if (_NotifyMessage == WheelOfFortunePanel.NotifyMessageWatchAdButtonClick)
+                ShowRewardedAd(_Args[0] as UnityAction);
         }
 
         #endregion

@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using DebugConsole;
 using Entities;
-using UI;
-using UI.Managers;
 using Utils;
 
 namespace Settings
@@ -19,8 +17,9 @@ namespace Settings
         {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             return SaveUtils.GetValue<bool>(SaveKeyDebug.DebugUtilsOn);
-#endif
+#else
             return null;
+#endif
         }
 
         public void Put(object _Parameter)

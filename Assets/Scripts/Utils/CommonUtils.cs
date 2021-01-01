@@ -5,8 +5,8 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
-using Entities;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Utils
 {
@@ -37,8 +37,9 @@ namespace Utils
             return "Android";
 #elif UNITY_IPHONE
             return "iOS";
-#endif
+#else
             throw new NotImplementedException();
+#endif
         }
 
         public static void SetGoActive<T>(this T _Item, bool _Active) where T : Component
@@ -56,11 +57,6 @@ namespace Utils
         {
             return Enum.GetValues(typeof(T))
                 .Cast<T>().ToArray();
-        }
-        
-        public static bool CheckForMainServerInternetConnection()
-        {
-            return CheckForConnection("77.37.152.15");
         }
 
         public static void SetEvenIfNotContainKey<T1, T2>(
@@ -104,7 +100,7 @@ namespace Utils
             return CheckForConnection("http://google.com/generate_204");
         }
 
-        private static bool CheckForConnection(string url)
+        private static bool CheckForConnection(string _Url)
         {
             int tryCount = 0;
             while (tryCount < 3)
@@ -112,7 +108,7 @@ namespace Utils
                 try
                 {
                     using (var client = new WebClient())
-                    using (client.OpenRead(url)) 
+                    using (client.OpenRead(_Url)) 
                         return true; 
                 }
                 catch
@@ -123,7 +119,7 @@ namespace Utils
             return false;
         }
 
-        public static System.Action WaitForSecs(float _Seconds, System.Action _OnFinish)
+        public static UnityAction WaitForSecs(float _Seconds, Action _OnFinish)
         {
             return () =>
             {
@@ -136,14 +132,14 @@ namespace Utils
         //https://answers.unity.com/questions/246116/how-can-i-generate-a-guid-or-a-uuid-from-within-un.html
         public static string GetUniqueId()
         {
-            var epochStart = new System.DateTime(1970, 1, 1, 8, 0, 0, System.DateTimeKind.Utc);
-            double timestamp = (System.DateTime.UtcNow - epochStart).TotalSeconds;
+            var epochStart = new DateTime(1970, 1, 1, 8, 0, 0, DateTimeKind.Utc);
+            double timestamp = (DateTime.UtcNow - epochStart).TotalSeconds;
          
             string uniqueId = Application.systemLanguage //Language
                               + "-" + Application.platform //Device    
-                              + "-" + string.Format("{0:X}", System.Convert.ToInt32(timestamp)) //Time
-                              + "-" + string.Format("{0:X}", System.Convert.ToInt32(Time.time * 1000000)) //Time in game
-                              + "-" + string.Format("{0:X}", RandomGen.Next(1000000000)); //random number
+                              + "-" + $"{Convert.ToInt32(timestamp):X}" //Time
+                              + "-" + $"{Convert.ToInt32(Time.time * 1000000):X}" //Time in game
+                              + "-" + $"{RandomGen.Next(1000000000):X}"; //random number
          
             Debug.Log($"Generated Unique ID: {uniqueId}");
             
@@ -158,8 +154,7 @@ namespace Utils
         
         public static void CopyToClipboard(this string _Text)
         {
-            TextEditor te = new TextEditor();
-            te.text = _Text;
+            var te = new TextEditor {text = _Text};
             te.SelectAll();
             te.Copy();
         }
@@ -172,7 +167,7 @@ namespace Utils
         
         public static T CreateObject<T>(Transform _Parent, string _Name) where T : Component
         {
-            GameObject go = new GameObject(_Name);
+            var go = new GameObject(_Name);
             // link object to parent
             if (_Parent != null)
                 go.transform.SetParent(_Parent, false);
@@ -182,33 +177,33 @@ namespace Utils
         
         public static string ToRoman(int _Number)
         {
-            if (_Number < 0 || _Number >= 40) throw new System.ArgumentOutOfRangeException();
+            if (_Number < 0 || _Number >= 40) throw new ArgumentOutOfRangeException();
             if (_Number < 1) return string.Empty;
             if (_Number >= 10) return "X" + ToRoman(_Number - 10);
             if (_Number >= 9) return "IX" + ToRoman(_Number - 9);
             if (_Number >= 5) return "V" + ToRoman(_Number - 5);
             if (_Number >= 4) return "IV" + ToRoman(_Number - 4);
             if (_Number >= 1) return "I" + ToRoman(_Number - 1);
-            throw new System.ArgumentOutOfRangeException();
+            throw new ArgumentOutOfRangeException();
         }
     
-        public static string GetMD5Hash(string _StrToEncrypt)
+        public static string GetMd5Hash(string _StrToEncrypt)
         {
             UTF8Encoding ue = new UTF8Encoding();
-            return GetMD5Hash(ue.GetBytes(_StrToEncrypt));
+            return GetMd5Hash(ue.GetBytes(_StrToEncrypt));
         }
 
-        public static string GetMD5Hash(byte[] _Bytes)
+        public static string GetMd5Hash(byte[] _Bytes)
         {
             return Md5.GetMd5String(_Bytes);
         }
     
         public static bool IsEmailAddressValid(string _Mail)
         {
-            int atInd = _Mail.IndexOf("@", System.StringComparison.Ordinal);
+            int atInd = _Mail.IndexOf("@", StringComparison.Ordinal);
             if (atInd <= 0)
                 return false;
-            int dotInd = _Mail.IndexOf(".", atInd,System.StringComparison.Ordinal);
+            int dotInd = _Mail.IndexOf(".", atInd, StringComparison.Ordinal);
             return dotInd - atInd > 1 && dotInd < _Mail.Length - 1;
         }
         
@@ -217,13 +212,13 @@ namespace Utils
             return _Val >= _Min && _Val <= _Max;
         }
     
-        public static bool IsInRange(int val, int min, int max)
+        public static bool IsInRange(int _Val, int _Min, int _Max)
         {
-            return val >= min && val <= max;
+            return _Val >= _Min && _Val <= _Max;
         }
         
         public static Dictionary<TKey, TValue> Clone<TKey, TValue>
-            (this Dictionary<TKey, TValue> _Original) where TValue : System.ICloneable
+            (this Dictionary<TKey, TValue> _Original) where TValue : ICloneable
         {
             Dictionary<TKey, TValue> ret = new Dictionary<TKey, TValue>(_Original.Count,
                 _Original.Comparer);

@@ -4,13 +4,11 @@ namespace Network.Packets
 {
     public class RankPacket : PacketBase
     {
-        public override int Id => 10;
+        public override int Id => 90;
         public override string Url => $"{GameClient.Instance.BaseUrl}/api/scores/rank";
         public RankResponseArgs Response { get; private set; }
         
-        public RankPacket(RankRequestArgs _Request) : base(_Request)
-        {
-        }
+        public RankPacket(RankRequestArgs _Request) : base(_Request) { }
 
         public override void DeserializeResponse(string _Json)
         {

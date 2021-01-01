@@ -1,9 +1,11 @@
 ﻿#if UNITY_EDITOR || DEVELOPMENT_BUILD
+using System;
 using System.Linq;
 using Constants;
 using Controllers;
 using Entities;
 using Lean.Localization;
+using Managers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;
@@ -27,6 +29,7 @@ namespace DebugConsole
             Controller.RegisterCommand("target_fps", SetTargetFps, "Set target frame rate");
             Controller.RegisterCommand("wof_spin_enable", EnableSpinButton, "Enable wheel of fortune spin.");
             Controller.RegisterCommand("auth_google", AuthWithGoogle, "Authenticate with Google");
+            Controller.RegisterCommand("enable_ads", EnableAds, "Enable or disable advertising (true/false)");
         }
 
         private static void Reload(string[] _Args)
@@ -96,7 +99,7 @@ namespace DebugConsole
         
         private static void ClearConsole(string[] _Args)
         {
-            System.Array.Clear(Controller.Log, 0, Controller.Log.Length);
+            Array.Clear(Controller.Log, 0, Controller.Log.Length);
             Controller.Scrollback.Clear();
             Controller.RaiseLogChangedEvent(Controller.Log);
         }
@@ -112,7 +115,7 @@ namespace DebugConsole
                     if (arg == "-h")
                     {
                         Controller.AppendLogLine("Current language list:");
-                        foreach (var lang in System.Enum.GetValues(typeof(Language)))
+                        foreach (var lang in Enum.GetValues(typeof(Language)))
                         {
                             Controller.AppendLogLine(lang.ToString());
                         }
@@ -136,13 +139,28 @@ namespace DebugConsole
         
         private static void EnableSpinButton(string[] _Args)
         {
-            SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, System.DateTime.Now.Date.AddDays(-1));
+            SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, DateTime.Now.Date.AddDays(-1));
         }
 
         private static void AuthWithGoogle(string[] _Args)
         {
             var auth = new AuthController();
-            auth.AuthenticateWithGoogle();
+            auth.AuthenticateWithGoogleOnAndroid();
+        }
+
+        private static void EnableAds(string[] _Args)
+        {
+            if (_Args == null || !_Args.Any())
+            {
+                Controller.AppendLogLine(@"Argument need! ""true"" or ""false""");
+                return;
+            }
+            if (_Args[0] != "true" && _Args[0] != "false")
+            {
+                Controller.AppendLogLine(@"Wrong argument! Need ""true"" or ""false""");
+                return;
+            }
+            AdsManager.Instance.ShowAds = _Args[0] == "true";
         }
     }
 }
