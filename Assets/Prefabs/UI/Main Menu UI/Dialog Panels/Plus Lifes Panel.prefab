@@ -102,6 +102,7 @@ GameObject:
   - component: {fileID: 3154862824903170091}
   - component: {fileID: 1626520194818398428}
   - component: {fileID: 693404523997546405}
+  - component: {fileID: 4078915273877858213}
   m_Layer: 0
   m_Name: Exchange
   m_TagString: Untagged
@@ -195,6 +196,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   radius: 30
+--- !u!114 &4078915273877858213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 60264770516395120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cacb2d1dd5b74e3ea744e7ef8f9d2592, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  background: {fileID: 0}
+  border: {fileID: 1626520194818398428}
+  shadow: {fileID: 0}
+  texts:
+  - {fileID: 2978975245690021882}
+  - {fileID: 7965521129697955965}
+  - {fileID: 4857693708744883810}
+  - {fileID: 5368474195214013443}
+  - {fileID: 1314204839289598210}
 --- !u!1 &77158215352869245
 GameObject:
   m_ObjectHideFlags: 0
@@ -298,6 +320,7 @@ GameObject:
   - component: {fileID: 6205372546214555301}
   - component: {fileID: 7227742348304309397}
   - component: {fileID: 4746815325940813215}
+  - component: {fileID: 7964181929820068425}
   m_Layer: 5
   m_Name: Exchange Button
   m_TagString: Untagged
@@ -418,7 +441,7 @@ Animator:
   m_GameObject: {fileID: 240480133972222099}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 13fba0a07e6b4a64387f9571b4d65adc, type: 2}
+  m_Controller: {fileID: 9100000, guid: efba89dbfd9db3245ad2f7de4de8cd5a, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -427,6 +450,23 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &7964181929820068425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 240480133972222099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 782ac7148f4b411b8c779fa71f28211b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  background: {fileID: 1340118525794311687}
+  border: {fileID: 7638065828687876151}
+  shadow: {fileID: 532891131772001111}
+  texts:
+  - {fileID: 7128508710724211822}
 --- !u!1 &395481782464413571
 GameObject:
   m_ObjectHideFlags: 0
@@ -630,6 +670,7 @@ GameObject:
   - component: {fileID: 5295861544227893480}
   - component: {fileID: 2801301436524589229}
   - component: {fileID: 3234981960603555572}
+  - component: {fileID: 190029304072475115}
   m_Layer: 5
   m_Name: Reset Button
   m_TagString: Untagged
@@ -750,7 +791,7 @@ Animator:
   m_GameObject: {fileID: 910897082081678872}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 13fba0a07e6b4a64387f9571b4d65adc, type: 2}
+  m_Controller: {fileID: 9100000, guid: efba89dbfd9db3245ad2f7de4de8cd5a, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -759,6 +800,23 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &190029304072475115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 910897082081678872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 782ac7148f4b411b8c779fa71f28211b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  background: {fileID: 3882884171576958315}
+  border: {fileID: 6425496468260532714}
+  shadow: {fileID: 3839874278379422002}
+  texts:
+  - {fileID: 1358225188948625219}
 --- !u!1 &1036159041155895354
 GameObject:
   m_ObjectHideFlags: 0
@@ -1740,6 +1798,7 @@ GameObject:
   - component: {fileID: 5288032525944707737}
   - component: {fileID: 4166566855169405434}
   - component: {fileID: 870917085632348103}
+  - component: {fileID: 401654902152479334}
   m_Layer: 5
   m_Name: Plus 10 Button
   m_TagString: Untagged
@@ -1861,7 +1920,7 @@ Animator:
   m_GameObject: {fileID: 2471409887187338952}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 13fba0a07e6b4a64387f9571b4d65adc, type: 2}
+  m_Controller: {fileID: 9100000, guid: efba89dbfd9db3245ad2f7de4de8cd5a, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1870,6 +1929,23 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &401654902152479334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2471409887187338952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 782ac7148f4b411b8c779fa71f28211b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  background: {fileID: 2455716520619304566}
+  border: {fileID: 2098373006685108495}
+  shadow: {fileID: 3824174123607408078}
+  texts:
+  - {fileID: 1973271642266490157}
 --- !u!1 &2494289954479401193
 GameObject:
   m_ObjectHideFlags: 0
@@ -2383,6 +2459,7 @@ GameObject:
   - component: {fileID: 1413200295294124857}
   - component: {fileID: 3859768349070979221}
   - component: {fileID: 1892188451130392443}
+  - component: {fileID: 2222395990985460586}
   m_Layer: 5
   m_Name: Plus 100 Button
   m_TagString: Untagged
@@ -2504,7 +2581,7 @@ Animator:
   m_GameObject: {fileID: 3496721699962312694}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 13fba0a07e6b4a64387f9571b4d65adc, type: 2}
+  m_Controller: {fileID: 9100000, guid: efba89dbfd9db3245ad2f7de4de8cd5a, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -2513,6 +2590,23 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &2222395990985460586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3496721699962312694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 782ac7148f4b411b8c779fa71f28211b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  background: {fileID: 7817040468512038356}
+  border: {fileID: 6204670375635851108}
+  shadow: {fileID: 2991903780844395327}
+  texts:
+  - {fileID: 7921876645538375759}
 --- !u!1 &3738855901472117870
 GameObject:
   m_ObjectHideFlags: 0
@@ -3561,6 +3655,7 @@ GameObject:
   - component: {fileID: 3494787878712782677}
   - component: {fileID: 985550496794159020}
   - component: {fileID: 7344053820772402871}
+  - component: {fileID: 8267282975095734115}
   m_Layer: 5
   m_Name: Plus 1 Button
   m_TagString: Untagged
@@ -3682,7 +3777,7 @@ Animator:
   m_GameObject: {fileID: 5720548372671346147}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 13fba0a07e6b4a64387f9571b4d65adc, type: 2}
+  m_Controller: {fileID: 9100000, guid: efba89dbfd9db3245ad2f7de4de8cd5a, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -3691,6 +3786,23 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &8267282975095734115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5720548372671346147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 782ac7148f4b411b8c779fa71f28211b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  background: {fileID: 6521572013707251800}
+  border: {fileID: 1750439150849724364}
+  shadow: {fileID: 5188560821887519518}
+  texts:
+  - {fileID: 8244555772565648348}
 --- !u!1 &5723602909370097711
 GameObject:
   m_ObjectHideFlags: 0
@@ -4020,6 +4132,7 @@ GameObject:
   - component: {fileID: 2858988515721246091}
   - component: {fileID: 1211803029955660130}
   - component: {fileID: 4326648242049170816}
+  - component: {fileID: 753485898089421039}
   m_Layer: 0
   m_Name: Plus Lifes Panel
   m_TagString: Untagged
@@ -4157,6 +4270,23 @@ MonoBehaviour:
       name: gold_warning_icon
     - item: {fileID: 8285859201962201405}
       name: diamonds_warning_icon
+--- !u!114 &753485898089421039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5894679440432804922}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cacb2d1dd5b74e3ea744e7ef8f9d2592, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  background: {fileID: 2388796399574311266}
+  border: {fileID: 5301681330142143562}
+  shadow: {fileID: 6718045617715612141}
+  texts:
+  - {fileID: 4037004017839515321}
 --- !u!1 &6019277156705865009
 GameObject:
   m_ObjectHideFlags: 0
@@ -4343,6 +4473,7 @@ GameObject:
   - component: {fileID: 7336031439850101016}
   - component: {fileID: 6739539079113964539}
   - component: {fileID: 6460454958702306001}
+  - component: {fileID: 3992760881204661919}
   m_Layer: 5
   m_Name: Shop Button
   m_TagString: Untagged
@@ -4463,7 +4594,7 @@ Animator:
   m_GameObject: {fileID: 6034151437510723364}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 13fba0a07e6b4a64387f9571b4d65adc, type: 2}
+  m_Controller: {fileID: 9100000, guid: efba89dbfd9db3245ad2f7de4de8cd5a, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -4472,6 +4603,23 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &3992760881204661919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6034151437510723364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 782ac7148f4b411b8c779fa71f28211b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  background: {fileID: 2835894848241992050}
+  border: {fileID: 4124590784051464671}
+  shadow: {fileID: 2281829892787306901}
+  texts:
+  - {fileID: 8625037962254396242}
 --- !u!1 &6231376512777884928
 GameObject:
   m_ObjectHideFlags: 0

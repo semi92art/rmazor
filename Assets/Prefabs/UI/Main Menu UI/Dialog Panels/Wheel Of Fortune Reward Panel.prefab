@@ -839,6 +839,7 @@ GameObject:
   - component: {fileID: 6464686154105717949}
   - component: {fileID: 2610866382671325752}
   - component: {fileID: 5063241499148990229}
+  - component: {fileID: 1586098095934753589}
   m_Layer: 0
   m_Name: Wheel Of Fortune Reward Panel
   m_TagString: Untagged
@@ -915,6 +916,24 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1586098095934753589
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8219298684319459333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cacb2d1dd5b74e3ea744e7ef8f9d2592, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  background: {fileID: 1109469875758932689}
+  border: {fileID: 1449032150117461140}
+  shadow: {fileID: 0}
+  texts:
+  - {fileID: 4719008432578410783}
+  - {fileID: 2227881001101410867}
 --- !u!1001 &4701914424137266434
 PrefabInstance:
   m_ObjectHideFlags: 0

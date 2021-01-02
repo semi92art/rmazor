@@ -52,6 +52,35 @@ namespace UI.PanelItems
             if (!string.IsNullOrEmpty(_Props.Description))
                 description.text = _Props.Description;
             price.text = $"{_Props.Price:F2}$";
+
+            switch (_Props.Type)
+            {
+                case ShopItemType.NoAds:
+                    title.color = ColorUtils.GetColorFromCurrentPalette(CommonPaletteColors.UiShopNoAdsTitle);
+                    break;
+                case ShopItemType.Money:
+                case ShopItemType.Lifes:
+                    switch (_Props.Size)
+                    {
+                        case ShopItemSize.Small:
+                            title.color = ColorUtils.GetColorFromCurrentPalette(
+                                CommonPaletteColors.UiShopSmallSetTitle);
+                            break;
+                        case ShopItemSize.Medium:
+                            title.color = ColorUtils.GetColorFromCurrentPalette(
+                                CommonPaletteColors.UiShopMediumSetTitle);
+                            break;
+                        case ShopItemSize.Big:
+                            title.color = ColorUtils.GetColorFromCurrentPalette(
+                                CommonPaletteColors.UiShopBigSetTitle);
+                            break;
+                        default:
+                            throw new InvalidEnumArgumentExceptionEx(_Props.Size);
+                    }
+                    break;
+                default:
+                    throw new InvalidEnumArgumentExceptionEx(_Props.Type);
+            }
         }
 
         protected string BagSize(ShopItemSize _Size)

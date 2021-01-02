@@ -506,7 +506,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 2
   m_textAlignment: 258
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -578,6 +578,7 @@ GameObject:
   - component: {fileID: 7820643953804770633}
   - component: {fileID: 4185812958595626238}
   - component: {fileID: 2625840915405619154}
+  - component: {fileID: 7884397069926795877}
   m_Layer: 0
   m_Name: Shop Item Default
   m_TagString: Untagged
@@ -671,7 +672,7 @@ Animator:
   m_GameObject: {fileID: 3257581172924190555}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 7c8921bfebee29b45b791f2d0297fcd3, type: 2}
+  m_Controller: {fileID: 9100000, guid: 1a56f884a047bd542b08a599eb033d8a, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -726,6 +727,25 @@ MonoBehaviour:
   description: {fileID: 2310317921150404518}
   price: {fileID: 3595652779965104956}
   icon: {fileID: 8247920742439375921}
+--- !u!114 &7884397069926795877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3257581172924190555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a51db108d614017ad1f50be2f2ce143, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  background: {fileID: 1534909530632413018}
+  border: {fileID: 966977994159661218}
+  shadow: {fileID: 3450991396198211506}
+  texts:
+  - {fileID: 7197588681721016454}
+  - {fileID: 2310317921150404518}
+  - {fileID: 3595652779965104956}
 --- !u!1 &6621403717188039584
 GameObject:
   m_ObjectHideFlags: 0

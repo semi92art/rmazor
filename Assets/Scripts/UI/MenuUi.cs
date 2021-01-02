@@ -27,6 +27,7 @@ namespace UI
         private IMenuDialogViewer m_MenuDialogViewer;
         private INotificationViewer m_NotificationViewer;
         private ITransitionRenderer m_TransitionRenderer;
+        private MainBackgroundRenderer m_MainBackgroundRenderer;
         private RectTransform m_Background;
 
         #endregion
@@ -75,25 +76,32 @@ namespace UI
 
         private void CreateBackground()
         {
-            var go = PrefabInitializer.InitUiPrefab(
-                UiFactory.UiRectTransform(
-                    m_Canvas.RTransform(),
-                    RtrLites.FullFill),
-                CommonStyleNames.MainMenu,
-                "background_panel");
-            m_Background = go.RTransform();
-        
-            m_MenuDialogViewer.AddNotDialogItem(m_Background, 
-                MenuUiCategory.Loading |
-                MenuUiCategory.Profile |
-                MenuUiCategory.Settings |
-                MenuUiCategory.Shop |
-                MenuUiCategory.DailyBonus |
-                MenuUiCategory.MainMenu |
-                MenuUiCategory.SelectGame |
-                MenuUiCategory.Login |
-                MenuUiCategory.PlusLifes |
-                MenuUiCategory.PlusMoney);
+            var backgroundPanel = CreateMainMenuBackgroundPanel();
+            m_MainBackgroundRenderer = MainBackgroundRenderer.Create();
+            RawImage rImage = backgroundPanel.GetCompItem<RawImage>("raw_image");
+            rImage.texture = m_MainBackgroundRenderer.Texture;
+            
+            // var go = PrefabInitializer.InitUiPrefab(
+            //     UiFactory.UiRectTransform(
+            //         m_Canvas.RTransform(),
+            //         RtrLites.FullFill),
+            //     CommonStyleNames.MainMenu,
+            //     "background_panel");
+            // m_Background = go.RTransform();
+            //
+            //
+            //
+            // m_MenuDialogViewer.AddNotDialogItem(m_Background, 
+            //     MenuUiCategory.Loading |
+            //     MenuUiCategory.Profile |
+            //     MenuUiCategory.Settings |
+            //     MenuUiCategory.Shop |
+            //     MenuUiCategory.DailyBonus |
+            //     MenuUiCategory.MainMenu |
+            //     MenuUiCategory.SelectGame |
+            //     MenuUiCategory.Login |
+            //     MenuUiCategory.PlusLifes |
+            //     MenuUiCategory.PlusMoney);
         }
     
         private void CreateDialogViewers()
@@ -209,7 +217,8 @@ namespace UI
             m_MainMenuUi = new MainMenuUi(
                 m_Canvas.RTransform(),
                 m_MenuDialogViewer,
-                m_NotificationViewer);
+                m_NotificationViewer,
+                m_MainBackgroundRenderer);
             m_MainMenuUi.AddObservers(GetObservers());
             m_MainMenuUi.Init();
         }
@@ -219,6 +228,13 @@ namespace UI
             return PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(m_Canvas.RTransform(), RtrLites.FullFill),
                 "ui_panel_transition", "transition_panel");
+        }
+
+        private GameObject CreateMainMenuBackgroundPanel()
+        {
+            return PrefabInitializer.InitUiPrefab(
+                UiFactory.UiRectTransform(m_Canvas.RTransform(), RtrLites.FullFill),
+                "main_menu", "main_menu_background_panel");
         }
     
         #endregion

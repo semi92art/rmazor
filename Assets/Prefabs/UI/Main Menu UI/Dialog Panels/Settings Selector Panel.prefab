@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3160550826274539680}
   - component: {fileID: 2338348674611996818}
   - component: {fileID: 540576917986103651}
+  - component: {fileID: 5930312382394691294}
   m_Layer: 0
   m_Name: Settings Selector Panel
   m_TagString: Untagged
@@ -66,6 +67,22 @@ MonoBehaviour:
       name: content
     - item: {fileID: 1387803228975601542}
       name: viewport
+--- !u!114 &5930312382394691294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 432638780763177933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cacb2d1dd5b74e3ea744e7ef8f9d2592, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  background: {fileID: 575995176358991561}
+  border: {fileID: 730766186299289662}
+  shadow: {fileID: 7906723185114202465}
+  texts: []
 --- !u!1 &553711355306752002
 GameObject:
   m_ObjectHideFlags: 0

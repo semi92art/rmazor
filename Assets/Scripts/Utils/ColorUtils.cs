@@ -1,4 +1,5 @@
-﻿using PygmyMonkey.ColorPalette;
+﻿using Network;
+using PygmyMonkey.ColorPalette;
 using UnityEngine;
 
 namespace Utils
@@ -22,6 +23,19 @@ namespace Utils
             var cpd = ColorPaletteData.Singleton;
             int paletteIdx = cpd.getPaletteIndexFromName(_PaletteName);
             return cpd.colorPaletteList[paletteIdx].getColorFromName(_ColorName).color;
+        }
+
+        public static Color GetColorFromCurrentPalette(string _ColorName)
+        {
+            return GetCurrentPalette().getColorFromName(_ColorName).color;
+        }
+
+        private static ColorPalette GetCurrentPalette()
+        {
+            string paletteName = $"Game {GameClient.Instance.GameId}";
+            var cpd = ColorPaletteData.Singleton;
+            int paletteIdx = cpd.getPaletteIndexFromName(paletteName);
+            return cpd.colorPaletteList[paletteIdx];
         }
     }
 }

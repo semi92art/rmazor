@@ -166,14 +166,14 @@ MonoBehaviour:
   size: 50
   offsetAngle: 90
   offsetDistance: 4
-  offset: {x: 0, y: 0}
+  offset: {x: 0.00000023841858, y: -3.9999998}
   color: {r: 0, g: 0, b: 0, a: 1}
   blendMode: 0
   shadowAsSibling: 0
   cutout: 0
   baked: 0
   colorBleedMode: 0
-  modifiedFromInspector: 1
+  modifiedFromInspector: 0
   bakedShadows: []
 --- !u!1 &4369251929842834086
 GameObject:
@@ -497,6 +497,7 @@ GameObject:
   - component: {fileID: 6464686154105717949}
   - component: {fileID: 6012472167807389483}
   - component: {fileID: 2610866382671325752}
+  - component: {fileID: 3263378176620707105}
   m_Layer: 0
   m_Name: Shop Panel
   m_TagString: Untagged
@@ -582,3 +583,19 @@ MonoBehaviour:
       name: viewport
     - item: {fileID: 4369251929842834086}
       name: content
+--- !u!114 &3263378176620707105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8219298684319459333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cacb2d1dd5b74e3ea744e7ef8f9d2592, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  background: {fileID: 6996633448739404900}
+  border: {fileID: 3790684800849750929}
+  shadow: {fileID: 2488544707070032149}
+  texts: []

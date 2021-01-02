@@ -14,31 +14,113 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_currentPaletteIndex: 0
   colorPaletteList:
-  - name: UI
+  - name: Game 1
     showDetails: 1
     colorInfoList:
-    - name: Image Main Background
-      color: {r: 0.83921576, g: 0.8235295, b: 0.7686275, a: 1}
-    - name: Image Dialog Background
-      color: {r: 0.6981132, g: 0.6798188, b: 0.6157885, a: 1}
-    - name: Dialog Item Normal
-      color: {r: 0.6509434, g: 0.62974244, b: 0.56189924, a: 1}
-    - name: Dialog Item Pressed
-      color: {r: 0.5471698, g: 0.52301174, b: 0.4465112, a: 1}
-    - name: Button Normal
+    - name: UI Button Normal
       color: {r: 0.49056602, g: 0.48310983, b: 0.42346027, a: 1}
-    - name: Button Pressed
+    - name: UI Button Pressed
       color: {r: 0.3882353, g: 0.38039216, b: 0.32941177, a: 1}
-    - name: Button Disabled
+    - name: UI Button Disabled
       color: {r: 0.5377358, g: 0.5377358, b: 0.5377358, a: 1}
-    - name: Text
+    - name: UI Dialog Item Normal
+      color: {r: 0.6509434, g: 0.62974244, b: 0.56189924, a: 1}
+    - name: UI Dialog Item Pressed
+      color: {r: 0.5471698, g: 0.52301174, b: 0.4465112, a: 1}
+    - name: UI Dialog Item Disabled
+      color: {r: 0.5377358, g: 0.5377358, b: 0.5377358, a: 1}
+    - name: UI Toggle Normal
       color: {r: 1, g: 1, b: 1, a: 1}
-    - name: Text Dark
-      color: {r: 0, g: 0, b: 0, a: 1}
-    - name: Text Error
-      color: {r: 1, g: 0, b: 0, a: 1}
-    - name: Text PlaceHolder
-      color: {r: 0.61960787, g: 0.61960787, b: 0.61960787, a: 1}
+    - name: UI Toggle Pressed
+      color: {r: 0.8396226, g: 0.8396226, b: 0.8396226, a: 1}
+    - name: UI Toggle Disabled
+      color: {r: 0.5372549, g: 0.5372549, b: 0.5372549, a: 1}
+    - name: UI Toggle Check Mark
+      color: {r: 0.6509804, g: 0.6313726, b: 0.56078434, a: 1}
+    - name: UI Main Background
+      color: {r: 0.83921576, g: 0.8235295, b: 0.7686275, a: 1}
+    - name: UI Dialog Background
+      color: {r: 0.6981132, g: 0.6798188, b: 0.6157885, a: 1}
+    - name: UI Border Default
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - name: UI Text Default
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - name: UI Shop No Ads Title
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - name: UI Shop Small Set Title
+      color: {r: 0.23113209, g: 1, b: 0.26479375, a: 1}
+    - name: UI Shop Medium Set Title
+      color: {r: 0.19339621, g: 0.3924006, b: 1, a: 1}
+    - name: UI Shop Big Set Title
+      color: {r: 1, g: 0.18396229, b: 0.18396229, a: 1}
+    - name: UI Loading Panel Outer Indicator
+      color: {r: 0.9490197, g: 0.87843144, b: 0.75294125, a: 1}
+    - name: UI Loading Panel Inner Indicator
+      color: {r: 0.6226415, g: 0.530655, b: 0.36712354, a: 1}
+    - name: UI Main Menu Background Color 1
+      color: {r: 0.83921576, g: 0.8235295, b: 0.7686275, a: 1}
+    - name: UI Main Menu Background Color 2
+      color: {r: 0.745283, g: 0.7280252, b: 0.6503649, a: 1}
+    colorList: []
+  - name: Game 4
+    showDetails: 1
+    colorInfoList:
+    - name: UI Button Normal
+      color: {r: 0.49056602, g: 0.48310983, b: 0.42346027, a: 1}
+    - name: UI Button Pressed
+      color: {r: 0.3882353, g: 0.38039216, b: 0.32941177, a: 1}
+    - name: UI Button Disabled
+      color: {r: 0.5377358, g: 0.5377358, b: 0.5377358, a: 1}
+    - name: UI Dialog Item Normal
+      color: {r: 0.6509434, g: 0.62974244, b: 0.56189924, a: 1}
+    - name: UI Dialog Item Pressed
+      color: {r: 0.5471698, g: 0.52301174, b: 0.4465112, a: 1}
+    - name: UI Dialog Item Disabled
+      color: {r: 0.5377358, g: 0.5377358, b: 0.5377358, a: 1}
+    - name: UI Toggle Normal
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - name: UI Toggle Pressed
+      color: {r: 0.8396226, g: 0.8396226, b: 0.8396226, a: 1}
+    - name: UI Toggle Disabled
+      color: {r: 0.5372549, g: 0.5372549, b: 0.5372549, a: 1}
+    - name: UI Toggle Check Mark
+      color: {r: 0.6509804, g: 0.6313726, b: 0.56078434, a: 1}
+    - name: UI Main Background
+      color: {r: 0.5410229, g: 0.52812386, b: 0.8679245, a: 1}
+    - name: UI Dialog Background
+      color: {r: 0.6981132, g: 0.6798188, b: 0.6157885, a: 1}
+    - name: UI Border Default
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - name: UI Text Default
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - name: UI Shop No Ads Title
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - name: UI Shop Small Set Title
+      color: {r: 0.23113209, g: 1, b: 0.26479375, a: 1}
+    - name: UI Shop Medium Set Title
+      color: {r: 0.19339621, g: 0.3924006, b: 1, a: 1}
+    - name: UI Shop Big Set Title
+      color: {r: 1, g: 0.18396229, b: 0.18396229, a: 1}
+    - name: UI Loading Panel Outer Indicator
+      color: {r: 0.9490197, g: 0.87843144, b: 0.75294125, a: 1}
+    - name: UI Loading Panel Inner Indicator
+      color: {r: 0.6226415, g: 0.530655, b: 0.36712354, a: 1}
+    - name: UI Main Menu Background Color 1
+      color: {r: 0.5410229, g: 0.52812386, b: 0.8679245, a: 1}
+    - name: UI Main Menu Background Color 2
+      color: {r: 0.45010477, g: 0.43943575, b: 0.745283, a: 1}
+    colorList: []
+  - name: Main Menu Bottom Group Buttons
+    showDetails: 1
+    colorInfoList:
+    - name: Login
+      color: {r: 0.3803922, g: 0.57254905, b: 0.7686275, a: 1}
+    - name: Wheel Of Fortune
+      color: {r: 0.5372549, g: 0.2509804, b: 0.5372549, a: 1}
+    - name: Daily Bonus
+      color: {r: 0.5882353, g: 0.8431373, b: 0.33333334, a: 1}
+    - name: Shop
+      color: {r: 0.9058824, g: 0.2901961, b: 0.2901961, a: 1}
     colorList: []
   - name: Points Tapper
     showDetails: 1
@@ -55,16 +137,4 @@ MonoBehaviour:
       color: {r: 0.7254902, g: 0.7137255, b: 0.64705884, a: 1}
     - name: Random
       color: {r: 0.7568628, g: 0.7490196, b: 0.6901961, a: 1}
-    colorList: []
-  - name: Main Menu Bottom Group Buttons
-    showDetails: 1
-    colorInfoList:
-    - name: Login
-      color: {r: 0.427451, g: 0.427451, b: 0.8431373, a: 1}
-    - name: Wheel Of Fortune
-      color: {r: 0.5372549, g: 0.2509804, b: 0.5372549, a: 1}
-    - name: Daily Bonus
-      color: {r: 0.5882353, g: 0.8431373, b: 0.33333334, a: 1}
-    - name: Shop
-      color: {r: 0.9058824, g: 0.2901961, b: 0.2901961, a: 1}
     colorList: []

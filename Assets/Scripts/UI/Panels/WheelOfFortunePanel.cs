@@ -87,6 +87,7 @@ namespace UI.Panels
                 "wheel_main");
             m_WheelController = m_Wheel.GetCompItem<WheelController>("wheel_controller");
             SpriteRenderer background = m_Wheel.GetCompItem<SpriteRenderer>("background");
+            background.color = ColorUtils.GetColorFromCurrentPalette(CommonPaletteColors.UiMainBackground);
             var cameraBounds = GameUtils.GetVisibleBounds();
             Transform tr = background.transform;
             Vector3 lScale = tr.localScale;

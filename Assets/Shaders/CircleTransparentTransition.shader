@@ -14,7 +14,7 @@
             "Queue"="Transparent"
             "RenderType"="Transparent"
         }
-
+        
         Cull Off
         Lighting Off
         ZWrite Off
@@ -60,11 +60,13 @@
 
                 OUT.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
                 OUT.color = v.color * _Color;
-
+                
+                // Transition start
                 float coordX1 = pow(2 * v.texcoord.x / 10 - 1, 2);
                 float coordY1 = pow(2 * v.texcoord.y / 10 - 1, 2);
-
                 float newAlpha = sqrt((coordX1 * coordX1 + coordY1 * coordY1) / 2) + _AlphaCoeff;
+                // Transition end
+                
                 OUT.color.a = newAlpha;
                 return OUT;
             }

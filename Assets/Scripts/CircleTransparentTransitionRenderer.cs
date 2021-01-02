@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
+using Constants;
 using Extensions;
 using GameHelpers;
-using UI;
 using UnityEngine;
 using Utils;
 #if UNITY_EDITOR
@@ -20,6 +20,7 @@ public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRen
 {
     public EventHandler TransitionAction { get; set; }
     public static readonly int AlphaCoeff = Shader.PropertyToID("_AlphaCoeff");
+    private static readonly int Tint = Shader.PropertyToID("_Color");
     public RenderTexture Texture { get; set; }
 
     public AnimationCurve curve;
@@ -33,11 +34,15 @@ public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRen
     {
         m_Material = transitionRenderer.sharedMaterial;
         m_Material.SetFloat(AlphaCoeff, -1);
+        var backColor = ColorUtils.GetColorFromCurrentPalette(CommonPaletteColors.UiMainBackground);
+        m_Material.SetColor(Tint, backColor);
     }
     
     public static CircleTransparentTransitionRenderer Create()
     {
-        GameObject instance = GameObject.FindGameObjectWithTag("RenderTransitionCamera");
+        string name = "Transparent Transition Renderer Camera";
+        var cameras = GameObject.FindGameObjectsWithTag("TextureCamera");
+        GameObject instance = cameras.FirstOrDefault(_Obj => _Obj.name == name);
         if (instance == null)
         {
             instance = PrefabInitializer.InitPrefab(
@@ -45,6 +50,7 @@ public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRen
                 "ui_panel_transition",
                 "render_camera"
             );
+            instance.name = name;
             instance.transform.position = instance.transform.position.SetX(-50);
         }
         var result = instance.GetComponent<CircleTransparentTransitionRenderer>();
@@ -81,7 +87,7 @@ public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRen
     }
 }
 
-#region Editor
+#region editor
 
 #if UNITY_EDITOR
 [CustomEditor(typeof(CircleTransparentTransitionRenderer))]

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2375447684269315924}
   - component: {fileID: 2443246674266610617}
   - component: {fileID: 7726819044002864188}
-  - component: {fileID: 8738966221224576488}
+  - component: {fileID: 5010043360517318665}
   m_Layer: 0
   m_Name: Login Panel
   m_TagString: Untagged
@@ -100,7 +100,7 @@ MonoBehaviour:
       name: logout_button
     - item: {fileID: 4782514289169581588}
       name: logout_button_text
---- !u!114 &8738966221224576488
+--- !u!114 &5010043360517318665
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -109,10 +109,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1091539298732603443}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8714c362c0c8a6449a9559a31cdab9a5, type: 3}
+  m_Script: {fileID: 11500000, guid: cacb2d1dd5b74e3ea744e7ef8f9d2592, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 0
+  background: {fileID: 2544045564647401292}
+  border: {fileID: 7814465436812130460}
+  shadow: {fileID: 3777276642129238296}
+  texts: []
 --- !u!114 &4786963553956919001
 MonoBehaviour:
   m_ObjectHideFlags: 0

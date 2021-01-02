@@ -149,7 +149,7 @@ public class EditorHelper : EditorWindow
         GuiButtonAction("Set default api url", SetDefaultApiUrl);
         GuiButtonAction("Delete all settings", DeleteAllSettings);
 
-        GuiButtonAction("Set Default Material Props", SetDefaultMaterialProps);
+        GuiButtonAction("Get ready to commit", GetReadyToCommit);
         EditorUtils.DrawUiLine(Color.gray);
         
         GUILayout.BeginHorizontal();
@@ -294,7 +294,7 @@ public class EditorHelper : EditorWindow
         GameClient.Instance.Send(packet);
     }
 
-    private static void SetDefaultMaterialProps()
+    private static void GetReadyToCommit()
     {
         string matPath = @"Assets\Materials\CircleTransparentTransition.mat";
         var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);

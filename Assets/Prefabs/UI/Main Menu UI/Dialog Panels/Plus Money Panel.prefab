@@ -1322,6 +1322,7 @@ GameObject:
   - component: {fileID: 7678507305639209119}
   - component: {fileID: 7236289956725443845}
   - component: {fileID: 6668775250529861087}
+  - component: {fileID: 8717764679665847527}
   m_Layer: 0
   m_Name: Plus Money Panel
   m_TagString: Untagged
@@ -1409,6 +1410,22 @@ MonoBehaviour:
       name: daily_bonus_button
     - item: {fileID: 8877836217167280358}
       name: wheel_of_fortune_button
+--- !u!114 &8717764679665847527
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5731393280859855209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cacb2d1dd5b74e3ea744e7ef8f9d2592, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  background: {fileID: 8528406726517254941}
+  border: {fileID: 2620450441214154212}
+  shadow: {fileID: 387925861303267358}
+  texts: []
 --- !u!1 &5865059866315892280
 GameObject:
   m_ObjectHideFlags: 0
@@ -1595,6 +1612,7 @@ GameObject:
   - component: {fileID: 5797904302603289798}
   - component: {fileID: 8866975731764391457}
   - component: {fileID: 2892012686283842000}
+  - component: {fileID: 5045758175054586370}
   m_Layer: 0
   m_Name: Daily Bonus Button
   m_TagString: Untagged
@@ -1725,6 +1743,23 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &5045758175054586370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6130416741673789242}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a51db108d614017ad1f50be2f2ce143, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  background: {fileID: 1225979001550669324}
+  border: {fileID: 4476169454633013028}
+  shadow: {fileID: 1557732435362923957}
+  texts:
+  - {fileID: 1871445575436112439}
 --- !u!1 &6298372387926074340
 GameObject:
   m_ObjectHideFlags: 0
@@ -2256,6 +2291,7 @@ GameObject:
   - component: {fileID: 6217463413991121874}
   - component: {fileID: 2504467576584495940}
   - component: {fileID: 839942062136026174}
+  - component: {fileID: 7551889218045697245}
   m_Layer: 0
   m_Name: Shop Button
   m_TagString: Untagged
@@ -2348,7 +2384,7 @@ Animator:
   m_GameObject: {fileID: 7621148608963155108}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 7c8921bfebee29b45b791f2d0297fcd3, type: 2}
+  m_Controller: {fileID: 9100000, guid: 1a56f884a047bd542b08a599eb033d8a, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -2386,6 +2422,23 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7551889218045697245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7621148608963155108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a51db108d614017ad1f50be2f2ce143, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  background: {fileID: 959089348388967442}
+  border: {fileID: 689327440916315122}
+  shadow: {fileID: 7049638477271603621}
+  texts:
+  - {fileID: 8097054636967916024}
 --- !u!1 &7716175377515263025
 GameObject:
   m_ObjectHideFlags: 0
@@ -2689,6 +2742,7 @@ GameObject:
   - component: {fileID: 6973940949948951103}
   - component: {fileID: 742874567348726559}
   - component: {fileID: 101486255093199625}
+  - component: {fileID: 5787413453004854946}
   m_Layer: 0
   m_Name: Wheel Of Fortune Button
   m_TagString: Untagged
@@ -2819,3 +2873,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &5787413453004854946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8877836217167280358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a51db108d614017ad1f50be2f2ce143, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  background: {fileID: 4964948067380518480}
+  border: {fileID: 7883959166147696873}
+  shadow: {fileID: 1753971544188753968}
+  texts:
+  - {fileID: 5737446374147822380}

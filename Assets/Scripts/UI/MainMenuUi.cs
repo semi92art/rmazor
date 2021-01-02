@@ -50,6 +50,7 @@ namespace UI
         private MenuUiCategory m_CurrentCategory;
         private Button m_SelectGameButton;
         private Image m_GameLogo;
+        private MainBackgroundRenderer m_MainBackgroundRenderer;
 
         #endregion
 
@@ -58,12 +59,14 @@ namespace UI
         public MainMenuUi(
             RectTransform _Parent,
             IMenuDialogViewer _MenuDialogViewer,
-            INotificationViewer _NotificationViewer)
+            INotificationViewer _NotificationViewer,
+            MainBackgroundRenderer _MainBackgroundRenderer)
         {
             m_Parent = _Parent;
             m_MenuDialogViewer = _MenuDialogViewer;
             m_NotificationViewer = _NotificationViewer;
             UiManager.Instance.CurrentMenuCategory = MenuUiCategory.MainMenu;
+            m_MainBackgroundRenderer = _MainBackgroundRenderer;
         }
 
         #endregion
@@ -158,6 +161,7 @@ namespace UI
         {
             m_GameLogo.sprite = PrefabInitializer.GetObject<Sprite>(
                     "game_logos", $"game_logo_{GameClient.Instance.GameId}");
+            m_MainBackgroundRenderer.UpdateColors();
         }
 
         private void InitCenterButtonsGroup()
