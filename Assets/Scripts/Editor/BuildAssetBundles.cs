@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using Exceptions;
 using UnityEditor;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Utils.Editor;
 using Debug = UnityEngine.Debug;
 
 public static class BuildAssetBundles
 {
-    private const string GitDirectory = "../bundles";
+    private const string BundlesLocalPath = "../bundles";
     private const string GitRepo = "https://semi92art:Anthony_1980@github.com/semi92art/bundles.git";
     private const string ProgressBarTitle = "Building Bundles";
     private static string BundlesPath => $"Assets/AssetBundles/{GetOsBundleSubPath()}";
@@ -27,10 +27,10 @@ public static class BuildAssetBundles
         CopyBundlesToGitFolder();
         
         EditorUtility.DisplayProgressBar(ProgressBarTitle, "Staging in git...", 20f);
-        string unstagedFiles = RunGitCommand("ls-files --others --exclude-standard");
+        string unstagedFiles = GitUtils.RunGitCommand("ls-files --others --exclude-standard", BundlesLocalPath);
         if (!string.IsNullOrEmpty(unstagedFiles))
             Debug.Log($"New Files: {unstagedFiles}");
-        string modifiedFiles = RunGitCommand("diff --name-only");
+        string modifiedFiles = GitUtils.RunGitCommand("diff --name-only", BundlesLocalPath);
         if (!string.IsNullOrEmpty(modifiedFiles))
             Debug.Log($"Modified Files: {modifiedFiles}");
         var fileNames = BundleFileNames(unstagedFiles, modifiedFiles);
@@ -45,12 +45,12 @@ public static class BuildAssetBundles
         if (string.IsNullOrEmpty(fileNamesText) || string.IsNullOrWhiteSpace(fileNamesText))
             Debug.Log("No new bundles to push");
 
-        RunGitCommand($"stage {fileNamesText}");
+        GitUtils.RunGitCommand($"stage {fileNamesText}", BundlesLocalPath);
         EditorUtility.DisplayProgressBar(ProgressBarTitle, "Commit in git...", 50f);
-        RunGitCommand("commit -m 'UnityBuild'");
+        GitUtils.RunGitCommand("commit -m 'UnityBuild'", BundlesLocalPath);
         EditorUtility.DisplayProgressBar(ProgressBarTitle, "Pushing to remote repository...", 70f);
-        RunGitCommand($"remote set-url origin {GitRepo}");
-        RunGitCommand("push origin HEAD");
+        GitUtils.RunGitCommand($"remote set-url origin {GitRepo}", BundlesLocalPath);
+        GitUtils.RunGitCommand("push origin HEAD", BundlesLocalPath);
         EditorUtility.ClearProgressBar();
     }
 
@@ -64,42 +64,6 @@ public static class BuildAssetBundles
             default:
                 throw new InvalidEnumArgumentExceptionEx(EditorUserBuildSettings.activeBuildTarget);
         }
-    }
-    
-    private static string RunGitCommand(string _GitCommand)
-    {
-        ProcessStartInfo processInfo = new ProcessStartInfo("git", $"-C {GitDirectory} {_GitCommand}")
-        {
-            CreateNoWindow = true,
-            UseShellExecute = false,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true
-        };
-        
-        var process = new Process {StartInfo = processInfo};
-
-        try {
-            process.Start();
-        }
-        catch (System.Exception) {
-            Debug.LogError("Git is not set-up correctly, required to be on PATH, and to be a git project.");
-            throw;
-        }
-
-        var output = process.StandardOutput.ReadToEnd();
-        var errorOutput = process.StandardError.ReadToEnd();
-
-        process.WaitForExit();
-        process.Close();
-        
-        if (output.Contains("fatal"))
-        {
-            string message = "Command: git " + _GitCommand + " Failed\n" + output + errorOutput;
-            throw new System.Exception(message);
-        }
-        if (errorOutput != "") 
-            Debug.Log("Git Message: " + errorOutput);
-        return output;
     }
 
     private static IEnumerable<string> BundleFileNames(params string[] _FileNameLists)

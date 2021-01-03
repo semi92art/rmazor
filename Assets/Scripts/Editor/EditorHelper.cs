@@ -17,6 +17,7 @@ using Unity.Android.Logcat;
 #endif
 using UnityEngine.Events;
 using Utils;
+using Utils.Editor;
 
 public class EditorHelper : EditorWindow
 {
@@ -164,13 +165,13 @@ public class EditorHelper : EditorWindow
             m_Quality, new[] { "Normal", "Good" });
         GUILayout.EndHorizontal();
 
-        if (GUILayout.Button("Fix Firebase Dependencies"))
-        {
+        //if (GUILayout.Button("Fix Firebase Dependencies"))
+        //{
             // FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(_Task =>
             // {
             //     FirebaseAnalytics.SetAnalyticsCollectionEnabled(true);
             // });
-        }
+        //}
         
         UpdateTestUrl();
         UpdateGameId();
@@ -261,7 +262,7 @@ public class EditorHelper : EditorWindow
                             {
                                 AccountId = packet.Response.Id,
                                 GameId = gameId,
-                                LastUpdateTime = System.DateTime.Now,
+                                LastUpdateTime = DateTime.Now,
                                 Points = randGen.Next(0, 100),
                                 Type = ScoreTypes.MaxScore
                             });
@@ -296,9 +297,16 @@ public class EditorHelper : EditorWindow
 
     private static void GetReadyToCommit()
     {
-        string matPath = @"Assets\Materials\CircleTransparentTransition.mat";
-        var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
-        mat.SetFloat(CircleTransparentTransitionRenderer.AlphaCoeff, -1);
+        string[] files =
+        {
+            @"Assets\Materials\CircleTransparentTransition.mat",
+            @"Assets\Materials\MainMenuBackground.mat"
+        };
+        foreach (var file in files)
+        {
+            GitUtils.RunGitCommand($"reset -- {file}");
+            GitUtils.RunGitCommand($"checkout -- {file}");
+        }
         AssetDatabase.SaveAssets();
     }
 
