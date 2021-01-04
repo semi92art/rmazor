@@ -46,7 +46,7 @@ namespace PathFinder
         public override void Init(int _Level)
         {
             m_GridItemsGenerator = new GridItemsGenerator();
-            m_GridItemsGenerator.GenerateItems();
+           // m_GridItemsGenerator.GenerateItems();
             // m_PointItemsGenerator = new PointItemsGenerator(
             //     new Dictionary<PointType, UnityAction>
             // {
