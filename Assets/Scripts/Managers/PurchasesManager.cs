@@ -38,7 +38,7 @@ namespace Managers
                         case ShopItemSize.Big:
                             break;
                         default:
-                            throw new InvalidEnumArgumentExceptionEx(props.Size);
+                            throw new SwitchCaseNotImplementedException(props.Size);
                     }
                     break;
                 case ShopItemType.Lifes:
@@ -49,11 +49,11 @@ namespace Managers
                         case ShopItemSize.Big:
                             break;
                         default:
-                            throw new InvalidEnumArgumentExceptionEx(props.Size);
+                            throw new SwitchCaseNotImplementedException(props.Size);
                     }
                     break;
                 default:
-                    throw new InvalidEnumArgumentExceptionEx(props.Type);
+                    throw new SwitchCaseNotImplementedException(props.Type);
             }
         }
         

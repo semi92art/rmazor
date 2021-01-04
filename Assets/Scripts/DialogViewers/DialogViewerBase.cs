@@ -170,7 +170,7 @@ namespace DialogViewers
                         ((IGameUiCategory)_ItemTo?.DialogPanel)?.Category ?? GameUiCategory.Game;
                     break;
                 default:
-                    throw new InvalidEnumArgumentExceptionEx(_UiCategoryType);
+                    throw new SwitchCaseNotImplementedException(_UiCategoryType);
             }
 
             if (itemFrom != null && fromPanel != null && _HidePrevious)

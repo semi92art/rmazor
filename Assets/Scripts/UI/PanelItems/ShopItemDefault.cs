@@ -35,7 +35,7 @@ namespace UI.PanelItems
                     afterPurchaseAction = () => MoneyManager.Instance.PlusMoney(_Props.Rewards);
                     break;
                 default:
-                    throw new InvalidEnumArgumentExceptionEx(_Props.Type);
+                    throw new SwitchCaseNotImplementedException(_Props.Type);
             }
             
             UnityAction action = () =>

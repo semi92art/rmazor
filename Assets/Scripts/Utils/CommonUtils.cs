@@ -37,8 +37,6 @@ namespace Utils
             return "Android";
 #elif UNITY_IPHONE
             return "iOS";
-#else
-            throw new NotImplementedException();
 #endif
         }
 

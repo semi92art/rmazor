@@ -1,13 +1,10 @@
 ﻿using Constants;
-using UnityEngine;
 using Shapes;
+using UnityEngine;
 using UnityEngine.Events;
 using Utils;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
-namespace PointsTapper
+namespace Games.PointsTapper
 {
     public enum PointType
     {
@@ -162,31 +159,4 @@ namespace PointsTapper
 
         #endregion
     }
-
-#if UNITY_EDITOR
-
-    [CustomEditor(typeof(PointItem))]
-    public class PointItemEditor : Editor
-    {
-        private PointItem m_Item;
-
-        private void OnEnable()
-        {
-            m_Item = (PointItem) target;
-        }
-
-        public override void OnInspectorGUI()
-        {
-            base.OnInspectorGUI();
-            GUI.enabled = Application.isPlaying;
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Activate"))
-                m_Item.Activated = true;
-            if (GUILayout.Button("Deactivate"))
-                m_Item.Activated = false;
-            GUILayout.EndHorizontal();
-        }
-    }
-    
-#endif
 }

@@ -84,7 +84,6 @@ namespace UI.Panels
         {
             Notify(this, NotifyMessageLoginButtonClick);
             CleanErrorHandlers();
-            //TODO get translation name from localization
             if (string.IsNullOrEmpty(LoginInputField.text))
                 SetLoginError(LeanLocalization.GetTranslationText("FieldIsEmpty"));
             if (string.IsNullOrEmpty(PasswordInputField.text))

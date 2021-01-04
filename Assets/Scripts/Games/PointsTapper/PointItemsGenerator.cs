@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using Utils;
 
-namespace PointsTapper
+namespace Games.PointsTapper
 {
     public interface IPointItemsGenerator
     {

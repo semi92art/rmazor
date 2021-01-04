@@ -1,5 +1,7 @@
 ﻿using Constants;
-using Managers;
+using Exceptions;
+using Games.LinesDefender;
+using Games.PointsTapper;
 using Network;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -32,7 +34,8 @@ public static class LevelLoader
         switch (_GameId)
         {
             case 1:
-                PointsTapper.PointsTapperManager.Instance.Init(_level);
+                //PointsTapperManager.Instance.Init(_level);
+                //LinesDefenderManager.Instance.Init(_level);
                 break;
             case 2:
                 Debug.Log(WasNotMadeMessage);
@@ -47,7 +50,7 @@ public static class LevelLoader
                 Debug.Log(WasNotMadeMessage);
                 break;
             default:
-                throw new System.NotImplementedException();
+                throw new SwitchCaseNotImplementedException(_GameId);
         }
     }
 }

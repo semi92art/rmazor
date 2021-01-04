@@ -45,7 +45,7 @@ namespace MkeyFW
                     case MoneyType.Lifes:
                         return Coins >= 10;
                     default:
-                        throw new InvalidEnumArgumentExceptionEx(m_MoneyType);
+                        throw new SwitchCaseNotImplementedException(m_MoneyType);
                 }
             }
         }
@@ -71,7 +71,7 @@ namespace MkeyFW
                     iconName = "icon_life";
                     break;
                 default:
-                    throw new InvalidEnumArgumentExceptionEx(m_MoneyType);
+                    throw new SwitchCaseNotImplementedException(m_MoneyType);
             }
 
             icon.sprite = PrefabInitializer.GetObject<Sprite>(styleName, iconName);

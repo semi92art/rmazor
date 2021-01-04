@@ -164,7 +164,7 @@ namespace UI.Managers
                     Application.targetFrameRate = GraphicUtils.GetMenuTargetFps();
                     break;
                 default: 
-                    throw new InvalidEnumArgumentExceptionEx(_New);
+                    throw new SwitchCaseNotImplementedException(_New);
             }
         }
         
@@ -186,7 +186,7 @@ namespace UI.Managers
                     Application.targetFrameRate = GraphicUtils.GetMenuTargetFps();
                     break;
                 default:
-                    throw new InvalidEnumArgumentExceptionEx(_New);
+                    throw new SwitchCaseNotImplementedException(_New);
             }
         }
         

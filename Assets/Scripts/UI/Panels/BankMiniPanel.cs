@@ -306,7 +306,7 @@ namespace UI.Panels
                         isMoney = true;
                         break;
                     default:
-                        throw new InvalidEnumArgumentExceptionEx(moneyType);
+                        throw new SwitchCaseNotImplementedException(moneyType);
                 }
                 
                 Coroutines.Run(Coroutines.WaitWhile(() =>
@@ -501,7 +501,7 @@ namespace UI.Panels
                             // Do nothing
                             break;
                         default:
-                            throw new NotImplementedException();
+                            throw new SwitchCaseNotImplementedException(_Prev);
                     }
                     break;
                 case MenuUiCategory.Profile:
@@ -527,7 +527,7 @@ namespace UI.Panels
                             // Do nothing
                             break;
                         default:
-                            throw new NotImplementedException();
+                            throw new SwitchCaseNotImplementedException(_Prev);
                     }
                     break;
                 case MenuUiCategory.MainMenu:
@@ -548,11 +548,11 @@ namespace UI.Panels
                             trigger = AkFromDlgToMm;
                             break;
                         default:
-                            throw new NotImplementedException();
+                            throw new SwitchCaseNotImplementedException(_Prev);
                     }
                     break;
                 default:
-                    throw new NotImplementedException();
+                    throw new SwitchCaseNotImplementedException(_New);
             }
 
             if (trigger != -1)

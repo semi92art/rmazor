@@ -1,6 +1,6 @@
 ﻿using UI;
 
-namespace PointsTapper
+namespace Games.PointsTapper
 {
     public class PointsTapperGameMenuUi : GameMenuUiBase
     {

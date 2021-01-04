@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using Utils;
 
-namespace PointsTapper
+namespace Games.PointsTapper
 {
     public class RandomPositionGenerator
     {

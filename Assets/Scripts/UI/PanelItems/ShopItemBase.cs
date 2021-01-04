@@ -75,11 +75,11 @@ namespace UI.PanelItems
                                 CommonPaletteColors.UiShopBigSetTitle);
                             break;
                         default:
-                            throw new InvalidEnumArgumentExceptionEx(_Props.Size);
+                            throw new SwitchCaseNotImplementedException(_Props.Size);
                     }
                     break;
                 default:
-                    throw new InvalidEnumArgumentExceptionEx(_Props.Type);
+                    throw new SwitchCaseNotImplementedException(_Props.Type);
             }
         }
 
@@ -95,7 +95,7 @@ namespace UI.PanelItems
                 case ShopItemSize.Big:
                     bagSize = "big"; break;
                 default:
-                    throw new InvalidEnumArgumentExceptionEx(_Size);
+                    throw new SwitchCaseNotImplementedException(_Size);
             }
             return bagSize;
         }

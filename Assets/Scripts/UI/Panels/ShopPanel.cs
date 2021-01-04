@@ -92,7 +92,7 @@ namespace UI.Panels
                         item = ShopItemMoney.Create(content);
                         break;
                     default:
-                        throw new InvalidEnumArgumentExceptionEx(shopItemProps.Type);
+                        throw new SwitchCaseNotImplementedException(shopItemProps.Type);
                 }
                 item.Init(shopItemProps, GetObservers());
             }

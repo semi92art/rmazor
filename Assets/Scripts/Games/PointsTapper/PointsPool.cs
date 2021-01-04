@@ -6,7 +6,7 @@ using UnityEngine;
 using Utils;
 using Object = UnityEngine.Object;
 
-namespace PointsTapper
+namespace Games.PointsTapper
 {
     public class PointsPool : ActivatedMonoBehavioursSpawnPool<PointItem>
     {
@@ -58,7 +58,7 @@ namespace PointsTapper
                     result = PrefabInitializer.GetPrefab("points_tapper", "point_unknown");
                     break;
                 default:
-                    throw new InvalidEnumArgumentExceptionEx(_Type);
+                    throw new SwitchCaseNotImplementedException(_Type);
             }
 
             return result;

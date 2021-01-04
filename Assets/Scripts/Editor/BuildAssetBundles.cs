@@ -62,7 +62,7 @@ public static class BuildAssetBundles
             case BuildTarget.iOS:
                 return EditorUserBuildSettings.activeBuildTarget.ToString();
             default:
-                throw new InvalidEnumArgumentExceptionEx(EditorUserBuildSettings.activeBuildTarget);
+                throw new SwitchCaseNotImplementedException(EditorUserBuildSettings.activeBuildTarget);
         }
     }
 

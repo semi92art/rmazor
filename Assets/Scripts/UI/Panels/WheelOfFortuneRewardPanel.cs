@@ -77,7 +77,7 @@ namespace UI.Panels
                     styleName = "icons";
                     break;
                 default:
-                    throw new InvalidEnumArgumentExceptionEx(m_MoneyType);
+                    throw new SwitchCaseNotImplementedException(m_MoneyType);
             }
 
             Sprite iconSprite = PrefabInitializer.GetObject<Sprite>(styleName, iconName);

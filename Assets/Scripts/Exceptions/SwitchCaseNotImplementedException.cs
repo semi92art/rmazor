@@ -4,9 +4,9 @@ using System.Reflection;
 
 namespace Exceptions
 {
-    public class InvalidEnumArgumentExceptionEx : InvalidEnumArgumentException
+    public class SwitchCaseNotImplementedException : Exception
     {
-        public InvalidEnumArgumentExceptionEx(object _Value)
+        public SwitchCaseNotImplementedException(object _Value)
         {
             var type = _Value.GetType();
             var name = Enum.GetName(type, _Value);

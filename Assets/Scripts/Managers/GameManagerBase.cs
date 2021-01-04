@@ -19,6 +19,20 @@ namespace Managers
 
     public abstract class GameManagerBase : MonoBehaviour, IGameManager, ISingleton
     {
+        #region singleton
+
+        private static IGameManager _instance;
+        protected static IGameManager GetInstance<T>() where T : GameManagerBase
+        {
+            if (_instance is T ptm && !ptm.IsNull()) 
+                    return _instance;
+            var go = new GameObject("Game Manager");
+            _instance = go.AddComponent<T>();
+            return _instance;
+        }
+
+        #endregion
+        
         #region nonpublic members
         
         protected ILevelController LevelController;
