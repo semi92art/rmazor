@@ -50,6 +50,7 @@ namespace DI
         private readonly UpdateMethodsDict m_UpdateMethods = new UpdateMethodsDict();
         private readonly UpdateMethodsDict m_FixedUpdateMethods = new UpdateMethodsDict();
         private readonly UpdateMethodsDict m_LateUpdateMethods = new UpdateMethodsDict();
+        private readonly UpdateMethodsDict m_OnDrawGizmosMethods = new UpdateMethodsDict();
 
         #endregion
 
@@ -98,6 +99,13 @@ namespace DI
         {
             InvokeUpdateMethods(m_LateUpdateMethods);
         }
+
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            InvokeUpdateMethods(m_OnDrawGizmosMethods);
+        }
+#endif
 
         #endregion
 
@@ -183,6 +191,8 @@ namespace DI
                     dict = m_FixedUpdateMethods; break;
                 case LateUpdateAttribute _:
                     dict = m_LateUpdateMethods; break;
+                case DrawGizmosAttribute _:
+                    dict = m_OnDrawGizmosMethods; break;
                 default:
                     throw new SwitchCaseNotImplementedException(temp);
             }
