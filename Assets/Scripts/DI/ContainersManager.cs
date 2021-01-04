@@ -174,7 +174,7 @@ namespace DI
         private UpdateMethodsDict GetDictByUpdateType<T>() where T : Attribute, IOrder, IDoNotDestroyOnLoad
         {
             UpdateMethodsDict dict;
-            T temp = (T)Activator.CreateInstance(typeof(T));
+            T temp = (T)Activator.CreateInstance(typeof(T), 0, false);
             switch (temp)
             {
                 case UpdateAttribute _:
