@@ -34,11 +34,10 @@ public static class LevelLoader
         switch (_GameId)
         {
             case 1:
-                //PointsTapperManager.Instance.Init(_level);
-                //LinesDefenderManager.Instance.Init(_level);
+                PointsTapperManager.Instance.Init(_level);
                 break;
             case 2:
-                Debug.Log(WasNotMadeMessage);
+                //LinesDefenderManager.Instance.Init(_level);
                 break;
             case 3:
                 Debug.Log(WasNotMadeMessage);

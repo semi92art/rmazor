@@ -268,7 +268,7 @@ namespace DialogViewers
         {
             foreach (var item in GraphicsAlphas.ToArray())
             {
-                if (item.Value.Alphas.All(_A => !_A.Key.IsAlive()))
+                if (item.Value.Alphas.All(_A => _A.Key.IsNull()))
                     GraphicsAlphas.Remove(item.Key);
             }
         }

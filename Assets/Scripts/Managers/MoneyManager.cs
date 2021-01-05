@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Entities;
+using Extensions;
 using Network;
 using Network.PacketArgs;
 using Network.Packets;
@@ -14,20 +15,7 @@ namespace Managers
         #region singleton
     
         private static MoneyManager _instance;
-
-        public static MoneyManager Instance
-        {
-            get
-            {
-                if (_instance is MoneyManager ptm && !ptm.IsNull())
-                    return _instance;
-                var go = new GameObject("Money Manager");
-                _instance = go.AddComponent<MoneyManager>();
-                if (!GameClient.Instance.IsModuleTestsMode)
-                    DontDestroyOnLoad(go);
-                return _instance;
-            }
-        }
+        public static MoneyManager Instance => CommonUtils.Singleton(ref _instance, "Money Manager");
     
         #endregion
     

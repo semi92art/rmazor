@@ -15,19 +15,7 @@ namespace Managers
 
         private static ScoreManager _instance;
 
-        public static ScoreManager Instance
-        {
-            get
-            {
-                if (_instance is ScoreManager ptm && !ptm.IsNull())
-                    return _instance;
-                var go = new GameObject("Score Manager");
-                _instance = go.AddComponent<ScoreManager>();
-                if (!GameClient.Instance.IsModuleTestsMode)
-                    DontDestroyOnLoad(go);
-                return _instance;
-            }
-        }
+        public static ScoreManager Instance = CommonUtils.Singleton(ref _instance, "Score Manager");
 
         #endregion
         

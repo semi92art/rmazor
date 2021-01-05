@@ -64,10 +64,9 @@
                 // Effects start
                 float realXcoord = v.texcoord.x / 10;
                 float realYcoord = v.texcoord.y / 10; 
-                float coeff = 0.5 + cos(_Time * 10 + realYcoord * 2) * 0.5;
-                OUT.color.r = (_Color1.r * coeff + _Color2.r * (1 - coeff));
-                OUT.color.g = (_Color1.g * coeff + _Color2.g * (1 - coeff));
-                OUT.color.b = (_Color1.b * coeff + _Color2.b * (1 - coeff));
+                float crdC = (realXcoord + realYcoord) * 0.5;
+                fixed4 resCol = crdC * _Color1 + (1 - crdC) * _Color2;
+                OUT.color = resCol;
                 // Effects end
                 return OUT;
             }

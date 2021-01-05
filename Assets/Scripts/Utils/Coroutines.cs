@@ -151,7 +151,7 @@ namespace Utils
                 //before start transition, make background shadows transparent
                 if (backgroundShadows != null)
                     foreach (var ga in from ga 
-                        in backgroundShadows let graphic = ga.Key where graphic.IsAlive() select ga)
+                        in backgroundShadows let graphic = ga.Key where !graphic.IsNull() select ga)
                         ga.Key.color = ga.Key.color.SetAlpha(0);
                 
                 //do transition for foreground graphic elements
@@ -165,7 +165,7 @@ namespace Utils
                         if (backgroundShadows != null && !_ShadowsAfterOther)
                             collection = collection.Concat(backgroundShadows).ToList();
                         foreach (var ga in from ga 
-                            in collection let graphic = ga.Key where graphic.IsAlive() select ga)
+                            in collection let graphic = ga.Key where !graphic.IsNull() select ga)
                             ga.Key.color = ga.Key.color.SetAlpha(ga.Value * alphaCoeff);
                         yield return new WaitForEndOfFrame();
                     } 
@@ -173,7 +173,7 @@ namespace Utils
 
             //enable selectable elements (buttons, toggles, etc.)
             foreach (var button in selectables
-                .Where(_Button => _Button.Key.IsAlive()))
+                .Where(_Button => !_Button.Key.IsNull()))
                 button.Key.enabled = button.Value;
 
 
@@ -188,7 +188,7 @@ namespace Utils
                         float timeCoeff = (currTime + shadowBackgrTime - UiTimeProvider.Instance.Time) / shadowBackgrTime;
                         float alphaCoeff = 1 - timeCoeff;
                         foreach (var ga in from ga
-                            in backgroundShadows let graphic = ga.Key where graphic.IsAlive() select ga)
+                            in backgroundShadows let graphic = ga.Key where !graphic.IsNull() select ga)
                             ga.Key.color = ga.Key.color.SetAlpha(ga.Value * alphaCoeff);
                         yield return new WaitForEndOfFrame();
                     }
@@ -200,7 +200,7 @@ namespace Utils
             foreach (var ga in graphicsAndAlphas.ToList())
             {
                 var graphic = ga.Key;
-                if (graphic.IsAlive())
+                if (!graphic.IsNull())
                     graphic.color = graphic.color.SetAlpha(_Disappear ? 0 : ga.Value);
             }
             

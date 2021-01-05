@@ -37,11 +37,6 @@ namespace Games.PointsTapper
                 {PointType.Bad, () => LifesController.MinusOneLife()},
                 {PointType.BonusGold, () => RevenueController.AddRevenue(MoneyType.Gold, 300)}
             });
-            SpriteRenderer background = new GameObject().AddComponent<SpriteRenderer>();
-            background.sprite = PrefabInitializer.GetObject<Sprite>("points_tapper", "background");
-            GameUtils.FillByCameraRect(background);
-            background.color = ColorUtils.GetColorFromPalette("Points Tapper", "Background");
-            background.sortingOrder = SortingOrders.Background;
             GameMenuUi = new PointsTapperGameMenuUi();
             base.Init(_Level);
         }

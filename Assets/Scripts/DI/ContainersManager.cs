@@ -28,21 +28,9 @@ namespace DI
         #region singleton
         
         private static ContainersManager _instance;
-        
-        public static ContainersManager Instance
-        {
-            get
-            {
-                if (_instance is ContainersManager ptm && !ptm.IsNull()) 
-                    return _instance;
-                GameObject go = new GameObject("Containers Manager");
-                _instance = go.AddComponent<ContainersManager>();
-                if (!GameClient.Instance.IsModuleTestsMode)
-                    DontDestroyOnLoad(go);
-                return _instance;
-            }
-        }
-        
+        public static ContainersManager Instance => 
+            CommonUtils.Singleton(ref _instance, "Containers Manager");
+
         #endregion
 
         #region nonpublic members

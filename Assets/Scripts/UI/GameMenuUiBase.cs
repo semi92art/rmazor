@@ -32,7 +32,7 @@ namespace UI
         void OnRevenueIncome(MoneyType _MoneyType, long _Revenue);
     }
     
-    public abstract class GameMenuUiBase : DI.DiObject, IGameMenuUi
+    public abstract class GameMenuUiBase : GameObservable, IGameMenuUi
     {
         #region api properties
         public IStatsMiniPanel StatsMiniPanel { get; protected set; }
@@ -114,15 +114,17 @@ namespace UI
         
         protected virtual void OnGameMenuButtonClick()
         {
-            if (!GameMenuPanel.PanelState.HasFlag(PanelState.Showing))
+            if (GameMenuPanel.PanelState.HasFlag(PanelState.Showing))
             {
-                GameTimeProvider.Instance.Pause = true;
-                var gameMenuPanel = new GameMenuPanel(DialogViewer,
-                    () => GameTimeProvider.Instance.Pause = false);
-                gameMenuPanel.OnDialogShow();
-            }
-            else
                 GameMenuPanel.PanelState |= PanelState.NeedToClose;
+                return;
+            }
+            GameTimeProvider.Instance.Pause = true;
+            var gameMenuPanel = new GameMenuPanel(DialogViewer,
+                () => GameTimeProvider.Instance.Pause = false);
+            gameMenuPanel.AddObservers(GetObservers());
+            gameMenuPanel.Init();
+            DialogViewer.Show(gameMenuPanel);
         }
 
         [DI.Update]
@@ -143,7 +145,9 @@ namespace UI
         {
             var startLevelPanel = new LevelStartPanel(
                 DialogViewer, _Args.Level, _GetLifes, _StartLevel);
-            startLevelPanel.OnDialogShow();
+            startLevelPanel.AddObservers(GetObservers());
+            startLevelPanel.Init();
+            DialogViewer.Show(startLevelPanel);
         }
 
         public virtual void OnLevelStarted(LevelStateChangedArgs _Args)
@@ -165,27 +169,33 @@ namespace UI
                 _SetNewRevenue,
                 _Finish,
                 _IsPersonalBest);
-            levelFinishPanel.OnDialogShow();
+            levelFinishPanel.AddObservers(GetObservers());
+            levelFinishPanel.Init();
+            DialogViewer.Show(levelFinishPanel);
         }
 
         public virtual void OnTimeEnded(UnityAction<float> _SetAdditionalTime, UnityAction _Continue)
         {
-            var timeFinishedPanel = new TimeOrLifesEndedPanel(
+            var panel = new TimeOrLifesEndedPanel(
                 DialogViewer,
                 true,
                 _Continue,
                 _SetAdditionalTime);
-                timeFinishedPanel.OnDialogShow();
+            panel.AddObservers(GetObservers());
+            panel.Init();
+            DialogViewer.Show(panel);
         }
 
         public virtual void OnLifesEnded(UnityAction<long> _SetAdditionalLifes, UnityAction _Continue)
         {
-            var timeFinishedPanel = new TimeOrLifesEndedPanel(
+            var panel = new TimeOrLifesEndedPanel(
                 DialogViewer,
                 false,
                 _Continue,
                 _SetAdditionalLife: _SetAdditionalLifes);
-            timeFinishedPanel.OnDialogShow();
+            panel.AddObservers(GetObservers());
+            panel.Init();
+            DialogViewer.Show(panel);
         }
 
         public virtual void OnRevenueIncome(MoneyType _MoneyType, long _Revenue)

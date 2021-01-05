@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using DI;
 using UnityEngine;
 using UnityEngine.Events;
 using Utils;
@@ -119,7 +118,7 @@ namespace Games.PointsTapper
 
 #if UNITY_EDITOR
         
-        [DrawGizmos]
+        [DI.DrawGizmos]
         public void DrawGizmos()
         {
             var bounds = GameUtils.GetVisibleBounds();

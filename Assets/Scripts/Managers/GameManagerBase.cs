@@ -1,12 +1,12 @@
 ﻿using System;
 using Constants;
+using Extensions;
 using GameHelpers;
 using Lean.Touch;
 using Network;
 using Network.PacketArgs;
 using Network.Packets;
 using UI;
-using UI.Panels;
 using UnityEngine;
 using Utils;
 
@@ -48,7 +48,7 @@ namespace Managers
         
         public virtual void Init(int _Level)
         {
-            new GameTimeProvider();
+            GameTimeProvider.Instance.Reset();
             if (LevelController == null)
                 LevelController = new DefaultLevelController();
             LevelController.Level = _Level;
@@ -73,7 +73,8 @@ namespace Managers
             
             LevelController.Level = _Level;
             LevelController.BeforeStartLevel();
-            LevelController.CountdownController.OnTimeChange += GameMenuUi.StatsMiniPanel.SetTime;
+            if (GameMenuUi != null)
+                LevelController.CountdownController.OnTimeChange += GameMenuUi.StatsMiniPanel.SetTime;
             LevelController.CountdownController.OnTimeEnded += OnTimeEnded;
             LifesController.OnLifesEnded += OnLifesEnded;
         }
@@ -105,13 +106,13 @@ namespace Managers
         {
             MainScoreController.Score = 0;
             MainScoreController.NecessaryScore = NecessaryScore(_Args.Level);
-            GameMenuUi.OnBeforeLevelStarted(
+            GameMenuUi?.OnBeforeLevelStarted(
                 _Args, 
                 _Lifes =>
                 {
                     LevelController.CountdownController.SetDuration(LevelDuration(_Args.Level));
                     LifesController.SetLifesWithoutNotification(_Lifes);
-                    GameMenuUi.StatsMiniPanel.SetLifes(_Lifes, false);
+                    GameMenuUi?.StatsMiniPanel.SetLifes(_Lifes, false);
                 }, 
                 () => LevelController.StartLevel(
                     LevelDuration(_Args.Level), () => LifesController.Lifes <= 0));
@@ -119,7 +120,7 @@ namespace Managers
 
         protected virtual void OnLevelStarted(LevelStateChangedArgs _Args)
         {
-            GameMenuUi.OnLevelStarted(_Args);
+            GameMenuUi?.OnLevelStarted(_Args);
         }
 
         protected virtual void OnLevelFinished(LevelStateChangedArgs _Args)
@@ -141,7 +142,7 @@ namespace Managers
                     GameClient.Instance.Send(scorePacket);
                 }
                 
-                GameMenuUi.OnLevelFinished(_Args, RevenueController.TotalRevenue,
+                GameMenuUi?.OnLevelFinished(_Args, RevenueController.TotalRevenue,
                     _NewRevenue =>
                         RevenueController.TotalRevenue = _NewRevenue,
                     () =>
@@ -157,12 +158,12 @@ namespace Managers
 
         protected virtual void OnScoreChanged(int _Score)
         {
-            GameMenuUi.StatsMiniPanel.SetScore(_Score);
+            GameMenuUi?.StatsMiniPanel.SetScore(_Score);
         }
         
         protected virtual void OnNecessaryScoreChanged(int _Score)
         {
-            GameMenuUi.StatsMiniPanel.SetNecessaryScore(_Score);
+            GameMenuUi?.StatsMiniPanel.SetNecessaryScore(_Score);
         }
 
         protected virtual void OnNecessaryScoreReached()
@@ -172,19 +173,19 @@ namespace Managers
         
         protected virtual void OnLifesChanged(LifeEventArgs _Args)
         {
-            GameMenuUi.StatsMiniPanel.SetLifes(_Args.Lifes);
+            GameMenuUi?.StatsMiniPanel.SetLifes(_Args.Lifes);
         }
         
         protected virtual void OnLifesEnded()
         {
-            GameMenuUi.OnLifesEnded(_AdditionalLifes => 
+            GameMenuUi?.OnLifesEnded(_AdditionalLifes => 
                 LifesController.PlusLifes(_AdditionalLifes), () => LevelController.StartLevel(
                 null, () => LifesController.Lifes <= 0));
         }
 
         protected virtual void OnTimeEnded()
         {
-            GameMenuUi.OnTimeEnded(_AdditionalTime => 
+            GameMenuUi?.OnTimeEnded(_AdditionalTime => 
                     LevelController.CountdownController.SetDuration(_AdditionalTime),
                 () => LevelController.StartLevel(
                     null, () => LifesController.Lifes <= 0));
@@ -192,7 +193,7 @@ namespace Managers
         
         protected virtual void OnRevenueIncome(MoneyType _MoneyType, long _Revenue)
         {
-            GameMenuUi.OnRevenueIncome(_MoneyType, _Revenue);
+            GameMenuUi?.OnRevenueIncome(_MoneyType, _Revenue);
         }
         
         protected abstract float LevelDuration(int _Level);
@@ -216,7 +217,8 @@ namespace Managers
             MainScoreController.OnScoreChanged -= OnScoreChanged;
             MainScoreController.OnNecessaryScoreChanged -= OnNecessaryScoreChanged;
             MainScoreController.OnNecessaryScoreReached -= OnNecessaryScoreReached;
-            LevelController.CountdownController.OnTimeChange -= GameMenuUi.StatsMiniPanel.SetTime;
+            if (GameMenuUi != null)
+                LevelController.CountdownController.OnTimeChange -= GameMenuUi.StatsMiniPanel.SetTime;
             LevelController.CountdownController.OnTimeEnded -= OnTimeEnded;
             LifesController.OnLifesEnded -= OnLifesEnded;
         }

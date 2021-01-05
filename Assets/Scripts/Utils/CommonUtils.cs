@@ -5,6 +5,8 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
+using Extensions;
+using Network;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -26,9 +28,15 @@ namespace Utils
         }
 #endif
 
-        public static bool IsNull<T>(this T _Item) where T : Component
+        public static T Singleton<T>(ref T _Instance, string _Name) where T : MonoBehaviour
         {
-            return _Item == null || _Item.ToString() == "null";
+            if (_Instance is T ptm && !ptm.IsNull())
+                return _Instance;
+            var go = new GameObject(_Name);
+            _Instance = go.AddComponent<T>();
+            if (!GameClient.Instance.IsModuleTestsMode)
+                UnityEngine.Object.DontDestroyOnLoad(go);
+            return _Instance;
         }
         
         public static string GetOsName()

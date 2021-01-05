@@ -75,9 +75,9 @@ public class EditorHelper : EditorWindow
     {
         if (Application.isPlaying)
         {
-            GUILayout.Label("Account info:");
             GUILayout.Label($"Account Id: {GameClient.Instance.AccountId}");
             GUILayout.Label($"Device Id: {GameClient.Instance.DeviceId}");
+            GUILayout.Label($"Target FPS: {Application.targetFrameRate}");
         }
         
         GUI.enabled = Application.isPlaying;

@@ -82,7 +82,7 @@ namespace Extensions
             this Component _Item) where T : Behaviour
         {
             IEnumerable<T> result = _Item.GetComponentsInChildren<T>();
-            result = result.Except(result.Where(_Itm => !_Itm.IsAlive()));
+            result = result.Except(result.Where(_Itm => _Itm.IsNull()));
                 
             T root = _Item.GetComponent<T>();
             if (root != null)
@@ -105,10 +105,11 @@ namespace Extensions
             return cloned;
         }
 
-        public static bool IsAlive(this Behaviour _Beh)
+        public static bool IsNull<T>(this T _Item) where T : Component
         {
-            return !(_Beh is UIBehaviour) && _Beh != null ||
-                   _Beh is UIBehaviour uiBeh && uiBeh != null && !uiBeh.IsDestroyed();
+            if (_Item is UIBehaviour beh)
+                return beh == null || beh.ToString() == "null" || beh.IsDestroyed();
+            return _Item == null || _Item.ToString() == "null";
         }
     }
 }

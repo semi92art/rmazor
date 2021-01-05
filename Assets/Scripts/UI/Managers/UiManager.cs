@@ -75,8 +75,6 @@ namespace UI.Managers
             {
                 OnCurrentMenuCategoryChanged?.Invoke(m_CurrentMenuCategory, value);
                 m_CurrentMenuCategory = value;
-                if (value != MenuUiCategory.Nothing)
-                    OnCurrentGameCategoryChanged = null;
             }
         }
         
@@ -87,8 +85,6 @@ namespace UI.Managers
             {
                 OnCurrentGameCategoryChanged?.Invoke(m_CurrentGameCategory, value);
                 m_CurrentGameCategory = value;
-                if (value != GameUiCategory.Nothing)
-                    OnCurrentMenuCategoryChanged = null;
             }
         }
 
