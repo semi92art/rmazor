@@ -1,7 +1,8 @@
 ﻿using Constants;
 using Exceptions;
-using Games.LinesDefender;
+//using Games.LinesDefender;
 using Games.PointsTapper;
+using Games.PathFinder;
 using Network;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -45,7 +46,7 @@ public static class LevelLoader
                 break;
             case 4:
                 Debug.Log("PathFinder WIP");
-                PathFinder.PathFinderManager.Instance.Init(_level);
+                PathFinderManager.Instance.Init(_level);
                 break;
             case 5:
                 Debug.Log(WasNotMadeMessage);

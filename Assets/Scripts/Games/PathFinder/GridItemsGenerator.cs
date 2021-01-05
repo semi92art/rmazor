@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using Shapes;
 using UnityEngine;
 
-namespace PathFinder
+namespace Games.PathFinder
 {
     public interface IGridItemsGenerator
     {

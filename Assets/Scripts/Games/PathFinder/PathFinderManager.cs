@@ -1,17 +1,11 @@
-﻿using System.Collections.Generic;
-using Constants;
-using GameHelpers;
-using Lean.Touch;
+﻿using Extensions;
 using Managers;
 using UnityEngine;
-using UnityEngine.Events;
-using Utils;
-using ColorUtils = Utils.ColorUtils;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-namespace PathFinder
+namespace Games.PathFinder
 {
     public sealed class PathFinderManager : GameManagerBase
     {

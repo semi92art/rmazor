@@ -1,6 +1,6 @@
 ﻿using UI;
 
-namespace PathFinder
+namespace Games.PathFinder
 {
     public class PathFinderGameMenuUi : GameMenuUiBase
     {

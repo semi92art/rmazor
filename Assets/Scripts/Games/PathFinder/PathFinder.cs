@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
+using Games.PathFinder;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
