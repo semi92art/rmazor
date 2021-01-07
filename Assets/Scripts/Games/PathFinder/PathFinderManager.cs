@@ -1,6 +1,8 @@
 ﻿using Extensions;
 using Managers;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -65,6 +67,66 @@ namespace Games.PathFinder
             base.Init(_Level);
         }
        
+        #endregion
+
+        #region public methods
+
+        public void GenerateOriginTileTb()
+        {
+            //генерация начала пути: в первой строке сетки
+        }
+        
+        public void GenerateDestinationTileTb()
+        {
+            //генерация окончания пути: в последней строке сетки
+        }
+        
+        public void GenerateAndShowPath()
+        {
+            //генерация случайного пути
+            //Don't do anything if origin or destination is not defined yet
+            if (originTileTb == null || this.destinationTileTb == null)
+            {
+                DrawPath(new List<Tile>());
+                return;
+            }
+            //We assume that the distance between any two adjacent tiles is 1
+            //If you want to have some mountains, rivers, dirt roads or something else which might slow down the player you should replace the function with something that suits better your needs
+            var path = PathFinderInGame.FindPath(originTileTb.tile, this.destinationTileTb.tile);
+            DrawPath(path);
+            // MovementController mc = CombatController.instanceCombatController.selectedUnit.GetComponent<MovementController>();
+            // mc.StartMoving(path.ToList());
+        }
+        
+        public void DrawPath(IEnumerable<Tile> _Path)
+        {
+            //Отрисовка пути
+            // if (this.m_path == null)
+            //     this.m_path = new List<GameObject>();
+            // //Destroy game objects which used to indicate the path
+            // this.m_path.ForEach(Destroy);
+            // this.m_path.Clear();
+            //
+            // //Lines game object is used to hold all the "Line" game objects indicating the path
+            // GameObject lines = GameObject.Find("Lines");
+            // if (lines == null)
+            //     lines = new GameObject("Lines");
+            // foreach (Tile tile in _Path)
+            // {
+            //     var line = (GameObject)Instantiate(this.line);
+            //     //calcWorldCoord method uses squiggly axis coordinates so we add y / 2 to convert x coordinate from straight axis coordinate system
+            //     Vector2 gridPos = new Vector2(tile.X, tile.Y);
+            //     line.transform.position = CalcWorldCoord(gridPos);
+            //     this.m_path.Add(line);
+            //     line.transform.parent = lines.transform;
+            // }
+        }
+
+        public void CheckPath()
+        {
+            //проверка правильности отрисованного пути 
+        }
+
         #endregion
 
         #region nonpublic methods

@@ -99,6 +99,7 @@ namespace Games.PathFinder
                     RegularPolygon regularPolygon = hex.AddComponent<RegularPolygon>();
                     regularPolygon.Color = new Color(138f/255f,135f/255f,221f/255f);
                     regularPolygon.Sides = 6;
+                    regularPolygon.Roundness = 0.3f;
                 
                     TileBehaviour tileBehaviour = hex.AddComponent<TileBehaviour>();
                     tileBehaviour.tile = new Tile((int)x, (int)y);
