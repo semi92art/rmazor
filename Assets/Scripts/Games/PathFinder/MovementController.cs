@@ -62,7 +62,7 @@ namespace Games.PathFinder
         {
             GridBuilder GM = GridBuilder.instanceGridBuilder;
             Material originMaterial = GM.originTileTb.GetComponent<Renderer>().material;
-            GM.originTileTb.GetComponent<Renderer>().material = GM.destinationTileTb.defaultMaterial;
+            //GM.originTileTb.GetComponent<Renderer>().material = GM.destinationTileTb.defaultMaterial;
             GM.originTileTb = GM.destinationTileTb;
             GM.originTileTb.GetComponent<Renderer>().material = originMaterial;
             GM.destinationTileTb = null;

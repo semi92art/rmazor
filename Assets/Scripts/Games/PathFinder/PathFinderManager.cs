@@ -7,13 +7,13 @@ using UnityEditor;
 
 namespace Games.PathFinder
 {
-    public sealed class PathFinderManager : GameManagerBase
+    public class PathFinderManager : GameManagerBase
     {
         #region singleton
         
-        private static IGameManager _instance;
+        private static PathFinderManager _instance;
 
-        public static IGameManager Instance
+        public static PathFinderManager Instance
         {
             get
             {
@@ -24,6 +24,14 @@ namespace Games.PathFinder
                 return _instance;
             }
         }
+        
+        #endregion
+
+        #region public members
+
+        public Tile selectedTile = null;
+        public TileBehaviour originTileTb = null;
+        public TileBehaviour destinationTileTb = null;
         
         #endregion
         

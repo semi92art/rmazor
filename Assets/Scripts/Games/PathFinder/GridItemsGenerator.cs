@@ -85,8 +85,16 @@ namespace Games.PathFinder
                     hex.transform.parent = hexGridGameObject.transform;
                     hex.transform.localScale = new Vector3(m_hexWidth,m_hexHeight,0f);
 
-                    hex.AddComponent<PolygonCollider2D>();
-
+                    PolygonCollider2D collider = hex.AddComponent<PolygonCollider2D>();
+                    collider.SetPath(0, new []
+                    {
+                        new Vector2(0f,1f),
+                        new Vector2(-0.9f,0.5f),
+                        new Vector2(-0.9f,-0.5f),
+                        new Vector2(0f,-1f),
+                        new Vector2(0.9f,-0.5f),
+                        new Vector2(0.9f,0.5f)
+                    });
                     //set beauty
                     RegularPolygon regularPolygon = hex.AddComponent<RegularPolygon>();
                     regularPolygon.Color = new Color(138f/255f,135f/255f,221f/255f);
