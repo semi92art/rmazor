@@ -35,3 +35,5 @@ For = for
 Reset = reset
 OrGoTo = or go to
 Register = Register
+YourReward = your reward:
+Get = get

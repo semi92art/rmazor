@@ -363,6 +363,7 @@ GameObject:
   - component: {fileID: 712964001580613804}
   - component: {fileID: 8789872755923165623}
   - component: {fileID: 6504002402830318559}
+  - component: {fileID: 7919329590014352296}
   m_Layer: 0
   m_Name: Register Panel
   m_TagString: Untagged
@@ -440,6 +441,22 @@ MonoBehaviour:
       name: register_button_text
     - item: {fileID: 4102966418775052067}
       name: registered_successfully
+--- !u!114 &7919329590014352296
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2987709224702265387}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cacb2d1dd5b74e3ea744e7ef8f9d2592, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  background: {fileID: 3915826341267766689}
+  border: {fileID: 2773495373959610125}
+  shadow: {fileID: 2909164737191758730}
+  texts: []
 --- !u!1 &3153323431926834150
 GameObject:
   m_ObjectHideFlags: 0

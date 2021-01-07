@@ -20,6 +20,8 @@ namespace Entities
                 m_Observers.Add(AdsManager.Instance);
             if (!m_Observers.Contains(AnalyticsManager.Instance))
                 m_Observers.Add(AnalyticsManager.Instance);
+            if (!m_Observers.Contains(PurchasesManager.Instance))
+                m_Observers.Add(PurchasesManager.Instance);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (!m_Observers.Contains(DebugConsoleView.Instance.Controller))
                 m_Observers.Add(DebugConsoleView.Instance.Controller);

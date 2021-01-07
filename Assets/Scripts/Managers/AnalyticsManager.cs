@@ -1,4 +1,5 @@
 ﻿using Entities;
+using UI;
 using UnityEngine;
 
 namespace Managers
@@ -8,7 +9,6 @@ namespace Managers
         #region singleton
         
         private static AnalyticsManager _instance;
-
         public static AnalyticsManager Instance => _instance ?? (_instance = new AnalyticsManager());
     
         #endregion
@@ -30,11 +30,21 @@ namespace Managers
         }
         #endregion
 
-        #region nonpubli methods
+        #region nonpublic methods
         
         protected override void OnNotify(object _Sender, string _NotifyMessage, params object[] _Args)
         {
-            // TODO
+            switch (_Sender)
+            {
+                case MainMenuUi _:
+                    switch (_NotifyMessage)
+                    {
+                        case MainMenuUi.NotifyMessageSelectGamePanelButtonClick:
+                            // TODO
+                            break;
+                    }
+                    break;
+            }
         }
         
         #endregion

@@ -1,29 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &8544109622172686941
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1241170318809227312}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59e9a8a8a0c816841bf2f00e1c5197f8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &4174416930953446486
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3315263948265166954}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59e9a8a8a0c816841bf2f00e1c5197f8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &4806769396530410129
 GameObject:
   m_ObjectHideFlags: 0
@@ -234,6 +210,41 @@ PrefabInstance:
       propertyPath: m_Name
       value: Go Back Button
       objectReference: {fileID: 0}
+    - target: {fileID: 7511557255587344881, guid: 80bb05ea1757fad4b97a0dd009723495,
+        type: 3}
+      propertyPath: content.array.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7511557255587344881, guid: 80bb05ea1757fad4b97a0dd009723495,
+        type: 3}
+      propertyPath: content.array.Array.data[2].item
+      value: 
+      objectReference: {fileID: 1241170318809227312}
+    - target: {fileID: 7511557255587344881, guid: 80bb05ea1757fad4b97a0dd009723495,
+        type: 3}
+      propertyPath: content.array.Array.data[2].name
+      value: border
+      objectReference: {fileID: 0}
+    - target: {fileID: 7511557255587344881, guid: 80bb05ea1757fad4b97a0dd009723495,
+        type: 3}
+      propertyPath: content.array.Array.data[3].item
+      value: 
+      objectReference: {fileID: 1264414818273538948}
+    - target: {fileID: 7511557255587344881, guid: 80bb05ea1757fad4b97a0dd009723495,
+        type: 3}
+      propertyPath: content.array.Array.data[3].name
+      value: background
+      objectReference: {fileID: 0}
+    - target: {fileID: 7511557255587344881, guid: 80bb05ea1757fad4b97a0dd009723495,
+        type: 3}
+      propertyPath: content.array.Array.data[4].item
+      value: 
+      objectReference: {fileID: 3797182881001493430}
+    - target: {fileID: 7511557255587344881, guid: 80bb05ea1757fad4b97a0dd009723495,
+        type: 3}
+      propertyPath: content.array.Array.data[4].name
+      value: icon
+      objectReference: {fileID: 0}
     - target: {fileID: 8324500480116602104, guid: 80bb05ea1757fad4b97a0dd009723495,
         type: 3}
       propertyPath: m_Pivot.x
@@ -353,6 +364,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 6763325626026518289}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1264414818273538948 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5498950400922113173, guid: 80bb05ea1757fad4b97a0dd009723495,
+    type: 3}
+  m_PrefabInstance: {fileID: 6763325626026518289}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3797182881001493430 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7597121105866962087, guid: 80bb05ea1757fad4b97a0dd009723495,
+    type: 3}
+  m_PrefabInstance: {fileID: 6763325626026518289}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7126810038609092427
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -395,6 +418,41 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Color.a
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7511557255587344881, guid: 80bb05ea1757fad4b97a0dd009723495,
+        type: 3}
+      propertyPath: content.array.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7511557255587344881, guid: 80bb05ea1757fad4b97a0dd009723495,
+        type: 3}
+      propertyPath: content.array.Array.data[2].item
+      value: 
+      objectReference: {fileID: 3315263948265166954}
+    - target: {fileID: 7511557255587344881, guid: 80bb05ea1757fad4b97a0dd009723495,
+        type: 3}
+      propertyPath: content.array.Array.data[2].name
+      value: border
+      objectReference: {fileID: 0}
+    - target: {fileID: 7511557255587344881, guid: 80bb05ea1757fad4b97a0dd009723495,
+        type: 3}
+      propertyPath: content.array.Array.data[3].item
+      value: 
+      objectReference: {fileID: 3366354655558749150}
+    - target: {fileID: 7511557255587344881, guid: 80bb05ea1757fad4b97a0dd009723495,
+        type: 3}
+      propertyPath: content.array.Array.data[3].name
+      value: background
+      objectReference: {fileID: 0}
+    - target: {fileID: 7511557255587344881, guid: 80bb05ea1757fad4b97a0dd009723495,
+        type: 3}
+      propertyPath: content.array.Array.data[4].item
+      value: 
+      objectReference: {fileID: 831449166099590124}
+    - target: {fileID: 7511557255587344881, guid: 80bb05ea1757fad4b97a0dd009723495,
+        type: 3}
+      propertyPath: content.array.Array.data[4].name
+      value: icon
       objectReference: {fileID: 0}
     - target: {fileID: 7554799690956909677, guid: 80bb05ea1757fad4b97a0dd009723495,
         type: 3}
@@ -517,6 +575,18 @@ GameObject:
 --- !u!224 &1252302978842405811 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8324500480116602104, guid: 80bb05ea1757fad4b97a0dd009723495,
+    type: 3}
+  m_PrefabInstance: {fileID: 7126810038609092427}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3366354655558749150 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5498950400922113173, guid: 80bb05ea1757fad4b97a0dd009723495,
+    type: 3}
+  m_PrefabInstance: {fileID: 7126810038609092427}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &831449166099590124 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7597121105866962087, guid: 80bb05ea1757fad4b97a0dd009723495,
     type: 3}
   m_PrefabInstance: {fileID: 7126810038609092427}
   m_PrefabAsset: {fileID: 0}

@@ -7,5 +7,6 @@ namespace Network.PacketArgs
         public long Gold { get; set; }
         public long Diamonds { get; set; }
         public long Lifes { get; set; }
+        public bool ShowAds { get; set; }
     }
 }

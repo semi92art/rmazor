@@ -22,6 +22,8 @@ public class LocalizationHelper : EditorWindow
     private Dictionary<string, KeyValues> m_LocalizedDict;
     private Dictionary<Language, TextAsset> m_Assets;
     private string m_NewKey;
+    private Vector2 m_ScrollPos;
+    private string m_ErrorText;
     
     #endregion
     
@@ -40,6 +42,7 @@ public class LocalizationHelper : EditorWindow
 
     private void OnGUI()
     {
+        m_ScrollPos = EditorGUILayout.BeginScrollView(m_ScrollPos, false, false);
         var boldStyle = new GUIStyle(EditorStyles.label)
         {
             fontStyle = FontStyle.Bold,
@@ -95,10 +98,25 @@ public class LocalizationHelper : EditorWindow
         GUILayout.EndHorizontal();
         GUILayout.Space(10);
         GUILayout.BeginHorizontal();
+        if (!string.IsNullOrEmpty(m_ErrorText))
+            GUI.enabled = false;
         if (GUILayout.Button("Add key", GUILayout.Width(100)))
             AddKey(m_NewKey);
+        GUI.enabled = true;
         m_NewKey = EditorGUILayout.TextField(m_NewKey, GUILayout.Width(200));
+        var defaultContentColor = GUI.contentColor;
+        GUI.contentColor = Color.red;
+        GUILayout.Label(m_ErrorText, EditorStyles.boldLabel);
+        GUI.contentColor = defaultContentColor;
         GUILayout.EndHorizontal();
+        EditorGUILayout.EndScrollView();
+        CheckForErrors();
+    }
+
+    private void CheckForErrors()
+    {
+        m_ErrorText = m_LocalizedDict.Keys.Any(_DictKey => _DictKey == m_NewKey) ?
+            $@"Localization already contains key ""{m_NewKey}""" : string.Empty;
     }
 
     private void LoadResources()
@@ -132,12 +150,6 @@ public class LocalizationHelper : EditorWindow
             return;
         }
 
-        if (m_LocalizedDict.Keys.Any(_DictKey => _DictKey == _Key))
-        {
-            Debug.LogError($"Localization already contains key {_Key}");
-            return;
-        }
-        
         m_LocalizedDict.Add(_Key, new KeyValues());
         foreach (var lang in GetLanguages())
             m_LocalizedDict[_Key].Values.Add(lang, string.Empty);

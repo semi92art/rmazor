@@ -2,14 +2,22 @@
 {
     float Time { get; }
     bool Pause { get; set; }
+    void Reset();
 }
 
 public abstract class TimeProviderBase : DI.DiObject, ITimeProvider, ISingleton
 {
+    protected float Delta;
+    
     public float Time { get; protected set; }
     public bool Pause { get; set; }
+
+    public void Reset()
+    {
+        Time = 0;
+        Delta = 0;
+    }
     
-    protected float Delta;
 
     protected TimeProviderBase()
     {
@@ -32,12 +40,14 @@ public class UiTimeProvider : TimeProviderBase
 {
     private static ITimeProvider _instance;
     public static  ITimeProvider Instance => _instance ?? (_instance = new UiTimeProvider());
+    private UiTimeProvider() { }
 }
 
 public class GameTimeProvider : TimeProviderBase
 {
     private static ITimeProvider _instance;
     public static  ITimeProvider Instance => _instance ?? (_instance = new GameTimeProvider());
+    private GameTimeProvider() { }
 }
 
 

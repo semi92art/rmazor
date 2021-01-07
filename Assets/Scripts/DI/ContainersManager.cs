@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Exceptions;
 using Network;
 using UnityEngine;
 using UnityEngine.Events;
@@ -27,21 +28,9 @@ namespace DI
         #region singleton
         
         private static ContainersManager _instance;
-        
-        public static ContainersManager Instance
-        {
-            get
-            {
-                if (_instance is ContainersManager ptm && !ptm.IsNull()) 
-                    return _instance;
-                GameObject go = new GameObject("Containers Manager");
-                _instance = go.AddComponent<ContainersManager>();
-                if (!GameClient.Instance.IsModuleTestsMode)
-                    DontDestroyOnLoad(go);
-                return _instance;
-            }
-        }
-        
+        public static ContainersManager Instance => 
+            CommonUtils.Singleton(ref _instance, "Containers Manager");
+
         #endregion
 
         #region nonpublic members
@@ -49,6 +38,7 @@ namespace DI
         private readonly UpdateMethodsDict m_UpdateMethods = new UpdateMethodsDict();
         private readonly UpdateMethodsDict m_FixedUpdateMethods = new UpdateMethodsDict();
         private readonly UpdateMethodsDict m_LateUpdateMethods = new UpdateMethodsDict();
+        private readonly UpdateMethodsDict m_OnDrawGizmosMethods = new UpdateMethodsDict();
 
         #endregion
 
@@ -98,19 +88,33 @@ namespace DI
             InvokeUpdateMethods(m_LateUpdateMethods);
         }
 
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            InvokeUpdateMethods(m_OnDrawGizmosMethods);
+        }
+#endif
+
         #endregion
 
         #region nonpublic methods
         
         private void InvokeUpdateMethods(UpdateMethodsDict _Dictionary)
         {
+            if (!_Dictionary.Any())
+                return;
             foreach (var methods in _Dictionary.Values)
-            foreach (var method in methods)
             {
-                if (method.Object == null)
-                    continue;
-                method.Delegat.DynamicInvoke(null);
+                if (!methods.Any())
+                    return;
+                foreach (var method in methods)
+                {
+                    if (method.Object == null)
+                        continue;
+                    method.Delegat.DynamicInvoke(null);
+                }
             }
+            
         }
 
         private void RegisterUpdateMethods<T>(object _Object) where T : Attribute, IOrder, IDoNotDestroyOnLoad
@@ -165,15 +169,21 @@ namespace DI
 
         private UpdateMethodsDict GetDictByUpdateType<T>() where T : Attribute, IOrder, IDoNotDestroyOnLoad
         {
-            UpdateMethodsDict dict = null;
-            if (typeof(T) == typeof(UpdateAttribute))
-                dict = m_UpdateMethods;
-            else if (typeof(T) == typeof(FixedUpdateAttribute))
-                dict = m_FixedUpdateMethods;
-            else if (typeof(T) == typeof(LateUpdateAttribute))
-                dict = m_LateUpdateMethods;
-            if (dict == null)
-                throw new NotImplementedException();
+            UpdateMethodsDict dict;
+            T temp = (T)Activator.CreateInstance(typeof(T), 0, false);
+            switch (temp)
+            {
+                case UpdateAttribute _:
+                    dict = m_UpdateMethods; break;
+                case FixedUpdateAttribute _:
+                    dict = m_FixedUpdateMethods; break;
+                case LateUpdateAttribute _:
+                    dict = m_LateUpdateMethods; break;
+                case DrawGizmosAttribute _:
+                    dict = m_OnDrawGizmosMethods; break;
+                default:
+                    throw new SwitchCaseNotImplementedException(temp);
+            }
             return dict;
         }
 

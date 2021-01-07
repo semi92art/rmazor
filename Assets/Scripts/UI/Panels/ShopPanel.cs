@@ -2,13 +2,14 @@
 using Entities;
 using Extensions;
 using GameHelpers;
-using UI.Entities;
 using UI.Factories;
 using UI.Managers;
 using UI.PanelItems;
 using UnityEngine;
 using Utils;
 using Constants;
+using Exceptions;
+using Managers;
 
 namespace UI.Panels
 {
@@ -16,28 +17,44 @@ namespace UI.Panels
     {
         #region nonpublic members
         
+        private readonly RectTransform m_Container;
         private readonly List<ShopItemProps> m_ShopItemPropsList = new List<ShopItemProps>
         {
-            //new ShopItemProps("No Ads", "9.99$", "20$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_0_icon")),
-            new ShopItemProps(0, "30,000", "9.99$", "20$", 
-                PrefabInitializer.GetObject<Sprite>("shop_items", "item_1_icon")),
-            new ShopItemProps(1, "30", "9.99$", "20$", 
-                PrefabInitializer.GetObject<Sprite>("shop_items", "item_2_icon")),
-            new ShopItemProps(2, "80,000", "19.99$", "40$",
-                PrefabInitializer.GetObject<Sprite>("shop_items", "item_3_icon")),
-            new ShopItemProps(3, "80", "19.99$", "40$",
-                PrefabInitializer.GetObject<Sprite>("shop_items", "item_4_icon")),
-            new ShopItemProps(4, "200,000", "39.99$",
-                "80$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_5_icon")),
-            new ShopItemProps(5, "200", "39.99$",
-                "80$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_6_icon")),
-            new ShopItemProps(6, "500,000", "79.99$",
-                "180$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_7_icon")),
-            new ShopItemProps(7, "500", "79.99$", 
-                "180$", PrefabInitializer.GetObject<Sprite>("shop_items", "item_8_icon"))
+            new ShopItemProps(ShopItemType.NoAds, "No Ads", 9.99f,_Description: "No advertising forever"),
+            new ShopItemProps(ShopItemType.Money, "Rockie money set", 9.99f,
+                new Dictionary<MoneyType, long>
+                {
+                    {MoneyType.Gold, 100000L},
+                    {MoneyType.Diamonds, 1000L}
+                }, _Size: ShopItemSize.Small),
+            new ShopItemProps(ShopItemType.Money, "Advanced money set", 19.99f,
+                new Dictionary<MoneyType, long>
+                {
+                    {MoneyType.Gold, 5000000L},
+                    {MoneyType.Diamonds, 5000L}
+                }, _Size: ShopItemSize.Medium),
+            new ShopItemProps(ShopItemType.Money,"Pro money set", 39.99f,
+                new Dictionary<MoneyType, long>
+                {
+                    {MoneyType.Gold, 20000000L},
+                    {MoneyType.Diamonds, 20000L}
+                }, _Size: ShopItemSize.Big),
+            new ShopItemProps(ShopItemType.Lifes,"Rockie lifes set", 9.99f,
+                new Dictionary<MoneyType, long>
+                {
+                    {MoneyType.Lifes, 100L}
+                }, _Size: ShopItemSize.Small),
+            new ShopItemProps(ShopItemType.Lifes, "Advanced lifes set", 19.99f,
+                new Dictionary<MoneyType, long>
+                {
+                    {MoneyType.Lifes, 500L}
+                }, _Size: ShopItemSize.Medium),
+            new ShopItemProps(ShopItemType.Lifes, "Pro lifes set", 39.99f,
+                new Dictionary<MoneyType, long>
+                {
+                    {MoneyType.Lifes, 2000L}
+                }, _Size: ShopItemSize.Big)
         };
-
-        private readonly RectTransform m_Container;
         
         #endregion
         
@@ -59,27 +76,26 @@ namespace UI.Panels
                 CommonStyleNames.MainMenuDialogPanels,
                 "shop_panel");
             RectTransform content = go.GetCompItem<RectTransform>("content");
-            
-            GameObject shopItem = PrefabInitializer.InitUiPrefab(
-                UiFactory.UiRectTransform(
-                    content,
-                    UiAnchor.Create(0, 1, 0, 1),
-                    new Vector2(218f, -60f),
-                    Vector2.one * 0.5f,
-                    new Vector2(416f, 100f)),
-                CommonStyleNames.MainMenu,
-                "shop_item");
-            
+
             foreach (var shopItemProps in m_ShopItemPropsList)
             {
-                if (shopItemProps.Amount == "No Ads" && !SaveUtils.GetValue<bool>(SaveKey.ShowAds))
+                if (shopItemProps.Title == "No Ads" && !SaveUtils.GetValue<bool>(SaveKey.ShowAds))
                     continue;
-                var shopItemClone = shopItem.Clone();
-                ShopItem si = shopItemClone.GetComponent<ShopItem>();
-                si.Init(shopItemProps, GetObservers());
+
+                IShopItem item;
+                switch (shopItemProps.Type)
+                {
+                    case ShopItemType.NoAds:
+                    case ShopItemType.Lifes:
+                        item = ShopItemDefault.Create(content); break;
+                    case ShopItemType.Money:
+                        item = ShopItemMoney.Create(content);
+                        break;
+                    default:
+                        throw new SwitchCaseNotImplementedException(shopItemProps.Type);
+                }
+                item.Init(shopItemProps, GetObservers());
             }
-            
-            Object.Destroy(shopItem);
 
             content.anchoredPosition = content.anchoredPosition.SetY(0);
             Panel = go.RTransform();

@@ -3,12 +3,14 @@ using Constants;
 using Entities;
 using Extensions;
 using GameHelpers;
+using TMPro;
 using UI;
 using UI.Factories;
 using UI.Managers;
 using UI.Panels;
 using UnityEngine;
 using UnityEngine.UI;
+using Utils;
 
 namespace DialogViewers
 {
@@ -45,6 +47,15 @@ namespace DialogViewers
             m_GoBackButton = gameObject.GetCompItem<Button>("go_back_button");
             m_CloseButton = gameObject.GetCompItem<Button>("close_button");
             m_ButtonsAnim = gameObject.GetCompItem<Animator>("buttons_animator");
+
+            var borderColor = ColorUtils.GetColorFromCurrentPalette(CommonPaletteColors.UiBorderDefault);
+            var backgroundColor = ColorUtils.GetColorFromCurrentPalette(CommonPaletteColors.UiDialogBackground);
+            m_GoBackButton.GetCompItem<Image>("border").color = borderColor;
+            m_CloseButton.GetCompItem<Image>("border").color = borderColor;
+            m_GoBackButton.GetCompItem<Image>("background").color = backgroundColor;
+            m_CloseButton.GetCompItem<Image>("background").color = backgroundColor;
+            m_GoBackButton.GetCompItem<Image>("icon").color = borderColor;
+            m_CloseButton.GetCompItem<Image>("icon").color = borderColor;
             
             m_GoBackButton.SetOnClick(() =>
             {

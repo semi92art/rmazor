@@ -190,12 +190,11 @@ GameObject:
   m_Component:
   - component: {fileID: 1954152783299436436}
   - component: {fileID: 5193928587581463657}
-  - component: {fileID: 5204104259753395773}
   - component: {fileID: 1617924211302417492}
-  - component: {fileID: -341784325170596131}
   - component: {fileID: 3490585608690012998}
   - component: {fileID: 8159061009852271485}
   - component: {fileID: 1484700413056417286}
+  - component: {fileID: 5126639799701417318}
   m_Layer: 0
   m_Name: Spin Button Item
   m_TagString: Untagged
@@ -236,21 +235,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2929232023256113801}
   m_CullTransparentMesh: 0
---- !u!114 &5204104259753395773
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2929232023256113801}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 572b4cae3cb141f7b7cd3a7c08ad2df3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  trigger: {fileID: 0}
-  title: {fileID: 7033620513697884526}
-  animator: {fileID: 0}
 --- !u!114 &1617924211302417492
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -280,18 +264,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &-341784325170596131
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2929232023256113801}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59e9a8a8a0c816841bf2f00e1c5197f8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &3490585608690012998
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -345,7 +317,7 @@ Animator:
   m_GameObject: {fileID: 2929232023256113801}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 13fba0a07e6b4a64387f9571b4d65adc, type: 2}
+  m_Controller: {fileID: 9100000, guid: efba89dbfd9db3245ad2f7de4de8cd5a, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -376,6 +348,24 @@ MonoBehaviour:
       name: watch_ad_image
     - item: {fileID: 1785581798325562719}
       name: watch_ad_background
+--- !u!114 &5126639799701417318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2929232023256113801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33dadfb2b85d46638e607f1a9d5bb6a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  background: {fileID: 7919793822030853388}
+  border: {fileID: 3671890259856293963}
+  shadow: {fileID: 1858883084987612796}
+  texts:
+  - {fileID: 7033620513697884526}
+  watchAd: {fileID: 691846365744410767}
 --- !u!1 &3712885539190471290
 GameObject:
   m_ObjectHideFlags: 0
@@ -446,7 +436,7 @@ MonoBehaviour:
   m_material: {fileID: 0}
   m_sharedMaterial: {fileID: 0}
   m_isDefaultMaterial: 0
-  m_padding: 1.25
+  m_padding: 8.5625
   m_canvasRenderer: {fileID: 5056522370529272027}
   m_TextComponent: {fileID: 7033620513697884526}
   m_materialReferenceIndex: 1

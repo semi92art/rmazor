@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Entities;
+using Extensions;
 using Network;
 using Network.PacketArgs;
 using Network.Packets;
@@ -14,32 +15,19 @@ namespace Managers
         #region singleton
     
         private static MoneyManager _instance;
-
-        public static MoneyManager Instance
-        {
-            get
-            {
-                if (_instance is MoneyManager ptm && !ptm.IsNull())
-                    return _instance;
-                var go = new GameObject("Money Manager");
-                _instance = go.AddComponent<MoneyManager>();
-                if (!GameClient.Instance.IsModuleTestsMode)
-                    DontDestroyOnLoad(go);
-                return _instance;
-            }
-        }
+        public static MoneyManager Instance => CommonUtils.Singleton(ref _instance, "Money Manager");
     
         #endregion
     
         #region nonpublic members
     
         private bool m_IsMoneySavedLocal;
+        private const long MaxMoneyCount = 999999999999;
     
         #endregion
     
         #region api
 
-        public const long MaxMoneyCount = 999999999999;
         public event MoneyEventHandler OnMoneyCountChanged;
         public event IncomeEventHandler OnIncome;
     
@@ -55,11 +43,13 @@ namespace Managers
                 });
                 profPacket.OnSuccess(() =>
                 {
-                    result.Money.Add(MoneyType.Gold, profPacket.Response.Gold);
-                    result.Money.Add(MoneyType.Diamonds, profPacket.Response.Diamonds);
-                    result.Money.Add(MoneyType.Lifes, profPacket.Response.Lifes);
+                    var response = profPacket.Response;
+                    result.Money.Add(MoneyType.Gold, response.Gold);
+                    result.Money.Add(MoneyType.Diamonds, response.Diamonds);
+                    result.Money.Add(MoneyType.Lifes, response.Lifes);
                     result.Loaded = true;
                     SetMoneyLocal(result);
+                    AdsManager.Instance.ShowAds = response.ShowAds;
                 }).OnFail(() =>
                 {
                     Debug.LogError(profPacket.ErrorMessage);
@@ -133,7 +123,8 @@ namespace Managers
                     AccountId = GameClient.Instance.AccountId,
                     Gold = _Money.ContainsKey(tGold) ? _Money[tGold] : bank.Money[tGold],
                     Diamonds = _Money.ContainsKey(tDiamonds) ? _Money[tDiamonds] : bank.Money[tDiamonds],
-                    Lifes = _Money.ContainsKey(tLifes) ? _Money[tLifes] : bank.Money[tLifes]
+                    Lifes = _Money.ContainsKey(tLifes) ? _Money[tLifes] : bank.Money[tLifes],
+                    ShowAds = AdsManager.Instance.ShowAds
                 });
                 profPacket.OnFail(() => Debug.LogError(profPacket.ErrorMessage));
                 GameClient.Instance.Send(profPacket);    

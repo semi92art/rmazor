@@ -104,6 +104,7 @@ GameObject:
   - component: {fileID: 6236061636389521851}
   - component: {fileID: 1617924211302417492}
   - component: {fileID: 3575961883980322892}
+  - component: {fileID: 6844146196694701399}
   m_Layer: 0
   m_Name: Settings Selector Item
   m_TagString: Untagged
@@ -167,7 +168,7 @@ Animator:
   m_GameObject: {fileID: 2929232023256113801}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 3bb0c351ba73aea468b6a0c455222979, type: 2}
+  m_Controller: {fileID: 9100000, guid: 7faf51a4110d1734786ff28ebf630c2f, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -218,6 +219,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Delegates: []
+--- !u!114 &6844146196694701399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2929232023256113801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a51db108d614017ad1f50be2f2ce143, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  background: {fileID: 7919793822030853388}
+  border: {fileID: 3671890259856293963}
+  shadow: {fileID: 1858883084987612796}
+  texts:
+  - {fileID: 7033620513697884526}
 --- !u!1 &3712885539190471290
 GameObject:
   m_ObjectHideFlags: 0
@@ -288,7 +306,7 @@ MonoBehaviour:
   m_material: {fileID: 0}
   m_sharedMaterial: {fileID: 0}
   m_isDefaultMaterial: 0
-  m_padding: 1.25
+  m_padding: 8.5625
   m_canvasRenderer: {fileID: 5056522370529272027}
   m_TextComponent: {fileID: 7033620513697884526}
   m_materialReferenceIndex: 1

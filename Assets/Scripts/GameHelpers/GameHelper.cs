@@ -70,7 +70,7 @@ namespace GameHelpers
         {
             var list = m_DiscDict.ToList();
             foreach (var kvp in list
-                .Where(_Kvp => !_Kvp.Value.IsAlive()))
+                .Where(_Kvp => _Kvp.Value.IsNull()))
                 list.Remove(kvp);
         }
 

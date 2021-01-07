@@ -106,7 +106,7 @@ namespace UI.Panels
             var packet = new RegisterUserPacket(new RegisterUserPacketRequestArgs
             {
                 Name = LoginInputField.text,
-                PasswordHash = CommonUtils.GetMD5Hash(PasswordInputField.text)
+                PasswordHash = CommonUtils.GetMd5Hash(PasswordInputField.text)
             });
             packet.OnSuccess(() =>
             {

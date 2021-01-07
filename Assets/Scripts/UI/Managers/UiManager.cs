@@ -75,8 +75,6 @@ namespace UI.Managers
             {
                 OnCurrentMenuCategoryChanged?.Invoke(m_CurrentMenuCategory, value);
                 m_CurrentMenuCategory = value;
-                if (value != MenuUiCategory.Nothing)
-                    OnCurrentGameCategoryChanged = null;
             }
         }
         
@@ -87,8 +85,6 @@ namespace UI.Managers
             {
                 OnCurrentGameCategoryChanged?.Invoke(m_CurrentGameCategory, value);
                 m_CurrentGameCategory = value;
-                if (value != GameUiCategory.Nothing)
-                    OnCurrentMenuCategoryChanged = null;
             }
         }
 
@@ -164,7 +160,7 @@ namespace UI.Managers
                     Application.targetFrameRate = GraphicUtils.GetMenuTargetFps();
                     break;
                 default: 
-                    throw new InvalidEnumArgumentExceptionEx(_New);
+                    throw new SwitchCaseNotImplementedException(_New);
             }
         }
         
@@ -186,7 +182,7 @@ namespace UI.Managers
                     Application.targetFrameRate = GraphicUtils.GetMenuTargetFps();
                     break;
                 default:
-                    throw new InvalidEnumArgumentExceptionEx(_New);
+                    throw new SwitchCaseNotImplementedException(_New);
             }
         }
         

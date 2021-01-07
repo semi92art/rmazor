@@ -81,7 +81,12 @@ namespace DebugConsole
         private int m_CurrentCommand;
         private int m_Index;
         private bool m_IsVisible;
-        
+        private static Swipe _swipeDirection;
+ 
+        private Vector2 m_FirstPressPos;
+        private Vector2 m_SecondPressPos;
+        private Vector2 m_CurrentSwipe;
+        public enum Swipe { None, Up, Down, Left, Right }
 
         #endregion
 
@@ -132,21 +137,76 @@ namespace DebugConsole
 
 #endif
 
-            //Toggle visibility when right swipe
-            foreach (Touch touch in Input.touches)
+            if (Input.touches.Length > 0)
             {
-                if (touch.phase == TouchPhase.Moved)
-                    m_TouchPositions.Add(touch.position);
-
-                if (touch.phase == TouchPhase.Ended)
+                Touch t = Input.GetTouch(0);
+ 
+                if (t.phase == TouchPhase.Began)
                 {
-                    m_SwipeFirstPosition = m_TouchPositions[0];
-                    m_SwipeLastPosition = m_TouchPositions[m_TouchPositions.Count - 1];
-
-                    //if swipeDragDistance > 30% from screen edge
-                    if ((m_SwipeLastPosition.x - m_SwipeFirstPosition.x > m_SwipeDragDistance) && m_IsVisible)
-                        ToggleVisibility();
+                    m_FirstPressPos = new Vector2(t.position.x, t.position.y);
                 }
+ 
+                if (t.phase == TouchPhase.Ended)
+                {
+                    m_SecondPressPos = new Vector2(t.position.x, t.position.y);
+                    m_CurrentSwipe = new Vector3(m_SecondPressPos.x - m_FirstPressPos.x, m_SecondPressPos.y - m_FirstPressPos.y);
+ 
+                    // check istap
+                    if (m_CurrentSwipe.magnitude < m_SwipeDragDistance)
+                    {
+                        _swipeDirection = Swipe.None;
+                        return;
+                    }
+ 
+                    m_CurrentSwipe.Normalize();
+ 
+                    if (!(m_SecondPressPos == m_FirstPressPos))
+                    {
+                        if (Mathf.Abs(m_CurrentSwipe.x) > Mathf.Abs(m_CurrentSwipe.y))
+                        {
+                            if (m_CurrentSwipe.x < 0 && !m_IsVisible)
+                            {
+                                ToggleVisibility();
+                            }
+                            else if (m_CurrentSwipe.x > 0 && m_IsVisible)
+                            {
+                                ToggleVisibility();
+                            }
+                        }
+                        else
+                        {
+                            if (m_CurrentSwipe.y < 0)
+                            {
+                                Debug.Log("down");
+                            }
+                            else
+                            {
+                                Debug.Log("up");
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    _swipeDirection = Swipe.None;
+                }
+            }
+
+            if (inputField.touchScreenKeyboard == null)
+                return;
+            switch (inputField.touchScreenKeyboard.status)
+            {
+                case TouchScreenKeyboard.Status.Visible:
+                    UpdatePositionsForKeyboard();
+                    break;
+                case TouchScreenKeyboard.Status.Done:
+                    CreatePositions();
+                    RunCommand();
+                    break;
+                case TouchScreenKeyboard.Status.Canceled:
+                case TouchScreenKeyboard.Status.LostFocus:
+                    CreatePositions();
+                    break;
             }
         }
 
@@ -248,7 +308,43 @@ namespace DebugConsole
             downButtonRectTransform.SetTop(screenHeight - screenHeight * 0.05f);
             downButtonRectTransform.SetBottom(0);
 
-        }    
+        }
+
+        private void UpdatePositionsForKeyboard()
+        {
+            var canvas = GameObject.Find("DebugConsoleCanvas");
+            RectTransform canvasRectTransform = canvas.RTransform();
+            float screenWidth = canvasRectTransform.sizeDelta.x;
+            float screenHeight = canvasRectTransform.sizeDelta.y;
+            //Log
+            RectTransform logAreaRectTransform = consoleLog.RTransform();
+            logAreaRectTransform.SetTop(0);
+            logAreaRectTransform.SetBottom(screenHeight * 0.5f);
+            //Scroll
+            RectTransform scrollRectTransform = consoleScrollBar.RTransform();
+            scrollRectTransform.SetTop(0);
+            scrollRectTransform.SetBottom(screenHeight * 0.5f);
+                
+            //Input
+            RectTransform inputRectTransform = inputField.RTransform();
+            inputRectTransform.SetTop(screenHeight - screenHeight * 0.5f);
+            inputRectTransform.SetBottom(0);        
+
+            //EnterButton
+            RectTransform enterButtonRectTransform = enterCommand.RTransform();
+            enterButtonRectTransform.SetTop(screenHeight - screenHeight * 0.5f);
+            enterButtonRectTransform.SetBottom(screenHeight * 0.45f);
+
+            //UpButton
+            RectTransform upButtonRectTransform = upCommand.RTransform();
+            upButtonRectTransform.SetTop(screenHeight - screenHeight * 0.45f);
+            upButtonRectTransform.SetBottom(screenHeight * 0.4f);
+
+            //DownButton
+            RectTransform downButtonRectTransform = downCommand.RTransform();
+            downButtonRectTransform.SetTop(screenHeight - screenHeight * 0.45f);
+            downButtonRectTransform.SetBottom(screenHeight * 0.4f);
+        }
 
         private void ToggleVisibility()
         {

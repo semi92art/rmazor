@@ -34,3 +34,5 @@ MonoBehaviour:
       name: icon_shop
     - item: {fileID: 21300000, guid: 65fd4d530d54bed4da013596e6c00afe, type: 3}
       name: icon_login
+    - item: {fileID: 21300000, guid: 79aa76a1610e52348a314d2db03133fe, type: 3}
+      name: icon_no_ads

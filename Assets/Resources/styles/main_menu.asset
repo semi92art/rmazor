@@ -32,9 +32,10 @@ MonoBehaviour:
     - item: {fileID: 4353535992515256928, guid: 6b79a31630448804c98eaedff872ef9b,
         type: 3}
       name: daily_bonus_item
-    - item: {fileID: 3257581172924190555, guid: 66e9d61eff18e4c47970c0a3ee33578d,
-        type: 3}
-      name: shop_item
     - item: {fileID: 4929242845806425626, guid: 7bbb09f06d17654488940008edd7f655,
         type: 3}
       name: bank_mini_panel
+    - item: {fileID: 282470615992248765, guid: dacdf3d8e367d474d9492378c8a16a1a, type: 3}
+      name: main_menu_background_panel
+    - item: {fileID: 176441828620803706, guid: c6f5f62018852c3409d85d8e271709e1, type: 3}
+      name: background_render_camera

@@ -1,18 +1,24 @@
 ﻿using System.Linq;
+using Constants;
+using Extensions;
 using Lean.Localization;
+using PygmyMonkey.ColorPalette;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Utils;
+using ColorUtils = Utils.ColorUtils;
 
 namespace UI
 {
-    public class LoadingPanelView : MonoBehaviour
+    public class LoadingPanelView : SimpleUiDialogPanelView
     {
         #region serialized fields
     
-        public Image indicator;
-        public Image indicator2;
+        public Image outerIndicator1;
+        public Image outerIndicator2;
+        public Image innerIndicator;
         public Animator animator;
         public TextMeshProUGUI loading;
         public float speed = 50f;
@@ -37,8 +43,8 @@ namespace UI
             get => m_DoLoading;
             set
             {
-                indicator.enabled = value;
-                indicator2.enabled = value;
+                outerIndicator1.enabled = value;
+                outerIndicator2.enabled = value;
                 animator.enabled = value;
                 m_DoLoading = value;
             }
@@ -47,11 +53,22 @@ namespace UI
         #endregion
         
         #region engine methods
-        
+
+        protected override void OnEnable()
+        {
+            var outerColor = ColorUtils.GetColorFromCurrentPalette(
+                CommonPaletteColors.UiLoadingPanelOuterIndicator);
+            var innerColor = ColorUtils.GetColorFromCurrentPalette(
+                CommonPaletteColors.UiLoadingPanelInnerIndicator);
+            outerIndicator1.color = outerIndicator2.color = outerColor;
+            innerIndicator.color = innerColor;
+            base.OnEnable();
+        }
+
         private void Start()
         {
-            m_Indicator = indicator.transform;
-            m_Indicator2 = indicator2.transform;
+            m_Indicator = outerIndicator1.transform;
+            m_Indicator2 = outerIndicator2.transform;
             DoLoading = true;
         }
         

@@ -49,4 +49,11 @@ namespace DI
         public LateUpdateAttribute(int _Order = 0, bool _DoNotDestroyOnLoad = false) : base(_Order, _DoNotDestroyOnLoad)
         { }
     }
+    
+    [AttributeUsage(AttributeTargets.Method)]
+    public class DrawGizmosAttribute : UpdateBaseAttribute
+    {
+        public DrawGizmosAttribute(int _Order = 0, bool _DoNotDestroyOnLoad = false) : base(_Order, _DoNotDestroyOnLoad)
+        { }
+    }
 }

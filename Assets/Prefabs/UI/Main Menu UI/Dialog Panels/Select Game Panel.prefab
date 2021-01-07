@@ -117,6 +117,7 @@ GameObject:
   - component: {fileID: 8414954107260219302}
   - component: {fileID: 7581676916077104355}
   - component: {fileID: 2351742488670283327}
+  - component: {fileID: 3768915286299973349}
   m_Layer: 0
   m_Name: Select Game Panel
   m_TagString: Untagged
@@ -201,6 +202,22 @@ MonoBehaviour:
     array:
     - item: {fileID: 8977903025412141776}
       name: content
+--- !u!114 &3768915286299973349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 747921176770291476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cacb2d1dd5b74e3ea744e7ef8f9d2592, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  background: {fileID: 8748056133655497608}
+  border: {fileID: 2103765124607147380}
+  shadow: {fileID: 4275320767084196142}
+  texts: []
 --- !u!1 &5391653930971433688
 GameObject:
   m_ObjectHideFlags: 0

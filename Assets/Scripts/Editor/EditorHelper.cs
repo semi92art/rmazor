@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Constants;
 using Entities;
 using Managers;
@@ -12,8 +11,13 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+#if UNITY_ANDROID
+using System.Reflection;
 using Unity.Android.Logcat;
+#endif
+using UnityEngine.Events;
 using Utils;
+using Utils.Editor;
 
 public class EditorHelper : EditorWindow
 {
@@ -42,6 +46,7 @@ public class EditorHelper : EditorWindow
         GetWindow(tProfiler, false);
     }
     
+#if UNITY_ANDROID
     [MenuItem("Tools/Android Logcat",false, 4)]
     public static void ShowAndroidLogcatWindow()
     {
@@ -50,6 +55,7 @@ public class EditorHelper : EditorWindow
             BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
         mInfoShow?.Invoke(null, null);
     }
+#endif
     
     [MenuItem("Tools/Color Palette", false, 5)]
     private static void ShowColorPaletteWindow()
@@ -67,6 +73,13 @@ public class EditorHelper : EditorWindow
 
     private void OnGUI()
     {
+        if (Application.isPlaying)
+        {
+            GUILayout.Label($"Account Id: {GameClient.Instance.AccountId}");
+            GUILayout.Label($"Device Id: {GameClient.Instance.DeviceId}");
+            GUILayout.Label($"Target FPS: {Application.targetFrameRate}");
+        }
+        
         GUI.enabled = Application.isPlaying;
         if (!GUI.enabled)
             GUILayout.Label("Available only in play mode:");
@@ -74,8 +87,7 @@ public class EditorHelper : EditorWindow
             GUILayout.Space(10);
         
         GUILayout.BeginHorizontal();
-        if (GUILayout.Button("Enable Daily Bonus"))
-            EnableDailyBonus();
+        GuiButtonAction("Enable Daily Bonus", EnableDailyBonus);
         GUILayout.Label("Day:");
         m_DailyBonusIndex = EditorGUILayout.Popup(
             m_DailyBonusIndex, new[] { "1", "2", "3", "4", "5", "6", "7" });
@@ -94,53 +106,35 @@ public class EditorHelper : EditorWindow
             GUILayout.EndHorizontal();
             
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Get From Bank"))
-                GetMoneyFromBank();
-            if (GUILayout.Button("Set Money"))
-                SetMoney();
+            GuiButtonAction("Get From Bank", GetMoneyFromBank);
+            GuiButtonAction("Set Money", SetMoney);
             GUILayout.EndHorizontal();
         }
 
         GUILayout.BeginHorizontal();
-        if (GUILayout.Button("Start Level:"))
-            LevelLoader.LoadLevel(m_Level);
+        GuiButtonAction("Start Level:", LevelLoader.LoadLevel, m_Level);
         m_Level = EditorGUILayout.IntField(m_Level);
         GUILayout.EndHorizontal();
         
         GUILayout.BeginHorizontal();
-        if (GUILayout.Button("Pause game"))
-        {
-            if (EditorSceneManager.GetActiveScene().name == SceneNames.Main)
-                UiTimeProvider.Instance.Pause = true;
-            else if (EditorSceneManager.GetActiveScene().name == SceneNames.Level)
-                GameTimeProvider.Instance.Pause = true;
-        }
-        if (GUILayout.Button("Continue game"))
-        {
-            if (EditorSceneManager.GetActiveScene().name == SceneNames.Main)
-                UiTimeProvider.Instance.Pause = false;
-            else if (EditorSceneManager.GetActiveScene().name == SceneNames.Level)
-                GameTimeProvider.Instance.Pause = false;
-        }
+        GuiButtonAction("Pause game", PauseGame, true);
+        GuiButtonAction("Continue game", PauseGame, false);
         GUILayout.EndHorizontal();
         
         EditorUtils.DrawUiLine(Color.gray);
         GUI.enabled = true;
 
-        if (GUILayout.Button("Print Common Info"))
-            PrintCommonInfo();
+        GuiButtonAction("Print common info", PrintCommonInfo);
 
         GUILayout.BeginHorizontal();
-        if (GUILayout.Button("Create test users"))
-            CreateTestUsers(m_TestUsersNum);
+        GuiButtonAction("Create test users", CreateTestUsers, m_TestUsersNum);
         GUILayout.Label("is guest: ");
         m_IsGuest = EditorGUILayout.Toggle(m_IsGuest);
         GUILayout.Label("count: ");
         m_TestUsersNum = EditorGUILayout.IntField(m_TestUsersNum);
         GUILayout.EndHorizontal();
         
-        if (GUILayout.Button("Delete all test users"))
-            DeleteAllTestUsers();
+        GuiButtonAction("Delete test users", DeleteTestUsers);
 
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("Set Game Id:"))
@@ -153,29 +147,16 @@ public class EditorHelper : EditorWindow
         m_TestUrl = EditorGUILayout.TextField(m_TestUrl);
         GUILayout.EndHorizontal();
 
-        if (GUILayout.Button("Set Default Url"))
-        {
-            m_TestUrl = @"http://77.37.152.15:7000";
-            UpdateTestUrl(true);
-        }
+        GuiButtonAction("Set default api url", SetDefaultApiUrl);
+        GuiButtonAction("Delete all settings", DeleteAllSettings);
 
-        if (GUILayout.Button("Delete All Settings"))
-        {
-            PlayerPrefs.DeleteAll();
-            UpdateTestUrl(true);
-        }
-        
-        if (GUILayout.Button("Set Default Material Props"))
-            SetDefaultMaterialProps();
+        GuiButtonAction("Get ready to commit", GetReadyToCommit);
         EditorUtils.DrawUiLine(Color.gray);
         
         GUILayout.BeginHorizontal();
-        if (GUILayout.Button(SceneNames.Preload))
-            LoadScene($"Assets/Scenes/{SceneNames.Preload}.unity");
-        if (GUILayout.Button(SceneNames.Main))
-            LoadScene($"Assets/Scenes/{SceneNames.Main}.unity");
-        if (GUILayout.Button(SceneNames.Level))
-            LoadScene($"Assets/Scenes/{SceneNames.Level}.unity");
+        GuiButtonAction(SceneNames.Preload, LoadScene, $"Assets/Scenes/{SceneNames.Preload}.unity");
+        GuiButtonAction(SceneNames.Main, LoadScene, $"Assets/Scenes/{SceneNames.Main}.unity");
+        GuiButtonAction(SceneNames.Level, LoadScene, $"Assets/Scenes/{SceneNames.Level}.unity");
         GUILayout.EndHorizontal();
         
         GUILayout.BeginHorizontal();
@@ -184,10 +165,13 @@ public class EditorHelper : EditorWindow
             m_Quality, new[] { "Normal", "Good" });
         GUILayout.EndHorizontal();
 
-        if (GUILayout.Button("Show identifier"))
-        {
-            Debug.Log(Application.identifier);
-        }
+        //if (GUILayout.Button("Fix Firebase Dependencies"))
+        //{
+            // FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(_Task =>
+            // {
+            //     FirebaseAnalytics.SetAnalyticsCollectionEnabled(true);
+            // });
+        //}
         
         UpdateTestUrl();
         UpdateGameId();
@@ -240,7 +224,7 @@ public class EditorHelper : EditorWindow
         MoneyManager.Instance.SetMoney(m_Money);
     }
 
-    private void PrintCommonInfo()
+    private static void PrintCommonInfo()
     {
         Debug.Log($"Account Id: {GameClient.Instance.AccountId}");
         Debug.Log($"Device Id: {GameClient.Instance.DeviceId}");
@@ -248,7 +232,7 @@ public class EditorHelper : EditorWindow
 
     private void CreateTestUsers(int _Count)
     {
-        System.Func<int, string> resultTextBegin = _I => $"Creating test user #{_I + 1} of {_Count}";
+        Func<int, string> resultTextBegin = _I => $"Creating test user #{_I + 1} of {_Count}";
         GameClient.Instance.Init(true);
         int gameId = 1;
         System.Random randGen = new System.Random();
@@ -258,7 +242,7 @@ public class EditorHelper : EditorWindow
                 new RegisterUserPacketRequestArgs
                 {
                     Name = m_IsGuest ? string.Empty : $"test_{CommonUtils.GetUniqueId()}",
-                    PasswordHash = CommonUtils.GetMD5Hash("1"),
+                    PasswordHash = CommonUtils.GetMd5Hash("1"),
                     DeviceId = m_IsGuest ? $"test_{CommonUtils.GetUniqueId()}" : string.Empty,
                     GameId = gameId
                 });
@@ -278,7 +262,7 @@ public class EditorHelper : EditorWindow
                             {
                                 AccountId = packet.Response.Id,
                                 GameId = gameId,
-                                LastUpdateTime = System.DateTime.Now,
+                                LastUpdateTime = DateTime.Now,
                                 Points = randGen.Next(0, 100),
                                 Type = ScoreTypes.MaxScore
                             });
@@ -299,7 +283,7 @@ public class EditorHelper : EditorWindow
         }
     }
 
-    private void DeleteAllTestUsers()
+    private static void DeleteTestUsers()
     {
         GameClient.Instance.Init(true);
         IPacket packet = new DeleteTestUsersPacket();
@@ -311,15 +295,22 @@ public class EditorHelper : EditorWindow
         GameClient.Instance.Send(packet);
     }
 
-    private void SetDefaultMaterialProps()
+    private static void GetReadyToCommit()
     {
-        string matPath = @"Assets\Materials\CircleTransparentTransition.mat";
-        var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
-        mat.SetFloat(CircleTransparentTransitionRenderer.AlphaCoeff, -1);
+        string[] files =
+        {
+            @"Assets\Materials\CircleTransparentTransition.mat",
+            @"Assets\Materials\MainMenuBackground.mat"
+        };
+        foreach (var file in files)
+        {
+            GitUtils.RunGitCommand($"reset -- {file}");
+            GitUtils.RunGitCommand($"checkout -- {file}");
+        }
         AssetDatabase.SaveAssets();
     }
 
-    private void LoadScene(string _Name)
+    private static void LoadScene(string _Name)
     {
         if (Application.isPlaying)
             SceneManager.LoadScene(_Name);
@@ -328,6 +319,36 @@ public class EditorHelper : EditorWindow
             if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
                 EditorSceneManager.OpenScene(_Name);    
         }       
+    }
+    
+    private static void PauseGame(bool _Pause)
+    {
+        UiTimeProvider.Instance.Pause = _Pause;
+        GameTimeProvider.Instance.Pause = _Pause;
+    }
+
+    private void SetDefaultApiUrl()
+    {
+        m_TestUrl = @"http://77.37.152.15:7000";
+        UpdateTestUrl(true);
+    }
+
+    private void DeleteAllSettings()
+    {
+        PlayerPrefs.DeleteAll();
+        UpdateTestUrl(true);
+    }
+
+    private static void GuiButtonAction(string _Name, UnityAction _Action)
+    {
+        if (GUILayout.Button(_Name))
+            _Action?.Invoke();
+    }
+    
+    private static void GuiButtonAction<T>(string _Name, UnityAction<T> _Action, T _Arg)
+    {
+        if (GUILayout.Button(_Name))
+            _Action?.Invoke(_Arg);
     }
 }
 

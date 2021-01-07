@@ -72,7 +72,6 @@ namespace UI.Panels
 
         #endregion
         
-
         #region nonpublic methods
 
         private void SetStartLifes()

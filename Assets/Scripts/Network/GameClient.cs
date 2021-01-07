@@ -90,6 +90,7 @@ namespace Network
 #elif GAME_5
                 return 5;
 #endif
+                return 1;
             }
         }
 
