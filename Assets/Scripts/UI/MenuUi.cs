@@ -5,7 +5,6 @@ using Extensions;
 using GameHelpers;
 using Managers;
 using Network;
-using Network.PacketArgs;
 using Network.Packets;
 using UI.Factories;
 using UI.Managers;
@@ -156,7 +155,7 @@ namespace UI
                         );
                         loginPacket.OnFail(() =>
                         {
-                            if (loginPacket.ErrorMessage.Id == RequestErrorCodes.AccontEntityNotFoundByDeviceId)
+                            if (loginPacket.ErrorMessage.Id == ServerErrorCodes.AccountNotFoundByDeviceId)
                             {
                                 Debug.LogWarning(loginPacket.ErrorMessage);
                                 var registerPacket = new RegisterUserPacket(
@@ -169,16 +168,16 @@ namespace UI
                                     {
                                         Debug.Log("Register by DeviceId successfully");
                                         GameClient.Instance.AccountId = registerPacket.Response.Id;
-                                        var bank = MoneyManager.Instance.GetBank(true);
-                                        var scores = ScoreManager.Instance.GetScores(true);
+                                        var bank = BankManager.Instance.GetBank(true);
+                                        
                                         Coroutines.Run(Coroutines.WaitWhile(
                                             () => ShowMainMenu(true),
-                                            () => !bank.Loaded || !scores.Loaded));
+                                            () => !bank.Loaded));
                                     })
                                     .OnFail(() => { Debug.LogError(registerPacket.ErrorMessage); });
                                 GameClient.Instance.Send(registerPacket);
                             }
-                            else if (loginPacket.ErrorMessage.Id == RequestErrorCodes.WrongLoginOrPassword)
+                            else if (loginPacket.ErrorMessage.Id == ServerErrorCodes.WrongLoginOrPassword)
                             {
                                 Debug.LogError("Login failed: Wrong login or password");
                                 ShowMainMenu(true);

@@ -34,11 +34,11 @@ namespace Utils
                 return _Instance;
             var go = new GameObject(_Name);
             _Instance = go.AddComponent<T>();
-            if (!GameClient.Instance.IsModuleTestsMode)
+            if (GameClient.Instance.PlayMode)
                 UnityEngine.Object.DontDestroyOnLoad(go);
             return _Instance;
         }
-        
+
         public static string GetOsName()
         {
 #if UNITY_ANDROID
@@ -146,9 +146,6 @@ namespace Utils
                               + "-" + $"{Convert.ToInt32(timestamp):X}" //Time
                               + "-" + $"{Convert.ToInt32(Time.time * 1000000):X}" //Time in game
                               + "-" + $"{RandomGen.Next(1000000000):X}"; //random number
-         
-            Debug.Log($"Generated Unique ID: {uniqueId}");
-            
             return uniqueId;
         }
 

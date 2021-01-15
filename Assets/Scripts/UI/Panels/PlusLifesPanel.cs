@@ -43,12 +43,12 @@ namespace UI.Panels
         private Image m_DiamondsWarningIcon;
         private int m_LifesCount = 1;
         
-        public static readonly Dictionary<MoneyType, long> OneLifePrice = new Dictionary<MoneyType, long>
+        public static readonly Dictionary<BankItemType, long> OneLifePrice = new Dictionary<BankItemType, long>
         {
-            {MoneyType.Gold, 1000}, {MoneyType.Diamonds, 10}
+            {BankItemType.Gold, 1000}, {BankItemType.Diamonds, 10}
         };
 
-        private Dictionary<MoneyType, long> m_Money;
+        private Dictionary<BankItemType, long> m_Money;
         
         #endregion
 
@@ -128,9 +128,9 @@ namespace UI.Panels
                 .CloneAlt()
                 .ToDictionary(_P => _P.Key,
                     _P => _P.Value * m_LifesCount);
-            bool result = MoneyManager.Instance.TryMinusMoney(pricesTemp);
+            bool result = BankManager.Instance.TryMinusBankItems(pricesTemp);
             if (result)
-                MoneyManager.Instance.PlusMoney(MoneyType.Lifes, m_LifesCount);
+                BankManager.Instance.PlusBankItems(BankItemType.Lifes, m_LifesCount);
             else
                 Debug.LogError("Not enough money to buy lifes");
 
@@ -161,8 +161,8 @@ namespace UI.Panels
             m_Plus1Button.interactable = m_LifesCount == 0 || IsMoneyEnough(m_LifesCount + 1);
             m_ExchangeButton.interactable = m_LifesCount > 0 && IsMoneyEnough(1);
             m_ResetButton.interactable = m_LifesCount > 0;
-            m_GoldWarningIcon.SetGoActive(m_LifesCount > 0 && !IsMoneyEnoughForOneLife(MoneyType.Gold));
-            m_DiamondsWarningIcon.SetGoActive(m_LifesCount > 0 && !IsMoneyEnoughForOneLife(MoneyType.Diamonds));
+            m_GoldWarningIcon.SetGoActive(m_LifesCount > 0 && !IsMoneyEnoughForOneLife(BankItemType.Gold));
+            m_DiamondsWarningIcon.SetGoActive(m_LifesCount > 0 && !IsMoneyEnoughForOneLife(BankItemType.Diamonds));
             SetTexts();
         }
 
@@ -176,24 +176,24 @@ namespace UI.Panels
             return pricesTemp.All(_Kvp => _Kvp.Value <= moneyTemp[_Kvp.Key]);
         }
         
-        private bool IsMoneyEnoughForOneLife(MoneyType _MoneyType)
+        private bool IsMoneyEnoughForOneLife(BankItemType _BankItemType)
         {
-            return OneLifePrice[_MoneyType] <= m_Money[_MoneyType];
+            return OneLifePrice[_BankItemType] <= m_Money[_BankItemType];
         }
 
         private void SetTexts()
         {
-            m_GoldCountText.text = (OneLifePrice[MoneyType.Gold] * m_LifesCount).ToNumeric();
-            m_DiamondsCountText.text = (OneLifePrice[MoneyType.Diamonds] * m_LifesCount).ToNumeric();
+            m_GoldCountText.text = (OneLifePrice[BankItemType.Gold] * m_LifesCount).ToNumeric();
+            m_DiamondsCountText.text = (OneLifePrice[BankItemType.Diamonds] * m_LifesCount).ToNumeric();
             m_LifesCountText.text = m_LifesCount.ToNumeric();
         }
 
         private void GetBank()
         {
-            var bank = MoneyManager.Instance.GetBank();
+            var bank = BankManager.Instance.GetBank();
             Coroutines.Run(Coroutines.WaitWhile(() =>
             {
-                m_Money = bank.Money;
+                m_Money = bank.BankItems;
                 UpdatePanelState();
             }, () => !bank.Loaded));
         }

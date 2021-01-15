@@ -5,6 +5,7 @@ using Extensions;
 using Network;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Utils;
 
 namespace Managers
 {
@@ -13,21 +14,8 @@ namespace Managers
         #region singleton
         
         private static HierarchyOrderManager _instance;
-        
-        public static HierarchyOrderManager Instance
-        {
-            get
-            {
-                if (_instance is HierarchyOrderManager ptm && !ptm.IsNull())
-                    return _instance;
-                var go = new GameObject("Hierarchy Order Manager");
-                _instance = go.AddComponent<HierarchyOrderManager>();
-                if (!GameClient.Instance.IsModuleTestsMode)
-                    DontDestroyOnLoad(go);
-                return _instance;
-            }
-        }
-        
+        public static HierarchyOrderManager Instance => CommonUtils.Singleton(ref _instance, "Hierarchy Order Manager");
+
         #endregion
         
         #region nonpublic members

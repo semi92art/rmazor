@@ -15,13 +15,14 @@ namespace Entities
         public static SaveKey LastConnectionSucceeded => new SaveKey("last_connection_succeeded", typeof(bool));
         public static SaveKey DailyBonusLastDate => new SaveKey("daily_bonus_last_date", typeof(DateTime));
         public static SaveKey DailyBonusLastItemClickedDay => new SaveKey("daily_bonus_last_item_clicked_date", typeof(int));
-        public static SaveKey ShowAds => new SaveKey("show_ads", typeof(bool));
         public static SaveKey SettingSoundOn => new SaveKey("sound_on", typeof(bool));
         public static SaveKey SettingLanguage => new SaveKey("language", typeof(Language));
-        public static SaveKey Money => new SaveKey("money", typeof(Dictionary<MoneyType, long>));
-        public static SaveKey Scores => new SaveKey("scores", typeof(Dictionary<string, int>));
         public static SaveKey WheelOfFortuneLastDate => new SaveKey("wheel_of_fortune_last_date", typeof(DateTime));
         public static SaveKey ColorScheme => new SaveKey("color_scheme", typeof(string));
+        public static SaveKey AccountDataFieldValue(int _AccountId, ushort _FieldId) =>
+            new SaveKey($"df_value_cache_{_AccountId}_{_FieldId}", typeof(AccountDataField));
+        public static SaveKey GameDataFieldValue(int _AccountId, int _GameId, ushort _FieldId) =>
+            new SaveKey($"df_value_cache_{_AccountId}_{_GameId}_{_FieldId}", typeof(GameDataField));
 
         #endregion
     

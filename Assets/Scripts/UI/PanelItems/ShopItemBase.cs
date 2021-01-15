@@ -6,7 +6,6 @@ using Extensions;
 using GameHelpers;
 using Managers;
 using Network;
-using Network.PacketArgs;
 using Network.Packets;
 using TMPro;
 using UI.Entities;
@@ -100,14 +99,14 @@ namespace UI.PanelItems
             return bagSize;
         }
     }
-
+    
     public enum ShopItemType { Money, Lifes, NoAds }
     public enum ShopItemSize { Small, Medium, Big }
 
     public class ShopItemProps
     {
         public ShopItemType Type { get; }
-        public Dictionary<MoneyType, long> Rewards { get; }
+        public Dictionary<BankItemType, long> Rewards { get; }
         public string Title { get; }
         public string Description { get; }
         public float Price { get; }
@@ -117,7 +116,7 @@ namespace UI.PanelItems
             ShopItemType _Type,
             string _Title,
             float _Price,
-            Dictionary<MoneyType, long> _Rewards = null,
+            Dictionary<BankItemType, long> _Rewards = null,
             string _Description = null,
             ShopItemSize? _Size = null)
         {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Constants;
 using DialogViewers;
 using Entities;
@@ -192,17 +193,13 @@ namespace UI
                 "play_button");
             playButton.GetComponent<Button>().SetOnClick(OnPlayButtonClick);
             var bestScoreText = playButton.GetCompItem<TextMeshProUGUI>("best_score_text");
+
             var scores = ScoreManager.Instance.GetScores();
-            Coroutines.Run(Coroutines.WaitWhile(
-                () =>
-                {
-                    long maxScore = 0;
-                    if (scores.Scores.ContainsKey(ScoreTypes.MaxScore))
-                        maxScore = scores.Scores[ScoreTypes.MaxScore];
-                    bestScoreText.text = $" {maxScore.ToNumeric()}";
-                },
-                () => !scores.Loaded));
-            
+            Coroutines.Run(Coroutines.WaitWhile(() =>
+            {
+                int mainScore = scores.Scores[ScoreType.Main];
+                bestScoreText.text = mainScore.ToNumeric();
+            }, () => !scores.Loaded));
             
             var ratingsButton = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(
@@ -211,7 +208,6 @@ namespace UI
                 "main_menu_buttons",
                 "ratings_button");
             ratingsButton.GetComponent<Button>().SetOnClick(OnRatingsButtonClick);
-            
         }
 
         private void InitBottomButtonsGroups()
@@ -369,15 +365,6 @@ namespace UI
             selectGamePanel.AddObservers(GetObservers());
             selectGamePanel.Init();
             m_MenuDialogViewer.Show(selectGamePanel);
-        }
-        
-        private void OnProfileButtonClick()
-        {
-            Notify(this, NotifyMessageProfileButtonClick);
-            var profilePanel = new ProfilePanel(m_MenuDialogViewer);
-            profilePanel.AddObservers(GetObservers());
-            profilePanel.Init();
-            m_MenuDialogViewer.Show(profilePanel);
         }
 
         private void OnSettingsButtonClick()

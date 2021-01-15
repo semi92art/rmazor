@@ -20,7 +20,7 @@ public class DefaultLevelController : ILevelController
     public ICountdownController CountdownController { get; }
     
     public int Level { get; set; }
-    public Dictionary<MoneyType, long> Revenue { get; } = new Dictionary<MoneyType, long>();
+    public Dictionary<BankItemType, long> Revenue { get; } = new Dictionary<BankItemType, long>();
 
     public event LevelStateHandler OnLevelBeforeStarted;
     public event LevelStateHandler OnLevelStarted;

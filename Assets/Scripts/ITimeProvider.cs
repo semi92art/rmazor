@@ -1,11 +1,14 @@
-﻿public interface ITimeProvider
+﻿using UnityEngine;
+using Utils;
+
+public interface ITimeProvider
 {
     float Time { get; }
     bool Pause { get; set; }
     void Reset();
 }
 
-public abstract class TimeProviderBase : DI.DiObject, ITimeProvider, ISingleton
+public abstract class TimeProviderBase : MonoBehaviour, ITimeProvider, ISingleton
 {
     protected float Delta;
     
@@ -18,14 +21,7 @@ public abstract class TimeProviderBase : DI.DiObject, ITimeProvider, ISingleton
         Delta = 0;
     }
     
-
-    protected TimeProviderBase()
-    {
-        Time = UnityEngine.Time.deltaTime;
-    }
-    
-    [DI.Update(-1, true)]
-    protected virtual void OnUpdate()
+    protected virtual void Update()
     {
         if (Pause)
         {
@@ -38,15 +34,15 @@ public abstract class TimeProviderBase : DI.DiObject, ITimeProvider, ISingleton
 
 public class UiTimeProvider : TimeProviderBase
 {
-    private static ITimeProvider _instance;
-    public static  ITimeProvider Instance => _instance ?? (_instance = new UiTimeProvider());
+    private static UiTimeProvider _instance;
+    public static  UiTimeProvider Instance => CommonUtils.Singleton(ref _instance, "UI Time Provider");
     private UiTimeProvider() { }
 }
 
 public class GameTimeProvider : TimeProviderBase
 {
-    private static ITimeProvider _instance;
-    public static  ITimeProvider Instance => _instance ?? (_instance = new GameTimeProvider());
+    private static GameTimeProvider _instance;
+    public static  GameTimeProvider Instance  => CommonUtils.Singleton(ref _instance, "Game Time Provider");
     private GameTimeProvider() { }
 }
 

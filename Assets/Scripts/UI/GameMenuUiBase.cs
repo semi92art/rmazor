@@ -23,13 +23,13 @@ namespace UI
         void OnLevelStarted(LevelStateChangedArgs _Args);
         void OnLevelFinished(
             LevelStateChangedArgs _Args,
-            Dictionary<MoneyType, long> _Revenue,
-            UnityAction<Dictionary<MoneyType, long>> _SetNewRevenue,
+            Dictionary<BankItemType, long> _Revenue,
+            UnityAction<Dictionary<BankItemType, long>> _SetNewRevenue,
             UnityAction _Finish,
             bool _IsPersonalBest);
         void OnTimeEnded(UnityAction<float> _SetAdditionalTime, UnityAction _Continue);
         void OnLifesEnded(UnityAction<long> _SetAdditionalLifes, UnityAction _Continue);
-        void OnRevenueIncome(MoneyType _MoneyType, long _Revenue);
+        void OnRevenueIncome(BankItemType _BankItemType, long _Revenue);
     }
     
     public abstract class GameMenuUiBase : GameObservable, IGameMenuUi
@@ -157,8 +157,8 @@ namespace UI
 
         public virtual void OnLevelFinished(
             LevelStateChangedArgs _Args, 
-            Dictionary<MoneyType, long> _Revenue,
-            UnityAction<Dictionary<MoneyType, long>> _SetNewRevenue,
+            Dictionary<BankItemType, long> _Revenue,
+            UnityAction<Dictionary<BankItemType, long>> _SetNewRevenue,
             UnityAction _Finish,
             bool _IsPersonalBest)
         {
@@ -198,9 +198,9 @@ namespace UI
             DialogViewer.Show(panel);
         }
 
-        public virtual void OnRevenueIncome(MoneyType _MoneyType, long _Revenue)
+        public virtual void OnRevenueIncome(BankItemType _BankItemType, long _Revenue)
         {
-            RevenueMiniPanel.PlusRevenue(_MoneyType, _Revenue);
+            RevenueMiniPanel.PlusRevenue(_BankItemType, _Revenue);
         }
 
         #endregion

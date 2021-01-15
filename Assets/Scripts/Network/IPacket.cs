@@ -1,10 +1,16 @@
-﻿using Network.PacketArgs;
-
-namespace Network
+﻿namespace Network
 {
-    public interface IPacket
+    public interface IOnPacketFinish
     {
-        int Id { get; }
+        IPacket OnSuccess(System.Action _Action);
+        IPacket OnFail(System.Action _Action);
+        IPacket OnCancel(System.Action _Action);
+    }
+    
+    
+    public interface IPacket : IOnPacketFinish
+    {
+        string Id { get; }
         object Request { get; }
         string Url { get; }
         string ResponseRaw { get; }
@@ -14,8 +20,6 @@ namespace Network
         bool IsDone { get; }
         ErrorResponseArgs ErrorMessage { get; }
         void DeserializeResponse(string _Json);
-        IPacket OnSuccess(System.Action _Action);
-        IPacket OnFail(System.Action _Action);
-        IPacket OnCancel(System.Action _Action);
+        
     }
 }

@@ -6,6 +6,7 @@ using GameHelpers;
 using Managers;
 using TMPro;
 using UI.Factories;
+using UI.PanelItems;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -19,7 +20,7 @@ namespace UI.Panels
         
         private static int AkShow => AnimKeys.Anim;
         private readonly INotificationViewer m_NotificationViewer;
-        private readonly MoneyType m_MoneyType;
+        private readonly BankItemType m_BankItemType;
         private readonly long m_Reward;
         private readonly UnityAction m_OnClose;
         private Animator m_Animator;
@@ -33,12 +34,12 @@ namespace UI.Panels
 
         public WheelOfFortuneRewardPanel(
             INotificationViewer _NotificationViewer,
-            MoneyType _MoneyType,
+            BankItemType _BankItemType,
             long _Reward,
             UnityAction _OnClose)
         {
             m_NotificationViewer = _NotificationViewer;
-            m_MoneyType = _MoneyType;
+            m_BankItemType = _BankItemType;
             m_Reward = _Reward;
             m_OnClose = _OnClose;
         }
@@ -62,22 +63,22 @@ namespace UI.Panels
             
             string iconName;
             string styleName;
-            switch (m_MoneyType)
+            switch (m_BankItemType)
             {
-                case MoneyType.Gold:
+                case BankItemType.Gold:
                     iconName = "gold_coin_0";
                     styleName = "coins";
                     break;
-                case MoneyType.Diamonds:
+                case BankItemType.Diamonds:
                     iconName = "diamond_coin_0";
                     styleName = "coins";
                     break;
-                case MoneyType.Lifes:
+                case BankItemType.Lifes:
                     iconName = "icon_life";
                     styleName = "icons";
                     break;
                 default:
-                    throw new SwitchCaseNotImplementedException(m_MoneyType);
+                    throw new SwitchCaseNotImplementedException(m_BankItemType);
             }
 
             Sprite iconSprite = PrefabInitializer.GetObject<Sprite>(styleName, iconName);

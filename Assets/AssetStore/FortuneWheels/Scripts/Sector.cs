@@ -24,54 +24,54 @@ namespace MkeyFW
         #region nonpublic members
         
         private const float DestroyTime = 3f;
-        private MoneyType m_MoneyType;
+        private BankItemType m_BankItemType;
         
         #endregion
 
         #region api
         
         public long Coins { get; private set; }
-        public MoneyType MoneyType => m_MoneyType;
+        public BankItemType BankItemType => m_BankItemType;
         public bool BigWin 
         {
             get
             {
-                switch (m_MoneyType)
+                switch (m_BankItemType)
                 {
-                    case MoneyType.Gold:
+                    case BankItemType.Gold:
                         return Coins >= 1000000;
-                    case MoneyType.Diamonds:
+                    case BankItemType.Diamonds:
                         return Coins >= 100;
-                    case MoneyType.Lifes:
+                    case BankItemType.Lifes:
                         return Coins >= 10;
                     default:
-                        throw new SwitchCaseNotImplementedException(m_MoneyType);
+                        throw new SwitchCaseNotImplementedException(m_BankItemType);
                 }
             }
         }
 
         public void Init(SectorMoney _SectorMoney)
         {
-            m_MoneyType = _SectorMoney.type;
+            m_BankItemType = _SectorMoney.type;
             Coins = _SectorMoney.count;
             string styleName;
             string iconName;
-            switch (m_MoneyType)
+            switch (m_BankItemType)
             {
-                case MoneyType.Gold:
+                case BankItemType.Gold:
                     styleName = "coins";
                     iconName = "gold_coin_0";
                     break;
-                case MoneyType.Diamonds:
+                case BankItemType.Diamonds:
                     styleName = "coins";
                     iconName = "diamond_coin_0";
                     break;
-                case MoneyType.Lifes:
+                case BankItemType.Lifes:
                     styleName = "icons";
                     iconName = "icon_life";
                     break;
                 default:
-                    throw new SwitchCaseNotImplementedException(m_MoneyType);
+                    throw new SwitchCaseNotImplementedException(m_BankItemType);
             }
 
             icon.sprite = PrefabInitializer.GetObject<Sprite>(styleName, iconName);

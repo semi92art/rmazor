@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using Managers;
 
 namespace Entities
 {
     public class ScoresEntity
     {
-        public Dictionary<string, int> Scores { get; set; } = new Dictionary<string, int>();
+        public Dictionary<ScoreType, int> Scores { get; set; } = new Dictionary<ScoreType, int>();
         public bool Loaded { get; set; }
     }
 }

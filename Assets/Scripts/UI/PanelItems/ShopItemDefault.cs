@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Constants;
 using Entities;
 using Exceptions;
 using GameHelpers;
 using Managers;
+using Network;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -29,10 +31,11 @@ namespace UI.PanelItems
                     afterPurchaseAction = () => AdsManager.Instance.ShowAds = false;
                     break;
                 case ShopItemType.Lifes:
-                    description.text = _Props.Rewards[MoneyType.Lifes].ToNumeric() + " " + "lifes";
+                    description.text = _Props.Rewards[BankItemType.Lifes].ToNumeric() + " " + "lifes";
                     icon.sprite = PrefabInitializer.GetObject<Sprite>(
                         "icons_bags", $"icon_lifes_bag_{BagSize(_Props.Size)}");
-                    afterPurchaseAction = () => MoneyManager.Instance.PlusMoney(_Props.Rewards);
+                    afterPurchaseAction = () =>
+                        BankManager.Instance.PlusBankItems(BankItemType.Lifes, _Props.Rewards[BankItemType.Lifes]);
                     break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Props.Type);

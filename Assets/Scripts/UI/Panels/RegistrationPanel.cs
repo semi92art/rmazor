@@ -4,7 +4,6 @@ using Extensions;
 using GameHelpers;
 using Managers;
 using Network;
-using Network.PacketArgs;
 using Network.Packets;
 using TMPro;
 using UI.Factories;
@@ -113,7 +112,7 @@ namespace UI.Panels
                 GameClient.Instance.Login = packet.Response.Name;
                 GameClient.Instance.PasswordHash = packet.Response.PasswordHash;
                 GameClient.Instance.AccountId = packet.Response.Id;
-                MoneyManager.Instance.GetBank(true);
+                BankManager.Instance.GetBank(true);
                 m_RegisteredSuccessfully.enabled = true;
                 Coroutines.Run(Coroutines.Delay(() =>
                 {

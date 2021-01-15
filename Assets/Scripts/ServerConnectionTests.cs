@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Constants;
 using GameHelpers;
 using Network;
-using Network.PacketArgs;
 using Network.Packets;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -28,7 +27,7 @@ public class ServerConnectionTests
         //Arrange
         InitGameObjects();
         GameClient.Instance.Init(true);
-        string url = $"{GameClient.Instance.BaseUrl}/timetest";
+        string url = $"{GameClient.Instance.ServerApiUrl}/timetest";
 
         var request = new UnityWebRequest(url, "GET");
         request.downloadHandler = new DownloadHandlerBuffer();
@@ -104,171 +103,6 @@ public class ServerConnectionTests
         Debug.Log($"response code: {packet.ResponseCode}");
         Debug.Log($"response string: {packet.ResponseRaw}");
         
-        Assert.IsTrue(requestSuccess);
-    }
-
-    [UnityTest]
-    public IEnumerator GetScore()
-    {
-        //Arrange
-        InitGameObjects();
-        GameClient.Instance.Init(true);
-        bool requestSuccess = false;
-        
-        //Act
-        IPacket packet = new GetScorePacket(
-                new GetScoreRequestArgs
-                {
-                    AccountId = 1,
-                    GameId = 1,
-                    Type = ScoreTypes.MaxScore
-                })
-            .OnSuccess(() => requestSuccess = true);
-        GameClient.Instance.Send(packet);
-        while (!packet.IsDone) 
-            yield return new WaitForEndOfFrame();
-        
-        //Assert
-        Debug.Log($"response code: {packet.ResponseCode}");
-        Debug.Log($"response string: {packet.ResponseRaw}");
-        
-        Assert.IsTrue(requestSuccess);
-    }
-
-    [UnityTest]
-    public IEnumerator GetScores()
-    {
-        //Arrange
-        InitGameObjects();
-        GameClient.Instance.Init(true);
-        bool requestSuccess = false;
-        
-        //Act
-        IPacket packet = new GetScoresPacket(
-                new AccIdGameId
-                {
-                    AccountId = 1,
-                    GameId = 1
-                })
-            .OnSuccess(() => requestSuccess = true);
-        GameClient.Instance.Send(packet);
-        while (!packet.IsDone) 
-            yield return new WaitForEndOfFrame();
-        
-        //Assert
-        Debug.Log($"response code: {packet.ResponseCode}");
-        Debug.Log($"response string: {packet.ResponseRaw}");
-        
-        Assert.IsTrue(requestSuccess);
-    }
-        
-    [UnityTest]
-    public IEnumerator SetScore()
-    {
-        //Arrange
-        InitGameObjects();
-        GameClient.Instance.Init(true);
-        bool requestSuccess = false;
-        Mathf.RoundToInt(Random.value * 100);
-        
-        //Act
-        IPacket packet = new SetScorePacket(
-                new SetScoreRequestArgs
-                {
-                    AccountId = 1,
-                    GameId = 1,
-                    Points = Mathf.RoundToInt(Random.value * 100),
-                    Type = ScoreTypes.MaxScore
-                })
-            .OnSuccess(() => requestSuccess = true);
-        GameClient.Instance.Send(packet);
-        while (!packet.IsDone) 
-            yield return new WaitForEndOfFrame();
-        
-        //Assert
-        Debug.Log($"response code: {packet.ResponseCode}");
-        Debug.Log($"response string: {packet.ResponseRaw}");
-        
-        Assert.IsTrue(requestSuccess);
-    }
-
-    [UnityTest]
-    public IEnumerator GetProfile()
-    {
-        //Arrange
-        InitGameObjects();
-        GameClient.Instance.Init(true);
-        bool requestSuccess = false;
-        
-        //Act
-        IPacket packet = new GetProfilePacket(
-                new AccIdGameId
-                {
-                    AccountId = 1,
-                    GameId = 1
-                })
-            .OnSuccess(() => requestSuccess = true);
-        GameClient.Instance.Send(packet);
-        while (!packet.IsDone)
-            yield return new WaitForEndOfFrame();
-        
-        //Assert
-        Debug.Log($"response code: {packet.ResponseCode}");
-        Debug.Log($"response string: {packet.ResponseRaw}");
-        
-        Assert.IsTrue(requestSuccess);
-    }
-    
-    [UnityTest]
-    public IEnumerator SetProfile()
-    {
-        //Arrange
-        InitGameObjects();
-        GameClient.Instance.Init(true);
-        bool requestSuccess = false;
-            
-        //Act
-        IPacket packet = new SetProfilePacket(
-                new SetProfileRequestArgs
-                {
-                    AccountId = 1
-                })
-            .OnSuccess(() => requestSuccess = true);
-        GameClient.Instance.Send(packet);
-        while (!packet.IsDone) 
-            yield return new WaitForEndOfFrame();
-        
-        //Assert
-        Debug.Log($"response code: {packet.ResponseCode}");
-        Debug.Log($"response string: {packet.ResponseRaw}");
-            
-        Assert.IsTrue(requestSuccess);
-    }
-    
-    [UnityTest]
-    public IEnumerator GetFullAccountData()
-    {
-        //Arrange
-        InitGameObjects();
-        GameClient.Instance.Init(true);
-        bool requestSuccess = false;
-            
-        //Act
-        IPacket packet = new GetFullAccountDataPacket(
-                new AccIdGameId
-                {
-                    AccountId = 1,
-                    GameId = 1
-                })
-            .OnSuccess(() => requestSuccess = true);
-        GameClient.Instance.Send(packet);
-        while (!packet.IsDone) 
-            yield return new WaitForEndOfFrame();
-            
-        //Assert
-        Debug.Log($"response code: {packet.ResponseCode}");
-        Debug.Log($"response string: {packet.ResponseRaw}");
-            
         Assert.IsTrue(requestSuccess);
     }
 }

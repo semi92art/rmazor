@@ -17,7 +17,7 @@ namespace MkeyFW
     public class SectorMoney
     {
         public long count;
-        public MoneyType type;
+        public BankItemType type;
         public double probability;
     }
     
@@ -93,7 +93,7 @@ namespace MkeyFW
         private AudioSource m_AudioSource;
         private float m_RotDirF;
         private IMenuDialogViewer m_MenuDialogViewer;
-        private UnityAction<MoneyType, long> m_SpinFinishAction;
+        private UnityAction<BankItemType, long> m_SpinFinishAction;
 		#endregion
  
         #region engine methods
@@ -141,7 +141,7 @@ namespace MkeyFW
         
         #region api
 
-        public void Init(IMenuDialogViewer _MenuDialogViewer, UnityAction<MoneyType, long> _SpinFinishAction)
+        public void Init(IMenuDialogViewer _MenuDialogViewer, UnityAction<BankItemType, long> _SpinFinishAction)
         {
             m_MenuDialogViewer = _MenuDialogViewer;
             m_SpinFinishAction = _SpinFinishAction;
@@ -373,7 +373,7 @@ namespace MkeyFW
             //     return;
             Sector s = m_Sectors[m_CurrSector];
             s.PlayHit(Reel.position);
-            m_SpinFinishAction?.Invoke(s.MoneyType, s.Coins);
+            m_SpinFinishAction?.Invoke(s.BankItemType, s.Coins);
             Debug.Log($"Coins: {s.Coins}; IsBigWin: {s.BigWin}");
         }
 

@@ -32,20 +32,7 @@ namespace Managers
         #region singleton
     
         private static AssetBundleManager _instance;
-
-        public static AssetBundleManager Instance
-        {
-            get
-            {
-                if (_instance is AssetBundleManager ptm && !ptm.IsNull())
-                    return _instance;
-                var go = new GameObject("Asset Bundle Manager");
-                _instance = go.AddComponent<AssetBundleManager>();
-                if (!GameClient.Instance.IsModuleTestsMode)
-                    DontDestroyOnLoad(go);
-                return _instance;
-            }
-        }
+        public static AssetBundleManager Instance => CommonUtils.Singleton(ref _instance, "Asset Bundle Manager");
 
         #endregion
         

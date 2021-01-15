@@ -1,11 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Constants;
 using DialogViewers;
-using Entities;
 using Extensions;
 using GameHelpers;
-using Managers;
 using Network;
 using UI.Entities;
 using UI.Factories;
@@ -82,7 +79,7 @@ namespace UI.Panels
             var infos = GameInfo.Infos;
             return infos
                 .Select(_Info => new ChooseGameItemProps(
-                    _Info.GameId, _Info.ComingSoon, _Info.Available))
+                    _Info.GameId, _Info.Available))
                 .ToArray();
         }
         

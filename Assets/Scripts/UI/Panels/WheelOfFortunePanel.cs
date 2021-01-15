@@ -12,6 +12,7 @@ using TMPro;
 using UI.Entities;
 using UI.Factories;
 using UI.Managers;
+using UI.PanelItems;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -120,11 +121,12 @@ namespace UI.Panels
             }
         }
 
-        private void SpinFinishAction(MoneyType _MoneyType, long _Reward)
+        private void SpinFinishAction(BankItemType _BankItemType, long _Reward)
         {
             var rewardPanel = new WheelOfFortuneRewardPanel(
-                m_NotificationViewer, _MoneyType, _Reward, () =>
-                    MoneyManager.Instance.PlusMoney(_MoneyType, _Reward));
+                m_NotificationViewer, _BankItemType, _Reward, () =>
+                    BankManager.Instance.PlusBankItems(_BankItemType, _Reward));
+                    
             m_SpinButton.interactable = true;
             m_IsLocked = CheckIfWofSpinToday();
             rewardPanel.Init();

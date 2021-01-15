@@ -17,7 +17,7 @@ namespace UI.Panels
 {
     public interface IRevenueMiniPanel : IMiniPanel
     {
-        void PlusRevenue(MoneyType _MoneyType, long _Revenue);
+        void PlusRevenue(BankItemType _BankItemType, long _Revenue);
         void ClearRevenue();
     }
     
@@ -38,14 +38,14 @@ namespace UI.Panels
         private readonly TextMeshProUGUI m_RevenueText;
         private readonly Image m_RevenueIcon;
         private readonly Dictionary<string, bool> m_Coroutines = new Dictionary<string, bool>();
-        private readonly Dictionary<MoneyType, long> m_Revenue = new Dictionary<MoneyType, long>
+        private readonly Dictionary<BankItemType, long> m_Revenue = new Dictionary<BankItemType, long>
         {
-            {MoneyType.Gold, 0},
-            {MoneyType.Diamonds, 0},
-            {MoneyType.Lifes, 0}
+            {BankItemType.Gold, 0},
+            {BankItemType.Diamonds, 0},
+            {BankItemType.Lifes, 0}
         };
 
-        private MoneyType m_LastRevenueType;
+        private BankItemType m_LastRevenueType;
         private long m_LastRevenue;
         private bool m_RevenueShowing;
         private string m_LastCoroutineHash;
@@ -96,10 +96,10 @@ namespace UI.Panels
             m_Panel.gameObject.SetActive(false);
         }
 
-        public void PlusRevenue(MoneyType _MoneyType, long _Revenue)
+        public void PlusRevenue(BankItemType _BankItemType, long _Revenue)
         {
             CheckForLastRevenueFinished();
-            m_LastRevenueType = _MoneyType;
+            m_LastRevenueType = _BankItemType;
             m_LastRevenue = _Revenue;
 
             string newHash = Md5.GetMd5String(BitConverter.GetBytes(CommonUtils.RandomGen.NextDouble()));
@@ -109,15 +109,15 @@ namespace UI.Panels
                 m_Coroutines[m_LastCoroutineHash] = false;
             m_LastCoroutineHash = newHash;
             
-            m_BankMoney.text = m_Revenue[_MoneyType].ToNumeric();
+            m_BankMoney.text = m_Revenue[_BankItemType].ToNumeric();
             m_RevenueText.text = "+ " + _Revenue.ToNumeric();
             m_RevenueIcon.sprite = PrefabInitializer.GetObject<Sprite>("coins",
-                _MoneyType == MoneyType.Gold ? "gold_coin_0" : "diamond_coin_0");
+                _BankItemType == BankItemType.Gold ? "gold_coin_0" : "diamond_coin_0");
             Show();
             m_RevenueShowing = true;
             Coroutines.Run(Coroutines.Delay(() =>
             {
-                m_BankMoney.text = (m_Revenue[_MoneyType] + _Revenue).ToNumeric();
+                m_BankMoney.text = (m_Revenue[_BankItemType] + _Revenue).ToNumeric();
                 Coroutines.Run(Coroutines.Delay(
                     FinishAnimate, 0.5f, 
                     () => !m_Coroutines[newHash]));
@@ -127,7 +127,7 @@ namespace UI.Panels
 
         public void ClearRevenue()
         {
-            foreach (var mt in CommonUtils.EnumToList<MoneyType>())
+            foreach (var mt in CommonUtils.EnumToList<BankItemType>())
                 m_Revenue[mt] = 0;
         }
         

@@ -6,7 +6,6 @@ using GameHelpers;
 using Lean.Localization;
 using Managers;
 using Network;
-using Network.PacketArgs;
 using Network.Packets;
 using TMPro;
 using UI.Factories;
@@ -101,7 +100,7 @@ namespace UI.Panels
                 GameClient.Instance.Login = packet.Response.Name;
                 GameClient.Instance.PasswordHash = packet.Response.PasswordHash;
                 GameClient.Instance.AccountId = packet.Response.Id;
-                MoneyManager.Instance.GetBank(true);
+                BankManager.Instance.GetBank(true);
                 DialogViewer.Back();       
             });
             packet.OnFail(() =>
@@ -166,7 +165,7 @@ namespace UI.Panels
                 GameClient.Instance.Login = string.Empty;
                 GameClient.Instance.PasswordHash = string.Empty;
                 GameClient.Instance.AccountId = packet.Response.Id;
-                MoneyManager.Instance.GetBank(true);
+                BankManager.Instance.GetBank(true);
                 DialogViewer.Back();       
             });
             packet.OnFail(() =>

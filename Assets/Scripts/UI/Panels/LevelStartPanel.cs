@@ -76,11 +76,11 @@ namespace UI.Panels
 
         private void SetStartLifes()
         {
-            var bank = MoneyManager.Instance.GetBank();
+            var bank = BankManager.Instance.GetBank();
             Coroutines.Run(Coroutines.WaitWhile(() =>
                 {
                     if (!m_AvailableLifes.HasValue)
-                        m_AvailableLifes = bank.Money[MoneyType.Lifes];
+                        m_AvailableLifes = bank.BankItems[BankItemType.Lifes];
                     m_StartLifes = System.Math.Min(m_AvailableLifes.Value, 3);
                     m_AvailableLifes -= m_StartLifes;
                     CheckForAvailableLifesAndSetTexts();
@@ -95,11 +95,11 @@ namespace UI.Panels
 
         private void OnWatchAdFinishAction()
         {
-            var bank = MoneyManager.Instance.GetBank();
+            var bank = BankManager.Instance.GetBank();
             Coroutines.Run(Coroutines.WaitWhile(() =>
                 {
                     if (!m_AvailableLifes.HasValue)
-                        m_AvailableLifes = bank.Money[MoneyType.Lifes];
+                        m_AvailableLifes = bank.BankItems[BankItemType.Lifes];
                     if (m_AvailableLifes <= 0)
                         return;
                     m_StartLifes++;

@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Constants;
 using Entities;
 using GameHelpers;
 using Managers;
+using Network;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -22,8 +24,8 @@ namespace UI.PanelItems
         public void Init(ShopItemProps _Props, IEnumerable<GameObserver> _Observers)
         {
             var rewards = _Props.Rewards;
-            description.text = rewards[MoneyType.Gold].ToNumeric() + " " + "gold" + "\n" + 
-                               rewards[MoneyType.Diamonds].ToNumeric() + " " + "diamonds";
+            description.text = rewards[BankItemType.Gold].ToNumeric() + " " + "gold" + "\n" + 
+                               rewards[BankItemType.Diamonds].ToNumeric() + " " + "diamonds";
             goldIcon.sprite = PrefabInitializer.GetObject<Sprite>(
                 "icons_bags", $"icon_gold_bag_{BagSize(_Props.Size)}");
             diamondIcon.sprite = PrefabInitializer.GetObject<Sprite>(
@@ -36,7 +38,7 @@ namespace UI.PanelItems
                     this,
                     CommonNotifyMessages.PurchaseCommand,
                     _Props,
-                    (UnityAction) (() => MoneyManager.Instance.PlusMoney(_Props.Rewards)));
+                    (UnityAction) (() => BankManager.Instance.PlusBankItems(_Props.Rewards)));
             };
             
             base.Init(action, _Props, _Observers);

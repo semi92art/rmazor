@@ -28,8 +28,8 @@ namespace UI.Panels
 
         private readonly IGameDialogViewer m_DialogViewer;
         private readonly int m_Level;
-        private readonly Dictionary<MoneyType, long> m_Revenue;
-        private readonly UnityAction<Dictionary<MoneyType, long>> m_SetNewRevenue;
+        private readonly Dictionary<BankItemType, long> m_Revenue;
+        private readonly UnityAction<Dictionary<BankItemType, long>> m_SetNewRevenue;
         private readonly UnityAction m_FinishLevel;
         private readonly bool m_IsPersonalBest;
 
@@ -48,8 +48,8 @@ namespace UI.Panels
         public LevelFinishPanel(
             IGameDialogViewer _DialogViewer,
             int _Level,
-            Dictionary<MoneyType, long> _Revenue,
-            UnityAction<Dictionary<MoneyType, long>> _SetNewRevenue,
+            Dictionary<BankItemType, long> _Revenue,
+            UnityAction<Dictionary<BankItemType, long>> _SetNewRevenue,
             UnityAction _FinishLevel,
             bool _IsPersonalBest)
         {
@@ -120,13 +120,13 @@ namespace UI.Panels
         private void SetRevenueCountsText()
         {
             m_GoldCountRevenueText.text = "-";
-            if (m_Revenue.ContainsKey(MoneyType.Gold) && m_Revenue[MoneyType.Gold] > 0)
-                m_GoldCountRevenueText.text = m_Revenue[MoneyType.Gold].ToNumeric();
+            if (m_Revenue.ContainsKey(BankItemType.Gold) && m_Revenue[BankItemType.Gold] > 0)
+                m_GoldCountRevenueText.text = m_Revenue[BankItemType.Gold].ToNumeric();
             m_DiamondsCountRevenueText.text = "-";
-            if (m_Revenue.ContainsKey(MoneyType.Diamonds) && m_Revenue[MoneyType.Diamonds] > 0)
-                m_DiamondsCountRevenueText.text = m_Revenue[MoneyType.Diamonds].ToNumeric();
+            if (m_Revenue.ContainsKey(BankItemType.Diamonds) && m_Revenue[BankItemType.Diamonds] > 0)
+                m_DiamondsCountRevenueText.text = m_Revenue[BankItemType.Diamonds].ToNumeric();
             m_LifesCountRevenueText.text = "-";
-            if (m_Revenue.ContainsKey(MoneyType.Lifes) && m_Revenue[MoneyType.Lifes] > 0)
+            if (m_Revenue.ContainsKey(BankItemType.Lifes) && m_Revenue[BankItemType.Lifes] > 0)
                 m_LifesCountRevenueText.text = "-";
         }
         

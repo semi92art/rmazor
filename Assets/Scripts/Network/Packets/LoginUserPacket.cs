@@ -1,11 +1,9 @@
-﻿using Network.PacketArgs;
-
-namespace Network.Packets
+﻿namespace Network.Packets
 {
     public sealed class LoginUserPacket : PacketBase
     {
-        public override int Id => 5;
-        public override string Url => $"{GameClient.Instance.BaseUrl}/api/accounts/login";
+        public override string Id => nameof(LoginUserPacket);
+        public override string Url => $"{GameClient.Instance.ServerApiUrl}/api/accounts/login";
         public Account Response { get; private set; }
         
         private readonly LoginUserPacketRequestArgs m_Request;
@@ -19,5 +17,12 @@ namespace Network.Packets
                 Response = GameClient.Instance.Deserialize<Account>(_Json);
             base.DeserializeResponse(_Json);
         }
+    }
+    
+    public class LoginUserPacketRequestArgs
+    {
+        public string Name { get; set; }
+        public string PasswordHash { get; set; }
+        public string DeviceId { get; set; }
     }
 }

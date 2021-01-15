@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using UnityEngine;
 
 namespace Utils
@@ -18,6 +19,16 @@ namespace Utils
         public static int Max(params int[] _Values)
         {
             return _Values.Max();
+        }
+
+        public static long Clamp(long _X, long _Min, long _Max)
+        {
+            return Math.Min(Math.Max(_X, _Min), _Max);
+        }
+        
+        public static int Clamp(int _X, int _Min, int _Max)
+        {
+            return Math.Min(Math.Max(_X, _Min), _Max);
         }
     }
 }

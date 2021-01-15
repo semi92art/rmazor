@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Linq;
 using Constants;
 using Extensions;
 using GameHelpers;
 using Lean.Touch;
 using Network;
-using Network.PacketArgs;
 using Network.Packets;
 using UI;
 using UnityEngine;
@@ -128,31 +128,21 @@ namespace Managers
             var scores = ScoreManager.Instance.GetScores();
             Coroutines.Run(Coroutines.WaitWhile(() =>
             {
-                if (scores.Scores[ScoreTypes.MaxScore] < LevelController.Level)
-                {
-                    IPacket scorePacket = new SetScorePacket(new SetScoreRequestArgs
-                    {
-                        AccountId = GameClient.Instance.AccountId,
-                        GameId = GameClient.Instance.GameId,
-                        LastUpdateTime = DateTime.Now,
-                        Points = LevelController.Level,
-                        Type = ScoreTypes.MaxScore
-                    });
-                    scorePacket.OnFail(() => Debug.LogError(scorePacket.ErrorMessage));
-                    GameClient.Instance.Send(scorePacket);
-                }
-                
+                int mainScore = scores.Scores[ScoreType.Main];
+                if (mainScore < LevelController.Level)
+                    ScoreManager.Instance.SetScore(ScoreType.Main, LevelController.Level);
+
                 GameMenuUi?.OnLevelFinished(_Args, RevenueController.TotalRevenue,
                     _NewRevenue =>
                         RevenueController.TotalRevenue = _NewRevenue,
                     () =>
                     {
                         LevelController.Level++;
-                        MoneyManager.Instance.PlusMoney(RevenueController.TotalRevenue);
+                        BankManager.Instance.PlusBankItems(RevenueController.TotalRevenue);
                         RevenueController.TotalRevenue.Clear();
                         LevelController.BeforeStartLevel();
                     },
-                    LevelController.Level > scores.Scores[ScoreTypes.MaxScore]);
+                    LevelController.Level > mainScore);
             }, () => !scores.Loaded));
         }
 
@@ -191,9 +181,9 @@ namespace Managers
                     null, () => LifesController.Lifes <= 0));
         }
         
-        protected virtual void OnRevenueIncome(MoneyType _MoneyType, long _Revenue)
+        protected virtual void OnRevenueIncome(BankItemType _BankItemType, long _Revenue)
         {
-            GameMenuUi?.OnRevenueIncome(_MoneyType, _Revenue);
+            GameMenuUi?.OnRevenueIncome(_BankItemType, _Revenue);
         }
         
         protected abstract float LevelDuration(int _Level);

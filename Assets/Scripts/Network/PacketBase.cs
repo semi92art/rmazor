@@ -1,5 +1,4 @@
 ﻿using System;
-using Network.PacketArgs;
 using Newtonsoft.Json;
 using UnityEngine;
 using Utils;
@@ -10,7 +9,7 @@ namespace Network
     {
         #region public properties
         
-        public abstract int Id { get; }
+        public abstract string Id { get; }
         public abstract string Url { get; }
         public virtual string Method => "POST";
         public virtual bool OnlyOne => false;
@@ -117,8 +116,17 @@ namespace Network
         public virtual void DeserializeResponse(string _Json)
         {
             ResponseRaw = _Json;
-            if (!CommonUtils.IsInRange(ResponseCode, 200, 299))
-                m_ErrorMessage = JsonConvert.DeserializeObject<ErrorResponseArgs>(_Json);
+            try
+            {
+                if (!CommonUtils.IsInRange(ResponseCode, 200, 299))
+                    m_ErrorMessage = JsonConvert.DeserializeObject<ErrorResponseArgs>(_Json);
+            }
+            catch (JsonReaderException)
+            {
+                Debug.LogError(ResponseRaw);
+                throw;
+            }
+            
             
             if (CommonUtils.IsInRange(ResponseCode, 200, 299))
                 InvokeSuccess();

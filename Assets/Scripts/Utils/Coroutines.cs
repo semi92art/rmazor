@@ -18,14 +18,14 @@ namespace Utils
 
         static Coroutines()
         {
-            _coroutineRunner = GameObject.Find("CoroutinesRunner").GetComponent<DontDestroyOnLoad>();
+            _coroutineRunner = GameObject.Find("Coroutines Runner").GetComponent<DontDestroyOnLoad>();
         }
         
         public static Coroutine Run(IEnumerator _Coroutine)
         {
 #if UNITY_EDITOR
-            if (GameClient.Instance.IsModuleTestsMode && _coroutineRunner == null)
-                _coroutineRunner = GameObject.Find("CoroutinesRunner").GetComponent<DontDestroyOnLoad>();
+            if (!GameClient.Instance.PlayMode && _coroutineRunner == null)
+                _coroutineRunner = GameObject.Find("Coroutines Runner").GetComponent<DontDestroyOnLoad>();
 #endif
             return _coroutineRunner.StartCoroutine(_Coroutine);
         }

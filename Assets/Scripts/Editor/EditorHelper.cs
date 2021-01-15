@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Constants;
 using Entities;
+using GameHelpers;
 using Managers;
 using Network;
-using Network.PacketArgs;
 using Network.Packets;
 using PygmyMonkey.ColorPalette;
 using UnityEditor;
@@ -22,7 +23,7 @@ using Utils.Editor;
 public class EditorHelper : EditorWindow
 {
     private int m_DailyBonusIndex;
-    private Dictionary<MoneyType, long> m_Money = new Dictionary<MoneyType, long>();
+    private Dictionary<BankItemType, long> m_Money = new Dictionary<BankItemType, long>();
     private int m_TestUsersNum;
     private bool m_IsGuest;
     private string m_TestUrl;
@@ -164,14 +165,6 @@ public class EditorHelper : EditorWindow
         m_Quality = EditorGUILayout.Popup(
             m_Quality, new[] { "Normal", "Good" });
         GUILayout.EndHorizontal();
-
-        //if (GUILayout.Button("Fix Firebase Dependencies"))
-        //{
-            // FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(_Task =>
-            // {
-            //     FirebaseAnalytics.SetAnalyticsCollectionEnabled(true);
-            // });
-        //}
         
         UpdateTestUrl();
         UpdateGameId();
@@ -207,21 +200,21 @@ public class EditorHelper : EditorWindow
 
     private void EnableDailyBonus()
     {
-        SaveUtils.PutValue(SaveKey.DailyBonusLastDate, System.DateTime.Now.Date.AddDays(-1));
+        SaveUtils.PutValue(SaveKey.DailyBonusLastDate, DateTime.Now.Date.AddDays(-1));
         SaveUtils.PutValue(SaveKey.DailyBonusLastItemClickedDay, m_DailyBonusIndex);
     }
 
     private void GetMoneyFromBank()
     {
-        var bank = MoneyManager.Instance.GetBank();
+        var bank = BankManager.Instance.GetBank();
         Coroutines.Run(Coroutines.WaitWhile(
-            () =>  m_Money = bank.Money,
+            () =>  m_Money = bank.BankItems,
             () => !bank.Loaded));
     }
     
     private void SetMoney()
     {
-        MoneyManager.Instance.SetMoney(m_Money);
+        BankManager.Instance.SetBank(m_Money);
     }
 
     private static void PrintCommonInfo()
@@ -232,10 +225,9 @@ public class EditorHelper : EditorWindow
 
     private void CreateTestUsers(int _Count)
     {
-        Func<int, string> resultTextBegin = _I => $"Creating test user #{_I + 1} of {_Count}";
         GameClient.Instance.Init(true);
-        int gameId = 1;
-        System.Random randGen = new System.Random();
+        int gameId = 1; 
+        var randGen = new System.Random();
         for (int i = 0; i < _Count; i++)
         {
             var packet = new RegisterUserPacket(
@@ -249,36 +241,24 @@ public class EditorHelper : EditorWindow
             int ii = i;
             packet.OnSuccess(() =>
                 {
-                    var profPacket = new SetProfilePacket(new SetProfileRequestArgs
+                    var dfvf = new AccountDataFieldFilter(packet.Response.Id, 
+                        DataFieldIds.FirstCurrency, DataFieldIds.SecondCurrency, DataFieldIds.Lifes);
+                    dfvf.Filter(_DfValues =>
                     {
-                        AccountId = packet.Response.Id,
-                        Gold = randGen.Next(0, 100000),
-                        Diamonds = randGen.Next(0, 100)
+                        _DfValues.First(_DfValue => _DfValue.FieldId == DataFieldIds.FirstCurrency)
+                            .SetValue(randGen.Next(0, 10000)).Save();
+                        _DfValues.First(_DfValue => _DfValue.FieldId == DataFieldIds.SecondCurrency)
+                            .SetValue(randGen.Next(0, 100)).Save();
+                        _DfValues.First(_DfValue => _DfValue.FieldId == DataFieldIds.Lifes)
+                            .SetValue(randGen.Next(0, 100)).Save();
                     });
-                    int iii = ii;
-                    profPacket.OnSuccess(() =>
-                        {
-                            var scPacket = new SetScorePacket(new SetScoreRequestArgs
-                            {
-                                AccountId = packet.Response.Id,
-                                GameId = gameId,
-                                LastUpdateTime = DateTime.Now,
-                                Points = randGen.Next(0, 100),
-                                Type = ScoreTypes.MaxScore
-                            });
-
-                            int iiii = iii;
-                            scPacket.OnSuccess(() =>
-                            {
-                                Debug.Log($"{resultTextBegin(iiii)} score succeeded");
-                            }).OnFail(() => Debug.Log($"{resultTextBegin(iiii)} score failed"));
-                            GameClient.Instance.Send(scPacket);
-                        })
-                        .OnFail(() => Debug.Log($"{resultTextBegin(iii)} profile failed"));
-                    GameClient.Instance.Send(profPacket);
+                    Debug.Log("All test users were created successfully");
                 })
-                .OnFail(() => Debug.Log($"{resultTextBegin(ii)} failed"));
-    
+                .OnFail(() =>
+                {
+                    Debug.LogError($"Creating test user #{ii + 1} of {_Count} failed");
+                    Debug.LogError(packet.Response);
+                });
             GameClient.Instance.Send(packet);
         }
     }

@@ -1,11 +1,9 @@
-﻿using Network.PacketArgs;
-
-namespace Network.Packets
+﻿namespace Network.Packets
 {
     public class RankPacket : PacketBase
     {
-        public override int Id => 90;
-        public override string Url => $"{GameClient.Instance.BaseUrl}/api/scores/rank";
+        public override string Id => nameof(RankPacket);
+        public override string Url => $"{GameClient.Instance.ServerApiUrl}/api/scores/rank";
         public RankResponseArgs Response { get; private set; }
         
         public RankPacket(RankRequestArgs _Request) : base(_Request) { }
@@ -16,5 +14,16 @@ namespace Network.Packets
                 Response = GameClient.Instance.Deserialize<RankResponseArgs>(_Json);
             base.DeserializeResponse(_Json);
         }
+    }
+    
+    public class RankRequestArgs : AccIdGameId
+    {
+        public string Type { get; set; }
+        public bool Global { get; set; }
+    }
+    
+    public class RankResponseArgs : AccIdGameId
+    {
+        public int Rank { get; set; }
     }
 }

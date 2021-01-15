@@ -1,11 +1,10 @@
-﻿using Entities;
+﻿using System.Linq;
+using Constants;
+using Entities;
 using GameHelpers;
 using GoogleMobileAds.Api;
 using Network;
-using Network.PacketArgs;
-using Network.Packets;
 using UI.Panels;
-using UnityEngine;
 using UnityEngine.Events;
 using Utils;
 
@@ -25,23 +24,32 @@ namespace Managers
         private RewardedAd m_RewardedAd;
         private AdRequest m_AdRequest;
         private UnityAction m_OnPaid;
+        private bool m_ShowAds;
 
         #endregion
 
         #region api
-
+        
         public bool ShowAds
         {
-            get => SaveUtils.GetValue<bool>(SaveKey.ShowAds);
+            get
+            {
+                var dff = new AccountDataFieldFilter(
+                    GameClient.Instance.AccountId, DataFieldIds.ShowAds);
+                return dff.Filter().First().GetBool();
+            }
             set
             {
-                SaveUtils.PutValue(SaveKey.ShowAds, value);
-                if (value) return;
-                var packet = new DisableAdsPacket(new AccIdGameId
+                m_ShowAds = value;
+                var dff = new AccountDataFieldFilter(
+                    GameClient.Instance.AccountId, DataFieldIds.ShowAds);
+                dff.Filter(_DataFields =>
                 {
-                    AccountId = GameClient.Instance.AccountId
+                    _DataFields
+                        .FirstOrDefault(_Fv => _Fv.FieldId == DataFieldIds.ShowAds)?
+                        .SetValue(m_ShowAds)
+                        .Save();
                 });
-                GameClient.Instance.Send(packet);
             }
         }
 

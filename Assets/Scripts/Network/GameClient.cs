@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Entities;
-using Network.PacketArgs;
 using Network.Packets;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -38,7 +37,7 @@ namespace Network
         
         #region nonpublic members
         
-        private readonly Dictionary<int, IPacket> m_Packets = new Dictionary<int, IPacket>();
+        private readonly Dictionary<string, IPacket> m_Packets = new Dictionary<string, IPacket>();
         private string m_ServerName;
         private Dictionary<string, string> m_ServerBaseUrls;
         private bool m_FirstRequest = true;
@@ -49,7 +48,7 @@ namespace Network
         
         #region api
 
-        public string BaseUrl => m_ServerBaseUrls[m_ServerName];
+        public string ServerApiUrl => m_ServerBaseUrls[m_ServerName];
 
         public int AccountId
         {
@@ -101,8 +100,8 @@ namespace Network
             get => SaveUtils.GetValue<bool>(SaveKey.LastConnectionSucceeded);
             private set => SaveUtils.PutValue(SaveKey.LastConnectionSucceeded, value);
         }
-        
-        public bool IsModuleTestsMode => m_ServerName == "TestRunner";
+
+        public bool PlayMode { get; set; }
 
         public void Init(bool _TestMode = false)
         {
@@ -127,9 +126,10 @@ namespace Network
                 m_ServerName = "TestRunner";
             if (!_TestMode)
                 StartTestingConnection();
+            PlayMode = !_TestMode;
         }
 
-        public void Send(IPacket _Packet)
+        public void Send(IPacket _Packet, bool _Async = true)
         {
             if (m_Packets.ContainsKey(_Packet.Id))
             {
@@ -138,13 +138,13 @@ namespace Network
                 else
                 {
                     m_Packets[_Packet.Id] = _Packet;
-                    SendCore(_Packet);
+                    SendCore(_Packet, _Async);
                 }
             }
             else
             {
                 m_Packets.Add(_Packet.Id, _Packet);
-                SendCore(_Packet);
+                SendCore(_Packet, _Async);
             }
         }
         
@@ -157,9 +157,12 @@ namespace Network
         
         #region nonpublic methods
         
-        private void SendCore(IPacket _Packet)
+        private void SendCore(IPacket _Packet, bool _Async)
         {
-            Coroutines.Run(Coroutines.Action(() => SendRequest(_Packet)));
+            if (_Async)
+                Coroutines.Run(Coroutines.Action(() => SendRequest(_Packet)));
+            else
+                SendRequest(_Packet);
         }
 
         private void SendRequest(IPacket _Packet)

@@ -8,7 +8,6 @@ using Firebase.Extensions;
 using Google;
 using Managers;
 using Network;
-using Network.PacketArgs;
 using Network.Packets;
 using UnityEngine;
 using Utils;
@@ -148,12 +147,12 @@ namespace Controllers
                 );
                 loginPacket.OnFail(() =>
                 {
-                    if (loginPacket.ErrorMessage.Id == RequestErrorCodes.AccontEntityNotFoundByDeviceId)
+                    if (loginPacket.ErrorMessage.Id == ServerErrorCodes.AccountNotFoundByDeviceId)
                     {
                         Debug.LogWarning(loginPacket.ErrorMessage);
                         Register(_Login, _PasswordHash);
                     }
-                    else if (loginPacket.ErrorMessage.Id == RequestErrorCodes.WrongLoginOrPassword)
+                    else if (loginPacket.ErrorMessage.Id == ServerErrorCodes.WrongLoginOrPassword)
                     {
                         Debug.LogError("Login failed: Wrong login or password");
                     }
@@ -179,11 +178,7 @@ namespace Controllers
                 {
                     Debug.Log("Registered successfully");
                     GameClient.Instance.AccountId = registerPacket.Response.Id;
-                    var bank = MoneyManager.Instance.GetBank(true);
-                    var scores = ScoreManager.Instance.GetScores(true);
-                    Coroutines.Run(Coroutines.WaitWhile(
-                        () => {},
-                        () => !bank.Loaded || !scores.Loaded));
+                    BankManager.Instance.GetBank(true);
                 })
                 .OnFail(() => { Debug.LogError(registerPacket.ErrorMessage); });
             GameClient.Instance.Send(registerPacket);
