@@ -22,12 +22,11 @@ namespace UI
         private readonly bool m_OnStart;
         private MainMenuUi m_MainMenuUi;
         private Canvas m_Canvas;
-        private IDialogPanel m_LoadingPanel;
+        private LoadingPanel m_LoadingPanel;
         private IMenuDialogViewer m_MenuDialogViewer;
         private INotificationViewer m_NotificationViewer;
         private ITransitionRenderer m_TransitionRenderer;
         private MainBackgroundRenderer m_MainBackgroundRenderer;
-        private RectTransform m_Background;
 
         #endregion
 
@@ -80,27 +79,17 @@ namespace UI
             RawImage rImage = backgroundPanel.GetCompItem<RawImage>("raw_image");
             rImage.texture = m_MainBackgroundRenderer.Texture;
             
-            // var go = PrefabInitializer.InitUiPrefab(
-            //     UiFactory.UiRectTransform(
-            //         m_Canvas.RTransform(),
-            //         RtrLites.FullFill),
-            //     CommonStyleNames.MainMenu,
-            //     "background_panel");
-            // m_Background = go.RTransform();
-            //
-            //
-            //
-            // m_MenuDialogViewer.AddNotDialogItem(m_Background, 
-            //     MenuUiCategory.Loading |
-            //     MenuUiCategory.Profile |
-            //     MenuUiCategory.Settings |
-            //     MenuUiCategory.Shop |
-            //     MenuUiCategory.DailyBonus |
-            //     MenuUiCategory.MainMenu |
-            //     MenuUiCategory.SelectGame |
-            //     MenuUiCategory.Login |
-            //     MenuUiCategory.PlusLifes |
-            //     MenuUiCategory.PlusMoney);
+            m_MenuDialogViewer.AddNotDialogItem(backgroundPanel.RTransform(), 
+                MenuUiCategory.Loading |
+                MenuUiCategory.Profile |
+                MenuUiCategory.Settings |
+                MenuUiCategory.Shop |
+                MenuUiCategory.DailyBonus |
+                MenuUiCategory.MainMenu |
+                MenuUiCategory.SelectGame |
+                MenuUiCategory.Login |
+                MenuUiCategory.PlusLifes |
+                MenuUiCategory.PlusMoney);
         }
     
         private void CreateDialogViewers()
@@ -171,8 +160,8 @@ namespace UI
                                         var bank = BankManager.Instance.GetBank(true);
                                         
                                         Coroutines.Run(Coroutines.WaitWhile(
-                                            () => ShowMainMenu(true),
-                                            () => !bank.Loaded));
+                                            () => !bank.Loaded,
+                                            () => ShowMainMenu(true)));
                                     })
                                     .OnFail(() => { Debug.LogError(registerPacket.ErrorMessage); });
                                 GameClient.Instance.Send(registerPacket);
@@ -200,7 +189,7 @@ namespace UI
             {
                 m_TransitionRenderer.TransitionAction = (_, _Args) =>
                 {
-                    (m_LoadingPanel as LoadingPanel).DoLoading = false;
+                    m_LoadingPanel.DoLoading = false;
                     m_MenuDialogViewer.Back();
                     m_MainMenuUi.Show();
                 };

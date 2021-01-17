@@ -96,6 +96,11 @@ namespace UI.Panels
             m_Panel.gameObject.SetActive(false);
         }
 
+        public void Init()
+        {
+            
+        }
+
         public void PlusRevenue(BankItemType _BankItemType, long _Revenue)
         {
             CheckForLastRevenueFinished();

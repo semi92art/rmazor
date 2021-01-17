@@ -106,6 +106,11 @@ namespace UI.Panels
             m_Panel.SetGoActive(false);
         }
 
+        public void Init()
+        {
+            
+        }
+
         public void SetLifes(long _Count, bool _AnimateIfDecrease = true)
         {
             m_AnimateIfDecrease = _AnimateIfDecrease;

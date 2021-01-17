@@ -27,16 +27,16 @@ namespace Managers
         public ScoresEntity GetScores(bool _ForcedFromServer = false)
         {
             var result = new ScoresEntity();
-            if (!GameClient.Instance.LastConnectionSucceeded) 
-                return result;
-            var dfvf = new GameDataFieldFilter(
+            //if (!GameClient.Instance.LastConnectionSucceeded) 
+            //    return result;
+            var gdf = new GameDataFieldFilter(
                 GameClient.Instance.AccountId,
                 GameClient.Instance.GameId,
                 DataFieldIds.MainScore);
-            dfvf.Filter(_DataFields =>
+            gdf.Filter(_DataFields =>
             {
                 int mainScore = _DataFields.First(_F =>
-                    _F.FieldId == DataFieldIds.MainScore).GetInt();
+                    _F.FieldId == DataFieldIds.MainScore).ToInt();
                 result.Scores.Add(ScoreType.Main, mainScore);
                 result.Loaded = true;
                 OnScoresChanged?.Invoke(new ScoresEventArgs(result));

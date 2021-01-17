@@ -58,11 +58,13 @@ namespace Controllers
 
             Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
             {
-                Coroutines.Run(Coroutines.WaitWhile(() =>
+                Coroutines.Run(Coroutines.WaitWhile(
+                () => audioSource.isPlaying,
+                () =>
                 {
                     m_Clips.Remove(go);
                     Object.Destroy(go);
-                }, () => audioSource.isPlaying));
+                }));
             }));
             audioSource.Play();
         }

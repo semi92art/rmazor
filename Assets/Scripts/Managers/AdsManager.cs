@@ -36,7 +36,7 @@ namespace Managers
             {
                 var dff = new AccountDataFieldFilter(
                     GameClient.Instance.AccountId, DataFieldIds.ShowAds);
-                return dff.Filter().First().GetBool();
+                return dff.Filter().First().ToBool();
             }
             set
             {

@@ -85,6 +85,7 @@ namespace DialogViewers
                 true,
                 () =>
                 {
+                    m_Panel.OnDialogHide();
                     Destroy(m_Panel.Panel.gameObject);
                     m_Panel = null;
                 },

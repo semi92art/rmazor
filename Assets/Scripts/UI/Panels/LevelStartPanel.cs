@@ -77,15 +77,16 @@ namespace UI.Panels
         private void SetStartLifes()
         {
             var bank = BankManager.Instance.GetBank();
-            Coroutines.Run(Coroutines.WaitWhile(() =>
-                {
-                    if (!m_AvailableLifes.HasValue)
-                        m_AvailableLifes = bank.BankItems[BankItemType.Lifes];
-                    m_StartLifes = System.Math.Min(m_AvailableLifes.Value, 3);
-                    m_AvailableLifes -= m_StartLifes;
-                    CheckForAvailableLifesAndSetTexts();
-                },
-                () => !bank.Loaded));
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !bank.Loaded,
+                () =>
+            {
+                if (!m_AvailableLifes.HasValue)
+                    m_AvailableLifes = bank.BankItems[BankItemType.Lifes];
+                m_StartLifes = System.Math.Min(m_AvailableLifes.Value, 3);
+                m_AvailableLifes -= m_StartLifes;
+                CheckForAvailableLifesAndSetTexts();
+            }));
         }
 
         private void OnTakeOneMoreLifeButtonClick()
@@ -96,17 +97,18 @@ namespace UI.Panels
         private void OnWatchAdFinishAction()
         {
             var bank = BankManager.Instance.GetBank();
-            Coroutines.Run(Coroutines.WaitWhile(() =>
-                {
-                    if (!m_AvailableLifes.HasValue)
-                        m_AvailableLifes = bank.BankItems[BankItemType.Lifes];
-                    if (m_AvailableLifes <= 0)
-                        return;
-                    m_StartLifes++;
-                    m_AvailableLifes--;
-                    CheckForAvailableLifesAndSetTexts();
-                },
-                () => !bank.Loaded));
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !bank.Loaded,
+                () =>
+            {
+                if (!m_AvailableLifes.HasValue)
+                    m_AvailableLifes = bank.BankItems[BankItemType.Lifes];
+                if (m_AvailableLifes <= 0)
+                    return;
+                m_StartLifes++;
+                m_AvailableLifes--;
+                CheckForAvailableLifesAndSetTexts();
+            }));
         }
         
         private void OnStartButtonClick()

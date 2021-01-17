@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 using Entities;
@@ -11,6 +12,7 @@ using Newtonsoft.Json;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
 using Utils;
+using Debug = UnityEngine.Debug;
 
 namespace Network
 {
@@ -165,7 +167,7 @@ namespace Network
                 SendRequest(_Packet);
         }
 
-        private void SendRequest(IPacket _Packet)
+        private void SendRequest(IPacket _Packet, float? _WaitingTime = null)
         {
             UnityWebRequest request = new UnityWebRequest(_Packet.Url, _Packet.Method);
             request.method = _Packet.Method;
@@ -176,30 +178,45 @@ namespace Network
             
             bool stopWaiting = false;
             request.SendWebRequest();
-            Coroutines.Run(Coroutines.Delay(() => stopWaiting = true, m_FirstRequest ? 5f : 2f));
-            Coroutines.Run(Coroutines.WaitWhile(() =>
+
+            float waitingTime = 2f;
+            if (m_FirstRequest)
+                waitingTime = 5f;
+            if (!LastConnectionSucceeded)
+                waitingTime = 0f;
+            if (_WaitingTime.HasValue)
+                waitingTime = _WaitingTime.Value;
+            
+            Coroutines.Run(Coroutines.Delay(
+                () => stopWaiting = true, waitingTime));
+            
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !request.isDone && !stopWaiting,
+                () =>
             {
                 _Packet.ResponseCode = request.responseCode;
                 _Packet.DeserializeResponse(request.downloadHandler.text);
                 m_FirstRequest = false;
-            }, () => !request.isDone && !stopWaiting));
+            }));
         }
 
         private void StartTestingConnection()
         {
+            var sw = new Stopwatch();
             if (m_ConnectionTestStarted)
                 return;
             Coroutines.Run(Coroutines.Repeat(() =>
             {
+                sw.Restart();
                 IPacket testPacket = new TestConnectionPacket()
                     .OnSuccess(() => LastConnectionSucceeded = true)
                     .OnFail(() =>
                         {
-                            Debug.LogError("No connection to server");
+                            Debug.LogError($"No connection to server, request time: {(sw.Elapsed.TotalMilliseconds / 1000D):F2} secs");
                             LastConnectionSucceeded = false;
                         }
                     );
-                Send(testPacket);
+                Coroutines.Run(Coroutines.Action(() => SendRequest(testPacket, 2f)));
             }, 5f,
                 float.MaxValue,
                 UiTimeProvider.Instance,

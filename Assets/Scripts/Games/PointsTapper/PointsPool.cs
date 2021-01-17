@@ -29,8 +29,8 @@ namespace Games.PointsTapper
         {
             _Item.Activated = false;
             Coroutines.Run(Coroutines.WaitWhile(
-                () => base.Deactivate(_Item, _Predicate, _OnFinish),
-                () => _Item.Activated));
+                () => _Item.Activated,
+                () => base.Deactivate(_Item, _Predicate, _OnFinish)));
         }
         
         #endregion

@@ -91,6 +91,7 @@ namespace UI
         public void Show()
         {
             Notify(this, NotifyMessageMainMenuLoaded);
+            m_BankMiniPanel.Show();
             m_MainMenu.SetGoActive(true);
         }
         
@@ -102,9 +103,8 @@ namespace UI
         {
             var bmp = new BankMiniPanel(m_Parent, m_MenuDialogViewer, m_NotificationViewer);
             bmp.AddObservers(GetObservers());
-            bmp.Init();
-            bmp.Show();
             m_BankMiniPanel = bmp;
+            m_BankMiniPanel.Init();
         }
 
         private void InitContainers(RectTransform _Parent)
@@ -194,12 +194,15 @@ namespace UI
             playButton.GetComponent<Button>().SetOnClick(OnPlayButtonClick);
             var bestScoreText = playButton.GetCompItem<TextMeshProUGUI>("best_score_text");
 
-            var scores = ScoreManager.Instance.GetScores();
-            Coroutines.Run(Coroutines.WaitWhile(() =>
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => GameClient.Instance.AccountId == default,
+                () =>
             {
-                int mainScore = scores.Scores[ScoreType.Main];
-                bestScoreText.text = mainScore.ToNumeric();
-            }, () => !scores.Loaded));
+                var scores = ScoreManager.Instance.GetScores();
+                Coroutines.Run(Coroutines.WaitWhile(
+                    () => !scores.Loaded, 
+                    () => bestScoreText.text = scores.Scores[ScoreType.Main].ToNumeric()));
+            }));
             
             var ratingsButton = PrefabInitializer.InitUiPrefab(
                 UiFactory.UiRectTransform(

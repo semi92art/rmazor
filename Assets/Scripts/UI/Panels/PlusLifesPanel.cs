@@ -191,11 +191,13 @@ namespace UI.Panels
         private void GetBank()
         {
             var bank = BankManager.Instance.GetBank();
-            Coroutines.Run(Coroutines.WaitWhile(() =>
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !bank.Loaded,
+                () =>
             {
                 m_Money = bank.BankItems;
                 UpdatePanelState();
-            }, () => !bank.Loaded));
+            }));
         }
 
         #endregion

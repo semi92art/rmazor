@@ -154,12 +154,12 @@ public class ComponentsSpawnPool<T> : ISpawnPool<T> where T : Component
     private void ActivateOrDeactivate(int _Index, Vector3 _Position, Func<bool> _Predicate, Action _OnFinish, bool _Activate)
     {
         Coroutines.Run(Coroutines.WaitWhile(
-            () =>
-            {
-                ActivateOrDeactivate(_Index, _Position, _Activate);
-                _OnFinish?.Invoke();
-            },
-            () => _Predicate?.Invoke() ?? false));
+        () => _Predicate?.Invoke() ?? false,
+        () =>
+        {
+            ActivateOrDeactivate(_Index, _Position, _Activate);
+            _OnFinish?.Invoke();
+        }));
     }
     
     private void ActivateOrDeactivate(int _Index, Vector3 _Position, bool _Activate)

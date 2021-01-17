@@ -12,10 +12,8 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-#if UNITY_ANDROID
 using System.Reflection;
 using Unity.Android.Logcat;
-#endif
 using UnityEngine.Events;
 using Utils;
 using Utils.Editor;
@@ -24,7 +22,7 @@ public class EditorHelper : EditorWindow
 {
     private int m_DailyBonusIndex;
     private Dictionary<BankItemType, long> m_Money = new Dictionary<BankItemType, long>();
-    private int m_TestUsersNum;
+    private int m_TestUsersCount = 3;
     private bool m_IsGuest;
     private string m_TestUrl;
     private string m_TestUrlCheck;
@@ -111,8 +109,11 @@ public class EditorHelper : EditorWindow
             GuiButtonAction("Set Money", SetMoney);
             GUILayout.EndHorizontal();
         }
-
+        
         GUILayout.BeginHorizontal();
+        if (GUILayout.Button("Set Game Id:"))
+            SaveUtils.PutValue(SaveKey.GameId, m_GameId);
+        m_GameId = EditorGUILayout.IntField(m_GameId);
         GuiButtonAction("Start Level:", LevelLoader.LoadLevel, m_Level);
         m_Level = EditorGUILayout.IntField(m_Level);
         GUILayout.EndHorizontal();
@@ -128,20 +129,14 @@ public class EditorHelper : EditorWindow
         GuiButtonAction("Print common info", PrintCommonInfo);
 
         GUILayout.BeginHorizontal();
-        GuiButtonAction("Create test users", CreateTestUsers, m_TestUsersNum);
-        GUILayout.Label("is guest: ");
-        m_IsGuest = EditorGUILayout.Toggle(m_IsGuest);
-        GUILayout.Label("count: ");
-        m_TestUsersNum = EditorGUILayout.IntField(m_TestUsersNum);
+        GuiButtonAction("Create test users", CreateTestUsers, m_TestUsersCount);
+        GUILayout.Label("count:", GUILayout.Width(40));
+        m_TestUsersCount = EditorGUILayout.IntField(m_TestUsersCount);
+        GUILayout.Label("guest:", GUILayout.Width(40));
+        m_IsGuest = EditorGUILayout.Toggle(m_IsGuest, GUILayout.Width(30));
         GUILayout.EndHorizontal();
         
         GuiButtonAction("Delete test users", DeleteTestUsers);
-
-        GUILayout.BeginHorizontal();
-        if (GUILayout.Button("Set Game Id:"))
-            SaveUtils.PutValue(SaveKey.GameId, m_GameId);
-        m_GameId = EditorGUILayout.IntField(m_GameId);
-        GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
         GUILayout.Label("Debug Server Url:");
@@ -165,7 +160,24 @@ public class EditorHelper : EditorWindow
         m_Quality = EditorGUILayout.Popup(
             m_Quality, new[] { "Normal", "Good" });
         GUILayout.EndHorizontal();
+
+        EditorUtils.DrawUiLine(Color.gray);
         
+        GUILayout.Label("Cached data:");
+        foreach (var skVal in GetAllSaveKeyValues())
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label(skVal.Key, GUILayout.Width(200));
+            Color defCol = GUI.contentColor;
+            if (skVal.Value == "empty")
+                GUI.contentColor = Color.yellow;
+            if (skVal.Value == "not exist")
+                GUI.contentColor = Color.red;
+            GUILayout.Label(skVal.Value);
+            GUI.contentColor = defCol;
+            GUILayout.EndHorizontal();
+        }
+
         UpdateTestUrl();
         UpdateGameId();
         UpdateQuality();
@@ -208,8 +220,8 @@ public class EditorHelper : EditorWindow
     {
         var bank = BankManager.Instance.GetBank();
         Coroutines.Run(Coroutines.WaitWhile(
-            () =>  m_Money = bank.BankItems,
-            () => !bank.Loaded));
+            () => !bank.Loaded,
+            () =>  m_Money = bank.BankItems));
     }
     
     private void SetMoney()
@@ -241,9 +253,9 @@ public class EditorHelper : EditorWindow
             int ii = i;
             packet.OnSuccess(() =>
                 {
-                    var dfvf = new AccountDataFieldFilter(packet.Response.Id, 
+                    var adf = new AccountDataFieldFilter(packet.Response.Id, 
                         DataFieldIds.FirstCurrency, DataFieldIds.SecondCurrency, DataFieldIds.Lifes);
-                    dfvf.Filter(_DfValues =>
+                    adf.Filter(_DfValues =>
                     {
                         _DfValues.First(_DfValue => _DfValue.FieldId == DataFieldIds.FirstCurrency)
                             .SetValue(randGen.Next(0, 10000)).Save();
@@ -294,11 +306,8 @@ public class EditorHelper : EditorWindow
     {
         if (Application.isPlaying)
             SceneManager.LoadScene(_Name);
-        else
-        {
-            if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
-                EditorSceneManager.OpenScene(_Name);    
-        }       
+        else if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+            EditorSceneManager.OpenScene(_Name);
     }
     
     private static void PauseGame(bool _Pause)
@@ -319,6 +328,47 @@ public class EditorHelper : EditorWindow
         UpdateTestUrl(true);
     }
 
+    private static Dictionary<string, string> GetAllSaveKeyValues() =>
+        new Dictionary<string, string>
+        {
+            {"Last connection succeeded", SaveUtils.GetValue<bool>(SaveKey.LastConnectionSucceeded).ToString()},
+            {"Login", SaveUtils.GetValue<string>(SaveKey.Login) ?? "not exist"},
+            {"Password hash", SaveUtils.GetValue<string>(SaveKey.PasswordHash) ?? "not exist"},
+            {"Account id", SaveUtils.GetValue<int>(SaveKey.AccountId).ToString()},
+            {"Game id", SaveUtils.GetValue<int>(SaveKey.GameId).ToString()},
+            {"Show ads", GetAccountFieldCached(DataFieldIds.ShowAds)},
+            {"Gold", GetAccountFieldCached(DataFieldIds.FirstCurrency)},
+            {"Diamonds", GetAccountFieldCached(DataFieldIds.SecondCurrency)},
+            {"Main score", GetGameFieldCached(DataFieldIds.MainScore)}
+        };
+    
+    private static string GetAccountFieldCached(ushort _FieldId)
+    {
+        int accountId = SaveUtils.GetValue<int>(SaveKey.AccountId);
+        var field = SaveUtils.GetValue<AccountDataField>(
+            SaveKey.AccountDataFieldValue(accountId, _FieldId));
+        return DataFieldValueString(field);
+    }
+    
+    private static string GetGameFieldCached(ushort _FieldId)
+    {
+        int accountId = SaveUtils.GetValue<int>(SaveKey.AccountId);
+        int gameId = SaveUtils.GetValue<int>(SaveKey.GameId);
+        var field = SaveUtils.GetValue<GameDataField>(
+            SaveKey.GameDataFieldValue(accountId, gameId, _FieldId));
+        return DataFieldValueString(field);
+    }
+
+    private static string DataFieldValueString(DataFieldBase _DataField)
+    {
+        if (_DataField == null)
+            return "not exist";
+        string value = _DataField.ToString();
+        if (string.IsNullOrEmpty(value) || string.IsNullOrWhiteSpace(value))
+            return "empty";
+        return value;
+    }
+
     private static void GuiButtonAction(string _Name, UnityAction _Action)
     {
         if (GUILayout.Button(_Name))
@@ -331,5 +381,3 @@ public class EditorHelper : EditorWindow
             _Action?.Invoke(_Arg);
     }
 }
-
-

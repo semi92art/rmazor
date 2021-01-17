@@ -38,6 +38,7 @@ namespace Utils
         {
             string value = JsonConvert.SerializeObject(_Value);
             PlayerPrefs.SetString(_Key.Key, value);
+            PlayerPrefs.Save();
         }
 
         public static void PutValue<T>(SaveKey _Key, T _Value)

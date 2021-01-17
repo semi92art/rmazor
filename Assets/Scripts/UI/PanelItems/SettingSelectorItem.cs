@@ -44,7 +44,7 @@ namespace UI.PanelItems
 
             if (_IsOn)
                 Coroutines.Run(Coroutines.WaitWhile(
-                    () => Select(null), () => m_Items == null));
+                    () => m_Items == null, () => Select(null)));
         }
 
         public void Select(BaseEventData _BaseEventData)

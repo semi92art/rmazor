@@ -93,14 +93,6 @@ namespace GameHelpers
             return m_Fields;
         }
 
-        private List<GameFieldDtoLite> CreateRequestFields()
-        {
-            return FieldIds
-                .Select(_FieldId => new GameFieldDtoLite 
-                    {AccountId = AccountId, GameId = m_GameId, FieldId = _FieldId})
-                .ToList();
-        }
-
         private List<GameDataField> GetCachedFields()
         {
             return FieldIds
@@ -113,7 +105,7 @@ namespace GameHelpers
         private List<GameDataField> GetFromDtos(List<GameFieldDto> _Dtos)
         {
             return _Dtos
-                .Select(_DfvArgs => new GameDataField(_DfvArgs))
+                .Select(_Dto => new GameDataField(_Dto))
                 .ToList();
         }
 
@@ -126,6 +118,14 @@ namespace GameHelpers
                 Pagination = new PaginationDto()
             };
             return new GameDataFieldsGetPacket(args);
+        }
+        
+        private List<GameFieldDtoLite> CreateRequestFields()
+        {
+            return FieldIds
+                .Select(_FieldId => new GameFieldDtoLite 
+                    {AccountId = AccountId, GameId = m_GameId, FieldId = _FieldId})
+                .ToList();
         }
         
         #endregion

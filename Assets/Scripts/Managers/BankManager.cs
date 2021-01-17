@@ -33,21 +33,21 @@ namespace Managers
         public BankEntity GetBank(bool _ForcedFromServer = false)
         {
             var result = new BankEntity();
-            if (!GameClient.Instance.LastConnectionSucceeded) 
-                return result;
-            var dfvf = new AccountDataFieldFilter(
+            //if (!GameClient.Instance.LastConnectionSucceeded) 
+            //    return result;
+            var adf = new AccountDataFieldFilter(
                 GameClient.Instance.AccountId,
                 DataFieldIds.FirstCurrency,
                 DataFieldIds.SecondCurrency,
                 DataFieldIds.Lifes);
-            dfvf.Filter(_DataFields =>
+            adf.Filter(_DataFields =>
             {
                 long gold = _DataFields.First(_V =>
-                    _V.FieldId == DataFieldIds.FirstCurrency).GetLong();
+                    _V.FieldId == DataFieldIds.FirstCurrency).ToLong();
                 long diamonds = _DataFields.First(_V =>
-                    _V.FieldId == DataFieldIds.SecondCurrency).GetLong();
+                    _V.FieldId == DataFieldIds.SecondCurrency).ToLong();
                 long lifes = _DataFields.First(_V =>
-                    _V.FieldId == DataFieldIds.Lifes).GetLong();
+                    _V.FieldId == DataFieldIds.Lifes).ToLong();
                 result.BankItems.Add(BankItemType.Gold, gold);
                 result.BankItems.Add(BankItemType.Diamonds, diamonds);
                 result.BankItems.Add(BankItemType.Lifes, lifes);
@@ -60,23 +60,27 @@ namespace Managers
         public void PlusBankItems(Dictionary<BankItemType, long> _Money)
         {
             var inBank = GetBank();
-            Coroutines.Run(Coroutines.WaitWhile(() =>
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !inBank.Loaded,
+                () =>
             {
                 foreach (var kvp in _Money
                     .Where(_Kvp => inBank.BankItems.ContainsKey(_Kvp.Key)))
                     inBank.BankItems[kvp.Key] += _Money[kvp.Key];
                 SetBank(inBank.BankItems);
-            }, () => !inBank.Loaded));
+            }));
         }
 
         public void PlusBankItems(BankItemType _BankItemType, long _Value)
         {
             var inBank = GetBank();
-            Coroutines.Run(Coroutines.WaitWhile(() =>
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !inBank.Loaded,
+                () =>
             {
                 inBank.BankItems[_BankItemType] += _Value;
                 SetBank(inBank.BankItems);
-            }, () => !inBank.Loaded));
+            }));
         }
 
         public bool TryMinusBankItems(Dictionary<BankItemType, long> _Money)
@@ -102,8 +106,8 @@ namespace Managers
             foreach (var kvp in _BankItems.ToArray())
                 _BankItems[kvp.Key] = MathUtils.Clamp(kvp.Value, MinMoneyCount, MaxMoneyCount);
             
-            if (!GameClient.Instance.LastConnectionSucceeded) 
-                return;
+            //if (!GameClient.Instance.LastConnectionSucceeded) 
+            //    return;
             
             var aff = new AccountDataFieldFilter(GameClient.Instance.AccountId,
                 DataFieldIds.FirstCurrency,

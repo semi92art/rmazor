@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Entities;
 using Network;
 using Network.Packets;
+using UnityEngine;
 using UnityEngine.Events;
 using Utils;
 
@@ -87,14 +89,6 @@ namespace GameHelpers
             return m_Fields;
         }
 
-        private List<AccountFieldDtoLite> CreateRequestFields()
-        {
-            return FieldIds
-                .Select(_FieldId => new AccountFieldDtoLite 
-                    {AccountId = AccountId, FieldId = _FieldId})
-                .ToList();
-        }
-
         private List<AccountDataField> GetCachedFields()
         {
             return FieldIds
@@ -120,6 +114,14 @@ namespace GameHelpers
                 Pagination = new PaginationDto()
             };
             return new AccountDataFieldsGetPacket(args);
+        }
+        
+        private List<AccountFieldDtoLite> CreateRequestFields()
+        {
+            return FieldIds
+                .Select(_FieldId => new AccountFieldDtoLite 
+                    {AccountId = AccountId, FieldId = _FieldId})
+                .ToList();
         }
         
         #endregion

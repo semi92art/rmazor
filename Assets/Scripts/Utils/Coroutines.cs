@@ -69,8 +69,8 @@ namespace Utils
         }
 
         public static IEnumerator WaitWhile(
-            UnityAction _Action,
             Func<bool> _Predicate,
+            UnityAction _Action,
             Func<bool> _OnBreak = null)
         {
             if (_Action == null || _Predicate == null)

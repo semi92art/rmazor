@@ -8,6 +8,7 @@ using Exceptions;
 using Extensions;
 using GameHelpers;
 using Managers;
+using Network;
 using TMPro;
 using UI.Entities;
 using UI.Factories;
@@ -24,6 +25,7 @@ namespace UI.Panels
     {
         void Show();
         void Hide();
+        void Init();
     }
 
     public interface IActionExecutor
@@ -146,43 +148,46 @@ namespace UI.Panels
             BankManager.Instance.OnMoneyCountChanged += MoneyCountChanged;
             BankManager.Instance.OnIncome += Income;
             UiManager.Instance.OnCurrentMenuCategoryChanged += CurrentMenuCategoryChanged;
-
-            var bank = BankManager.Instance.GetBank();
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => SetMoney(bank.BankItems),
-                () => !bank.Loaded));
         }
 
         public void Show()
         {
-            var bank = BankManager.Instance.GetBank();
-            m_Animator.SetTrigger(UiManager.Instance.CurrentMenuCategory == MenuUiCategory.MainMenu ?
-                AkShowInMm : AkShowInDlg);
-            m_IsShowing = true;
-            m_BankMiniPanel.sizeDelta = m_BankMiniPanel.sizeDelta.SetX(100);
-            m_MoneyPanel.sizeDelta = m_MoneyPanel.sizeDelta.SetX(100);
-            m_LifesPanel.sizeDelta = m_LifesPanel.sizeDelta.SetX(100);
-
-            Coroutines.Run(Coroutines.WaitWhile(() =>
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => GameClient.Instance.AccountId == default,
+                () =>
             {
-                int maxMoneyTextLength = bank.BankItems
-                    .Max(_Kvp => _Kvp.Value).ToNumeric().Length;
-                
-                Coroutines.Run(Coroutines.Lerp(
-                    m_MoneyPanel.sizeDelta.x, 
-                    GetMoneyPanelWidth(maxMoneyTextLength),
-                    0.3f,
-                    SetMoneyPanelWidth,
-                    UiTimeProvider.Instance));
+                var bank = BankManager.Instance.GetBank();
+                Coroutines.Run(Coroutines.WaitWhile(
+                    () => !bank.Loaded,
+                    () =>
+                {
+                    SetMoney(bank.BankItems);
+                    m_Animator.SetTrigger(UiManager.Instance.CurrentMenuCategory == MenuUiCategory.MainMenu
+                        ? AkShowInMm
+                        : AkShowInDlg);
+                    m_IsShowing = true;
+                    m_BankMiniPanel.sizeDelta = m_BankMiniPanel.sizeDelta.SetX(100);
+                    m_MoneyPanel.sizeDelta = m_MoneyPanel.sizeDelta.SetX(100);
+                    m_LifesPanel.sizeDelta = m_LifesPanel.sizeDelta.SetX(100);
 
-                Coroutines.Run(Coroutines.Lerp(
-                    m_LifesPanel.sizeDelta.x, 
-                    GetLifesPanelWidth(bank.BankItems[BankItemType.Lifes].ToNumeric().Length),
-                    0.3f,
-                    SetLifesPanelWidth,
-                    UiTimeProvider.Instance));
-                
-            }, () => !bank.Loaded));
+                    int maxMoneyTextLength = bank.BankItems
+                        .Max(_Kvp => _Kvp.Value).ToNumeric().Length;
+
+                    Coroutines.Run(Coroutines.Lerp(
+                        m_MoneyPanel.sizeDelta.x,
+                        GetMoneyPanelWidth(maxMoneyTextLength),
+                        0.3f,
+                        SetMoneyPanelWidth,
+                        UiTimeProvider.Instance));
+
+                    Coroutines.Run(Coroutines.Lerp(
+                        m_LifesPanel.sizeDelta.x,
+                        GetLifesPanelWidth(bank.BankItems[BankItemType.Lifes].ToNumeric().Length),
+                        0.3f,
+                        SetLifesPanelWidth,
+                        UiTimeProvider.Instance));
+                }));
+            }));
         }
 
         public void Hide()
@@ -282,13 +287,15 @@ namespace UI.Panels
                 UiTimeProvider.Instance,
                 _OnFinish:() =>
                 {
-                    Coroutines.Run(Coroutines.WaitWhile(() =>
+                    Coroutines.Run(Coroutines.WaitWhile(
+                        () => finishedDict.Any(_Kvp => !_Kvp.Value),
+                        () =>
                     {
                         foreach (var item in m_CoinsPool)
                             Object.Destroy(item.Item.gameObject);
                         m_CoinsPool.Clear();
                         Coroutines.Run(Coroutines.Delay(Action, 0.3f));
-                    }, () => finishedDict.Any(_Kvp => !_Kvp.Value)));
+                    }));
                 }));
         }
 
@@ -312,7 +319,9 @@ namespace UI.Panels
                         throw new SwitchCaseNotImplementedException(rewardType);
                 }
                 
-                Coroutines.Run(Coroutines.WaitWhile(() =>
+                Coroutines.Run(Coroutines.WaitWhile(
+                    () => !currMoney.Loaded,
+                    () =>
                 {
                     int maxTextLength = isMoney ? Mathf.Max(m_GoldCount.text.Length,
                         m_DiamondsCount.text.Length) : m_LifesCount.text.Length;
@@ -364,7 +373,7 @@ namespace UI.Panels
                             else if (rewardType == BankItemType.Lifes)
                                 m_LifesCount.text = _Value.ToNumeric();
                         }, UiTimeProvider.Instance));
-                }, () => !currMoney.Loaded));
+                }));
             }
         }
         

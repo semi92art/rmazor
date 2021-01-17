@@ -126,7 +126,9 @@ namespace Managers
         protected virtual void OnLevelFinished(LevelStateChangedArgs _Args)
         {
             var scores = ScoreManager.Instance.GetScores();
-            Coroutines.Run(Coroutines.WaitWhile(() =>
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !scores.Loaded,
+                () =>
             {
                 int mainScore = scores.Scores[ScoreType.Main];
                 if (mainScore < LevelController.Level)
@@ -143,7 +145,7 @@ namespace Managers
                         LevelController.BeforeStartLevel();
                     },
                     LevelController.Level > mainScore);
-            }, () => !scores.Loaded));
+            }));
         }
 
         protected virtual void OnScoreChanged(int _Score)
