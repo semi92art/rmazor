@@ -45,6 +45,11 @@ namespace Network
         private bool m_FirstRequest = true;
         private bool m_ConnectionTestStarted;
         
+        private bool LastConnectionSucceeded
+        {
+            get => SaveUtils.GetValue<bool>(SaveKey.LastConnectionSucceeded);
+            set => SaveUtils.PutValue(SaveKey.LastConnectionSucceeded, value);
+        }
         
         #endregion
         
@@ -96,12 +101,6 @@ namespace Network
         }
 
         public string DeviceId => $"test_{SystemInfo.deviceUniqueIdentifier}";
-
-        public bool LastConnectionSucceeded
-        {
-            get => SaveUtils.GetValue<bool>(SaveKey.LastConnectionSucceeded);
-            private set => SaveUtils.PutValue(SaveKey.LastConnectionSucceeded, value);
-        }
 
         public bool PlayMode { get; set; }
 
@@ -180,10 +179,10 @@ namespace Network
             request.SendWebRequest();
 
             float waitingTime = 2f;
-            if (m_FirstRequest)
-                waitingTime = 5f;
             if (!LastConnectionSucceeded)
                 waitingTime = 0f;
+            if (m_FirstRequest)
+                waitingTime = 5f;
             if (_WaitingTime.HasValue)
                 waitingTime = _WaitingTime.Value;
             

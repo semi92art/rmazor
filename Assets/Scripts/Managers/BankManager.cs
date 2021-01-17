@@ -33,8 +33,6 @@ namespace Managers
         public BankEntity GetBank(bool _ForcedFromServer = false)
         {
             var result = new BankEntity();
-            //if (!GameClient.Instance.LastConnectionSucceeded) 
-            //    return result;
             var adf = new AccountDataFieldFilter(
                 GameClient.Instance.AccountId,
                 DataFieldIds.FirstCurrency,
@@ -105,10 +103,7 @@ namespace Managers
         {
             foreach (var kvp in _BankItems.ToArray())
                 _BankItems[kvp.Key] = MathUtils.Clamp(kvp.Value, MinMoneyCount, MaxMoneyCount);
-            
-            //if (!GameClient.Instance.LastConnectionSucceeded) 
-            //    return;
-            
+
             var aff = new AccountDataFieldFilter(GameClient.Instance.AccountId,
                 DataFieldIds.FirstCurrency,
                 DataFieldIds.SecondCurrency,
