@@ -145,22 +145,22 @@ public class EditorHelper : EditorWindow
 
         GuiButtonAction("Set default api url", SetDefaultApiUrl);
         GuiButtonAction("Delete all settings", DeleteAllSettings);
-
         GuiButtonAction("Get ready to commit", GetReadyToCommit);
-        EditorUtils.DrawUiLine(Color.gray);
-        
-        GUILayout.BeginHorizontal();
-        GuiButtonAction(SceneNames.Preload, LoadScene, $"Assets/Scenes/{SceneNames.Preload}.unity");
-        GuiButtonAction(SceneNames.Main, LoadScene, $"Assets/Scenes/{SceneNames.Main}.unity");
-        GuiButtonAction(SceneNames.Level, LoadScene, $"Assets/Scenes/{SceneNames.Level}.unity");
-        GUILayout.EndHorizontal();
         
         GUILayout.BeginHorizontal();
         GUILayout.Label("Quality:");
         m_Quality = EditorGUILayout.Popup(
             m_Quality, new[] { "Normal", "Good" });
         GUILayout.EndHorizontal();
+        
+        EditorUtils.DrawUiLine(Color.gray);
 
+        GUILayout.BeginHorizontal();
+        GuiButtonAction(SceneNames.Preload, LoadScene, $"Assets/Scenes/{SceneNames.Preload}.unity");
+        GuiButtonAction(SceneNames.Main, LoadScene, $"Assets/Scenes/{SceneNames.Main}.unity");
+        GuiButtonAction(SceneNames.Level, LoadScene, $"Assets/Scenes/{SceneNames.Level}.unity");
+        GUILayout.EndHorizontal();
+        
         EditorUtils.DrawUiLine(Color.gray);
         
         GUILayout.Label("Cached data:");

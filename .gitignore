@@ -73,5 +73,11 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/build_info.meta
 /[Aa]ssets/[Aa]ssetBundles
 .idea
+
+# Temporary files
 /[Bb]uilds
 ProjectSettings/AndroidLogcatSettings.asset
+Assets/Scenes/Test
+Assets/Scenes/Test.meta
+Assets/Scripts/Test
+Assets/Scripts/Test.meta

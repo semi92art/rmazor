@@ -28,11 +28,12 @@ namespace SmartCopier
 		[MenuItem("GameObject/Smart Copy Components", true)]
 		private static bool CanCopy(MenuCommand menuCommand)
 		{
-			if (menuCommand.context == null)
-			{
-				Debug.LogWarning("Please select a valid GameObject to copy components.");
-				return false;
-			}
+			// NOTE почему-то контекст не хочет определяться, но копирование работает 
+			// if (menuCommand.context == null)
+			// {
+			// 	Debug.LogWarning("Please select a valid GameObject to copy components.");
+			// 	return false;
+			// }
 			return true;
 		}
 
