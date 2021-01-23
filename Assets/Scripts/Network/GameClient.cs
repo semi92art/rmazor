@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 using Entities;
+using GameHelpers;
 using Network.Packets;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -101,8 +102,7 @@ namespace Network
         }
 
         public string DeviceId => $"test_{SystemInfo.deviceUniqueIdentifier}";
-
-        public bool PlayMode { get; set; }
+        
 
         public void Init(bool _TestMode = false)
         {
@@ -127,7 +127,7 @@ namespace Network
                 m_ServerName = "TestRunner";
             if (!_TestMode)
                 StartTestingConnection();
-            PlayMode = !_TestMode;
+            GameSettings.PlayMode = !_TestMode;
         }
 
         public void Send(IPacket _Packet, bool _Async = true)

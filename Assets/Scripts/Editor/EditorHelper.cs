@@ -300,6 +300,8 @@ public class EditorHelper : EditorWindow
             GitUtils.RunGitCommand($"checkout -- {file}");
         }
         AssetDatabase.SaveAssets();
+        
+        BuildSettingsUtils.AddDefaultScenesToBuild();
     }
 
     private static void LoadScene(string _Name)

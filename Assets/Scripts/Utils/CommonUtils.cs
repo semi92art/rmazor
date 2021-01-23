@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using Extensions;
+using GameHelpers;
 using Network;
 using UnityEngine;
 using UnityEngine.Events;
@@ -34,7 +35,7 @@ namespace Utils
                 return _Instance;
             var go = new GameObject(_Name);
             _Instance = go.AddComponent<T>();
-            if (GameClient.Instance.PlayMode)
+            if (GameSettings.PlayMode)
                 UnityEngine.Object.DontDestroyOnLoad(go);
             return _Instance;
         }

@@ -40,7 +40,7 @@ namespace DebugConsole
                 true,
                 GraphicRaycaster.BlockingObjects.None);
             
-            if (GameClient.Instance.PlayMode)
+            if (GameSettings.PlayMode)
                 DontDestroyOnLoad(canvas);
 
             return PrefabInitializer.InitUiPrefab(

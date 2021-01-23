@@ -269,10 +269,10 @@ namespace UI.Panels
                     finishedDict.Add(coroutineIndex, false);
                     int cI = coroutineIndex++;
                     Coroutines.Run(Coroutines.Lerp(
-                        coin.Item,
                         _From.position,
                         to,
                         IncomeAnimDeltaTime * IncomeCoinsAnimOnScreen,
+                        _Pos => coin.Item.position = _Pos,
                         UiTimeProvider.Instance,
                         () =>
                         {

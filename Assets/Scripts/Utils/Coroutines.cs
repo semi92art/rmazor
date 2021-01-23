@@ -12,22 +12,37 @@ using UnityEngine.UI;
 
 namespace Utils
 {
-    public static class Coroutines
+    public static partial class Coroutines
     {
-        private static DontDestroyOnLoad _coroutineRunner;
+        private const string RunnerName = "Coroutines Runner";
+        private static MonoBehaviour _coroutineRunner;
+        private static bool _runnerFound;
 
         static Coroutines()
         {
-            _coroutineRunner = GameObject.Find("Coroutines Runner").GetComponent<DontDestroyOnLoad>();
+            FindRunner();
+        }
+
+        private static MonoBehaviour FindRunner()
+        {
+            if (_runnerFound)
+                return _coroutineRunner;
+            
+            var go = GameObject.Find(RunnerName);
+            if (go == null)
+            {
+                go = new GameObject(RunnerName);
+                go.AddComponent<DontDestroyOnLoad>();
+            }
+
+            _coroutineRunner = go.GetComponent<DontDestroyOnLoad>();
+            _runnerFound = true;
+            return _coroutineRunner;
         }
         
         public static Coroutine Run(IEnumerator _Coroutine)
         {
-#if UNITY_EDITOR
-            if (!GameClient.Instance.PlayMode && _coroutineRunner == null)
-                _coroutineRunner = GameObject.Find("Coroutines Runner").GetComponent<DontDestroyOnLoad>();
-#endif
-            return _coroutineRunner.StartCoroutine(_Coroutine);
+            return FindRunner().StartCoroutine(_Coroutine);
         }
 
         public static void Stop(IEnumerator _Coroutine)
@@ -152,7 +167,7 @@ namespace Utils
                 if (backgroundShadows != null)
                     foreach (var ga in from ga 
                         in backgroundShadows let graphic = ga.Key where !graphic.IsNull() select ga)
-                        ga.Key.color = ga.Key.color.SetAlpha(0);
+                        ga.Key.color = ga.Key.color.SetA(0);
                 
                 //do transition for foreground graphic elements
                 float currTime = UiTimeProvider.Instance.Time;
@@ -166,7 +181,7 @@ namespace Utils
                             collection = collection.Concat(backgroundShadows).ToList();
                         foreach (var ga in from ga 
                             in collection let graphic = ga.Key where !graphic.IsNull() select ga)
-                            ga.Key.color = ga.Key.color.SetAlpha(ga.Value * alphaCoeff);
+                            ga.Key.color = ga.Key.color.SetA(ga.Value * alphaCoeff);
                         yield return new WaitForEndOfFrame();
                     } 
             }
@@ -189,7 +204,7 @@ namespace Utils
                         float alphaCoeff = 1 - timeCoeff;
                         foreach (var ga in from ga
                             in backgroundShadows let graphic = ga.Key where !graphic.IsNull() select ga)
-                            ga.Key.color = ga.Key.color.SetAlpha(ga.Value * alphaCoeff);
+                            ga.Key.color = ga.Key.color.SetA(ga.Value * alphaCoeff);
                         yield return new WaitForEndOfFrame();
                     }
             }
@@ -201,7 +216,7 @@ namespace Utils
             {
                 var graphic = ga.Key;
                 if (!graphic.IsNull())
-                    graphic.color = graphic.color.SetAlpha(_Disappear ? 0 : ga.Value);
+                    graphic.color = graphic.color.SetA(_Disappear ? 0 : ga.Value);
             }
             
             if (_Disappear)
@@ -210,150 +225,7 @@ namespace Utils
             _OnFinish?.Invoke();
         }
         
-        public static IEnumerator Lerp(
-            long _From,
-            long _To,
-            float _Time,
-            UnityAction<long> _Result,
-            ITimeProvider _TimeProvider,
-            UnityAction _OnFinish = null,
-            Func<bool> _OnBreak = null)
-        {
-            if (_Result == null)
-                yield break;
-            _Result(_From);
-
-            float currTime = _TimeProvider.Time;
-            while (_TimeProvider.Time < currTime + _Time)
-            {
-                float timeCoeff = 1 - (currTime + _Time - _TimeProvider.Time) / _Time;
-                long newVal = MathUtils.Lerp(_From, _To, timeCoeff);
-                _Result(newVal);
-                bool? isBreak = _OnBreak?.Invoke();
-                if (isBreak.HasValue && isBreak.Value)
-                    yield break;
-                yield return new WaitForEndOfFrame();
-            }
-            
-            _Result(_To);
-            _OnFinish?.Invoke();
-        }
         
-        public static IEnumerator Lerp(
-            float _From,
-            float _To,
-            float _Time,
-            UnityAction<float> _Result,
-            ITimeProvider _TimeProvider,
-            UnityAction _OnFinish = null,
-            Func<bool> _OnBreak = null)
-        {
-            if (_Result == null)
-                yield break;
-            _Result(_From);
-
-            float currTime = _TimeProvider.Time;
-            while (_TimeProvider.Time < currTime + _Time)
-            {
-                if (_OnBreak != null && _OnBreak())
-                    yield break;
-                if (_TimeProvider.Pause)
-                {
-                    yield return new WaitForEndOfFrame();
-                    continue;
-                }
-                
-                float timeCoeff = 1 - (currTime + _Time - _TimeProvider.Time) / _Time;
-                float newVal = Mathf.Lerp(_From, _To, timeCoeff);
-                _Result(newVal);
-                yield return new WaitForEndOfFrame();
-            }
-            
-            _Result(_To);
-            _OnFinish?.Invoke();
-        }
-
-        public static IEnumerator Lerp(
-            int _From,
-            int _To,
-            float _Time,
-            UnityAction<int> _Result,
-            ITimeProvider _TimeProvider,
-            UnityAction _OnFinish = null)
-        {
-            if (_Result == null)
-                yield break;
-            _Result(_From);
-
-            float currTime = _TimeProvider.Time;
-            while (_TimeProvider.Time < currTime + _Time)
-            {
-                float timeCoeff = 1 - (currTime + _Time - _TimeProvider.Time) / _Time;
-                int newVal = Mathf.RoundToInt(Mathf.Lerp(_From, _To, timeCoeff));
-                _Result(newVal);
-                yield return new WaitForEndOfFrame();
-            }
-            
-            _Result(_To);
-            _OnFinish?.Invoke();
-        }
-        
-        public static IEnumerator Lerp(
-            Color _From,
-            Color _To,
-            float _Time,
-            UnityAction<Color> _Result,
-            ITimeProvider _TimeProvider,
-            UnityAction _OnFinish = null)
-        {
-            if (_Result == null)
-                yield break;
-            _Result(_From);
-
-            float currTime = _TimeProvider.Time;
-            while (_TimeProvider.Time < currTime + _Time)
-            {
-                float timeCoeff = 1 - (currTime + _Time - _TimeProvider.Time) / _Time;
-                float r = Mathf.Lerp(_From.r, _To.r, timeCoeff);
-                float g = Mathf.Lerp(_From.g, _To.g, timeCoeff);
-                float b = Mathf.Lerp(_From.b, _To.b, timeCoeff);
-                float a = Mathf.Lerp(_From.a, _To.a, timeCoeff);
-                var newColor = new Color(r, g, b, a);
-                _Result(newColor);
-                yield return new WaitForEndOfFrame();
-            }
-            
-            _Result(_To);
-            _OnFinish?.Invoke();
-        }
-        
-        public static IEnumerator Lerp(
-            RectTransform _Item,
-            Vector3 _From,
-            Vector3 _To,
-            float _Time,
-            ITimeProvider _TimeProvider,
-            UnityAction _OnFinish = null)
-        {
-            if (_Item == null)
-                yield break;
-            
-            _Item.position = _From;
-            
-            float currTime = _TimeProvider.Time;
-            while (_TimeProvider.Time < currTime + _Time)
-            {
-                float timeCoeff = 1 - (currTime + _Time - _TimeProvider.Time) / _Time;
-                Vector3 newPos = Vector3.Lerp(_From, _To, timeCoeff);
-                if (_Item != null)
-                    _Item.position = newPos;
-                yield return new WaitForEndOfFrame();
-            }
-
-            if (_Item != null)
-                _Item.position = _To;
-            _OnFinish?.Invoke();
-        }
 
         public static IEnumerator Repeat(
             UnityAction _Action,
