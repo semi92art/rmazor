@@ -14,7 +14,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Reflection;
 using Unity.Android.Logcat;
-using UnityEngine.Events;
 using Utils;
 using Utils.Editor;
 
@@ -86,7 +85,7 @@ public class EditorHelper : EditorWindow
             GUILayout.Space(10);
         
         GUILayout.BeginHorizontal();
-        GuiButtonAction("Enable Daily Bonus", EnableDailyBonus);
+        EditorUtilsEx.GuiButtonAction("Enable Daily Bonus", EnableDailyBonus);
         GUILayout.Label("Day:");
         m_DailyBonusIndex = EditorGUILayout.Popup(
             m_DailyBonusIndex, new[] { "1", "2", "3", "4", "5", "6", "7" });
@@ -105,8 +104,8 @@ public class EditorHelper : EditorWindow
             GUILayout.EndHorizontal();
             
             GUILayout.BeginHorizontal();
-            GuiButtonAction("Get From Bank", GetMoneyFromBank);
-            GuiButtonAction("Set Money", SetMoney);
+            EditorUtilsEx.GuiButtonAction("Get From Bank", GetMoneyFromBank);
+            EditorUtilsEx.GuiButtonAction("Set Money", SetMoney);
             GUILayout.EndHorizontal();
         }
         
@@ -114,38 +113,38 @@ public class EditorHelper : EditorWindow
         if (GUILayout.Button("Set Game Id:"))
             SaveUtils.PutValue(SaveKey.GameId, m_GameId);
         m_GameId = EditorGUILayout.IntField(m_GameId);
-        GuiButtonAction("Start Level:", LevelLoader.LoadLevel, m_Level);
+        EditorUtilsEx.GuiButtonAction("Start Level:", LevelLoader.LoadLevel, m_Level);
         m_Level = EditorGUILayout.IntField(m_Level);
         GUILayout.EndHorizontal();
         
         GUILayout.BeginHorizontal();
-        GuiButtonAction("Pause game", PauseGame, true);
-        GuiButtonAction("Continue game", PauseGame, false);
+        EditorUtilsEx.GuiButtonAction("Pause game", PauseGame, true);
+        EditorUtilsEx.GuiButtonAction("Continue game", PauseGame, false);
         GUILayout.EndHorizontal();
         
         EditorUtils.DrawUiLine(Color.gray);
         GUI.enabled = true;
 
-        GuiButtonAction("Print common info", PrintCommonInfo);
+        EditorUtilsEx.GuiButtonAction("Print common info", PrintCommonInfo);
 
         GUILayout.BeginHorizontal();
-        GuiButtonAction("Create test users", CreateTestUsers, m_TestUsersCount);
+        EditorUtilsEx.GuiButtonAction("Create test users", CreateTestUsers, m_TestUsersCount);
         GUILayout.Label("count:", GUILayout.Width(40));
         m_TestUsersCount = EditorGUILayout.IntField(m_TestUsersCount);
         GUILayout.Label("guest:", GUILayout.Width(40));
         m_IsGuest = EditorGUILayout.Toggle(m_IsGuest, GUILayout.Width(30));
         GUILayout.EndHorizontal();
         
-        GuiButtonAction("Delete test users", DeleteTestUsers);
+        EditorUtilsEx.GuiButtonAction("Delete test users", DeleteTestUsers);
 
         GUILayout.BeginHorizontal();
         GUILayout.Label("Debug Server Url:");
         m_TestUrl = EditorGUILayout.TextField(m_TestUrl);
         GUILayout.EndHorizontal();
 
-        GuiButtonAction("Set default api url", SetDefaultApiUrl);
-        GuiButtonAction("Delete all settings", DeleteAllSettings);
-        GuiButtonAction("Get ready to commit", GetReadyToCommit);
+        EditorUtilsEx.GuiButtonAction("Set default api url", SetDefaultApiUrl);
+        EditorUtilsEx.GuiButtonAction("Delete all settings", DeleteAllSettings);
+        EditorUtilsEx.GuiButtonAction("Get ready to commit", GetReadyToCommit);
         
         GUILayout.BeginHorizontal();
         GUILayout.Label("Quality:");
@@ -156,9 +155,9 @@ public class EditorHelper : EditorWindow
         EditorUtils.DrawUiLine(Color.gray);
 
         GUILayout.BeginHorizontal();
-        GuiButtonAction(SceneNames.Preload, LoadScene, $"Assets/Scenes/{SceneNames.Preload}.unity");
-        GuiButtonAction(SceneNames.Main, LoadScene, $"Assets/Scenes/{SceneNames.Main}.unity");
-        GuiButtonAction(SceneNames.Level, LoadScene, $"Assets/Scenes/{SceneNames.Level}.unity");
+        EditorUtilsEx.GuiButtonAction(SceneNames.Preload, LoadScene, $"Assets/Scenes/{SceneNames.Preload}.unity");
+        EditorUtilsEx.GuiButtonAction(SceneNames.Main, LoadScene, $"Assets/Scenes/{SceneNames.Main}.unity");
+        EditorUtilsEx.GuiButtonAction(SceneNames.Level, LoadScene, $"Assets/Scenes/{SceneNames.Level}.unity");
         GUILayout.EndHorizontal();
         
         EditorUtils.DrawUiLine(Color.gray);
@@ -369,17 +368,5 @@ public class EditorHelper : EditorWindow
         if (string.IsNullOrEmpty(value) || string.IsNullOrWhiteSpace(value))
             return "empty";
         return value;
-    }
-
-    private static void GuiButtonAction(string _Name, UnityAction _Action)
-    {
-        if (GUILayout.Button(_Name))
-            _Action?.Invoke();
-    }
-    
-    private static void GuiButtonAction<T>(string _Name, UnityAction<T> _Action, T _Arg)
-    {
-        if (GUILayout.Button(_Name))
-            _Action?.Invoke(_Arg);
     }
 }
