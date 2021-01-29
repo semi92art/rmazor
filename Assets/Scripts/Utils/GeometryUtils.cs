@@ -5,6 +5,8 @@ namespace Utils
 {
     public static class GeometryUtils
     {
+        #region api
+        
         public static bool Intersect(Rect _R0, Rect _R1)
         {
             return _R0.xMin < _R1.xMax &&
@@ -79,5 +81,28 @@ namespace Utils
             float dist = MathUtils.Pow2(_X0Y0.x - _X1Y1.x) + MathUtils.Pow2(_X0Y0.y - _X1Y1.y);
             return dist < MathUtils.Pow2(_R0 - _R1);
         }
+
+        public static void LookAt2D(this Transform _T, Vector2 _To)
+        {
+            _T.eulerAngles = DirectionEulerAngles(_T.transform.position, _To);
+        }
+        
+        #endregion
+
+        #region nonpublic methods
+
+        private static Vector3 DirectionEulerAngles(Vector2 _From, Vector2 _To)
+        {
+            return Vector3.forward * DirectionZAngle(_From, _To);
+        }
+        
+        private static float DirectionZAngle(Vector2 _From, Vector2 _To)
+        {
+            float angle = Vector2.Angle(Vector2.right, _To - _From);
+            angle *= _To.y > _From.y ? 1 : -1;
+            return angle;
+        }
+
+        #endregion
     }
 }

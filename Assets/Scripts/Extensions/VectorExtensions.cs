@@ -23,6 +23,11 @@ namespace Extensions
         {
             return new Vector3(_Val, _Val, _V.z); 
         }
+
+        public static Vector3 SetXY(this Vector3 _V, Vector2 _XY)
+        {
+            return new Vector3(_XY.x, _XY.y, _V.z);
+        }
         
         public static Vector2 SetX(this Vector2 _V, float _X)
         {
@@ -37,6 +42,17 @@ namespace Extensions
         public static Vector2 XY(this Vector3 _V)
         {
             return new Vector2(_V.x, _V.y);
+        }
+        
+        public static Vector2 Rotate(this Vector2 _V, float _Angle)
+        {
+            float sin = Mathf.Sin(_Angle);
+            float cos = Mathf.Cos(_Angle);
+            float tx = _V.x;
+            float ty = _V.y;
+            _V.x = cos * tx - sin * ty;
+            _V.y = sin * tx + cos * ty;
+            return _V;
         }
     }
 }
