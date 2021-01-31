@@ -8,6 +8,7 @@ namespace Games.PathFinder
 {
     public class GridBuilder : MonoBehaviour
     {
+        //NOT IN USE
         public GameObject line;
         public Tile selectedTile = null;
 
@@ -34,7 +35,7 @@ namespace Games.PathFinder
             instanceGridBuilder = this;
             //SetHexSize();
             CreateGrid();
-            GenerateAndShowPath();
+            PathFinderManager.Instance.GenerateAndShowPath();
         }
 
         //set hex size depends on HEX-prefabs (need renderer component)
@@ -156,21 +157,21 @@ namespace Games.PathFinder
                 line.transform.parent = lines.transform;
             }
         }
-
-        public void GenerateAndShowPath()
-        {
-            //Don't do anything if origin or destination is not defined yet
-            if (originTileTb == null || this.destinationTileTb == null)
-            {
-                DrawPath(new List<Tile>());
-                return;
-            }
-            //We assume that the distance between any two adjacent tiles is 1
-            //If you want to have some mountains, rivers, dirt roads or something else which might slow down the player you should replace the function with something that suits better your needs
-            var path = PathFinderInGame.FindPath(originTileTb.tile, this.destinationTileTb.tile);
-            DrawPath(path);
-            MovementController mc = CombatController.instanceCombatController.selectedUnit.GetComponent<MovementController>();
-            mc.StartMoving(path.ToList());
-        }
+        //
+        // public void GenerateAndShowPath()
+        // {
+        //     //Don't do anything if origin or destination is not defined yet
+        //     if (originTileTb == null || this.destinationTileTb == null)
+        //     {
+        //         DrawPath(new List<Tile>());
+        //         return;
+        //     }
+        //     //We assume that the distance between any two adjacent tiles is 1
+        //     //If you want to have some mountains, rivers, dirt roads or something else which might slow down the player you should replace the function with something that suits better your needs
+        //     var path = PathFinderInGame.FindPath(originTileTb.tile, this.destinationTileTb.tile);
+        //     DrawPath(path);
+        //     MovementController mc = CombatController.instanceCombatController.selectedUnit.GetComponent<MovementController>();
+        //     mc.StartMoving(path.ToList());
+        // }
     }
 }

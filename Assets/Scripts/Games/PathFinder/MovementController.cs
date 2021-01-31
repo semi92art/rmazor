@@ -66,7 +66,7 @@ namespace Games.PathFinder
             GM.originTileTb = GM.destinationTileTb;
             GM.originTileTb.GetComponent<Renderer>().material = originMaterial;
             GM.destinationTileTb = null;
-            GM.GenerateAndShowPath();
+            // GM.GenerateAndShowPath();
         }
 
         void Update()

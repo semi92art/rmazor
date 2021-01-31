@@ -130,6 +130,9 @@ namespace Games.PathFinder
             m_CurrentLevel = _Args.Level;
             m_IsLevelInProcess = true;
             GenerateItems();
+            PathFinderManager.Instance.GenerateOriginTileTb(Board);
+            PathFinderManager.Instance.GenerateDestinationTileTb(Board);
+            PathFinderManager.Instance.GenerateAndShowPath();
         }
 
         public void OnLevelFinished(LevelStateChangedArgs _Args)

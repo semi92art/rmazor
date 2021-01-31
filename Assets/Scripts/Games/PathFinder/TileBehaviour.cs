@@ -27,32 +27,32 @@ namespace Games.PathFinder
             if (Input.GetMouseButtonUp(1))
             {
                 Debug.Log("RM!");
-            if (this == PathFinderManager.Instance.destinationTileTb ||
-                this == PathFinderManager.Instance.originTileTb)
-                return;
-            tile.isPassable = !tile.isPassable;
-            if (!tile.isPassable)
-                ChangeColor(Color.gray);
-            else
-                ChangeColor(Color.red);
-            
-           // GridBuilder.instanceGridBuilder.GenerateAndShowPath();
+                if (this == PathFinderManager.Instance.destinationTileTb ||
+                    this == PathFinderManager.Instance.originTileTb)
+                    return;
+                tile.isPassable = !tile.isPassable;
+                if (!tile.isPassable)
+                    ChangeColor(Color.gray);
+                else
+                    ChangeColor(Color.red);
+
+                // GridBuilder.instanceGridBuilder.GenerateAndShowPath();
             }
             // //if user left-clicks the tile
             if (Input.GetMouseButtonUp(0))
             {
                 Debug.Log("LM!");
-            tile.isPassable = true;
-            
-            TileBehaviour originTileTb = PathFinderManager.Instance.originTileTb;
-            //if user clicks on origin tile or origin tile is not assigned yet
-            if (this == originTileTb || originTileTb == null)
-                //CombatController.instanceCombatController.selectedUnit =
-                OriginTileChanged();
-            else
-                DestTileChanged();
-            
-            //GridBuilder.instanceGridBuilder.GenerateAndShowPath();
+                tile.isPassable = true;
+
+                TileBehaviour originTileTb = PathFinderManager.Instance.originTileTb;
+                //if user clicks on origin tile or origin tile is not assigned yet
+                if (this == originTileTb || originTileTb == null)
+                    //CombatController.instanceCombatController.selectedUnit =
+                    OriginTileChanged();
+                else
+                    DestTileChanged();
+
+                PathFinderManager.Instance.GenerateAndShowPath();
             }
         }
 

@@ -36,8 +36,16 @@ namespace Games.PathFinder
                 int neighbourX = X + point.X;
                 int neighbourY = Y + point.Y;
 
-                if (neighbourX >= 0 && neighbourX < (int)_BoardSize.x && neighbourY >= 0 && neighbourY < (int)_BoardSize.y)
-                    neighbours.Add(_Board[new Point(neighbourX, neighbourY)].tile);
+                if (neighbourX >= 0 &&
+                    neighbourX < (int) _BoardSize.x &&
+                    neighbourY >= 0 &&
+                    neighbourY < (int) _BoardSize.y)
+                {
+                    if (_Board.ContainsKey(new Point(neighbourX, neighbourY)))
+                    {
+                        neighbours.Add(_Board[new Point(neighbourX, neighbourY)].tile);
+                    }
+                }
             }
 
             AllNeighbours = neighbours;

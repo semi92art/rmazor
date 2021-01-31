@@ -1,8 +1,10 @@
-﻿using Extensions;
+﻿using System.Collections;
+using Extensions;
 using Managers;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using Shapes;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -34,6 +36,8 @@ namespace Games.PathFinder
         public Tile selectedTile = null;
         public TileBehaviour originTileTb = null;
         public TileBehaviour destinationTileTb = null;
+        public Color StandartColor = new Color(138f / 255f, 135f / 255f, 221f / 255f);
+        public float TimeToShow = 0.3f;
         
         #endregion
         
@@ -50,6 +54,8 @@ namespace Games.PathFinder
         public override void Init(int _Level)
         {
             m_GridItemsGenerator = new GridItemsGenerator();
+            
+            
            // m_GridItemsGenerator.GenerateItems();
             // m_PointItemsGenerator = new PointItemsGenerator(
             //     new Dictionary<PointType, UnityAction>
@@ -65,20 +71,30 @@ namespace Games.PathFinder
             // background.sortingOrder = SortingOrders.Background;
             GameMenuUi = new PathFinderGameMenuUi();
             base.Init(_Level);
+            
+            // GenerateOriginTileTb();
+            // GenerateDestinationTileTb();
+            // GenerateAndShowPath();
         }
        
         #endregion
 
         #region public methods
 
-        public void GenerateOriginTileTb()
+        public void GenerateOriginTileTb(Dictionary<Point, TileBehaviour> _Board)
         {
             //генерация начала пути: в первой строке сетки
+            originTileTb = _Board[new Point(Random.Range(0, m_GridItemsGenerator.GridWidthInHexes - 1), 0)];
         }
         
-        public void GenerateDestinationTileTb()
+        public void GenerateDestinationTileTb(Dictionary<Point, TileBehaviour> _Board)
         {
             //генерация окончания пути: в последней строке сетки
+            destinationTileTb =
+                _Board[
+                    new Point(Random.Range(0, m_GridItemsGenerator.GridWidthInHexes - 1),
+                        m_GridItemsGenerator.GridHeightInHexes - 1 )];
+
         }
         
         public void GenerateAndShowPath()
@@ -90,16 +106,26 @@ namespace Games.PathFinder
                 DrawPath(new List<Tile>());
                 return;
             }
+
             //We assume that the distance between any two adjacent tiles is 1
             //If you want to have some mountains, rivers, dirt roads or something else which might slow down the player you should replace the function with something that suits better your needs
             var path = PathFinderInGame.FindPath(originTileTb.tile, this.destinationTileTb.tile);
-            DrawPath(path);
+            StartCoroutine(DrawPath(path));
             // MovementController mc = CombatController.instanceCombatController.selectedUnit.GetComponent<MovementController>();
             // mc.StartMoving(path.ToList());
         }
         
-        public void DrawPath(IEnumerable<Tile> _Path)
+        public IEnumerator DrawPath(IEnumerable<Tile> _Path)
         {
+            ChangeColor(originTileTb,Color.red);
+            ChangeColor(destinationTileTb, Color.red);
+
+            foreach (var tile in _Path.Reverse())
+            {
+                ChangeColor(m_GridItemsGenerator.Board[new Point(tile.X,tile.Y)],Color.red);
+                yield return new WaitForSeconds(TimeToShow);
+                ChangeColor(m_GridItemsGenerator.Board[new Point(tile.X,tile.Y)],StandartColor);
+            }
             //Отрисовка пути
             // if (this.m_path == null)
             //     this.m_path = new List<GameObject>();
@@ -120,6 +146,11 @@ namespace Games.PathFinder
             //     this.m_path.Add(line);
             //     line.transform.parent = lines.transform;
             // }
+        }
+
+        private void ChangeColor(TileBehaviour _TileBehaviour, Color _Color)
+        {
+            _TileBehaviour.GetComponent<RegularPolygon>().Color = _Color;
         }
 
         public void CheckPath()
