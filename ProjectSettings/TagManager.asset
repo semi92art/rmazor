@@ -14,30 +14,30 @@ TagManager:
   - UI
   - 
   - 
-  - Touchable
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - "\u03B1 Alpha"
+  - "\u03B2 Beta"
+  - "\u03B3 Gamma"
+  - "\u03B4 Delta"
+  - "\u03B5 Epsilon"
+  - "\u03B6 Dzeta"
+  - "\u03B7 Eta"
+  - "\u03B8 Teta"
+  - "\u03B9 Yota"
+  - "\u03BA Kappa"
+  - "\u03BB Lambda"
+  - "\u03BC Mu"
+  - "\u03BD Nu"
+  - "\u03BE Ksi"
+  - "\u03BF Omikron"
+  - "\u03C0 Pi"
+  - "\u03C1 Po"
+  - "\u03C3 Sigma"
+  - "\u03C4 Tau"
+  - "\u03C5 Ipsilon"
+  - "\u03C6 Fi"
+  - "\u03C7 Hi"
+  - "\u03C8 Psi"
+  - "\u03C9 Omega"
   m_SortingLayers:
   - name: Default
     uniqueID: 0

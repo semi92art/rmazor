@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using Utils;
 using System.IO;
+using Utils.Editor;
 
 public class LocalizationHelper : EditorWindow
 {
@@ -70,7 +71,7 @@ public class LocalizationHelper : EditorWindow
         GUILayout.EndHorizontal();
         GUI.enabled = true;
         
-        EditorUtils.DrawUiLine(Color.gray);
+        EditorUtilsEx.DrawUiLine(Color.gray);
         
         //values rows
         foreach (var kvp in m_LocalizedDict.ToArray())
@@ -91,7 +92,7 @@ public class LocalizationHelper : EditorWindow
             GUILayout.EndHorizontal();
         }
         
-        EditorUtils.DrawUiLine(Color.gray);
+        EditorUtilsEx.DrawUiLine(Color.gray);
         
         GUILayout.Space(10);
         GUILayout.BeginHorizontal();

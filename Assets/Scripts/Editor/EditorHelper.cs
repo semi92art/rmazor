@@ -122,7 +122,7 @@ public class EditorHelper : EditorWindow
         EditorUtilsEx.GuiButtonAction("Continue game", PauseGame, false);
         GUILayout.EndHorizontal();
         
-        EditorUtils.DrawUiLine(Color.gray);
+        EditorUtilsEx.DrawUiLine(Color.gray);
         GUI.enabled = true;
 
         EditorUtilsEx.GuiButtonAction("Print common info", PrintCommonInfo);
@@ -152,7 +152,7 @@ public class EditorHelper : EditorWindow
             m_Quality, new[] { "Normal", "Good" });
         GUILayout.EndHorizontal();
         
-        EditorUtils.DrawUiLine(Color.gray);
+        EditorUtilsEx.DrawUiLine(Color.gray);
 
         GUILayout.BeginHorizontal();
         EditorUtilsEx.GuiButtonAction(SceneNames.Preload, LoadScene, $"Assets/Scenes/{SceneNames.Preload}.unity");
@@ -160,7 +160,7 @@ public class EditorHelper : EditorWindow
         EditorUtilsEx.GuiButtonAction(SceneNames.Level, LoadScene, $"Assets/Scenes/{SceneNames.Level}.unity");
         GUILayout.EndHorizontal();
         
-        EditorUtils.DrawUiLine(Color.gray);
+        EditorUtilsEx.DrawUiLine(Color.gray);
         
         GUILayout.Label("Cached data:");
         foreach (var skVal in GetAllSaveKeyValues())
