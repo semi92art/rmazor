@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using UnityEngine;
 
 namespace Utils
@@ -82,27 +83,28 @@ namespace Utils
             return dist < MathUtils.Pow2(_R0 - _R1);
         }
 
-        public static void LookAt2D(this Transform _T, Vector2 _To)
+        public static Vector2 Middle(params Vector2[] _Points)
         {
-            _T.eulerAngles = DirectionEulerAngles(_T.transform.position, _To);
+            if (_Points == null || !_Points.Any())
+                return default;
+            Vector2 sum = _Points.Aggregate<Vector2, Vector2>(default, (_Current, _P) => _Current + _P);
+            return sum / _Points.Length;
         }
-        
-        #endregion
 
-        #region nonpublic methods
-
-        private static Vector3 DirectionEulerAngles(Vector2 _From, Vector2 _To)
-        {
-            return Vector3.forward * DirectionZAngle(_From, _To);
-        }
-        
-        private static float DirectionZAngle(Vector2 _From, Vector2 _To)
+        public static float ZAngle(Vector2 _From, Vector2 _To)
         {
             float angle = Vector2.Angle(Vector2.right, _To - _From);
             angle *= _To.y > _From.y ? 1 : -1;
             return angle;
         }
-
+        
+        public static float ZAngle(Vector2 _Vector)
+        {
+            float angle = Vector2.Angle(Vector2.right, _Vector);
+            angle *= _Vector.y > 0 ? 1 : -1;
+            return angle;
+        }
+        
         #endregion
     }
 }

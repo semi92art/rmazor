@@ -63,9 +63,10 @@ namespace Utils
             yield break;
         }
     
-        public static IEnumerator WaitEndOfFrame(UnityAction _Action)
+        public static IEnumerator WaitEndOfFrame(UnityAction _Action, uint _NumOfFrames = 1)
         {
-            yield return new WaitForEndOfFrame();
+            for (uint i = 0; i < _NumOfFrames; i++)
+                yield return new WaitForEndOfFrame();
 
             _Action?.Invoke();
         }

@@ -54,5 +54,11 @@ namespace Extensions
             _V.y = sin * tx + cos * ty;
             return _V;
         }
+
+        public static float Angle2D(this Vector2 _V)
+        {
+            float coeff = _V.y > 0 ? 1 : -1;
+            return Vector2.Angle(_V, Vector2.right) * coeff;
+        }
     }
 }
