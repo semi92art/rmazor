@@ -83,25 +83,25 @@ namespace GameHelpers
         private void SetTopLeft()
         {
             Bounds bounds = GameUtils.GetVisibleBounds();
-            m_Transform.SetPosXY(bounds.center.x - bounds.size.x, bounds.center.y + bounds.size.y);
+            m_Transform.SetPosXY(bounds.min.x, bounds.max.y);
         }
 
         private void SetTopRight()
         {
             Bounds bounds = GameUtils.GetVisibleBounds();
-            m_Transform.SetPosXY(bounds.center.x + bounds.size.x, bounds.center.y + bounds.size.y);
+            m_Transform.SetPosXY(bounds.max.x, bounds.max.y);
         }
 
         private void SetBottomLeft()
         {
             Bounds bounds = GameUtils.GetVisibleBounds();
-            m_Transform.SetPosXY(bounds.center.x - bounds.size.x, bounds.center.y - bounds.size.y);
+            m_Transform.SetPosXY(bounds.min.x, bounds.min.y);
         }
 
         private void SetBottomRight()
         {
             Bounds bounds = GameUtils.GetVisibleBounds();
-            m_Transform.SetPosXY(bounds.center.x + bounds.size.x, bounds.center.y - bounds.size.y);
+            m_Transform.SetPosXY(bounds.max.x, bounds.min.y);
         }
     }
 #endif

@@ -7,8 +7,6 @@ using Utils;
 
 namespace GameHelpers
 {
-
-
     public class GameHelper : MonoBehaviour
     {
         [Range(0, 10)] public float horMargin;
@@ -73,9 +71,9 @@ namespace GameHelpers
         private Vector2 RandomPositionInMarginRect()
         {
             var bounds = GameUtils.GetVisibleBounds();
-            float x = CommonUtils.RandomGen.NextFloatAlt() * (bounds.size.x - horMargin);
+            float x = CommonUtils.RandomGen.NextFloatAlt() * (bounds.max.x - horMargin);
             float y = bottomMargin * 0.5f - topMargin * 0.5f + CommonUtils.RandomGen.NextFloatAlt() *
-                      (bounds.size.y - topMargin * 0.5f - bottomMargin * 0.5f);
+                      (bounds.max.y - topMargin * 0.5f - bottomMargin * 0.5f);
             return new Vector2(x, y);
         }
     
@@ -83,23 +81,43 @@ namespace GameHelpers
         {
             var bounds = GameUtils.GetVisibleBounds();
             var topLeft = new Vector3(
-                bounds.center.x - bounds.size.x + horMargin,
-                bounds.center.y + bounds.size.y - topMargin);
+                bounds.min.x + horMargin,
+                bounds.max.y - topMargin);
             var topRight = new Vector3(
-                bounds.center.x + bounds.size.x - horMargin,
-                bounds.center.y + bounds.size.y - topMargin);
+                bounds.max.x - horMargin,
+                bounds.max.y - topMargin);
             var bottomLeft = new Vector3(
-                bounds.center.x - bounds.size.x + horMargin,
-                bounds.center.y - bounds.size.y + bottomMargin);
+                bounds.min.x + horMargin,
+                bounds.min.y + bottomMargin);
             var bottomRight = new Vector3(
-                bounds.center.x + bounds.size.x - horMargin,
-                bounds.center.y - bounds.size.y + bottomMargin);
+                bounds.max.x - horMargin,
+                bounds.min.y + bottomMargin);
 
             Gizmos.color = Color.white;
             Gizmos.DrawLine(topLeft, topRight);
             Gizmos.DrawLine(topRight, bottomRight);
             Gizmos.DrawLine(bottomRight, bottomLeft);
             Gizmos.DrawLine(bottomLeft, topLeft);
+        }
+        
+        public void GenerateEdges()
+        {
+            string name = "Edges";
+            var go = GameObject.Find(name);
+            EdgeCollider2D coll;
+            if (go == null)
+            {
+                go = new GameObject("Edges");
+                go.AddComponent<EdgeCollider2D>();
+            }
+
+            coll = go.GetComponent<EdgeCollider2D>();
+            var bounds = GameUtils.GetVisibleBounds();
+            var a = new Vector2(bounds.min.x, bounds.max.y);
+            var b = bounds.min.XY();
+            var c = new Vector2(bounds.max.x, bounds.min.y);
+            var d = bounds.max.XY(); 
+            coll.points = new[] { a, b, c, d, a};
         }
     }
 }

@@ -8,14 +8,14 @@ namespace GameHelpers.Editor
     [CustomEditor(typeof(GameHelper))]
     public class GameHelperEditor : UnityEditor.Editor
     {
-        private GameHelper m_GameHelper;
+        private GameHelper m_Target;
         private float m_DiscNum = 5;
         private float m_Radius = 2;
         private float m_RadiusIndent = 1;
 
         private void OnEnable()
         {
-            m_GameHelper = (GameHelper) target;
+            m_Target = (GameHelper) target;
         }
 
         public override void OnInspectorGUI()
@@ -23,20 +23,20 @@ namespace GameHelpers.Editor
             base.OnInspectorGUI();
             var bounds = GameUtils.GetVisibleBounds();
             GUILayout.Label("Camera View Rect:");
-            GUILayout.Label($"Width: {bounds.size.x * 2:f2}\tHeight: {bounds.size.y * 2:f2}");
-            GUILayout.Label($"Width/2: {bounds.size.x:f2}\tHeight/2: {bounds.size.y:f2}");
+            GUILayout.Label($"Width: {bounds.size.x:f2}\tHeight: {bounds.size.y:f2}");
+            GUILayout.Label($"Width/2: {bounds.size.x * 0.5f:f2}\tHeight/2: {bounds.size.y * 0.5f:f2}");
             GUILayout.Label("Margin Rect:");
-            GUILayout.Label($"Left: {-bounds.size.x + m_GameHelper.horMargin:f2}\t" +
-                            $"Right: {bounds.size.x - m_GameHelper.horMargin:f2}");
-            GUILayout.Label($"Top: {bounds.size.y - m_GameHelper.topMargin}\t\t" +
-                            $"Bottom: {-bounds.size.y + m_GameHelper.bottomMargin}");
+            GUILayout.Label($"Left: {bounds.min.x + m_Target.horMargin:f2}\t" +
+                            $"Right: {bounds.max.x - m_Target.horMargin:f2}");
+            GUILayout.Label($"Top: {bounds.max.y - m_Target.topMargin}\t\t" +
+                            $"Bottom: {bounds.min.y + m_Target.bottomMargin}");
             EditorUtilsEx.DrawUiLine(Color.gray);
 
 
             if (GUILayout.Button("Generate Disc"))
             {
                 for (int i = 0; i < m_DiscNum; i++)
-                    m_GameHelper.GenerateDiscWithRandomPosition(m_Radius, m_RadiusIndent);
+                    m_Target.GenerateDiscWithRandomPosition(m_Radius, m_RadiusIndent);
             }
 
             GUILayout.BeginHorizontal();
@@ -48,8 +48,10 @@ namespace GameHelpers.Editor
             m_RadiusIndent = EditorGUILayout.FloatField(m_RadiusIndent);
             GUILayout.EndHorizontal();
             if (GUILayout.Button("Clear"))
-                m_GameHelper.ClearDiscs();
+                m_Target.ClearDiscs();
             EditorUtilsEx.DrawUiLine(Color.gray);
+            
+            EditorUtilsEx.GuiButtonAction("Generate Edges", m_Target.GenerateEdges);
         }
     }
 }

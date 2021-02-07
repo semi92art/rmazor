@@ -18,15 +18,35 @@ namespace Extensions
         {
             return new Vector3(_V.x, _V.y, _Z);
         }
-
-        public static Vector3 SetXY(this Vector3 _V, float _Val)
+        
+        public static Vector3 PlusX(this Vector3 _V, float _X)
         {
-            return new Vector3(_Val, _Val, _V.z); 
+            return _V.SetX(_V.x + _X);
         }
-
-        public static Vector3 SetXY(this Vector3 _V, Vector2 _XY)
+        
+        public static Vector3 PlusY(this Vector3 _V, float _Y)
         {
-            return new Vector3(_XY.x, _XY.y, _V.z);
+            return _V.SetY(_V.y + _Y);
+        }
+        
+        public static Vector3 PlusZ(this Vector3 _V, float _Z)
+        {
+            return _V.SetY(_V.z + _Z);
+        }
+        
+        public static Vector3 MinusX(this Vector3 _V, float _X)
+        {
+            return _V.SetX(_V.x - _X);
+        }
+        
+        public static Vector3 MinusY(this Vector3 _V, float _Y)
+        {
+            return _V.SetY(_V.y - _Y);
+        }
+        
+        public static Vector3 MinusZ(this Vector3 _V, float _Z)
+        {
+            return _V.SetY(_V.z - _Z);
         }
         
         public static Vector2 SetX(this Vector2 _V, float _X)
@@ -38,7 +58,32 @@ namespace Extensions
         {
             return new Vector2(_V.x, _Y);
         }
+        
+        public static Vector2 PlusX(this Vector2 _V, float _X)
+        {
+            return _V.SetX(_V.x + _X);
+        }
+        
+        public static Vector2 PlusY(this Vector2 _V, float _Y)
+        {
+            return _V.SetY(_V.y + _Y);
+        }
 
+        public static Vector2 MinusX(this Vector2 _V, float _X)
+        {
+            return _V.SetX(_V.x - _X);
+        }
+        
+        public static Vector2 MinusY(this Vector2 _V, float _Y)
+        {
+            return _V.SetY(_V.y - _Y);
+        }
+
+        public static Vector3 SetXY(this Vector3 _V, Vector2 _XY)
+        {
+            return new Vector3(_XY.x, _XY.y, _V.z);
+        }
+        
         public static Vector2 XY(this Vector3 _V)
         {
             return new Vector2(_V.x, _V.y);

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Extensions;
+using UnityEngine;
 
 namespace Utils
 {
@@ -6,10 +7,10 @@ namespace Utils
     {
         public static Bounds GetVisibleBounds()
         {
-            float vertExtent = Camera.main.orthographicSize;
+            float vertExtent = Camera.main.orthographicSize * 2f;
             float horzExtent = vertExtent * GraphicUtils.AspectRatio;
             Vector3 size = new Vector3(horzExtent, vertExtent, 0);
-            return new Bounds(Vector3.zero, size);
+            return new Bounds(Camera.main.transform.position.SetZ(0), size);
         }
 
         public static void DrawGizmosRect(
@@ -34,8 +35,8 @@ namespace Utils
             var rendererBounds = _Item.bounds;
             var transform = _Item.transform;
             transform.localScale = new Vector3(
-                cameraBounds.size.x * 2f / rendererBounds.size.x,
-                cameraBounds.size.y * 2f / rendererBounds.size.y);
+                cameraBounds.size.x / rendererBounds.size.x,
+                cameraBounds.size.y / rendererBounds.size.y);
             transform.position = new Vector3(
                 rendererBounds.center.x,
                 rendererBounds.center.y,

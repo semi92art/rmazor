@@ -94,12 +94,13 @@ namespace UI.Panels
             Vector3 lScale = tr.localScale;
             Bounds bounds = background.bounds;
             tr.localScale = new Vector3(
-                cameraBounds.size.x * 2f * lScale.x / bounds.size.x,
-                cameraBounds.size.y * 2f * lScale.y / bounds.size.y);
+                cameraBounds.size.x * lScale.x / bounds.size.x,
+                cameraBounds.size.y * lScale.y / bounds.size.y);
             tr.position = tr.position.SetY(cameraBounds.center.y);
             Transform outer = m_Wheel.GetCompItem<Transform>("wheel");
             outer.position = outer.position.SetY(GraphicUtils.AspectRatio * 17.68f - 5.5f);
-            outer.localScale = outer.localScale.SetXY(GraphicUtils.AspectRatio * 15f / 11f + 491f / 1100f);
+            float xyVal = GraphicUtils.AspectRatio * 15f / 11f + 491f / 1100f;
+            outer.localScale = outer.localScale.SetXY(Vector2.one * xyVal);
 
             m_IsLocked = CheckIfWofSpinToday();
             m_SpinButton.SetOnClick(StartSpinOrWatchAd);

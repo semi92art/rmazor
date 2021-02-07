@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace GameHelpers.Editor
 {
+    //https://forum.unity.com/threads/angle-property-drawer.236359/
     public class AngleAttribute : PropertyAttribute
     {
         public readonly float Snap;

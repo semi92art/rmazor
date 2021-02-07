@@ -62,11 +62,11 @@ namespace Games.PointsTapper
 
             float xCenter = 0.5f * (rightMargin - leftMargin);
             float xDelta = CommonUtils.RandomGen.NextFloatAlt() *
-                           (m_Bounds.size.x - _Radius * 2f - 0.5f * (rightMargin + leftMargin));
+                           (m_Bounds.size.x * 0.5f - _Radius * 2f - 0.5f * (rightMargin + leftMargin));
             float x = xCenter + xDelta;
             float yCenter = 0.5f * (topMargin - bottomMargin);
             float yDelta = CommonUtils.RandomGen.NextFloatAlt() *
-                           (m_Bounds.size.y - _Radius * 2f - 0.5f * (topMargin + bottomMargin));
+                           (m_Bounds.size.y * 0.5f - _Radius * 2f - 0.5f * (topMargin + bottomMargin));
             float y = yCenter + yDelta;
             return new Vector2(x, y);
         }

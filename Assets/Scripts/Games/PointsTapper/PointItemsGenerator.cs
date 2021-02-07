@@ -123,17 +123,17 @@ namespace Games.PointsTapper
         {
             var bounds = GameUtils.GetVisibleBounds();
             var topLeft = new Vector3(
-                bounds.center.x - bounds.size.x + m_Margin.x,
-                bounds.center.y + bounds.size.y - m_Margin.z);
+                bounds.min.x + m_Margin.x,
+                bounds.max.y - m_Margin.z);
             var topRight = new Vector3(
-                bounds.center.x + bounds.size.x - m_Margin.y,
-                bounds.center.y + bounds.size.y - m_Margin.z);
+                bounds.max.x - m_Margin.y,
+                bounds.max.y - m_Margin.z);
             var bottomLeft = new Vector3(
-                bounds.center.x - bounds.size.x + m_Margin.x,
-                bounds.center.y - bounds.size.y + m_Margin.w);
+                bounds.min.x + m_Margin.x,
+                bounds.min.y + m_Margin.w);
             var bottomRight = new Vector3(
-                bounds.center.x + bounds.size.x - m_Margin.y,
-                bounds.center.y - bounds.size.y + m_Margin.w);
+                bounds.max.x - m_Margin.y,
+                bounds.min.y + m_Margin.w);
 
             GameUtils.DrawGizmosRect(
                 topLeft, 
