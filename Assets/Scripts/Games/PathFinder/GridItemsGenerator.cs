@@ -46,8 +46,8 @@ namespace Games.PathFinder
 
         public GridItemsGenerator()
         {
-            GridHeightInHexes = 11;
-            GridWidthInHexes = 5;
+            GridHeightInHexes = 5;
+            GridWidthInHexes = 10;
         }
 
         public void GenerateItems()
@@ -100,7 +100,7 @@ namespace Games.PathFinder
                     regularPolygon.Color = new Color(138f/255f,135f/255f,221f/255f);
                     regularPolygon.Sides = 6;
                     regularPolygon.Roundness = 0.3f;
-                
+
                     TileBehaviour tileBehaviour = hex.AddComponent<TileBehaviour>();
                     tileBehaviour.tile = new Tile((int)x, (int)y);
                     Board.Add(tileBehaviour.tile.Location, tileBehaviour);
@@ -130,9 +130,7 @@ namespace Games.PathFinder
             m_CurrentLevel = _Args.Level;
             m_IsLevelInProcess = true;
             GenerateItems();
-            PathFinderManager.Instance.GenerateOriginTileTb(Board);
-            PathFinderManager.Instance.GenerateDestinationTileTb(Board);
-            PathFinderManager.Instance.GenerateAndShowPath();
+            PathFinderManager.Instance.GenerateAndShowPath(Board);
         }
 
         public void OnLevelFinished(LevelStateChangedArgs _Args)

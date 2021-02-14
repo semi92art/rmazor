@@ -35,7 +35,7 @@ namespace Games.PathFinder
             instanceGridBuilder = this;
             //SetHexSize();
             CreateGrid();
-            PathFinderManager.Instance.GenerateAndShowPath();
+            //PathFinderManager.Instance.GenerateAndShowPath();
         }
 
         //set hex size depends on HEX-prefabs (need renderer component)

@@ -38,7 +38,8 @@ namespace Games.PathFinder
         public TileBehaviour destinationTileTb = null;
         public Color StandartColor = new Color(138f / 255f, 135f / 255f, 221f / 255f);
         public float TimeToShow = 0.3f;
-        
+        public List<TileBehaviour> UserPath = new List<TileBehaviour>();
+        public bool CatchUserPath = false;
         #endregion
         
         #region nonpublic members
@@ -71,7 +72,8 @@ namespace Games.PathFinder
             // background.sortingOrder = SortingOrders.Background;
             GameMenuUi = new PathFinderGameMenuUi();
             base.Init(_Level);
-            
+            Camera.main.transform.position = new Vector3(5, 5, -9.81f);
+            Camera.main.transform.eulerAngles = new Vector3(0, 0, -90);
             // GenerateOriginTileTb();
             // GenerateDestinationTileTb();
             // GenerateAndShowPath();
@@ -83,36 +85,67 @@ namespace Games.PathFinder
 
         public void GenerateOriginTileTb(Dictionary<Point, TileBehaviour> _Board)
         {
-            //генерация начала пути: в первой строке сетки
-            originTileTb = _Board[new Point(Random.Range(0, m_GridItemsGenerator.GridWidthInHexes - 1), 0)];
+            //генерация начала пути: в нижней строке сетки
+            // originTileTb =
+            //     _Board[
+            //         new Point(Random.Range(0, m_GridItemsGenerator.GridWidthInHexes - 1),
+            //             m_GridItemsGenerator.GridHeightInHexes - 1)];
+            originTileTb =
+                _Board[
+                    new Point(0, Random.Range(0, m_GridItemsGenerator.GridHeightInHexes - 1))];
         }
         
         public void GenerateDestinationTileTb(Dictionary<Point, TileBehaviour> _Board)
         {
-            //генерация окончания пути: в последней строке сетки
+            //генерация окончания пути: в верхней строке сетки
             destinationTileTb =
                 _Board[
-                    new Point(Random.Range(0, m_GridItemsGenerator.GridWidthInHexes - 1),
-                        m_GridItemsGenerator.GridHeightInHexes - 1 )];
+                    new Point(m_GridItemsGenerator.GridWidthInHexes - 1,
+                        Random.Range(0, (m_GridItemsGenerator.GridHeightInHexes - 1) / 2) * 2)];
 
         }
         
-        public void GenerateAndShowPath()
+        public void GenerateAndShowPath(Dictionary<Point, TileBehaviour> _Board)
         {
+            GenerateOriginTileTb(_Board);
+            GenerateDestinationTileTb(_Board);
+            
             //генерация случайного пути
             //Don't do anything if origin or destination is not defined yet
-            if (originTileTb == null || this.destinationTileTb == null)
+            if (originTileTb == null || destinationTileTb == null)
             {
                 DrawPath(new List<Tile>());
                 return;
             }
 
-            //We assume that the distance between any two adjacent tiles is 1
-            //If you want to have some mountains, rivers, dirt roads or something else which might slow down the player you should replace the function with something that suits better your needs
-            var path = PathFinderInGame.FindPath(originTileTb.tile, this.destinationTileTb.tile);
+            Path<Tile> path;
+            do
+            {
+                var NotPassableTiles = GenerateNotPassableTiles(_Board, 10);
+                path = PathFinderInGame.FindPath(originTileTb.tile, this.destinationTileTb.tile);
+                if (path == null)
+                {
+                    SetPassableTiles(NotPassableTiles);
+                }
+                else
+                {
+                    break;
+                }
+            } while (true);
+            
+            
             StartCoroutine(DrawPath(path));
             // MovementController mc = CombatController.instanceCombatController.selectedUnit.GetComponent<MovementController>();
             // mc.StartMoving(path.ToList());
+        }
+
+        private void SetPassableTiles(List<TileBehaviour> NotPassableTiles)
+        {
+            foreach (var tileBehaviour in NotPassableTiles)
+            {
+                tileBehaviour.tile.isPassable = true;
+                ChangeColor(tileBehaviour,new Color(138f/255f,135f/255f,221f/255f));
+            }
         }
         
         public IEnumerator DrawPath(IEnumerable<Tile> _Path)
@@ -124,7 +157,7 @@ namespace Games.PathFinder
             {
                 ChangeColor(m_GridItemsGenerator.Board[new Point(tile.X,tile.Y)],Color.red);
                 yield return new WaitForSeconds(TimeToShow);
-                ChangeColor(m_GridItemsGenerator.Board[new Point(tile.X,tile.Y)],StandartColor);
+                //ChangeColor(m_GridItemsGenerator.Board[new Point(tile.X,tile.Y)],StandartColor);
             }
             //Отрисовка пути
             // if (this.m_path == null)
@@ -148,7 +181,31 @@ namespace Games.PathFinder
             // }
         }
 
-        private void ChangeColor(TileBehaviour _TileBehaviour, Color _Color)
+        public List<TileBehaviour> GenerateNotPassableTiles(Dictionary<Point, TileBehaviour> _Board,int count)
+        {
+            List<TileBehaviour> NotPassableTiles = new List<TileBehaviour>();
+            Point point;
+            for (int i = 0; i < count; i++)
+            {
+                bool isExit = false;
+                do
+                { 
+                    point = new Point(Random.Range(1, m_GridItemsGenerator.GridWidthInHexes - 2),
+                        Random.Range(0, m_GridItemsGenerator.GridHeightInHexes));
+                    if (_Board[point].tile.isPassable == true)
+                    {
+                        _Board[point].tile.isPassable = false;
+                        ChangeColor(_Board[point], Color.gray);
+                        NotPassableTiles.Add(_Board[point]);
+                        isExit = true;
+                    }
+                } while (!isExit);
+            }
+
+            return NotPassableTiles;
+        }
+
+        public void ChangeColor(TileBehaviour _TileBehaviour, Color _Color)
         {
             _TileBehaviour.GetComponent<RegularPolygon>().Color = _Color;
         }

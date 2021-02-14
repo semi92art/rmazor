@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Shapes;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -8,53 +9,71 @@ namespace Games.PathFinder
     public class TileBehaviour : MonoBehaviour
     {
         public Tile tile;
+        
 
        void OnMouseEnter()
         {
             PathFinderManager.Instance.selectedTile = tile;
+            if (PathFinderManager.Instance.CatchUserPath && tile.isPassable==true)
+            {
+                PathFinderManager.Instance.UserPath.Add(this);
+                ChangeColor(Color.green);
+            }
+
+            // if (Input.GetMouseButtonUp(1))
+            // {
+            //     foreach (var tileBehaviour in UserPath)
+            //     {
+            //         PathFinderManager.Instance.ChangeColor(tileBehaviour,
+            //             new Color(138f / 255f, 135f / 255f, 221f / 255f));
+            //     }
+            //     PathFinderManager.Instance.UserPath.Clear();
+            //     
+            // }
             Debug.Log("This:" + tile);
         }
 
         private void OnMouseUp()
         {
+            PathFinderManager.Instance.CatchUserPath = !PathFinderManager.Instance.CatchUserPath;
             Debug.Log("OnMouseUp!");
         }
 
         //called every frame when mouse cursor is on this tile
-        void OnMouseOver()
-        {
-            // //if player right-clicks on the tile, toggle passable variable and change the color accordingly
-            if (Input.GetMouseButtonUp(1))
-            {
-                Debug.Log("RM!");
-                if (this == PathFinderManager.Instance.destinationTileTb ||
-                    this == PathFinderManager.Instance.originTileTb)
-                    return;
-                tile.isPassable = !tile.isPassable;
-                if (!tile.isPassable)
-                    ChangeColor(Color.gray);
-                else
-                    ChangeColor(Color.red);
-
-                // GridBuilder.instanceGridBuilder.GenerateAndShowPath();
-            }
-            // //if user left-clicks the tile
-            if (Input.GetMouseButtonUp(0))
-            {
-                Debug.Log("LM!");
-                tile.isPassable = true;
-
-                TileBehaviour originTileTb = PathFinderManager.Instance.originTileTb;
-                //if user clicks on origin tile or origin tile is not assigned yet
-                if (this == originTileTb || originTileTb == null)
-                    //CombatController.instanceCombatController.selectedUnit =
-                    OriginTileChanged();
-                else
-                    DestTileChanged();
-
-                PathFinderManager.Instance.GenerateAndShowPath();
-            }
-        }
+        // void OnMouseOver()
+        // {
+        //     // //if player right-clicks on the tile, toggle passable variable and change the color accordingly
+        //     if (Input.GetMouseButtonUp(1))
+        //     {
+        //         Debug.Log("RM!");
+        //         if (this == PathFinderManager.Instance.destinationTileTb ||
+        //             this == PathFinderManager.Instance.originTileTb)
+        //             return;
+        //         tile.isPassable = !tile.isPassable;
+        //         if (!tile.isPassable)
+        //             ChangeColor(Color.gray);
+        //         else
+        //             ChangeColor(Color.red);
+        //
+        //         // GridBuilder.instanceGridBuilder.GenerateAndShowPath();
+        //     }
+        //     // //if user left-clicks the tile
+        //     if (Input.GetMouseButtonUp(0))
+        //     {
+        //         Debug.Log("LM!");
+        //         tile.isPassable = true;
+        //
+        //         TileBehaviour originTileTb = PathFinderManager.Instance.originTileTb;
+        //         //if user clicks on origin tile or origin tile is not assigned yet
+        //         if (this == originTileTb || originTileTb == null)
+        //             //CombatController.instanceCombatController.selectedUnit =
+        //             OriginTileChanged();
+        //         else
+        //             DestTileChanged();
+        //
+        //         //PathFinderManager.Instance.GenerateAndShowPath();
+        //     }
+        // }
 
         void OriginTileChanged()
         {

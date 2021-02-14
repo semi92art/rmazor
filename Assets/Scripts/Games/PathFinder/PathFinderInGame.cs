@@ -46,15 +46,25 @@ namespace Games.PathFinder
         {
             return 1;
         }
-
-    
-        static double Estimate(Tile _Tile, Tile _DestTile)
+        
+        static double EstimateRand(Tile _Tile, Tile _DestTile)
         {
             float dx = Mathf.Abs(_DestTile.X - _Tile.X) + Random.Range(0f, 100f);
-            float dy = Mathf.Abs(_DestTile.Y - _Tile.Y) + Random.Range(0f, 100f);;
+            float dy = Mathf.Abs(_DestTile.Y - _Tile.Y) + Random.Range(0f, 100f);
             int z1 = -(_Tile.X + _Tile.Y);
             int z2 = -(_DestTile.X + _DestTile.Y);
-            float dz = Mathf.Abs(z2 - z1)  + Random.Range(0f, 100f);;
+            float dz = Mathf.Abs(z2 - z1)  + Random.Range(0f, 100f);
+
+            return Mathf.Max(dx, dy, dz);
+        }
+        
+        static double Estimate(Tile _Tile, Tile _DestTile)
+        {
+            float dx = Mathf.Abs(_DestTile.X - _Tile.X);
+            float dy = Mathf.Abs(_DestTile.Y - _Tile.Y);
+            int z1 = -(_Tile.X + _Tile.Y);
+            int z2 = -(_DestTile.X + _DestTile.Y);
+            float dz = Mathf.Abs(z2 - z1);
 
             return Mathf.Max(dx, dy, dz);
         }
