@@ -1,49 +1,45 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Extensions;
-using Games.Main_Mode.LevelStages;
+using Games.Main_Mode.BlockObstacles;
 using Games.Main_Mode.StageBlocks;
-using Shapes;
 using UnityEngine;
 
-namespace Games.Main_Mode
+namespace Games.Main_Mode.LevelStages
 {
     public class LevelStageCircle : LevelStageBase
     {
-        protected override float Height => 10f;
-        protected override float StagePosition => (Height + GapBetweenStages) * StageIndex;
-        public override float Perimeter { get; }
+        public override float Height => StageBlockCircle.GetRadius(Blocks.Count());
 
-        public static LevelStageCircle CreateRandom(Transform _Parent, int _StageIdx, int _BlocksCount)
+        public static LevelStageCircle Create(
+            Transform _Parent, 
+            int _StageIdx, 
+            IEnumerable<StageBlockProps> _BlocksProps,
+            float _VerticalPosition)
         {
             var go = new GameObject();
             var stage = go.AddComponent<LevelStageCircle>();
-            var blocks = stage.InitRandomBlocks(_BlocksCount);
-            stage.Init(_StageIdx, blocks);
-            
-            go.transform.SetLocalPosXY(0, stage.StagePosition);
+            stage.Init(_StageIdx, _BlocksProps);
+            go.transform.SetLocalPosXY(0, _VerticalPosition);
             go.SetParent(_Parent);
             return stage;
         }
 
-        protected override IEnumerable<StageBlockBase> InitRandomBlocks(int _BlocksCount)
+        protected override IEnumerable<StageBlockBase> InitBlocks(
+            IEnumerable<StageBlockProps> _BlocksProps)
         {
-            for (int i = 0; i < _BlocksCount; i++)
+            var blocks = new List<StageBlockBase>();
+            foreach (var props in _BlocksProps)
             {
-                var go = new GameObject($"Block {i + 1}");
-                go.SetParent(transform);
-                var block = go.AddComponent<StageBlockCircle>();
-                
-                
-                ConfigureBlock(block, i);
+                var block = StageBlockCircle.Create(transform, props);
+                blocks.Add(block);
             }
-
-            return null;
+            return blocks;
         }
 
-        private void ConfigureBlock(StageBlockCircle _Block, int _BlockIdx)
+        protected override void InitCenterBlock()
         {
-            
+            throw new System.NotImplementedException();
         }
     }
 }

@@ -30,5 +30,15 @@ namespace Utils
         {
             return Math.Min(Math.Max(_X, _Min), _Max);
         }
+
+        public static double Fraction(double _Value)
+        {
+            return _Value - Math.Truncate(_Value);
+        }
+        
+        public static float Fraction(float _Value)
+        {
+            return Convert.ToSingle(Fraction(Convert.ToDouble(_Value)));
+        }
     }
 }

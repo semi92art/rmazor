@@ -37,7 +37,10 @@ namespace Utils
 
         public static UIStyleObject GetStyle(string _StyleName)
         {
-            return Resources.Load<UIStyleObject>($"styles/{_StyleName}");
+            var style = Resources.Load<UIStyleObject>($"styles/{_StyleName}");
+            if (style == null)
+                Debug.LogError($"Style with name {_StyleName} does not exist");
+            return style;
         }
 
         public static TextAsset GetText(string _Path)

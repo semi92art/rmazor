@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Extensions;
 using UnityEngine;
 using Exceptions;
 using Games.Main_Mode.LevelStages;
+using Games.Main_Mode.StageBlocks;
 
 namespace Games.Main_Mode
 {
@@ -11,26 +13,30 @@ namespace Games.Main_Mode
         private const string ParentName = "Level Content";
         private Transform m_Parent;
         [SerializeField, HideInInspector]
-        private List<LevelStageBase> stages = new List<LevelStageBase>();
+        public List<LevelStageBase> stages = new List<LevelStageBase>();
 
-        public void ClearStages()
-        {
-            foreach (var stage in stages)
-                stage.DestroySafe();
-            stages.Clear();
-        }
+        
 
-        public void CreateStage(LevelStageType _Type, int _StageIdx, int _BlocksCount)
+        public void CreateStage(
+            LevelStageType _Type,
+            int _StageIdx, 
+            IEnumerable<StageBlockProps> _BlocksProps)
         {
+            float verticalPosition = 0;
+            foreach (var st in stages)
+            {
+                verticalPosition += st.Height + MainModeConstants.GapBetweenStages;
+            }
+            
             CheckForParentExist();
             LevelStageBase stage;
             switch (_Type)
             {
                 case LevelStageType.Circle:
-                    stage = LevelStageCircle.CreateRandom(m_Parent, _StageIdx, _BlocksCount);
+                    stage = LevelStageCircle.Create(m_Parent, _StageIdx, _BlocksProps, verticalPosition);
                     break;
                 case LevelStageType.Square:
-                    stage = LevelStageSquare.Create(m_Parent, _StageIdx, _BlocksCount);
+                    stage = LevelStageSquare.Create(m_Parent, _StageIdx, _BlocksProps, verticalPosition);
                     break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Type);
@@ -38,14 +44,17 @@ namespace Games.Main_Mode
             stages.Add(stage);
         }
 
-        public void RemoveLastStage()
-        {
-            
-        }
-
         public void RemoveStage(int _Idx)
         {
-            
+            stages[_Idx].gameObject.DestroySafe();
+            stages.RemoveAt(_Idx);
+        }
+        
+        public void ClearStages()
+        {
+            foreach (var stage in stages)
+                stage.DestroySafe();
+            stages.Clear();
         }
 
         private void CheckForParentExist()
