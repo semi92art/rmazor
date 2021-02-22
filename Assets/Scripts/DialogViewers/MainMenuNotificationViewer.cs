@@ -43,7 +43,7 @@ namespace DialogViewers
         
         public static INotificationViewer Create(RectTransform _Parent)
         {
-            var go = PrefabInitializer.InitUiPrefab(
+            var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     _Parent,
                     RtrLites.FullFill),

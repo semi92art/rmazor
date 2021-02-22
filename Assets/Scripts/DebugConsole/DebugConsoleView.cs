@@ -43,7 +43,7 @@ namespace DebugConsole
             if (GameSettings.PlayMode)
                 DontDestroyOnLoad(canvas);
 
-            return PrefabInitializer.InitUiPrefab(
+            return PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(canvas.RTransform(), RtrLites.FullFill),
                 "debug_console", "console").GetComponent<DebugConsoleView>();
         }

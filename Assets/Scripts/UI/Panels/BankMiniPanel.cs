@@ -100,7 +100,7 @@ namespace UI.Panels
 
         public void Init()
         {
-            var go = PrefabInitializer.InitUiPrefab(
+            var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_Parent,
                     UiAnchor.Create(1, 1, 1, 1),
@@ -226,7 +226,7 @@ namespace UI.Panels
             List<Sprite> sprites = new List<Sprite>();
             int spriteCount = 8;
             for (int i = 0; i < spriteCount; i++)
-                sprites.Add(PrefabInitializer.GetObject<Sprite>("coins", $"{iconName}_{i}"));
+                sprites.Add(PrefabUtilsEx.GetObject<Sprite>("coins", $"{iconName}_{i}"));
             
             for (int i = 0; i < PoolSize; i++)
             {

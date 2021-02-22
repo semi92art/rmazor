@@ -62,7 +62,7 @@ namespace UI.Panels
 
         public override void Init()
         {
-            GameObject wofPan = PrefabInitializer.InitUiPrefab(
+            GameObject wofPan = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_DialogViewer.Container,
                     RtrLites.FullFill),
@@ -82,7 +82,7 @@ namespace UI.Panels
         
         private void InstantiateWheel()
         {
-            m_Wheel = PrefabInitializer.InitPrefab(
+            m_Wheel = PrefabUtilsEx.InitPrefab(
                 null,
                 "wheel_of_fortune",
                 "wheel_main");

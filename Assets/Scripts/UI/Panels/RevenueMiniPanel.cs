@@ -62,7 +62,7 @@ namespace UI.Panels
             else if (_Position == RevenuePanelPosition.TopRight)
                 prefabName = "revenue_mini_panel_top_right";
             
-            var go = PrefabInitializer.InitUiPrefab(
+            var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     _Parent,
                     UiAnchor.Create(1, 1, 1, 1),
@@ -116,7 +116,7 @@ namespace UI.Panels
             
             m_BankMoney.text = m_Revenue[_BankItemType].ToNumeric();
             m_RevenueText.text = "+ " + _Revenue.ToNumeric();
-            m_RevenueIcon.sprite = PrefabInitializer.GetObject<Sprite>("coins",
+            m_RevenueIcon.sprite = PrefabUtilsEx.GetObject<Sprite>("coins",
                 _BankItemType == BankItemType.Gold ? "gold_coin_0" : "diamond_coin_0");
             Show();
             m_RevenueShowing = true;

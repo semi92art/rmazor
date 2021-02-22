@@ -26,9 +26,9 @@ namespace UI.PanelItems
             var rewards = _Props.Rewards;
             description.text = rewards[BankItemType.Gold].ToNumeric() + " " + "gold" + "\n" + 
                                rewards[BankItemType.Diamonds].ToNumeric() + " " + "diamonds";
-            goldIcon.sprite = PrefabInitializer.GetObject<Sprite>(
+            goldIcon.sprite = PrefabUtilsEx.GetObject<Sprite>(
                 "icons_bags", $"icon_gold_bag_{BagSize(_Props.Size)}");
-            diamondIcon.sprite = PrefabInitializer.GetObject<Sprite>(
+            diamondIcon.sprite = PrefabUtilsEx.GetObject<Sprite>(
                 "icons_bags", $"icon_diamonds_bag_{BagSize(_Props.Size)}");
             
             UnityAction action = () =>

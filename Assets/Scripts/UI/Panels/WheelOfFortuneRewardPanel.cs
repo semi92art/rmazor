@@ -46,7 +46,7 @@ namespace UI.Panels
         
         public override void Init()
         {
-            var go = PrefabInitializer.InitUiPrefab(
+            var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_NotificationViewer.Container,
                     RtrLites.FullFill),
@@ -81,7 +81,7 @@ namespace UI.Panels
                     throw new SwitchCaseNotImplementedException(m_BankItemType);
             }
 
-            Sprite iconSprite = PrefabInitializer.GetObject<Sprite>(styleName, iconName);
+            Sprite iconSprite = PrefabUtilsEx.GetObject<Sprite>(styleName, iconName);
             m_RewardIcon.sprite = iconSprite;
             m_RewardCount.text = m_Reward.ToNumeric();
         }

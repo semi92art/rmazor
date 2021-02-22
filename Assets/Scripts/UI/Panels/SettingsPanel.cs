@@ -43,7 +43,7 @@ namespace UI.Panels
         
         public override void Init()
         {
-            var sp = PrefabInitializer.InitUiPrefab(
+            var sp = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(m_DialogViewer.Container, RtrLites.FullFill),
                 CommonStyleNames.MainMenuDialogPanels, "settings_panel");
             _settingGoList = new List<GameObject>();
@@ -121,7 +121,7 @@ namespace UI.Panels
 
         private SettingItemOnOff CreateOnOffSetting()
         {
-            GameObject obj = PrefabInitializer.InitUiPrefab(
+            GameObject obj = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_Content,
                     SettingItemRectLite),
@@ -132,7 +132,7 @@ namespace UI.Panels
 
         private SettingItemInPanelSelector CreateInPanelSelectorSetting()
         {
-            GameObject obj = PrefabInitializer.InitUiPrefab(
+            GameObject obj = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_Content,
                     SettingItemRectLite),
@@ -144,7 +144,7 @@ namespace UI.Panels
 
         private SettingItemSlider CreateSliderSetting()
         {
-            GameObject obj = PrefabInitializer.InitUiPrefab(
+            GameObject obj = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_Content,
                     SettingItemRectLite),

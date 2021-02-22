@@ -77,7 +77,7 @@ namespace DialogViewers
             RectTransform _Parent,
             IEnumerable<GameObserver> _Observers)
         {
-            var go = PrefabInitializer.InitUiPrefab(
+            var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     _Parent,
                     RtrLites.FullFill),

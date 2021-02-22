@@ -31,7 +31,7 @@ namespace UI.PanelItems
 
         protected static IShopItem Create<T>(RectTransform _Parent, string _Prefab) where T : ShopItemBase
         {
-            var go = PrefabInitializer.InitUiPrefab(
+            var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     _Parent,
                     UiAnchor.Create(0, 1, 0, 1),

@@ -99,7 +99,7 @@ namespace Managers
             mts.PinchTwistKey = KeyCode.LeftControl;
             mts.MovePivotKey = KeyCode.LeftAlt;
             mts.MultiDragKey = KeyCode.LeftAlt;
-            mts.FingerTexture = PrefabInitializer.GetObject<Texture2D>("icons", "finger_texture");
+            mts.FingerTexture = PrefabUtilsEx.GetObject<Texture2D>("icons", "finger_texture");
         }
         
         protected virtual void OnBeforeLevelStarted(LevelStateChangedArgs _Args)

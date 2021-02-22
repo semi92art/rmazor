@@ -27,7 +27,7 @@ namespace UI.PanelItems
         
         private Sprite GetLogo(int _GameId)
         {
-            return PrefabInitializer.GetObject<Sprite>("game_logos", $"game_logo_{_GameId}");
+            return PrefabUtilsEx.GetObject<Sprite>("game_logos", $"game_logo_{_GameId}");
         }
     }
 

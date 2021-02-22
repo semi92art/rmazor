@@ -35,7 +35,7 @@ namespace UI.Panels
 
         public override void Init()
         {
-            GameObject selectGamePanel = PrefabInitializer.InitUiPrefab(
+            GameObject selectGamePanel = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_DialogViewer.Container,
                     RtrLites.FullFill),
@@ -43,7 +43,7 @@ namespace UI.Panels
                 "select_game_panel");
             RectTransform content = selectGamePanel.GetCompItem<RectTransform>("content");
             
-            GameObject cgiObj = PrefabInitializer.InitUiPrefab(
+            GameObject cgiObj = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     content,
                     UiAnchor.Create(0, 1, 0, 1),

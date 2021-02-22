@@ -39,13 +39,22 @@ namespace Extensions
         
         public static void SetPosXY(this Transform _T, float _X, float _Y)
         {
-            var newPosition = _T.position.SetX(_X).SetY(_Y);
-            _T.position = newPosition;
+            _T.position = _T.position.SetX(_X).SetY(_Y);
+        }
+
+        public static void SetPosXY(this Transform _T, Vector2 _XY)
+        {
+            _T.position = _T.position.SetXY(_XY);
         }
 
         public static void SetLocalPosXY(this Transform _T, float _X, float _Y)
         {
             _T.localPosition = _T.localPosition.SetX(_X).SetY(_Y);
+        }
+        
+        public static void SetLocalPosXY(this Transform _T, Vector2 _XY)
+        {
+            _T.localPosition = _T.localPosition.SetXY(_XY);
         }
         
         public static void LookAt2D(this Transform _T, Vector2 _To)

@@ -132,7 +132,7 @@ namespace UI
                 Vector2.one * 0.5f,
                 new Vector2(486f, 198.4f));
 
-            var go = PrefabInitializer.InitUiPrefab(
+            var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_GameLogoContainer,
                     UiAnchor.Create(0, 0, 1, 1),
@@ -145,7 +145,7 @@ namespace UI
 
         private void InitSelectGameButton()
         {
-            var go = PrefabInitializer.InitUiPrefab(
+            var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_MainMenu,
                     UiAnchor.Create(0.5f, 1, 0.5f, 1),
@@ -160,14 +160,14 @@ namespace UI
 
         private void SetGameLogo(int _GameId)
         {
-            m_GameLogo.sprite = PrefabInitializer.GetObject<Sprite>(
+            m_GameLogo.sprite = PrefabUtilsEx.GetObject<Sprite>(
                     "game_logos", $"game_logo_{GameClient.Instance.GameId}");
             m_MainBackgroundRenderer.UpdateColors();
         }
 
         private void InitCenterButtonsGroup()
         {
-            GameObject centerButtonsScrollView = PrefabInitializer.InitUiPrefab(
+            GameObject centerButtonsScrollView = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_MainMenu,
                     UiAnchor.Create(0.5f, 0.5f, 0.5f, 0.5f),
@@ -185,7 +185,7 @@ namespace UI
                 SizeDelta = new Vector2(280, 96)
             };
             
-            var playButton = PrefabInitializer.InitUiPrefab(
+            var playButton = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     content,
                     rtrLite),
@@ -204,7 +204,7 @@ namespace UI
                     () => bestScoreText.text = scores.Scores[ScoreType.Main].ToNumeric()));
             }));
             
-            var ratingsButton = PrefabInitializer.InitUiPrefab(
+            var ratingsButton = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     content,
                     rtrLite),
@@ -224,7 +224,7 @@ namespace UI
                 SizeDelta = Vector2.one * 100f
             };
             
-            var firstGroupObj = PrefabInitializer.InitUiPrefab(
+            var firstGroupObj = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_MainMenu,
                     UiAnchor.Create(0, 0, 1, 0),
@@ -235,7 +235,7 @@ namespace UI
                 "bottom_buttons_group");
             var firstGroupContent = firstGroupObj.GetCompItem<RectTransform>("content");
             
-            var secondGroupObj = PrefabInitializer.InitUiPrefab(
+            var secondGroupObj = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_MainMenu,
                     UiAnchor.Create(0, 0, 1, 0),
@@ -246,7 +246,7 @@ namespace UI
                 "bottom_buttons_group");
             var secondGroupContent = secondGroupObj.GetCompItem<RectTransform>("content");
             
-            var temp = PrefabInitializer.InitUiPrefab(
+            var temp = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     firstGroupContent,
                     buttonRtrLite),
@@ -258,9 +258,9 @@ namespace UI
                 "Wheel Of Fortune Button",
                 firstGroupContent,
                 temp,
-                PrefabInitializer.GetObject<Sprite>(
+                PrefabUtilsEx.GetObject<Sprite>(
                     "button_sprites", "wof_button_background"),
-                PrefabInitializer.GetObject<Sprite>(
+                PrefabUtilsEx.GetObject<Sprite>(
                     "icons", "icon_wof"),
                 ColorUtils.GetColorFromPalette(paletteName, "Wheel Of Fortune"),
                 "Wheel",
@@ -271,9 +271,9 @@ namespace UI
                 "Daily Bonus Button",
                 firstGroupContent,
                 temp,
-                PrefabInitializer.GetObject<Sprite>(
+                PrefabUtilsEx.GetObject<Sprite>(
                     "button_sprites", "daily_bonus_button_background"),
-                PrefabInitializer.GetObject<Sprite>(
+                PrefabUtilsEx.GetObject<Sprite>(
                     "icons", "icon_daily_bonus"),
                 ColorUtils.GetColorFromPalette(paletteName, "Daily Bonus"),
                 "Bonus",
@@ -285,9 +285,9 @@ namespace UI
                 "Shop Button",
                 firstGroupContent,
                 temp,
-                PrefabInitializer.GetObject<Sprite>(
+                PrefabUtilsEx.GetObject<Sprite>(
                     "button_sprites", "shop_button_background"),
-                PrefabInitializer.GetObject<Sprite>(
+                PrefabUtilsEx.GetObject<Sprite>(
                     "icons", "icon_shop"),
                 ColorUtils.GetColorFromPalette(paletteName, "Shop"),
                 "Shop",
@@ -298,9 +298,9 @@ namespace UI
                 "Login Button",
                 secondGroupContent,
                 temp,
-                PrefabInitializer.GetObject<Sprite>(
+                PrefabUtilsEx.GetObject<Sprite>(
                     "button_sprites", "login_button_background"),
-                PrefabInitializer.GetObject<Sprite>(
+                PrefabUtilsEx.GetObject<Sprite>(
                     "icons", "icon_login"),
                 ColorUtils.GetColorFromPalette(paletteName, "Login"),
                 "Login",
@@ -335,7 +335,7 @@ namespace UI
 
         private void InitSmallButtons()
         {
-            var settingsButtonSmall = PrefabInitializer.InitUiPrefab(
+            var settingsButtonSmall = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_MainMenu,
                     UiAnchor.Create(1, 0, 1, 0),

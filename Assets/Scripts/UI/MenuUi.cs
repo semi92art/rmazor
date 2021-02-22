@@ -213,14 +213,14 @@ namespace UI
         
         private GameObject CreateLoadingTransitionPanel()
         {
-            return PrefabInitializer.InitUiPrefab(
+            return PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(m_Canvas.RTransform(), RtrLites.FullFill),
                 "ui_panel_transition", "transition_panel");
         }
 
         private GameObject CreateMainMenuBackgroundPanel()
         {
-            return PrefabInitializer.InitUiPrefab(
+            return PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(m_Canvas.RTransform(), RtrLites.FullFill),
                 "main_menu", "main_menu_background_panel");
         }

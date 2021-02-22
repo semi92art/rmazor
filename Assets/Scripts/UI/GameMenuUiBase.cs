@@ -99,7 +99,7 @@ namespace UI
         
         protected virtual void CreateGameMenuButton()
         {
-            var settingsButtonSmall = PrefabInitializer.InitUiPrefab(
+            var settingsButtonSmall = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     Canvas.RTransform(),
                     UiAnchor.Create(1, 0, 1, 0),

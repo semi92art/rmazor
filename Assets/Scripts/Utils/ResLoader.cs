@@ -43,6 +43,24 @@ namespace Utils
             return style;
         }
 
+        public static bool StyleExist(string _StyleName)
+        {
+            var style = Resources.Load<UIStyleObject>($"styles/{_StyleName}");
+            return style != null;
+        }
+
+#if UNITY_EDITOR
+        public static UIStyleObject CreateStyleIfNotExist(string _StyleName)
+        {
+            if (StyleExist(_StyleName))
+                return GetStyle(_StyleName);
+            var style = ScriptableObject.CreateInstance<UIStyleObject>();
+            UnityEditor.AssetDatabase.CreateAsset(style, $"Assets/Resources/styles/{_StyleName}.asset");
+            UnityEditor.AssetDatabase.SaveAssets();
+            return style;
+        }
+#endif
+
         public static TextAsset GetText(string _Path)
         {
             return Resources.Load<TextAsset>(_Path);

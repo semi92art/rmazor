@@ -74,7 +74,7 @@ namespace MkeyFW
                     throw new SwitchCaseNotImplementedException(m_BankItemType);
             }
 
-            icon.sprite = PrefabInitializer.GetObject<Sprite>(styleName, iconName);
+            icon.sprite = PrefabUtilsEx.GetObject<Sprite>(styleName, iconName);
         }
         
         /// <summary>

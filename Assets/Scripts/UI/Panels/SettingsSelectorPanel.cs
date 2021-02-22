@@ -44,7 +44,7 @@ namespace UI.Panels
         
         public override void Init()
         {
-            var sp = PrefabInitializer.InitUiPrefab(
+            var sp = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_DialogViewer.Container,
                     RtrLites.FullFill),
@@ -70,7 +70,7 @@ namespace UI.Panels
                 SizeDelta = new Vector2(406, 100)
             };
             
-            GameObject sspi = PrefabInitializer.InitUiPrefab(
+            GameObject sspi = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_Content,
                     sspiRect),

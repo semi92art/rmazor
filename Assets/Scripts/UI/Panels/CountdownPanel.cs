@@ -25,7 +25,7 @@ namespace UI.Panels
         {
             m_Container = _Container;
             m_OnCountdownFinish = _OnCountdownFinish;
-            var go = PrefabInitializer.InitUiPrefab(
+            var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_Container,
                     RtrLites.FullFill),
@@ -38,7 +38,7 @@ namespace UI.Panels
 
         public override void Init()
         {
-            var go = PrefabInitializer.InitUiPrefab(
+            var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_Container,
                     RtrLites.FullFill),

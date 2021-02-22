@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using Extensions;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -11,6 +12,12 @@ namespace Utils.Editor
             if (GUILayout.Button(_Name))
                 _Action?.Invoke();
         }
+        
+        public static void GuiButtonAction(UnityAction _Action)
+        {
+            if (GUILayout.Button(_Action.Method.Name.WithSpaces()))
+                _Action?.Invoke();
+        }
     
         public static void GuiButtonAction<T>(string _Name, UnityAction<T> _Action, T _Arg)
         {
@@ -18,6 +25,12 @@ namespace Utils.Editor
                 _Action?.Invoke(_Arg);
         }
         
+        public static void GuiButtonAction<T>(UnityAction<T> _Action, T _Arg)
+        {
+            if (GUILayout.Button(_Action.Method.Name.WithSpaces()))
+                _Action?.Invoke(_Arg);
+        }
+
         public static void DrawUiLine(Color _C, int _Thickness = 2, int _Padding = 10)
         {
             Rect r = EditorGUILayout.GetControlRect(GUILayout.Height(_Padding+_Thickness));
@@ -26,6 +39,13 @@ namespace Utils.Editor
             r.x -= 2;
             r.width += 6;
             EditorGUI.DrawRect(r, _C);
+        }
+
+        public static void HorizonalZone(UnityAction _Action)
+        {
+            GUILayout.BeginHorizontal();
+            _Action?.Invoke();
+            GUILayout.EndHorizontal();
         }
     }
 }

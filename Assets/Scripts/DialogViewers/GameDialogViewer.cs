@@ -23,7 +23,7 @@ namespace DialogViewers
         
         public static IGameDialogViewer Create(RectTransform _Parent)
         {
-            var dialogPanelObj = PrefabInitializer.InitUiPrefab(
+            var dialogPanelObj = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     _Parent,
                     RtrLites.FullFill),

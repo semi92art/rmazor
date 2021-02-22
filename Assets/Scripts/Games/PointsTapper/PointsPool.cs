@@ -43,19 +43,19 @@ namespace Games.PointsTapper
             switch (_Type)
             {
                 case PointType.Default:
-                    result = PrefabInitializer.GetPrefab("points_tapper", "point_default");
+                    result = PrefabUtilsEx.GetPrefab("points_tapper", "point_default");
                     break;
                 case PointType.Bad:
-                    result = PrefabInitializer.GetPrefab("points_tapper", "point_bad");
+                    result = PrefabUtilsEx.GetPrefab("points_tapper", "point_bad");
                     break;
                 case PointType.BonusGold:
-                    result = PrefabInitializer.GetPrefab("points_tapper", "point_bonus_gold");
+                    result = PrefabUtilsEx.GetPrefab("points_tapper", "point_bonus_gold");
                     break;
                 case PointType.BonusDiamonds:
-                    result = PrefabInitializer.GetPrefab("points_tapper", "point_bonus_diamonds");
+                    result = PrefabUtilsEx.GetPrefab("points_tapper", "point_bonus_diamonds");
                     break;
                 case PointType.Unknown:
-                    result = PrefabInitializer.GetPrefab("points_tapper", "point_unknown");
+                    result = PrefabUtilsEx.GetPrefab("points_tapper", "point_unknown");
                     break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Type);

@@ -67,7 +67,7 @@ namespace UI.Panels
             else if (_Position == StatsPanelPosition.TopRight)
                 prefabName = "stats_panel_top_right";
             
-            var go = PrefabInitializer.InitUiPrefab(
+            var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     _Parent,
                     UiAnchor.Create(0, 1, 1, 1),
@@ -81,8 +81,8 @@ namespace UI.Panels
                 m_LifeIcons[i] = go.GetCompItem<Image>($"life_icon_{i + 1}");
                 m_LifeBrokenAnimators[i] = go.GetCompItem<Animator>($"life_broken_animator_{i + 1}");    
             }
-            m_LifeEnabled = PrefabInitializer.GetObject<Sprite>("icons", "icon_life_enabled");
-            m_LifeDisabled = PrefabInitializer.GetObject<Sprite>("icons", "icon_life_disabled");
+            m_LifeEnabled = PrefabUtilsEx.GetObject<Sprite>("icons", "icon_life_enabled");
+            m_LifeDisabled = PrefabUtilsEx.GetObject<Sprite>("icons", "icon_life_disabled");
             m_CountdownText = go.GetCompItem<TextMeshProUGUI>("countdown_text");
             m_ScoreText = go.GetCompItem<TextMeshProUGUI>("score_text");
         }

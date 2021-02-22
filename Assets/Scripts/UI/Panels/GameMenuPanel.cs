@@ -52,7 +52,7 @@ namespace UI.Panels
 
         public override void Init()
         {
-            GameObject go = PrefabInitializer.InitUiPrefab(
+            GameObject go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_DialogViewer.Container,
                     RtrLites.FullFill),

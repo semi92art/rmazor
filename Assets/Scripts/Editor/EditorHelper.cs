@@ -118,17 +118,17 @@ public class EditorHelper : EditorWindow
         GUILayout.EndHorizontal();
         
         GUILayout.BeginHorizontal();
-        EditorUtilsEx.GuiButtonAction("Pause game", PauseGame, true);
+        EditorUtilsEx.GuiButtonAction(PauseGame, true);
         EditorUtilsEx.GuiButtonAction("Continue game", PauseGame, false);
         GUILayout.EndHorizontal();
         
         EditorUtilsEx.DrawUiLine(Color.gray);
         GUI.enabled = true;
 
-        EditorUtilsEx.GuiButtonAction("Print common info", PrintCommonInfo);
+        EditorUtilsEx.GuiButtonAction(PrintCommonInfo);
 
         GUILayout.BeginHorizontal();
-        EditorUtilsEx.GuiButtonAction("Create test users", CreateTestUsers, m_TestUsersCount);
+        EditorUtilsEx.GuiButtonAction(CreateTestUsers, m_TestUsersCount);
         GUILayout.Label("count:", GUILayout.Width(40));
         m_TestUsersCount = EditorGUILayout.IntField(m_TestUsersCount);
         GUILayout.Label("guest:", GUILayout.Width(40));

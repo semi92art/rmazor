@@ -1,10 +1,26 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 
 namespace Extensions
 {
     public static class TextExtensions
     {
+        public static string WithSpaces(this string _Name)
+        {
+            if (string.IsNullOrWhiteSpace(_Name))
+                return "";
+            StringBuilder newText = new StringBuilder(_Name.Length * 2);
+            newText.Append(_Name[0]);
+            for (int i = 1; i < _Name.Length; i++)
+            {
+                if (char.IsUpper(_Name[i]) && _Name[i - 1] != ' ')
+                    newText.Append(' ');
+                newText.Append(_Name[i]);
+            }
+            return newText.ToString();
+        }
+        
         public static string GetFileName(this string _Path, bool _WithExtension)
         {
             _Path =  _Path.Replace('/', '\\');
@@ -23,14 +39,15 @@ namespace Extensions
         {
             return _Text.FirstCharTo(true);
         }
-/// <summary>
-/// //yjf
-/// </summary>
-/// <param name="_Text"></param>
-/// <returns></returns>
+
         public static string FirstCharToLower(this string _Text)
         {
             return _Text.FirstCharTo(false);
+        }
+
+        public static bool InRange(this string _Text, params string[] _Strings)
+        {
+            return _Strings.Any(_S => _Text == _S);
         }
 
         private static string FirstCharTo(this string _Text, bool _ToUpper)

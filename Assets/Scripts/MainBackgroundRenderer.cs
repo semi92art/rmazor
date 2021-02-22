@@ -30,7 +30,7 @@ public class MainBackgroundRenderer : MonoBehaviour
         GameObject instance = cameras.FirstOrDefault(_Obj => _Obj.name == name);
         if (instance == null)
         {
-            instance = PrefabInitializer.InitPrefab(
+            instance = PrefabUtilsEx.InitPrefab(
                 null,
                 "main_menu",
                 "background_render_camera"

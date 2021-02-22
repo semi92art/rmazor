@@ -33,7 +33,7 @@ namespace Controllers
 
         public void PlayClip(string _Name, bool _Cycling, float? _Volume = null)
         {
-            AudioClip clip = PrefabInitializer.GetObject<AudioClip>("sounds", _Name);
+            AudioClip clip = PrefabUtilsEx.GetObject<AudioClip>("sounds", _Name);
             PlayClipCore(clip, _Cycling, _Volume);
         }
 
