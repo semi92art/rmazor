@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Extensions;
-using Games.Utils;
-using UnityEngine;
+using Games.Maze.Utils;
 using Shapes;
-using Utils;
+using UnityEngine;
 
-namespace Games
+namespace Games.Maze
 {
     [ExecuteInEditMode]
     public class MazeLevelDesigner : MonoBehaviour
@@ -38,6 +36,9 @@ namespace Games
             foreach (var neibGo in m_Neibs)
                 neibGo.DestroySafe();
             m_Neibs.Clear();
+
+            if (m_Info.PathNodes == null)
+                return;
             
             foreach (var neib in m_Info.PathNodes[nodeIdx].Neighbours)
             {
@@ -77,17 +78,20 @@ namespace Games
                 wallColl.points = new[] {wall.Start, wall.End};
                 wallColl.edgeRadius = mazeInfo.WallWidth * 0.5f;
             }
-            
-            foreach (var pathNode in mazeInfo.PathNodes)
-            {
-                var pathGo = new GameObject("pathNode");
-                pathGo.SetParent(nodesParentGo);
-                var pathPt = pathGo.AddComponent<Disc>();
-                pathGo.transform.SetPosXY(pathNode.Point);
-                pathPt.Radius = pathNode.Neighbours.Count > 2 ? mazeInfo.WallWidth : mazeInfo.WallWidth * 0.6f;
-                pathPt.UpdateMesh(true);
-            }
 
+            if (mazeInfo.PathNodes != null)
+            {
+                foreach (var pathNode in mazeInfo.PathNodes)
+                {
+                    var pathGo = new GameObject("pathNode");
+                    pathGo.SetParent(nodesParentGo);
+                    var pathPt = pathGo.AddComponent<Disc>();
+                    pathGo.transform.SetPosXY(pathNode.Point);
+                    pathPt.Radius = pathNode.Neighbours.Count > 2 ? mazeInfo.WallWidth : mazeInfo.WallWidth * 0.6f;
+                    pathPt.UpdateMesh(true);
+                }    
+            }
+            
             nodeIdx = m_NodeIdxCheck = 0;
             ShowNeibs();
         }
@@ -110,16 +114,11 @@ namespace Games
             return go;
         }
         
-        
-        
-
         private MazeInfo GetMazeInfo()
         {
             string walls = @"C:\temp\triang.svg";
-            //string path = @"C:\temp\maze_path.svg";
             string wallsText = File.ReadAllText(walls);
-            string pathText = null;// File.ReadAllText(path);
-            var mazeInfo = MazeUtils.ParseSvg(wallsText, pathText);
+            var mazeInfo = MazeSvgParser.ParseSvg(wallsText);
             return mazeInfo;
         }
     }
