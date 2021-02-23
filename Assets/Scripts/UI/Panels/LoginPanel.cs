@@ -39,7 +39,7 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     DialogViewer.Container,
                     RtrLites.FullFill),
-                CommonStyleNames.MainMenuDialogPanels, "login_panel");
+                CommenPrefabSetNames.MainMenuDialogPanels, "login_panel");
 
             LoginErrorHandler = lp.GetCompItem<TextMeshProUGUI>("login_error_handler");
             PasswordErrorHandler = lp.GetCompItem<TextMeshProUGUI>("password_error_handler");

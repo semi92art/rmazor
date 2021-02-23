@@ -75,7 +75,7 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     m_Container,
                     RtrLites.FullFill),
-                CommonStyleNames.MainMenuDialogPanels,
+                CommenPrefabSetNames.MainMenuDialogPanels,
                 "shop_panel");
             RectTransform content = go.GetCompItem<RectTransform>("content");
 

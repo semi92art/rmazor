@@ -15,19 +15,19 @@ namespace GameHelpers
 {
     public static class PrefabUtilsEx
     {
-        public static GameObject GetPrefab(string _StyleName, string _PrefabName)
+        public static GameObject GetPrefab(string _PrefabSetName, string _PrefabName)
         {
-            return GetPrefabBase(_StyleName, _PrefabName);
+            return GetPrefabBase(_PrefabSetName, _PrefabName);
         }
 
 #if UNITY_EDITOR
 
-        public static void SetPrefab(string _StyleName, string _PrefabName, Object _Prefab)
+        public static void SetPrefab(string _PrefabSetName, string _PrefabName, Object _Prefab)
         {
-            UIStyleObject style = ResLoader.GetStyle(_StyleName);
-            if (style == null)
-                style = ResLoader.CreateStyleIfNotExist(_StyleName);
-            var perfabsList = style.prefabs;
+            PrefabSetObject set = ResLoader.GetPrefabSet(_PrefabSetName);
+            if (set == null)
+                set = ResLoader.CreatePrefabSetIfNotExist(_PrefabSetName);
+            var perfabsList = set.prefabs;
             var prefab = perfabsList.FirstOrDefault(_P => _P.name == _PrefabName);
             if (prefab == null)
             {
@@ -46,18 +46,18 @@ namespace GameHelpers
         }
 #endif
 
-        public static List<Prefab> GetAllPrefabs(string _StyleName)
+        public static List<Prefab> GetAllPrefabs(string _PrefabSetName)
         {
-            UIStyleObject style = ResLoader.GetStyle(_StyleName);
-            return style.prefabs.ToList();
+            PrefabSetObject set = ResLoader.GetPrefabSet(_PrefabSetName);
+            return set.prefabs.ToList();
         }
         
         public static GameObject InitUiPrefab(
             RectTransform _RectTransform,
-            string _StyleName,
+            string _PrefabSetName,
             string _PrefabName)
         {
-            GameObject instance = GetPrefabBase(_StyleName, _PrefabName);
+            GameObject instance = GetPrefabBase(_PrefabSetName, _PrefabName);
             UiFactory.CopyRTransform(_RectTransform, instance.RTransform());
             Object.Destroy(_RectTransform.gameObject);
             instance.RTransform().localScale = Vector3.one;
@@ -66,10 +66,10 @@ namespace GameHelpers
 
         public static GameObject InitPrefab(
             Transform _Parent,
-            string _StyleName,
+            string _PrefabSetName,
             string _PrefabName)
         {
-            GameObject instance = GetPrefabBase(_StyleName, _PrefabName);
+            GameObject instance = GetPrefabBase(_PrefabSetName, _PrefabName);
             if (_Parent != null)
                 instance.transform.SetParent(_Parent);
             
@@ -78,32 +78,32 @@ namespace GameHelpers
         }
 
         public static T GetObject<T>(
-            string _StyleName,
+            string _PrefabSetName,
             string _ObjectName) where T : Object
         {
-            UIStyleObject style = ResLoader.GetStyle(_StyleName);
-            T content = style.prefabs.FirstOrDefault(_P => _P.name == _ObjectName)?.item as T;
+            PrefabSetObject set = ResLoader.GetPrefabSet(_PrefabSetName);
+            T content = set.prefabs.FirstOrDefault(_P => _P.name == _ObjectName)?.item as T;
 
             if (content == null)
-                content = AssetBundleManager.Instance.GetAsset<T>(_ObjectName, _StyleName);
+                content = AssetBundleManager.Instance.GetAsset<T>(_ObjectName, _PrefabSetName);
             
             if (content == null)
-                Debug.LogError($"Content of style {_StyleName} with name {_ObjectName} was not set");
+                Debug.LogError($"Content of set {_PrefabSetName} with name {_ObjectName} was not set");
             
             return content;
         }
         
         private static GameObject GetPrefabBase(
-            string _StyleName,
+            string _PrefabSetName,
             string _PrefabName,
             bool _Instantiate = true)
         {
-            UIStyleObject style = ResLoader.GetStyle(_StyleName);
-            GameObject prefab = style.prefabs.FirstOrDefault(p => p.name == _PrefabName).item as GameObject;
+            PrefabSetObject set = ResLoader.GetPrefabSet(_PrefabSetName);
+            GameObject prefab = set.prefabs.FirstOrDefault(p => p.name == _PrefabName).item as GameObject;
             
             if (prefab == null)
             {
-                Debug.LogError($"Prefab of style {_StyleName} with name {_PrefabName} was not set");
+                Debug.LogError($"Prefab of set {_PrefabSetName} with name {_PrefabName} was not set");
                 return null;
             }
 

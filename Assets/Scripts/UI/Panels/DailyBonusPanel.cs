@@ -53,7 +53,7 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     m_DialogViewer.Container,
                     RtrLites.FullFill),
-                CommonStyleNames.MainMenuDialogPanels,
+                CommenPrefabSetNames.MainMenuDialogPanels,
                 "daily_bonus_panel");
             m_Content = go.GetCompItem<RectTransform>("content");
             CreateItems();
@@ -73,7 +73,7 @@ namespace UI.Panels
                     new Vector2(218f, -60f),
                     Vector2.one * 0.5f,
                     new Vector2(416f, 100f)),
-                CommonStyleNames.MainMenu,
+                CommenPrefabSetNames.MainMenu,
                 "daily_bonus_item");
             
             int dailyBonusDay = GetCurrentDailyBonusDay();

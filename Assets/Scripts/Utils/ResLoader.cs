@@ -35,29 +35,29 @@ namespace Utils
         public static string GoogleAdsNativeAdId => GetAdsNodeValue("native");
         public static List<string> GoogleTestDeviceIds => Ads.Elements("test_device").Select(_El => _El.Value).ToList();
 
-        public static UIStyleObject GetStyle(string _StyleName)
+        public static PrefabSetObject GetPrefabSet(string _PrefabSetName)
         {
-            var style = Resources.Load<UIStyleObject>($"styles/{_StyleName}");
-            if (style == null)
-                Debug.LogError($"Style with name {_StyleName} does not exist");
-            return style;
+            var set = Resources.Load<PrefabSetObject>($"prefab_sets/{_PrefabSetName}");
+            if (set == null)
+                Debug.LogError($"Prefab set with name {_PrefabSetName} does not exist");
+            return set;
         }
 
-        public static bool StyleExist(string _StyleName)
+        public static bool PrefabSetExist(string _PrefabSetName)
         {
-            var style = Resources.Load<UIStyleObject>($"styles/{_StyleName}");
-            return style != null;
+            var set = Resources.Load<PrefabSetObject>($"prefab_sets/{_PrefabSetName}");
+            return set != null;
         }
 
 #if UNITY_EDITOR
-        public static UIStyleObject CreateStyleIfNotExist(string _StyleName)
+        public static PrefabSetObject CreatePrefabSetIfNotExist(string _PrefabSetName)
         {
-            if (StyleExist(_StyleName))
-                return GetStyle(_StyleName);
-            var style = ScriptableObject.CreateInstance<UIStyleObject>();
-            UnityEditor.AssetDatabase.CreateAsset(style, $"Assets/Resources/styles/{_StyleName}.asset");
+            if (PrefabSetExist(_PrefabSetName))
+                return GetPrefabSet(_PrefabSetName);
+            var set = ScriptableObject.CreateInstance<PrefabSetObject>();
+            UnityEditor.AssetDatabase.CreateAsset(set, $"Assets/Resources/prefab_sets/{_PrefabSetName}.asset");
             UnityEditor.AssetDatabase.SaveAssets();
-            return style;
+            return set;
         }
 #endif
 

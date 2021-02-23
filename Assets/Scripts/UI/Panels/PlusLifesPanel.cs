@@ -66,7 +66,7 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     m_DialogViewer.Container,
                     RtrLites.FullFill),
-                CommonStyleNames.MainMenuDialogPanels,
+                CommenPrefabSetNames.MainMenuDialogPanels,
                 "plus_lifes_panel");
 
             m_GoldCountText = go.GetCompItem<TextMeshProUGUI>("gold_count_text");

@@ -54,27 +54,27 @@ namespace MkeyFW
         {
             m_BankItemType = _SectorMoney.type;
             Coins = _SectorMoney.count;
-            string styleName;
+            string prefabSetName;
             string iconName;
             switch (m_BankItemType)
             {
                 case BankItemType.Gold:
-                    styleName = "coins";
+                    prefabSetName = "coins";
                     iconName = "gold_coin_0";
                     break;
                 case BankItemType.Diamonds:
-                    styleName = "coins";
+                    prefabSetName = "coins";
                     iconName = "diamond_coin_0";
                     break;
                 case BankItemType.Lifes:
-                    styleName = "icons";
+                    prefabSetName = "icons";
                     iconName = "icon_life";
                     break;
                 default:
                     throw new SwitchCaseNotImplementedException(m_BankItemType);
             }
 
-            icon.sprite = PrefabUtilsEx.GetObject<Sprite>(styleName, iconName);
+            icon.sprite = PrefabUtilsEx.GetObject<Sprite>(prefabSetName, iconName);
         }
         
         /// <summary>

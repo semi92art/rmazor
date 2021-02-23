@@ -50,7 +50,7 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     m_NotificationViewer.Container,
                     RtrLites.FullFill),
-                CommonStyleNames.MainMenuDialogPanels, "wof_reward_panel");
+                CommenPrefabSetNames.MainMenuDialogPanels, "wof_reward_panel");
             Panel = go.RTransform();
             go.SetActive(false);
             
@@ -62,26 +62,26 @@ namespace UI.Panels
             m_GetButton.SetOnClick(() => m_NotificationViewer.Back());
             
             string iconName;
-            string styleName;
+            string prefabSet;
             switch (m_BankItemType)
             {
                 case BankItemType.Gold:
                     iconName = "gold_coin_0";
-                    styleName = "coins";
+                    prefabSet = "coins";
                     break;
                 case BankItemType.Diamonds:
                     iconName = "diamond_coin_0";
-                    styleName = "coins";
+                    prefabSet = "coins";
                     break;
                 case BankItemType.Lifes:
                     iconName = "icon_life";
-                    styleName = "icons";
+                    prefabSet = "icons";
                     break;
                 default:
                     throw new SwitchCaseNotImplementedException(m_BankItemType);
             }
 
-            Sprite iconSprite = PrefabUtilsEx.GetObject<Sprite>(styleName, iconName);
+            Sprite iconSprite = PrefabUtilsEx.GetObject<Sprite>(prefabSet, iconName);
             m_RewardIcon.sprite = iconSprite;
             m_RewardCount.text = m_Reward.ToNumeric();
         }

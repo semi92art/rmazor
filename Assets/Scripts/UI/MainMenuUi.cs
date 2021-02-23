@@ -174,7 +174,7 @@ namespace UI
                     Vector2.up * -65f,
                     Vector2.one * 0.5f,
                     new Vector2(280, 360)),
-                CommonStyleNames.MainMenu, "center_buttons_group");
+                CommenPrefabSetNames.MainMenu, "center_buttons_group");
             
             RectTransform content = centerButtonsScrollView.GetCompItem<RectTransform>("content");
             var rtrLite = new RectTransformLite
@@ -231,7 +231,7 @@ namespace UI
                     Vector2.up * 123f,
                     Vector2.one * 0.5f,
                     Vector2.up * 100f),
-                CommonStyleNames.MainMenu,
+                CommenPrefabSetNames.MainMenu,
                 "bottom_buttons_group");
             var firstGroupContent = firstGroupObj.GetCompItem<RectTransform>("content");
             
@@ -242,7 +242,7 @@ namespace UI
                     Vector2.up * 247,
                     Vector2.one * 0.5f,
                     Vector2.up * 100f),
-                CommonStyleNames.MainMenu,
+                CommenPrefabSetNames.MainMenu,
                 "bottom_buttons_group");
             var secondGroupContent = secondGroupObj.GetCompItem<RectTransform>("content");
             

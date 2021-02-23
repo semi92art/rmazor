@@ -1,6 +1,6 @@
 ﻿namespace Constants
 {
-    public static class CommonStyleNames
+    public static class CommenPrefabSetNames
     {
         public const string MainMenu = "main_menu";
         public const string MainMenuDialogPanels = "main_menu_dialog_panels";
