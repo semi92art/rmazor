@@ -1,143 +1,111 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Constants;
-using Firebase;
-using Firebase.Auth;
-using Firebase.Extensions;
-using Google;
+﻿using Exceptions;
 using Managers;
 using Network;
 using Network.Packets;
 using UnityEngine;
-using Utils;
+using UnityEngine.Events;
+#if UNITY_ANDROID
+using GooglePlayGames;
+using GooglePlayGames.BasicApi;
+#endif
+
 
 namespace Controllers
 {
     public class AuthController
     {
-        #region nonpulic members
-        
-        private readonly FirebaseAuth m_Auth;
-        
-        #endregion
+        #region api
 
-        #region constructor
+        public enum AuthResult
+        {
+            LoginSuccess,
+            RegisterSuccess,
+            LoginFailed,
+            RegisterFailed
+        }
 
         public AuthController()
         {
-            FirebaseApp.Create();
-            m_Auth = FirebaseAuth.DefaultInstance;
-        }
+#if UNITY_ANDROID
+            InitGooglePlayServices();
+#elif  UNITY_IPHONE
 
-        #endregion
-
-        #region api
-        
-        public void AuthenticateWithGoogleOnAndroid()
-        {
-            GoogleSignIn.DefaultInstance.SignOut();
-            
-            if (GoogleSignIn.Configuration == null)
-            {
-                GoogleSignIn.Configuration = new GoogleSignInConfiguration
-                {
-                    RequestIdToken = true,
-                    WebClientId = "619485590991-nq6hj3duurrbero3b4q80tbqtvr6d4f6.apps.googleusercontent.com"
-                };
-            }
-
-            var signIn = GoogleSignIn.DefaultInstance.SignIn();
-            var signInCompleted = new TaskCompletionSource<FirebaseUser>();
-            signIn.ContinueWith(_Task =>
-            {
-                if (_Task.IsCanceled)
-                {
-                    signInCompleted.SetCanceled();
-                }
-                else if (_Task.IsFaulted && _Task.Exception != null)
-                {
-                    signInCompleted.SetException(_Task.Exception);
-                }
-                else
-                {
-                    string googleIdToken = _Task.Result.IdToken;
-                    var credential = GoogleAuthProvider.GetCredential(googleIdToken, null);
-                    m_Auth.SignInWithCredentialAsync(credential).ContinueWith(_Tsk =>
-                    {
-                        if (_Tsk.IsCanceled)
-                        {
-                            Debug.LogError("SignInWithCredentialAsync was canceled.");
-                            return;
-                        }
-                        if (_Tsk.IsFaulted)
-                        {
-                            Debug.LogError("SignInWithCredentialAsync encountered an error: " + _Tsk.Exception);
-                            return;
-                        }
-
-                        FirebaseUser newUser = _Tsk.Result;
-                        Debug.LogFormat("User signed in successfully: {0} ({1})",
-                            newUser.DisplayName, newUser.UserId);
-                        
-                        Login(_Tsk.Result.Email, Md5.GetMd5String("google"));
-                    });
-                }
-            });
-        }
-
-        public void AuthenticateWithGoogleOnIos()
-        {
+#endif
             
         }
 
-        public void AuthenticateWithAppleIdOnAndroid()
+        public void Authenticate(UnityAction<AuthResult> _OnDoIfRegister)
         {
-            var providerData = new FederatedOAuthProviderData();
-            providerData.ProviderId = "apple.com";
-            providerData.Scopes = new[] {"email", "name"};
-            providerData.CustomParameters = new Dictionary<string, string>();
-            //providerData.CustomParameters.Add("language", "en");
-            var provider = new FederatedOAuthProvider();
-            provider.SetProviderData(providerData);
-            
-            m_Auth.SignInWithProviderAsync(provider).ContinueWithOnMainThread(_Task =>
-            {
-                if (_Task.IsCanceled)
-                {
-                    Debug.LogError("SignInWithProviderAsync was canceled.");
-                    return;
-                }
-                if (_Task.IsFaulted)
-                {
-                    Debug.LogError("SignInWithProviderAsync encountered an error: " +
-                                   _Task.Exception);
-                    return;
-                }
-
-                SignInResult signInResult = _Task.Result;
-                FirebaseUser user = signInResult.User;
-                Debug.LogFormat("User signed in successfully: {0} ({1})",
-                    user.DisplayName, user.UserId);
-            });
-        }
-
-        public void AuthenticateWithAppleOnIos()
-        {
-            
+#if UNITY_ANDROID
+            AuthenticateWithGoogle(_OnDoIfRegister);
+#elif UNITY_IPHONE
+            AuthenticateWithApple(_OnDoIfRegister);
+#endif
         }
         
         #endregion
 
         #region nonpublic methods
+        
+        private void AuthenticateWithGoogle(UnityAction<AuthResult> _OnResult)
+        {
+            // authenticate user:
+            PlayGamesPlatform.Instance.Authenticate(
+                SignInInteractivity.CanPromptOnce, _Result =>
+            {
+                switch (_Result)
+                {
+                    case SignInStatus.Success:
+                        string login = PlayGamesPlatform.Instance.GetUserEmail();
+                        string password = "google";
+                        Login(login, password, _OnResult);
+                        break;
+                    case SignInStatus.Canceled:
+                    case SignInStatus.Failed:
+                    case SignInStatus.DeveloperError:
+                    case SignInStatus.InternalError:
+                    case SignInStatus.NetworkError:
+                    case SignInStatus.NotAuthenticated:
+                    case SignInStatus.AlreadyInProgress:
+                    case SignInStatus.UiSignInRequired:
+                        _OnResult?.Invoke(AuthResult.LoginFailed);
+                        break;
+                    default:
+                        throw new SwitchCaseNotImplementedException(_Result);
+                }
+            });
+        }
 
-        private void Login(string _Login, string _PasswordHash)
+        private void AuthenticateWithApple(UnityAction<AuthResult> _OnResult)
+        {
+            //TODO
+        }
+        
+#if UNITY_ANDROID
+        
+        //https://github.com/playgameservices/play-games-plugin-for-unity
+        private void InitGooglePlayServices()
+        {
+            PlayGamesClientConfiguration config = new PlayGamesClientConfiguration.Builder()
+                .EnableSavedGames()
+                .RequestEmail()
+                .RequestServerAuthCode(false)
+                .RequestIdToken()
+                .Build();
+
+            PlayGamesPlatform.InitializeInstance(config);
+            PlayGamesPlatform.DebugLogEnabled = true;
+            PlayGamesPlatform.Activate();
+        }
+        
+#endif
+
+        private void Login(string _Login, string _PasswordHash, UnityAction<AuthResult> _OnResult)
         {
             var loginPacket = new LoginUserPacket(new LoginUserPacketRequestArgs
                 {
                     Name = _Login,
-                    PasswordHash = _PasswordHash,
-                    DeviceId = GameClient.Instance.DeviceId
+                    PasswordHash = _PasswordHash
                 });
                 loginPacket.OnSuccess(() =>
                     {
@@ -150,40 +118,257 @@ namespace Controllers
                     if (loginPacket.ErrorMessage.Id == ServerErrorCodes.AccountNotFoundByDeviceId)
                     {
                         Debug.LogWarning(loginPacket.ErrorMessage);
-                        Register(_Login, _PasswordHash);
+                        Register(_Login, _PasswordHash, _OnResult);
                     }
                     else if (loginPacket.ErrorMessage.Id == ServerErrorCodes.WrongLoginOrPassword)
                     {
+                        _OnResult.Invoke(AuthResult.LoginFailed);
                         Debug.LogError("Login failed: Wrong login or password");
                     }
                     else
                     {
+                        _OnResult.Invoke(AuthResult.LoginFailed);
                         Debug.LogError(loginPacket.ErrorMessage);
                     }
                 });
                 GameClient.Instance.Send(loginPacket);
         }
 
-        private void Register(string _Login, string _PasswordHash)
+        private void Register(string _Login, string _PasswordHash, UnityAction<AuthResult> _OnResult)
         {
+            if (string.IsNullOrEmpty(_Login))
+                return;
+            
             var registerPacket = new RegisterUserPacket(
                 new RegisterUserPacketRequestArgs
                 {
                     Name = _Login,
                     PasswordHash = _PasswordHash,
-                    DeviceId = GameClient.Instance.DeviceId,
                     GameId = GameClient.Instance.DefaultGameId
                 });
             registerPacket.OnSuccess(() =>
                 {
                     Debug.Log("Registered successfully");
                     GameClient.Instance.AccountId = registerPacket.Response.Id;
-                    BankManager.Instance.GetBank(true);
+                    _OnResult?.Invoke(AuthResult.RegisterSuccess);
                 })
-                .OnFail(() => { Debug.LogError(registerPacket.ErrorMessage); });
+                .OnFail(() =>
+                {
+                    _OnResult?.Invoke(AuthResult.RegisterFailed);
+                    Debug.LogError(registerPacket.ErrorMessage);
+                });
             GameClient.Instance.Send(registerPacket);
         }
 
         #endregion
     }
 }
+
+//Apple Game Center integration example
+
+// using UnityEngine;
+// using System.Collections;
+// using UnityEngine.SocialPlatforms;
+// using UnityEngine.SocialPlatforms.GameCenter;
+//
+// public class GameCenter : MonoBehaviour {
+// 	
+// 	static ILeaderboard m_Leaderboard;
+// 	public int highScoreInt = 1000;
+// 	
+// 	public string leaderboardName = "leaderboard01";
+// 	public string leaderboardID = "com.company.game.leaderboardname";
+// 	
+// 	public string achievement1Name = "com.compnayname.demo.10m";
+// 	
+// 	public string achievement2Name = "com.companyname.demo.achiev1";
+// 	public string achievement3Name = "com.companyname.demo.achievement3";
+// 	public string achievement4Name = "com.companyname.demo.achievement4";
+// 	
+// 	bool gameOver = false;
+// 	
+// // THIS MAKES SURE THE GAME CENTER INTEGRATION WILL ONLY WORK WHEN OPERATING ON AN APPLE IOS DEVICE (iPHONE, iPOD TOUCH, iPAD)
+// //#if UNITY_IPHONE
+// 	
+// 	// Use this for initialization
+// 	void Start () {
+// 	
+// 		 // AUTHENTICATE AND REGISTER A ProcessAuthentication CALLBACK
+// 		// THIS CALL NEEDS OT BE MADE BEFORE WE CAN PROCEED TO OTHER CALLS IN THE Social API
+//         Social.localUser.Authenticate (ProcessAuthentication);
+// 		
+// 		// GET INSTANCE OF LEADERBOARD
+// 		DoLeaderboard();
+// 		
+// 	}
+// 	
+// 	// Update is called once per frame
+// 	void Update () {
+// 	
+// 		#if UNITY_IPHONE
+// 		if(gameOver == true) {
+// 			// REPORT THE PLAYER'S SCORE WHEN THE GAME IS OVER USE A GUI BUTTON TO FLIP THE BOOLEAN FROM FALSE TO TRUE SO THIS GETS CALLED
+// 			ReportScore(highScoreInt, leaderboardID);
+// 		}
+// 		#endif
+// 		
+// 	}
+// 	
+// 	// THE UI BELOW CONTAINING GUI BUTTONS IS USED TO DEMONSTRATE THE GAME CENTER INTEGRATION
+// 	// HERE, YOU ARE ABLE TO:
+// 	// (1) VIEW LEADERBOARDS 
+// 	// (2) VIEW ACHIEVEMENTS
+// 	// (3) SUBMIT HIGH SCORE TO LEADERBOARD
+// 	// (4) REPORT ACHIEVEMENTS ACQUIRED
+// 	// (5) RESET ACHIEVEMENTS.
+// 	void OnGUI () {	
+// 		
+// 		// COLUMN 1
+// 		// SHOW LEADERBOARDS WITHIN GAME CENTER
+// 		if(GUI.Button(new Rect(20, 20, 200, 75), "View Leaderboard")) {
+// 			Social.ShowLeaderboardUI();
+// 		}
+// 		
+// 		// SHOW ACHIEVEMENTS WITHIN GAME CENTER
+// 		if(GUI.Button(new Rect(20, 100, 200, 75), "View Achievements")) {
+// 			Social.ShowAchievementsUI();
+// 		}
+// 		
+// 		// SET GAME OVER SWITCH
+// 		if(GUI.Button(new Rect(20, 180, 200, 75), "Game Over Switch")) {
+// 			// ONCE TRUE, THE UPDATE WILL HIT AND HIGH SCORE WILL BE SUBMITTED
+// 			gameOver = true;
+// 		}
+// 		
+// 		// RESET ALL ACHIEVEMENTS
+// 		if(GUI.Button(new Rect(20, 260, 200, 75), "Reset Achievements")) {
+// 			GameCenterPlatform.ResetAllAchievements((resetResult) => {
+// 				Debug.Log(resetResult ? "Achievements have been Reset" : "Achievement reset failure.");
+// 			});
+// 		}
+// 		
+// 		// COLUMN 2
+// 		// ENABLE ACHIEVEMENT 1
+// 		if(GUI.Button(new Rect(225, 20, 200, 75), "Report Achievement 1")) {
+// 			ReportAchievement(achievement1Name, 100.00);
+// 		}
+// 		
+// 		// ENABLE ACHIEVEMENT 2
+// 		if(GUI.Button(new Rect(225, 100, 200, 75), "Report Achievement 2")) {
+// 			ReportAchievement(achievement2Name, 100.00);
+// 		}
+// 		
+// 		// ENABLE ACHIEVEMENT 3
+// 		if(GUI.Button(new Rect(225, 180, 200, 75), "Report Achievement 3")) {
+// 			ReportAchievement(achievement3Name, 100.00);
+// 		}
+// 		
+// 		// ENABLE ACHIEVEMENT 4
+// 		if(GUI.Button(new Rect(225, 260, 200, 75), "Report Achievement 4")) {
+// 			ReportAchievement(achievement4Name, 100.00);
+// 		}
+// 	
+//     }
+// 	
+// 	///////////////////////////////////////////////////
+// 	// INITAL AUTHENTICATION (MUST BE DONE FIRST)
+// 	///////////////////////////////////////////////////
+// 	
+// 	// THIS FUNCTION GETS CALLED WHEN AUTHENTICATION COMPLETES
+// 	// NOTE THAT IF THE OPERATION IS SUCCESSFUL Social.localUser WILL CONTAIN DATA FROM THE GAME CENTER SERVER
+//     void ProcessAuthentication (bool success) {
+//         if (success) {
+//             Debug.Log ("Authenticated, checking achievements");
+//
+// 			// MAKE REQUEST TO GET LOADED ACHIEVEMENTS AND REGISTER A CALLBACK FOR PROCESSING THEM
+//             Social.LoadAchievements (ProcessLoadedAchievements); // ProcessLoadedAchievements FUNCTION CAN BE FOUND BELOW
+// 			
+// 			Social.LoadScores(leaderboardName, scores => {
+//     			if (scores.Length > 0) {
+// 					// SHOW THE SCORES RECEIVED
+//         			Debug.Log ("Received " + scores.Length + " scores");
+//         			string myScores = "Leaderboard: \n";
+//         			foreach (IScore score in scores)
+//             			myScores += "\t" + score.userID + " " + score.formattedValue + " " + score.date + "\n";
+//         			Debug.Log (myScores);
+//     			}
+//     			else
+//         			Debug.Log ("No scores have been loaded.");
+// 				});
+//         }
+//         else
+//             Debug.Log ("Failed to authenticate with Game Center.");
+//     }
+// 	
+// 	
+// 	// THIS FUNCTION GETS CALLED WHEN THE LoadAchievements CALL COMPLETES
+//     void ProcessLoadedAchievements (IAchievement[] achievements) {
+//         if (achievements.Length == 0)
+//             Debug.Log ("Error: no achievements found");
+//         else
+//             Debug.Log ("Got " + achievements.Length + " achievements");
+//
+//         // You can also call into the functions like this
+//         Social.ReportProgress ("Achievement01", 100.0, result => {
+//             if (result)
+//                 Debug.Log ("Successfully reported achievement progress");
+//             else
+//                 Debug.Log ("Failed to report achievement");
+//         });
+// 		//Social.ShowAchievementsUI();
+//     }
+// 	
+// 	///////////////////////////////////////////////////
+// 	// GAME CENTER ACHIEVEMENT INTEGRATION
+// 	///////////////////////////////////////////////////
+//
+// 	void ReportAchievement( string achievementId, double progress ){
+// 		Social.ReportProgress( achievementId, progress, (result) => {
+// 			Debug.Log( result ? string.Format("Successfully reported achievement {0}", achievementId) 
+// 			          : string.Format("Failed to report achievement {0}", achievementId));
+// 		});
+// 	}
+//
+// 	#region Game Center Integration
+// 	///////////////////////////////////////////////////
+// 	// GAME CENTER LEADERBOARD INTEGRATION
+// 	///////////////////////////////////////////////////
+// 	
+// 	
+// 	/// <summary>
+// 	/// Reports the score to the leaderboards.
+// 	/// </summary>
+// 	/// <param name="score">Score.</param>
+// 	/// <param name="leaderboardID">Leaderboard I.</param>
+// 	void ReportScore (long score, string leaderboardID) {
+//     	Debug.Log ("Reporting score " + score + " on leaderboard " + leaderboardID);
+//     	Social.ReportScore (score, leaderboardID, success => {
+//         	Debug.Log(success ? "Reported score to leaderboard successfully" : "Failed to report score");
+//     	});
+// 	}
+// 	
+// 	/// <summary>
+// 	/// Get the leaderboard.
+// 	/// </summary>
+// 	void DoLeaderboard () {
+//     	m_Leaderboard = Social.CreateLeaderboard();
+//     	m_Leaderboard.id = leaderboardID;  // YOUR CUSTOM LEADERBOARD NAME
+//     	m_Leaderboard.LoadScores(result => DidLoadLeaderboard(result));
+// 	}
+//
+// 	/// <summary>
+// 	/// RETURNS THE NUMBER OF LEADERBOARD SCORES THAT WERE RECEIVED BY THE APP
+// 	/// </summary>
+// 	/// <param name="result">If set to <c>true</c> result.</param>
+// 	void DidLoadLeaderboard (bool result) {
+//     	Debug.Log("Received " + m_Leaderboard.scores.Length + " scores");
+//     	foreach (IScore score in m_Leaderboard.scores) {
+//         	Debug.Log(score);
+// 		}
+// 		//Social.ShowLeaderboardUI();
+// 	}
+//
+// 	#endregion
+// }
+//
+// //#endif
