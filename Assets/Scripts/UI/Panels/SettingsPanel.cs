@@ -45,7 +45,7 @@ namespace UI.Panels
         {
             var sp = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(m_DialogViewer.Container, RtrLites.FullFill),
-                CommenPrefabSetNames.MainMenuDialogPanels, "settings_panel");
+                CommonPrefabSetNames.MainMenuDialogPanels, "settings_panel");
             _settingGoList = new List<GameObject>();
             _settingList = new List<ISetting>();
             m_Content = sp.GetCompItem<RectTransform>("content");

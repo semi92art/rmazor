@@ -39,7 +39,7 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     m_DialogViewer.Container,
                     RtrLites.FullFill),
-                CommenPrefabSetNames.MainMenuDialogPanels,
+                CommonPrefabSetNames.MainMenuDialogPanels,
                 "select_game_panel");
             RectTransform content = selectGamePanel.GetCompItem<RectTransform>("content");
             
@@ -50,7 +50,7 @@ namespace UI.Panels
                     new Vector2(218f, -43f),
                     Vector2.one * 0.5f,
                     new Vector2(416f, 170f)),
-                CommenPrefabSetNames.MainMenu,
+                CommonPrefabSetNames.MainMenu,
                 "select_game_item");
             
             foreach (var cgiProps in GetAllCgiProps().Where(_Props => _Props.IsVisible))

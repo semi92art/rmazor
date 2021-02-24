@@ -1,15 +1,19 @@
-﻿using Constants;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Controllers;
 using DialogViewers;
 using Entities;
+using Exceptions;
 using Extensions;
 using GameHelpers;
+using Lean.Localization;
 using Managers;
-using Network;
-using Network.Packets;
 using UI.Factories;
 using UI.Managers;
 using UI.Panels;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using Utils;
 
@@ -88,7 +92,6 @@ namespace UI
                 MenuUiCategory.MainMenu |
                 MenuUiCategory.SelectGame |
                 MenuUiCategory.Login |
-                MenuUiCategory.PlusLifes |
                 MenuUiCategory.PlusMoney);
         }
     
@@ -116,70 +119,78 @@ namespace UI
 
             Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
             {
-                float delayAnyway = 1f;
+                bool loadingStopped = false;
+                float percents = 0;
+                var loadingTexts = new Dictionary<int, string>
+                {
+                    {1, "Loading resources"},
+                    {2, "Connecting to server"},
+                    {3, "Done"}
+                };
+                Func<int, string> getLoadingText = _Idx =>
+                    Mathf.Abs(percents - 100) < float.Epsilon ? loadingTexts[3] : loadingTexts[_Idx];
+                
+                m_LoadingPanel.SetProgress(percents, loadingTexts[1]);
 
-                bool isSuccess = false;
-                float startTime = UiTimeProvider.Instance.Time;
-                Coroutines.Run(Coroutines.DoWhile(
-                    () => delayAnyway = Mathf.Max(2f - (UiTimeProvider.Instance.Time - startTime), 0),
-                    null,
-                    () => !isSuccess || !AssetBundleManager.Instance.Initialized));
-
-                Coroutines.Run(Coroutines.Delay(
+                Coroutines.Run(Coroutines.WaitWhile(
+                    () => !AssetBundleManager.Instance.Initialized,
                     () =>
                     {
-                        var loginPacket = new LoginUserPacket(new LoginUserPacketRequestArgs
+                        if (AssetBundleManager.Instance.Errors.Any())
                         {
-                            Name = GameClient.Instance.Login,
-                            PasswordHash = GameClient.Instance.PasswordHash,
-                            DeviceId = GameClient.Instance.DeviceId
-                        });
-                        loginPacket.OnSuccess(() =>
-                            {
-                                isSuccess = true;
-                                Debug.Log("Login successfully");
-                                GameClient.Instance.AccountId = loginPacket.Response.Id;
-                                ShowMainMenu(true);
-                            }
-                        );
-                        loginPacket.OnFail(() =>
+                            m_LoadingPanel.Break("Failed to load game resources. Need internet for first connection");
+                            loadingStopped = true;
+                        }
+                        else
                         {
-                            if (loginPacket.ErrorMessage.Id == ServerErrorCodes.AccountNotFoundByDeviceId)
-                            {
-                                Debug.LogWarning(loginPacket.ErrorMessage);
-                                var registerPacket = new RegisterUserPacket(
-                                    new RegisterUserPacketRequestArgs
-                                    {
-                                        DeviceId = GameClient.Instance.DeviceId,
-                                        GameId = GameClient.Instance.DefaultGameId
-                                    });
-                                registerPacket.OnSuccess(() =>
-                                    {
-                                        Debug.Log("Register by DeviceId successfully");
-                                        GameClient.Instance.AccountId = registerPacket.Response.Id;
-                                        var bank = BankManager.Instance.GetBank(true);
-                                        
-                                        Coroutines.Run(Coroutines.WaitWhile(
-                                            () => !bank.Loaded,
-                                            () => ShowMainMenu(true)));
-                                    })
-                                    .OnFail(() => { Debug.LogError(registerPacket.ErrorMessage); });
-                                GameClient.Instance.Send(registerPacket);
-                            }
-                            else if (loginPacket.ErrorMessage.Id == ServerErrorCodes.WrongLoginOrPassword)
-                            {
-                                Debug.LogError("Login failed: Wrong login or password");
-                                ShowMainMenu(true);
-                            }
-                            else
-                            {
-                                Debug.LogError(loginPacket.ErrorMessage);
-                                ShowMainMenu(true);
-                            }
+                            percents += 50;
+                            m_LoadingPanel.SetProgress(percents, getLoadingText.Invoke(2));
+                        }
+                    }, () => loadingStopped));
+                
+                var authCtrl = new AuthController();
+                authCtrl.Authenticate(_AuthResult =>
+                {
+                    UnityAction setBankStart = () =>
+                    {
+                        BankManager.Instance.SetBank(new Dictionary<BankItemType, long>
+                        {
+                            {BankItemType.FirstCurrency, 10},
+                            {BankItemType.SecondCurrency, 10}
                         });
-                        GameClient.Instance.Send(loginPacket);
-                    },
-                    delayAnyway));
+                    };
+                    
+                    switch (_AuthResult)
+                    {
+                        case AuthController.AuthResult.LoginSuccess:
+                            BankManager.Instance.GetBank(true);
+                            break;
+                        case AuthController.AuthResult.RegisterSuccess:
+                            setBankStart.Invoke();
+                            BankManager.Instance.GetBank(true);
+                            break;
+                        case AuthController.AuthResult.LoginFailed:
+                        case AuthController.AuthResult.RegisterFailed:
+                            var bank = BankManager.Instance.GetBank();
+                            Coroutines.Run(Coroutines.WaitWhile(() => !bank.Loaded,
+                                () =>
+                                {
+                                    if (bank.BankItems.Any())
+                                        return;
+                                    setBankStart.Invoke();
+                                }));
+                            break;
+                        default:
+                            throw new SwitchCaseNotImplementedException(_AuthResult);
+                    }
+
+                    if (loadingStopped)
+                        return;
+                    
+                    percents += 50;
+                    m_LoadingPanel.SetProgress(percents, getLoadingText.Invoke(1));
+                    ShowMainMenu(true);
+                });
             }));
         }
 
@@ -189,7 +200,7 @@ namespace UI
             {
                 m_TransitionRenderer.TransitionAction = (_, _Args) =>
                 {
-                    m_LoadingPanel.DoLoading = false;
+                    m_LoadingPanel.Break(null);
                     m_MenuDialogViewer.Back();
                     m_MainMenuUi.Show();
                 };

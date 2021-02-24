@@ -66,7 +66,7 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     m_DialogViewer.Container,
                     RtrLites.FullFill),
-                CommenPrefabSetNames.MainMenuDialogPanels, "wof_panel");
+                CommonPrefabSetNames.MainMenuDialogPanels, "wof_panel");
 
             m_SpinButton = wofPan.GetCompItem<Button>("spin_button");
             m_Title = m_SpinButton.GetCompItem<TextMeshProUGUI>("title");

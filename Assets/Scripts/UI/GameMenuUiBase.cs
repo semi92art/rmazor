@@ -17,9 +17,8 @@ namespace UI
     public interface IGameMenuUi
     {
         IStatsMiniPanel StatsMiniPanel { get; }
-        IRevenueMiniPanel RevenueMiniPanel { get; }
-        void OnBeforeLevelStarted(LevelStateChangedArgs _Args,
-            UnityAction<long> _GetLifes, UnityAction _StartLevel);
+
+        void OnBeforeLevelStarted(LevelStateChangedArgs _Args, UnityAction _StartLevel);
         void OnLevelStarted(LevelStateChangedArgs _Args);
         void OnLevelFinished(
             LevelStateChangedArgs _Args,
@@ -28,16 +27,13 @@ namespace UI
             UnityAction _Finish,
             bool _IsPersonalBest);
         void OnTimeEnded(UnityAction<float> _SetAdditionalTime, UnityAction _Continue);
-        void OnLifesEnded(UnityAction<long> _SetAdditionalLifes, UnityAction _Continue);
-        void OnRevenueIncome(BankItemType _BankItemType, long _Revenue);
     }
     
     public abstract class GameMenuUiBase : GameObservable, IGameMenuUi
     {
         #region api properties
         public IStatsMiniPanel StatsMiniPanel { get; protected set; }
-        public IRevenueMiniPanel RevenueMiniPanel { get; protected set; }
-        
+
         #endregion
         
         #region nonpublic members
@@ -54,7 +50,6 @@ namespace UI
             CreateCanvas();
             CreateDialogViewer();
             CreateStatsMiniPanel();
-            CreateRevenueMiniPanel();
             CreateGameMenuButton();
         }
 
@@ -62,7 +57,7 @@ namespace UI
         
         #region nonpublic methods
         
-        protected virtual void CreateCanvas()
+        protected void CreateCanvas()
         {
             Canvas = UiFactory.UiCanvas(
                 "MenuCanvas",
@@ -79,25 +74,18 @@ namespace UI
                 GraphicRaycaster.BlockingObjects.None);
         }
 
-        protected virtual void CreateStatsMiniPanel()
+        protected void CreateStatsMiniPanel()
         {
             StatsMiniPanel = Panels.StatsMiniPanel.Create(
                 Canvas.RTransform(), StatsPanelPosition.Top);
         }
         
-        protected virtual void CreateDialogViewer()
+        protected void CreateDialogViewer()
         {
             DialogViewer = GameDialogViewer.Create(Canvas.RTransform());
         }
 
-        protected virtual void CreateRevenueMiniPanel()
-        {
-            RevenueMiniPanel = Panels.RevenueMiniPanel.Create(
-                Canvas.RTransform(), RevenuePanelPosition.TopRight);
-            RevenueMiniPanel.Hide();
-        }
-        
-        protected virtual void CreateGameMenuButton()
+        protected void CreateGameMenuButton()
         {
             var settingsButtonSmall = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
@@ -112,7 +100,7 @@ namespace UI
             settingsButtonSmall.GetComponent<Button>().SetOnClick(OnGameMenuButtonClick);
         }
         
-        protected virtual void OnGameMenuButtonClick()
+        protected void OnGameMenuButtonClick()
         {
             if (GameMenuPanel.PanelState.HasFlag(PanelState.Showing))
             {
@@ -128,7 +116,7 @@ namespace UI
         }
 
         [DI.Update]
-        protected virtual void OnUpdate()
+        protected void OnUpdate()
         {
             if (Input.GetKeyDown(KeyCode.Escape))
                 OnGameMenuButtonClick();
@@ -140,11 +128,10 @@ namespace UI
 
         public virtual void OnBeforeLevelStarted(
             LevelStateChangedArgs _Args,
-            UnityAction<long> _GetLifes,
             UnityAction _StartLevel)
         {
             var startLevelPanel = new LevelStartPanel(
-                DialogViewer, _Args.Level, _GetLifes, _StartLevel);
+                DialogViewer, _Args.Level, _StartLevel);
             startLevelPanel.AddObservers(GetObservers());
             startLevelPanel.Init();
             DialogViewer.Show(startLevelPanel);
@@ -152,7 +139,7 @@ namespace UI
 
         public virtual void OnLevelStarted(LevelStateChangedArgs _Args)
         {
-            RevenueMiniPanel.ClearRevenue();
+            
         }
 
         public virtual void OnLevelFinished(
@@ -186,7 +173,7 @@ namespace UI
             DialogViewer.Show(panel);
         }
 
-        public virtual void OnLifesEnded(UnityAction<long> _SetAdditionalLifes, UnityAction _Continue)
+        public void OnLifesEnded(UnityAction<long> _SetAdditionalLifes, UnityAction _Continue)
         {
             var panel = new TimeOrLifesEndedPanel(
                 DialogViewer,
@@ -196,11 +183,6 @@ namespace UI
             panel.AddObservers(GetObservers());
             panel.Init();
             DialogViewer.Show(panel);
-        }
-
-        public virtual void OnRevenueIncome(BankItemType _BankItemType, long _Revenue)
-        {
-            RevenueMiniPanel.PlusRevenue(_BankItemType, _Revenue);
         }
 
         #endregion

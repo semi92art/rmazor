@@ -39,7 +39,7 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     DialogViewer.Container,
                     RtrLites.FullFill),
-                CommenPrefabSetNames.MainMenuDialogPanels, "login_panel");
+                CommonPrefabSetNames.MainMenuDialogPanels, "login_panel");
 
             LoginErrorHandler = lp.GetCompItem<TextMeshProUGUI>("login_error_handler");
             PasswordErrorHandler = lp.GetCompItem<TextMeshProUGUI>("password_error_handler");
@@ -124,24 +124,24 @@ namespace UI.Panels
 
         private void OnLoginWithGoogleButtonClick()
         {
-            Notify(this, NotifyMessageLoginWithGoogleButtonClick);
-            var auth = new AuthController();
-#if UNITY_ANDROID
-            auth.AuthenticateWithGoogleOnAndroid();
-#elif UNITY_IPHONE
-            auth.AuthenticateWithGoogleOnIos();
-#endif
+//             Notify(this, NotifyMessageLoginWithGoogleButtonClick);
+//             var auth = new AuthController();
+// #if UNITY_ANDROID
+//             auth.AuthenticateWithGoogleOnAndroid();
+// #elif UNITY_IPHONE
+//             auth.AuthenticateWithGoogleOnIos();
+// #endif
         }
         
         private void OnLoginWithAppleButtonClick()
         {
-            Notify(this, NotifyMessageLoginWithAppleButtonClick);
-            var auth = new AuthController();
-#if UNITY_ANDROID
-            auth.AuthenticateWithAppleIdOnAndroid();
-#elif UNITY_IPHONE
-            auth.AuthenticateWithAppleOnIos();
-#endif
+//             Notify(this, NotifyMessageLoginWithAppleButtonClick);
+//             var auth = new AuthController();
+// #if UNITY_ANDROID
+//             auth.AuthenticateWithAppleIdOnAndroid();
+// #elif UNITY_IPHONE
+//             auth.AuthenticateWithAppleOnIos();
+// #endif
         }
         
         private void OnRegistrationButtonClick()

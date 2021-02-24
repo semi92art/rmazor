@@ -42,9 +42,9 @@ namespace UI.PanelItems
             {
                 var money = new Dictionary<BankItemType, long>();
                 if (_Props.Gold > 0)
-                    money.Add(BankItemType.Gold, _Props.Gold);
+                    money.Add(BankItemType.FirstCurrency, _Props.Gold);
                 if (_Props.Diamonds > 0)
-                    money.Add(BankItemType.Diamonds, _Props.Diamonds);
+                    money.Add(BankItemType.SecondCurrency, _Props.Diamonds);
                 BankManager.Instance.SetIncome(money, icon.RTransform());
                 BankManager.Instance.PlusBankItems(money);
             

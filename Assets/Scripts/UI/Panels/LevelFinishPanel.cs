@@ -34,9 +34,8 @@ namespace UI.Panels
         private readonly bool m_IsPersonalBest;
 
         private float m_MultiplyCoefficient = 2f;
-        private TextMeshProUGUI m_GoldCountRevenueText;
-        private TextMeshProUGUI m_DiamondsCountRevenueText;
-        private TextMeshProUGUI m_LifesCountRevenueText;
+        private TextMeshProUGUI m_FirstCurrencyRevenueText;
+        private TextMeshProUGUI m_SecondCurrencyRevenueText;
         private Button m_X2Button;
 
         #endregion
@@ -72,9 +71,8 @@ namespace UI.Panels
             var levelFinishedText = go.GetCompItem<TextMeshProUGUI>("level_finished_text");
             var personalBestText = go.GetCompItem<TextMeshProUGUI>("personal_best_text");
             var revenueText = go.GetCompItem<TextMeshProUGUI>("revenue_text");
-            m_GoldCountRevenueText = go.GetCompItem<TextMeshProUGUI>("gold_count_revenue_text"); 
-            m_DiamondsCountRevenueText = go.GetCompItem<TextMeshProUGUI>("diamonds_count_revenue_text"); 
-            m_LifesCountRevenueText = go.GetCompItem<TextMeshProUGUI>("lifes_count_revenue_text");
+            m_FirstCurrencyRevenueText = go.GetCompItem<TextMeshProUGUI>("gold_count_revenue_text"); 
+            m_SecondCurrencyRevenueText = go.GetCompItem<TextMeshProUGUI>("diamonds_count_revenue_text");
             m_X2Button = go.GetCompItem<Button>("x2_button");
             Button continueButton = go.GetCompItem<Button>("continue_button");
             levelFinishedText.text = $"Level {m_Level} finished!";
@@ -119,15 +117,12 @@ namespace UI.Panels
 
         private void SetRevenueCountsText()
         {
-            m_GoldCountRevenueText.text = "-";
-            if (m_Revenue.ContainsKey(BankItemType.Gold) && m_Revenue[BankItemType.Gold] > 0)
-                m_GoldCountRevenueText.text = m_Revenue[BankItemType.Gold].ToNumeric();
-            m_DiamondsCountRevenueText.text = "-";
-            if (m_Revenue.ContainsKey(BankItemType.Diamonds) && m_Revenue[BankItemType.Diamonds] > 0)
-                m_DiamondsCountRevenueText.text = m_Revenue[BankItemType.Diamonds].ToNumeric();
-            m_LifesCountRevenueText.text = "-";
-            if (m_Revenue.ContainsKey(BankItemType.Lifes) && m_Revenue[BankItemType.Lifes] > 0)
-                m_LifesCountRevenueText.text = "-";
+            m_FirstCurrencyRevenueText.text = "-";
+            if (m_Revenue.ContainsKey(BankItemType.FirstCurrency) && m_Revenue[BankItemType.FirstCurrency] > 0)
+                m_FirstCurrencyRevenueText.text = m_Revenue[BankItemType.FirstCurrency].ToNumeric();
+            m_SecondCurrencyRevenueText.text = "-";
+            if (m_Revenue.ContainsKey(BankItemType.SecondCurrency) && m_Revenue[BankItemType.SecondCurrency] > 0)
+                m_SecondCurrencyRevenueText.text = m_Revenue[BankItemType.SecondCurrency].ToNumeric();
         }
         
         #endregion

@@ -41,17 +41,6 @@ namespace Managers
                             throw new SwitchCaseNotImplementedException(props.Size);
                     }
                     break;
-                case ShopItemType.Lifes:
-                    switch (props.Size)
-                    {
-                        case ShopItemSize.Small:
-                            break;
-                        case ShopItemSize.Big:
-                            break;
-                        default:
-                            throw new SwitchCaseNotImplementedException(props.Size);
-                    }
-                    break;
                 default:
                     throw new SwitchCaseNotImplementedException(props.Type);
             }

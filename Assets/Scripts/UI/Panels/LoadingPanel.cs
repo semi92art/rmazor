@@ -8,24 +8,24 @@ using UnityEngine;
 
 namespace UI.Panels
 {
-    public class LoadingPanel : DialogPanelBase, IMenuUiCategory
+    public interface IProgress
+    {
+        void SetProgress(float _Percents, string _Info);
+        void Break(string _Error);
+    }
+    
+    public class LoadingPanel : DialogPanelBase, IMenuUiCategory, IProgress
     {
         #region nonpublic members
 
         private readonly IMenuDialogViewer m_DialogViewer;
         private LoadingPanelView m_View;
-        
+
         #endregion
         
         #region public api
 
         public MenuUiCategory Category => MenuUiCategory.Loading;
-
-        public bool DoLoading
-        {
-            get => m_View.DoLoading;
-            set => m_View.DoLoading = value;
-        }
 
         public LoadingPanel(IMenuDialogViewer _DialogViewer)
         {
@@ -38,12 +38,21 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     m_DialogViewer.Container,
                     RtrLites.FullFill),
-                Constants.CommenPrefabSetNames.MainMenuDialogPanels, "loading_panel");
+                Constants.CommonPrefabSetNames.MainMenuDialogPanels, "loading_panel");
             m_View = prefab.GetComponent<LoadingPanelView>();
             Panel = prefab.RTransform();
         }
 
-    
+        public void SetProgress(float _Percents, string _Info)
+        {
+            m_View.SetProgress(_Percents, _Info);
+        }
+        
+        public void Break(string _Error)
+        {
+            m_View.Break(_Error);
+        }
+
         #endregion
     }
 }

@@ -48,7 +48,7 @@ namespace Managers
                     _DataFields
                         .FirstOrDefault(_Fv => _Fv.FieldId == DataFieldIds.ShowAds)?
                         .SetValue(m_ShowAds)
-                        .Save();
+                        .Save(true);
                 });
             }
         }

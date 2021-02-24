@@ -28,7 +28,6 @@ namespace DebugConsole
             Controller.RegisterCommand("set_lang", SetLanguage,"set language");
             Controller.RegisterCommand("target_fps", SetTargetFps, "Set target frame rate");
             Controller.RegisterCommand("wof_spin_enable", EnableSpinButton, "Enable wheel of fortune spin.");
-            Controller.RegisterCommand("auth_google", AuthWithGoogle, "Authenticate with Google");
             Controller.RegisterCommand("enable_ads", EnableAds, "Enable or disable advertising (true/false)");
         }
 
@@ -140,12 +139,6 @@ namespace DebugConsole
         private static void EnableSpinButton(string[] _Args)
         {
             SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, DateTime.Now.Date.AddDays(-1));
-        }
-
-        private static void AuthWithGoogle(string[] _Args)
-        {
-            var auth = new AuthController();
-            auth.AuthenticateWithGoogleOnAndroid();
         }
 
         private static void EnableAds(string[] _Args)

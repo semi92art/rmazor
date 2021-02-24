@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Constants;
 using Entities;
 using Exceptions;
@@ -58,7 +59,6 @@ namespace UI.PanelItems
                     title.color = ColorUtils.GetColorFromCurrentPalette(CommonPaletteColors.UiShopNoAdsTitle);
                     break;
                 case ShopItemType.Money:
-                case ShopItemType.Lifes:
                     switch (_Props.Size)
                     {
                         case ShopItemSize.Small:
@@ -100,7 +100,7 @@ namespace UI.PanelItems
         }
     }
     
-    public enum ShopItemType { Money, Lifes, NoAds }
+    [Flags] public enum ShopItemType { Money, NoAds }
     public enum ShopItemSize { Small, Medium, Big }
 
     public class ShopItemProps

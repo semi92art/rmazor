@@ -26,35 +26,20 @@ namespace UI.Panels
             new ShopItemProps(ShopItemType.Money, "Rockie money set", 9.99f,
                 new Dictionary<BankItemType, long>
                 {
-                    {BankItemType.Gold, 100000L},
-                    {BankItemType.Diamonds, 1000L}
+                    {BankItemType.FirstCurrency, 100000L},
+                    {BankItemType.SecondCurrency, 1000L}
                 }, _Size: ShopItemSize.Small),
             new ShopItemProps(ShopItemType.Money, "Advanced money set", 19.99f,
                 new Dictionary<BankItemType, long>
                 {
-                    {BankItemType.Gold, 5000000L},
-                    {BankItemType.Diamonds, 5000L}
+                    {BankItemType.FirstCurrency, 5000000L},
+                    {BankItemType.SecondCurrency, 5000L}
                 }, _Size: ShopItemSize.Medium),
             new ShopItemProps(ShopItemType.Money,"Pro money set", 39.99f,
                 new Dictionary<BankItemType, long>
                 {
-                    {BankItemType.Gold, 20000000L},
-                    {BankItemType.Diamonds, 20000L}
-                }, _Size: ShopItemSize.Big),
-            new ShopItemProps(ShopItemType.Lifes,"Rockie lifes set", 9.99f,
-                new Dictionary<BankItemType, long>
-                {
-                    {BankItemType.Lifes, 100L}
-                }, _Size: ShopItemSize.Small),
-            new ShopItemProps(ShopItemType.Lifes, "Advanced lifes set", 19.99f,
-                new Dictionary<BankItemType, long>
-                {
-                    {BankItemType.Lifes, 500L}
-                }, _Size: ShopItemSize.Medium),
-            new ShopItemProps(ShopItemType.Lifes, "Pro lifes set", 39.99f,
-                new Dictionary<BankItemType, long>
-                {
-                    {BankItemType.Lifes, 2000L}
+                    {BankItemType.FirstCurrency, 20000000L},
+                    {BankItemType.SecondCurrency, 20000L}
                 }, _Size: ShopItemSize.Big)
         };
         
@@ -75,7 +60,7 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     m_Container,
                     RtrLites.FullFill),
-                CommenPrefabSetNames.MainMenuDialogPanels,
+                CommonPrefabSetNames.MainMenuDialogPanels,
                 "shop_panel");
             RectTransform content = go.GetCompItem<RectTransform>("content");
 
@@ -87,9 +72,6 @@ namespace UI.Panels
                     case ShopItemType.NoAds:
                         if (!AdsManager.Instance.ShowAds)
                             continue;
-                        item = ShopItemDefault.Create(content); 
-                        break;
-                    case ShopItemType.Lifes:
                         item = ShopItemDefault.Create(content); 
                         break;
                     case ShopItemType.Money:

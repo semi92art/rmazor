@@ -22,7 +22,6 @@ namespace Controllers
                 case MainMenuDialogViewer _:
                 case LoginPanel _:
                 case RegistrationPanel _:
-                case PlusLifesPanel _:
                 case PlusMoneyPanel _:
                     PlayUiButtonClick();
                     break;

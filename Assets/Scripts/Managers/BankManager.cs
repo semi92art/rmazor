@@ -36,19 +36,15 @@ namespace Managers
             var adf = new AccountDataFieldFilter(
                 GameClient.Instance.AccountId,
                 DataFieldIds.FirstCurrency,
-                DataFieldIds.SecondCurrency,
-                DataFieldIds.Lifes);
+                DataFieldIds.SecondCurrency);
             adf.Filter(_DataFields =>
             {
                 long gold = _DataFields.First(_V =>
                     _V.FieldId == DataFieldIds.FirstCurrency).ToLong();
                 long diamonds = _DataFields.First(_V =>
                     _V.FieldId == DataFieldIds.SecondCurrency).ToLong();
-                long lifes = _DataFields.First(_V =>
-                    _V.FieldId == DataFieldIds.Lifes).ToLong();
-                result.BankItems.Add(BankItemType.Gold, gold);
-                result.BankItems.Add(BankItemType.Diamonds, diamonds);
-                result.BankItems.Add(BankItemType.Lifes, lifes);
+                result.BankItems.Add(BankItemType.FirstCurrency, gold);
+                result.BankItems.Add(BankItemType.SecondCurrency, diamonds);
                 result.Loaded = true;
                 OnMoneyCountChanged?.Invoke(new BankEventArgs(result));
             }, _ForcedFromServer);
@@ -84,7 +80,7 @@ namespace Managers
         public bool TryMinusBankItems(Dictionary<BankItemType, long> _Money)
         {
             var inBank = GetBank();
-            var mts = new [] {BankItemType.Gold, BankItemType.Diamonds, BankItemType.Lifes};
+            var mts = new [] {BankItemType.FirstCurrency, BankItemType.SecondCurrency};
             foreach (var mt in mts)
             {
                 if (!_Money.ContainsKey(mt))
@@ -106,25 +102,19 @@ namespace Managers
 
             var aff = new AccountDataFieldFilter(GameClient.Instance.AccountId,
                 DataFieldIds.FirstCurrency,
-                DataFieldIds.SecondCurrency,
-                DataFieldIds.Lifes);
+                DataFieldIds.SecondCurrency);
             
             aff.Filter(_DataFields =>
             {
-                if (_BankItems.ContainsKey(BankItemType.Gold))
+                if (_BankItems.ContainsKey(BankItemType.FirstCurrency))
                     _DataFields.First(_V =>
                             _V.FieldId == DataFieldIds.FirstCurrency)
-                        .SetValue(_BankItems[BankItemType.Gold])
+                        .SetValue(_BankItems[BankItemType.FirstCurrency])
                         .Save();
-                if (_BankItems.ContainsKey(BankItemType.Diamonds))
+                if (_BankItems.ContainsKey(BankItemType.SecondCurrency))
                     _DataFields.First(_V => 
                             _V.FieldId == DataFieldIds.SecondCurrency)
-                        .SetValue(_BankItems[BankItemType.Diamonds])
-                        .Save();
-                if (_BankItems.ContainsKey(BankItemType.Lifes))
-                    _DataFields.First(_V => 
-                            _V.FieldId == DataFieldIds.Lifes)
-                        .SetValue(_BankItems[BankItemType.Lifes])
+                        .SetValue(_BankItems[BankItemType.SecondCurrency])
                         .Save();
             });
             
@@ -174,9 +164,8 @@ namespace Managers
 
     public enum BankItemType
     {
-        Gold,
-        Diamonds,
-        Lifes
+        FirstCurrency,
+        SecondCurrency
     }
 
     #endregion

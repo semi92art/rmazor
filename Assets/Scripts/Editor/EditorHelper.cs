@@ -253,14 +253,12 @@ public class EditorHelper : EditorWindow
             packet.OnSuccess(() =>
                 {
                     var adf = new AccountDataFieldFilter(packet.Response.Id, 
-                        DataFieldIds.FirstCurrency, DataFieldIds.SecondCurrency, DataFieldIds.Lifes);
+                        DataFieldIds.FirstCurrency, DataFieldIds.SecondCurrency);
                     adf.Filter(_DfValues =>
                     {
                         _DfValues.First(_DfValue => _DfValue.FieldId == DataFieldIds.FirstCurrency)
                             .SetValue(randGen.Next(0, 10000)).Save();
                         _DfValues.First(_DfValue => _DfValue.FieldId == DataFieldIds.SecondCurrency)
-                            .SetValue(randGen.Next(0, 100)).Save();
-                        _DfValues.First(_DfValue => _DfValue.FieldId == DataFieldIds.Lifes)
                             .SetValue(randGen.Next(0, 100)).Save();
                     });
                     Debug.Log("All test users were created successfully");

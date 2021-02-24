@@ -38,12 +38,10 @@ namespace MkeyFW
             {
                 switch (m_BankItemType)
                 {
-                    case BankItemType.Gold:
+                    case BankItemType.FirstCurrency:
                         return Coins >= 1000000;
-                    case BankItemType.Diamonds:
+                    case BankItemType.SecondCurrency:
                         return Coins >= 100;
-                    case BankItemType.Lifes:
-                        return Coins >= 10;
                     default:
                         throw new SwitchCaseNotImplementedException(m_BankItemType);
                 }
@@ -58,17 +56,13 @@ namespace MkeyFW
             string iconName;
             switch (m_BankItemType)
             {
-                case BankItemType.Gold:
+                case BankItemType.FirstCurrency:
                     prefabSetName = "coins";
                     iconName = "gold_coin_0";
                     break;
-                case BankItemType.Diamonds:
+                case BankItemType.SecondCurrency:
                     prefabSetName = "coins";
                     iconName = "diamond_coin_0";
-                    break;
-                case BankItemType.Lifes:
-                    prefabSetName = "icons";
-                    iconName = "icon_life";
                     break;
                 default:
                     throw new SwitchCaseNotImplementedException(m_BankItemType);

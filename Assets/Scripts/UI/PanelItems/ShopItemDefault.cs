@@ -30,13 +30,6 @@ namespace UI.PanelItems
                     icon.sprite = PrefabUtilsEx.GetObject<Sprite>("icons", "icon_no_ads");
                     afterPurchaseAction = () => AdsManager.Instance.ShowAds = false;
                     break;
-                case ShopItemType.Lifes:
-                    description.text = _Props.Rewards[BankItemType.Lifes].ToNumeric() + " " + "lifes";
-                    icon.sprite = PrefabUtilsEx.GetObject<Sprite>(
-                        "icons_bags", $"icon_lifes_bag_{BagSize(_Props.Size)}");
-                    afterPurchaseAction = () =>
-                        BankManager.Instance.PlusBankItems(BankItemType.Lifes, _Props.Rewards[BankItemType.Lifes]);
-                    break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Props.Type);
             }

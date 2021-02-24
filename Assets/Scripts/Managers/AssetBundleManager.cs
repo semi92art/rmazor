@@ -13,6 +13,13 @@ namespace Managers
 {
     public class AssetBundleManager : MonoBehaviour, ISingleton
     {
+        #region constants
+
+        private const string SoundsBundle = "sounds";
+        private const string LevelsBundle = "levels";
+        
+        #endregion
+        
         #region types
 
         private class AssetInfo
@@ -40,6 +47,7 @@ namespace Managers
         
         public void Init() { } // only for calling IEnumerator Start()
         public bool Initialized { get; private set; }
+        public List<string> Errors { get; private set; } = new List<string>();
 
         public T GetAsset<T>(string _AssetName, string _BundleName) where T : Object
         {
@@ -50,8 +58,8 @@ namespace Managers
         #endregion
         
         #region nonpublic members
-
-        private readonly string[] m_BundleNames = {"sounds"};
+        
+        private readonly string[] m_BundleNames = {SoundsBundle, LevelsBundle};
         private const string BundlesUri = "https://raw.githubusercontent.com/semi92art/bundles/main/mgc";
         private readonly Dictionary<string, List<AssetInfo>> m_Bundles = new Dictionary<string, List<AssetInfo>>();
         
@@ -93,7 +101,9 @@ namespace Managers
 
                     if (loadedBundle == null)
                     {
-                        Debug.LogError($"Failed to load bundle {_BundleName} from remote server");
+                        string error = $"Failed to load bundle {_BundleName} from remote server";
+                        Errors.Add(error);
+                        Debug.LogError(error);
                         yield break;
                     }
                     

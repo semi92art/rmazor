@@ -45,7 +45,7 @@ namespace Games.PointsTapper
                 {
                     {PointType.Default, () => MainScoreController.Score++},
                     {PointType.Bad, () => LifesController.MinusOneLife()},
-                    {PointType.BonusGold, () => RevenueController.AddRevenue(BankItemType.Gold, 300)}
+                    {PointType.BonusGold, () => RevenueController.AddRevenue(BankItemType.FirstCurrency, 300)}
                 });
             GameMenuUi = new PointsTapperGameMenuUi();
             base.Init(_Level);
@@ -106,13 +106,6 @@ namespace Games.PointsTapper
             DoInstantiate = false;
             ((IOnLevelStartedFinished) m_PointItemsGenerator).OnLevelFinished(null);
             base.OnTimeEnded();
-        }
-
-        protected override void OnLifesEnded()
-        {
-            DoInstantiate = false;
-            ((IOnLevelStartedFinished) m_PointItemsGenerator).OnLevelFinished(null);
-            base.OnLifesEnded();
         }
 
         protected override float LevelDuration(int _Level)

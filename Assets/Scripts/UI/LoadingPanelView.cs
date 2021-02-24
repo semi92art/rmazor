@@ -21,6 +21,7 @@ namespace UI
         public Image innerIndicator;
         public Animator animator;
         public TextMeshProUGUI loading;
+        public TextMeshProUGUI error;
         public float speed = 50f;
         
         #endregion
@@ -36,7 +37,7 @@ namespace UI
         
         #endregion
         
-        #region public properties
+        #region api
 
         public bool DoLoading
         {
@@ -48,6 +49,17 @@ namespace UI
                 animator.enabled = value;
                 m_DoLoading = value;
             }
+        }
+
+        public void SetProgress(float _Percents, string _Text)
+        {
+            loading.text = _Text;
+        }
+
+        public void Break(string _Error)
+        {
+            error.text = _Error;
+            DoLoading = false;
         }
 
         #endregion
@@ -93,7 +105,7 @@ namespace UI
             if (time % 2 == 0 && time != m_TimePrev)
             {
                 CommonUtils.IncWithOverflow(ref m_PointsState, 4);
-                m_LoadingText = LeanLocalization.GetTranslationText("Loading");
+                // m_LoadingText = LeanLocalization.GetTranslationText("Loading");
                 loading.text = m_LoadingText + string.Concat(Enumerable.Repeat(".", m_PointsState));
             }
 

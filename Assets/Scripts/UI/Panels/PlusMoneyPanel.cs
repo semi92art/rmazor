@@ -50,7 +50,7 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     m_DialogViewer.Container,
                     RtrLites.FullFill),
-                CommenPrefabSetNames.MainMenuDialogPanels,
+                CommonPrefabSetNames.MainMenuDialogPanels,
                 "plus_money_panel");
             
             go.GetCompItem<Button>("shop_button").SetOnClick(OnShopButtonClick);

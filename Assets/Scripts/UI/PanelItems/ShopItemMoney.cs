@@ -24,8 +24,8 @@ namespace UI.PanelItems
         public void Init(ShopItemProps _Props, IEnumerable<GameObserver> _Observers)
         {
             var rewards = _Props.Rewards;
-            description.text = rewards[BankItemType.Gold].ToNumeric() + " " + "gold" + "\n" + 
-                               rewards[BankItemType.Diamonds].ToNumeric() + " " + "diamonds";
+            description.text = rewards[BankItemType.FirstCurrency].ToNumeric() + " " + "gold" + "\n" + 
+                               rewards[BankItemType.SecondCurrency].ToNumeric() + " " + "diamonds";
             goldIcon.sprite = PrefabUtilsEx.GetObject<Sprite>(
                 "icons_bags", $"icon_gold_bag_{BagSize(_Props.Size)}");
             diamondIcon.sprite = PrefabUtilsEx.GetObject<Sprite>(

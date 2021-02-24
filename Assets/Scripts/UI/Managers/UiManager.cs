@@ -25,7 +25,6 @@ namespace UI.Managers
         Shop = 128,
         Settings = 256,
         PlusMoney = 512,
-        PlusLifes = 1024
     }
 
     [Flags]
@@ -116,7 +115,7 @@ namespace UI.Managers
                 SaveUtils.PutValue(SaveKeyDebug.DebugUtilsOn, debugOn);
                 DebugConsoleView.Instance.SetGoActive(debugOn);
     #if !UNITY_EDITOR && DEVELOPMENT_BUILD
-                    DebugReporter = GameHelpers.PrefabInitializer.InitPrefab(
+                    DebugReporter = GameHelpers.PrefabUtilsEx.InitPrefab(
                         null,
                         "debug_console",
                         "reporter");
@@ -156,7 +155,6 @@ namespace UI.Managers
                 case MenuUiCategory.Shop:
                 case MenuUiCategory.Settings:
                 case MenuUiCategory.PlusMoney:
-                case MenuUiCategory.PlusLifes:
                     Application.targetFrameRate = GraphicUtils.GetMenuTargetFps();
                     break;
                 default: 

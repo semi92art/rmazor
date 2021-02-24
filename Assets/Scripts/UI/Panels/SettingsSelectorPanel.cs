@@ -48,7 +48,7 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     m_DialogViewer.Container,
                     RtrLites.FullFill),
-                CommenPrefabSetNames.MainMenuDialogPanels, "settings_selector_panel");
+                CommonPrefabSetNames.MainMenuDialogPanels, "settings_selector_panel");
 
             m_ToggleGroup = sp.AddComponent<ToggleGroup>();
             m_Content = sp.GetCompItem<RectTransform>("content");

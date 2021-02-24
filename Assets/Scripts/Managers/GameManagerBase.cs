@@ -69,14 +69,13 @@ namespace Managers
 
             if (RevenueController == null)
                 RevenueController = new DefaultRevenueController();
-            RevenueController.OnRevenueIncome += OnRevenueIncome;
+            //RevenueController.OnRevenueIncome += OnRevenueIncome;
             
             LevelController.Level = _Level;
             LevelController.BeforeStartLevel();
             if (GameMenuUi != null)
                 LevelController.CountdownController.OnTimeChange += GameMenuUi.StatsMiniPanel.SetTime;
             LevelController.CountdownController.OnTimeEnded += OnTimeEnded;
-            LifesController.OnLifesEnded += OnLifesEnded;
         }
         
         #endregion
@@ -107,13 +106,7 @@ namespace Managers
             MainScoreController.Score = 0;
             MainScoreController.NecessaryScore = NecessaryScore(_Args.Level);
             GameMenuUi?.OnBeforeLevelStarted(
-                _Args, 
-                _Lifes =>
-                {
-                    LevelController.CountdownController.SetDuration(LevelDuration(_Args.Level));
-                    LifesController.SetLifesWithoutNotification(_Lifes);
-                    GameMenuUi?.StatsMiniPanel.SetLifes(_Lifes, false);
-                }, 
+                _Args,
                 () => LevelController.StartLevel(
                     LevelDuration(_Args.Level), () => LifesController.Lifes <= 0));
         }
@@ -167,13 +160,6 @@ namespace Managers
         {
             GameMenuUi?.StatsMiniPanel.SetLifes(_Args.Lifes);
         }
-        
-        protected virtual void OnLifesEnded()
-        {
-            GameMenuUi?.OnLifesEnded(_AdditionalLifes => 
-                LifesController.PlusLifes(_AdditionalLifes), () => LevelController.StartLevel(
-                null, () => LifesController.Lifes <= 0));
-        }
 
         protected virtual void OnTimeEnded()
         {
@@ -182,12 +168,7 @@ namespace Managers
                 () => LevelController.StartLevel(
                     null, () => LifesController.Lifes <= 0));
         }
-        
-        protected virtual void OnRevenueIncome(BankItemType _BankItemType, long _Revenue)
-        {
-            GameMenuUi?.OnRevenueIncome(_BankItemType, _Revenue);
-        }
-        
+
         protected abstract float LevelDuration(int _Level);
         protected abstract int NecessaryScore(int _Level);
     
@@ -212,7 +193,6 @@ namespace Managers
             if (GameMenuUi != null)
                 LevelController.CountdownController.OnTimeChange -= GameMenuUi.StatsMiniPanel.SetTime;
             LevelController.CountdownController.OnTimeEnded -= OnTimeEnded;
-            LifesController.OnLifesEnded -= OnLifesEnded;
         }
 
         #endregion

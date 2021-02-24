@@ -14,7 +14,7 @@ namespace Extensions
             else
                 Object.DestroyImmediate(_GameObject);
 #else
-            Object.Destroy(_GameObject)
+            Object.Destroy(_GameObject);
 #endif
         }
     }
