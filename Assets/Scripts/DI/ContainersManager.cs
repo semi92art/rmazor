@@ -29,7 +29,7 @@ namespace DI
         
         private static ContainersManager _instance;
         public static ContainersManager Instance => 
-            CommonUtils.Singleton(ref _instance, "Containers Manager");
+            CommonUtils.MonoBehSingleton(ref _instance, "Containers Manager");
 
         #endregion
 

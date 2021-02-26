@@ -4,6 +4,7 @@ using Network;
 using Network.Packets;
 using UnityEngine;
 using UnityEngine.Events;
+using Utils;
 #if UNITY_ANDROID
 using GooglePlayGames;
 using GooglePlayGames.BasicApi;
@@ -36,7 +37,9 @@ namespace Controllers
 
         public void Authenticate(UnityAction<AuthResult> _OnDoIfRegister)
         {
-#if UNITY_ANDROID
+#if UNITY_EDITOR
+            Login(SystemInfo.deviceUniqueIdentifier, "123", _OnDoIfRegister);         
+#elif UNITY_ANDROID
             AuthenticateWithGoogle(_OnDoIfRegister);
 #elif UNITY_IPHONE
             AuthenticateWithApple(_OnDoIfRegister);
@@ -110,7 +113,7 @@ namespace Controllers
                 loginPacket.OnSuccess(() =>
                     {
                         Debug.Log("Login successfully");
-                        GameClient.Instance.AccountId = loginPacket.Response.Id;
+                        GameClientUtils.AccountId = loginPacket.Response.Id;
                     }
                 );
                 loginPacket.OnFail(() =>
@@ -144,12 +147,12 @@ namespace Controllers
                 {
                     Name = _Login,
                     PasswordHash = _PasswordHash,
-                    GameId = GameClient.Instance.DefaultGameId
+                    GameId = GameClientUtils.DefaultGameId
                 });
             registerPacket.OnSuccess(() =>
                 {
                     Debug.Log("Registered successfully");
-                    GameClient.Instance.AccountId = registerPacket.Response.Id;
+                    GameClientUtils.AccountId = registerPacket.Response.Id;
                     _OnResult?.Invoke(AuthResult.RegisterSuccess);
                 })
                 .OnFail(() =>

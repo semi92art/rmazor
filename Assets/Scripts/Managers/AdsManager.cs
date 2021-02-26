@@ -35,14 +35,14 @@ namespace Managers
             get
             {
                 var dff = new AccountDataFieldFilter(
-                    GameClient.Instance.AccountId, DataFieldIds.ShowAds);
+                    GameClientUtils.AccountId, DataFieldIds.ShowAds);
                 return dff.Filter().First().ToBool();
             }
             set
             {
                 m_ShowAds = value;
                 var dff = new AccountDataFieldFilter(
-                    GameClient.Instance.AccountId, DataFieldIds.ShowAds);
+                    GameClientUtils.AccountId, DataFieldIds.ShowAds);
                 dff.Filter(_DataFields =>
                 {
                     _DataFields

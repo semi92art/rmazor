@@ -14,7 +14,7 @@ namespace Managers
         #region singleton
     
         private static BankManager _instance;
-        public static BankManager Instance => CommonUtils.Singleton(ref _instance, "Money Manager");
+        public static BankManager Instance => CommonUtils.MonoBehSingleton(ref _instance, "Money Manager");
     
         #endregion
     
@@ -34,7 +34,7 @@ namespace Managers
         {
             var result = new BankEntity();
             var adf = new AccountDataFieldFilter(
-                GameClient.Instance.AccountId,
+                GameClientUtils.AccountId,
                 DataFieldIds.FirstCurrency,
                 DataFieldIds.SecondCurrency);
             adf.Filter(_DataFields =>
@@ -100,7 +100,7 @@ namespace Managers
             foreach (var kvp in _BankItems.ToArray())
                 _BankItems[kvp.Key] = MathUtils.Clamp(kvp.Value, MinMoneyCount, MaxMoneyCount);
 
-            var aff = new AccountDataFieldFilter(GameClient.Instance.AccountId,
+            var aff = new AccountDataFieldFilter(GameClientUtils.AccountId,
                 DataFieldIds.FirstCurrency,
                 DataFieldIds.SecondCurrency);
             
@@ -132,6 +132,14 @@ namespace Managers
             PlusBankItems(bank.BankItems);
             OnIncome?.Invoke(new IncomeEventArgs(bank, _From));    
         }
+
+        // public bool BankExistLocally
+        // {
+        //     get
+        //     {
+        //         
+        //     }
+        // }
     
         #endregion
     }

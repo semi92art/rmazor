@@ -1,7 +1,6 @@
 ﻿using System;
 using Constants;
 using Controllers;
-using DebugConsole;
 using Entities;
 using Exceptions;
 using Extensions;
@@ -113,7 +112,7 @@ namespace UI.Managers
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 bool debugOn = SaveUtils.GetValue<bool>(SaveKeyDebug.DebugUtilsOn);
                 SaveUtils.PutValue(SaveKeyDebug.DebugUtilsOn, debugOn);
-                DebugConsoleView.Instance.SetGoActive(debugOn);
+                DebugConsole.DebugConsoleView.Instance.SetGoActive(debugOn);
     #if !UNITY_EDITOR && DEVELOPMENT_BUILD
                     DebugReporter = GameHelpers.PrefabUtilsEx.InitPrefab(
                         null,

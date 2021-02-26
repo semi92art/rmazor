@@ -1,9 +1,11 @@
-﻿namespace Network.Packets
+﻿using Utils;
+
+namespace Network.Packets
 {
     public class RankPacket : PacketBase
     {
         public override string Id => nameof(RankPacket);
-        public override string Url => $"{GameClient.Instance.ServerApiUrl}/api/scores/rank";
+        public override string Url => $"{GameClientUtils.ServerApiUrl}/api/scores/rank";
         public RankResponseArgs Response { get; private set; }
         
         public RankPacket(RankRequestArgs _Request) : base(_Request) { }

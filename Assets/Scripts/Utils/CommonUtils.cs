@@ -16,8 +16,8 @@ namespace Utils
     public static class CommonUtils
     {
         public const float SymbolWidth = 19;
-        
         public static readonly System.Random RandomGen = new System.Random();
+        public static bool UnitTesting = false;
 
 #if UNITY_ANDROID
         public static int GetAndroidSdkLevel() 
@@ -29,7 +29,7 @@ namespace Utils
         }
 #endif
 
-        public static T Singleton<T>(ref T _Instance, string _Name) where T : MonoBehaviour
+        public static T MonoBehSingleton<T>(ref T _Instance, string _Name) where T : MonoBehaviour
         {
             if (_Instance is T ptm && !ptm.IsNull())
                 return _Instance;

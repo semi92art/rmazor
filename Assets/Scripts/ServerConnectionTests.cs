@@ -27,7 +27,7 @@ public class ServerConnectionTests
         //Arrange
         InitGameObjects();
         GameClient.Instance.Init(true);
-        string url = $"{GameClient.Instance.ServerApiUrl}/timetest";
+        string url = $"{GameClientUtils.ServerApiUrl}/timetest";
 
         var request = new UnityWebRequest(url, "GET");
         request.downloadHandler = new DownloadHandlerBuffer();

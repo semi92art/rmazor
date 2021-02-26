@@ -73,8 +73,8 @@ public class EditorHelper : EditorWindow
     {
         if (Application.isPlaying)
         {
-            GUILayout.Label($"Account Id: {GameClient.Instance.AccountId}");
-            GUILayout.Label($"Device Id: {GameClient.Instance.DeviceId}");
+            GUILayout.Label($"Account Id: {GameClientUtils.AccountId}");
+            GUILayout.Label($"Device Id: {GameClientUtils.DeviceId}");
             GUILayout.Label($"Target FPS: {Application.targetFrameRate}");
         }
         
@@ -230,8 +230,8 @@ public class EditorHelper : EditorWindow
 
     private static void PrintCommonInfo()
     {
-        Debug.Log($"Account Id: {GameClient.Instance.AccountId}");
-        Debug.Log($"Device Id: {GameClient.Instance.DeviceId}");
+        Debug.Log($"Account Id: {GameClientUtils.AccountId}");
+        Debug.Log($"Device Id: {GameClientUtils.DeviceId}");
     }
 
     private void CreateTestUsers(int _Count)
@@ -333,28 +333,28 @@ public class EditorHelper : EditorWindow
             {"Last connection succeeded", SaveUtils.GetValue<bool>(SaveKey.LastConnectionSucceeded).ToString()},
             {"Login", SaveUtils.GetValue<string>(SaveKey.Login) ?? "not exist"},
             {"Password hash", SaveUtils.GetValue<string>(SaveKey.PasswordHash) ?? "not exist"},
-            {"Account id", SaveUtils.GetValue<int>(SaveKey.AccountId).ToString()},
-            {"Game id", SaveUtils.GetValue<int>(SaveKey.GameId).ToString()},
+            {"Account id", SaveUtils.GetValue<int?>(SaveKey.AccountId).ToString()},
+            {"Game id", SaveUtils.GetValue<int?>(SaveKey.GameId).ToString()},
             {"Show ads", GetAccountFieldCached(DataFieldIds.ShowAds)},
             {"Gold", GetAccountFieldCached(DataFieldIds.FirstCurrency)},
             {"Diamonds", GetAccountFieldCached(DataFieldIds.SecondCurrency)},
-            {"Main score", GetGameFieldCached(DataFieldIds.MainScore)}
+            {"Main score", GetGameFieldCached(DataFieldIds.InfiniteLevelScore)}
         };
     
     private static string GetAccountFieldCached(ushort _FieldId)
     {
-        int accountId = SaveUtils.GetValue<int>(SaveKey.AccountId);
+        int? accountId = SaveUtils.GetValue<int?>(SaveKey.AccountId);
         var field = SaveUtils.GetValue<AccountDataField>(
-            SaveKey.AccountDataFieldValue(accountId, _FieldId));
+            SaveKey.AccountDataFieldValue(accountId ?? GameClientUtils.DefaultAccountId, _FieldId));
         return DataFieldValueString(field);
     }
     
     private static string GetGameFieldCached(ushort _FieldId)
     {
-        int accountId = SaveUtils.GetValue<int>(SaveKey.AccountId);
+        int? accountId = SaveUtils.GetValue<int?>(SaveKey.AccountId);
         int gameId = SaveUtils.GetValue<int>(SaveKey.GameId);
         var field = SaveUtils.GetValue<GameDataField>(
-            SaveKey.GameDataFieldValue(accountId, gameId, _FieldId));
+            SaveKey.GameDataFieldValue(accountId ?? GameClientUtils.DefaultAccountId, gameId, _FieldId));
         return DataFieldValueString(field);
     }
 

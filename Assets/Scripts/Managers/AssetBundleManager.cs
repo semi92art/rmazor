@@ -39,7 +39,7 @@ namespace Managers
         #region singleton
     
         private static AssetBundleManager _instance;
-        public static AssetBundleManager Instance => CommonUtils.Singleton(ref _instance, "Asset Bundle Manager");
+        public static AssetBundleManager Instance => CommonUtils.MonoBehSingleton(ref _instance, "Asset Bundle Manager");
 
         #endregion
         

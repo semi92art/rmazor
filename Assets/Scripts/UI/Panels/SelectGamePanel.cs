@@ -9,6 +9,7 @@ using UI.Factories;
 using UI.Managers;
 using UI.PanelItems;
 using UnityEngine;
+using Utils;
 
 namespace UI.Panels
 {
@@ -59,7 +60,7 @@ namespace UI.Panels
                 ChooseGameItem cgi = cgiObjClone.GetComponent<ChooseGameItem>();
                 cgiProps.Click = () =>
                 {
-                    GameClient.Instance.GameId = cgiProps.GameId;
+                    GameClientUtils.GameId = cgiProps.GameId;
                     m_SelectGame.Invoke(cgiProps.GameId);
                     m_DialogViewer.Back();
                 };

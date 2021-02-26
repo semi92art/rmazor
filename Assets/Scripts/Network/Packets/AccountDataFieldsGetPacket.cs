@@ -1,9 +1,11 @@
-﻿namespace Network.Packets
+﻿using Utils;
+
+namespace Network.Packets
 {
     public class AccountDataFieldsGetPacket : PacketBase
     {
         public override string Id => nameof(GameDataFieldsGetPacket);
-        public override string Url => $"{GameClient.Instance.ServerApiUrl}/api/account_data_fields/get_list";
+        public override string Url => $"{GameClientUtils.ServerApiUrl}/api/account_data_fields/get_list";
         public AccountFieldDto[] Response { get; private set; }
         
         public AccountDataFieldsGetPacket(AccountFieldListDtoLite _Request) : base(_Request) { }

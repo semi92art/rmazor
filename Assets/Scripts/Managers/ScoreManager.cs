@@ -16,7 +16,7 @@ namespace Managers
 
         private static ScoreManager _instance;
 
-        public static ScoreManager Instance = CommonUtils.Singleton(ref _instance, "Score Manager");
+        public static ScoreManager Instance = CommonUtils.MonoBehSingleton(ref _instance, "Score Manager");
 
         #endregion
 
@@ -29,13 +29,13 @@ namespace Managers
             var result = new ScoresEntity();
 
             var gdf = new GameDataFieldFilter(
-                GameClient.Instance.AccountId,
-                GameClient.Instance.GameId,
-                DataFieldIds.MainScore);
+                GameClientUtils.AccountId,
+                GameClientUtils.GameId,
+                DataFieldIds.InfiniteLevelScore);
             gdf.Filter(_DataFields =>
             {
                 int mainScore = _DataFields.First(_F =>
-                    _F.FieldId == DataFieldIds.MainScore).ToInt();
+                    _F.FieldId == DataFieldIds.InfiniteLevelScore).ToInt();
                 result.Scores.Add(ScoreType.Main, mainScore);
                 result.Loaded = true;
                 OnScoresChanged?.Invoke(new ScoresEventArgs(result));
@@ -45,15 +45,15 @@ namespace Managers
 
         public void SetScore(ScoreType _ScoreType, int _Value)
         {
-            var gff = new GameDataFieldFilter(GameClient.Instance.AccountId,
-                GameClient.Instance.GameId,
-                DataFieldIds.MainScore);
+            var gff = new GameDataFieldFilter(GameClientUtils.AccountId,
+                GameClientUtils.GameId,
+                DataFieldIds.InfiniteLevelScore);
             gff.Filter(_Fields =>
             {
                 if (_ScoreType == ScoreType.Main)
                 {
                     _Fields.First(_F =>
-                            _F.FieldId == DataFieldIds.MainScore)
+                            _F.FieldId == DataFieldIds.InfiniteLevelScore)
                         .SetValue(_Value).Save();
                 }
                 OnScoresChanged?.Invoke(new ScoresEventArgs(GetScores()));

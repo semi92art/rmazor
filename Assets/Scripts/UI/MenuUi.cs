@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Constants;
 using Controllers;
 using DialogViewers;
 using Entities;
 using Exceptions;
 using Extensions;
 using GameHelpers;
-using Lean.Localization;
 using Managers;
 using UI.Factories;
 using UI.Managers;
@@ -43,11 +43,12 @@ namespace UI
 
         public void Init()
         {
+            DataFieldsMigrator.InitDefaultDataFieldValues();
             CreateCanvas();
             CreateDialogViewers();
             CreateBackground();
             CreateTransitionRenderer();
-            
+
             PreloadMainMenu();
             if (m_OnStart)
                 CreateLoadingPanel();
@@ -82,8 +83,8 @@ namespace UI
             m_MainBackgroundRenderer = MainBackgroundRenderer.Create();
             RawImage rImage = backgroundPanel.GetCompItem<RawImage>("raw_image");
             rImage.texture = m_MainBackgroundRenderer.Texture;
-            
-            m_MenuDialogViewer.AddNotDialogItem(backgroundPanel.RTransform(), 
+
+            m_MenuDialogViewer.AddNotDialogItem(backgroundPanel.RTransform(),
                 MenuUiCategory.Loading |
                 MenuUiCategory.Profile |
                 MenuUiCategory.Settings |
@@ -94,7 +95,7 @@ namespace UI
                 MenuUiCategory.Login |
                 MenuUiCategory.PlusMoney);
         }
-    
+
         private void CreateDialogViewers()
         {
             m_MenuDialogViewer = MainMenuDialogViewer.Create(
@@ -129,7 +130,7 @@ namespace UI
                 };
                 Func<int, string> getLoadingText = _Idx =>
                     Mathf.Abs(percents - 100) < float.Epsilon ? loadingTexts[3] : loadingTexts[_Idx];
-                
+
                 m_LoadingPanel.SetProgress(percents, loadingTexts[1]);
 
                 Coroutines.Run(Coroutines.WaitWhile(
@@ -147,7 +148,7 @@ namespace UI
                             m_LoadingPanel.SetProgress(percents, getLoadingText.Invoke(2));
                         }
                     }, () => loadingStopped));
-                
+
                 var authCtrl = new AuthController();
                 authCtrl.Authenticate(_AuthResult =>
                 {
@@ -159,13 +160,25 @@ namespace UI
                             {BankItemType.SecondCurrency, 10}
                         });
                     };
+
+                    bool authorizedAtLeastOnce = SaveUtils.GetValue<bool>(SaveKey.AuthorizedAtLeastOnce);
                     
                     switch (_AuthResult)
                     {
                         case AuthController.AuthResult.LoginSuccess:
+                            if (!authorizedAtLeastOnce)
+                            {
+                                DataFieldsMigrator.MigrateFromDatabase();
+                                SaveUtils.PutValue(SaveKey.AuthorizedAtLeastOnce, true);
+                            }
                             BankManager.Instance.GetBank(true);
                             break;
                         case AuthController.AuthResult.RegisterSuccess:
+                            if (!authorizedAtLeastOnce)
+                            {
+                                DataFieldsMigrator.MigrateFromDefault();
+                                SaveUtils.PutValue(SaveKey.AuthorizedAtLeastOnce, true);
+                            }
                             setBankStart.Invoke();
                             BankManager.Instance.GetBank(true);
                             break;
@@ -186,7 +199,7 @@ namespace UI
 
                     if (loadingStopped)
                         return;
-                    
+
                     percents += 50;
                     m_LoadingPanel.SetProgress(percents, getLoadingText.Invoke(1));
                     ShowMainMenu(true);
@@ -196,19 +209,19 @@ namespace UI
 
         private void ShowMainMenu(bool _OnStart)
         {
-            if (_OnStart)
+            if (!_OnStart)
             {
-                m_TransitionRenderer.TransitionAction = (_, _Args) =>
-                {
-                    m_LoadingPanel.Break(null);
-                    m_MenuDialogViewer.Back();
-                    m_MainMenuUi.Show();
-                };
-                m_TransitionRenderer.StartTransition();
-            }
-            else
                 m_MainMenuUi.Show();
+                return;
+            }
             
+            m_TransitionRenderer.TransitionAction = (_, _Args) =>
+            {
+                m_LoadingPanel.Break(null);
+                m_MenuDialogViewer.Back();
+                m_MainMenuUi.Show();
+            };
+            m_TransitionRenderer.StartTransition();
         }
 
         private void PreloadMainMenu()
@@ -221,7 +234,7 @@ namespace UI
             m_MainMenuUi.AddObservers(GetObservers());
             m_MainMenuUi.Init();
         }
-        
+
         private GameObject CreateLoadingTransitionPanel()
         {
             return PrefabUtilsEx.InitUiPrefab(
@@ -235,7 +248,7 @@ namespace UI
                 UiFactory.UiRectTransform(m_Canvas.RTransform(), RtrLites.FullFill),
                 "main_menu", "main_menu_background_panel");
         }
-    
+        
         #endregion
     }
 }

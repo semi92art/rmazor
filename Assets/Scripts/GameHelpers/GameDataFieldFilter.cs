@@ -55,6 +55,13 @@ namespace GameHelpers
                 _FinishAction?.Invoke(m_Fields);
                 yield break;
             }
+
+            if (OnlyLocal)
+            {
+                m_Fields = GetCachedFields();
+                _FinishAction?.Invoke(m_Fields);
+                yield break;
+            }
             
             var packet = CreatePacket();
             packet.OnSuccess(() =>
@@ -65,7 +72,7 @@ namespace GameHelpers
                 _FinishAction?.Invoke(dataFields);
             }).OnFail(() =>
             {
-                if (AccountId != GameClient.Instance.AccountId)
+                if (AccountId != GameClientUtils.AccountId)
                     return;
                 m_Fields = GetCachedFields();
                 m_Fields.ForEach(_Field => _Field.Save(true));
@@ -79,7 +86,7 @@ namespace GameHelpers
             if (WasFiltered(m_Fields, _ForceRefresh))
                 return m_Fields;
             
-            if (AccountId == GameClient.Instance.AccountId)
+            if (AccountId == GameClientUtils.AccountId || OnlyLocal)
                 m_Fields = GetCachedFields();
             else
             {

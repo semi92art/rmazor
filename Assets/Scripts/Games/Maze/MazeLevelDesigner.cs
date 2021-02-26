@@ -70,12 +70,13 @@ namespace Games.Maze
                 var wallGo = new GameObject("wall");
                 wallGo.SetParent(wallsParentGo);
                 var wallLine = wallGo.AddComponent<Line>();
-                wallLine.Start = wall.Start;
-                wallLine.End = wall.End;
+                wallGo.transform.SetPosXY(wall.Start);
+                wallLine.Start = Vector3.zero;
+                wallLine.End = wall.End - wall.Start;
                 wallLine.Thickness = mazeInfo.WallWidth;
                 wallLine.UpdateMesh(true);
                 var wallColl = wallGo.AddComponent<EdgeCollider2D>();
-                wallColl.points = new[] {wall.Start, wall.End};
+                wallColl.points = new[] {Vector2.zero, wall.End - wall.Start};
                 wallColl.edgeRadius = mazeInfo.WallWidth * 0.5f;
             }
 

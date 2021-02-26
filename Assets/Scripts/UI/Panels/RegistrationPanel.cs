@@ -109,9 +109,9 @@ namespace UI.Panels
             });
             packet.OnSuccess(() =>
             {
-                GameClient.Instance.Login = packet.Response.Name;
-                GameClient.Instance.PasswordHash = packet.Response.PasswordHash;
-                GameClient.Instance.AccountId = packet.Response.Id;
+                GameClientUtils.Login = packet.Response.Name;
+                GameClientUtils.PasswordHash = packet.Response.PasswordHash;
+                GameClientUtils.AccountId = packet.Response.Id;
                 BankManager.Instance.GetBank(true);
                 m_RegisteredSuccessfully.enabled = true;
                 Coroutines.Run(Coroutines.Delay(() =>

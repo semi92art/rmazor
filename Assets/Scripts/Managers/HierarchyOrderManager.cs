@@ -14,7 +14,7 @@ namespace Managers
         #region singleton
         
         private static HierarchyOrderManager _instance;
-        public static HierarchyOrderManager Instance => CommonUtils.Singleton(ref _instance, "Hierarchy Order Manager");
+        public static HierarchyOrderManager Instance => CommonUtils.MonoBehSingleton(ref _instance, "Hierarchy Order Manager");
 
         #endregion
         

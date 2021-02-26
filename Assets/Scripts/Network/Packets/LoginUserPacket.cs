@@ -1,9 +1,11 @@
-﻿namespace Network.Packets
+﻿using Utils;
+
+namespace Network.Packets
 {
     public sealed class LoginUserPacket : PacketBase
     {
         public override string Id => nameof(LoginUserPacket);
-        public override string Url => $"{GameClient.Instance.ServerApiUrl}/api/accounts/login";
+        public override string Url => $"{GameClientUtils.ServerApiUrl}/api/accounts/login";
         public Account Response { get; private set; }
         
         private readonly LoginUserPacketRequestArgs m_Request;

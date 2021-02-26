@@ -4,6 +4,7 @@ using Games.PointsTapper;
 using Network;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Utils;
 
 public static class LevelLoader
 {
@@ -19,7 +20,7 @@ public static class LevelLoader
     {
         if (_Scene.name != SceneNames.Level)
             return;
-        LoadGame(GameClient.Instance.GameId);
+        LoadGame(GameClientUtils.GameId);
     }
 
     public static void LoadLevel(int _Level)

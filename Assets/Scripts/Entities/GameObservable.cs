@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
-using DebugConsole;
 using Managers;
 
 namespace Entities
@@ -23,8 +22,8 @@ namespace Entities
             if (!m_Observers.Contains(PurchasesManager.Instance))
                 m_Observers.Add(PurchasesManager.Instance);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (!m_Observers.Contains(DebugConsoleView.Instance.Controller))
-                m_Observers.Add(DebugConsoleView.Instance.Controller);
+            if (!m_Observers.Contains(DebugConsole.DebugConsoleView.Instance.Controller))
+                m_Observers.Add(DebugConsole.DebugConsoleView.Instance.Controller);
 #endif
         }
         

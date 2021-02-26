@@ -32,7 +32,7 @@ namespace Utils
 
         private static ColorPalette GetCurrentPalette()
         {
-            string paletteName = $"Game {GameClient.Instance.GameId}";
+            string paletteName = $"Game {GameClientUtils.GameId}";
             var cpd = ColorPaletteData.Singleton;
             int paletteIdx = cpd.getPaletteIndexFromName(paletteName);
             return cpd.colorPaletteList[paletteIdx];

@@ -12,6 +12,12 @@ namespace GameHelpers
         protected readonly ushort[] FieldIds;
         
         #endregion
+        
+        #region api
+        
+        public bool OnlyLocal { get; set; }
+        
+        #endregion
 
         #region constructors
 

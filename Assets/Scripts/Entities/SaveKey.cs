@@ -8,7 +8,9 @@ namespace Entities
     {
         #region factory
     
-        public static SaveKey AccountId => new SaveKey("account_id", typeof(int));
+        public static SaveKey AuthorizedAtLeastOnce => new SaveKey("authorized_at_least_once", typeof(bool));
+        public static SaveKey NotFirstLaunch => new SaveKey("not_first_launch", typeof(bool));
+        public static SaveKey AccountId => new SaveKey("account_id", typeof(int?));
         public static SaveKey Login => new SaveKey("login", typeof(string));
         public static SaveKey PasswordHash => new SaveKey("password_hash", typeof(string));
         public static SaveKey GameId => new SaveKey("game_id", typeof(int));

@@ -1,9 +1,11 @@
-﻿namespace Network.Packets
+﻿using Utils;
+
+namespace Network.Packets
 {
     public sealed class GameDataFieldsSetPacket : PacketBase
     {
         public override string Id => nameof(GameDataFieldsSetPacket);
-        public override string Url => $"{GameClient.Instance.ServerApiUrl}/api/game_data_fields/set_list";
+        public override string Url => $"{GameClientUtils.ServerApiUrl}/api/game_data_fields/set_list";
         
         public GameDataFieldsSetPacket(GameFieldDto[] _Request) : base(_Request) { }
     }

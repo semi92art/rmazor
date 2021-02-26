@@ -41,8 +41,7 @@ namespace Network
         #region nonpublic members
         
         private readonly Dictionary<string, IPacket> m_Packets = new Dictionary<string, IPacket>();
-        private string m_ServerName;
-        private Dictionary<string, string> m_ServerBaseUrls;
+        
         private bool m_FirstRequest = true;
         private bool m_ConnectionTestStarted;
         
@@ -56,75 +55,17 @@ namespace Network
         
         #region api
 
-        public string ServerApiUrl => m_ServerBaseUrls[m_ServerName];
-
-        public int AccountId
-        {
-            get => SaveUtils.GetValue<int>(SaveKey.AccountId);
-            set => SaveUtils.PutValue(SaveKey.AccountId, value);
-        }
-
-        public string Login
-        {
-            get => SaveUtils.GetValue<string>(SaveKey.Login);
-            set => SaveUtils.PutValue(SaveKey.Login, value);
-        }
-
-        public string PasswordHash
-        {
-            get => SaveUtils.GetValue<string>(SaveKey.PasswordHash);
-            set => SaveUtils.PutValue(SaveKey.PasswordHash, value);
-        }
-
-        public int GameId
-        {
-            get => SaveUtils.GetValue<int>(SaveKey.GameId);
-            set => SaveUtils.PutValue(SaveKey.GameId, value);
-        }
-
-        public int DefaultGameId
-        {
-            get
-            {
-#if GAME_1
-                return 1;
-#elif GAME_2
-                return 2;
-#elif GAME_3
-                return 3;
-#elif GAME_4
-                return 4;
-#elif GAME_5
-                return 5;
-#endif
-                return 1;
-            }
-        }
-
-        public string DeviceId => $"test_{SystemInfo.deviceUniqueIdentifier}";
-        
+       
 
         public void Init(bool _TestMode = false)
         {
-#if UNITY_EDITOR
-            m_ServerName = "Debug";
-#else
-            m_ServerName = "Ubuntu1";
-#endif
 
-            if (GameId == 0)
-                GameId = DefaultGameId;
-            m_ServerBaseUrls = new Dictionary<string, string>
-            {
-                {"Ubuntu1", @"http://77.37.152.15:7000"},
-#if UNITY_EDITOR
-                {"Debug", SaveUtils.GetValue<string>(SaveKeyDebug.ServerUrl)},
-                {"TestRunner", SaveUtils.GetValue<string>(SaveKeyDebug.ServerUrl)}
-#endif
-            };
-            
+
+            if (GameClientUtils.GameId == 0)
+                GameClientUtils.GameId = GameClientUtils.DefaultGameId;
+
             if (_TestMode)
-                m_ServerName = "TestRunner";
+                CommonUtils.UnitTesting = true;
             if (!_TestMode)
                 StartTestingConnection();
             GameSettings.PlayMode = !_TestMode;
@@ -153,7 +94,7 @@ namespace Network
         {
             return JsonConvert.DeserializeObject<T>(_Json);
         }
-
+        
         #endregion
         
         #region nonpublic methods

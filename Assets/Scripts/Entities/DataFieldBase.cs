@@ -17,7 +17,8 @@ namespace Entities
         protected readonly int AccountId;
         [JsonIgnore]
         protected DateTime LastUpdate;
-        
+
+        public object             GetValue()    => Value;
         public bool               ToBool()      => Convert.ToBoolean(Value);
         public override string    ToString()    => Convert.ToString(Value);
         public int                ToInt()       => Convert.ToInt32(Value);

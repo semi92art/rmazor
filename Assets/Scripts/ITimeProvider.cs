@@ -35,14 +35,14 @@ public abstract class TimeProviderBase : MonoBehaviour, ITimeProvider, ISingleto
 public class UiTimeProvider : TimeProviderBase
 {
     private static UiTimeProvider _instance;
-    public static  UiTimeProvider Instance => CommonUtils.Singleton(ref _instance, "UI Time Provider");
+    public static  UiTimeProvider Instance => CommonUtils.MonoBehSingleton(ref _instance, "UI Time Provider");
     private UiTimeProvider() { }
 }
 
 public class GameTimeProvider : TimeProviderBase
 {
     private static GameTimeProvider _instance;
-    public static  GameTimeProvider Instance  => CommonUtils.Singleton(ref _instance, "Game Time Provider");
+    public static  GameTimeProvider Instance  => CommonUtils.MonoBehSingleton(ref _instance, "Game Time Provider");
     private GameTimeProvider() { }
 }
 

@@ -78,7 +78,7 @@ namespace UI
         {
             InitContainers(m_Parent);
             InitSelectGameButton();
-            SetGameLogo(GameClient.Instance.GameId);
+            SetGameLogo(GameClientUtils.GameId);
             InitCenterButtonsGroup();
             InitBottomButtonsGroups();
             InitSmallButtons();
@@ -161,7 +161,7 @@ namespace UI
         private void SetGameLogo(int _GameId)
         {
             m_GameLogo.sprite = PrefabUtilsEx.GetObject<Sprite>(
-                    "game_logos", $"game_logo_{GameClient.Instance.GameId}");
+                    "game_logos", $"game_logo_{GameClientUtils.GameId}");
             m_MainBackgroundRenderer.UpdateColors();
         }
 
@@ -195,7 +195,7 @@ namespace UI
             var bestScoreText = playButton.GetCompItem<TextMeshProUGUI>("best_score_text");
 
             Coroutines.Run(Coroutines.WaitWhile(
-                () => GameClient.Instance.AccountId == default,
+                () => GameClientUtils.AccountId == default,
                 () =>
             {
                 var scores = ScoreManager.Instance.GetScores();

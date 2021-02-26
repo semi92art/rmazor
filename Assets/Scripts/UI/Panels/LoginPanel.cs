@@ -67,7 +67,7 @@ namespace UI.Panels
             registrationButton.SetOnClick(OnRegistrationButtonClick);
             logoutButton.SetOnClick(Logout);
 
-            bool isLogined = !string.IsNullOrEmpty(GameClient.Instance.Login);
+            bool isLogined = !string.IsNullOrEmpty(GameClientUtils.Login);
             logoutButton.SetGoActive(isLogined);
             loginButton.SetGoActive(!isLogined);
 
@@ -97,9 +97,9 @@ namespace UI.Panels
             });
             packet.OnSuccess(() =>
             {
-                GameClient.Instance.Login = packet.Response.Name;
-                GameClient.Instance.PasswordHash = packet.Response.PasswordHash;
-                GameClient.Instance.AccountId = packet.Response.Id;
+                GameClientUtils.Login = packet.Response.Name;
+                GameClientUtils.PasswordHash = packet.Response.PasswordHash;
+                GameClientUtils.AccountId = packet.Response.Id;
                 BankManager.Instance.GetBank(true);
                 DialogViewer.Back();       
             });
@@ -158,13 +158,13 @@ namespace UI.Panels
             Notify(this, NotifyMessageLogoutButtonClick);
             var packet = new LoginUserPacket(new LoginUserPacketRequestArgs
             {
-                DeviceId = GameClient.Instance.DeviceId
+                DeviceId = GameClientUtils.DeviceId
             });
             packet.OnSuccess(() =>
             {
-                GameClient.Instance.Login = string.Empty;
-                GameClient.Instance.PasswordHash = string.Empty;
-                GameClient.Instance.AccountId = packet.Response.Id;
+                GameClientUtils.Login = string.Empty;
+                GameClientUtils.PasswordHash = string.Empty;
+                GameClientUtils.AccountId = packet.Response.Id;
                 BankManager.Instance.GetBank(true);
                 DialogViewer.Back();       
             });

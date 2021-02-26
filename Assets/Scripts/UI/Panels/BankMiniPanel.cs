@@ -138,7 +138,7 @@ namespace UI.Panels
         public void Show()
         {
             Coroutines.Run(Coroutines.WaitWhile(
-                () => GameClient.Instance.AccountId == default,
+                () => GameClientUtils.AccountId == default,
                 () =>
             {
                 var bank = BankManager.Instance.GetBank();
