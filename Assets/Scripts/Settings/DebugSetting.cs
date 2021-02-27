@@ -28,7 +28,7 @@ namespace Settings
             SaveUtils.PutValue(SaveKeyDebug.DebugUtilsOn, debugOn);
             DebugConsole.DebugConsoleView.Instance.SetGoActive(debugOn);
 #if !UNITY_EDITOR && DEVELOPMENT_BUILD
-            UiManager.Instance.DebugReporter.SetActive(debugOn);
+            UI.Managers.UiManager.Instance.DebugReporter.SetActive(debugOn);
 #endif 
 #endif
 

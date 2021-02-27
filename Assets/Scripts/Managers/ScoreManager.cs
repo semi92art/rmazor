@@ -24,22 +24,31 @@ namespace Managers
 
         public event ScoresEventHandler OnScoresChanged;
 
+        public ScoresEntity GetMainScore()
+        {
+#if UNITY_EDITOR
+            return GetMainScoreCached();
+#elif UNITY_ANDROID
+            return GetMainScoreAndroid();
+#elif UNITY_IPHONE
+            return GetMainScoreIos();
+#endif
+        }
+
+        public void SetMainScore(int _Value)
+        {
+            SetMainScoreCache(_Value);
+#if UNITY_ANDROID
+            SetMainScoreAndroid(_Value);
+#elif UNITY_IPHONE
+            SetMainScoreIos(_Value);
+#endif
+        }
+        
         public ScoresEntity GetScores(bool _ForcedFromServer = false)
         {
             var result = new ScoresEntity();
-
-            var gdf = new GameDataFieldFilter(
-                GameClientUtils.AccountId,
-                GameClientUtils.GameId,
-                DataFieldIds.InfiniteLevelScore);
-            gdf.Filter(_DataFields =>
-            {
-                int mainScore = _DataFields.First(_F =>
-                    _F.FieldId == DataFieldIds.InfiniteLevelScore).ToInt();
-                result.Scores.Add(ScoreType.Main, mainScore);
-                result.Loaded = true;
-                OnScoresChanged?.Invoke(new ScoresEventArgs(result));
-            }, _ForcedFromServer);
+            result.Loaded = true;
             return result;
         }
 
@@ -47,17 +56,58 @@ namespace Managers
         {
             var gff = new GameDataFieldFilter(GameClientUtils.AccountId,
                 GameClientUtils.GameId,
-                DataFieldIds.InfiniteLevelScore);
+                DataFieldIds.Main);
             gff.Filter(_Fields =>
             {
                 if (_ScoreType == ScoreType.Main)
                 {
                     _Fields.First(_F =>
-                            _F.FieldId == DataFieldIds.InfiniteLevelScore)
+                            _F.FieldId == DataFieldIds.Main)
                         .SetValue(_Value).Save();
                 }
                 OnScoresChanged?.Invoke(new ScoresEventArgs(GetScores()));
             });
+        }
+        
+        #endregion
+        
+        #region nonpublic methods
+
+        private ScoresEntity GetMainScoreCached()
+        {
+            int? score = SaveUtils.GetValue<int?>(SaveKey.MainScore);
+            return new ScoresEntity{Loaded = true, Scores = new Dictionary<ScoreType, int>
+            {
+                {ScoreType.Main, score ?? 0}
+            }};
+        }
+        
+        private ScoresEntity GetMainScoreAndroid()
+        {
+            //TODO
+            return GetMainScoreCached();
+        }
+
+        private ScoresEntity GetMainScoreIos()
+        {
+            //TODO
+            return GetMainScoreCached();
+        }
+
+        private void SetMainScoreCache(int _Value)
+        {
+            int? val = _Value;
+            SaveUtils.PutValue(SaveKey.MainScore, val);
+        }
+
+        private void SetMainScoreAndroid(int _Value)
+        {
+            //TODO
+        }
+
+        private void SetMainScoreIos(int _Value)
+        {
+            //TODO
         }
         
         #endregion

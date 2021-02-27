@@ -50,6 +50,11 @@ namespace Extensions
             return _Strings.Any(_S => _Text == _S);
         }
 
+        public static bool InRange(this char _Symbol, params char[] _Symbols)
+        {
+            return _Symbols.Any(_S => _Symbol == _S);
+        }
+
         private static string FirstCharTo(this string _Text, bool _ToUpper)
         {
             switch (_Text)

@@ -59,7 +59,7 @@ namespace Managers
         
         #region nonpublic members
         
-        private readonly string[] m_BundleNames = {SoundsBundle, LevelsBundle};
+        private readonly string[] m_BundleNames = {SoundsBundle};//, LevelsBundle};
         private const string BundlesUri = "https://raw.githubusercontent.com/semi92art/bundles/main/mgc";
         private readonly Dictionary<string, List<AssetInfo>> m_Bundles = new Dictionary<string, List<AssetInfo>>();
         

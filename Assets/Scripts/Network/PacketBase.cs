@@ -63,7 +63,7 @@ namespace Network
             }
             catch (Exception e)
             {
-                Debug.LogError($"OnSuccess error: {e.Message}");
+                Debug.LogError($"OnSuccess error: {e.Message};\n StackTrace: {e.StackTrace}");
             }
         }
 
@@ -75,7 +75,7 @@ namespace Network
             }
             catch (Exception e)
             {
-                Debug.LogError($"OnFail error: {e.Message}");
+                Debug.LogError($"OnFail error: {e.Message};\n StackTrace: {e.StackTrace}");
             }
         }
 
@@ -87,7 +87,7 @@ namespace Network
             }
             catch (Exception e)
             {
-                Debug.LogError($"OnCancel error: {e.Message}");
+                Debug.LogError($"OnCancel error: {e.Message};\n StackTrace: {e.StackTrace}");
             }
         }
         

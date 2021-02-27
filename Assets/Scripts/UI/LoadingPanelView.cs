@@ -21,7 +21,6 @@ namespace UI
         public Image innerIndicator;
         public Animator animator;
         public TextMeshProUGUI loading;
-        public TextMeshProUGUI error;
         public float speed = 50f;
         
         #endregion
@@ -58,7 +57,7 @@ namespace UI
 
         public void Break(string _Error)
         {
-            error.text = _Error;
+            loading.text = _Error;
             DoLoading = false;
         }
 

@@ -202,6 +202,7 @@ namespace UI
 
                     percents += 50;
                     m_LoadingPanel.SetProgress(percents, getLoadingText.Invoke(1));
+                    
                     ShowMainMenu(true);
                 });
             }));
@@ -217,7 +218,7 @@ namespace UI
             
             m_TransitionRenderer.TransitionAction = (_, _Args) =>
             {
-                m_LoadingPanel.Break(null);
+                m_LoadingPanel.Break(string.Empty);
                 m_MenuDialogViewer.Back();
                 m_MainMenuUi.Show();
             };

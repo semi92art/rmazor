@@ -13,6 +13,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Reflection;
+using Extensions;
 using Unity.Android.Logcat;
 using Utils;
 using Utils.Editor;
@@ -22,8 +23,7 @@ public class EditorHelper : EditorWindow
     private int m_DailyBonusIndex;
     private Dictionary<BankItemType, long> m_Money = new Dictionary<BankItemType, long>();
     private int m_TestUsersCount = 3;
-    private bool m_IsGuest;
-    private string m_TestUrl;
+    private string m_DebugServerUrl;
     private string m_TestUrlCheck;
     private int m_GameId = -1;
     private int m_GameIdCheck;
@@ -132,14 +132,15 @@ public class EditorHelper : EditorWindow
         GUILayout.Label("count:", GUILayout.Width(40));
         m_TestUsersCount = EditorGUILayout.IntField(m_TestUsersCount);
         GUILayout.Label("guest:", GUILayout.Width(40));
-        m_IsGuest = EditorGUILayout.Toggle(m_IsGuest, GUILayout.Width(30));
         GUILayout.EndHorizontal();
         
         EditorUtilsEx.GuiButtonAction("Delete test users", DeleteTestUsers);
 
         GUILayout.BeginHorizontal();
         GUILayout.Label("Debug Server Url:");
-        m_TestUrl = EditorGUILayout.TextField(m_TestUrl);
+        m_DebugServerUrl = EditorGUILayout.TextField(m_DebugServerUrl);
+        if (m_DebugServerUrl.Last().InRange('/','\\'))
+            m_DebugServerUrl = m_DebugServerUrl.Remove(m_DebugServerUrl.Length - 1);
         GUILayout.EndHorizontal();
 
         EditorUtilsEx.GuiButtonAction("Set default api url", SetDefaultApiUrl);
@@ -184,11 +185,11 @@ public class EditorHelper : EditorWindow
 
     private void UpdateTestUrl(bool _Forced = false)
     {
-        if (string.IsNullOrEmpty(m_TestUrl))
-            m_TestUrl = SaveUtils.GetValue<string>(SaveKeyDebug.ServerUrl);
-        if (m_TestUrl != m_TestUrlCheck || _Forced)
-            SaveUtils.PutValue(SaveKeyDebug.ServerUrl, m_TestUrl);
-        m_TestUrlCheck = m_TestUrl;
+        if (string.IsNullOrEmpty(m_DebugServerUrl))
+            m_DebugServerUrl = SaveUtils.GetValue<string>(SaveKeyDebug.ServerUrl);
+        if (m_DebugServerUrl != m_TestUrlCheck || _Forced)
+            SaveUtils.PutValue(SaveKeyDebug.ServerUrl, m_DebugServerUrl);
+        m_TestUrlCheck = m_DebugServerUrl;
     }
 
     private void UpdateGameId()
@@ -244,23 +245,18 @@ public class EditorHelper : EditorWindow
             var packet = new RegisterUserPacket(
                 new RegisterUserPacketRequestArgs
                 {
-                    Name = m_IsGuest ? string.Empty : $"test_{CommonUtils.GetUniqueId()}",
+                    Name = $"test_{CommonUtils.GetUniqueId()}",
                     PasswordHash = CommonUtils.GetMd5Hash("1"),
-                    DeviceId = m_IsGuest ? $"test_{CommonUtils.GetUniqueId()}" : string.Empty,
                     GameId = gameId
                 });
             int ii = i;
             packet.OnSuccess(() =>
                 {
-                    var adf = new AccountDataFieldFilter(packet.Response.Id, 
-                        DataFieldIds.FirstCurrency, DataFieldIds.SecondCurrency);
-                    adf.Filter(_DfValues =>
-                    {
-                        _DfValues.First(_DfValue => _DfValue.FieldId == DataFieldIds.FirstCurrency)
-                            .SetValue(randGen.Next(0, 10000)).Save();
-                        _DfValues.First(_DfValue => _DfValue.FieldId == DataFieldIds.SecondCurrency)
-                            .SetValue(randGen.Next(0, 100)).Save();
-                    });
+                    int accId = packet.Response.Id;
+                    new GameDataField(10, accId, 
+                        GameClientUtils.GameId, DataFieldIds.FirstCurrency).Save();
+                    new GameDataField(10, accId,
+                        GameClientUtils.GameId, DataFieldIds.SecondCurrency).Save();
                     Debug.Log("All test users were created successfully");
                 })
                 .OnFail(() =>
@@ -317,7 +313,7 @@ public class EditorHelper : EditorWindow
 
     private void SetDefaultApiUrl()
     {
-        m_TestUrl = @"http://77.37.152.15:7000";
+        m_DebugServerUrl = @"http://77.37.152.15:7000";
         UpdateTestUrl(true);
     }
 
@@ -334,11 +330,11 @@ public class EditorHelper : EditorWindow
             {"Login", SaveUtils.GetValue<string>(SaveKey.Login) ?? "not exist"},
             {"Password hash", SaveUtils.GetValue<string>(SaveKey.PasswordHash) ?? "not exist"},
             {"Account id", SaveUtils.GetValue<int?>(SaveKey.AccountId).ToString()},
-            {"Game id", SaveUtils.GetValue<int?>(SaveKey.GameId).ToString()},
+            {"Game id", SaveUtils.GetValue<int>(SaveKey.GameId).ToString()},
             {"Show ads", GetAccountFieldCached(DataFieldIds.ShowAds)},
             {"Gold", GetAccountFieldCached(DataFieldIds.FirstCurrency)},
             {"Diamonds", GetAccountFieldCached(DataFieldIds.SecondCurrency)},
-            {"Main score", GetGameFieldCached(DataFieldIds.InfiniteLevelScore)}
+            {"Main score", GetGameFieldCached(DataFieldIds.Main)}
         };
     
     private static string GetAccountFieldCached(ushort _FieldId)

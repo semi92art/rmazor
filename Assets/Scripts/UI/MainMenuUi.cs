@@ -198,10 +198,10 @@ namespace UI
                 () => GameClientUtils.AccountId == default,
                 () =>
             {
-                var scores = ScoreManager.Instance.GetScores();
+                var mainScore = ScoreManager.Instance.GetMainScore();
                 Coroutines.Run(Coroutines.WaitWhile(
-                    () => !scores.Loaded, 
-                    () => bestScoreText.text = scores.Scores[ScoreType.Main].ToNumeric()));
+                    () => !mainScore.Loaded, 
+                    () => bestScoreText.text = mainScore.Scores[ScoreType.Main].ToNumeric()));
             }));
             
             var ratingsButton = PrefabUtilsEx.InitUiPrefab(

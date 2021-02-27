@@ -56,6 +56,7 @@ namespace Controllers
             PlayGamesPlatform.Instance.Authenticate(
                 SignInInteractivity.CanPromptOnce, _Result =>
             {
+                Debug.Log($"MGC: {_Result}");
                 switch (_Result)
                 {
                     case SignInStatus.Success:
@@ -89,22 +90,29 @@ namespace Controllers
         //https://github.com/playgameservices/play-games-plugin-for-unity
         private void InitGooglePlayServices()
         {
+            Debug.Log("MGC: Play Games Init Start");
             PlayGamesClientConfiguration config = new PlayGamesClientConfiguration.Builder()
-                .EnableSavedGames()
                 .RequestEmail()
-                .RequestServerAuthCode(false)
-                .RequestIdToken()
                 .Build();
 
             PlayGamesPlatform.InitializeInstance(config);
+#if DEVELOPMENT_BUILD
             PlayGamesPlatform.DebugLogEnabled = true;
+#endif
             PlayGamesPlatform.Activate();
+            Debug.Log("MGC: Play Games Init End");
         }
         
 #endif
 
         private void Login(string _Login, string _PasswordHash, UnityAction<AuthResult> _OnResult)
         {
+            if (GameClientUtils.AccountId == GameClientUtils.DefaultAccountId)
+            {
+                Register(_Login, _PasswordHash, _OnResult);
+                return;
+            }
+            
             var loginPacket = new LoginUserPacket(new LoginUserPacketRequestArgs
                 {
                     Name = _Login,
@@ -114,23 +122,19 @@ namespace Controllers
                     {
                         Debug.Log("Login successfully");
                         GameClientUtils.AccountId = loginPacket.Response.Id;
+                        _OnResult?.Invoke(AuthResult.LoginSuccess);
                     }
                 );
                 loginPacket.OnFail(() =>
                 {
-                    if (loginPacket.ErrorMessage.Id == ServerErrorCodes.AccountNotFoundByDeviceId)
+                    if (loginPacket.ErrorMessage.Id == ServerErrorCodes.WrongLoginOrPassword)
                     {
-                        Debug.LogWarning(loginPacket.ErrorMessage);
-                        Register(_Login, _PasswordHash, _OnResult);
-                    }
-                    else if (loginPacket.ErrorMessage.Id == ServerErrorCodes.WrongLoginOrPassword)
-                    {
-                        _OnResult.Invoke(AuthResult.LoginFailed);
+                        _OnResult?.Invoke(AuthResult.LoginFailed);
                         Debug.LogError("Login failed: Wrong login or password");
                     }
                     else
                     {
-                        _OnResult.Invoke(AuthResult.LoginFailed);
+                        _OnResult?.Invoke(AuthResult.LoginFailed);
                         Debug.LogError(loginPacket.ErrorMessage);
                     }
                 });

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Entities;
+﻿using Entities;
 using UnityEngine;
 
 namespace Utils
@@ -11,7 +10,7 @@ namespace Utils
         public static int AccountId
         {
             get => SaveUtils.GetValue<int?>(SaveKey.AccountId) ?? DefaultAccountId;
-            set => SaveUtils.PutValue(SaveKey.AccountId, value);
+            set => SaveUtils.PutValue(SaveKey.AccountId, (int?)value);
         }
 
         public static string Login
@@ -67,7 +66,7 @@ namespace Utils
         {
             get
             {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
+#if UNITY_EDITOR
                 if (CommonUtils.UnitTesting)
                     return SaveUtils.GetValue<string>(SaveKeyDebug.ServerUrl);
                 return SaveUtils.GetValue<string>(SaveKeyDebug.ServerUrl);

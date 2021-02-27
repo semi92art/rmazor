@@ -60,9 +60,8 @@ public class ServerConnectionTests
         IPacket packet = new LoginUserPacket(
             new LoginUserPacketRequestArgs
             {
-                Name = "",
-                PasswordHash = "",
-                DeviceId = "test_user_do_not_delete"
+                Name = "test_user_do_not_delete",
+                PasswordHash = ""
             })
             .OnFail(() => requestSuccess = false)
             .OnSuccess(() => requestSuccess = true) as LoginUserPacket;
@@ -89,9 +88,8 @@ public class ServerConnectionTests
         IPacket packet = new RegisterUserPacket(
             new RegisterUserPacketRequestArgs
             {
-                Name = "",
+                Name = $"test_{CommonUtils.GetUniqueId()}",
                 PasswordHash = "",
-                DeviceId = $"test_{CommonUtils.GetUniqueId()}",
                 GameId = 1
             })
             .OnSuccess(() => requestSuccess = true);

@@ -34,22 +34,21 @@ namespace Managers
         {
             get
             {
-                var dff = new AccountDataFieldFilter(
-                    GameClientUtils.AccountId, DataFieldIds.ShowAds);
-                return dff.Filter().First().ToBool();
+                var fromCache = SaveUtils.GetValue<bool?>(SaveKey.ShowAds);
+                if (fromCache.HasValue)
+                    return fromCache.Value;
+                
+#if UNITY_EDITOR
+                return true;
+#elif UNITY_ANDROID
+                return GetShowAdsAndroid();
+#elif UNITY_IPHONE
+                return GetShowAdsIos();
+#endif
             }
             set
             {
-                m_ShowAds = value;
-                var dff = new AccountDataFieldFilter(
-                    GameClientUtils.AccountId, DataFieldIds.ShowAds);
-                dff.Filter(_DataFields =>
-                {
-                    _DataFields
-                        .FirstOrDefault(_Fv => _Fv.FieldId == DataFieldIds.ShowAds)?
-                        .SetValue(m_ShowAds)
-                        .Save(true);
-                });
+                
             }
         }
 
@@ -72,6 +71,18 @@ namespace Managers
 
         #region nonpublic methods
 
+        private bool GetShowAdsAndroid()
+        {
+            //TODO
+            return true;
+        }
+
+        private bool GetShowAdsIos()
+        {
+            //TODO
+            return true;
+        }
+        
         private void ShowRewardedAd(UnityAction _OnPaid)
         {
             m_OnPaid = _OnPaid;

@@ -8,6 +8,8 @@ namespace Entities
     {
         #region factory
     
+        public static SaveKey MainScore => new SaveKey("main_score", typeof(int?));
+        public static SaveKey ShowAds => new SaveKey("show_ads", typeof(bool?));
         public static SaveKey AuthorizedAtLeastOnce => new SaveKey("authorized_at_least_once", typeof(bool));
         public static SaveKey NotFirstLaunch => new SaveKey("not_first_launch", typeof(bool));
         public static SaveKey AccountId => new SaveKey("account_id", typeof(int?));

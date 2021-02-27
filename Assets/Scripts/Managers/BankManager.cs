@@ -3,7 +3,6 @@ using System.Linq;
 using Constants;
 using Entities;
 using GameHelpers;
-using Network;
 using UnityEngine;
 using Utils;
 
@@ -33,11 +32,13 @@ namespace Managers
         public BankEntity GetBank(bool _ForcedFromServer = false)
         {
             var result = new BankEntity();
-            var adf = new AccountDataFieldFilter(
+            var gdff = new GameDataFieldFilter(
                 GameClientUtils.AccountId,
+                GameClientUtils.GameId,
                 DataFieldIds.FirstCurrency,
                 DataFieldIds.SecondCurrency);
-            adf.Filter(_DataFields =>
+            gdff.OnlyLocal = GameClientUtils.AccountId == GameClientUtils.DefaultAccountId;
+            gdff.Filter(_DataFields =>
             {
                 long gold = _DataFields.First(_V =>
                     _V.FieldId == DataFieldIds.FirstCurrency).ToLong();
@@ -100,22 +101,43 @@ namespace Managers
             foreach (var kvp in _BankItems.ToArray())
                 _BankItems[kvp.Key] = MathUtils.Clamp(kvp.Value, MinMoneyCount, MaxMoneyCount);
 
-            var aff = new AccountDataFieldFilter(GameClientUtils.AccountId,
+            var aff = new GameDataFieldFilter(GameClientUtils.AccountId,
+                GameClientUtils.GameId,
                 DataFieldIds.FirstCurrency,
                 DataFieldIds.SecondCurrency);
             
             aff.Filter(_DataFields =>
             {
-                if (_BankItems.ContainsKey(BankItemType.FirstCurrency))
-                    _DataFields.First(_V =>
-                            _V.FieldId == DataFieldIds.FirstCurrency)
-                        .SetValue(_BankItems[BankItemType.FirstCurrency])
-                        .Save();
-                if (_BankItems.ContainsKey(BankItemType.SecondCurrency))
-                    _DataFields.First(_V => 
-                            _V.FieldId == DataFieldIds.SecondCurrency)
-                        .SetValue(_BankItems[BankItemType.SecondCurrency])
-                        .Save();
+                if (!_DataFields.Any())
+                {
+                    if (_BankItems.ContainsKey(BankItemType.FirstCurrency))
+                        new GameDataField(
+                            _BankItems[BankItemType.FirstCurrency],
+                            GameClientUtils.AccountId,
+                            GameClientUtils.GameId,
+                            DataFieldIds.FirstCurrency).Save();
+                    if (_BankItems.ContainsKey(BankItemType.SecondCurrency))
+                    {
+                        new GameDataField(
+                            _BankItems[BankItemType.SecondCurrency],
+                            GameClientUtils.AccountId,
+                            GameClientUtils.GameId,
+                            DataFieldIds.SecondCurrency).Save();
+                    }
+                }
+                else
+                {
+                    if (_BankItems.ContainsKey(BankItemType.FirstCurrency))
+                        _DataFields.First(_V =>
+                                _V.FieldId == DataFieldIds.FirstCurrency)
+                            .SetValue(_BankItems[BankItemType.FirstCurrency])
+                            .Save();
+                    if (_BankItems.ContainsKey(BankItemType.SecondCurrency))
+                        _DataFields.First(_V => 
+                                _V.FieldId == DataFieldIds.SecondCurrency)
+                            .SetValue(_BankItems[BankItemType.SecondCurrency])
+                            .Save();    
+                }
             });
             
             var bank = new BankEntity {BankItems = _BankItems, Loaded = true};

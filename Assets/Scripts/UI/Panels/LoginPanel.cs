@@ -158,7 +158,7 @@ namespace UI.Panels
             Notify(this, NotifyMessageLogoutButtonClick);
             var packet = new LoginUserPacket(new LoginUserPacketRequestArgs
             {
-                DeviceId = GameClientUtils.DeviceId
+                //DeviceId = GameClientUtils.DeviceId
             });
             packet.OnSuccess(() =>
             {

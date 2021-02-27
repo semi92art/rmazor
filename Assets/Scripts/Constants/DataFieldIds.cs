@@ -7,7 +7,7 @@
         // game field ids
         public const ushort FirstCurrency = 1;
         public const ushort SecondCurrency = 2;
-        public const ushort InfiniteLevelScore = 3;
-        public static ushort LevelOpened(int _LevelIndex) => System.Convert.ToUInt16(100 + _LevelIndex);
+        public const ushort Main = 3;
+        public const ushort LevelsInfo = 4;
     }
 }

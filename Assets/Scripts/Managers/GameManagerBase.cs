@@ -118,27 +118,17 @@ namespace Managers
 
         protected virtual void OnLevelFinished(LevelStateChangedArgs _Args)
         {
-            var scores = ScoreManager.Instance.GetScores();
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !scores.Loaded,
+            GameMenuUi?.OnLevelFinished(_Args, RevenueController.TotalRevenue,
+                _NewRevenue =>
+                    RevenueController.TotalRevenue = _NewRevenue,
                 () =>
-            {
-                int mainScore = scores.Scores[ScoreType.Main];
-                if (mainScore < LevelController.Level)
-                    ScoreManager.Instance.SetScore(ScoreType.Main, LevelController.Level);
-
-                GameMenuUi?.OnLevelFinished(_Args, RevenueController.TotalRevenue,
-                    _NewRevenue =>
-                        RevenueController.TotalRevenue = _NewRevenue,
-                    () =>
-                    {
-                        LevelController.Level++;
-                        BankManager.Instance.PlusBankItems(RevenueController.TotalRevenue);
-                        RevenueController.TotalRevenue.Clear();
-                        LevelController.BeforeStartLevel();
-                    },
-                    LevelController.Level > mainScore);
-            }));
+                {
+                    LevelController.Level++;
+                    BankManager.Instance.PlusBankItems(RevenueController.TotalRevenue);
+                    RevenueController.TotalRevenue.Clear();
+                    LevelController.BeforeStartLevel();
+                },
+                false);
         }
 
         protected virtual void OnScoreChanged(int _Score)
