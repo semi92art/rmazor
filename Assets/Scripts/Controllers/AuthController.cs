@@ -93,6 +93,8 @@ namespace Controllers
             Debug.Log("MGC: Play Games Init Start");
             PlayGamesClientConfiguration config = new PlayGamesClientConfiguration.Builder()
                 .RequestEmail()
+                //.RequestIdToken()
+                //.RequestServerAuthCode(false)
                 .Build();
 
             PlayGamesPlatform.InitializeInstance(config);
