@@ -398,7 +398,6 @@ namespace UI.Panels
                 case MenuUiCategory.Settings:
                 case MenuUiCategory.Loading:
                 case MenuUiCategory.SelectGame:
-                case MenuUiCategory.Login:
                     m_IsShowing = false;
                     trigger = _Prev == MenuUiCategory.MainMenu ? AkHideInMm : AkHideInDlg;
                     break;
@@ -412,10 +411,8 @@ namespace UI.Panels
                         case MenuUiCategory.Settings:
                         case MenuUiCategory.Loading:
                         case MenuUiCategory.SelectGame:
-                        case MenuUiCategory.Login:
                             trigger = AkShowInDlg;
                             break;
-                        case MenuUiCategory.Profile:
                         case MenuUiCategory.WheelOfFortune:
                         case MenuUiCategory.DailyBonus:
                         case MenuUiCategory.Shop:
@@ -426,7 +423,6 @@ namespace UI.Panels
                             throw new SwitchCaseNotImplementedException(_Prev);
                     }
                     break;
-                case MenuUiCategory.Profile:
                 case MenuUiCategory.WheelOfFortune:
                 case MenuUiCategory.DailyBonus:
                     switch (_Prev)
@@ -437,10 +433,8 @@ namespace UI.Panels
                         case MenuUiCategory.Settings:
                         case MenuUiCategory.Loading:
                         case MenuUiCategory.SelectGame:
-                        case MenuUiCategory.Login:
                             trigger = AkShowInDlg;
                             break;
-                        case MenuUiCategory.Profile:
                         case MenuUiCategory.WheelOfFortune:
                         case MenuUiCategory.Shop:
                         case MenuUiCategory.DailyBonus:
@@ -457,10 +451,8 @@ namespace UI.Panels
                         case MenuUiCategory.Settings:
                         case MenuUiCategory.Loading:
                         case MenuUiCategory.SelectGame:
-                        case MenuUiCategory.Login:
                             trigger = AkShowInMm;
                             break;
-                        case MenuUiCategory.Profile:
                         case MenuUiCategory.Shop:
                         case MenuUiCategory.DailyBonus:
                         case MenuUiCategory.WheelOfFortune:

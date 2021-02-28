@@ -326,7 +326,7 @@ public class EditorHelper : EditorWindow
     private static Dictionary<string, string> GetAllSaveKeyValues() =>
         new Dictionary<string, string>
         {
-            {"Last connection succeeded", SaveUtils.GetValue<bool>(SaveKey.LastConnectionSucceeded).ToString()},
+            {"Last connection succeeded", SaveUtils.GetValue<bool>(SaveKey.LastDatabaseConnectionSucceeded).ToString()},
             {"Login", SaveUtils.GetValue<string>(SaveKey.Login) ?? "not exist"},
             {"Password hash", SaveUtils.GetValue<string>(SaveKey.PasswordHash) ?? "not exist"},
             {"Account id", SaveUtils.GetValue<int?>(SaveKey.AccountId).ToString()},

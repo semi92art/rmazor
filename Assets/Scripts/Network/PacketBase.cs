@@ -40,8 +40,7 @@ namespace Network
         private ErrorResponseArgs m_ErrorMessage;
         private Action m_Success;
         private Action m_Fail;
-        private Action m_Cancel;
-        
+
         #endregion
         
         #region constructor
@@ -55,7 +54,7 @@ namespace Network
         
         #region nonpublic methods
         
-        private void InvokeSuccess()
+        public void InvokeSuccess()
         {
             try
             {
@@ -67,7 +66,7 @@ namespace Network
             }
         }
 
-        private void InvokeFail()
+        public void InvokeFail()
         {
             try
             {
@@ -79,18 +78,6 @@ namespace Network
             }
         }
 
-        private void InvokeCancel()
-        {
-            try
-            {
-                m_Cancel?.Invoke();
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"OnCancel error: {e.Message};\n StackTrace: {e.StackTrace}");
-            }
-        }
-        
         #endregion
         
         #region public methods
@@ -107,12 +94,6 @@ namespace Network
             return this;
         }
 
-        public virtual IPacket OnCancel(Action _Action)
-        {
-            m_Cancel = _Action;
-            return this;
-        }
-        
         public virtual void DeserializeResponse(string _Json)
         {
             ResponseRaw = _Json;
@@ -127,12 +108,9 @@ namespace Network
                 throw;
             }
             
-            
             if (CommonUtils.IsInRange(ResponseCode, 200, 299))
                 InvokeSuccess();
-            else if (CommonUtils.IsInRange(ResponseCode, 300, 399))
-                InvokeCancel();
-            else if (CommonUtils.IsInRange(ResponseCode, 400, 599) || ResponseCode == 0)
+            else if (CommonUtils.IsInRange(ResponseCode, 300, 599) || ResponseCode == 0)
                 InvokeFail();
 
             IsDone = true;

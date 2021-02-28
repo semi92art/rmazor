@@ -33,7 +33,7 @@ namespace GameHelpers
             SaveUtils.PutValue(SaveKey.NotFirstLaunch, true);
         }
 
-        public static void MigrateFromDefault()
+        public static void MigrateFromPrevious()
         {
             var gameFieldIds = new []
             {
@@ -41,7 +41,7 @@ namespace GameHelpers
                 DataFieldIds.SecondCurrency,
                 DataFieldIds.LevelsInfo
             };
-            var gdff = new GameDataFieldFilter(GameClientUtils.DefaultAccountId, 1, gameFieldIds);
+            var gdff = new GameDataFieldFilter(GameClientUtils.PreviousAccountId, 1, gameFieldIds);
             gdff.OnlyLocal = true;
             gdff.Filter(_DefaultFields =>
             {

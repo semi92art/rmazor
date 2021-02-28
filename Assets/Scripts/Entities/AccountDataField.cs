@@ -49,8 +49,7 @@ namespace Entities
                     IsSaving = false;
                     LastUpdate = newLastUpdate;
                 })
-                .OnFail(() => IsSaving = false)
-                .OnCancel(() => IsSaving = false);
+                .OnFail(() => IsSaving = false);
             GameClient.Instance.Send(packet);
             return this;
         }

@@ -1,4 +1,6 @@
-﻿using DialogViewers;
+﻿using System.Collections.Generic;
+using System.Linq;
+using DialogViewers;
 using Extensions;
 using GameHelpers;
 using UI.Entities;
@@ -8,13 +10,13 @@ using UnityEngine;
 
 namespace UI.Panels
 {
-    public interface IProgress
+    public interface ILoadingHandler
     {
-        void SetProgress(float _Percents, string _Info);
+        void SetProgress(float _Percents, List<string> _Infos);
         void Break(string _Error);
     }
     
-    public class LoadingPanel : DialogPanelBase, IMenuUiCategory, IProgress
+    public class LoadingPanel : DialogPanelBase, IMenuUiCategory, ILoadingHandler
     {
         #region nonpublic members
 
@@ -43,9 +45,9 @@ namespace UI.Panels
             Panel = prefab.RTransform();
         }
 
-        public void SetProgress(float _Percents, string _Info)
+        public void SetProgress(float _Percents, List<string> _Infos)
         {
-            m_View.SetProgress(_Percents, _Info);
+            m_View.SetProgress(_Percents, _Infos.Last());
         }
         
         public void Break(string _Error)

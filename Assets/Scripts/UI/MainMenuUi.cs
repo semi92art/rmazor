@@ -293,19 +293,6 @@ namespace UI
                 "Shop",
                 OnShopButtonClick);
 
-            // Login button
-            InitBottomGroupButton(
-                "Login Button",
-                secondGroupContent,
-                temp,
-                PrefabUtilsEx.GetObject<Sprite>(
-                    "button_sprites", "login_button_background"),
-                PrefabUtilsEx.GetObject<Sprite>(
-                    "icons", "icon_login"),
-                ColorUtils.GetColorFromPalette(paletteName, "Login"),
-                "Login",
-                OnLoginButtonClick);
-
             Object.Destroy(temp);
         }
 
@@ -377,15 +364,6 @@ namespace UI
             settingsPanel.AddObservers(GetObservers());
             settingsPanel.Init();
             m_MenuDialogViewer.Show(settingsPanel);
-        }
-
-        private void OnLoginButtonClick()
-        {
-            Notify(this, NotifyMessageLoginButtonClick);
-            var loginPanel = new LoginPanel(m_MenuDialogViewer);
-            loginPanel.AddObservers(GetObservers());
-            loginPanel.Init();
-            m_MenuDialogViewer.Show(loginPanel);
         }
 
         private void OnShopButtonClick()

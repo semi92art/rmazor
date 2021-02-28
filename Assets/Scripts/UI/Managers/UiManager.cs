@@ -19,11 +19,9 @@ namespace UI.Managers
         SelectGame = 4,
         DailyBonus = 8,
         WheelOfFortune = 16,
-        Profile = 32,
-        Login = 64,
-        Shop = 128,
-        Settings = 256,
-        PlusMoney = 512,
+        Shop = 32,
+        Settings = 64,
+        PlusMoney = 128,
     }
 
     [Flags]
@@ -149,8 +147,6 @@ namespace UI.Managers
                 case MenuUiCategory.MainMenu:
                 case MenuUiCategory.SelectGame:
                 case MenuUiCategory.DailyBonus:
-                case MenuUiCategory.Profile:
-                case MenuUiCategory.Login:
                 case MenuUiCategory.Shop:
                 case MenuUiCategory.Settings:
                 case MenuUiCategory.PlusMoney:

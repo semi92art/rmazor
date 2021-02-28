@@ -6,11 +6,21 @@ namespace Utils
     public static class GameClientUtils
     {
         public const int DefaultAccountId = 0;
+
+        public static int PreviousAccountId
+        {
+            get => SaveUtils.GetValue<int?>(SaveKey.PreviousAccountId) ?? DefaultAccountId;
+            set => SaveUtils.PutValue(SaveKey.PreviousAccountId, (int?)value);
+        }
         
         public static int AccountId
         {
             get => SaveUtils.GetValue<int?>(SaveKey.AccountId) ?? DefaultAccountId;
-            set => SaveUtils.PutValue(SaveKey.AccountId, (int?)value);
+            set
+            {
+                PreviousAccountId = AccountId;
+                SaveUtils.PutValue(SaveKey.AccountId, (int?) value);
+            }
         }
 
         public static string Login
@@ -74,6 +84,12 @@ namespace Utils
                return "http://77.37.152.15:7000";
 #endif
             }
+        }
+        
+        public static bool InternetConnection
+        {
+            get => SaveUtils.GetValue<bool>(SaveKey.LastInternetConnectionSucceeded);
+            set => SaveUtils.PutValue(SaveKey.LastInternetConnectionSucceeded, value);
         }
     }
 }

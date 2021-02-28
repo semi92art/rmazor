@@ -13,10 +13,12 @@ namespace Entities
         public static SaveKey AuthorizedAtLeastOnce => new SaveKey("authorized_at_least_once", typeof(bool));
         public static SaveKey NotFirstLaunch => new SaveKey("not_first_launch", typeof(bool));
         public static SaveKey AccountId => new SaveKey("account_id", typeof(int?));
+        public static SaveKey PreviousAccountId => new SaveKey("previous_account_id", typeof(int?));
         public static SaveKey Login => new SaveKey("login", typeof(string));
         public static SaveKey PasswordHash => new SaveKey("password_hash", typeof(string));
         public static SaveKey GameId => new SaveKey("game_id", typeof(int));
-        public static SaveKey LastConnectionSucceeded => new SaveKey("last_connection_succeeded", typeof(bool));
+        public static SaveKey LastDatabaseConnectionSucceeded => new SaveKey("last_connection_succeeded", typeof(bool));
+        public static SaveKey LastInternetConnectionSucceeded => new SaveKey("last_internet_succeeded", typeof(bool));
         public static SaveKey DailyBonusLastDate => new SaveKey("daily_bonus_last_date", typeof(DateTime));
         public static SaveKey DailyBonusLastItemClickedDay => new SaveKey("daily_bonus_last_item_clicked_date", typeof(int));
         public static SaveKey SettingSoundOn => new SaveKey("sound_on", typeof(bool));

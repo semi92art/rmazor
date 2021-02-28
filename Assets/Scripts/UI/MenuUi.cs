@@ -26,11 +26,11 @@ namespace UI
         private readonly bool m_OnStart;
         private MainMenuUi m_MainMenuUi;
         private Canvas m_Canvas;
-        private LoadingPanel m_LoadingPanel;
         private IMenuDialogViewer m_MenuDialogViewer;
         private INotificationViewer m_NotificationViewer;
         private ITransitionRenderer m_TransitionRenderer;
         private MainBackgroundRenderer m_MainBackgroundRenderer;
+        private LoadingController m_StartLoadingController;
 
         #endregion
 
@@ -85,15 +85,13 @@ namespace UI
             rImage.texture = m_MainBackgroundRenderer.Texture;
 
             m_MenuDialogViewer.AddNotDialogItem(backgroundPanel.RTransform(),
-                MenuUiCategory.Loading |
-                MenuUiCategory.Profile |
-                MenuUiCategory.Settings |
-                MenuUiCategory.Shop |
-                MenuUiCategory.DailyBonus |
-                MenuUiCategory.MainMenu |
-                MenuUiCategory.SelectGame |
-                MenuUiCategory.Login |
-                MenuUiCategory.PlusMoney);
+                MenuUiCategory.Loading 
+                | MenuUiCategory.Settings 
+                | MenuUiCategory.Shop 
+                | MenuUiCategory.DailyBonus 
+                | MenuUiCategory.MainMenu 
+                | MenuUiCategory.SelectGame 
+                | MenuUiCategory.PlusMoney);
         }
 
         private void CreateDialogViewers()
@@ -114,98 +112,69 @@ namespace UI
 
         private void CreateLoadingPanel()
         {
-            m_LoadingPanel = new LoadingPanel(m_MenuDialogViewer);
-            m_LoadingPanel.Init();
-            m_MenuDialogViewer.Show(m_LoadingPanel);
-
-            Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
+            bool authFinished = false;
+            var loadingPanel = new LoadingPanel(m_MenuDialogViewer);
+            loadingPanel.Init();
+            m_MenuDialogViewer.Show(loadingPanel);
+            m_StartLoadingController = new LoadingController(loadingPanel, _LoadingResult =>
             {
-                bool loadingStopped = false;
-                float percents = 0;
-                var loadingTexts = new Dictionary<int, string>
+                switch (_LoadingResult)
                 {
-                    {1, "Loading resources"},
-                    {2, "Connecting to server"},
-                    {3, "Done"}
-                };
-                Func<int, string> getLoadingText = _Idx =>
-                    Mathf.Abs(percents - 100) < float.Epsilon ? loadingTexts[3] : loadingTexts[_Idx];
-
-                m_LoadingPanel.SetProgress(percents, loadingTexts[1]);
-
-                Coroutines.Run(Coroutines.WaitWhile(
-                    () => !AssetBundleManager.Instance.Initialized,
-                    () =>
-                    {
-                        if (AssetBundleManager.Instance.Errors.Any())
-                        {
-                            m_LoadingPanel.Break("Failed to load game resources. Need internet for first connection");
-                            loadingStopped = true;
-                        }
-                        else
-                        {
-                            percents += 50;
-                            m_LoadingPanel.SetProgress(percents, getLoadingText.Invoke(2));
-                        }
-                    }, () => loadingStopped));
-
-                var authCtrl = new AuthController();
-                authCtrl.Authenticate(_AuthResult =>
+                    case LoadingResult.Success:
+                        ShowMainMenu(true);
+                        break;
+                    case LoadingResult.Fail:
+                        //TODO if failed to load, do something with it
+                        break;
+                    default:
+                        throw new SwitchCaseNotImplementedException(_LoadingResult);
+                }
+            },
+            new List<LoadingStage>
+            {
+                new LoadingStage(1, "Loading resources", 0.5f, () => {}),
+                new LoadingStage(2, "Connecting to server", 0.5f, () =>
                 {
-                    UnityAction setBankStart = () =>
+                    var authCtrl = new AuthController();
+                    authCtrl.Authenticate(_AuthResult =>
                     {
-                        BankManager.Instance.SetBank(new Dictionary<BankItemType, long>
-                        {
-                            {BankItemType.FirstCurrency, 10},
-                            {BankItemType.SecondCurrency, 10}
-                        });
-                    };
+                        bool authorizedAtLeastOnce = SaveUtils.GetValue<bool>(SaveKey.AuthorizedAtLeastOnce);
 
-                    bool authorizedAtLeastOnce = SaveUtils.GetValue<bool>(SaveKey.AuthorizedAtLeastOnce);
-                    
-                    switch (_AuthResult)
-                    {
-                        case AuthController.AuthResult.LoginSuccess:
-                            if (!authorizedAtLeastOnce)
-                            {
-                                DataFieldsMigrator.MigrateFromDatabase();
-                                SaveUtils.PutValue(SaveKey.AuthorizedAtLeastOnce, true);
-                            }
-                            BankManager.Instance.GetBank(true);
-                            break;
-                        case AuthController.AuthResult.RegisterSuccess:
-                            if (!authorizedAtLeastOnce)
-                            {
-                                DataFieldsMigrator.MigrateFromDefault();
-                                SaveUtils.PutValue(SaveKey.AuthorizedAtLeastOnce, true);
-                            }
-                            setBankStart.Invoke();
-                            BankManager.Instance.GetBank(true);
-                            break;
-                        case AuthController.AuthResult.LoginFailed:
-                        case AuthController.AuthResult.RegisterFailed:
-                            var bank = BankManager.Instance.GetBank();
-                            Coroutines.Run(Coroutines.WaitWhile(() => !bank.Loaded,
-                                () =>
+                        switch (_AuthResult)
+                        {
+                            case AuthController.AuthResult.LoginSuccess:
+                                if (!authorizedAtLeastOnce)
                                 {
-                                    if (bank.BankItems.Any())
-                                        return;
-                                    setBankStart.Invoke();
-                                }));
-                            break;
-                        default:
-                            throw new SwitchCaseNotImplementedException(_AuthResult);
-                    }
+                                    DataFieldsMigrator.MigrateFromDatabase();
+                                    SaveUtils.PutValue(SaveKey.AuthorizedAtLeastOnce, true);
+                                }
 
-                    if (loadingStopped)
-                        return;
+                                BankManager.Instance.GetBank(true);
+                                break;
+                            case AuthController.AuthResult.RegisterSuccess:
+                                DataFieldsMigrator.MigrateFromPrevious();
+                                SaveUtils.PutValue(SaveKey.AuthorizedAtLeastOnce, true);
+                                BankManager.Instance.GetBank(true);
+                                break;
+                            case AuthController.AuthResult.LoginFailed:
+                            case AuthController.AuthResult.RegisterFailed:
+                            case AuthController.AuthResult.FailedNoInternet:
+                                break;
+                            default:
+                                throw new SwitchCaseNotImplementedException(_AuthResult);
+                        }
 
-                    percents += 50;
-                    m_LoadingPanel.SetProgress(percents, getLoadingText.Invoke(1));
-                    
-                    ShowMainMenu(true);
-                });
-            }));
+                        authFinished = true;
+                    });
+                })
+            });
+
+            m_StartLoadingController.StartStage(1, 
+                () => AssetBundleManager.Instance.Initialized, 
+                () => AssetBundleManager.Instance.Errors);
+            
+            m_StartLoadingController.StartStage(2,
+                () => authFinished, () => null);
         }
 
         private void ShowMainMenu(bool _OnStart)
@@ -218,7 +187,6 @@ namespace UI
             
             m_TransitionRenderer.TransitionAction = (_, _Args) =>
             {
-                m_LoadingPanel.Break(string.Empty);
                 m_MenuDialogViewer.Back();
                 m_MainMenuUi.Show();
             };

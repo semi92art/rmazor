@@ -149,7 +149,9 @@ namespace Utils
                 .FirstOrDefault(_G => _G.Key)
                 ?.ToList();
 
-            if (!GraphicUtils.IsGoodQuality() && backgroundShadows != null)
+            bool showShadows = GraphicUtils.ShowShadows;
+            
+            if (!showShadows && backgroundShadows != null)
             {
                 foreach (var shadow in backgroundShadows)
                     shadow.Key.GetComponent<TrueShadow>().enabled = false;
@@ -157,7 +159,7 @@ namespace Utils
                 backgroundShadows = null;
             }
 
-            if (GraphicUtils.IsGoodQuality())
+            if (showShadows)
             {
                 //get foreground group
                 var foreground = enumerable
@@ -172,7 +174,7 @@ namespace Utils
                 
                 //do transition for foreground graphic elements
                 float currTime = UiTimeProvider.Instance.Time;
-                if (!_Disappear && foreground != null && GraphicUtils.IsGoodQuality())
+                if (!_Disappear && foreground != null && showShadows)
                     while (UiTimeProvider.Instance.Time < currTime + _Time)
                     {
                         float timeCoeff = (currTime + _Time - UiTimeProvider.Instance.Time) / _Time;
@@ -193,7 +195,7 @@ namespace Utils
                 button.Key.enabled = button.Value;
 
 
-            if (GraphicUtils.IsGoodQuality())
+            if (showShadows)
             {
                 //do transition for background shadows after other transitions only if _ShadowsAfterOther == true
                 float shadowBackgrTime = 0.3f;    

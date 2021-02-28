@@ -4,7 +4,6 @@
     {
         IPacket OnSuccess(System.Action _Action);
         IPacket OnFail(System.Action _Action);
-        IPacket OnCancel(System.Action _Action);
     }
     
     
@@ -16,7 +15,6 @@
         string ResponseRaw { get; }
         long ResponseCode { get; set; }
         string Method { get;}
-        bool OnlyOne { get; }
         bool IsDone { get; }
         ErrorResponseArgs ErrorMessage { get; }
         void DeserializeResponse(string _Json);

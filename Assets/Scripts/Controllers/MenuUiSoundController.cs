@@ -20,8 +20,6 @@ namespace Controllers
                     SwitchSound((bool)_Args[0]);
                     break;
                 case MainMenuDialogViewer _:
-                case LoginPanel _:
-                case RegistrationPanel _:
                 case PlusMoneyPanel _:
                     PlayUiButtonClick();
                     break;

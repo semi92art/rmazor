@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using System.Threading.Tasks;
 using Entities;
 using GameHelpers;
 using Network.Packets;
-using UnityEngine;
 using UnityEngine.Networking;
 using Newtonsoft.Json;
-using UnityEngine.Assertions;
-using UnityEngine.TestTools;
 using Utils;
 using Debug = UnityEngine.Debug;
 
@@ -39,55 +33,39 @@ namespace Network
         #endregion
         
         #region nonpublic members
-        
-        private readonly Dictionary<string, IPacket> m_Packets = new Dictionary<string, IPacket>();
-        
+
         private bool m_FirstRequest = true;
-        private bool m_ConnectionTestStarted;
+        private bool m_DatabaseConnectionTestStarted;
+        private bool m_InternetConnectionTestStarted;
         
-        private bool LastConnectionSucceeded
+        private bool DatabaseConnection
         {
-            get => SaveUtils.GetValue<bool>(SaveKey.LastConnectionSucceeded);
-            set => SaveUtils.PutValue(SaveKey.LastConnectionSucceeded, value);
+            get => SaveUtils.GetValue<bool>(SaveKey.LastDatabaseConnectionSucceeded);
+            set => SaveUtils.PutValue(SaveKey.LastDatabaseConnectionSucceeded, value);
         }
         
         #endregion
         
         #region api
 
-       
-
         public void Init(bool _TestMode = false)
         {
-
-
             if (GameClientUtils.GameId == 0)
                 GameClientUtils.GameId = GameClientUtils.DefaultGameId;
 
             if (_TestMode)
                 CommonUtils.UnitTesting = true;
             if (!_TestMode)
-                StartTestingConnection();
+            {
+                TestDatabaseConnection();
+                TestInternetConnection();
+            }
             GameSettings.PlayMode = !_TestMode;
         }
 
         public void Send(IPacket _Packet, bool _Async = true)
         {
-            if (m_Packets.ContainsKey(_Packet.Id))
-            {
-                if (m_Packets[_Packet.Id].OnlyOne)
-                    _Packet.ResponseCode = 300;
-                else
-                {
-                    m_Packets[_Packet.Id] = _Packet;
-                    SendCore(_Packet, _Async);
-                }
-            }
-            else
-            {
-                m_Packets.Add(_Packet.Id, _Packet);
-                SendCore(_Packet, _Async);
-            }
+            SendCore(_Packet, _Async);
         }
         
         public T Deserialize<T>(string _Json)
@@ -102,14 +80,14 @@ namespace Network
         private void SendCore(IPacket _Packet, bool _Async)
         {
             if (_Async)
-                Coroutines.Run(Coroutines.Action(() => SendRequest(_Packet)));
+                Coroutines.Run(Coroutines.Action(() => SendRequestToDatabase(_Packet)));
             else
-                SendRequest(_Packet);
+                SendRequestToDatabase(_Packet);
         }
 
-        private void SendRequest(IPacket _Packet, float? _WaitingTime = null)
+        private void SendRequestToDatabase(IPacket _Packet, float? _WaitingTime = null)
         {
-            UnityWebRequest request = new UnityWebRequest(_Packet.Url, _Packet.Method);
+            var request = new UnityWebRequest(_Packet.Url, _Packet.Method);
             request.method = _Packet.Method;
             string json = JsonConvert.SerializeObject(_Packet.Request);
             byte[] bodyRaw = Encoding.UTF8.GetBytes(json);
@@ -120,7 +98,7 @@ namespace Network
             request.SendWebRequest();
 
             float waitingTime = 2f;
-            if (!LastConnectionSucceeded)
+            if (!DatabaseConnection)
                 waitingTime = 0f;
             if (m_FirstRequest)
                 waitingTime = 5f;
@@ -140,28 +118,49 @@ namespace Network
             }));
         }
 
-        private void StartTestingConnection()
+        private void TestDatabaseConnection()
         {
             var sw = new Stopwatch();
-            if (m_ConnectionTestStarted)
+            if (m_DatabaseConnectionTestStarted)
                 return;
+            m_DatabaseConnectionTestStarted = true;
             Coroutines.Run(Coroutines.Repeat(() =>
             {
                 sw.Restart();
                 IPacket testPacket = new TestConnectionPacket()
-                    .OnSuccess(() => LastConnectionSucceeded = true)
+                    .OnSuccess(() => DatabaseConnection = true)
                     .OnFail(() =>
                         {
-                            Debug.LogError($"No connection to server, request time: {(sw.Elapsed.TotalMilliseconds / 1000D):F2} secs");
-                            LastConnectionSucceeded = false;
+                            Debug.LogError($"No connection to database," +
+                                           $" request time: {sw.Elapsed.TotalMilliseconds / 1000D:F2} secs");
+                            DatabaseConnection = false;
                         }
                     );
-                Coroutines.Run(Coroutines.Action(() => SendRequest(testPacket, 2f)));
+                Coroutines.Run(Coroutines.Action(() => SendRequestToDatabase(testPacket, 2f)));
             }, 5f,
-                float.MaxValue,
-                UiTimeProvider.Instance,
-                () => false));
-            m_ConnectionTestStarted = true;
+            float.MaxValue,
+            UiTimeProvider.Instance,
+            () => false));
+        }
+
+        private void TestInternetConnection()
+        {
+            if (m_InternetConnectionTestStarted)
+                return;
+            m_InternetConnectionTestStarted = true;
+            Coroutines.Run(Coroutines.Repeat(
+            () =>
+            {
+                var r = new UnityWebRequest("http://google.com", "GET");
+                Coroutines.Run(Coroutines.WaitWhile(() =>
+                !r.isDone && !r.isHttpError && !r.isNetworkError,
+                () => GameClientUtils.InternetConnection = r.isDone && !r.isHttpError && !r.isNetworkError));
+                r.SendWebRequest();
+            },
+            5f,
+            float.MaxValue,
+            UiTimeProvider.Instance,
+            () => false));
         }
 
         #endregion

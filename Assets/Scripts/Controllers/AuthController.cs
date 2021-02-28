@@ -22,7 +22,8 @@ namespace Controllers
             LoginSuccess,
             RegisterSuccess,
             LoginFailed,
-            RegisterFailed
+            RegisterFailed,
+            FailedNoInternet
         }
 
         public AuthController()
@@ -68,11 +69,13 @@ namespace Controllers
                     case SignInStatus.Failed:
                     case SignInStatus.DeveloperError:
                     case SignInStatus.InternalError:
-                    case SignInStatus.NetworkError:
                     case SignInStatus.NotAuthenticated:
                     case SignInStatus.AlreadyInProgress:
                     case SignInStatus.UiSignInRequired:
                         _OnResult?.Invoke(AuthResult.LoginFailed);
+                        break;
+                    case SignInStatus.NetworkError:
+                        _OnResult?.Invoke(AuthResult.FailedNoInternet);
                         break;
                     default:
                         throw new SwitchCaseNotImplementedException(_Result);
@@ -109,12 +112,6 @@ namespace Controllers
 
         private void Login(string _Login, string _PasswordHash, UnityAction<AuthResult> _OnResult)
         {
-            if (GameClientUtils.AccountId == GameClientUtils.DefaultAccountId)
-            {
-                Register(_Login, _PasswordHash, _OnResult);
-                return;
-            }
-            
             var loginPacket = new LoginUserPacket(new LoginUserPacketRequestArgs
                 {
                     Name = _Login,
@@ -129,7 +126,13 @@ namespace Controllers
                 );
                 loginPacket.OnFail(() =>
                 {
-                    if (loginPacket.ErrorMessage.Id == ServerErrorCodes.WrongLoginOrPassword)
+                    int errorId = loginPacket.ErrorMessage.Id;
+                    if (errorId == ServerErrorCodes.AccountDoesNotExist)
+                    {
+                        Register(_Login, _PasswordHash, _OnResult);
+                        Debug.LogWarning("Account does not exist");
+                    }
+                    else if (errorId == ServerErrorCodes.WrongLoginOrPassword)
                     {
                         _OnResult?.Invoke(AuthResult.LoginFailed);
                         Debug.LogError("Login failed: Wrong login or password");

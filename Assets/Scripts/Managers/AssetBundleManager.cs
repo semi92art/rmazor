@@ -47,7 +47,7 @@ namespace Managers
         
         public void Init() { } // only for calling IEnumerator Start()
         public bool Initialized { get; private set; }
-        public List<string> Errors { get; private set; } = new List<string>();
+        public List<string> Errors { get; } = new List<string>();
 
         public T GetAsset<T>(string _AssetName, string _BundleName) where T : Object
         {

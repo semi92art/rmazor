@@ -2,6 +2,7 @@
 {
     public static class ServerErrorCodes
     {
+        public const int AccountDoesNotExist = 1;
         public const int WrongLoginOrPassword = 2;
         public const int EntityNotFoundByAccountIdAndGameId = 3;
         public const int IncorrectRequest = 4;

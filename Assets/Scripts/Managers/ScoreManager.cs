@@ -4,6 +4,8 @@ using System.Linq;
 using Constants;
 using Entities;
 using GameHelpers;
+using GooglePlayGames;
+using GooglePlayGames.BasicApi;
 using Network;
 using UnityEngine;
 using Utils;
@@ -84,8 +86,23 @@ namespace Managers
         
         private ScoresEntity GetMainScoreAndroid()
         {
-            //TODO
-            return GetMainScoreCached();
+            var result = new ScoresEntity();
+            PlayGamesPlatform.Instance.LoadScores(
+                GPGSIds.leaderboard_infinite_level,
+                LeaderboardStart.PlayerCentered,
+                100,
+                LeaderboardCollection.Public,
+                LeaderboardTimeSpan.AllTime,
+                _Data =>
+                {
+                    if (_Data.Valid)
+                    {
+                        result.Scores.Add(ScoreType.Main, Convert.ToInt32(_Data.PlayerScore.value));
+                        result.Loaded = true;
+                    }
+                    else result = GetMainScoreCached();
+                });
+            return result;
         }
 
         private ScoresEntity GetMainScoreIos()
