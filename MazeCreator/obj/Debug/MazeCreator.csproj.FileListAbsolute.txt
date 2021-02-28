@@ -1,0 +1,15 @@
+D:\Project\devMazeCreator\MazeCreator\bin\Debug\MazeCreator.exe.config
+D:\Project\devMazeCreator\MazeCreator\bin\Debug\MazeCreator.exe
+D:\Project\devMazeCreator\MazeCreator\bin\Debug\MazeCreator.pdb
+D:\Project\devMazeCreator\MazeCreator\obj\Debug\MazeCreator.csprojAssemblyReference.cache
+D:\Project\devMazeCreator\MazeCreator\obj\Debug\MazeCreator.MazeCreatorForm.resources
+D:\Project\devMazeCreator\MazeCreator\obj\Debug\MazeCreator.Properties.Resources.resources
+D:\Project\devMazeCreator\MazeCreator\obj\Debug\MazeCreator.csproj.GenerateResource.cache
+D:\Project\devMazeCreator\MazeCreator\obj\Debug\MazeCreator.csproj.CoreCompileInputs.cache
+D:\Project\devMazeCreator\MazeCreator\obj\Debug\MazeCreator.exe
+D:\Project\devMazeCreator\MazeCreator\obj\Debug\MazeCreator.pdb
+D:\Project\devMazeCreator\MazeCreator\bin\Debug\Syroot.KnownFolders.dll
+D:\Project\devMazeCreator\MazeCreator\bin\Debug\System.Security.Principal.Windows.dll
+D:\Project\devMazeCreator\MazeCreator\bin\Debug\Syroot.KnownFolders.xml
+D:\Project\devMazeCreator\MazeCreator\bin\Debug\System.Security.Principal.Windows.xml
+D:\Project\devMazeCreator\MazeCreator\obj\Debug\MazeCreator.csproj.CopyComplete
