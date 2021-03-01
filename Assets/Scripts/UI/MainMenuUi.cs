@@ -385,7 +385,7 @@ namespace UI
         private void OnRatingsButtonClick()
         {
             Notify(this, NotifyMessageRatingsButtonClick);
-            // TODO
+            ScoreManager.Instance.ShowLeaderboard();
         }
 
         private void OnDailyBonusButtonClick()

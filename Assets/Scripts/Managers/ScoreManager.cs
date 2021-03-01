@@ -4,9 +4,6 @@ using System.Linq;
 using Constants;
 using Entities;
 using GameHelpers;
-using GooglePlayGames;
-using GooglePlayGames.BasicApi;
-using Network;
 using UnityEngine;
 using Utils;
 
@@ -71,6 +68,17 @@ namespace Managers
             });
         }
         
+        public void ShowLeaderboard()
+        {
+#if UNITY_EDITOR
+            //do nothing
+#elif UNITY_ANDROID
+            ShowLeaderboardAndroid();
+#elif UNITY_IPHONE
+            ShowLeaderboardIos();
+#endif
+        }
+        
         #endregion
         
         #region nonpublic methods
@@ -84,15 +92,22 @@ namespace Managers
             }};
         }
         
+        private void SetMainScoreCache(int _Value)
+        {
+            int? val = _Value;
+            SaveUtils.PutValue(SaveKey.MainScore, val);
+        }
+
+        
         private ScoresEntity GetMainScoreAndroid()
         {
             var result = new ScoresEntity();
-            PlayGamesPlatform.Instance.LoadScores(
+            GooglePlayGames.PlayGamesPlatform.Instance.LoadScores(
                 GPGSIds.leaderboard_infinite_level,
-                LeaderboardStart.PlayerCentered,
+                GooglePlayGames.BasicApi.LeaderboardStart.PlayerCentered,
                 100,
-                LeaderboardCollection.Public,
-                LeaderboardTimeSpan.AllTime,
+                GooglePlayGames.BasicApi.LeaderboardCollection.Public,
+                GooglePlayGames.BasicApi.LeaderboardTimeSpan.AllTime,
                 _Data =>
                 {
                     if (_Data.Valid)
@@ -104,27 +119,35 @@ namespace Managers
                 });
             return result;
         }
+        
+        private void SetMainScoreAndroid(int _Value)
+        {
+            Social.ReportScore(_Value, GPGSIds.leaderboard_infinite_level, _Success => 
+            {
+                if (!_Success)
+                    Debug.LogError("Failed to post leaderboard score");
+            });
+        }
+        
+        private static void ShowLeaderboardAndroid()
+        {
+            GooglePlayGames.PlayGamesPlatform.Instance.ShowLeaderboardUI("Cfji293fjsie_QA");
+        }
 
         private ScoresEntity GetMainScoreIos()
         {
             //TODO
             return GetMainScoreCached();
         }
-
-        private void SetMainScoreCache(int _Value)
-        {
-            int? val = _Value;
-            SaveUtils.PutValue(SaveKey.MainScore, val);
-        }
-
-        private void SetMainScoreAndroid(int _Value)
-        {
-            //TODO
-        }
-
+        
         private void SetMainScoreIos(int _Value)
         {
             //TODO
+        }
+        
+        private static void ShowLeaderboardIos()
+        {
+            //TODO   
         }
         
         #endregion
