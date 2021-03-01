@@ -1,0 +1,17 @@
+C:\dev\Clickers\MazeCreator\MazeCreator\obj\Debug\MazeCreator.csprojAssemblyReference.cache
+C:\dev\Clickers\MazeCreator\MazeCreator\obj\Debug\MazeCreator.MazeCreatorForm.resources
+C:\dev\Clickers\MazeCreator\MazeCreator\obj\Debug\MazeCreator.csproj.GenerateResource.cache
+C:\dev\Clickers\MazeCreator\MazeCreator\obj\Debug\MazeCreator.csproj.CoreCompileInputs.cache
+C:\dev\Clickers\MazeCreator\MazeCreator\bin\Debug\MazeCreator.exe
+C:\dev\Clickers\MazeCreator\MazeCreator\bin\Debug\MazeCreator.pdb
+C:\dev\Clickers\MazeCreator\MazeCreator\bin\Debug\Syroot.KnownFolders.dll
+C:\dev\Clickers\MazeCreator\MazeCreator\bin\Debug\Syroot.Windows.dll
+C:\dev\Clickers\MazeCreator\MazeCreator\bin\Debug\Syroot.KnownFolders.xml
+C:\dev\Clickers\MazeCreator\MazeCreator\bin\Debug\Syroot.Windows.xml
+C:\dev\Clickers\MazeCreator\MazeCreator\obj\Debug\MazeCreator.csproj.CopyComplete
+C:\dev\Clickers\MazeCreator\MazeCreator\obj\Debug\MazeCreator.exe
+C:\dev\Clickers\MazeCreator\MazeCreator\obj\Debug\MazeCreator.pdb
+C:\dev\Clickers\MazeCreator\MazeCreator\bin\Debug\MazeCreator.exe.config
+C:\dev\Clickers\MazeCreator\MazeCreator\bin\Debug\System.Security.Principal.Windows.dll
+C:\dev\Clickers\MazeCreator\MazeCreator\bin\Debug\System.Security.Principal.Windows.xml
+C:\dev\Clickers\MazeCreator\MazeCreator\obj\Debug\MazeCreator.exe.config
