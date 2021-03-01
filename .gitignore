@@ -79,3 +79,6 @@ crashlytics-build.properties
 ProjectSettings/AndroidLogcatSettings.asset
 Prototyping*
 Prototyping.meta*
+
+MazeCreator/MazeCreator/bin/*
+MazeCreator/MazeCreator/obj/*
