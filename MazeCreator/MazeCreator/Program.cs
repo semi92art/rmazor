@@ -10,6 +10,7 @@ namespace MazeCreator
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
             Application.Run(new MazeCreatorForm());
         }
     }

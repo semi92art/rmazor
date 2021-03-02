@@ -3,8 +3,8 @@
     public enum EStage
     {
         Ready,
-        SelectedShape,
-        Generate,
-        GeneratedWithSolution
+        SetShape,
+        SetSolution,
+        Generated
     }
 }
