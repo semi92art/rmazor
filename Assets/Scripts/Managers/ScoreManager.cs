@@ -98,7 +98,7 @@ namespace Managers
             SaveUtils.PutValue(SaveKey.MainScore, val);
         }
 
-        
+#if UNITY_ANDROID
         private ScoresEntity GetMainScoreAndroid()
         {
             var result = new ScoresEntity();
@@ -134,6 +134,8 @@ namespace Managers
             GooglePlayGames.PlayGamesPlatform.Instance.ShowLeaderboardUI("Cfji293fjsie_QA");
         }
 
+#elif UNITY_IPHONE
+        
         private ScoresEntity GetMainScoreIos()
         {
             //TODO
@@ -149,6 +151,8 @@ namespace Managers
         {
             //TODO   
         }
+        
+#endif
         
         #endregion
     }

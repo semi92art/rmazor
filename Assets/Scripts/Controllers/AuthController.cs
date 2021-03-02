@@ -51,6 +51,8 @@ namespace Controllers
 
         #region nonpublic methods
         
+#if UNITY_ANDROID
+        
         private void AuthenticateWithGoogle(UnityAction<AuthResult> _OnResult)
         {
             // authenticate user:
@@ -83,10 +85,14 @@ namespace Controllers
             });
         }
 
+#elif UNITY_IPHONE
+
         private void AuthenticateWithApple(UnityAction<AuthResult> _OnResult)
         {
             //TODO
         }
+        
+#endif
         
 #if UNITY_ANDROID
         

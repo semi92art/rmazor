@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <data>
-	<ad type="app_id" os="android">ca-app-pub-1763919853958157~5665911644</ad>
-	<ad type="banner" os="android">ca-app-pub-1763919853958157/6822370207</ad>
-	<ad type="fullscreen" os="android">ca-app-pub-1763919853958157/3106486476</ad>
-	<ad type="native" os="android">ca-app-pub-1763919853958157/5282768267</ad>
-	<ad type="reward" os="android">ca-app-pub-1763919853958157/3375732170</ad>
+	<ad type="app_id" os="android">ca-app-pub-5357184552698168~9131218519</ad>
+	<ad type="banner" os="android">ca-app-pub-5357184552698168/9539053259</ad>
+	<ad type="fullscreen" os="android">ca-app-pub-5357184552698168/7920765543</ad>
+	<ad type="native" os="android">ca-app-pub-5357184552698168/7403844507</ad>
+	<ad type="reward" os="android">ca-app-pub-5357184552698168/5216664869</ad>
+	
+	<ad type="app_id" os="ios">ca-app-pub-5357184552698168~8964338187</ad>
+	<ad type="banner" os="ios">ca-app-pub-5357184552698168/8525354482</ad>
+	<ad type="fullscreen" os="ios">ca-app-pub-5357184552698168/7483735551</ad>
+	<ad type="native" os="ios">ca-app-pub-5357184552698168/5979082196</ad>
+	<ad type="reward" os="ios">ca-app-pub-5357184552698168/1768374443</ad>
+	
 	<test_device>FE989E63CDFFFB64D9E6A288C137E1E2</test_device><!--Xiaomi Mi Mix 2 (Artem)-->
 	<test_device>A7BDF038439EAB9E32977E9485093F43</test_device><!--Xiaomi Redmi Note 2 (Artem)-->
 	<test_device>B648AEC33D2557D0BFD1FD486B3E7678</test_device><!--Xiaomi Redmi Note 5 (Artem)-->
