@@ -13,29 +13,31 @@ namespace MazeCreator
 {
     public partial class MazeCreatorForm : Form
     {
+        private delegate void VoidHandler();
+        
         private const string UriString = "http://www.mazegenerator.net";
         private const string MemberClick = "click";
         private const string AttrValue = "value";
+        private const double TimerDelay = 6D;
+        
         private int m_Amount, m_Size;
         private int m_Width, m_Height;
         private EShape m_Shape;
         private EStage m_Stage;
         private EStyle m_Style;
         
+        private readonly Random m_Random = new Random();
         private readonly Stopwatch m_Stopwatch = new Stopwatch();
         private readonly Timer m_Timer = new Timer();
         private int m_ServerAnswersCountCheck;
         private int m_ServerAnswersCount;
+        private int m_Delay;
 
         private int m_CurrentIndex;
         private int CurrentIndex
         {
             get => m_CurrentIndex;
-            set
-            {
-                m_CurrentIndex = value;
-                pb_creation.Value = value;
-            }
+            set => m_CurrentIndex = pb_creation.Value = value;
         }
 
         public MazeCreatorForm()
@@ -48,9 +50,6 @@ namespace MazeCreator
             InitializeComponent();
             webBrowser1.ScriptErrorsSuppressed = true;
             pb_creation.Minimum = pb_creation.Value = 0;
-            btn_setParams.Enabled = false;
-            buttonCreateMazeDB.Enabled = false;
-            chb_IsReady.Enabled = false;
             m_Timer.Tick += TimerOnTick;
         }
         
@@ -58,46 +57,42 @@ namespace MazeCreator
         {
             if (m_ServerAnswersCount > m_ServerAnswersCountCheck)
                 m_Stopwatch.Restart();
-            if (m_Stopwatch.Elapsed.TotalSeconds > 10d)
-                buttonCreateMazeDB_Click(null, null);
+            if (m_Stopwatch.Elapsed.TotalSeconds > TimerDelay)
+            {
+                m_Stopwatch.Stop();
+                StartCreation();
+            }
             m_ServerAnswersCountCheck = m_ServerAnswersCount;
         }
         
         private void btn_Init_Click(object _S, EventArgs _E)
         {
             webBrowser1.Navigate(UriString);
-            btn_setParams.Enabled = true;
         }
 
         private void buttonCreateMazeDB_Click(object _Sender, EventArgs _E)
         {
-            m_Timer.Start();
-            m_Stage = EStage.Ready;
-            webBrowser1.Navigate(UriString);
-            m_Amount = Convert.ToInt32(textBoxAmount.Text) + 2;
-            pb_creation.Maximum = m_Amount;
-            CurrentIndex = pb_creation.Value = 0;
+            webBrowser1.DocumentCompleted += DocumentCompleted;
+            StartCreation();
         }
         
-        private void btn_setParams_Click(object _, EventArgs _E)
+        private void StartCreation()
         {
             UpdateSettings();
-            chb_IsReady.Enabled = true;
+            int.TryParse(tb_delay.Text, out m_Delay);
+            tb_delay.Enabled = false;
+            buttonCreateMazeDB.Enabled = false;
+            m_Timer.Start();
+            m_Stage = EStage.Ready;
+            m_Amount = pb_creation.Maximum = Convert.ToInt32(textBoxAmount.Text);
+            CurrentIndex = pb_creation.Value = 0;
+            CallGenerateNewButton();
         }
 
-        private void chb_IsReady_CheckedChanged(object _, EventArgs _E)
-        {
-            buttonCreateMazeDB.Enabled = chb_IsReady.Checked;
-            if (chb_IsReady.Checked)
-                UpdateSettings();
-        }
-        
         private void DocumentCompleted(object _Sender, WebBrowserDocumentCompletedEventArgs _E)
         {
-            if (!chb_IsReady.Checked)
-                return;
-
-            if (webBrowser1.ReadyState != WebBrowserReadyState.Complete)
+            var rState = webBrowser1.ReadyState;
+            if (rState != WebBrowserReadyState.Complete && rState != WebBrowserReadyState.Interactive)
             {
                 m_Stage = EStage.Ready;
                 MessageBox.Show($@"Document state: {webBrowser1.ReadyState}");
@@ -108,16 +103,17 @@ namespace MazeCreator
             switch (m_Stage)
             {
                 case EStage.Ready:
-                    ProcessStage(StageSelectShape);
+                    pb_creation.Value = pb_creation.Minimum;
+                    ProcessStage(StageSelectShape, m_Stage);
                     break;
                 case EStage.SetShape:
-                    ProcessStage(StageSelectMazeSizeAndGenerate);
+                    ProcessStage(StageSelectMazeSizeAndGenerate, m_Stage);
                     break;
                 case EStage.SetSolution:
-                    ProcessStage(SetSolutionCheckbox);
+                    ProcessStage(SetSolutionCheckbox, m_Stage);
                     break;
                 case EStage.Generated:
-                    ProcessStage(StageGetSvg);
+                    ProcessStage(StageGetSvg, m_Stage);
                     break;
                 default:
                     throw new Exception("Not all EStage types implemented");
@@ -126,7 +122,7 @@ namespace MazeCreator
         
         private void StageSelectShape()
         {
-            var shapeElement = webBrowser1.Document?.GetElementById("ShapeDropDownList");
+            var shapeElement = webBrowser1.Document?.GetElementById(ElNames.ShapeDropdown);
             shapeElement?.SetAttribute(AttrValue, ((int) m_Shape + 1).ToString());
             m_Stage = EStage.SetShape;
             CallGenerateNewButton();
@@ -134,28 +130,32 @@ namespace MazeCreator
         
         private void StageSelectMazeSizeAndGenerate()
         {
+            var eParamElement = webBrowser1.Document?.GetElementById(ElNames.EParam);
+            var rParamElement = webBrowser1.Document?.GetElementById(ElNames.RParam);
+            eParamElement?.SetAttribute(AttrValue, m_Random.Next(0, 100).ToString());
+            rParamElement?.SetAttribute(AttrValue, m_Random.Next(50, 100).ToString());
             switch (m_Shape)
             {
                 case EShape.Rectangular:
-                    var styleElement = webBrowser1.Document?.GetElementById("S1TesselationDropDownList");
-                    var widthElement = webBrowser1.Document?.GetElementById("S1WidthTextBox");
-                    var heightElement = webBrowser1.Document?.GetElementById("S1HeightTextBox");
+                    var styleElement = webBrowser1.Document?.GetElementById(ElNames.StyleDropdown);
+                    var widthElement = webBrowser1.Document?.GetElementById(ElNames.Width);
+                    var heightElement = webBrowser1.Document?.GetElementById(ElNames.Height);
                     styleElement?.SetAttribute(AttrValue, ((int) m_Style + 1).ToString());
                     widthElement?.SetAttribute(AttrValue, m_Width.ToString());
                     heightElement?.SetAttribute(AttrValue, m_Height.ToString());
                     break;
                 case EShape.Circular:
-                    var diameterElement = webBrowser1.Document?.GetElementById("S2OuterDiameterTextBox");
-                    diameterElement?.SetAttribute(AttrValue, m_Size.ToString());
-                    break;
                 case EShape.Triangular:
-                    var lengthEl = webBrowser1.Document?.GetElementById("S3SideLengthTextBox");
-                    lengthEl?.SetAttribute(AttrValue, m_Size.ToString());
-                    break;
                 case EShape.Hexagonal:
-                    var lengthElement = webBrowser1.Document?.GetElementById("S4SideLengthTextBox");
-                    lengthElement?.SetAttribute(AttrValue, m_Size.ToString());
+                    var sizeElement = webBrowser1.Document?.GetElementById(ElNames.Size(m_Shape));
+                    sizeElement?.SetAttribute(AttrValue, m_Size.ToString());
                     break;
+            }
+
+            if (m_Shape == EShape.Triangular)
+            {
+                var innerSideLenEl = webBrowser1.Document?.GetElementById(ElNames.InnerSideLength);
+                innerSideLenEl?.SetAttribute(AttrValue, "0");
             }
 
             m_Stage = EStage.SetSolution;
@@ -173,10 +173,7 @@ namespace MazeCreator
             
             bool isChecked = showSolutionEl.GetAttribute("checked") != "False";
             if (!isChecked)
-            {
                 showSolutionEl.InvokeMember(MemberClick);
-                //Thread.Sleep(1000);
-            }
             m_Stage = EStage.Generated;
             DocumentCompleted(null, null);
         }
@@ -187,11 +184,10 @@ namespace MazeCreator
             if (svgLinkElement == null)
             {
                 MessageBox.Show(@"Svg el is null");
-                chb_IsReady.Checked = false;
                 return;
             }
                     
-            string svgUri = svgLinkElement.GetAttribute("src");
+            var svgUri = svgLinkElement.GetAttribute("src");
             var req = WebRequest.CreateHttp(svgUri);
             req.CookieContainer = CookiesHelper.GetUriCookieContainer(new Uri(UriString));
             using (var response = req.GetResponse())
@@ -200,7 +196,6 @@ namespace MazeCreator
                 if (responseStream == null)
                 {
                     MessageBox.Show(@"Response stream is null");
-                    chb_IsReady.Checked = false;
                     return;
                 }
                 var reader = new StreamReader( responseStream );
@@ -209,18 +204,25 @@ namespace MazeCreator
                 xDoc = ClearSvg(xDoc);
                 if (!Directory.Exists(MazeDir))
                     Directory.CreateDirectory(MazeDir);
-                if (CurrentIndex > 2)
+                if (CurrentIndex > 1)
                     xDoc.Save(Path.Combine(MazeDir, $"{GetMazeName()}.svg"));
+                
+                CurrentIndex++;
+                if (GetMazeDirectoryFilesCount() >= m_Amount)
+                {
+                    webBrowser1.DocumentCompleted -= DocumentCompleted;
+                    tb_delay.Enabled = true;
+                    buttonCreateMazeDB.Enabled = true;
+                    lb_log.Text = @"Creation completed!";
+                    pb_creation.Value = pb_creation.Maximum;
+                    m_Timer.Stop(); 
+                }
+                else
+                {
+                    m_Stage = EStage.Ready;
+                    CallGenerateNewButton();
+                }
             }
-            m_Stage = EStage.Ready;
-
-            if (++CurrentIndex == m_Amount)
-            {
-                lb_log.Text = @"Creation completed!";
-                m_Timer.Stop(); 
-            }
-            else
-                CallGenerateNewButton();
         }
         
         private XDocument ClearSvg(XDocument _Doc)
@@ -250,38 +252,54 @@ namespace MazeCreator
         
         private string GetMazeName()
         {
-            int newIdx = Directory.GetFiles(MazeDir).Length + 1;
+            int newIdx = GetMazeDirectoryFilesCount() + 1;
             return m_Shape == EShape.Rectangular ? 
                 $"Maze_{m_Shape}_{m_Style}_{MazeNameSuffix}_{newIdx}" 
                 : $"Maze_{MazeNameSuffix}_{newIdx}";
-        } 
-        
-        private void ProcessStage(Action _StateAction)
+        }
+
+        private int GetMazeDirectoryFilesCount()
         {
-            lb_log.Text = $@"Creating maze {CurrentIndex} of {m_Amount}: {m_Stage}";
+            if (!Directory.Exists(MazeDir))
+                Directory.CreateDirectory(MazeDir);
+            return Directory.GetFiles(MazeDir).Length;
+        }
+
+        private void ProcessStage(Action _StateAction, EStage _Stage)
+        {
+            lb_log.Text = $@"Creating maze {GetMazeDirectoryFilesCount() + 1} of {m_Amount}: {m_Stage}";
             _StateAction?.Invoke();
-            if (m_Stage != EStage.Generated)
+            pb_creation.Value = Math.Min(pb_creation.Maximum, pb_creation.Value + 33);
+            int defaultDelay = 200;
+            switch (_Stage)
             {
-                int.TryParse(tb_delay.Text, out int delay);
-                Thread.Sleep(delay);
+                case EStage.Ready:
+                    Thread.Sleep(defaultDelay + m_Delay);
+                    break;
+                case EStage.SetShape:
+                case EStage.SetSolution:
+                    Thread.Sleep(defaultDelay);
+                    break;
+                case EStage.Generated:
+                    break;
             }
         }
         
         private void UpdateSettings()
         {
-            var shapeElement = webBrowser1.Document?.GetElementById("ShapeDropDownList");
+            var shapeElement = webBrowser1.Document?.GetElementById(ElNames.ShapeDropdown);
             if (shapeElement != null)
             {
                 int.TryParse(shapeElement.GetAttribute(AttrValue), out int val);
                 m_Shape = (EShape)(val - 1);
             }
-            
+
             switch (m_Shape)
             {
                 case EShape.Rectangular:
-                    var styleElement = webBrowser1.Document?.GetElementById("S1TesselationDropDownList");
-                    var widthElement = webBrowser1.Document?.GetElementById("S1WidthTextBox");
-                    var heightElement = webBrowser1.Document?.GetElementById("S1HeightTextBox");
+                    var styleElement = webBrowser1.Document?.GetElementById(ElNames.StyleDropdown);
+                    var widthElement = webBrowser1.Document?.GetElementById(ElNames.Width);
+                    var heightElement = webBrowser1.Document?.GetElementById(ElNames.Height);
 
                     if (styleElement != null)
                     {
@@ -294,24 +312,38 @@ namespace MazeCreator
                         int.TryParse(heightElement.GetAttribute(AttrValue), out m_Height);
                     break;
                 case EShape.Circular:
-                    var diameterElement = webBrowser1.Document?.GetElementById("S2OuterDiameterTextBox");
-                    if (diameterElement != null)
-                        int.TryParse(diameterElement.GetAttribute(AttrValue), out m_Size);
-                    break;
                 case EShape.Triangular:
-                {
-                    var lengthEl = webBrowser1.Document?.GetElementById("S3SideLengthTextBox");
-                    if (lengthEl != null)
-                        int.TryParse(lengthEl.GetAttribute(AttrValue), out m_Size);
-                    break;
-                }
                 case EShape.Hexagonal:
-                {
-                    var lengthEl = webBrowser1.Document?.GetElementById("S4SideLengthTextBox");
-                    if (lengthEl != null)
-                        int.TryParse(lengthEl.GetAttribute(AttrValue), out m_Size);
+                    var sizeElement = webBrowser1.Document?.GetElementById(ElNames.Size(m_Shape));
+                    if (sizeElement != null)
+                        int.TryParse(sizeElement.GetAttribute(AttrValue), out m_Size);
                     break;
-                }
+            }
+        }
+    }
+
+    public static class ElNames
+    {
+        public const string ShapeDropdown = "ShapeDropDownList";
+        public const string StyleDropdown = "S1TesselationDropDownList";
+        public const string EParam = "AlgorithmParameter1TextBox";
+        public const string RParam = "AlgorithmParameter2TextBox";
+        public const string Width = "S1WidthTextBox";
+        public const string Height = "S1HeightTextBox";
+        public const string InnerSideLength = "S3InnerSideLengthTextBox";
+
+        public static string Size(EShape _Shape)
+        {
+            switch (_Shape)
+            {
+                case EShape.Circular:
+                    return "S2OuterDiameterTextBox";
+                case EShape.Triangular:
+                    return "S3SideLengthTextBox";
+                case EShape.Hexagonal:
+                    return "S4SideLengthTextBox";
+                default:
+                    return string.Empty;
             }
         }
     }

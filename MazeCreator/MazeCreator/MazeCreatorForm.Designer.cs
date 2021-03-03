@@ -34,8 +34,6 @@ namespace MazeCreator
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.tb_delay = new System.Windows.Forms.TextBox();
-            this.btn_setParams = new System.Windows.Forms.Button();
-            this.chb_IsReady = new System.Windows.Forms.CheckBox();
             this.btn_Init = new System.Windows.Forms.Button();
             this.lb_log = new System.Windows.Forms.Label();
             this.pb_creation = new System.Windows.Forms.ProgressBar();
@@ -61,14 +59,11 @@ namespace MazeCreator
             this.webBrowser1.Name = "webBrowser1";
             this.webBrowser1.Size = new System.Drawing.Size(500, 495);
             this.webBrowser1.TabIndex = 1;
-            this.webBrowser1.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.DocumentCompleted);
             // 
             // panel1
             // 
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.tb_delay);
-            this.panel1.Controls.Add(this.btn_setParams);
-            this.panel1.Controls.Add(this.chb_IsReady);
             this.panel1.Controls.Add(this.btn_Init);
             this.panel1.Controls.Add(this.lb_log);
             this.panel1.Controls.Add(this.pb_creation);
@@ -83,7 +78,7 @@ namespace MazeCreator
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(336, 13);
+            this.label1.Location = new System.Drawing.Point(188, 14);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(34, 13);
             this.label1.TabIndex = 11;
@@ -91,31 +86,11 @@ namespace MazeCreator
             // 
             // tb_delay
             // 
-            this.tb_delay.Location = new System.Drawing.Point(376, 9);
+            this.tb_delay.Location = new System.Drawing.Point(228, 10);
             this.tb_delay.Name = "tb_delay";
             this.tb_delay.Size = new System.Drawing.Size(44, 20);
             this.tb_delay.TabIndex = 10;
-            this.tb_delay.Text = "1000";
-            // 
-            // btn_setParams
-            // 
-            this.btn_setParams.Location = new System.Drawing.Point(161, 8);
-            this.btn_setParams.Name = "btn_setParams";
-            this.btn_setParams.Size = new System.Drawing.Size(74, 23);
-            this.btn_setParams.TabIndex = 9;
-            this.btn_setParams.Text = "Set Params";
-            this.btn_setParams.UseVisualStyleBackColor = true;
-            this.btn_setParams.Click += new System.EventHandler(this.btn_setParams_Click);
-            // 
-            // chb_IsReady
-            // 
-            this.chb_IsReady.Location = new System.Drawing.Point(241, 10);
-            this.chb_IsReady.Name = "chb_IsReady";
-            this.chb_IsReady.Size = new System.Drawing.Size(77, 24);
-            this.chb_IsReady.TabIndex = 8;
-            this.chb_IsReady.Text = "Is Ready";
-            this.chb_IsReady.UseVisualStyleBackColor = true;
-            this.chb_IsReady.CheckedChanged += new System.EventHandler(this.chb_IsReady_CheckedChanged);
+            this.tb_delay.Text = "0";
             // 
             // btn_Init
             // 
@@ -176,10 +151,6 @@ namespace MazeCreator
         private System.Windows.Forms.TextBox tb_delay;
 
         private System.Windows.Forms.Label label1;
-
-        private System.Windows.Forms.Button btn_setParams;
-
-        private System.Windows.Forms.CheckBox chb_IsReady;
 
         private System.Windows.Forms.Button btn_Init;
 
