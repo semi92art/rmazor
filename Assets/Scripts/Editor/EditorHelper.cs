@@ -331,20 +331,11 @@ public class EditorHelper : EditorWindow
             {"Password hash", SaveUtils.GetValue<string>(SaveKey.PasswordHash) ?? "not exist"},
             {"Account id", SaveUtils.GetValue<int?>(SaveKey.AccountId).ToString()},
             {"Game id", SaveUtils.GetValue<int>(SaveKey.GameId).ToString()},
-            {"Show ads", GetAccountFieldCached(DataFieldIds.ShowAds)},
-            {"Gold", GetAccountFieldCached(DataFieldIds.FirstCurrency)},
-            {"Diamonds", GetAccountFieldCached(DataFieldIds.SecondCurrency)},
-            {"Main score", GetGameFieldCached(DataFieldIds.Main)}
+            {"First curr.", GetGameFieldCached(DataFieldIds.FirstCurrency)},
+            {"Second curr.", GetGameFieldCached(DataFieldIds.SecondCurrency)},
+            {"Main score", GetGameFieldCached(DataFieldIds.MainScore)}
         };
-    
-    private static string GetAccountFieldCached(ushort _FieldId)
-    {
-        int? accountId = SaveUtils.GetValue<int?>(SaveKey.AccountId);
-        var field = SaveUtils.GetValue<AccountDataField>(
-            SaveKey.AccountDataFieldValue(accountId ?? GameClientUtils.DefaultAccountId, _FieldId));
-        return DataFieldValueString(field);
-    }
-    
+
     private static string GetGameFieldCached(ushort _FieldId)
     {
         int? accountId = SaveUtils.GetValue<int?>(SaveKey.AccountId);
