@@ -8,7 +8,6 @@ using Exceptions;
 using Extensions;
 using GameHelpers;
 using Managers;
-using Network;
 using TMPro;
 using UI.Entities;
 using UI.Factories;
@@ -62,8 +61,8 @@ namespace UI.Panels
         private readonly RectTransform m_Parent;
         private readonly List<CoinAnimObject> m_CoinsPool = 
             new List<CoinAnimObject>(PoolSize);
-        private Image m_GoldIcon;
-        private Image m_DiamondIcon;
+        private Image m_FirstCurrencyIcon;
+        private Image m_SecondCurrencyIcon;
         private TextMeshProUGUI m_GoldCount;
         private TextMeshProUGUI m_DiamondsCount;
         private Button m_PlusMoneyButton;
@@ -108,8 +107,8 @@ namespace UI.Panels
                     new Vector2(1f, 0.5f), 
                     new Vector2(103f, 120f)),
                 "main_menu", "bank_mini_panel");
-            m_GoldIcon = go.GetCompItem<Image>("gold_icon");
-            m_DiamondIcon = go.GetCompItem<Image>("diamond_icon");
+            m_FirstCurrencyIcon = go.GetCompItem<Image>("gold_icon");
+            m_SecondCurrencyIcon = go.GetCompItem<Image>("diamond_icon");
             m_GoldCount = go.GetCompItem<TextMeshProUGUI>("gold_count_text");
             m_DiamondsCount = go.GetCompItem<TextMeshProUGUI>("diamonds_count_text");
             m_PlusMoneyButton = go.GetCompItem<Button>("plus_money_button");
@@ -130,9 +129,12 @@ namespace UI.Panels
                 m_DialogViewer.Show(plusMoneyPanel);
             });
 
+            Dbg.Log("Init bank minipanel");
             BankManager.Instance.OnMoneyCountChanged += MoneyCountChanged;
             BankManager.Instance.OnIncome += Income;
             UiManager.Instance.OnCurrentMenuCategoryChanged += CurrentMenuCategoryChanged;
+            
+            BankManager.Instance.RaiseMoneyCountChangedEvent();
         }
 
         public void Show()
@@ -193,11 +195,11 @@ namespace UI.Panels
         private void CreateCoinsPool(Dictionary<BankItemType, long> _Income)
         {
             string iconName = "gold_coin";
-            Image icon = m_GoldIcon;
+            Image icon = m_FirstCurrencyIcon;
             if (_Income.ContainsKey(BankItemType.SecondCurrency) && _Income[BankItemType.SecondCurrency] > 0)
             {
                 iconName = "diamond_coin";
-                icon = m_DiamondIcon;
+                icon = m_SecondCurrencyIcon;
             }
             
             List<Sprite> sprites = new List<Sprite>();
@@ -226,9 +228,9 @@ namespace UI.Panels
 
         private void AnimateCoinsTransfer(Dictionary<BankItemType, long> _Income, RectTransform _From)
         {
-            Vector3 to = m_GoldIcon.transform.position;
+            Vector3 to = m_FirstCurrencyIcon.transform.position;
             if (_Income.ContainsKey(BankItemType.SecondCurrency) && _Income[BankItemType.SecondCurrency] > 0)
-                to = m_DiamondIcon.transform.position;
+                to = m_SecondCurrencyIcon.transform.position;
 
             Dictionary<int, bool> finishedDict = new Dictionary<int, bool>();
             int coroutineIndex = 0;
@@ -366,7 +368,7 @@ namespace UI.Panels
             int textLength = _MaxTextLength ?? MathUtils.Max(
                                  m_GoldCount.text.Length, 
                                  m_DiamondsCount.text.Length);
-            return m_GoldIcon.RTransform().rect.width + 
+            return m_FirstCurrencyIcon.RTransform().rect.width + 
                                   GetTextWidth(textLength) +
                                   m_PlusMoneyButton.RTransform().rect.width + 40;
         }

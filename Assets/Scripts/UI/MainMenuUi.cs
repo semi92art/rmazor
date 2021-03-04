@@ -194,15 +194,14 @@ namespace UI
             playButton.GetComponent<Button>().SetOnClick(OnPlayButtonClick);
             var bestScoreText = playButton.GetCompItem<TextMeshProUGUI>("best_score_text");
 
+            var mainScore = ScoreManager.Instance.GetMainScore();
             Coroutines.Run(Coroutines.WaitWhile(
-                () => GameClientUtils.AccountId == default,
+                () => !mainScore.Loaded, 
                 () =>
-            {
-                var mainScore = ScoreManager.Instance.GetMainScore();
-                Coroutines.Run(Coroutines.WaitWhile(
-                    () => !mainScore.Loaded, 
-                    () => bestScoreText.text = mainScore.Scores[ScoreType.Main].ToNumeric()));
-            }));
+                {
+                    Dbg.Log("Set main score");
+                    bestScoreText.text = mainScore.Scores.First().Value.ToNumeric();
+                }));
             
             var ratingsButton = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(

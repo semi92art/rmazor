@@ -5,8 +5,7 @@ namespace Utils
 {
     public static class GraphicUtils
     {
-        public static bool ShowShadows => false;
-        
+
         public static bool IsGoodQuality()
         {
 #if UNITY_EDITOR

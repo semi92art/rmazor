@@ -188,7 +188,7 @@ namespace DialogViewers
                         var monobeh = itemFrom.DialogPanel as MonoBehaviour;
                         if (monobeh != null)
                             Destroy(monobeh.gameObject);
-                    }, true));
+                    }));
             }
 
             if (toPanel != null)
@@ -198,7 +198,7 @@ namespace DialogViewers
                     GraphicsAlphas.Add(instId, new GraphicAlphas(toPanel));
                 StartCoroutine(Coroutines.DoTransparentTransition(
                     toPanel, GraphicsAlphas[instId].Alphas, TransitionTime, false, 
-                    () => background.enabled = true, true));
+                    () => background.enabled = true));
                 _ItemTo.DialogPanel.OnDialogEnable();
             }
 
@@ -234,7 +234,7 @@ namespace DialogViewers
                         {
                             Action?.Invoke();
                             Action = null;
-                        }, true));
+                        }));
                 }
             }
 

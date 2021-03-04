@@ -21,7 +21,6 @@ namespace UI
     {
         [SerializeField] protected ProceduralImage background;
         [SerializeField] protected ProceduralImage border;
-        [SerializeField] protected Image shadow;
         [SerializeField] protected List<TextMeshProUGUI> texts;
         private const float TransitionTime = 0.2f;
         private int m_TransitionCount;

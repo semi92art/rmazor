@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 9111513267323085564}
   - component: {fileID: 3380598769946004885}
   - component: {fileID: 6922436209118784306}
-  - component: {fileID: 5384266286866285114}
   m_Layer: 0
   m_Name: Settings Button Small
   m_TagString: Untagged
@@ -62,6 +61,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -118,27 +118,3 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &5384266286866285114
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2601192048318346412}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52c162dc854d2f24fa639ba0623de5ef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  size: 20
-  offsetAngle: 90
-  offsetDistance: 3
-  offset: {x: 0.00000017881395, y: -3}
-  color: {r: 0, g: 0, b: 0, a: 0.76862746}
-  blendMode: 0
-  shadowAsSibling: 0
-  cutout: 0
-  baked: 0
-  colorBleedMode: 0
-  modifiedFromInspector: 0
-  bakedShadows: []

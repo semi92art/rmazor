@@ -15,8 +15,8 @@ namespace UI.PanelItems
 {
     public class ShopItemMoney : ShopItemBase, IShopItem
     {
-        [SerializeField] private Image goldIcon;
-        [SerializeField] private Image diamondIcon;
+        [SerializeField] private Image firstCurrencyIcon;
+        [SerializeField] private Image secondCurrencyIcon;
 
         public static IShopItem Create(RectTransform _Parent) =>
             ShopItemBase.Create<ShopItemMoney>(_Parent, "shop_item_money");
@@ -26,9 +26,9 @@ namespace UI.PanelItems
             var rewards = _Props.Rewards;
             description.text = rewards[BankItemType.FirstCurrency].ToNumeric() + " " + "gold" + "\n" + 
                                rewards[BankItemType.SecondCurrency].ToNumeric() + " " + "diamonds";
-            goldIcon.sprite = PrefabUtilsEx.GetObject<Sprite>(
+            firstCurrencyIcon.sprite = PrefabUtilsEx.GetObject<Sprite>(
                 "icons_bags", $"icon_gold_bag_{BagSize(_Props.Size)}");
-            diamondIcon.sprite = PrefabUtilsEx.GetObject<Sprite>(
+            secondCurrencyIcon.sprite = PrefabUtilsEx.GetObject<Sprite>(
                 "icons_bags", $"icon_diamonds_bag_{BagSize(_Props.Size)}");
             
             UnityAction action = () =>

@@ -7,8 +7,7 @@ namespace Entities
     public class SaveKey
     {
         #region factory
-    
-        public static SaveKey MainScore => new SaveKey("main_score", typeof(int?));
+        
         public static SaveKey ShowAds => new SaveKey("show_ads", typeof(bool?));
         public static SaveKey AuthorizedAtLeastOnce => new SaveKey("authorized_at_least_once", typeof(bool));
         public static SaveKey NotFirstLaunch => new SaveKey("not_first_launch", typeof(bool));
@@ -24,8 +23,6 @@ namespace Entities
         public static SaveKey SettingSoundOn => new SaveKey("sound_on", typeof(bool));
         public static SaveKey SettingLanguage => new SaveKey("language", typeof(Language));
         public static SaveKey WheelOfFortuneLastDate => new SaveKey("wheel_of_fortune_last_date", typeof(DateTime));
-        public static SaveKey AccountDataFieldValue(int _AccountId, ushort _FieldId) =>
-            new SaveKey($"df_value_cache_{_AccountId}_{_FieldId}", typeof(AccountDataField));
         public static SaveKey GameDataFieldValue(int _AccountId, int _GameId, ushort _FieldId) =>
             new SaveKey($"df_value_cache_{_AccountId}_{_GameId}_{_FieldId}", typeof(GameDataField));
 

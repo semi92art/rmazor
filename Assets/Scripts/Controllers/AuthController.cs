@@ -33,7 +33,6 @@ namespace Controllers
 #elif  UNITY_IPHONE
 
 #endif
-            
         }
 
         public void Authenticate(UnityAction<AuthResult> _OnDoIfRegister)

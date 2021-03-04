@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Extensions;
 using GameHelpers;
-using LeTai.TrueShadow;
 using Network;
 using UnityEngine;
 using UnityEngine.Events;
@@ -125,8 +124,7 @@ namespace Utils
             Dictionary<Graphic, float> _GraphicsAndAlphas,
             float _Time,
             bool _Disappear = false,
-            UnityAction _OnFinish = null,
-            bool _ShadowsAfterOther = false)
+            UnityAction _OnFinish = null)
         {
             if (_Item == null)
                 yield break;
@@ -138,81 +136,24 @@ namespace Utils
             foreach (var button in selectables)
                 button.Key.enabled = false;
 
-            //group graphic elements by background and foreground criteria 
-            var groups = 
-                graphicsAndAlphas.GroupBy(_Ga =>
-                    _Ga.Key != null && _Ga.Key.GetComponent<TrueShadow>() != null && _Ga.Key.GetComponent<TrueShadow>().isBackground);
-            var enumerable = groups as IGrouping<bool, KeyValuePair<Graphic, float>>[] ?? groups.ToArray();
-            
-            //get background shadows group
-            var backgroundShadows = enumerable
-                .FirstOrDefault(_G => _G.Key)
-                ?.ToList();
-
-            bool showShadows = GraphicUtils.ShowShadows;
-            
-            if (!showShadows && backgroundShadows != null)
-            {
-                foreach (var shadow in backgroundShadows)
-                    shadow.Key.GetComponent<TrueShadow>().enabled = false;
-                backgroundShadows.Clear();
-                backgroundShadows = null;
-            }
-
-            if (showShadows)
-            {
-                //get foreground group
-                var foreground = enumerable
-                    .FirstOrDefault(_G => !_G.Key)
-                    ?.ToList();
-            
-                //before start transition, make background shadows transparent
-                if (backgroundShadows != null)
+            //do transition for graphic elements
+            float currTime = UiTimeProvider.Instance.Time;
+            if (!_Disappear)
+                while (UiTimeProvider.Instance.Time < currTime + _Time)
+                {
+                    float timeCoeff = (currTime + _Time - UiTimeProvider.Instance.Time) / _Time;
+                    float alphaCoeff = 1 - timeCoeff;
+                    var collection = graphicsAndAlphas.ToList();
                     foreach (var ga in from ga 
-                        in backgroundShadows let graphic = ga.Key where !graphic.IsNull() select ga)
-                        ga.Key.color = ga.Key.color.SetA(0);
-                
-                //do transition for foreground graphic elements
-                float currTime = UiTimeProvider.Instance.Time;
-                if (!_Disappear && foreground != null && showShadows)
-                    while (UiTimeProvider.Instance.Time < currTime + _Time)
-                    {
-                        float timeCoeff = (currTime + _Time - UiTimeProvider.Instance.Time) / _Time;
-                        float alphaCoeff = 1 - timeCoeff;
-                        var collection = foreground;
-                        if (backgroundShadows != null && !_ShadowsAfterOther)
-                            collection = collection.Concat(backgroundShadows).ToList();
-                        foreach (var ga in from ga 
-                            in collection let graphic = ga.Key where !graphic.IsNull() select ga)
-                            ga.Key.color = ga.Key.color.SetA(ga.Value * alphaCoeff);
-                        yield return new WaitForEndOfFrame();
-                    } 
-            }
-
+                        in collection let graphic = ga.Key where !graphic.IsNull() select ga)
+                        ga.Key.color = ga.Key.color.SetA(ga.Value * alphaCoeff);
+                    yield return new WaitForEndOfFrame();
+                } 
+            
             //enable selectable elements (buttons, toggles, etc.)
             foreach (var button in selectables
                 .Where(_Button => !_Button.Key.IsNull()))
                 button.Key.enabled = button.Value;
-
-
-            if (showShadows)
-            {
-                //do transition for background shadows after other transitions only if _ShadowsAfterOther == true
-                float shadowBackgrTime = 0.3f;    
-                float currTime = UiTimeProvider.Instance.Time;
-                if (!_Disappear && backgroundShadows != null && _ShadowsAfterOther)
-                    while (UiTimeProvider.Instance.Time < currTime + shadowBackgrTime)
-                    {
-                        float timeCoeff = (currTime + shadowBackgrTime - UiTimeProvider.Instance.Time) / shadowBackgrTime;
-                        float alphaCoeff = 1 - timeCoeff;
-                        foreach (var ga in from ga
-                            in backgroundShadows let graphic = ga.Key where !graphic.IsNull() select ga)
-                            ga.Key.color = ga.Key.color.SetA(ga.Value * alphaCoeff);
-                        yield return new WaitForEndOfFrame();
-                    }
-            }
-
-            
             
             //set color alphas to finish values for all graphic elements
             foreach (var ga in graphicsAndAlphas.ToList())

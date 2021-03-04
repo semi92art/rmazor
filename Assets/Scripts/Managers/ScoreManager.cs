@@ -54,13 +54,13 @@ namespace Managers
         {
             var gff = new GameDataFieldFilter(GameClientUtils.AccountId,
                 GameClientUtils.GameId,
-                DataFieldIds.Main);
+                DataFieldIds.MainScore);
             gff.Filter(_Fields =>
             {
                 if (_ScoreType == ScoreType.Main)
                 {
                     _Fields.First(_F =>
-                            _F.FieldId == DataFieldIds.Main)
+                            _F.FieldId == DataFieldIds.MainScore)
                         .SetValue(_Value).Save();
                 }
                 OnScoresChanged?.Invoke(new ScoresEventArgs(GetScores()));
@@ -82,19 +82,29 @@ namespace Managers
         
         #region nonpublic methods
 
-        private ScoresEntity GetMainScoreCached()
+        private static ScoresEntity GetMainScoreCached()
         {
-            int? score = SaveUtils.GetValue<int?>(SaveKey.MainScore);
-            return new ScoresEntity{Loaded = true, Scores = new Dictionary<ScoreType, int>
+            var scores = new ScoresEntity();
+            var gdff = new GameDataFieldFilter(GameClientUtils.AccountId, GameClientUtils.GameId,
+                DataFieldIds.MainScore) {OnlyLocal = true};
+            gdff.Filter(_Fields =>
             {
-                {ScoreType.Main, score ?? 0}
-            }};
+                var scoreField = _Fields.First();
+                scores.Scores.Add(ScoreType.Main, scoreField.ToInt());
+                scores.Loaded = true;
+            });
+            return scores;
         }
         
-        private void SetMainScoreCache(int _Value)
+        private static void SetMainScoreCache(int _Value)
         {
-            int? val = _Value;
-            SaveUtils.PutValue(SaveKey.MainScore, val);
+            var gdff = new GameDataFieldFilter(GameClientUtils.AccountId, GameClientUtils.GameId,
+                DataFieldIds.MainScore) {OnlyLocal = true};
+            gdff.Filter(_Fields =>
+            {
+                var scoreField = _Fields.First();
+                scoreField.SetValue(_Value).Save(true);
+            });
         }
 
 #if UNITY_ANDROID && !UNITY_EDITOR

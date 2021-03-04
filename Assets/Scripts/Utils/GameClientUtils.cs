@@ -46,7 +46,7 @@ namespace Utils
             get
             {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                return $"test_{SystemInfo.deviceUniqueIdentifier}";
+                return $"{SystemInfo.deviceUniqueIdentifier}";
 #else
                 return SystemInfo.deviceUniqueIdentifier.ToString();
 #endif

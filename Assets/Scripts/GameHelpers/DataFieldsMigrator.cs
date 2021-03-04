@@ -14,9 +14,12 @@ namespace GameHelpers
         {
             if (SaveUtils.GetValue<bool>(SaveKey.NotFirstLaunch))
                 return;
+            Dbg.Log(nameof(InitDefaultDataFieldValues));
+            
             int accId = GameClientUtils.DefaultAccountId;
             new GameDataField(10, accId, 1, DataFieldIds.FirstCurrency).Save(true);
             new GameDataField(10, accId, 1, DataFieldIds.SecondCurrency).Save(true);
+            new GameDataField(0, accId, 1, DataFieldIds.MainScore).Save(true);
 
             var levelsInfo = new LevelsCommonInfo {Infos = new List<LevelCommonInfo>()};
             foreach (var idx in Enumerable.Range(1, 10000))

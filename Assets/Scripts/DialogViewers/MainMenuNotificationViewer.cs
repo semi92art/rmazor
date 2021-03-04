@@ -57,19 +57,10 @@ namespace DialogViewers
         {
             m_Panel = _Item;
             var panel = m_Panel.Panel;
-            
             m_Alphas = panel.GetComponentsInChildrenEx<Graphic>()
                 .Distinct()
                 .ToDictionary(_El => _El, _El => _El.color.a);
-
-            Coroutines.Run(Coroutines.DoTransparentTransition(
-                panel,
-                m_Alphas,
-                0.2f,
-                false,
-                null,
-                true));
-            
+            Coroutines.Run(Coroutines.DoTransparentTransition(panel, m_Alphas, 0.2f));
             m_Panel.OnDialogShow();
             animator.SetTrigger(AkShow);
             IsShowing = true;
@@ -88,8 +79,7 @@ namespace DialogViewers
                     m_Panel.OnDialogHide();
                     Destroy(m_Panel.Panel.gameObject);
                     m_Panel = null;
-                },
-                true));
+                }));
             IsShowing = false;
         }
         

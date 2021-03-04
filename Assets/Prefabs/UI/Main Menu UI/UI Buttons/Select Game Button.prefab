@@ -207,7 +207,7 @@ MonoBehaviour:
   m_material: {fileID: 0}
   m_sharedMaterial: {fileID: 0}
   m_isDefaultMaterial: 0
-  m_padding: 1.25
+  m_padding: 8.5625
   m_canvasRenderer: {fileID: 2639100807201644887}
   m_TextComponent: {fileID: 2077458303218885743}
   m_materialReferenceIndex: 1
@@ -222,7 +222,6 @@ GameObject:
   - component: {fileID: 5229424782557190995}
   - component: {fileID: 6986173603357290425}
   - component: {fileID: 7459830007728636604}
-  - component: {fileID: 8645092487174926595}
   m_Layer: 0
   m_Name: Icon
   m_TagString: Untagged
@@ -286,31 +285,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8645092487174926595
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7462950695857116624}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52c162dc854d2f24fa639ba0623de5ef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isBackground: 0
-  size: 32
-  offsetAngle: 90
-  offsetDistance: 0
-  offset: {x: 0, y: -0}
-  color: {r: 0, g: 0, b: 0, a: 1}
-  blendMode: 0
-  shadowAsSibling: 0
-  cutout: 0
-  baked: 0
-  colorBleedMode: 0
-  modifiedFromInspector: 0
-  bakedShadows: []
 --- !u!1 &7586950372442203724
 GameObject:
   m_ObjectHideFlags: 0

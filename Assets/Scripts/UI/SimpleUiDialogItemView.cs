@@ -10,8 +10,6 @@ namespace UI
         {
             if (!background.IsNull())
                 background.color = ColorUtils.GetColorFromCurrentPalette(CommonPaletteColors.UDialogItemNormal);
-            if (!shadow.IsNull())
-                shadow.color = ColorUtils.GetColorFromCurrentPalette(CommonPaletteColors.UiDialogBackground);
             base.OnEnable();
         }
         

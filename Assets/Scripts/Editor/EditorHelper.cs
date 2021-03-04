@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Constants;
 using Entities;
-using GameHelpers;
 using Managers;
 using Network;
 using Network.Packets;
@@ -12,9 +11,8 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Reflection;
 using Extensions;
-using Unity.Android.Logcat;
+using PygmyMonkey.ColorPalette.Utils;
 using Utils;
 using Utils.Editor;
 
@@ -58,7 +56,7 @@ public class EditorHelper : EditorWindow
     [MenuItem("Tools/Color Palette", false, 5)]
     private static void ShowColorPaletteWindow()
     {
-        EditorWindow window = ColorPaletteWindow.createWindow<ColorPaletteWindow>("Color Palette");
+        EditorWindow window = PMEditorWindow.createWindow<ColorPaletteWindow>("Color Palette");
         window.minSize = new Vector2(280, 500);
     }
 
@@ -72,12 +70,8 @@ public class EditorHelper : EditorWindow
     private void OnGUI()
     {
         if (Application.isPlaying)
-        {
-            GUILayout.Label($"Account Id: {GameClientUtils.AccountId}");
-            GUILayout.Label($"Device Id: {GameClientUtils.DeviceId}");
             GUILayout.Label($"Target FPS: {Application.targetFrameRate}");
-        }
-        
+
         GUI.enabled = Application.isPlaying;
         if (!GUI.enabled)
             GUILayout.Label("Available only in play mode:");
@@ -124,8 +118,6 @@ public class EditorHelper : EditorWindow
         
         EditorUtilsEx.DrawUiLine(Color.gray);
         GUI.enabled = true;
-
-        EditorUtilsEx.GuiButtonAction(PrintCommonInfo);
 
         GUILayout.BeginHorizontal();
         EditorUtilsEx.GuiButtonAction(CreateTestUsers, m_TestUsersCount);
@@ -229,24 +221,17 @@ public class EditorHelper : EditorWindow
         BankManager.Instance.SetBank(m_Money);
     }
 
-    private static void PrintCommonInfo()
-    {
-        Dbg.Log($"Account Id: {GameClientUtils.AccountId}");
-        Dbg.Log($"Device Id: {GameClientUtils.DeviceId}");
-    }
-
     private void CreateTestUsers(int _Count)
     {
         GameClient.Instance.Init(true);
-        int gameId = 1; 
-        var randGen = new System.Random();
+        int gameId = 1;
         for (int i = 0; i < _Count; i++)
         {
             var packet = new RegisterUserPacket(
                 new RegisterUserPacketRequestArgs
                 {
-                    Name = $"test_{CommonUtils.GetUniqueId()}",
-                    PasswordHash = CommonUtils.GetMd5Hash("1"),
+                    Name = $"{CommonUtils.GetUniqueId()}",
+                    PasswordHash = "test",
                     GameId = gameId
                 });
             int ii = i;
@@ -329,7 +314,7 @@ public class EditorHelper : EditorWindow
             {"Last connection succeeded", SaveUtils.GetValue<bool>(SaveKey.LastDatabaseConnectionSucceeded).ToString()},
             {"Login", SaveUtils.GetValue<string>(SaveKey.Login) ?? "not exist"},
             {"Password hash", SaveUtils.GetValue<string>(SaveKey.PasswordHash) ?? "not exist"},
-            {"Account id", SaveUtils.GetValue<int?>(SaveKey.AccountId).ToString()},
+            {"Account id", GameClientUtils.AccountId.ToString()},
             {"Game id", SaveUtils.GetValue<int>(SaveKey.GameId).ToString()},
             {"First curr.", GetGameFieldCached(DataFieldIds.FirstCurrency)},
             {"Second curr.", GetGameFieldCached(DataFieldIds.SecondCurrency)},

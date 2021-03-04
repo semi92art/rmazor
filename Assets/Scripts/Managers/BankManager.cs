@@ -40,12 +40,12 @@ namespace Managers
             gdff.OnlyLocal = GameClientUtils.AccountId == GameClientUtils.DefaultAccountId;
             gdff.Filter(_DataFields =>
             {
-                long gold = _DataFields.First(_V =>
+                long firstCurr = _DataFields.First(_V =>
                     _V.FieldId == DataFieldIds.FirstCurrency).ToLong();
-                long diamonds = _DataFields.First(_V =>
+                long secondCurr = _DataFields.First(_V =>
                     _V.FieldId == DataFieldIds.SecondCurrency).ToLong();
-                result.BankItems.Add(BankItemType.FirstCurrency, gold);
-                result.BankItems.Add(BankItemType.SecondCurrency, diamonds);
+                result.BankItems.Add(BankItemType.FirstCurrency, firstCurr);
+                result.BankItems.Add(BankItemType.SecondCurrency, secondCurr);
                 result.Loaded = true;
                 OnMoneyCountChanged?.Invoke(new BankEventArgs(result));
             }, _ForcedFromServer);
@@ -155,13 +155,11 @@ namespace Managers
             OnIncome?.Invoke(new IncomeEventArgs(bank, _From));    
         }
 
-        // public bool BankExistLocally
-        // {
-        //     get
-        //     {
-        //         
-        //     }
-        // }
+        public void RaiseMoneyCountChangedEvent()
+        {
+            var bank = GetBank();
+            OnMoneyCountChanged?.Invoke(new BankEventArgs(bank));
+        }
     
         #endregion
     }
