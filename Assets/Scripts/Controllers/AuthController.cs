@@ -39,7 +39,7 @@ namespace Controllers
         public void Authenticate(UnityAction<AuthResult> _OnDoIfRegister)
         {
 #if UNITY_EDITOR
-            Login(SystemInfo.deviceUniqueIdentifier, "123", _OnDoIfRegister);         
+            Login(SystemInfo.deviceUniqueIdentifier, "unity", _OnDoIfRegister);         
 #elif UNITY_ANDROID
             AuthenticateWithGoogle(_OnDoIfRegister);
 #elif UNITY_IPHONE
@@ -51,7 +51,7 @@ namespace Controllers
 
         #region nonpublic methods
         
-#if UNITY_ANDROID
+#if UNITY_ANDROID && !UNITY_EDITOR
         
         private void AuthenticateWithGoogle(UnityAction<AuthResult> _OnResult)
         {
@@ -85,11 +85,21 @@ namespace Controllers
             });
         }
 
-#elif UNITY_IPHONE
+#elif  UNITY_IPHONE && !UNITY_EDITOR
 
         private void AuthenticateWithApple(UnityAction<AuthResult> _OnResult)
         {
-            //TODO
+            Social.localUser.Authenticate(_Success =>
+            {
+                if (!_Success)
+                    _OnResult?.Invoke(AuthResult.LoginFailed);
+                else
+                {
+                    string login = Social.localUser.id;
+                    string password = "apple";
+                    Login(login, password, _OnResult);
+                }
+            });
         }
         
 #endif
@@ -196,7 +206,7 @@ namespace Controllers
 //     }
 //
 //     // This function gets called when Authenticate completes
-//     // Note that if the operation is successful, Social.localUser will contain data from the server. 
+//     // If the operation is successful, Social.localUser will contain data from the server. 
 //     void ProcessAuthentication (bool success) {
 //         if (success) {
 //             Debug.Log ("Authenticated, checking achievements");

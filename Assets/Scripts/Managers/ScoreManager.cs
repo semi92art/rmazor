@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Constants;
 using Entities;
@@ -37,9 +36,9 @@ namespace Managers
         public void SetMainScore(int _Value)
         {
             SetMainScoreCache(_Value);
-#if UNITY_ANDROID
+#if UNITY_ANDROID && !UNITY_EDITOR
             SetMainScoreAndroid(_Value);
-#elif UNITY_IPHONE
+#elif UNITY_IPHONE && !UNITY_EDITOR
             SetMainScoreIos(_Value);
 #endif
         }
@@ -98,7 +97,7 @@ namespace Managers
             SaveUtils.PutValue(SaveKey.MainScore, val);
         }
 
-#if UNITY_ANDROID
+#if UNITY_ANDROID && !UNITY_EDITOR
         private ScoresEntity GetMainScoreAndroid()
         {
             var result = new ScoresEntity();
@@ -131,25 +130,61 @@ namespace Managers
         
         private static void ShowLeaderboardAndroid()
         {
-            GooglePlayGames.PlayGamesPlatform.Instance.ShowLeaderboardUI("Cfji293fjsie_QA");
+            GooglePlayGames.PlayGamesPlatform.Instance.ShowLeaderboardUI(GPGSIds.leaderboard_infinite_level);
         }
 
-#elif UNITY_IPHONE
+#elif UNITY_IPHONE && !UNITY_EDITOR
         
         private ScoresEntity GetMainScoreIos()
         {
-            //TODO
-            return GetMainScoreCached();
+            if (!Social.localUser.authenticated)
+            {
+                Debug.LogWarning("User is not authenticated to Game Center");
+                return GetMainScoreCached();
+            }
+            var score = new ScoresEntity();
+            Social.LoadScores( "mazes_infinite_level_score", _Scores =>
+            {
+                var cachedScore = GetMainScoreCached().Scores[ScoreType.Main];
+                var socialScore = _Scores.FirstOrDefault(_S => _S.userID == Social.localUser.id);
+                if (socialScore != null)
+                {
+                    if (cachedScore > (int)socialScore.value)
+                        SetMainScoreIos(cachedScore);
+                    else 
+                        SetMainScoreCache((int)socialScore.value);
+                    score.Scores.Add(ScoreType.Main, (int)socialScore.value);
+                }
+                else
+                    Debug.LogWarning("Failed to get score from Game Center leaderboard");
+                score.Scores = GetMainScoreCached().Scores;
+                score.Loaded = true;
+            });
+            return score;
         }
         
         private void SetMainScoreIos(int _Value)
         {
-            //TODO
+            if (!Social.localUser.authenticated)
+            {
+                Debug.LogWarning("User is not authenticated to Game Center");
+                return;
+            }
+            Social.LoadScores( "mazes_infinite_level_score", _Scores =>
+            {
+                var socialScore = _Scores.FirstOrDefault(_S => _S.userID == Social.localUser.id);
+                if (socialScore == null)
+                {
+                    Debug.LogWarning("Failed to set score to Game Center leaderboard");
+                    return;
+                }
+                socialScore.value = _Value;
+            });
         }
         
         private static void ShowLeaderboardIos()
         {
-            //TODO   
+            Social.ShowLeaderboardUI();
         }
         
 #endif
