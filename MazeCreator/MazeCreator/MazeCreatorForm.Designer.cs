@@ -32,8 +32,6 @@ namespace MazeCreator
             this.buttonCreateMazeDB = new System.Windows.Forms.Button();
             this.webBrowser1 = new System.Windows.Forms.WebBrowser();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.tb_delay = new System.Windows.Forms.TextBox();
             this.btn_Init = new System.Windows.Forms.Button();
             this.lb_log = new System.Windows.Forms.Label();
             this.pb_creation = new System.Windows.Forms.ProgressBar();
@@ -62,8 +60,6 @@ namespace MazeCreator
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.label1);
-            this.panel1.Controls.Add(this.tb_delay);
             this.panel1.Controls.Add(this.btn_Init);
             this.panel1.Controls.Add(this.lb_log);
             this.panel1.Controls.Add(this.pb_creation);
@@ -74,23 +70,6 @@ namespace MazeCreator
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(500, 80);
             this.panel1.TabIndex = 2;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(188, 14);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(34, 13);
-            this.label1.TabIndex = 11;
-            this.label1.Text = "Delay";
-            // 
-            // tb_delay
-            // 
-            this.tb_delay.Location = new System.Drawing.Point(228, 10);
-            this.tb_delay.Name = "tb_delay";
-            this.tb_delay.Size = new System.Drawing.Size(44, 20);
-            this.tb_delay.TabIndex = 10;
-            this.tb_delay.Text = "0";
             // 
             // btn_Init
             // 
@@ -147,10 +126,6 @@ namespace MazeCreator
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
         }
-
-        private System.Windows.Forms.TextBox tb_delay;
-
-        private System.Windows.Forms.Label label1;
 
         private System.Windows.Forms.Button btn_Init;
 

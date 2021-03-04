@@ -13,8 +13,6 @@ namespace MazeCreator
 {
     public partial class MazeCreatorForm : Form
     {
-        private delegate void VoidHandler();
-        
         private const string UriString = "http://www.mazegenerator.net";
         private const string MemberClick = "click";
         private const string AttrValue = "value";
@@ -31,8 +29,6 @@ namespace MazeCreator
         private readonly Timer m_Timer = new Timer();
         private int m_ServerAnswersCountCheck;
         private int m_ServerAnswersCount;
-        private int m_Delay;
-
         private int m_CurrentIndex;
         private int CurrentIndex
         {
@@ -79,8 +75,6 @@ namespace MazeCreator
         private void StartCreation()
         {
             UpdateSettings();
-            int.TryParse(tb_delay.Text, out m_Delay);
-            tb_delay.Enabled = false;
             buttonCreateMazeDB.Enabled = false;
             m_Timer.Start();
             m_Stage = EStage.Ready;
@@ -211,7 +205,6 @@ namespace MazeCreator
                 if (GetMazeDirectoryFilesCount() >= m_Amount)
                 {
                     webBrowser1.DocumentCompleted -= DocumentCompleted;
-                    tb_delay.Enabled = true;
                     buttonCreateMazeDB.Enabled = true;
                     lb_log.Text = @"Creation completed!";
                     pb_creation.Value = pb_creation.Maximum;
@@ -238,12 +231,7 @@ namespace MazeCreator
         private void CallGenerateNewButton()
         {
             var buttonGenElement = webBrowser1.Document?.GetElementById("GenerateButton");
-            if (buttonGenElement == null)
-            {
-                MessageBox.Show(@"Generate New Button is null");
-                return;
-            }
-            buttonGenElement.InvokeMember(MemberClick);
+            buttonGenElement?.InvokeMember(MemberClick);
         }
         
         private string MazeNameSuffix => m_Shape == EShape.Rectangular ? $"{m_Width}_{m_Height}_{m_Style}" : $"{m_Size}";
@@ -270,19 +258,8 @@ namespace MazeCreator
             lb_log.Text = $@"Creating maze {GetMazeDirectoryFilesCount() + 1} of {m_Amount}: {m_Stage}";
             _StateAction?.Invoke();
             pb_creation.Value = Math.Min(pb_creation.Maximum, pb_creation.Value + 33);
-            int defaultDelay = 200;
-            switch (_Stage)
-            {
-                case EStage.Ready:
-                    Thread.Sleep(defaultDelay + m_Delay);
-                    break;
-                case EStage.SetShape:
-                case EStage.SetSolution:
-                    Thread.Sleep(defaultDelay);
-                    break;
-                case EStage.Generated:
-                    break;
-            }
+            if (_Stage != EStage.Generated)
+                    Thread.Sleep(150);
         }
         
         private void UpdateSettings()
