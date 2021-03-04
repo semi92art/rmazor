@@ -25,7 +25,7 @@ namespace Settings
         {
             bool volumeOn = (bool) _Parameter;
             Notify(this, CommonNotifyMessages.UiButtonClick, volumeOn);
-            Debug.Log(volumeOn.ToString());
+            Dbg.Log(volumeOn.ToString());
         }
     }
 }

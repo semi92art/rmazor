@@ -131,8 +131,8 @@ namespace Network
                     .OnSuccess(() => DatabaseConnection = true)
                     .OnFail(() =>
                         {
-                            Debug.LogError($"No connection to database," +
-                                           $" request time: {sw.Elapsed.TotalMilliseconds / 1000D:F2} secs");
+                            Dbg.LogError($"No connection to database," +
+                                         $" request time: {sw.Elapsed.TotalMilliseconds / 1000D:F2} secs");
                             DatabaseConnection = false;
                         }
                     );

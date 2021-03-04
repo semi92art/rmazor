@@ -124,7 +124,7 @@ namespace Managers
             Social.ReportScore(_Value, GPGSIds.leaderboard_infinite_level, _Success => 
             {
                 if (!_Success)
-                    Debug.LogError("Failed to post leaderboard score");
+                    Dbg.LogError("Failed to post leaderboard score");
             });
         }
         
@@ -139,7 +139,7 @@ namespace Managers
         {
             if (!Social.localUser.authenticated)
             {
-                Debug.LogWarning("User is not authenticated to Game Center");
+                Dbg.LogWarning("User is not authenticated to Game Center");
                 return GetMainScoreCached();
             }
             var score = new ScoresEntity();
@@ -156,7 +156,7 @@ namespace Managers
                     score.Scores.Add(ScoreType.Main, (int)socialScore.value);
                 }
                 else
-                    Debug.LogWarning("Failed to get score from Game Center leaderboard");
+                    Dbg.LogWarning("Failed to get score from Game Center leaderboard");
                 score.Scores = GetMainScoreCached().Scores;
                 score.Loaded = true;
             });
@@ -167,7 +167,7 @@ namespace Managers
         {
             if (!Social.localUser.authenticated)
             {
-                Debug.LogWarning("User is not authenticated to Game Center");
+                Dbg.LogWarning("User is not authenticated to Game Center");
                 return;
             }
             Social.LoadScores( "mazes_infinite_level_score", _Scores =>
@@ -175,7 +175,7 @@ namespace Managers
                 var socialScore = _Scores.FirstOrDefault(_S => _S.userID == Social.localUser.id);
                 if (socialScore == null)
                 {
-                    Debug.LogWarning("Failed to set score to Game Center leaderboard");
+                    Dbg.LogWarning("Failed to set score to Game Center leaderboard");
                     return;
                 }
                 socialScore.value = _Value;

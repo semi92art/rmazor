@@ -26,7 +26,7 @@ namespace Managers
            // AnalyticsEventTracker analyticsEventTracker = _analyticsObject.AddComponent<AnalyticsEventTracker>();
            // analyticsEventTracker.m_Trigger.lifecycleEvent.
            //  
-           //  Debug.Log("Analytics enabled");
+           //  Dbg.Log("Analytics enabled");
         }
         #endregion
 

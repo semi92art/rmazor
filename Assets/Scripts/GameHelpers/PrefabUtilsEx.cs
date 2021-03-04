@@ -88,7 +88,7 @@ namespace GameHelpers
                 content = AssetBundleManager.Instance.GetAsset<T>(_ObjectName, _PrefabSetName);
             
             if (content == null)
-                Debug.LogError($"Content of set {_PrefabSetName} with name {_ObjectName} was not set");
+                Dbg.LogError($"Content of set {_PrefabSetName} with name {_ObjectName} was not set");
             
             return content;
         }
@@ -103,7 +103,7 @@ namespace GameHelpers
             
             if (prefab == null)
             {
-                Debug.LogError($"Prefab of set {_PrefabSetName} with name {_PrefabName} was not set");
+                Dbg.LogError($"Prefab of set {_PrefabSetName} with name {_PrefabName} was not set");
                 return null;
             }
 

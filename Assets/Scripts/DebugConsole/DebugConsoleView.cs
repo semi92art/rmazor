@@ -177,11 +177,11 @@ namespace DebugConsole
                         {
                             if (m_CurrentSwipe.y < 0)
                             {
-                                Debug.Log("down");
+                                Dbg.Log("down");
                             }
                             else
                             {
-                                Debug.Log("up");
+                                Dbg.Log("up");
                             }
                         }
                     }

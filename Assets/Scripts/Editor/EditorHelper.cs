@@ -231,8 +231,8 @@ public class EditorHelper : EditorWindow
 
     private static void PrintCommonInfo()
     {
-        Debug.Log($"Account Id: {GameClientUtils.AccountId}");
-        Debug.Log($"Device Id: {GameClientUtils.DeviceId}");
+        Dbg.Log($"Account Id: {GameClientUtils.AccountId}");
+        Dbg.Log($"Device Id: {GameClientUtils.DeviceId}");
     }
 
     private void CreateTestUsers(int _Count)
@@ -257,12 +257,12 @@ public class EditorHelper : EditorWindow
                         GameClientUtils.GameId, DataFieldIds.FirstCurrency).Save();
                     new GameDataField(10, accId,
                         GameClientUtils.GameId, DataFieldIds.SecondCurrency).Save();
-                    Debug.Log("All test users were created successfully");
+                    Dbg.Log("All test users were created successfully");
                 })
                 .OnFail(() =>
                 {
-                    Debug.LogError($"Creating test user #{ii + 1} of {_Count} failed");
-                    Debug.LogError(packet.Response);
+                    Dbg.LogError($"Creating test user #{ii + 1} of {_Count} failed");
+                    Dbg.LogError(packet.Response);
                 });
             GameClient.Instance.Send(packet);
         }
@@ -274,9 +274,9 @@ public class EditorHelper : EditorWindow
         IPacket packet = new DeleteTestUsersPacket();
         packet.OnSuccess(() =>
             {
-                Debug.Log("All test users deleted");
+                Dbg.Log("All test users deleted");
             })
-            .OnFail(() => Debug.Log($"Failed to delete test users: {packet.ErrorMessage}"));
+            .OnFail(() => Dbg.Log($"Failed to delete test users: {packet.ErrorMessage}"));
         GameClient.Instance.Send(packet);
     }
 

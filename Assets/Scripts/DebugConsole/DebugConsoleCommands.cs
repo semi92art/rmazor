@@ -43,7 +43,7 @@ namespace DebugConsole
         {
             if (_Args.Length == 0)
             {
-                Debug.Log("Print: command list");
+                Dbg.Log("Print: command list");
                 Controller.AppendLogLine("Current command list:");
                 foreach (var kvp in Controller.Commands)
                     Controller.AppendLogLine($"{kvp.Key}: {kvp.Value.Description}");

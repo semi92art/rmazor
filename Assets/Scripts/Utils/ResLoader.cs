@@ -39,7 +39,7 @@ namespace Utils
         {
             var set = Resources.Load<PrefabSetObject>($"prefab_sets/{_PrefabSetName}");
             if (set == null)
-                Debug.LogError($"Prefab set with name {_PrefabSetName} does not exist");
+                Dbg.LogError($"Prefab set with name {_PrefabSetName} does not exist");
             return set;
         }
 

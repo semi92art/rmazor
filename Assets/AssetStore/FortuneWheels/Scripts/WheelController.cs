@@ -151,7 +151,7 @@ namespace MkeyFW
         {
             if (m_Ts != null)
                 return;
-            Debug.Log("rand: " + m_Rand);
+            Dbg.Log("rand: " + m_Rand);
             m_NextSector = m_Rand;
             CancelLight();
             
@@ -197,7 +197,7 @@ namespace MkeyFW
             // get next reel position
             m_NextSector = !simulate ? m_NextSector : simPos;
             
-            Debug.Log($"next: {m_NextSector} ;angle: { GetAngleToNextSector(m_NextSector)}");
+            Dbg.Log($"next: {m_NextSector} ;angle: { GetAngleToNextSector(m_NextSector)}");
 
             // create reel rotation sequence - 4 parts  in - (continuous) - main - out
             float oldVal = 0f;
@@ -374,7 +374,7 @@ namespace MkeyFW
             Sector s = m_Sectors[m_CurrSector];
             s.PlayHit(Reel.position);
             m_SpinFinishAction?.Invoke(s.BankItemType, s.Coins);
-            Debug.Log($"Coins: {s.Coins}; IsBigWin: {s.BigWin}");
+            Dbg.Log($"Coins: {s.Coins}; IsBigWin: {s.BigWin}");
         }
 
         

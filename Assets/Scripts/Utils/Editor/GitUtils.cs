@@ -22,7 +22,7 @@ namespace Utils.Editor
                 process.Start();
             }
             catch (System.Exception) {
-                UnityEngine.Debug.LogError("Git is not set-up correctly, required to be on PATH, and to be a git project.");
+                Dbg.LogError("Git is not set-up correctly, required to be on PATH, and to be a git project.");
                 throw;
             }
 
@@ -38,7 +38,7 @@ namespace Utils.Editor
                 throw new System.Exception(message);
             }
             if (errorOutput != "") 
-                UnityEngine.Debug.Log("Git Message: " + errorOutput);
+                Dbg.Log("Git Message: " + errorOutput);
             return output;
         }
     }

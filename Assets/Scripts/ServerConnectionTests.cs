@@ -44,8 +44,8 @@ public class ServerConnectionTests
         //Assert
         Assert.IsTrue(CommonUtils.IsInRange(request.responseCode, 200, 299));
             
-        Debug.Log($"Response code: {request.responseCode}");
-        Debug.Log(request.downloadHandler.text);
+        Dbg.Log($"Response code: {request.responseCode}");
+        Dbg.Log(request.downloadHandler.text);
     }
     
     [UnityTest]
@@ -70,8 +70,8 @@ public class ServerConnectionTests
             yield return new WaitForEndOfFrame();
         
         //Assert
-        Debug.Log($"response code: {packet.ResponseCode}");
-        Debug.Log($"response string: {packet.ResponseRaw}");
+        Dbg.Log($"response code: {packet.ResponseCode}");
+        Dbg.Log($"response string: {packet.ResponseRaw}");
         
         Assert.IsTrue(requestSuccess);
     }
@@ -98,8 +98,8 @@ public class ServerConnectionTests
             yield return new WaitForEndOfFrame();
         
         //Assert
-        Debug.Log($"response code: {packet.ResponseCode}");
-        Debug.Log($"response string: {packet.ResponseRaw}");
+        Dbg.Log($"response code: {packet.ResponseCode}");
+        Dbg.Log($"response string: {packet.ResponseRaw}");
         
         Assert.IsTrue(requestSuccess);
     }

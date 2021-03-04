@@ -51,6 +51,9 @@ namespace Managers
 
         public T GetAsset<T>(string _AssetName, string _BundleName) where T : Object
         {
+            if (!Initialized)
+                Dbg.LogError("Bundles were not initialized");
+            
             return m_Bundles[_BundleName].FirstOrDefault(
                 _Info => _Info.Name.GetFileName(false) == _AssetName)?.Asset as T;
         }
@@ -90,7 +93,7 @@ namespace Managers
                 string version = bundleVersionRequest.downloadHandler.text;
                 if (bundleVersionRequest.isHttpError || bundleVersionRequest.isNetworkError)
                 {
-                    Debug.LogError(bundleVersionRequest.error);
+                    Dbg.LogError(bundleVersionRequest.error);
                     yield break;
                 }
                 using (var bundleRequest = UnityWebRequestAssetBundle.GetAssetBundle(
@@ -103,7 +106,7 @@ namespace Managers
                     {
                         string error = $"Failed to load bundle {_BundleName} from remote server";
                         Errors.Add(error);
-                        Debug.LogError(error);
+                        Dbg.LogError(error);
                         yield break;
                     }
                     

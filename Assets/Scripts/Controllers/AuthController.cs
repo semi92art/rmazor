@@ -59,7 +59,7 @@ namespace Controllers
             PlayGamesPlatform.Instance.Authenticate(
                 SignInInteractivity.CanPromptOnce, _Result =>
             {
-                Debug.Log($"MGC: {_Result}");
+                Utils.Dbg.Log($"{_Result}");
                 switch (_Result)
                 {
                     case SignInStatus.Success:
@@ -109,7 +109,7 @@ namespace Controllers
         //https://github.com/playgameservices/play-games-plugin-for-unity
         private void InitGooglePlayServices()
         {
-            Debug.Log("MGC: Play Games Init Start");
+            Dbg.Log("Play Games Init Start");
             PlayGamesClientConfiguration config = new PlayGamesClientConfiguration.Builder()
                 .RequestEmail()
                 //.RequestIdToken()
@@ -121,7 +121,7 @@ namespace Controllers
             PlayGamesPlatform.DebugLogEnabled = true;
 #endif
             PlayGamesPlatform.Activate();
-            Debug.Log("MGC: Play Games Init End");
+            Dbg.Log("Play Games Init End");
         }
         
 #endif
@@ -135,7 +135,7 @@ namespace Controllers
                 });
                 loginPacket.OnSuccess(() =>
                     {
-                        Debug.Log("Login successfully");
+                        Dbg.Log("Login successfully");
                         GameClientUtils.AccountId = loginPacket.Response.Id;
                         _OnResult?.Invoke(AuthResult.LoginSuccess);
                     }
@@ -146,17 +146,17 @@ namespace Controllers
                     if (errorId == ServerErrorCodes.AccountDoesNotExist)
                     {
                         Register(_Login, _PasswordHash, _OnResult);
-                        Debug.LogWarning("Account does not exist");
+                        Dbg.LogWarning("Account does not exist");
                     }
                     else if (errorId == ServerErrorCodes.WrongLoginOrPassword)
                     {
                         _OnResult?.Invoke(AuthResult.LoginFailed);
-                        Debug.LogError("Login failed: Wrong login or password");
+                        Dbg.LogError("Login failed: Wrong login or password");
                     }
                     else
                     {
                         _OnResult?.Invoke(AuthResult.LoginFailed);
-                        Debug.LogError(loginPacket.ErrorMessage);
+                        Dbg.LogError(loginPacket.ErrorMessage);
                     }
                 });
                 GameClient.Instance.Send(loginPacket);
@@ -176,14 +176,14 @@ namespace Controllers
                 });
             registerPacket.OnSuccess(() =>
                 {
-                    Debug.Log("Registered successfully");
+                    Dbg.Log("Registered successfully");
                     GameClientUtils.AccountId = registerPacket.Response.Id;
                     _OnResult?.Invoke(AuthResult.RegisterSuccess);
                 })
                 .OnFail(() =>
                 {
                     _OnResult?.Invoke(AuthResult.RegisterFailed);
-                    Debug.LogError(registerPacket.ErrorMessage);
+                    Dbg.LogError(registerPacket.ErrorMessage);
                 });
             GameClient.Instance.Send(registerPacket);
         }
@@ -209,28 +209,28 @@ namespace Controllers
 //     // If the operation is successful, Social.localUser will contain data from the server. 
 //     void ProcessAuthentication (bool success) {
 //         if (success) {
-//             Debug.Log ("Authenticated, checking achievements");
+//             Dbg.Log ("Authenticated, checking achievements");
 //
 //             // Request loaded achievements, and register a callback for processing them
 //             Social.LoadAchievements (ProcessLoadedAchievements);
 //         }
 //         else
-//             Debug.Log ("Failed to authenticate");
+//             Dbg.Log ("Failed to authenticate");
 //     }
 //
 //     // This function gets called when the LoadAchievement call completes
 //     void ProcessLoadedAchievements (IAchievement[] achievements) {
 //         if (achievements.Length == 0)
-//             Debug.Log ("Error: no achievements found");
+//             Dbg.Log ("Error: no achievements found");
 //         else
-//             Debug.Log ("Got " + achievements.Length + " achievements");
+//             Dbg.Log ("Got " + achievements.Length + " achievements");
 //      
 //         // You can also call into the functions like this
 //         Social.ReportProgress ("Achievement01", 100.0, result => {
 //             if (result)
-//                 Debug.Log ("Successfully reported achievement progress");
+//                 Dbg.Log ("Successfully reported achievement progress");
 //             else
-//                 Debug.Log ("Failed to report achievement");
+//                 Dbg.Log ("Failed to report achievement");
 //         });
 //     }
 // }
@@ -314,7 +314,7 @@ namespace Controllers
 // 		// RESET ALL ACHIEVEMENTS
 // 		if(GUI.Button(new Rect(20, 260, 200, 75), "Reset Achievements")) {
 // 			GameCenterPlatform.ResetAllAchievements((resetResult) => {
-// 				Debug.Log(resetResult ? "Achievements have been Reset" : "Achievement reset failure.");
+// 				Dbg.Log(resetResult ? "Achievements have been Reset" : "Achievement reset failure.");
 // 			});
 // 		}
 // 		
@@ -349,7 +349,7 @@ namespace Controllers
 // 	// NOTE THAT IF THE OPERATION IS SUCCESSFUL Social.localUser WILL CONTAIN DATA FROM THE GAME CENTER SERVER
 //     void ProcessAuthentication (bool success) {
 //         if (success) {
-//             Debug.Log ("Authenticated, checking achievements");
+//             Dbg.Log ("Authenticated, checking achievements");
 //
 // 			// MAKE REQUEST TO GET LOADED ACHIEVEMENTS AND REGISTER A CALLBACK FOR PROCESSING THEM
 //             Social.LoadAchievements (ProcessLoadedAchievements); // ProcessLoadedAchievements FUNCTION CAN BE FOUND BELOW
@@ -357,27 +357,27 @@ namespace Controllers
 // 			Social.LoadScores(leaderboardName, scores => {
 //     			if (scores.Length > 0) {
 // 					// SHOW THE SCORES RECEIVED
-//         			Debug.Log ("Received " + scores.Length + " scores");
+//         			Dbg.Log ("Received " + scores.Length + " scores");
 //         			string myScores = "Leaderboard: \n";
 //         			foreach (IScore score in scores)
 //             			myScores += "\t" + score.userID + " " + score.formattedValue + " " + score.date + "\n";
-//         			Debug.Log (myScores);
+//         			Dbg.Log (myScores);
 //     			}
 //     			else
-//         			Debug.Log ("No scores have been loaded.");
+//         			Dbg.Log ("No scores have been loaded.");
 // 				});
 //         }
 //         else
-//             Debug.Log ("Failed to authenticate with Game Center.");
+//             Dbg.Log ("Failed to authenticate with Game Center.");
 //     }
 // 	
 // 	
 // 	// THIS FUNCTION GETS CALLED WHEN THE LoadAchievements CALL COMPLETES
 //     void ProcessLoadedAchievements (IAchievement[] achievements) {
 //         if (achievements.Length == 0)
-//             Debug.Log ("Error: no achievements found");
+//             Dbg.Log ("Error: no achievements found");
 //         else
-//             Debug.Log ("Got " + achievements.Length + " achievements");
+//             Dbg.Log ("Got " + achievements.Length + " achievements");
 //
 //         // You can also call into the functions like this
 //         Social.ReportProgress ("Achievement01", 100.0, result => {

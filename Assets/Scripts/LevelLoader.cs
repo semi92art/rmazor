@@ -40,13 +40,13 @@ public static class LevelLoader
                 //LinesDefenderManager.Instance.Init(_level);
                 break;
             case 3:
-                Debug.Log(WasNotMadeMessage);
+                Dbg.Log(WasNotMadeMessage);
                 break;
             case 4:
-                Debug.Log(WasNotMadeMessage);
+                Dbg.Log(WasNotMadeMessage);
                 break;
             case 5:
-                Debug.Log(WasNotMadeMessage);
+                Dbg.Log(WasNotMadeMessage);
                 break;
             default:
                 throw new SwitchCaseNotImplementedException(_GameId);

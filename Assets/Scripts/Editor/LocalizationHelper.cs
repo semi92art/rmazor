@@ -151,7 +151,7 @@ public class LocalizationHelper : EditorWindow
     {
         if (string.IsNullOrEmpty(_Key))
         {
-            Debug.LogError("Key is empty!");
+            Dbg.LogError("Key is empty!");
             return;
         }
 
@@ -186,13 +186,13 @@ public class LocalizationHelper : EditorWindow
             File.WriteAllText($@"Assets\Resources\texts\{m_Assets[key].name}.txt", sb.ToString());
         }
         
-        Debug.Log("Localization changes saved successfully");
+        Dbg.Log("Localization changes saved successfully");
     }
 
     private void Discard()
     {
         LoadResources();
-        Debug.Log("Localization changes were discarded");
+        Dbg.Log("Localization changes were discarded");
     }
 
     private Language[] GetLanguages()

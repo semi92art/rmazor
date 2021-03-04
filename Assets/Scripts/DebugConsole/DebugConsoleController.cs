@@ -77,7 +77,7 @@ namespace DebugConsole
         
         public void AppendLogLine(string _Line)
         {
-            Debug.Log(_Line);
+            Utils.Dbg.Log(_Line);
 
             if (Scrollback.Count >= ScrollbackSize)
                 Scrollback.Dequeue();

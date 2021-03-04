@@ -14,6 +14,7 @@ public static class BuildAssetBundles
     private const string ProgressBarTitle = "Building Bundles";
     private static string BundlesPath => $"Assets/AssetBundles/{GetOsBundleSubPath()}";
     
+    [MenuItem("Tools/Build Bundles")]
     public static void BuildAllAssetBundles()
     {
         EditorUtility.DisplayProgressBar(ProgressBarTitle, "Starting build...", 0f);
@@ -29,10 +30,10 @@ public static class BuildAssetBundles
         EditorUtility.DisplayProgressBar(ProgressBarTitle, "Staging in git...", 20f);
         string unstagedFiles = GitUtils.RunGitCommand("ls-files --others --exclude-standard", BundlesLocalPath);
         if (!string.IsNullOrEmpty(unstagedFiles))
-            Debug.Log($"New Files: {unstagedFiles}");
+            Utils.Dbg.Log($"New Files: {unstagedFiles}");
         string modifiedFiles = GitUtils.RunGitCommand("diff --name-only", BundlesLocalPath);
         if (!string.IsNullOrEmpty(modifiedFiles))
-            Debug.Log($"Modified Files: {modifiedFiles}");
+            Utils.Dbg.Log($"Modified Files: {modifiedFiles}");
         var fileNames = BundleFileNames(unstagedFiles, modifiedFiles);
         var sb = new StringBuilder();
         foreach (var fileName in fileNames)
@@ -43,7 +44,7 @@ public static class BuildAssetBundles
         
         string fileNamesText = sb.ToString();
         if (string.IsNullOrEmpty(fileNamesText) || string.IsNullOrWhiteSpace(fileNamesText))
-            Debug.Log("No new bundles to push");
+            Utils.Dbg.Log("No new bundles to push");
 
         GitUtils.RunGitCommand($"stage {fileNamesText}", BundlesLocalPath);
         EditorUtility.DisplayProgressBar(ProgressBarTitle, "Commit in git...", 50f);
@@ -110,7 +111,7 @@ public static class BuildAssetBundles
                 if (int.TryParse(File.ReadAllText(versionFileName), out int ver))
                     File.WriteAllText(versionFileName, $"{++ver}");
                 else
-                    Debug.LogError($"Cannot read version from existing file {versionFileName}");
+                    Utils.Dbg.LogError($"Cannot read version from existing file {versionFileName}");
             }
             File.Copy(fileNames[i], newFileNames[i], true);
         }

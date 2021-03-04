@@ -47,7 +47,7 @@ namespace GameHelpers
             }
         
             if (!generated)
-                Debug.LogWarning("Disc was not generated because of not enough space");
+                Dbg.LogWarning("Disc was not generated because of not enough space");
         }
 
         public void ClearDiscs()

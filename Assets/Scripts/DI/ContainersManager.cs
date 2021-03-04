@@ -125,7 +125,7 @@ namespace DI
             {
                 if (mInfo.IsPublic)
                 {
-                    Debug.LogError($"Method {mInfo.Name} of class {_Object.GetType().Name} can't be public." +
+                    Dbg.LogError($"Method {mInfo.Name} of class {_Object.GetType().Name} can't be public." +
                                    $"Methods with attribute {nameof(T)} must be private or protected.");
                 }
                 var attribute = mInfo.GetCustomAttributes(true).OfType<T>().First();

@@ -62,7 +62,7 @@ namespace Network
             }
             catch (Exception e)
             {
-                Debug.LogError($"OnSuccess error: {e.Message};\n StackTrace: {e.StackTrace}");
+                Dbg.LogError($"OnSuccess error: {e.Message};\n StackTrace: {e.StackTrace}");
             }
         }
 
@@ -74,7 +74,7 @@ namespace Network
             }
             catch (Exception e)
             {
-                Debug.LogError($"OnFail error: {e.Message};\n StackTrace: {e.StackTrace}");
+                Dbg.LogError($"OnFail error: {e.Message};\n StackTrace: {e.StackTrace}");
             }
         }
 
@@ -104,7 +104,7 @@ namespace Network
             }
             catch (JsonReaderException)
             {
-                Debug.LogError(ResponseRaw);
+                Dbg.LogError(ResponseRaw);
                 throw;
             }
             

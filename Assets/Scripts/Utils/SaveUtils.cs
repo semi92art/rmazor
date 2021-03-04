@@ -11,7 +11,7 @@ namespace Utils
         public static T GetValue<T>(SaveKey _Key)
         {
             if (typeof(T) != _Key.Type)
-                Debug.LogError($"Type mismatch: generic {typeof(T).Name} and SaveKey type {_Key.Type.Name}");
+                Dbg.LogError($"Type mismatch: generic {typeof(T).Name} and SaveKey type {_Key.Type.Name}");
             object result = GetValue(_Key);
             if (!typeof(T).GetTypeInfo().IsClass && result == null)
                 return default;
@@ -25,7 +25,7 @@ namespace Utils
         public static void PutValue<T>(SaveKey _Key, T _Value)
         {
             if (typeof(T) != _Key.Type)
-                Debug.LogError($"Type mismatch: generic {typeof(T).Name} and SaveKey type {_Key.Type.Name}");
+                Dbg.LogError($"Type mismatch: generic {typeof(T).Name} and SaveKey type {_Key.Type.Name}");
             string value = JsonConvert.SerializeObject(_Value);
             PlayerPrefs.SetString(_Key.Key, value);
             PlayerPrefs.Save();
