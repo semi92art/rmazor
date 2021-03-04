@@ -1,8 +1,6 @@
 {
-    "name": "LeTai.TrueShadow.Editor",
-    "references": [
-        "LeTai.TrueShadow"
-    ],
+    "name": "Unity.PlayerPrefsEditor.EditorResources",
+    "references": [],
     "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
