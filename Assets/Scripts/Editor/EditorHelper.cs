@@ -123,7 +123,6 @@ public class EditorHelper : EditorWindow
         EditorUtilsEx.GuiButtonAction(CreateTestUsers, m_TestUsersCount);
         GUILayout.Label("count:", GUILayout.Width(40));
         m_TestUsersCount = EditorGUILayout.IntField(m_TestUsersCount);
-        GUILayout.Label("guest:", GUILayout.Width(40));
         GUILayout.EndHorizontal();
         
         EditorUtilsEx.GuiButtonAction("Delete test users", DeleteTestUsers);

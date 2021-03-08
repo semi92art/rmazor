@@ -13,14 +13,14 @@ namespace Managers
         #region singleton
     
         private static BankManager _instance;
-        public static BankManager Instance => CommonUtils.MonoBehSingleton(ref _instance, "Money Manager");
+        public static BankManager Instance => CommonUtils.MonoBehSingleton(ref _instance, "Bank Manager");
     
         #endregion
     
         #region nonpublic members
 
-        private const long MinMoneyCount = 0;
-        private const long MaxMoneyCount = 999999999999;
+        private const long MinBankItemsCount = 0;
+        private const long MaxBankItemsCount = 999999999999;
     
         #endregion
     
@@ -99,7 +99,7 @@ namespace Managers
         public void SetBank(Dictionary<BankItemType, long> _BankItems)
         {
             foreach (var kvp in _BankItems.ToArray())
-                _BankItems[kvp.Key] = MathUtils.Clamp(kvp.Value, MinMoneyCount, MaxMoneyCount);
+                _BankItems[kvp.Key] = MathUtils.Clamp(kvp.Value, MinBankItemsCount, MaxBankItemsCount);
 
             var aff = new GameDataFieldFilter(GameClientUtils.AccountId,
                 GameClientUtils.GameId,
@@ -173,21 +173,14 @@ namespace Managers
     public class BankEventArgs
     {
         public BankEntity BankEntity { get; }
-
-        public BankEventArgs(BankEntity _BankEntity)
-        {
-            BankEntity = _BankEntity;
-        }
+        public BankEventArgs(BankEntity _BankEntity) => BankEntity = _BankEntity;
     }
 
     public class IncomeEventArgs : BankEventArgs
     {
         public RectTransform From { get; }
-    
-        public IncomeEventArgs(BankEntity _BankEntity, RectTransform _From) : base(_BankEntity)
-        {
-            From = _From;
-        }
+        public IncomeEventArgs(BankEntity _BankEntity, RectTransform _From)
+            : base(_BankEntity) => From = _From;
     }
 
     public enum BankItemType

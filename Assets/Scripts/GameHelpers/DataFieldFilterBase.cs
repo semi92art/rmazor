@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace GameHelpers
@@ -21,11 +20,9 @@ namespace GameHelpers
 
         #region constructors
 
-        protected DataFieldFilterBase(int? _AccountId, params ushort[] _FieldIds)
+        protected DataFieldFilterBase(int _AccountId, params ushort[] _FieldIds)
         {
-            AccountId = -1;
-            if (_AccountId.HasValue)
-                AccountId = _AccountId.Value;
+            AccountId = _AccountId;    
             FieldIds = _FieldIds;
         }
 

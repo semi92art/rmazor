@@ -42,6 +42,7 @@ namespace GameHelpers
             {
                 DataFieldIds.FirstCurrency,
                 DataFieldIds.SecondCurrency,
+                DataFieldIds.MainScore,
                 DataFieldIds.LevelsInfo
             };
             var gdff = new GameDataFieldFilter(GameClientUtils.PreviousAccountId, 1, gameFieldIds);
@@ -64,6 +65,7 @@ namespace GameHelpers
             {
                 DataFieldIds.FirstCurrency,
                 DataFieldIds.SecondCurrency,
+                DataFieldIds.MainScore,
                 DataFieldIds.LevelsInfo
             };
             var gdff = new GameDataFieldFilter(GameClientUtils.AccountId, 1, gameFieldIds);

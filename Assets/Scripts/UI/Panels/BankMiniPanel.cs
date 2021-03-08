@@ -326,7 +326,11 @@ namespace UI.Panels
         
         private void MoneyCountChanged(BankEventArgs _Args)
         {
-            SetMoney(_Args.BankEntity.BankItems);
+            var bank = _Args.BankEntity;
+            Coroutines.Run(Coroutines.WaitWhile(() => !bank.Loaded, () =>
+            {
+                SetMoney(bank.BankItems);
+            }));
         }
 
         private void SetMoney(Dictionary<BankItemType, long> _Money)

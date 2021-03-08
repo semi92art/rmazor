@@ -20,12 +20,10 @@ namespace GameHelpers
         
         #region constructors
 
-        public GameDataFieldFilter(int? _AccountId, int? _GameId = null, params ushort[] _FieldIds)
+        public GameDataFieldFilter(int _AccountId, int _GameId, params ushort[] _FieldIds)
             : base(_AccountId, _FieldIds)
         {
-            m_GameId = -1;
-            if (_GameId.HasValue)
-                m_GameId = _GameId.Value;
+            m_GameId = _GameId;
         }
 
         #endregion
@@ -109,7 +107,7 @@ namespace GameHelpers
                 .ToList();
         }
 
-        private List<GameDataField> GetFromDtos(List<GameFieldDto> _Dtos)
+        private List<GameDataField> GetFromDtos(IEnumerable<GameFieldDto> _Dtos)
         {
             return _Dtos
                 .Select(_Dto => new GameDataField(_Dto))

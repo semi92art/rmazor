@@ -37,7 +37,7 @@ namespace Network
         private bool m_FirstRequest = true;
         private bool m_DatabaseConnectionTestStarted;
         private bool m_InternetConnectionTestStarted;
-        
+
         private bool DatabaseConnection
         {
             get => SaveUtils.GetValue<bool>(SaveKey.LastDatabaseConnectionSucceeded);
@@ -48,6 +48,8 @@ namespace Network
         
         #region api
 
+        public readonly List<GameDataField> ExecutingGameFields = new List<GameDataField>();
+        
         public void Init(bool _TestMode = false)
         {
             if (GameClientUtils.GameId == 0)
@@ -131,7 +133,7 @@ namespace Network
                     .OnSuccess(() => DatabaseConnection = true)
                     .OnFail(() =>
                         {
-                            Dbg.LogError($"No connection to database," +
+                            Dbg.LogError("No connection to database," +
                                          $" request time: {sw.Elapsed.TotalMilliseconds / 1000D:F2} secs");
                             DatabaseConnection = false;
                         }

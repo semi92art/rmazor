@@ -41,11 +41,19 @@ namespace Utils.Editor
             EditorGUI.DrawRect(r, _C);
         }
 
-        public static void HorizonalZone(UnityAction _Action)
+        public static void HorizontalZone(UnityAction _Action)
         {
             GUILayout.BeginHorizontal();
             _Action?.Invoke();
             GUILayout.EndHorizontal();
+        }
+
+        public static void GUIColorZone(Color _Color, UnityAction _Action)
+        {
+            var defCol = GUI.color;
+            GUI.color = _Color;
+            _Action?.Invoke();
+            GUI.color = defCol;
         }
     }
 }
