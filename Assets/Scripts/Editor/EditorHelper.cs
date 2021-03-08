@@ -131,7 +131,7 @@ public class EditorHelper : EditorWindow
         GUILayout.BeginHorizontal();
         GUILayout.Label("Debug Server Url:");
         m_DebugServerUrl = EditorGUILayout.TextField(m_DebugServerUrl);
-        if (m_DebugServerUrl.Last().InRange('/','\\'))
+        if (!string.IsNullOrEmpty(m_DebugServerUrl) && m_DebugServerUrl.Last().InRange('/','\\'))
             m_DebugServerUrl = m_DebugServerUrl.Remove(m_DebugServerUrl.Length - 1);
         GUILayout.EndHorizontal();
 
