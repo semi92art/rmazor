@@ -73,7 +73,6 @@ namespace GameHelpers
                 if (AccountId != GameClientUtils.AccountId)
                     return;
                 m_Fields = GetCachedFields();
-                m_Fields.ForEach(_Field => _Field.Save(true));
                 _FinishAction?.Invoke(m_Fields);
             });
             GameClient.Instance.Send(packet);

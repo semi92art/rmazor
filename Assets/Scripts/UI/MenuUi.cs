@@ -144,13 +144,10 @@ namespace UI
                                     DataFieldsMigrator.MigrateFromDatabase();
                                     SaveUtils.PutValue(SaveKey.AuthorizedAtLeastOnce, true);
                                 }
-
-                                BankManager.Instance.GetBank(true);
                                 break;
                             case AuthController.AuthResult.RegisterSuccess:
                                 DataFieldsMigrator.MigrateFromPrevious();
                                 SaveUtils.PutValue(SaveKey.AuthorizedAtLeastOnce, true);
-                                BankManager.Instance.GetBank(true);
                                 break;
                             case AuthController.AuthResult.LoginFailed:
                             case AuthController.AuthResult.RegisterFailed:

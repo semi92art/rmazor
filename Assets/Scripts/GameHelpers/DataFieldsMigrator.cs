@@ -22,7 +22,7 @@ namespace GameHelpers
             new GameDataField(0, accId, 1, DataFieldIds.MainScore).Save(true);
 
             var levelsInfo = new LevelsCommonInfo {Infos = new List<LevelCommonInfo>()};
-            foreach (var idx in Enumerable.Range(1, 10000))
+            foreach (var idx in Enumerable.Range(1, 1000))
             {
                 levelsInfo.Infos.Add(new LevelCommonInfo
                 {

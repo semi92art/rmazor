@@ -133,20 +133,14 @@ namespace UI.Panels
             BankManager.Instance.OnMoneyCountChanged += MoneyCountChanged;
             BankManager.Instance.OnIncome += Income;
             UiManager.Instance.OnCurrentMenuCategoryChanged += CurrentMenuCategoryChanged;
-            
-            BankManager.Instance.RaiseMoneyCountChangedEvent();
         }
 
         public void Show()
         {
+            var bank = BankManager.Instance.GetBank();
             Coroutines.Run(Coroutines.WaitWhile(
-                () => GameClientUtils.AccountId == default,
+                () => !bank.Loaded,
                 () =>
-            {
-                var bank = BankManager.Instance.GetBank();
-                Coroutines.Run(Coroutines.WaitWhile(
-                    () => !bank.Loaded,
-                    () =>
                 {
                     SetMoney(bank.BankItems);
                     m_Animator.SetTrigger(UiManager.Instance.CurrentMenuCategory == MenuUiCategory.MainMenu
@@ -166,7 +160,6 @@ namespace UI.Panels
                         SetMoneyPanelWidth,
                         UiTimeProvider.Instance));
                 }));
-            }));
         }
 
         public void Hide()
@@ -326,6 +319,7 @@ namespace UI.Panels
         
         private void MoneyCountChanged(BankEventArgs _Args)
         {
+            Debug.Log("Money count changed");
             var bank = _Args.BankEntity;
             Coroutines.Run(Coroutines.WaitWhile(() => !bank.Loaded, () =>
             {

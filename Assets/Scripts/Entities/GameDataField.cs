@@ -51,16 +51,9 @@ namespace Entities
 
         public void Save(bool _OnlyLocal = false)
         {
-            if (_OnlyLocal)
-                IsSaving = true;
             SaveUtils.PutValue(SaveKey.GameDataFieldValue(AccountId, m_GameId, FieldId), this);
-
             if (_OnlyLocal)
-            {
-                IsSaving = false;
                 return;
-            }
-
             Coroutines.Run(Coroutines.WaitWhile(() =>
             {
                 var execFields = GameClient.Instance.ExecutingGameFields;
