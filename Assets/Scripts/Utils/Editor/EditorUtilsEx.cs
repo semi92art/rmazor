@@ -55,5 +55,15 @@ namespace Utils.Editor
             _Action?.Invoke();
             GUI.color = defCol;
         }
+
+        public static void FocusSceneCamera(Bounds _Bounds, bool _Instant = false)
+        {
+            SceneView.lastActiveSceneView.Frame(_Bounds, _Instant);
+        }
+
+        public static void ClearConsole()
+        {
+            Debug.ClearDeveloperConsole();
+        }
     }
 }

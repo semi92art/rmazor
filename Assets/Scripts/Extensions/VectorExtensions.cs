@@ -105,5 +105,10 @@ namespace Extensions
             float coeff = _V.y > 0 ? 1 : -1;
             return Vector2.Angle(_V, Vector2.right) * coeff;
         }
+
+        public static Vector2Int ToVector2Int(this Vector2 _V)
+        {
+            return new Vector2Int(Mathf.RoundToInt(_V.x), Mathf.RoundToInt(_V.y));
+        }
     }
 }
