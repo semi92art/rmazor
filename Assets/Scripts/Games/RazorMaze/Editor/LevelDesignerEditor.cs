@@ -52,6 +52,7 @@ namespace Games.RazorMaze.Editor
                 m_Des.wallLengths.ToArray());
             var info = LevelGenerator.CreateRandomLevelInfo(parms, out m_Des.valid);
             CreateObjectsAndFocusCamera(info);
+            m_Des.valid = LevelAnalizator.IsValid(info, false);
         }
 
         private void CreateDefault()
@@ -60,6 +61,7 @@ namespace Games.RazorMaze.Editor
             ClearLevel();
             var info = LevelGenerator.CreateDefaultLevelInfo(m_Des.sizes[m_Des.sizeIdx], true);
             CreateObjectsAndFocusCamera(info);
+            m_Des.valid = LevelAnalizator.IsValid(info, false);
         }
 
         private void CreateObjectsAndFocusCamera(LevelInfo _Info)
