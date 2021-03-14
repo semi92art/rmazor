@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Games.RazorMaze.Nodes;
+using Games.RazorMaze.Models;
 using UnityEngine;
 using Random = UnityEngine.Random;
-using V2Int = UnityEngine.Vector2Int;
+using Entities;
 
 namespace Games.RazorMaze
 {
-    public static class LevelAnalizator
+    public static class 
+        LevelAnalizator
     {
         private class NodeSolve
         {
@@ -18,7 +19,7 @@ namespace Games.RazorMaze
             public NodeSolve(V2Int _Node) => Position = _Node;
         }
         
-        public static bool IsValid(LevelInfo _Info, bool _FastValidation = true)
+        public static bool IsValid(MazeInfo _Info, bool _FastValidation = true)
         {
             var sw = Stopwatch.StartNew();
             var nodes = _Info.Nodes;
@@ -51,7 +52,7 @@ namespace Games.RazorMaze
         private static void FollowRandomDirection(
             ref V2Int _Position, 
             IReadOnlyCollection<NodeSolve> _Solves,
-            List<INode> _Nodes)
+            List<Node> _Nodes)
         {
             var direction = FindDirection(_Position, _Nodes);
             var nextNodePos = _Position;
@@ -66,14 +67,14 @@ namespace Games.RazorMaze
             _Position = nextNodePos - direction;
         }
 
-        private static V2Int FindDirection(V2Int _Position, IReadOnlyCollection<INode> _Nodes)
+        private static V2Int FindDirection(V2Int _Position, IReadOnlyCollection<Node> _Nodes)
         {
             var dirIdxs = Enumerable.Range(0, LevelGenerator.Directions.Count).ToList();
             V2Int nextNodePos = default;
             while (dirIdxs.Any())
             {
                 int dirIdx = Mathf.FloorToInt(Random.value * LevelGenerator.Directions.Count * 0.999f);
-                nextNodePos = _Position + LevelGenerator.Directions[dirIdx];
+                nextNodePos = _Position + new V2Int(LevelGenerator.Directions[dirIdx]);
                 dirIdxs.Remove(dirIdx);
                 if (!_Nodes.Select(_N => _N.Position).Contains(nextNodePos)) 
                     continue;

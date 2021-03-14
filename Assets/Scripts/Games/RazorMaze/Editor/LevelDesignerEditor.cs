@@ -1,11 +1,12 @@
 ﻿using System.Linq;
 using Extensions;
-using Games.RazorMaze.Nodes;
+using Games.RazorMaze.Models;
 using Games.RazorMaze.Prot;
-using Games.RazorMaze.WallBlocks;
 using UnityEditor;
 using UnityEngine;
+using Utils;
 using Utils.Editor;
+using Entities;
 
 namespace Games.RazorMaze.Editor
 {
@@ -38,6 +39,12 @@ namespace Games.RazorMaze.Editor
             EditorUtilsEx.GuiButtonAction("Check for validity", CheckLevelOnSceneForValidity);
             EditorUtilsEx.GUIColorZone(m_Des.valid ? Color.green : Color.red, 
                 () => GUILayout.Label($"Level is {(m_Des.valid ? "" : "not")} valid"));
+            EditorUtilsEx.DrawUiLine(Color.gray);
+            EditorUtilsEx.GUIEnabledZone(!Application.isPlaying, () =>
+            {
+                EditorUtilsEx.GuiButtonAction("Play", Play);    
+            });
+            
         }
 
         private void CreateLevel()
@@ -64,11 +71,11 @@ namespace Games.RazorMaze.Editor
             m_Des.valid = LevelAnalizator.IsValid(info, false);
         }
 
-        private void CreateObjectsAndFocusCamera(LevelInfo _Info)
+        private void CreateObjectsAndFocusCamera(MazeInfo _Info)
         {
-            m_Des.prototype = LevelProt.Create(
+            m_Des.prototype = MazeProtItems.Create(
                 _Info,
-                GetParent("WallsAndNodes"));
+                CommonUtils.FindOrCreateGameObject("Walls and Nodes", out _).transform);
             var bounds = new Bounds(
                 Vector3.zero.SetXY(new Vector2((_Info.Width - 1) * 0.5f, (_Info.Height - 1) * 0.5f)),
                 new Vector3(_Info.Width * 0.7f, _Info.Height * 0.7f, 10));
@@ -91,29 +98,34 @@ namespace Games.RazorMaze.Editor
             m_Des.valid = LevelAnalizator.IsValid(info, false);
         }
 
-        private LevelInfo GetLevelInfoFromScene()
+        private MazeInfo GetLevelInfoFromScene()
         {
             var prot = m_Des.prototype;
             var nodes = prot.items
                 .Where(_Item => _Item.type == PrototypingItemType.Node)
                 .Select(_Item => _Item.transform.position.XY().ToVector2Int())
-                .Select(_PosInt => new Node(_PosInt) as INode)
+                .Select(_PosInt => new Node{Position = new V2Int(_PosInt)})
                 .ToList();
             var nodeStart = prot.items.Where(_Item => _Item.type == PrototypingItemType.NodeStart)
-                .Select(_Item => new NodeStart(_Item.transform.position.XY().ToVector2Int())).First();
+                .Select(_Item => new Node{Position = new V2Int(_Item.transform.position.XY().ToVector2Int())}).First();
             nodes.Insert(0, nodeStart);
             var wallBlocks  = prot.items
                 .Where(_Item => _Item.type == PrototypingItemType.WallBlockSimple)
                 .Select(_Item => _Item.transform.position.XY().ToVector2Int())
-                .Select(_PosInt => new WallBlockSimple(_PosInt) as IWallBlock)
+                .Select(_PosInt => new WallBlock{Position = new V2Int(_PosInt)})
                 .ToList();
-            return new LevelInfo(prot.Width, prot.Height, nodes, wallBlocks);
+            return new MazeInfo{
+                Width =  prot.Width,
+                Height = prot.Height,
+                Nodes = nodes,
+                WallBlocks = wallBlocks
+            };
         }
 
-        private static Transform GetParent(string _Name)
+        private void Play()
         {
-            var go = GameObject.Find(_Name) ?? new GameObject(_Name);
-            return go.transform;
+            var info = GetLevelInfoFromScene();
+            LevelDesigner.Play(info);
         }
     }
 }

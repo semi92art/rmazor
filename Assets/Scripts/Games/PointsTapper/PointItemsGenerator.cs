@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityGameLoopDI;
 using Utils;
 
 namespace Games.PointsTapper
@@ -20,7 +21,7 @@ namespace Games.PointsTapper
         void OnLevelFinished(LevelStateChangedArgs _Args);
     }
 
-    public class PointItemsGenerator : DI.DiObject, IPointItemsGenerator, IOnLevelStartedFinished
+    public class PointItemsGenerator : UnityGameLoopObjectDI, IPointItemsGenerator, IOnLevelStartedFinished
     {
         #region public properties
 
@@ -69,7 +70,6 @@ namespace Games.PointsTapper
             m_PositionGenerator = new RandomPositionGenerator(Pools.Values.ToList(), m_Margin);
         }
         
-        [DI.Update]
         private void GenerateItemsOnUpdate()
         {
             if (!DoInstantiate)
@@ -118,7 +118,6 @@ namespace Games.PointsTapper
 
 #if UNITY_EDITOR
         
-        [DI.DrawGizmos]
         public void DrawGizmos()
         {
             var bounds = GameUtils.GetVisibleBounds();

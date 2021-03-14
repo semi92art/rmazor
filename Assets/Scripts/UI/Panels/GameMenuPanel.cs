@@ -10,6 +10,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityGameLoopDI;
 
 namespace UI.Panels
 {
@@ -20,7 +21,7 @@ namespace UI.Panels
         NeedToClose = 2
     }
     
-    public class GameMenuPanel : DialogPanelBase, IGameUiCategory
+    public class GameMenuPanel : DialogPanelBase, IGameUiCategory, IOnUpdate
     {
         #region nonpublic members
 
@@ -79,9 +80,8 @@ namespace UI.Panels
             m_DialogViewer.Back();
             PanelState &= ~PanelState.Showing;
         }
-
-        [DI.Update]
-        private void OnUpdate()
+        
+        public void OnUpdate()
         {
             if (!m_Initialized)
                 return;

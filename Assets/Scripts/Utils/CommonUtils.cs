@@ -245,31 +245,10 @@ namespace Utils
             return ret;
         }
 
-        public static string ToNumeric(this long _Value)
-        {
-            return _Value.ToString("N0", CultureInfo.CreateSpecificCulture("en-US"));
-        }
-
-        public static string ToNumeric(this ulong _Value)
-        {
-            return ToNumeric((long) _Value);
-        }
-
-        public static string ToNumeric(this int _Value)
-        {
-            return ((long) _Value).ToNumeric();
-        }
-
-        public static string ToTimer(this float _Value)
-        {
-            return $"{_Value:f1}";
-        }
-        
         public static bool IsFullyVisibleFrom(this RectTransform _Item, RectTransform _Rect)
         {
             if (!_Item.gameObject.activeInHierarchy)
                 return false;
- 
             return _Item.CountCornersVisibleFrom(_Rect) == 4;
         }
         
@@ -293,22 +272,22 @@ namespace Utils
         
         private static int CountCornersVisibleFrom(this RectTransform _Item, RectTransform _Rect)
         {
-            Vector3[] itemCorners = new Vector3[4];
+            var itemCorners = new Vector3[4];
             _Item.GetWorldCorners(itemCorners);
-            Vector3[] rectCorners = new Vector3[4];
+            var rectCorners = new Vector3[4];
             _Rect.GetWorldCorners(rectCorners);
-
-            int count = 0;
-
-            Vector2[] polygon = rectCorners.Select(_P => new Vector2(_P.x, _P.y)).ToArray();
-            foreach (var corner in itemCorners)
-            {
-                Vector2 point = new Vector2(corner.x, corner.y);
-                if (GeometryUtils.IsPointInPolygon(polygon, point))
-                    count++;
-            }
-            
-            return count;
+            var polygon = rectCorners.Select(_P => new Vector2(_P.x, _P.y)).ToArray();
+            return itemCorners.Select(_Corner => new Vector2(_Corner.x, _Corner.y))
+                .Count(_Point => GeometryUtils.IsPointInPolygon(polygon, _Point));
+        }
+        
+        public static GameObject FindOrCreateGameObject(string _Name, out bool _WasFound)
+        {
+            var go = GameObject.Find(_Name);
+            _WasFound = go != null;
+            if (go == null)
+                go = new GameObject(_Name);
+            return go;
         }
     }
 }

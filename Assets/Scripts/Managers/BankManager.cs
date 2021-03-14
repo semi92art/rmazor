@@ -8,15 +8,21 @@ using Utils;
 
 namespace Managers
 {
-    public class BankManager : MonoBehaviour, ISingleton
+    public interface IBankManager
     {
-        #region singleton
+        event MoneyEventHandler OnMoneyCountChanged;
+        event IncomeEventHandler OnIncome;
+        BankEntity GetBank(bool _ForcedFromServer = false);
+        void PlusBankItems(Dictionary<BankItemType, long> _Money);
+        void PlusBankItems(BankItemType _BankItemType, long _Value);
+        bool MinusBankItems(Dictionary<BankItemType, long> _Money);
+        void SetBank(Dictionary<BankItemType, long> _BankItems);
+        void SetIncome(Dictionary<BankItemType, long> _Money, RectTransform _From);
+        void RaiseMoneyCountChangedEvent();
+    }
     
-        private static BankManager _instance;
-        public static BankManager Instance => CommonUtils.MonoBehSingleton(ref _instance, "Bank Manager");
-    
-        #endregion
-    
+    public class BankManager : IBankManager
+    {
         #region nonpublic members
 
         private const long MinBankItemsCount = 0;
@@ -78,7 +84,7 @@ namespace Managers
             }));
         }
 
-        public bool TryMinusBankItems(Dictionary<BankItemType, long> _Money)
+        public bool MinusBankItems(Dictionary<BankItemType, long> _Money)
         {
             var inBank = GetBank();
             var mts = new [] {BankItemType.FirstCurrency, BankItemType.SecondCurrency};

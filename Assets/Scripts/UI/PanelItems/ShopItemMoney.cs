@@ -1,15 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using Constants;
 using Entities;
 using GameHelpers;
 using Managers;
-using Network;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using Utils;
+using Extensions;
+using Zenject;
+
 
 namespace UI.PanelItems
 {
@@ -20,6 +20,11 @@ namespace UI.PanelItems
 
         public static IShopItem Create(RectTransform _Parent) =>
             ShopItemBase.Create<ShopItemMoney>(_Parent, "shop_item_money");
+        
+        private IBankManager BankManager { get; set; }
+
+        [Inject, Obsolete("For internal use")]
+        public void Inject(IBankManager _BankManager) => BankManager = _BankManager; 
 
         public void Init(ShopItemProps _Props, IEnumerable<GameObserver> _Observers)
         {
@@ -38,7 +43,7 @@ namespace UI.PanelItems
                     this,
                     CommonNotifyMessages.PurchaseCommand,
                     _Props,
-                    (UnityAction) (() => BankManager.Instance.PlusBankItems(_Props.Rewards)));
+                    (UnityAction) (() => BankManager.PlusBankItems(_Props.Rewards)));
             };
             
             base.Init(action, _Props, _Observers);

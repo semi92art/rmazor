@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using UnityEngine;
 using UnityEditor;
-using Utils;
+using Extensions;
 
 namespace Managers.Editor
 {

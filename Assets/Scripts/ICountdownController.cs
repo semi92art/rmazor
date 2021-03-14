@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityGameLoopDI;
 
 public delegate void TimeHandler(float _Time);
 
@@ -11,7 +12,7 @@ public interface ICountdownController
     void StopCountdown();
 }
 
-public class CountdownController : DI.DiObject, ICountdownController
+public class CountdownController : UnityGameLoopObjectDI, ICountdownController, IOnUpdate
 {
     #region protected members
 
@@ -44,9 +45,8 @@ public class CountdownController : DI.DiObject, ICountdownController
     {
         m_DoUpdate = false;
     }
-
-    [DI.Update]
-    private void OnUpdate()
+    
+    public void OnUpdate()
     {
         float timerLeft = m_Duration - (GameTimeProvider.Instance.Time - m_StartTime);
         if (!m_DoUpdate)

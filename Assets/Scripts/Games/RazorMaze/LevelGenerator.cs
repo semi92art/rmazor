@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using Games.RazorMaze.Nodes;
-using Games.RazorMaze.WallBlocks;
+using Games.RazorMaze.Models;
 using UnityEngine;
 using Utils;
-using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
-using V2Int = UnityEngine.Vector2Int;
+using Entities;
 
 namespace Games.RazorMaze
 {
@@ -37,25 +34,31 @@ namespace Games.RazorMaze
 
     public static class LevelGenerator
     {
-        public static List<V2Int> Directions => new List<V2Int> {V2Int.up, V2Int.down, V2Int.right, V2Int.left};
+        public static List<Vector2Int> Directions => new List<Vector2Int>
+        {
+            Vector2Int.up, Vector2Int.down, Vector2Int.right, Vector2Int.left
+        };
         
-        public static LevelInfo CreateDefaultLevelInfo(int _Size, bool _OnlyWallBlocks = false)
+        public static MazeInfo CreateDefaultLevelInfo(int _Size, bool _OnlyWallBlocks = false)
         {
             return CreateDefaultLevelInfo(_Size, _Size, _OnlyWallBlocks);
         }
 
-        public static LevelInfo CreateDefaultLevelInfo(int _Width, int _Height, bool _OnlyWallBlocks = false)
+        public static MazeInfo CreateDefaultLevelInfo(int _Width, int _Height, bool _OnlyWallBlocks = false)
         {
             GetDefaultNodesAndWallBlockPositions(_Width, _Height, _OnlyWallBlocks,
                 out var nodePositions, out var wallBlockPositions);
-            return new LevelInfo(
-                _Width,
-                _Height,
-                nodePositions.Select(_Pos => new Node(_Pos) as INode).ToList(), 
-                wallBlockPositions.Select(_Pos => new WallBlockSimple(_Pos) as IWallBlock).ToList());
+            return new MazeInfo
+            {
+                Width = _Width,
+                Height = _Height,
+                Nodes = nodePositions.Select(_Pos => new Node{Position = _Pos}).ToList(),
+                WallBlocks = wallBlockPositions.Select(_Pos => new WallBlock{Position = _Pos}).ToList(),
+                MovingItems = null
+            };
         }
         
-        public static LevelInfo CreateRandomLevelInfo(
+        public static MazeInfo CreateRandomLevelInfo(
             MazeGenerationParams _Params,
             out bool _Valid)
         {
@@ -69,14 +72,14 @@ namespace Games.RazorMaze
             int h = _Params.Height;
             GetDefaultNodesAndWallBlockPositions(w, h, true,
                 out _, out var wallBlockPositions);
-            var nodes = new List<INode>();
+            var nodes = new List<Node>();
             var wallBlocks = wallBlockPositions
-                .Select(_P => new WallBlockSimple(_P) as IWallBlock)
+                .Select(_P => new WallBlock{Position = _P})
                 .ToList();
             int xPos = 1 + Mathf.FloorToInt((w - 2) * Random.value);
             int yPos = 1 + Mathf.FloorToInt((h - 2) * Random.value);
             var pos = new V2Int(xPos, yPos);
-            nodes.Add(new NodeStart(pos));
+            nodes.Add(new Node{Position = pos});
             wallBlocks.Remove(wallBlocks.ToList().First(_B => _B.Position == pos));
             int k = 0;
             V2Int dir = GetRandomDirection();
@@ -95,7 +98,14 @@ namespace Games.RazorMaze
             foreach (var node in nodes.ToList().
                 Where(node => wallBlocks.Any(_B => _B.Position == node.Position)))
                 nodes.Remove(node);
-            var levelInfo = new LevelInfo(w, h, nodes, wallBlocks);
+            var levelInfo = new MazeInfo
+            {
+                Width = w,
+                Height = h,
+                Nodes = nodes,
+                WallBlocks = wallBlocks,
+                MovingItems = null
+            };
             _Valid = LevelAnalizator.IsValid(levelInfo);
             return levelInfo;
         }
@@ -103,7 +113,7 @@ namespace Games.RazorMaze
         private static bool DoBreak(
             int _Width,
             int _Height,
-            IEnumerable<INode> _AlreadyGenerated, 
+            IEnumerable<Node> _AlreadyGenerated, 
             float _A)
         {
             int maxWallBlocksCountWithoutCoeff = _Width * _Height;
@@ -135,8 +145,8 @@ namespace Games.RazorMaze
         private static void FollowDirectionByLength(
             ref V2Int _Position,
             ref V2Int _Direction,
-            List<IWallBlock> _WallBlocks,
-            List<INode> _Nodes,
+            List<WallBlock> _WallBlocks,
+            List<Node> _Nodes,
             MazeGenerationParams _Params,
             int _PathLenghtIndex)
         {
@@ -164,18 +174,27 @@ namespace Games.RazorMaze
                     {
                         newNodePositions.Add(pos);
                         _WallBlocks.Remove(block);
-                        _Nodes.Add(new Node(_Position));
+                        _Nodes.Add(new Node {Position = _Position});
                     }
                     nextPosIdx++;
                 }
-                var info = new LevelInfo(_Params.Width, _Params.Height, _Nodes, _WallBlocks);
+
+                var info = new MazeInfo
+                {
+                    Width = _Params.Width,
+                    Height = _Params.Height,
+                    Nodes = _Nodes,
+                    WallBlocks = _WallBlocks,
+                    MovingItems = null
+                };
+                    
                 bool isValid = LevelAnalizator.IsValid(info);
                 Dbg.Log($"Valid: {isValid}");
                 if (isValid)
                     break;
                 foreach (var pos in newNodePositions)
                 {
-                    _WallBlocks.Add(new WallBlockSimple(pos));
+                    _WallBlocks.Add(new WallBlock{Position = pos});
                     var node = _Nodes.First(_N => _N.Position == pos);
                     _Nodes.Remove(node);
                 }
@@ -186,14 +205,14 @@ namespace Games.RazorMaze
         private static V2Int GetRandomDirection()
         {
             int dirIdx = Mathf.RoundToInt(Random.value * Directions.Count * 0.99f - 0.48f);
-            return Directions[dirIdx];
+            return new V2Int(Directions[dirIdx]);
         }
 
         private static bool IsPositionOnEdges(V2Int _Position, int _Width, int _Height)
         {
-            if (_Position.x == 0 || _Position.x == _Width - 1)
+            if (_Position.X == 0 || _Position.X == _Width - 1)
                 return true;
-            if (_Position.y == 0 || _Position.y == _Height - 1)
+            if (_Position.Y == 0 || _Position.Y == _Height - 1)
                 return true;
             return false;
         }

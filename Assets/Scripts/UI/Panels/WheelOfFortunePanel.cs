@@ -49,7 +49,9 @@ namespace UI.Panels
         public MenuUiCategory Category => MenuUiCategory.WheelOfFortune;
 
         public WheelOfFortunePanel(
-            IMenuDialogViewer _DialogViewer, INotificationViewer _NotificationViewer)
+            IBankManager _BankManager,
+            IMenuDialogViewer _DialogViewer,
+            INotificationViewer _NotificationViewer) : base(_BankManager)
         {
             m_DialogViewer = _DialogViewer;
             m_NotificationViewer = _NotificationViewer;
@@ -126,7 +128,7 @@ namespace UI.Panels
         {
             var rewardPanel = new WheelOfFortuneRewardPanel(
                 m_NotificationViewer, _BankItemType, _Reward, () =>
-                    BankManager.Instance.PlusBankItems(_BankItemType, _Reward));
+                    BankManager.PlusBankItems(_BankItemType, _Reward));
                     
             m_SpinButton.interactable = true;
             m_IsLocked = CheckIfWofSpinToday();

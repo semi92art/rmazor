@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using Managers;
+using UnityGameLoopDI;
 
 namespace Entities
 {
@@ -9,7 +10,7 @@ namespace Entities
         protected abstract void OnNotify(object _Sender, string _NotifyMessage, params object[] _Args);
     }
 
-    public abstract class GameObservable : DI.DiObject
+    public abstract class GameObservable : UnityGameLoopObjectDI
     {
         private readonly List<GameObserver> m_Observers = new List<GameObserver>();
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -63,6 +64,21 @@ namespace Extensions
                 case "": throw new ArgumentException($"{nameof(_Text)} cannot be empty", nameof(_Text));
                 default: return _ToUpper ? _Text.First().ToString().ToUpper() : _Text.First().ToString().ToLower() + _Text.Substring(1);
             }
+        }
+        
+        public static string ToNumeric(this long _Value)
+        {
+            return _Value.ToString("N0", CultureInfo.CreateSpecificCulture("en-US"));
+        }
+        
+        public static string ToNumeric(this ulong _Value)
+        {
+            return ToNumeric((long) _Value);
+        }
+
+        public static string ToNumeric(this int _Value)
+        {
+            return ((long) _Value).ToNumeric();
         }
     }
 }

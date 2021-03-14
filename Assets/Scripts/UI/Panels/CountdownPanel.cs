@@ -1,6 +1,7 @@
 ﻿using DialogViewers;
 using Extensions;
 using GameHelpers;
+using Managers;
 using UI.Factories;
 using UI.Managers;
 using UnityEngine;
@@ -21,7 +22,8 @@ namespace UI.Panels
 
         public GameUiCategory Category => GameUiCategory.Countdown;
 
-        public CountdownPanel(RectTransform _Container, UnityAction _OnCountdownFinish)
+        public CountdownPanel(RectTransform _Container,
+            UnityAction _OnCountdownFinish)
         {
             m_Container = _Container;
             m_OnCountdownFinish = _OnCountdownFinish;

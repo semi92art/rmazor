@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Constants;
 using Entities;
 using Extensions;
@@ -10,6 +11,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using Utils;
+using Zenject;
 
 
 namespace UI.PanelItems
@@ -24,7 +26,14 @@ namespace UI.PanelItems
         [SerializeField] private TextMeshProUGUI tomorrow;
     
         private DailyBonusProps m_Props;
-    
+        private IBankManager BankManager { get; set; }
+
+        [Inject, Obsolete("For internal use")]
+        public void Inject(IBankManager _BankManager)
+        {
+            BankManager = _BankManager;
+        }
+        
         public void Init(
             DailyBonusProps _Props,
             IActionExecutor _ActionExecutor)
@@ -45,19 +54,14 @@ namespace UI.PanelItems
                     money.Add(BankItemType.FirstCurrency, _Props.Gold);
                 if (_Props.Diamonds > 0)
                     money.Add(BankItemType.SecondCurrency, _Props.Diamonds);
-                BankManager.Instance.SetIncome(money, icon.RTransform());
-                BankManager.Instance.PlusBankItems(money);
+                BankManager.SetIncome(money, icon.RTransform());
+                BankManager.PlusBankItems(money);
             
-                SaveUtils.PutValue(SaveKey.DailyBonusLastDate, System.DateTime.Today);
+                SaveUtils.PutValue(SaveKey.DailyBonusLastDate, DateTime.Today);
                 SaveUtils.PutValue(SaveKey.DailyBonusLastItemClickedDay, _Props.Day);
                 iconAnimator.SetTrigger(AnimKeys.Stop);
             });
-        
-        
-            button.onClick.AddListener(() =>
-            {
-                _ActionExecutor.Action = _Props.Click;
-            });
+            button.onClick.AddListener(() => _ActionExecutor.Action = _Props.Click);
         }
     }
 

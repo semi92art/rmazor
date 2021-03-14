@@ -107,7 +107,7 @@ public class EditorHelper : EditorWindow
         if (GUILayout.Button("Set Game Id:"))
             SaveUtils.PutValue(SaveKey.GameId, m_GameId);
         m_GameId = EditorGUILayout.IntField(m_GameId);
-        EditorUtilsEx.GuiButtonAction("Start Level:", LevelLoader.LoadLevel, m_Level);
+        EditorUtilsEx.GuiButtonAction("Start Level:", GameLoader.LoadLevel, m_Level);
         m_Level = EditorGUILayout.IntField(m_Level);
         GUILayout.EndHorizontal();
         
@@ -209,7 +209,7 @@ public class EditorHelper : EditorWindow
 
     private void GetMoneyFromBank()
     {
-        var bank = BankManager.Instance.GetBank();
+        var bank = new BankManager().GetBank();
         Coroutines.Run(Coroutines.WaitWhile(
             () => !bank.Loaded,
             () =>  m_Money = bank.BankItems));
@@ -217,7 +217,7 @@ public class EditorHelper : EditorWindow
     
     private void SetMoney()
     {
-        BankManager.Instance.SetBank(m_Money);
+        new BankManager().SetBank(m_Money);
     }
 
     private void CreateTestUsers(int _Count)

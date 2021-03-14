@@ -84,7 +84,7 @@ namespace UI.Panels
         private void OnWheelOfFortuneButtonClick()
         {
             Notify(this, NotifyMessageWheelOfFortuneButtonClick);
-            var panel = new WheelOfFortunePanel(m_DialogViewer, m_NotificationViewer);
+            var panel = new WheelOfFortunePanel(new BankManager(), m_DialogViewer, m_NotificationViewer);
             panel.AddObservers(GetObservers());
             panel.Init();
             m_DialogViewer.Show(panel);

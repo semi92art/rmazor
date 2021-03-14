@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Games.RazorMaze;
 using Managers;
 
 namespace Entities
@@ -16,6 +17,7 @@ namespace Entities
         public static SaveKey Login => new SaveKey("login", typeof(string));
         public static SaveKey PasswordHash => new SaveKey("password_hash", typeof(string));
         public static SaveKey GameId => new SaveKey("game_id", typeof(int));
+        public static SaveKey GameMode => new SaveKey("game_mode", typeof(int));
         public static SaveKey LastDatabaseConnectionSucceeded => new SaveKey("last_connection_succeeded", typeof(bool));
         public static SaveKey LastInternetConnectionSucceeded => new SaveKey("last_internet_succeeded", typeof(bool));
         public static SaveKey DailyBonusLastDate => new SaveKey("daily_bonus_last_date", typeof(DateTime));
@@ -25,6 +27,7 @@ namespace Entities
         public static SaveKey WheelOfFortuneLastDate => new SaveKey("wheel_of_fortune_last_date", typeof(DateTime));
         public static SaveKey GameDataFieldValue(int _AccountId, int _GameId, ushort _FieldId) =>
             new SaveKey($"df_value_cache_{_AccountId}_{_GameId}_{_FieldId}", typeof(GameDataField));
+        public static SaveKey DesignerMazeInfo => new SaveKey("designer_maze_info", typeof(MazeInfo));
 
         #endregion
     

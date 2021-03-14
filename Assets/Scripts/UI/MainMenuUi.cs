@@ -101,10 +101,10 @@ namespace UI
 
         private void InitBankMiniPanel()
         {
-            var bmp = new BankMiniPanel(m_Parent, m_MenuDialogViewer, m_NotificationViewer);
+            var bmp = new BankMiniPanel(new BankManager(), m_MenuDialogViewer, m_NotificationViewer);
             bmp.AddObservers(GetObservers());
             m_BankMiniPanel = bmp;
-            m_BankMiniPanel.Init();
+            m_BankMiniPanel.Init(m_Parent);
         }
 
         private void InitContainers(RectTransform _Parent)
@@ -378,7 +378,7 @@ namespace UI
         {
             Notify(this, NotifyMessagePlayButtonClick);
             (m_BankMiniPanel as BankMiniPanel)?.UnregisterFromEvents();
-            LevelLoader.LoadLevel(1);
+            GameLoader.LoadLevel(1);
         }
 
         private void OnRatingsButtonClick()
@@ -400,7 +400,7 @@ namespace UI
         private void OnWheelOfFortuneButtonClick()
         {
             Notify(this, NotifyMessageWheelOfFortuneButtonClick);
-            var wofPanel = new WheelOfFortunePanel(m_MenuDialogViewer, m_NotificationViewer);
+            var wofPanel = new WheelOfFortunePanel(new BankManager(), m_MenuDialogViewer, m_NotificationViewer);
             wofPanel.AddObservers(GetObservers());
             wofPanel.Init();
             m_MenuDialogViewer.Show(wofPanel);

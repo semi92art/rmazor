@@ -69,5 +69,13 @@ namespace Utils.Editor
                 System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
             clearMethod?.Invoke(null, null);
         }
+
+        public static void GUIEnabledZone(bool _Enabled, UnityAction _Action)
+        {
+            bool prevEnabled = GUI.enabled;
+            GUI.enabled = _Enabled;
+            _Action?.Invoke();
+            GUI.enabled = prevEnabled;
+        }
     }
 }

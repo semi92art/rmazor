@@ -3,6 +3,7 @@
 <SettingsList FormatVersion = "1" ProductVersion = "3.3.1">
 <Entries>
 <e text = "Utils.Dbg:LogError" />
+<e text = "Utils.Dbg:Log" />
 </Entries>
 </SettingsList>
 </root>

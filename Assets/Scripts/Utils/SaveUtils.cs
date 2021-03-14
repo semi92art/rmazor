@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using Entities;
 using UnityEngine;
 using Newtonsoft.Json;
@@ -12,29 +11,27 @@ namespace Utils
         {
             if (typeof(T) != _Key.Type)
                 Dbg.LogError($"Type mismatch: generic {typeof(T).Name} and SaveKey type {_Key.Type.Name}");
-            object result = GetValue(_Key);
-            if (!typeof(T).GetTypeInfo().IsClass && result == null)
+            string value = PlayerPrefs.GetString(_Key.Key, string.Empty);
+            if (string.IsNullOrEmpty(value))
                 return default;
-            if (result != null) 
-                return (T) result;
-            PutValue<T>(_Key, default);
-            result = GetValue(_Key);
-            return (T) result;
+            var result = JsonConvert.DeserializeObject<T>(value, SerializerSettings);
+            return result;
         }
         
         public static void PutValue<T>(SaveKey _Key, T _Value)
         {
             if (typeof(T) != _Key.Type)
                 Dbg.LogError($"Type mismatch: generic {typeof(T).Name} and SaveKey type {_Key.Type.Name}");
-            string value = JsonConvert.SerializeObject(_Value);
+
+            string value = JsonConvert.SerializeObject(_Value, SerializerSettings);
             PlayerPrefs.SetString(_Key.Key, value);
             PlayerPrefs.Save();
         }
-        
-        private static object GetValue(SaveKey _Key)
+
+        private static JsonSerializerSettings SerializerSettings => new JsonSerializerSettings
         {
-            string value = PlayerPrefs.GetString(_Key.Key, string.Empty);
-            return string.IsNullOrEmpty(value) ? null : JsonConvert.DeserializeObject(value, _Key.Type);
-        }
+            TypeNameHandling = TypeNameHandling.Auto,
+            NullValueHandling = NullValueHandling.Include
+        };
     }
 }
