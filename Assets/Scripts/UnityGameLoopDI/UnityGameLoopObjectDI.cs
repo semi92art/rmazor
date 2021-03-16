@@ -3,10 +3,10 @@ using UnityEngine.SceneManagement;
 
 namespace UnityGameLoopDI
 {
-    public interface IOnUpdate { [Obsolete("Only for internal usage")] void OnUpdate(); }
-    public interface IOnFixedUpdate { [Obsolete("Only for internal usage")] void OnFixedUpdate(); }
-    public interface IOnLateUpdate { [Obsolete("Only for internal usage")] void OnLateUpdate(); }
-    public interface IOnDrawGizmos { [Obsolete("Only for internal usage")] void OnDrawGizmos(); }
+    public interface IOnUpdate { void OnUpdate(); }
+    public interface IOnFixedUpdate {void OnFixedUpdate(); }
+    public interface IOnLateUpdate { void OnLateUpdate(); }
+    public interface IOnDrawGizmos { void OnDrawGizmos(); }
     
     public class UnityGameLoopObjectDI
     {

@@ -44,7 +44,7 @@ namespace Games.RazorMaze
     
         #region api
 
-        [Inject, System.Obsolete("For internal use")]
+        [Inject]
         public void Construct(
             IGameModel _GameModel,
             IMazeView _MazeView,

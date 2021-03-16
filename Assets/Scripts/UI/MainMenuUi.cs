@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Constants;
 using DialogViewers;
 using Entities;
@@ -7,7 +6,6 @@ using Extensions;
 using GameHelpers;
 using Lean.Localization;
 using Managers;
-using Network;
 using TMPro;
 using UI.Entities;
 using UI.Factories;
@@ -378,7 +376,7 @@ namespace UI
         {
             Notify(this, NotifyMessagePlayButtonClick);
             (m_BankMiniPanel as BankMiniPanel)?.UnregisterFromEvents();
-            LevelLoader.LoadLevel(1);
+            GameLoader.LoadLevel(1);
         }
 
         private void OnRatingsButtonClick()

@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 601712047}
   - component: {fileID: 601712046}
   m_Layer: 0
-  m_Name: Game Loader
+  m_Name: Application Initializer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -54,9 +54,9 @@ namespace Games.RazorMaze
             if (_Change != PlayModeStateChange.EnteredPlayMode)
                 return;
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
-            // var sceneName = SceneManager.GetActiveScene().name;
-            // if (!sceneName.Contains("prot"))
-            //     return;
+             var sceneName = SceneManager.GetActiveScene().name;
+             if (!sceneName.Contains("prot"))
+                 return;
             SceneManager.sceneLoaded += (_Scene, _Mode) =>
             {
                  RazorMazeGameManager.Instance.SetMazeInfo(MazeInfo);
