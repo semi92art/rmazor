@@ -10,7 +10,7 @@ namespace Games.RazorMaze.Prot
         public Rectangle rectangle;
         public PrototypingItemType type;
         private PrototypingItemType m_TypeCheck;
-        private bool m_Initialized;
+        [SerializeField] private bool m_Initialized;
 
         private void Update()
         {

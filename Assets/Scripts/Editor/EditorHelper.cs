@@ -150,7 +150,9 @@ public class EditorHelper : EditorWindow
         EditorUtilsEx.GuiButtonAction(SceneNames.Preload, LoadScene, $"Assets/Scenes/{SceneNames.Preload}.unity");
         EditorUtilsEx.GuiButtonAction(SceneNames.Main, LoadScene, $"Assets/Scenes/{SceneNames.Main}.unity");
         EditorUtilsEx.GuiButtonAction(SceneNames.Level, LoadScene, $"Assets/Scenes/{SceneNames.Level}.unity");
+        EditorUtilsEx.GuiButtonAction(SceneNames.Prototyping,  LoadScene, $"Assets/Scenes/{SceneNames.Prototyping}.unity");
         GUILayout.EndHorizontal();
+        
         
         EditorUtilsEx.DrawUiLine(Color.gray);
         

@@ -40,11 +40,6 @@ namespace Games.RazorMaze.Editor
             EditorUtilsEx.GUIColorZone(m_Des.valid ? Color.green : Color.red, 
                 () => GUILayout.Label($"Level is {(m_Des.valid ? "" : "not")} valid"));
             EditorUtilsEx.DrawUiLine(Color.gray);
-            EditorUtilsEx.GUIEnabledZone(!Application.isPlaying, () =>
-            {
-                EditorUtilsEx.GuiButtonAction("Play", Play);    
-            });
-            
         }
 
         private void CreateLevel()
@@ -94,38 +89,8 @@ namespace Games.RazorMaze.Editor
 
         private void CheckLevelOnSceneForValidity()
         {
-            var info = GetLevelInfoFromScene();
+            var info = m_Des.GetLevelInfoFromScene();
             m_Des.valid = LevelAnalizator.IsValid(info, false);
-        }
-
-        private MazeInfo GetLevelInfoFromScene()
-        {
-            var prot = m_Des.prototype;
-            var nodes = prot.items
-                .Where(_Item => _Item.type == PrototypingItemType.Node)
-                .Select(_Item => _Item.transform.position.XY().ToVector2Int())
-                .Select(_PosInt => new Node{Position = new V2Int(_PosInt)})
-                .ToList();
-            var nodeStart = prot.items.Where(_Item => _Item.type == PrototypingItemType.NodeStart)
-                .Select(_Item => new Node{Position = new V2Int(_Item.transform.position.XY().ToVector2Int())}).First();
-            nodes.Insert(0, nodeStart);
-            var wallBlocks  = prot.items
-                .Where(_Item => _Item.type == PrototypingItemType.WallBlockSimple)
-                .Select(_Item => _Item.transform.position.XY().ToVector2Int())
-                .Select(_PosInt => new WallBlock{Position = new V2Int(_PosInt)})
-                .ToList();
-            return new MazeInfo{
-                Width =  prot.Width,
-                Height = prot.Height,
-                Nodes = nodes,
-                WallBlocks = wallBlocks
-            };
-        }
-
-        private void Play()
-        {
-            var info = GetLevelInfoFromScene();
-            LevelDesigner.Play(info);
         }
     }
 }
