@@ -24,7 +24,7 @@ namespace UI.Panels
     {
         void Show();
         void Hide();
-        void Init(RectTransform _Parent);
+        void Init();
     }
 
     public interface IActionExecutor
@@ -56,10 +56,9 @@ namespace UI.Panels
         private const int IncomeCoinsAnimOnScreen = 3;
         private const int PoolSize = 8;
 
-        private IBankManager BankManager { get; }
         private readonly IMenuDialogViewer m_DialogViewer;
         private readonly INotificationViewer m_NotificationViewer;
-        private RectTransform m_Parent;
+        private readonly RectTransform m_Parent;
         private readonly List<CoinAnimObject> m_CoinsPool = 
             new List<CoinAnimObject>(PoolSize);
         private Image m_FirstCurrencyIcon;
@@ -83,24 +82,23 @@ namespace UI.Panels
         private static int AkPlusButtonStop => AnimKeys.Stop;
         
         #endregion
-        
+
         #region api
         
         public UnityAction Action { get; set; }
         
         public BankMiniPanel(
-            IBankManager _BankManager,
+            RectTransform _Parent,
             IMenuDialogViewer _DialogViewer,
             INotificationViewer _NotificationViewer)
         {
-            BankManager = _BankManager;
+            m_Parent = _Parent;
             m_DialogViewer = _DialogViewer;
             m_NotificationViewer = _NotificationViewer;
         }
 
-        public void Init(RectTransform _Parent)
+        public void Init()
         {
-            m_Parent = _Parent;
             var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_Parent,
@@ -132,14 +130,14 @@ namespace UI.Panels
             });
 
             Dbg.Log("Init bank minipanel");
-            BankManager.OnMoneyCountChanged += MoneyCountChanged;
-            BankManager.OnIncome += Income;
+            BankManager.Instance.OnMoneyCountChanged += MoneyCountChanged;
+            BankManager.Instance.OnIncome += Income;
             UiManager.Instance.OnCurrentMenuCategoryChanged += CurrentMenuCategoryChanged;
         }
 
         public void Show()
         {
-            var bank = BankManager.GetBank();
+            var bank = BankManager.Instance.GetBank();
             Coroutines.Run(Coroutines.WaitWhile(
                 () => !bank.Loaded,
                 () =>
@@ -171,8 +169,8 @@ namespace UI.Panels
         
         public void UnregisterFromEvents()
         {
-            BankManager.OnMoneyCountChanged -= MoneyCountChanged;
-            BankManager.OnIncome -= Income;
+            BankManager.Instance.OnMoneyCountChanged -= MoneyCountChanged;
+            BankManager.Instance.OnIncome -= Income;
             UiManager.Instance.OnCurrentMenuCategoryChanged -= CurrentMenuCategoryChanged;
         }
         
@@ -274,7 +272,7 @@ namespace UI.Panels
         private void AnimateTextIncome(IReadOnlyDictionary<BankItemType, long> _Income)
         {
             BankItemType rewardType = _Income.ToList().First(_Kvp => _Kvp.Value > 0).Key;
-            var currMoney = BankManager.GetBank();
+            var currMoney = BankManager.Instance.GetBank();
             if (_Income.ContainsKey(rewardType))
             {
                 Coroutines.Run(Coroutines.WaitWhile(
@@ -323,9 +321,10 @@ namespace UI.Panels
         {
             Debug.Log("Money count changed");
             var bank = _Args.BankEntity;
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !bank.Loaded,
-                () => SetMoney(bank.BankItems)));
+            Coroutines.Run(Coroutines.WaitWhile(() => !bank.Loaded, () =>
+            {
+                SetMoney(bank.BankItems);
+            }));
         }
 
         private void SetMoney(Dictionary<BankItemType, long> _Money)

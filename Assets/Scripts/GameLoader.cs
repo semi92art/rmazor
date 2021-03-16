@@ -1,39 +1,31 @@
-﻿using Constants;
-using Exceptions;
+﻿using DI;
+using Managers;
+using Network;
+using UI.Panels;
+using UnityEngine;
 using UnityEngine.SceneManagement;
-using Utils;
 
-public static class GameLoader
+public class GameLoader : MonoBehaviour, ISingleton
 {
-    private static int _level;
+    #region engine methods
 
-    static GameLoader()
+    private void Start()
     {
-        SceneManager.sceneLoaded += OnLoadLevel;
-    }
-
-    private static void OnLoadLevel(Scene _Scene, LoadSceneMode _LoadSceneMode)
-    {
-        if (_Scene.name != SceneNames.Level)
-            return;
-        LoadGame(GameClientUtils.GameId);
-    }
-
-    public static void LoadLevel(int _Level)
-    {
-        _level = _Level;
-        SceneManager.LoadScene(SceneNames.Level);
+        SceneManager.sceneLoaded += (_Scene, _Mode) =>
+        {
+            ContainersManager.Instance.Clear();
+            TimeOrLifesEndedPanel.TimesPanelCalled = 0;
+        };
+        
+        GameClient.Instance.Init();
+        AdsManager.Instance.Init();
+        AnalyticsManager.Instance.Init();
+        AssetBundleManager.Instance.Init();
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        DebugConsole.DebugConsoleView.Instance.Init();
+#endif
+        SceneManager.LoadScene(1);
     }
     
-    private static void LoadGame(int _GameId)
-    {
-        switch (_GameId)
-        {
-            case 1:
-                
-                break;
-            default:
-                throw new SwitchCaseNotImplementedException(_GameId);
-        }
-    }
+    #endregion
 }

@@ -4,7 +4,6 @@ using DialogViewers;
 using Entities;
 using Extensions;
 using GameHelpers;
-using Managers;
 using UI.Entities;
 using UI.Factories;
 using UI.Managers;
@@ -40,7 +39,9 @@ namespace UI.Panels
 
         public MenuUiCategory Category => MenuUiCategory.DailyBonus;
 
-        public DailyBonusPanel(IMenuDialogViewer _DialogViewer, IActionExecutor _ActionExecutor)
+        public DailyBonusPanel(
+            IMenuDialogViewer _DialogViewer, 
+            IActionExecutor _ActionExecutor)
         {
             m_DialogViewer = _DialogViewer;
             m_ActionExecutor = _ActionExecutor;
