@@ -1,11 +1,6 @@
 ﻿using System;
-using Constants;
-using Controllers;
-using Entities;
 using Exceptions;
-using Extensions;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Utils;
 
 namespace UI.Managers
@@ -21,7 +16,7 @@ namespace UI.Managers
         WheelOfFortune = 16,
         Shop = 32,
         Settings = 64,
-        PlusMoney = 128,
+        PlusMoney = 128
     }
 
     [Flags]
@@ -55,7 +50,6 @@ namespace UI.Managers
 
         private MenuUiCategory m_CurrentMenuCategory = MenuUiCategory.Nothing;
         private GameUiCategory m_CurrentGameCategory = GameUiCategory.Nothing;
-        private string m_PrevScene;
 
         #endregion
         
@@ -96,41 +90,8 @@ namespace UI.Managers
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            SceneManager.sceneLoaded += OnSceneLoaded;
             OnCurrentMenuCategoryChanged += OnMenuCategoryChanged;
             OnCurrentGameCategoryChanged += OnGameCategoryChanged;
-        }
-
-        private void OnSceneLoaded(Scene _Scene, LoadSceneMode _)
-        {
-            bool onStart = m_PrevScene.EqualsIgnoreCase(SceneNames.Preload);
-                
-            if (onStart)
-            {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-                bool debugOn = SaveUtils.GetValue<bool>(SaveKeyDebug.DebugUtilsOn);
-                SaveUtils.PutValue(SaveKeyDebug.DebugUtilsOn, debugOn);
-                DebugConsole.DebugConsoleView.Instance.SetGoActive(debugOn);
-    #if !UNITY_EDITOR && DEVELOPMENT_BUILD
-                    DebugReporter = GameHelpers.PrefabUtilsEx.InitPrefab(
-                        null,
-                        "debug_console",
-                        "reporter");
-                    DebugReporter.SetActive(debugOn);
-    #endif
-#endif
-            }
-                
-            if (_Scene.name.EqualsIgnoreCase(SceneNames.Main))
-            {
-                if (onStart)
-                    LocalizationManager.Instance.Init();
-                var menuUi = new MenuUi(onStart);
-                menuUi.AddObserver(new MenuUiSoundController());
-                menuUi.Init();
-            }
-
-            m_PrevScene = _Scene.name;
         }
         
         private void OnMenuCategoryChanged(MenuUiCategory _, MenuUiCategory _New)

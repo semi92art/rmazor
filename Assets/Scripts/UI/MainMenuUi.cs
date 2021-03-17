@@ -18,7 +18,13 @@ using Utils;
 
 namespace UI
 {
-    public class MainMenuUi : GameObservable
+    public interface IMainMenuUI
+    {
+        void Init();
+        void Show();
+    }
+    
+    public class MainMenuUi : GameObservable, IMainMenuUI
     {
         #region notify messages
 
@@ -38,9 +44,9 @@ namespace UI
         #region nonpublic members
         
         private static bool _isDailyBonusClicked;
-        private readonly IMenuDialogViewer m_MenuDialogViewer;
-        private readonly INotificationViewer m_NotificationViewer;
-        private readonly RectTransform m_Parent;
+        private IMenuDialogViewer m_MenuDialogViewer;
+        private INotificationViewer m_NotificationViewer;
+        private RectTransform m_Parent;
         
         private IMiniPanel m_BankMiniPanel;
         private RectTransform m_MainMenu;
@@ -53,10 +59,9 @@ namespace UI
 
         #endregion
 
-        #region constructor
-        
-        public MainMenuUi(
-            RectTransform _Parent,
+        #region api
+
+        public void InitDirty(RectTransform _Parent,
             IMenuDialogViewer _MenuDialogViewer,
             INotificationViewer _NotificationViewer,
             MainBackgroundRenderer _MainBackgroundRenderer)
@@ -67,10 +72,6 @@ namespace UI
             UiManager.Instance.CurrentMenuCategory = MenuUiCategory.MainMenu;
             m_MainBackgroundRenderer = _MainBackgroundRenderer;
         }
-
-        #endregion
-        
-        #region api
 
         public void Init()
         {

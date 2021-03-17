@@ -1,22 +1,26 @@
-﻿using Managers;
+﻿using Constants;
+using Controllers;
+using Entities;
+using Extensions;
+using Managers;
 using Network;
+using UI;
 using UI.Panels;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityGameLoopDI;
+using Utils;
+using Zenject;
 
-public class ApplicationInitializer : MonoBehaviour, ISingleton
+public class ApplicationInitializer : MonoBehaviour
 {
     #region engine methods
 
+    private static string _prevScene = SceneNames.Preload;
+    
     private void Start()
     {
-        SceneManager.sceneLoaded += (_Scene, _Mode) =>
-        {
-            UnityGameLoopDIManager.Instance.Clear();
-            TimeOrLifesEndedPanel.TimesPanelCalled = 0;
-        };
-        
+        DontDestroyOnLoad(gameObject);
         GameClient.Instance.Init();
         AdsManager.Instance.Init();
         AnalyticsManager.Instance.Init();
@@ -24,7 +28,40 @@ public class ApplicationInitializer : MonoBehaviour, ISingleton
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         DebugConsole.DebugConsoleView.Instance.Init();
 #endif
+        SceneManager.sceneLoaded += OnSceneLoaded;
         SceneManager.LoadScene(1);
+    }
+    
+    private void OnSceneLoaded(Scene _Scene, LoadSceneMode _)
+    {
+        UnityGameLoopDIManager.Instance.Clear();
+        TimeOrLifesEndedPanel.TimesPanelCalled = 0;
+        
+        bool onStart = _prevScene.EqualsIgnoreCase(SceneNames.Preload);
+                
+        if (onStart)
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            bool debugOn = SaveUtils.GetValue<bool>(SaveKeyDebug.DebugUtilsOn);
+            SaveUtils.PutValue(SaveKeyDebug.DebugUtilsOn, debugOn);
+            DebugConsole.DebugConsoleView.Instance.SetGoActive(debugOn);
+#if !UNITY_EDITOR && DEVELOPMENT_BUILD
+                    UiManager.Instance.DebugReporter = GameHelpers.PrefabUtilsEx.InitPrefab(
+                        null,
+                        "debug_console",
+                        "reporter");
+                    UiManager.Instance.DebugReporter.SetActive(debugOn);
+#endif
+#endif
+        }
+                
+        if (_Scene.name.EqualsIgnoreCase(SceneNames.Main))
+        {
+            if (onStart)
+                LocalizationManager.Instance.Init();
+        }
+
+        _prevScene = _Scene.name;
     }
     
     #endregion

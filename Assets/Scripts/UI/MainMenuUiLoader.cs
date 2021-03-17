@@ -12,15 +12,20 @@ using UI.Panels;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils;
+using Zenject;
 
 namespace UI
 {
-    public class MenuUi : GameObservable
+    public interface IMainMenuUiLoader
+    {
+        void Init(bool _OnStart);
+    }
+    
+    public class MainMenuUiLoader : GameObservable, IMainMenuUiLoader
     {
         #region nonpublic members
 
         private readonly bool m_OnStart;
-        private MainMenuUi m_MainMenuUi;
         private Canvas m_Canvas;
         private IMenuDialogViewer m_MenuDialogViewer;
         private INotificationViewer m_NotificationViewer;
@@ -30,14 +35,22 @@ namespace UI
 
         #endregion
 
+        #region inject
+        
+        private IMainMenuUI MainMenuUI { get; set; }
+
+        [Inject]
+        public void Inject(IMainMenuUI _MainMenuUI)
+        {
+            MainMenuUI = _MainMenuUI;
+        }
+        
+        #endregion
+        
+        
         #region api
 
-        public MenuUi(bool _OnStart)
-        {
-            m_OnStart = _OnStart;
-        }
-
-        public void Init()
+        public void Init(bool _OnStart)
         {
             DataFieldsMigrator.InitDefaultDataFieldValues();
             CreateCanvas();
@@ -46,7 +59,7 @@ namespace UI
             CreateTransitionRenderer();
 
             PreloadMainMenu();
-            if (m_OnStart)
+            if (_OnStart)
                 CreateLoadingPanel();
             else
                 ShowMainMenu(false);
@@ -174,27 +187,27 @@ namespace UI
         {
             if (!_OnStart)
             {
-                m_MainMenuUi.Show();
+                MainMenuUI.Show();
                 return;
             }
             
             m_TransitionRenderer.TransitionAction = (_, _Args) =>
             {
                 m_MenuDialogViewer.Back();
-                m_MainMenuUi.Show();
+                MainMenuUI.Show();
             };
             m_TransitionRenderer.StartTransition();
         }
 
         private void PreloadMainMenu()
         {
-            m_MainMenuUi = new MainMenuUi(
-                m_Canvas.RTransform(),
+            (MainMenuUI as MainMenuUi)?.InitDirty(
+            m_Canvas.RTransform(),
                 m_MenuDialogViewer,
                 m_NotificationViewer,
                 m_MainBackgroundRenderer);
-            m_MainMenuUi.AddObservers(GetObservers());
-            m_MainMenuUi.Init();
+            (MainMenuUI as MainMenuUi)?.AddObservers(GetObservers());
+            MainMenuUI.Init();
         }
 
         private GameObject CreateLoadingTransitionPanel()
