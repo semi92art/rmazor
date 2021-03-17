@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Entities;
-using Exceptions;
 using Games.RazorMaze.Models.Obstacles;
-using UnityEngine;
 using UnityEngine.EventSystems;
 using Utils;
 
@@ -14,6 +12,7 @@ namespace Games.RazorMaze.Models
         #region nonpublic members
 
         private MazeInfo m_MazeInfo;
+        private MazeOrientation m_Orientation;
         private long m_HealthPoints;
         
         #endregion
@@ -59,10 +58,14 @@ namespace Games.RazorMaze.Models
                 () => FinishMove?.Invoke()));
         }
 
-        public void UpdateMazeInfo(MazeInfo _Info)
+        public void UpdateMazeInfo(MazeInfo _Info, MazeOrientation _Orientation)
         {
-            m_MazeInfo = _Info;
-            Position = m_MazeInfo.Nodes[0].Position;
+            if (!ReferenceEquals(m_MazeInfo, _Info))
+            {
+                m_MazeInfo = _Info;
+                Position = m_MazeInfo.Nodes[0].Position;
+            }
+            m_Orientation = _Orientation;
         }
 
         #endregion
@@ -87,17 +90,43 @@ namespace Games.RazorMaze.Models
 
         private V2Int GetDirectionVector(MoveDirection _Direction)
         {
-            switch (_Direction)
+            switch (m_Orientation)
             {
-                case MoveDirection.Up:    return V2Int.up;
-                case MoveDirection.Down:  return V2Int.down;
-                case MoveDirection.Left:  return V2Int.left;
-                case MoveDirection.Right: return V2Int.right;
-                default: throw new SwitchCaseNotImplementedException(_Direction);
+                case MazeOrientation.North:
+                    switch (_Direction)
+                    {
+                        case MoveDirection.Up:    return V2Int.up;
+                        case MoveDirection.Right: return V2Int.right;
+                        case MoveDirection.Down:  return V2Int.down;
+                        case MoveDirection.Left:  return V2Int.left;
+                    } break;
+                case MazeOrientation.East:
+                    switch (_Direction)
+                    {
+                        case MoveDirection.Up:    return V2Int.left;
+                        case MoveDirection.Right: return V2Int.up;
+                        case MoveDirection.Down:  return V2Int.right;
+                        case MoveDirection.Left:  return V2Int.down;
+                    } break;
+                case MazeOrientation.South:
+                    switch (_Direction)
+                    {
+                        case MoveDirection.Up:    return V2Int.down;
+                        case MoveDirection.Right: return V2Int.left;
+                        case MoveDirection.Down:  return V2Int.up;
+                        case MoveDirection.Left:  return V2Int.right;
+                    } break;
+                case MazeOrientation.West:
+                    switch (_Direction)
+                    {
+                        case MoveDirection.Up:    return V2Int.right;
+                        case MoveDirection.Right: return V2Int.down;
+                        case MoveDirection.Down:  return V2Int.left;
+                        case MoveDirection.Left:  return V2Int.up;
+                    } break;
             }
+            return default;
         }
-
-        private static float MoveCoefficient(float _Progress) => Mathf.Pow(_Progress, 2);
 
         #endregion
     }

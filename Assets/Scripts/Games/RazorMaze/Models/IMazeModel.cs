@@ -2,7 +2,7 @@
 
 namespace Games.RazorMaze.Models
 {
-    public delegate void MazeInfoHandler(MazeInfo _Info);
+    public delegate void MazeInfoHandler(MazeInfo _Info, MazeOrientation _Orientation);
     public delegate void MazeOrientationHandler(MazeRotateDirection _Direction, MazeOrientation _Orientation);
     public delegate void MazeRotationHandler(float _Progress);
     public enum MazeOrientation { North, East, South, West}

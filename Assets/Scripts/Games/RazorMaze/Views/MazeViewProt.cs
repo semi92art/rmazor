@@ -25,6 +25,7 @@ namespace Games.RazorMaze.Views
         }
 
         public void SetLevel(int _Level) { }
+        
         public void StartRotation(MazeRotateDirection _Direction, MazeOrientation _Orientation)
         {
             m_Direction = _Direction;
@@ -39,7 +40,7 @@ namespace Games.RazorMaze.Views
         public void Rotate(float _Progress)
         {
             var rb = Maze.Container.GetComponent<Rigidbody2D>();
-            float dirCorff = m_Direction == MazeRotateDirection.Clockwise ? 1 : -1;
+            float dirCorff = m_Direction == MazeRotateDirection.Clockwise ? -1 : 1;
             float currAngle = m_StartAngle + RotateCoefficient(_Progress) * 90f * dirCorff;
             rb.SetRotation(currAngle);
         }
@@ -61,13 +62,9 @@ namespace Games.RazorMaze.Views
             switch (_Direction)
             {
                 case MazeRotateDirection.Clockwise:
-                    orient--;
-                    if (orient < 0) orient = 3;
-                    break;
+                    orient = MathUtils.ClampInverse(orient - 1, 0, 3); break;
                 case MazeRotateDirection.CounterClockwise:
-                    orient++;
-                    if (orient > 3) orient = 0;
-                    break;
+                    orient = MathUtils.ClampInverse(orient + 1, 0, 3); break;
             }
             return (MazeOrientation) orient;
         }
@@ -77,9 +74,9 @@ namespace Games.RazorMaze.Views
             switch (_Orientation)
             {
                 case MazeOrientation.North: return 0;
-                case MazeOrientation.East:  return 90;
+                case MazeOrientation.East:  return 270;
                 case MazeOrientation.South: return 180;
-                case MazeOrientation.West:  return 270;
+                case MazeOrientation.West:  return 90;
                 default: throw new SwitchCaseNotImplementedException(_Orientation);
             }
         }

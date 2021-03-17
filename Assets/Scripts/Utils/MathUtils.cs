@@ -40,5 +40,12 @@ namespace Utils
         {
             return Convert.ToSingle(Fraction(Convert.ToDouble(_Value)));
         }
+
+        public static int ClampInverse(int _Val, int _Min, int _Max)
+        {
+            if (_Val > _Max) return _Min;
+            if (_Val < _Min) return _Max;
+            return _Val;
+        }
     }
 }

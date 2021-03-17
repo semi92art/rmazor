@@ -1,8 +1,6 @@
-﻿using Entities;
-using Extensions;
+﻿using Extensions;
 using Shapes;
 using UnityEngine;
-
 
 namespace Games.RazorMaze.Views
 {
@@ -27,7 +25,7 @@ namespace Games.RazorMaze.Views
         private void Init(MazeInfo _Info)
         {
             var scaler = new MazeScreenScaler();
-            var pos = scaler.GetWorldPosition(
+            var pos = scaler.GetCharacterPosition(
                 _Info.Nodes[0].Position, _Info.Width, out float scale);
             InitShape(0.4f * scale, Color.blue);
             SetPosition(pos);

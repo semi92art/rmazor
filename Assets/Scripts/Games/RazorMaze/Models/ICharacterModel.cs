@@ -17,6 +17,6 @@ namespace Games.RazorMaze.Models
         long HealthPoints { get; set; }
         V2Int Position { get; }
         void Move(MoveDirection _Direction);
-        void UpdateMazeInfo(MazeInfo _Info);
+        void UpdateMazeInfo(MazeInfo _Info, MazeOrientation _Orientation);
     }
 }

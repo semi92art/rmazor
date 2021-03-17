@@ -17,7 +17,7 @@ namespace Games.RazorMaze.Models
             set
             {
                 m_Info = value;
-                MazeChanged?.Invoke(m_Info);
+                MazeChanged?.Invoke(m_Info, Orientation);
             }
         }
         public MazeOrientation Orientation { get; private set; } = MazeOrientation.North;

@@ -67,14 +67,14 @@ namespace Games.RazorMaze
             var scoring                       = GameModel.Scoring;
             var levelStaging                  = GameModel.LevelStaging;
             
-            maze.RotationStarted            += MazeOnRotationStarted;
+            maze.RotationStarted              += MazeOnRotationStarted;
             maze.OnRotation                   += MazeOnRotation;
-            maze.RotationFinished           += MazeRotationFinished;
+            maze.RotationFinished             += MazeRotationFinished;
 
             character.OnHealthChanged         += CharacterOnHealthChanged;
             character.OnDeath                 += CharacterOnDeath;
-            character.StartMove   += CharacterStartMove;
-            character.FinishMove += CharacterFinishMove;
+            character.StartMove               += CharacterStartMove;
+            character.FinishMove              += CharacterFinishMove;
             character.OnMoving                += CharacterOnMoving;
             
             scoring.OnScoreChanged            += OnScoreChanged;
