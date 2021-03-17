@@ -6,5 +6,6 @@
         ICharacterModel Character { get; }
         ILevelStagingModel LevelStaging { get; }
         IScoringModel Scoring { get; }
+        IInputScheduler InputScheduler { get; }
     }
 }

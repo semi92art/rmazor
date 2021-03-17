@@ -8,17 +8,16 @@ namespace Games.RazorMaze.Prot
     public class MazeProtItem : MonoBehaviour
     {
         public Rectangle rectangle;
-        public PrototypingItemType type;
-        private PrototypingItemType m_TypeCheck;
-        [SerializeField] private bool m_Initialized;
+        [SerializeField, HideInInspector] PrototypingItemType type;
 
-        private void Update()
+        public PrototypingItemType Type
         {
-            if (!m_Initialized)
-                return;
-            if (type != m_TypeCheck)
+            get => type;
+            set
+            {
+                type = value;
                 rectangle.Color = ColorByType(type);
-            m_TypeCheck = type;
+            }
         }
 
         public void Init(PrototypingItemProps _Props)
@@ -30,7 +29,6 @@ namespace Games.RazorMaze.Prot
             rectangle.Type = Rectangle.RectangleType.RoundedSolid;
             rectangle.CornerRadius = 0.1f;
             rectangle.Color = ColorByType(type);
-            m_Initialized = true;
         }
 
         private static Color ColorByType(PrototypingItemType _Type)

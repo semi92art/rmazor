@@ -1,15 +1,13 @@
-﻿using System;
-using UnityGameLoopDI;
-using Utils;
+﻿using Utils;
 
 namespace Games.RazorMaze.Models
 {
-    public class MazeModelDefault : UnityGameLoopObjectDI, IMazeModel
+    public class MazeModel : IMazeModel
     {
-        public event MazeInfoHandler OnMazeChanged;
-        public event MazeOrientationHandler OnRotationStarted;
+        public event MazeInfoHandler MazeChanged;
+        public event MazeOrientationHandler RotationStarted;
         public event MazeRotationHandler OnRotation;
-        public event MazeOrientationHandler OnRotationFinished;
+        public event NoArgsHandler RotationFinished;
 
         private MazeInfo m_Info;
 
@@ -19,7 +17,7 @@ namespace Games.RazorMaze.Models
             set
             {
                 m_Info = value;
-                OnMazeChanged?.Invoke(m_Info);
+                MazeChanged?.Invoke(m_Info);
             }
         }
         public MazeOrientation Orientation { get; private set; } = MazeOrientation.North;
@@ -39,20 +37,14 @@ namespace Games.RazorMaze.Models
                     break;
             }
             Orientation = (MazeOrientation) orient;
-            OnRotationStarted?.Invoke(_Direction, Orientation);
+            RotationStarted?.Invoke(_Direction, Orientation);
             Coroutines.Run(Coroutines.Lerp(
                 0f, 
                 1f, 
-                0.3f, 
+                0.2f, 
                 _Val => OnRotation?.Invoke(_Val),
                 GameTimeProvider.Instance, 
-                () => OnRotationFinished?.Invoke(_Direction, Orientation)));
-        }
-
-        [Obsolete("This method")]
-        public void OnUpdate()
-        {
-            //TODO
+                () => RotationFinished?.Invoke()));
         }
     }
 }

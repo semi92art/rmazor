@@ -8,12 +8,12 @@ namespace Games.RazorMaze.Models
     public enum MazeOrientation { North, East, South, West}
     public enum MazeRotateDirection {Clockwise, CounterClockwise}
     
-    public interface IMazeModel : IOnUpdate
+    public interface IMazeModel
     {
-        event MazeInfoHandler OnMazeChanged;
-        event MazeOrientationHandler OnRotationStarted;
+        event MazeInfoHandler MazeChanged;
+        event MazeOrientationHandler RotationStarted;
         event MazeRotationHandler OnRotation;
-        event MazeOrientationHandler OnRotationFinished;
+        event NoArgsHandler RotationFinished;
         MazeInfo Info { get; set; }
         MazeOrientation Orientation { get; }
         void Rotate(MazeRotateDirection _Direction);

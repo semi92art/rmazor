@@ -8,6 +8,6 @@ namespace Games.RazorMaze.Views
         void SetLevel(int _Level);
         void StartRotation(MazeRotateDirection _Direction, MazeOrientation _Orientation);
         void Rotate(float _Progress);
-        void FinishRotation(MazeRotateDirection _Direction, MazeOrientation _Orientation);
+        void FinishRotation();
     }
 }

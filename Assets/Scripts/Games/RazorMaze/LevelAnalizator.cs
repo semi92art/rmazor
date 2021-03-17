@@ -9,7 +9,7 @@ using Entities;
 namespace Games.RazorMaze
 {
     public static class 
-        LevelAnalizator
+    LevelAnalizator
     {
         private class NodeSolve
         {
@@ -39,12 +39,12 @@ namespace Games.RazorMaze
                 if (nodeSolves.Any(_N => !_N.Solved)) 
                     continue;
                 sw.Stop();
-                Utils.Dbg.Log($"Time elapsed: {sw.Elapsed.TotalMilliseconds}");
+                //Utils.Dbg.Log($"Time elapsed: {sw.Elapsed.TotalMilliseconds}");
                 return true;
 
             }
             sw.Stop();
-            Utils.Dbg.Log($"Time elapsed: {sw.Elapsed.TotalMilliseconds}");
+            //Utils.Dbg.Log($"Time elapsed: {sw.Elapsed.TotalMilliseconds}");
             return false;
         }
         

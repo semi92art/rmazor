@@ -8,7 +8,7 @@ namespace Games.RazorMaze.Views
     {
         public event IntHandler OnCommand;
         public void ConfigureInput() { }
-
+        
         public void OnUpdate()
         {
             if (OnCommand == null) 
@@ -25,9 +25,6 @@ namespace Games.RazorMaze.Views
                 OnCommand.Invoke((int)EInputCommand.RotateClockwise);
             else if (Input.GetKeyDown(KeyCode.Q))
                 OnCommand.Invoke((int)EInputCommand.RotateCounterClockwise);
-            
-            if (Input.anyKeyDown)
-                Utils.Dbg.Log("Key pressed!!!");
         }
     }
 }

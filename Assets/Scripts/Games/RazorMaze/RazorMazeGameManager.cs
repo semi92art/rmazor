@@ -2,7 +2,6 @@
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using Utils;
 using Zenject;
 
@@ -68,13 +67,14 @@ namespace Games.RazorMaze
             var scoring                       = GameModel.Scoring;
             var levelStaging                  = GameModel.LevelStaging;
             
-            maze.OnRotationStarted            += MazeOnRotationStarted;
+            maze.RotationStarted            += MazeOnRotationStarted;
             maze.OnRotation                   += MazeOnRotation;
-            maze.OnRotationFinished           += MazeOnRotationFinished;
+            maze.RotationFinished           += MazeRotationFinished;
 
             character.OnHealthChanged         += CharacterOnHealthChanged;
             character.OnDeath                 += CharacterOnDeath;
-            character.OnStartChangePosition   += CharacterOnStartChangePosition;
+            character.StartMove   += CharacterStartMove;
+            character.FinishMove += CharacterFinishMove;
             character.OnMoving                += CharacterOnMoving;
             
             scoring.OnScoreChanged            += OnScoreChanged;
@@ -96,17 +96,7 @@ namespace Games.RazorMaze
 
         private void InputConfiguratorOnCommand(int _Value)
         {
-            var character = GameModel.Character;
-            var maze = GameModel.Maze;
-            switch (_Value)
-            {
-                case (int)EInputCommand.MoveLeft:               character.Move(MoveDirection.Left);                break;
-                case (int)EInputCommand.MoveRight:              character.Move(MoveDirection.Right);               break;
-                case (int)EInputCommand.MoveUp:                 character.Move(MoveDirection.Up);                  break;
-                case (int)EInputCommand.MoveDown:               character.Move(MoveDirection.Down);                break;
-                case (int)EInputCommand.RotateClockwise:        maze.Rotate(MazeRotateDirection.Clockwise);        break;
-                case (int)EInputCommand.RotateCounterClockwise: maze.Rotate(MazeRotateDirection.CounterClockwise); break;
-            }
+            GameModel.InputScheduler.AddCommand((EInputCommand)_Value);
         }
 
         private void CharacterOnHealthChanged(HealthPointsEventArgs _Args)
@@ -119,7 +109,7 @@ namespace Games.RazorMaze
             CharacterView.OnDeath();
         }
 
-        private void CharacterOnStartChangePosition(V2Int _PrevPos, V2Int _NextPos)
+        private void CharacterStartMove(V2Int _PrevPos, V2Int _NextPos)
         {
             CharacterView.OnStartChangePosition(_PrevPos, _NextPos);
         }
@@ -128,10 +118,15 @@ namespace Games.RazorMaze
         {
             CharacterView.OnMoving(_Progress);
         }
+        
+        private void CharacterFinishMove()
+        {
+
+        }
 
         private void MazeOnRotationStarted(MazeRotateDirection _Direction, MazeOrientation _Orientation)
         {
-            MazeView.FinishRotation(_Direction, _Orientation);
+            MazeView.StartRotation(_Direction, _Orientation);
         }
 
         private void MazeOnRotation(float _Progress)
@@ -139,9 +134,9 @@ namespace Games.RazorMaze
             MazeView.Rotate(_Progress);
         }
         
-        private void MazeOnRotationFinished(MazeRotateDirection _Direction, MazeOrientation _Orientation)
+        private void MazeRotationFinished()
         {
-            MazeView.StartRotation(_Direction, _Orientation);
+            MazeView.FinishRotation();
         }
 
         public void SetLevel(int _Level)
@@ -201,13 +196,13 @@ namespace Games.RazorMaze
             var levelStaging                  = GameModel.LevelStaging;
             var scoring                       = GameModel.Scoring;
             
-            maze.OnRotationStarted            -= MazeOnRotationStarted;
+            maze.RotationStarted            -= MazeOnRotationStarted;
             maze.OnRotation                   -= MazeOnRotation;
-            maze.OnRotationFinished           -= MazeOnRotationFinished;
+            maze.RotationFinished           -= MazeRotationFinished;
             
             character.OnHealthChanged         -= CharacterOnHealthChanged;
             character.OnDeath                 -= CharacterOnDeath;
-            character.OnStartChangePosition   -= CharacterOnStartChangePosition;
+            character.StartMove   -= CharacterStartMove;
             character.OnMoving                -= CharacterOnMoving;
             
             scoring.OnScoreChanged            -= OnScoreChanged;

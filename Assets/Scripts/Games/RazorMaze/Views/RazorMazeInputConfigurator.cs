@@ -7,6 +7,8 @@ namespace Games.RazorMaze.Views
 {
     public class RazorMazeInputConfigurator : IInputConfigurator
     {
+        private LeanTouch m_LeanTouch;
+        
         public event IntHandler OnCommand;
         public void ConfigureInput()
         {
@@ -26,6 +28,17 @@ namespace Games.RazorMaze.Views
 #if UNITY_EDITOR
             mts.FingerTexture = PrefabUtilsEx.GetObject<Texture2D>("icons", "finger_texture");
 #endif
+            m_LeanTouch = mts;
+        }
+
+        public void LockInput()
+        {
+            m_LeanTouch.enabled = false;
+        }
+
+        public void UnlockInput()
+        {
+            m_LeanTouch.enabled = true;
         }
     }
 }

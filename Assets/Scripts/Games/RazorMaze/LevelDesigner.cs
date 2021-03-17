@@ -70,15 +70,15 @@ namespace Games.RazorMaze
         {
             var prot = prototype;
             var nodes = prot.items
-                .Where(_Item => _Item.type == PrototypingItemType.Node)
+                .Where(_Item => _Item.Type == PrototypingItemType.Node)
                 .Select(_Item => _Item.transform.position.XY().ToVector2Int())
                 .Select(_PosInt => new Node{Position = new V2Int(_PosInt)})
                 .ToList();
-            var nodeStart = prot.items.Where(_Item => _Item.type == PrototypingItemType.NodeStart)
+            var nodeStart = prot.items.Where(_Item => _Item.Type == PrototypingItemType.NodeStart)
                 .Select(_Item => new Node{Position = new V2Int(_Item.transform.position.XY().ToVector2Int())}).First();
             nodes.Insert(0, nodeStart);
             var wallBlocks  = prot.items
-                .Where(_Item => _Item.type == PrototypingItemType.WallBlockSimple)
+                .Where(_Item => _Item.Type == PrototypingItemType.WallBlockSimple)
                 .Select(_Item => _Item.transform.position.XY().ToVector2Int())
                 .Select(_PosInt => new WallBlock{Position = new V2Int(_PosInt)})
                 .ToList();

@@ -22,8 +22,8 @@ namespace Games.RazorMaze.Views
         public void OnStartChangePosition(V2Int _PrevPos, V2Int _NextPos)
         {
             var scaler = new MazeScreenScaler();
-            m_PrevPos = scaler.GetWorldPosition(_PrevPos, m_Info.Width, m_Info.Height, out _);
-            m_NextPos = scaler.GetWorldPosition(_NextPos, m_Info.Width, m_Info.Height, out _);
+            m_PrevPos = scaler.GetWorldPosition(_PrevPos, m_Info.Width, out _);
+            m_NextPos = scaler.GetWorldPosition(_NextPos, m_Info.Width, out _);
         }
 
         public void OnMoving(float _Progress)

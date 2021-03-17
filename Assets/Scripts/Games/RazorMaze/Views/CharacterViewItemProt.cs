@@ -28,7 +28,7 @@ namespace Games.RazorMaze.Views
         {
             var scaler = new MazeScreenScaler();
             var pos = scaler.GetWorldPosition(
-                _Info.Nodes[0].Position, _Info.Width, _Info.Height, out float scale);
+                _Info.Nodes[0].Position, _Info.Width, out float scale);
             InitShape(0.4f * scale, Color.blue);
             SetPosition(pos);
         }

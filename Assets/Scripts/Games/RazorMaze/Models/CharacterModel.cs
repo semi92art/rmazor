@@ -3,12 +3,13 @@ using System.Linq;
 using Entities;
 using Exceptions;
 using Games.RazorMaze.Models.Obstacles;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using Utils;
 
 namespace Games.RazorMaze.Models
 {
-    public class CharacherModelDefault : ICharacterModel
+    public class CharacterModel : ICharacterModel
     {
         #region nonpublic members
 
@@ -19,8 +20,9 @@ namespace Games.RazorMaze.Models
         
         #region api
 
-        public event V2IntV2IntHandler OnStartChangePosition;
+        public event V2IntV2IntHandler StartMove;
         public event CharacterMovingHandler OnMoving;
+        public event NoArgsHandler FinishMove;
         public event HealthPointsChangedHandler OnHealthChanged;
         public event NoArgsHandler OnDeath;
 
@@ -47,13 +49,14 @@ namespace Games.RazorMaze.Models
         {
             var prevPos = Position;
             Position = GetNewPosition(_Direction);
-            OnStartChangePosition?.Invoke(prevPos, Position);
+            StartMove?.Invoke(prevPos, Position);
             Coroutines.Run(Coroutines.Lerp(
                 0f,
                 1f,
-                0.3f,
+                0.1f,
                 _Progress => OnMoving?.Invoke(_Progress),
-                GameTimeProvider.Instance));
+                GameTimeProvider.Instance,
+                () => FinishMove?.Invoke()));
         }
 
         public void UpdateMazeInfo(MazeInfo _Info)
@@ -70,11 +73,8 @@ namespace Games.RazorMaze.Models
         {
             var nextPos = Position;
             var dirVector = GetDirectionVector(_Direction);
-            do
-            {
+            while (ValidPosition(nextPos + dirVector, m_MazeInfo))
                 nextPos += dirVector;
-            }
-            while (ValidPosition(nextPos + dirVector, m_MazeInfo));
             return nextPos;
         }
 
@@ -96,7 +96,9 @@ namespace Games.RazorMaze.Models
                 default: throw new SwitchCaseNotImplementedException(_Direction);
             }
         }
-        
+
+        private static float MoveCoefficient(float _Progress) => Mathf.Pow(_Progress, 2);
+
         #endregion
     }
 }
