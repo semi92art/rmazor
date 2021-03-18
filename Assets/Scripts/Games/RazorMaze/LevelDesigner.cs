@@ -30,7 +30,7 @@ namespace Games.RazorMaze
         [HideInInspector] public int sizeIdx;
         [HideInInspector] public float aParam;
         [HideInInspector] public bool valid;
-        [HideInInspector] public MazeProtItems prototype;
+        [HideInInspector] public List<MazeProtItem> mazeItems;
 
         private static MazeInfo MazeInfo
         {
@@ -68,23 +68,24 @@ namespace Games.RazorMaze
         
         public MazeInfo GetLevelInfoFromScene()
         {
-            var prot = prototype;
-            var nodes = prot.items
+            var nodes = mazeItems
                 .Where(_Item => _Item.Type == PrototypingItemType.Node)
                 .Select(_Item => _Item.transform.position.XY().ToVector2Int())
                 .Select(_PosInt => new Node{Position = new V2Int(_PosInt)})
                 .ToList();
-            var nodeStart = prot.items.Where(_Item => _Item.Type == PrototypingItemType.NodeStart)
+            var nodeStart = mazeItems.Where(_Item => _Item.Type == PrototypingItemType.NodeStart)
                 .Select(_Item => new Node{Position = new V2Int(_Item.transform.position.XY().ToVector2Int())}).First();
             nodes.Insert(0, nodeStart);
-            var wallBlocks  = prot.items
+            var wallBlocks  = mazeItems
                 .Where(_Item => _Item.Type == PrototypingItemType.WallBlockSimple)
                 .Select(_Item => _Item.transform.position.XY().ToVector2Int())
                 .Select(_PosInt => new WallBlock{Position = new V2Int(_PosInt)})
                 .ToList();
+            int width = wallBlocks.GroupBy(_Wb => _Wb.Position.X).Count();
+            int height = wallBlocks.GroupBy(_Wb => _Wb.Position.Y).Count();
             return new MazeInfo{
-                Width =  prot.Width,
-                Height = prot.Height,
+                Width =  width,
+                Height = height,
                 Nodes = nodes,
                 WallBlocks = wallBlocks
             };

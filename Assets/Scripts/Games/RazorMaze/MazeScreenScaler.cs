@@ -1,57 +1,91 @@
-﻿using Entities;
+﻿using System;
+using Entities;
 using Extensions;
 using UnityEngine;
 using Utils;
 
 namespace Games.RazorMaze
 {
-    public class MazeScreenScaler
+    public interface ICoordinateConverter
     {
-        private float m_HorizontalOffset;
-        private float m_TopOffset;
-        private float m_BottomOffset;
+        void Init(int _Size);
+        float GetScale();
+        Vector2 GetCenter();
+        Vector2 ToWorldPosition(V2Int _Point);
+        Vector2 ToLocalPosition(V2Int _Point);
+    }
+    
+    public class CoordinateConverter : ICoordinateConverter
+    {
+        #region nonpublic members
 
-        public MazeScreenScaler() : this(1f, 5f, 10f) { }
+        private float HorizontalOffset => 1f;
+        private float TopOffset => 5f;
+        private float BottomOffset => 10f;
+
+        private int m_Size;
+        private float m_Scale;
+        private Vector2 m_StartPoint;
+        private Vector2 m_Center;
+
+        #endregion
         
-        private MazeScreenScaler(float _HorizontalOffset, float _TopOffset, float _BottomOffset)
+        #region api
+        
+        public void Init(int _Size)
         {
-            m_HorizontalOffset = _HorizontalOffset;
-            m_TopOffset = _TopOffset;
-            m_BottomOffset = _BottomOffset;
+            m_Size = _Size;
+            CheckForInitialization();
+            SetStartPointAndScaleAndCenter(m_Size);
         }
 
-        public Vector2 GetPosition(V2Int _Point, int _Size, out float _Scale)
+        public float GetScale()
         {
-            GetStartPointAndScale(_Size, out var startPoint, out _Scale);
-            return _Point.ToVector2() * _Scale + startPoint;
+            CheckForInitialization();
+            return m_Scale;
         }
         
-        public Vector2 GetCharacterPosition(V2Int _Point, int _Size, out float _Scale)
+        public Vector2 ToWorldPosition(V2Int _Point)
         {
-            return GetPosition(_Point, _Size, out _Scale).MinusY(GetCenter().y);
+            CheckForInitialization();
+            return _Point.ToVector2() * m_Scale + m_StartPoint;
         }
-
-        private void GetStartPointAndScale(
-            int _Size,
-            out Vector2 _StartPoint,
-            out float _Scale)
+        
+        public Vector2 ToLocalPosition(V2Int _Point)
         {
-            var bounds = GameUtils.GetVisibleBounds();
-            float realBoundsSizeX = bounds.size.x - m_HorizontalOffset * 2f;
-            _Scale = realBoundsSizeX / _Size;
-            float itemSize = realBoundsSizeX / _Size;
-            float startX = bounds.min.x + m_HorizontalOffset + itemSize * 0.5f;
-            float startY = bounds.min.y + m_BottomOffset + itemSize * 0.5f;
-            _StartPoint = new Vector2(startX, startY);
+            return ToWorldPosition(_Point).MinusY(GetCenter().y);
         }
-
+        
         public Vector2 GetCenter()
         {
-            var bounds = GameUtils.GetVisibleBounds();
-            float realBoundsSize = bounds.size.x - m_HorizontalOffset * 2f;
-            float startY = bounds.min.y + m_BottomOffset;
-            float centerY = startY + realBoundsSize * 0.5f;
-            return new Vector2(bounds.center.x, centerY);
+            CheckForInitialization();
+            return m_Center;
         }
+        
+        #endregion
+
+        #region nonpublic menhods
+
+        private void SetStartPointAndScaleAndCenter(int _Size)
+        {
+            var bounds = GameUtils.GetVisibleBounds();
+            float realBoundsSize = bounds.size.x - HorizontalOffset * 2f;
+            m_Scale = realBoundsSize / _Size;
+            float itemSize = m_Scale;
+            float startX = bounds.min.x + HorizontalOffset + itemSize * 0.5f;
+            float startY = bounds.min.y + BottomOffset + itemSize * 0.5f;
+            m_StartPoint = new Vector2(startX, startY);
+            float centerY = startY + realBoundsSize * 0.5f;
+            m_Center = new Vector2(bounds.center.x, centerY);
+        }
+
+        private void CheckForInitialization()
+        {
+            if (m_Size <= 0)
+                Dbg.LogError<Exception>("Size must be greater than zero");
+        }
+        
+        #endregion
+        
     }
 }

@@ -6,25 +6,25 @@ namespace Games.RazorMaze.Views
 {
     public class RazorMazeInputConfiguratorProt : UnityGameLoopObjectDI, IInputConfigurator, IOnUpdate 
     {
-        public event IntHandler OnCommand;
+        public event IntHandler Command;
         public void ConfigureInput() { }
         
         public void OnUpdate()
         {
-            if (OnCommand == null) 
+            if (Command == null) 
                 return;
             if (Input.GetKeyDown(KeyCode.A))
-                OnCommand.Invoke((int)EInputCommand.MoveLeft);
+                Command.Invoke((int)EInputCommand.MoveLeft);
             else if (Input.GetKeyDown(KeyCode.D))
-                OnCommand.Invoke((int)EInputCommand.MoveRight);
+                Command.Invoke((int)EInputCommand.MoveRight);
             else if (Input.GetKeyUp(KeyCode.W))
-                OnCommand.Invoke((int)EInputCommand.MoveUp);
+                Command.Invoke((int)EInputCommand.MoveUp);
             else if (Input.GetKeyDown(KeyCode.S))
-                OnCommand.Invoke((int)EInputCommand.MoveDown);
+                Command.Invoke((int)EInputCommand.MoveDown);
             else if (Input.GetKeyDown(KeyCode.E))
-                OnCommand.Invoke((int)EInputCommand.RotateClockwise);
+                Command.Invoke((int)EInputCommand.RotateClockwise);
             else if (Input.GetKeyDown(KeyCode.Q))
-                OnCommand.Invoke((int)EInputCommand.RotateCounterClockwise);
+                Command.Invoke((int)EInputCommand.RotateCounterClockwise);
         }
     }
 }

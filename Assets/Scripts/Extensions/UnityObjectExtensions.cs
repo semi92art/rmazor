@@ -4,7 +4,7 @@ namespace Extensions
 {
     public static class UnityObjectExtensions
     {
-        public static void DestroySafe(this Object _GameObject, bool _CheckForNull = true)
+        public static void DestroySafe(this GameObject _GameObject, bool _CheckForNull = true)
         {
             if (_CheckForNull && _GameObject == null)
                 return;

@@ -110,5 +110,10 @@ namespace Extensions
         {
             return new Vector2Int(Mathf.RoundToInt(_V.x), Mathf.RoundToInt(_V.y));
         }
+
+        public static Vector2 ToVector3(this Vector2 _V)
+        {
+            return Vector3.zero.SetXY(_V);
+        }
     }
 }

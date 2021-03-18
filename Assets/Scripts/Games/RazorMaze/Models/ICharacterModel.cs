@@ -9,11 +9,11 @@ namespace Games.RazorMaze.Models
     public interface ICharacterModel
     {
         event V2IntV2IntHandler StartMove;
-        event CharacterMovingHandler OnMoving;
+        event CharacterMovingHandler Moving;
         event NoArgsHandler FinishMove;
-        event HealthPointsChangedHandler OnHealthChanged;
-        event NoArgsHandler OnDeath;
-        void Init(HealthPointsEventArgs _HealthPointArgs);
+        event HealthPointsChangedHandler HealthChanged;
+        event NoArgsHandler Death;
+        void Init();
         long HealthPoints { get; set; }
         V2Int Position { get; }
         void Move(MoveDirection _Direction);

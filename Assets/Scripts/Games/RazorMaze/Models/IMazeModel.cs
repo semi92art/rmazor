@@ -12,7 +12,7 @@ namespace Games.RazorMaze.Models
     {
         event MazeInfoHandler MazeChanged;
         event MazeOrientationHandler RotationStarted;
-        event MazeRotationHandler OnRotation;
+        event MazeRotationHandler Rotation;
         event NoArgsHandler RotationFinished;
         MazeInfo Info { get; set; }
         MazeOrientation Orientation { get; }

@@ -189,7 +189,6 @@ namespace Games.RazorMaze
                 };
                     
                 bool isValid = LevelAnalizator.IsValid(info);
-                Dbg.Log($"Valid: {isValid}");
                 if (isValid)
                     break;
                 foreach (var pos in newNodePositions)

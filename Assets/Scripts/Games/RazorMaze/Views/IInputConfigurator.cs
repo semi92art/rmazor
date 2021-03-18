@@ -2,7 +2,7 @@
 {
     public interface IInputConfigurator
     {
-        event IntHandler OnCommand; 
+        event IntHandler Command; 
         void ConfigureInput();
     }
 }

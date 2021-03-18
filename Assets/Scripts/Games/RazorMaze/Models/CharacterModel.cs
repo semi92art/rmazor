@@ -20,10 +20,10 @@ namespace Games.RazorMaze.Models
         #region api
 
         public event V2IntV2IntHandler StartMove;
-        public event CharacterMovingHandler OnMoving;
+        public event CharacterMovingHandler Moving;
         public event NoArgsHandler FinishMove;
-        public event HealthPointsChangedHandler OnHealthChanged;
-        public event NoArgsHandler OnDeath;
+        public event HealthPointsChangedHandler HealthChanged;
+        public event NoArgsHandler Death;
 
         public V2Int Position { get; private set; }
         
@@ -33,15 +33,15 @@ namespace Games.RazorMaze.Models
             set
             {
                 m_HealthPoints = Math.Max(0, value);
-                OnHealthChanged?.Invoke(new HealthPointsEventArgs(m_HealthPoints));
+                HealthChanged?.Invoke(new HealthPointsEventArgs(m_HealthPoints));
                 if (m_HealthPoints <= 0)
-                    OnDeath?.Invoke();
+                    Death?.Invoke();
             }
         }
 
-        public void Init(HealthPointsEventArgs _HealthPointArgs)
+        public void Init()
         {
-            HealthPoints = _HealthPointArgs.HealthPoints;
+            HealthPoints = 1;
         }
         
         public void Move(MoveDirection _Direction)
@@ -53,7 +53,7 @@ namespace Games.RazorMaze.Models
                 0f,
                 1f,
                 0.1f,
-                _Progress => OnMoving?.Invoke(_Progress),
+                _Progress => Moving?.Invoke(_Progress),
                 GameTimeProvider.Instance,
                 () => FinishMove?.Invoke()));
         }

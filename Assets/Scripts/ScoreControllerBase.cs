@@ -1,8 +1,8 @@
 ﻿public interface IScoringModel
 {
-    event IntHandler OnScoreChanged;
+    event IntHandler ScoreChanged;
     event IntHandler OnNecessaryScoreChanged;
-    event NoArgsHandler OnNecessaryScoreReached;
+    event NoArgsHandler NecessaryScoreReached;
     int Score { get; set; }
     int NecessaryScore { get; set; }
 }
@@ -12,18 +12,18 @@ public abstract class ScoringModelBase : IScoringModel
     private int m_Score;
     private int m_NecessaryScore;
     
-    public event IntHandler OnScoreChanged;
+    public event IntHandler ScoreChanged;
     public event IntHandler OnNecessaryScoreChanged;
-    public event NoArgsHandler OnNecessaryScoreReached;
+    public event NoArgsHandler NecessaryScoreReached;
 
     public int Score
     {
         get => m_Score;
         set
         {
-            OnScoreChanged?.Invoke(m_Score = value);
+            ScoreChanged?.Invoke(m_Score = value);
             if (m_Score >= m_NecessaryScore && m_NecessaryScore != 0)
-                OnNecessaryScoreReached?.Invoke();
+                NecessaryScoreReached?.Invoke();
         }
     }
     

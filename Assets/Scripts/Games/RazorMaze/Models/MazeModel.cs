@@ -6,7 +6,7 @@ namespace Games.RazorMaze.Models
     {
         public event MazeInfoHandler MazeChanged;
         public event MazeOrientationHandler RotationStarted;
-        public event MazeRotationHandler OnRotation;
+        public event MazeRotationHandler Rotation;
         public event NoArgsHandler RotationFinished;
 
         private MazeInfo m_Info;
@@ -42,7 +42,7 @@ namespace Games.RazorMaze.Models
                 0f, 
                 1f, 
                 0.2f, 
-                _Val => OnRotation?.Invoke(_Val),
+                _Val => Rotation?.Invoke(_Val),
                 GameTimeProvider.Instance, 
                 () => RotationFinished?.Invoke()));
         }

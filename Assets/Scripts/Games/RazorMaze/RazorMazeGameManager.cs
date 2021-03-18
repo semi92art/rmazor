@@ -68,27 +68,27 @@ namespace Games.RazorMaze
             var levelStaging                  = GameModel.LevelStaging;
             
             maze.RotationStarted              += MazeOnRotationStarted;
-            maze.OnRotation                   += MazeOnRotation;
+            maze.Rotation                     += MazeOnRotation;
             maze.RotationFinished             += MazeRotationFinished;
 
-            character.OnHealthChanged         += CharacterOnHealthChanged;
-            character.OnDeath                 += CharacterOnDeath;
+            character.HealthChanged           += CharacterOnHealthChanged;
+            character.Death                   += CharacterOnDeath;
             character.StartMove               += CharacterStartMove;
             character.FinishMove              += CharacterFinishMove;
-            character.OnMoving                += CharacterOnMoving;
+            character.Moving                  += CharacterOnMoving;
             
-            scoring.OnScoreChanged            += OnScoreChanged;
-            scoring.OnNecessaryScoreReached   += OnNecessaryScoreReached;
+            scoring.ScoreChanged              += OnScoreChanged;
+            scoring.NecessaryScoreReached     += OnNecessaryScoreReached;
 
-            levelStaging.OnLevelBeforeStarted += OnBeforeLevelStarted;
-            levelStaging.OnLevelStarted       += OnLevelStarted;
-            levelStaging.OnLevelFinished      += OnLevelFinished;
+            levelStaging.LevelBeforeStarted   += OnBeforeLevelStarted;
+            levelStaging.LevelStarted         += OnLevelStarted;
+            levelStaging.LevelFinished        += OnLevelFinished;
             
-            InputConfigurator.OnCommand       += InputConfiguratorOnCommand;
+            InputConfigurator.Command         += InputConfiguratorOnCommand;
             
-            MazeView.Init(GameModel.Maze);
-            CharacterView.Init(GameModel.Maze.Info);
-            character.Init(new HealthPointsEventArgs(1));
+            MazeView.Init();
+            CharacterView.Init();
+            character.Init();
             InputConfigurator.ConfigureInput();
             
             //GameModel.LevelStaging.BeforeStartLevel();
@@ -196,21 +196,21 @@ namespace Games.RazorMaze
             var levelStaging                  = GameModel.LevelStaging;
             var scoring                       = GameModel.Scoring;
             
-            maze.RotationStarted            -= MazeOnRotationStarted;
-            maze.OnRotation                   -= MazeOnRotation;
-            maze.RotationFinished           -= MazeRotationFinished;
+            maze.RotationStarted              -= MazeOnRotationStarted;
+            maze.Rotation                     -= MazeOnRotation;
+            maze.RotationFinished             -= MazeRotationFinished;
             
-            character.OnHealthChanged         -= CharacterOnHealthChanged;
-            character.OnDeath                 -= CharacterOnDeath;
-            character.StartMove   -= CharacterStartMove;
-            character.OnMoving                -= CharacterOnMoving;
+            character.HealthChanged           -= CharacterOnHealthChanged;
+            character.Death                   -= CharacterOnDeath;
+            character.StartMove               -= CharacterStartMove;
+            character.Moving                  -= CharacterOnMoving;
             
-            scoring.OnScoreChanged            -= OnScoreChanged;
-            scoring.OnNecessaryScoreReached   -= OnNecessaryScoreReached;
+            scoring.ScoreChanged              -= OnScoreChanged;
+            scoring.NecessaryScoreReached     -= OnNecessaryScoreReached;
             
-            levelStaging.OnLevelBeforeStarted -= OnBeforeLevelStarted;
-            levelStaging.OnLevelStarted       -= OnLevelStarted;
-            levelStaging.OnLevelFinished      -= OnLevelFinished;
+            levelStaging.LevelBeforeStarted   -= OnBeforeLevelStarted;
+            levelStaging.LevelStarted         -= OnLevelStarted;
+            levelStaging.LevelFinished        -= OnLevelFinished;
         }
 
         #endregion

@@ -1,4 +1,5 @@
-﻿using Exceptions;
+﻿using System.Collections.Generic;
+using Exceptions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Prot;
 using UnityEngine;
@@ -8,20 +9,28 @@ namespace Games.RazorMaze.Views
 {
     public class MazeViewProt : IMazeView
     {
-        private MazeProtItems Maze { get; set; }
-        private IMazeModel Model { get; set; }
+        private IMazeModel Model { get; }
+        private ICoordinateConverter Scaler { get; }
 
+        private Transform m_Container;
+        private List<MazeProtItem> m_MazeItems;
+        private Rigidbody2D m_Rb;
         private MazeRotateDirection m_Direction;
         private MazeOrientation m_Orientation;
         private float m_StartAngle;
-
-        public void Init(IMazeModel _Model)
+        
+        public MazeViewProt(IMazeModel _Model, ICoordinateConverter _Scaler)
         {
             Model = _Model;
-            Maze = MazeProtItems.Create(
-                _Model.Info, 
-                CommonUtils.FindOrCreateGameObject("Maze", out _).transform, 
-                true);
+            Scaler = _Scaler;
+        }
+        
+        public void Init()
+        {
+            m_Container = CommonUtils.FindOrCreateGameObject("Maze", out _).transform;
+            m_Rb = m_Container.gameObject.AddComponent<Rigidbody2D>();
+            m_Rb.gravityScale = 0;
+            m_MazeItems = RazorMazePrototypingUtils.CreateMazeItems(Model.Info, m_Container);
         }
 
         public void SetLevel(int _Level) { }
@@ -30,26 +39,23 @@ namespace Games.RazorMaze.Views
         {
             m_Direction = _Direction;
             m_Orientation = _Orientation;
-            var rb = Maze.Container.GetComponent<Rigidbody2D>();
             var prevOrientantion = GetPreviousOrientation(m_Direction, m_Orientation);
             float angle = GetAngleByOrientation(prevOrientantion);
-            rb.SetRotation(angle);
-            m_StartAngle = Maze.Container.localEulerAngles.z;
+            m_Rb.SetRotation(angle);
+            m_StartAngle = m_Container.localEulerAngles.z;
         }
 
         public void Rotate(float _Progress)
         {
-            var rb = Maze.Container.GetComponent<Rigidbody2D>();
             float dirCorff = m_Direction == MazeRotateDirection.Clockwise ? -1 : 1;
             float currAngle = m_StartAngle + RotateCoefficient(_Progress) * 90f * dirCorff;
-            rb.SetRotation(currAngle);
+            m_Rb.SetRotation(currAngle);
         }
 
         public void FinishRotation()
         {
-            var rb = Maze.Container.GetComponent<Rigidbody2D>();
             float angle = GetAngleByOrientation(m_Orientation);
-            rb.SetRotation(angle);
+            m_Rb.SetRotation(angle);
         }
 
         private static float RotateCoefficient(float _Progress) => Mathf.Pow(_Progress, 2);

@@ -9,7 +9,7 @@ namespace Games.RazorMaze.Views
     {
         private LeanTouch m_LeanTouch;
         
-        public event IntHandler OnCommand;
+        public event IntHandler Command;
         public void ConfigureInput()
         {
             var touchSystemObj = new GameObject("Main Touch System");
