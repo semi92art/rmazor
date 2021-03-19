@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Constants;
 using Entities;
+using Exceptions;
 using Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Prot;
@@ -19,12 +20,12 @@ namespace Games.RazorMaze
     {
         public static LevelDesigner Instance => FindObjectOfType<LevelDesigner>();
         
-        [Serializable] public class WallLengthList : ReorderableArray<int> { }
+        [Serializable] public class ObstacleLengthList : ReorderableArray<int> { }
         
         private const int MinSize = 5;
         private const int MaxSize = 20;
 
-        [Header("Wall lengths"), Reorderable(paginate = true, pageSize = 5)] public WallLengthList wallLengths;
+        [Header("Path lengths"), Reorderable(paginate = true, pageSize = 5)] public ObstacleLengthList obstacleLengths;
         
         [HideInInspector] public List<int> sizes = Enumerable.Range(MinSize, MaxSize).ToList();
         [HideInInspector] public int sizeIdx;
@@ -69,25 +70,43 @@ namespace Games.RazorMaze
         public MazeInfo GetLevelInfoFromScene()
         {
             var nodes = mazeItems
-                .Where(_Item => _Item.Type == PrototypingItemType.Node)
-                .Select(_Item => _Item.transform.position.XY().ToVector2Int())
-                .Select(_PosInt => new Node{Position = new V2Int(_PosInt)})
+                .Where(_Item => _Item.Type == MazeItemType.Node)
+                .Select(_Item => _Item.start)
+                .Select(_PosInt => new Node{Position = _PosInt})
                 .ToList();
-            var nodeStart = mazeItems.Where(_Item => _Item.Type == PrototypingItemType.NodeStart)
-                .Select(_Item => new Node{Position = new V2Int(_Item.transform.position.XY().ToVector2Int())}).First();
+            var nodeStart = mazeItems.Where(_Item => _Item.Type == MazeItemType.NodeStart)
+                .Select(_Item => new Node{Position = _Item.start}).First();
             nodes.Insert(0, nodeStart);
-            var wallBlocks  = mazeItems
-                .Where(_Item => _Item.Type == PrototypingItemType.WallBlockSimple)
-                .Select(_Item => _Item.transform.position.XY().ToVector2Int())
-                .Select(_PosInt => new WallBlock{Position = new V2Int(_PosInt)})
-                .ToList();
-            int width = wallBlocks.GroupBy(_Wb => _Wb.Position.X).Count();
-            int height = wallBlocks.GroupBy(_Wb => _Wb.Position.Y).Count();
+            var obstacles  = mazeItems
+                .Where(_Item => _Item.Type == MazeItemType.Obstacle 
+                                || _Item.Type == MazeItemType.ObstacleMoving 
+                                || _Item.Type == MazeItemType.ObstacleTrap
+                                || _Item.Type == MazeItemType.ObstacleTrapMoving)
+                .Select(_Item =>
+                {
+                    var type = RazorMazePrototypingUtils.GetObstacleType(_Item.Type);
+                    return new Obstacle {Position = _Item.start, Path = _Item.path, Type = type};
+                }).ToList();
+            foreach (var obs in obstacles)
+            {
+                switch (obs.Type)
+                {
+                    case EObstacleType.Obstacle: break; // do nothing
+                    case EObstacleType.Trap:
+                        obstacles.Add(new Obstacle{Position = obs.Position, Path = obs.Path, Type = EObstacleType.Obstacle});
+                        break;
+                    case EObstacleType.ObstacleMoving:
+                    case EObstacleType.TrapMoving:
+                        nodes.Add(new Node{Position = obs.Position});
+                        break;
+                    default: throw new SwitchCaseNotImplementedException(obs.Type);
+                }
+            }
             return new MazeInfo{
-                Width =  width,
-                Height = height,
-                Nodes = nodes,
-                WallBlocks = wallBlocks
+                Width     = sizes[sizeIdx],
+                Height    = sizes[sizeIdx],
+                Nodes     = nodes,
+                Obstacles = obstacles
             };
         }
     }

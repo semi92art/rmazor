@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Entities;
-using Games.RazorMaze.Models.Obstacles;
 using UnityEngine.EventSystems;
 using Utils;
 
@@ -75,22 +74,22 @@ namespace Games.RazorMaze.Models
         private V2Int GetNewPosition(MoveDirection _Direction)
         {
             var nextPos = Position;
-            var dirVector = GetDirectionVector(_Direction);
+            var dirVector = GetDirectionVector(_Direction, m_Orientation);
             while (ValidPosition(nextPos + dirVector, m_MazeInfo))
                 nextPos += dirVector;
             return nextPos;
         }
 
-        private bool ValidPosition(V2Int _Position, MazeInfo _Info)
+        private static bool ValidPosition(V2Int _Position, MazeInfo _Info)
         {
-            return _Info.Nodes.Any(_N => _N.Position == _Position)
-                   && _Info.MovingItems.Where(_Item => _Item.Type == MovingItemType.Block)
-                       .All(_Item => _Item.Position != _Position);
+            bool isNode = _Info.Nodes.Any(_N => _N.Position == _Position);
+            bool isObstacle = _Info.Obstacles.Any(_O => _O.Position == _Position);
+            return isNode && !isObstacle;
         }
 
-        private V2Int GetDirectionVector(MoveDirection _Direction)
+        private static V2Int GetDirectionVector(MoveDirection _Direction, MazeOrientation _Orientation)
         {
-            switch (m_Orientation)
+            switch (_Orientation)
             {
                 case MazeOrientation.North:
                     switch (_Direction)

@@ -22,6 +22,7 @@ namespace Mono_Installers
             Container.Bind<IScoringModel>()       .To<ScoringModelDefault>()           .AsSingle().When(_ => razorMaze);
             Container.Bind<IInputScheduler>()     .To<InputScheduler>()                .AsSingle().When(_ => razorMaze);
             Container.Bind<ICoordinateConverter>().To<CoordinateConverter>()           .AsSingle().When(_ => razorMaze);
+            Container.Bind<IContainersGetter>()   .To<ContainersGetter>()              .AsSingle().When(_ => razorMaze);
             Container.Bind<IMazeView>()           .To<MazeViewProt>()                  .AsSingle().When(_ => razorMaze && prototyping);
             Container.Bind<IGameUiView>()         .To<GameUiViewProt>()                .AsSingle().When(_ => razorMaze && prototyping);
             Container.Bind<ICharacterView>()      .To<CharacterViewProt>()             .AsSingle().When(_ => razorMaze && prototyping);

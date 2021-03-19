@@ -53,7 +53,7 @@ namespace Games.RazorMaze.Editor
                 size,
                 size,
                 m_Des.aParam,
-                m_Des.wallLengths.ToArray());
+                m_Des.obstacleLengths.ToArray());
             var info = LevelGenerator.CreateRandomLevelInfo(parms, out m_Des.valid);
             CreateObjectsAndFocusCamera(info);
             //m_Des.valid = LevelAnalizator.IsValid(info, false);
@@ -74,7 +74,7 @@ namespace Games.RazorMaze.Editor
             m_Des.mazeItems = RazorMazePrototypingUtils.CreateMazeItems(_Info, container);
             var converter = new CoordinateConverter();
             converter.Init(_Info.Width);
-            var bounds = new Bounds(converter.GetCenter() * 2, GameUtils.GetVisibleBounds().size * 0.7f);
+            var bounds = new Bounds(converter.GetCenter(), GameUtils.GetVisibleBounds().size * 0.7f);
             EditorUtilsEx.FocusSceneCamera(bounds);
         }
 

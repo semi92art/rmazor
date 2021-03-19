@@ -1,73 +1,36 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace Entities
 {
+    [Serializable]
     public struct V2Int
     {
-        [JsonProperty] public int X { get; set; }
-        [JsonProperty] public int Y { get; set; }
-
-        [JsonConstructor]
-        public V2Int(int _X, int _Y)
-        {
-            X = _X;
-            Y = _Y;
-        }
-
-        public V2Int(Vector2Int _V)
-        {
-            X = _V.x;
-            Y = _V.y;
-        }
-
-        public Vector2Int ToVector2Int()
-        {
-            return new Vector2Int(X, Y);
-        }
-
-        public Vector2 ToVector2()
-        {
-            return new Vector2(X, Y);
-        }
-
-        public static V2Int operator +(V2Int _V1, V2Int _V2)
-        {
-            return new V2Int(_V1.X + _V2.X, _V1.Y + _V2.Y);
-        }
+        public int X => x;
+        public int Y => y;
         
-        public static V2Int operator -(V2Int _V1, V2Int _V2)
-        {
-            return new V2Int(_V1.X - _V2.X, _V1.Y - _V2.Y);
-        }
+        [JsonProperty, SerializeField] private int x;
+        [JsonProperty, SerializeField] private int y;
 
-        public static bool operator ==(V2Int _V1, V2Int _V2)
-        {
-            return _V1.X == _V2.X && _V1.Y == _V2.Y;
-        }
-
-        public static bool operator !=(V2Int _V1, V2Int _V2)
-        {
-            return !(_V1 == _V2);
-        }
+        [JsonConstructor] public V2Int(int _X, int _Y) { x = _X; y = _Y; }
+        public V2Int(Vector2Int _V) { x = _V.x; y = _V.y; }
+        public Vector2Int ToVector2Int() => new Vector2Int(X, Y);
+        public Vector2 ToVector2() => new Vector2(X, Y);
+        public static V2Int operator +(V2Int _V1, V2Int _V2) => new V2Int(_V1.X + _V2.X, _V1.Y + _V2.Y);
+        public static V2Int operator -(V2Int _V1, V2Int _V2) => new V2Int(_V1.X - _V2.X, _V1.Y - _V2.Y);
+        public static bool operator ==(V2Int _V1, V2Int _V2) => _V1.X == _V2.X && _V1.Y == _V2.Y;
+        public static bool operator !=(V2Int _V1, V2Int _V2) => !(_V1 == _V2);
+        public bool Equals(V2Int other) => X == other.X && Y == other.Y;
+        public override bool Equals(object obj) => obj is V2Int other && Equals(other);
+        public override int GetHashCode() { unchecked { return (X * 397) ^ Y; } }
+        public override string ToString() => $"({X}, {Y})";
         
-        public bool Equals(V2Int other)
-        {
-            return X == other.X && Y == other.Y;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj is V2Int other && Equals(other);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (X * 397) ^ Y;
-            }
-        }
+        public V2Int PlusX(int _X) => new V2Int(X + _X, Y);
+        public V2Int MinusX(int _X) => new V2Int(X - _X, Y);
+        public V2Int PlusY(int _Y) => new V2Int(X, Y + _Y);
+        public V2Int MinusY(int _Y) => new V2Int(X, Y - _Y);
+        
         
         public static V2Int up => new V2Int(Vector2Int.up);
         public static V2Int down => new V2Int(Vector2Int.down);

@@ -33,12 +33,12 @@ namespace Games.RazorMaze
         
         #region nonpublic members
         
-        private IGameModel         GameModel { get; set; }
-        private IMazeView          MazeView { get; set; }
-        private ICharacterView     CharacterView { get; set; }
-        private IGameUiView        GameUiView { get; set; }
-        private IInputConfigurator InputConfigurator { get; set; }
-        
+        private IGameModel           GameModel { get; set; }
+        private IMazeView            MazeView { get; set; }
+        private ICharacterView       CharacterView { get; set; }
+        private IGameUiView          GameUiView { get; set; }
+        private IInputConfigurator   InputConfigurator { get; set; }
+
         #endregion
     
         #region api
@@ -70,6 +70,9 @@ namespace Games.RazorMaze
             maze.RotationStarted              += MazeOnRotationStarted;
             maze.Rotation                     += MazeOnRotation;
             maze.RotationFinished             += MazeRotationFinished;
+            maze.ObstacleMoveStarted          += MazeOnObstacleMoveStarted;
+            maze.ObstacleMove                 += MazeOnObstacleMove;
+            maze.ObstacleMoveFinished         += MazeOnObstacleMoveFinished;
 
             character.HealthChanged           += CharacterOnHealthChanged;
             character.Death                   += CharacterOnDeath;
@@ -93,62 +96,27 @@ namespace Games.RazorMaze
             
             //GameModel.LevelStaging.BeforeStartLevel();
         }
-
-        private void InputConfiguratorOnCommand(int _Value)
-        {
-            GameModel.InputScheduler.AddCommand((EInputCommand)_Value);
-        }
-
-        private void CharacterOnHealthChanged(HealthPointsEventArgs _Args)
-        {
-            CharacterView.OnHealthChanged(_Args);
-        }
         
-        private void CharacterOnDeath()
-        {
-            CharacterView.OnDeath();
-        }
+        private void InputConfiguratorOnCommand(int _Value) => GameModel.InputScheduler.AddCommand((EInputCommand)_Value);
+        private void CharacterOnHealthChanged(HealthPointsEventArgs _Args) => CharacterView.OnHealthChanged(_Args);
+        private void CharacterOnDeath() => CharacterView.OnDeath();
+        private void CharacterStartMove(V2Int _PrevPos, V2Int _NextPos) => CharacterView.OnStartChangePosition(_PrevPos, _NextPos);
+        private void CharacterOnMoving(float _Progress) => CharacterView.OnMoving(_Progress);
 
-        private void CharacterStartMove(V2Int _PrevPos, V2Int _NextPos)
-        {
-            CharacterView.OnStartChangePosition(_PrevPos, _NextPos);
-        }
-
-        private void CharacterOnMoving(float _Progress)
-        {
-            CharacterView.OnMoving(_Progress);
-        }
-        
         private void CharacterFinishMove()
         {
 
         }
 
-        private void MazeOnRotationStarted(MazeRotateDirection _Direction, MazeOrientation _Orientation)
-        {
-            MazeView.StartRotation(_Direction, _Orientation);
-        }
+        private void MazeOnRotationStarted(MazeRotateDirection _Direction, MazeOrientation _Orientation) => MazeView.StartRotation(_Direction, _Orientation);
+        private void MazeOnRotation(float _Progress) => MazeView.Rotate(_Progress);
+        private void MazeRotationFinished() => MazeView.FinishRotation();
+        private void MazeOnObstacleMoveStarted(Obstacle _Obstacle, V2Int _From, V2Int _To) => MazeView.OnObstacleMoveStarted(_Obstacle, _From, _To);
+        private void MazeOnObstacleMove(Obstacle _Obstacle, float _Progress) => MazeView.OnObstacleMove(_Obstacle, _Progress);
+        private void MazeOnObstacleMoveFinished(Obstacle _Obstacle) => MazeView.OnObstacleMoveFinished(_Obstacle);
+        public void SetLevel(int _Level) => GameModel.LevelStaging.Level = _Level;
+        public void SetMazeInfo(MazeInfo _Info) => GameModel.Maze.Info = _Info;
 
-        private void MazeOnRotation(float _Progress)
-        {
-            MazeView.Rotate(_Progress);
-        }
-        
-        private void MazeRotationFinished()
-        {
-            MazeView.FinishRotation();
-        }
-
-        public void SetLevel(int _Level)
-        {
-            GameModel.LevelStaging.Level = _Level;
-        }
-
-        public void SetMazeInfo(MazeInfo _Info)
-        {
-            GameModel.Maze.Info = _Info;
-        }
-        
         #endregion
     
         #region protected methods
@@ -161,10 +129,7 @@ namespace Games.RazorMaze
                 () => GameModel.LevelStaging.StartLevel());
         }
 
-        protected virtual void OnLevelStarted(LevelStateChangedArgs _Args)
-        {
-            GameUiView?.OnLevelStarted(_Args);
-        }
+        protected virtual void OnLevelStarted(LevelStateChangedArgs _Args) => GameUiView?.OnLevelStarted(_Args);
 
         protected virtual void OnLevelFinished(LevelStateChangedArgs _Args)
         {
@@ -175,15 +140,8 @@ namespace Games.RazorMaze
                 });
         }
 
-        private void OnScoreChanged(int _Score)
-        {
-            throw new System.NotImplementedException();
-        }
-        
-        protected virtual void OnNecessaryScoreReached()
-        {
-            GameModel.LevelStaging.FinishLevel();
-        }
+        private void OnScoreChanged(int _Score) => throw new System.NotImplementedException();
+        protected virtual void OnNecessaryScoreReached() => GameModel.LevelStaging.FinishLevel();
 
         #endregion
     
