@@ -7,6 +7,7 @@ namespace Games.RazorMaze.Models
 {
     public class MazeModel : IMazeModel
     {
+        public ICharacterModel CharacterModel { get; }
         public event MazeInfoHandler MazeChanged;
         public event MazeOrientationHandler RotationStarted;
         public event FloatHandler Rotation;
@@ -28,6 +29,11 @@ namespace Games.RazorMaze.Models
         }
         public MazeOrientation Orientation { get; private set; } = MazeOrientation.North;
 
+        public MazeModel(ICharacterModel _CharacterModel)
+        {
+            CharacterModel = _CharacterModel;
+        }
+        
         public void Rotate(MazeRotateDirection _Direction)
         {
             int orient = (int) Orientation;
@@ -53,7 +59,7 @@ namespace Games.RazorMaze.Models
                 }));
         }
 
-        private void MoveObstacles()
+        public void MoveObstacles()
         {
             var obstaclesMoving = m_Info.Obstacles
                 .Where(_O => _O.Type == EObstacleType.ObstacleMoving);
@@ -76,9 +82,12 @@ namespace Games.RazorMaze.Models
             var dropVector = GetDropVector(Orientation);
             var pos = _Obstacle.Position;
             bool doMove = false;
-            while (IsOnNode(pos + dropVector))
+            V2Int? altPos = null;
+            while (IsValid(pos + dropVector))
             {
                 pos += dropVector;
+                if (CharacterModel.Position == pos)
+                    altPos = pos - dropVector;
                 if (_Obstacle.Path.All(_Pos => pos != _Pos)) 
                     continue;
                 doMove = true;
@@ -87,8 +96,9 @@ namespace Games.RazorMaze.Models
             if (!doMove)
                 return;
             V2Int from = _Obstacle.Position;
-            _Obstacle.Position = pos;
-            ObstacleMoveStarted?.Invoke(_Obstacle, from, pos);
+            V2Int to = altPos ?? pos;
+            _Obstacle.Position = to;
+            ObstacleMoveStarted?.Invoke(_Obstacle, from, to);
             Coroutines.Run(Coroutines.Lerp(
                 0f, 
                 1f, 
@@ -122,7 +132,7 @@ namespace Games.RazorMaze.Models
             }
         }
 
-        private bool IsOnNode(V2Int _Position)
+        private bool IsValid(V2Int _Position)
         {
             return m_Info.Nodes.Any(_N => _N.Position == _Position);
         }

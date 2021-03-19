@@ -46,6 +46,7 @@ namespace Games.RazorMaze.Models
         private void CharacterOnFinishMove()
         {
             InputScheduler.UnlockMovement();
+            Maze.MoveObstacles();
         }
         
         private void MazeOnRotationStarted(MazeRotateDirection _Direction, MazeOrientation _Orientation)
