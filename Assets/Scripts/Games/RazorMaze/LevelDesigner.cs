@@ -4,7 +4,6 @@ using System.Linq;
 using Constants;
 using Entities;
 using Exceptions;
-using Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Prot;
 using Malee.List;
@@ -85,15 +84,20 @@ namespace Games.RazorMaze
                 .Select(_Item =>
                 {
                     var type = RazorMazePrototypingUtils.GetObstacleType(_Item.Type);
-                    return new Obstacle {Position = _Item.start, Path = _Item.path, Type = type};
+                    return new Obstacle
+                    {
+                        Position = _Item.start, 
+                        Path = _Item.path,
+                        Type = type
+                    };
                 }).ToList();
-            foreach (var obs in obstacles)
+            foreach (var obs in obstacles.ToList())
             {
                 switch (obs.Type)
                 {
                     case EObstacleType.Obstacle: break; // do nothing
                     case EObstacleType.Trap:
-                        obstacles.Add(new Obstacle{Position = obs.Position, Path = obs.Path, Type = EObstacleType.Obstacle});
+                        obstacles.Add(new Obstacle {Position = obs.Position, Type = EObstacleType.Obstacle});
                         break;
                     case EObstacleType.ObstacleMoving:
                     case EObstacleType.TrapMoving:

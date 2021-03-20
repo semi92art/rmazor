@@ -7,6 +7,14 @@ namespace Games.RazorMaze.Models
 {
     public class MazeModel : IMazeModel
     {
+        #region nonpublic members
+        
+        private MazeInfo m_Info;
+        
+        #endregion
+        
+        #region api
+        
         public ICharacterModel CharacterModel { get; }
         public event MazeInfoHandler MazeChanged;
         public event MazeOrientationHandler RotationStarted;
@@ -16,16 +24,11 @@ namespace Games.RazorMaze.Models
         public event ObstacleMoveHandler ObstacleMove;
         public event ObstacleItemHandler ObstacleMoveFinished;
 
-        private MazeInfo m_Info;
-
+        
         public MazeInfo Info
         {
             get => m_Info;
-            set
-            {
-                m_Info = value;
-                MazeChanged?.Invoke(m_Info, Orientation);
-            }
+            set => MazeChanged?.Invoke(m_Info = value, Orientation);
         }
         public MazeOrientation Orientation { get; private set; } = MazeOrientation.North;
 
@@ -58,19 +61,41 @@ namespace Games.RazorMaze.Models
                     MoveObstacles();
                 }));
         }
+        
+        public void OnCharacterMoved()
+        {
+            MoveWallBlocksMoving();
+        }
+        
+        #endregion
+        
+        #region nonpublic methods
+        
+        private void MoveObstacles()
+        {
+            MoveWallBlocksMoving();
+            MoveTraps();
+            MoveTrapsMoving();
+        }
 
-        public void MoveObstacles()
+        private void MoveWallBlocksMoving()
         {
             var obstaclesMoving = m_Info.Obstacles
                 .Where(_O => _O.Type == EObstacleType.ObstacleMoving);
             foreach (var obstacle in obstaclesMoving)
                 MoveWallBlockMoving(obstacle);
+        }
 
+        private void MoveTraps()
+        {
             var obstaclesTrap = m_Info.Obstacles
                 .Where(_O => _O.Type == EObstacleType.Trap);
             foreach (var obstacle in obstaclesTrap)
                 MoveTrap(obstacle);
+        }
 
+        private void MoveTrapsMoving()
+        {
             var obstaclesTrapMoving = m_Info.Obstacles
                 .Where(_O => _O.Type == EObstacleType.TrapMoving);
             foreach (var obstacle in obstaclesTrapMoving)
@@ -79,21 +104,40 @@ namespace Games.RazorMaze.Models
 
         private void MoveWallBlockMoving(Obstacle _Obstacle)
         {
+            MoveObstacleCore(_Obstacle, true, true);
+        }
+
+        private void MoveTrap(Obstacle _Obstacle)
+        {
+            MoveObstacleCore(_Obstacle, false, true);
+        }
+
+        private void MoveTrapMoving(Obstacle _Obstacle)
+        {
+            MoveObstacleCore(_Obstacle, false, false);
+        }
+
+        private void MoveObstacleCore(Obstacle _Obstacle, bool _CheckCharacter, bool _CheckPath)
+        {
             var dropVector = GetDropVector(Orientation);
             var pos = _Obstacle.Position;
-            bool doMove = false;
+            bool doMoveByPath = false;
             V2Int? altPos = null;
-            while (IsValid(pos + dropVector))
+            while (IsValid(pos + dropVector, _Obstacle))
             {
                 pos += dropVector;
-                if (CharacterModel.Position == pos)
+                if (_CheckCharacter && CharacterModel.Position == pos)
                     altPos = pos - dropVector;
+                if (!_CheckPath) 
+                    continue;
                 if (_Obstacle.Path.All(_Pos => pos != _Pos)) 
                     continue;
-                doMove = true;
+                doMoveByPath = true;
                 break;
             }
-            if (!doMove)
+            if (_CheckPath && !doMoveByPath)
+                return;
+            if (pos == _Obstacle.Position)
                 return;
             V2Int from = _Obstacle.Position;
             V2Int to = altPos ?? pos;
@@ -108,18 +152,6 @@ namespace Games.RazorMaze.Models
                 () => ObstacleMoveFinished?.Invoke(_Obstacle)));
         }
 
-        private void MoveTrap(Obstacle _Obstacle)
-        {
-            var dropVector = GetDropVector(Orientation);
-            
-        }
-
-        private void MoveTrapMoving(Obstacle _Obstacle)
-        {
-            var dropVector = GetDropVector(Orientation);
-            
-        }
-
         private static V2Int GetDropVector(MazeOrientation _Orientation)
         {
             switch (_Orientation)
@@ -132,9 +164,13 @@ namespace Games.RazorMaze.Models
             }
         }
 
-        private bool IsValid(V2Int _Position)
-        {
-            return m_Info.Nodes.Any(_N => _N.Position == _Position);
+        private bool IsValid(V2Int _Position, Obstacle _Obstacle)
+        { 
+            if (m_Info.Nodes.Any(_N => _N.Position == _Position))
+                return true;
+            return _Obstacle.Type == EObstacleType.Trap && _Obstacle.Path.Contains(_Position);
         }
+        
+        #endregion
     }
 }

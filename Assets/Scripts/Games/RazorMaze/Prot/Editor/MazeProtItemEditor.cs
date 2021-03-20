@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Entities;
 using Exceptions;
 using Extensions;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Events;
 using Utils.Editor;
 
 namespace Games.RazorMaze.Prot.Editor
@@ -119,15 +121,23 @@ namespace Games.RazorMaze.Prot.Editor
 
         private void DrawControlsTrap(MazeProtItem _Item)
         {
-            
+            UnityAction<V2Int> setPath = _Direction =>
+                _Item.path = new List<V2Int> {_Item.start, _Item.start + _Direction};
+            EditorUtilsEx.GuiButtonAction("△", () => setPath(V2Int.up));
+                EditorUtilsEx.HorizontalZone(() =>
+                {
+                    EditorUtilsEx.GuiButtonAction("◁", () => setPath(V2Int.left));
+                    EditorUtilsEx.GuiButtonAction("▷", () => setPath(V2Int.right));
+                });
+            EditorUtilsEx.GuiButtonAction("▽", () => setPath(V2Int.down));
         }
-        
+
         private static void SetGUIColors(MazeItemType _A, MazeItemType _B)
         {
             if (_A == _B)
-                SetGUIColorsIdle();
-            else
                 SetGUIColorsSelected();
+            else
+                SetGUIColorsIdle();
         }
         
         private static void SetGUIColorsIdle()
@@ -138,7 +148,7 @@ namespace Games.RazorMaze.Prot.Editor
 
         private static void SetGUIColorsSelected()
         {
-            GUI.color = Color.white;
+            GUI.color = Color.green;
             GUI.backgroundColor = Color.gray;  
         }
 

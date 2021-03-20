@@ -19,7 +19,7 @@ namespace Games.RazorMaze.Prot
             foreach (var node in _Info.Nodes)
                 AddNode(res, node.Position, _Parent, _Info.Width);
             foreach (var obstacle in _Info.Obstacles)
-                AddObstacle(res, GetObstacleType(obstacle.Type), obstacle.Position, obstacle.Path, obstacle.Direction, _Parent, _Info.Width);
+                AddObstacle(res, GetObstacleType(obstacle.Type), obstacle.Position, obstacle.Path, _Parent, _Info.Width);
             return res;
         }
 
@@ -48,7 +48,6 @@ namespace Games.RazorMaze.Prot
             MazeItemType _Type,
             V2Int _Position,
             List<V2Int> _Path,
-            V2Int _Direction,
             Transform _Parent,
             int _Size)
         {
@@ -60,8 +59,7 @@ namespace Games.RazorMaze.Prot
                 Type = _Type,
                 Size = _Size,
                 Position = _Position,
-                Path = _Path,
-                Direction = _Direction
+                Path = _Path
             };
             item.Init(props);
             _Items.Add(item);

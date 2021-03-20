@@ -136,23 +136,27 @@ namespace Games.RazorMaze.Views
         private void DrawWallBlockMovingPaths()
         {
             var obstacles = Model.Info.Obstacles
-                .Where(_O => _O.Type == EObstacleType.ObstacleMoving);
+                .Where(_O => _O.Type == EObstacleType.ObstacleMoving || _O.Type == EObstacleType.Trap);
             foreach (var obs in obstacles)
             {
+                var points = new List<Vector2>();
+                if (obs.Type == EObstacleType.ObstacleMoving || obs.Type == EObstacleType.Trap)
+                    points = obs.Path.Select(_P => CoordinateConverter.ToLocalCharacterPosition(_P)).ToList();
+
                 var go = new GameObject("Line");
                 go.SetParent(ContainersGetter.MazeContainer);
                 go.transform.SetLocalPosXY(Vector2.zero);
                 var line = go.AddComponent<Polyline>();
                 line.Thickness = 0.3f;
                 line.Color = Color.black;
-                line.SetPoints(obs.Path.Select(_P => CoordinateConverter.ToLocalCharacterPosition(_P)).ToList());
-                line.SortingOrder = 4;
-                foreach (var pathItem in obs.Path)
+                line.SetPoints(points);
+
+                foreach (var point in points)
                 {
                     var go1 = new GameObject("Joint");
                     go1.SetParent(ContainersGetter.MazeContainer);
                     var disc = go1.AddComponent<Disc>();
-                    go1.transform.SetLocalPosXY(CoordinateConverter.ToLocalCharacterPosition(pathItem));
+                    go1.transform.SetLocalPosXY(point);
                     disc.Color = Color.black;
                     disc.Radius = 0.5f;
                     disc.Type = DiscType.Disc;

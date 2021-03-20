@@ -24,13 +24,14 @@ namespace Games.RazorMaze.Models
             LevelStaging                 = _StagingModel;
             Scoring                      = _ScoringModel;
             InputScheduler               = _InputScheduler;
+            
             Maze.MazeChanged             += MazeOnMazeChanged;
-            InputScheduler.MoveCommand   += InputSchedulerOnMoveCommand;
-            InputScheduler.RotateCommand += InputSchedulerOnRotateCommand;
             Maze.RotationStarted         += MazeOnRotationStarted;
             Maze.RotationFinished        += MazeOnRotationFinished;
             Character.StartMove          += CharacterOnStartMove;
             Character.FinishMove         += CharacterOnFinishMove; 
+            InputScheduler.MoveCommand   += InputSchedulerOnMoveCommand;
+            InputScheduler.RotateCommand += InputSchedulerOnRotateCommand;
         }
 
         private void MazeOnMazeChanged(MazeInfo _Info, MazeOrientation _Orientation)
@@ -46,7 +47,7 @@ namespace Games.RazorMaze.Models
         private void CharacterOnFinishMove()
         {
             InputScheduler.UnlockMovement();
-            Maze.MoveObstacles();
+            Maze.OnCharacterMoved();
         }
         
         private void MazeOnRotationStarted(MazeRotateDirection _Direction, MazeOrientation _Orientation)

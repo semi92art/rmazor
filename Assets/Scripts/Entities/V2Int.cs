@@ -18,6 +18,7 @@ namespace Entities
         public Vector2Int ToVector2Int() => new Vector2Int(X, Y);
         public Vector2 ToVector2() => new Vector2(X, Y);
         public static V2Int operator +(V2Int _V1, V2Int _V2) => new V2Int(_V1.X + _V2.X, _V1.Y + _V2.Y);
+        public static V2Int operator -(V2Int _V) => new V2Int(-_V.X, -_V.Y);
         public static V2Int operator -(V2Int _V1, V2Int _V2) => new V2Int(_V1.X - _V2.X, _V1.Y - _V2.Y);
         public static bool operator ==(V2Int _V1, V2Int _V2) => _V1.X == _V2.X && _V1.Y == _V2.Y;
         public static bool operator !=(V2Int _V1, V2Int _V2) => !(_V1 == _V2);

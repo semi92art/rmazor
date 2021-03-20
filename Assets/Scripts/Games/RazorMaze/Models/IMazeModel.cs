@@ -24,6 +24,6 @@ namespace Games.RazorMaze.Models
         MazeInfo Info { get; set; }
         MazeOrientation Orientation { get; }
         void Rotate(MazeRotateDirection _Direction);
-        void MoveObstacles();
+        void OnCharacterMoved();
     }
 }

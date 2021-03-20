@@ -17,6 +17,5 @@ namespace Games.RazorMaze.Models
         [JsonProperty(PropertyName = "P")] public V2Int Position { get; set; }
         [JsonProperty(PropertyName = "T")] public EObstacleType Type { get; set; } = EObstacleType.Obstacle;
         [JsonProperty(PropertyName = "W")] public List<V2Int> Path { get; set; } = new List<V2Int>();
-        [JsonProperty(PropertyName = "D")] public V2Int Direction { get; set; }
     }
 }
