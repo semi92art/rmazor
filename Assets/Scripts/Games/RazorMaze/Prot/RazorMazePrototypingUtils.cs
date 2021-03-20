@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Entities;
 using Exceptions;
@@ -69,10 +70,12 @@ namespace Games.RazorMaze.Prot
         {
             switch (_Type)
             {
-                case EObstacleType.Obstacle:        return MazeItemType.Obstacle;
-                case EObstacleType.ObstacleMoving:  return MazeItemType.ObstacleMoving;
-                case EObstacleType.Trap:            return MazeItemType.ObstacleTrap;
-                case EObstacleType.TrapMoving:      return MazeItemType.ObstacleTrapMoving;
+                case EObstacleType.Obstacle:           return MazeItemType.Obstacle;
+                case EObstacleType.ObstacleMoving:     return MazeItemType.ObstacleMoving;
+                case EObstacleType.ObstacleMovingFree: return MazeItemType.ObstacleMovingFree;
+                case EObstacleType.Trap:               return MazeItemType.ObstacleTrap;
+                case EObstacleType.TrapMoving:         return MazeItemType.ObstacleTrapMoving;
+                case EObstacleType.TrapMovingFree:     return MazeItemType.ObstacleTrapMovingFree;
                 default: throw new SwitchCaseNotImplementedException(_Type);
             }
         }
@@ -81,12 +84,16 @@ namespace Games.RazorMaze.Prot
         {
             switch (_Type)
             {
-                case MazeItemType.Obstacle:           return EObstacleType.Obstacle;
-                case MazeItemType.ObstacleMoving:     return EObstacleType.ObstacleMoving;
-                case MazeItemType.ObstacleTrap:       return EObstacleType.Trap;
-                case MazeItemType.ObstacleTrapMoving: return EObstacleType.TrapMoving;
+                case MazeItemType.Obstacle:               return EObstacleType.Obstacle;
+                case MazeItemType.ObstacleMoving:         return EObstacleType.ObstacleMoving;
+                case MazeItemType.ObstacleMovingFree:     return EObstacleType.ObstacleMovingFree;
+                case MazeItemType.ObstacleTrap:           return EObstacleType.Trap;
+                case MazeItemType.ObstacleTrapMoving:     return EObstacleType.TrapMoving;
+                case MazeItemType.ObstacleTrapMovingFree: return EObstacleType.TrapMovingFree;
+                case MazeItemType.Node: 
+                case MazeItemType.NodeStart: throw new ArgumentException("Wrong maze item type");
+                default: throw new SwitchCaseNotImplementedException(_Type);
             }
-            return default;
         }
     }
 }

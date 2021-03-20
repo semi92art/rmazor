@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Entities;
 using Exceptions;
 using Utils;
@@ -58,53 +59,75 @@ namespace Games.RazorMaze.Models
                 () =>
                 {
                     RotationFinished?.Invoke();
-                    MoveObstacles();
+                    MoveAllObstacles();
                 }));
         }
         
         public void OnCharacterMoved()
         {
-            MoveWallBlocksMoving();
+            MoveObstaclesMoving();
+            MoveObstaclesMovingFree();
         }
         
         #endregion
         
         #region nonpublic methods
         
-        private void MoveObstacles()
+        private void MoveAllObstacles()
         {
-            MoveWallBlocksMoving();
+            MoveObstaclesMoving();
+            MoveObstaclesMovingFree();
             MoveTraps();
             MoveTrapsMoving();
+            MoveTrapsMovingFree();
+            // do something with it
+            MoveObstaclesMoving();
+            MoveObstaclesMovingFree();
         }
 
-        private void MoveWallBlocksMoving()
+        private void MoveObstaclesMoving()
         {
-            var obstaclesMoving = m_Info.Obstacles
-                .Where(_O => _O.Type == EObstacleType.ObstacleMoving);
-            foreach (var obstacle in obstaclesMoving)
-                MoveWallBlockMoving(obstacle);
+            foreach (var obstacle in FilterObstacles(EObstacleType.ObstacleMoving))
+                MoveObstacleMoving(obstacle);
+        }
+
+        private void MoveObstaclesMovingFree()
+        {
+            foreach (var obstacle in FilterObstacles(EObstacleType.ObstacleMovingFree))
+                MoveObstacleMovingFree(obstacle);
         }
 
         private void MoveTraps()
         {
-            var obstaclesTrap = m_Info.Obstacles
-                .Where(_O => _O.Type == EObstacleType.Trap);
-            foreach (var obstacle in obstaclesTrap)
+            foreach (var obstacle in FilterObstacles(EObstacleType.Trap))
                 MoveTrap(obstacle);
         }
 
         private void MoveTrapsMoving()
         {
-            var obstaclesTrapMoving = m_Info.Obstacles
-                .Where(_O => _O.Type == EObstacleType.TrapMoving);
-            foreach (var obstacle in obstaclesTrapMoving)
+            foreach (var obstacle in FilterObstacles(EObstacleType.TrapMoving))
                 MoveTrapMoving(obstacle);
         }
+        
+        private void MoveTrapsMovingFree()
+        {
+            foreach (var obstacle in FilterObstacles(EObstacleType.TrapMovingFree))
+                MoveTrapMovingFree(obstacle);
+        }
 
-        private void MoveWallBlockMoving(Obstacle _Obstacle)
+        private IEnumerable<Obstacle> FilterObstacles(EObstacleType _Type)
+        {
+            return m_Info.Obstacles.Where(_O => _O.Type == _Type);
+        }
+
+        private void MoveObstacleMoving(Obstacle _Obstacle)
         {
             MoveObstacleCore(_Obstacle, true, true);
+        }
+
+        private void MoveObstacleMovingFree(Obstacle _Obstacle)
+        {
+            MoveObstacleCore(_Obstacle, true, false);
         }
 
         private void MoveTrap(Obstacle _Obstacle)
@@ -113,6 +136,11 @@ namespace Games.RazorMaze.Models
         }
 
         private void MoveTrapMoving(Obstacle _Obstacle)
+        {
+            
+        }
+
+        private void MoveTrapMovingFree(Obstacle _Obstacle)
         {
             MoveObstacleCore(_Obstacle, false, false);
         }
@@ -158,15 +186,17 @@ namespace Games.RazorMaze.Models
             {
                 case MazeOrientation.North: return V2Int.down;
                 case MazeOrientation.South: return V2Int.up;
-                case MazeOrientation.East: return V2Int.right;
-                case MazeOrientation.West: return V2Int.left;
+                case MazeOrientation.East:  return V2Int.right;
+                case MazeOrientation.West:  return V2Int.left;
                 default: throw new SwitchCaseNotImplementedException(_Orientation);
             }
         }
 
         private bool IsValid(V2Int _Position, Obstacle _Obstacle)
-        { 
-            if (m_Info.Nodes.Any(_N => _N.Position == _Position))
+        {
+            bool isOnNode = m_Info.Nodes.Any(_N => _N.Position == _Position);
+            bool isOnObstacle = m_Info.Obstacles.Any(_N => _N.Position == _Position);
+            if (isOnNode && !isOnObstacle)
                 return true;
             return _Obstacle.Type == EObstacleType.Trap && _Obstacle.Path.Contains(_Position);
         }

@@ -8,9 +8,12 @@ namespace Extensions
 {
     public static class ObjectExtensions
     {
-        public static T AddComponentIfNotExist<T>(this GameObject _Object) where T : Component
+        public static T GetOrAddComponent<T>(this GameObject _Object) where T : Component
         {
-            return _Object.GetComponent<T>() == null ? _Object.AddComponent<T>() : null;
+            var res = _Object.GetComponent<T>();
+            if (res.IsNull())
+                res = _Object.AddComponent<T>();
+            return res;
         }
 
         public static void RemoveComponentIfExist<T>(this GameObject _Object) where T : Component

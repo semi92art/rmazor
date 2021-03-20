@@ -59,7 +59,7 @@ namespace UI.Factories
             item.Set(_Parent, _Name, _Anchor, _AnchoredPosition, _Pivot, _SizeDelta);
             
 #if UNITY_EDITOR
-            item.gameObject.AddComponentIfNotExist<RectTransformHelper>();
+            item.gameObject.GetOrAddComponent<RectTransformHelper>();
 #else
             item.gameObject.RemoveComponentIfExist<RectTransformHelper>();
 #endif

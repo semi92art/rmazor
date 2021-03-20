@@ -13,6 +13,7 @@ namespace Games.RazorMaze.Prot
     public class MazeProtItem : MonoBehaviour
     {
         public Rectangle rectangle;
+        public Rectangle innerRectangle;
         [SerializeField] private MazeItemType type;
         [SerializeField] public V2Int start;
         [SerializeField] public List<V2Int> path;
@@ -22,11 +23,7 @@ namespace Games.RazorMaze.Prot
         public MazeItemType Type
         {
             get => type;
-            set
-            {
-                type = value;
-                rectangle.Color = ColorByType(type);
-            }
+            set => SetShape(type = value);
         }
 
         public void Init(PrototypingItemProps _Props)
@@ -35,34 +32,7 @@ namespace Games.RazorMaze.Prot
             start = _Props.Position;
             path = _Props.Path;
             m_Size = _Props.Size;
-            rectangle = gameObject.AddComponent<Rectangle>();
-            var converter = new CoordinateConverter();
-            converter.Init(m_Size);
-            transform.localPosition = converter.ToLocalMazeItemPosition(start);
-            rectangle.Width = 0.97f * converter.GetScale();
-            rectangle.Height = 0.97f * converter.GetScale();
-            rectangle.Type = Rectangle.RectangleType.RoundedSolid;
-            rectangle.CornerRadius = 0.1f;
-            rectangle.Color = ColorByType(type);
-            switch (_Props.Type)
-            {
-                case MazeItemType.NodeStart:
-                case MazeItemType.Node: 
-                    rectangle.SortingOrder = 0; 
-                    break;
-                case MazeItemType.ObstacleTrap:
-                case MazeItemType.ObstacleTrapMoving:
-                    rectangle.SortingOrder = 1;
-                    break;
-                case MazeItemType.Obstacle: 
-                    rectangle.SortingOrder = 2; 
-                    break;
-                case MazeItemType.ObstacleMoving:
-                case MazeItemType.ObstacleTrapMovingFree:
-                    rectangle.SortingOrder = 10;
-                    break;
-                default: throw new SwitchCaseNotImplementedException(_Props.Type);
-            }
+            SetShape(_Props.Type);
         }
 
         public void SetLocalPosition(Vector2 _Position)
@@ -75,16 +45,82 @@ namespace Games.RazorMaze.Prot
             return _Obstacle.Path == path && _Obstacle.Type == RazorMazePrototypingUtils.GetObstacleType(type);
         }
 
-        private static Color ColorByType(MazeItemType _Type)
+        private void SetShape(MazeItemType _Type)
+        {
+            var converter = new CoordinateConverter();
+            converter.Init(m_Size);
+            
+            gameObject.DestroyChildrenSafe();
+            transform.localPosition = converter.ToLocalMazeItemPosition(start);
+            rectangle = gameObject.GetOrAddComponent<Rectangle>();
+            rectangle.Width = 0.97f * converter.GetScale();
+            rectangle.Height = 0.97f * converter.GetScale();
+            rectangle.Type = Rectangle.RectangleType.RoundedSolid;
+            rectangle.CornerRadius = 0.1f;
+            rectangle.Color = ColorByType(type, false);
+
+            if (_Type == MazeItemType.ObstacleMovingFree || _Type == MazeItemType.ObstacleTrapMovingFree)
+            {
+                var innerShapeGo = new GameObject("Inner Shape");
+                innerShapeGo.SetParent(gameObject);
+                innerShapeGo.transform.SetLocalPosXY(Vector2.zero);
+                innerRectangle = innerShapeGo.AddComponent<Rectangle>();
+                innerRectangle.Width = 0.5f * converter.GetScale();
+                innerRectangle.Height = 0.5f * converter.GetScale();
+                innerRectangle.Type = Rectangle.RectangleType.RoundedSolid;
+                innerRectangle.CornerRadius = 0.1f;
+                innerRectangle.Color = ColorByType(type, true);
+            }
+            
+            switch (_Type)
+            {
+                case MazeItemType.NodeStart:
+                case MazeItemType.Node: 
+                    rectangle.SortingOrder = 0;
+                    if (!innerRectangle.IsNull()) innerRectangle.SortingOrder = 1;
+                    break;
+                case MazeItemType.ObstacleTrap:
+                case MazeItemType.ObstacleTrapMoving:
+                case MazeItemType.ObstacleMoving:
+                    rectangle.SortingOrder = 1;
+                    if (!innerRectangle.IsNull()) innerRectangle.SortingOrder = 2;
+                    break;
+                case MazeItemType.Obstacle: 
+                    rectangle.SortingOrder = 2;
+                    if (!innerRectangle.IsNull()) innerRectangle.SortingOrder = 3;
+                    break;
+                case MazeItemType.ObstacleMovingFree:
+                case MazeItemType.ObstacleTrapMovingFree:
+                    rectangle.SortingOrder = 10;
+                    if (!innerRectangle.IsNull()) innerRectangle.SortingOrder = 11;
+                    break;
+                default: throw new SwitchCaseNotImplementedException(_Type);
+            }
+        }
+        
+        private static Color ColorByType(MazeItemType _Type, bool _Inner)
+        {
+            var obsColor = new Color(0.53f, 0.53f, 0.53f, 0.8f);
+            switch (_Type)
+            {
+                case MazeItemType.Node:                   return Color.white;
+                case MazeItemType.NodeStart:              return new Color(1f, 0.93f, 0.51f);
+                case MazeItemType.Obstacle:               return obsColor;
+                case MazeItemType.ObstacleMoving:         return Color.blue;
+                case MazeItemType.ObstacleMovingFree:     return _Inner ? Color.black : obsColor;
+                case MazeItemType.ObstacleTrap:           return Color.red;
+                case MazeItemType.ObstacleTrapMoving:     return Color.magenta;
+                case MazeItemType.ObstacleTrapMovingFree: return _Inner ? Color.red : new Color(1f, 0.38f, 0.28f);
+                default: throw new SwitchCaseNotImplementedException(_Type);
+            }
+        }
+
+        private static Color InnerColorByType(MazeItemType _Type)
         {
             switch (_Type)
             {
-                case MazeItemType.Node:                  return Color.white;
-                case MazeItemType.NodeStart:             return Color.yellow;
-                case MazeItemType.Obstacle:              return new Color(0.53f, 0.53f, 0.53f, 0.8f);
-                case MazeItemType.ObstacleMoving:        return Color.blue;
-                case MazeItemType.ObstacleTrap:          return Color.red;
-                case MazeItemType.ObstacleTrapMoving:    return Color.magenta;
+                case MazeItemType.ObstacleMovingFree:     return Color.green;
+                case MazeItemType.ObstacleTrapMovingFree: return Color.cyan;
                 default: throw new SwitchCaseNotImplementedException(_Type);
             }
         }
@@ -115,7 +151,9 @@ namespace Games.RazorMaze.Prot
                 case MazeItemType.Node:
                 case MazeItemType.NodeStart:
                 case MazeItemType.Obstacle:
+                case MazeItemType.ObstacleMovingFree:
                 case MazeItemType.ObstacleTrapMoving:
+                case MazeItemType.ObstacleTrapMovingFree:
                     //do nothing
                     break;
                 default: throw new SwitchCaseNotImplementedException(Type);
@@ -129,6 +167,7 @@ namespace Games.RazorMaze.Prot
         NodeStart,
         Obstacle,
         ObstacleMoving,
+        ObstacleMovingFree,
         ObstacleTrap,
         ObstacleTrapMoving,
         ObstacleTrapMovingFree

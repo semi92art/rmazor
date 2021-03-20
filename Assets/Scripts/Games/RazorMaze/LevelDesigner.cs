@@ -45,7 +45,6 @@ namespace Games.RazorMaze
         
         private static void OnPlayModeStateChanged(PlayModeStateChange _Change)
         {
-            //Dbg.Log($"PlayModeStateChange: {_Change}");
             var sceneName = SceneManager.GetActiveScene().name;
             if (!sceneName.Contains(SceneNames.Prototyping))
                 return;
@@ -79,8 +78,10 @@ namespace Games.RazorMaze
             var obstacles  = mazeItems
                 .Where(_Item => _Item.Type == MazeItemType.Obstacle 
                                 || _Item.Type == MazeItemType.ObstacleMoving 
+                                || _Item.Type == MazeItemType.ObstacleMovingFree
                                 || _Item.Type == MazeItemType.ObstacleTrap
-                                || _Item.Type == MazeItemType.ObstacleTrapMoving)
+                                || _Item.Type == MazeItemType.ObstacleTrapMoving
+                                || _Item.Type == MazeItemType.ObstacleTrapMovingFree)
                 .Select(_Item =>
                 {
                     var type = RazorMazePrototypingUtils.GetObstacleType(_Item.Type);
@@ -97,10 +98,12 @@ namespace Games.RazorMaze
                 {
                     case EObstacleType.Obstacle: break; // do nothing
                     case EObstacleType.Trap:
+                    case EObstacleType.TrapMoving:
                         obstacles.Add(new Obstacle {Position = obs.Position, Type = EObstacleType.Obstacle});
                         break;
                     case EObstacleType.ObstacleMoving:
-                    case EObstacleType.TrapMoving:
+                    case EObstacleType.ObstacleMovingFree:
+                    case EObstacleType.TrapMovingFree:
                         nodes.Add(new Node{Position = obs.Position});
                         break;
                     default: throw new SwitchCaseNotImplementedException(obs.Type);

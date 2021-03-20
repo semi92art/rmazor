@@ -83,9 +83,10 @@ namespace Games.RazorMaze.Models
         private static bool ValidPosition(V2Int _Position, MazeInfo _Info)
         {
             bool isNode = _Info.Nodes.Any(_N => _N.Position == _Position);
-            bool isObstacle = _Info.Obstacles.Any(_O => 
-                (_O.Type == EObstacleType.Obstacle || _O.Type == EObstacleType.ObstacleMoving)
-                &&_O.Position == _Position);
+            bool isObstacle = _Info.Obstacles.Any(_O => _O.Position == _Position && 
+                (_O.Type == EObstacleType.Obstacle 
+                 || _O.Type == EObstacleType.ObstacleMoving 
+                 || _O.Type == EObstacleType.ObstacleMovingFree));
             return isNode && !isObstacle;
         }
 

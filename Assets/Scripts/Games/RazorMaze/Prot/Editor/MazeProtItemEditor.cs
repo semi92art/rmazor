@@ -75,10 +75,13 @@ namespace Games.RazorMaze.Prot.Editor
                     case MazeItemType.ObstacleTrap:
                         DrawControlsTrap(targ);
                         break;
+                    case MazeItemType.ObstacleTrapMoving:
+                        break;
                     case MazeItemType.Node:
                     case MazeItemType.NodeStart:
                     case MazeItemType.Obstacle:
-                    case MazeItemType.ObstacleTrapMoving:
+                    case MazeItemType.ObstacleMovingFree:
+                    case MazeItemType.ObstacleTrapMovingFree:
                         // do nothing
                         break;
                     default: throw new SwitchCaseNotImplementedException(targ.Type);

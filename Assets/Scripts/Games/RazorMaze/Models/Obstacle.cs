@@ -8,8 +8,10 @@ namespace Games.RazorMaze.Models
     {
         Obstacle,
         ObstacleMoving,
+        ObstacleMovingFree,
         Trap,
-        TrapMoving
+        TrapMoving,
+        TrapMovingFree
     }
     
     public class Obstacle
