@@ -5,13 +5,13 @@ using Utils;
 
 namespace UnityGameLoopDI
 {
-    public class UnityGameLoopDIManager : MonoBehaviour, ISingleton
+    public class TickerManager : MonoBehaviour, ISingleton
     {
         #region singleton
         
-        private static UnityGameLoopDIManager _instance;
-        public static UnityGameLoopDIManager Instance => 
-            CommonUtils.MonoBehSingleton(ref _instance, "Game Loop DI Manager");
+        private static TickerManager _instance;
+        public static TickerManager Instance => 
+            CommonUtils.MonoBehSingleton(ref _instance, "Ticker Manager");
 
         #endregion
 

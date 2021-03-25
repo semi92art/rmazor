@@ -8,13 +8,13 @@ namespace UnityGameLoopDI
     public interface IOnLateUpdate { void OnLateUpdate(); }
     public interface IOnDrawGizmos { void OnDrawGizmos(); }
     
-    public class UnityGameLoopObjectDI
+    public class Ticker
     {
         private bool m_WasUnregistered;
         
-        protected UnityGameLoopObjectDI()
+        protected Ticker()
         {
-            UnityGameLoopDIManager.Instance.RegisterObject(this);
+            TickerManager.Instance.RegisterObject(this);
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
         }
 
@@ -24,7 +24,7 @@ namespace UnityGameLoopDI
                 return;
             if (_ChangeScene)
                 SceneManager.activeSceneChanged -= OnActiveSceneChanged;
-            UnityGameLoopDIManager.Instance.UnregisterObject(this);
+            TickerManager.Instance.UnregisterObject(this);
             m_WasUnregistered = true;
         }
 

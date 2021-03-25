@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Linq;
 using Entities;
-using UnityEngine.EventSystems;
-using Utils;
 
 namespace Games.RazorMaze.Models
 {
-    public class CharacterModel : ICharacterModel
+    public class CharacterModel : ICharacterModelFull
     {
+
         #region nonpublic members
 
         private MazeInfo m_MazeInfo;
@@ -16,11 +15,26 @@ namespace Games.RazorMaze.Models
         
         #endregion
         
+        #region inject
+        private ICharacterMover CharacterMover { get; }
+        private IMazeTransformer Transformer { get; }
+
+        public CharacterModel(ICharacterMover _CharacterMover, IMazeTransformer _Transformer)
+        {
+            CharacterMover = _CharacterMover;
+            Transformer = _Transformer;
+            CharacterMover.CharacterMoveStarted += _Progress => MoveStarted?.Invoke(_Progress);
+            CharacterMover.CharacterMoveContinued += _Progress => MoveContinued?.Invoke(_Progress);
+            CharacterMover.CharacterMoveFinished += _Position => MoveFinished?.Invoke(_Position);
+        }
+        
+        #endregion
+        
         #region api
 
-        public event V2IntV2IntHandler StartMove;
-        public event CharacterMovingHandler Moving;
-        public event NoArgsHandler FinishMove;
+        public event CharacterMovingHandler MoveStarted;
+        public event CharacterMovingHandler MoveContinued;
+        public event CharacterMovingHandler MoveFinished;
         public event HealthPointsChangedHandler HealthChanged;
         public event NoArgsHandler Death;
 
@@ -43,26 +57,19 @@ namespace Games.RazorMaze.Models
             HealthPoints = 1;
         }
         
-        public void Move(MoveDirection _Direction)
+        public void Move(MazeMoveDirection _Direction)
         {
             var prevPos = Position;
             Position = GetNewPosition(_Direction);
-            StartMove?.Invoke(prevPos, Position);
-            Coroutines.Run(Coroutines.Lerp(
-                0f,
-                1f,
-                0.1f,
-                _Progress => Moving?.Invoke(_Progress),
-                GameTimeProvider.Instance,
-                () => FinishMove?.Invoke()));
+            CharacterMover.MoveCharacter(prevPos, Position);
         }
 
-        public void UpdateMazeInfo(MazeInfo _Info, MazeOrientation _Orientation)
+        public void OnMazeInfoUpdated(MazeInfo _Info, MazeOrientation _Orientation)
         {
             if (!ReferenceEquals(m_MazeInfo, _Info))
             {
                 m_MazeInfo = _Info;
-                Position = m_MazeInfo.Nodes[0].Position;
+                Position = m_MazeInfo.Path[0];
             }
             m_Orientation = _Orientation;
         }
@@ -71,65 +78,26 @@ namespace Games.RazorMaze.Models
         
         #region nonpublic methods
 
-        private V2Int GetNewPosition(MoveDirection _Direction)
+        private V2Int GetNewPosition(MazeMoveDirection _Direction)
         {
             var nextPos = Position;
-            var dirVector = GetDirectionVector(_Direction, m_Orientation);
+            var dirVector = RazorMazeUtils.GetDirectionVector(_Direction, m_Orientation);
             while (ValidPosition(nextPos + dirVector, m_MazeInfo))
                 nextPos += dirVector;
             return nextPos;
         }
 
-        private static bool ValidPosition(V2Int _Position, MazeInfo _Info)
+        private bool ValidPosition(V2Int _Position, MazeInfo _Info)
         {
-            bool isNode = _Info.Nodes.Any(_N => _N.Position == _Position);
-            bool isObstacle = _Info.Obstacles.Any(_O => _O.Position == _Position && 
-                (_O.Type == EObstacleType.Obstacle 
-                 || _O.Type == EObstacleType.ObstacleMoving 
-                 || _O.Type == EObstacleType.ObstacleMovingFree));
-            return isNode && !isObstacle;
+            bool isNode = _Info.Path.Any(_PathItem => _PathItem == _Position);
+            bool isMazeItem = _Info.MazeItems.Any(_O => 
+                _O.Position == _Position && _O.Type == EMazeItemType.Block);
+            bool isBuzyMazeItem = Transformer.GravityProceeds.Values
+                .Where(_Proceed => _Proceed.Item.Type == EMazeItemType.BlockMovingGravity)
+                .Any(_Proceed => _Proceed.BusyPositions.Contains(_Position));
+            return isNode && !isMazeItem && !isBuzyMazeItem;
         }
-
-        private static V2Int GetDirectionVector(MoveDirection _Direction, MazeOrientation _Orientation)
-        {
-            switch (_Orientation)
-            {
-                case MazeOrientation.North:
-                    switch (_Direction)
-                    {
-                        case MoveDirection.Up:    return V2Int.up;
-                        case MoveDirection.Right: return V2Int.right;
-                        case MoveDirection.Down:  return V2Int.down;
-                        case MoveDirection.Left:  return V2Int.left;
-                    } break;
-                case MazeOrientation.East:
-                    switch (_Direction)
-                    {
-                        case MoveDirection.Up:    return V2Int.left;
-                        case MoveDirection.Right: return V2Int.up;
-                        case MoveDirection.Down:  return V2Int.right;
-                        case MoveDirection.Left:  return V2Int.down;
-                    } break;
-                case MazeOrientation.South:
-                    switch (_Direction)
-                    {
-                        case MoveDirection.Up:    return V2Int.down;
-                        case MoveDirection.Right: return V2Int.left;
-                        case MoveDirection.Down:  return V2Int.up;
-                        case MoveDirection.Left:  return V2Int.right;
-                    } break;
-                case MazeOrientation.West:
-                    switch (_Direction)
-                    {
-                        case MoveDirection.Up:    return V2Int.right;
-                        case MoveDirection.Right: return V2Int.down;
-                        case MoveDirection.Down:  return V2Int.left;
-                        case MoveDirection.Left:  return V2Int.up;
-                    } break;
-            }
-            return default;
-        }
-
+        
         #endregion
     }
 }

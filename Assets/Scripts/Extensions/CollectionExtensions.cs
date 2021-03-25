@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Extensions
@@ -23,6 +24,11 @@ namespace Extensions
             foreach (var item in _Items)
                 result.Remove(item);
             return result;
+        }
+        
+        public static List<T> Clone<T>(this IList<T> listToClone) where T: ICloneable
+        {
+            return listToClone.Select(_Item => (T)_Item.Clone()).ToList();
         }
     }
 }

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Entities;
-using Exceptions;
 using Extensions;
 using Games.RazorMaze.Models;
 using UnityEngine;
@@ -17,26 +15,27 @@ namespace Games.RazorMaze.Prot
             var converter = new CoordinateConverter();
             converter.Init(_Info.Width);
             _Parent.SetPosXY(converter.GetCenter());
-            foreach (var node in _Info.Nodes)
-                AddNode(res, node.Position, _Parent, _Info.Width);
-            foreach (var obstacle in _Info.Obstacles)
-                AddObstacle(res, GetObstacleType(obstacle.Type), obstacle.Position, obstacle.Path, _Parent, _Info.Width);
+            foreach (var item in _Info.Path)
+                AddPathItem(res, item, _Parent, _Info.Width);
+            foreach (var item in _Info.MazeItems)
+                AddMazeItem(res, item.Type, item.Position, item.Path, _Parent, _Info.Width);
             return res;
         }
 
-        private static void AddNode(
+        private static void AddPathItem(
             ICollection<MazeProtItem> _Items,
             V2Int _Position, 
             Transform _Parent, 
             int _Size)
         {
-            bool isFirst = _Items.All(_Item => _Item.Type != MazeItemType.NodeStart);
+            bool isStartNode = _Items.All(_Item => !_Item.props.IsStartNode);
             var tr = new GameObject("Node").transform;
             tr.SetParent(_Parent);
             var item = tr.gameObject.AddComponent<MazeProtItem>();
-            var props = new PrototypingItemProps
+            var props = new MazeProtItemProps
             {
-                Type = isFirst ? MazeItemType.NodeStart : MazeItemType.Node,
+                IsNode = true,
+                IsStartNode = isStartNode,
                 Size = _Size,
                 Position = _Position
             };
@@ -44,18 +43,18 @@ namespace Games.RazorMaze.Prot
             _Items.Add(item);
         }
 
-        private static void AddObstacle(
+        private static void AddMazeItem(
             ICollection<MazeProtItem> _Items,
-            MazeItemType _Type,
+            EMazeItemType _Type,
             V2Int _Position,
             List<V2Int> _Path,
             Transform _Parent,
             int _Size)
         {
-            var tr = new GameObject("Obstacle").transform;
+            var tr = new GameObject("Maze Item").transform;
             tr.SetParent(_Parent);
             var item = tr.gameObject.AddComponent<MazeProtItem>();
-            var props = new PrototypingItemProps
+            var props = new MazeProtItemProps
             {
                 Type = _Type,
                 Size = _Size,
@@ -64,36 +63,6 @@ namespace Games.RazorMaze.Prot
             };
             item.Init(props);
             _Items.Add(item);
-        }
-        
-        public static MazeItemType GetObstacleType(EObstacleType _Type)
-        {
-            switch (_Type)
-            {
-                case EObstacleType.Obstacle:           return MazeItemType.Obstacle;
-                case EObstacleType.ObstacleMoving:     return MazeItemType.ObstacleMoving;
-                case EObstacleType.ObstacleMovingFree: return MazeItemType.ObstacleMovingFree;
-                case EObstacleType.Trap:               return MazeItemType.ObstacleTrap;
-                case EObstacleType.TrapMoving:         return MazeItemType.ObstacleTrapMoving;
-                case EObstacleType.TrapMovingFree:     return MazeItemType.ObstacleTrapMovingFree;
-                default: throw new SwitchCaseNotImplementedException(_Type);
-            }
-        }
-
-        public static EObstacleType GetObstacleType(MazeItemType _Type)
-        {
-            switch (_Type)
-            {
-                case MazeItemType.Obstacle:               return EObstacleType.Obstacle;
-                case MazeItemType.ObstacleMoving:         return EObstacleType.ObstacleMoving;
-                case MazeItemType.ObstacleMovingFree:     return EObstacleType.ObstacleMovingFree;
-                case MazeItemType.ObstacleTrap:           return EObstacleType.Trap;
-                case MazeItemType.ObstacleTrapMoving:     return EObstacleType.TrapMoving;
-                case MazeItemType.ObstacleTrapMovingFree: return EObstacleType.TrapMovingFree;
-                case MazeItemType.Node: 
-                case MazeItemType.NodeStart: throw new ArgumentException("Wrong maze item type");
-                default: throw new SwitchCaseNotImplementedException(_Type);
-            }
         }
     }
 }

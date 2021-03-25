@@ -21,7 +21,7 @@ namespace Games.RazorMaze
         /// </summary>
         /// <param name="_Width">Maze width</param>
         /// <param name="_Height">Maze height</param>
-        /// <param name="_A">Obstacles to nodes ratio, value 0 to 1</param>
+        /// <param name="_A">Maze items to path items ratio, value 0 to 1</param>
         /// <param name="_PathLengths">Path lengths</param>
         public MazeGenerationParams(int _Width, int _Height, float _A,  int[] _PathLengths)
         {
@@ -39,23 +39,23 @@ namespace Games.RazorMaze
             Vector2Int.up, Vector2Int.down, Vector2Int.right, Vector2Int.left
         };
         
-        public static MazeInfo CreateDefaultLevelInfo(int _Size, bool _OnlyObstacles = false)
+        public static MazeInfo CreateDefaultLevelInfo(int _Size, bool _OnlyMazeItems = false)
         {
-            return CreateDefaultLevelInfo(_Size, _Size, _OnlyObstacles);
+            return CreateDefaultLevelInfo(_Size, _Size, _OnlyMazeItems);
         }
 
-        public static MazeInfo CreateDefaultLevelInfo(int _Width, int _Height, bool _OnlyObstacles = false)
+        public static MazeInfo CreateDefaultLevelInfo(int _Width, int _Height, bool _OnlyMazeItems = false)
         {
-            GetDefaultNodesAndObstaclesPositions(_Width, _Height, _OnlyObstacles,
-                out var nodePositions, out var obstaclePositions);
+            GetDefaultPathItemsAndMazeItemsPositions(_Width, _Height, _OnlyMazeItems,
+                out var pathItemsPositions, out var mazeItemsPositions);
             return new MazeInfo
             {
                 Width = _Width,
                 Height = _Height,
-                Nodes = nodePositions.Select(_Pos => new Node{Position = _Pos}).ToList(),
-                Obstacles = obstaclePositions.Select(_Pos => new Obstacle
+                Path = pathItemsPositions,
+                MazeItems = mazeItemsPositions.Select(_Pos => new MazeItem
                 {
-                    Position = _Pos, Type = EObstacleType.Obstacle, Path = new List<V2Int>{_Pos}
+                    Position = _Pos, Type = EMazeItemType.Block, Path = new List<V2Int>{_Pos}
                 }).ToList()
             };
         }
@@ -72,40 +72,40 @@ namespace Games.RazorMaze
             
             int w = _Params.Width;
             int h = _Params.Height;
-            GetDefaultNodesAndObstaclesPositions(w, h, true,
-                out _, out var obstaclePositions);
-            var nodes = new List<Node>();
-            var obstacles = obstaclePositions
-                .Select(_P => new Obstacle{Position = _P})
+            GetDefaultPathItemsAndMazeItemsPositions(w, h, true,
+                out _, out var mazeItemsPositions);
+            var pathItems = new List<V2Int>();
+            var mazeItems = mazeItemsPositions
+                .Select(_P => new MazeItem{Position = _P})
                 .ToList();
             int xPos = 1 + Mathf.FloorToInt((w - 2) * Random.value);
             int yPos = 1 + Mathf.FloorToInt((h - 2) * Random.value);
             var pos = new V2Int(xPos, yPos);
-            nodes.Add(new Node{Position = pos});
-            obstacles.Remove(obstacles.ToList().First(_B => _B.Position == pos));
+            pathItems.Add(pos);
+            mazeItems.Remove(mazeItems.ToList().First(_B => _B.Position == pos));
             int k = 0;
             V2Int dir = GetRandomDirection();
             while (k++ < 1000)
             {
-                if (DoBreak(w, h, nodes, _Params.A))
+                if (DoBreak(w, h, pathItems, _Params.A))
                     break;
                 FollowDirectionByLength(
                     ref pos,
                     ref dir,
-                    obstacles,
-                    nodes,
+                    mazeItems,
+                    pathItems,
                     _Params,
                     Mathf.RoundToInt(Random.value * _Params.PathLengths.Length * 0.99f - 0.49f));
             }
-            foreach (var node in nodes.ToList().
-                Where(node => obstacles.Any(_B => _B.Position == node.Position)))
-                nodes.Remove(node);
+            foreach (var pathItem in pathItems.ToList().
+                Where(_PathItem => mazeItems.Any(_B => _B.Position == _PathItem)))
+                pathItems.Remove(pathItem);
             var levelInfo = new MazeInfo
             {
                 Width = w,
                 Height = h,
-                Nodes = nodes,
-                Obstacles = obstacles
+                Path = pathItems,
+                MazeItems = mazeItems
             };
             _Valid = LevelAnalizator.IsValid(levelInfo);
             return levelInfo;
@@ -114,40 +114,39 @@ namespace Games.RazorMaze
         private static bool DoBreak(
             int _Width,
             int _Height,
-            IEnumerable<Node> _AlreadyGenerated, 
+            IEnumerable<V2Int> _AlreadyGenerated, 
             float _A)
         {
-            int maxObstaclesCountRaw = _Width * _Height;
-            int maxObstaclesCount = Mathf.RoundToInt(maxObstaclesCountRaw * _A);
-            var alreadyGeneratedObstacles = _AlreadyGenerated.ToList();
-            return alreadyGeneratedObstacles.Count >= maxObstaclesCount;
+            int maxPathItemsCount = Mathf.RoundToInt(_Width * _Height * _A);
+            var alreadyGeneratedPathItems = _AlreadyGenerated.ToList();
+            return alreadyGeneratedPathItems.Count >= maxPathItemsCount;
         }
         
-        private static void GetDefaultNodesAndObstaclesPositions(
+        private static void GetDefaultPathItemsAndMazeItemsPositions(
             int _Width,
             int _Height,
-            bool _OnlyObstacles,
-            out List<V2Int> _NodePositions,
-            out List<V2Int> _ObstaclePositions)
+            bool _OnlyMazeItems,
+            out List<V2Int> _PathItems,
+            out List<V2Int> _MazeItemsPositions)
         {
-            _NodePositions = new List<V2Int>();
-            _ObstaclePositions = new List<V2Int>();
+            _PathItems = new List<V2Int>();
+            _MazeItemsPositions = new List<V2Int>();
             for (int i = 0; i < _Width; i++)
             for (int j = 0; j < _Height; j++)
             {
                 var pos = new V2Int(i, j);
-                if (i == 0 || i == _Width - 1 || j == 0 || j == _Height - 1 || _OnlyObstacles)
-                    _ObstaclePositions.Add(pos);
+                if (i == 0 || i == _Width - 1 || j == 0 || j == _Height - 1 || _OnlyMazeItems)
+                    _MazeItemsPositions.Add(pos);
                 else
-                    _NodePositions.Add(pos);
+                    _PathItems.Add(pos);
             }
         }
 
         private static void FollowDirectionByLength(
             ref V2Int _Position,
             ref V2Int _Direction,
-            List<Obstacle> _Obstacles,
-            List<Node> _Nodes,
+            List<MazeItem> _MazeItems,
+            List<V2Int> _Path,
             MazeGenerationParams _Params,
             int _PathLenghtIndex)
         {
@@ -160,7 +159,7 @@ namespace Games.RazorMaze
             {
                 _Direction = GetNextDirection(ref dirs);
                 int nextPosIdx = 0;
-                var newNodePositions = new List<V2Int>();
+                var newPathItems = new List<V2Int>();
                 while (nextPosIdx < _Params.PathLengths[_PathLenghtIndex])
                 {
                     _Position += _Direction;
@@ -170,12 +169,12 @@ namespace Games.RazorMaze
                         _Position -= _Direction;
                         break;
                     }
-                    var block = _Obstacles.FirstOrDefault(_B => _B.Position == pos);
-                    if (block != null)
+                    var mazeItem = _MazeItems.FirstOrDefault(_B => _B.Position == pos);
+                    if (mazeItem != null)
                     {
-                        newNodePositions.Add(pos);
-                        _Obstacles.Remove(block);
-                        _Nodes.Add(new Node {Position = _Position});
+                        newPathItems.Add(pos);
+                        _MazeItems.Remove(mazeItem);
+                        _Path.Add(_Position);
                     }
                     nextPosIdx++;
                 }
@@ -184,22 +183,22 @@ namespace Games.RazorMaze
                 {
                     Width = _Params.Width,
                     Height = _Params.Height,
-                    Nodes = _Nodes,
-                    Obstacles = _Obstacles
+                    Path = _Path,
+                    MazeItems = _MazeItems
                 };
                     
                 bool isValid = LevelAnalizator.IsValid(info);
                 if (isValid)
                     break;
-                foreach (var pos in newNodePositions)
+                foreach (var pos in newPathItems)
                 {
-                    _Obstacles.Add(new Obstacle
+                    _MazeItems.Add(new MazeItem
                     {
                         Position = pos,
                         Path = new List<V2Int>{pos}
                     });
-                    var node = _Nodes.First(_N => _N.Position == pos);
-                    _Nodes.Remove(node);
+                    var item = _Path.First(_PathItem => _PathItem == pos);
+                    _Path.Remove(item);
                 }
                 _Position = startPos;
             }

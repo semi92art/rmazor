@@ -34,7 +34,7 @@ public class ApplicationInitializer : MonoBehaviour
     
     private void OnSceneLoaded(Scene _Scene, LoadSceneMode _)
     {
-        UnityGameLoopDIManager.Instance.Clear();
+        TickerManager.Instance.Clear();
         TimeOrLifesEndedPanel.TimesPanelCalled = 0;
         
         bool onStart = _prevScene.EqualsIgnoreCase(SceneNames.Preload);

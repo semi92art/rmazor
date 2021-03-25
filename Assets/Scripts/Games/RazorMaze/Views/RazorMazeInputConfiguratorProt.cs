@@ -4,7 +4,7 @@ using UnityGameLoopDI;
 
 namespace Games.RazorMaze.Views
 {
-    public class RazorMazeInputConfiguratorProt : UnityGameLoopObjectDI, IInputConfigurator, IOnUpdate 
+    public class RazorMazeInputConfiguratorProt : Ticker, IInputConfigurator, IOnUpdate 
     {
         public event IntHandler Command;
         public void ConfigureInput() { }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Entities;
 using Exceptions;
 using Extensions;
+using GameHelpers;
 using Games.RazorMaze.Models;
 using Shapes;
 using UnityEngine;
@@ -12,27 +14,31 @@ namespace Games.RazorMaze.Prot
     [ExecuteInEditMode, Serializable]
     public class MazeProtItem : MonoBehaviour
     {
-        public Rectangle rectangle;
-        public Rectangle innerRectangle;
-        [SerializeField] private MazeItemType type;
-        [SerializeField] public V2Int start;
-        [SerializeField] public List<V2Int> path;
-        [SerializeField, HideInInspector] private int m_Size; 
+        [HideInInspector] public ShapeRenderer shape;
+        [HideInInspector] public SpriteRenderer hint; 
+        [SerializeField] public MazeProtItemProps props;
+
+        [HideInInspector] public EMazeItemType typeCheck;
         
-
-        public MazeItemType Type
+        private static Color _blockCol = new Color(0.53f, 0.53f, 0.53f, 0.8f);
+        private static Color _trapCol = new Color(1f, 0.29f, 0.29f);
+        private static Color _turretCol = new Color(1f, 0.14f, 0.7f);
+        private static Color _portalCol = new Color(0.13f, 1f, 0.07f);
+        private static Color _blockTransfToNodeCol = new Color(0.17f, 0.2f, 1f);
+        
+        public void SetType(EMazeItemType _Type, bool _IsNode, bool _IsStartNode)
         {
-            get => type;
-            set => SetShape(type = value);
+            props.Type = _Type;
+            props.IsNode = _IsNode;
+            props.IsStartNode = _IsStartNode;
+            SetShape(_Type, _IsNode, _IsStartNode);
+            typeCheck = _Type;
         }
-
-        public void Init(PrototypingItemProps _Props)
+        
+        public void Init(MazeProtItemProps _Props)
         {
-            type = _Props.Type;
-            start = _Props.Position;
-            path = _Props.Path;
-            m_Size = _Props.Size;
-            SetShape(_Props.Type);
+            props = _Props;
+            SetShape(_Props.Type, _Props.IsNode, _Props.IsStartNode);
         }
 
         public void SetLocalPosition(Vector2 _Position)
@@ -40,144 +46,218 @@ namespace Games.RazorMaze.Prot
             transform.localPosition = _Position;
         }
 
-        public bool Equal(Obstacle _Obstacle)
+        public bool Equal(MazeItem _MazeItem)
         {
-            return _Obstacle.Path == path && _Obstacle.Type == RazorMazePrototypingUtils.GetObstacleType(type);
+            return _MazeItem.Path == props.Path && _MazeItem.Type == props.Type;
         }
 
-        private void SetShape(MazeItemType _Type)
+        private void SetShape(EMazeItemType _Type, bool _IsNode, bool _IsStartNode)
         {
             var converter = new CoordinateConverter();
-            converter.Init(m_Size);
+            converter.Init(props.Size);
             
             gameObject.DestroyChildrenSafe();
-            transform.localPosition = converter.ToLocalMazeItemPosition(start);
-            rectangle = gameObject.GetOrAddComponent<Rectangle>();
-            rectangle.Width = 0.97f * converter.GetScale();
-            rectangle.Height = 0.97f * converter.GetScale();
-            rectangle.Type = Rectangle.RectangleType.RoundedSolid;
-            rectangle.CornerRadius = 0.1f;
-            rectangle.Color = ColorByType(type, false);
-
-            if (_Type == MazeItemType.ObstacleMovingFree || _Type == MazeItemType.ObstacleTrapMovingFree)
-            {
-                var innerShapeGo = new GameObject("Inner Shape");
-                innerShapeGo.SetParent(gameObject);
-                innerShapeGo.transform.SetLocalPosXY(Vector2.zero);
-                innerRectangle = innerShapeGo.AddComponent<Rectangle>();
-                innerRectangle.Width = 0.5f * converter.GetScale();
-                innerRectangle.Height = 0.5f * converter.GetScale();
-                innerRectangle.Type = Rectangle.RectangleType.RoundedSolid;
-                innerRectangle.CornerRadius = 0.1f;
-                innerRectangle.Color = ColorByType(type, true);
-            }
+            transform.localPosition = converter.ToLocalMazeItemPosition(props.Position);
+            var sh = gameObject.GetOrAddComponent<Rectangle>();
+            sh.Width = 0.97f * converter.GetScale();
+            sh.Height = 0.97f * converter.GetScale();
+            sh.Type = Rectangle.RectangleType.RoundedSolid;
+            sh.CornerRadius = 0.1f;
+            sh.Color = GetShapeColor(props.Type, false, _IsNode, _IsStartNode);
+            shape = sh;
             
+            if (props.IsNode)
+            {
+                shape.SortingOrder = 0;
+                return;
+            }
+            SetHintByType(props.Type, converter);
+            SetSortingOrderByType(_Type);
+        }
+
+        private void SetHintByType(EMazeItemType _Type, ICoordinateConverter _CoordinateConverter)
+        {
+            // if (_Type != EMazeItemType.Block
+            //     && _Type != EMazeItemType.Portal
+            //     && _Type != EMazeItemType.Trap
+            //     && _Type != EMazeItemType.Turret)
+            // {
+                var go = new GameObject("Hint");
+                go.SetParent(gameObject);
+                go.transform.SetLocalPosXY(Vector2.zero);
+                hint = go.AddComponent<SpriteRenderer>();
+            //}
+
+            string objectName = null;
             switch (_Type)
             {
-                case MazeItemType.NodeStart:
-                case MazeItemType.Node: 
-                    rectangle.SortingOrder = 0;
-                    if (!innerRectangle.IsNull()) innerRectangle.SortingOrder = 1;
+                case EMazeItemType.Block: break;
+                case EMazeItemType.BlockTransformingToNode: objectName = "shredinger"; break;
+                case EMazeItemType.Portal:                  objectName = "portal"; break;
+                case EMazeItemType.Turret:                  objectName = "turret"; break;
+                case EMazeItemType.TrapMoving:              objectName = "trap-moving"; break;
+                case EMazeItemType.BlockMovingGravity:      objectName = "block-gravity"; break;
+                case EMazeItemType.TrapMovingGravity:       objectName = "trap-gravity"; break;
+                case EMazeItemType.TrapIncreasing:          objectName = "trap-increase"; break;
+                case EMazeItemType.TurretRotating:          objectName = "turret-rotate"; break;
+                case EMazeItemType.TrapReact:               objectName = "trap-react"; break;
+                default: throw new SwitchCaseNotImplementedException(_Type);
+            }
+
+            if (string.IsNullOrEmpty(objectName)) 
+                return;
+            var result = PrefabUtilsEx.GetObject<Sprite>("prot_icons", objectName);
+            hint.sprite = result;
+        }
+
+        private void SetSortingOrderByType(EMazeItemType _Type)
+        {
+            int shapeSortingOrder;
+            switch (_Type)
+            {
+                case EMazeItemType.TrapReact:
+                case EMazeItemType.TrapMovingGravity:
+                case EMazeItemType.BlockMovingGravity:
+                    shapeSortingOrder = 1;
                     break;
-                case MazeItemType.ObstacleTrap:
-                case MazeItemType.ObstacleTrapMoving:
-                case MazeItemType.ObstacleMoving:
-                    rectangle.SortingOrder = 1;
-                    if (!innerRectangle.IsNull()) innerRectangle.SortingOrder = 2;
+                case EMazeItemType.Block: 
+                    shapeSortingOrder = 2;
                     break;
-                case MazeItemType.Obstacle: 
-                    rectangle.SortingOrder = 2;
-                    if (!innerRectangle.IsNull()) innerRectangle.SortingOrder = 3;
-                    break;
-                case MazeItemType.ObstacleMovingFree:
-                case MazeItemType.ObstacleTrapMovingFree:
-                    rectangle.SortingOrder = 10;
-                    if (!innerRectangle.IsNull()) innerRectangle.SortingOrder = 11;
+                case EMazeItemType.Portal:
+                case EMazeItemType.Turret:
+                case EMazeItemType.TrapIncreasing:
+                case EMazeItemType.TrapMoving:
+                case EMazeItemType.TurretRotating:
+                case EMazeItemType.BlockTransformingToNode:
+                    shapeSortingOrder = 12;
                     break;
                 default: throw new SwitchCaseNotImplementedException(_Type);
+            }
+            shape.SortingOrder = shapeSortingOrder;
+            if (!hint.IsNull())
+            {
+                hint.sortingOrder = shapeSortingOrder + 1;
             }
         }
         
-        private static Color ColorByType(MazeItemType _Type, bool _Inner)
+        
+        private static Color GetShapeColor(EMazeItemType _Type, bool _Inner, bool _IsNode, bool _IsStartNode)
         {
-            var obsColor = new Color(0.53f, 0.53f, 0.53f, 0.8f);
-            switch (_Type)
-            {
-                case MazeItemType.Node:                   return Color.white;
-                case MazeItemType.NodeStart:              return new Color(1f, 0.93f, 0.51f);
-                case MazeItemType.Obstacle:               return obsColor;
-                case MazeItemType.ObstacleMoving:         return Color.blue;
-                case MazeItemType.ObstacleMovingFree:     return _Inner ? Color.black : obsColor;
-                case MazeItemType.ObstacleTrap:           return Color.red;
-                case MazeItemType.ObstacleTrapMoving:     return Color.magenta;
-                case MazeItemType.ObstacleTrapMovingFree: return _Inner ? Color.red : new Color(1f, 0.38f, 0.28f);
-                default: throw new SwitchCaseNotImplementedException(_Type);
-            }
-        }
+            if (_IsNode)
+                return _IsStartNode ? new Color(1f, 0.93f, 0.51f) : Color.white;
+            
+            if (_Inner)
+                return Color.black;
 
-        private static Color InnerColorByType(MazeItemType _Type)
-        {
             switch (_Type)
             {
-                case MazeItemType.ObstacleMovingFree:     return Color.green;
-                case MazeItemType.ObstacleTrapMovingFree: return Color.cyan;
+            
+                case EMazeItemType.Block:                   
+                case EMazeItemType.BlockMovingGravity: 
+                    return _blockCol; 
+                case EMazeItemType.BlockTransformingToNode:
+                    return _blockTransfToNodeCol;
+                case EMazeItemType.Portal: 
+                    return _portalCol;
+                case EMazeItemType.TrapReact:               
+                case EMazeItemType.TrapIncreasing:
+                case EMazeItemType.TrapMoving: 
+                case EMazeItemType.TrapMovingGravity:
+                    return _trapCol;
+                case EMazeItemType.Turret: 
+                case EMazeItemType.TurretRotating: 
+                    return _turretCol;
                 default: throw new SwitchCaseNotImplementedException(_Type);
             }
         }
 
         private void OnDrawGizmos()
         {
-            if (Application.isPlaying)
+            if (Application.isPlaying || props.IsNode)
                 return;
-            var converter = new CoordinateConverter();
-            converter.Init(m_Size);
-            Func<V2Int, Vector2> addConv = _V => converter.ToLocalMazeItemPosition(_V).PlusY(converter.GetCenter().y); 
-            switch (Type)
+
+            Gizmos.color = GetShapeColor(props.Type, false, false, false);
+            
+            switch (props.Type)
             {
-                case MazeItemType.ObstacleMoving:
-                case MazeItemType.ObstacleTrap:
-                    if (path == null || path.Count <= 1)
-                        return;
-                    Gizmos.color = Type == MazeItemType.ObstacleMoving ? Color.blue : Color.red;
-                    for (int i = 0; i < path.Count; i++)
-                    {
-                        var pos = path[i];
-                        Gizmos.DrawSphere(addConv(pos), 1);
-                        if (i == path.Count - 1)
-                            return;
-                        Gizmos.DrawLine(addConv(pos), addConv(path[i + 1]));
-                    }
-                    break;
-                case MazeItemType.Node:
-                case MazeItemType.NodeStart:
-                case MazeItemType.Obstacle:
-                case MazeItemType.ObstacleMovingFree:
-                case MazeItemType.ObstacleTrapMoving:
-                case MazeItemType.ObstacleTrapMovingFree:
+                case EMazeItemType.Block:
+                case EMazeItemType.BlockTransformingToNode:
+                case EMazeItemType.TrapIncreasing:
+                case EMazeItemType.TurretRotating:
                     //do nothing
                     break;
-                default: throw new SwitchCaseNotImplementedException(Type);
+                case EMazeItemType.TrapMoving:
+                case EMazeItemType.BlockMovingGravity:
+                case EMazeItemType.TrapMovingGravity:
+                    DrawGizmosPath();
+                    break;
+                case EMazeItemType.TrapReact:
+                case EMazeItemType.Turret:
+                    DrawGizmosDirections();
+                    break;
+                case EMazeItemType.Portal:
+                    DrawGizmosPortal();
+                    break;
+                default: throw new SwitchCaseNotImplementedException(props.Type);
             }
         }
-    }
 
-    public enum MazeItemType
-    {
-        Node,
-        NodeStart,
-        Obstacle,
-        ObstacleMoving,
-        ObstacleMovingFree,
-        ObstacleTrap,
-        ObstacleTrapMoving,
-        ObstacleTrapMovingFree
+        private void DrawGizmosPath()
+        {
+            if (!props.Path.Any())
+                return;
+            for (int i = 0; i < props.Path.Count; i++)
+            {
+                var pos = props.Path[i];
+                Gizmos.DrawSphere(ToWorldPosition(pos), 1);
+                if (i == props.Path.Count - 1)
+                    return;
+                Gizmos.DrawLine(ToWorldPosition(pos), ToWorldPosition(props.Path[i + 1]));
+            }
+        }
+
+        private void DrawGizmosDirections()
+        {
+            if (!props.Directions.Any())
+                return;
+            var pos = ToWorldPosition(props.Position);
+            Gizmos.DrawSphere(pos, 1);
+            foreach (var dir in props.Directions)
+            {
+                Gizmos.DrawSphere(ToWorldPosition(props.Position + dir), 1);
+                Gizmos.DrawLine(pos, ToWorldPosition(props.Position + dir));
+            }
+        }
+
+        private void DrawGizmosPortal()
+        {
+            if (props.Pair == default)
+                return;
+            var pos = ToWorldPosition(props.Position);
+            var pairPos = ToWorldPosition(props.Pair);
+            Gizmos.DrawSphere(pos, 1);
+            Gizmos.DrawSphere(pairPos, 1);
+            Gizmos.DrawLine(pos, pairPos);
+        }
+
+        private Vector2 ToWorldPosition(V2Int _Point)
+        {
+            var converter = new CoordinateConverter();
+            converter.Init(props.Size);
+            return converter.ToLocalMazeItemPosition(_Point).PlusY(converter.GetCenter().y);
+        }
     }
     
-    public class PrototypingItemProps
+    [Serializable]
+    public class MazeProtItemProps
     {
-        public MazeItemType Type { get; set; }
-        public V2Int Position { get; set; }
-        public List<V2Int> Path { get; set; } = new List<V2Int>();
-        public int Size { get; set; }
+        public bool IsNode;
+        public bool IsStartNode;
+        public EMazeItemType Type;
+        public V2Int Position;
+        public List<V2Int> Path = new List<V2Int>();
+        public List<V2Int> Directions = new List<V2Int>();
+        public V2Int Pair;
+        public int Size;
     }
 }

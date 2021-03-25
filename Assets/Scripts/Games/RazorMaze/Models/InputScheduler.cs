@@ -5,7 +5,7 @@ using UnityGameLoopDI;
 
 namespace Games.RazorMaze.Models
 {
-    public class InputScheduler : UnityGameLoopObjectDI, IInputScheduler, IOnUpdate
+    public class InputScheduler : Ticker, IInputScheduler, IOnUpdate
     {
         public event EInputCommandHandler MoveCommand;
         public event EInputCommandHandler RotateCommand;

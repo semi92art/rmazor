@@ -6,6 +6,7 @@ using Exceptions;
 using Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Prot;
+using ModestTree;
 using Shapes;
 using UnityEngine;
 using Utils;
@@ -15,23 +16,26 @@ namespace Games.RazorMaze.Views
     public class MazeViewProt : IMazeView
     {
         private IMazeModel Model { get; }
+        public IMazeTransformer Transformer { get; }
         private ICoordinateConverter CoordinateConverter { get; }
         private IContainersGetter ContainersGetter { get; }
         
         private List<MazeProtItem> m_MazeItems;
-        private readonly List<Tuple<Obstacle, Vector2, Vector2>> m_MovingObstacles = new List<Tuple<Obstacle, Vector2, Vector2>>();
-        
         private Rigidbody2D m_Rb;
         private MazeRotateDirection m_Direction;
         private MazeOrientation m_Orientation;
         private float m_StartAngle;
+        private readonly List<Tuple<MazeItem, Vector2, Vector2>> m_MazeItemsMoving = new List<Tuple<MazeItem, Vector2, Vector2>>();
+        private Dictionary<MazeItem, List<Tuple<V2Int, Disc>>> m_BusyPositions = new Dictionary<MazeItem, List<Tuple<V2Int, Disc>>>();
         
         public MazeViewProt(
             IMazeModel _Model,
+            IMazeTransformer _Transformer,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter)
         {
             Model = _Model;
+            Transformer = _Transformer;
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
         }
@@ -72,39 +76,45 @@ namespace Games.RazorMaze.Views
             m_Rb.SetRotation(angle);
         }
 
-        public void OnObstacleMoveStarted(Obstacle _Obstacle, V2Int _From, V2Int _To)
+        public void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
         {
-            var obstacleItem = m_MovingObstacles
-                .SingleOrDefault(_Item => _Item.Item1 == _Obstacle);
-            if (obstacleItem != null)
-                m_MovingObstacles.Remove(obstacleItem);
-            m_MovingObstacles.Add(new Tuple<Obstacle, Vector2, Vector2>(
-                _Obstacle,
-                CoordinateConverter.ToLocalMazeItemPosition(_From),
-                CoordinateConverter.ToLocalMazeItemPosition(_To)));
+            var mazeItem = m_MazeItemsMoving
+                .SingleOrDefault(_Item => _Item.Item1 == _Args.Item);
+            if (mazeItem != null)
+                m_MazeItemsMoving.Remove(mazeItem);
+            m_MazeItemsMoving.Add(new Tuple<MazeItem, Vector2, Vector2>(
+                _Args.Item,
+                CoordinateConverter.ToLocalMazeItemPosition(_Args.From),
+                CoordinateConverter.ToLocalMazeItemPosition(_Args.To)));
         }
 
-        public void OnObstacleMove(Obstacle _Obstacle, float _Progress)
+        public void OnMazeItemMoveContinued(MazeItemMoveEventArgs _Args)
         {
-            var obstacle = m_MovingObstacles
-                .SingleOrDefault(_Tuple => _Tuple.Item1 == _Obstacle);
-            if (obstacle == null)
+            if (_Args.Item.Type == EMazeItemType.BlockMovingGravity)
+                MarkMazeItemBusyPositions(_Args.Item, Transformer.GravityProceeds[_Args.Item].BusyPositions);
+            var item = m_MazeItemsMoving
+                .SingleOrDefault(_Tuple => _Tuple.Item1 == _Args.Item);
+            if (item == null)
                 return;
-            var mazeItem = m_MazeItems.Single(_Item => _Item.Equal(_Obstacle));
-            var pos = Vector2.Lerp(obstacle.Item2, obstacle.Item3, _Progress);
+            var mazeItem = m_MazeItems.Single(_Item => _Item.Equal(_Args.Item));
+            var pos = Vector2.Lerp(item.Item2, item.Item3, _Args.Progress);
             mazeItem.SetLocalPosition(pos);
         }
         
-        public void OnObstacleMoveFinished(Obstacle _Obstacle)
+        public void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
         {
-            var obstacleItem = m_MovingObstacles
-                .SingleOrDefault(_Item => _Item.Item1 == _Obstacle);
-            if (obstacleItem == null)
+            if (_Args.Item.Type == EMazeItemType.BlockMovingGravity)
+                MarkMazeItemBusyPositions(_Args.Item, null);
+            var item = m_MazeItemsMoving
+                .SingleOrDefault(_Item => _Item.Item1 == _Args.Item);
+            if (item == null)
                 return;
-            m_MovingObstacles.Remove(obstacleItem);
+            var mazeItem = m_MazeItems.Single(_Item => _Item.Equal(_Args.Item));
+            mazeItem.SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(_Args.To));
+            m_MazeItemsMoving.Remove(item);
         }
 
-        private static float RotateCoefficient(float _Progress) => Mathf.Pow(_Progress, 2);
+        private static float RotateCoefficient(float _Progress) => _Progress;// Mathf.Pow(_Progress, 2);
 
         private static MazeOrientation GetPreviousOrientation(
             MazeRotateDirection _Direction,
@@ -135,13 +145,13 @@ namespace Games.RazorMaze.Views
 
         private void DrawWallBlockMovingPaths()
         {
-            var obstacles = Model.Info.Obstacles
-                .Where(_O => _O.Type == EObstacleType.ObstacleMoving || _O.Type == EObstacleType.Trap);
-            foreach (var obs in obstacles)
+            var items = Model.Info.MazeItems
+                .Where(_O => _O.Type == EMazeItemType.BlockMovingGravity
+                || _O.Type == EMazeItemType.TrapMovingGravity
+                || _O.Type == EMazeItemType.TrapMoving);
+            foreach (var obs in items)
             {
-                var points = new List<Vector2>();
-                if (obs.Type == EObstacleType.ObstacleMoving || obs.Type == EObstacleType.Trap)
-                    points = obs.Path.Select(_P => CoordinateConverter.ToLocalCharacterPosition(_P)).ToList();
+                var points = obs.Path.Select(_P => CoordinateConverter.ToLocalCharacterPosition(_P)).ToList();
 
                 var go = new GameObject("Line");
                 go.SetParent(ContainersGetter.MazeContainer);
@@ -150,6 +160,7 @@ namespace Games.RazorMaze.Views
                 line.Thickness = 0.3f;
                 line.Color = Color.black;
                 line.SetPoints(points);
+                line.Closed = false;
 
                 foreach (var point in points)
                 {
@@ -161,6 +172,37 @@ namespace Games.RazorMaze.Views
                     disc.Radius = 0.5f;
                     disc.Type = DiscType.Disc;
                 }
+            }
+        }
+
+        private void MarkMazeItemBusyPositions(MazeItem _Item, IEnumerable<V2Int> _Positions)
+        {
+            if (!m_BusyPositions.ContainsKey(_Item))
+                m_BusyPositions.Add(_Item, new List<Tuple<V2Int, Disc>>());
+
+            var busyPoss = m_BusyPositions[_Item];
+
+            foreach (var disc in busyPoss.Select(_Tup => _Tup.Item2))
+            {
+                if (!disc.IsNull())
+                    disc.DestroySafe();
+            }
+            busyPoss.Clear();
+
+            if (_Positions == null)
+                return;
+            
+            foreach (var pos in _Positions)
+            {
+                var go = new GameObject("Busy Pos");
+                go.SetParent(ContainersGetter.MazeContainer);
+                go.transform.localPosition = CoordinateConverter.ToLocalCharacterPosition(pos);
+                var disc = go.AddComponent<Disc>();
+                disc.Color = Color.red;
+                disc.Radius = 0.3f;
+                disc.SortingOrder = 20;
+                var tup = new Tuple<V2Int, Disc>(pos, disc);
+                busyPoss.Add(tup);
             }
         }
     }

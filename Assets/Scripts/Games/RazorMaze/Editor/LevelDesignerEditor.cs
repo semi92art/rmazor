@@ -28,7 +28,7 @@ namespace Games.RazorMaze.Editor
             });
 
             m_Des.aParam = EditorGUILayout.Slider(
-                "Walls/nodes ratio", m_Des.aParam, 0, 1);
+                "Fullness", m_Des.aParam, 0, 1);
 
             base.OnInspectorGUI();
             
@@ -53,7 +53,7 @@ namespace Games.RazorMaze.Editor
                 size,
                 size,
                 m_Des.aParam,
-                m_Des.obstacleLengths.ToArray());
+                m_Des.pathLengths.ToArray());
             var info = LevelGenerator.CreateRandomLevelInfo(parms, out m_Des.valid);
             CreateObjectsAndFocusCamera(info);
             //m_Des.valid = LevelAnalizator.IsValid(info, false);
@@ -70,8 +70,8 @@ namespace Games.RazorMaze.Editor
 
         private void CreateObjectsAndFocusCamera(MazeInfo _Info)
         {
-            var container = CommonUtils.FindOrCreateGameObject("Walls and Nodes", out _).transform;
-            m_Des.mazeItems = RazorMazePrototypingUtils.CreateMazeItems(_Info, container);
+            var container = CommonUtils.FindOrCreateGameObject("Maze", out _).transform;
+            m_Des.maze = RazorMazePrototypingUtils.CreateMazeItems(_Info, container);
             var converter = new CoordinateConverter();
             converter.Init(_Info.Width);
             var bounds = new Bounds(converter.GetCenter(), GameUtils.GetVisibleBounds().size * 0.7f);
@@ -80,11 +80,11 @@ namespace Games.RazorMaze.Editor
 
         private void ClearLevel()
         {
-            var items = m_Des.mazeItems;
+            var items = m_Des.maze;
             if (items == null)
                 return;
-            foreach (var node in items.Where(_Item => _Item != null))
-                node.gameObject.DestroySafe();
+            foreach (var item in items.Where(_Item => _Item != null))
+                item.gameObject.DestroySafe();
             items.Clear();
         }
 

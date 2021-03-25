@@ -88,7 +88,7 @@ namespace Games.RazorMaze
         private void CheckForInitialization()
         {
             if (m_Size <= 0)
-                Dbg.LogError<Exception>("Size must be greater than zero");
+                Dbg.LogError("Size must be greater than zero");
         }
         
         #endregion

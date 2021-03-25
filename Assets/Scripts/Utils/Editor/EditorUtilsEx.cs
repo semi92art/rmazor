@@ -24,11 +24,27 @@ namespace Utils.Editor
             if (GUILayout.Button(_Name))
                 _Action?.Invoke(_Arg);
         }
-        
+
         public static void GuiButtonAction<T>(UnityAction<T> _Action, T _Arg)
         {
+            if (_Action == null)
+                return;
             if (GUILayout.Button(_Action.Method.Name.WithSpaces()))
-                _Action?.Invoke(_Arg);
+                _Action.Invoke(_Arg);
+        }
+        
+        public static void GuiButtonAction<T1, T2>(string _Name, UnityAction<T1, T2> _Action, T1 _Arg1, T2 _Arg2)
+        {
+            if (GUILayout.Button(_Name))
+                _Action?.Invoke(_Arg1, _Arg2);
+        }
+
+        public static void GuiButtonAction<T1, T2>(UnityAction<T1, T2> _Action, T1 _Arg1, T2 _Arg2)
+        {
+            if (_Action == null)
+                return;
+            if (GUILayout.Button(_Action.Method.Name.WithSpaces()))
+                _Action.Invoke(_Arg1, _Arg2);
         }
 
         public static void DrawUiLine(Color _C, int _Thickness = 2, int _Padding = 10)

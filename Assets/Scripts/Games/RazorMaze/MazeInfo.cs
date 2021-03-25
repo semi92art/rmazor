@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Entities;
 using Games.RazorMaze.Models;
 
 namespace Games.RazorMaze
@@ -7,7 +8,7 @@ namespace Games.RazorMaze
     {
         public int Width { get; set; }
         public int Height { get; set; }
-        public List<Node> Nodes { get; set; } = new List<Node>();
-        public List<Obstacle> Obstacles { get; set; } = new List<Obstacle>();
+        public List<V2Int> Path { get; set; } = new List<V2Int>();
+        public List<MazeItem> MazeItems { get; set; } = new List<MazeItem>();
     }
 }

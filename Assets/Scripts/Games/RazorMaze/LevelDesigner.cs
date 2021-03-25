@@ -4,6 +4,7 @@ using System.Linq;
 using Constants;
 using Entities;
 using Exceptions;
+using Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Prot;
 using Malee.List;
@@ -19,18 +20,18 @@ namespace Games.RazorMaze
     {
         public static LevelDesigner Instance => FindObjectOfType<LevelDesigner>();
         
-        [Serializable] public class ObstacleLengthList : ReorderableArray<int> { }
+        [Serializable] public class LengthsList : ReorderableArray<int> { }
         
         private const int MinSize = 5;
         private const int MaxSize = 20;
 
-        [Header("Path lengths"), Reorderable(paginate = true, pageSize = 5)] public ObstacleLengthList obstacleLengths;
+        [Header("Path lengths"), Reorderable(paginate = true, pageSize = 5)] public LengthsList pathLengths;
         
         [HideInInspector] public List<int> sizes = Enumerable.Range(MinSize, MaxSize).ToList();
         [HideInInspector] public int sizeIdx;
         [HideInInspector] public float aParam;
         [HideInInspector] public bool valid;
-        [HideInInspector] public List<MazeProtItem> mazeItems;
+        [HideInInspector] public List<MazeProtItem> maze;
 
         private static MazeInfo MazeInfo
         {
@@ -67,53 +68,60 @@ namespace Games.RazorMaze
         
         public MazeInfo GetLevelInfoFromScene()
         {
-            var nodes = mazeItems
-                .Where(_Item => _Item.Type == MazeItemType.Node)
-                .Select(_Item => _Item.start)
-                .Select(_PosInt => new Node{Position = _PosInt})
-                .ToList();
-            var nodeStart = mazeItems.Where(_Item => _Item.Type == MazeItemType.NodeStart)
-                .Select(_Item => new Node{Position = _Item.start}).First();
-            nodes.Insert(0, nodeStart);
-            var obstacles  = mazeItems
-                .Where(_Item => _Item.Type == MazeItemType.Obstacle 
-                                || _Item.Type == MazeItemType.ObstacleMoving 
-                                || _Item.Type == MazeItemType.ObstacleMovingFree
-                                || _Item.Type == MazeItemType.ObstacleTrap
-                                || _Item.Type == MazeItemType.ObstacleTrapMoving
-                                || _Item.Type == MazeItemType.ObstacleTrapMovingFree)
-                .Select(_Item =>
-                {
-                    var type = RazorMazePrototypingUtils.GetObstacleType(_Item.Type);
-                    return new Obstacle
-                    {
-                        Position = _Item.start, 
-                        Path = _Item.path,
-                        Type = type
-                    };
-                }).ToList();
-            foreach (var obs in obstacles.ToList())
+            var protItemStart = maze.FirstOrDefault(_Item => _Item.props.IsStartNode);
+            if (protItemStart == null)
             {
-                switch (obs.Type)
+                Dbg.LogError("Maze must contain start item");
+                return null;
+            }
+            var path = maze
+                .Where(_Item => _Item.props.IsNode && !_Item.props.IsStartNode)
+                .Select(_Item => _Item.props.Position)
+                .ToList();
+            path.Insert(0, protItemStart.props.Position);
+            var mazeProtItems = maze
+                .Where(_Item => !_Item.props.IsNode)
+                .Select(_Item => _Item.props).ToList();
+            foreach (var item in mazeProtItems.ToList())
+            {
+                switch (item.Type)
                 {
-                    case EObstacleType.Obstacle: break; // do nothing
-                    case EObstacleType.Trap:
-                    case EObstacleType.TrapMoving:
-                        obstacles.Add(new Obstacle {Position = obs.Position, Type = EObstacleType.Obstacle});
+                    case EMazeItemType.Block: 
+                    case EMazeItemType.Turret:
+                    case EMazeItemType.Portal:
+                    case EMazeItemType.TrapIncreasing:
+                    case EMazeItemType.TrapReact:
+                    case EMazeItemType.BlockTransformingToNode:
+                        // do nothing
                         break;
-                    case EObstacleType.ObstacleMoving:
-                    case EObstacleType.ObstacleMovingFree:
-                    case EObstacleType.TrapMovingFree:
-                        nodes.Add(new Node{Position = obs.Position});
+                    case EMazeItemType.TrapMoving:
+                    case EMazeItemType.TurretRotating:
+                    case EMazeItemType.BlockMovingGravity:
+                    case EMazeItemType.TrapMovingGravity:
+                        path.Add(item.Position);
                         break;
-                    default: throw new SwitchCaseNotImplementedException(obs.Type);
+                    default: throw new SwitchCaseNotImplementedException(item.Type);
                 }
             }
             return new MazeInfo{
-                Width     = sizes[sizeIdx],
-                Height    = sizes[sizeIdx],
-                Nodes     = nodes,
-                Obstacles = obstacles
+                Width = sizes[sizeIdx],
+                Height = sizes[sizeIdx],
+                Path = path,
+                MazeItems = mazeProtItems
+                    .SelectMany(_Item =>
+                    {
+                        var dirs = _Item.Directions.Clone();
+                        dirs.Add(V2Int.zero);
+                        return dirs.Select(_Dir =>
+                                new MazeItem
+                                {
+                                    Direction = _Dir,
+                                    Pair = _Item.Pair,
+                                    Path = _Item.Path,
+                                    Type = _Item.Type,
+                                    Position = _Item.Position
+                                });
+                    }).ToList()
             };
         }
     }

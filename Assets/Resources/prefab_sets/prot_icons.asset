@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1600272214c7aa418cb76f5cc38aecb, type: 3}
+  m_Name: prot_icons
+  m_EditorClassIdentifier: 
+  prefabs:
+    array:
+    - item: {fileID: 21300000, guid: bf43b2cb06a404d4ca6d97d8b6e8b1c2, type: 3}
+      name: turret
+    - item: {fileID: 21300000, guid: b10723808d3cb644e8bbde2d4f3ebda9, type: 3}
+      name: turret-rotate
+    - item: {fileID: 21300000, guid: b10723808d3cb644e8bbde2d4f3ebda9, type: 3}
+      name: turret-rotate
+    - item: {fileID: 21300000, guid: 7f664eb52c7766e4881ba2816ec3606c, type: 3}
+      name: block-gravity
+    - item: {fileID: 21300000, guid: 3417a80f0f6fd4046bbe457cbb3496c2, type: 3}
+      name: portal
+    - item: {fileID: 21300000, guid: 21819db3562a3a246b94885e91589566, type: 3}
+      name: trap-gravity
+    - item: {fileID: 21300000, guid: ddaa992ddcf8115488c4de22dd1913a0, type: 3}
+      name: trap-increase
+    - item: {fileID: 21300000, guid: 6907f400f9965b4499b2e749685f68e8, type: 3}
+      name: trap-moving
+    - item: {fileID: 21300000, guid: 5aee6871fb8cd0e41bb977d08171481f, type: 3}
+      name: trap-react
+    - item: {fileID: 21300000, guid: 4f08cbf4c6138264ba6a56e665340de8, type: 3}
+      name: trap
+    - item: {fileID: 21300000, guid: 53c7c7e999c03b444804afa14bdbf8b7, type: 3}
+      name: block-gravity-free
+    - item: {fileID: 21300000, guid: 218386cb18c1c18409baa86353658ba9, type: 3}
+      name: trap-gravity-free

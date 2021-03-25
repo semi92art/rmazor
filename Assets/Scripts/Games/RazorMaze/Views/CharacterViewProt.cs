@@ -1,5 +1,4 @@
-﻿using Entities;
-using Games.RazorMaze.Models;
+﻿using Games.RazorMaze.Models;
 using Shapes;
 using UnityEngine;
 
@@ -29,19 +28,19 @@ namespace Games.RazorMaze.Views
         {
             CoordinateConverter.Init(MazeModel.Info.Width);
             InitShape(0.4f * CoordinateConverter.GetScale(), new Color(1f, 0.38f, 0f));
-            var pos = CoordinateConverter.ToLocalCharacterPosition(MazeModel.Info.Nodes[0].Position);
+            var pos = CoordinateConverter.ToLocalCharacterPosition(MazeModel.Info.Path[0]);
             SetPosition(pos);
         }
 
-        public void OnStartChangePosition(V2Int _PrevPos, V2Int _NextPos)
+        public void OnStartChangePosition(CharacterMovingEventArgs _Args)
         {
-            m_PrevPos = CoordinateConverter.ToLocalCharacterPosition(_PrevPos);
-            m_NextPos = CoordinateConverter.ToLocalCharacterPosition(_NextPos);
+            m_PrevPos = CoordinateConverter.ToLocalCharacterPosition(_Args.From);
+            m_NextPos = CoordinateConverter.ToLocalCharacterPosition(_Args.To);
         }
 
-        public void OnMoving(float _Progress)
+        public void OnMoving(CharacterMovingEventArgs _Args)
         {
-            float coeff = MoveCoefficient(_Progress);
+            float coeff = MoveCoefficient(_Args.Progress);
             var pos = Vector2.Lerp(m_PrevPos, m_NextPos, coeff);
             SetPosition(pos);
         }
@@ -55,8 +54,8 @@ namespace Games.RazorMaze.Views
         {
             
         }
-        
-        private static float MoveCoefficient(float _Progress) => Mathf.Pow(_Progress, 2);
+
+        private static float MoveCoefficient(float _Progress) => _Progress;// Mathf.Pow(_Progress, 2);
         
         private void InitShape(float _Radius, Color _Color)
         {

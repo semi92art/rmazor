@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Entities
 {
     [Serializable]
-    public struct V2Int
+    public struct V2Int : ICloneable
     {
         public int X => x;
         public int Y => y;
@@ -15,6 +15,7 @@ namespace Entities
 
         [JsonConstructor] public V2Int(int _X, int _Y) { x = _X; y = _Y; }
         public V2Int(Vector2Int _V) { x = _V.x; y = _V.y; }
+        public V2Int(Vector2 _V) { x = Mathf.RoundToInt(_V.x); y = Mathf.RoundToInt(_V.y); }
         public Vector2Int ToVector2Int() => new Vector2Int(X, Y);
         public Vector2 ToVector2() => new Vector2(X, Y);
         public static V2Int operator +(V2Int _V1, V2Int _V2) => new V2Int(_V1.X + _V2.X, _V1.Y + _V2.Y);
@@ -26,7 +27,8 @@ namespace Entities
         public override bool Equals(object obj) => obj is V2Int other && Equals(other);
         public override int GetHashCode() { unchecked { return (X * 397) ^ Y; } }
         public override string ToString() => $"({X}, {Y})";
-        
+        public object Clone() => new V2Int(X, Y);
+
         public V2Int PlusX(int _X) => new V2Int(X + _X, Y);
         public V2Int MinusX(int _X) => new V2Int(X - _X, Y);
         public V2Int PlusY(int _Y) => new V2Int(X, Y + _Y);
@@ -38,5 +40,6 @@ namespace Entities
         public static V2Int left => new V2Int(Vector2Int.left);
         public static V2Int right => new V2Int(Vector2Int.right);
         public static V2Int one => new V2Int(Vector2Int.one);
+        public static V2Int zero => new V2Int(Vector2Int.zero);
     }
 }

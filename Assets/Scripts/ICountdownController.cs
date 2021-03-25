@@ -12,7 +12,7 @@ public interface ICountdownController
     void StopCountdown();
 }
 
-public class CountdownController : UnityGameLoopObjectDI, ICountdownController, IOnUpdate
+public class CountdownController : Ticker, ICountdownController, IOnUpdate
 {
     #region protected members
 

@@ -10,7 +10,7 @@ namespace Entities
         protected abstract void OnNotify(object _Sender, string _NotifyMessage, params object[] _Args);
     }
 
-    public abstract class GameObservable : UnityGameLoopObjectDI
+    public abstract class GameObservable : Ticker
     {
         private readonly List<GameObserver> m_Observers = new List<GameObserver>();
 

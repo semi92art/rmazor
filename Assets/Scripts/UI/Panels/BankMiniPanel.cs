@@ -244,7 +244,7 @@ namespace UI.Panels
                         IncomeAnimDeltaTime * IncomeCoinsAnimOnScreen,
                         _Pos => coin.Item.position = _Pos,
                         UiTimeProvider.Instance,
-                        () =>
+                        (_Breaked, _Progress) =>
                         {
                             coin.IsBusy = false;
                             if (coin.Item != null)

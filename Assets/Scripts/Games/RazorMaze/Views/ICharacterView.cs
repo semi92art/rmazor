@@ -6,8 +6,8 @@ namespace Games.RazorMaze.Views
     public interface ICharacterView
     {
         void Init();
-        void OnStartChangePosition(V2Int _PrevPos, V2Int _NextPos);
-        void OnMoving(float _Progress);
+        void OnStartChangePosition(CharacterMovingEventArgs _Args);
+        void OnMoving(CharacterMovingEventArgs _Args);
         void OnDeath();
         void OnHealthChanged(HealthPointsEventArgs _Args);
     }
