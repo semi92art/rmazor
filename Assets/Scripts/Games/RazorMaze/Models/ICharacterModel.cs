@@ -20,14 +20,13 @@ namespace Games.RazorMaze.Models
     public delegate void HealthPointsChangedHandler(HealthPointsEventArgs _Args);
     public delegate void CharacterMovingHandler(CharacterMovingEventArgs _Args);
 
-    public interface ICharacterModel
+    public interface ICharacterModel : IInit, IPreInit
     {
         event CharacterMovingHandler MoveStarted;
         event CharacterMovingHandler MoveContinued;
         event CharacterMovingHandler MoveFinished;
         event HealthPointsChangedHandler HealthChanged;
         event NoArgsHandler Death;
-        void Init();
         long HealthPoints { get; set; }
         V2Int Position { get; }
         void Move(MazeMoveDirection _Direction);

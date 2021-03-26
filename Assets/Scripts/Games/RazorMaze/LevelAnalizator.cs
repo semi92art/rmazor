@@ -28,7 +28,7 @@ namespace Games.RazorMaze
             var currPathItemPos = solves[0].Position;
             solves[0].Solved = true;
 
-            int triesCount = _Info.Height * _Info.Width;
+            int triesCount = _Info.Size.X * _Info.Size.Y;
             if (!_FastValidation)
                 triesCount *= 1000;
             int k = 0;

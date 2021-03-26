@@ -1,11 +1,9 @@
-﻿using Entities;
-using Games.RazorMaze.Models;
+﻿using Games.RazorMaze.Models;
 
-namespace Games.RazorMaze.Views
+namespace Games.RazorMaze.Views.Characters
 {
-    public interface ICharacterView
+    public interface IViewCharacter : IInit
     {
-        void Init();
         void OnStartChangePosition(CharacterMovingEventArgs _Args);
         void OnMoving(CharacterMovingEventArgs _Args);
         void OnDeath();

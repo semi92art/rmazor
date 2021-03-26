@@ -1,20 +1,27 @@
 ﻿using Games.RazorMaze.Models;
 using Shapes;
 using UnityEngine;
+using Utils;
 
-namespace Games.RazorMaze.Views
+namespace Games.RazorMaze.Views.Characters
 {
-    public class CharacterViewProt : ICharacterView
+    public class ViewCharacterProt : IViewCharacter
     {
-        private ICoordinateConverter CoordinateConverter { get; }
-        private IMazeModel MazeModel { get; }
-        public IContainersGetter ContainersGetter { get; }
-
+        #region nonpublic members
+        
         private Vector2 m_PrevPos;
         private Vector2 m_NextPos;
         private Disc m_Shape;
         
-        public CharacterViewProt(
+        #endregion
+     
+        #region inject
+        
+        private ICoordinateConverter CoordinateConverter { get; }
+        private IMazeModel MazeModel { get; }
+        private IContainersGetter ContainersGetter { get; }
+        
+        public ViewCharacterProt(
             ICoordinateConverter _CoordinateConverter, 
             IMazeModel _MazeModel, 
             IContainersGetter _ContainersGetter)
@@ -24,9 +31,13 @@ namespace Games.RazorMaze.Views
             ContainersGetter = _ContainersGetter;
         }
         
+        #endregion
+        
+        #region api
+        
         public void Init()
         {
-            CoordinateConverter.Init(MazeModel.Info.Width);
+            CoordinateConverter.Init(MazeModel.Info.Size);
             InitShape(0.4f * CoordinateConverter.GetScale(), new Color(1f, 0.38f, 0f));
             var pos = CoordinateConverter.ToLocalCharacterPosition(MazeModel.Info.Path[0]);
             SetPosition(pos);
@@ -40,8 +51,7 @@ namespace Games.RazorMaze.Views
 
         public void OnMoving(CharacterMovingEventArgs _Args)
         {
-            float coeff = MoveCoefficient(_Args.Progress);
-            var pos = Vector2.Lerp(m_PrevPos, m_NextPos, coeff);
+            var pos = Vector2.Lerp(m_PrevPos, m_NextPos, _Args.Progress);
             SetPosition(pos);
         }
 
@@ -55,7 +65,9 @@ namespace Games.RazorMaze.Views
             
         }
 
-        private static float MoveCoefficient(float _Progress) => _Progress;// Mathf.Pow(_Progress, 2);
+        #endregion
+        
+        #region nonpublic methods
         
         private void InitShape(float _Radius, Color _Color)
         {
@@ -70,5 +82,7 @@ namespace Games.RazorMaze.Views
         {
             ContainersGetter.CharacterContainer.localPosition = _Position;
         }
+        
+        #endregion
     }
 }

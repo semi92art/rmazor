@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityGameLoopDI;
 
-namespace Games.RazorMaze.Views
+namespace Games.RazorMaze.Views.InputConfigurators
 {
     public class RazorMazeInputConfiguratorProt : Ticker, IInputConfigurator, IOnUpdate 
     {

@@ -1,10 +1,9 @@
 ﻿using System.Collections;
 using Entities;
-using Games.RazorMaze.Models;
 using UnityEngine;
 using Utils;
 
-namespace Games.RazorMaze
+namespace Games.RazorMaze.Models
 {
     public interface ICharacterMover
     {
@@ -52,7 +51,7 @@ namespace Games.RazorMaze
                 pathLength / Settings.characterSpeed,
                 _Progress => CharacterMoveContinued?.Invoke(new CharacterMovingEventArgs(_From, _To, _Progress)),
                 GameTimeProvider.Instance,
-                (_Breaked, _Progress) => CharacterMoveFinished?.Invoke(new CharacterMovingEventArgs(_From, _To, _Progress)));
+                (_Stopped, _Progress) => CharacterMoveFinished?.Invoke(new CharacterMovingEventArgs(_From, _To, _Progress)));
         }
 
         #endregion

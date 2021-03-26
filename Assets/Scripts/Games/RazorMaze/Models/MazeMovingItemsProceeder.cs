@@ -1,21 +1,39 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections;
-using System.IO;
+using System.Collections.Generic;
 using System.Linq;
 using Entities;
 using Exceptions;
 using Extensions;
-using Games.RazorMaze.Models;
-using ModestTree;
+using Games.RazorMaze.Models.ProceedInfos;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityGameLoopDI;
 using Utils;
 
-namespace Games.RazorMaze
+namespace Games.RazorMaze.Models
 {
-    public interface IMazeTransformer
+    public class MazeItemMoveEventArgs : EventArgs
+    {
+        public MazeItem Item { get; }
+        public V2Int From { get; }
+        public V2Int To { get; }
+        public float Progress { get; }
+        public bool Stopped { get; }
+
+        public MazeItemMoveEventArgs(MazeItem _Item, V2Int _From, V2Int _To, float _Progress, bool _Stopped = false)
+        {
+            Item = _Item;
+            From = _From;
+            To = _To;
+            Progress = _Progress;
+            Stopped = _Stopped;
+        }
+    }
+    
+    public delegate void MazeItemMoveHandler(MazeItemMoveEventArgs Args);
+    
+    public interface IMazeMovingItemsProceeder
     {
         event MazeItemMoveHandler MazeItemMoveStarted;
         event MazeItemMoveHandler MazeItemMoveContinued;
@@ -23,11 +41,10 @@ namespace Games.RazorMaze
         void TransformItemsAfterMazeRotate(MazeOrientation _Orientation);
         void OnCharacterMoveContinued(CharacterMovingEventArgs _Args, MazeOrientation _Orientation);
         void StartProcessItems(MazeInfo _Info);
-        Dictionary<MazeItem, MazeItemProceeding> MovableProceeds { get; }
-        Dictionary<MazeItem, MazeItemProceeding> GravityProceeds { get; }
+        Dictionary<MazeItem, MazeItemMovingProceedInfo> ProceedInfos { get; }
     }
 
-    public class MazeTransformer : Ticker, IOnUpdate, IMazeTransformer
+    public class MazeMovingItemsProceeder : Ticker, IOnUpdate, IMazeMovingItemsProceeder
     {
         #region nonpublic members
         
@@ -41,7 +58,7 @@ namespace Games.RazorMaze
         
         private RazorMazeModelSettings Settings { get; }
 
-        public MazeTransformer(RazorMazeModelSettings _Settings)
+        public MazeMovingItemsProceeder(RazorMazeModelSettings _Settings)
         {
             Settings = _Settings;
         }
@@ -54,12 +71,7 @@ namespace Games.RazorMaze
         public event MazeItemMoveHandler MazeItemMoveContinued;
         public event MazeItemMoveHandler MazeItemMoveFinished;
         
-        public Dictionary<MazeItem, MazeItemProceeding> MovableProceeds { get; private set; }
-        public Dictionary<MazeItem, MazeItemProceeding> GravityProceeds { get; private set; }
-        public void OnCharacterMoved(CharacterMovingEventArgs _Args)
-        {
-            m_CharacterPos = _Args.To;
-        }
+        public Dictionary<MazeItem, MazeItemMovingProceedInfo> ProceedInfos { get; private set; }
 
         public void TransformItemsAfterMazeRotate(MazeOrientation _Orientation)
         {
@@ -80,29 +92,28 @@ namespace Games.RazorMaze
         public void StartProcessItems(MazeInfo _Info)
         {
             m_Info = _Info;
-            MovableProceeds = _Info.MazeItems
-                .Where(_Item => _Item.Type == EMazeItemType.TrapMoving)
-                .ToDictionary(_Item => _Item, _Item => new MazeItemProceeding
-                {
-                    Item = _Item,
-                    MoveByPathDirection = EMazeItemMoveByPathDirection.Forward
-                });
-            GravityProceeds = _Info.MazeItems
+            ProceedInfos = _Info.MazeItems
                 .Where(_Item => _Item.Type == EMazeItemType.BlockMovingGravity
-                                || _Item.Type == EMazeItemType.TrapMovingGravity)
-                .ToDictionary(_Item => _Item, _Item => new MazeItemProceeding
+                                || _Item.Type == EMazeItemType.TrapMovingGravity
+                                || _Item.Type == EMazeItemType.TrapMoving)
+                .ToDictionary(_Item => _Item, _Item => new MazeItemMovingProceedInfo
                 {
                     Item = _Item,
-                    MoveByPathDirection = EMazeItemMoveByPathDirection.Forward
+                    MoveByPathDirection = EMazeItemMoveByPathDirection.Forward,
+                    IsProceeding = false,
+                    PauseTimer = 0,
+                    BusyPositions = new List<V2Int>{_Item.Position},
+                    ProceedingStage = 0
                 });
             m_DoProceed = true;
         }
         
-        public void OnUpdate()
+        void IOnUpdate.OnUpdate()
         {
             if (!m_DoProceed)
                 return;
-            foreach (var proceed in MovableProceeds.Values.Where(_P => !_P.IsProceeding))
+            foreach (var proceed in ProceedInfos.Values
+                .Where(_P => !_P.IsProceeding && _P.Item.Type == EMazeItemType.TrapMoving))
             {
                 proceed.PauseTimer += Time.deltaTime;
                 if (proceed.PauseTimer < Settings.movingItemsPause)
@@ -120,50 +131,56 @@ namespace Games.RazorMaze
         private void MoveMazeItemsGravity(MazeOrientation _Orientation, V2Int _CharacterPoint)
         {
             var dropDirection = RazorMazeUtils.GetDropDirection(_Orientation);
-            foreach (var item in GravityProceeds.Values.Where(_P => _P.Item.Type == EMazeItemType.BlockMovingGravity))
+            foreach (var item in ProceedInfos.Values.Where(_P => _P.Item.Type == EMazeItemType.BlockMovingGravity))
                 MoveMazeItemGravity(item, dropDirection, _CharacterPoint);
-            foreach (var item in GravityProceeds.Values.Where(_P => _P.Item.Type == EMazeItemType.TrapMovingGravity))
+            foreach (var item in ProceedInfos.Values.Where(_P => _P.Item.Type == EMazeItemType.TrapMovingGravity))
                 MoveMazeItemGravity(item, dropDirection);
         }
         
         private void MoveMazeItemGravity(
-            MazeItemProceeding _MazeItemProceeding, 
+            MazeItemMovingProceedInfo _Info, 
             V2Int _DropDirection,
             V2Int? _CharacterPoint = null)
         {
             Coroutines.Run(Coroutines.WaitWhile(
-                () => _MazeItemProceeding.IsProceeding,
+                () => _Info.IsProceeding,
                 () =>
                 {
-                    _MazeItemProceeding.IsProceeding = true;
-                    var pos = _MazeItemProceeding.Item.Position;
+                    _Info.IsProceeding = true;
+                    var pos = _Info.Item.Position;
                     bool doMoveByPath = false;
                     V2Int? altPos = null;
-                    while (RazorMazeUtils.IsValidPositionForMove(m_Info, _MazeItemProceeding.Item, pos + _DropDirection))
+                    while (RazorMazeUtils.IsValidPositionForMove(m_Info, _Info.Item, pos + _DropDirection))
                     {
                         pos += _DropDirection;
                         if (_CharacterPoint.HasValue && _CharacterPoint.Value == pos)
                             altPos = pos - _DropDirection;
-                        if (_MazeItemProceeding.Item.Path.All(_Pos => pos != _Pos))
+                        var pos1 = pos;
+                        if (_Info.Item.Path.All(_Pos => pos1 != _Pos))
                             continue;
-                        int fromPosIdx = _MazeItemProceeding.Item.Path.IndexOf(_MazeItemProceeding.Item.Position);
-                        int toPosIds = _MazeItemProceeding.Item.Path.IndexOf(pos);
+                        int fromPosIdx = _Info.Item.Path.IndexOf(_Info.Item.Position);
+                        if (fromPosIdx == -1)
+                        {
+                            doMoveByPath = true;
+                            break;
+                        }
+                        int toPosIds = _Info.Item.Path.IndexOf(pos);
                         if (Math.Abs(toPosIds - fromPosIdx) > 1)
                             continue;
                         doMoveByPath = true;
                         break;
                     }
 
-                    if (!doMoveByPath || pos == _MazeItemProceeding.Item.Position)
+                    if (!doMoveByPath || pos == _Info.Item.Position)
                     {
-                        _MazeItemProceeding.IsProceeding = false;                       
+                        _Info.IsProceeding = false;                       
                         return;
                     }
                     
-                    var from = _MazeItemProceeding.Item.Position;
+                    var from = _Info.Item.Position;
                     var to = altPos ?? pos;
 
-                    Coroutines.Run(MoveMazeItemGravityCore(_MazeItemProceeding, from, to));
+                    Coroutines.Run(MoveMazeItemGravityCoroutine(_Info, from, to));
                 }));
         }
 
@@ -175,7 +192,7 @@ namespace Games.RazorMaze
             V2Int to;
             int idx = _Item.Path.IndexOf(_Item.Position);
             var path = _Item.Path.ToList();
-            var proceeing = MovableProceeds[_Item];
+            var proceeing = ProceedInfos[_Item];
             switch (proceeing.MoveByPathDirection)
             {
                 case EMazeItemMoveByPathDirection.Forward:
@@ -200,16 +217,16 @@ namespace Games.RazorMaze
                     break;
                 default: throw new SwitchCaseNotImplementedException(proceeing.MoveByPathDirection);
             }
-            Coroutines.Run(MoveMazeItemMoving(_Item, from, to, _OnFinish));
+            Coroutines.Run(MoveMazeItemMovingCoroutine(_Item, from, to, _OnFinish));
         }
 
-        private IEnumerator MoveMazeItemGravityCore(
-            MazeItemProceeding _Proceeding,
+        private IEnumerator MoveMazeItemGravityCoroutine(
+            MazeItemMovingProceedInfo _Info,
             V2Int _From,
             V2Int _To)
         {
-            var item = _Proceeding.Item;
-            var busyPositions = _Proceeding.BusyPositions;
+            var item = _Info.Item;
+            var busyPositions = _Info.BusyPositions;
             MazeItemMoveStarted?.Invoke(new MazeItemMoveEventArgs(item, _From, _To, 0));
             var direction = (_To.ToVector2() - _From.ToVector2Int()).normalized;
             float distance = Vector2Int.Distance(_From.ToVector2Int(), _To.ToVector2Int());
@@ -227,18 +244,18 @@ namespace Games.RazorMaze
                     MazeItemMoveContinued?.Invoke(new MazeItemMoveEventArgs(item, _From, _To, _Progress));
                 },
                 GameTimeProvider.Instance,
-                (_Breaked, _Progress) =>
+                (_Stopped, _Progress) =>
                 {
-                    var to = !_Breaked ? _To : _Proceeding.BusyPositions[0];  
+                    var to = !_Stopped ? _To : _Info.BusyPositions[0];  
                     item.Position = to;
-                    MazeItemMoveFinished?.Invoke(new MazeItemMoveEventArgs(item, _From, to, _Progress, _Breaked));
-                    _Proceeding.IsProceeding = false;
+                    MazeItemMoveFinished?.Invoke(new MazeItemMoveEventArgs(item, _From, to, _Progress, _Stopped));
+                    _Info.IsProceeding = false;
                     busyPositions.Clear();
                     busyPositions.Add(to);
                 }, () => busyPositions.Any() && busyPositions.Last() == m_CharacterPos);
         }
 
-        private IEnumerator MoveMazeItemMoving(
+        private IEnumerator MoveMazeItemMovingCoroutine(
             MazeItem _Item,
             V2Int _From,
             V2Int _To,
@@ -252,23 +269,15 @@ namespace Games.RazorMaze
                 distance / Settings.movingItemsSpeed,
                 _Progress => MazeItemMoveContinued?.Invoke(new MazeItemMoveEventArgs(_Item, _From, _To, _Progress)),
                 GameTimeProvider.Instance,
-                (_Breaked, _Progress) =>
+                (_Stopped, _Progress) =>
                 {
                     _Item.Position = _To;
+                    float progress = _Stopped ? _Progress : 1;
                     _OnFinish?.Invoke();
-                    MazeItemMoveFinished?.Invoke(new MazeItemMoveEventArgs(_Item, _From, _To, _Progress));
+                    MazeItemMoveFinished?.Invoke(new MazeItemMoveEventArgs(_Item, _From, _To, progress, _Stopped));
                 });
         }
 
         #endregion
-    }
-    
-    public class MazeItemProceeding
-    {
-        public MazeItem Item { get; set; }
-        public bool IsProceeding { get; set; }
-        public float PauseTimer { get; set; }
-        public EMazeItemMoveByPathDirection MoveByPathDirection { get; set; }
-        public List<V2Int> BusyPositions { get; } = new List<V2Int>();
     }
 }

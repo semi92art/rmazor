@@ -1,5 +1,4 @@
-﻿using Entities;
-using Utils;
+﻿using Utils;
 
 namespace Games.RazorMaze.Models
 {
@@ -23,8 +22,10 @@ namespace Games.RazorMaze.Models
             get => m_Info;
             set
             {
-                MazeChanged?.Invoke(m_Info = value, Orientation);
-                MazeTransformer.StartProcessItems(m_Info);
+                m_Info = value;
+                MazeChanged?.Invoke(m_Info, Orientation);
+                MazeMovingItemsProceeder.StartProcessItems(m_Info);
+                MazeTrapsReactProceeder.OnMazeChanged(m_Info);
             }
         }
 
@@ -32,14 +33,17 @@ namespace Games.RazorMaze.Models
 
         #region inject
         
-        private ICharacterModel CharacterModel { get; }
-        private IMazeTransformer MazeTransformer { get; }
+        private IMazeMovingItemsProceeder MazeMovingItemsProceeder { get; }
+        private IMazeTrapsReactProceeder MazeTrapsReactProceeder { get; }
         private RazorMazeModelSettings Settings { get; }
 
-        public MazeModel(ICharacterModel _CharacterModel, IMazeTransformer _MazeTransformer, RazorMazeModelSettings _Settings)
+        public MazeModel(
+            IMazeMovingItemsProceeder _MazeMovingItemsProceeder, 
+            IMazeTrapsReactProceeder _MazeTrapsReactProceeder,
+            RazorMazeModelSettings _Settings)
         {
-            CharacterModel = _CharacterModel;
-            MazeTransformer = _MazeTransformer;
+            MazeMovingItemsProceeder = _MazeMovingItemsProceeder;
+            MazeTrapsReactProceeder = _MazeTrapsReactProceeder;
             Settings = _Settings;
         }
         
@@ -58,13 +62,14 @@ namespace Games.RazorMaze.Models
                 1 / Settings.mazeRotateSpeed, 
                 _Val => Rotation?.Invoke(_Val),
                 GameTimeProvider.Instance, 
-                (_Breaked, _Progress) =>
+                (_Stopped, _Progress) =>
                 {
                     RotationFinished?.Invoke();
-                    MazeTransformer.TransformItemsAfterMazeRotate(Orientation);
+                    MazeMovingItemsProceeder.TransformItemsAfterMazeRotate(Orientation);
                 }));
         }
 
         #endregion
+
     }
 }

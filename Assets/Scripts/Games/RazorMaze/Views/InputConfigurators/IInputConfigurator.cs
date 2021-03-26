@@ -1,4 +1,4 @@
-﻿namespace Games.RazorMaze.Views
+﻿namespace Games.RazorMaze.Views.InputConfigurators
 {
     public interface IInputConfigurator
     {

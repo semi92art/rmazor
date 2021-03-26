@@ -1,5 +1,4 @@
-﻿using System;
-using Entities;
+﻿using Entities;
 using Extensions;
 using UnityEngine;
 using Utils;
@@ -9,7 +8,7 @@ namespace Games.RazorMaze
 {
     public interface ICoordinateConverter
     {
-        void Init(int _Size);
+        void Init(V2Int _MazeSize);
         float GetScale();
         Vector2 GetCenter();
         Vector2 ToLocalMazeItemPosition(V2Int _Point);
@@ -24,7 +23,7 @@ namespace Games.RazorMaze
         private float TopOffset => 5f;
         private float BottomOffset => 10f;
 
-        private int m_Size;
+        private V2Int m_MazeSize;
         private float m_Scale;
         private Vector2 m_StartPoint;
         private Vector2 m_Center;
@@ -35,11 +34,11 @@ namespace Games.RazorMaze
 
         [Inject] public CoordinateConverter() => SetCenter();
 
-        public void Init(int _Size)
+        public void Init(V2Int _MazeSize)
         {
-            m_Size = _Size;
+            m_MazeSize = _MazeSize;
             CheckForInitialization();
-            SetStartPointAndScale(m_Size);
+            SetStartPointAndScale();
         }
 
         public float GetScale()
@@ -66,11 +65,11 @@ namespace Games.RazorMaze
 
         #region nonpublic menhods
 
-        private void SetStartPointAndScale(int _Size)
+        private void SetStartPointAndScale()
         {
             var bounds = GameUtils.GetVisibleBounds();
             float realBoundsSize = bounds.size.x - HorizontalOffset * 2f;
-            m_Scale = realBoundsSize / _Size;
+            m_Scale = realBoundsSize / m_MazeSize.X;
             float startX = bounds.min.x + HorizontalOffset + m_Scale * 0.5f;
             float startY = bounds.min.y + BottomOffset;
             m_StartPoint = new Vector2(startX, startY);
@@ -87,8 +86,10 @@ namespace Games.RazorMaze
 
         private void CheckForInitialization()
         {
-            if (m_Size <= 0)
-                Dbg.LogError("Size must be greater than zero");
+            if (m_MazeSize.X <= 0)
+                Dbg.LogError("Maze width must be greater than zero");
+            if (m_MazeSize.Y <= 0)
+                Dbg.LogError("Maze height must be greater than zero");
         }
         
         #endregion

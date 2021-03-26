@@ -1,5 +1,4 @@
-﻿using Entities;
-using Games.RazorMaze.Models;
+﻿using Games.RazorMaze.Models;
 using Games.RazorMaze.Views;
 using UnityEngine;
 using Utils;
@@ -7,10 +6,7 @@ using Zenject;
 
 namespace Games.RazorMaze
 {
-    public interface IGameManager
-    {
-        void Init();
-    }
+    public interface IGameManager : IInit, IPreInit { }
     
     public class RazorMazeGameManager : MonoBehaviour, ISingleton, IGameManager
     {
@@ -31,91 +27,90 @@ namespace Games.RazorMaze
 
         #endregion
         
-        #region nonpublic members
+        #region inject
         
-        private IGameModel           GameModel { get; set; }
-        private IMazeView            MazeView { get; set; }
-        private ICharacterView       CharacterView { get; set; }
-        private IGameUiView          GameUiView { get; set; }
-        private IInputConfigurator   InputConfigurator { get; set; }
-
-        #endregion
-    
-        #region api
-
+        private IModelGame           Model { get; set; }
+        private IViewGame            View { get; set; }
+        
         [Inject]
-        public void Construct(
-            IGameModel _GameModel,
-            IMazeView _MazeView,
-            ICharacterView _CharacterView,
-            IInputConfigurator _InputConfigurator,
-            IGameUiView _GameUiView)
+        public void Inject(IModelGame _ModelGame, IViewGame _ViewGame)
         {
-            GameModel = _GameModel;
-            MazeView = _MazeView;
-            CharacterView = _CharacterView;
-            GameUiView = _GameUiView;
-            InputConfigurator = _InputConfigurator;
+            Model = _ModelGame;
+            View = _ViewGame;
+        }
+        
+        #endregion
+        
+        #region api
+        
+        public void PreInit()
+        {
+            GameTimeProvider.Instance.Reset();
+            
+            var maze                                   = Model.Maze;
+            var movingItemsProceeder                   = Model.MazeMovingItemsProceeder;
+            var trapsReactProceeder                    = Model.MazeTrapsReactProceeder;
+            var character                              = Model.Character;
+            var scoring                                = Model.Scoring;
+            var levelStaging                           = Model.LevelStaging;
+            
+            maze.RotationStarted                       += OnMazeRotationStarted;
+            maze.Rotation                              += OnMazeRotation;
+            maze.RotationFinished                      += OnMazeRotationFinished;
+            
+            movingItemsProceeder.MazeItemMoveStarted   += OnMazeItemMoveStarted;
+            movingItemsProceeder.MazeItemMoveContinued += OnMazeItemMoveContinued;
+            movingItemsProceeder.MazeItemMoveFinished  += OnMazeItemMoveFinished;
+            
+            trapsReactProceeder.TrapReactStageChanged  += OnMazeTrapReactStageChanged;
+
+            character.HealthChanged                    += OnCharacterHealthChanged;
+            character.Death                            += OnCharacterDeath;
+            character.MoveStarted                      += OnCharacterMoveStarted;
+            character.MoveContinued                    += OnCharacterMoveContinued;
+            character.MoveFinished                     += OnCharacterMoveFinished;
+            
+            scoring.ScoreChanged                       += OnScoreChanged;
+            scoring.NecessaryScoreReached              += OnNecessaryScoreReached;
+
+            levelStaging.LevelBeforeStarted            += OnBeforeLevelStarted;
+            levelStaging.LevelStarted                  += OnLevelStarted;
+            levelStaging.LevelFinished                 += OnLevelFinished;
+            
+            View.InputConfigurator.Command             += OnInputCommand;
+            
+            Model.PreInit();
         }
         
         public void Init()
         {
-            GameTimeProvider.Instance.Reset();
-
-            var maze                              = GameModel.Maze;
-            var mazeTransformer                   = GameModel.MazeTransformer;
-            var character                         = GameModel.Character;
-            var scoring                           = GameModel.Scoring;
-            var levelStaging                      = GameModel.LevelStaging;
-            
-            maze.RotationStarted                  += MazeOnRotationStarted;
-            maze.Rotation                         += MazeOnRotation;
-            maze.RotationFinished                 += MazeRotationFinished;
-            mazeTransformer.MazeItemMoveStarted   += MazeOnMazeItemMoveStarted;
-            mazeTransformer.MazeItemMoveContinued += MazeOnMazeItemMoveContinued;
-            mazeTransformer.MazeItemMoveFinished  += MazeOnMazeItemMoveFinished;
-
-            character.HealthChanged               += CharacterOnHealthChanged;
-            character.Death                       += CharacterOnDeath;
-            character.MoveStarted                 += CharacterStartMove;
-            character.MoveContinued               += CharacterOnMoving;
-            character.MoveFinished  += CharacterOnMoveFinished;
-            
-            scoring.ScoreChanged                  += OnScoreChanged;
-            scoring.NecessaryScoreReached         += OnNecessaryScoreReached;
-
-            levelStaging.LevelBeforeStarted       += OnBeforeLevelStarted;
-            levelStaging.LevelStarted             += OnLevelStarted;
-            levelStaging.LevelFinished            += OnLevelFinished;
-            
-            InputConfigurator.Command             += InputConfiguratorOnCommand;
-            
-            MazeView.Init();
-            CharacterView.Init();
-            character.Init();
-            InputConfigurator.ConfigureInput();
-            
-            //GameModel.LevelStaging.BeforeStartLevel();
+            Model.Init();
+            View.Init();
         }
 
-        private void CharacterOnMoveFinished(CharacterMovingEventArgs _Args)
+        private void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
         {
-            CharacterView.OnMoving(_Args);
+            View.Character.OnMoving(_Args);
         }
 
-        private void InputConfiguratorOnCommand(int _Value) => GameModel.InputScheduler.AddCommand((EInputCommand)_Value);
-        private void CharacterOnHealthChanged(HealthPointsEventArgs _Args) => CharacterView.OnHealthChanged(_Args);
-        private void CharacterOnDeath() => CharacterView.OnDeath();
-        private void CharacterStartMove(CharacterMovingEventArgs _Args) => CharacterView.OnStartChangePosition(_Args);
-        private void CharacterOnMoving(CharacterMovingEventArgs _Args) => CharacterView.OnMoving(_Args);
-        private void MazeOnRotationStarted(MazeRotateDirection _Direction, MazeOrientation _Orientation) => MazeView.StartRotation(_Direction, _Orientation);
-        private void MazeOnRotation(float _Progress) => MazeView.Rotate(_Progress);
-        private void MazeRotationFinished() => MazeView.FinishRotation();
-        private void MazeOnMazeItemMoveStarted(MazeItemMoveEventArgs _Args) => MazeView.OnMazeItemMoveStarted(_Args);
-        private void MazeOnMazeItemMoveContinued(MazeItemMoveEventArgs _Args) => MazeView.OnMazeItemMoveContinued(_Args);
-        private void MazeOnMazeItemMoveFinished(MazeItemMoveEventArgs _Args) => MazeView.OnMazeItemMoveFinished(_Args);
-        public void SetLevel(int _Level) => GameModel.LevelStaging.Level = _Level;
-        public void SetMazeInfo(MazeInfo _Info) => GameModel.Maze.Info = _Info;
+        private void OnInputCommand(int _Value) => Model.InputScheduler.AddCommand((EInputCommand)_Value);
+        
+        private void OnCharacterHealthChanged(HealthPointsEventArgs _Args) => View.Character.OnHealthChanged(_Args);
+        private void OnCharacterDeath() => View.Character.OnDeath();
+        private void OnCharacterMoveStarted(CharacterMovingEventArgs _Args) => View.Character.OnStartChangePosition(_Args);
+        private void OnCharacterMoveContinued(CharacterMovingEventArgs _Args) => View.Character.OnMoving(_Args);
+        
+        private void OnMazeRotationStarted(MazeRotateDirection _Direction, MazeOrientation _Orientation) => View.MazeRotation.StartRotation(_Direction, _Orientation);
+        private void OnMazeRotation(float _Progress) => View.MazeRotation.Rotate(_Progress);
+        private void OnMazeRotationFinished() => View.MazeRotation.FinishRotation();
+        
+        private void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args) => View.MazeMovingItemsGroup.OnMazeItemMoveStarted(_Args);
+        private void OnMazeItemMoveContinued(MazeItemMoveEventArgs _Args) => View.MazeMovingItemsGroup.OnMazeItemMoveContinued(_Args);
+        private void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args) => View.MazeMovingItemsGroup.OnMazeItemMoveFinished(_Args);
+
+        private void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args) => View.MazeTrapsReactItemsGroup.OnMazeTrapReactStageChanged(_Args);
+        
+        public void SetMazeInfo(MazeInfo _Info) => Model.Maze.Info = _Info;
 
         #endregion
     
@@ -123,25 +118,25 @@ namespace Games.RazorMaze
         
         protected virtual void OnBeforeLevelStarted(LevelStateChangedArgs _Args)
         {
-            GameModel.Scoring.Score = 0;
-            GameUiView?.OnBeforeLevelStarted(
+            Model.Scoring.Score = 0;
+            View.UI?.OnBeforeLevelStarted(
                 _Args,
-                () => GameModel.LevelStaging.StartLevel());
+                () => Model.LevelStaging.StartLevel());
         }
 
-        protected virtual void OnLevelStarted(LevelStateChangedArgs _Args) => GameUiView?.OnLevelStarted(_Args);
+        protected virtual void OnLevelStarted(LevelStateChangedArgs _Args) => View.UI?.OnLevelStarted(_Args);
 
         protected virtual void OnLevelFinished(LevelStateChangedArgs _Args)
         {
-            GameUiView?.OnLevelFinished(_Args, () =>
+            View.UI?.OnLevelFinished(_Args, () =>
                 {
-                    GameModel.LevelStaging.Level++;
-                    GameModel.LevelStaging.BeforeStartLevel();
+                    Model.LevelStaging.Level++;
+                    Model.LevelStaging.BeforeStartLevel();
                 });
         }
 
         private void OnScoreChanged(int _Score) => throw new System.NotImplementedException();
-        protected virtual void OnNecessaryScoreReached() => GameModel.LevelStaging.FinishLevel();
+        protected virtual void OnNecessaryScoreReached() => Model.LevelStaging.FinishLevel();
 
         #endregion
     
@@ -149,26 +144,37 @@ namespace Games.RazorMaze
 
         protected virtual void OnDestroy()
         {
-            var maze                          = GameModel.Maze;
-            var character                     = GameModel.Character;
-            var levelStaging                  = GameModel.LevelStaging;
-            var scoring                       = GameModel.Scoring;
+            var maze                                   = Model.Maze;
+            var movingItemsProceeder                   = Model.MazeMovingItemsProceeder;
+            var trapsReactProceeder                    = Model.MazeTrapsReactProceeder;
+            var character                              = Model.Character;
+            var scoring                                = Model.Scoring;
+            var levelStaging                           = Model.LevelStaging;
             
-            maze.RotationStarted              -= MazeOnRotationStarted;
-            maze.Rotation                     -= MazeOnRotation;
-            maze.RotationFinished             -= MazeRotationFinished;
+            maze.RotationStarted                       -= OnMazeRotationStarted;
+            maze.Rotation                              -= OnMazeRotation;
+            maze.RotationFinished                      -= OnMazeRotationFinished;
             
-            character.HealthChanged           -= CharacterOnHealthChanged;
-            character.Death                   -= CharacterOnDeath;
-            character.MoveStarted               -= CharacterStartMove;
-            character.MoveContinued                  -= CharacterOnMoving;
+            movingItemsProceeder.MazeItemMoveStarted   -= OnMazeItemMoveStarted;
+            movingItemsProceeder.MazeItemMoveContinued -= OnMazeItemMoveContinued;
+            movingItemsProceeder.MazeItemMoveFinished  -= OnMazeItemMoveFinished;
             
-            scoring.ScoreChanged              -= OnScoreChanged;
-            scoring.NecessaryScoreReached     -= OnNecessaryScoreReached;
+            trapsReactProceeder.TrapReactStageChanged  -= OnMazeTrapReactStageChanged;
+
+            character.HealthChanged                    -= OnCharacterHealthChanged;
+            character.Death                            -= OnCharacterDeath;
+            character.MoveStarted                      -= OnCharacterMoveStarted;
+            character.MoveContinued                    -= OnCharacterMoveContinued;
+            character.MoveFinished                     -= OnCharacterMoveFinished;
             
-            levelStaging.LevelBeforeStarted   -= OnBeforeLevelStarted;
-            levelStaging.LevelStarted         -= OnLevelStarted;
-            levelStaging.LevelFinished        -= OnLevelFinished;
+            scoring.ScoreChanged                       -= OnScoreChanged;
+            scoring.NecessaryScoreReached              -= OnNecessaryScoreReached;
+
+            levelStaging.LevelBeforeStarted            -= OnBeforeLevelStarted;
+            levelStaging.LevelStarted                  -= OnLevelStarted;
+            levelStaging.LevelFinished                 -= OnLevelFinished;
+            
+            View.InputConfigurator.Command             -= OnInputCommand;
         }
 
         #endregion

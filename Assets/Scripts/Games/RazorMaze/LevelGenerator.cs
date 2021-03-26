@@ -11,22 +11,19 @@ namespace Games.RazorMaze
 {
     public class MazeGenerationParams
     {
-        public int Width { get; }
-        public int Height { get; }
+        public V2Int Size { get; }
         public float A { get; }
         public int[] PathLengths { get; }
 
         /// <summary>
         /// Creates RazeMaze Generation Params
         /// </summary>
-        /// <param name="_Width">Maze width</param>
-        /// <param name="_Height">Maze height</param>
+        /// <param name="_Size">Maze size, X - width and Y - height</param>
         /// <param name="_A">Maze items to path items ratio, value 0 to 1</param>
         /// <param name="_PathLengths">Path lengths</param>
-        public MazeGenerationParams(int _Width, int _Height, float _A,  int[] _PathLengths)
+        public MazeGenerationParams(V2Int _Size, float _A,  int[] _PathLengths)
         {
-            Width = _Width;
-            Height = _Height;
+            Size = _Size;
             A = _A;
             PathLengths = _PathLengths;
         }
@@ -39,19 +36,13 @@ namespace Games.RazorMaze
             Vector2Int.up, Vector2Int.down, Vector2Int.right, Vector2Int.left
         };
         
-        public static MazeInfo CreateDefaultLevelInfo(int _Size, bool _OnlyMazeItems = false)
+        public static MazeInfo CreateDefaultLevelInfo(V2Int _Size, bool _OnlyMazeItems = false)
         {
-            return CreateDefaultLevelInfo(_Size, _Size, _OnlyMazeItems);
-        }
-
-        public static MazeInfo CreateDefaultLevelInfo(int _Width, int _Height, bool _OnlyMazeItems = false)
-        {
-            GetDefaultPathItemsAndMazeItemsPositions(_Width, _Height, _OnlyMazeItems,
+            GetDefaultPathItemsAndMazeItemsPositions(_Size, _OnlyMazeItems,
                 out var pathItemsPositions, out var mazeItemsPositions);
             return new MazeInfo
             {
-                Width = _Width,
-                Height = _Height,
+                Size = _Size,
                 Path = pathItemsPositions,
                 MazeItems = mazeItemsPositions.Select(_Pos => new MazeItem
                 {
@@ -70,9 +61,9 @@ namespace Games.RazorMaze
                 throw new Exception();
             }
             
-            int w = _Params.Width;
-            int h = _Params.Height;
-            GetDefaultPathItemsAndMazeItemsPositions(w, h, true,
+            int w = _Params.Size.X;
+            int h = _Params.Size.Y;
+            GetDefaultPathItemsAndMazeItemsPositions(_Params.Size, true,
                 out _, out var mazeItemsPositions);
             var pathItems = new List<V2Int>();
             var mazeItems = mazeItemsPositions
@@ -102,8 +93,7 @@ namespace Games.RazorMaze
                 pathItems.Remove(pathItem);
             var levelInfo = new MazeInfo
             {
-                Width = w,
-                Height = h,
+                Size = _Params.Size,
                 Path = pathItems,
                 MazeItems = mazeItems
             };
@@ -123,19 +113,18 @@ namespace Games.RazorMaze
         }
         
         private static void GetDefaultPathItemsAndMazeItemsPositions(
-            int _Width,
-            int _Height,
+            V2Int _Size,
             bool _OnlyMazeItems,
             out List<V2Int> _PathItems,
             out List<V2Int> _MazeItemsPositions)
         {
             _PathItems = new List<V2Int>();
             _MazeItemsPositions = new List<V2Int>();
-            for (int i = 0; i < _Width; i++)
-            for (int j = 0; j < _Height; j++)
+            for (int i = 0; i < _Size.X; i++)
+            for (int j = 0; j < _Size.Y; j++)
             {
                 var pos = new V2Int(i, j);
-                if (i == 0 || i == _Width - 1 || j == 0 || j == _Height - 1 || _OnlyMazeItems)
+                if (i == 0 || i == _Size.X - 1 || j == 0 || j == _Size.Y - 1 || _OnlyMazeItems)
                     _MazeItemsPositions.Add(pos);
                 else
                     _PathItems.Add(pos);
@@ -164,7 +153,7 @@ namespace Games.RazorMaze
                 {
                     _Position += _Direction;
                     var pos = _Position;
-                    if (IsPositionOnEdges(_Position, _Params.Width, _Params.Height))
+                    if (IsPositionOnEdges(_Position, _Params.Size))
                     {
                         _Position -= _Direction;
                         break;
@@ -181,8 +170,7 @@ namespace Games.RazorMaze
 
                 var info = new MazeInfo
                 {
-                    Width = _Params.Width,
-                    Height = _Params.Height,
+                    Size = _Params.Size,
                     Path = _Path,
                     MazeItems = _MazeItems
                 };
@@ -210,11 +198,11 @@ namespace Games.RazorMaze
             return new V2Int(Directions[dirIdx]);
         }
 
-        private static bool IsPositionOnEdges(V2Int _Position, int _Width, int _Height)
+        private static bool IsPositionOnEdges(V2Int _Position, V2Int _Size)
         {
-            if (_Position.X == 0 || _Position.X == _Width - 1)
+            if (_Position.X == 0 || _Position.X == _Size.X - 1)
                 return true;
-            if (_Position.Y == 0 || _Position.Y == _Height - 1)
+            if (_Position.Y == 0 || _Position.Y == _Size.Y - 1)
                 return true;
             return false;
         }

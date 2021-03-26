@@ -1,11 +1,24 @@
 ﻿using Exceptions;
+using Utils;
 
 namespace Games.RazorMaze.Models
 {
-    public class GameModel : IGameModel
+    public interface IModelGame : IInit, IPreInit
+    {
+        IMazeModel Maze { get; }
+        IMazeMovingItemsProceeder MazeMovingItemsProceeder { get; }
+        IMazeTrapsReactProceeder  MazeTrapsReactProceeder { get; }
+        ICharacterModel Character { get; }
+        ILevelStagingModel LevelStaging { get; }
+        IScoringModel Scoring { get; }
+        IInputScheduler InputScheduler { get; }
+    }
+    
+    public class ModelGame : IModelGame
     {
         public IMazeModel                Maze { get; }
-        public IMazeTransformer          MazeTransformer { get; }
+        public IMazeMovingItemsProceeder MazeMovingItemsProceeder { get; }
+        public IMazeTrapsReactProceeder  MazeTrapsReactProceeder { get; }
         public ICharacterModel           Character { get; }
         public ILevelStagingModel        LevelStaging { get; }
         public IScoringModel             Scoring { get; }
@@ -14,60 +27,60 @@ namespace Games.RazorMaze.Models
         
         private ICharacterModelFull      CharacterFull { get; }
         
-        public GameModel(
-            IMazeModel            _Model,
-            IMazeTransformer      _MazeTransformer,
-            ICharacterModel       _CharacterModel,
-            ILevelStagingModel    _StagingModel,
-            IScoringModel         _ScoringModel,
-            IInputScheduler       _InputScheduler)
+        public ModelGame(
+            IMazeModel                _Model,
+            IMazeMovingItemsProceeder _MazeMovingItemsProceeder,
+            ICharacterModel           _CharacterModel,
+            ILevelStagingModel        _StagingModel,
+            IScoringModel             _ScoringModel,
+            IInputScheduler           _InputScheduler,
+            IMazeTrapsReactProceeder  _MazeTrapsReactProceeder)
         {
             Maze                                  = _Model;
-            MazeTransformer                       = _MazeTransformer;
+            MazeMovingItemsProceeder              = _MazeMovingItemsProceeder;
+            MazeTrapsReactProceeder               = _MazeTrapsReactProceeder;
             Character                             = _CharacterModel;
             LevelStaging                          = _StagingModel;
             Scoring                               = _ScoringModel;
             InputScheduler                        = _InputScheduler;
 
-            CharacterFull = _CharacterModel as ICharacterModelFull;
-            
+            CharacterFull                         = _CharacterModel as ICharacterModelFull;
+        }
+        
+        public void PreInit()
+        {
             Maze.MazeChanged                      += MazeOnMazeChanged;
             Maze.RotationStarted                  += MazeOnRotationStarted;
             Maze.RotationFinished                 += MazeOnRotationFinished;
-            Character.MoveContinued += CharacterOnMoveContinued;
+            Character.MoveContinued               += CharacterOnMoveContinued;
             Character.MoveFinished                += CharacterOnFinishMove; 
             InputScheduler.MoveCommand            += InputSchedulerOnMoveCommand;
             InputScheduler.RotateCommand          += InputSchedulerOnRotateCommand;
+            
+            Character.PreInit();
         }
+        
+        public void Init()
+        {
+            Character.Init();
+        }
+        
+        private void MazeOnMazeChanged(MazeInfo _Info, MazeOrientation _Orientation) => CharacterFull.OnMazeInfoUpdated(_Info, _Orientation);
+        private void MazeOnRotationStarted(MazeRotateDirection _Direction, MazeOrientation _Orientation) => CharacterFull.OnMazeInfoUpdated(Maze.Info, _Orientation);
+        private void MazeOnRotationFinished() => InputScheduler.UnlockRotation();
+        
 
         private void CharacterOnMoveContinued(CharacterMovingEventArgs _Args)
         {
-            MazeTransformer.OnCharacterMoveContinued(_Args, Maze.Orientation);
-        }
-
-        private void MazeOnMazeChanged(MazeInfo _Info, MazeOrientation _Orientation)
-        {
-            CharacterFull.OnMazeInfoUpdated(_Info, _Orientation);
-        }
-
-        private void CharacterOnFinishMove(CharacterMovingEventArgs _Args)
-        {
-            // MazeTransformer.OnCharacterMoved(_Args);
-            InputScheduler.UnlockMovement();
+            MazeMovingItemsProceeder.OnCharacterMoveContinued(_Args, Maze.Orientation);
+            MazeTrapsReactProceeder.OnCharacterMoveContinued(_Args);
         }
         
-        private void MazeOnRotationStarted(MazeRotateDirection _Direction, MazeOrientation _Orientation)
-        {
-            CharacterFull.OnMazeInfoUpdated(Maze.Info, _Orientation);
-        }
+        private void CharacterOnFinishMove(CharacterMovingEventArgs _Args) => InputScheduler.UnlockMovement();
         
-        private void MazeOnRotationFinished()
-        {
-            InputScheduler.UnlockRotation();
-        }
-
         private void InputSchedulerOnMoveCommand(EInputCommand _Command)
         {
+            Dbg.Log("Move:" + _Command);
             MazeMoveDirection dir = default;
             switch (_Command)
             {

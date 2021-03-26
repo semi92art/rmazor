@@ -8,16 +8,16 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using UnityGameLoopDI;
 
-namespace Games
+namespace Games.RazorMaze.Views.UI
 {
-    public interface IGameUiView
+    public interface IViewUI
     {
         void OnBeforeLevelStarted(LevelStateChangedArgs _Args, UnityAction _StartLevel);
         void OnLevelStarted(LevelStateChangedArgs _Args);
         void OnLevelFinished(LevelStateChangedArgs _Args, UnityAction _Finish);
     }
     
-    public abstract class GameUiViewBase : GameObservable, IGameUiView, IOnUpdate
+    public abstract class ViewUIBase : GameObservable, IViewUI, IOnUpdate
     {
         #region nonpublic members
         
@@ -28,7 +28,7 @@ namespace Games
 
         #region constructor
 
-        protected GameUiViewBase()
+        protected ViewUIBase()
         {
             CreateCanvas();
             CreateDialogViewer();

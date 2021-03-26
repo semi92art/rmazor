@@ -6,7 +6,8 @@ using Entities;
 using Exceptions;
 using Extensions;
 using Games.RazorMaze.Models;
-using Games.RazorMaze.Prot;
+using Games.RazorMaze.Views;
+using Games.RazorMaze.Views.MazeItems;
 using Malee.List;
 using UnityEditor;
 using UnityEngine;
@@ -31,7 +32,7 @@ namespace Games.RazorMaze
         [HideInInspector] public int sizeIdx;
         [HideInInspector] public float aParam;
         [HideInInspector] public bool valid;
-        [HideInInspector] public List<MazeProtItem> maze;
+        [HideInInspector] public List<ViewMazeItemProt> maze;
 
         private static MazeInfo MazeInfo
         {
@@ -60,28 +61,29 @@ namespace Games.RazorMaze
              
             SceneManager.sceneLoaded += (_Scene, _Mode) =>
             {
-                 RazorMazeGameManager.Instance.SetMazeInfo(MazeInfo);
-                 RazorMazeGameManager.Instance.Init();
+                RazorMazeGameManager.Instance.PreInit();
+                RazorMazeGameManager.Instance.SetMazeInfo(MazeInfo);
+                RazorMazeGameManager.Instance.Init();
             };
             SceneManager.LoadScene(SceneNames.Level);
         }
         
         public MazeInfo GetLevelInfoFromScene()
         {
-            var protItemStart = maze.FirstOrDefault(_Item => _Item.props.IsStartNode);
+            var protItemStart = maze.FirstOrDefault(_Item => _Item.Props.IsStartNode);
             if (protItemStart == null)
             {
                 Dbg.LogError("Maze must contain start item");
                 return null;
             }
             var path = maze
-                .Where(_Item => _Item.props.IsNode && !_Item.props.IsStartNode)
-                .Select(_Item => _Item.props.Position)
+                .Where(_Item => _Item.Props.IsNode && !_Item.Props.IsStartNode)
+                .Select(_Item => _Item.Props.Position)
                 .ToList();
-            path.Insert(0, protItemStart.props.Position);
+            path.Insert(0, protItemStart.Props.Position);
             var mazeProtItems = maze
-                .Where(_Item => !_Item.props.IsNode)
-                .Select(_Item => _Item.props).ToList();
+                .Where(_Item => !_Item.Props.IsNode)
+                .Select(_Item => _Item.Props).ToList();
             foreach (var item in mazeProtItems.ToList())
             {
                 switch (item.Type)
@@ -104,8 +106,7 @@ namespace Games.RazorMaze
                 }
             }
             return new MazeInfo{
-                Width = sizes[sizeIdx],
-                Height = sizes[sizeIdx],
+                Size =  new V2Int(sizes[sizeIdx], sizes[sizeIdx]),
                 Path = path,
                 MazeItems = mazeProtItems
                     .SelectMany(_Item =>

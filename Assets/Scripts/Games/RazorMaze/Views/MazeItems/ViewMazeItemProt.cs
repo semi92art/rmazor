@@ -9,34 +9,42 @@ using Games.RazorMaze.Models;
 using Shapes;
 using UnityEngine;
 
-namespace Games.RazorMaze.Prot
+namespace Games.RazorMaze.Views.MazeItems
 {
     [ExecuteInEditMode, Serializable]
-    public class MazeProtItem : MonoBehaviour
+    public class ViewMazeItemProt : MonoBehaviour, IViewMazeItem
     {
-        [HideInInspector] public ShapeRenderer shape;
-        [HideInInspector] public SpriteRenderer hint; 
-        [SerializeField] public MazeProtItemProps props;
-
+        #region serialized fields
+        
+        [SerializeField] private ShapeRenderer shape;
+        [SerializeField] private SpriteRenderer hint;
         [HideInInspector] public EMazeItemType typeCheck;
+        [SerializeField] private ViewMazeItemProps props;
+        [SerializeField, HideInInspector] private V2Int mazeSize;
+        
+        #endregion
+        
+        #region nonpublic members
         
         private static Color _blockCol = new Color(0.53f, 0.53f, 0.53f, 0.8f);
         private static Color _trapCol = new Color(1f, 0.29f, 0.29f);
         private static Color _turretCol = new Color(1f, 0.14f, 0.7f);
         private static Color _portalCol = new Color(0.13f, 1f, 0.07f);
         private static Color _blockTransfToNodeCol = new Color(0.17f, 0.2f, 1f);
+
+        #endregion
         
-        public void SetType(EMazeItemType _Type, bool _IsNode, bool _IsStartNode)
+        #region api
+
+        public ViewMazeItemProps Props
         {
-            props.Type = _Type;
-            props.IsNode = _IsNode;
-            props.IsStartNode = _IsStartNode;
-            SetShape(_Type, _IsNode, _IsStartNode);
-            typeCheck = _Type;
+            get => props;
+            set => props = value;
         }
         
-        public void Init(MazeProtItemProps _Props)
+        public void Init(ViewMazeItemProps _Props, V2Int _MazeSize)
         {
+            mazeSize = _MazeSize;
             props = _Props;
             SetShape(_Props.Type, _Props.IsNode, _Props.IsStartNode);
         }
@@ -50,11 +58,28 @@ namespace Games.RazorMaze.Prot
         {
             return _MazeItem.Path == props.Path && _MazeItem.Type == props.Type;
         }
+        
+        #endregion
+        
+        #region editor api
+
+        public void SetType(EMazeItemType _Type, bool _IsNode, bool _IsStartNode)
+        {
+            props.Type = _Type;
+            props.IsNode = _IsNode;
+            props.IsStartNode = _IsStartNode;
+            SetShape(_Type, _IsNode, _IsStartNode);
+            typeCheck = _Type;
+        }
+        
+        #endregion
+        
+        #region nonpublic methods
 
         private void SetShape(EMazeItemType _Type, bool _IsNode, bool _IsStartNode)
         {
             var converter = new CoordinateConverter();
-            converter.Init(props.Size);
+            converter.Init(mazeSize);
             
             gameObject.DestroyChildrenSafe();
             transform.localPosition = converter.ToLocalMazeItemPosition(props.Position);
@@ -71,23 +96,17 @@ namespace Games.RazorMaze.Prot
                 shape.SortingOrder = 0;
                 return;
             }
-            SetHintByType(props.Type, converter);
+            SetHintByType(props.Type);
             SetSortingOrderByType(_Type);
         }
 
-        private void SetHintByType(EMazeItemType _Type, ICoordinateConverter _CoordinateConverter)
+        private void SetHintByType(EMazeItemType _Type)
         {
-            // if (_Type != EMazeItemType.Block
-            //     && _Type != EMazeItemType.Portal
-            //     && _Type != EMazeItemType.Trap
-            //     && _Type != EMazeItemType.Turret)
-            // {
-                var go = new GameObject("Hint");
-                go.SetParent(gameObject);
-                go.transform.SetLocalPosXY(Vector2.zero);
-                hint = go.AddComponent<SpriteRenderer>();
-            //}
-
+            var go = new GameObject("Hint");
+            go.SetParent(gameObject);
+            go.transform.SetLocalPosXY(Vector2.zero);
+            hint = go.AddComponent<SpriteRenderer>();
+            
             string objectName = null;
             switch (_Type)
             {
@@ -243,13 +262,15 @@ namespace Games.RazorMaze.Prot
         private Vector2 ToWorldPosition(V2Int _Point)
         {
             var converter = new CoordinateConverter();
-            converter.Init(props.Size);
+            converter.Init(mazeSize);
             return converter.ToLocalMazeItemPosition(_Point).PlusY(converter.GetCenter().y);
         }
+        
+        #endregion
     }
     
     [Serializable]
-    public class MazeProtItemProps
+    public class ViewMazeItemProps
     {
         public bool IsNode;
         public bool IsStartNode;
@@ -258,6 +279,5 @@ namespace Games.RazorMaze.Prot
         public List<V2Int> Path = new List<V2Int>();
         public List<V2Int> Directions = new List<V2Int>();
         public V2Int Pair;
-        public int Size;
     }
 }

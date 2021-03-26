@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Entities;
+using Utils;
 
 namespace Games.RazorMaze.Models
 {
@@ -17,15 +18,12 @@ namespace Games.RazorMaze.Models
         
         #region inject
         private ICharacterMover CharacterMover { get; }
-        private IMazeTransformer Transformer { get; }
+        private IMazeMovingItemsProceeder MovingItemsProceeder { get; }
 
-        public CharacterModel(ICharacterMover _CharacterMover, IMazeTransformer _Transformer)
+        public CharacterModel(ICharacterMover _CharacterMover, IMazeMovingItemsProceeder _MovingItemsProceeder)
         {
             CharacterMover = _CharacterMover;
-            Transformer = _Transformer;
-            CharacterMover.CharacterMoveStarted += _Progress => MoveStarted?.Invoke(_Progress);
-            CharacterMover.CharacterMoveContinued += _Progress => MoveContinued?.Invoke(_Progress);
-            CharacterMover.CharacterMoveFinished += _Position => MoveFinished?.Invoke(_Position);
+            MovingItemsProceeder = _MovingItemsProceeder;
         }
         
         #endregion
@@ -52,6 +50,13 @@ namespace Games.RazorMaze.Models
             }
         }
 
+        public void PreInit()
+        {
+            CharacterMover.CharacterMoveStarted += _Progress => MoveStarted?.Invoke(_Progress);
+            CharacterMover.CharacterMoveContinued += _Progress => MoveContinued?.Invoke(_Progress);
+            CharacterMover.CharacterMoveFinished += _Position => MoveFinished?.Invoke(_Position);
+        }
+
         public void Init()
         {
             HealthPoints = 1;
@@ -69,8 +74,9 @@ namespace Games.RazorMaze.Models
             if (!ReferenceEquals(m_MazeInfo, _Info))
             {
                 m_MazeInfo = _Info;
-                Position = m_MazeInfo.Path[0];
+                Position = m_MazeInfo.Path[0];    
             }
+            
             m_Orientation = _Orientation;
         }
 
@@ -92,7 +98,7 @@ namespace Games.RazorMaze.Models
             bool isNode = _Info.Path.Any(_PathItem => _PathItem == _Position);
             bool isMazeItem = _Info.MazeItems.Any(_O => 
                 _O.Position == _Position && _O.Type == EMazeItemType.Block);
-            bool isBuzyMazeItem = Transformer.GravityProceeds.Values
+            bool isBuzyMazeItem = MovingItemsProceeder.ProceedInfos.Values
                 .Where(_Proceed => _Proceed.Item.Type == EMazeItemType.BlockMovingGravity)
                 .Any(_Proceed => _Proceed.BusyPositions.Contains(_Position));
             return isNode && !isMazeItem && !isBuzyMazeItem;

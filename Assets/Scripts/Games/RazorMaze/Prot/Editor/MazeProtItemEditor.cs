@@ -3,6 +3,8 @@ using System.Linq;
 using Entities;
 using Exceptions;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Views;
+using Games.RazorMaze.Views.MazeItems;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
@@ -10,15 +12,15 @@ using Utils.Editor;
 
 namespace Games.RazorMaze.Prot.Editor
 {
-    [CustomEditor(typeof(MazeProtItem)), CanEditMultipleObjects]
+    [CustomEditor(typeof(ViewMazeItemProt)), CanEditMultipleObjects]
     public class MazeProtItemEditor : UnityEditor.Editor
     {
-        private MazeProtItem[] targetsCopy;
+        private ViewMazeItemProt[] targetsCopy;
         private EMazeItemType m_Type;
         
         private void OnEnable()
         {
-            targetsCopy = targets.Cast<MazeProtItem>().ToArray();
+            targetsCopy = targets.Cast<ViewMazeItemProt>().ToArray();
         }
         
         private void OnSceneGUI()
@@ -29,19 +31,19 @@ namespace Games.RazorMaze.Prot.Editor
             EditorGUILayout.BeginVertical();
             EditorUtilsEx.HorizontalZone(() =>
             {
-                GUI.color = targetsCopy.All(_Item => _Item.props.IsNode) ? Color.white : Color.green;
+                GUI.color = targetsCopy.All(_Item => _Item.Props.IsNode) ? Color.white : Color.green;
                 EditorUtilsEx.GuiButtonAction("Block", SetAsBlock, targetsCopy);
-                GUI.color = targetsCopy.All(_Item => _Item.props.IsNode) ? Color.green : Color.white;
+                GUI.color = targetsCopy.All(_Item => _Item.Props.IsNode) ? Color.green : Color.white;
                 EditorUtilsEx.GuiButtonAction("Path", SetAsPathItem, targetsCopy);
                 if (targetsCopy.Length == 1)
                 {
-                    GUI.color = targetsCopy[0].props.IsStartNode ? Color.green : Color.white;
+                    GUI.color = targetsCopy[0].Props.IsStartNode ? Color.green : Color.white;
                     EditorUtilsEx.GuiButtonAction("Start", SetAsPathItemStart, targetsCopy[0]);    
                 }
             });
             
             GUI.color = Color.white;
-            var props = targetsCopy[0].props;
+            var props = targetsCopy[0].Props;
             var popupRect = new Rect(0, 20, 200, 20);
             
             if (!props.IsNode)
@@ -71,32 +73,32 @@ namespace Games.RazorMaze.Prot.Editor
             if (targetsCopy.Length == 1)
                 DrawControlsForSingleBlock(props);
             else if (targetsCopy.Length == 2 && targetsCopy
-                .All(_T => _T.props.Type == EMazeItemType.Portal))
-                EditorUtilsEx.GuiButtonAction(LinkPortals, targetsCopy[0].props, targetsCopy[1].props);
+                .All(_T => _T.Props.Type == EMazeItemType.Portal))
+                EditorUtilsEx.GuiButtonAction(LinkPortals, targetsCopy[0].Props, targetsCopy[1].Props);
 
             EditorGUILayout.EndVertical();
             GUILayout.EndArea();
             Handles.EndGUI();
         }
 
-        private static void SetAsBlock(IEnumerable<MazeProtItem> _Items)
+        private static void SetAsBlock(IEnumerable<ViewMazeItemProt> _Items)
         {
             foreach (var item in _Items)
-                item.SetType(item.props.Type, false, false);
+                item.SetType(item.Props.Type, false, false);
         }
 
-        private static void SetAsPathItem(IEnumerable<MazeProtItem> _Items)
+        private static void SetAsPathItem(IEnumerable<ViewMazeItemProt> _Items)
         {
             foreach (var item in _Items)
-                item.SetType(item.props.Type, true, false);
+                item.SetType(item.Props.Type, true, false);
         }
 
-        private static void SetAsPathItemStart(MazeProtItem _Item)
+        private static void SetAsPathItemStart(ViewMazeItemProt _Item)
         {
-            _Item.SetType(_Item.props.Type, true, !_Item.props.IsStartNode);
+            _Item.SetType(_Item.Props.Type, true, !_Item.Props.IsStartNode);
         }
 
-        private void DrawControlsForSingleBlock(MazeProtItemProps _Props)
+        private void DrawControlsForSingleBlock(ViewMazeItemProps _Props)
         {
             switch (_Props.Type)
             {
@@ -120,7 +122,7 @@ namespace Games.RazorMaze.Prot.Editor
             }
         }
         
-        private void DrawControlsMovingBlock(MazeProtItemProps _Props)
+        private void DrawControlsMovingBlock(ViewMazeItemProps _Props)
         {
             EditorUtilsEx.GUIColorZone(Color.black,() => GUILayout.Label("Path:"));
             bool pathExist = _Props.Path.Any();
@@ -150,7 +152,7 @@ namespace Games.RazorMaze.Prot.Editor
                 _Props.Path[lastPathIndex] = _Props.Path[lastPathIndex].MinusY(1));
         }
 
-        private void DrawControlsDirectedBlock(MazeProtItemProps _Props)
+        private void DrawControlsDirectedBlock(ViewMazeItemProps _Props)
         {
             EditorUtilsEx.GUIColorZone(Color.black,() => GUILayout.Label("Direction:"));
             if (_Props.Type == EMazeItemType.Turret)
@@ -158,7 +160,7 @@ namespace Games.RazorMaze.Prot.Editor
             else DrawControlsDirectedBlockMultiple(_Props);
         }
 
-        private void DrawControlsDirectedBlockSingle(MazeProtItemProps _Props)
+        private void DrawControlsDirectedBlockSingle(ViewMazeItemProps _Props)
         {
             UnityAction<IEnumerable<V2Int>> setDir = _Directions => _Props.Directions = _Directions.ToList();
             System.Func<V2Int, Color> getCol = _Direction => _Props.Directions.Contains(_Direction) ? Color.green : Color.white;
@@ -171,7 +173,7 @@ namespace Games.RazorMaze.Prot.Editor
             EditorUtilsEx.GUIColorZone(getCol(V2Int.down), () => EditorUtilsEx.GuiButtonAction("▽", setDir, new []{V2Int.down}));
         }
 
-        private void DrawControlsDirectedBlockMultiple(MazeProtItemProps _Props)
+        private void DrawControlsDirectedBlockMultiple(ViewMazeItemProps _Props)
         {
             UnityAction<V2Int> setDir = _Direction =>
             {
@@ -189,7 +191,7 @@ namespace Games.RazorMaze.Prot.Editor
             EditorUtilsEx.GUIColorZone(getCol(V2Int.down), () => EditorUtilsEx.GuiButtonAction("▽", setDir, V2Int.down));
         }
 
-        private void LinkPortals(MazeProtItemProps _Props1, MazeProtItemProps _Props2)
+        private void LinkPortals(ViewMazeItemProps _Props1, ViewMazeItemProps _Props2)
         {
             _Props1.Pair = _Props2.Position;
             _Props2.Pair = _Props1.Position;

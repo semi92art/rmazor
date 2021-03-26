@@ -1,8 +1,8 @@
 ﻿using UnityEngine.Events;
 
-namespace Games.RazorMaze.Views
+namespace Games.RazorMaze.Views.UI
 {
-    public class GameUiViewProt : GameUiViewBase
+    public class ViewUIProt : ViewUIBase
     {
         public override void OnBeforeLevelStarted(LevelStateChangedArgs _Args, UnityAction _StartLevel)
         {

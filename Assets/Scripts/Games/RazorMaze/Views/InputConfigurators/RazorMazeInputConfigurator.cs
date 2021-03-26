@@ -3,7 +3,7 @@ using GameHelpers;
 using Lean.Touch;
 using UnityEngine;
 
-namespace Games.RazorMaze.Views
+namespace Games.RazorMaze.Views.InputConfigurators
 {
     public class RazorMazeInputConfigurator : IInputConfigurator
     {

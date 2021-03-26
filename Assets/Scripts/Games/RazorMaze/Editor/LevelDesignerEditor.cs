@@ -1,6 +1,10 @@
 ﻿using System.Linq;
+using Entities;
 using Extensions;
+using Games.RazorMaze.Models;
 using Games.RazorMaze.Prot;
+using Games.RazorMaze.Views;
+using Games.RazorMaze.Views.MazeItems;
 using UnityEditor;
 using UnityEngine;
 using Utils;
@@ -48,9 +52,8 @@ namespace Games.RazorMaze.Editor
         {
             EditorUtilsEx.ClearConsole();
             ClearLevel();
-            int size = m_Des.sizes[m_Des.sizeIdx];
+            var size = new V2Int(m_Des.sizes[m_Des.sizeIdx], m_Des.sizes[m_Des.sizeIdx]);
             var parms = new MazeGenerationParams(
-                size,
                 size,
                 m_Des.aParam,
                 m_Des.pathLengths.ToArray());
@@ -63,7 +66,8 @@ namespace Games.RazorMaze.Editor
         {
             EditorUtilsEx.ClearConsole();
             ClearLevel();
-            var info = LevelGenerator.CreateDefaultLevelInfo(m_Des.sizes[m_Des.sizeIdx], true);
+            var size = new V2Int(m_Des.sizes[m_Des.sizeIdx], m_Des.sizes[m_Des.sizeIdx]);
+            var info = LevelGenerator.CreateDefaultLevelInfo(size, true);
             CreateObjectsAndFocusCamera(info);
             //m_Des.valid = LevelAnalizator.IsValid(info, false);
         }
@@ -71,9 +75,12 @@ namespace Games.RazorMaze.Editor
         private void CreateObjectsAndFocusCamera(MazeInfo _Info)
         {
             var container = CommonUtils.FindOrCreateGameObject("Maze", out _).transform;
-            m_Des.maze = RazorMazePrototypingUtils.CreateMazeItems(_Info, container);
+            m_Des.maze = RazorMazePrototypingUtils
+                .CreateMazeItems(_Info, container)
+                .Cast<ViewMazeItemProt>()
+                .ToList();
             var converter = new CoordinateConverter();
-            converter.Init(_Info.Width);
+            converter.Init(_Info.Size);
             var bounds = new Bounds(converter.GetCenter(), GameUtils.GetVisibleBounds().size * 0.7f);
             EditorUtilsEx.FocusSceneCamera(bounds);
         }
