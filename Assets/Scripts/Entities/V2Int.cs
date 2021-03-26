@@ -7,8 +7,8 @@ namespace Entities
     [Serializable]
     public struct V2Int : ICloneable
     {
-        public int X => x;
-        public int Y => y;
+        [JsonIgnore] public int X => x;
+        [JsonIgnore] public int Y => y;
         
         [JsonProperty, SerializeField] private int x;
         [JsonProperty, SerializeField] private int y;

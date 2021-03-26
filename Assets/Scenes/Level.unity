@@ -336,11 +336,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4837f4ffd20048989325c725bc6454fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mazeRotateSpeed: 5
   characterSpeed: 40
-  trapReactTime: 1
+  mazeRotateSpeed: 5
   movingItemsSpeed: 5
   movingItemsPause: 1
+  trapPreReactTime: 0.5
+  trapReactTime: 0.5
+  trapAfterReactTime: 0.5
   turretShootIntervalSeconds: 1
 --- !u!1 &934508343
 GameObject:

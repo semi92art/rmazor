@@ -80,7 +80,6 @@ namespace Games.RazorMaze.Models
         
         private void InputSchedulerOnMoveCommand(EInputCommand _Command)
         {
-            Dbg.Log("Move:" + _Command);
             MazeMoveDirection dir = default;
             switch (_Command)
             {

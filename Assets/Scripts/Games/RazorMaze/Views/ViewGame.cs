@@ -37,6 +37,7 @@ namespace Games.RazorMaze.Views
 
         public void Init()
         {
+            MazeCommon.Init();
             MazeRotation.Init();
             MazeMovingItemsGroup.Init();
             Character.Init();

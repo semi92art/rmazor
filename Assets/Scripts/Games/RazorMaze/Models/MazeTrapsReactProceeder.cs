@@ -4,6 +4,7 @@ using System.Collections;
 using System.Linq;
 using Entities;
 using Games.RazorMaze.Models.ProceedInfos;
+using UnityGameLoopDI;
 using Utils;
 
 namespace Games.RazorMaze.Models
@@ -31,7 +32,7 @@ namespace Games.RazorMaze.Models
         void OnCharacterMoveContinued(CharacterMovingEventArgs _Args);
     }
     
-    public class MazeTrapsReactProceeder : IMazeTrapsReactProceeder
+    public class MazeTrapsReactProceeder : Ticker, IOnUpdate, IMazeTrapsReactProceeder
     {
         #region nonpublic members
 
@@ -57,6 +58,7 @@ namespace Games.RazorMaze.Models
 
         #endregion
         
+        #region api
         
         public event MazeItemTrapReactEventHandler TrapReactStageChanged;
 
@@ -76,6 +78,17 @@ namespace Games.RazorMaze.Models
             m_CharacterPos = newPos;
             ProceedTrapsReact();
         }
+
+        private float m_Duration;
+        
+        public void OnUpdate()
+        {
+            
+        }
+        
+        #endregion
+        
+        #region nonpublic methods
 
         private void CollectProceeds()
         {
@@ -98,23 +111,26 @@ namespace Games.RazorMaze.Models
                 var trapExtractPos = item.Position + item.Direction;
                 if (trapExtractPos != m_CharacterPos)
                     continue;
+                proceed.IsProceeding = true;
                 Coroutines.Run(ProceedTrapStage(proceed));
             }
         }
 
         private IEnumerator ProceedTrapStage(MazeItemTrapReactProceedInfo _Info)
         {
+            _Info.IsProceeding = true;
             _Info.ProceedingStage++;
             float duration = GetStageDuration(_Info.ProceedingStage); 
             TrapReactStageChanged?.Invoke(new MazeItemTrapReactEventArgs(_Info.Item, _Info.ProceedingStage, duration));
             float time = GameTimeProvider.Instance.Time;
             yield return Coroutines.WaitWhile(
-                () => time + duration < GameTimeProvider.Instance.Time,
+                () => time + duration > GameTimeProvider.Instance.Time,
                 () =>
                 {
                     if (_Info.ProceedingStage == StageAfterReact)
                     {
                         _Info.ProceedingStage = StageIdle;
+                        _Info.IsProceeding = false;
                         return;
                     }
                     Coroutines.Run(ProceedTrapStage(_Info));
@@ -134,5 +150,7 @@ namespace Games.RazorMaze.Models
                 default: return 0;
             }
         }
+        
+        #endregion
     }
 }

@@ -19,7 +19,7 @@ namespace Games.RazorMaze.Prot
             foreach (var item in _Info.Path)
                 AddPathItem(res, item, _Parent, _Info.Size);
             foreach (var item in _Info.MazeItems)
-                AddMazeItem(res, item.Type, item.Position, item.Path, _Parent, _Info.Size);
+                AddMazeItem(res, item.Type, item.Position, item.Path, item.Direction, _Parent, _Info.Size);
             return res;
         }
 
@@ -32,7 +32,7 @@ namespace Games.RazorMaze.Prot
             bool isStartNode = _Items.All(_Item => !_Item.Props.IsStartNode);
             var tr = new GameObject("Node").transform;
             tr.SetParent(_Parent);
-            var item = tr.gameObject.AddComponent<ViewMazeItemProt>();
+            IViewMazeItem item = tr.gameObject.AddComponent<ViewMazeItemProt>();
             var props = new ViewMazeItemProps
             {
                 IsNode = true,
@@ -48,17 +48,19 @@ namespace Games.RazorMaze.Prot
             EMazeItemType _Type,
             V2Int _Position,
             List<V2Int> _Path,
+            V2Int _Direction,
             Transform _Parent,
             V2Int _Size)
         {
             var tr = new GameObject("Maze Item").transform;
             tr.SetParent(_Parent);
-            var item = tr.gameObject.AddComponent<ViewMazeItemProt>();
+            IViewMazeItem item = tr.gameObject.AddComponent<ViewMazeItemProt>();
             var props = new ViewMazeItemProps
             {
                 Type = _Type,
                 Position = _Position,
-                Path = _Path
+                Path = _Path,
+                Directions = new List<V2Int>{_Direction}
             };
             item.Init(props, _Size);
             _Items.Add(item);

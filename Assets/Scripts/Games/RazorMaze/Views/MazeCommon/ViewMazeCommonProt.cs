@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Prot;
 using Games.RazorMaze.Views.MazeItems;
+using UnityEngine;
 
 namespace Games.RazorMaze.Views.MazeCommon
 {
@@ -10,12 +12,14 @@ namespace Games.RazorMaze.Views.MazeCommon
         #region inject
 
         private IMazeModel Model { get; }
-        public IContainersGetter ContainersGetter { get; }
+        private IContainersGetter ContainersGetter { get; }
+        private ICoordinateConverter CoordinateConverter { get; }
 
-        public ViewMazeCommonProt(IMazeModel _Model, IContainersGetter _ContainersGetter)
+        public ViewMazeCommonProt(IMazeModel _Model, IContainersGetter _ContainersGetter, ICoordinateConverter _CoordinateConverter)
         {
             Model = _Model;
             ContainersGetter = _ContainersGetter;
+            CoordinateConverter = _CoordinateConverter;
         }
 
         #endregion
@@ -27,6 +31,9 @@ namespace Games.RazorMaze.Views.MazeCommon
         public void Init()
         {
             MazeItems = RazorMazePrototypingUtils.CreateMazeItems(Model.Info, ContainersGetter.MazeItemsContainer);
+            CoordinateConverter.Init(Model.Info.Size);
+            ContainersGetter.MazeItemsContainer.SetLocalPosXY(Vector2.zero);
+            ContainersGetter.MazeItemsContainer.PlusLocalPosY(CoordinateConverter.GetScale() * 0.5f);
         }
         
         #endregion

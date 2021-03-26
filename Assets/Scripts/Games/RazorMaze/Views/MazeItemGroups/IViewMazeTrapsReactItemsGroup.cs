@@ -2,7 +2,7 @@
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
-    public interface IViewMazeTrapsReactItemsGroup
+    public interface IViewMazeTrapsReactItemsGroup : IInit
     {
         void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args);
     }

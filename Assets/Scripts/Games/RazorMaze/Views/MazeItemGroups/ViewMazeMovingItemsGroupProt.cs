@@ -3,8 +3,7 @@ using System.Linq;
 using Entities;
 using Extensions;
 using Games.RazorMaze.Models;
-using Games.RazorMaze.Prot;
-using Games.RazorMaze.Views.MazeItems;
+using Games.RazorMaze.Views.MazeCommon;
 using Shapes;
 using UnityEngine;
 
@@ -25,12 +24,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         #region nonpublic members
         
-        private List<IViewMazeItem> m_MazeItems;
-
         private Dictionary<MazeItem, MovingItemInfo> m_ItemsMoving = new Dictionary<MazeItem,MovingItemInfo>();
-        
-        //private readonly List<Tuple<MazeItem, Vector2, Vector2>> m_MazeItemsMoving = new List<Tuple<MazeItem, Vector2, Vector2>>();
-        //private readonly Dictionary<MazeItem, List<Tuple<V2Int, Disc>>> m_BusyPositions = new Dictionary<MazeItem, List<Tuple<V2Int, Disc>>>();
         
         #endregion
         
@@ -40,17 +34,20 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         private IMazeMovingItemsProceeder MovingItemsProceeder { get; }
         private ICoordinateConverter CoordinateConverter { get; }
         private IContainersGetter ContainersGetter { get; }
-        
+        private IViewMazeCommon MazeCommon { get; }
+
         public ViewMazeMovingItemsGroupProt(
             IMazeModel _Model,
             IMazeMovingItemsProceeder _MovingItemsProceeder,
             ICoordinateConverter _CoordinateConverter,
-            IContainersGetter _ContainersGetter)
+            IContainersGetter _ContainersGetter,
+            IViewMazeCommon _MazeCommon)
         {
             Model = _Model;
             MovingItemsProceeder = _MovingItemsProceeder;
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
+            MazeCommon = _MazeCommon;
         }
         
         #endregion
@@ -59,10 +56,6 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         public void Init()
         {
-            m_MazeItems = RazorMazePrototypingUtils.CreateMazeItems(Model.Info, ContainersGetter.MazeItemsContainer);
-            CoordinateConverter.Init(Model.Info.Size);
-            ContainersGetter.MazeItemsContainer.SetLocalPosXY(Vector2.zero);
-            ContainersGetter.MazeItemsContainer.PlusLocalPosY(CoordinateConverter.GetScale() * 0.5f);
             DrawWallBlockMovingPaths();
         }
 
@@ -85,7 +78,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
             if (!m_ItemsMoving.ContainsKey(_Args.Item))
                 return;
             var item = m_ItemsMoving[_Args.Item];
-            var mazeItem = m_MazeItems.Single(_Item => _Item.Equal(_Args.Item));
+            var mazeItem = MazeCommon.MazeItems.Single(_Item => _Item.Equal(_Args.Item));
             var pos = Vector2.Lerp(item.From, item.To, _Args.Progress);
             mazeItem.SetLocalPosition(pos);
         }
@@ -96,7 +89,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                 MarkMazeItemBusyPositions(_Args.Item, null);
             if (!m_ItemsMoving.ContainsKey(_Args.Item))
                 return;
-            var viewItem = m_MazeItems.Single(_Item => _Item.Equal(_Args.Item));
+            var viewItem = MazeCommon.MazeItems.Single(_Item => _Item.Equal(_Args.Item));
             viewItem.SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(_Args.To));
             m_ItemsMoving.Remove(_Args.Item);
         }
