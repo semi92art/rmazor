@@ -6,19 +6,19 @@ namespace Games.RazorMaze.Models
 {
     public enum EMazeItemType
     {
-        // ======== not moving items: =========
+        // blocks
         Block,
+        BlockMovingGravity,
         BlockTransformingToNode,
         Portal,
+        // traps
         TrapReact,
         TrapIncreasing,
-        Turret,
-        // ========= moving and|or rotating items =========
         TrapMoving,
-        TurretRotating,
-        // gravity items
-        BlockMovingGravity,
-        TrapMovingGravity
+        TrapMovingGravity,
+        // turrets
+        Turret,
+        TurretRotating
     }
 
     public enum EMazeItemMoveByPathDirection

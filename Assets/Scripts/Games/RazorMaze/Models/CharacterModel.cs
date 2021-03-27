@@ -1,83 +1,84 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using Entities;
+using Games.RazorMaze.Models.ProceedInfos;
+using UnityEngine;
 using Utils;
 
 namespace Games.RazorMaze.Models
 {
-    public class CharacterModel : ICharacterModelFull
+    public class CharacterMovingEventArgs : EventArgs
     {
+        public V2Int From { get; }
+        public V2Int To { get; }
+        public V2Int Current { get; }
+        public float Progress { get; }
 
-        #region nonpublic members
-
-        private MazeInfo m_MazeInfo;
-        private MazeOrientation m_Orientation;
-        private long m_HealthPoints;
-        
-        #endregion
-        
-        #region inject
-        private ICharacterMover CharacterMover { get; }
-        private IMazeMovingItemsProceeder MovingItemsProceeder { get; }
-
-        public CharacterModel(ICharacterMover _CharacterMover, IMazeMovingItemsProceeder _MovingItemsProceeder)
+        public CharacterMovingEventArgs(V2Int _From, V2Int _To, V2Int _Current, float _Progress)
         {
-            CharacterMover = _CharacterMover;
-            MovingItemsProceeder = _MovingItemsProceeder;
+            From = _From;
+            To = _To;
+            Current = _Current;
+            Progress = _Progress;
+        }
+    }
+    
+    public delegate void HealthPointsChangedHandler(HealthPointsEventArgs _Args);
+    public delegate void CharacterMovingHandler(CharacterMovingEventArgs _Args);
+
+    public interface ICharacterModel : IInit, IPreInit
+    {
+        event CharacterMovingHandler CharacterMoveStarted;
+        event CharacterMovingHandler CharacterMoveContinued;
+        event CharacterMovingHandler CharacterMoveFinished;
+        event HealthPointsChangedHandler HealthChanged;
+        event NoArgsHandler Death;
+        void Move(MazeMoveDirection _Direction);
+        void OnMazeChanged(MazeInfo _Info);
+    }
+    
+    public class CharacterModel : ICharacterModel
+    {
+        #region inject
+
+        private RazorMazeModelSettings Settings { get; }
+        private IModelMazeData Data { get; }
+
+        public CharacterModel(RazorMazeModelSettings _Settings, IModelMazeData _Data)
+        {
+            Settings = _Settings;
+            Data = _Data;
         }
         
         #endregion
         
         #region api
 
-        public event CharacterMovingHandler MoveStarted;
-        public event CharacterMovingHandler MoveContinued;
-        public event CharacterMovingHandler MoveFinished;
+        public event CharacterMovingHandler CharacterMoveStarted;
+        public event CharacterMovingHandler CharacterMoveContinued;
+        public event CharacterMovingHandler CharacterMoveFinished;
         public event HealthPointsChangedHandler HealthChanged;
         public event NoArgsHandler Death;
-
-        public V2Int Position { get; private set; }
         
-        public long HealthPoints
-        {
-            get => m_HealthPoints;
-            set
-            {
-                m_HealthPoints = Math.Max(0, value);
-                HealthChanged?.Invoke(new HealthPointsEventArgs(m_HealthPoints));
-                if (m_HealthPoints <= 0)
-                    Death?.Invoke();
-            }
-        }
-
         public void PreInit()
-        {
-            CharacterMover.CharacterMoveStarted += _Progress => MoveStarted?.Invoke(_Progress);
-            CharacterMover.CharacterMoveContinued += _Progress => MoveContinued?.Invoke(_Progress);
-            CharacterMover.CharacterMoveFinished += _Position => MoveFinished?.Invoke(_Position);
-        }
+        { }
 
         public void Init()
         {
-            HealthPoints = 1;
+            Data.CharacterInfo.HealthPoints = 1;
         }
         
         public void Move(MazeMoveDirection _Direction)
         {
-            var prevPos = Position;
-            Position = GetNewPosition(_Direction);
-            CharacterMover.MoveCharacter(prevPos, Position);
+            var from = Data.CharacterInfo.Position;
+            var to = GetNewPosition(_Direction);
+            Coroutines.Run(MoveCharacterCore(from, to));
         }
 
-        public void OnMazeInfoUpdated(MazeInfo _Info, MazeOrientation _Orientation)
+        public void OnMazeChanged(MazeInfo _Info)
         {
-            if (!ReferenceEquals(m_MazeInfo, _Info))
-            {
-                m_MazeInfo = _Info;
-                Position = m_MazeInfo.Path[0];    
-            }
-            
-            m_Orientation = _Orientation;
+            Data.CharacterInfo.Position = Data.Info.Path[0];
         }
 
         #endregion
@@ -86,9 +87,9 @@ namespace Games.RazorMaze.Models
 
         private V2Int GetNewPosition(MazeMoveDirection _Direction)
         {
-            var nextPos = Position;
-            var dirVector = RazorMazeUtils.GetDirectionVector(_Direction, m_Orientation);
-            while (ValidPosition(nextPos + dirVector, m_MazeInfo))
+            var nextPos = Data.CharacterInfo.Position;
+            var dirVector = RazorMazeUtils.GetDirectionVector(_Direction, Data.Orientation);
+            while (ValidPosition(nextPos + dirVector, Data.Info))
                 nextPos += dirVector;
             return nextPos;
         }
@@ -98,10 +99,30 @@ namespace Games.RazorMaze.Models
             bool isNode = _Info.Path.Any(_PathItem => _PathItem == _Position);
             bool isMazeItem = _Info.MazeItems.Any(_O => 
                 _O.Position == _Position && _O.Type == EMazeItemType.Block);
-            bool isBuzyMazeItem = MovingItemsProceeder.ProceedInfos.Values
+            bool isBuzyMazeItem = Data.ProceedInfos.Values
                 .Where(_Proceed => _Proceed.Item.Type == EMazeItemType.BlockMovingGravity)
-                .Any(_Proceed => _Proceed.BusyPositions.Contains(_Position));
+                .Any(_Proceed => (_Proceed as MazeItemMovingProceedInfo).BusyPositions.Contains(_Position));
             return isNode && !isMazeItem && !isBuzyMazeItem;
+        }
+        
+        private IEnumerator MoveCharacterCore(V2Int _From, V2Int _To)
+        {
+            CharacterMoveStarted?.Invoke(new CharacterMovingEventArgs(_From, _To, _From,0));
+            int pathLength = Mathf.RoundToInt(Vector2Int.Distance(_From.ToVector2Int(), _To.ToVector2Int()));
+            yield return Coroutines.Lerp(
+                0f,
+                1f,
+                pathLength / Settings.characterSpeed,
+                _Progress =>
+                {
+                    var addictRaw = (_To.ToVector2() - _From.ToVector2()) * _Progress;
+                    var addict = new V2Int(addictRaw);
+                    var newPos = _From + addict;
+                    Data.CharacterInfo.Position = newPos;
+                    CharacterMoveContinued?.Invoke(new CharacterMovingEventArgs(_From, _To, newPos, _Progress));
+                },
+                GameTimeProvider.Instance,
+                (_Stopped, _Progress) => CharacterMoveFinished?.Invoke(new CharacterMovingEventArgs(_From, _To, _To, _Progress)));
         }
         
         #endregion

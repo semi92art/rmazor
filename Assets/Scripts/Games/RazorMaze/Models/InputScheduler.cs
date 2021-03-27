@@ -5,13 +5,26 @@ using UnityGameLoopDI;
 
 namespace Games.RazorMaze.Models
 {
+    public delegate void EInputCommandHandler(EInputCommand _Command);
+    
+    public interface IInputScheduler
+    {
+        event EInputCommandHandler MoveCommand; 
+        event EInputCommandHandler RotateCommand; 
+        void AddCommand(EInputCommand _Command);
+        //void LockMovement();
+        void UnlockMovement();
+        //void LockRotation();
+        void UnlockRotation();
+    }
+    
     public class InputScheduler : Ticker, IInputScheduler, IOnUpdate
     {
         public event EInputCommandHandler MoveCommand;
         public event EInputCommandHandler RotateCommand;
         
-        private Queue<EInputCommand> m_MoveCommands = new Queue<EInputCommand>();
-        private Queue<EInputCommand> m_RotateCommands = new Queue<EInputCommand>();
+        private readonly Queue<EInputCommand> m_MoveCommands = new Queue<EInputCommand>();
+        private readonly Queue<EInputCommand> m_RotateCommands = new Queue<EInputCommand>();
 
         private bool m_MovementLocked;
         private bool m_RotationLocked;

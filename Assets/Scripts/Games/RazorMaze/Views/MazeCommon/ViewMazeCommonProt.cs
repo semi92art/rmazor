@@ -11,11 +11,11 @@ namespace Games.RazorMaze.Views.MazeCommon
     {
         #region inject
 
-        private IMazeModel Model { get; }
+        private IModelMazeData Model { get; }
         private IContainersGetter ContainersGetter { get; }
         private ICoordinateConverter CoordinateConverter { get; }
 
-        public ViewMazeCommonProt(IMazeModel _Model, IContainersGetter _ContainersGetter, ICoordinateConverter _CoordinateConverter)
+        public ViewMazeCommonProt(IModelMazeData _Model, IContainersGetter _ContainersGetter, ICoordinateConverter _CoordinateConverter)
         {
             Model = _Model;
             ContainersGetter = _ContainersGetter;

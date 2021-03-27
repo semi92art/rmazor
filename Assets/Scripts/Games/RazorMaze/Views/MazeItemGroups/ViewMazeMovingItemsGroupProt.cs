@@ -3,6 +3,7 @@ using System.Linq;
 using Entities;
 using Extensions;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.MazeCommon;
 using Shapes;
 using UnityEngine;
@@ -24,26 +25,27 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         #region nonpublic members
         
-        private Dictionary<MazeItem, MovingItemInfo> m_ItemsMoving = new Dictionary<MazeItem,MovingItemInfo>();
+        private readonly Dictionary<MazeItem, MovingItemInfo> m_ItemsMoving = 
+            new Dictionary<MazeItem,MovingItemInfo>();
         
         #endregion
         
         #region inject
         
-        private IMazeModel Model { get; }
+        private IModelMazeData Data { get; }
         private IMazeMovingItemsProceeder MovingItemsProceeder { get; }
         private ICoordinateConverter CoordinateConverter { get; }
         private IContainersGetter ContainersGetter { get; }
         private IViewMazeCommon MazeCommon { get; }
 
         public ViewMazeMovingItemsGroupProt(
-            IMazeModel _Model,
+            IModelMazeData _Data,
             IMazeMovingItemsProceeder _MovingItemsProceeder,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IViewMazeCommon _MazeCommon)
         {
-            Model = _Model;
+            Data = _Data;
             MovingItemsProceeder = _MovingItemsProceeder;
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
@@ -74,7 +76,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         public void OnMazeItemMoveContinued(MazeItemMoveEventArgs _Args)
         {
             if (_Args.Item.Type == EMazeItemType.BlockMovingGravity)
-                MarkMazeItemBusyPositions(_Args.Item, MovingItemsProceeder.ProceedInfos[_Args.Item].BusyPositions);
+                MarkMazeItemBusyPositions(_Args.Item, (Data.ProceedInfos[_Args.Item] as MazeItemMovingProceedInfo).BusyPositions);
             if (!m_ItemsMoving.ContainsKey(_Args.Item))
                 return;
             var item = m_ItemsMoving[_Args.Item];
@@ -100,7 +102,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
 
         private void DrawWallBlockMovingPaths()
         {
-            var items = Model.Info.MazeItems
+            var items = Data.Info.MazeItems
                 .Where(_O => _O.Type == EMazeItemType.BlockMovingGravity
                 || _O.Type == EMazeItemType.TrapMovingGravity
                 || _O.Type == EMazeItemType.TrapMoving);

@@ -18,16 +18,16 @@ namespace Games.RazorMaze.Views.Characters
         #region inject
         
         private ICoordinateConverter CoordinateConverter { get; }
-        private IMazeModel MazeModel { get; }
+        private IModelMazeData ModelMazeData { get; }
         private IContainersGetter ContainersGetter { get; }
         
         public ViewCharacterProt(
             ICoordinateConverter _CoordinateConverter, 
-            IMazeModel _MazeModel, 
+            IModelMazeData _ModelMazeData, 
             IContainersGetter _ContainersGetter)
         {
             CoordinateConverter = _CoordinateConverter;
-            MazeModel = _MazeModel;
+            ModelMazeData = _ModelMazeData;
             ContainersGetter = _ContainersGetter;
         }
         
@@ -37,9 +37,9 @@ namespace Games.RazorMaze.Views.Characters
         
         public void Init()
         {
-            CoordinateConverter.Init(MazeModel.Info.Size);
+            CoordinateConverter.Init(ModelMazeData.Info.Size);
             InitShape(0.4f * CoordinateConverter.GetScale(), new Color(1f, 0.38f, 0f));
-            var pos = CoordinateConverter.ToLocalCharacterPosition(MazeModel.Info.Path[0]);
+            var pos = CoordinateConverter.ToLocalCharacterPosition(ModelMazeData.Info.Path[0]);
             SetPosition(pos);
         }
 

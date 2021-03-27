@@ -47,28 +47,33 @@ namespace Games.RazorMaze
         {
             GameTimeProvider.Instance.Reset();
             
-            var maze                                   = Model.Maze;
-            var movingItemsProceeder                   = Model.MazeMovingItemsProceeder;
-            var trapsReactProceeder                    = Model.MazeTrapsReactProceeder;
+            var rotation                               = Model.MazeRotation;
+            var movingItemsProceeder                   = Model.MovingItemsProceeder;
+            var gravityItemsProceeder                  = Model.GravityItemsProceeder;
+            var trapsReactProceeder                    = Model.TrapsReactProceeder;
             var character                              = Model.Character;
             var scoring                                = Model.Scoring;
             var levelStaging                           = Model.LevelStaging;
             
-            maze.RotationStarted                       += OnMazeRotationStarted;
-            maze.Rotation                              += OnMazeRotation;
-            maze.RotationFinished                      += OnMazeRotationFinished;
+            rotation.RotationStarted                   += OnMazeRotationStarted;
+            rotation.Rotation                          += OnMazeRotation;
+            rotation.RotationFinished                  += OnMazeRotationFinished;
             
             movingItemsProceeder.MazeItemMoveStarted   += OnMazeItemMoveStarted;
             movingItemsProceeder.MazeItemMoveContinued += OnMazeItemMoveContinued;
             movingItemsProceeder.MazeItemMoveFinished  += OnMazeItemMoveFinished;
+
+            gravityItemsProceeder.MazeItemMoveStarted  += OnMazeItemMoveStarted;
+            gravityItemsProceeder.MazeItemMoveContinued+= OnMazeItemMoveContinued;
+            gravityItemsProceeder.MazeItemMoveFinished += OnMazeItemMoveFinished;
             
             trapsReactProceeder.TrapReactStageChanged  += OnMazeTrapReactStageChanged;
 
             character.HealthChanged                    += OnCharacterHealthChanged;
             character.Death                            += OnCharacterDeath;
-            character.MoveStarted                      += OnCharacterMoveStarted;
-            character.MoveContinued                    += OnCharacterMoveContinued;
-            character.MoveFinished                     += OnCharacterMoveFinished;
+            character.CharacterMoveStarted             += OnCharacterMoveStarted;
+            character.CharacterMoveContinued           += OnCharacterMoveContinued;
+            character.CharacterMoveFinished            += OnCharacterMoveFinished;
             
             scoring.ScoreChanged                       += OnScoreChanged;
             scoring.NecessaryScoreReached              += OnNecessaryScoreReached;
@@ -102,7 +107,7 @@ namespace Games.RazorMaze
         
         private void OnMazeRotationStarted(MazeRotateDirection _Direction, MazeOrientation _Orientation) => View.MazeRotation.StartRotation(_Direction, _Orientation);
         private void OnMazeRotation(float _Progress) => View.MazeRotation.Rotate(_Progress);
-        private void OnMazeRotationFinished() => View.MazeRotation.FinishRotation();
+        private void OnMazeRotationFinished(MazeRotateDirection _Direction, MazeOrientation _Orientation) => View.MazeRotation.FinishRotation();
         
         private void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args) => View.MazeMovingItemsGroup.OnMazeItemMoveStarted(_Args);
         private void OnMazeItemMoveContinued(MazeItemMoveEventArgs _Args) => View.MazeMovingItemsGroup.OnMazeItemMoveContinued(_Args);
@@ -110,7 +115,7 @@ namespace Games.RazorMaze
 
         private void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args) => View.MazeTrapsReactItemsGroup.OnMazeTrapReactStageChanged(_Args);
         
-        public void SetMazeInfo(MazeInfo _Info) => Model.Maze.Info = _Info;
+        public void SetMazeInfo(MazeInfo _Info) => Model.Data.Info = _Info;
 
         #endregion
     
@@ -144,16 +149,16 @@ namespace Games.RazorMaze
 
         protected virtual void OnDestroy()
         {
-            var maze                                   = Model.Maze;
-            var movingItemsProceeder                   = Model.MazeMovingItemsProceeder;
-            var trapsReactProceeder                    = Model.MazeTrapsReactProceeder;
+            var rotation                               = Model.MazeRotation;
+            var movingItemsProceeder                   = Model.MovingItemsProceeder;
+            var trapsReactProceeder                    = Model.TrapsReactProceeder;
             var character                              = Model.Character;
             var scoring                                = Model.Scoring;
             var levelStaging                           = Model.LevelStaging;
             
-            maze.RotationStarted                       -= OnMazeRotationStarted;
-            maze.Rotation                              -= OnMazeRotation;
-            maze.RotationFinished                      -= OnMazeRotationFinished;
+            rotation.RotationStarted                   -= OnMazeRotationStarted;
+            rotation.Rotation                          -= OnMazeRotation;
+            rotation.RotationFinished                  -= OnMazeRotationFinished;
             
             movingItemsProceeder.MazeItemMoveStarted   -= OnMazeItemMoveStarted;
             movingItemsProceeder.MazeItemMoveContinued -= OnMazeItemMoveContinued;
@@ -163,9 +168,9 @@ namespace Games.RazorMaze
 
             character.HealthChanged                    -= OnCharacterHealthChanged;
             character.Death                            -= OnCharacterDeath;
-            character.MoveStarted                      -= OnCharacterMoveStarted;
-            character.MoveContinued                    -= OnCharacterMoveContinued;
-            character.MoveFinished                     -= OnCharacterMoveFinished;
+            character.CharacterMoveStarted             -= OnCharacterMoveStarted;
+            character.CharacterMoveContinued           -= OnCharacterMoveContinued;
+            character.CharacterMoveFinished            -= OnCharacterMoveFinished;
             
             scoring.ScoreChanged                       -= OnScoreChanged;
             scoring.NecessaryScoreReached              -= OnNecessaryScoreReached;
