@@ -21,12 +21,12 @@ namespace Utils
 
             float currTime = _TimeProvider.Time;
             long progress = _From;
-            bool wasBreaked = false;
-            while (progress < _To)
+            bool breaked = false;
+            while (_TimeProvider.Time < currTime + _Time)
             {
                 if (_OnBreak != null && _OnBreak())
                 {
-                    wasBreaked = true;
+                    breaked = true;
                     break;
                 }
                 if (_TimeProvider.Pause)
@@ -37,11 +37,12 @@ namespace Utils
                 
                 float timeCoeff = 1 - (currTime + _Time - _TimeProvider.Time) / _Time;
                 progress = MathUtils.Lerp(_From, _To, timeCoeff);
-                progress = Math.Min(progress, _To);
                 _OnProgress(progress);
                 yield return new WaitForEndOfFrame();
             }
-            _OnFinish?.Invoke(wasBreaked, progress);
+            if (!breaked)
+                _OnProgress(_To);
+            _OnFinish?.Invoke(breaked, breaked ? progress : _To);
         }
         
         public static IEnumerator Lerp(
@@ -58,12 +59,13 @@ namespace Utils
 
             float currTime = _TimeProvider.Time;
             float progress = _From;
-            bool wasBreaked = false;
-            while (progress < _To)
+            bool breaked = false;
+            
+            while (_TimeProvider.Time < currTime + _Time)
             {
                 if (_OnBreak != null && _OnBreak())
                 {
-                    wasBreaked = true;
+                    breaked = true;
                     break;
                 }
                 if (_TimeProvider.Pause)
@@ -74,11 +76,12 @@ namespace Utils
                 
                 float timeCoeff = 1 - (currTime + _Time - _TimeProvider.Time) / _Time;
                 progress = Mathf.Lerp(_From, _To, timeCoeff);
-                progress = Mathf.Min(progress, _To);
                 _OnProgress(progress);
                 yield return new WaitForEndOfFrame();
             }
-            _OnFinish?.Invoke(wasBreaked, progress);
+            if (!breaked)
+                _OnProgress(_To);
+            _OnFinish?.Invoke(breaked, breaked ? progress : _To);
         }
 
         public static IEnumerator Lerp(
@@ -94,12 +97,12 @@ namespace Utils
                 yield break;
             float currTime = _TimeProvider.Time;
             int progress = _From;
-            bool wasBreaked = false;
+            bool breaked = false;
             while (_TimeProvider.Time < currTime + _Time)
             {
                 if (_OnBreak != null && _OnBreak())
                 {
-                    wasBreaked = true;
+                    breaked = true;
                     break;
                 }
                 if (_TimeProvider.Pause)
@@ -109,11 +112,12 @@ namespace Utils
                 }
                 float timeCoeff = 1 - (currTime + _Time - _TimeProvider.Time) / _Time;
                 progress = Mathf.RoundToInt(Mathf.Lerp(_From, _To, timeCoeff));
-                progress = Math.Min(progress, _To);
                 _OnProgress(progress);
                 yield return new WaitForEndOfFrame();
             }
-            _OnFinish?.Invoke(wasBreaked,progress);
+            if (!breaked)
+                _OnProgress(_To);
+            _OnFinish?.Invoke(breaked, breaked ? progress : _To);
         }
         
         public static IEnumerator Lerp(
@@ -122,14 +126,28 @@ namespace Utils
             float _Time,
             UnityAction<Color> _OnProgress,
             ITimeProvider _TimeProvider,
-            UnityAction<Color> _OnFinish = null)
+            UnityAction<bool, Color> _OnFinish = null,
+            Func<bool> _OnBreak = null)
         {
             if (_OnProgress == null)
                 yield break;
             float currTime = _TimeProvider.Time;
             Color progress = _From;
+            bool breaked = false;
             while (_TimeProvider.Time < currTime + _Time)
             {
+                if (_OnBreak != null && _OnBreak())
+                {
+                    breaked = true;
+                    break;
+                }
+                
+                if (_TimeProvider.Pause)
+                {
+                    yield return new WaitForEndOfFrame();
+                    continue;
+                }
+                
                 float timeCoeff = 1 - (currTime + _Time - _TimeProvider.Time) / _Time;
                 float r = Mathf.Lerp(_From.r, _To.r, timeCoeff);
                 float g = Mathf.Lerp(_From.g, _To.g, timeCoeff);
@@ -139,7 +157,9 @@ namespace Utils
                 _OnProgress(progress);
                 yield return new WaitForEndOfFrame();
             }
-            _OnFinish?.Invoke(progress);
+            if (!breaked)
+                _OnProgress(_To);
+            _OnFinish?.Invoke(breaked, breaked ? progress : _To);
         }
 
         public static IEnumerator Lerp(
@@ -169,7 +189,9 @@ namespace Utils
                 _OnProgress(progress);
                 yield return new WaitForEndOfFrame();
             }
-            _OnFinish?.Invoke(breaked, progress);
+            if (!breaked)
+                _OnProgress(_To);
+            _OnFinish?.Invoke(breaked, breaked ? progress : _To);
         }
         
         public static IEnumerator Lerp(
@@ -198,7 +220,9 @@ namespace Utils
                 _OnProgress(progress);
                 yield return new WaitForEndOfFrame();
             }
-            _OnFinish?.Invoke(breaked, progress);
+            if (!breaked)
+                _OnProgress(_To);
+            _OnFinish?.Invoke(breaked, breaked ? progress : _To);
         }
     }
 }

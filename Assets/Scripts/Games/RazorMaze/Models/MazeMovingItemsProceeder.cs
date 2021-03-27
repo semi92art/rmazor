@@ -32,14 +32,11 @@ namespace Games.RazorMaze.Models
     
     public delegate void MazeItemMoveHandler(MazeItemMoveEventArgs Args);
     
-    public interface IMazeMovingItemsProceeder
+    public interface IMazeMovingItemsProceeder : IOnMazeChanged
     {
         event MazeItemMoveHandler MazeItemMoveStarted;
         event MazeItemMoveHandler MazeItemMoveContinued;
         event MazeItemMoveHandler MazeItemMoveFinished;
-        
-        
-        void OnMazeChanged(MazeInfo _Info);
     }
 
     public class MazeMovingItemsProceeder : Ticker, IOnUpdate, IMazeMovingItemsProceeder

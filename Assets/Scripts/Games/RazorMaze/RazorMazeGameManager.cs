@@ -47,42 +47,44 @@ namespace Games.RazorMaze
         {
             GameTimeProvider.Instance.Reset();
             
-            var rotation                               = Model.MazeRotation;
-            var movingItemsProceeder                   = Model.MovingItemsProceeder;
-            var gravityItemsProceeder                  = Model.GravityItemsProceeder;
-            var trapsReactProceeder                    = Model.TrapsReactProceeder;
-            var character                              = Model.Character;
-            var scoring                                = Model.Scoring;
-            var levelStaging                           = Model.LevelStaging;
+            var rotation                                        = Model.MazeRotation;
+            var movingItemsProceeder                            = Model.MovingItemsProceeder;
+            var gravityItemsProceeder                           = Model.GravityItemsProceeder;
+            var trapsReactProceeder                             = Model.TrapsReactProceeder;
+            var trapsIncreasingProceeder                        = Model.TrapsIncreasingProceeder;
+            var character                                       = Model.Character;
+            var scoring                                         = Model.Scoring;
+            var levelStaging                                    = Model.LevelStaging;
             
-            rotation.RotationStarted                   += OnMazeRotationStarted;
-            rotation.Rotation                          += OnMazeRotation;
-            rotation.RotationFinished                  += OnMazeRotationFinished;
+            rotation.RotationStarted                            += OnMazeRotationStarted;
+            rotation.Rotation                                   += OnMazeRotation;
+            rotation.RotationFinished                           += OnMazeRotationFinished;
             
-            movingItemsProceeder.MazeItemMoveStarted   += OnMazeItemMoveStarted;
-            movingItemsProceeder.MazeItemMoveContinued += OnMazeItemMoveContinued;
-            movingItemsProceeder.MazeItemMoveFinished  += OnMazeItemMoveFinished;
+            movingItemsProceeder.MazeItemMoveStarted            += OnMazeItemMoveStarted;
+            movingItemsProceeder.MazeItemMoveContinued          += OnMazeItemMoveContinued;
+            movingItemsProceeder.MazeItemMoveFinished           += OnMazeItemMoveFinished;
 
-            gravityItemsProceeder.MazeItemMoveStarted  += OnMazeItemMoveStarted;
-            gravityItemsProceeder.MazeItemMoveContinued+= OnMazeItemMoveContinued;
-            gravityItemsProceeder.MazeItemMoveFinished += OnMazeItemMoveFinished;
+            gravityItemsProceeder.MazeItemMoveStarted           += OnMazeItemMoveStarted;
+            gravityItemsProceeder.MazeItemMoveContinued         += OnMazeItemMoveContinued;
+            gravityItemsProceeder.MazeItemMoveFinished          += OnMazeItemMoveFinished;
             
-            trapsReactProceeder.TrapReactStageChanged  += OnMazeTrapReactStageChanged;
+            trapsReactProceeder.TrapReactStageChanged           += OnMazeTrapReactStageChanged;
+            trapsIncreasingProceeder.TrapIncreasingStageChanged += OnMazeTrapIncreasingStageChanged;
 
-            character.HealthChanged                    += OnCharacterHealthChanged;
-            character.Death                            += OnCharacterDeath;
-            character.CharacterMoveStarted             += OnCharacterMoveStarted;
-            character.CharacterMoveContinued           += OnCharacterMoveContinued;
-            character.CharacterMoveFinished            += OnCharacterMoveFinished;
+            character.HealthChanged                             += OnCharacterHealthChanged;
+            character.Death                                     += OnCharacterDeath;
+            character.CharacterMoveStarted                      += OnCharacterMoveStarted;
+            character.CharacterMoveContinued                    += OnCharacterMoveContinued;
+            character.CharacterMoveFinished                     += OnCharacterMoveFinished;
             
-            scoring.ScoreChanged                       += OnScoreChanged;
-            scoring.NecessaryScoreReached              += OnNecessaryScoreReached;
+            scoring.ScoreChanged                                += OnScoreChanged;
+            scoring.NecessaryScoreReached                       += OnNecessaryScoreReached;
 
-            levelStaging.LevelBeforeStarted            += OnBeforeLevelStarted;
-            levelStaging.LevelStarted                  += OnLevelStarted;
-            levelStaging.LevelFinished                 += OnLevelFinished;
+            levelStaging.LevelBeforeStarted                     += OnBeforeLevelStarted;
+            levelStaging.LevelStarted                           += OnLevelStarted;
+            levelStaging.LevelFinished                          += OnLevelFinished;
             
-            View.InputConfigurator.Command             += OnInputCommand;
+            View.InputConfigurator.Command                      += OnInputCommand;
             
             Model.PreInit();
         }
@@ -114,6 +116,7 @@ namespace Games.RazorMaze
         private void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args) => View.MazeMovingItemsGroup.OnMazeItemMoveFinished(_Args);
 
         private void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args) => View.MazeTrapsReactItemsGroup.OnMazeTrapReactStageChanged(_Args);
+        private void OnMazeTrapIncreasingStageChanged(MazeItemTrapIncreasingEventArgs _Args) => View.MazeTrapsIncreasingItemsGroup.OnMazeTrapIncreasingStageChanged(_Args);
         
         public void SetMazeInfo(MazeInfo _Info) => Model.Data.Info = _Info;
 

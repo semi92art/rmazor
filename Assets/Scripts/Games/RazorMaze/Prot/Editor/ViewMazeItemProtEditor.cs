@@ -3,7 +3,6 @@ using System.Linq;
 using Entities;
 using Exceptions;
 using Games.RazorMaze.Models;
-using Games.RazorMaze.Views;
 using Games.RazorMaze.Views.MazeItems;
 using UnityEditor;
 using UnityEngine;
@@ -13,7 +12,7 @@ using Utils.Editor;
 namespace Games.RazorMaze.Prot.Editor
 {
     [CustomEditor(typeof(ViewMazeItemProt)), CanEditMultipleObjects]
-    public class MazeProtItemEditor : UnityEditor.Editor
+    public class ViewMazeItemProtEditor : UnityEditor.Editor
     {
         private ViewMazeItemProt[] targetsCopy;
         private EMazeItemType m_Type;

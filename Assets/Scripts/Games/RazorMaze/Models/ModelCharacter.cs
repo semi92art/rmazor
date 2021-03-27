@@ -27,7 +27,7 @@ namespace Games.RazorMaze.Models
     public delegate void HealthPointsChangedHandler(HealthPointsEventArgs _Args);
     public delegate void CharacterMovingHandler(CharacterMovingEventArgs _Args);
 
-    public interface ICharacterModel : IInit, IPreInit
+    public interface IModelCharacter : IInit, IPreInit
     {
         event CharacterMovingHandler CharacterMoveStarted;
         event CharacterMovingHandler CharacterMoveContinued;
@@ -38,14 +38,14 @@ namespace Games.RazorMaze.Models
         void OnMazeChanged(MazeInfo _Info);
     }
     
-    public class CharacterModel : ICharacterModel
+    public class ModelCharacter : IModelCharacter
     {
         #region inject
 
         private RazorMazeModelSettings Settings { get; }
         private IModelMazeData Data { get; }
 
-        public CharacterModel(RazorMazeModelSettings _Settings, IModelMazeData _Data)
+        public ModelCharacter(RazorMazeModelSettings _Settings, IModelMazeData _Data)
         {
             Settings = _Settings;
             Data = _Data;
@@ -98,7 +98,7 @@ namespace Games.RazorMaze.Models
         {
             bool isNode = _Info.Path.Any(_PathItem => _PathItem == _Position);
             bool isMazeItem = _Info.MazeItems.Any(_O => 
-                _O.Position == _Position && _O.Type == EMazeItemType.Block);
+                _O.Position == _Position && (_O.Type == EMazeItemType.Block || _O.Type == EMazeItemType.TrapIncreasing));
             bool isBuzyMazeItem = Data.ProceedInfos.Values
                 .Where(_Proceed => _Proceed.Item.Type == EMazeItemType.BlockMovingGravity)
                 .Any(_Proceed => (_Proceed as MazeItemMovingProceedInfo).BusyPositions.Contains(_Position));

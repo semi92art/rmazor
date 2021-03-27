@@ -20,7 +20,7 @@ namespace Games.RazorMaze.Models
         event MazeInfoHandler MazeChanged;
         MazeInfo Info { get; set; }
         MazeOrientation Orientation { get; set; }
-        Dictionary<MazeItem, MazeItemProceedInfoBase> ProceedInfos { get; set; }
+        Dictionary<MazeItem, IMazeItemProceedInfo> ProceedInfos { get; }
         CharacterInfo CharacterInfo { get; }
     }
     
@@ -47,8 +47,8 @@ namespace Games.RazorMaze.Models
         
         public event MazeInfoHandler MazeChanged;
         public MazeOrientation Orientation { get; set; } = MazeOrientation.North;
-        public Dictionary<MazeItem, MazeItemProceedInfoBase> ProceedInfos { get; set; } 
-            = new Dictionary<MazeItem, MazeItemProceedInfoBase>();
+        public Dictionary<MazeItem, IMazeItemProceedInfo> ProceedInfos { get; } 
+            = new Dictionary<MazeItem, IMazeItemProceedInfo>();
 
         public CharacterInfo CharacterInfo { get; } = new CharacterInfo();
 

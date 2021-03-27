@@ -16,5 +16,6 @@ namespace Games.RazorMaze.Views
         IViewMazeRotation MazeRotation { get; }
         IViewMazeMovingItemsGroup MazeMovingItemsGroup { get; }
         IViewMazeTrapsReactItemsGroup MazeTrapsReactItemsGroup { get; }
+        IViewMazeTrapsIncreasingItemsGroup MazeTrapsIncreasingItemsGroup { get; }
     }
 }

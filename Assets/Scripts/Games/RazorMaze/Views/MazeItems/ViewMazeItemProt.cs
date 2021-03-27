@@ -54,6 +54,11 @@ namespace Games.RazorMaze.Views.MazeItems
             transform.localPosition = _Position;
         }
 
+        public void SetLocalScale(float _Scale)
+        {
+            transform.localScale = _Scale * Vector3.one;
+        }
+
         public bool Equal(MazeItem _MazeItem)
         {
             return _MazeItem.Path == props.Path && _MazeItem.Type == props.Type;
@@ -201,9 +206,11 @@ namespace Games.RazorMaze.Views.MazeItems
             {
                 case EMazeItemType.Block:
                 case EMazeItemType.BlockTransformingToNode:
-                case EMazeItemType.TrapIncreasing:
                 case EMazeItemType.TurretRotating:
                     //do nothing
+                    break;
+                case EMazeItemType.TrapIncreasing:
+                    DrawGizmosTrapIncreasing();
                     break;
                 case EMazeItemType.TrapMoving:
                 case EMazeItemType.BlockMovingGravity:
@@ -257,6 +264,31 @@ namespace Games.RazorMaze.Views.MazeItems
             Gizmos.DrawSphere(pos, 1);
             Gizmos.DrawSphere(pairPos, 1);
             Gizmos.DrawLine(pos, pairPos);
+        }
+
+        private void DrawGizmosTrapIncreasing()
+        {
+            var p1 = new V2Int(props.Position.X - 1, props.Position.Y - 1);
+            var p2 = new V2Int(props.Position.X - 1, props.Position.Y + 1);
+            var p3 = new V2Int(props.Position.X + 1, props.Position.Y + 1);
+            var p4 = new V2Int(props.Position.X + 1, props.Position.Y - 1);
+
+            var p1_2 = (Vector3)ToWorldPosition(p1);
+            var p2_2 = (Vector3)ToWorldPosition(p2);
+            var p3_2 = (Vector3)ToWorldPosition(p3);
+            var p4_2 = (Vector3)ToWorldPosition(p4);
+
+            Gizmos.DrawLine(p1_2, p2_2);
+            Gizmos.DrawLine(p2_2, p3_2);
+            Gizmos.DrawLine(p3_2, p4_2);
+            Gizmos.DrawLine(p4_2, p1_2);
+            Gizmos.DrawLine(p1_2, p3_2);
+            Gizmos.DrawLine(p2_2, p4_2);
+
+            Gizmos.DrawSphere(p1_2, 1);
+            Gizmos.DrawSphere(p2_2, 1);
+            Gizmos.DrawSphere(p3_2, 1);
+            Gizmos.DrawSphere(p4_2, 1);
         }
 
         private Vector2 ToWorldPosition(V2Int _Point)
