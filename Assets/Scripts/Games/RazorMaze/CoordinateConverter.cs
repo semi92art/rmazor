@@ -12,7 +12,9 @@ namespace Games.RazorMaze
         float GetScale();
         Vector2 GetCenter();
         Vector2 ToLocalMazeItemPosition(V2Int _Point);
+        Vector2 ToLocalMazeItemPosition(Vector2 _Point);
         Vector2 ToLocalCharacterPosition(V2Int _Point);
+        Vector2 ToLocalCharacterPosition(Vector2 _Point);
     }
     
     public class CoordinateConverter : ICoordinateConverter
@@ -50,13 +52,25 @@ namespace Games.RazorMaze
         public Vector2 ToLocalMazeItemPosition(V2Int _Point)
         {
             CheckForInitialization();
-            return (_Point.ToVector2() * m_Scale + m_StartPoint).MinusY(GetCenter().y);
+            return ToLocalMazeItemPosition(_Point.ToVector2());
         }
         
         public Vector2 ToLocalCharacterPosition(V2Int _Point)
         {
             CheckForInitialization();
-            return (_Point.ToVector2() * m_Scale + m_StartPoint).PlusY(m_Scale * 0.5f).MinusY(GetCenter().y);
+            return ToLocalCharacterPosition(_Point.ToVector2());
+        }
+        
+        public Vector2 ToLocalMazeItemPosition(Vector2 _Point)
+        {
+            CheckForInitialization();
+            return (_Point * m_Scale + m_StartPoint).MinusY(GetCenter().y);
+        }
+        
+        public Vector2 ToLocalCharacterPosition(Vector2 _Point)
+        {
+            CheckForInitialization();
+            return (_Point * m_Scale + m_StartPoint).PlusY(m_Scale * 0.5f).MinusY(GetCenter().y);
         }
         
         public Vector2 GetCenter() => m_Center;

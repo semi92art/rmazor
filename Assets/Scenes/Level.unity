@@ -345,7 +345,8 @@ MonoBehaviour:
   trapAfterReactTime: 0.5
   trapIncreasingIdleTime: 3
   trapIncreasingIncreasedTime: 1
-  turretShootIntervalSeconds: 1
+  turretShootInterval: 2
+  turretProjectileSpeed: 1
 --- !u!1 &934508343
 GameObject:
   m_ObjectHideFlags: 0

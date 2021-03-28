@@ -5,7 +5,7 @@ using Games.RazorMaze.Views.MazeItemGroups;
 using Games.RazorMaze.Views.Rotation;
 using Games.RazorMaze.Views.UI;
 
-namespace Games.RazorMaze.Views
+namespace Games.RazorMaze.Views.Views
 {
     public interface IViewGame : IInit
     {
@@ -17,5 +17,6 @@ namespace Games.RazorMaze.Views
         IViewMazeMovingItemsGroup MazeMovingItemsGroup { get; }
         IViewMazeTrapsReactItemsGroup MazeTrapsReactItemsGroup { get; }
         IViewMazeTrapsIncreasingItemsGroup MazeTrapsIncreasingItemsGroup { get; }
+        IViewMazeTurretsGroup MazeTurretsGroup { get; }
     }
 }

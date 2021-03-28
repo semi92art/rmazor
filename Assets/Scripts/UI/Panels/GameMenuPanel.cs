@@ -21,7 +21,7 @@ namespace UI.Panels
         NeedToClose = 2
     }
     
-    public class GameMenuPanel : DialogPanelBase, IGameUiCategory, IOnUpdate
+    public class GameMenuPanel : DialogPanelBase, IGameUiCategory, IUpdateTick
     {
         #region nonpublic members
 
@@ -81,7 +81,7 @@ namespace UI.Panels
             PanelState &= ~PanelState.Showing;
         }
         
-        public void OnUpdate()
+        public void UpdateTick()
         {
             if (!m_Initialized)
                 return;

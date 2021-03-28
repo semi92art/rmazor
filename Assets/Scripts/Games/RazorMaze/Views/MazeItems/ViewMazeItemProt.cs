@@ -87,7 +87,7 @@ namespace Games.RazorMaze.Views.MazeItems
             converter.Init(mazeSize);
             
             gameObject.DestroyChildrenSafe();
-            transform.localPosition = converter.ToLocalMazeItemPosition(props.Position);
+            transform.SetLocalPosXY(converter.ToLocalMazeItemPosition(props.Position));
             var sh = gameObject.GetOrAddComponent<Rectangle>();
             sh.Width = 0.97f * converter.GetScale();
             sh.Height = 0.97f * converter.GetScale();

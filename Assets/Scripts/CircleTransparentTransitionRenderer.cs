@@ -67,22 +67,22 @@ public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRen
         Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
         {
             m_Material.SetFloat(AlphaCoeff, -1);
-            Coroutines.Run(Coroutines.DoWhile(() =>
+            Coroutines.Run(Coroutines.DoWhile(
+                () => UiTimeProvider.Instance.Time - startTime < ac.keys.Last().time,
+                () =>
                 {
                     float dt = UiTimeProvider.Instance.Time - startTime;
                     m_Material.SetFloat(AlphaCoeff, ac.Evaluate(dt));
-                    if (!doEvent && dt > ac.keys.Last().time * 0.5f)
-                    {
-                        TransitionAction?.Invoke(this, null);
-                        doEvent = true;
-                    }
+                    if (doEvent || !(dt > ac.keys.Last().time * 0.5f)) 
+                        return;
+                    TransitionAction?.Invoke(this, null);
+                    doEvent = true;
                 },
                 () =>
                 {
                     TransitionAction = null;
                     m_Material.SetFloat(AlphaCoeff, ac.keys.Last().value);
-                },
-                () => UiTimeProvider.Instance.Time - startTime < ac.keys.Last().time));
+                }));
         }));
     }
 }

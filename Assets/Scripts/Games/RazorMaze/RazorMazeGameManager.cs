@@ -1,12 +1,13 @@
 ﻿using Games.RazorMaze.Models;
 using Games.RazorMaze.Views;
+using Games.RazorMaze.Views.Views;
 using UnityEngine;
 using Utils;
 using Zenject;
 
 namespace Games.RazorMaze
 {
-    public interface IGameManager : IInit, IPreInit { }
+    public interface IGameManager : IInit, IPreInit, IPostInit { }
     
     public class RazorMazeGameManager : MonoBehaviour, ISingleton, IGameManager
     {
@@ -52,6 +53,7 @@ namespace Games.RazorMaze
             var gravityItemsProceeder                           = Model.GravityItemsProceeder;
             var trapsReactProceeder                             = Model.TrapsReactProceeder;
             var trapsIncreasingProceeder                        = Model.TrapsIncreasingProceeder;
+            var turretsProceeder                                = Model.TurretsProceeder;
             var character                                       = Model.Character;
             var scoring                                         = Model.Scoring;
             var levelStaging                                    = Model.LevelStaging;
@@ -70,6 +72,7 @@ namespace Games.RazorMaze
             
             trapsReactProceeder.TrapReactStageChanged           += OnMazeTrapReactStageChanged;
             trapsIncreasingProceeder.TrapIncreasingStageChanged += OnMazeTrapIncreasingStageChanged;
+            turretsProceeder.TurretShoot                        += TurretsProceederOnTurretShoot;
 
             character.HealthChanged                             += OnCharacterHealthChanged;
             character.Death                                     += OnCharacterDeath;
@@ -88,7 +91,8 @@ namespace Games.RazorMaze
             
             Model.PreInit();
         }
-        
+
+
         public void Init()
         {
             Model.Init();
@@ -117,6 +121,7 @@ namespace Games.RazorMaze
 
         private void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args) => View.MazeTrapsReactItemsGroup.OnMazeTrapReactStageChanged(_Args);
         private void OnMazeTrapIncreasingStageChanged(MazeItemTrapIncreasingEventArgs _Args) => View.MazeTrapsIncreasingItemsGroup.OnMazeTrapIncreasingStageChanged(_Args);
+        private void TurretsProceederOnTurretShoot(TurretShotEventArgs _Args) => View.MazeTurretsGroup.OnTurretShoot(_Args);
         
         public void SetMazeInfo(MazeInfo _Info) => Model.Data.Info = _Info;
 
@@ -186,5 +191,11 @@ namespace Games.RazorMaze
         }
 
         #endregion
+
+        public void PostInit()
+        {
+            Model.Data.ProceedingControls = true;
+            Model.Data.ProceedingMazeItems = true;
+        }
     }
 }

@@ -12,20 +12,15 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         #region inject
         
         private IViewMazeCommon MazeCommon { get; }
-        private ICoordinateConverter Converter { get; }
 
-        public ViewMazeTrapsIncreasingItemsGroupProt(IViewMazeCommon _MazeCommon, ICoordinateConverter _Converter)
+        public ViewMazeTrapsIncreasingItemsGroupProt(IViewMazeCommon _MazeCommon)
         {
             MazeCommon = _MazeCommon;
-            Converter = _Converter;
         }
 
         #endregion
         
-        public void Init()
-        {
-            
-        }
+        public void Init() { }
         
         
         public void OnMazeTrapIncreasingStageChanged(MazeItemTrapIncreasingEventArgs _Args)
@@ -43,7 +38,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
             }
         }
 
-        private IEnumerator HandleItemIdle(IViewMazeItem _Item)
+        private static IEnumerator HandleItemIdle(IViewMazeItem _Item)
         {
             Dbg.Log("HandleItemIdle");
             yield return Coroutines.Lerp(
@@ -55,7 +50,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
             );
         }
         
-        private IEnumerator HandleItemIncreased(IViewMazeItem _Item)
+        private static IEnumerator HandleItemIncreased(IViewMazeItem _Item)
         {
             Dbg.Log("HandleItemIncreased");
             yield return Coroutines.Lerp(

@@ -3,10 +3,10 @@ using UnityEngine.SceneManagement;
 
 namespace UnityGameLoopDI
 {
-    public interface IOnUpdate { void OnUpdate(); }
-    public interface IOnFixedUpdate {void OnFixedUpdate(); }
-    public interface IOnLateUpdate { void OnLateUpdate(); }
-    public interface IOnDrawGizmos { void OnDrawGizmos(); }
+    public interface IUpdateTick { void UpdateTick(); }
+    public interface IFixedUpdateTick {void FixedUpdateTick(); }
+    public interface ILateUpdateTick { void LateUpdateTick(); }
+    public interface IDrawGizmosTick { void DrawGizmosTick(); }
     
     public class Ticker
     {

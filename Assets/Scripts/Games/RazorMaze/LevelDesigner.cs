@@ -64,6 +64,7 @@ namespace Games.RazorMaze
                 RazorMazeGameManager.Instance.PreInit();
                 RazorMazeGameManager.Instance.SetMazeInfo(MazeInfo);
                 RazorMazeGameManager.Instance.Init();
+                RazorMazeGameManager.Instance.PostInit();
             };
             SceneManager.LoadScene(SceneNames.Level);
         }

@@ -17,10 +17,10 @@ namespace UnityGameLoopDI
 
         #region nonpublic members
 
-        private readonly List<IOnUpdate> m_UpdateInfoDict = new List<IOnUpdate>();
-        private readonly List<IOnFixedUpdate> m_FixedUpdateInfoDict = new List<IOnFixedUpdate>();
-        private readonly List<IOnLateUpdate> m_LateUpdateInfoDict = new List<IOnLateUpdate>();
-        private readonly List<IOnDrawGizmos> m_DrawGizmosInfoDict = new List<IOnDrawGizmos>();
+        private readonly List<IUpdateTick> m_UpdateInfoDict = new List<IUpdateTick>();
+        private readonly List<IFixedUpdateTick> m_FixedUpdateInfoDict = new List<IFixedUpdateTick>();
+        private readonly List<ILateUpdateTick> m_LateUpdateInfoDict = new List<ILateUpdateTick>();
+        private readonly List<IDrawGizmosTick> m_DrawGizmosInfoDict = new List<IDrawGizmosTick>();
         
         #endregion
 
@@ -37,13 +37,13 @@ namespace UnityGameLoopDI
         {
             if (_Object == null)
                 return;
-            if (_Object is IOnUpdate onUpdateObj)
+            if (_Object is IUpdateTick onUpdateObj)
                 m_UpdateInfoDict.Remove(onUpdateObj);
-            if (_Object is IOnFixedUpdate onFixedUpdateObj)
+            if (_Object is IFixedUpdateTick onFixedUpdateObj)
                 m_FixedUpdateInfoDict.Remove(onFixedUpdateObj);
-            if (_Object is IOnLateUpdate onLateUpdateObj)
+            if (_Object is ILateUpdateTick onLateUpdateObj)
                 m_LateUpdateInfoDict.Remove(onLateUpdateObj);
-            if (_Object is IOnDrawGizmos onDrawGizmosObj)
+            if (_Object is IDrawGizmosTick onDrawGizmosObj)
                 m_DrawGizmosInfoDict.Remove(onDrawGizmosObj);
         }
 
@@ -64,7 +64,7 @@ namespace UnityGameLoopDI
             if (!m_UpdateInfoDict.Any())
                 return;
             foreach (var obj in m_UpdateInfoDict)
-                obj?.OnUpdate();
+                obj?.UpdateTick();
         }
 
         private void FixedUpdate()
@@ -72,7 +72,7 @@ namespace UnityGameLoopDI
             if (!m_FixedUpdateInfoDict.Any())
                 return;
             foreach (var obj in m_FixedUpdateInfoDict)
-                obj?.OnFixedUpdate();
+                obj?.FixedUpdateTick();
         }
 
         private void LateUpdate()
@@ -80,7 +80,7 @@ namespace UnityGameLoopDI
             if (!m_LateUpdateInfoDict.Any())
                 return;
             foreach (var obj in m_LateUpdateInfoDict)
-                obj?.OnLateUpdate();
+                obj?.LateUpdateTick();
         }
         
         private void OnDrawGizmos()
@@ -88,7 +88,7 @@ namespace UnityGameLoopDI
             if (!m_DrawGizmosInfoDict.Any())
                 return;
             foreach (var obj in m_DrawGizmosInfoDict)
-                obj?.OnDrawGizmos();
+                obj?.DrawGizmosTick();
         }
 
         #endregion
@@ -97,13 +97,13 @@ namespace UnityGameLoopDI
         
         private void RegisterUpdateMethods(object _Object)
         {
-            if (_Object is IOnUpdate onUpdateObj)
+            if (_Object is IUpdateTick onUpdateObj)
                 m_UpdateInfoDict.Add(onUpdateObj);
-            if (_Object is IOnFixedUpdate onFixedUpdateObj)
+            if (_Object is IFixedUpdateTick onFixedUpdateObj)
                 m_FixedUpdateInfoDict.Add(onFixedUpdateObj);
-            if (_Object is IOnLateUpdate onLateUpdateObj)
+            if (_Object is ILateUpdateTick onLateUpdateObj)
                 m_LateUpdateInfoDict.Add(onLateUpdateObj);
-            if (_Object is IOnDrawGizmos onDrawGizmosObj)
+            if (_Object is IDrawGizmosTick onDrawGizmosObj)
                 m_DrawGizmosInfoDict.Add(onDrawGizmosObj);
             
             RemoveNullObjects();

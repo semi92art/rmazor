@@ -2,23 +2,13 @@
 using UnityEngine;
 using Utils;
 
-namespace Games.RazorMaze.Views
+namespace Games.RazorMaze.Views.ContainerGetters
 {
-    public interface IContainersGetter
-    {
-        Transform MazeContainer { get; }
-        Transform MazeItemsContainer { get; }
-        Transform CharacterContainer { get; }
-    }
-
     public class ContainersGetter : IContainersGetter
     {
+        #region inject
+        
         private ICoordinateConverter CoordinateConverter { get; }
-
-        public Transform MazeContainer { get; }
-
-        public Transform MazeItemsContainer { get; }
-        public Transform CharacterContainer { get; }
 
         public ContainersGetter(ICoordinateConverter _CoordinateConverter)
         {
@@ -30,5 +20,15 @@ namespace Games.RazorMaze.Views
             CharacterContainer = CommonUtils.FindOrCreateGameObject("Character", out _).transform;
             CharacterContainer.SetParent(MazeContainer);
         }
+        
+        #endregion
+
+        #region api
+
+        public Transform MazeContainer { get; }
+        public Transform MazeItemsContainer { get; }
+        public Transform CharacterContainer { get; }
+
+        #endregion
     }
 }

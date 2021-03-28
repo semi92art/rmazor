@@ -22,6 +22,8 @@ namespace Games.RazorMaze.Models
         MazeOrientation Orientation { get; set; }
         Dictionary<MazeItem, IMazeItemProceedInfo> ProceedInfos { get; }
         CharacterInfo CharacterInfo { get; }
+        bool ProceedingMazeItems { get; set; }
+        bool ProceedingControls { get; set; }
     }
     
     public class ModelMazeData : IModelMazeData
@@ -51,6 +53,8 @@ namespace Games.RazorMaze.Models
             = new Dictionary<MazeItem, IMazeItemProceedInfo>();
 
         public CharacterInfo CharacterInfo { get; } = new CharacterInfo();
+        public bool ProceedingMazeItems { get; set; }
+        public bool ProceedingControls { get; set; }
 
         public MazeInfo Info
         {

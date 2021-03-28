@@ -22,7 +22,7 @@ namespace Games.RazorMaze.Models
         }
     }
     
-    public delegate void MazeItemTrapIncreasingEventHandler(MazeItemTrapIncreasingEventArgs _Args);
+    public delegate void MazeItemTrapIncreasingEventHandler(MazeItemTrapIncreasingEventArgs Args);
     
     public interface IMazeTrapsIncreasingProceeder : IOnMazeChanged
     {
@@ -30,7 +30,7 @@ namespace Games.RazorMaze.Models
         void OnCharacterMoveContinued(CharacterMovingEventArgs _Args);
     }
     
-    public class MazeTrapsIncreasingProceeder : Ticker, IOnUpdate, IMazeTrapsIncreasingProceeder
+    public class MazeTrapsIncreasingProceeder : Ticker, IUpdateTick, IMazeTrapsIncreasingProceeder
     {
         #region constants
         
@@ -71,6 +71,8 @@ namespace Games.RazorMaze.Models
         
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
+            if (!Data.ProceedingMazeItems)
+                return;
             var addictRaw = (_Args.To.ToVector2() - _Args.From.ToVector2()) * _Args.Progress;
             var addict = new V2Int(addictRaw);
             var newPos = _Args.From + addict;
@@ -80,7 +82,7 @@ namespace Games.RazorMaze.Models
             ProceedTraps();
         }
         
-        public void OnUpdate()
+        public void UpdateTick()
         {
             ProceedTraps();
         }

@@ -10,6 +10,7 @@ namespace Games.RazorMaze.Models
         IMazeGravityItemsProceeder    GravityItemsProceeder { get; }
         IMazeTrapsReactProceeder      TrapsReactProceeder { get; }
         IMazeTrapsIncreasingProceeder TrapsIncreasingProceeder { get; }
+        IMazeTurretsProceeder         TurretsProceeder { get; }
         IModelCharacter               Character { get; }
         ILevelStagingModel            LevelStaging { get; }
         IScoringModel                 Scoring { get; }
@@ -22,8 +23,9 @@ namespace Games.RazorMaze.Models
         public IModelMazeRotation            MazeRotation { get; }
         public IMazeMovingItemsProceeder     MovingItemsProceeder { get; }
         public IMazeGravityItemsProceeder    GravityItemsProceeder { get; }
-        public IMazeTrapsIncreasingProceeder TrapsIncreasingProceeder { get; }
         public IMazeTrapsReactProceeder      TrapsReactProceeder { get; }
+        public IMazeTrapsIncreasingProceeder TrapsIncreasingProceeder { get; }
+        public IMazeTurretsProceeder         TurretsProceeder { get; }
         public IModelCharacter               Character { get; }
         public ILevelStagingModel            LevelStaging { get; }
         public IScoringModel                 Scoring { get; }
@@ -36,6 +38,7 @@ namespace Games.RazorMaze.Models
             IMazeGravityItemsProceeder    _GravityItemsProceeder,
             IMazeTrapsReactProceeder      _TrapsReactProceeder,
             IMazeTrapsIncreasingProceeder _TrapsIncreasingProceeder,
+            IMazeTurretsProceeder         _TurretsProceeder,
             IModelCharacter               _CharacterModel,
             ILevelStagingModel            _StagingModel,
             IScoringModel                 _ScoringModel,
@@ -47,6 +50,7 @@ namespace Games.RazorMaze.Models
             GravityItemsProceeder                 = _GravityItemsProceeder;
             TrapsReactProceeder                   = _TrapsReactProceeder;
             TrapsIncreasingProceeder              = _TrapsIncreasingProceeder;
+            TurretsProceeder                      = _TurretsProceeder;
             Character                             = _CharacterModel;
             LevelStaging                          = _StagingModel;
             Scoring                               = _ScoringModel;
@@ -77,6 +81,7 @@ namespace Games.RazorMaze.Models
             GravityItemsProceeder.OnMazeChanged(_Info);
             TrapsReactProceeder.OnMazeChanged(_Info);
             TrapsIncreasingProceeder.OnMazeChanged(_Info);
+            TurretsProceeder.OnMazeChanged(_Info);
         }
 
         private void MazeOnRotationStarted(MazeRotateDirection _Direction, MazeOrientation _Orientation)

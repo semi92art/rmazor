@@ -43,5 +43,9 @@ namespace Extensions
         public static V2Int ToV2IntFloor(this Vector2 _V) => new V2Int(Mathf.FloorToInt(_V.x), Mathf.FloorToInt(_V.y));
         public static V2Int ToV2IntCeil(this Vector2 _V) => new V2Int(Mathf.CeilToInt(_V.x), Mathf.CeilToInt(_V.y));
         public static V2Int ToV2IntRound(this Vector2 _V) => new V2Int(Mathf.RoundToInt(_V.x), Mathf.RoundToInt(_V.y));
+
+        public static V2Int ToV2IntFloor(this Vector3 _V) => _V.XY().ToV2IntFloor();
+        public static V2Int ToV2IntCeil(this Vector3 _V) => _V.XY().ToV2IntCeil();
+        public static V2Int ToV2IntRound(this Vector3 _V) => _V.XY().ToV2IntRound();
     }
 }

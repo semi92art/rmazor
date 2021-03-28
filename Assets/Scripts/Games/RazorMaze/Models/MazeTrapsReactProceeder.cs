@@ -72,6 +72,8 @@ namespace Games.RazorMaze.Models
 
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
+            if (!Data.ProceedingMazeItems)
+                return;
             var addictRaw = (_Args.To.ToVector2() - _Args.From.ToVector2()) * _Args.Progress;
             var addict = new V2Int(addictRaw);
             var newPos = _Args.From + addict;

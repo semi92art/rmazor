@@ -34,6 +34,8 @@ namespace Games.RazorMaze.Models
         
         public void Rotate(MazeRotateDirection _Direction)
         {
+            if (!Data.ProceedingControls)
+                return;
             int orient = (int) Data.Orientation;
             int addict = _Direction == MazeRotateDirection.Clockwise ? 1 : -1;
             orient = MathUtils.ClampInverse(orient + addict, 0, 3);

@@ -28,13 +28,14 @@ namespace Entities
         public override int GetHashCode() { unchecked { return (X * 397) ^ Y; } }
         public override string ToString() => $"({X}, {Y})";
         public object Clone() => new V2Int(X, Y);
-
+        public Vector2 Normalized => ToVector2().normalized;
+        
         public V2Int PlusX(int _X) => new V2Int(X + _X, Y);
         public V2Int MinusX(int _X) => new V2Int(X - _X, Y);
         public V2Int PlusY(int _Y) => new V2Int(X, Y + _Y);
         public V2Int MinusY(int _Y) => new V2Int(X, Y - _Y);
         
-        
+        public static float Distance(V2Int _V1, V2Int _V2) => Vector2Int.Distance(_V1.ToVector2Int(), _V2.ToVector2Int());
         public static V2Int up => new V2Int(Vector2Int.up);
         public static V2Int down => new V2Int(Vector2Int.down);
         public static V2Int left => new V2Int(Vector2Int.left);

@@ -17,7 +17,7 @@ namespace Games.RazorMaze.Views.UI
         void OnLevelFinished(LevelStateChangedArgs _Args, UnityAction _Finish);
     }
     
-    public abstract class ViewUIBase : GameObservable, IViewUI, IOnUpdate
+    public abstract class ViewUIBase : GameObservable, IViewUI, IUpdateTick
     {
         #region nonpublic members
         
@@ -75,7 +75,7 @@ namespace Games.RazorMaze.Views.UI
             DialogViewer.Show(gameMenuPanel);
         }
         
-        public void OnUpdate()
+        public void UpdateTick()
         {
             if (Input.GetKeyDown(KeyCode.Escape))
                 OnGameMenuButtonClick();

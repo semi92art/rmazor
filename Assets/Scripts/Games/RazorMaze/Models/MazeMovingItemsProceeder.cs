@@ -39,14 +39,8 @@ namespace Games.RazorMaze.Models
         event MazeItemMoveHandler MazeItemMoveFinished;
     }
 
-    public class MazeMovingItemsProceeder : Ticker, IOnUpdate, IMazeMovingItemsProceeder
+    public class MazeMovingItemsProceeder : Ticker, IUpdateTick, IMazeMovingItemsProceeder
     {
-        #region nonpublic members
-        
-        private bool m_DoProceed;
-        
-        #endregion
-        
         #region inject
         
         private RazorMazeModelSettings Settings { get; }
@@ -71,6 +65,15 @@ namespace Games.RazorMaze.Models
 
         public void OnMazeChanged(MazeInfo _Info)
         {
+            CollectItems(_Info);
+        }
+        
+        #endregion
+
+        #region nonpublic methods
+
+        private void CollectItems(MazeInfo _Info)
+        {
             var infos = _Info.MazeItems
                 .Where(_Item =>_Item.Type == EMazeItemType.TrapMoving)
                 .Select(_Item => new MazeItemMovingProceedInfo
@@ -89,13 +92,17 @@ namespace Games.RazorMaze.Models
                 else
                     Data.ProceedInfos.Add(info.Item, info);
             }
-            m_DoProceed = true;
         }
         
-        void IOnUpdate.OnUpdate()
+        void IUpdateTick.UpdateTick()
         {
-            if (!m_DoProceed)
+            if (!Data.ProceedingMazeItems)
                 return;
+            ProceedMazeItemsMoving();
+        }
+
+        private void ProceedMazeItemsMoving()
+        {
             foreach (var proceed in Data.ProceedInfos.Values
                 .Where(_P => !_P.IsProceeding && _P.Item.Type == EMazeItemType.TrapMoving))
             {
@@ -107,15 +114,7 @@ namespace Games.RazorMaze.Models
                 ProceedMazeItemMoving(proceed.Item, () => proceed.IsProceeding = false);
             }
         }
-
-        #endregion
-
-        #region nonpublic methods
         
-
-        
-
-
         private void ProceedMazeItemMoving(
             MazeItem _Item, 
             UnityAction _OnFinish)
@@ -159,7 +158,7 @@ namespace Games.RazorMaze.Models
             UnityAction _OnFinish)
         {
             MazeItemMoveStarted?.Invoke(new MazeItemMoveEventArgs(_Item, _From, _To, 0));
-            float distance = Vector2Int.Distance(_From.ToVector2Int(), _To.ToVector2Int());
+            float distance = V2Int.Distance(_From, _To);
             yield return Coroutines.Lerp(
                 0f,
                 1f,
@@ -174,9 +173,7 @@ namespace Games.RazorMaze.Models
                     MazeItemMoveFinished?.Invoke(new MazeItemMoveEventArgs(_Item, _From, _To, progress, _Stopped));
                 });
         }
-
-
-
+        
         #endregion
     }
 }

@@ -2,6 +2,7 @@
 using Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Prot;
+using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeItems;
 using UnityEngine;
 

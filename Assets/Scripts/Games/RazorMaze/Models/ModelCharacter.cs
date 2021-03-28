@@ -71,6 +71,8 @@ namespace Games.RazorMaze.Models
         
         public void Move(MazeMoveDirection _Direction)
         {
+            if (!Data.ProceedingControls)
+                return;
             var from = Data.CharacterInfo.Position;
             var to = GetNewPosition(_Direction);
             Coroutines.Run(MoveCharacterCore(from, to));
@@ -98,7 +100,10 @@ namespace Games.RazorMaze.Models
         {
             bool isNode = _Info.Path.Any(_PathItem => _PathItem == _Position);
             bool isMazeItem = _Info.MazeItems.Any(_O => 
-                _O.Position == _Position && (_O.Type == EMazeItemType.Block || _O.Type == EMazeItemType.TrapIncreasing));
+                _O.Position == _Position
+                && (_O.Type == EMazeItemType.Block
+                    || _O.Type == EMazeItemType.TrapIncreasing
+                    || _O.Type == EMazeItemType.Turret));
             bool isBuzyMazeItem = Data.ProceedInfos.Values
                 .Where(_Proceed => _Proceed.Item.Type == EMazeItemType.BlockMovingGravity)
                 .Any(_Proceed => (_Proceed as MazeItemMovingProceedInfo).BusyPositions.Contains(_Position));
@@ -108,7 +113,7 @@ namespace Games.RazorMaze.Models
         private IEnumerator MoveCharacterCore(V2Int _From, V2Int _To)
         {
             CharacterMoveStarted?.Invoke(new CharacterMovingEventArgs(_From, _To, _From,0));
-            int pathLength = Mathf.RoundToInt(Vector2Int.Distance(_From.ToVector2Int(), _To.ToVector2Int()));
+            int pathLength = Mathf.RoundToInt(V2Int.Distance(_From, _To));
             yield return Coroutines.Lerp(
                 0f,
                 1f,

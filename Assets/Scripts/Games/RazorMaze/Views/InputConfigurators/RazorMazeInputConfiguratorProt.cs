@@ -4,12 +4,12 @@ using UnityGameLoopDI;
 
 namespace Games.RazorMaze.Views.InputConfigurators
 {
-    public class RazorMazeInputConfiguratorProt : Ticker, IInputConfigurator, IOnUpdate 
+    public class RazorMazeInputConfiguratorProt : Ticker, IInputConfigurator, IUpdateTick 
     {
         public event IntHandler Command;
         public void ConfigureInput() { }
         
-        public void OnUpdate()
+        public void UpdateTick()
         {
             if (Command == null) 
                 return;

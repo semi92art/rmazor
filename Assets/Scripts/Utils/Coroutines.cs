@@ -98,9 +98,9 @@ namespace Utils
         }
         
         public static IEnumerator DoWhile(
+            Func<bool> _Predicate,
             UnityAction _Action,
             UnityAction _FinishAction,
-            Func<bool> _Predicate,
             Func<bool> _Pause = null,
             bool _WaitEndOfFrame = true)
         {

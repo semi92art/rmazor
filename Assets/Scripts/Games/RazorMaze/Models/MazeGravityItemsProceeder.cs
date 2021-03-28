@@ -64,17 +64,19 @@ namespace Games.RazorMaze.Models
                 else
                     Data.ProceedInfos.Add(info.Item, info);
             }
-            
-            MoveMazeItemsGravity(Data.Orientation, Data.CharacterInfo.Position);
         }
 
         public void OnMazeOrientationChanged()
         {
+            if (!Data.ProceedingMazeItems)
+                return;
             MoveMazeItemsGravity(Data.Orientation, Data.CharacterInfo.Position);
         }
         
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
+            if (!Data.ProceedingMazeItems)
+                return;
             if (Data.CharacterInfo.Position == _Args.Current)
                 return;
             m_CharacterPosCheck = _Args.Current;
@@ -148,8 +150,8 @@ namespace Games.RazorMaze.Models
             var item = _Info.Item;
             var busyPositions = _Info.BusyPositions;
             MazeItemMoveStarted?.Invoke(new MazeItemMoveEventArgs(item, _From, _To, 0));
-            var direction = (_To.ToVector2() - _From.ToVector2Int()).normalized;
-            float distance = Vector2Int.Distance(_From.ToVector2Int(), _To.ToVector2Int());
+            var direction = (_To - _From).Normalized;
+            float distance = V2Int.Distance(_From, _To);
             yield return Coroutines.Lerp(
                 0f,
                 1f,

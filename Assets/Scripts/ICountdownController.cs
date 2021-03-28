@@ -12,7 +12,7 @@ public interface ICountdownController
     void StopCountdown();
 }
 
-public class CountdownController : Ticker, ICountdownController, IOnUpdate
+public class CountdownController : Ticker, ICountdownController, IUpdateTick
 {
     #region protected members
 
@@ -46,7 +46,7 @@ public class CountdownController : Ticker, ICountdownController, IOnUpdate
         m_DoUpdate = false;
     }
     
-    public void OnUpdate()
+    public void UpdateTick()
     {
         float timerLeft = m_Duration - (GameTimeProvider.Instance.Time - m_StartTime);
         if (!m_DoUpdate)

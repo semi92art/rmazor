@@ -18,7 +18,7 @@ namespace Games.RazorMaze.Models
         void UnlockRotation();
     }
     
-    public class InputScheduler : Ticker, IInputScheduler, IOnUpdate
+    public class InputScheduler : Ticker, IInputScheduler, IUpdateTick
     {
         public event EInputCommandHandler MoveCommand;
         public event EInputCommandHandler RotateCommand;
@@ -58,7 +58,7 @@ namespace Games.RazorMaze.Models
         public void UnlockMovement() => m_MovementLocked = false;
         public void UnlockRotation() => m_RotationLocked = false;
 
-        public void OnUpdate()
+        public void UpdateTick()
         {
             ScheduleMovement();
             ScheduleRotation();

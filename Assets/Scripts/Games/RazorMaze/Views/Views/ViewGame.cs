@@ -5,7 +5,7 @@ using Games.RazorMaze.Views.MazeItemGroups;
 using Games.RazorMaze.Views.Rotation;
 using Games.RazorMaze.Views.UI;
 
-namespace Games.RazorMaze.Views
+namespace Games.RazorMaze.Views.Views
 {
     public class ViewGame : IViewGame
     {
@@ -17,6 +17,7 @@ namespace Games.RazorMaze.Views
         public IViewMazeMovingItemsGroup MazeMovingItemsGroup { get; }
         public IViewMazeTrapsReactItemsGroup MazeTrapsReactItemsGroup { get; }
         public IViewMazeTrapsIncreasingItemsGroup MazeTrapsIncreasingItemsGroup { get; }
+        public IViewMazeTurretsGroup MazeTurretsGroup { get; }
 
         public ViewGame(
             IViewUI _UI,
@@ -26,7 +27,8 @@ namespace Games.RazorMaze.Views
             IViewMazeRotation _MazeRotation,
             IViewMazeMovingItemsGroup _MazeMovingItemsGroup,
             IViewMazeTrapsReactItemsGroup _MazeTrapsReactItemsGroup,
-            IViewMazeTrapsIncreasingItemsGroup _MazeTrapsIncreasingItemsGroup)
+            IViewMazeTrapsIncreasingItemsGroup _MazeTrapsIncreasingItemsGroup,
+            IViewMazeTurretsGroup _MazeTurretsGroup)
         {
             UI = _UI;
             InputConfigurator = _InputConfigurator;
@@ -36,6 +38,7 @@ namespace Games.RazorMaze.Views
             MazeMovingItemsGroup = _MazeMovingItemsGroup;
             MazeTrapsReactItemsGroup = _MazeTrapsReactItemsGroup;
             MazeTrapsIncreasingItemsGroup = _MazeTrapsIncreasingItemsGroup;
+            MazeTurretsGroup = _MazeTurretsGroup;
         }
 
         public void Init()
