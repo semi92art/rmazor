@@ -22,17 +22,21 @@ namespace Games.RazorMaze
         public static LevelDesigner Instance => FindObjectOfType<LevelDesigner>();
         
         [Serializable] public class LengthsList : ReorderableArray<int> { }
-        
-        private const int MinSize = 5;
+
+        public const int MazeWidth = 12;
+        private const int MinSize = MazeWidth;
         private const int MaxSize = 20;
 
         [Header("Path lengths"), Reorderable(paginate = true, pageSize = 5)] public LengthsList pathLengths;
         
-        [HideInInspector] public List<int> sizes = Enumerable.Range(MinSize, MaxSize).ToList();
+        public static List<int> Sizes => Enumerable.Range(MinSize, MaxSize - MinSize).ToList();
         [HideInInspector] public int sizeIdx;
         [HideInInspector] public float aParam;
         [HideInInspector] public bool valid;
         [HideInInspector] public List<ViewMazeItemProt> maze;
+        [HideInInspector] public int group;
+        [HideInInspector] public int index;
+        
 
         private static MazeInfo MazeInfo
         {
@@ -69,7 +73,7 @@ namespace Games.RazorMaze
             SceneManager.LoadScene(SceneNames.Level);
         }
         
-        public MazeInfo GetLevelInfoFromScene()
+        public MazeInfo GetLevelInfoFromScene(bool _Full = true)
         {
             var protItemStart = maze.FirstOrDefault(_Item => _Item.Props.IsStartNode);
             if (protItemStart == null)
@@ -85,35 +89,39 @@ namespace Games.RazorMaze
             var mazeProtItems = maze
                 .Where(_Item => !_Item.Props.IsNode)
                 .Select(_Item => _Item.Props).ToList();
-            foreach (var item in mazeProtItems.ToList())
+            if (_Full)
             {
-                switch (item.Type)
+                foreach (var item in mazeProtItems.ToList())
                 {
-                    case EMazeItemType.TrapReact:
-                    case EMazeItemType.Turret:
-                    case EMazeItemType.BlockTransformingToNode:
-                        mazeProtItems.Add(new ViewMazeItemProps
-                        {
-                            Position = item.Position,
-                            Type = EMazeItemType.Block
-                        });
-                        break;
-                    case EMazeItemType.TrapIncreasing:
-                    case EMazeItemType.Block: 
-                    case EMazeItemType.Portal:
-                        // do nothing
-                        break;
-                    case EMazeItemType.TrapMoving:
-                    case EMazeItemType.TurretRotating:
-                    case EMazeItemType.BlockMovingGravity:
-                    case EMazeItemType.TrapMovingGravity:
-                        path.Add(item.Position);
-                        break;
-                    default: throw new SwitchCaseNotImplementedException(item.Type);
+                    switch (item.Type)
+                    {
+                        case EMazeItemType.TrapReact:
+                        case EMazeItemType.BlockTransformingToNode:
+                            mazeProtItems.Add(new ViewMazeItemProps
+                            {
+                                Position = item.Position,
+                                Type = EMazeItemType.Block
+                            });
+                            break;
+                        case EMazeItemType.Turret:
+                        case EMazeItemType.TrapIncreasing:
+                        case EMazeItemType.Block: 
+                        case EMazeItemType.Portal:
+                            // do nothing
+                            break;
+                        case EMazeItemType.TrapMoving:
+                        case EMazeItemType.TurretRotating:
+                        case EMazeItemType.BlockMovingGravity:
+                        case EMazeItemType.TrapMovingGravity:
+                            path.Add(item.Position);
+                            break;
+                        default: throw new SwitchCaseNotImplementedException(item.Type);
+                    }
                 }
             }
+            
             return new MazeInfo{
-                Size =  new V2Int(sizes[sizeIdx], sizes[sizeIdx]),
+                Size =  new V2Int(MazeWidth, Sizes[sizeIdx]),
                 Path = path,
                 MazeItems = mazeProtItems
                     .SelectMany(_Item =>

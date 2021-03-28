@@ -28,7 +28,7 @@ namespace Entities
         public override int GetHashCode() { unchecked { return (X * 397) ^ Y; } }
         public override string ToString() => $"({X}, {Y})";
         public object Clone() => new V2Int(X, Y);
-        public Vector2 Normalized => ToVector2().normalized;
+        [JsonIgnore] public Vector2 Normalized => ToVector2().normalized;
         
         public V2Int PlusX(int _X) => new V2Int(X + _X, Y);
         public V2Int MinusX(int _X) => new V2Int(X - _X, Y);

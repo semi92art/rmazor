@@ -24,7 +24,7 @@ namespace GameHelpers
 
         public static void SetPrefab(string _PrefabSetName, string _PrefabName, Object _Prefab)
         {
-            PrefabSetObject set = ResLoader.GetPrefabSet(_PrefabSetName);
+            var set = ResLoader.GetPrefabSet(_PrefabSetName);
             if (set == null)
                 set = ResLoader.CreatePrefabSetIfNotExist(_PrefabSetName);
             var perfabsList = set.prefabs;
@@ -79,12 +79,13 @@ namespace GameHelpers
 
         public static T GetObject<T>(
             string _PrefabSetName,
-            string _ObjectName) where T : Object
+            string _ObjectName,
+            bool _FromBundles = true) where T : Object
         {
             PrefabSetObject set = ResLoader.GetPrefabSet(_PrefabSetName);
             T content = set.prefabs.FirstOrDefault(_P => _P.name == _ObjectName)?.item as T;
 
-            if (content == null)
+            if (content == null && _FromBundles)
                 content = AssetBundleManager.Instance.GetAsset<T>(_ObjectName, _PrefabSetName);
             
             if (content == null)
