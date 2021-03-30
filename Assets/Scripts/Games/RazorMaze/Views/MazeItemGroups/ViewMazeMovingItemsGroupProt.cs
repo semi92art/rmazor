@@ -119,6 +119,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                 line.Color = Color.black;
                 line.SetPoints(points);
                 line.Closed = false;
+                line.SortingOrder = 25;
 
                 foreach (var point in points)
                 {
@@ -129,6 +130,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                     disc.Color = Color.black;
                     disc.Radius = 0.5f;
                     disc.Type = DiscType.Disc;
+                    disc.SortingOrder = 25;
                 }
             }
         }

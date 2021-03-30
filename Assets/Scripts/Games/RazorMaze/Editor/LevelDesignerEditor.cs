@@ -61,7 +61,7 @@ namespace Games.RazorMaze.Editor
                 EditorUtilsEx.GuiButtonAction("Check for validity", CheckForValidity, GUILayout.Width(120));
                 
                 EditorUtilsEx.GUIColorZone(m_Des.valid ? Color.green : Color.red, 
-                    () => GUILayout.Label($"Level is {(m_Des.valid ? "" : "not")}valid"));
+                    () => GUILayout.Label($"Level is {(m_Des.valid ? "" : "not ")}valid"));
             });
             EditorUtilsEx.HorizontalZone(() =>
             {

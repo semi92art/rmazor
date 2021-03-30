@@ -16,7 +16,7 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         #region serialized fields
         
-        [SerializeField] private ShapeRenderer shape;
+        [HideInInspector, SerializeField] public ShapeRenderer shape;
         [SerializeField] private SpriteRenderer hint;
         [HideInInspector] public EMazeItemType typeCheck;
         [SerializeField] private ViewMazeItemProps props;

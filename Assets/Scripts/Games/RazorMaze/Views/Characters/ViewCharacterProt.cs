@@ -1,5 +1,8 @@
-﻿using Games.RazorMaze.Models;
+﻿using System.Linq;
+using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.MazeCommon;
+using Games.RazorMaze.Views.MazeItems;
 using Shapes;
 using UnityEngine;
 using Utils;
@@ -21,15 +24,18 @@ namespace Games.RazorMaze.Views.Characters
         private ICoordinateConverter CoordinateConverter { get; }
         private IModelMazeData ModelMazeData { get; }
         private IContainersGetter ContainersGetter { get; }
-        
+        private IViewMazeCommon ViewMazeCommon { get; }
+
         public ViewCharacterProt(
             ICoordinateConverter _CoordinateConverter, 
             IModelMazeData _ModelMazeData, 
-            IContainersGetter _ContainersGetter)
+            IContainersGetter _ContainersGetter,
+            IViewMazeCommon _ViewMazeCommon)
         {
             CoordinateConverter = _CoordinateConverter;
             ModelMazeData = _ModelMazeData;
             ContainersGetter = _ContainersGetter;
+            ViewMazeCommon = _ViewMazeCommon;
         }
         
         #endregion
@@ -54,6 +60,11 @@ namespace Games.RazorMaze.Views.Characters
         {
             var pos = Vector2.Lerp(m_PrevPos, m_NextPos, _Args.Progress);
             SetPosition(pos);
+            var item = ViewMazeCommon.MazeItems.FirstOrDefault(_Item => _Item.Props.Position == _Args.Current);
+            if (item == null)
+                return;
+            if (item.Props.IsNode)
+                (item as ViewMazeItemProt).shape.Color = new Color(1f, 0.93f, 0.51f);
         }
 
         public void OnDeath()
