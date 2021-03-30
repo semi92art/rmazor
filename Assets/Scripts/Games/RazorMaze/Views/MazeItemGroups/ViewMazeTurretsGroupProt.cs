@@ -56,6 +56,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
             var disc = go.AddComponent<Disc>();
             disc.Radius = 1f;
             disc.Color = Color.black;
+            disc.SortingOrder = 30;
             var rb = go.AddComponent<Rigidbody2D>();
             rb.gravityScale = 0;
             

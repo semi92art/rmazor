@@ -176,6 +176,8 @@ namespace Games.RazorMaze.Prot.Editor
         {
             UnityAction<V2Int> setDir = _Direction =>
             {
+                if (_Props.Directions.Contains(V2Int.zero))
+                    _Props.Directions.Remove(V2Int.zero);
                 if (_Props.Directions.Contains(_Direction))
                     _Props.Directions.Remove(_Direction);
                 else _Props.Directions.Add(_Direction);

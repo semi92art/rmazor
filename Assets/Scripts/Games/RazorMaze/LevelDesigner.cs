@@ -6,9 +6,7 @@ using Entities;
 using Exceptions;
 using Extensions;
 using Games.RazorMaze.Models;
-using Games.RazorMaze.Views;
 using Games.RazorMaze.Views.MazeItems;
-using Malee.List;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -20,20 +18,18 @@ namespace Games.RazorMaze
     public class LevelDesigner : MonoBehaviour
     {
         public static LevelDesigner Instance => FindObjectOfType<LevelDesigner>();
-        
-        [Serializable] public class LengthsList : ReorderableArray<int> { }
 
         public const int MazeWidth = 12;
         private const int MinSize = MazeWidth;
         private const int MaxSize = 20;
 
-        [Header("Path lengths"), Reorderable(paginate = true, pageSize = 5)] public LengthsList pathLengths;
         
         public static List<int> Sizes => Enumerable.Range(MinSize, MaxSize - MinSize).ToList();
+        [HideInInspector] public string pathLengths;
         [HideInInspector] public int sizeIdx;
         [HideInInspector] public float aParam;
         [HideInInspector] public bool valid;
-        [HideInInspector] public List<ViewMazeItemProt> maze;
+        [SerializeField] public List<ViewMazeItemProt> maze;
         [HideInInspector] public int group;
         [HideInInspector] public int index;
         
@@ -97,12 +93,6 @@ namespace Games.RazorMaze
                     {
                         case EMazeItemType.TrapReact:
                         case EMazeItemType.BlockTransformingToNode:
-                            mazeProtItems.Add(new ViewMazeItemProps
-                            {
-                                Position = item.Position,
-                                Type = EMazeItemType.Block
-                            });
-                            break;
                         case EMazeItemType.Turret:
                         case EMazeItemType.TrapIncreasing:
                         case EMazeItemType.Block: 
@@ -127,7 +117,8 @@ namespace Games.RazorMaze
                     .SelectMany(_Item =>
                     {
                         var dirs = _Item.Directions.Clone();
-                        dirs.Add(V2Int.zero);
+                        if (!dirs.Any())
+                            dirs.Add(V2Int.zero);
                         return dirs.Select(_Dir =>
                                 new MazeItem
                                 {
