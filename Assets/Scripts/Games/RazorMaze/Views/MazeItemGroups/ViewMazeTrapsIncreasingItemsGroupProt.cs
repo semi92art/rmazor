@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Linq;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.MazeCommon;
 using Games.RazorMaze.Views.MazeItems;
 using Utils;
@@ -33,8 +34,8 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         {
             switch (_Args.Stage)
             {
-                case MazeTrapsIncreasingProceeder.StageIdle: Coroutines.Run(HandleItemIdle(_Item)); break;
-                case MazeTrapsIncreasingProceeder.StageIncreased: Coroutines.Run(HandleItemIncreased(_Item)); break;
+                case TrapsIncreasingProceeder.StageIdle: Coroutines.Run(HandleItemIdle(_Item)); break;
+                case TrapsIncreasingProceeder.StageIncreased: Coroutines.Run(HandleItemIncreased(_Item)); break;
             }
         }
 

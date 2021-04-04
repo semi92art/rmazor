@@ -52,12 +52,14 @@ namespace Games.RazorMaze.Views.Characters
 
         public void OnStartChangePosition(CharacterMovingEventArgs _Args)
         {
-            m_PrevPos = CoordinateConverter.ToLocalCharacterPosition(_Args.From);
-            m_NextPos = CoordinateConverter.ToLocalCharacterPosition(_Args.To);
+            // m_PrevPos = CoordinateConverter.ToLocalCharacterPosition(_Args.From);
+            // m_NextPos = CoordinateConverter.ToLocalCharacterPosition(_Args.To);
         }
 
         public void OnMoving(CharacterMovingEventArgs _Args)
         {
+            m_PrevPos = CoordinateConverter.ToLocalCharacterPosition(_Args.From);
+            m_NextPos = CoordinateConverter.ToLocalCharacterPosition(_Args.To);
             var pos = Vector2.Lerp(m_PrevPos, m_NextPos, _Args.Progress);
             SetPosition(pos);
             var item = ViewMazeCommon.MazeItems.FirstOrDefault(_Item => _Item.Props.Position == _Args.Current);

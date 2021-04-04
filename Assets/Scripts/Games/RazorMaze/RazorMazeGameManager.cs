@@ -1,5 +1,5 @@
 ﻿using Games.RazorMaze.Models;
-using Games.RazorMaze.Views;
+using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Views;
 using UnityEngine;
 using Utils;
@@ -53,6 +53,7 @@ namespace Games.RazorMaze
             var gravityItemsProceeder                           = Model.GravityItemsProceeder;
             var trapsReactProceeder                             = Model.TrapsReactProceeder;
             var trapsIncreasingProceeder                        = Model.TrapsIncreasingProceeder;
+            var portalsProceeder                                = Model.PortalsProceeder;
             var turretsProceeder                                = Model.TurretsProceeder;
             var character                                       = Model.Character;
             var scoring                                         = Model.Scoring;
@@ -73,6 +74,8 @@ namespace Games.RazorMaze
             trapsReactProceeder.TrapReactStageChanged           += OnMazeTrapReactStageChanged;
             trapsIncreasingProceeder.TrapIncreasingStageChanged += OnMazeTrapIncreasingStageChanged;
             turretsProceeder.TurretShoot                        += TurretsProceederOnTurretShoot;
+            portalsProceeder.PortalEvent                        += PortalsProceederOnPortalEvent;
+            
 
             character.HealthChanged                             += OnCharacterHealthChanged;
             character.Death                                     += OnCharacterDeath;
@@ -91,18 +94,14 @@ namespace Games.RazorMaze
             
             Model.PreInit();
         }
-
-
+        
         public void Init()
         {
             Model.Init();
             View.Init();
         }
 
-        private void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
-        {
-            View.Character.OnMoving(_Args);
-        }
+        private void OnCharacterMoveFinished(CharacterMovingEventArgs _Args) { }
 
         private void OnInputCommand(int _Value) => Model.InputScheduler.AddCommand((EInputCommand)_Value);
         
@@ -122,6 +121,7 @@ namespace Games.RazorMaze
         private void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args) => View.MazeTrapsReactItemsGroup.OnMazeTrapReactStageChanged(_Args);
         private void OnMazeTrapIncreasingStageChanged(MazeItemTrapIncreasingEventArgs _Args) => View.MazeTrapsIncreasingItemsGroup.OnMazeTrapIncreasingStageChanged(_Args);
         private void TurretsProceederOnTurretShoot(TurretShotEventArgs _Args) => View.MazeTurretsGroup.OnTurretShoot(_Args);
+        private void PortalsProceederOnPortalEvent(PortalEventArgs _Args) => View.PortalsGroup.OnPortalEvent(_Args);
         
         public void SetMazeInfo(MazeInfo _Info) => Model.Data.Info = _Info;
 

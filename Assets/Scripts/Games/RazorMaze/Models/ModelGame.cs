@@ -1,4 +1,5 @@
 ﻿using Exceptions;
+using Games.RazorMaze.Models.ItemProceeders;
 
 namespace Games.RazorMaze.Models
 {
@@ -6,11 +7,12 @@ namespace Games.RazorMaze.Models
     {
         IModelMazeData                Data { get; }
         IModelMazeRotation            MazeRotation { get; }
-        IMazeMovingItemsProceeder     MovingItemsProceeder { get; }
-        IMazeGravityItemsProceeder    GravityItemsProceeder { get; }
-        IMazeTrapsReactProceeder      TrapsReactProceeder { get; }
-        IMazeTrapsIncreasingProceeder TrapsIncreasingProceeder { get; }
-        IMazeTurretsProceeder         TurretsProceeder { get; }
+        IMovingItemsProceeder         MovingItemsProceeder { get; }
+        IGravityItemsProceeder        GravityItemsProceeder { get; }
+        ITrapsReactProceeder          TrapsReactProceeder { get; }
+        ITrapsIncreasingProceeder     TrapsIncreasingProceeder { get; }
+        ITurretsProceeder             TurretsProceeder { get; }
+        IPortalsProceeder             PortalsProceeder { get; }
         IModelCharacter               Character { get; }
         ILevelStagingModel            LevelStaging { get; }
         IScoringModel                 Scoring { get; }
@@ -21,11 +23,12 @@ namespace Games.RazorMaze.Models
     {
         public IModelMazeData                Data { get; }
         public IModelMazeRotation            MazeRotation { get; }
-        public IMazeMovingItemsProceeder     MovingItemsProceeder { get; }
-        public IMazeGravityItemsProceeder    GravityItemsProceeder { get; }
-        public IMazeTrapsReactProceeder      TrapsReactProceeder { get; }
-        public IMazeTrapsIncreasingProceeder TrapsIncreasingProceeder { get; }
-        public IMazeTurretsProceeder         TurretsProceeder { get; }
+        public IMovingItemsProceeder         MovingItemsProceeder { get; }
+        public IGravityItemsProceeder        GravityItemsProceeder { get; }
+        public ITrapsReactProceeder          TrapsReactProceeder { get; }
+        public ITrapsIncreasingProceeder     TrapsIncreasingProceeder { get; }
+        public ITurretsProceeder             TurretsProceeder { get; }
+        public IPortalsProceeder             PortalsProceeder { get; }
         public IModelCharacter               Character { get; }
         public ILevelStagingModel            LevelStaging { get; }
         public IScoringModel                 Scoring { get; }
@@ -34,11 +37,12 @@ namespace Games.RazorMaze.Models
         public ModelGame(
             IModelMazeData                _Data,
             IModelMazeRotation            _MazeRotation,
-            IMazeMovingItemsProceeder     _MovingItemsProceeder,
-            IMazeGravityItemsProceeder    _GravityItemsProceeder,
-            IMazeTrapsReactProceeder      _TrapsReactProceeder,
-            IMazeTrapsIncreasingProceeder _TrapsIncreasingProceeder,
-            IMazeTurretsProceeder         _TurretsProceeder,
+            IMovingItemsProceeder         _MovingItemsProceeder,
+            IGravityItemsProceeder        _GravityItemsProceeder,
+            ITrapsReactProceeder          _TrapsReactProceeder,
+            ITrapsIncreasingProceeder     _TrapsIncreasingProceeder,
+            ITurretsProceeder             _TurretsProceeder,
+            IPortalsProceeder             _PortalsProceeder,
             IModelCharacter               _CharacterModel,
             ILevelStagingModel            _StagingModel,
             IScoringModel                 _ScoringModel,
@@ -51,6 +55,7 @@ namespace Games.RazorMaze.Models
             TrapsReactProceeder                   = _TrapsReactProceeder;
             TrapsIncreasingProceeder              = _TrapsIncreasingProceeder;
             TurretsProceeder                      = _TurretsProceeder;
+            PortalsProceeder                      = _PortalsProceeder;
             Character                             = _CharacterModel;
             LevelStaging                          = _StagingModel;
             Scoring                               = _ScoringModel;
@@ -66,7 +71,7 @@ namespace Games.RazorMaze.Models
             Character.CharacterMoveFinished       += CharacterOnFinishMove; 
             InputScheduler.MoveCommand            += InputSchedulerOnMoveCommand;
             InputScheduler.RotateCommand          += InputSchedulerOnRotateCommand;
-            Character.PreInit();
+            PortalsProceeder.PortalEvent          += Character.OnPortal;
         }
         
         public void Init()
@@ -76,17 +81,18 @@ namespace Games.RazorMaze.Models
 
         private void MazeOnMazeChanged(MazeInfo _Info)
         {
-            Character.OnMazeChanged(_Info);
-            MovingItemsProceeder.OnMazeChanged(_Info);
-            GravityItemsProceeder.OnMazeChanged(_Info);
-            TrapsReactProceeder.OnMazeChanged(_Info);
+            Character               .OnMazeChanged(_Info);
+            MovingItemsProceeder    .OnMazeChanged(_Info);
+            GravityItemsProceeder   .OnMazeChanged(_Info);
+            TrapsReactProceeder     .OnMazeChanged(_Info);
             TrapsIncreasingProceeder.OnMazeChanged(_Info);
-            TurretsProceeder.OnMazeChanged(_Info);
+            TurretsProceeder        .OnMazeChanged(_Info);
+            PortalsProceeder        .OnMazeChanged(_Info);
         }
 
         private void MazeOnRotationStarted(MazeRotateDirection _Direction, MazeOrientation _Orientation)
         {
-            //Character.OnMazeChanged(Data.Info);  
+              
         }
 
         private void MazeOnRotationFinished(MazeRotateDirection _Direction, MazeOrientation _Orientation)
@@ -98,9 +104,10 @@ namespace Games.RazorMaze.Models
 
         private void CharacterOnMoveContinued(CharacterMovingEventArgs _Args)
         {
-            GravityItemsProceeder.OnCharacterMoveContinued(_Args);
-            TrapsReactProceeder.OnCharacterMoveContinued(_Args);
+            GravityItemsProceeder   .OnCharacterMoveContinued(_Args);
+            TrapsReactProceeder     .OnCharacterMoveContinued(_Args);
             TrapsIncreasingProceeder.OnCharacterMoveContinued(_Args);
+            PortalsProceeder        .OnCharacterMoveContinued(_Args);
         }
         
         private void CharacterOnFinishMove(CharacterMovingEventArgs _Args) => InputScheduler.UnlockMovement();

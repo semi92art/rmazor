@@ -5,7 +5,7 @@ using Entities;
 using Games.RazorMaze.Models.ProceedInfos;
 using Utils;
 
-namespace Games.RazorMaze.Models
+namespace Games.RazorMaze.Models.ItemProceeders
 {
     public class MazeItemTrapReactEventArgs : EventArgs
     {
@@ -23,13 +23,13 @@ namespace Games.RazorMaze.Models
 
     public delegate void MazeItemTrapReactEventHandler(MazeItemTrapReactEventArgs _Args);
     
-    public interface IMazeTrapsReactProceeder : IOnMazeChanged
+    public interface ITrapsReactProceeder : IOnMazeChanged
     {
         event MazeItemTrapReactEventHandler TrapReactStageChanged;
         void OnCharacterMoveContinued(CharacterMovingEventArgs _Args);
     }
     
-    public class MazeTrapsReactProceeder : IMazeTrapsReactProceeder
+    public class TrapsReactProceeder : ITrapsReactProceeder
     {
         #region constants
         
@@ -51,7 +51,7 @@ namespace Games.RazorMaze.Models
         private IModelMazeData Data { get; }
         private RazorMazeModelSettings Settings { get; }
 
-        public MazeTrapsReactProceeder(
+        public TrapsReactProceeder(
             IModelMazeData _Data,
             RazorMazeModelSettings _Settings)
         {

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Constants;
 using Entities;
@@ -17,7 +16,17 @@ namespace Games.RazorMaze
     [InitializeOnLoad]
     public class LevelDesigner : MonoBehaviour
     {
-        public static LevelDesigner Instance => FindObjectOfType<LevelDesigner>();
+        private static LevelDesigner _instance;
+
+        public static LevelDesigner Instance
+        {
+            get
+            {
+                if (_instance.IsNull())
+                    _instance = FindObjectOfType<LevelDesigner>();
+                return _instance;
+            }
+        }
 
         public const int MazeWidth = 12;
         private const int MinSize = MazeWidth;

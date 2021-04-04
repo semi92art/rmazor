@@ -5,18 +5,17 @@ using System.Linq;
 using Entities;
 using Extensions;
 using Games.RazorMaze.Models.ProceedInfos;
-using UnityEngine;
 using Utils;
 
-namespace Games.RazorMaze.Models
+namespace Games.RazorMaze.Models.ItemProceeders
 {
-    public interface IMazeGravityItemsProceeder : IMazeMovingItemsProceeder
+    public interface IGravityItemsProceeder : IMovingItemsProceeder
     {
         void OnMazeOrientationChanged();
         void OnCharacterMoveContinued(CharacterMovingEventArgs _Args);
     }
     
-    public class MazeGravityItemsProceeder : IMazeGravityItemsProceeder
+    public class GravityItemsProceeder : IGravityItemsProceeder
     {
         #region nonpublic members
         
@@ -29,7 +28,7 @@ namespace Games.RazorMaze.Models
         private RazorMazeModelSettings Settings { get; }
         private IModelMazeData Data { get; }
 
-        public MazeGravityItemsProceeder(
+        public GravityItemsProceeder(
             RazorMazeModelSettings _Settings,
             IModelMazeData _Data)
         {

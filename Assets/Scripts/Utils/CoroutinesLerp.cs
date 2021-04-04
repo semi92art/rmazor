@@ -40,6 +40,8 @@ namespace Utils
                 _OnProgress(progress);
                 yield return new WaitForEndOfFrame();
             }
+            if (_OnBreak != null && _OnBreak())
+                breaked = true;
             if (!breaked)
                 _OnProgress(_To);
             _OnFinish?.Invoke(breaked, breaked ? progress : _To);
@@ -79,6 +81,8 @@ namespace Utils
                 _OnProgress(progress);
                 yield return new WaitForEndOfFrame();
             }
+            if (_OnBreak != null && _OnBreak())
+                breaked = true;
             if (!breaked)
                 _OnProgress(_To);
             _OnFinish?.Invoke(breaked, breaked ? progress : _To);
@@ -115,6 +119,8 @@ namespace Utils
                 _OnProgress(progress);
                 yield return new WaitForEndOfFrame();
             }
+            if (_OnBreak != null && _OnBreak())
+                breaked = true;
             if (!breaked)
                 _OnProgress(_To);
             _OnFinish?.Invoke(breaked, breaked ? progress : _To);
@@ -157,6 +163,8 @@ namespace Utils
                 _OnProgress(progress);
                 yield return new WaitForEndOfFrame();
             }
+            if (_OnBreak != null && _OnBreak())
+                breaked = true;
             if (!breaked)
                 _OnProgress(_To);
             _OnFinish?.Invoke(breaked, breaked ? progress : _To);
@@ -169,7 +177,7 @@ namespace Utils
             UnityAction<Vector2> _OnProgress,
             ITimeProvider _TimeProvider,
             UnityAction<bool, Vector2> _OnFinish = null,
-            Func<bool> OnBreak = null)
+            Func<bool> _OnBreak = null)
         {
             if (_OnProgress == null)
                 yield break;
@@ -178,7 +186,7 @@ namespace Utils
             Vector2 progress = _From;
             while (_TimeProvider.Time < currTime + _Time)
             {
-                if (OnBreak != null && OnBreak())
+                if (_OnBreak != null && _OnBreak())
                 {
                     breaked = true;
                     break;
@@ -189,6 +197,8 @@ namespace Utils
                 _OnProgress(progress);
                 yield return new WaitForEndOfFrame();
             }
+            if (_OnBreak != null && _OnBreak())
+                breaked = true;
             if (!breaked)
                 _OnProgress(_To);
             _OnFinish?.Invoke(breaked, breaked ? progress : _To);
@@ -201,7 +211,7 @@ namespace Utils
             UnityAction<Vector3> _OnProgress,
             ITimeProvider _TimeProvider,
             UnityAction<bool, Vector3> _OnFinish = null,
-            Func<bool> OnBreak = null)
+            Func<bool> _OnBreak = null)
         {
             if (_OnProgress == null)
                 yield break;
@@ -210,7 +220,7 @@ namespace Utils
             float currTime = _TimeProvider.Time;
             while (_TimeProvider.Time < currTime + _Time)
             {
-                if (OnBreak != null && OnBreak())
+                if (_OnBreak != null && _OnBreak())
                 {
                     breaked = true;
                     break;
@@ -220,6 +230,8 @@ namespace Utils
                 _OnProgress(progress);
                 yield return new WaitForEndOfFrame();
             }
+            if (_OnBreak != null && _OnBreak())
+                breaked = true;
             if (!breaked)
                 _OnProgress(_To);
             _OnFinish?.Invoke(breaked, breaked ? progress : _To);

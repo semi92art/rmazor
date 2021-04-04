@@ -18,5 +18,6 @@ namespace Games.RazorMaze.Views.Views
         IViewMazeTrapsReactItemsGroup MazeTrapsReactItemsGroup { get; }
         IViewMazeTrapsIncreasingItemsGroup MazeTrapsIncreasingItemsGroup { get; }
         IViewMazeTurretsGroup MazeTurretsGroup { get; }
+        IViewMazePortalsGroup PortalsGroup { get; }
     }
 }

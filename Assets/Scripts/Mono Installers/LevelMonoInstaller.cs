@@ -1,6 +1,7 @@
 ﻿using Games;
 using Games.RazorMaze;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views;
 using Games.RazorMaze.Views.Characters;
 using Games.RazorMaze.Views.ContainerGetters;
@@ -32,11 +33,12 @@ namespace Mono_Installers
             Container.Bind<IInputScheduler>()                   .To<InputScheduler>()                       .AsSingle();
             Container.Bind<ICoordinateConverter>()              .To<CoordinateConverter>()                  .AsSingle();
             Container.Bind<IContainersGetter>()                 .To<ContainersGetter>()                     .AsSingle();
-            Container.Bind<IMazeMovingItemsProceeder>()         .To<MazeMovingItemsProceeder>()             .AsSingle();
-            Container.Bind<IMazeGravityItemsProceeder>()        .To<MazeGravityItemsProceeder>()            .AsSingle();
-            Container.Bind<IMazeTrapsReactProceeder>()          .To<MazeTrapsReactProceeder>()              .AsSingle();
-            Container.Bind<IMazeTurretsProceeder>()             .To<MazeTurretsProceeder>()                 .AsSingle();
-            Container.Bind<IMazeTrapsIncreasingProceeder>()     .To<MazeTrapsIncreasingProceeder>()         .AsSingle();
+            Container.Bind<IMovingItemsProceeder>()             .To<MovingItemsProceeder>()                 .AsSingle();
+            Container.Bind<IGravityItemsProceeder>()            .To<GravityItemsProceeder>()                .AsSingle();
+            Container.Bind<ITrapsReactProceeder>()              .To<TrapsReactProceeder>()                  .AsSingle();
+            Container.Bind<ITurretsProceeder>()                 .To<TurretsProceeder>()                     .AsSingle();
+            Container.Bind<ITrapsIncreasingProceeder>()         .To<TrapsIncreasingProceeder>()             .AsSingle();
+            Container.Bind<IPortalsProceeder>()                 .To<PortalsProceeder>()                     .AsSingle();
             Container.Bind<IViewGame>()                         .To<ViewGame>()                             .AsSingle();
             
             Container.Bind<IViewMazeCommon>()                   .To<ViewMazeCommonProt>()                   .AsSingle().When(_ => prototyping);
@@ -45,6 +47,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazeTrapsReactItemsGroup>()     .To<ViewMazeTrapsReactItemsGroupProt>()     .AsSingle().When(_ => prototyping);
             Container.Bind<IViewMazeTrapsIncreasingItemsGroup>().To<ViewMazeTrapsIncreasingItemsGroupProt>().AsSingle().When(_ => prototyping);
             Container.Bind<IViewMazeTurretsGroup>()             .To<ViewMazeTurretsGroupProt>()             .AsSingle().When(_ => prototyping);
+            Container.Bind<IViewMazePortalsGroup>()             .To<ViewMazePortalsGroupProt>()             .AsSingle().When(_ => prototyping);
             Container.Bind<IViewUI>()                           .To<ViewUIProt>()                           .AsSingle().When(_ => prototyping);
             Container.Bind<IViewCharacter>()                    .To<ViewCharacterProt>()                    .AsSingle().When(_ => prototyping);
             Container.Bind<IInputConfigurator>()                .To<RazorMazeInputConfiguratorProt>()       .AsSingle().When(_ => prototyping);

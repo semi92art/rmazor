@@ -4,7 +4,7 @@ using Games.RazorMaze.Models.ProceedInfos;
 using UnityEngine;
 using UnityGameLoopDI;
 
-namespace Games.RazorMaze.Models
+namespace Games.RazorMaze.Models.ItemProceeders
 {
     public class TurretShotEventArgs : EventArgs
     {
@@ -20,19 +20,19 @@ namespace Games.RazorMaze.Models
 
     public delegate void TurretShotEventHandler(TurretShotEventArgs Args);
     
-    public interface IMazeTurretsProceeder : IOnMazeChanged
+    public interface ITurretsProceeder : IOnMazeChanged
     {
         event TurretShotEventHandler TurretShoot;
     }
     
-    public class MazeTurretsProceeder : Ticker, IUpdateTick, IMazeTurretsProceeder
+    public class TurretsProceeder : Ticker, IUpdateTick, ITurretsProceeder
     {
         #region inject
         
         private RazorMazeModelSettings Settings { get; }
         private IModelMazeData Data { get; }
 
-        public MazeTurretsProceeder(RazorMazeModelSettings _Settings, IModelMazeData _Data)
+        public TurretsProceeder(RazorMazeModelSettings _Settings, IModelMazeData _Data)
         {
             Settings = _Settings;
             Data = _Data;

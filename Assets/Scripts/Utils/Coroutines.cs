@@ -41,19 +41,13 @@ namespace Utils
         
         public static Coroutine Run(IEnumerator _Coroutine)
         {
-            return FindRunner().StartCoroutine(_Coroutine);
+            return _Coroutine == null ? null : FindRunner().StartCoroutine(_Coroutine);
         }
 
         public static void Stop(IEnumerator _Coroutine)
         {
             if (_Coroutine != null)
-                _coroutineRunner.StopCoroutine(_Coroutine);
-        }
-
-        public static void Stop(Coroutine _Coroutine)
-        {
-            if (_Coroutine != null)
-                _coroutineRunner.StopCoroutine(_Coroutine);
+                FindRunner().StopCoroutine(_Coroutine);
         }
     
         public static IEnumerator Action(UnityAction _Action)

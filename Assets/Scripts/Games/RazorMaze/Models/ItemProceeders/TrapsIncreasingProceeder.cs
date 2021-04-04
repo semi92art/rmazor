@@ -6,7 +6,7 @@ using Games.RazorMaze.Models.ProceedInfos;
 using UnityGameLoopDI;
 using Utils;
 
-namespace Games.RazorMaze.Models
+namespace Games.RazorMaze.Models.ItemProceeders
 {
     public class MazeItemTrapIncreasingEventArgs : EventArgs
     {
@@ -24,13 +24,13 @@ namespace Games.RazorMaze.Models
     
     public delegate void MazeItemTrapIncreasingEventHandler(MazeItemTrapIncreasingEventArgs Args);
     
-    public interface IMazeTrapsIncreasingProceeder : IOnMazeChanged
+    public interface ITrapsIncreasingProceeder : IOnMazeChanged
     {
         event MazeItemTrapIncreasingEventHandler TrapIncreasingStageChanged;
         void OnCharacterMoveContinued(CharacterMovingEventArgs _Args);
     }
     
-    public class MazeTrapsIncreasingProceeder : Ticker, IUpdateTick, IMazeTrapsIncreasingProceeder
+    public class TrapsIncreasingProceeder : Ticker, IUpdateTick, ITrapsIncreasingProceeder
     {
         #region constants
         
@@ -50,7 +50,7 @@ namespace Games.RazorMaze.Models
         private IModelMazeData Data { get; }
         private RazorMazeModelSettings Settings { get; }
 
-        public MazeTrapsIncreasingProceeder(
+        public TrapsIncreasingProceeder(
             IModelMazeData _Data,
             RazorMazeModelSettings _Settings)
         {

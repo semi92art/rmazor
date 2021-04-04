@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using Entities;
+using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Models.ProceedInfos;
 using UnityEngine;
 using Utils;
@@ -27,7 +28,7 @@ namespace Games.RazorMaze.Models
     public delegate void HealthPointsChangedHandler(HealthPointsEventArgs _Args);
     public delegate void CharacterMovingHandler(CharacterMovingEventArgs _Args);
 
-    public interface IModelCharacter : IInit, IPreInit
+    public interface IModelCharacter : IInit
     {
         event CharacterMovingHandler CharacterMoveStarted;
         event CharacterMovingHandler CharacterMoveContinued;
@@ -36,10 +37,17 @@ namespace Games.RazorMaze.Models
         event NoArgsHandler Death;
         void Move(MazeMoveDirection _Direction);
         void OnMazeChanged(MazeInfo _Info);
+        void OnPortal(PortalEventArgs _Args);
     }
     
     public class ModelCharacter : IModelCharacter
     {
+        #region nonpublic members
+
+        private int m_Counter;
+        
+        #endregion
+        
         #region inject
 
         private RazorMazeModelSettings Settings { get; }
@@ -61,8 +69,6 @@ namespace Games.RazorMaze.Models
         public event HealthPointsChangedHandler HealthChanged;
         public event NoArgsHandler Death;
         
-        public void PreInit()
-        { }
 
         public void Init()
         {
@@ -73,14 +79,22 @@ namespace Games.RazorMaze.Models
         {
             if (!Data.ProceedingControls)
                 return;
+            Data.CharacterInfo.MoveDirection = _Direction;
             var from = Data.CharacterInfo.Position;
             var to = GetNewPosition(_Direction);
-            Coroutines.Run(MoveCharacterCore(from, to));
+            var cor = MoveCharacterCore(from, to);
+            Coroutines.Run(cor);
         }
 
         public void OnMazeChanged(MazeInfo _Info)
         {
             Data.CharacterInfo.Position = Data.Info.Path[0];
+        }
+
+        public void OnPortal(PortalEventArgs _Args)
+        {
+            Data.CharacterInfo.Position = _Args.Item.Pair;
+            Move(Data.CharacterInfo.MoveDirection);
         }
 
         #endregion
@@ -107,11 +121,16 @@ namespace Games.RazorMaze.Models
             bool isBuzyMazeItem = Data.ProceedInfos.Values
                 .Where(_Proceed => _Proceed.Item.Type == EMazeItemType.BlockMovingGravity)
                 .Any(_Proceed => (_Proceed as MazeItemMovingProceedInfo).BusyPositions.Contains(_Position));
-            return isNode && !isMazeItem && !isBuzyMazeItem;
+            bool isPortal = _Info.MazeItems
+                .Any(_O => _O.Position == _Position && _O.Type == EMazeItemType.Portal);
+            return (isNode && !isMazeItem && !isBuzyMazeItem) || isPortal;
         }
         
         private IEnumerator MoveCharacterCore(V2Int _From, V2Int _To)
         {
+            m_Counter++;
+            int thisCount = m_Counter;
+            
             CharacterMoveStarted?.Invoke(new CharacterMovingEventArgs(_From, _To, _From,0));
             int pathLength = Mathf.RoundToInt(V2Int.Distance(_From, _To));
             yield return Coroutines.Lerp(
@@ -127,7 +146,9 @@ namespace Games.RazorMaze.Models
                     CharacterMoveContinued?.Invoke(new CharacterMovingEventArgs(_From, _To, newPos, _Progress));
                 },
                 GameTimeProvider.Instance,
-                (_Stopped, _Progress) => CharacterMoveFinished?.Invoke(new CharacterMovingEventArgs(_From, _To, _To, _Progress)));
+                (_Stopped, _Progress) => CharacterMoveFinished?
+                    .Invoke(new CharacterMovingEventArgs(_From, _To, _To, _Progress)),
+                () => thisCount != m_Counter);
         }
         
         #endregion

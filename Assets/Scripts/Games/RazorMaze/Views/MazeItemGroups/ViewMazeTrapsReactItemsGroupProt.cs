@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Linq;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.MazeCommon;
 using Games.RazorMaze.Views.MazeItems;
 using Utils;
@@ -40,10 +41,10 @@ namespace Games.RazorMaze.Views.MazeItemGroups
             IEnumerator coroutine = null;
             switch (_Args.Stage)
             {
-                case MazeTrapsReactProceeder.StageIdle: break;
-                case MazeTrapsReactProceeder.StagePreReact:   coroutine = HandleItemOnPreReact(_Item); break;
-                case MazeTrapsReactProceeder.StageReact:      coroutine = HandleItemOnReact(_Item); break;
-                case MazeTrapsReactProceeder.StageAfterReact: coroutine = HandleItemOnAfterReact(_Item); break;
+                case TrapsReactProceeder.StageIdle: break;
+                case TrapsReactProceeder.StagePreReact:   coroutine = HandleItemOnPreReact(_Item); break;
+                case TrapsReactProceeder.StageReact:      coroutine = HandleItemOnReact(_Item); break;
+                case TrapsReactProceeder.StageAfterReact: coroutine = HandleItemOnAfterReact(_Item); break;
             }
 
             if (coroutine != null)

@@ -259,6 +259,13 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             if (props.Pair == default)
                 return;
+            var pairItem = LevelDesigner.Instance.maze
+                .FirstOrDefault(_Item => _Item.props.Position == props.Pair);
+            if (pairItem != null && (pairItem.props.Type != EMazeItemType.Portal || pairItem.props.IsNode))
+            {
+                props.Pair = default;
+                return;
+            }
             var pos = ToWorldPosition(props.Position);
             var pairPos = ToWorldPosition(props.Pair);
             Gizmos.DrawSphere(pos, 1);

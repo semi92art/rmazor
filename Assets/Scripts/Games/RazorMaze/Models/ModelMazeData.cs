@@ -12,6 +12,7 @@ namespace Games.RazorMaze.Models
     public class CharacterInfo
     {
         public V2Int Position { get; set; }
+        public MazeMoveDirection MoveDirection { get; set; }
         public long HealthPoints { get; set; }
     }
     

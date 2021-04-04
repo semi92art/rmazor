@@ -10,7 +10,7 @@ using UnityEngine.Events;
 using UnityGameLoopDI;
 using Utils;
 
-namespace Games.RazorMaze.Models
+namespace Games.RazorMaze.Models.ItemProceeders
 {
     public class MazeItemMoveEventArgs : EventArgs
     {
@@ -32,21 +32,21 @@ namespace Games.RazorMaze.Models
     
     public delegate void MazeItemMoveHandler(MazeItemMoveEventArgs Args);
     
-    public interface IMazeMovingItemsProceeder : IOnMazeChanged
+    public interface IMovingItemsProceeder : IOnMazeChanged
     {
         event MazeItemMoveHandler MazeItemMoveStarted;
         event MazeItemMoveHandler MazeItemMoveContinued;
         event MazeItemMoveHandler MazeItemMoveFinished;
     }
 
-    public class MazeMovingItemsProceeder : Ticker, IUpdateTick, IMazeMovingItemsProceeder
+    public class MovingItemsProceeder : Ticker, IUpdateTick, IMovingItemsProceeder
     {
         #region inject
         
         private RazorMazeModelSettings Settings { get; }
         private IModelMazeData Data { get; }
 
-        public MazeMovingItemsProceeder(
+        public MovingItemsProceeder(
             RazorMazeModelSettings _Settings,
             IModelMazeData _Data)
         {

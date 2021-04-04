@@ -3,6 +3,7 @@ using System.Linq;
 using Entities;
 using Extensions;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeCommon;
@@ -34,14 +35,14 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         #region inject
         
         private IModelMazeData Data { get; }
-        private IMazeMovingItemsProceeder MovingItemsProceeder { get; }
+        private IMovingItemsProceeder MovingItemsProceeder { get; }
         private ICoordinateConverter CoordinateConverter { get; }
         private IContainersGetter ContainersGetter { get; }
         private IViewMazeCommon MazeCommon { get; }
 
         public ViewMazeMovingItemsGroupProt(
             IModelMazeData _Data,
-            IMazeMovingItemsProceeder _MovingItemsProceeder,
+            IMovingItemsProceeder _MovingItemsProceeder,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IViewMazeCommon _MazeCommon)
