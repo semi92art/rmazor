@@ -30,7 +30,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         void OnCharacterMoveContinued(CharacterMovingEventArgs _Args);
     }
     
-    public class TrapsIncreasingProceeder : Ticker, IUpdateTick, ITrapsIncreasingProceeder
+    public class TrapsIncreasingProceeder : ItemsProceederBase, IUpdateTick, ITrapsIncreasingProceeder
     {
         #region constants
         
@@ -47,14 +47,13 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region inject
 
-        private IModelMazeData Data { get; }
+        protected override EMazeItemType[] Types => new[] {EMazeItemType.TrapIncreasing};
         private RazorMazeModelSettings Settings { get; }
 
         public TrapsIncreasingProceeder(
             IModelMazeData _Data,
-            RazorMazeModelSettings _Settings)
+            RazorMazeModelSettings _Settings) : base(_Data)
         {
-            Data = _Data;
             Settings = _Settings;
         }
 

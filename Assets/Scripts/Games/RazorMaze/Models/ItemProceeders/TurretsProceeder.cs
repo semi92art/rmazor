@@ -25,17 +25,19 @@ namespace Games.RazorMaze.Models.ItemProceeders
         event TurretShotEventHandler TurretShoot;
     }
     
-    public class TurretsProceeder : Ticker, IUpdateTick, ITurretsProceeder
+    public class TurretsProceeder : ItemsProceederBase, IUpdateTick, ITurretsProceeder
     {
         #region inject
         
         private RazorMazeModelSettings Settings { get; }
-        private IModelMazeData Data { get; }
+        protected override EMazeItemType[] Types => 
+            new[] {EMazeItemType.Turret, EMazeItemType.TurretRotating};
 
-        public TurretsProceeder(RazorMazeModelSettings _Settings, IModelMazeData _Data)
+        public TurretsProceeder(
+            RazorMazeModelSettings _Settings,
+            IModelMazeData _Data) : base(_Data)
         {
             Settings = _Settings;
-            Data = _Data;
         }
         
         #endregion
@@ -52,26 +54,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         #endregion
         
         #region nonpublic methods
-        
-        private void CollectItems(MazeInfo _Info)
-        {
-            var infos = _Info.MazeItems
-                .Where(_Item =>_Item.Type == EMazeItemType.Turret)
-                .Select(_Item => new MazeItemTurretProceedInfo
-                {
-                    Item = _Item,
-                    IsProceeding = false,
-                    PauseTimer = 0
-                });
-            foreach (var info in infos)
-            {
-                if (Data.ProceedInfos.ContainsKey(info.Item))
-                    Data.ProceedInfos[info.Item] = info;
-                else
-                    Data.ProceedInfos.Add(info.Item, info);
-            }
-        }
-        
+
         void IUpdateTick.UpdateTick()
         {
             if (!Data.ProceedingMazeItems)

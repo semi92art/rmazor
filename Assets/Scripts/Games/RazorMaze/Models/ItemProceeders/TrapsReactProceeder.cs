@@ -29,7 +29,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         void OnCharacterMoveContinued(CharacterMovingEventArgs _Args);
     }
     
-    public class TrapsReactProceeder : ITrapsReactProceeder
+    public class TrapsReactProceeder : ItemsProceederBase, ITrapsReactProceeder
     {
         #region constants
         
@@ -48,14 +48,13 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         #region inject
 
-        private IModelMazeData Data { get; }
+        protected override EMazeItemType[] Types => new[] {EMazeItemType.TrapReact};
         private RazorMazeModelSettings Settings { get; }
 
         public TrapsReactProceeder(
             IModelMazeData _Data,
-            RazorMazeModelSettings _Settings)
+            RazorMazeModelSettings _Settings) : base(_Data)
         {
-            Data = _Data;
             Settings = _Settings;
         }
 
@@ -67,7 +66,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         public void OnMazeChanged(MazeInfo _Info)
         {
-            CollectProceeds();
+            CollectItems(_Info);
         }
 
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
@@ -86,26 +85,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
         #endregion
         
         #region nonpublic methods
-
-        private void CollectProceeds()
-        {
-            var proceeds = Data.Info.MazeItems
-                .Where(_Item => _Item.Type == EMazeItemType.TrapReact)
-                .Select(_Item => new MazeItemTrapReactProceedInfo
-                {
-                    IsProceeding = false,
-                    ProceedingStage = 0,
-                    Item = _Item,
-                    PauseTimer = 0
-                });
-            foreach (var proceed in proceeds)
-            {
-                if (Data.ProceedInfos.ContainsKey(proceed.Item))
-                    Data.ProceedInfos[proceed.Item] = proceed;
-                else
-                    Data.ProceedInfos.Add(proceed.Item, proceed);
-            }
-        }
 
         private void ProceedTraps()
         {

@@ -39,19 +39,18 @@ namespace Games.RazorMaze.Models.ItemProceeders
         event MazeItemMoveHandler MazeItemMoveFinished;
     }
 
-    public class MovingItemsProceeder : Ticker, IUpdateTick, IMovingItemsProceeder
+    public class MovingItemsProceeder : ItemsProceederBase, IUpdateTick, IMovingItemsProceeder
     {
         #region inject
         
         private RazorMazeModelSettings Settings { get; }
-        private IModelMazeData Data { get; }
+        protected override EMazeItemType[] Types => new[] {EMazeItemType.TrapMoving};
 
         public MovingItemsProceeder(
             RazorMazeModelSettings _Settings,
-            IModelMazeData _Data)
+            IModelMazeData _Data) : base(_Data)
         {
             Settings = _Settings;
-            Data = _Data;
         }
         
         #endregion
@@ -72,28 +71,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         #region nonpublic methods
 
-        private void CollectItems(MazeInfo _Info)
-        {
-            var infos = _Info.MazeItems
-                .Where(_Item =>_Item.Type == EMazeItemType.TrapMoving)
-                .Select(_Item => new MazeItemMovingProceedInfo
-                {
-                    Item = _Item,
-                    MoveByPathDirection = EMazeItemMoveByPathDirection.Forward,
-                    IsProceeding = false,
-                    PauseTimer = 0,
-                    BusyPositions = new List<V2Int>{_Item.Position},
-                    ProceedingStage = 0
-                });
-            foreach (var info in infos)
-            {
-                if (Data.ProceedInfos.ContainsKey(info.Item))
-                    Data.ProceedInfos[info.Item] = info;
-                else
-                    Data.ProceedInfos.Add(info.Item, info);
-            }
-        }
-        
         void IUpdateTick.UpdateTick()
         {
             if (!Data.ProceedingMazeItems)
@@ -104,7 +81,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         private void ProceedMazeItemsMoving()
         {
             foreach (var proceed in Data.ProceedInfos.Values
-                .Where(_P => !_P.IsProceeding && _P.Item.Type == EMazeItemType.TrapMoving))
+                .Where(_P => !_P.IsProceeding && Types.Contains(_P.Item.Type)))
             {
                 proceed.PauseTimer += Time.deltaTime;
                 if (proceed.PauseTimer < Settings.movingItemsPause)

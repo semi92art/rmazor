@@ -23,7 +23,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
     }
     
     
-    public class PortalsProceeder : IPortalsProceeder
+    public class PortalsProceeder : ItemsProceederBase, IPortalsProceeder
     {
         #region nonpublic members
 
@@ -32,13 +32,10 @@ namespace Games.RazorMaze.Models.ItemProceeders
         #endregion
 
         #region inject
-        
-        private IModelMazeData Data { get; }
 
-        public PortalsProceeder(IModelMazeData _Data)
-        {
-            Data = _Data;
-        }
+        protected override EMazeItemType[] Types => new[] {EMazeItemType.Portal};
+
+        public PortalsProceeder(IModelMazeData _Data) : base(_Data) { }
         
         #endregion
         
@@ -49,7 +46,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
             var infos = Data.ProceedInfos.Values
-                .Where(_Info => _Info.Item.Type == EMazeItemType.Portal);
+                .Where(_Info => Types.Contains(_Info.Item.Type));
             MazeItem portalItem = (from info in infos where 
                     info.Item.Position == _Args.Current select info.Item)
                 .FirstOrDefault();
@@ -69,16 +66,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         public void OnMazeChanged(MazeInfo _Info)
         {
-            var infos = _Info.MazeItems
-                .Where(_Item => _Item.Type == EMazeItemType.Portal)
-                .Select(_Item => new MazeItemPortalProceedInfo {Item = _Item});
-            foreach (var info in infos)
-            {
-                if (Data.ProceedInfos.ContainsKey(info.Item))
-                    Data.ProceedInfos[info.Item] = info;
-                else
-                    Data.ProceedInfos.Add(info.Item, info);
-            }
+            CollectItems(_Info);
         }
         
         #endregion
