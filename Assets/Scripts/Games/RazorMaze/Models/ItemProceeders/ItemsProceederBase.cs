@@ -9,13 +9,18 @@ namespace Games.RazorMaze.Models.ItemProceeders
     public abstract class ItemsProceederBase : Ticker
     {
         protected abstract EMazeItemType[] Types { get; }
-        protected IModelMazeData Data { get; set; }
+        protected ModelSettings Settings { get; }
+        protected IModelMazeData Data { get; }
 
-        protected ItemsProceederBase(IModelMazeData _Data) => Data = _Data;
-
-        protected virtual void CollectItems(MazeInfo _Info)
+        protected ItemsProceederBase(ModelSettings _Settings, IModelMazeData _Data)
         {
-            var infos = _Info.MazeItems
+            Settings = _Settings;
+            Data = _Data;
+        }
+
+        protected void CollectItems(MazeInfo _Info)
+        {
+            var newInfos = _Info.MazeItems
                 .Where(_Item => Types.Contains(_Item.Type))
                 .Select(_Item => new MazeItemMovingProceedInfo
                 {
@@ -26,13 +31,23 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     BusyPositions = new List<V2Int>{_Item.Position},
                     ProceedingStage = 0
                 });
-            foreach (var info in infos)
+            var infos = Data.ProceedInfos;
+            foreach (var newInfo in newInfos)
             {
-                if (Data.ProceedInfos.ContainsKey(info.Item))
-                    Data.ProceedInfos[info.Item] = info;
+                if (!infos.ContainsKey(newInfo.Item.Type))
+                    infos.Add(newInfo.Item.Type, new Dictionary<MazeItem, IMazeItemProceedInfo>());
+                var dict = infos[newInfo.Item.Type];
+                
+                if (!dict.ContainsKey(newInfo.Item))
+                    dict.Add(newInfo.Item, newInfo);
                 else
-                    Data.ProceedInfos.Add(info.Item, info);
+                    dict[newInfo.Item] = newInfo;
             }
+        }
+
+        protected Dictionary<MazeItem, IMazeItemProceedInfo> GetProceedInfos(EMazeItemType _Type)
+        {
+            return Data.ProceedInfos[_Type];
         }
     }
 }

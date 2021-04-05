@@ -23,10 +23,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
     public delegate void MazeItemTrapReactEventHandler(MazeItemTrapReactEventArgs _Args);
     
-    public interface ITrapsReactProceeder : IOnMazeChanged
+    public interface ITrapsReactProceeder : IOnMazeChanged, ICharacterMoveContinued
     {
         event MazeItemTrapReactEventHandler TrapReactStageChanged;
-        void OnCharacterMoveContinued(CharacterMovingEventArgs _Args);
     }
     
     public class TrapsReactProceeder : ItemsProceederBase, ITrapsReactProceeder
@@ -43,20 +42,14 @@ namespace Games.RazorMaze.Models.ItemProceeders
         #region nonpublic members
         
         private V2Int m_CharacterPosCheck;
+        protected override EMazeItemType[] Types => new[] {EMazeItemType.TrapReact};
 
         #endregion
 
         #region inject
-
-        protected override EMazeItemType[] Types => new[] {EMazeItemType.TrapReact};
-        private RazorMazeModelSettings Settings { get; }
-
-        public TrapsReactProceeder(
-            IModelMazeData _Data,
-            RazorMazeModelSettings _Settings) : base(_Data)
-        {
-            Settings = _Settings;
-        }
+        
+        public TrapsReactProceeder(ModelSettings _Settings, IModelMazeData _Data) 
+            : base(_Settings, _Data) { }
 
         #endregion
         
@@ -88,15 +81,18 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         private void ProceedTraps()
         {
-            foreach (var proceed in Data.ProceedInfos.Values.Where(_P => 
-                _P.Item.Type == EMazeItemType.TrapReact && !_P.IsProceeding))
+            foreach (var type in Types)
             {
-                var item = proceed.Item;
-                var trapExtractPos = item.Position + item.Direction;
-                if (trapExtractPos != m_CharacterPosCheck)
-                    continue;
-                proceed.IsProceeding = true;
-                Coroutines.Run(ProceedTrap(proceed));
+                var infos = GetProceedInfos(type);
+                foreach (var info in infos.Values.Where(_Info => !_Info.IsProceeding))
+                {
+                    var item = info.Item;
+                    var trapExtractPos = item.Position + item.Direction;
+                    if (trapExtractPos != m_CharacterPosCheck)
+                        continue;
+                    info.IsProceeding = true;
+                    Coroutines.Run(ProceedTrap(info));
+                }
             }
         }
 

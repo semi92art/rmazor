@@ -25,16 +25,34 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
         
         #region nonpublic members
-        
+
+        private static Color _pathItemCol = Color.white;
+        private static Color _pathStartItemCol = new Color(1f, 0.93f, 0.51f);
         private static Color _blockCol = new Color(0.53f, 0.53f, 0.53f, 0.8f);
         private static Color _trapCol = new Color(1f, 0.29f, 0.29f);
         private static Color _turretCol = new Color(1f, 0.14f, 0.7f);
         private static Color _portalCol = new Color(0.13f, 1f, 0.07f);
-        private static Color _blockTransfToNodeCol = new Color(0.17f, 0.2f, 1f);
+        private static Color _blockShredingerCol = new Color(0.49f, 0.79f, 1f);
+        
+        private bool m_Active;
 
         #endregion
         
         #region api
+
+        public bool Active
+        {
+            get => m_Active;
+            set
+            {
+                m_Active = value;
+                if (props.Type == EMazeItemType.ShredingerBlock)
+                {
+                    shape.Color = m_Active ? _blockCol : _blockShredingerCol;
+                    // hint.enabled = m_Active;
+                }
+            }
+        }
 
         public ViewMazeItemProps Props
         {
@@ -116,12 +134,12 @@ namespace Games.RazorMaze.Views.MazeItems
             switch (_Type)
             {
                 case EMazeItemType.Block: break;
-                case EMazeItemType.BlockTransformingToNode: objectName = "shredinger"; break;
+                case EMazeItemType.ShredingerBlock:         objectName = "shredinger"; break;
                 case EMazeItemType.Portal:                  objectName = "portal"; break;
                 case EMazeItemType.Turret:                  objectName = "turret"; break;
                 case EMazeItemType.TrapMoving:              objectName = "trap-moving"; break;
-                case EMazeItemType.BlockMovingGravity:      objectName = "block-gravity"; break;
-                case EMazeItemType.TrapMovingGravity:       objectName = "trap-gravity"; break;
+                case EMazeItemType.GravityBlock:            objectName = "block-gravity"; break;
+                case EMazeItemType.GravityTrap:             objectName = "trap-gravity"; break;
                 case EMazeItemType.TrapIncreasing:          objectName = "trap-increase"; break;
                 case EMazeItemType.TurretRotating:          objectName = "turret-rotate"; break;
                 case EMazeItemType.TrapReact:               objectName = "trap-react"; break;
@@ -140,8 +158,8 @@ namespace Games.RazorMaze.Views.MazeItems
             switch (_Type)
             {
                 case EMazeItemType.TrapReact:
-                case EMazeItemType.TrapMovingGravity:
-                case EMazeItemType.BlockMovingGravity:
+                case EMazeItemType.GravityTrap:
+                case EMazeItemType.GravityBlock:
                     shapeSortingOrder = 1;
                     break;
                 case EMazeItemType.Block: 
@@ -152,7 +170,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 case EMazeItemType.TrapIncreasing:
                 case EMazeItemType.TrapMoving:
                 case EMazeItemType.TurretRotating:
-                case EMazeItemType.BlockTransformingToNode:
+                case EMazeItemType.ShredingerBlock:
                     shapeSortingOrder = 12;
                     break;
                 default: throw new SwitchCaseNotImplementedException(_Type);
@@ -168,7 +186,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private static Color GetShapeColor(EMazeItemType _Type, bool _Inner, bool _IsNode, bool _IsStartNode)
         {
             if (_IsNode)
-                return _IsStartNode ? new Color(1f, 0.93f, 0.51f) : Color.white;
+                return _IsStartNode ? _pathStartItemCol : _pathItemCol;
             
             if (_Inner)
                 return Color.black;
@@ -177,16 +195,16 @@ namespace Games.RazorMaze.Views.MazeItems
             {
             
                 case EMazeItemType.Block:                   
-                case EMazeItemType.BlockMovingGravity: 
+                case EMazeItemType.GravityBlock: 
                     return _blockCol; 
-                case EMazeItemType.BlockTransformingToNode:
-                    return _blockTransfToNodeCol;
+                case EMazeItemType.ShredingerBlock:
+                    return _blockShredingerCol;
                 case EMazeItemType.Portal: 
                     return _portalCol;
                 case EMazeItemType.TrapReact:               
                 case EMazeItemType.TrapIncreasing:
                 case EMazeItemType.TrapMoving: 
-                case EMazeItemType.TrapMovingGravity:
+                case EMazeItemType.GravityTrap:
                     return _trapCol;
                 case EMazeItemType.Turret: 
                 case EMazeItemType.TurretRotating: 
@@ -205,7 +223,7 @@ namespace Games.RazorMaze.Views.MazeItems
             switch (props.Type)
             {
                 case EMazeItemType.Block:
-                case EMazeItemType.BlockTransformingToNode:
+                case EMazeItemType.ShredingerBlock:
                 case EMazeItemType.TurretRotating:
                     //do nothing
                     break;
@@ -213,8 +231,8 @@ namespace Games.RazorMaze.Views.MazeItems
                     DrawGizmosTrapIncreasing();
                     break;
                 case EMazeItemType.TrapMoving:
-                case EMazeItemType.BlockMovingGravity:
-                case EMazeItemType.TrapMovingGravity:
+                case EMazeItemType.GravityBlock:
+                case EMazeItemType.GravityTrap:
                     DrawGizmosPath();
                     break;
                 case EMazeItemType.TrapReact:

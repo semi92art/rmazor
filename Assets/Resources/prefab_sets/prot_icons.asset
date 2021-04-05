@@ -38,3 +38,5 @@ MonoBehaviour:
       name: block-gravity-free
     - item: {fileID: 21300000, guid: 218386cb18c1c18409baa86353658ba9, type: 3}
       name: trap-gravity-free
+    - item: {fileID: 21300000, guid: f7b4a956b48ac574cb1b225cad716416, type: 3}
+      name: shredinger

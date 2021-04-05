@@ -77,8 +77,9 @@ namespace Games.RazorMaze.Views.MazeItemGroups
 
         public void OnMazeItemMoveContinued(MazeItemMoveEventArgs _Args)
         {
-            if (_Args.Item.Type == EMazeItemType.BlockMovingGravity)
-                MarkMazeItemBusyPositions(_Args.Item, (Data.ProceedInfos[_Args.Item] as MazeItemMovingProceedInfo).BusyPositions);
+            if (_Args.Item.Type == EMazeItemType.GravityBlock)
+                MarkMazeItemBusyPositions(_Args.Item, 
+                    (Data.ProceedInfos[_Args.Item.Type][_Args.Item] as MazeItemMovingProceedInfo).BusyPositions);
             if (!m_ItemsMoving.ContainsKey(_Args.Item))
                 return;
             var item = m_ItemsMoving[_Args.Item];
@@ -89,7 +90,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         public void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
         {
-            if (_Args.Item.Type == EMazeItemType.BlockMovingGravity)
+            if (_Args.Item.Type == EMazeItemType.GravityBlock)
                 MarkMazeItemBusyPositions(_Args.Item, null);
             if (!m_ItemsMoving.ContainsKey(_Args.Item))
                 return;
@@ -105,8 +106,8 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         private void DrawWallBlockMovingPaths()
         {
             var items = Data.Info.MazeItems
-                .Where(_O => _O.Type == EMazeItemType.BlockMovingGravity
-                || _O.Type == EMazeItemType.TrapMovingGravity
+                .Where(_O => _O.Type == EMazeItemType.GravityBlock
+                || _O.Type == EMazeItemType.GravityTrap
                 || _O.Type == EMazeItemType.TrapMoving);
             foreach (var obs in items)
             {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Entities;
 using Exceptions;
@@ -41,17 +40,17 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
     public class MovingItemsProceeder : ItemsProceederBase, IUpdateTick, IMovingItemsProceeder
     {
+        #region nonpublic members
+        
+        protected override EMazeItemType[] Types => new[] {EMazeItemType.TrapMoving};
+        
+        #endregion
+        
+        
         #region inject
         
-        private RazorMazeModelSettings Settings { get; }
-        protected override EMazeItemType[] Types => new[] {EMazeItemType.TrapMoving};
-
-        public MovingItemsProceeder(
-            RazorMazeModelSettings _Settings,
-            IModelMazeData _Data) : base(_Data)
-        {
-            Settings = _Settings;
-        }
+        public MovingItemsProceeder(ModelSettings _Settings, IModelMazeData _Data) 
+            : base(_Settings, _Data) { }
         
         #endregion
         
@@ -60,7 +59,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
         public event MazeItemMoveHandler MazeItemMoveStarted;
         public event MazeItemMoveHandler MazeItemMoveContinued;
         public event MazeItemMoveHandler MazeItemMoveFinished;
-        
 
         public void OnMazeChanged(MazeInfo _Info)
         {
@@ -80,15 +78,18 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         private void ProceedMazeItemsMoving()
         {
-            foreach (var proceed in Data.ProceedInfos.Values
-                .Where(_P => !_P.IsProceeding && Types.Contains(_P.Item.Type)))
+            foreach (var type in Types)
             {
-                proceed.PauseTimer += Time.deltaTime;
-                if (proceed.PauseTimer < Settings.movingItemsPause)
-                    continue;
-                proceed.PauseTimer = 0;
-                proceed.IsProceeding = true;
-                ProceedMazeItemMoving(proceed.Item, () => proceed.IsProceeding = false);
+                var infos = GetProceedInfos(type);
+                foreach (var info in infos.Values.Where(_Info => !_Info.IsProceeding))
+                {
+                    info.PauseTimer += Time.deltaTime;
+                    if (info.PauseTimer < Settings.movingItemsPause)
+                        continue;
+                    info.PauseTimer = 0;
+                    info.IsProceeding = true;
+                    ProceedMazeItemMoving(info.Item, () => info.IsProceeding = false);
+                }
             }
         }
         
@@ -100,7 +101,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             V2Int to;
             int idx = _Item.Path.IndexOf(_Item.Position);
             var path = _Item.Path.ToList();
-            var proceeing = (MazeItemMovingProceedInfo) Data.ProceedInfos[_Item];
+            var proceeing = (MazeItemMovingProceedInfo) Data.ProceedInfos[Types.First()][_Item];
             switch (proceeing.MoveByPathDirection)
             {
                 case EMazeItemMoveByPathDirection.Forward:

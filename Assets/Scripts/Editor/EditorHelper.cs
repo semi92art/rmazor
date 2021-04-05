@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Constants;
 using Entities;
 using Managers;
@@ -12,6 +13,8 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Extensions;
+using GameHelpers;
+using Games.RazorMaze;
 using PygmyMonkey.ColorPalette.Utils;
 using Utils;
 using Utils.Editor;
@@ -28,6 +31,8 @@ public class EditorHelper : EditorWindow
     private int m_Level = -1;
     private int m_Quality = -1;
     private int m_QualityCheck;
+    private int m_TabPage;
+    private Vector2 m_ModelSettingsScrollPos;
 
     [MenuItem("Tools/Helper", false, 0)]
     public static void ShowWindow()
@@ -69,7 +74,21 @@ public class EditorHelper : EditorWindow
 
     private void OnGUI()
     {
-        if (Application.isPlaying)
+        m_TabPage = GUILayout.Toolbar (m_TabPage, new [] {"Common", "Model Settings"});
+        switch (m_TabPage) 
+        {
+            case 0:
+                CommonTabPage();
+                break;
+            case 1:
+                ModelSettingsTabPage();
+                break;
+        }
+    }
+
+    private void CommonTabPage()
+    {
+                if (Application.isPlaying)
             GUILayout.Label($"Target FPS: {Application.targetFrameRate}");
 
         GUI.enabled = Application.isPlaying;
@@ -174,6 +193,33 @@ public class EditorHelper : EditorWindow
         UpdateTestUrl();
         UpdateGameId();
         UpdateQuality();
+    }
+
+    private void ModelSettingsTabPage()
+    {
+        var settings = PrefabUtilsEx.GetObject<ModelSettings>(
+            "model_settings", "model_settings");
+        var serObj = new SerializedObject(settings);
+
+        var type = typeof(ModelSettings);
+        var fieldInfos = type.GetFields().ToList();
+
+        EditorUtilsEx.ScrollViewZone(ref m_ModelSettingsScrollPos, () =>
+        {
+            foreach (var fieldInfo in fieldInfos)
+            {
+                var prop = serObj.FindProperty(fieldInfo.Name);
+                EditorGUILayout.PropertyField(prop);
+                float val = Convert.ToSingle(fieldInfo.GetValue(settings));
+                if (Math.Abs(val - prop.floatValue) > float.Epsilon)
+                {
+                    fieldInfo.SetValue(settings, prop.floatValue);
+                    EditorUtility.SetDirty(settings);
+                    AssetDatabase.SaveAssets();
+                    AssetDatabase.Refresh();
+                }
+            }
+        }, false, false);
     }
 
     private void UpdateTestUrl(bool _Forced = false)

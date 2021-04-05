@@ -258,7 +258,6 @@ GameObject:
   - component: {fileID: 703413960}
   - component: {fileID: 703413959}
   - component: {fileID: 703413958}
-  - component: {fileID: 703413961}
   m_Layer: 0
   m_Name: SceneContext
   m_TagString: Untagged
@@ -278,6 +277,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04e81e2efdb244aeb8b5ce8eb6b54570, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  modelSettings: {fileID: 11400000, guid: 243986dd30cfcce4abbf025e950c2262, type: 2}
 --- !u!114 &703413959
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -324,29 +324,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &703413961
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 703413957}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4837f4ffd20048989325c725bc6454fa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  characterSpeed: 40
-  mazeRotateSpeed: 5
-  movingItemsSpeed: 5
-  movingItemsPause: 1
-  trapPreReactTime: 0.5
-  trapReactTime: 0.5
-  trapAfterReactTime: 0.5
-  trapIncreasingIdleTime: 3
-  trapIncreasingIncreasedTime: 1
-  turretShootInterval: 2
-  turretProjectileSpeed: 1
 --- !u!1 &934508343
 GameObject:
   m_ObjectHideFlags: 0

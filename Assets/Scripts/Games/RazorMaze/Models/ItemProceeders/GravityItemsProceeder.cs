@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Entities;
 using Extensions;
@@ -9,10 +8,9 @@ using Utils;
 
 namespace Games.RazorMaze.Models.ItemProceeders
 {
-    public interface IGravityItemsProceeder : IMovingItemsProceeder
+    public interface IGravityItemsProceeder : IMovingItemsProceeder, ICharacterMoveContinued
     {
         void OnMazeOrientationChanged();
-        void OnCharacterMoveContinued(CharacterMovingEventArgs _Args);
     }
     
     public class GravityItemsProceeder : ItemsProceederBase, IGravityItemsProceeder
@@ -20,22 +18,14 @@ namespace Games.RazorMaze.Models.ItemProceeders
         #region nonpublic members
         
         private V2Int m_CharacterPosCheck;
+        protected override EMazeItemType[] Types => new[] {EMazeItemType.GravityBlock, EMazeItemType.GravityTrap};
         
         #endregion
         
         #region inject
         
-        private RazorMazeModelSettings Settings { get; }
-
-        protected override EMazeItemType[] Types =>
-            new[] {EMazeItemType.BlockMovingGravity, EMazeItemType.TrapMovingGravity};
-
-        public GravityItemsProceeder(
-            RazorMazeModelSettings _Settings,
-            IModelMazeData _Data) : base (_Data)
-        {
-            Settings = _Settings;
-        }
+        public GravityItemsProceeder(ModelSettings _Settings, IModelMazeData _Data) 
+            : base (_Settings, _Data) { }
         
         #endregion
         
@@ -71,9 +61,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
         private void MoveMazeItemsGravity(MazeOrientation _Orientation, V2Int _CharacterPoint)
         {
             var dropDirection = RazorMazeUtils.GetDropDirection(_Orientation);
-            foreach (var item in Data.ProceedInfos.Values.Where(_P => _P.Item.Type == EMazeItemType.BlockMovingGravity))
+            foreach (var item in GetProceedInfos(EMazeItemType.GravityBlock).Values)
                 MoveMazeItemGravity((MazeItemMovingProceedInfo)item, dropDirection, _CharacterPoint);
-            foreach (var item in Data.ProceedInfos.Values.Where(_P => _P.Item.Type == EMazeItemType.TrapMovingGravity))
+            foreach (var item in GetProceedInfos(EMazeItemType.GravityTrap).Values)
                 MoveMazeItemGravity((MazeItemMovingProceedInfo)item, dropDirection);
         } 
         

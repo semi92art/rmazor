@@ -55,6 +55,7 @@ namespace Games.RazorMaze
             var trapsIncreasingProceeder                        = Model.TrapsIncreasingProceeder;
             var portalsProceeder                                = Model.PortalsProceeder;
             var turretsProceeder                                = Model.TurretsProceeder;
+            var shredingerProceeder                             = Model.ShredingerBlocksProceeder;
             var character                                       = Model.Character;
             var scoring                                         = Model.Scoring;
             var levelStaging                                    = Model.LevelStaging;
@@ -73,9 +74,9 @@ namespace Games.RazorMaze
             
             trapsReactProceeder.TrapReactStageChanged           += OnMazeTrapReactStageChanged;
             trapsIncreasingProceeder.TrapIncreasingStageChanged += OnMazeTrapIncreasingStageChanged;
-            turretsProceeder.TurretShoot                        += TurretsProceederOnTurretShoot;
-            portalsProceeder.PortalEvent                        += PortalsProceederOnPortalEvent;
-            
+            turretsProceeder.TurretShoot                        += OnTurretShoot;
+            portalsProceeder.PortalEvent                        += OnPortalEvent;
+            shredingerProceeder.ShredingerBlockEvent += OnShredingerBlockEvent;
 
             character.HealthChanged                             += OnCharacterHealthChanged;
             character.Death                                     += OnCharacterDeath;
@@ -120,8 +121,9 @@ namespace Games.RazorMaze
 
         private void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args) => View.MazeTrapsReactItemsGroup.OnMazeTrapReactStageChanged(_Args);
         private void OnMazeTrapIncreasingStageChanged(MazeItemTrapIncreasingEventArgs _Args) => View.MazeTrapsIncreasingItemsGroup.OnMazeTrapIncreasingStageChanged(_Args);
-        private void TurretsProceederOnTurretShoot(TurretShotEventArgs _Args) => View.MazeTurretsGroup.OnTurretShoot(_Args);
-        private void PortalsProceederOnPortalEvent(PortalEventArgs _Args) => View.PortalsGroup.OnPortalEvent(_Args);
+        private void OnTurretShoot(TurretShotEventArgs _Args) => View.MazeTurretsGroup.OnTurretShoot(_Args);
+        private void OnPortalEvent(PortalEventArgs _Args) => View.PortalsGroup.OnPortalEvent(_Args);
+        private void OnShredingerBlockEvent(ShredingerBlockArgs _Args) => View.ShredingerBlocksGroup.OnShredingerBlockEvent(_Args);
         
         public void SetMazeInfo(MazeInfo _Info) => Model.Data.Info = _Info;
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Games.RazorMaze.Models.ProceedInfos;
 
 namespace Games.RazorMaze.Models.ItemProceeders
 {
@@ -16,10 +15,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
     public delegate void PortalEventHandler(PortalEventArgs _Args);
 
-    public interface IPortalsProceeder : IOnMazeChanged
+    public interface IPortalsProceeder : IOnMazeChanged, ICharacterMoveContinued
     {
         event PortalEventHandler PortalEvent;
-        void OnCharacterMoveContinued(CharacterMovingEventArgs _Args);
     }
     
     
@@ -28,14 +26,14 @@ namespace Games.RazorMaze.Models.ItemProceeders
         #region nonpublic members
 
         private PortalEventArgs m_LastArgs;
+        protected override EMazeItemType[] Types => new[] {EMazeItemType.Portal};
         
         #endregion
 
         #region inject
-
-        protected override EMazeItemType[] Types => new[] {EMazeItemType.Portal};
-
-        public PortalsProceeder(IModelMazeData _Data) : base(_Data) { }
+        
+        public PortalsProceeder(ModelSettings _Settings, IModelMazeData _Data) 
+            : base(_Settings, _Data) { }
         
         #endregion
         
@@ -45,23 +43,25 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
-            var infos = Data.ProceedInfos.Values
-                .Where(_Info => Types.Contains(_Info.Item.Type));
-            MazeItem portalItem = (from info in infos where 
-                    info.Item.Position == _Args.Current select info.Item)
-                .FirstOrDefault();
-
-            if (portalItem == null)
+            foreach (var type in Types)
             {
-                m_LastArgs = null;
-                return;
+                var infos = GetProceedInfos(type);
+                MazeItem portalItem = (from info in infos.Values where 
+                        info.Item.Position == _Args.Current select info.Item)
+                    .FirstOrDefault();
+
+                if (portalItem == null)
+                {
+                    m_LastArgs = null;
+                    return;
+                }
+
+                if (m_LastArgs != null)
+                    return;
+
+                m_LastArgs = new PortalEventArgs(portalItem);
+                PortalEvent?.Invoke(m_LastArgs);
             }
-
-            if (m_LastArgs != null)
-                return;
-
-            m_LastArgs = new PortalEventArgs(portalItem);
-            PortalEvent?.Invoke(m_LastArgs);
         }
 
         public void OnMazeChanged(MazeInfo _Info)

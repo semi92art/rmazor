@@ -101,17 +101,17 @@ namespace Games.RazorMaze
                     switch (item.Type)
                     {
                         case EMazeItemType.TrapReact:
-                        case EMazeItemType.BlockTransformingToNode:
                         case EMazeItemType.Turret:
                         case EMazeItemType.TrapIncreasing:
                         case EMazeItemType.Block: 
                         case EMazeItemType.Portal:
+                        case EMazeItemType.ShredingerBlock:
                             // do nothing
                             break;
                         case EMazeItemType.TrapMoving:
                         case EMazeItemType.TurretRotating:
-                        case EMazeItemType.BlockMovingGravity:
-                        case EMazeItemType.TrapMovingGravity:
+                        case EMazeItemType.GravityBlock:
+                        case EMazeItemType.GravityTrap:
                             path.Add(item.Position);
                             break;
                         default: throw new SwitchCaseNotImplementedException(item.Type);

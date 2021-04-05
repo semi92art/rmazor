@@ -102,8 +102,8 @@ namespace Games.RazorMaze.Prot.Editor
             switch (_Props.Type)
             {
                 case EMazeItemType.TrapMoving:
-                case EMazeItemType.BlockMovingGravity:
-                case EMazeItemType.TrapMovingGravity:
+                case EMazeItemType.GravityBlock:
+                case EMazeItemType.GravityTrap:
                     DrawControlsMovingBlock(_Props);
                     break;
                 case EMazeItemType.Turret:
@@ -112,7 +112,7 @@ namespace Games.RazorMaze.Prot.Editor
                     break;
                 case EMazeItemType.Portal:
                 case EMazeItemType.Block:
-                case EMazeItemType.BlockTransformingToNode:
+                case EMazeItemType.ShredingerBlock:
                 case EMazeItemType.TrapIncreasing:
                 case EMazeItemType.TurretRotating:
                     // do nothing

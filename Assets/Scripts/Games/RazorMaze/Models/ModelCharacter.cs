@@ -50,10 +50,10 @@ namespace Games.RazorMaze.Models
         
         #region inject
 
-        private RazorMazeModelSettings Settings { get; }
+        private ModelSettings Settings { get; }
         private IModelMazeData Data { get; }
 
-        public ModelCharacter(RazorMazeModelSettings _Settings, IModelMazeData _Data)
+        public ModelCharacter(ModelSettings _Settings, IModelMazeData _Data)
         {
             Settings = _Settings;
             Data = _Data;
@@ -118,12 +118,14 @@ namespace Games.RazorMaze.Models
                 && (_O.Type == EMazeItemType.Block
                     || _O.Type == EMazeItemType.TrapIncreasing
                     || _O.Type == EMazeItemType.Turret));
-            bool isBuzyMazeItem = Data.ProceedInfos.Values
-                .Where(_Proceed => _Proceed.Item.Type == EMazeItemType.BlockMovingGravity)
-                .Any(_Proceed => (_Proceed as MazeItemMovingProceedInfo).BusyPositions.Contains(_Position));
+            bool isBuzyMazeItem = Data.ProceedInfos[EMazeItemType.GravityBlock]
+                .Where(_Inf => _Inf.Value.Item.Type == EMazeItemType.GravityBlock)
+                .Any(_Inf => (_Inf.Value as MazeItemMovingProceedInfo).BusyPositions.Contains(_Position));
             bool isPortal = _Info.MazeItems
                 .Any(_O => _O.Position == _Position && _O.Type == EMazeItemType.Portal);
-            return (isNode && !isMazeItem && !isBuzyMazeItem) || isPortal;
+            bool isShredingerAndPass = Data.ProceedInfos[EMazeItemType.ShredingerBlock].Values
+                .Any(_Inf => _Inf.Item.Position == _Position && _Inf.ProceedingStage == 0);
+            return (isNode && !isMazeItem && !isBuzyMazeItem) || isPortal || isShredingerAndPass;
         }
         
         private IEnumerator MoveCharacterCore(V2Int _From, V2Int _To)

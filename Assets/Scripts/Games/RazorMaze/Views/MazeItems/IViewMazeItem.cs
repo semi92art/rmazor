@@ -6,6 +6,7 @@ namespace Games.RazorMaze.Views.MazeItems
 {
     public interface IViewMazeItem
     {
+        bool Active { get; set; }
         ViewMazeItemProps Props { get; set; }
         void Init(ViewMazeItemProps _Props, V2Int _MazeSize);
         void SetLocalPosition(Vector2 _Position);

@@ -8,14 +8,14 @@ namespace Games.RazorMaze.Models
     {
         // blocks
         Block,
-        BlockMovingGravity,
-        BlockTransformingToNode,
+        GravityBlock,
+        ShredingerBlock,
         Portal,
         // traps
         TrapReact,
         TrapIncreasing,
         TrapMoving,
-        TrapMovingGravity,
+        GravityTrap,
         // turrets
         Turret,
         TurretRotating

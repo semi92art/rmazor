@@ -24,10 +24,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
     
     public delegate void MazeItemTrapIncreasingEventHandler(MazeItemTrapIncreasingEventArgs Args);
     
-    public interface ITrapsIncreasingProceeder : IOnMazeChanged
+    public interface ITrapsIncreasingProceeder : IOnMazeChanged, ICharacterMoveContinued
     {
         event MazeItemTrapIncreasingEventHandler TrapIncreasingStageChanged;
-        void OnCharacterMoveContinued(CharacterMovingEventArgs _Args);
     }
     
     public class TrapsIncreasingProceeder : ItemsProceederBase, IUpdateTick, ITrapsIncreasingProceeder
@@ -42,20 +41,14 @@ namespace Games.RazorMaze.Models.ItemProceeders
         #region nonpublic members
         
         private V2Int m_CharacterPosCheck;
+        protected override EMazeItemType[] Types => new[] {EMazeItemType.TrapIncreasing};
 
         #endregion
         
         #region inject
-
-        protected override EMazeItemType[] Types => new[] {EMazeItemType.TrapIncreasing};
-        private RazorMazeModelSettings Settings { get; }
-
-        public TrapsIncreasingProceeder(
-            IModelMazeData _Data,
-            RazorMazeModelSettings _Settings) : base(_Data)
-        {
-            Settings = _Settings;
-        }
+        
+        public TrapsIncreasingProceeder(ModelSettings _Settings, IModelMazeData _Data) 
+            : base(_Settings, _Data) { }
 
         #endregion
         
@@ -65,7 +58,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         public void OnMazeChanged(MazeInfo _Info)
         {
-            CollectProceeds();
+            CollectItems(_Info);
         }
         
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
@@ -81,7 +74,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             ProceedTraps();
         }
         
-        public void UpdateTick()
+        void IUpdateTick.UpdateTick()
         {
             ProceedTraps();
         }
@@ -89,34 +82,17 @@ namespace Games.RazorMaze.Models.ItemProceeders
         #endregion
         
         #region nonpublic methods
-        
-        private void CollectProceeds()
-        {
-            var proceeds = Data.Info.MazeItems
-                .Where(_Item => _Item.Type == EMazeItemType.TrapIncreasing)
-                .Select(_Item => new MazeItemTrapReactProceedInfo
-                {
-                    IsProceeding = false,
-                    ProceedingStage = 0,
-                    Item = _Item,
-                    PauseTimer = 0
-                });
-            foreach (var proceed in proceeds)
-            {
-                if (Data.ProceedInfos.ContainsKey(proceed.Item))
-                    Data.ProceedInfos[proceed.Item] = proceed;
-                else
-                    Data.ProceedInfos.Add(proceed.Item, proceed);
-            }
-        }
-        
+
         private void ProceedTraps()
         {
-            foreach (var proceed in Data.ProceedInfos.Values.Where(_P => 
-                _P.Item.Type == EMazeItemType.TrapIncreasing && !_P.IsProceeding))
+            foreach (var type in Types)
             {
-                proceed.IsProceeding = true;
-                Coroutines.Run(ProceedTrap(proceed));
+                var infos = GetProceedInfos(type);
+                foreach (var info in infos.Values.Where(_Info => !_Info.IsProceeding))
+                {
+                    info.IsProceeding = true;
+                    Coroutines.Run(ProceedTrap(info));
+                }
             }
         }
         

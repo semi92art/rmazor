@@ -27,18 +27,17 @@ namespace Games.RazorMaze.Models.ItemProceeders
     
     public class TurretsProceeder : ItemsProceederBase, IUpdateTick, ITurretsProceeder
     {
-        #region inject
+        #region nonpubic members
         
-        private RazorMazeModelSettings Settings { get; }
         protected override EMazeItemType[] Types => 
             new[] {EMazeItemType.Turret, EMazeItemType.TurretRotating};
-
-        public TurretsProceeder(
-            RazorMazeModelSettings _Settings,
-            IModelMazeData _Data) : base(_Data)
-        {
-            Settings = _Settings;
-        }
+        
+        #endregion
+        
+        #region inject
+        
+        public TurretsProceeder(ModelSettings _Settings, IModelMazeData _Data) 
+            : base(_Settings, _Data) { }
         
         #endregion
         
@@ -64,16 +63,19 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         private void ProceedTurrets()
         {
-            foreach (var proceed in Data.ProceedInfos.Values
-                .Where(_P => !_P.IsProceeding && _P.Item.Type == EMazeItemType.Turret))
+            foreach (var type in Types)
             {
-                proceed.PauseTimer += Time.deltaTime;
-                if (proceed.PauseTimer < Settings.turretShootInterval)
-                    continue;
-                proceed.PauseTimer = 0;
-                proceed.IsProceeding = true;
-                ProceedTurret(proceed.Item);
-                proceed.IsProceeding = false;
+                var infos = GetProceedInfos(type);
+                foreach (var info in infos.Values.Where(_Info => !_Info.IsProceeding))
+                {
+                    info.PauseTimer += Time.deltaTime;
+                    if (info.PauseTimer < Settings.turretShootInterval)
+                        continue;
+                    info.PauseTimer = 0;
+                    info.IsProceeding = true;
+                    ProceedTurret(info.Item);
+                    info.IsProceeding = false;
+                }
             }
         }
 

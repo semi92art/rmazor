@@ -2,7 +2,8 @@
 
 namespace Games.RazorMaze
 {
-    public class RazorMazeModelSettings : MonoBehaviour
+    [CreateAssetMenu(fileName = "model_settings", menuName = "Model Settings", order = 1)]
+    public class ModelSettings : ScriptableObject
     {
         public float characterSpeed;
         public float mazeRotateSpeed;
@@ -19,5 +20,7 @@ namespace Games.RazorMaze
         
         public float turretShootInterval;
         public float turretProjectileSpeed;
+
+        public float shredingerBlockProceedTime;
     }
 }

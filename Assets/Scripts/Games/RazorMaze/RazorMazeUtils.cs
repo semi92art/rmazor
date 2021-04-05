@@ -25,8 +25,8 @@ namespace Games.RazorMaze
                 || _Item.Type == EMazeItemType.TrapReact
                 || _Item.Type == EMazeItemType.TrapIncreasing
                 || _Item.Type == EMazeItemType.TurretRotating
-                || _Item.Type == EMazeItemType.BlockMovingGravity
-                || _Item.Type == EMazeItemType.BlockTransformingToNode);
+                || _Item.Type == EMazeItemType.GravityBlock
+                || _Item.Type == EMazeItemType.ShredingerBlock);
         }
         
         public static V2Int GetDropDirection(MazeOrientation _Orientation)

@@ -9,15 +9,16 @@ namespace Games.RazorMaze.Views.Views
 {
     public interface IViewGame : IInit
     {
-        IViewUI UI { get; }
-        IInputConfigurator InputConfigurator { get; }
-        IViewCharacter Character { get; }
-        IViewMazeCommon MazeCommon { get; }
-        IViewMazeRotation MazeRotation { get; }
-        IViewMazeMovingItemsGroup MazeMovingItemsGroup { get; }
-        IViewMazeTrapsReactItemsGroup MazeTrapsReactItemsGroup { get; }
+        IViewUI                            UI { get; }
+        IInputConfigurator                 InputConfigurator { get; }
+        IViewCharacter                     Character { get; }
+        IViewMazeCommon                    MazeCommon { get; }
+        IViewMazeRotation                  MazeRotation { get; }
+        IViewMazeMovingItemsGroup          MazeMovingItemsGroup { get; }
+        IViewMazeTrapsReactItemsGroup      MazeTrapsReactItemsGroup { get; }
         IViewMazeTrapsIncreasingItemsGroup MazeTrapsIncreasingItemsGroup { get; }
-        IViewMazeTurretsGroup MazeTurretsGroup { get; }
-        IViewMazePortalsGroup PortalsGroup { get; }
+        IViewMazeTurretsGroup              MazeTurretsGroup { get; }
+        IViewMazePortalsGroup              PortalsGroup { get; }
+        IViewMazeShredingerBlocksGroup     ShredingerBlocksGroup { get; }
     }
 }

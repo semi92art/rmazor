@@ -19,6 +19,7 @@ namespace Games.RazorMaze.Views.Views
         public IViewMazeTrapsIncreasingItemsGroup MazeTrapsIncreasingItemsGroup { get; }
         public IViewMazeTurretsGroup MazeTurretsGroup { get; }
         public IViewMazePortalsGroup PortalsGroup { get; }
+        public IViewMazeShredingerBlocksGroup ShredingerBlocksGroup { get; }
 
         public ViewGame(
             IViewUI _UI,
@@ -30,7 +31,8 @@ namespace Games.RazorMaze.Views.Views
             IViewMazeTrapsReactItemsGroup _MazeTrapsReactItemsGroup,
             IViewMazeTrapsIncreasingItemsGroup _MazeTrapsIncreasingItemsGroup,
             IViewMazeTurretsGroup _MazeTurretsGroup,
-            IViewMazePortalsGroup _PortalsGroup)
+            IViewMazePortalsGroup _PortalsGroup,
+            IViewMazeShredingerBlocksGroup _ShredingerBlocksGroup)
         {
             UI = _UI;
             InputConfigurator = _InputConfigurator;
@@ -42,6 +44,7 @@ namespace Games.RazorMaze.Views.Views
             MazeTrapsIncreasingItemsGroup = _MazeTrapsIncreasingItemsGroup;
             MazeTurretsGroup = _MazeTurretsGroup;
             PortalsGroup = _PortalsGroup;
+            ShredingerBlocksGroup = _ShredingerBlocksGroup;
         }
 
         public void Init()

@@ -50,11 +50,7 @@ namespace Games.RazorMaze.Views.Characters
             SetPosition(pos);
         }
 
-        public void OnStartChangePosition(CharacterMovingEventArgs _Args)
-        {
-            // m_PrevPos = CoordinateConverter.ToLocalCharacterPosition(_Args.From);
-            // m_NextPos = CoordinateConverter.ToLocalCharacterPosition(_Args.To);
-        }
+        public void OnStartChangePosition(CharacterMovingEventArgs _Args) { }
 
         public void OnMoving(CharacterMovingEventArgs _Args)
         {
@@ -69,15 +65,9 @@ namespace Games.RazorMaze.Views.Characters
                 (item as ViewMazeItemProt).shape.Color = new Color(1f, 0.93f, 0.51f);
         }
 
-        public void OnDeath()
-        {
-            
-        }
+        public void OnDeath() { }
 
-        public void OnHealthChanged(HealthPointsEventArgs _Args)
-        {
-            
-        }
+        public void OnHealthChanged(HealthPointsEventArgs _Args) { }
 
         #endregion
         
