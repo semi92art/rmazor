@@ -25,6 +25,7 @@ namespace Shapes {
 		const int MANY_POINTS = 20;
 		[SerializeField] bool hasManyPoints;
 		[SerializeField] bool showPointList = true;
+		bool showZ;
 
 		public override void OnEnable() {
 			base.OnEnable();
@@ -44,6 +45,8 @@ namespace Shapes {
 
 		public override void OnInspectorGUI() {
 			base.BeginProperties();
+			if( Event.current.type == EventType.Layout )
+				showZ = targets.Any( x => ( (Polyline)x ).Geometry != PolylineGeometry.Flat2D );
 			EditorGUILayout.PropertyField( propGeometry );
 			EditorGUI.BeginChangeCheck();
 			EditorGUILayout.PropertyField( propJoins );
@@ -96,8 +99,9 @@ namespace Shapes {
 			SerializedProperty pPoint = prop.FindPropertyRelative( nameof(PolylinePoint.point) );
 			SerializedProperty pThickness = prop.FindPropertyRelative( nameof(PolylinePoint.thickness) );
 			SerializedProperty pColor = prop.FindPropertyRelative( nameof(PolylinePoint.color) );
+
 			using( var chChk = new EditorGUI.ChangeCheckScope() ) {
-				ShapesUI.PosThicknessColorField( r, pPoint, pThickness, pColor );
+				ShapesUI.PosThicknessColorField( r, pPoint, pThickness, pColor, colorEnabled: true, showZ );
 				if( chChk.changed )
 					pThickness.floatValue = Mathf.Max( 0.001f, pThickness.floatValue ); // Make sure it's never 0 or under
 			}

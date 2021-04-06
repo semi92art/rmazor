@@ -45,7 +45,6 @@ namespace Shapes {
 			return sum;
 		}
 
-
 		public static Vector2 Rotate( Vector2 v, float angRad ) {
 			float ca = Mathf.Cos( angRad );
 			float sa = Mathf.Sin( angRad );
@@ -69,6 +68,30 @@ namespace Shapes {
 		public static Vector2 Remap( Rect iRect, Rect oRect, Vector2 iPos ) => Remap( iRect.min, iRect.max, oRect.min, oRect.max, iPos );
 
 		public static Vector3 Abs( Vector3 v ) => new Vector3( Mathf.Abs( v.x ), Mathf.Abs( v.y ), Mathf.Abs( v.z ) );
+		
+		// source: https://answers.unity.com/questions/421968/normal-distribution-random.html
+		public static float RandomGaussian( float min = 0.0f, float max = 1.0f ) {
+			float u;
+			float s;
+			do {
+				u = 2f * Random.value - 1f;
+				float v = 2f * Random.value - 1f;
+				s = u * u + v * v;
+			} while( s >= 1f );
+
+			float std = u * Mathf.Sqrt( -2.0f * Mathf.Log( s ) / s );
+			float mean = ( min + max ) / 2.0f;
+			float sigma = ( max - mean ) / 3.0f;
+			return Mathf.Clamp( std * sigma + mean, min, max );
+		}
+		
+		public static Vector3 GetRandomPerpendicularVector( Vector3 a ) {
+			Vector3 b;
+			do b = Random.onUnitSphere;
+			while( Mathf.Abs( Vector3.Dot( a, b ) ) > 0.98f );
+
+			return b;
+		}
 
 		// arc utils
 		public static IEnumerable<Vector3> GetArcPoints( Vector3 normA, Vector3 normB, Vector3 center, float radius, int count ) {

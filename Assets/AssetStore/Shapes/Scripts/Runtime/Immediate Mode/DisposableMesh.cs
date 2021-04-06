@@ -7,21 +7,38 @@ namespace Shapes {
 
 	public class DisposableMesh : IDisposable {
 
-		// mesh states
+		static int activeMeshCount;
+		public static int ActiveMeshCount => activeMeshCount;
+
 		protected Mesh mesh;
 		protected bool meshDirty = false;
-		protected bool hasSetFirstPoint;
 		bool hasMesh = false; // used to detect if mesh needs to update on the fly on draw
 
-		protected void OnSetFirstDataPoint() {
-			hasSetFirstPoint = true;
-			mesh = new Mesh() { hideFlags = HideFlags.DontSave };
-			hasMesh = true;
+		internal DrawCommand lastCommandUsedIn = null;
+
+		protected void EnsureMeshExists() {
+			if( hasMesh == false || mesh == null ) {
+				mesh = new Mesh { hideFlags = HideFlags.DontSave };
+				activeMeshCount++;
+				hasMesh = true;
+			}
 		}
 
 		public void Dispose() {
-			if( hasSetFirstPoint )
-				mesh.DestroyBranched();
+			if( hasMesh ) {
+				if( lastCommandUsedIn != null && lastCommandUsedIn.hasRendered == false )
+					lastCommandUsedIn.cachedAssets.Add( mesh ); // we need to keep the mesh around in the draw command, so, don't destroy it just yet
+				else
+					mesh.DestroyBranched();
+
+				activeMeshCount--;
+				hasMesh = false;
+			}
+		}
+
+		protected void ClearMesh() {
+			if( hasMesh )
+				mesh.Clear();
 		}
 
 		protected virtual bool ExternallyDirty() => false;
@@ -34,7 +51,10 @@ namespace Shapes {
 				return false;
 			}
 
-			updateMesh();
+			if( meshDirty ) {
+				updateMesh();
+				meshDirty = false;
+			}
 			outMesh = mesh;
 			return hasMesh;
 		}

@@ -26,7 +26,6 @@ UNITY_INSTANCING_BUFFER_END(Props)
 
 struct VertexInput {
 	float4 vertex : POSITION;
-	float2 uv0 : TEXCOORD0;
 	UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 struct VertexOutput {
@@ -64,27 +63,29 @@ VertexOutput vert(VertexInput v) {
 	half3 normal;
 	half3 forward;
 	GetDirMag(b - a, /*out*/ forward, /*out*/ lineLength);
+	float side = saturate( v.vertex.z );
+	float3 vertOrigin = side > 0.5 ? b : a;
+	half3 camForward = -DirectionToNearPlanePos(vertOrigin);
+	half3 camLineNormal;
 
     if( lineLength < 0.0001 ){ // degenerate case (start == end)
-        right   = half3(1,0,0);
-        normal  = half3(0,1,0);
-        forward = half3(0,0,1);
+        right   = CAM_RIGHT;
+        normal  = CAM_UP;
+        forward = CAM_FORWARD;
+    	camLineNormal = normal;
     } else {
         bool prettyVertical = abs(forward.y) >= 0.99;
         half3 upRef = prettyVertical ? half3(1,0,0) : half3(0,1,0);
         normal = normalize(cross(upRef,forward));
         right = cross( normal, forward );
+    	camLineNormal = normalize(cross(camForward, forward));
     }
 
-	float side = saturate( v.uv0.y );
-	float3 vertOrigin = side > 0.5 ? b : a;
-	half3 camForward = DirectionToNearPlanePos(vertOrigin);
-	half3 camLineNormal = normalize(cross(camForward, forward));
     LineWidthData widthData = GetScreenSpaceWidthDataSimple( vertOrigin, camLineNormal, thickness, thicknessSpace );
     o.IP_pxCoverage = widthData.thicknessPixelsTarget;
     float radius = widthData.thicknessMeters * 0.5;
 	
-	half3 localOffset = v.vertex - half3( 0, 0, saturate( v.uv0.y ) ); //  if uv >= 1 then subtract height (z) by 1 to make it a spherical offset
+	half3 localOffset = v.vertex - half3( 0, 0, saturate( v.vertex.z ) ); //  if z >= 1 then subtract height (z) by 1 to make it a spherical offset
 	localOffset *= radius;
 	half3 vertPos = vertOrigin + localOffset.x * right + localOffset.y * normal;
 	

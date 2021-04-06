@@ -20,6 +20,12 @@ Material:
     serializedVersion: 3
     m_TexEnvs: []
     m_Floats:
+    - _StencilComp: 8
+    - _StencilID: 0
+    - _StencilOp: 0
+    - _StencilOpPass: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
     - _ZOffsetFactor: 0
     - _ZOffsetUnits: 0
     - _ZTest: 4

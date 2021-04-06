@@ -110,7 +110,7 @@ namespace Shapes {
 			if( canSetStyle ) {
 				using( new EditorGUILayout.HorizontalScope() ) {
 					EditorGUILayout.PrefixLabel( "Style" );
-					ShapesUI.DrawTypeSwitchButtons( propType, ShapesAssets.LineDashButtonContents );
+					ShapesUI.DrawTypeSwitchButtons( propType, UIAssets.LineDashButtonContents );
 				}
 
 				bool canEditStyle = propShapeModifier.hasMultipleDifferentValues || ( (DashType)propType.enumValueIndex ).HasModifier();
@@ -120,9 +120,9 @@ namespace Shapes {
 				using( new EditorGUI.DisabledScope( true ) ) {
 					using( new EditorGUILayout.HorizontalScope() ) {
 						EditorGUILayout.PrefixLabel( new GUIContent( "Style", "3D lines support basic dashes only" ) );
-						GUILayout.Toggle( true, ShapesAssets.LineDashButtonContents[0], ShapesUI.GetMiniButtonStyle( 0, 3 ), GUILayout.MinHeight( 20 ) );
-						GUILayout.Toggle( false, ShapesAssets.LineDashButtonContents[1], ShapesUI.GetMiniButtonStyle( 1, 3 ), GUILayout.MinHeight( 20 ) );
-						GUILayout.Toggle( false, ShapesAssets.LineDashButtonContents[2], ShapesUI.GetMiniButtonStyle( 2, 3 ), GUILayout.MinHeight( 20 ) );
+						GUILayout.Toggle( true, UIAssets.LineDashButtonContents[0], ShapesUI.GetMiniButtonStyle( 0, 3 ), GUILayout.MinHeight( 20 ) );
+						GUILayout.Toggle( false, UIAssets.LineDashButtonContents[1], ShapesUI.GetMiniButtonStyle( 1, 3 ), GUILayout.MinHeight( 20 ) );
+						GUILayout.Toggle( false, UIAssets.LineDashButtonContents[2], ShapesUI.GetMiniButtonStyle( 2, 3 ), GUILayout.MinHeight( 20 ) );
 					}
 				}
 			}

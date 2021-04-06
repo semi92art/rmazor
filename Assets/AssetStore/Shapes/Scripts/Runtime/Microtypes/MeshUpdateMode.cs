@@ -3,7 +3,7 @@
 
 namespace Shapes {
 
-	public enum MeshUpdateMode {
+	internal enum MeshUpdateMode {
 		UseAsset,
 		UseAssetCopy,
 		SelfGenerated

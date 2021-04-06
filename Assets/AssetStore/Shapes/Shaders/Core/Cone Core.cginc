@@ -32,13 +32,11 @@ VertexOutput vert(VertexInput v) {
     float radiusTarget = UNITY_ACCESS_INSTANCED_PROP(Props, _Radius);
     float lengthTarget = UNITY_ACCESS_INSTANCED_PROP(Props, _Length);
     int sizeSpace = UNITY_ACCESS_INSTANCED_PROP(Props, _SizeSpace);
-    float3 center = LocalToWorldPos( float3( 0, 0, 0 ) );
-    float3 camRight = CameraToWorldVec( float3( 1, 0, 0 ) );
-     
-	LineWidthData widthDataLength = GetScreenSpaceWidthDataSimple( center, camRight, lengthTarget, sizeSpace );
+    
+	LineWidthData widthDataLength = GetScreenSpaceWidthDataSimple( OBJ_ORIGIN, CAM_RIGHT, lengthTarget, sizeSpace );
 	float length = widthDataLength.thicknessMeters;
 	
-	LineWidthData widthDataRadius = GetScreenSpaceWidthDataSimple( center, camRight, radiusTarget*2, sizeSpace );
+	LineWidthData widthDataRadius = GetScreenSpaceWidthDataSimple( OBJ_ORIGIN, CAM_RIGHT, radiusTarget*2, sizeSpace );
 	float radius = widthDataRadius.thicknessMeters / 2;
 	
 	o.pxCoverage = min( widthDataLength.thicknessPixelsTarget, widthDataRadius.thicknessPixelsTarget );

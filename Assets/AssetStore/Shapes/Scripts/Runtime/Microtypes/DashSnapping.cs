@@ -3,6 +3,7 @@
 
 namespace Shapes {
 
+	/// <summary>Snap modes for dashed shapes</summary>
 	public enum DashSnapping {
 		/// <summary>No snapping</summary>
 		Off,

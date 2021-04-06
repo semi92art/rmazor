@@ -14,13 +14,22 @@ namespace Shapes {
 	[CanEditMultipleObjects]
 	public class ShapeRendererEditor : Editor {
 
+		static bool showDepth = false;
+		static bool showStencil = false;
+
 		// ShapeRenderer
 		protected SerializedProperty propColor;
 		SerializedProperty propZTest = null;
 		SerializedProperty propZOffsetFactor = null;
 		SerializedProperty propZOffsetUnits = null;
+		SerializedProperty propStencilComp = null;
+		SerializedProperty propStencilOpPass = null;
+		SerializedProperty propStencilRefID = null;
+		SerializedProperty propStencilReadMask = null;
+		SerializedProperty propStencilWriteMask = null;
 		SerializedProperty propBlendMode = null;
 		SerializedProperty propScaleMode = null;
+		SerializedProperty propDetailLevel = null;
 
 		// MeshRenderer
 		SerializedObject soRnd;
@@ -68,6 +77,12 @@ namespace Shapes {
 			"I've never found much use of this one, seems like a bad version of Z offset factor? It's mostly here for completeness I guess"
 		);
 
+		static GUIContent stencilCompGuiContent = new GUIContent( "Compare", "Stencil compare function" );
+		static GUIContent stencilOpPassGuiContent = new GUIContent( "Pass", "Stencil Op Pass" );
+		static GUIContent stencilIDGuiContent = new GUIContent( "Ref", "Stencil reference ID" );
+		static GUIContent stencilReadMaskGuiContent = new GUIContent( "Read Mask", "Bitmask for reading stencil values" );
+		static GUIContent stencilWriteMaskGuiContent = new GUIContent( "Write Mask", "Bitmask for writing stencil values" );
+
 		public virtual void OnEnable() {
 			soRnd = new SerializedObject( targets.Select( t => ( (Component)t ).GetComponent<MeshRenderer>() as Object ).ToArray() );
 			propSortingOrder = soRnd.FindProperty( "m_SortingOrder" );
@@ -98,61 +113,109 @@ namespace Shapes {
 			}
 		}
 
-		protected void BeginProperties( bool showColor = true ) {
+		bool updateMeshFromEditorChange = false;
+
+		protected void BeginProperties( bool showColor = true, bool canEditDetailLevel = true ) {
 			soRnd.Update();
 
+			using( new ShapesUI.GroupScope() ) {
+				updateMeshFromEditorChange = false;
 
-			ShapesUI.BeginGroup();
-			using( ShapesUI.Horizontal ) {
-				using( ShapesUI.TempFieldWidth( 180f ) )
-					ShapesUI.RenderSortingLayerField( propSortingLayer );
-				using( ShapesUI.TempLabelWidth( 40f ) )
-					EditorGUILayout.PropertyField( propSortingOrder, new GUIContent( "Order" ) );
-			}
+				ShapesUI.SortedEnumPopup<ShapesBlendMode>( blendModeGuiContent, propBlendMode );
+				if( ( target as ShapeRenderer ).HasScaleModes )
+					EditorGUILayout.PropertyField( propScaleMode, scaleModeGuiContent );
 
-			EditorGUILayout.PropertyField( propZTest, zTestGuiContent );
-			EditorGUILayout.PropertyField( propZOffsetFactor, zOffsetFactorGuiContent );
-			EditorGUILayout.PropertyField( propZOffsetUnits, zOffsetUnitsGuiContent );
+				// sorting/depth stuff
+				using( new EditorGUI.IndentLevelScope( 1 ) ) {
+					if( showDepth = EditorGUILayout.Foldout( showDepth, "Sorting & Depth" ) ) {
+						using( ShapesUI.TempLabelWidth( 140 ) ) {
+							ShapesUI.RenderSortingLayerField( propSortingLayer );
+							EditorGUILayout.PropertyField( propSortingOrder );
+							EditorGUILayout.PropertyField( propZTest, zTestGuiContent );
+							EditorGUILayout.PropertyField( propZOffsetFactor, zOffsetFactorGuiContent );
+							EditorGUILayout.PropertyField( propZOffsetUnits, zOffsetUnitsGuiContent );
+						}
+					}
+				}
 
-			// todo: add little warning box about instancing
-			int uniqueCount = 0;
-			int instancedCount = 0;
-			foreach( ShapeRenderer obj in targets.Cast<ShapeRenderer>() ) {
-				if( obj.IsUsingUniqueMaterials )
-					uniqueCount++;
-				else
-					instancedCount++;
-			}
+				// stencil
+				using( new EditorGUI.IndentLevelScope( 1 ) ) {
+					if( showStencil = EditorGUILayout.Foldout( showStencil, "Stencil Buffer" ) ) {
+						EditorGUILayout.PropertyField( propStencilComp, stencilCompGuiContent );
+						EditorGUILayout.PropertyField( propStencilOpPass, stencilOpPassGuiContent );
+						EditorGUILayout.PropertyField( propStencilRefID, stencilIDGuiContent );
+						EditorGUILayout.PropertyField( propStencilReadMask, stencilReadMaskGuiContent );
+						EditorGUILayout.PropertyField( propStencilWriteMask, stencilWriteMaskGuiContent );
+					}
+				}
 
-			if( uniqueCount > 0 ) {
-				string label;
-				if( instancedCount == 0 ) {
-					if( uniqueCount == 1 ) // single non-instanced
-						label = "Note: this object is not GPU instanced due to custom depth settings";
-					else // multiple exclusively non-instanced
-						label = "Note: these objects are not GPU instanced due to custom depth settings";
-				} else // mixed selection
-					label = "Note: some of these objects are not GPU instanced due to custom depth settings";
+				// warning box about instancing
+				int uniqueCount = 0;
+				int instancedCount = 0;
+				foreach( ShapeRenderer obj in targets.Cast<ShapeRenderer>() ) {
+					if( obj.IsUsingUniqueMaterials )
+						uniqueCount++;
+					else
+						instancedCount++;
+				}
 
-				GUIStyle wrapLabel = new GUIStyle( EditorStyles.miniLabel );
-				wrapLabel.wordWrap = true;
-				using( ShapesUI.Horizontal ) {
-					GUIContent icon = EditorGUIUtility.IconContent( "console.warnicon.sml" );
-					GUILayout.Label( icon );
-					GUILayout.TextArea( label, wrapLabel );
+				if( uniqueCount > 0 ) {
+					string infix;
+					if( instancedCount == 0 )
+						infix = uniqueCount == 1 ? "this object is" : "these objects are";
+					else // mixed selection
+						infix = "some of these objects are";
+
+					string label = $"Note: {infix} not GPU instanced due to custom depth/stencil settings";
+
+					GUIStyle wrapLabel = new GUIStyle( EditorStyles.miniLabel );
+					wrapLabel.wordWrap = true;
+					using( ShapesUI.Horizontal ) {
+						GUIContent icon = EditorGUIUtility.IconContent( "console.warnicon.sml" );
+						GUILayout.Label( icon );
+						GUILayout.TextArea( label, wrapLabel );
+						if( GUILayout.Button( "Reset", EditorStyles.miniButton ) ) {
+							propZTest.enumValueIndex = (int)ShapeRenderer.DEFAULT_ZTEST;
+							propZOffsetFactor.floatValue = ShapeRenderer.DEFAULT_ZOFS_FACTOR;
+							propZOffsetUnits.intValue = ShapeRenderer.DEFAULT_ZOFS_UNITS;
+							propStencilComp.enumValueIndex = (int)ShapeRenderer.DEFAULT_STENCIL_COMP;
+							propStencilOpPass.enumValueIndex = (int)ShapeRenderer.DEFAULT_STENCIL_OP;
+							propStencilRefID.intValue = ShapeRenderer.DEFAULT_STENCIL_REF_ID;
+							propStencilReadMask.intValue = ShapeRenderer.DEFAULT_STENCIL_MASK;
+							propStencilWriteMask.intValue = ShapeRenderer.DEFAULT_STENCIL_MASK;
+						}
+					}
 				}
 			}
 
-			ShapesUI.EndGroup();
+			if( ( target as ShapeRenderer ).HasDetailLevels ) {
+				using( new EditorGUI.DisabledScope( canEditDetailLevel == false ) ) {
+					if( canEditDetailLevel ) {
+						using( var chChk = new EditorGUI.ChangeCheckScope() ) {
+							EditorGUILayout.PropertyField( propDetailLevel );
+							if( chChk.changed )
+								updateMeshFromEditorChange = true;
+						}
+					} else {
+						EditorGUILayout.TextField( propDetailLevel.displayName, "∞", GUI.skin.label );
+					}
+				}
+			}
 
-			EditorGUILayout.PropertyField( propBlendMode, blendModeGuiContent );
-			if( ( target as ShapeRenderer ).HasScaleModes )
-				EditorGUILayout.PropertyField( propScaleMode, scaleModeGuiContent );
 			if( showColor )
 				PropertyFieldColor();
 		}
 
-		protected bool EndProperties() => soRnd.ApplyModifiedProperties() | serializedObject.ApplyModifiedProperties();
+		protected bool EndProperties() {
+			bool propertiesDidChange = soRnd.ApplyModifiedProperties() | serializedObject.ApplyModifiedProperties();
+			if( updateMeshFromEditorChange ) {
+				foreach( ShapeRenderer shape in targets.Cast<ShapeRenderer>() )
+					shape.UpdateMesh();
+				updateMeshFromEditorChange = false;
+			}
+
+			return propertiesDidChange;
+		}
 
 		protected void PropertyFieldColor() => EditorGUILayout.PropertyField( propColor );
 		protected void PropertyFieldColor( string s ) => EditorGUILayout.PropertyField( propColor, new GUIContent( s ) );

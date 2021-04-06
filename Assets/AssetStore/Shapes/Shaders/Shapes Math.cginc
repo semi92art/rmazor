@@ -5,6 +5,12 @@
 #define TAU 6.28318530718
 #define VERY_SMOL 0.000001
 
+#define CAM_POS        _WorldSpaceCameraPos
+#define CAM_RIGHT      UNITY_MATRIX_I_V._m00_m10_m20
+#define CAM_UP         UNITY_MATRIX_I_V._m01_m11_m21
+#define CAM_FORWARD    UNITY_MATRIX_I_V._m02_m12_m22
+#define OBJ_ORIGIN     UNITY_MATRIX_M._m03_m13_m23
+ 
 #define THICKN_SPACE_METERS 0
 #define THICKN_SPACE_PIXELS 1
 #define THICKN_SPACE_NOOTS 2
@@ -32,19 +38,29 @@
 #define FILL_SPACE_WORLD 1
 
 // remap functions
-inline float InverseLerp( float a, float b, float v ) {
-	return (v - a) / (b - a);
-}
-inline float2 InverseLerp( float2 a, float2 b, float2 v ) {
-	return (v - a) / (b - a);
-}
-inline float3 InverseLerp( float3 a, float3 b, float v ) {
-	return (v - a) / (b - a);
-}
+inline float InverseLerp( float a, float b, float v ) {     return (v - a) / (b - a); }
+inline float2 InverseLerp( float2 a, float2 b, float2 v ) { return (v - a) / (b - a); }
+inline float3 InverseLerp( float3 a, float3 b, float v ) {  return (v - a) / (b - a); }
 float2 Remap( float2 iMin, float2 iMax, float2 oMin, float2 oMax, float2 v ) {
-	float2 t = InverseLerp( iMin, iMax, v );
-	return lerp( oMin, oMax, t );
+    float2 t = InverseLerp( iMin, iMax, v );
+    return lerp( oMin, oMax, t );
 }
+half Remap( half iMin, half iMax, half oMin, half oMax, half v ) {
+    half t = InverseLerp( iMin, iMax, v );
+    return lerp( oMin, oMax, t );
+}
+
+// iOS metal seem to convert half to float, so these overloads error out as redefinitions of the above functions
+#ifndef SHADER_API_METAL 
+inline half InverseLerp( half a, half b, half v ) {         return (v - a) / (b - a); }
+inline half2 InverseLerp( half2 a, half2 b, half2 v ) {     return (v - a) / (b - a); }
+half2 Remap( half2 iMin, half2 iMax, half2 oMin, half2 oMax, half2 v ) {
+    half2 t = InverseLerp( iMin, iMax, v );
+    return lerp( oMin, oMax, t );
+}
+#endif
+
+
 inline float Round( float a, float divs ){
 	return round(a*divs)/divs;
 }
@@ -85,6 +101,46 @@ void GetDirMag( in float2 v, out float2 dir, out float mag ){
 void GetDirMag( in float3 v, out float3 dir, out float mag ){
 	mag = length( v );
 	dir = v / mag; // Normalize
+}
+inline half2 ClampedVecReject( in half2 p, in half2 v ) {
+    return p - v*saturate( dot(p,v)/dot(v,v) );
+}
+void GetMiterOffset( out float3 dir, out float len, float3 aNormal, float3 bNormal, float radius ) {
+    float dotVal = dot(aNormal, bNormal);
+    if (dotVal < -0.99) {
+        dir = float3(0, 0, 0);
+        len = 0;
+    } else {
+        dir = normalize( aNormal + bNormal );
+        len = radius / max(0.0001,dot( dir, bNormal ));
+    }
+}
+void GetMiterOffsetFast( out half3 dir, out half len, half3 aNormal, half3 bNormal, half radius ) {
+    dir = normalize( aNormal + bNormal );
+    len = radius / max(0.0001,dot( dir, bNormal ));
+}
+struct MiterOffset2D {
+    half2 dir;
+    half len;
+};
+inline MiterOffset2D GetMiterOffsetFast( half2 aNormal, half2 bNormal, half radius ) {
+    MiterOffset2D m;
+    m.dir = normalize( aNormal + bNormal );
+    m.len = radius / max(0.0001,dot( m.dir, bNormal ));
+    return m;
+}
+inline half2 GetMiterOffsetDirFast( half2 aNormal, half2 bNormal, half radius ) {
+    MiterOffset2D m = GetMiterOffsetFast( aNormal, bNormal, radius );
+    return m.dir * m.len;
+}
+inline half4 WeightedSum( half3 w, half4 a, half4 b, half4 c ){
+    return a*w.x + b*w.y + c*w.z;
+}
+inline half3 WeightedSum( half3 w, half3 a, half3 b, half3 c ){
+    return a*w.x + b*w.y + c*w.z;
+}
+inline half2 WeightedSum( half3 w, half2 a, half2 b, half2 c ){
+    return a*w.x + b*w.y + c*w.z;
 }
 
 // color/value utils
@@ -156,17 +212,20 @@ inline float StepThresholdPD( float value, float pd ) {
 inline float StepThresholdPDAAOffset( float value, float pd, float aaOffset ) {
     return saturate( value / max( 0.00001, pd ) + aaOffset );
 }
-inline float StepAA( float value ) {
+inline float StepAAExplicitPD( float value, float pdValue ){
     #if LOCAL_ANTI_ALIASING_QUALITY == 0
-        return step(0,value);
+    return step(0,value);
     #else
-        return StepThresholdPD( value, PD( value ) );
-	#endif
+    return StepThresholdPD( value, PD( pdValue ) );
+    #endif
 }
-
+inline float StepAA( float value ) {
+    return StepAAExplicitPD( value, value );
+}
 inline float StepAA( float thresh, float value ){
 	return StepAA( value - thresh );
 }
+
 
 inline float SdfToMask( float value, float thresh ){
     float sdf = value - thresh;
@@ -193,8 +252,25 @@ inline float GetLineLocalAA( float coord, float pxCoverage, half pxOffset = 0 ){
 }
 #endif
 
-inline float2 GetDir( float angleRad ) {
-	return float2(cos(angleRad), sin(angleRad));
+struct Circle {
+    half2 pos;
+    half r;
+};
+
+Circle GetIncirclePosRadius( half2 a, half2 b, half2 c, half ab, half bc, half ca ) {
+    half sideSum = bc + ca + ab;
+    half s = sideSum * 0.5;
+    Circle circle;
+    circle.pos = ( bc * a + ca * b + ab * c ) / sideSum;
+    circle.r = sqrt( ( s - bc ) * ( s - ca ) * ( s - ab ) / s );
+    return circle;
+}
+
+Circle GetIncirclePosRadius( half2 a, half2 b, half2 c ) {
+    half ab = distance( a, b );
+    half bc = distance( b, c );
+    half ca = distance( c, a );
+    return GetIncirclePosRadius(a,b,c,ab,bc,ca);
 }
 
 // sdfs
@@ -203,18 +279,45 @@ inline float SdfBox( float2 coord, float2 size ) {
     return length(max(0,q)) + min(0,max(q.x,q.y));
 }
 
-
 // The MIT License (for the function below)
 // Copyright © 2018 Inigo Quilez
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // (modified to align with a vertex on the right, have constants as inputs and using some of my helper functions)
-float SdfNgon( half tauOverN, half apothem, half halfSideLength, half angOffset, half2 p ) {
+half SdfNgon( half tauOverN, half apothem, half halfSideLength, half angOffset, half2 p ) {
     half halfAng = tauOverN/2;
     half pAng = DirToAng(p)-halfAng-angOffset;
     half bn = tauOverN*floor( (pAng+halfAng)/tauOverN );
     half2 cs = AngToDir(bn+halfAng+angOffset);
     p = mul(p, half2x2(cs.x,-cs.y,cs.y,cs.x));
     return length(p-half2(apothem,clamp(p.y,-halfSideLength,halfSideLength)))*sign(p.x-apothem);
+}
+
+// The MIT License (for most of the function below)
+// Copyright © 2018 Inigo Quilez
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// This is modified to use my helper functions and made cheaper because we can assume correct handedness
+half SdfTriangle( half2 p, half2 p0, half2 p1, half2 p2 ) {
+    half2 e0 = p1 - p0;
+    half2 e1 = p2 - p1;
+    half2 e2 = p0 - p2;
+
+    half2 v0 = p - p0;
+    half2 v1 = p - p1;
+    half2 v2 = p - p2;
+
+    half2 pq0 = ClampedVecReject(v0, e0);
+    half2 pq1 = ClampedVecReject(v1, e1);
+    half2 pq2 = ClampedVecReject(v2, e2);
+    
+    half2 d = min( min( half2( dot( pq0, pq0 ), Determinant(v0,e0) ),
+                       half2( dot( pq1, pq1 ), Determinant(v1,e1) )),
+                       half2( dot( pq2, pq2 ), Determinant(v2,e2) ));
+
+    return -sqrt(d.x)*sign(d.y);
+}
+
+inline half SdfLine( half2 coord, half2 a, half2 b ) {
+    return Determinant( a-coord, b-a );
 }
 
 // smoothing and tweening
@@ -275,41 +378,37 @@ inline float3 LocalToWorldVec( in float3 localVec ){
     return mul( (float3x3)UNITY_MATRIX_M, localVec ); 
 }
 inline float3 CameraToWorldVec( float3 camVec ){
-    return mul( (float3x3)unity_CameraToWorld, camVec );
+    return mul( (float3x3)UNITY_MATRIX_I_V, camVec );
 }
 float2 WorldToScreenSpace( float3 worldPos ){
     float4 clipSpace = UnityObjectToClipPos( float4( worldPos, 1 ) );
     float2 normalizedScreenspace = clipSpace.xy / clipSpace.w;
     return 0.5*(normalizedScreenspace+1.0) * SCREEN_PARAMS.xy;
 }
-float2 WorldToScreenSpaceNormalized( float3 worldPos ){
-    float4 clipSpace = WorldToClipPos( worldPos );
-    return clipSpace.xy / clipSpace.w;
+float CalcPixelsPerMeter( float3 worldPos, float3 worldDir ){
+    float w = dot( UNITY_MATRIX_VP._m30_m31_m32_m33, float4(worldPos,1) );
+    float2 clipVec = float2(
+        dot( UNITY_MATRIX_VP._m00_m01_m02, worldDir )/w,
+        dot( UNITY_MATRIX_VP._m10_m11_m12, worldDir )/w
+    );
+    return length(clipVec * SCREEN_PARAMS.xy)/2;
 }
 
-float WorldToPixelDistance( float3 worldPosA, float3 worldPosB ){
-    float2 pxNrmA = WorldToScreenSpaceNormalized( worldPosA );
-	float2 pxNrmB = WorldToScreenSpaceNormalized( worldPosB );
-	float2 diff = (pxNrmA - pxNrmB) * SCREEN_PARAMS.xy;
-	return length( diff )*0.5;
-}
 inline float NootsToPixels( in float noots ){
-    return min( _ScreenParams.x, _ScreenParams.y ) * ( noots / NOOTS_ACROSS_SCREEN );
+    return min( SCREEN_PARAMS.x, SCREEN_PARAMS.y ) * ( noots / NOOTS_ACROSS_SCREEN );
 }
 inline float PixelsToNoots( in float pixels ){
-    return (NOOTS_ACROSS_SCREEN * pixels) / min( _ScreenParams.x, _ScreenParams.y );
-}
-inline float3 GetCameraForwardDirection(){
-    return CameraToWorldVec( float3(0,0,1) );
+    return (NOOTS_ACROSS_SCREEN * pixels) / min( SCREEN_PARAMS.x, SCREEN_PARAMS.y );
 }
 
 // camera stuff
 inline bool IsOrthographic(){
     return unity_OrthoParams.w == 1;
 }
+
 inline half3 DirectionToNearPlanePos( float3 pt ){
     if( IsOrthographic() ){
-        return -GetCameraForwardDirection();
+        return -CAM_FORWARD;
     } else {
         return normalize( _WorldSpaceCameraPos - pt );
     }
@@ -324,31 +423,44 @@ inline half3 GetObjectScale(){
         length( half3( m[0][2], m[1][2], m[2][2] ) )
     );
 }
+inline half2 GetObjectScaleXY(){
+    half3x3 m = (half3x3)UNITY_MATRIX_M;
+    return half2(
+        length( half3( m[0][0], m[1][0], m[2][0] ) ),
+        length( half3( m[0][1], m[1][1], m[2][1] ) )
+    );
+}
+inline half GetUniformScale( half3 s ){
+    return ( s.x + s.y + s.z ) / 3;
+}
 inline half GetUniformScale(){
-    half3 s = GetObjectScale();
-	return ( s.x + s.y + s.z ) / 3;
+    return GetUniformScale(GetObjectScale());
 }
 
 // line utils
 inline void ConvertToPixelThickness( float3 vertOrigin, float3 normal, float thickness, int thicknessSpace, out float pxPerMeter, out float pxWidth ){
 
     // calculate pixels per meter
-	pxPerMeter = WorldToPixelDistance( vertOrigin, vertOrigin + normal ); // 1 unit in world space
+	pxPerMeter = CalcPixelsPerMeter( vertOrigin, normal ); // 1 unit in world space
 	
 	// figure out target width in pixels
 	switch( thicknessSpace ){
-	    case THICKN_SPACE_METERS:
+	    case THICKN_SPACE_METERS: {
 	        pxWidth = thickness*pxPerMeter; // this specifically should not have the + extraWidth
 	        break;
-	    case THICKN_SPACE_PIXELS:
+	    }
+	    case THICKN_SPACE_PIXELS: {
 	        pxWidth = thickness;
 	        break;
-        case THICKN_SPACE_NOOTS:
+	    }
+        case THICKN_SPACE_NOOTS: {
             pxWidth = NootsToPixels( thickness );
             break;
-        default:
+        }
+        default: {
             pxWidth = 0;
             break;
+        }
     }
 }
 

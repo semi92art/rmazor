@@ -71,7 +71,7 @@ namespace Shapes {
 
 			using( new EditorGUILayout.HorizontalScope() ) {
 				EditorGUILayout.PrefixLabel( "Type" );
-				ShapesUI.DrawTypeSwitchButtons( propType, ShapesAssets.DiscTypeButtonContents );
+				ShapesUI.DrawTypeSwitchButtons( propType, UIAssets.DiscTypeButtonContents );
 			}
 
 			DiscType selectedType = (DiscType)propType.enumValueIndex;
@@ -88,10 +88,9 @@ namespace Shapes {
 				discEditor.GUIEditButton();
 
 			bool hasDashablesInSelection = targets.Any( x => ( x as Disc ).HasThickness );
-			ShapesUI.BeginGroup();
-			using( new EditorGUI.DisabledScope( hasDashablesInSelection == false ) )
-				dashEditor.DrawProperties();
-			ShapesUI.EndGroup();
+			using( new ShapesUI.GroupScope() )
+				using( new EditorGUI.DisabledScope( hasDashablesInSelection == false ) )
+					dashEditor.DrawProperties();
 
 			base.EndProperties();
 		}

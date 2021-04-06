@@ -7,7 +7,7 @@ using UnityEngine.Rendering;
 // Website & Documentation - https://acegikmo.com/shapes/
 namespace Shapes {
 
-	public class ShapesMaterials {
+	internal class ShapesMaterials {
 
 		const bool USE_INSTANCING = true;
 		public const string SHAPES_SHADER_PATH_PREFIX = "Shapes/";

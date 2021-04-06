@@ -7,71 +7,35 @@ using UnityEngine;
 // Website & Documentation - https://acegikmo.com/shapes/
 namespace Shapes {
 
-	public static class ShapesMeshUtils {
+	internal static class ShapesMeshUtils {
 
-		static Vector3[] quadVerts = new[] { new Vector3( -1, -1 ), new Vector3( -1, 1 ), new Vector3( 1, 1 ), new Vector3( 1, -1 ) };
-		static Vector3[] quadNormals = new[] { new Vector3( 0, 0, -1 ), new Vector3( 0, 0, -1 ), new Vector3( 0, 0, -1 ), new Vector3( 0, 0, -1 ) };
-		static Vector2[] quadUvs = new[] { new Vector2( -1, -1 ), new Vector2( -1, 1 ), new Vector2( 1, 1 ), new Vector2( 1, -1 ) };
-		static Color[] quadColors = new[] { new Color( 1, 0, 0, 0 ), new Color( 0, 1, 0, 0 ), new Color( 0, 0, 1, 0 ), new Color( 0, 0, 0, 1 ) };
-		static int[] quadTris = new[] { 0, 1, 2, 0, 2, 3 };
-		[DestroyOnAssemblyReload] static Mesh quadMesh;
-		public static Mesh QuadMesh {
-			get {
-				if( quadMesh == null ) {
-					quadMesh = new Mesh {
-						hideFlags = HideFlags.HideAndDontSave,
-						name = "Quad"
-					};
-					quadMesh.vertices = quadVerts;
-					quadMesh.uv = quadUvs;
-					quadMesh.triangles = quadTris;
-					quadMesh.colors = quadColors;
-					quadMesh.normals = quadNormals;
-					quadMesh.bounds = ShapesConfig.BOUNDS_QUAD_PRIMITIVE;
-				}
 
-				return quadMesh;
-			}
-		}
-		static Vector3[] triangleVerts = new[] { new Vector3( 1, 0, 0 ), new Vector3( 0, 1, 0 ), new Vector3( 0, 0, 1 ) };
-		static int[] triangleTris = new[] { 0, 1, 2 };
-		[DestroyOnAssemblyReload] static Mesh triangleMesh;
-		public static Mesh TriangleMesh {
-			get {
-				if( triangleMesh == null ) {
-					triangleMesh = new Mesh {
-						hideFlags = HideFlags.HideAndDontSave,
-						name = "Triangle"
-					};
-					triangleMesh.vertices = triangleVerts;
-					triangleMesh.triangles = triangleTris;
-					triangleMesh.bounds = ShapesConfig.BOUNDS_TRIANGLE_PRIMITIVE;
-				}
+		static Mesh quadMesh;
+		public static Mesh[] QuadMesh => ShapesAssets.Instance.meshQuad;
 
-				return triangleMesh;
-			}
-		}
+		static Mesh triangleMesh;
+		public static Mesh[] TriangleMesh => ShapesAssets.Instance.meshTriangle;
 
 		static Mesh sphereMesh;
-		public static Mesh SphereMesh => sphereMesh == null ? ( sphereMesh = EnsureValidMeshBounds( ShapesAssets.Instance.meshSphere, ShapesConfig.BOUNDS_SPHERE_PRIMITIVE ) ) : sphereMesh;
+		public static Mesh[] SphereMesh => ShapesAssets.Instance.meshSphere;
 
 		static Mesh cuboidMesh;
-		public static Mesh CuboidMesh => cuboidMesh == null ? ( cuboidMesh = EnsureValidMeshBounds( ShapesAssets.Instance.meshCube, ShapesConfig.BOUNDS_CUBOID_PRIMITIVE ) ) : cuboidMesh;
+		public static Mesh[] CuboidMesh => ShapesAssets.Instance.meshCube;
 
 		static Mesh torusMesh;
-		public static Mesh TorusMesh => torusMesh == null ? ( torusMesh = EnsureValidMeshBounds( ShapesAssets.Instance.meshTorus, ShapesConfig.BOUNDS_TORUS_PRIMITIVE ) ) : torusMesh;
+		public static Mesh[] TorusMesh => ShapesAssets.Instance.meshTorus;
 
 		static Mesh coneMesh;
-		public static Mesh ConeMesh => coneMesh == null ? ( coneMesh = EnsureValidMeshBounds( ShapesAssets.Instance.meshCone, ShapesConfig.BOUNDS_CONE_PRIMITIVE ) ) : coneMesh;
+		public static Mesh[] ConeMesh => ShapesAssets.Instance.meshCone;
 
 		static Mesh coneMeshUncapped;
-		public static Mesh ConeMeshUncapped => coneMeshUncapped == null ? ( coneMeshUncapped = EnsureValidMeshBounds( ShapesAssets.Instance.meshConeUncapped, ShapesConfig.BOUNDS_CONE_PRIMITIVE ) ) : coneMeshUncapped;
+		public static Mesh[] ConeMeshUncapped => ShapesAssets.Instance.meshConeUncapped;
 
 		static Mesh cylinderMesh;
-		public static Mesh CylinderMesh => cylinderMesh == null ? ( cylinderMesh = EnsureValidMeshBounds( ShapesAssets.Instance.meshCylinder, ShapesConfig.BOUNDS_CYLINDER_PRIMITIVE ) ) : cylinderMesh;
+		public static Mesh[] CylinderMesh => ShapesAssets.Instance.meshCylinder;
 
 		static Mesh capsuleMesh;
-		public static Mesh CapsuleMesh => capsuleMesh == null ? ( capsuleMesh = EnsureValidMeshBounds( ShapesAssets.Instance.meshCapsule, ShapesConfig.BOUNDS_CAPSULE_PRIMITIVE ) ) : capsuleMesh;
+		public static Mesh[] CapsuleMesh => ShapesAssets.Instance.meshCapsule;
 
 		#if UNITY_EDITOR
 
@@ -97,13 +61,13 @@ namespace Shapes {
 			return mesh;
 		}
 
-		public static Mesh GetLineMesh( LineGeometry geometry, LineEndCap endCaps ) {
+		public static Mesh GetLineMesh( LineGeometry geometry, LineEndCap endCaps, DetailLevel detail ) {
 			switch( geometry ) {
 				case LineGeometry.Billboard:
 				case LineGeometry.Flat2D:
-					return QuadMesh;
+					return QuadMesh[0];
 				case LineGeometry.Volumetric3D:
-					return endCaps == LineEndCap.Round ? CapsuleMesh : CylinderMesh;
+					return endCaps == LineEndCap.Round ? CapsuleMesh[(int)detail] : CylinderMesh[(int)detail];
 			}
 
 			return default;

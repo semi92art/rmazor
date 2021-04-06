@@ -23,34 +23,88 @@ namespace Shapes {
 
 	public static class CodegenShaders {
 
+		static class StaticInit {
+			public static string[] shaderNames = ShapesIO.LoadAllAssets<TextAsset>( ShapesIO.CoreShaderFolder ).Select( x => x.name.Substring( 0, x.name.Length - " Core".Length ) ).ToArray();
+		}
+
+		class PathContent {
+			public string path;
+			public string content;
+			public PathContent( string path, string content ) => ( this.path, this.content ) = ( path, content );
+		}
+
+		class PathMaterial {
+			public string path;
+			public Material mat;
+			public Shader shader;
+			public string[] keywords;
+			public PathMaterial( string path, Material mat, Shader shader, string[] keywords ) => ( this.path, this.mat, this.shader, this.keywords ) = ( path, mat, shader, keywords );
+
+			public void GenerateOrUpdate() {
+				if( mat != null ) {
+					EditorUtility.SetDirty( mat );
+					mat.shader = shader;
+					mat.hideFlags = HideFlags.HideInInspector;
+					TrySetKeywordsAndDefaultProperties( keywords, mat );
+				} else {
+					Debug.Log( "creating material " + path );
+					mat = new Material( shader ) { enableInstancing = true, hideFlags = HideFlags.HideInInspector };
+					TrySetKeywordsAndDefaultProperties( keywords, mat );
+					AssetDatabase.CreateAsset( mat, path );
+				}
+			}
+		}
+
+		static int blendModeCount = System.Enum.GetNames( typeof(ShapesBlendMode) ).Length;
 
 		public static void GenerateShadersAndMaterials() {
 			RenderPipeline currentRP = UnityInfo.GetCurrentRenderPipelineInUse();
 
-			int blendModeCount = System.Enum.GetNames( typeof(ShapesBlendMode) ).Length;
-			const string CORE_SUFFIX = " Core";
-			IEnumerable<TextAsset> shaderCores = ShapesIO.LoadAllAssets<TextAsset>( ShapesIO.CoreShaderFolder );
-			IEnumerable<string> shaderNames = shaderCores.Select( x => x.name.Substring( 0, x.name.Length - CORE_SUFFIX.Length ) );
+			// check if we need to update rp state
+			bool writeCurrentRpToImportState = ShapesImportState.Instance.currentShaderRP != currentRP;
 
-			// generate all shaders
-			foreach( string name in shaderNames ) {
+			// generate all shader paths & content
+			List<PathContent> shaderPathContents = GetShaderPathContents();
+			List<PathMaterial> pathMaterials = GetMaterialPathContents();
+
+			// tally up all files we need to edit to make version control happy
+			List<string> filesToUnlock = new List<string>();
+			if( writeCurrentRpToImportState ) filesToUnlock.Add( AssetDatabase.GetAssetPath( ShapesImportState.Instance ) );
+			filesToUnlock.AddRange( shaderPathContents.Select( x => x.path ) );
+			filesToUnlock.AddRange( pathMaterials.Where( x => x.mat != null ).Select( x => x.path ) );
+
+			// try to make sure they can be edited, then write all data
+			if( ShapesIO.TryMakeAssetsEditable( filesToUnlock.ToArray() ) ) {
+				shaderPathContents.ForEach( pc => File.WriteAllText( pc.path, pc.content ) ); // write all shaders
+				AssetDatabase.Refresh( ImportAssetOptions.Default ); // reimport all assets to load newly generated shaders
+				pathMaterials.ForEach( x => x.GenerateOrUpdate() ); // generate all materials
+				if( writeCurrentRpToImportState ) { // update the current shader state
+					ShapesImportState.Instance.currentShaderRP = currentRP;
+					EditorUtility.SetDirty( ShapesImportState.Instance );
+				}
+
+				AssetDatabase.Refresh( ImportAssetOptions.Default ); // reimport stuff
+			}
+		}
+
+		static List<PathContent> GetShaderPathContents() {
+			RenderPipeline rp = UnityInfo.GetCurrentRenderPipelineInUse();
+			List<PathContent> pcs = new List<PathContent>();
+			foreach( string name in StaticInit.shaderNames ) {
 				for( int i = 0; i < blendModeCount; i++ ) {
 					ShapesBlendMode blendMode = (ShapesBlendMode)i;
 					string path = $"{ShapesIO.GeneratedShadersFolder}/{name} {blendMode}.shader";
-					string shaderContents = new ShaderBuilder( name, blendMode, currentRP ).shader;
-					File.WriteAllText( path, shaderContents );
+					string shaderContents = new ShaderBuilder( name, blendMode, rp ).shader;
+					pcs.Add( new PathContent( path, shaderContents ) );
 				}
 			}
 
-			// update the current shader state
-			ShapesImportState.Instance.currentShaderRP = currentRP;
-			EditorUtility.SetDirty( ShapesImportState.Instance );
+			return pcs;
+		}
 
-			// reimport all assets to load newly generated shaders
-			AssetDatabase.Refresh( ImportAssetOptions.Default );
-
-			// generate all materials
-			foreach( string name in shaderNames ) {
+		static List<PathMaterial> GetMaterialPathContents() {
+			List<PathMaterial> pathMaterials = new List<PathMaterial>();
+			foreach( string name in StaticInit.shaderNames ) {
 				for( int i = 0; i < blendModeCount; i++ ) {
 					ShapesBlendMode blendMode = (ShapesBlendMode)i;
 					string nameWithBlendMode = ShapesMaterials.GetMaterialName( name, blendMode.ToString() );
@@ -60,51 +114,38 @@ namespace Shapes {
 						continue;
 					}
 
-
 					if( ShaderBuilder.shaderKeywords.ContainsKey( name ) ) {
 						// create all permutations
 						MultiCompile[] multis = ShaderBuilder.shaderKeywords[name];
 						List<string> keywordPermutations = new List<string>();
 						foreach( IEnumerable<string> perm in GetPermutations( multis.Select( m => m.Enumerate() ) ) ) {
-							IEnumerable<string> validKeywords = perm.Where( p => string.IsNullOrEmpty( p ) == false );
+							string[] validKeywords = perm.Where( p => string.IsNullOrEmpty( p ) == false ).ToArray();
 							string kws = $" [{string.Join( "][", validKeywords )}]";
 							if( kws.Contains( "[]" ) ) // this means it has no permutations
 								kws = "";
-							TryCreateMaterial( nameWithBlendMode + kws, validKeywords );
+							pathMaterials.Add( GetPathMaterial( nameWithBlendMode + kws, shader, validKeywords ) );
 						}
 					} else {
-						TryCreateMaterial( nameWithBlendMode );
-					}
-
-					Material TryCreateMaterial( string fullMaterialName, IEnumerable<string> keywords = null ) {
-						string savePath = $"{ShapesIO.GeneratedMaterialsFolder}/{fullMaterialName}.mat";
-						Material mat = AssetDatabase.LoadAssetAtPath<Material>( savePath );
-
-						void TrySetKeywordsAndDefaultProperties() {
-							if( keywords != null ) {
-								foreach( string keyword in keywords )
-									mat.EnableKeyword( keyword );
-							}
-							ShapesMaterials.ApplyDefaultGlobalProperties( mat );
-						}
-
-						if( mat != null ) {
-							EditorUtility.SetDirty( mat );
-							mat.hideFlags = HideFlags.HideInInspector;
-							TrySetKeywordsAndDefaultProperties();
-						} else {
-							Debug.Log( "creating material " + savePath );
-							mat = new Material( shader ) { enableInstancing = true, hideFlags = HideFlags.HideInInspector };
-							TrySetKeywordsAndDefaultProperties();
-							AssetDatabase.CreateAsset( mat, savePath );
-						}
-
-						return mat;
+						pathMaterials.Add( GetPathMaterial( nameWithBlendMode, shader ) );
 					}
 				}
 			}
 
-			AssetDatabase.Refresh( ImportAssetOptions.Default );
+			return pathMaterials;
+		}
+
+		static PathMaterial GetPathMaterial( string fullMaterialName, Shader shader, string[] keywords = null ) {
+			string savePath = $"{ShapesIO.GeneratedMaterialsFolder}/{fullMaterialName}.mat";
+			Material mat = AssetDatabase.LoadAssetAtPath<Material>( savePath );
+			return new PathMaterial( savePath, mat, shader, keywords );
+		}
+
+		static void TrySetKeywordsAndDefaultProperties( IEnumerable<string> keywords, Material mat ) {
+			if( keywords != null )
+				foreach( string keyword in keywords )
+					mat.EnableKeyword( keyword );
+
+			ShapesMaterials.ApplyDefaultGlobalProperties( mat );
 		}
 
 		// magic wand wau ✨

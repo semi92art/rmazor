@@ -1,33 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 // Shapes © Freya Holmér - https://twitter.com/FreyaHolmer/
 // Website & Documentation - https://acegikmo.com/shapes/
 namespace Shapes {
 
-	public class PolylinePath : DisposableMesh {
-
-		List<PolylinePoint> path = new List<PolylinePoint>();
+	public class PolylinePath : PointPath<PolylinePoint> {
 
 		bool lastUsedClosed = false;
 		PolylineJoins lastUsedJoins = PolylineJoins.Miter;
 
-		public int Count => path.Count;
-		public PolylinePoint LastPoint => path[path.Count - 1];
-
 		public PolylinePath() => _ = 0;
 
 		#region accessors and setters by index
-
-		public PolylinePoint this[ int i ] {
-			get => path[i];
-			set {
-				path[i] = value;
-				meshDirty = true;
-			}
-		}
 
 		public void SetPoint( int index, Vector3 point ) {
 			PolylinePoint p = path[index];
@@ -47,11 +33,6 @@ namespace Shapes {
 			SetPoint( index, p );
 		}
 
-		public void SetPoint( int index, PolylinePoint point ) {
-			path[index] = point;
-			meshDirty = true;
-		}
-
 		#endregion
 
 		#region point adding
@@ -68,15 +49,7 @@ namespace Shapes {
 		public void AddPoint( Vector2 pos, Color color ) => AddPoint( new PolylinePoint( pos, color ) );
 		public void AddPoint( Vector2 pos, float thickness ) => AddPoint( new PolylinePoint( pos, Color.white, thickness ) );
 		public void AddPoint( Vector2 pos, float thickness, Color color ) => AddPoint( new PolylinePoint( pos, color, thickness ) );
-
-
-		public void AddPoint( PolylinePoint p ) {
-			if( hasSetFirstPoint == false )
-				OnSetFirstDataPoint();
-			path.Add( p );
-			meshDirty = true;
-		}
-
+		
 		public void AddPoints( IEnumerable<Vector3> pts ) => AddPoints( pts.Select( point => new PolylinePoint( point, Color.white ) ) );
 		public void AddPoints( params Vector3[] pts ) => AddPoints( pts.Select( point => new PolylinePoint( point, Color.white ) ) );
 		public void AddPoints( IEnumerable<Vector2> pts ) => AddPoints( pts.Select( point => new PolylinePoint( point, Color.white ) ) );
@@ -89,33 +62,10 @@ namespace Shapes {
 		public void AddPoints( IEnumerable<Vector2> pts, IEnumerable<float> thicknesses ) => AddPoints( pts.Zip( thicknesses, ( p, t ) => new PolylinePoint( p, Color.white, t ) ) );
 		public void AddPoints( IEnumerable<Vector3> pts, IEnumerable<float> thicknesses, IEnumerable<Color> colors ) => AddPoints( pts.Zip( colors, thicknesses, ( p, c, t ) => new PolylinePoint( p, c, t ) ) );
 		public void AddPoints( IEnumerable<Vector2> pts, IEnumerable<float> thicknesses, IEnumerable<Color> colors ) => AddPoints( pts.Zip( colors, thicknesses, ( p, c, t ) => new PolylinePoint( p, c, t ) ) );
-
-		public void AddPoints( params PolylinePoint[] pts ) => AddPoints( (IEnumerable<PolylinePoint>)pts );
-
-		public void AddPoints( IEnumerable<PolylinePoint> ptsToAdd ) {
-			int prevCount = path.Count;
-			path.AddRange( ptsToAdd );
-			int pathCount = path.Count;
-			int addedPtCount = pathCount - prevCount;
-
-			if( addedPtCount > 0 ) {
-				if( hasSetFirstPoint == false )
-					OnSetFirstDataPoint();
-			}
-		}
-
+		
 		#endregion
 
 		#region BezierTo, ArcTo
-
-		bool CheckInvalidToCall( [CallerMemberName] string callerName = null ) {
-			if( hasSetFirstPoint == false ) {
-				Debug.LogWarning( $"{callerName} requires adding a point before calling it, to determine starting point" );
-				return true;
-			}
-
-			return false;
-		}
 
 		/// <summary>
 		/// Adds points of a cubic bezier curve, using the previous point as the starting point
@@ -126,19 +76,19 @@ namespace Shapes {
 		/// Adds points of a cubic bezier curve, using the previous point as the starting point
 		/// </summary>
 		public void BezierTo( Vector3 startTangent, Vector3 endTangent, Vector3 end, int pointCount, Color color ) {
-			if( CheckInvalidToCall() ) return;
+			if( CheckCanAddContinuePoint() ) return;
 			AddPoints( ShapesMath.CubicBezierPointsSkipFirst( LastPoint.point, startTangent, endTangent, end, pointCount ), color );
 		}
 
 		/// <summary>
 		/// A cubic bezier curve, using the previous point as the starting point
 		/// </summary>
-		public void BezierTo( Vector3 startTangent, Vector3 endTangent, Vector3 end ) => BezierTo( startTangent, endTangent, end, ShapesConfig.POLYLINE_DEFAULT_POINTS_PER_TURN, Color.white );
+		public void BezierTo( Vector3 startTangent, Vector3 endTangent, Vector3 end ) => BezierTo( startTangent, endTangent, end, ShapesConfig.Instance.polylineDefaultPointsPerTurn, Color.white );
 
 		/// <summary>
 		/// A cubic bezier curve, using the previous point as the starting point
 		/// </summary>
-		public void BezierTo( Vector3 startTangent, Vector3 endTangent, Vector3 end, Color color ) => BezierTo( startTangent, endTangent, end, ShapesConfig.POLYLINE_DEFAULT_POINTS_PER_TURN, color );
+		public void BezierTo( Vector3 startTangent, Vector3 endTangent, Vector3 end, Color color ) => BezierTo( startTangent, endTangent, end, ShapesConfig.Instance.polylineDefaultPointsPerTurn, color );
 
 		/// <summary>
 		/// A cubic bezier curve, using the previous point as the starting point. Number of points is given by density in number of points per full 360° turn
@@ -149,10 +99,10 @@ namespace Shapes {
 		/// A cubic bezier curve, using the previous point as the starting point. Number of points is given by density in number of points per full 360° turn
 		/// </summary>
 		public void BezierTo( Vector3 startTangent, Vector3 endTangent, Vector3 end, float pointsPerTurn, Color color ) {
-			int sampleCount = ShapesConfig.POLYLINE_BEZIER_ANGULAR_SUM_ACCURACY * 2 + 1;
+			int sampleCount = ShapesConfig.Instance.polylineBezierAngularSumAccuracy * 2 + 1;
 			float curveSumDeg = ShapesMath.GetApproximateCurveSum( LastPoint.point, startTangent, endTangent, end, sampleCount );
 			float angSpanTurns = curveSumDeg / 360f;
-			int pointCount = Mathf.Max( 2, Mathf.RoundToInt( angSpanTurns * ShapesConfig.POLYLINE_DEFAULT_POINTS_PER_TURN ) );
+			int pointCount = Mathf.Max( 2, Mathf.RoundToInt( angSpanTurns * pointsPerTurn ) );
 			BezierTo( startTangent, endTangent, end, pointCount, color );
 		}
 
@@ -160,7 +110,7 @@ namespace Shapes {
 		/// Adds points of an arc wedged into the corner defined by the previous point, corner, and next, with the given point count
 		/// </summary>
 		public void ArcTo( Vector3 corner, Vector3 next, float radius, int pointCount ) {
-			if( CheckInvalidToCall() ) return;
+			if( CheckCanAddContinuePoint() ) return;
 			AddArcPoints( corner, next, radius, useDensity: false, pointCount, 0, Color.white );
 		}
 
@@ -168,15 +118,15 @@ namespace Shapes {
 		/// Adds points of an arc wedged into the corner defined by the previous point, corner, and next
 		/// </summary>
 		public void ArcTo( Vector3 corner, Vector3 next, float radius ) {
-			if( CheckInvalidToCall() ) return;
-			AddArcPoints( corner, next, radius, useDensity: true, 0, ShapesConfig.POLYLINE_DEFAULT_POINTS_PER_TURN, Color.white );
+			if( CheckCanAddContinuePoint() ) return;
+			AddArcPoints( corner, next, radius, useDensity: true, 0, ShapesConfig.Instance.polylineDefaultPointsPerTurn, Color.white );
 		}
 
 		/// <summary>
 		/// Adds points of an arc wedged into the corner defined by the previous point, corner, and next, with the given point density in number of points per full 360° turn
 		/// </summary>
 		public void ArcTo( Vector3 corner, Vector3 next, float radius, float pointsPerTurn ) {
-			if( CheckInvalidToCall() ) return;
+			if( CheckCanAddContinuePoint() ) return;
 			AddArcPoints( corner, next, radius, useDensity: true, 0, pointsPerTurn, Color.white );
 		}
 
@@ -184,7 +134,7 @@ namespace Shapes {
 		/// Adds points of an arc wedged into the corner defined by the previous point, corner, and next, with the given point count
 		/// </summary>
 		public void ArcTo( Vector3 corner, Vector3 next, float radius, int pointCount, Color color ) {
-			if( CheckInvalidToCall() ) return;
+			if( CheckCanAddContinuePoint() ) return;
 			AddArcPoints( corner, next, radius, useDensity: false, pointCount, 0, color );
 		}
 
@@ -192,15 +142,15 @@ namespace Shapes {
 		/// Adds points of an arc wedged into the corner defined by the previous point, corner, and next
 		/// </summary>
 		public void ArcTo( Vector3 corner, Vector3 next, float radius, Color color ) {
-			if( CheckInvalidToCall() ) return;
-			AddArcPoints( corner, next, radius, useDensity: true, 0, ShapesConfig.POLYLINE_DEFAULT_POINTS_PER_TURN, color );
+			if( CheckCanAddContinuePoint() ) return;
+			AddArcPoints( corner, next, radius, useDensity: true, 0, ShapesConfig.Instance.polylineDefaultPointsPerTurn, color );
 		}
 
 		/// <summary>
 		/// Adds points of an arc wedged into the corner defined by the previous point, corner, and next, with the given point density in number of points per full 360° turn
 		/// </summary>
 		public void ArcTo( Vector3 corner, Vector3 next, float radius, float pointsPerTurn, Color color ) {
-			if( CheckInvalidToCall() ) return;
+			if( CheckCanAddContinuePoint() ) return;
 			AddArcPoints( corner, next, radius, useDensity: true, 0, pointsPerTurn, color );
 		}
 
@@ -236,7 +186,7 @@ namespace Shapes {
 		}
 
 		#endregion
-
+		
 		public bool EnsureMeshIsReadyToRender( bool closed, PolylineJoins renderJoins, out Mesh outMesh ) {
 			if( meshDirty == false ) {
 				// polyline itself didn't change, but the render state might force us to update

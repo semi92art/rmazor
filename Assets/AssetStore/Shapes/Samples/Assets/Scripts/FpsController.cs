@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
-
-#if UNITY_2019_1_OR_NEWER
 using UnityEngine.Rendering;
-
-#endif
 
 namespace Shapes {
 
@@ -29,7 +25,7 @@ namespace Shapes {
 	}
 
 	[ExecuteAlways]
-	public class FpsController : MonoBehaviour {
+	public class FpsController : ImmediateModeShapeDrawer {
 
 		// components
 		public Transform head;
@@ -56,6 +52,38 @@ namespace Shapes {
 		[Header( "Animation" )] [Range( 0f, 0.3f )] public float fireSidebarRadiusPunchAmount = 0.1f;
 		public AnimationCurve shakeAnimX = AnimationCurve.Constant( 0, 1, 0 );
 		public AnimationCurve shakeAnimY = AnimationCurve.Constant( 0, 1, 0 );
+
+		void Awake() {
+			if( Application.isPlaying == false )
+				return;
+			InputFocus = true;
+			StartCoroutine( FixedSteps() );
+		}
+
+		// called by the ImmediateModeShapeDrawer base type
+		public override void DrawShapes( Camera cam ) {
+			if( cam != this.cam ) // only draw in the player camera
+				return;
+
+			using( Draw.Command( cam ) ) {
+				Draw.ZTest = CompareFunction.Always; // to make sure it draws on top of everything like a HUD
+				Draw.Matrix = crosshairTransform.localToWorldMatrix; // draw it in the space of crosshairTransform
+				Draw.BlendMode = ShapesBlendMode.Transparent;
+				Draw.LineGeometry = LineGeometry.Flat2D;
+				crosshair.DrawCrosshair();
+				float radiusPunched = ammoBarRadius + fireSidebarRadiusPunchAmount * crosshair.fireDecayer.value;
+				ammoBar.DrawBar( this, radiusPunched );
+				chargeBar.DrawBar( this, radiusPunched );
+				compass.DrawCompass( head.transform.forward );
+			}
+		}
+
+		IEnumerator FixedSteps() {
+			while( true ) {
+				FixedUpdateManual();
+				yield return new WaitForSeconds( 0.01f ); // 100 fps
+			}
+		}
 
 		public static void DrawRoundedArcOutline( Vector2 origin, float radius, float thickness, float outlineThickness, float angStart, float angEnd ) {
 			// inner / outer
@@ -87,68 +115,6 @@ namespace Shapes {
 				Cursor.visible = !value;
 			}
 		}
-
-		void Awake() {
-			if( Application.isPlaying == false )
-				return;
-			InputFocus = true;
-			StartCoroutine( FixedSteps() );
-		}
-
-		IEnumerator FixedSteps() {
-			while( true ) {
-				FixedUpdateManual();
-				yield return new WaitForSeconds( 0.01f ); // 100 fps
-			}
-		}
-
-
-		// This is a little boilerplatey, mostly because Shapes has to support all render pipelines
-		// All we're doing is subscribing and unsubscribing from onPostRender
-		void OnEnable() => OnPostRenderSubscribe();
-		void OnDisable() => OnPostRenderUnsubscribe();
-		#if UNITY_2019_1_OR_NEWER
-		void DrawShapesSRP( ScriptableRenderContext ctx, Camera cam ) => DrawShapes( cam );
-		#endif
-		void OnPostRenderSubscribe() {
-			if( UnityInfo.UsingSRP ) {
-				#if UNITY_2019_1_OR_NEWER
-				RenderPipelineManager.endCameraRendering += DrawShapesSRP;
-				#else
-				Debug.LogWarning( "URP/HDRP immediate mode doesn't really work pre-Unity 2019.1, as there is no OnPostRender or endCameraRendering callback" );
-				#endif
-			} else
-				Camera.onPostRender += DrawShapes;
-		}
-
-		void OnPostRenderUnsubscribe() {
-			if( UnityInfo.UsingSRP ) {
-				#if UNITY_2019_1_OR_NEWER
-				RenderPipelineManager.endCameraRendering -= DrawShapesSRP;
-				#else
-				Debug.LogWarning( "URP/HDRP immediate mode doesn't really work pre-Unity 2019.1, as there is no OnPostRender or endCameraRendering callback" );
-				#endif
-			} else
-				Camera.onPostRender -= DrawShapes;
-		}
-
-
-		void DrawShapes( Camera cam ) {
-			if( cam != this.cam )
-				return;
-
-			Draw.Matrix = crosshairTransform.localToWorldMatrix;
-			Draw.BlendMode = ShapesBlendMode.Transparent;
-			Draw.LineGeometry = LineGeometry.Flat2D;
-
-			crosshair.DrawCrosshair();
-
-			float radiusPunched = ammoBarRadius + fireSidebarRadiusPunchAmount * crosshair.fireDecayer.value;
-			ammoBar.DrawBar( this, radiusPunched );
-			chargeBar.DrawBar( this, radiusPunched );
-			compass.DrawCompass( head.transform.forward );
-		}
-
 
 		void FixedUpdateManual() {
 			if( Application.isPlaying == false )
@@ -189,8 +155,8 @@ namespace Shapes {
 					// Fire
 					ammoBar.Fire();
 					crosshair.Fire();
-					Ray ray = new Ray( head.transform.position, head.transform.forward );
-					if( Physics.Raycast( ray, Mathf.Infinity, 1 << 9 ) )
+					Ray ray = new Ray( head.position, head.forward );
+					if( Physics.Raycast( ray, out RaycastHit hit ) && hit.collider.gameObject.name == "Enemy" )
 						crosshair.FireHit();
 				}
 

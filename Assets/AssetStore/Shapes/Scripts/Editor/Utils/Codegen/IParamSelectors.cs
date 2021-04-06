@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using UnityEngine;
 
 // Shapes © Freya Holmér - https://twitter.com/FreyaHolmer/
 // Website & Documentation - https://acegikmo.com/shapes/
@@ -38,11 +40,25 @@ namespace Shapes {
 
 
 	class Param : IParamSelector {
+
+		[Flags] internal enum MtxFlags {
+			None = 0,
+			Position = 1 << 0,
+			Rotation = 1 << 1,
+			Normal = 1 << 2,
+			Angle = 1 << 3,
+			PosRot = MtxFlags.Position | MtxFlags.Rotation,
+			PosNormal = MtxFlags.Position | MtxFlags.Normal,
+			PosAngle = MtxFlags.Position | MtxFlags.Angle
+		}
+
 		public string methodSigType;
 		public string methodSigName;
 		public string methodCallStr;
 		public string methodSigDefault = null;
 		public string[] targetArgNames;
+		public string desc;
+		public MtxFlags mtxFlags = MtxFlags.None;
 
 		public string FullMethodSig {
 			get {
@@ -55,7 +71,11 @@ namespace Shapes {
 
 		public Param( string methodSigParam, params string[] targetArgNames ) {
 			this.methodSigDefault = null;
-			if( methodSigParam.Contains( "=" ) ) // this means we have a default value
+			if( methodSigParam.Contains( "//" ) ) // this means we have a param description, extract it
+				( methodSigParam, this.desc ) = methodSigParam.Split( new[] { "//" }, StringSplitOptions.None ).Select( x => x.Trim() ).ToArray();
+			else
+				Debug.Log( $"Missing param description: {methodSigParam}" );
+			if( methodSigParam.Contains( "=" ) ) // this means we have a default value, extract it
 				( methodSigParam, this.methodSigDefault ) = methodSigParam.Split( '=' ).Select( x => x.Trim() ).ToArray(); // this is fine don't judge me okay
 			// methodSigParam is in the form "Vector3 start" now
 			( this.methodSigType, this.methodSigName ) = methodSigParam.Split( ' ' ).Select( x => x.Trim() ).ToArray();

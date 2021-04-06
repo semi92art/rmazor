@@ -189,7 +189,7 @@ namespace Shapes {
 				}
 
 				bool DoAddButton( Vector3 pt, T newPoint, int insertIndex ) {
-					if( TextureButton( pt, ShapesAssets.Instance.pointEditAdd, 0.5f ) ) {
+					if( TextureButton( pt, UIAssets.Instance.pointEditAdd, 0.5f ) ) {
 						// add point
 						changed = true;
 						Undo.RecordObject( component, "add point" );
@@ -247,7 +247,7 @@ namespace Shapes {
 					Handles.BeginGUI();
 					for( int i = 0; i < points.Count; i++ ) {
 						Vector3 ptWorld = GetWorldPt( i );
-						if( TextureButton( ptWorld, ShapesAssets.Instance.pointEditRemove, 0.5f ) ) {
+						if( TextureButton( ptWorld, UIAssets.Instance.pointEditRemove, 0.5f ) ) {
 							// delete point
 							changed = true;
 							Undo.RecordObject( component, "delete point" );
@@ -277,7 +277,7 @@ namespace Shapes {
 						Color col = GetColor( i );
 						col.a = 1f;
 						GUI.color = col;
-						if( TextureButton( ptWorld, ShapesAssets.Instance.pointEditColor, 0.5f, fade: false ) ) {
+						if( TextureButton( ptWorld, UIAssets.Instance.pointEditColor, 0.5f, fade: false ) ) {
 							int noot = i;
 							ShapesUI.ShowColorPicker( OnColorChanged, GetColor( i ) );
 

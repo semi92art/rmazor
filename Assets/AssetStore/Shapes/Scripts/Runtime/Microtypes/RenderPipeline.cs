@@ -3,7 +3,7 @@
 
 namespace Shapes {
 
-	public enum RenderPipeline {
+	internal enum RenderPipeline {
 		Legacy,
 		URP,
 		HDRP

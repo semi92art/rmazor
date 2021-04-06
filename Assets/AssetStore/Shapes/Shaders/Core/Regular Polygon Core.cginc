@@ -53,9 +53,7 @@ VertexOutput vert (VertexInput v) {
 
 	float radius = UNITY_ACCESS_INSTANCED_PROP(Props, _Radius);
 	float radiusSpace = UNITY_ACCESS_INSTANCED_PROP(Props, _RadiusSpace);
-	float3 wPos = LocalToWorldPos( float3(0,0,0) ); // per vertex makes it real wonky so shrug~
-    float3 camRight = CameraToWorldVec( float3(1,0,0) );
-    LineWidthData widthDataRadius = GetScreenSpaceWidthDataSimple( wPos, camRight, radius*2, radiusSpace );
+    LineWidthData widthDataRadius = GetScreenSpaceWidthDataSimple( OBJ_ORIGIN, CAM_RIGHT, radius*2, radiusSpace );
     o.IP_pxCoverage = widthDataRadius.thicknessPixelsTarget;
     half radiusInMeters = widthDataRadius.thicknessMeters / 2; // actually, center radius
 
@@ -67,7 +65,7 @@ VertexOutput vert (VertexInput v) {
 		half scaleThickness = scaleMode == SCALE_MODE_UNIFORM ? 1 : 1.0/uniformScale;
 		float thickness = UNITY_ACCESS_INSTANCED_PROP(Props, _Thickness) * scaleThickness;
 		float thicknessSpace = UNITY_ACCESS_INSTANCED_PROP(Props, _ThicknessSpace);
-		LineWidthData widthDataThickness = GetScreenSpaceWidthDataSimple( wPos, camRight, thickness, thicknessSpace );
+		LineWidthData widthDataThickness = GetScreenSpaceWidthDataSimple( OBJ_ORIGIN, CAM_RIGHT, thickness, thicknessSpace );
 		half thicknessRadius = widthDataThickness.thicknessMeters / 2;
 		o.IP_pxCoverage = widthDataThickness.thicknessPixelsTarget; // todo: this isn't properly handling coordinate scaling yet
 		half radiusOuter = radiusInMeters + thicknessRadius;
@@ -78,8 +76,8 @@ VertexOutput vert (VertexInput v) {
 	}
 
 	if( UNITY_ACCESS_INSTANCED_PROP(Props, _Alignment) == ALIGNMENT_BILLBOARD ) {
-		half3 frw = WorldToLocalVec( -DirectionToNearPlanePos( wPos ) );
-		half3 camRightLocal = WorldToLocalVec( camRight );
+		half3 frw = WorldToLocalVec( -DirectionToNearPlanePos( OBJ_ORIGIN ) );
+		half3 camRightLocal = WorldToLocalVec( CAM_RIGHT );
 		half3 up = normalize( cross( frw, camRightLocal ) );
 		half3 right = cross( up, frw ); // already normalized
 		v.vertex.xyz = v.vertex.x * right + v.vertex.y * up;

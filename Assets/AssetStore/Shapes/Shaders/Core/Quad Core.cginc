@@ -102,7 +102,7 @@ FRAG_OUTPUT_V4 frag( VertexOutput i ) : SV_Target {
             float3 D = UNITY_ACCESS_INSTANCED_PROP(Props, _D);
             half2 uv = InvBilinear( i.localPos.xy, A.xy, B.xy, C.xy, D.xy );
         #elif QUAD_INTERPOLATION_QUALITY == 3
-            half2 uv = InvBilinear( i.localPos.xy, i.posA, i.posB, i.posC, i.posD );
+            half2 uv = InvBilinear( i.localPos.xy, i.posAB.xy, i.posAB.zw, i.posCD.xy, i.posCD.zw );
         #endif
         half4 colorA = UNITY_ACCESS_INSTANCED_PROP(Props, _Color);
         half4 colorB = UNITY_ACCESS_INSTANCED_PROP(Props, _ColorB);

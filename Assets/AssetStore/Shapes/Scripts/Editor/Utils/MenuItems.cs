@@ -11,7 +11,6 @@ namespace Shapes {
 	public static class MenuItems {
 
 		const string MENU_ROOT = "Shapes/";
-		const string ADVANCED_ROOT = MENU_ROOT + "Advanced/";
 		const string CREATE_ROOT = MENU_ROOT + "Create/";
 
 		const string GO_CREATE_ROOT = "GameObject/" + MENU_ROOT;
@@ -22,31 +21,24 @@ namespace Shapes {
 		const int MENU_ITEM_SORT_CREATE_FLATS = 40;
 		const int MENU_ITEM_SORT_CREATE_3D = 60;
 
-		const int MENU_ITEM_SORT_CONFIG_CSHARP = 200;
-		const int MENU_ITEM_SORT_CONFIG_SHADER = 201;
+		const int MENU_ITEM_SORT_CONFIG = 200;
 
 		const int MENU_ITEM_SORT_DOCS = 500;
-		const int MENU_ITEM_SORT_BACKLOG = 501;
-		const int MENU_ITEM_SORT_BUGREPORT = 502;
-		const int MENU_ITEM_SORT_FEEDBACK = 503;
-		const int MENU_ITEM_SORT_CHANGELOG = 504;
-
-		const int MENU_ITEM_SORT_ADVANCED = 1000;
+		const int MENU_ITEM_SORT_BUGREPORT = 501;
+		const int MENU_ITEM_SORT_FEEDBACK = 502;
+		const int MENU_ITEM_SORT_CHANGELOG = 503;
 
 		const int MENU_ITEM_SORT_ABOUT = 2000;
 
 
-		[MenuItem( MENU_ROOT + "Open C# Config", false, MENU_ITEM_SORT_CONFIG_CSHARP )]
-		public static void OpenCsharpSettings() => ShapesIO.OpenConfigCsharp();
+		[MenuItem( MENU_ROOT + "⚙ Settings", false, MENU_ITEM_SORT_CONFIG )]
+		public static void OpenCsharpSettings() => CenterWindow( EditorWindow.GetWindow<ShapesConfigWindow>( "Shapes Settings" ), 400, ShapesIO.IsUsingVcWithCheckoutEnabled ? 600 : 500 );
 
-		[MenuItem( MENU_ROOT + "Open Shader Config", false, MENU_ITEM_SORT_CONFIG_SHADER )]
-		public static void OpenShaderSettings() => ShapesIO.OpenConfigShaders();
+		[MenuItem( MENU_ROOT + "⏱ Immediate Mode Monitor", false, MENU_ITEM_SORT_CONFIG + 1 )]
+		public static void OpenImmediateModeDebugger() => CenterWindow( EditorWindow.GetWindow<ImmediateModeMonitor>( "IM Monitor" ), 400, 640 );
 
 		[MenuItem( MENU_ROOT + "📄 Documentation", false, MENU_ITEM_SORT_DOCS )]
 		public static void OpenDocs() => Application.OpenURL( ShapesInfo.LINK_DOCS );
-
-		//[MenuItem( MENU_ROOT + "🗳 Backlog", false, MENU_ITEM_SORT_BACKLOG )]
-		//public static void OpenTodo() => Application.OpenURL( ShapesInfo.LINK_QUIRE );
 
 		[MenuItem( MENU_ROOT + "🐞 Report Bug", false, MENU_ITEM_SORT_BUGREPORT )]
 		public static void ReportBug() => Application.OpenURL( ShapesInfo.LINK_FEEDBACK );
@@ -97,7 +89,7 @@ namespace Shapes {
 		[MenuItem( GO_CREATE_ROOT + "Polygon", false, GO_MENU_SORT_OFFSET + MENU_ITEM_SORT_CREATE_FLATS + 3 )]
 		[MenuItem( CREATE_ROOT + "Polygon", false, MENU_ITEM_SORT_CREATE_FLATS + 3 )]
 		public static void CreatePolygon( MenuCommand menuCommand ) => CreateShape<Polygon>( menuCommand, "Polygon" );
-		
+
 		[MenuItem( GO_CREATE_ROOT + "Regular Polygon", false, GO_MENU_SORT_OFFSET + MENU_ITEM_SORT_CREATE_FLATS + 4 )]
 		[MenuItem( CREATE_ROOT + "Regular Polygon", false, MENU_ITEM_SORT_CREATE_FLATS + 4 )]
 		public static void CreateRegularPolygon( MenuCommand menuCommand ) => CreateShape<RegularPolygon>( menuCommand, "Regular Polygon" );
@@ -154,19 +146,12 @@ namespace Shapes {
 			}
 		}
 
-
-		[MenuItem( ADVANCED_ROOT + "Regenerate Shaders and Materials", false, MENU_ITEM_SORT_ADVANCED )]
-		public static void GenerateShadersAndMaterials() => CodegenShaders.GenerateShadersAndMaterials();
-
-		[MenuItem( ADVANCED_ROOT + "Regenerate Draw Overloads", false, MENU_ITEM_SORT_ADVANCED )]
-		public static void GenerateDrawOverloads() => CodegenDrawOverloads.GenerateDrawOverloadsScript();
-
 		[MenuItem( MENU_ROOT + "About  \u2044  Check for Updates", false, MENU_ITEM_SORT_ABOUT )]
-		public static void About() {
-			AboutWindow window = EditorWindow.GetWindow<AboutWindow>( false, "Shapes " + ShapesInfo.Version, true );
-			// center window
+		public static void About() => CenterWindow( EditorWindow.GetWindow<AboutWindow>( false, "Shapes " + ShapesInfo.Version, true ), 960, 540 );
+
+		static void CenterWindow( EditorWindow window, int width, int height ) {
 			Vector2 center = new Vector2( Screen.currentResolution.width, Screen.currentResolution.height ) / 2;
-			Vector2 size = new Vector2( 640 * 1.5f, 360 * 1.5f );
+			Vector2 size = new Vector2( width, height );
 			window.position = new Rect( center - size / 2, size );
 		}
 

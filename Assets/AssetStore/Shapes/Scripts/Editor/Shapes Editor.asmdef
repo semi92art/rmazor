@@ -2,7 +2,9 @@
     "name": "ShapesEditor",
     "references": [
         "ShapesRuntime",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.RenderPipelines.Universal.Editor"
     ],
     "includePlatforms": [
         "Editor"

@@ -4,31 +4,34 @@
 // Website & Documentation - https://acegikmo.com/shapes/
 namespace Shapes {
 
+	/// <summary>A helper component to tint shape component children</summary>
 	[ExecuteAlways]
 	public class ShapeGroup : MonoBehaviour {
 
+		/// <summary>The number of ShapeGroup components active in the scenet</summary>
 		public static int shapeGroupsInScene = 0;
 
-		[ColorUsage( true, ShapesConfig.USE_HDR_COLOR_PICKERS )]
+		[ShapesColorField( true )]
 		[SerializeField] Color color = Color.white;
 
 		// this is because in OnDisable, this component reads as still being enabled by the child shapes
 		// so, we've got an additional lil noot to make sure things do a correct upon the things
-		[System.NonSerialized] bool isEnabled = false;
-		public bool IsEnabled => isEnabled;
+		[field: System.NonSerialized]
+		internal bool IsEnabled { get; private set; } = false;
 
 		void OnEnable() {
 			shapeGroupsInScene++;
-			isEnabled = true;
+			IsEnabled = true;
 			UpdateChildShapes();
 		}
 
 		void OnDisable() {
 			shapeGroupsInScene--;
-			isEnabled = false;
+			IsEnabled = false;
 			UpdateChildShapes();
 		}
 
+		/// <summary>The color tint of all shapes in this group</summary>
 		public Color Color {
 			get => color;
 			set {

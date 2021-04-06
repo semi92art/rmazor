@@ -7,6 +7,9 @@ namespace Shapes {
 
 	public static class ShapesInfo {
 
+		public static string FILE_HEADER_COMMENT_A = "// Shapes © Freya Holmér - https://twitter.com/FreyaHolmer/";
+		public static string FILE_HEADER_COMMENT_B = "// Website & Documentation - https://acegikmo.com/shapes/";
+		
 		public static string LINK_WEBSITE = "https://acegikmo.com/shapes";
 		public static string LINK_DOCS = "https://acegikmo.com/shapes/docs";
 		public static string LINK_CHANGELOG = "https://acegikmo.com/shapes/changelog";

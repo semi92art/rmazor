@@ -32,7 +32,11 @@ namespace Shapes {
 		}
 
 		void OnSceneGUI() {
-			bool changed = discEditor.DoSceneHandles( target as RegularPolygon );
+			RegularPolygon rp = target as RegularPolygon;
+			bool changed = discEditor.DoSceneHandles( rp );
+			changed |= fillEditor.DoSceneHandles( rp.UseFill, rp, rp.Fill, rp.transform );
+			if( changed )
+				rp.UpdateAllMaterialProperties();
 		}
 
 		int[] indexToPolygonPreset = { 3, 4, 5, 6, 8 };
@@ -40,11 +44,11 @@ namespace Shapes {
 		GUIContent[] sideCountTypes;
 		GUIContent[] SideCountTypes =>
 			sideCountTypes ?? ( sideCountTypes = new[] {
-				new GUIContent( ShapesAssets.Instance.GetRegularPolygonIcon( 3 ), "Triangle" ),
-				new GUIContent( ShapesAssets.Instance.GetRegularPolygonIcon( 4 ), "Square" ),
-				new GUIContent( ShapesAssets.Instance.GetRegularPolygonIcon( 5 ), "Pentagon" ),
-				new GUIContent( ShapesAssets.Instance.GetRegularPolygonIcon( 6 ), "Hexagon" ),
-				new GUIContent( ShapesAssets.Instance.GetRegularPolygonIcon( 8 ), "Octagon" )
+				new GUIContent( UIAssets.Instance.GetRegularPolygonIcon( 3 ), "Triangle" ),
+				new GUIContent( UIAssets.Instance.GetRegularPolygonIcon( 4 ), "Square" ),
+				new GUIContent( UIAssets.Instance.GetRegularPolygonIcon( 5 ), "Pentagon" ),
+				new GUIContent( UIAssets.Instance.GetRegularPolygonIcon( 6 ), "Hexagon" ),
+				new GUIContent( UIAssets.Instance.GetRegularPolygonIcon( 8 ), "Octagon" )
 			} );
 
 
@@ -59,9 +63,9 @@ namespace Shapes {
 
 			ShapesUI.FloatInSpaceField( propRadius, propRadiusSpace );
 
+			EditorGUILayout.PropertyField( propHollow );
 			using( new EditorGUI.DisabledScope( propHollow.boolValue == false || propHollow.hasMultipleDifferentValues ) )
 				ShapesUI.FloatInSpaceField( propThickness, propThicknessSpace );
-			EditorGUILayout.PropertyField( propHollow );
 			ShapesUI.AngleProperty( propAngle, "Angle", propAngUnitInput, angLabelLayout );
 			ShapesUI.DrawAngleSwitchButtons( propAngUnitInput );
 

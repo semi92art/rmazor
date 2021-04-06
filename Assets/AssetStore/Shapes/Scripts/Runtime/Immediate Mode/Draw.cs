@@ -1,67 +1,73 @@
 ﻿using System;
 using UnityEngine;
 using TMPro;
+#if SHAPES_URP
+using UnityEngine.Rendering.Universal;
+
+#elif SHAPES_HDRP
+using UnityEngine.Rendering.HighDefinition;
+#else
+using UnityEngine.Rendering;
+
+#endif
 
 // Shapes © Freya Holmér - https://twitter.com/FreyaHolmer/
 // Website & Documentation - https://acegikmo.com/shapes/
 namespace Shapes {
 
+	/// <summary>The primary class in Shapes for all functionality to draw in immediate mode</summary>
 	public static partial class Draw {
 
-		static void ApplyGlobalProperties( Material mat ) => mat.SetInt( ShapesMaterialUtils.propZTest, (int)ZTest );
 
-		[OvldGenCallTarget] public static void Line( [OvldDefault( nameof(BlendMode) )] ShapesBlendMode blendMode,
-													 [OvldDefault( nameof(LineGeometry) )] LineGeometry geometry,
-													 [OvldDefault( nameof(LineEndCaps) )] LineEndCap endCaps,
-													 [OvldDefault( nameof(LineThicknessSpace) )] ThicknessSpace thicknessSpace,
-													 Vector3 start,
-													 Vector3 end,
-													 [OvldDefault( nameof(Color) )] Color colorStart,
-													 [OvldDefault( nameof(Color) )] Color colorEnd,
-													 [OvldDefault( nameof(LineThickness) )] float thickness,
-													 [OvldDefault( nameof(LineDashStyle) )] DashStyle dashStyle = null ) {
-			Material mat = ShapesMaterialUtils.GetLineMat( geometry, endCaps )[blendMode];
-			ApplyGlobalProperties( mat );
-			mat.SetColor( ShapesMaterialUtils.propColor, colorStart );
-			mat.SetColor( ShapesMaterialUtils.propColorEnd, colorEnd );
-			mat.SetVector( ShapesMaterialUtils.propPointStart, start );
-			mat.SetVector( ShapesMaterialUtils.propPointEnd, end );
-			mat.SetFloat( ShapesMaterialUtils.propThickness, thickness );
-			mat.SetInt( ShapesMaterialUtils.propAlignment, (int)geometry );
-			mat.SetInt( ShapesMaterialUtils.propThicknessSpace, (int)thicknessSpace );
-			mat.SetInt( ShapesMaterialUtils.propScaleMode, (int)ScaleMode );
+		/// <summary><para>Creates a DrawCommand for drawing in immediate mode.</para>
+		/// <para>Example usage:</para>
+		/// <para>using(Draw.Command(Camera.main)){ Draw.Line( a, b, Color.red ); }</para></summary>
+		/// <param name="cam">The camera to draw in</param>
+		/// <param name="cameraEvent">When during the render this command should execute</param>
+		#if SHAPES_URP
+		public static DrawCommand Command( Camera cam, RenderPassEvent cameraEvent = RenderPassEvent.BeforeRenderingPostProcessing ) => ObjectPool<DrawCommand>.Alloc().Initialize( cam, cameraEvent );
+		#elif SHAPES_HDRP
+		public static DrawCommand Command( Camera cam, CustomPassInjectionPoint cameraEvent = CustomPassInjectionPoint.BeforePostProcess ) => ObjectPool<DrawCommand>.Alloc().Initialize( cam, cameraEvent );
+		#else
+		public static DrawCommand Command( Camera cam, CameraEvent cameraEvent = CameraEvent.BeforeImageEffects ) => ObjectPool<DrawCommand>.Alloc().Initialize( cam, cameraEvent );
+		#endif
 
-			ApplyDashSettings( mat, dashStyle, thickness, useType: geometry != LineGeometry.Volumetric3D );
+		static MpbLine mpbLine = new MpbLine();
 
-			DrawMesh( Vector3.zero, Quaternion.identity, ShapesMeshUtils.GetLineMesh( geometry, endCaps ), mat );
-		}
-
-		static void ApplyDashSettings( Material mat, DashStyle style, float thickness, bool useType = true ) {
-			bool dashed = style?.size > 0f;
-			mat.SetFloat( ShapesMaterialUtils.propDashSize, dashed ? style.GetNetAbsoluteSize( true, thickness ) : 0 );
-			if( dashed ) {
-				if( useType ) {
-					mat.SetInt( ShapesMaterialUtils.propDashType, (int)style.type );
-					if( style.type.HasModifier() )
-						mat.SetInt( ShapesMaterialUtils.propDashShapeModifier, (int)style.shapeModifier );
-				}
-
-				mat.SetInt( ShapesMaterialUtils.propDashSpace, (int)style.space );
-				mat.SetInt( ShapesMaterialUtils.propDashSnap, (int)style.snap );
-				mat.SetFloat( ShapesMaterialUtils.propDashOffset, style.offset );
-				mat.SetFloat( ShapesMaterialUtils.propDashSpacing, style.GetNetAbsoluteSpacing( true, thickness ) );
+		[OvldGenCallTarget] static void Line_Internal( [OvldDefault( nameof(LineEndCaps) )] LineEndCap endCaps,
+													   [OvldDefault( nameof(LineThicknessSpace) )] ThicknessSpace thicknessSpace,
+													   Vector3 start,
+													   Vector3 end,
+													   [OvldDefault( nameof(Color) )] Color colorStart,
+													   [OvldDefault( nameof(Color) )] Color colorEnd,
+													   [OvldDefault( nameof(LineThickness) )] float thickness,
+													   [OvldDefault( nameof(LineDashStyle) )] DashStyle dashStyle = null ) {
+			using( new IMDrawer(
+				metaMpb: mpbLine,
+				sourceMat: ShapesMaterialUtils.GetLineMat( Draw.LineGeometry, endCaps )[Draw.BlendMode],
+				sourceMesh: ShapesMeshUtils.GetLineMesh( Draw.LineGeometry, endCaps, DetailLevel ) ) ) {
+				MetaMpb.ApplyDashSettings( mpbLine, dashStyle, thickness );
+				mpbLine.color.Add( colorStart.ColorSpaceAdjusted() );
+				mpbLine.colorEnd.Add( colorEnd.ColorSpaceAdjusted() );
+				mpbLine.pointStart.Add( start );
+				mpbLine.pointEnd.Add( end );
+				mpbLine.thickness.Add( thickness );
+				mpbLine.alignment.Add( (float)Draw.LineGeometry );
+				mpbLine.thicknessSpace.Add( (float)thicknessSpace );
+				mpbLine.scaleMode.Add( (float)ScaleMode );
 			}
 		}
 
+		static MpbPolyline mpbPolyline = new MpbPolyline(); // they can use the same mpb structure
+		static MpbPolyline mpbPolylineJoins = new MpbPolyline();
 
-		[OvldGenCallTarget] public static void Polyline( [OvldDefault( nameof(BlendMode) )] ShapesBlendMode blendMode,
-														 PolylinePath path,
-														 [OvldDefault( "false" )] bool closed,
-														 [OvldDefault( nameof(PolylineGeometry) )] PolylineGeometry geometry,
-														 [OvldDefault( nameof(PolylineJoins) )] PolylineJoins joins,
-														 [OvldDefault( nameof(LineThickness) )] float thickness,
-														 [OvldDefault( nameof(LineThicknessSpace) )] ThicknessSpace thicknessSpace,
-														 [OvldDefault( nameof(Color) )] Color color ) {
+		[OvldGenCallTarget] static void Polyline_Internal( PolylinePath path,
+														   [OvldDefault( "false" )] bool closed,
+														   [OvldDefault( nameof(PolylineGeometry) )] PolylineGeometry geometry,
+														   [OvldDefault( nameof(PolylineJoins) )] PolylineJoins joins,
+														   [OvldDefault( nameof(LineThickness) )] float thickness,
+														   [OvldDefault( nameof(LineThicknessSpace) )] ThicknessSpace thicknessSpace,
+														   [OvldDefault( nameof(Color) )] Color color ) {
 			if( path.EnsureMeshIsReadyToRender( closed, joins, out Mesh mesh ) == false )
 				return; // no points defined in the mesh
 
@@ -74,32 +80,32 @@ namespace Shapes {
 					return;
 			}
 
-			Material matPolyLine = ShapesMaterialUtils.GetPolylineMat( joins )[blendMode];
-			ApplyGlobalProperties( matPolyLine );
-			matPolyLine.SetFloat( ShapesMaterialUtils.propThickness, thickness );
-			matPolyLine.SetFloat( ShapesMaterialUtils.propThicknessSpace, (int)thicknessSpace );
-			matPolyLine.SetColor( ShapesMaterialUtils.propColor, color );
-			matPolyLine.SetInt( ShapesMaterialUtils.propAlignment, (int)geometry );
-			matPolyLine.SetInt( ShapesMaterialUtils.propScaleMode, (int)ScaleMode );
-			if( joins == PolylineJoins.Miter ) {
-				DrawMesh( Vector3.zero, Quaternion.identity, mesh, matPolyLine );
-			} else {
-				Material matPolyLineJoins = ShapesMaterialUtils.GetPolylineJoinsMat( joins )[blendMode];
-				ApplyGlobalProperties( matPolyLineJoins );
-				matPolyLineJoins.SetFloat( ShapesMaterialUtils.propThickness, thickness );
-				matPolyLineJoins.SetFloat( ShapesMaterialUtils.propThicknessSpace, (int)thicknessSpace );
-				matPolyLineJoins.SetColor( ShapesMaterialUtils.propColor, color );
-				matPolyLineJoins.SetInt( ShapesMaterialUtils.propAlignment, (int)geometry );
-				matPolyLineJoins.SetInt( ShapesMaterialUtils.propScaleMode, (int)ScaleMode );
-				DrawTwoSubmeshes( Vector3.zero, Quaternion.identity, mesh, matPolyLine, matPolyLineJoins );
+			void ApplyToMpb( MpbPolyline mpb ) {
+				mpb.thickness.Add( thickness );
+				mpb.thicknessSpace.Add( (int)thicknessSpace );
+				mpb.color.Add( color.ColorSpaceAdjusted() );
+				mpb.alignment.Add( (int)geometry );
+				mpb.scaleMode.Add( (int)ScaleMode );
+			}
+
+			if( DrawCommand.IsAddingDrawCommandsToBuffer ) // mark as used by this command to prevent destroy in dispose
+				path.lastCommandUsedIn = DrawCommand.CurrentWritingCommandBuffer;
+
+			using( new IMDrawer( mpbPolyline, ShapesMaterialUtils.GetPolylineMat( joins )[Draw.BlendMode], mesh, 0 ) )
+				ApplyToMpb( mpbPolyline );
+
+			if( joins.HasJoinMesh() ) {
+				using( new IMDrawer( mpbPolylineJoins, ShapesMaterialUtils.GetPolylineJoinsMat( joins )[Draw.BlendMode], mesh, 1 ) )
+					ApplyToMpb( mpbPolylineJoins );
 			}
 		}
 
-		[OvldGenCallTarget] public static void Polygon( [OvldDefault( nameof(BlendMode) )] ShapesBlendMode blendMode,
-														PolygonPath path,
-														[OvldDefault( nameof(PolygonTriangulation) )] PolygonTriangulation triangulation,
-														[OvldDefault( nameof(Color) )] Color color,
-														[OvldDefault( nameof(PolygonShapeFill) )] ShapeFill fill ) {
+		static MpbPolygon mpbPolygon = new MpbPolygon();
+
+		[OvldGenCallTarget] static void Polygon_Internal( PolygonPath path,
+														  [OvldDefault( nameof(PolygonTriangulation) )] PolygonTriangulation triangulation,
+														  [OvldDefault( nameof(Color) )] Color color,
+														  [OvldDefault( nameof(PolygonShapeFill) )] ShapeFill fill ) {
 			if( path.EnsureMeshIsReadyToRender( triangulation, out Mesh mesh ) == false )
 				return; // no points defined in the mesh
 
@@ -115,150 +121,113 @@ namespace Shapes {
 					return;
 			}
 
-			Material matPolygon = ShapesMaterialUtils.matPolygon[blendMode];
-			ApplyGlobalProperties( matPolygon );
-			TryApplyFillAndColor( matPolygon, fill, color );
-			DrawMesh( Vector3.zero, Quaternion.identity, mesh, matPolygon );
-		}
+			if( DrawCommand.IsAddingDrawCommandsToBuffer ) // mark as used by this command to prevent destroy in dispose
+				path.lastCommandUsedIn = DrawCommand.CurrentWritingCommandBuffer;
 
-		static void TryApplyFillAndColor( Material mat, ShapeFill fill, Color defaultColor ) {
-			bool useFill = fill != null;
-			mat.SetColor( ShapesMaterialUtils.propColor, useFill ? fill.colorStart : defaultColor );
-			mat.SetInt( ShapesMaterialUtils.propFillType, fill.GetShaderFillModeInt() );
-			if( useFill ) {
-				mat.SetInt( ShapesMaterialUtils.propFillSpace, (int)fill.space );
-				mat.SetVector( ShapesMaterialUtils.propFillStart, fill.GetShaderStartVector() );
-				mat.SetColor( ShapesMaterialUtils.propColorEnd, fill.colorEnd );
-				if( fill.type == FillType.LinearGradient )
-					mat.SetVector( ShapesMaterialUtils.propFillEnd, fill.linearEnd );
+			using( new IMDrawer( mpbPolygon, ShapesMaterialUtils.matPolygon[Draw.BlendMode], mesh ) ) {
+				MetaMpb.ApplyColorOrFill( mpbPolygon, fill, color );
 			}
 		}
 
-
-		[OvldGenCallTarget] public static void Disc( Vector3 pos,
-													 [OvldDefault( "Quaternion.identity" )] Quaternion rot,
-													 [OvldDefault( nameof(DiscRadius) )] float radius,
-													 [OvldDefault( nameof(Color) )] Color colorInnerStart,
-													 [OvldDefault( nameof(Color) )] Color colorOuterStart,
-													 [OvldDefault( nameof(Color) )] Color colorInnerEnd,
-													 [OvldDefault( nameof(Color) )] Color colorOuterEnd ) {
-			DiscCore( BlendMode, DiscRadiusSpace, RingThicknessSpace, false, false, pos, rot, radius, 0f, colorInnerStart, colorOuterStart, colorInnerEnd, colorOuterEnd );
+		[OvldGenCallTarget] static void Disc_Internal( [OvldDefault( nameof(DiscRadius) )] float radius,
+													   [OvldDefault( nameof(Color) )] Color colorInnerStart,
+													   [OvldDefault( nameof(Color) )] Color colorOuterStart,
+													   [OvldDefault( nameof(Color) )] Color colorInnerEnd,
+													   [OvldDefault( nameof(Color) )] Color colorOuterEnd ) {
+			DiscCore( false, false, radius, 0f, colorInnerStart, colorOuterStart, colorInnerEnd, colorOuterEnd );
 		}
 
-		[OvldGenCallTarget] public static void Ring( Vector3 pos,
-													 [OvldDefault( "Quaternion.identity" )] Quaternion rot,
-													 [OvldDefault( nameof(DiscRadius) )] float radius,
-													 [OvldDefault( nameof(RingThickness) )] float thickness,
-													 [OvldDefault( nameof(Color) )] Color colorInnerStart,
-													 [OvldDefault( nameof(Color) )] Color colorOuterStart,
-													 [OvldDefault( nameof(Color) )] Color colorInnerEnd,
-													 [OvldDefault( nameof(Color) )] Color colorOuterEnd,
-													 [OvldDefault( nameof(RingDashStyle) )] DashStyle dashStyle = null ) {
-			DiscCore( BlendMode, DiscRadiusSpace, RingThicknessSpace, true, false, pos, rot, radius, thickness, colorInnerStart, colorOuterStart, colorInnerEnd, colorOuterEnd, dashStyle );
+		[OvldGenCallTarget] static void Ring_Internal( [OvldDefault( nameof(DiscRadius) )] float radius,
+													   [OvldDefault( nameof(RingThickness) )] float thickness,
+													   [OvldDefault( nameof(Color) )] Color colorInnerStart,
+													   [OvldDefault( nameof(Color) )] Color colorOuterStart,
+													   [OvldDefault( nameof(Color) )] Color colorInnerEnd,
+													   [OvldDefault( nameof(Color) )] Color colorOuterEnd,
+													   [OvldDefault( nameof(RingDashStyle) )] DashStyle dashStyle = null ) {
+			DiscCore( true, false, radius, thickness, colorInnerStart, colorOuterStart, colorInnerEnd, colorOuterEnd, dashStyle );
 		}
 
-		[OvldGenCallTarget] public static void Pie( Vector3 pos,
-													[OvldDefault( "Quaternion.identity" )] Quaternion rot,
-													[OvldDefault( nameof(DiscRadius) )] float radius,
-													[OvldDefault( nameof(Color) )] Color colorInnerStart,
-													[OvldDefault( nameof(Color) )] Color colorOuterStart,
-													[OvldDefault( nameof(Color) )] Color colorInnerEnd,
-													[OvldDefault( nameof(Color) )] Color colorOuterEnd,
-													float angleRadStart,
-													float angleRadEnd ) {
-			DiscCore( BlendMode, DiscRadiusSpace, RingThicknessSpace, false, true, pos, rot, radius, 0f, colorInnerStart, colorOuterStart, colorInnerEnd, colorOuterEnd, null, angleRadStart, angleRadEnd );
+		[OvldGenCallTarget] static void Pie_Internal( [OvldDefault( nameof(DiscRadius) )] float radius,
+													  [OvldDefault( nameof(Color) )] Color colorInnerStart,
+													  [OvldDefault( nameof(Color) )] Color colorOuterStart,
+													  [OvldDefault( nameof(Color) )] Color colorInnerEnd,
+													  [OvldDefault( nameof(Color) )] Color colorOuterEnd,
+													  float angleRadStart,
+													  float angleRadEnd ) {
+			DiscCore( false, true, radius, 0f, colorInnerStart, colorOuterStart, colorInnerEnd, colorOuterEnd, null, angleRadStart, angleRadEnd );
 		}
 
-		[OvldGenCallTarget] public static void Arc( Vector3 pos,
-													[OvldDefault( "Quaternion.identity" )] Quaternion rot,
-													[OvldDefault( nameof(DiscRadius) )] float radius,
-													[OvldDefault( nameof(RingThickness) )] float thickness,
-													[OvldDefault( nameof(Color) )] Color colorInnerStart,
-													[OvldDefault( nameof(Color) )] Color colorOuterStart,
-													[OvldDefault( nameof(Color) )] Color colorInnerEnd,
-													[OvldDefault( nameof(Color) )] Color colorOuterEnd,
-													float angleRadStart,
-													float angleRadEnd,
-													[OvldDefault( nameof(ArcEndCap) + "." + nameof(ArcEndCap.None) )] ArcEndCap endCaps,
-													[OvldDefault( nameof(RingDashStyle) )] DashStyle dashStyle = null ) {
-			DiscCore( BlendMode, DiscRadiusSpace, RingThicknessSpace, true, true, pos, rot, radius, thickness, colorInnerStart, colorOuterStart, colorInnerEnd, colorOuterEnd, dashStyle, angleRadStart, angleRadEnd, endCaps );
+		[OvldGenCallTarget] static void Arc_Internal( [OvldDefault( nameof(DiscRadius) )] float radius,
+													  [OvldDefault( nameof(RingThickness) )] float thickness,
+													  [OvldDefault( nameof(Color) )] Color colorInnerStart,
+													  [OvldDefault( nameof(Color) )] Color colorOuterStart,
+													  [OvldDefault( nameof(Color) )] Color colorInnerEnd,
+													  [OvldDefault( nameof(Color) )] Color colorOuterEnd,
+													  float angleRadStart,
+													  float angleRadEnd,
+													  [OvldDefault( nameof(ArcEndCap) + "." + nameof(ArcEndCap.None) )] ArcEndCap endCaps,
+													  [OvldDefault( nameof(RingDashStyle) )] DashStyle dashStyle = null ) {
+			DiscCore( true, true, radius, thickness, colorInnerStart, colorOuterStart, colorInnerEnd, colorOuterEnd, dashStyle, angleRadStart, angleRadEnd, endCaps );
 		}
 
-		static void DiscCore( ShapesBlendMode blendMode, ThicknessSpace spaceRadius, ThicknessSpace spaceThickness, bool hollow, bool sector, Vector3 pos, Quaternion rot, float radius, float thickness, Color colorInnerStart, Color colorOuterStart, Color colorInnerEnd, Color colorOuterEnd, DashStyle dashStyle = null, float angleRadStart = 0f, float angleRadEnd = 0f, ArcEndCap arcEndCaps = ArcEndCap.None ) {
+		static readonly MpbDisc mpbDisc = new MpbDisc();
+
+		static void DiscCore( bool hollow, bool sector, float radius, float thickness, Color colorInnerStart, Color colorOuterStart, Color colorInnerEnd, Color colorOuterEnd, DashStyle dashStyle = null, float angleRadStart = 0f, float angleRadEnd = 0f, ArcEndCap arcEndCaps = ArcEndCap.None ) {
 			if( sector && Mathf.Abs( angleRadEnd - angleRadStart ) < 0.0001f )
 				return;
-			Material mat = ShapesMaterialUtils.GetDiscMaterial( hollow, sector )[blendMode];
-			ApplyGlobalProperties( mat );
-			mat.SetFloat( ShapesMaterialUtils.propRadius, radius );
-			mat.SetInt( ShapesMaterialUtils.propRadiusSpace, (int)spaceRadius );
-			mat.SetInt( ShapesMaterialUtils.propAlignment, (int)Draw.DiscGeometry );
-			if( hollow ) {
-				mat.SetInt( ShapesMaterialUtils.propThicknessSpace, (int)spaceThickness );
-				mat.SetFloat( ShapesMaterialUtils.propThickness, thickness );
-				mat.SetInt( ShapesMaterialUtils.propScaleMode, (int)ScaleMode );
+
+			using( new IMDrawer( mpbDisc, ShapesMaterialUtils.GetDiscMaterial( hollow, sector )[Draw.BlendMode], ShapesMeshUtils.QuadMesh[0] ) ) {
+				MetaMpb.ApplyDashSettings( mpbDisc, dashStyle, thickness );
+				mpbDisc.radius.Add( radius );
+				mpbDisc.radiusSpace.Add( (int)Draw.DiscRadiusSpace );
+				mpbDisc.alignment.Add( (int)Draw.DiscGeometry );
+				mpbDisc.thicknessSpace.Add( (int)Draw.RingThicknessSpace );
+				mpbDisc.thickness.Add( thickness );
+				mpbDisc.scaleMode.Add( (int)ScaleMode );
+				mpbDisc.angStart.Add( angleRadStart );
+				mpbDisc.angEnd.Add( angleRadEnd );
+				mpbDisc.roundCaps.Add( (int)arcEndCaps );
+				mpbDisc.color.Add( colorInnerStart.ColorSpaceAdjusted() );
+				mpbDisc.colorOuterStart.Add( colorOuterStart.ColorSpaceAdjusted() );
+				mpbDisc.colorInnerEnd.Add( colorInnerEnd.ColorSpaceAdjusted() );
+				mpbDisc.colorOuterEnd.Add( colorOuterEnd.ColorSpaceAdjusted() );
 			}
-
-			if( sector ) {
-				mat.SetFloat( ShapesMaterialUtils.propAngStart, angleRadStart );
-				mat.SetFloat( ShapesMaterialUtils.propAngEnd, angleRadEnd );
-				if( hollow )
-					mat.SetFloat( ShapesMaterialUtils.propRoundCaps, (int)arcEndCaps );
-			}
-
-			mat.SetColor( ShapesMaterialUtils.propColor, colorInnerStart );
-			mat.SetColor( ShapesMaterialUtils.propColorOuterStart, colorOuterStart );
-			mat.SetColor( ShapesMaterialUtils.propColorInnerEnd, colorInnerEnd );
-			mat.SetColor( ShapesMaterialUtils.propColorOuterEnd, colorOuterEnd );
-
-			ApplyDashSettings( mat, dashStyle, thickness );
-
-			DrawMesh( pos, rot, ShapesMeshUtils.QuadMesh, mat );
 		}
 
+		static readonly MpbRegularPolygon mpbRegularPolygon = new MpbRegularPolygon();
 
-		[OvldGenCallTarget] public static void RegularPolygon( [OvldDefault( nameof(BlendMode) )] ShapesBlendMode blendMode,
-															   [OvldDefault( nameof(RegularPolygonRadiusSpace) )] ThicknessSpace spaceRadius,
-															   [OvldDefault( nameof(RegularPolygonThicknessSpace) )] ThicknessSpace spaceThickness,
-															   Vector3 pos,
-															   [OvldDefault( "Quaternion.identity" )] Quaternion rot,
-															   [OvldDefault( nameof(RegularPolygonSideCount) )] int sideCount,
-															   [OvldDefault( nameof(RegularPolygonRadius) )] float radius,
-															   [OvldDefault( nameof(RegularPolygonThickness) )] float thickness,
-															   [OvldDefault( nameof(Color) )] Color color,
-															   bool hollow,
-															   [OvldDefault( "0f" )] float roundness,
-															   [OvldDefault( "0f" )] float angle,
-															   [OvldDefault( nameof(PolygonShapeFill) )] ShapeFill fill ) {
-			Material mat = ShapesMaterialUtils.matRegularPolygon[blendMode];
-			ApplyGlobalProperties( mat );
-			mat.SetFloat( ShapesMaterialUtils.propRadius, radius );
-			mat.SetInt( ShapesMaterialUtils.propRadiusSpace, (int)spaceRadius );
-			mat.SetInt( ShapesMaterialUtils.propAlignment, (int)Draw.RegularPolygonGeometry );
-			mat.SetInt( ShapesMaterialUtils.propSides, Mathf.Max( 3, sideCount ) );
-			mat.SetFloat( ShapesMaterialUtils.propAng, angle );
-			mat.SetFloat( ShapesMaterialUtils.propRoundness, roundness );
-
-			mat.SetInt( ShapesMaterialUtils.propHollow, hollow.AsInt() );
-			if( hollow ) {
-				mat.SetInt( ShapesMaterialUtils.propThicknessSpace, (int)spaceThickness );
-				mat.SetFloat( ShapesMaterialUtils.propThickness, thickness );
-				mat.SetInt( ShapesMaterialUtils.propScaleMode, (int)ScaleMode );
+		[OvldGenCallTarget] static void RegularPolygon_Internal( [OvldDefault( nameof(RegularPolygonSideCount) )] int sideCount,
+																 [OvldDefault( nameof(RegularPolygonRadius) )] float radius,
+																 [OvldDefault( nameof(RegularPolygonThickness) )] float thickness,
+																 [OvldDefault( nameof(Color) )] Color color,
+																 bool hollow,
+																 [OvldDefault( "0f" )] float roundness,
+																 [OvldDefault( "0f" )] float angle,
+																 [OvldDefault( nameof(PolygonShapeFill) )] ShapeFill fill ) {
+			using( new IMDrawer( mpbRegularPolygon, ShapesMaterialUtils.matRegularPolygon[Draw.BlendMode], ShapesMeshUtils.QuadMesh[0] ) ) {
+				MetaMpb.ApplyColorOrFill( mpbRegularPolygon, fill, color );
+				mpbRegularPolygon.radius.Add( radius );
+				mpbRegularPolygon.radiusSpace.Add( (int)Draw.RegularPolygonRadiusSpace );
+				mpbRegularPolygon.geometry.Add( (int)Draw.RegularPolygonGeometry );
+				mpbRegularPolygon.sides.Add( Mathf.Max( 3, sideCount ) );
+				mpbRegularPolygon.angle.Add( angle );
+				mpbRegularPolygon.roundness.Add( roundness );
+				mpbRegularPolygon.hollow.Add( hollow.AsInt() );
+				mpbRegularPolygon.thicknessSpace.Add( (int)Draw.RegularPolygonThicknessSpace );
+				mpbRegularPolygon.thickness.Add( thickness );
+				mpbRegularPolygon.scaleMode.Add( (int)ScaleMode );
 			}
-
-			TryApplyFillAndColor( mat, fill, color );
-
-			DrawMesh( pos, rot, ShapesMeshUtils.QuadMesh, mat );
 		}
 
+		static readonly MpbRectangle mpbRectangle = new MpbRectangle();
 
-		[OvldGenCallTarget] public static void Rectangle( [OvldDefault( nameof(BlendMode) )] ShapesBlendMode blendMode,
-														  [OvldDefault( "false" )] bool hollow,
-														  [OvldDefault( "Vector3.zero" )] Vector3 pos,
-														  [OvldDefault( "Quaternion.identity" )] Quaternion rot,
-														  Rect rect,
-														  [OvldDefault( nameof(Color) )] Color color,
-														  [OvldDefault( "0f" )] float thickness = 0f,
-														  [OvldDefault( "default" )] Vector4 cornerRadii = default ) {
+		[OvldGenCallTarget] static void Rectangle_Internal( [OvldDefault( nameof(BlendMode) )] ShapesBlendMode blendMode,
+															[OvldDefault( "false" )] bool hollow,
+															Rect rect,
+															[OvldDefault( nameof(Color) )] Color color,
+															[OvldDefault( nameof(RectangleThickness) )] float thickness,
+															[OvldDefault( "default" )] Vector4 cornerRadii,
+															[OvldDefault( nameof(PolygonShapeFill) )] ShapeFill fill ) {
 			bool rounded = ShapesMath.MaxComp( cornerRadii ) >= 0.0001f;
 
 			// positive vibes only
@@ -266,138 +235,136 @@ namespace Shapes {
 			if( rect.height < 0 ) rect.y -= rect.height *= -1;
 
 			if( hollow && thickness * 2 >= Mathf.Min( rect.width, rect.height ) ) hollow = false;
-			Material mat = ShapesMaterialUtils.GetRectMaterial( hollow, rounded )[blendMode];
-			ApplyGlobalProperties( mat );
-			mat.SetColor( ShapesMaterialUtils.propColor, color );
-			mat.SetVector( ShapesMaterialUtils.propRect, rect.ToVector4() );
-			if( rounded ) mat.SetVector( ShapesMaterialUtils.propCornerRadii, cornerRadii );
-			if( hollow ) {
-				mat.SetFloat( ShapesMaterialUtils.propThickness, thickness );
-				mat.SetInt( ShapesMaterialUtils.propScaleMode, (int)ScaleMode );
+
+			using( new IMDrawer( mpbRectangle, ShapesMaterialUtils.GetRectMaterial( hollow, rounded )[blendMode], ShapesMeshUtils.QuadMesh[0] ) ) {
+				MetaMpb.ApplyColorOrFill( mpbRectangle, fill, color );
+				mpbRectangle.rect.Add( rect.ToVector4() );
+				mpbRectangle.cornerRadii.Add( cornerRadii );
+				mpbRectangle.thickness.Add( thickness );
+				mpbRectangle.thicknessSpace.Add( (int)Draw.RegularPolygonThicknessSpace );
+				mpbRectangle.scaleMode.Add( (int)ScaleMode );
 			}
-
-			DrawMesh( pos, rot, ShapesMeshUtils.QuadMesh, mat );
 		}
 
-		[OvldGenCallTarget] public static void Triangle( [OvldDefault( nameof(BlendMode) )] ShapesBlendMode blendMode,
-														 Vector3 a,
-														 Vector3 b,
-														 Vector3 c,
-														 [OvldDefault( nameof(Color) )] Color colorA,
-														 [OvldDefault( nameof(Color) )] Color colorB,
-														 [OvldDefault( nameof(Color) )] Color colorC ) {
-			Material mat = ShapesMaterialUtils.matTriangle[blendMode];
-			ApplyGlobalProperties( mat );
-			mat.SetVector( ShapesMaterialUtils.propA, a );
-			mat.SetVector( ShapesMaterialUtils.propB, b );
-			mat.SetVector( ShapesMaterialUtils.propC, c );
-			mat.SetColor( ShapesMaterialUtils.propColor, colorA );
-			mat.SetColor( ShapesMaterialUtils.propColorB, colorB );
-			mat.SetColor( ShapesMaterialUtils.propColorC, colorC );
-			DrawMesh( Vector3.zero, Quaternion.identity, ShapesMeshUtils.TriangleMesh, mat );
+		static MpbTriangle mpbTriangle = new MpbTriangle();
+
+		[OvldGenCallTarget] static void Triangle_Internal( Vector3 a,
+														   Vector3 b,
+														   Vector3 c,
+														   bool hollow,
+														   [OvldDefault( nameof(TriangleThickness) )] float thickness,
+														   [OvldDefault( "0f" )] float roundness,
+														   [OvldDefault( nameof(Color) )] Color colorA,
+														   [OvldDefault( nameof(Color) )] Color colorB,
+														   [OvldDefault( nameof(Color) )] Color colorC ) {
+			using( new IMDrawer( mpbTriangle, ShapesMaterialUtils.matTriangle[Draw.BlendMode], ShapesMeshUtils.TriangleMesh[0] ) ) {
+				mpbTriangle.a.Add( a );
+				mpbTriangle.b.Add( b );
+				mpbTriangle.c.Add( c );
+				mpbTriangle.color.Add( colorA.ColorSpaceAdjusted() );
+				mpbTriangle.colorB.Add( colorB.ColorSpaceAdjusted() );
+				mpbTriangle.colorC.Add( colorC.ColorSpaceAdjusted() );
+				mpbTriangle.roundness.Add( roundness );
+				mpbTriangle.hollow.Add( hollow.AsInt() );
+				mpbTriangle.thicknessSpace.Add( (int)Draw.RegularPolygonThicknessSpace );
+				mpbTriangle.thickness.Add( thickness );
+				mpbTriangle.scaleMode.Add( (int)ScaleMode );
+			}
 		}
 
-		[OvldGenCallTarget] public static void Quad( [OvldDefault( nameof(BlendMode) )] ShapesBlendMode blendMode,
-													 Vector3 a,
-													 Vector3 b,
-													 Vector3 c,
-													 [OvldDefault( "a + ( c - b )" )] Vector3 d,
-													 [OvldDefault( nameof(Color) )] Color colorA,
-													 [OvldDefault( nameof(Color) )] Color colorB,
-													 [OvldDefault( nameof(Color) )] Color colorC,
-													 [OvldDefault( nameof(Color) )] Color colorD ) {
-			Material mat = ShapesMaterialUtils.matQuad[blendMode];
-			ApplyGlobalProperties( mat );
-			mat.SetVector( ShapesMaterialUtils.propA, a );
-			mat.SetVector( ShapesMaterialUtils.propB, b );
-			mat.SetVector( ShapesMaterialUtils.propC, c );
-			mat.SetVector( ShapesMaterialUtils.propD, d );
-			mat.SetColor( ShapesMaterialUtils.propColor, colorA );
-			mat.SetColor( ShapesMaterialUtils.propColorB, colorB );
-			mat.SetColor( ShapesMaterialUtils.propColorC, colorC );
-			mat.SetColor( ShapesMaterialUtils.propColorD, colorD );
-			DrawMesh( Vector3.zero, Quaternion.identity, ShapesMeshUtils.QuadMesh, mat );
+		static MpbQuad mpbQuad = new MpbQuad();
+
+		[OvldGenCallTarget] static void Quad_Internal( Vector3 a,
+													   Vector3 b,
+													   Vector3 c,
+													   [OvldDefault( "a + ( c - b )" )] Vector3 d,
+													   [OvldDefault( nameof(Color) )] Color colorA,
+													   [OvldDefault( nameof(Color) )] Color colorB,
+													   [OvldDefault( nameof(Color) )] Color colorC,
+													   [OvldDefault( nameof(Color) )] Color colorD ) {
+			using( new IMDrawer( mpbQuad, ShapesMaterialUtils.matQuad[Draw.BlendMode], ShapesMeshUtils.QuadMesh[0] ) ) {
+				mpbQuad.a.Add( a );
+				mpbQuad.b.Add( b );
+				mpbQuad.c.Add( c );
+				mpbQuad.d.Add( d );
+				mpbQuad.color.Add( colorA.ColorSpaceAdjusted() );
+				mpbQuad.colorB.Add( colorB.ColorSpaceAdjusted() );
+				mpbQuad.colorC.Add( colorC.ColorSpaceAdjusted() );
+				mpbQuad.colorD.Add( colorD.ColorSpaceAdjusted() );
+			}
 		}
 
-		[OvldGenCallTarget] public static void Sphere( [OvldDefault( nameof(BlendMode) )] ShapesBlendMode blendMode,
-													   [OvldDefault( nameof(SphereRadiusSpace) )] ThicknessSpace spaceRadius,
-													   Vector3 pos,
-													   [OvldDefault( nameof(SphereRadius) )] float radius,
+
+		static readonly MpbSphere metaMpbSphere = new MpbSphere();
+
+		[OvldGenCallTarget] static void Sphere_Internal( [OvldDefault( nameof(SphereRadius) )] float radius,
+														 [OvldDefault( nameof(Color) )] Color color ) {
+			using( new IMDrawer( metaMpbSphere, ShapesMaterialUtils.matSphere[Draw.BlendMode], ShapesMeshUtils.SphereMesh[(int)DetailLevel] ) ) {
+				metaMpbSphere.color.Add( color.ColorSpaceAdjusted() );
+				metaMpbSphere.radius.Add( radius );
+				metaMpbSphere.radiusSpace.Add( (float)Draw.SphereRadiusSpace );
+			}
+		}
+
+		static readonly MpbCone mpbCone = new MpbCone();
+
+		[OvldGenCallTarget] static void Cone_Internal( float radius,
+													   float length,
+													   [OvldDefault( "true" )] bool fillCap,
 													   [OvldDefault( nameof(Color) )] Color color ) {
-			Material mat = ShapesMaterialUtils.matSphere[blendMode];
-			ApplyGlobalProperties( mat );
-			mat.SetColor( ShapesMaterialUtils.propColor, color );
-			mat.SetFloat( ShapesMaterialUtils.propRadius, radius );
-			mat.SetInt( ShapesMaterialUtils.propRadiusSpace, (int)spaceRadius );
-			DrawMesh( pos, Quaternion.identity, ShapesMeshUtils.SphereMesh, mat );
+			Mesh mesh = fillCap ? ShapesMeshUtils.ConeMesh[(int)DetailLevel] : ShapesMeshUtils.ConeMeshUncapped[(int)DetailLevel];
+			using( new IMDrawer( mpbCone, ShapesMaterialUtils.matCone[Draw.BlendMode], mesh ) ) {
+				mpbCone.color.Add( color.ColorSpaceAdjusted() );
+				mpbCone.radius.Add( radius );
+				mpbCone.length.Add( length );
+				mpbCone.sizeSpace.Add( (float)Draw.ConeSizeSpace );
+			}
 		}
 
-		[OvldGenCallTarget] public static void Cone( [OvldDefault( nameof(BlendMode) )] ShapesBlendMode blendMode,
-													 [OvldDefault( nameof(ConeSizeSpace) )] ThicknessSpace sizeSpace,
-													 Vector3 pos,
-													 [OvldDefault( "Quaternion.identity" )] Quaternion rot,
-													 float radius,
-													 float length,
-													 [OvldDefault( "true" )] bool fillCap,
-													 [OvldDefault( nameof(Color) )] Color color ) {
-			Material mat = ShapesMaterialUtils.matCone[blendMode];
-			ApplyGlobalProperties( mat );
-			mat.SetColor( ShapesMaterialUtils.propColor, color );
-			mat.SetFloat( ShapesMaterialUtils.propRadius, radius );
-			mat.SetFloat( ShapesMaterialUtils.propLength, length );
-			mat.SetInt( ShapesMaterialUtils.propSizeSpace, (int)sizeSpace );
-			DrawMesh( pos, rot, fillCap ? ShapesMeshUtils.ConeMesh : ShapesMeshUtils.ConeMeshUncapped, mat );
+		static readonly MpbCuboid mpbCuboid = new MpbCuboid();
+
+		[OvldGenCallTarget] static void Cuboid_Internal( Vector3 size,
+														 [OvldDefault( nameof(Color) )] Color color ) {
+			using( new IMDrawer( mpbCuboid, ShapesMaterialUtils.matCuboid[Draw.BlendMode], ShapesMeshUtils.CuboidMesh[0] ) ) {
+				mpbCuboid.color.Add( color.ColorSpaceAdjusted() );
+				mpbCuboid.size.Add( size );
+				mpbCuboid.sizeSpace.Add( (float)Draw.CuboidSizeSpace );
+			}
 		}
 
-		[OvldGenCallTarget] public static void Cuboid( [OvldDefault( nameof(BlendMode) )] ShapesBlendMode blendMode,
-													   [OvldDefault( nameof(CuboidSizeSpace) )] ThicknessSpace sizeSpace,
-													   Vector3 pos,
-													   [OvldDefault( "Quaternion.identity" )] Quaternion rot,
-													   Vector3 size,
-													   [OvldDefault( nameof(Color) )] Color color ) {
-			Material mat = ShapesMaterialUtils.matCuboid[blendMode];
-			ApplyGlobalProperties( mat );
-			mat.SetColor( ShapesMaterialUtils.propColor, color );
-			mat.SetVector( ShapesMaterialUtils.propSize, size );
-			mat.SetInt( ShapesMaterialUtils.propSizeSpace, (int)sizeSpace );
-			DrawMesh( pos, rot, ShapesMeshUtils.CuboidMesh, mat );
-		}
+		static MpbTorus mpbTorus = new MpbTorus();
 
-		[OvldGenCallTarget] public static void Torus( [OvldDefault( nameof(BlendMode) )] ShapesBlendMode blendMode,
-													  [OvldDefault( nameof(TorusRadiusSpace) )] ThicknessSpace spaceRadius,
-													  [OvldDefault( nameof(TorusThicknessSpace) )] ThicknessSpace spaceThickness,
-													  Vector3 pos,
-													  [OvldDefault( "Quaternion.identity" )] Quaternion rot,
-													  float radius,
-													  float thickness,
-													  [OvldDefault( nameof(Color) )] Color color ) {
+		[OvldGenCallTarget] static void Torus_Internal( float radius,
+														float thickness,
+														[OvldDefault( nameof(Color) )] Color color ) {
 			if( thickness < 0.0001f )
 				return;
 			if( radius < 0.00001f ) {
-				Sphere( blendMode, spaceThickness, pos, thickness, color );
+				ThicknessSpace cached = Draw.SphereRadiusSpace;
+				Draw.SphereRadiusSpace = Draw.TorusThicknessSpace;
+				Sphere( thickness / 2, color );
+				Draw.SphereRadiusSpace = cached;
 				return;
 			}
 
-			Material mat = ShapesMaterialUtils.matTorus[blendMode];
-			ApplyGlobalProperties( mat );
-			mat.SetColor( ShapesMaterialUtils.propColor, color );
-			mat.SetFloat( ShapesMaterialUtils.propRadius, radius );
-			mat.SetFloat( ShapesMaterialUtils.propThickness, thickness );
-			mat.SetInt( ShapesMaterialUtils.propRadiusSpace, (int)spaceRadius );
-			mat.SetInt( ShapesMaterialUtils.propThicknessSpace, (int)spaceThickness );
-			mat.SetInt( ShapesMaterialUtils.propScaleMode, (int)ScaleMode );
-			DrawMesh( pos, rot, ShapesMeshUtils.TorusMesh, mat );
+			using( new IMDrawer( mpbTorus, ShapesMaterialUtils.matTorus[Draw.BlendMode], ShapesMeshUtils.TorusMesh[(int)DetailLevel] ) ) {
+				mpbTorus.color.Add( color.ColorSpaceAdjusted() );
+				mpbTorus.radius.Add( radius );
+				mpbTorus.thickness.Add( thickness );
+				mpbTorus.spaceRadius.Add( (int)Draw.TorusRadiusSpace );
+				mpbTorus.spaceThickness.Add( (int)Draw.TorusThicknessSpace );
+				mpbTorus.scaleMode.Add( (int)Draw.ScaleMode );
+			}
 		}
 
-		[OvldGenCallTarget] public static void Text( Vector3 pos,
-													 [OvldDefault( "Quaternion.identity" )] Quaternion rot,
-													 string content,
-													 [OvldDefault( nameof(Font) )] TMP_FontAsset font,
-													 [OvldDefault( nameof(FontSize) )] float fontSize,
-													 [OvldDefault( nameof(TextAlign) )] TextAlign align,
-													 [OvldDefault( nameof(Color) )] Color color ) {
-			TextMeshPro tmp = ShapesTextDrawer.Instance.tmp;
+		static MpbText mpbText = new MpbText();
 
+		[OvldGenCallTarget] static void Text_Internal( string content,
+													   [OvldDefault( nameof(Font) )] TMP_FontAsset font,
+													   [OvldDefault( nameof(FontSize) )] float fontSize,
+													   [OvldDefault( nameof(TextAlign) )] TextAlign align,
+													   [OvldDefault( nameof(Color) )] Color color ) {
+			TextMeshPro tmp = ShapesTextDrawer.Instance.tmp;
 			// Statics
 			tmp.font = font;
 			tmp.color = color;
@@ -407,53 +374,25 @@ namespace Shapes {
 			tmp.text = content;
 			tmp.alignment = align.GetTMPAlignment();
 			tmp.rectTransform.pivot = align.GetPivot();
-			tmp.transform.position = pos;
-			tmp.rectTransform.rotation = rot;
+			tmp.transform.position = Matrix.GetColumn( 3 );
+			tmp.rectTransform.rotation = Matrix.rotation;
 			tmp.ForceMeshUpdate();
 
-			// Actually draw
-			font.material.SetPass( 0 );
-			Matrix4x4 mtx = GetDrawingMatrix( tmp.transform.position, tmp.transform.rotation );
-			for( int sm = 0; sm < tmp.mesh.subMeshCount; sm++ )
-				Graphics.DrawMeshNow( tmp.mesh, mtx, sm );
-		}
-
-		static Matrix4x4 GetDrawingMatrix( Vector3 pos, Quaternion rot ) {
-			Matrix4x4 mtx = Matrix4x4.TRS( pos, rot, Vector3.one );
-			if( hasCustomMatrix )
-				mtx = matrix * mtx;
-			return mtx;
-		}
-
-		public static void DrawMesh( Vector3 pos, Quaternion rot, Mesh mesh, Material mat ) {
-			mat.SetPass( 0 );
-			Matrix4x4 mtx = GetDrawingMatrix( pos, rot );
-			//MaterialPropertyBlock mpb = new MaterialPropertyBlock();
-			//mpb.SetColor( MaterialUtils.propColor, color );
-			for( int sm = 0; sm < mesh.subMeshCount; sm++ ) {
-				// Graphics.DrawMesh( mesh, mtx, mat, 0, null, sm, mpb );
-				Graphics.DrawMeshNow( mesh, mtx, sm );
+			using( new IMDrawer( mpbText, font.material, tmp.mesh, cachedTMP: true ) ) {
+				// will draw on dispose
 			}
 		}
 
-		// used for polyline. 0 = lines, 1 = caps
-		static void DrawTwoSubmeshes( Vector3 pos, Quaternion rot, Mesh mesh, Material mat0, Material mat1 ) {
-			Matrix4x4 mtx = GetDrawingMatrix( pos, rot );
-			mat0.SetPass( 0 );
-			Graphics.DrawMeshNow( mesh, mtx, 0 );
-			mat1.SetPass( 0 );
-			Graphics.DrawMeshNow( mesh, mtx, 1 );
-		}
 
 	}
 
 	// these are used by CodegenDrawOverloads
 	[AttributeUsage( AttributeTargets.Method )]
-	public class OvldGenCallTarget : Attribute {
+	internal class OvldGenCallTarget : Attribute {
 	}
 
 	[AttributeUsage( AttributeTargets.Parameter )]
-	public class OvldDefault : Attribute {
+	internal class OvldDefault : Attribute {
 		public string @default;
 		public OvldDefault( string @default ) => this.@default = @default;
 	}

@@ -8,11 +8,13 @@ using UnityEngine.Serialization;
 // Website & Documentation - https://acegikmo.com/shapes/
 namespace Shapes {
 
-	[ExecuteInEditMode]
+	/// <summary>A Polyline shape component</summary>
+	[ExecuteAlways]
 	[AddComponentMenu( "Shapes/Polyline" )]
 	public class Polyline : ShapeRenderer {
 
 		#if UNITY_EDITOR
+		/// <summary>"Please use points instead of PolyPoints - this one is deprecated"</summary>
 		[Obsolete( "Please use " + nameof(points) + " instead - this one is deprecated", error: true )]
 		public List<PolylinePoint> PolyPoints => points;
 		#endif
@@ -28,6 +30,7 @@ namespace Shapes {
 
 		// also called alignment
 		[SerializeField] PolylineGeometry geometry = PolylineGeometry.Flat2D;
+		/// <summary>Get or set the geometry type to use for this polyline</summary>
 		public PolylineGeometry Geometry {
 			get => geometry;
 			set {
@@ -39,6 +42,7 @@ namespace Shapes {
 		}
 
 		[SerializeField] PolylineJoins joins = PolylineJoins.Miter;
+		/// <summary>The type of joins to use in all corners of this polyline</summary>
 		public PolylineJoins Joins {
 			get => joins;
 			set {
@@ -48,6 +52,7 @@ namespace Shapes {
 		}
 
 		[SerializeField] bool closed = true;
+		/// <summary>Whether or not this polyline should form a closed loop</summary>
 		public bool Closed {
 			get => closed;
 			set {
@@ -57,18 +62,23 @@ namespace Shapes {
 		}
 
 		[SerializeField] float thickness = 0.125f;
+		/// <summary>The thickness of this polyline in the given thickness space</summary>
 		public float Thickness {
 			get => thickness;
 			set => SetFloatNow( ShapesMaterialUtils.propThickness, thickness = value );
 		}
 
 		[SerializeField] ThicknessSpace thicknessSpace = Shapes.ThicknessSpace.Meters;
+		/// <summary>The space in which Thickness is defined</summary>
 		public ThicknessSpace ThicknessSpace {
 			get => thicknessSpace;
 			set => SetIntNow( ShapesMaterialUtils.propThicknessSpace, (int)( thicknessSpace = value ) );
 		}
 
+		/// <summary>The number of points in this polyline</summary>
 		public int Count => points.Count;
+
+		/// <summary>Get or set a polyline point by index</summary>
 		public PolylinePoint this[ int i ] {
 			get => points[i];
 			set {
@@ -77,6 +87,7 @@ namespace Shapes {
 			}
 		}
 
+		/// <summary>Set a polygon point position by index</summary>
 		public void SetPointPosition( int index, Vector3 position ) {
 			if( index < 0 || index >= Count ) throw new IndexOutOfRangeException();
 			PolylinePoint pp = points[index];
@@ -85,6 +96,7 @@ namespace Shapes {
 			meshOutOfDate = true;
 		}
 
+		/// <summary>Set a polygon point color by index</summary>
 		public void SetPointColor( int index, Color color ) {
 			if( index < 0 || index >= Count ) throw new IndexOutOfRangeException();
 			PolylinePoint pp = points[index];
@@ -93,6 +105,7 @@ namespace Shapes {
 			meshOutOfDate = true;
 		}
 
+		/// <summary>Set a polygon point thickness by index</summary>
 		public void SetPointThickness( int index, float thickness ) {
 			if( index < 0 || index >= Count ) throw new IndexOutOfRangeException();
 			PolylinePoint pp = points[index];
@@ -101,6 +114,7 @@ namespace Shapes {
 			meshOutOfDate = true;
 		}
 
+		/// <summary>Sets all points and their corresponding colors for this polyline</summary>
 		public void SetPoints( IReadOnlyCollection<Vector3> points, IReadOnlyCollection<Color> colors = null ) {
 			this.points.Clear();
 			if( colors == null ) {
@@ -112,6 +126,7 @@ namespace Shapes {
 			}
 		}
 
+		/// <summary>Sets all points and their corresponding colors for this polyline</summary>
 		public void SetPoints( IReadOnlyCollection<Vector2> points, IReadOnlyCollection<Color> colors = null ) {
 			this.points.Clear();
 			if( colors == null ) {
@@ -123,29 +138,39 @@ namespace Shapes {
 			}
 		}
 
+		/// <summary>Sets all points of this polyline</summary>
 		public void SetPoints( IEnumerable<PolylinePoint> points ) {
 			this.points.Clear();
 			AddPoints( points );
 		}
 
+		/// <summary>Adds a set of points to this polyline</summary>
 		public void AddPoints( IEnumerable<PolylinePoint> points ) {
 			this.points.AddRange( points );
 			meshOutOfDate = true;
 		}
 
+		/// <summary>Adds a point to this polyline</summary>
 		public void AddPoint( Vector3 position ) => AddPoint( new PolylinePoint( position ) );
+
+		/// <summary>Adds a point to this polyline</summary>
 		public void AddPoint( Vector3 position, Color color ) => AddPoint( new PolylinePoint( position, color ) );
+
+		/// <summary>Adds a point to this polyline</summary>
 		public void AddPoint( Vector3 position, Color color, float thickness ) => AddPoint( new PolylinePoint( position, color, thickness ) );
+
+		/// <summary>Adds a point to this polyline</summary>
 		public void AddPoint( Vector3 position, float thickness ) => AddPoint( new PolylinePoint( position, Color.white, thickness ) );
 
+		/// <summary>Adds a point to this polyline</summary>
 		public void AddPoint( PolylinePoint point ) {
 			points.Add( point );
 			meshOutOfDate = true;
 		}
 
-		protected override bool UseCamOnPreCull => true;
+		private protected override bool UseCamOnPreCull => true;
 
-		protected override void CamOnPreCull() {
+		internal override void CamOnPreCull() {
 			if( meshOutOfDate ) {
 				meshOutOfDate = false;
 				UpdateMesh( force: true );
@@ -153,25 +178,25 @@ namespace Shapes {
 		}
 
 
-		protected override MeshUpdateMode MeshUpdateMode => MeshUpdateMode.SelfGenerated;
-		protected override void GenerateMesh() => ShapesMeshGen.GenPolylineMesh( Mesh, points, closed, joins, flattenZ: geometry == PolylineGeometry.Flat2D, useColors: true );
+		private protected override MeshUpdateMode MeshUpdateMode => MeshUpdateMode.SelfGenerated;
+		private protected override void GenerateMesh() => ShapesMeshGen.GenPolylineMesh( Mesh, points, closed, joins, flattenZ: geometry == PolylineGeometry.Flat2D, useColors: true );
 
-		protected override void SetAllMaterialProperties() {
+		private protected override void SetAllMaterialProperties() {
 			SetFloat( ShapesMaterialUtils.propThickness, thickness );
 			SetInt( ShapesMaterialUtils.propThicknessSpace, (int)thicknessSpace );
 			SetInt( ShapesMaterialUtils.propAlignment, (int)geometry );
 		}
 
-		protected override void ShapeClampRanges() => thickness = Mathf.Max( 0f, thickness );
+		private protected override void ShapeClampRanges() => thickness = Mathf.Max( 0f, thickness );
 
-		protected override Material[] GetMaterials() {
+		private protected override Material[] GetMaterials() {
 			if( joins.HasJoinMesh() )
 				return new[] { ShapesMaterialUtils.GetPolylineMat( joins )[BlendMode], ShapesMaterialUtils.GetPolylineJoinsMat( joins )[BlendMode] };
 			return new[] { ShapesMaterialUtils.GetPolylineMat( joins )[BlendMode] };
 		}
 
 		// todo: this doesn't take point thickness or thickness space into account
-		protected override Bounds GetBounds() {
+		private protected override Bounds GetBounds_Internal() {
 			if( points.Count < 2 )
 				return default;
 			Vector3 min = Vector3.one * float.MaxValue;

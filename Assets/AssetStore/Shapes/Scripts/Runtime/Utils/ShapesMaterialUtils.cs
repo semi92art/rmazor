@@ -5,12 +5,20 @@ using UnityEngine;
 // Website & Documentation - https://acegikmo.com/shapes/
 namespace Shapes {
 
-	public static class ShapesMaterialUtils {
+	internal static class ShapesMaterialUtils {
 
 		// properties
 		public static readonly int propZTest = Shader.PropertyToID( "_ZTest" ); // used for all shapes
+		public static readonly int propZTestTMP = Shader.PropertyToID( "unity_GUIZTestMode" ); // TMP only
 		public static readonly int propZOffsetFactor = Shader.PropertyToID( "_ZOffsetFactor" ); // used for all shapes
 		public static readonly int propZOffsetUnits = Shader.PropertyToID( "_ZOffsetUnits" ); // used for all shapes
+		public static readonly int propStencilComp = Shader.PropertyToID( "_StencilComp" ); // used for all shapes
+		public static readonly int propStencilOpPass = Shader.PropertyToID( "_StencilOpPass" ); // used for all shapes
+		public static readonly int propStencilID = Shader.PropertyToID( "_StencilID" ); // used for all shapes
+		public static readonly int propStencilIDTMP = Shader.PropertyToID( "_Stencil" ); // TMP only
+		public static readonly int propStencilReadMask = Shader.PropertyToID( "_StencilReadMask" ); // used for all shapes
+		public static readonly int propStencilWriteMask = Shader.PropertyToID( "_StencilWriteMask" ); // used for all shapes
+		public static readonly int propBaseColor = Shader.PropertyToID( "_BaseColor" ); // used only in the sample asset import process
 		public static readonly int propColor = Shader.PropertyToID( "_Color" ); // used for all shapes
 		public static readonly int propScaleMode = Shader.PropertyToID( "_ScaleMode" ); // polyline, lines, discs, rectangle, torus
 		public static readonly int propColorEnd = Shader.PropertyToID( "_ColorEnd" ); // line, & polygon fill

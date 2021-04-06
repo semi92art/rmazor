@@ -2,16 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 #if UNITY_EDITOR
+using System.ComponentModel;
 using UnityEditor;
 #endif
 using System.Linq;
+using System.Reflection;
 using Object = UnityEngine.Object;
 
 // Shapes © Freya Holmér - https://twitter.com/FreyaHolmer/
 // Website & Documentation - https://acegikmo.com/shapes/
 namespace Shapes {
 
-	public static class ShapesExtensions {
+	internal static class ShapesExtensions {
 		public static void ForEach<T>( this IEnumerable<T> elems, Action<T> action ) {
 			foreach( T e in elems )
 				action( e );
@@ -22,6 +24,7 @@ namespace Shapes {
 		public static Vector4 ToVector4( this Rect r ) => new Vector4( r.x, r.y, r.width, r.height );
 		public static float TaxicabMagnitude( this Vector3 v ) => Mathf.Abs( v.x ) + Mathf.Abs( v.y ) + Mathf.Abs( v.z );
 		public static float AvgComponentMagnitude( this Vector3 v ) => ( Mathf.Abs( v.x ) + Mathf.Abs( v.y ) + Mathf.Abs( v.z ) ) / 3;
+		internal static Color ColorSpaceAdjusted( this Color c ) => QualitySettings.activeColorSpace == ColorSpace.Linear ? c.linear : c;
 
 		// because outside of play mode, we have to use DestroyImmediate, but we want to use Destroy otherwise
 		public static void DestroyBranched( this Object obj ) {
@@ -95,8 +98,8 @@ namespace Shapes {
 			first = list.Count > 0 ? list[0] : default(T); // or throw
 			second = list.Count > 1 ? list[1] : default(T); // or throw
 		}
-		
-		public static int GetIntValue(this SerializedProperty prop, int[] indexOverride = null) {
+
+		public static int GetIntValue( this SerializedProperty prop, int[] indexOverride = null ) {
 			int IntNoot() {
 				switch( prop.propertyType ) {
 					case SerializedPropertyType.Enum:    return prop.enumValueIndex;
@@ -109,7 +112,7 @@ namespace Shapes {
 			return indexOverride != null ? Array.IndexOf( indexOverride, value ) : value;
 		}
 
-		public static void SetIntValue( this SerializedProperty prop, int value, int[] indexOverride = null) {
+		public static void SetIntValue( this SerializedProperty prop, int value, int[] indexOverride = null ) {
 			if( indexOverride != null )
 				value = indexOverride[value];
 
@@ -129,10 +132,11 @@ namespace Shapes {
 				bool[] bools = new bool[entryCount];
 				foreach( int shapeID in so.targetObjects.Select( obj => new SerializedObject( obj ).FindProperty( prop.propertyPath ).GetIntValue( indexOverride ) ) ) {
 					int index = indexOverride == null ? shapeID : Array.IndexOf( indexOverride, shapeID );
-					if( index >= entryCount || index < 0)
+					if( index >= entryCount || index < 0 )
 						continue;
 					bools[index] = true;
 				}
+
 				return bools;
 			} else {
 				return null;
@@ -152,6 +156,19 @@ namespace Shapes {
 					yield return currentProperty.Copy();
 				} while( currentProperty.NextVisible( false ) );
 			}
+		}
+
+		// modified version of https://www.codingame.com/playgrounds/2487/c---how-to-display-friendly-names-for-enumerations
+		public static string GetDescription( this Enum GenericEnum ) {
+			Type genericEnumType = GenericEnum.GetType();
+			MemberInfo[] memberInfo = genericEnumType.GetMember( GenericEnum.ToString() );
+			if( memberInfo.Length > 0 ) {
+				object[] attributes = memberInfo[0].GetCustomAttributes( typeof(DescriptionAttribute), false );
+				if( attributes.Any() )
+					return ( (DescriptionAttribute)attributes.ElementAt( 0 ) ).Description;
+			}
+
+			return GenericEnum.ToString();
 		}
 		#endif
 

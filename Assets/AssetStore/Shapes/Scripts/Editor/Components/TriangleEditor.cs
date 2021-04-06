@@ -16,6 +16,10 @@ namespace Shapes {
 		SerializedProperty propColorMode = null;
 		SerializedProperty propColorB = null;
 		SerializedProperty propColorC = null;
+		SerializedProperty propRoundness = null;
+		SerializedProperty propHollow = null;
+		SerializedProperty propThickness = null;
+		SerializedProperty propThicknessSpace = null;
 
 		ScenePointEditor scenePointEditor;
 
@@ -55,6 +59,10 @@ namespace Shapes {
 			base.BeginProperties( showColor: false );
 
 			EditorGUILayout.PropertyField( propColorMode );
+			EditorGUILayout.PropertyField( propRoundness );
+			EditorGUILayout.PropertyField( propHollow );
+			using( new EditorGUI.DisabledScope( propHollow.boolValue == false || propHollow.hasMultipleDifferentValues ) )
+				ShapesUI.FloatInSpaceField( propThickness, propThicknessSpace );
 			if( propColorMode.enumValueIndex == (int)Triangle.TriangleColorMode.Single ) {
 				ShapesUI.PosColorField( "A", propA, base.propColor );
 				ShapesUI.PosColorField( "B", propB, base.propColor, false );

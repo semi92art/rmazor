@@ -125,17 +125,16 @@ namespace Shapes {
 
 		public bool DrawProperties( Editor parentEditor ) {
 			bool changed = soMain.ApplyModifiedProperties(); // this is a little cursed
-			ShapesUI.BeginGroup();
-			using( ShapesUI.TempLabelWidth( 75 ) ) {
-				PropertyHeader( ref changed );
-				using( new EditorGUI.DisabledScope( ShowFillControls ) ) {
-					FillModeProperties( ref changed );
-					// edit button
-					GUIEditButton( "Edit Fill in Scene" );
+			using( new ShapesUI.GroupScope() )
+				using( ShapesUI.TempLabelWidth( 75 ) ) {
+					PropertyHeader( ref changed );
+					using( new EditorGUI.DisabledScope( ShowFillControls ) ) {
+						FillModeProperties( ref changed );
+						// edit button
+						GUIEditButton( "Edit Fill in Scene" );
+					}
 				}
-			}
 
-			ShapesUI.EndGroup();
 			return changed;
 		}
 

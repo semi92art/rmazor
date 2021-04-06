@@ -60,6 +60,7 @@ inline void ApplyAngularMask( inout half mask, VertexOutput i,out half tAngularF
 inline void ApplyEndCaps( inout half mask, VertexOutput i, half2 coord, half ang, half angStart, half angEnd, bool useRoundCaps );
 inline void ApplyDashes( inout half mask, VertexOutput i, half t, half tRadial, half sectorSize );
 inline half4 GetColor( half tRadial, half tAngular );
+inline half4 GetBounds( bool centerAlign, half alignOffset, half angDelta, half innerFrac, half outerFrac );
 
 VertexOutput vert (VertexInput v) {
 	UNITY_SETUP_INSTANCE_ID(v);
@@ -70,9 +71,7 @@ VertexOutput vert (VertexInput v) {
 	half uniformScale = GetUniformScale();
 	half radius = UNITY_ACCESS_INSTANCED_PROP(Props, _Radius) * uniformScale;
 	int radiusSpace = UNITY_ACCESS_INSTANCED_PROP(Props, _RadiusSpace);
-	float3 wPos = LocalToWorldPos( float3(0,0,0) ); // per vertex makes it real wonky so shrug~
-    half3 camRight = CameraToWorldVec( float3(1,0,0) );
-    LineWidthData widthDataRadius = GetScreenSpaceWidthDataSimple( wPos, camRight, radius*2, radiusSpace );
+    LineWidthData widthDataRadius = GetScreenSpaceWidthDataSimple( OBJ_ORIGIN, CAM_RIGHT, radius*2, radiusSpace );
     o.IP_pxCoverage = widthDataRadius.thicknessPixelsTarget;
 
 	// padding correction
@@ -80,6 +79,7 @@ VertexOutput vert (VertexInput v) {
     half radiusInMeters = widthDataRadius.thicknessMeters / 2; // actually, center radius
 	half vertexRadius;
 	half outerRadiusFraction;
+	half innerRadiusFraction = 0;
 	
 	#ifdef INNER_RADIUS
         o.IP_pxPerMeter = widthDataRadius.pxPerMeter;
@@ -87,7 +87,7 @@ VertexOutput vert (VertexInput v) {
         half scaleThickness = scaleMode == SCALE_MODE_UNIFORM ? uniformScale : 1;
 	    half thickness = UNITY_ACCESS_INSTANCED_PROP(Props, _Thickness) * scaleThickness;
 	    int thicknessSpace = UNITY_ACCESS_INSTANCED_PROP(Props, _ThicknessSpace);
-	    LineWidthData widthDataThickness = GetScreenSpaceWidthDataSimple( wPos, camRight, thickness, thicknessSpace );
+	    LineWidthData widthDataThickness = GetScreenSpaceWidthDataSimple( OBJ_ORIGIN, CAM_RIGHT, thickness, thicknessSpace );
 	    half thicknessRadius = widthDataThickness.thicknessMeters / 2;
 	    o.IP_thicknessMeters = widthDataThickness.thicknessMeters;
 	    o.IP_pxCoverage = widthDataThickness.thicknessPixelsTarget; // todo: this isn't properly handling coordinate scaling yet
@@ -95,6 +95,7 @@ VertexOutput vert (VertexInput v) {
 		vertexRadius = radiusOuter + paddingMeters;
 		outerRadiusFraction = radiusOuter / vertexRadius;
 	    o.IP_innerRadiusFraction = (radiusOuter - thicknessRadius*2) / radiusOuter;
+		innerRadiusFraction = o.IP_innerRadiusFraction;
 	    o.IP_centerRadiusMeters = radiusInMeters;
 	    o.IP_uniformScale = uniformScale;
 	#else
@@ -102,12 +103,40 @@ VertexOutput vert (VertexInput v) {
 		outerRadiusFraction = radiusInMeters / vertexRadius;
 	#endif
 	
+
+	// change the bounding box based on angles to save fill rate performance
+	#ifdef SECTOR
+		half angStartRaw = UNITY_ACCESS_INSTANCED_PROP(Props, _AngleStart);
+		half angEndRaw = UNITY_ACCESS_INSTANCED_PROP(Props, _AngleEnd);
+		half angStart = min(angStartRaw,angEndRaw);
+		half angEnd = max(angStartRaw,angEndRaw);
+	
+		half angDeltaRaw = angEnd - angStart;
+		half angDelta = clamp( angDeltaRaw, -TAU, TAU );
+		half angSpan = abs(angDelta);
+
+		half alignOffset = (angSpan-TAU/2)*0.5;
+		bool centerAlign = true;
+		#ifndef INNER_RADIUS
+			if( angSpan <= TAU/2 ) { // don't center align pies until more than half a turn
+				alignOffset = 0; // to corner-align pies better
+				centerAlign = false;
+			}
+		#endif
+	
+		half4 bounds = GetBounds( centerAlign, alignOffset, angDelta, innerRadiusFraction, outerRadiusFraction );
+		v.uv0 = Remap( half2(-1,-1), half2(1,1), bounds.xy, bounds.zw, v.uv0 );
+		v.uv0 = Rotate(v.uv0, angStart + alignOffset);
+		
+	#endif
+	
 	v.vertex.xy = v.uv0 * vertexRadius;
 	v.uv0 /= outerRadiusFraction; // padding correction
+	
 
 	if( UNITY_ACCESS_INSTANCED_PROP(Props, _Alignment) == ALIGNMENT_BILLBOARD ) {
-		half3 frw = WorldToLocalVec( -DirectionToNearPlanePos( wPos ) );
-		half3 camRightLocal = WorldToLocalVec( camRight );
+		half3 frw = WorldToLocalVec( -DirectionToNearPlanePos( OBJ_ORIGIN ) );
+		half3 camRightLocal = WorldToLocalVec( CAM_RIGHT );
 		half3 up = normalize( cross( frw, camRightLocal ) );
 		half3 right = cross( up, frw ); // already normalized
 		v.vertex.xyz = v.vertex.x * right + v.vertex.y * up;
@@ -138,9 +167,51 @@ FRAG_OUTPUT_V4 frag( VertexOutput i ) : SV_Target {
 	#endif
 	mask *= saturate(i.IP_pxCoverage); // pixel fade
 	
-    half4 color = GetColor( tRadial, tAngular );    
+    half4 color = GetColor( tRadial, tAngular );
 	return ShapesOutput( color, mask );
 }
+
+
+// minX, minY, maxX, maxY
+inline half4 GetBounds( bool centerAlign, half alignOffset, half angDelta, half innerFrac, half outerFrac ) {
+	half laaPadding = -(1-outerFrac);
+	half yMinRootRef = laaPadding; // padded for LAA
+	half aSpan = abs(angDelta);
+	half2 dir = AngToDir(aSpan - alignOffset);
+	half2 tipMin = min(0,dir);
+	half tipMaxY = dir.y;
+	#ifdef INNER_RADIUS
+		bool roundCaps = UNITY_ACCESS_INSTANCED_PROP( Props, _RoundCaps );
+		if(roundCaps){
+			half uvRingRadius = (1-innerFrac)*0.5-laaPadding;
+			half2 dirSclCnt = dir*(1-uvRingRadius);
+			yMinRootRef -= uvRingRadius;
+			tipMin = dirSclCnt-uvRingRadius.xx;
+			tipMaxY = dirSclCnt.y+uvRingRadius;
+		} else {
+			half2 dirSclInner = dir*innerFrac+laaPadding;
+			tipMin = min(dirSclInner, dir);
+		}
+	#endif
+
+	half2 minC, maxC;
+	if( centerAlign ){ // arc center always at the top
+		minC.x = aSpan > TAU*0.50 ? -1 : tipMin.x;
+		minC.y = tipMin.y;
+		maxC.x = -minC.x;
+		maxC.y = 1;
+	} else {
+		minC.x = aSpan > TAU*0.50 ? -1 : tipMin.x;
+		half y0 = aSpan > TAU*0.75 ? tipMin.y : min(tipMin.y, yMinRootRef);
+		half y1 = aSpan > TAU*0.25 ? 1 : tipMaxY;
+		minC.y = min(y0,y1);
+		maxC.y = max(y0,y1);
+		maxC.x = 1; // start angle always fully to the right
+	}
+
+	return half4(minC, maxC);
+}
+
 
 inline half ArcLengthToAngle( half radius, half arcLength ){
     return arcLength / radius;
@@ -199,9 +270,9 @@ inline void ApplyRadialMask( inout half mask, VertexOutput i, out half tRadial )
 inline void ApplyAngularMask( inout half mask, VertexOutput i, out half tAngularFull, out half tAngular, out half2 coord, out half ang, out half angStart, out half angEnd, out bool useRoundCaps, out half sectorSize ){
 
     #ifdef SECTOR
-        half angStartInput = UNITY_ACCESS_INSTANCED_PROP(Props, _AngleStart);
-		angStart = angStartInput;
-	    angEnd = UNITY_ACCESS_INSTANCED_PROP(Props, _AngleEnd);
+        angStart = UNITY_ACCESS_INSTANCED_PROP(Props, _AngleStart);
+		angEnd = UNITY_ACCESS_INSTANCED_PROP(Props, _AngleEnd);
+	
 	    // Rotate so that the -pi/pi seam is opposite of the visible segment
 		// 0 is the center of the segment post-rotate
 		half angOffset = -(angEnd + angStart) * 0.5;
@@ -215,10 +286,12 @@ inline void ApplyAngularMask( inout half mask, VertexOutput i, out half tAngular
         coord = -i.IP_uv0;
 	#endif
 	
+	half angDelta = clamp( angEnd - angStart, -TAU, TAU );
+	coord.y *= sign(angDelta); // since start/end is flipped for reversed situations
 	ang = atan2( coord.y, coord.x ); // -pi to pi
-	sectorSize = abs(angEnd - angStart);
-	tAngular = saturate(ang/sectorSize + 0.5); // angular interpolator for color
 	
+	sectorSize = abs(angDelta);
+	tAngular = saturate(ang/sectorSize + 0.5); // angular interpolator for color
 	
 	
 	#ifdef SECTOR

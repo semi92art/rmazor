@@ -5,14 +5,14 @@ using System;
 
 namespace Shapes {
 
-	public enum ShaderPassType {
+	internal enum ShaderPassType {
 		Render,
 		Picking,
 		Selection,
 		DepthOnly
 	}
 
-	public static class ShaderPassTypeExtensions {
+	internal static class ShaderPassTypeExtensions {
 
 		public static (string name, string lightMode) NameAndLightMode( this ShaderPassType pass, RenderPipeline rp ) {
 			switch( pass ) {

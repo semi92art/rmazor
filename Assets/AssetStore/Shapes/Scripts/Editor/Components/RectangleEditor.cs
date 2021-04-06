@@ -17,17 +17,25 @@ namespace Shapes {
 		SerializedProperty propHeight = null;
 		SerializedProperty propPivot = null;
 		SerializedProperty propThickness = null;
+		SerializedProperty propThicknessSpace = null;
+		SerializedProperty propFill = null;
+		SerializedProperty propUseFill = null;
 
+		SceneFillEditor fillEditor;
 		SceneRectEditor rectEditor;
 
 		public override void OnEnable() {
 			base.OnEnable();
 			rectEditor = new SceneRectEditor( this );
+			fillEditor = new SceneFillEditor( this, propFill, propUseFill );
 		}
 
 		void OnSceneGUI() {
 			Rectangle rect = target as Rectangle;
 			bool changed = rectEditor.DoSceneHandles( rect );
+			changed |= fillEditor.DoSceneHandles( rect.UseFill, rect, rect.Fill, rect.transform );
+			if( changed )
+				rect.UpdateAllMaterialProperties();
 		}
 
 		public override void OnInspectorGUI() {
@@ -37,7 +45,7 @@ namespace Shapes {
 
 			using( new EditorGUILayout.HorizontalScope() ) {
 				EditorGUILayout.PrefixLabel( "Type" );
-				ShapesUI.DrawTypeSwitchButtons( propType, ShapesAssets.RectTypeButtonContents );
+				ShapesUI.DrawTypeSwitchButtons( propType, UIAssets.RectTypeButtonContents );
 			}
 
 			EditorGUILayout.PropertyField( propPivot );
@@ -50,9 +58,8 @@ namespace Shapes {
 			}
 
 			bool isHollow = ( (Rectangle)target ).IsHollow;
-			using( new EditorGUI.DisabledScope( !multiEditing && isHollow == false ) ) {
-				EditorGUILayout.PropertyField( propThickness );
-			}
+			using( new EditorGUI.DisabledScope( !multiEditing && isHollow == false ) )
+				ShapesUI.FloatInSpaceField( propThickness, propThicknessSpace );
 
 			bool hasRadius = ( (Rectangle)target ).IsRounded;
 
@@ -62,6 +69,8 @@ namespace Shapes {
 			}
 
 			rectEditor.GUIEditButton();
+
+			fillEditor.DrawProperties( this );
 
 			base.EndProperties();
 		}

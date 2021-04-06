@@ -3,14 +3,20 @@
 
 namespace Shapes {
 
+	/// <summary>Dash style, space &amp; size settings</summary>
 	[System.Serializable]
 	public class DashStyle {
 
 		public static DashStyle DefaultDashStyleRing => new DashStyle( 16 ) { spacing = 0.5f, snap = DashSnapping.Tiling, space = DashSpace.FixedCount };
 		public static DashStyle DefaultDashStyleLine => new DashStyle( 4 );
 
+		/// <summary>The type of dash to use</summary>
 		public DashType type = DashType.Basic;
+
+		/// <summary>The space in which dashes are defined</summary>
 		public DashSpace space = DashSpace.Relative;
+
+		/// <summary>What snapping type to use</summary>
 		public DashSnapping snap = DashSnapping.Off;
 
 		/// <summary>Size of dashes in the specified dash space. When using DashSpace.FixedCount, this is the number of dashes</summary>
@@ -19,7 +25,7 @@ namespace Shapes {
 		/// <summary>An offset of 1 is the size of a whole dash+space period</summary>
 		public float offset = 0f;
 
-		/// <summary>Size of spacing between each dash, in the specified dash space.\nWhen using DashSpace.FixedCount, this is the dash:space ratio</summary>
+		/// <summary>Size of spacing between each dash, in the specified dash space. When using DashSpace.FixedCount, this is the dash:space ratio</summary>
 		public float spacing = 1f;
 
 		/// <summary>-1 to 1 modifier that allows you to tweak or mirror certain dash types</summary>

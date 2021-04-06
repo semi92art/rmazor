@@ -3,9 +3,15 @@
 
 namespace Shapes {
 
+	/// <summary>Various dash types</summary>
 	public enum DashType {
+		/// <summary>Standard dashes</summary>	
 		Basic,
+
+		/// <summary>Angled dashes, similar to hazard stripes</summary>
 		Angled,
+
+		/// <summary>Rounded dashes</summary>
 		Rounded
 	}
 

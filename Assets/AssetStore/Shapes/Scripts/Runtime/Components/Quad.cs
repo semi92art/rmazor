@@ -5,17 +5,29 @@ using UnityEngine;
 // Website & Documentation - https://acegikmo.com/shapes/
 namespace Shapes {
 
-	[ExecuteInEditMode]
+	/// <summary>A Quad shape component</summary>
+	[ExecuteAlways]
 	[AddComponentMenu( "Shapes/Quad" )]
 	public class Quad : ShapeRenderer {
 
+		/// <summary>Gradient color modes for the quad shape</summary>
 		public enum QuadColorMode {
+			/// <summary>A single color for the whole quad</summary>
 			Single,
+
+			/// <summary>Two colors running horizontally across the quad</summary>
 			Horizontal,
+
+			/// <summary>Two colors running vertically across the quad</summary>
 			Vertical,
+
+			/// <summary>One color per corner of the quad</summary>
 			PerCorner
 		}
 
+		/// <summary>Get or set vertex positions by index (clockwise)</summary>
+		/// <param name="index">A value from 0 to 3</param>
+		/// <exception cref="IndexOutOfRangeException"></exception>
 		public Vector3 this[ int index ] {
 			get {
 				switch( index ) {
@@ -47,9 +59,17 @@ namespace Shapes {
 			}
 		}
 
+		/// <summary>Get vertex positions by index (clockwise)</summary>
+		/// <param name="index">An index from 0 to 3</param>
 		public Vector3 GetQuadVertex( int index ) => this[index];
+
+		/// <summary>Set vertex positions by index (clockwise)</summary>
+		/// <param name="index">An index from 0 to 3</param>
+		/// <param name="value">The position to set the vertex to</param>
 		public Vector3 SetQuadVertex( int index, Vector3 value ) => this[index] = value;
 
+		/// <summary>Get vertex color by index (clockwise)</summary>
+		/// <param name="index">An index from 0 to 3</param>
 		public Color GetQuadColor( int index ) {
 			switch( index ) {
 				case 0: return Color;
@@ -61,6 +81,9 @@ namespace Shapes {
 			}
 		}
 
+		/// <summary>Set vertex color by index (clockwise)</summary>
+		/// <param name="index">An index from 0 to 3</param>
+		/// <param name="color">The color to set the vertex to</param>
 		public void SetQuadColor( int index, Color color ) {
 			switch( index ) {
 				case 0:
@@ -81,6 +104,7 @@ namespace Shapes {
 		}
 
 		[SerializeField] QuadColorMode colorMode = QuadColorMode.Single;
+		/// <summary>The color gradient mode to use on this quad</summary>
 		public QuadColorMode ColorMode {
 			get => colorMode;
 			set {
@@ -90,6 +114,7 @@ namespace Shapes {
 		}
 
 		[SerializeField] Vector3 a = new Vector2( -0.5f, -0.5f );
+		/// <summary>Get or set the position of the first vertex (clockwise)</summary>
 		public Vector3 A {
 			get => a;
 			set {
@@ -98,6 +123,7 @@ namespace Shapes {
 			}
 		}
 		[SerializeField] Vector3 b = new Vector2( -0.5f, 0.5f );
+		/// <summary>Get or set the position of the second vertex (clockwise)</summary>
 		public Vector3 B {
 			get => b;
 			set {
@@ -106,6 +132,7 @@ namespace Shapes {
 			}
 		}
 		[SerializeField] Vector3 c = new Vector2( 0.5f, 0.5f );
+		/// <summary>Get or set the position of the third vertex (clockwise)</summary>
 		public Vector3 C {
 			get => c;
 			set {
@@ -114,6 +141,7 @@ namespace Shapes {
 			}
 		}
 		[SerializeField] Vector3 d = new Vector2( 0.5f, -0.5f );
+		/// <summary>Get or set the position of the fourth vertex (clockwise)</summary>
 		public Vector3 D {
 			get => d;
 			set {
@@ -123,11 +151,20 @@ namespace Shapes {
 					SetVector3Now( ShapesMaterialUtils.propD, d = value );
 			}
 		}
-		#if UNITY_EDITOR
-		public bool IsUsingAutoD => autoSetD;
-		#endif
+
+		/// <summary>Whether or not the position of D should be automatically set based on the other points</summary>
+		public bool IsUsingAutoD {
+			get => autoSetD;
+			set {
+				autoSetD = value;
+				AutoSetD();
+			}
+		}
 		[SerializeField] bool autoSetD = false;
+
+		/// <summary>Get an auto-calculated fourth position based on the first three vertices</summary>
 		public Vector3 DAuto => A + ( C - B );
+
 		void AutoSetD() => SetVector3( ShapesMaterialUtils.propD, DAuto );
 
 		void CheckAutoSetD() {
@@ -135,6 +172,7 @@ namespace Shapes {
 				AutoSetD();
 		}
 
+		/// <summary>The color of this shape. The alpha channel is used for opacity/intensity in all blend modes</summary>
 		public override Color Color {
 			get => color;
 			set {
@@ -144,6 +182,7 @@ namespace Shapes {
 				SetColorNow( ShapesMaterialUtils.propColorD, colorD = value );
 			}
 		}
+		/// <summary>The color on the left side (A and B) of this shape when using the horizontal gradient color mode</summary>
 		public Color ColorLeft {
 			get => color;
 			set {
@@ -151,6 +190,7 @@ namespace Shapes {
 				SetColorNow( ShapesMaterialUtils.propColorB, colorB = value );
 			}
 		}
+		/// <summary>The color on the top side (B and C) of this shape when using the vertical gradient color mode</summary>
 		public Color ColorTop {
 			get => colorB;
 			set {
@@ -158,6 +198,7 @@ namespace Shapes {
 				SetColorNow( ShapesMaterialUtils.propColorC, colorC = value );
 			}
 		}
+		/// <summary>The color on the right side (C and D) of this shape when using the horizontal gradient color mode</summary>
 		public Color ColorRight {
 			get => colorC;
 			set {
@@ -165,6 +206,7 @@ namespace Shapes {
 				SetColorNow( ShapesMaterialUtils.propColorD, colorD = value );
 			}
 		}
+		/// <summary>The color on the bottom side (D and A) of this shape when using the vertical gradient color mode</summary>
 		public Color ColorBottom {
 			get => colorD;
 			set {
@@ -173,27 +215,31 @@ namespace Shapes {
 			}
 		}
 
+		/// <summary>Get or set the color of the first vertex (clockwise), when using the per-corner color mode</summary>
 		public Color ColorA {
 			get => color;
 			set => SetColorNow( ShapesMaterialUtils.propColor, color = value );
 		}
-		[SerializeField] [ColorUsage( true, ShapesConfig.USE_HDR_COLOR_PICKERS )] Color colorB = Color.white;
+		[SerializeField] [ShapesColorField( true )] Color colorB = Color.white;
+		/// <summary>Get or set the color of the second vertex (clockwise), when using the per-corner color mode</summary>
 		public Color ColorB {
 			get => colorB;
 			set => SetColorNow( ShapesMaterialUtils.propColorB, colorB = value );
 		}
-		[SerializeField] [ColorUsage( true, ShapesConfig.USE_HDR_COLOR_PICKERS )] Color colorC = Color.white;
+		[SerializeField] [ShapesColorField( true )] Color colorC = Color.white;
+		/// <summary>Get or set the color of the third vertex (clockwise), when using the per-corner color mode</summary>
 		public Color ColorC {
 			get => colorC;
 			set => SetColorNow( ShapesMaterialUtils.propColorC, colorC = value );
 		}
-		[SerializeField] [ColorUsage( true, ShapesConfig.USE_HDR_COLOR_PICKERS )] Color colorD = Color.white;
+		[SerializeField] [ShapesColorField( true )] Color colorD = Color.white;
+		/// <summary>Get or set the color of the fourth vertex (clockwise), when using the per-corner color mode</summary>
 		public Color ColorD {
 			get => colorD;
 			set => SetColorNow( ShapesMaterialUtils.propColorD, colorD = value );
 		}
 
-		protected override void SetAllMaterialProperties() {
+		private protected override void SetAllMaterialProperties() {
 			SetVector3( ShapesMaterialUtils.propA, a );
 			SetVector3( ShapesMaterialUtils.propB, b );
 			SetVector3( ShapesMaterialUtils.propC, c );
@@ -230,11 +276,12 @@ namespace Shapes {
 			}
 		}
 
-		public override bool HasScaleModes => false;
-		protected override Mesh GetInitialMeshAsset() => ShapesMeshUtils.QuadMesh;
-		protected override Material[] GetMaterials() => new[] { ShapesMaterialUtils.matQuad[BlendMode] };
+		internal override bool HasDetailLevels => false;
+		internal override bool HasScaleModes => false;
+		private protected override Mesh GetInitialMeshAsset() => ShapesMeshUtils.QuadMesh[0];
+		private protected override Material[] GetMaterials() => new[] { ShapesMaterialUtils.matQuad[BlendMode] };
 
-		protected override Bounds GetBounds() {
+		private protected override Bounds GetBounds_Internal() {
 			Vector3 min = Vector3.Min( Vector3.Min( a, b ), c );
 			Vector3 max = Vector3.Max( Vector3.Max( a, b ), c );
 			return new Bounds( ( min + max ) / 2, ShapesMath.Abs( max - min ) );

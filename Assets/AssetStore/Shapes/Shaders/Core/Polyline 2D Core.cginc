@@ -44,17 +44,6 @@ struct VertexOutput {
     UNITY_VERTEX_OUTPUT_STEREO
 };
 
-
-void GetMiterOffset( out float3 dir, out float len, float3 aNormal, float3 bNormal, float radius ) {
-    float dotVal = dot(aNormal, bNormal);
-    if (dotVal < -0.99) {
-        dir = float3(0, 0, 0);
-        len = 0;
-    } else {
-        dir = normalize( aNormal + bNormal );
-        len = radius / max(0.0001,dot( dir, bNormal ));
-    }
-}
 void GetSimpleOffset( out float3 dir, out float len, float3 aNormal, float3 bNormal, float radius ){
     float dotVal = dot(aNormal, bNormal);
     if (dotVal < -0.99) {
@@ -82,20 +71,22 @@ VertexOutput vert (VertexInput v) {
     float3 ptNext = 0;
     half3 dirToCam = 0;
     switch( alignment ){
-        case ALIGNMENT_FLAT:
+        case ALIGNMENT_FLAT: {
             // local space
             pt = float3( v.vertex.xy, 0 );
             ptWorld = LocalToWorldPos( pt );
             ptPrev = float3( v.uv1.xy, 0 );
             ptNext = float3( v.uv2.xy, 0 );
-        break;
-        case ALIGNMENT_BILLBOARD:
+            break;
+        }
+        case ALIGNMENT_BILLBOARD: {
             pt = LocalToWorldPos( v.vertex.xyz );
             ptWorld = pt;
             ptPrev = LocalToWorldPos( v.uv1 );
             ptNext = LocalToWorldPos( v.uv2 );
             dirToCam = DirectionToNearPlanePos( pt );
-        break;
+            break;
+        }
     }
     
 
@@ -105,16 +96,18 @@ VertexOutput vert (VertexInput v) {
     half3 normalPrev = 0;
     half3 normalNext = 0;
     switch( alignment ){
-        case ALIGNMENT_FLAT:
+        case ALIGNMENT_FLAT: {
             // local space
             normalPrev = half3( tangentPrev.y, -tangentPrev.x, 0 );
             normalNext = half3( tangentNext.y, -tangentNext.x, 0 );
-        break;
-        case ALIGNMENT_BILLBOARD:
+            break;
+        }
+        case ALIGNMENT_BILLBOARD: {
             // world space
             normalPrev = normalize(cross( dirToCam, tangentPrev ));
             normalNext = normalize(cross( dirToCam, tangentNext ));
-        break;
+            break;
+        }
     }
     
     int scaleMode = UNITY_ACCESS_INSTANCED_PROP(Props, _ScaleMode);
@@ -126,8 +119,7 @@ VertexOutput vert (VertexInput v) {
     
     // radius calc
     int thicknessSpace = UNITY_ACCESS_INSTANCED_PROP(Props, _ThicknessSpace);
-	half3 camRight = CameraToWorldVec( half3( 1, 0, 0 ) );
-	LineWidthData widthData = GetScreenSpaceWidthData( ptWorld, camRight, thickness, thicknessSpace );
+	LineWidthData widthData = GetScreenSpaceWidthData( ptWorld, CAM_RIGHT, thickness, thicknessSpace );
 	o.IP_pxCoverage = widthData.thicknessPixelsTarget / scaleThickness; // hack: this is a lil weird honestly - I think we're mixing local vs world somehere before this
 	half vertexRadius = widthData.thicknessMeters * 0.5;
 	#if LOCAL_ANTI_ALIASING_QUALITY > 0
@@ -194,7 +186,7 @@ VertexOutput vert (VertexInput v) {
         o.origin = pt;
     #endif
 
-    o.color = GammaCorrectVertexColorsIfNeeded(v.color) * UNITY_ACCESS_INSTANCED_PROP(Props, _Color);
+    o.color = v.color * UNITY_ACCESS_INSTANCED_PROP(Props, _Color);
 
     // todo: this causes *bad things* with anti-aliasing
     // it's complicated - this doesn't work due to how barycentric interpolation skews coordinates.
@@ -204,16 +196,14 @@ VertexOutput vert (VertexInput v) {
 
     //float depth = unity_ObjectToWorld[2][3];
     switch( alignment ){
-        case ALIGNMENT_FLAT:
-            // world space
+        case ALIGNMENT_FLAT: {
             o.pos = LocalToClipPos( float4( vertPos, 1 ) );
-        break;
-        case ALIGNMENT_BILLBOARD:
+            break;
+        }
+        case ALIGNMENT_BILLBOARD: {
             o.pos = WorldToClipPos( float4( vertPos, 1 ) );
-            /*// view space
-            vertPos.z = originalClipSpacePos.z;
-            o.pos = float4( vertPos, originalClipSpacePos.w );*/
-        break;
+            break;
+        }
     }
     
     return o;

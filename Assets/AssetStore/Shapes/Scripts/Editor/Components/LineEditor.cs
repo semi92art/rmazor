@@ -44,48 +44,45 @@ namespace Shapes {
 
 		public override void OnInspectorGUI() {
 			SerializedObject so = serializedObject;
-			base.BeginProperties( showColor: false );
+			
+			// show detail edit
+			bool showDetailEdit = targets.OfType<Line>().Any( x => x.Geometry == LineGeometry.Volumetric3D );
+			base.BeginProperties( showColor: false,  canEditDetailLevel: showDetailEdit );
 
 			bool updateGeometry = false;
-
 			EditorGUI.BeginChangeCheck();
 			EditorGUILayout.PropertyField( propGeometry, new GUIContent( "Geometry" ) );
 			if( EditorGUI.EndChangeCheck() )
 				updateGeometry = true;
-
-			// shape (positions & thickness)
-			ShapesUI.BeginGroup();
 			EditorGUILayout.PropertyField( propStart );
 			EditorGUILayout.PropertyField( propEnd );
 			ShapesUI.FloatInSpaceField( propThickness, propThicknessSpace );
 			scenePointEditor.GUIEditButton( "Edit Points in Scene" );
-			ShapesUI.EndGroup();
 
 			// style (color, caps, dashes)
-			ShapesUI.BeginGroup();
-			EditorGUILayout.PropertyField( propColorMode );
-			if( (Line.LineColorMode)propColorMode.enumValueIndex == Line.LineColorMode.Single ) {
-				base.PropertyFieldColor();
-			} else {
+			using( new ShapesUI.GroupScope() ) {
+				EditorGUILayout.PropertyField( propColorMode );
+				if( (Line.LineColorMode)propColorMode.enumValueIndex == Line.LineColorMode.Single ) {
+					base.PropertyFieldColor();
+				} else {
+					using( new EditorGUILayout.HorizontalScope() ) {
+						EditorGUILayout.PrefixLabel( "Colors" );
+						base.PropertyFieldColor( GUIContent.none );
+						EditorGUILayout.PropertyField( propColorEnd, GUIContent.none );
+					}
+				}
+
 				using( new EditorGUILayout.HorizontalScope() ) {
-					EditorGUILayout.PrefixLabel( "Colors" );
-					base.PropertyFieldColor( GUIContent.none );
-					EditorGUILayout.PropertyField( propColorEnd, GUIContent.none );
+					EditorGUILayout.PrefixLabel( "End Caps" );
+					if( ShapesUI.DrawTypeSwitchButtons( propEndCaps, UIAssets.LineCapButtonContents ) )
+						updateGeometry = true;
 				}
 			}
 
-			using( new EditorGUILayout.HorizontalScope() ) {
-				EditorGUILayout.PrefixLabel( "End Caps" );
-				if( ShapesUI.DrawTypeSwitchButtons( propEndCaps, ShapesAssets.LineCapButtonContents ) )
-					updateGeometry = true;
-			}
-
-			ShapesUI.EndGroup();
 
 			// Dashes
-			ShapesUI.BeginGroup();
-			dashEditor.DrawProperties();
-			ShapesUI.EndGroup();
+			using( new ShapesUI.GroupScope() )
+				dashEditor.DrawProperties();
 
 			base.EndProperties();
 

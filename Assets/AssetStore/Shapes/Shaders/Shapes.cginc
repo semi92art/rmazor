@@ -50,13 +50,15 @@ float3 GetFillCoords( float3 localPos, int fillType, int fillSpace, float4 start
 half GetFillGradientT( float3 coords, int fillType, float4 start ){
     float t = 0;
     switch( fillType ){
-    case FILL_TYPE_LINEAR:
-        t = saturate(coords.x); // interpolation is done in the vertex shader so shrug~
-        break;
-    case FILL_TYPE_RADIAL:
-        half radius = start.w;
-        t = saturate( length( coords ) / radius ); // start.w = radius
-        break;
+        case FILL_TYPE_LINEAR: {
+            t = saturate(coords.x); // interpolation is done in the vertex shader so shrug~
+            break;
+        }
+        case FILL_TYPE_RADIAL: {
+            half radius = start.w;
+            t = saturate( length( coords ) / radius ); // start.w = radius
+            break;
+        }
     }
     return t;
 }
@@ -82,14 +84,28 @@ half4 GetFillColor( float3 fillCoords, int fillType, float4 start, half4 color, 
 // used for the final output. supports branching based on opaque vs transparent and outline functions
 inline half4 ShapesOutput( half4 shape_color, float shape_mask ){
     half4 outColor = half4(shape_color.rgb, shape_mask * shape_color.a);
-    
-    clip(outColor.a - VERY_SMOL);
-    
-    #ifdef ADDITIVE
-        outColor.rgb *= outColor.a; // additive fade base on alpha
+
+    clip(outColor.a - VERY_SMOL); // todo: this disallows negative colors, which, might be bad? idk
+
+    // fade toward black if
+    #if defined( SCREEN ) || defined( SUBTRACTIVE ) || defined( ADDITIVE ) || defined( LIGHTEN ) || defined( COLORDODGE )
+        outColor.rgb *= outColor.a;
     #endif
-    #ifdef MULTIPLICATIVE
+
+    // fade toward white if
+    #if defined( MULTIPLICATIVE ) || defined( LINEARBURN ) || defined( DARKEN ) || defined( COLORBURN )
         outColor.rgb = 1 + outColor.a * ( outColor.rgb - 1 ); // lerp(1,b,t) = 1 + t(b - 1);
+    #endif
+
+    // linear burn is additive minus one, so we're doing the subtract here
+    #ifdef LINEARBURN
+        outColor.rgb -= 1;
+    #endif
+    #ifdef COLORDODGE
+        outColor.rgb = 1.0/max(0.00001,1-outColor.rgb);
+    #endif
+    #ifdef COLORBURN
+        outColor.rgb = 1-(1.0/max(0.00001,outColor.rgb));
     #endif
     
     #if defined(SCENE_VIEW_OUTLINE_MASK) || defined(SCENE_VIEW_PICKING)

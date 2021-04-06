@@ -64,16 +64,22 @@ VertexOutput vert(VertexInput v) {
 	half3 tangent;
 	GetDirMag(b - a, /*out*/ tangent, /*out*/ lineLengthVisual);
 
-    half3 normal = 0;
+    half3 normal;
     switch( alignment ){
-        case ALIGNMENT_FLAT:
+        case ALIGNMENT_FLAT: {
             half3 localZ = normalize( half3( UNITY_MATRIX_M[0].z, UNITY_MATRIX_M[1].z, UNITY_MATRIX_M[2].z ) );
             normal = cross( tangent, localZ );
-        break;
-        case ALIGNMENT_BILLBOARD:
+			break;
+	    }
+        case ALIGNMENT_BILLBOARD: {
             half3 camForward = -DirectionToNearPlanePos( vertOrigin );
-            normal = normalize(cross(tangent,camForward));
-        break;
+            normal = normalize(cross(tangent,camForward));   
+			break;
+        }
+    	default: {
+			normal = 0;
+        	break;
+	    }
     }
     
     int scaleMode = UNITY_ACCESS_INSTANCED_PROP(Props, _ScaleMode);

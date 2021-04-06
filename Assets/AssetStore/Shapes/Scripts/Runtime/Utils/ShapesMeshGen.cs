@@ -94,7 +94,7 @@ namespace Shapes {
 
 				// Indices & verts
 				Vector3 vert = flattenZ ? new Vector3( path[i].point.x, path[i].point.y, 0f ) : path[i].point;
-				Color color = useColors ? path[i].color : default;
+				Color color = useColors ? path[i].color.ColorSpaceAdjusted() : default;
 				iv0 = i * vertsPerPathPoint;
 				if( separateJoinMesh ) {
 					iv1 = iv0 + 1; // "prev" outer

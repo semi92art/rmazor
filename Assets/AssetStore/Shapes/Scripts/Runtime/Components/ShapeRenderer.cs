@@ -9,6 +9,7 @@ using UnityEngine.Rendering;
 // Website & Documentation - https://acegikmo.com/shapes/
 namespace Shapes {
 
+	/// <summary>The base type of all shape components</summary>
 	[DisallowMultipleComponent]
 	public abstract class ShapeRenderer : MonoBehaviour {
 
@@ -19,30 +20,34 @@ namespace Shapes {
 		MaterialPropertyBlock mpb;
 		MaterialPropertyBlock Mpb => mpb ?? ( mpb = new MaterialPropertyBlock() ); // hecking, gosh, I want the C#8 ??= operator
 		Material[] instancedMaterials = null; // used when pass tags are anything but the default (eg ZTest != Less Equal, or scale offset is set, or a weird blend mode)
-		public bool IsUsingUniqueMaterials => IsInstanced == false;
+		internal bool IsUsingUniqueMaterials => IsInstanced == false;
 
-		/// <summary>
-		/// Used to mark this mesh as changed. Only required when manually editing the point lists of polygons and polylines, otherwise you shouldn't ever need to use this
-		/// </summary>
-		public bool meshOutOfDate = true;
+		/// <summary>Used to mark this mesh as changed. Only required when manually editing the point lists of polygons and polylines, otherwise you shouldn't ever need to use this</summary>
+		[System.NonSerialized] public bool meshOutOfDate = true;
 
+		/// <summary>The current mesh in use by this shape. Note: Do not directly modify this mesh, it may not update properly or your changes will be overwritten or you'll modify assets. It's here for reading purposes only</summary>
 		public Mesh Mesh {
 			get => mf.sharedMesh;
 			private set => mf.sharedMesh = value;
 		}
+		/// <summary>The sorting layer ID of this renderer</summary>
 		public int SortingLayerID {
 			get => MakeSureComponentExists( ref rnd, out _ ).sortingLayerID;
 			set => MakeSureComponentExists( ref rnd, out _ ).sortingLayerID = value;
 		}
+		/// <summary>The sorting order of this renderer</summary>
 		public int SortingOrder {
 			get => MakeSureComponentExists( ref rnd, out _ ).sortingOrder;
 			set => MakeSureComponentExists( ref rnd, out _ ).sortingOrder = value;
 		}
+
+		/// <summary>Gets the name of the current sorting layer of this renderer</summary>
 		public string SortingLayerName => SortingLayer.IDToName( SortingLayerID );
 
 
 		// Properties
 		[SerializeField] ShapesBlendMode blendMode = ShapesBlendMode.Transparent;
+		/// <summary>What blending mode to use</summary>
 		public ShapesBlendMode BlendMode {
 			get => blendMode;
 			set {
@@ -51,34 +56,113 @@ namespace Shapes {
 			}
 		}
 		[SerializeField] ScaleMode scaleMode = ScaleMode.Uniform;
+		/// <summary>Sets how this shape should behave when scaled</summary>
 		public ScaleMode ScaleMode {
 			get => scaleMode;
 			set => SetIntNow( ShapesMaterialUtils.propScaleMode, (int)( scaleMode = value ) );
 		}
-		[SerializeField] [ColorUsage( true, ShapesConfig.USE_HDR_COLOR_PICKERS )] protected Color color = Color.white;
+		[SerializeField] [ShapesColorField( true )] private protected Color color = Color.white;
+		/// <summary>The color of this shape. The alpha channel is used for opacity/intensity in all blend modes</summary>
 		public virtual Color Color {
 			get => color;
 			set => SetColorNow( ShapesMaterialUtils.propColor, color = value );
+		}
+		[SerializeField] private protected DetailLevel detailLevel = DetailLevel.Medium;
+		/// <summary>What detail level to use for 3D primitives (3D Lines/Sphere/Torus/Cone)</summary>
+		public virtual DetailLevel DetailLevel {
+			get => detailLevel;
+			set {
+				detailLevel = value;
+				UpdateMesh( force: true );
+			}
 		}
 
 		#region instancing breaking pass tags
 
 		// if and only if all are set to their default values
-		bool IsInstanced => zTest == CompareFunction.LessEqual && zOffsetFactor == 0f && zOffsetUnits == 0;
-		[SerializeField] CompareFunction zTest = CompareFunction.LessEqual;
+		bool IsInstanced => UsingDefaultZTests && UsingDefaultStencil;
+
+		// Z testing properties
+		/// <summary>The default Z test (depth test) value of LessEqual</summary>
+		public const CompareFunction DEFAULT_ZTEST = CompareFunction.LessEqual;
+
+		/// <summary>The default Z offset factor of 0</summary>
+		public const float DEFAULT_ZOFS_FACTOR = 0f;
+
+		/// <summary>The default Z offset units of 0</summary>
+		public const int DEFAULT_ZOFS_UNITS = 0;
+
+		bool UsingDefaultZTests => zTest == DEFAULT_ZTEST && zOffsetFactor == DEFAULT_ZOFS_FACTOR && zOffsetUnits == DEFAULT_ZOFS_UNITS;
+		[SerializeField] CompareFunction zTest = DEFAULT_ZTEST;
+		/// <summary>Current depth buffer compare function. Default is CompareFunction.LessEqual</summary>
 		public CompareFunction ZTest {
 			get => zTest;
 			set => SetIntOnAllInstancedMaterials( ShapesMaterialUtils.propZTest, (int)( zTest = value ) );
 		}
-		[SerializeField] float zOffsetFactor = 0f;
+		[SerializeField] float zOffsetFactor = DEFAULT_ZOFS_FACTOR;
+		/// <summary>This ZOffsetFactor scales the maximum Z slope, with respect to X or Y of the polygon,
+		/// while the other ZOffsetUnits, scales the minimum resolvable depth buffer value.
+		/// This allows you to force one polygon to be drawn on top of another although they are actually in the same position.
+		/// For example, if ZOffsetFactor = 0 &amp; ZOffsetUnits = -1, it pulls the polygon closer to the camera,
+		/// ignoring the polygon’s slope, whereas if ZOffsetFactor = -1 &amp; ZOffsetUnits = -1, it will pull the polygon even closer when looking at a grazing angle.</summary>
 		public float ZOffsetFactor {
 			get => zOffsetFactor;
 			set => SetFloatOnAllInstancedMaterials( ShapesMaterialUtils.propZOffsetFactor, zOffsetFactor = value );
 		}
-		[SerializeField] int zOffsetUnits = 0;
+		[SerializeField] int zOffsetUnits = DEFAULT_ZOFS_UNITS;
+		/// <summary>this ZOffsetUnits value scales the minimum resolvable depth buffer value,
+		/// while the other ZOffsetFactor scales the maximum Z slope, with respect to X or Y of the polygon.
+		/// This allows you to force one polygon to be drawn on top of another although they are actually in the same position.
+		/// For example, if ZOffsetFactor = 0 &amp; ZOffsetUnits = -1, it pulls the polygon closer to the camera,
+		/// ignoring the polygon’s slope, whereas if ZOffsetFactor = -1 &amp; ZOffsetUnits = -1, it will pull the polygon even closer when looking at a grazing angle.</summary>
 		public int ZOffsetUnits {
 			get => zOffsetUnits;
-			set => SetFloatOnAllInstancedMaterials( ShapesMaterialUtils.propZOffsetUnits, zOffsetUnits = value );
+			set => SetIntOnAllInstancedMaterials( ShapesMaterialUtils.propZOffsetUnits, zOffsetUnits = value );
+		}
+
+		// stencil
+		/// <summary>The default stencil compare function of CompareFunction.Always</summary>
+		public const CompareFunction DEFAULT_STENCIL_COMP = CompareFunction.Always;
+
+		/// <summary>The default stencil operation of StencilOp.Keep</summary>
+		public const StencilOp DEFAULT_STENCIL_OP = StencilOp.Keep;
+
+		/// <summary>The default stencil ref id 0</summary>
+		public const byte DEFAULT_STENCIL_REF_ID = 0;
+
+		/// <summary>The default stencil mask of 255</summary>
+		public const byte DEFAULT_STENCIL_MASK = 255; // read & write
+
+		bool UsingDefaultStencil => stencilComp == DEFAULT_STENCIL_COMP && stencilOpPass == DEFAULT_STENCIL_OP && stencilRefID == DEFAULT_STENCIL_REF_ID && stencilReadMask == DEFAULT_STENCIL_MASK && stencilWriteMask == DEFAULT_STENCIL_MASK;
+		[SerializeField] CompareFunction stencilComp = DEFAULT_STENCIL_COMP;
+		/// <summary> The stencil buffer function used to compare the reference value to the current contents of the buffer. Default: always </summary>
+		public CompareFunction StencilComp {
+			get => stencilComp;
+			set => SetIntOnAllInstancedMaterials( ShapesMaterialUtils.propStencilComp, (int)( stencilComp = value ) );
+		}
+		[SerializeField] StencilOp stencilOpPass = DEFAULT_STENCIL_OP;
+		/// <summary>What to do with the contents of the stencil buffer if the stencil test (and the depth test) passes. Default: keep</summary>
+		public StencilOp StencilOpPass {
+			get => stencilOpPass;
+			set => SetIntOnAllInstancedMaterials( ShapesMaterialUtils.propStencilOpPass, (int)( stencilOpPass = value ) );
+		}
+		[SerializeField] byte stencilRefID = DEFAULT_STENCIL_REF_ID;
+		/// <summary>The stencil buffer id/reference value to be compared against</summary>
+		public byte StencilRefID {
+			get => stencilRefID;
+			set => SetIntOnAllInstancedMaterials( ShapesMaterialUtils.propStencilID, stencilRefID = value );
+		}
+		[SerializeField] byte stencilReadMask = DEFAULT_STENCIL_MASK;
+		/// <summary>A stencil buffer 8 bit mask as an 0–255 integer, used when comparing the reference value with the contents of the buffer. Default: 255</summary>
+		public byte StencilReadMask {
+			get => stencilReadMask;
+			set => SetIntOnAllInstancedMaterials( ShapesMaterialUtils.propStencilReadMask, stencilReadMask = value );
+		}
+		[SerializeField] byte stencilWriteMask = DEFAULT_STENCIL_MASK;
+		/// <summary>A stencil buffer 8 bit mask as an 0–255 integer, used when writing to the buffer. Note that, like other write masks, it specifies which bits of stencil buffer will be affected by write (i.e. WriteMask 0 means that no bits are affected and not that 0 will be written). Default: 255</summary>
+		public byte StencilWriteMask {
+			get => stencilWriteMask;
+			set => SetIntOnAllInstancedMaterials( ShapesMaterialUtils.propStencilWriteMask, stencilWriteMask = value );
 		}
 
 		#endregion
@@ -98,7 +182,8 @@ namespace Shapes {
 			// UpdateMesh( force:true ); gosh I wish I could do this it would solve so many problems but Unity has some WEIRD quirks here
 		}
 
-		public void HideMeshFilterRenderer() {
+		internal void HideMeshFilterRenderer() {
+			VerifyComponents();
 			const HideFlags flags = HideFlags.HideInInspector; // Hide mesh renderer and filter
 			rnd.hideFlags = flags;
 			mf.hideFlags = flags;
@@ -212,22 +297,19 @@ namespace Shapes {
 			TryDestroyInstancedMaterials( inOnDestroy: true );
 		}
 
+		private protected abstract Bounds GetBounds_Internal();
+		private protected abstract void SetAllMaterialProperties();
+		private protected virtual void ShapeClampRanges() => _ = 0;
+		private protected abstract Material[] GetMaterials();
+		private protected virtual void GenerateMesh() => _ = 0;
+		private protected virtual Mesh GetInitialMeshAsset() => ShapesMeshUtils.QuadMesh[HasDetailLevels ? (int)DetailLevel.Medium : 0];
+		private protected virtual MeshUpdateMode MeshUpdateMode => MeshUpdateMode.UseAsset;
+		internal virtual bool HasScaleModes => true;
+		internal virtual bool HasDetailLevels => true;
+		private protected virtual bool UseCamOnPreCull => false;
+		internal virtual void CamOnPreCull() => _ = 0;
 
-		protected virtual void DrawGizmos( bool selected ) => _ = 0;
-		private void OnDrawGizmos() => DrawGizmos( false );
-		private void OnDrawGizmosSelected() => DrawGizmos( true );
-		protected abstract void SetAllMaterialProperties();
-		protected virtual void ShapeClampRanges() => _ = 0;
-		protected abstract Material[] GetMaterials();
-		protected abstract Bounds GetBounds();
-		protected virtual void GenerateMesh() => _ = 0;
-		protected virtual Mesh GetInitialMeshAsset() => ShapesMeshUtils.QuadMesh;
-		protected virtual MeshUpdateMode MeshUpdateMode => MeshUpdateMode.UseAsset;
-		public virtual bool HasScaleModes => true;
-		protected virtual bool UseCamOnPreCull => false;
-		protected virtual void CamOnPreCull() => _ = 0;
-
-		void UpdateMeshBounds() => Mesh.bounds = GetBounds();
+		void UpdateMeshBounds() => Mesh.bounds = GetBounds_Internal();
 
 
 		void TryDestroyInstancedMaterials( bool inOnDestroy = false ) {
@@ -282,7 +364,7 @@ namespace Shapes {
 			}
 		}
 
-		protected void UpdateMaterial() {
+		private protected void UpdateMaterial() {
 			Material[] targetMats = GetMaterials();
 
 			// this means we have unique material properties for this shape, so, instantiate them
@@ -323,6 +405,9 @@ namespace Shapes {
 		}
 		#endif
 
+		/// <summary>Updates the mesh this object is using.
+		/// If this mesh generates procedural meshes, such as the polygon or polyline, it will regenerate it if force is set to true</summary>
+		/// <param name="force"></param>
 		public void UpdateMesh( bool force = false ) {
 			MeshUpdateMode mode = MeshUpdateMode;
 
@@ -355,8 +440,14 @@ namespace Shapes {
 			}
 		}
 
+		/// <summary><para>Returns the local space bounds</para>
+		/// <para>Note: This does not take into account screen space sizing, so it will only behave as you expect when using meters only</para></summary>
+		public Bounds GetBounds() => GetBounds_Internal();
+
+		/// <summary><para>Returns the world space bounds of the local space bounds</para>
+		/// <para>Note: This does not take into account screen space sizing, so it will only behave as you expect when using meters only</para></summary>
 		public Bounds GetWorldBounds() {
-			Bounds localBounds = GetBounds();
+			Bounds localBounds = GetBounds_Internal();
 			Vector3 min = Vector3.one * float.MaxValue;
 			Vector3 max = Vector3.one * float.MinValue;
 
@@ -390,7 +481,7 @@ namespace Shapes {
 			}
 		}
 
-		public void UpdateAllMaterialProperties() {
+		internal void UpdateAllMaterialProperties() {
 			if( gameObject.scene.IsValid() == false )
 				return; // not in a scene :c
 
@@ -401,6 +492,11 @@ namespace Shapes {
 					instancedMaterial.SetInt( ShapesMaterialUtils.propZTest, (int)zTest );
 					instancedMaterial.SetFloat( ShapesMaterialUtils.propZOffsetFactor, zOffsetFactor );
 					instancedMaterial.SetInt( ShapesMaterialUtils.propZOffsetUnits, zOffsetUnits );
+					instancedMaterial.SetInt( ShapesMaterialUtils.propStencilComp, (int)stencilComp );
+					instancedMaterial.SetInt( ShapesMaterialUtils.propStencilOpPass, (int)stencilOpPass );
+					instancedMaterial.SetInt( ShapesMaterialUtils.propStencilID, stencilRefID );
+					instancedMaterial.SetInt( ShapesMaterialUtils.propStencilReadMask, stencilReadMask );
+					instancedMaterial.SetInt( ShapesMaterialUtils.propStencilWriteMask, stencilWriteMask );
 				}
 
 			SetColor( ShapesMaterialUtils.propColor, color );
@@ -410,14 +506,14 @@ namespace Shapes {
 			ApplyProperties();
 		}
 
-		protected void ApplyProperties() {
+		private protected void ApplyProperties() {
 			VerifyComponents(); // make sure components exists. rnd can be uninitialized if you modify an object that has never had awake called
 			rnd.SetPropertyBlock( Mpb );
 			if( MeshUpdateMode == MeshUpdateMode.UseAssetCopy )
 				UpdateMeshBounds();
 		}
 
-		protected void SetAllDashValues( DashStyle style, bool dashed, bool matchSpacingToSize, float thickness, bool setType, bool now ) {
+		private protected void SetAllDashValues( DashStyle style, bool dashed, bool matchSpacingToSize, float thickness, bool setType, bool now ) {
 			float netDashSize = style.GetNetAbsoluteSize( dashed, thickness );
 			if( dashed ) {
 				SetFloat( ShapesMaterialUtils.propDashSpacing, GetNetDashSpacing( style, true, matchSpacingToSize, thickness ) );
@@ -437,14 +533,14 @@ namespace Shapes {
 				SetFloat( ShapesMaterialUtils.propDashSize, netDashSize );
 		}
 
-		protected float GetNetDashSpacing( DashStyle style, bool dashed, bool matchSpacingToSize, float thickness ) {
+		private protected float GetNetDashSpacing( DashStyle style, bool dashed, bool matchSpacingToSize, float thickness ) {
 			if( matchSpacingToSize && style.space == DashSpace.FixedCount )
 				return 0.5f;
 			return matchSpacingToSize ? style.GetNetAbsoluteSize( dashed, thickness ) : style.GetNetAbsoluteSpacing( dashed, thickness );
 		}
 
 
-		protected void SetColor( int prop, Color value ) {
+		private protected void SetColor( int prop, Color value ) {
 			if( ShapeGroup.shapeGroupsInScene > 0 ) { // if color tint groups exist, see if we have any
 				ShapeGroup[] groups = GetComponentsInParent<ShapeGroup>();
 				if( groups != null )
@@ -455,32 +551,32 @@ namespace Shapes {
 			Mpb.SetColor( prop, value );
 		}
 
-		protected void SetFloat( int prop, float value ) => Mpb.SetFloat( prop, value );
-		protected void SetInt( int prop, int value ) => Mpb.SetInt( prop, value );
-		protected void SetVector3( int prop, Vector3 value ) => Mpb.SetVector( prop, value );
-		protected void SetVector4( int prop, Vector4 value ) => Mpb.SetVector( prop, value );
+		private protected void SetFloat( int prop, float value ) => Mpb.SetFloat( prop, value );
+		private protected void SetInt( int prop, int value ) => Mpb.SetInt( prop, value );
+		private protected void SetVector3( int prop, Vector3 value ) => Mpb.SetVector( prop, value );
+		private protected void SetVector4( int prop, Vector4 value ) => Mpb.SetVector( prop, value );
 
-		protected void SetColorNow( int prop, Color value ) {
+		private protected void SetColorNow( int prop, Color value ) {
 			SetColor( prop, value );
 			ApplyProperties();
 		}
 
-		protected void SetFloatNow( int prop, float value ) {
+		private protected void SetFloatNow( int prop, float value ) {
 			Mpb.SetFloat( prop, value );
 			ApplyProperties();
 		}
 
-		protected void SetIntNow( int prop, int value ) {
+		private protected void SetIntNow( int prop, int value ) {
 			Mpb.SetInt( prop, value );
 			ApplyProperties();
 		}
 
-		protected void SetVector3Now( int prop, Vector3 value ) {
+		private protected void SetVector3Now( int prop, Vector3 value ) {
 			Mpb.SetVector( prop, value );
 			ApplyProperties();
 		}
 
-		protected void SetVector4Now( int prop, Vector4 value ) {
+		private protected void SetVector4Now( int prop, Vector4 value ) {
 			Mpb.SetVector( prop, value );
 			ApplyProperties();
 		}

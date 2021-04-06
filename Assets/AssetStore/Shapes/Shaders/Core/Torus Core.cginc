@@ -33,33 +33,28 @@ VertexOutput vert(VertexInput v) {
 	
 	int scaleMode = UNITY_ACCESS_INSTANCED_PROP(Props, _ScaleMode);
     half uniformScale = GetUniformScale();
-    half scaleThickness = scaleMode == SCALE_MODE_UNIFORM ? 1 : 1.0/uniformScale;
+    half scaleThickness = scaleMode == SCALE_MODE_UNIFORM ? uniformScale : 1;
     
-    half radiusMajorTarget = UNITY_ACCESS_INSTANCED_PROP(Props, _Radius);
+    half radiusMajorTarget = UNITY_ACCESS_INSTANCED_PROP(Props, _Radius) * uniformScale;
     int radiusMajorSpace = UNITY_ACCESS_INSTANCED_PROP(Props, _RadiusSpace);
     int thicknessSpace = UNITY_ACCESS_INSTANCED_PROP(Props, _ThicknessSpace);
     half thicknessTarget = UNITY_ACCESS_INSTANCED_PROP(Props, _Thickness) * scaleThickness;
     
     
-    // calc radius & tube center
-    float3 objectOrigin = LocalToWorldPos(float3(0,0,0));
-    half3 camRight = CameraToWorldVec(half3(1,0,0));
-	LineWidthData widthDataRadius = GetScreenSpaceWidthDataSimple( objectOrigin, camRight, radiusMajorTarget * 2 /*to thickness*/, radiusMajorSpace );
+    // calc radius
+	LineWidthData widthDataRadius = GetScreenSpaceWidthDataSimple( OBJ_ORIGIN, CAM_RIGHT, radiusMajorTarget * 2 /*to thickness*/, radiusMajorSpace );
 	float radiusMajor = widthDataRadius.thicknessMeters / 2;
-    half3 dirFromCenter = normalize( half3( v.vertex.xy, 0 ) );
-    half3 tubeCenter = dirFromCenter * radiusMajor;
-    half3 tubeCenterWorld = LocalToWorldPos( tubeCenter );
 	
 	// calc thickness
-    half3 tangentWorld = LocalToWorldVec( half3(dirFromCenter.y,-dirFromCenter.x, 0) );
-    half3 camForward = GetCameraForwardDirection();
-	half3 camLineNormal = normalize(cross(camForward, tangentWorld));
-	LineWidthData widthDataThickness = GetScreenSpaceWidthDataSimple( tubeCenterWorld, camLineNormal, thicknessTarget, thicknessSpace );
+	LineWidthData widthDataThickness = GetScreenSpaceWidthDataSimple( OBJ_ORIGIN, CAM_RIGHT, thicknessTarget, thicknessSpace );
 	o.pxCoverage = widthDataThickness.thicknessPixelsTarget;
 	float thicknessRadius = widthDataThickness.thicknessMeters * 0.5;
-	
+
+	// local space pos
+    half3 dirFromCenter = normalize( half3( v.vertex.xy, 0 ) );
+    half3 tubeCenter = dirFromCenter * radiusMajor;
 	half3 localPos = tubeCenter + v.normal * thicknessRadius; 
-	o.pos = LocalToClipPos( localPos );
+	o.pos = LocalToClipPos( localPos / uniformScale );
 	return o;
 }
 
