@@ -108,6 +108,7 @@ namespace Games.RazorMaze
                         case EMazeItemType.ShredingerBlock:
                             // do nothing
                             break;
+                        case EMazeItemType.Springboard:
                         case EMazeItemType.TrapMoving:
                         case EMazeItemType.TurretRotating:
                         case EMazeItemType.GravityBlock:

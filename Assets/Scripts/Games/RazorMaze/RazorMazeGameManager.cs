@@ -56,6 +56,7 @@ namespace Games.RazorMaze
             var portalsProceeder                                = Model.PortalsProceeder;
             var turretsProceeder                                = Model.TurretsProceeder;
             var shredingerProceeder                             = Model.ShredingerBlocksProceeder;
+            var springboardProceeder                            = Model.SpringboardProceeder;
             var character                                       = Model.Character;
             var scoring                                         = Model.Scoring;
             var levelStaging                                    = Model.LevelStaging;
@@ -76,7 +77,8 @@ namespace Games.RazorMaze
             trapsIncreasingProceeder.TrapIncreasingStageChanged += OnMazeTrapIncreasingStageChanged;
             turretsProceeder.TurretShoot                        += OnTurretShoot;
             portalsProceeder.PortalEvent                        += OnPortalEvent;
-            shredingerProceeder.ShredingerBlockEvent += OnShredingerBlockEvent;
+            shredingerProceeder.ShredingerBlockEvent            += OnShredingerBlockEvent;
+            springboardProceeder.SpringboardEvent               += OnSpringboardEvent;
 
             character.HealthChanged                             += OnCharacterHealthChanged;
             character.Death                                     += OnCharacterDeath;
@@ -95,7 +97,7 @@ namespace Games.RazorMaze
             
             Model.PreInit();
         }
-        
+
         public void Init()
         {
             Model.Init();
@@ -124,6 +126,8 @@ namespace Games.RazorMaze
         private void OnTurretShoot(TurretShotEventArgs _Args) => View.MazeTurretsGroup.OnTurretShoot(_Args);
         private void OnPortalEvent(PortalEventArgs _Args) => View.PortalsGroup.OnPortalEvent(_Args);
         private void OnShredingerBlockEvent(ShredingerBlockArgs _Args) => View.ShredingerBlocksGroup.OnShredingerBlockEvent(_Args);
+        private void OnSpringboardEvent(SpringboardEventArgs _Args) => View.SpringboardItemsGroup.OnSpringboardEvent(_Args);
+
         
         public void SetMazeInfo(MazeInfo _Info) => Model.Data.Info = _Info;
 
@@ -134,9 +138,7 @@ namespace Games.RazorMaze
         protected virtual void OnBeforeLevelStarted(LevelStateChangedArgs _Args)
         {
             Model.Scoring.Score = 0;
-            View.UI?.OnBeforeLevelStarted(
-                _Args,
-                () => Model.LevelStaging.StartLevel());
+            View.UI?.OnBeforeLevelStarted(_Args, () => Model.LevelStaging.StartLevel());
         }
 
         protected virtual void OnLevelStarted(LevelStateChangedArgs _Args) => View.UI?.OnLevelStarted(_Args);
@@ -159,37 +161,52 @@ namespace Games.RazorMaze
 
         protected virtual void OnDestroy()
         {
-            var rotation                               = Model.MazeRotation;
-            var movingItemsProceeder                   = Model.MovingItemsProceeder;
-            var trapsReactProceeder                    = Model.TrapsReactProceeder;
-            var character                              = Model.Character;
-            var scoring                                = Model.Scoring;
-            var levelStaging                           = Model.LevelStaging;
+            var rotation                                        = Model.MazeRotation;
+            var movingItemsProceeder                            = Model.MovingItemsProceeder;
+            var gravityItemsProceeder                           = Model.GravityItemsProceeder;
+            var trapsReactProceeder                             = Model.TrapsReactProceeder;
+            var trapsIncreasingProceeder                        = Model.TrapsIncreasingProceeder;
+            var portalsProceeder                                = Model.PortalsProceeder;
+            var turretsProceeder                                = Model.TurretsProceeder;
+            var shredingerProceeder                             = Model.ShredingerBlocksProceeder;
+            var springboardProceeder                            = Model.SpringboardProceeder;
+            var character                                       = Model.Character;
+            var scoring                                         = Model.Scoring;
+            var levelStaging                                    = Model.LevelStaging;
             
-            rotation.RotationStarted                   -= OnMazeRotationStarted;
-            rotation.Rotation                          -= OnMazeRotation;
-            rotation.RotationFinished                  -= OnMazeRotationFinished;
+            rotation.RotationStarted                            -= OnMazeRotationStarted;
+            rotation.Rotation                                   -= OnMazeRotation;
+            rotation.RotationFinished                           -= OnMazeRotationFinished;
             
-            movingItemsProceeder.MazeItemMoveStarted   -= OnMazeItemMoveStarted;
-            movingItemsProceeder.MazeItemMoveContinued -= OnMazeItemMoveContinued;
-            movingItemsProceeder.MazeItemMoveFinished  -= OnMazeItemMoveFinished;
-            
-            trapsReactProceeder.TrapReactStageChanged  -= OnMazeTrapReactStageChanged;
+            movingItemsProceeder.MazeItemMoveStarted            -= OnMazeItemMoveStarted;
+            movingItemsProceeder.MazeItemMoveContinued          -= OnMazeItemMoveContinued;
+            movingItemsProceeder.MazeItemMoveFinished           -= OnMazeItemMoveFinished;
 
-            character.HealthChanged                    -= OnCharacterHealthChanged;
-            character.Death                            -= OnCharacterDeath;
-            character.CharacterMoveStarted             -= OnCharacterMoveStarted;
-            character.CharacterMoveContinued           -= OnCharacterMoveContinued;
-            character.CharacterMoveFinished            -= OnCharacterMoveFinished;
+            gravityItemsProceeder.MazeItemMoveStarted           -= OnMazeItemMoveStarted;
+            gravityItemsProceeder.MazeItemMoveContinued         -= OnMazeItemMoveContinued;
+            gravityItemsProceeder.MazeItemMoveFinished          -= OnMazeItemMoveFinished;
             
-            scoring.ScoreChanged                       -= OnScoreChanged;
-            scoring.NecessaryScoreReached              -= OnNecessaryScoreReached;
+            trapsReactProceeder.TrapReactStageChanged           -= OnMazeTrapReactStageChanged;
+            trapsIncreasingProceeder.TrapIncreasingStageChanged -= OnMazeTrapIncreasingStageChanged;
+            turretsProceeder.TurretShoot                        -= OnTurretShoot;
+            portalsProceeder.PortalEvent                        -= OnPortalEvent;
+            shredingerProceeder.ShredingerBlockEvent            -= OnShredingerBlockEvent;
+            springboardProceeder.SpringboardEvent               -= OnSpringboardEvent;
 
-            levelStaging.LevelBeforeStarted            -= OnBeforeLevelStarted;
-            levelStaging.LevelStarted                  -= OnLevelStarted;
-            levelStaging.LevelFinished                 -= OnLevelFinished;
+            character.HealthChanged                             -= OnCharacterHealthChanged;
+            character.Death                                     -= OnCharacterDeath;
+            character.CharacterMoveStarted                      -= OnCharacterMoveStarted;
+            character.CharacterMoveContinued                    -= OnCharacterMoveContinued;
+            character.CharacterMoveFinished                     -= OnCharacterMoveFinished;
             
-            View.InputConfigurator.Command             -= OnInputCommand;
+            scoring.ScoreChanged                                -= OnScoreChanged;
+            scoring.NecessaryScoreReached                       -= OnNecessaryScoreReached;
+
+            levelStaging.LevelBeforeStarted                     -= OnBeforeLevelStarted;
+            levelStaging.LevelStarted                           -= OnLevelStarted;
+            levelStaging.LevelFinished                          -= OnLevelFinished;
+            
+            View.InputConfigurator.Command                      -= OnInputCommand;
         }
 
         #endregion

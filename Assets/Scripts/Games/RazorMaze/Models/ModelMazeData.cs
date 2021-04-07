@@ -9,12 +9,12 @@ namespace Games.RazorMaze.Models
 {
     public delegate void MazeInfoHandler(MazeInfo Info);
     public enum MazeOrientation { North, East, South, West}
-    public enum MazeMoveDirection { Up, Right, Down, Left}
+    public enum EMazeMoveDirection { Up, Right, Down, Left}
 
     public class CharacterInfo
     {
         public V2Int Position { get; set; }
-        public MazeMoveDirection MoveDirection { get; set; }
+        public EMazeMoveDirection MoveDirection { get; set; }
         public long HealthPoints { get; set; }
     }
     

@@ -18,7 +18,8 @@ namespace Games.RazorMaze.Models
         GravityTrap,
         // turrets
         Turret,
-        TurretRotating
+        TurretRotating,
+        Springboard
     }
 
     public enum EMazeItemMoveByPathDirection

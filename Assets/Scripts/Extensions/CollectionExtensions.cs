@@ -26,9 +26,49 @@ namespace Extensions
             return result;
         }
         
-        public static List<T> Clone<T>(this IList<T> listToClone) where T: ICloneable
+        public static List<T> Clone<T>(this IEnumerable<T> _Collection) where T: ICloneable
         {
-            return listToClone.Select(_Item => (T)_Item.Clone()).ToList();
+            return _Collection.Select(_Item => (T)_Item.Clone()).ToList();
+        }
+
+        public static bool ContainsRange<T>(this IEnumerable<T> _Collection, params T[] _Items)
+        {
+            return _Items.All(_Collection.Contains);
+        }
+
+        public static T Second<T>(this IEnumerable<T> _Collection)
+        {
+            using (var enumerator = _Collection.GetEnumerator())
+            {
+                MoveOnEnumerator(enumerator, 2);
+                return enumerator.Current;    
+            }
+        }
+        
+        public static T Third<T>(this IEnumerable<T> _Collection)
+        {
+            using (var enumerator = _Collection.GetEnumerator())
+            {
+                MoveOnEnumerator(enumerator, 3);
+                return enumerator.Current;    
+            }
+        }
+        
+        public static T Fourth<T>(this IEnumerable<T> _Collection)
+        {
+            using (var enumerator = _Collection.GetEnumerator())
+            {
+                MoveOnEnumerator(enumerator, 4);
+                return enumerator.Current;    
+            }
+        }
+
+        private static void MoveOnEnumerator<T>(IEnumerator<T> _Enumerator, int _Count)
+        {
+            foreach (var _ in Enumerable.Range(0, _Count))
+            {
+                _Enumerator.MoveNext();
+            }
         }
     }
 }

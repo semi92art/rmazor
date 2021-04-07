@@ -8,6 +8,7 @@ using GameHelpers;
 using Games.RazorMaze.Models;
 using Shapes;
 using UnityEngine;
+using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
@@ -33,6 +34,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private static Color _turretCol = new Color(1f, 0.14f, 0.7f);
         private static Color _portalCol = new Color(0.13f, 1f, 0.07f);
         private static Color _blockShredingerCol = new Color(0.49f, 0.79f, 1f);
+        private static Color _springboardCol = new Color(0.41f, 1f, 0.79f);
         
         private bool m_Active;
 
@@ -64,7 +66,10 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             mazeSize = _MazeSize;
             props = _Props;
-            SetShape(_Props.Type, _Props.IsNode, _Props.IsStartNode);
+            SetShapeAndHint(
+                _Props.Type, 
+                _Props.IsNode,
+                _Props.IsStartNode);
         }
 
         public void SetLocalPosition(Vector2 _Position)
@@ -88,43 +93,61 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public void SetType(EMazeItemType _Type, bool _IsNode, bool _IsStartNode)
         {
+            typeCheck = _Type;
             props.Type = _Type;
             props.IsNode = _IsNode;
             props.IsStartNode = _IsStartNode;
-            SetShape(_Type, _IsNode, _IsStartNode);
-            typeCheck = _Type;
+            if (_Type == EMazeItemType.Springboard)
+                props.Directions = new List<V2Int> {V2Int.up + V2Int.left};
+            SetShapeAndHint(_Type, _IsNode, _IsStartNode);
+        }
+
+        public void SetSpringboardDirection(V2Int _Direction)
+        {
+            props.Directions = new List<V2Int>{_Direction};
+            SetShapeAndHint(EMazeItemType.Springboard, false, false);
         }
         
         #endregion
         
         #region nonpublic methods
 
-        private void SetShape(EMazeItemType _Type, bool _IsNode, bool _IsStartNode)
+        private void SetShapeAndHint(EMazeItemType _Type, bool _IsNode, bool _IsStartNode)
         {
             var converter = new CoordinateConverter();
             converter.Init(mazeSize);
             
             gameObject.DestroyChildrenSafe();
             transform.SetLocalPosXY(converter.ToLocalMazeItemPosition(props.Position));
-            var sh = gameObject.GetOrAddComponent<Rectangle>();
-            sh.Width = 0.97f * converter.GetScale();
-            sh.Height = 0.97f * converter.GetScale();
-            sh.Type = Rectangle.RectangleType.RoundedSolid;
-            sh.CornerRadius = 0.1f;
-            sh.Color = GetShapeColor(props.Type, false, _IsNode, _IsStartNode);
-            shape = sh;
-            
+
+            SetShapeByType(_Type, _IsNode, _IsStartNode);
             if (props.IsNode)
             {
                 shape.SortingOrder = 0;
                 return;
             }
-            SetHintByType(props.Type);
-            SetSortingOrderByType(_Type);
+            SetHintByType(_Type, _IsNode);
+            GetShapeSortingOrder(_Type, _IsNode);
         }
 
-        private void SetHintByType(EMazeItemType _Type)
+        private void SetShapeByType(EMazeItemType _Type, bool _IsNode, bool _IsStartNode)
         {
+            var converter = new CoordinateConverter();
+            converter.Init(mazeSize);
+            var sh = gameObject.GetOrAddComponent<Rectangle>();
+            sh.Width = 0.97f * converter.GetScale();
+            sh.Height = 0.97f * converter.GetScale();
+            sh.Type = Rectangle.RectangleType.RoundedSolid;
+            sh.CornerRadius = 0.1f;
+            shape = sh;
+            shape.Color = GetShapeColor(_Type, false, _IsNode, _IsStartNode);
+            shape.SortingOrder = GetShapeSortingOrder(_Type, _IsNode);
+        }
+
+        private void SetHintByType(EMazeItemType _Type, bool _IsNode)
+        {
+            if (_IsNode)
+                return;
             var go = new GameObject("Hint");
             go.SetParent(gameObject);
             go.transform.SetLocalPosXY(Vector2.zero);
@@ -134,6 +157,7 @@ namespace Games.RazorMaze.Views.MazeItems
             switch (_Type)
             {
                 case EMazeItemType.Block: break;
+                case EMazeItemType.Springboard:             objectName = "springboard"; break;
                 case EMazeItemType.ShredingerBlock:         objectName = "shredinger"; break;
                 case EMazeItemType.Portal:                  objectName = "portal"; break;
                 case EMazeItemType.Turret:                  objectName = "turret"; break;
@@ -148,22 +172,24 @@ namespace Games.RazorMaze.Views.MazeItems
 
             if (string.IsNullOrEmpty(objectName)) 
                 return;
-            var result = PrefabUtilsEx.GetObject<Sprite>("prot_icons", objectName);
-            hint.sprite = result;
+            hint.sprite = PrefabUtilsEx.GetObject<Sprite>("prot_icons", objectName);
+            hint.sortingOrder = GetShapeSortingOrder(_Type, false) + 1;
         }
 
-        private void SetSortingOrderByType(EMazeItemType _Type)
+        private int GetShapeSortingOrder(EMazeItemType _Type, bool _IsNode)
         {
-            int shapeSortingOrder;
+            if (_IsNode)
+                return 0;
+            int result;
             switch (_Type)
             {
                 case EMazeItemType.TrapReact:
                 case EMazeItemType.GravityTrap:
                 case EMazeItemType.GravityBlock:
-                    shapeSortingOrder = 1;
+                    result = 1;
                     break;
                 case EMazeItemType.Block: 
-                    shapeSortingOrder = 2;
+                    result = 2;
                     break;
                 case EMazeItemType.Portal:
                 case EMazeItemType.Turret:
@@ -171,15 +197,12 @@ namespace Games.RazorMaze.Views.MazeItems
                 case EMazeItemType.TrapMoving:
                 case EMazeItemType.TurretRotating:
                 case EMazeItemType.ShredingerBlock:
-                    shapeSortingOrder = 12;
+                case EMazeItemType.Springboard:
+                    result = 12;
                     break;
                 default: throw new SwitchCaseNotImplementedException(_Type);
             }
-            shape.SortingOrder = shapeSortingOrder;
-            if (!hint.IsNull())
-            {
-                hint.sortingOrder = shapeSortingOrder + 1;
-            }
+            return result;
         }
         
         
@@ -193,7 +216,6 @@ namespace Games.RazorMaze.Views.MazeItems
 
             switch (_Type)
             {
-            
                 case EMazeItemType.Block:                   
                 case EMazeItemType.GravityBlock: 
                     return _blockCol; 
@@ -209,6 +231,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 case EMazeItemType.Turret: 
                 case EMazeItemType.TurretRotating: 
                     return _turretCol;
+                case EMazeItemType.Springboard:
+                    return _springboardCol;
                 default: throw new SwitchCaseNotImplementedException(_Type);
             }
         }
@@ -242,8 +266,36 @@ namespace Games.RazorMaze.Views.MazeItems
                 case EMazeItemType.Portal:
                     DrawGizmosPortal();
                     break;
+                case EMazeItemType.Springboard:
+                    DrawGizmosSpringboard();
+                    break;
                 default: throw new SwitchCaseNotImplementedException(props.Type);
             }
+        }
+        
+        private void DrawGizmosTrapIncreasing()
+        {
+            var p1 = new V2Int(props.Position.X - 1, props.Position.Y - 1);
+            var p2 = new V2Int(props.Position.X - 1, props.Position.Y + 1);
+            var p3 = new V2Int(props.Position.X + 1, props.Position.Y + 1);
+            var p4 = new V2Int(props.Position.X + 1, props.Position.Y - 1);
+
+            var p1_2 = (Vector3)ToWorldPosition(p1);
+            var p2_2 = (Vector3)ToWorldPosition(p2);
+            var p3_2 = (Vector3)ToWorldPosition(p3);
+            var p4_2 = (Vector3)ToWorldPosition(p4);
+
+            Gizmos.DrawLine(p1_2, p2_2);
+            Gizmos.DrawLine(p2_2, p3_2);
+            Gizmos.DrawLine(p3_2, p4_2);
+            Gizmos.DrawLine(p4_2, p1_2);
+            Gizmos.DrawLine(p1_2, p3_2);
+            Gizmos.DrawLine(p2_2, p4_2);
+
+            Gizmos.DrawSphere(p1_2, 1);
+            Gizmos.DrawSphere(p2_2, 1);
+            Gizmos.DrawSphere(p3_2, 1);
+            Gizmos.DrawSphere(p4_2, 1);
         }
 
         private void DrawGizmosPath()
@@ -291,32 +343,40 @@ namespace Games.RazorMaze.Views.MazeItems
             Gizmos.DrawLine(pos, pairPos);
         }
 
-        private void DrawGizmosTrapIncreasing()
+        private void DrawGizmosSpringboard()
         {
-            var p1 = new V2Int(props.Position.X - 1, props.Position.Y - 1);
-            var p2 = new V2Int(props.Position.X - 1, props.Position.Y + 1);
-            var p3 = new V2Int(props.Position.X + 1, props.Position.Y + 1);
-            var p4 = new V2Int(props.Position.X + 1, props.Position.Y - 1);
+            if (!props.Directions.Any())
+                return;
+            var pos = ToWorldPosition(props.Position);
+            var dir = props.Directions.First();
 
-            var p1_2 = (Vector3)ToWorldPosition(p1);
-            var p2_2 = (Vector3)ToWorldPosition(p2);
-            var p3_2 = (Vector3)ToWorldPosition(p3);
-            var p4_2 = (Vector3)ToWorldPosition(p4);
-
-            Gizmos.DrawLine(p1_2, p2_2);
-            Gizmos.DrawLine(p2_2, p3_2);
-            Gizmos.DrawLine(p3_2, p4_2);
-            Gizmos.DrawLine(p4_2, p1_2);
-            Gizmos.DrawLine(p1_2, p3_2);
-            Gizmos.DrawLine(p2_2, p4_2);
-
-            Gizmos.DrawSphere(p1_2, 1);
-            Gizmos.DrawSphere(p2_2, 1);
-            Gizmos.DrawSphere(p3_2, 1);
-            Gizmos.DrawSphere(p4_2, 1);
+            var dirs = new List<V2Int>();
+            if (dir == V2Int.up + V2Int.left)
+                dirs = new List<V2Int> {V2Int.up, V2Int.left};
+            else if (dir == V2Int.up + V2Int.right)
+                dirs = new List<V2Int> {V2Int.up, V2Int.right};
+            else if (dir == V2Int.down + V2Int.left)
+                dirs = new List<V2Int> {V2Int.down, V2Int.left};
+            else if (dir == V2Int.down + V2Int.right)
+                dirs = new List<V2Int> {V2Int.down, V2Int.right};
+            
+            foreach (var direct in dirs)
+            {
+                var posVector2 = props.Position.ToVector2();
+                var dirVector2 = direct.ToVector2();
+                Gizmos.DrawSphere(ToWorldPosition(posVector2 + dirVector2), 0.5f);
+                Gizmos.DrawLine(pos, ToWorldPosition(posVector2 + dirVector2));
+            }
         }
-
+        
         private Vector2 ToWorldPosition(V2Int _Point)
+        {
+            var converter = new CoordinateConverter();
+            converter.Init(mazeSize);
+            return converter.ToLocalMazeItemPosition(_Point).PlusY(converter.GetCenter().y);
+        }
+        
+        private Vector2 ToWorldPosition(Vector2 _Point)
         {
             var converter = new CoordinateConverter();
             converter.Init(mazeSize);
@@ -334,7 +394,7 @@ namespace Games.RazorMaze.Views.MazeItems
         public EMazeItemType Type;
         public V2Int Position;
         public List<V2Int> Path = new List<V2Int>();
-        public List<V2Int> Directions = new List<V2Int>();
+        public List<V2Int> Directions = new List<V2Int>{V2Int.zero};
         public V2Int Pair;
     }
 }

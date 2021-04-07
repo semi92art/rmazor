@@ -40,3 +40,5 @@ MonoBehaviour:
       name: trap-gravity-free
     - item: {fileID: 21300000, guid: f7b4a956b48ac574cb1b225cad716416, type: 3}
       name: shredinger
+    - item: {fileID: 21300000, guid: 0607dd72cd725d841bef1c4132aa959f, type: 3}
+      name: springboard

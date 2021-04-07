@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Entities;
 using Exceptions;
@@ -41,48 +42,97 @@ namespace Games.RazorMaze
             }
         }
         
-        public static V2Int GetDirectionVector(MazeMoveDirection _Direction, MazeOrientation _Orientation)
+        public static V2Int GetDirectionVector(EMazeMoveDirection _Direction, MazeOrientation _Orientation)
         {
             switch (_Orientation)
             {
                 case MazeOrientation.North:
                     switch (_Direction)
                     {
-                        case MazeMoveDirection.Up:    return V2Int.up;
-                        case MazeMoveDirection.Right: return V2Int.right;
-                        case MazeMoveDirection.Down:  return V2Int.down;
-                        case MazeMoveDirection.Left:  return V2Int.left;
+                        case EMazeMoveDirection.Up:    return V2Int.up;
+                        case EMazeMoveDirection.Right: return V2Int.right;
+                        case EMazeMoveDirection.Down:  return V2Int.down;
+                        case EMazeMoveDirection.Left:  return V2Int.left;
                         default: throw new SwitchCaseNotImplementedException(_Direction);
                     }
                 case MazeOrientation.East:
                     switch (_Direction)
                     {
-                        case MazeMoveDirection.Up:    return V2Int.left;
-                        case MazeMoveDirection.Right: return V2Int.up;
-                        case MazeMoveDirection.Down:  return V2Int.right;
-                        case MazeMoveDirection.Left:  return V2Int.down;
+                        case EMazeMoveDirection.Up:    return V2Int.left;
+                        case EMazeMoveDirection.Right: return V2Int.up;
+                        case EMazeMoveDirection.Down:  return V2Int.right;
+                        case EMazeMoveDirection.Left:  return V2Int.down;
                         default: throw new SwitchCaseNotImplementedException(_Direction);
                     }
                 case MazeOrientation.South:
                     switch (_Direction)
                     {
-                        case MazeMoveDirection.Up:    return V2Int.down;
-                        case MazeMoveDirection.Right: return V2Int.left;
-                        case MazeMoveDirection.Down:  return V2Int.up;
-                        case MazeMoveDirection.Left:  return V2Int.right;
+                        case EMazeMoveDirection.Up:    return V2Int.down;
+                        case EMazeMoveDirection.Right: return V2Int.left;
+                        case EMazeMoveDirection.Down:  return V2Int.up;
+                        case EMazeMoveDirection.Left:  return V2Int.right;
                         default: throw new SwitchCaseNotImplementedException(_Direction);
                     }
                 case MazeOrientation.West:
                     switch (_Direction)
                     {
-                        case MazeMoveDirection.Up:    return V2Int.right;
-                        case MazeMoveDirection.Right: return V2Int.down;
-                        case MazeMoveDirection.Down:  return V2Int.left;
-                        case MazeMoveDirection.Left:  return V2Int.up;
+                        case EMazeMoveDirection.Up:    return V2Int.right;
+                        case EMazeMoveDirection.Right: return V2Int.down;
+                        case EMazeMoveDirection.Down:  return V2Int.left;
+                        case EMazeMoveDirection.Left:  return V2Int.up;
                         default: throw new SwitchCaseNotImplementedException(_Direction);
                     }
                 default: throw new SwitchCaseNotImplementedException(_Orientation);
             }
+        }
+
+        public static EMazeMoveDirection GetMoveDirection(V2Int _DirectionVector, MazeOrientation _Orientation)
+        {
+            switch (_Orientation)
+            {
+                case MazeOrientation.North:
+                    if (_DirectionVector == V2Int.up)
+                        return EMazeMoveDirection.Up;
+                    else if (_DirectionVector == V2Int.right)
+                        return EMazeMoveDirection.Right;
+                    else if (_DirectionVector == V2Int.down)
+                        return EMazeMoveDirection.Down;
+                    else if (_DirectionVector == V2Int.left)
+                        return EMazeMoveDirection.Left;
+                    break;
+                case MazeOrientation.East:
+                    if (_DirectionVector == V2Int.left)
+                        return EMazeMoveDirection.Up;
+                    else if (_DirectionVector == V2Int.up)
+                        return EMazeMoveDirection.Right;
+                    else if (_DirectionVector == V2Int.right)
+                        return EMazeMoveDirection.Down;
+                    else if (_DirectionVector == V2Int.down)
+                        return EMazeMoveDirection.Left;
+                    break;
+                case MazeOrientation.South:
+                    if (_DirectionVector == V2Int.down)
+                        return EMazeMoveDirection.Up;
+                    else if (_DirectionVector == V2Int.left)
+                        return EMazeMoveDirection.Right;
+                    else if (_DirectionVector == V2Int.up)
+                        return EMazeMoveDirection.Down;
+                    else if (_DirectionVector == V2Int.right)
+                        return EMazeMoveDirection.Left;
+                    break;
+                case MazeOrientation.West:
+                    if (_DirectionVector == V2Int.right)
+                        return EMazeMoveDirection.Up;
+                    else if (_DirectionVector == V2Int.down)
+                        return EMazeMoveDirection.Right;
+                    else if (_DirectionVector == V2Int.left)
+                        return EMazeMoveDirection.Down;
+                    else if (_DirectionVector == V2Int.up)
+                        return EMazeMoveDirection.Left;
+                    break;
+                default: throw new SwitchCaseNotImplementedException(_Orientation);
+            }
+            throw new ArgumentException("Wrong direction vector");
         }
     }
 }

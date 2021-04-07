@@ -28,16 +28,16 @@ namespace Games.RazorMaze.Models
     public delegate void HealthPointsChangedHandler(HealthPointsEventArgs _Args);
     public delegate void CharacterMovingHandler(CharacterMovingEventArgs _Args);
 
-    public interface IModelCharacter : IInit
+    public interface IModelCharacter : IInit, IOnMazeChanged
     {
         event CharacterMovingHandler CharacterMoveStarted;
         event CharacterMovingHandler CharacterMoveContinued;
         event CharacterMovingHandler CharacterMoveFinished;
         event HealthPointsChangedHandler HealthChanged;
         event NoArgsHandler Death;
-        void Move(MazeMoveDirection _Direction);
-        void OnMazeChanged(MazeInfo _Info);
+        void Move(EMazeMoveDirection _Direction);
         void OnPortal(PortalEventArgs _Args);
+        void OnSpringboard(SpringboardEventArgs _Args);
     }
     
     public class ModelCharacter : IModelCharacter
@@ -75,7 +75,7 @@ namespace Games.RazorMaze.Models
             Data.CharacterInfo.HealthPoints = 1;
         }
         
-        public void Move(MazeMoveDirection _Direction)
+        public void Move(EMazeMoveDirection _Direction)
         {
             if (!Data.ProceedingControls)
                 return;
@@ -97,11 +97,27 @@ namespace Games.RazorMaze.Models
             Move(Data.CharacterInfo.MoveDirection);
         }
 
+        public void OnSpringboard(SpringboardEventArgs _Args)
+        {
+            var charInverseDir = -RazorMazeUtils.GetDirectionVector(Data.CharacterInfo.MoveDirection, Data.Orientation);
+            V2Int newDirection = default;
+            if (_Args.Item.Direction == V2Int.up + V2Int.left)
+                newDirection = charInverseDir == V2Int.up ? V2Int.left : V2Int.up;
+            else if (_Args.Item.Direction == V2Int.up + V2Int.right)
+                newDirection = charInverseDir == V2Int.up ? V2Int.right : V2Int.up;
+            else if (_Args.Item.Direction == V2Int.down + V2Int.left)
+                newDirection = charInverseDir == V2Int.down ? V2Int.left : V2Int.down;
+            else if (_Args.Item.Direction == V2Int.down + V2Int.right)
+                newDirection = charInverseDir == V2Int.down ? V2Int.right : V2Int.down;
+            Data.CharacterInfo.MoveDirection = RazorMazeUtils.GetMoveDirection(newDirection, Data.Orientation);
+            Move(Data.CharacterInfo.MoveDirection);
+        }
+
         #endregion
         
         #region nonpublic methods
 
-        private V2Int GetNewPosition(MazeMoveDirection _Direction)
+        private V2Int GetNewPosition(EMazeMoveDirection _Direction)
         {
             var nextPos = Data.CharacterInfo.Position;
             var dirVector = RazorMazeUtils.GetDirectionVector(_Direction, Data.Orientation);

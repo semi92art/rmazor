@@ -19,8 +19,7 @@ namespace Extensions
         public static void RemoveComponentIfExist<T>(this GameObject _Object) where T : Component
         {
             var component = _Object.GetComponent<T>();
-            if (component != null)
-                Object.Destroy(component);
+            component.DestroySafe();
         }
         
         //https://answers.unity.com/questions/530178/how-to-get-a-component-from-an-object-and-add-it-t.html?_ga=2.165477879.911525322.1599381767-2044961467.1583736117

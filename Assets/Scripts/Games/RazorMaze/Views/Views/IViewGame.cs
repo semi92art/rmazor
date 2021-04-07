@@ -20,5 +20,6 @@ namespace Games.RazorMaze.Views.Views
         IViewMazeTurretsGroup              MazeTurretsGroup { get; }
         IViewMazePortalsGroup              PortalsGroup { get; }
         IViewMazeShredingerBlocksGroup     ShredingerBlocksGroup { get; }
+        IViewMazeSpringboardItemsGroup     SpringboardItemsGroup { get; }
     }
 }

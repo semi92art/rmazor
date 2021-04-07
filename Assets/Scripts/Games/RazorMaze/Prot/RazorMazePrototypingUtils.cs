@@ -60,7 +60,9 @@ namespace Games.RazorMaze.Prot
                 Type = _Type,
                 Position = _Position,
                 Path = _Path,
-                Directions = new List<V2Int>{_Direction}
+                Directions = new List<V2Int>{_Direction},
+                IsNode = false,
+                IsStartNode = false
             };
             item.Init(props, _Size);
             _Items.Add(item);

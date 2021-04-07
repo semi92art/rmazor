@@ -14,6 +14,7 @@ namespace Games.RazorMaze.Models
         ITurretsProceeder             TurretsProceeder { get; }
         IPortalsProceeder             PortalsProceeder { get; }
         IShredingerBlocksProceeder    ShredingerBlocksProceeder { get; }
+        ISpringboardProceeder         SpringboardProceeder { get; }
         IModelCharacter               Character { get; }
         ILevelStagingModel            LevelStaging { get; }
         IScoringModel                 Scoring { get; }
@@ -31,6 +32,7 @@ namespace Games.RazorMaze.Models
         public ITurretsProceeder             TurretsProceeder { get; }
         public IPortalsProceeder             PortalsProceeder { get; }
         public IShredingerBlocksProceeder    ShredingerBlocksProceeder { get; }
+        public ISpringboardProceeder         SpringboardProceeder { get; }
         public IModelCharacter               Character { get; }
         public ILevelStagingModel            LevelStaging { get; }
         public IScoringModel                 Scoring { get; }
@@ -49,7 +51,8 @@ namespace Games.RazorMaze.Models
             ILevelStagingModel            _StagingModel,
             IScoringModel                 _ScoringModel,
             IInputScheduler               _InputScheduler,
-            IShredingerBlocksProceeder    _ShredingerBlocksProceeder)
+            IShredingerBlocksProceeder    _ShredingerBlocksProceeder,
+            ISpringboardProceeder         _SpringboardProceeder)
         {
             Data                                  = _Data;
             MazeRotation                          = _MazeRotation;
@@ -64,6 +67,7 @@ namespace Games.RazorMaze.Models
             Scoring                               = _ScoringModel;
             InputScheduler                        = _InputScheduler;
             ShredingerBlocksProceeder             = _ShredingerBlocksProceeder;
+            SpringboardProceeder                  = _SpringboardProceeder;
         }
         
         public void PreInit()
@@ -75,6 +79,7 @@ namespace Games.RazorMaze.Models
             InputScheduler.MoveCommand            += InputSchedulerOnMoveCommand;
             InputScheduler.RotateCommand          += InputSchedulerOnRotateCommand;
             PortalsProceeder.PortalEvent          += Character.OnPortal;
+            SpringboardProceeder.SpringboardEvent += Character.OnSpringboard;
             Data.PreInit();
         }
         
@@ -85,14 +90,21 @@ namespace Games.RazorMaze.Models
 
         private void MazeOnMazeChanged(MazeInfo _Info)
         {
-            Character                .OnMazeChanged(_Info);
-            MovingItemsProceeder     .OnMazeChanged(_Info);
-            GravityItemsProceeder    .OnMazeChanged(_Info);
-            TrapsReactProceeder      .OnMazeChanged(_Info);
-            TrapsIncreasingProceeder .OnMazeChanged(_Info);
-            TurretsProceeder         .OnMazeChanged(_Info);
-            PortalsProceeder         .OnMazeChanged(_Info);
-            ShredingerBlocksProceeder.OnMazeChanged(_Info);
+            foreach (var item in new IOnMazeChanged []
+            {
+                Character,
+                MovingItemsProceeder,
+                GravityItemsProceeder,
+                TrapsReactProceeder,
+                TrapsIncreasingProceeder,
+                TurretsProceeder,
+                PortalsProceeder,
+                ShredingerBlocksProceeder,
+                SpringboardProceeder
+            })
+            {
+                item.OnMazeChanged(_Info);
+            }
         }
 
         private void MazeOnRotationFinished(MazeRotateDirection _Direction, MazeOrientation _Orientation)
@@ -104,24 +116,32 @@ namespace Games.RazorMaze.Models
 
         private void CharacterOnMoveContinued(CharacterMovingEventArgs _Args)
         {
-            GravityItemsProceeder    .OnCharacterMoveContinued(_Args);
-            TrapsReactProceeder      .OnCharacterMoveContinued(_Args);
-            TrapsIncreasingProceeder .OnCharacterMoveContinued(_Args);
-            PortalsProceeder         .OnCharacterMoveContinued(_Args);
-            ShredingerBlocksProceeder.OnCharacterMoveContinued(_Args);
+            
+            foreach (var proceeder in new ICharacterMoveContinued[]
+            {
+                GravityItemsProceeder,
+                TrapsReactProceeder,
+                TrapsIncreasingProceeder,
+                PortalsProceeder,
+                ShredingerBlocksProceeder,
+                SpringboardProceeder
+            })
+            {
+                proceeder.OnCharacterMoveContinued(_Args);                
+            }
         }
         
         private void CharacterOnFinishMove(CharacterMovingEventArgs _Args) => InputScheduler.UnlockMovement();
         
         private void InputSchedulerOnMoveCommand(EInputCommand _Command)
         {
-            MazeMoveDirection dir = default;
+            EMazeMoveDirection dir = default;
             switch (_Command)
             {
-                case EInputCommand.MoveUp:    dir = MazeMoveDirection.Up;    break;
-                case EInputCommand.MoveDown:  dir = MazeMoveDirection.Down;  break;
-                case EInputCommand.MoveLeft:  dir = MazeMoveDirection.Left;  break;
-                case EInputCommand.MoveRight: dir = MazeMoveDirection.Right; break;
+                case EInputCommand.MoveUp:    dir = EMazeMoveDirection.Up;    break;
+                case EInputCommand.MoveDown:  dir = EMazeMoveDirection.Down;  break;
+                case EInputCommand.MoveLeft:  dir = EMazeMoveDirection.Left;  break;
+                case EInputCommand.MoveRight: dir = EMazeMoveDirection.Right; break;
                 case EInputCommand.RotateClockwise:
                 case EInputCommand.RotateCounterClockwise:
                     break;

@@ -42,6 +42,7 @@ namespace Mono_Installers
             Container.Bind<ITrapsIncreasingProceeder>()         .To<TrapsIncreasingProceeder>()             .AsSingle();
             Container.Bind<IPortalsProceeder>()                 .To<PortalsProceeder>()                     .AsSingle();
             Container.Bind<IShredingerBlocksProceeder>()        .To<ShredingerBlocksProceeder>()            .AsSingle();
+            Container.Bind<ISpringboardProceeder>()             .To<SpringboardProceeder>()                 .AsSingle();
             
             Container.Bind<IViewMazeCommon>()                   .To<ViewMazeCommonProt>()                   .AsSingle().When(_ => prototyping);
             Container.Bind<IViewMazeRotation>()                 .To<ViewMazeRotationProt>()                 .AsSingle().When(_ => prototyping);
@@ -51,6 +52,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazeTurretsGroup>()             .To<ViewMazeTurretsGroupProt>()             .AsSingle().When(_ => prototyping);
             Container.Bind<IViewMazePortalsGroup>()             .To<ViewMazePortalsGroupProt>()             .AsSingle().When(_ => prototyping);
             Container.Bind<IViewMazeShredingerBlocksGroup>()    .To<ViewMazeShredingerBlocksGroupProt>()    .AsSingle().When(_ => prototyping);
+            Container.Bind<IViewMazeSpringboardItemsGroup>()    .To<ViewMazeSpringboardItemsGroupProt>()    .AsSingle().When(_ => prototyping);
             Container.Bind<IViewUI>()                           .To<ViewUIProt>()                           .AsSingle().When(_ => prototyping);
             Container.Bind<IViewCharacter>()                    .To<ViewCharacterProt>()                    .AsSingle().When(_ => prototyping);
             Container.Bind<IInputConfigurator>()                .To<RazorMazeInputConfiguratorProt>()       .AsSingle().When(_ => prototyping);

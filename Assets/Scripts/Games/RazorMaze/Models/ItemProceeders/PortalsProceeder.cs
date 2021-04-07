@@ -46,7 +46,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             foreach (var type in Types)
             {
                 var infos = GetProceedInfos(type);
-                MazeItem portalItem = (from info in infos.Values where 
+                var portalItem = (from info in infos.Values where 
                         info.Item.Position == _Args.Current select info.Item)
                     .FirstOrDefault();
 

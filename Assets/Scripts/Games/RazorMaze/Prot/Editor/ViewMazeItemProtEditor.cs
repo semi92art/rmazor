@@ -70,7 +70,7 @@ namespace Games.RazorMaze.Prot.Editor
             GUILayout.Space(20);
             
             if (targetsCopy.Length == 1)
-                DrawControlsForSingleBlock(props);
+                DrawControlsForSingleBlock(targetsCopy[0]);
             else if (targetsCopy.Length == 2 && targetsCopy
                 .All(_T => _T.Props.Type == EMazeItemType.Portal))
                 EditorUtilsEx.GuiButtonAction(LinkPortals, targetsCopy[0].Props, targetsCopy[1].Props);
@@ -97,18 +97,22 @@ namespace Games.RazorMaze.Prot.Editor
             _Item.SetType(_Item.Props.Type, true, !_Item.Props.IsStartNode);
         }
 
-        private void DrawControlsForSingleBlock(ViewMazeItemProps _Props)
+        private static void DrawControlsForSingleBlock(ViewMazeItemProt _Item)
         {
-            switch (_Props.Type)
+            var props = _Item.Props;
+            switch (props.Type)
             {
                 case EMazeItemType.TrapMoving:
                 case EMazeItemType.GravityBlock:
                 case EMazeItemType.GravityTrap:
-                    DrawControlsMovingBlock(_Props);
+                    DrawControlsMovingBlock(props);
                     break;
                 case EMazeItemType.Turret:
                 case EMazeItemType.TrapReact:
-                    DrawControlsDirectedBlock(_Props);
+                    DrawControlsDirectedBlock(props);
+                    break;
+                case EMazeItemType.Springboard:
+                    DrawControlsSpringboardBlock(_Item);
                     break;
                 case EMazeItemType.Portal:
                 case EMazeItemType.Block:
@@ -117,11 +121,11 @@ namespace Games.RazorMaze.Prot.Editor
                 case EMazeItemType.TurretRotating:
                     // do nothing
                     break;
-                default: throw new SwitchCaseNotImplementedException(_Props.Type);
+                default: throw new SwitchCaseNotImplementedException(props.Type);
             }
         }
         
-        private void DrawControlsMovingBlock(ViewMazeItemProps _Props)
+        private static void DrawControlsMovingBlock(ViewMazeItemProps _Props)
         {
             EditorUtilsEx.GUIColorZone(Color.black,() => GUILayout.Label("Path:"));
             bool pathExist = _Props.Path.Any();
@@ -151,7 +155,7 @@ namespace Games.RazorMaze.Prot.Editor
                 _Props.Path[lastPathIndex] = _Props.Path[lastPathIndex].MinusY(1));
         }
 
-        private void DrawControlsDirectedBlock(ViewMazeItemProps _Props)
+        private static void DrawControlsDirectedBlock(ViewMazeItemProps _Props)
         {
             EditorUtilsEx.GUIColorZone(Color.black,() => GUILayout.Label("Direction:"));
             if (_Props.Type == EMazeItemType.Turret)
@@ -159,7 +163,30 @@ namespace Games.RazorMaze.Prot.Editor
             else DrawControlsDirectedBlockMultiple(_Props);
         }
 
-        private void DrawControlsDirectedBlockSingle(ViewMazeItemProps _Props)
+        private static void DrawControlsSpringboardBlock(ViewMazeItemProt _Item)
+        {
+            var props = _Item.Props;
+            if (!props.Directions.Any())
+            {
+                _Item.SetSpringboardDirection(V2Int.up + V2Int.left);
+                return;
+            }
+            EditorUtilsEx.GuiButtonAction("Rotate", () =>
+            {
+                var dir = props.Directions.First();
+                if (dir == V2Int.up + V2Int.left)
+                    dir = V2Int.up + V2Int.right;
+                else if (dir == V2Int.up + V2Int.right)
+                    dir = V2Int.down + V2Int.right;
+                else if (dir == V2Int.down + V2Int.right)
+                    dir = V2Int.down + V2Int.left;
+                else if (dir == V2Int.down + V2Int.left)
+                    dir = V2Int.up + V2Int.left;
+                _Item.SetSpringboardDirection(dir);
+            });
+        }
+
+        private static void DrawControlsDirectedBlockSingle(ViewMazeItemProps _Props)
         {
             UnityAction<IEnumerable<V2Int>> setDir = _Directions => _Props.Directions = _Directions.ToList();
             System.Func<V2Int, Color> getCol = _Direction => _Props.Directions.Contains(_Direction) ? Color.green : Color.white;
@@ -172,7 +199,7 @@ namespace Games.RazorMaze.Prot.Editor
             EditorUtilsEx.GUIColorZone(getCol(V2Int.down), () => EditorUtilsEx.GuiButtonAction("▽", setDir, new []{V2Int.down}));
         }
 
-        private void DrawControlsDirectedBlockMultiple(ViewMazeItemProps _Props)
+        private static void DrawControlsDirectedBlockMultiple(ViewMazeItemProps _Props)
         {
             UnityAction<V2Int> setDir = _Direction =>
             {
@@ -192,7 +219,7 @@ namespace Games.RazorMaze.Prot.Editor
             EditorUtilsEx.GUIColorZone(getCol(V2Int.down), () => EditorUtilsEx.GuiButtonAction("▽", setDir, V2Int.down));
         }
 
-        private void LinkPortals(ViewMazeItemProps _Props1, ViewMazeItemProps _Props2)
+        private static void LinkPortals(ViewMazeItemProps _Props1, ViewMazeItemProps _Props2)
         {
             _Props1.Pair = _Props2.Position;
             _Props2.Pair = _Props1.Position;

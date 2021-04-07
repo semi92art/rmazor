@@ -5,9 +5,7 @@
 <e text = "Utils.Dbg:LogError" />
 <e text = "Utils.Dbg:Log" />
 <e text = "Utils.CommonUtils.SetGoActive[T]" />
-<e text = "Utils.Dbg.LogError[T]" />
-<e text = "Games.RazorMaze.CoordinateConverter.CheckForInitialization" />
-<e text = "Games.RazorMaze.CoordinateConverter:CheckForInitialization" />
+<e text = "Shapes.ShapeRenderer.get_Mesh" />
 </Entries>
 </SettingsList>
 </root>

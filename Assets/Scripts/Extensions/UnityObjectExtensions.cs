@@ -19,15 +19,15 @@ namespace Extensions
 #endif
         }
         
-        public static void DestroySafe(this Component _GameObject, bool _CheckForNull = true)
+        public static void DestroySafe(this Component _Component, bool _CheckForNull = true)
         {
-            if (_CheckForNull && _GameObject == null)
+            if (_CheckForNull && _Component == null)
                 return;
 #if UNITY_EDITOR
             if (Application.isPlaying)
-                Object.Destroy(_GameObject);
+                Object.Destroy(_Component);
             else
-                Object.DestroyImmediate(_GameObject);
+                Object.DestroyImmediate(_Component);
 #else
             Object.Destroy(_GameObject);
 #endif
