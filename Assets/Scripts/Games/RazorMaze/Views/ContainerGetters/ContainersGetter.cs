@@ -19,6 +19,7 @@ namespace Games.RazorMaze.Views.ContainerGetters
             MazeItemsContainer.SetParent(MazeContainer);
             CharacterContainer = CommonUtils.FindOrCreateGameObject("Character", out _).transform;
             CharacterContainer.SetParent(MazeContainer);
+            MazeItemsContainer.SetPosXY(_CoordinateConverter.GetCenter());
         }
         
         #endregion

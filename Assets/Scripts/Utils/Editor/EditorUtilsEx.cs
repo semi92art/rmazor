@@ -1,7 +1,9 @@
 ﻿using Extensions;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 namespace Utils.Editor
 {
@@ -122,6 +124,12 @@ namespace Utils.Editor
             GUI.enabled = _Enabled;
             _Action?.Invoke();
             GUI.enabled = prevEnabled;
+        }
+
+        public static void SceneDirtyAction(UnityAction _Action)
+        {
+            _Action?.Invoke();
+            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
         }
     }
 }

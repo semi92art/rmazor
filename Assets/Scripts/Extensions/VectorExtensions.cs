@@ -16,6 +16,7 @@ namespace Extensions
         public static Vector3 MinusY(this Vector3 _V, float _Y) => _V.SetY(_V.y - _Y);
         public static Vector3 MinusZ(this Vector3 _V, float _Z) => _V.SetY(_V.z - _Z);
         public static Vector3 SetXY (this Vector3 _V, Vector2 _XY) => new Vector3(_XY.x, _XY.y, _V.z);
+        public static Vector3 SetXY (this Vector3 _V, float _X, float _Y) => new Vector3(_X, _Y, _V.z);
         
         public static Vector2 SetX  (this Vector2 _V, float _X) => new Vector2(_X, _V.y);
         public static Vector2 SetY  (this Vector2 _V, float _Y) => new Vector2(_V.x, _Y);
@@ -47,5 +48,7 @@ namespace Extensions
         public static V2Int ToV2IntFloor(this Vector3 _V) => _V.XY().ToV2IntFloor();
         public static V2Int ToV2IntCeil(this Vector3 _V) => _V.XY().ToV2IntCeil();
         public static V2Int ToV2IntRound(this Vector3 _V) => _V.XY().ToV2IntRound();
+        
+        public static Vector3 Abs(this Vector3 _V) => new Vector3(Mathf.Abs(_V.x), Mathf.Abs(_V.y), Mathf.Abs(_V.z));
     }
 }

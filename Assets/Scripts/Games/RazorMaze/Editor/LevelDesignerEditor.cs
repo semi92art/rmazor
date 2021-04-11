@@ -3,7 +3,8 @@ using System.Linq;
 using Entities;
 using Extensions;
 using Games.RazorMaze.Models;
-using Games.RazorMaze.Prot;
+using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.MazeItems;
 using UnityEditor;
 using UnityEngine;
@@ -38,6 +39,20 @@ namespace Games.RazorMaze.Editor
 
         public void OnGUI()
         {
+            EditorUtilsEx.HorizontalZone(() =>
+            {
+                GUILayout.Label("Release view", GUILayout.Width(80));
+                int gameMode = GameClientUtils.GameMode;
+                bool releaseView = gameMode == (int) EGameMode.Release;
+                bool newReleaseView = EditorGUILayout.Toggle(releaseView, GUILayout.Width(35));
+                if (releaseView != newReleaseView)
+                    GameClientUtils.GameMode = newReleaseView ? (int) EGameMode.Release : (int) EGameMode.Prototyping;
+                EditorUtilsEx.GUIEnabledZone(m_Des.size != default, () =>
+                {
+                    EditorUtilsEx.GuiButtonAction("Focus", FocusCamera, m_Des.size, GUILayout.Width(50));
+                });
+            });
+
             EditorUtilsEx.HorizontalZone(() =>
             {
                 GUILayout.Label("Size:", GUILayout.Width(35));
@@ -91,36 +106,49 @@ namespace Games.RazorMaze.Editor
 
         private void CreateLevel()
         {
-            EditorUtilsEx.ClearConsole();
-            ClearLevel();
-            var size = new V2Int(LevelDesigner.MazeWidth, LevelDesigner.Sizes[m_Des.sizeIdx]);
-            var parms = new MazeGenerationParams(
-                size,
-                m_Des.aParam,
-                m_Des.pathLengths.Split(',').Select(_S => int.Parse(_S)).ToArray());
-            var info = LevelGenerator.CreateRandomLevelInfo(parms, out m_Des.valid);
-            LoadLevel(info);
+            EditorUtilsEx.SceneDirtyAction(() =>
+            {
+                EditorUtilsEx.ClearConsole();
+                ClearLevel();
+                var size = new V2Int(LevelDesigner.MazeWidth, LevelDesigner.Sizes[m_Des.sizeIdx]);
+                var parms = new MazeGenerationParams(
+                    size,
+                    m_Des.aParam,
+                    m_Des.pathLengths.Split(',').Select(_S => int.Parse(_S)).ToArray());
+                var info = LevelGenerator.CreateRandomLevelInfo(parms, out m_Des.valid);
+                LoadLevel(info);
+            });
         }
 
         private void CreateDefault()
         {
-            EditorUtilsEx.ClearConsole();
-            ClearLevel();
-            var size = new V2Int(LevelDesigner.MazeWidth, LevelDesigner.Sizes[m_Des.sizeIdx]);
-            var info = LevelGenerator.CreateDefaultLevelInfo(size, true);
-            LoadLevel(info);
+            EditorUtilsEx.SceneDirtyAction(() =>
+            {
+                EditorUtilsEx.ClearConsole();
+                ClearLevel();
+                var size = new V2Int(LevelDesigner.MazeWidth, LevelDesigner.Sizes[m_Des.sizeIdx]);
+                var info = LevelGenerator.CreateDefaultLevelInfo(size, true);
+                LoadLevel(info);
+            });
         }
 
         private void CreateObjects(MazeInfo _Info)
         {
-            var container = CommonUtils.FindOrCreateGameObject("Maze", out _).transform;
-            container.gameObject.DestroyChildrenSafe();
-            m_Des.maze = RazorMazePrototypingUtils
-                .CreateMazeItems(_Info, container)
-                .Cast<ViewMazeItemProt>()
-                .ToList();
-            m_Des.group = _Info.LevelGroup;
-            m_Des.index = _Info.LevelIndex;
+            EditorUtilsEx.SceneDirtyAction(() =>
+            {
+                var container = CommonUtils.FindOrCreateGameObject("Maze", out _).transform;
+                container.gameObject.DestroyChildrenSafe();
+                var converter = new CoordinateConverter();
+                converter.Init(_Info.Size);
+                var contGetter = new ContainersGetter(converter);
+                var mazeItemsCreator = new MazeItemsCreator(contGetter, converter, null);
+                m_Des.maze = mazeItemsCreator.CreateMazeItems(_Info)
+                    .Cast<ViewMazeItemProt>()
+                    .ToList();
+                m_Des.group = _Info.LevelGroup;
+                m_Des.index = _Info.LevelIndex;
+                m_Des.size = _Info.Size;
+            });
         }
 
         private static void FocusCamera(V2Int _Size)

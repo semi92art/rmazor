@@ -3,13 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Entities;
+using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Models.ProceedInfos;
 
 namespace Games.RazorMaze.Models
 {
+    public enum MazeOrientation { North, East, South, West }
+    public enum EMazeMoveDirection { Up, Right, Down, Left }
+    
     public delegate void MazeInfoHandler(MazeInfo Info);
-    public enum MazeOrientation { North, East, South, West}
-    public enum EMazeMoveDirection { Up, Right, Down, Left}
+    public delegate void PathProceedHandler(V2Int PathItem);
 
     public class CharacterInfo
     {
@@ -18,11 +21,13 @@ namespace Games.RazorMaze.Models
         public long HealthPoints { get; set; }
     }
     
-    public interface IModelMazeData : IPreInit
+    public interface IModelMazeData : IPreInit, ICharacterMoveContinued
     {
         event MazeInfoHandler MazeChanged;
+        event PathProceedHandler PathProceedEvent;
         MazeInfo Info { get; set; }
         MazeOrientation Orientation { get; set; }
+        Dictionary<V2Int, bool> PathProceeds { get; }
         Dictionary<EMazeItemType, Dictionary<MazeItem, IMazeItemProceedInfo>> ProceedInfos { get; }
         CharacterInfo CharacterInfo { get; }
         bool ProceedingMazeItems { get; set; }
@@ -52,7 +57,10 @@ namespace Games.RazorMaze.Models
         #region api
         
         public event MazeInfoHandler MazeChanged;
+        public event PathProceedHandler PathProceedEvent;
         public MazeOrientation Orientation { get; set; } = MazeOrientation.North;
+        public Dictionary<V2Int, bool> PathProceeds { get; private set; }
+
         public Dictionary<EMazeItemType, Dictionary<MazeItem, IMazeItemProceedInfo>> ProceedInfos { get; private set; } 
             = new Dictionary<EMazeItemType, Dictionary<MazeItem, IMazeItemProceedInfo>>();
 
@@ -66,10 +74,22 @@ namespace Games.RazorMaze.Models
             set
             {
                 m_Info = value;
+                PathProceeds = m_Info.Path.ToDictionary(_P => _P, _P => false);
+                PathProceeds[m_Info.Path[0]] = true;
                 MazeChanged?.Invoke(m_Info);
             }
         }
         
         #endregion
+
+        public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
+        {
+            if (!PathProceeds.ContainsKey(_Args.Current))
+                return;
+            if (PathProceeds[_Args.Current])
+                return;
+            PathProceeds[_Args.Current] = true;
+            PathProceedEvent?.Invoke(_Args.Current);
+        }
     }
 }

@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Entities;
 using Extensions;
 using Games.RazorMaze.Models;
-using Games.RazorMaze.Prot;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.MazeItems;
+using Games.RazorMaze.Views.Utils;
 using UnityEngine;
 
 namespace Games.RazorMaze.Views.MazeCommon
@@ -12,15 +15,23 @@ namespace Games.RazorMaze.Views.MazeCommon
     {
         #region inject
 
+        public IMazeItemsCreator MazeItemsCreator { get; }
         private IModelMazeData Model { get; }
         private IContainersGetter ContainersGetter { get; }
         private ICoordinateConverter CoordinateConverter { get; }
 
-        public ViewMazeCommonProt(IModelMazeData _Model, IContainersGetter _ContainersGetter, ICoordinateConverter _CoordinateConverter)
+        public ViewMazeCommonProt(
+            IMazeItemsCreator _MazeItemsCreator,
+            IModelMazeData _Model,
+            IContainersGetter _ContainersGetter, 
+            ICoordinateConverter _CoordinateConverter)
         {
+            MazeItemsCreator = _MazeItemsCreator;
             Model = _Model;
             ContainersGetter = _ContainersGetter;
             CoordinateConverter = _CoordinateConverter;
+
+            Camera.main.backgroundColor = ViewUtils.ColorMain;
         }
 
         #endregion
@@ -29,10 +40,16 @@ namespace Games.RazorMaze.Views.MazeCommon
         
         public List<IViewMazeItem> MazeItems { get; private set; }
         
+        public void OnPathProceed(V2Int _PathItem)
+        {
+            var item = MazeItems.First(_Item => _Item.Props.Position == _PathItem && _Item.Props.IsNode);
+            item.Active = true;
+        }
+
         public void Init()
         {
-            MazeItems = RazorMazePrototypingUtils.CreateMazeItems(Model.Info, ContainersGetter.MazeItemsContainer);
-            CoordinateConverter.Init(Model.Info.Size);
+            MazeItems = MazeItemsCreator.CreateMazeItems(Model.Info);
+            MazeItems.First(_Item => _Item.Props.IsStartNode).Active = true;
             ContainersGetter.MazeItemsContainer.SetLocalPosXY(Vector2.zero);
             ContainersGetter.MazeItemsContainer.PlusLocalPosY(CoordinateConverter.GetScale() * 0.5f);
         }

@@ -41,6 +41,7 @@ namespace Games.RazorMaze
         [SerializeField] public List<ViewMazeItemProt> maze;
         [HideInInspector] public int group;
         [HideInInspector] public int index;
+        [HideInInspector] public V2Int size;
         
 
         private static MazeInfo MazeInfo
@@ -65,7 +66,6 @@ namespace Games.RazorMaze
             
             MazeInfo = Instance.GetLevelInfoFromScene();
             GameClientUtils.GameId = 1;
-            GameClientUtils.GameMode = (int)EGameMode.Prototyping;
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
              
             SceneManager.sceneLoaded += (_Scene, _Mode) =>
@@ -101,6 +101,12 @@ namespace Games.RazorMaze
                     switch (item.Type)
                     {
                         case EMazeItemType.TrapReact:
+                            mazeProtItems.Add(new ViewMazeItemProps
+                            {
+                                Type = EMazeItemType.Block,
+                                Position = item.Position
+                            });
+                            break;
                         case EMazeItemType.Turret:
                         case EMazeItemType.TrapIncreasing:
                         case EMazeItemType.Block: 

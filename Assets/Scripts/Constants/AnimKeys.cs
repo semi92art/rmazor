@@ -14,6 +14,7 @@ namespace Constants
         public static int Normal { get; }
         public static int Selected { get; }
         public static int State { get; }
+        public static float Blend { get; }
 
         static AnimKeys()
         {
@@ -27,6 +28,7 @@ namespace Constants
             Normal = Animator.StringToHash("Normal");
             Selected = Animator.StringToHash("Selected");
             State = Animator.StringToHash("state");
+            Blend = Animator.StringToHash("Blend");
         }
     }
 }

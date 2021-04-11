@@ -127,6 +127,12 @@ namespace Games.RazorMaze.Prot.Editor
         
         private static void DrawControlsMovingBlock(ViewMazeItemProps _Props)
         {
+            if (!_Props.Path.Any())
+            {
+                EditorUtilsEx.SceneDirtyAction(() => 
+                    _Props.Path.AddRange(new [] {_Props.Position, _Props.Position}));
+            }
+            
             EditorUtilsEx.GUIColorZone(Color.black,() => GUILayout.Label("Path:"));
             bool pathExist = _Props.Path.Any();
             int lastPathIndex = _Props.Path.Count - 1;
@@ -134,25 +140,32 @@ namespace Games.RazorMaze.Prot.Editor
             {
                 EditorUtilsEx.GuiButtonAction("Add", () =>
                 {
-                    var pointToAdd = !pathExist ? _Props.Position : _Props.Path.Last();
-                    _Props.Path?.Add(pointToAdd);
+                    EditorUtilsEx.SceneDirtyAction(() =>
+                    {
+                        var pointToAdd = !pathExist ? _Props.Position : _Props.Path.Last();
+                        _Props.Path.Add(pointToAdd);    
+                    });
                 });
                 if (pathExist)
-                    EditorUtilsEx.GuiButtonAction("Remove Last", () => _Props.Path.RemoveAt(lastPathIndex));
+                    EditorUtilsEx.GuiButtonAction("Remove Last", () =>
+                        EditorUtilsEx.SceneDirtyAction(() => _Props.Path.RemoveAt(lastPathIndex)));
             });
             if (!pathExist)
                 return;
-            EditorUtilsEx.GuiButtonAction("△", () => 
-                    _Props.Path[lastPathIndex] = _Props.Path[lastPathIndex].PlusY(1));
+            
+            EditorUtilsEx.GuiButtonAction("△", () =>
+            {
+                EditorUtilsEx.SceneDirtyAction(() => _Props.Path[lastPathIndex] = _Props.Path[lastPathIndex].PlusY(1));
+            });
             EditorUtilsEx.HorizontalZone(() =>
             {
                 EditorUtilsEx.GuiButtonAction("◁", () => 
-                    _Props.Path[lastPathIndex] = _Props.Path[lastPathIndex].MinusX(1));
+                    EditorUtilsEx.SceneDirtyAction(() => _Props.Path[lastPathIndex] = _Props.Path[lastPathIndex].MinusX(1)));
                 EditorUtilsEx.GuiButtonAction("▷", () => 
-                    _Props.Path[lastPathIndex] = _Props.Path[lastPathIndex].PlusX(1));    
+                    EditorUtilsEx.SceneDirtyAction(() => _Props.Path[lastPathIndex] = _Props.Path[lastPathIndex].PlusX(1)));    
             });
             EditorUtilsEx.GuiButtonAction("▽", () => 
-                _Props.Path[lastPathIndex] = _Props.Path[lastPathIndex].MinusY(1));
+                EditorUtilsEx.SceneDirtyAction(() => _Props.Path[lastPathIndex] = _Props.Path[lastPathIndex].MinusY(1)));
         }
 
         private static void DrawControlsDirectedBlock(ViewMazeItemProps _Props)
@@ -168,27 +181,31 @@ namespace Games.RazorMaze.Prot.Editor
             var props = _Item.Props;
             if (!props.Directions.Any())
             {
-                _Item.SetSpringboardDirection(V2Int.up + V2Int.left);
+                EditorUtilsEx.SceneDirtyAction(() => { _Item.SetSpringboardDirection(V2Int.up + V2Int.left);});
                 return;
             }
             EditorUtilsEx.GuiButtonAction("Rotate", () =>
             {
-                var dir = props.Directions.First();
-                if (dir == V2Int.up + V2Int.left)
-                    dir = V2Int.up + V2Int.right;
-                else if (dir == V2Int.up + V2Int.right)
-                    dir = V2Int.down + V2Int.right;
-                else if (dir == V2Int.down + V2Int.right)
-                    dir = V2Int.down + V2Int.left;
-                else if (dir == V2Int.down + V2Int.left)
-                    dir = V2Int.up + V2Int.left;
-                _Item.SetSpringboardDirection(dir);
+                EditorUtilsEx.SceneDirtyAction(() =>
+                {
+                    var dir = props.Directions.First();
+                    if (dir == V2Int.up + V2Int.left)
+                        dir = V2Int.up + V2Int.right;
+                    else if (dir == V2Int.up + V2Int.right)
+                        dir = V2Int.down + V2Int.right;
+                    else if (dir == V2Int.down + V2Int.right)
+                        dir = V2Int.down + V2Int.left;
+                    else if (dir == V2Int.down + V2Int.left)
+                        dir = V2Int.up + V2Int.left;
+                    _Item.SetSpringboardDirection(dir);
+                });
             });
         }
 
         private static void DrawControlsDirectedBlockSingle(ViewMazeItemProps _Props)
         {
-            UnityAction<IEnumerable<V2Int>> setDir = _Directions => _Props.Directions = _Directions.ToList();
+            UnityAction<IEnumerable<V2Int>> setDir = _Directions =>
+                EditorUtilsEx.SceneDirtyAction(() => _Props.Directions = _Directions.ToList());
             System.Func<V2Int, Color> getCol = _Direction => _Props.Directions.Contains(_Direction) ? Color.green : Color.white;
             EditorUtilsEx.GUIColorZone(getCol(V2Int.up), () => EditorUtilsEx.GuiButtonAction("△", setDir, new []{V2Int.up}));
             EditorUtilsEx.HorizontalZone(() =>
@@ -203,11 +220,14 @@ namespace Games.RazorMaze.Prot.Editor
         {
             UnityAction<V2Int> setDir = _Direction =>
             {
-                if (_Props.Directions.Contains(V2Int.zero))
-                    _Props.Directions.Remove(V2Int.zero);
-                if (_Props.Directions.Contains(_Direction))
-                    _Props.Directions.Remove(_Direction);
-                else _Props.Directions.Add(_Direction);
+                EditorUtilsEx.SceneDirtyAction(() =>
+                {
+                    if (_Props.Directions.Contains(V2Int.zero))
+                        _Props.Directions.Remove(V2Int.zero);
+                    if (_Props.Directions.Contains(_Direction))
+                        _Props.Directions.Remove(_Direction);
+                    else _Props.Directions.Add(_Direction);
+                });
             };
             System.Func<V2Int, Color> getCol = _Direction => _Props.Directions.Contains(_Direction) ? Color.green : Color.white;
             EditorUtilsEx.GUIColorZone(getCol(V2Int.up), () => EditorUtilsEx.GuiButtonAction("△", setDir, V2Int.up));
@@ -221,8 +241,11 @@ namespace Games.RazorMaze.Prot.Editor
 
         private static void LinkPortals(ViewMazeItemProps _Props1, ViewMazeItemProps _Props2)
         {
-            _Props1.Pair = _Props2.Position;
-            _Props2.Pair = _Props1.Position;
+            EditorUtilsEx.SceneDirtyAction(() =>
+            {
+                _Props1.Pair = _Props2.Position;
+                _Props2.Pair = _Props1.Position;    
+            });
         }
     }
 }

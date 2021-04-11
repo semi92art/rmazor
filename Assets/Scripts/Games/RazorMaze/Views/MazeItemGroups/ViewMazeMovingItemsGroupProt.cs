@@ -7,6 +7,7 @@ using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeCommon;
+using Games.RazorMaze.Views.Utils;
 using Shapes;
 using UnityEngine;
 
@@ -121,7 +122,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                 line.Color = Color.black;
                 line.SetPoints(points);
                 line.Closed = false;
-                line.SortingOrder = 25;
+                line.SortingOrder = ViewUtils.GetPathLineSortingOrder();
 
                 foreach (var point in points)
                 {
@@ -132,7 +133,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                     disc.Color = Color.black;
                     disc.Radius = 0.5f;
                     disc.Type = DiscType.Disc;
-                    disc.SortingOrder = 25;
+                    disc.SortingOrder = ViewUtils.GetPathLineJointSortingOrder();
                 }
             }
         }

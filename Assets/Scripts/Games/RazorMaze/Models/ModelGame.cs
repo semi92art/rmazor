@@ -116,9 +116,9 @@ namespace Games.RazorMaze.Models
 
         private void CharacterOnMoveContinued(CharacterMovingEventArgs _Args)
         {
-            
             foreach (var proceeder in new ICharacterMoveContinued[]
             {
+                Data,
                 GravityItemsProceeder,
                 TrapsReactProceeder,
                 TrapsIncreasingProceeder,

@@ -1,4 +1,5 @@
-﻿using Games.RazorMaze.Models;
+﻿using Entities;
+using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Views;
 using UnityEngine;
@@ -47,7 +48,8 @@ namespace Games.RazorMaze
         public void PreInit()
         {
             GameTimeProvider.Instance.Reset();
-            
+
+            var data = Model.Data;
             var rotation                                        = Model.MazeRotation;
             var movingItemsProceeder                            = Model.MovingItemsProceeder;
             var gravityItemsProceeder                           = Model.GravityItemsProceeder;
@@ -60,6 +62,8 @@ namespace Games.RazorMaze
             var character                                       = Model.Character;
             var scoring                                         = Model.Scoring;
             var levelStaging                                    = Model.LevelStaging;
+            
+            data.PathProceedEvent += DataOnPathProceedEvent;
             
             rotation.RotationStarted                            += OnMazeRotationStarted;
             rotation.Rotation                                   += OnMazeRotation;
@@ -98,20 +102,25 @@ namespace Games.RazorMaze
             Model.PreInit();
         }
 
+        private void DataOnPathProceedEvent(V2Int _PathItem)
+        {
+            View.MazeCommon.OnPathProceed(_PathItem);
+        }
+
         public void Init()
         {
             Model.Init();
             View.Init();
         }
 
-        private void OnCharacterMoveFinished(CharacterMovingEventArgs _Args) { }
 
         private void OnInputCommand(int _Value) => Model.InputScheduler.AddCommand((EInputCommand)_Value);
         
         private void OnCharacterHealthChanged(HealthPointsEventArgs _Args) => View.Character.OnHealthChanged(_Args);
         private void OnCharacterDeath() => View.Character.OnDeath();
-        private void OnCharacterMoveStarted(CharacterMovingEventArgs _Args) => View.Character.OnStartChangePosition(_Args);
+        private void OnCharacterMoveStarted(CharacterMovingEventArgs _Args) => View.Character.OnMovingStarted(_Args);
         private void OnCharacterMoveContinued(CharacterMovingEventArgs _Args) => View.Character.OnMoving(_Args);
+        private void OnCharacterMoveFinished(CharacterMovingEventArgs _Args) => View.Character.OnMovingFinished(_Args);
         
         private void OnMazeRotationStarted(MazeRotateDirection _Direction, MazeOrientation _Orientation) => View.MazeRotation.StartRotation(_Direction, _Orientation);
         private void OnMazeRotation(float _Progress) => View.MazeRotation.Rotate(_Progress);

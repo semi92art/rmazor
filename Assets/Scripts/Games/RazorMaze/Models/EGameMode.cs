@@ -3,7 +3,6 @@
     public enum EGameMode
     {
         Prototyping = 0,
-        Levels,
-        Infinite
+        Release,
     }
 }

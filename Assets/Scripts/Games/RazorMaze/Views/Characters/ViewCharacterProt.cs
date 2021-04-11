@@ -1,11 +1,9 @@
-﻿using System.Linq;
+﻿using Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeCommon;
-using Games.RazorMaze.Views.MazeItems;
 using Shapes;
 using UnityEngine;
-using Utils;
 
 namespace Games.RazorMaze.Views.Characters
 {
@@ -13,8 +11,6 @@ namespace Games.RazorMaze.Views.Characters
     {
         #region nonpublic members
         
-        private Vector2 m_PrevPos;
-        private Vector2 m_NextPos;
         private Disc m_Shape;
         
         #endregion
@@ -50,20 +46,17 @@ namespace Games.RazorMaze.Views.Characters
             SetPosition(pos);
         }
 
-        public void OnStartChangePosition(CharacterMovingEventArgs _Args) { }
+        public void OnMovingStarted(CharacterMovingEventArgs _Args) { }
 
         public void OnMoving(CharacterMovingEventArgs _Args)
         {
-            m_PrevPos = CoordinateConverter.ToLocalCharacterPosition(_Args.From);
-            m_NextPos = CoordinateConverter.ToLocalCharacterPosition(_Args.To);
-            var pos = Vector2.Lerp(m_PrevPos, m_NextPos, _Args.Progress);
+            var prevPos = CoordinateConverter.ToLocalCharacterPosition(_Args.From);
+            var nextPos = CoordinateConverter.ToLocalCharacterPosition(_Args.To);
+            var pos = Vector2.Lerp(prevPos, nextPos, _Args.Progress);
             SetPosition(pos);
-            var item = ViewMazeCommon.MazeItems.FirstOrDefault(_Item => _Item.Props.Position == _Args.Current);
-            if (item == null)
-                return;
-            if (item.Props.IsNode)
-                (item as ViewMazeItemProt).shape.Color = new Color(1f, 0.93f, 0.51f);
         }
+
+        public void OnMovingFinished(CharacterMovingEventArgs _Args) { }
 
         public void OnDeath() { }
 
@@ -76,7 +69,7 @@ namespace Games.RazorMaze.Views.Characters
         private void InitShape(float _Radius, Color _Color)
         {
             var go = ContainersGetter.CharacterContainer.gameObject;
-            m_Shape = go.GetComponent<Disc>() ?? go.AddComponent<Disc>();
+            m_Shape = go.GetOrAddComponent<Disc>();
             m_Shape.Radius = _Radius;
             m_Shape.Color = _Color;
             m_Shape.SortingOrder = 100;

@@ -6,9 +6,9 @@ using Exceptions;
 using Extensions;
 using GameHelpers;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Views.Utils;
 using Shapes;
 using UnityEngine;
-using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
@@ -21,26 +21,19 @@ namespace Games.RazorMaze.Views.MazeItems
         [SerializeField] private SpriteRenderer hint;
         [HideInInspector] public EMazeItemType typeCheck;
         [SerializeField] private ViewMazeItemProps props;
-        [SerializeField, HideInInspector] private V2Int mazeSize;
+        [HideInInspector] public V2Int MazeSize;
         
         #endregion
         
         #region nonpublic members
-
-        private static Color _pathItemCol = Color.white;
-        private static Color _pathStartItemCol = new Color(1f, 0.93f, 0.51f);
-        private static Color _blockCol = new Color(0.53f, 0.53f, 0.53f, 0.8f);
-        private static Color _trapCol = new Color(1f, 0.29f, 0.29f);
-        private static Color _turretCol = new Color(1f, 0.14f, 0.7f);
-        private static Color _portalCol = new Color(0.13f, 1f, 0.07f);
-        private static Color _blockShredingerCol = new Color(0.49f, 0.79f, 1f);
-        private static Color _springboardCol = new Color(0.41f, 1f, 0.79f);
         
         private bool m_Active;
 
         #endregion
         
         #region api
+
+        public GameObject Object => gameObject;
 
         public bool Active
         {
@@ -49,10 +42,7 @@ namespace Games.RazorMaze.Views.MazeItems
             {
                 m_Active = value;
                 if (props.Type == EMazeItemType.ShredingerBlock)
-                {
-                    shape.Color = m_Active ? _blockCol : _blockShredingerCol;
-                    // hint.enabled = m_Active;
-                }
+                    shape.Color = m_Active ? ViewUtils.ColorBlock : ViewUtils.ColorShredinger;
             }
         }
 
@@ -62,19 +52,15 @@ namespace Games.RazorMaze.Views.MazeItems
             set => props = value;
         }
         
-        public void Init(ViewMazeItemProps _Props, V2Int _MazeSize)
+        public void Init(ViewMazeItemProps _Props)
         {
-            mazeSize = _MazeSize;
             props = _Props;
-            SetShapeAndHint(
-                _Props.Type, 
-                _Props.IsNode,
-                _Props.IsStartNode);
+            SetShapeAndHint(_Props.Type, _Props.IsNode);
         }
 
         public void SetLocalPosition(Vector2 _Position)
         {
-            transform.localPosition = _Position;
+            transform.SetLocalPosXY(_Position);
         }
 
         public void SetLocalScale(float _Scale)
@@ -99,28 +85,28 @@ namespace Games.RazorMaze.Views.MazeItems
             props.IsStartNode = _IsStartNode;
             if (_Type == EMazeItemType.Springboard)
                 props.Directions = new List<V2Int> {V2Int.up + V2Int.left};
-            SetShapeAndHint(_Type, _IsNode, _IsStartNode);
+            SetShapeAndHint(_Type, _IsNode);
         }
 
         public void SetSpringboardDirection(V2Int _Direction)
         {
             props.Directions = new List<V2Int>{_Direction};
-            SetShapeAndHint(EMazeItemType.Springboard, false, false);
+            SetShapeAndHint(EMazeItemType.Springboard, false);
         }
         
         #endregion
         
         #region nonpublic methods
 
-        private void SetShapeAndHint(EMazeItemType _Type, bool _IsNode, bool _IsStartNode)
+        private void SetShapeAndHint(EMazeItemType _Type, bool _IsNode)
         {
             var converter = new CoordinateConverter();
-            converter.Init(mazeSize);
+            converter.Init(MazeSize);
             
             gameObject.DestroyChildrenSafe();
             transform.SetLocalPosXY(converter.ToLocalMazeItemPosition(props.Position));
 
-            SetShapeByType(_Type, _IsNode, _IsStartNode);
+            SetShapeByType(_Type, _IsNode);
             if (props.IsNode)
             {
                 shape.SortingOrder = 0;
@@ -130,17 +116,17 @@ namespace Games.RazorMaze.Views.MazeItems
             GetShapeSortingOrder(_Type, _IsNode);
         }
 
-        private void SetShapeByType(EMazeItemType _Type, bool _IsNode, bool _IsStartNode)
+        private void SetShapeByType(EMazeItemType _Type, bool _IsNode)
         {
             var converter = new CoordinateConverter();
-            converter.Init(mazeSize);
+            converter.Init(MazeSize);
             var sh = gameObject.GetOrAddComponent<Rectangle>();
             sh.Width = 0.97f * converter.GetScale();
             sh.Height = 0.97f * converter.GetScale();
             sh.Type = Rectangle.RectangleType.RoundedSolid;
             sh.CornerRadius = 0.1f;
             shape = sh;
-            shape.Color = GetShapeColor(_Type, false, _IsNode, _IsStartNode);
+            shape.Color = GetShapeColor(_Type, false, _IsNode);
             shape.SortingOrder = GetShapeSortingOrder(_Type, _IsNode);
         }
 
@@ -176,74 +162,57 @@ namespace Games.RazorMaze.Views.MazeItems
             hint.sortingOrder = GetShapeSortingOrder(_Type, false) + 1;
         }
 
-        private int GetShapeSortingOrder(EMazeItemType _Type, bool _IsNode)
+        private int GetShapeSortingOrder(EMazeItemType _Type, bool _IsPath) => 
+            _IsPath ? ViewUtils.GetPathSortingOrder() : ViewUtils.GetBlockSortingOrder(_Type);
+
+
+        private static Color GetShapeColor(EMazeItemType _Type, bool _Inner, bool _IsNode)
         {
             if (_IsNode)
-                return 0;
-            int result;
-            switch (_Type)
-            {
-                case EMazeItemType.TrapReact:
-                case EMazeItemType.GravityTrap:
-                case EMazeItemType.GravityBlock:
-                    result = 1;
-                    break;
-                case EMazeItemType.Block: 
-                    result = 2;
-                    break;
-                case EMazeItemType.Portal:
-                case EMazeItemType.Turret:
-                case EMazeItemType.TrapIncreasing:
-                case EMazeItemType.TrapMoving:
-                case EMazeItemType.TurretRotating:
-                case EMazeItemType.ShredingerBlock:
-                case EMazeItemType.Springboard:
-                    result = 12;
-                    break;
-                default: throw new SwitchCaseNotImplementedException(_Type);
-            }
-            return result;
-        }
-        
-        
-        private static Color GetShapeColor(EMazeItemType _Type, bool _Inner, bool _IsNode, bool _IsStartNode)
-        {
-            if (_IsNode)
-                return _IsStartNode ? _pathStartItemCol : _pathItemCol;
-            
+                return ViewUtils.ColorMain;
+
             if (_Inner)
-                return Color.black;
+                return ViewUtils.ColorHint;
 
             switch (_Type)
             {
                 case EMazeItemType.Block:                   
-                case EMazeItemType.GravityBlock: 
-                    return _blockCol; 
+                case EMazeItemType.GravityBlock:
+                    return ViewUtils.ColorBlock;
                 case EMazeItemType.ShredingerBlock:
-                    return _blockShredingerCol;
-                case EMazeItemType.Portal: 
-                    return _portalCol;
+                    return ViewUtils.ColorShredinger;
+                case EMazeItemType.Portal:
+                    return ViewUtils.ColorPortal;
                 case EMazeItemType.TrapReact:               
                 case EMazeItemType.TrapIncreasing:
                 case EMazeItemType.TrapMoving: 
                 case EMazeItemType.GravityTrap:
-                    return _trapCol;
+                    return ViewUtils.ColorTrap;
                 case EMazeItemType.Turret: 
-                case EMazeItemType.TurretRotating: 
-                    return _turretCol;
+                case EMazeItemType.TurretRotating:
+                    return ViewUtils.ColorTurret;
                 case EMazeItemType.Springboard:
-                    return _springboardCol;
+                    return ViewUtils.ColorSpringboard;
                 default: throw new SwitchCaseNotImplementedException(_Type);
             }
         }
 
         private void OnDrawGizmos()
         {
-            if (Application.isPlaying || props.IsNode)
+            if (Application.isPlaying)
                 return;
+            Gizmos.color = GetShapeColor(props.Type, false, props.IsNode);
 
-            Gizmos.color = GetShapeColor(props.Type, false, false, false);
-            
+            if (props.IsNode)
+            {
+                if (props.IsStartNode)
+                {
+                    Gizmos.color = Color.yellow;
+                    DrawGizmosStartNode();
+                }
+                return;
+            }
+
             switch (props.Type)
             {
                 case EMazeItemType.Block:
@@ -272,6 +241,12 @@ namespace Games.RazorMaze.Views.MazeItems
                 default: throw new SwitchCaseNotImplementedException(props.Type);
             }
         }
+
+        private void DrawGizmosStartNode()
+        {
+            var p = (Vector3)ToWorldPosition(props.Position);
+            Gizmos.DrawSphere(p, 0.5f);
+        }
         
         private void DrawGizmosTrapIncreasing()
         {
@@ -292,10 +267,10 @@ namespace Games.RazorMaze.Views.MazeItems
             Gizmos.DrawLine(p1_2, p3_2);
             Gizmos.DrawLine(p2_2, p4_2);
 
-            Gizmos.DrawSphere(p1_2, 1);
-            Gizmos.DrawSphere(p2_2, 1);
-            Gizmos.DrawSphere(p3_2, 1);
-            Gizmos.DrawSphere(p4_2, 1);
+            Gizmos.DrawSphere(p1_2, 0.5f);
+            Gizmos.DrawSphere(p2_2, 0.5f);
+            Gizmos.DrawSphere(p3_2, 0.5f);
+            Gizmos.DrawSphere(p4_2, 0.5f);
         }
 
         private void DrawGizmosPath()
@@ -305,7 +280,7 @@ namespace Games.RazorMaze.Views.MazeItems
             for (int i = 0; i < props.Path.Count; i++)
             {
                 var pos = props.Path[i];
-                Gizmos.DrawSphere(ToWorldPosition(pos), 1);
+                Gizmos.DrawSphere(ToWorldPosition(pos), 0.5f);
                 if (i == props.Path.Count - 1)
                     return;
                 Gizmos.DrawLine(ToWorldPosition(pos), ToWorldPosition(props.Path[i + 1]));
@@ -317,10 +292,9 @@ namespace Games.RazorMaze.Views.MazeItems
             if (!props.Directions.Any())
                 return;
             var pos = ToWorldPosition(props.Position);
-            Gizmos.DrawSphere(pos, 1);
             foreach (var dir in props.Directions)
             {
-                Gizmos.DrawSphere(ToWorldPosition(props.Position + dir), 1);
+                Gizmos.DrawSphere(ToWorldPosition(props.Position + dir), 0.5f);
                 Gizmos.DrawLine(pos, ToWorldPosition(props.Position + dir));
             }
         }
@@ -372,29 +346,22 @@ namespace Games.RazorMaze.Views.MazeItems
         private Vector2 ToWorldPosition(V2Int _Point)
         {
             var converter = new CoordinateConverter();
-            converter.Init(mazeSize);
+            converter.Init(MazeSize);
             return converter.ToLocalMazeItemPosition(_Point).PlusY(converter.GetCenter().y);
         }
         
         private Vector2 ToWorldPosition(Vector2 _Point)
         {
             var converter = new CoordinateConverter();
-            converter.Init(mazeSize);
+            converter.Init(MazeSize);
             return converter.ToLocalMazeItemPosition(_Point).PlusY(converter.GetCenter().y);
         }
         
         #endregion
-    }
-    
-    [Serializable]
-    public class ViewMazeItemProps
-    {
-        public bool IsNode;
-        public bool IsStartNode;
-        public EMazeItemType Type;
-        public V2Int Position;
-        public List<V2Int> Path = new List<V2Int>();
-        public List<V2Int> Directions = new List<V2Int>{V2Int.zero};
-        public V2Int Pair;
+
+        public object Clone()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
