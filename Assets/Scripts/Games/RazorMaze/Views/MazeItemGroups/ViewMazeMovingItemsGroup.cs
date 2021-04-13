@@ -4,7 +4,6 @@ using Entities;
 using Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
-using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.MazeCommon;
@@ -14,7 +13,7 @@ using UnityEngine;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
-    public class ViewMazeMovingItemsGroupProt : IViewMazeMovingItemsGroup
+    public class ViewMazeMovingItemsGroup : IViewMazeMovingItemsGroup
     {
         #region nonpublic members
         
@@ -22,7 +21,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
             new Dictionary<MazeItem, ViewMovingItemInfo>();
         
         #endregion
-        
+
         #region inject
         
         private IModelMazeData Data { get; }
@@ -30,22 +29,26 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         private ICoordinateConverter CoordinateConverter { get; }
         private IContainersGetter ContainersGetter { get; }
         private IViewMazeCommon MazeCommon { get; }
+        private ViewSettings ViewSettings { get; }
 
-        public ViewMazeMovingItemsGroupProt(
+        public ViewMazeMovingItemsGroup(
             IModelMazeData _Data,
             IMovingItemsProceeder _MovingItemsProceeder,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IViewMazeCommon _MazeCommon)
+            IViewMazeCommon _MazeCommon,
+            ViewSettings _ViewSettings)
         {
             Data = _Data;
             MovingItemsProceeder = _MovingItemsProceeder;
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
             MazeCommon = _MazeCommon;
+            ViewSettings = _ViewSettings;
         }
         
         #endregion
+        
         
         #region api
         
@@ -68,9 +71,6 @@ namespace Games.RazorMaze.Views.MazeItemGroups
 
         public void OnMazeItemMoveContinued(MazeItemMoveEventArgs _Args)
         {
-            if (_Args.Item.Type == EMazeItemType.GravityBlock)
-                MarkMazeItemBusyPositions(_Args.Item, 
-                    (Data.ProceedInfos[_Args.Item.Type][_Args.Item] as MazeItemMovingProceedInfo).BusyPositions);
             if (!m_ItemsMoving.ContainsKey(_Args.Item))
                 return;
             var item = m_ItemsMoving[_Args.Item];
@@ -81,8 +81,6 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         public void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
         {
-            if (_Args.Item.Type == EMazeItemType.GravityBlock)
-                MarkMazeItemBusyPositions(_Args.Item, null);
             if (!m_ItemsMoving.ContainsKey(_Args.Item))
                 return;
             var viewItem = MazeCommon.MazeItems.Single(_Item => _Item.Equal(_Args.Item));
@@ -93,13 +91,13 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         #endregion
         
         #region nonpublic methods
-
+        
         private void DrawWallBlockMovingPaths()
         {
             var items = Data.Info.MazeItems
                 .Where(_O => _O.Type == EMazeItemType.GravityBlock
-                || _O.Type == EMazeItemType.GravityTrap
-                || _O.Type == EMazeItemType.TrapMoving);
+                             || _O.Type == EMazeItemType.GravityTrap
+                             || _O.Type == EMazeItemType.TrapMoving);
             foreach (var obs in items)
             {
                 var points = obs.Path.Select(_P => CoordinateConverter.ToLocalCharacterPosition(_P)).ToList();
@@ -108,8 +106,8 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                 go.SetParent(ContainersGetter.MazeContainer);
                 go.transform.SetLocalPosXY(Vector2.zero);
                 var line = go.AddComponent<Polyline>();
-                line.Thickness = 0.3f;
-                line.Color = Color.black;
+                line.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
+                line.Color = ViewUtils.ColorLines;
                 line.SetPoints(points);
                 line.Closed = false;
                 line.SortingOrder = ViewUtils.GetPathLineSortingOrder();
@@ -120,41 +118,11 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                     go1.SetParent(ContainersGetter.MazeContainer);
                     var disc = go1.AddComponent<Disc>();
                     go1.transform.SetLocalPosXY(point);
-                    disc.Color = Color.black;
-                    disc.Radius = 0.5f;
+                    disc.Color = ViewUtils.ColorLines;
+                    disc.Radius = ViewSettings.LineWidth * CoordinateConverter.GetScale() * 2f;
                     disc.Type = DiscType.Disc;
                     disc.SortingOrder = ViewUtils.GetPathLineJointSortingOrder();
                 }
-            }
-        }
-
-        private void MarkMazeItemBusyPositions(MazeItem _Item, IEnumerable<V2Int> _Positions)
-        {
-            if (!m_ItemsMoving.ContainsKey(_Item))
-                m_ItemsMoving.Add(_Item, new ViewMovingItemInfo
-                {
-                    BusyPositions = new Dictionary<V2Int, Disc>()
-                });
-
-            var busyPoss = m_ItemsMoving[_Item].BusyPositions;
-
-            foreach (var kvp in busyPoss.Where(_Kvp => !_Kvp.Value.IsNull()))
-                kvp.Value.DestroySafe();
-            busyPoss.Clear();
-
-            if (_Positions == null)
-                return;
-            
-            foreach (var pos in _Positions)
-            {
-                var go = new GameObject("Busy Pos");
-                go.SetParent(ContainersGetter.MazeContainer);
-                go.transform.localPosition = CoordinateConverter.ToLocalCharacterPosition(pos);
-                var disc = go.AddComponent<Disc>();
-                disc.Color = Color.red;
-                disc.Radius = 0.3f;
-                disc.SortingOrder = 20;
-                busyPoss.Add(pos, disc);
             }
         }
         

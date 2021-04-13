@@ -239,7 +239,7 @@ public class EditorHelper : EditorWindow
                     AssetDatabase.Refresh();
                 }
             }
-        }, false, false);
+        });
     }
     
     private void ViewSettingsTabPage()
@@ -249,7 +249,7 @@ public class EditorHelper : EditorWindow
         var serObj = new SerializedObject(settings);
 
         var type = typeof(ViewSettings);
-        var fieldInfos = type.GetFields().ToList();
+        var fieldInfos = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
 
         EditorUtilsEx.ScrollViewZone(ref m_ViewSettingsScrollPos, () =>
         {
@@ -266,7 +266,7 @@ public class EditorHelper : EditorWindow
                     AssetDatabase.Refresh();
                 }
             }
-        }, false, false);
+        });
     }
 
     private void UpdateTestUrl(bool _Forced = false)

@@ -63,9 +63,9 @@ namespace Mono_Installers
             #region view debug
 
             Container.Bind<IViewCharacter>()                        .To<ViewCharacterProt>()                    .AsSingle().When(_ => prototyping);
+            Container.Bind<IViewMazeMovingItemsGroup>()             .To<ViewMazeMovingItemsGroupProt>()         .AsSingle().When(_ => prototyping);
             Container.Bind<IViewMazeCommon>()                       .To<ViewMazeCommonProt>()                   .AsSingle();
             Container.Bind<IViewMazeRotation>()                     .To<ViewMazeRotationProt>()                 .AsSingle();
-            Container.Bind<IViewMazeMovingItemsGroup>()             .To<ViewMazeMovingItemsGroupProt>()         .AsSingle();
             Container.Bind<IViewMazeTrapsReactItemsGroup>()         .To<ViewMazeTrapsReactItemsGroupProt>()     .AsSingle();
             Container.Bind<IViewMazeTrapsIncreasingItemsGroup>()    .To<ViewMazeTrapsIncreasingItemsGroupProt>().AsSingle();
             Container.Bind<IViewMazeTurretsGroup>()                 .To<ViewMazeTurretsGroupProt>()             .AsSingle();
@@ -82,7 +82,9 @@ namespace Mono_Installers
             Container.Bind<IViewCharacter>()                        .To<ViewCharacter>()                        .AsSingle().When(_ => release);
             Container.Bind<IViewCharacterTail>()                    .To<ViewCharacterTailSimple>()              .AsSingle().When(_ => release);
             Container.Bind<IViewMazeItemPath>()                     .To<ViewMazeItemPath>()                     .AsSingle().When(_ => release);
-            
+            Container.Bind<IViewMazeItemGravityBlock>()             .To<ViewMazeItemGravityBlock>()             .AsSingle().When(_ => release);
+            Container.Bind<IViewMazeMovingItemsGroup>()             .To<ViewMazeMovingItemsGroup>()         .AsSingle().When(_ => release);
+
             #endregion
 
         }

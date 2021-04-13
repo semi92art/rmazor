@@ -7,7 +7,6 @@ using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using UnityEngine;
-using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
@@ -65,6 +64,8 @@ namespace Games.RazorMaze.Views.MazeItems
             SetShape();
         }
         
+        public object Clone() => new ViewMazeItemPath(CoordinateConverter, ContainersGetter, Data, ViewSettings);
+
         #endregion
         
         #region nonpublic methods
@@ -87,7 +88,6 @@ namespace Games.RazorMaze.Views.MazeItems
             sh.Type = Rectangle.RectangleType.RoundedSolid;
             sh.CornerRadiusMode = Rectangle.RectangleCornerRadiusMode.PerCorner;
             sh.CornerRadiii = Vector4.zero;
-            //sh.CornerRadius = 0;// ViewSettings.cornerRadius * CoordinateConverter.GetScale();
             sh.Color = ViewUtils.ColorMain;
             sh.SortingOrder = ViewUtils.GetPathSortingOrder();
             m_GameObject = go;
@@ -181,9 +181,9 @@ namespace Games.RazorMaze.Views.MazeItems
             go.SetParent(ContainersGetter.MazeItemsContainer);
             go.transform.SetLocalPosXY(Vector2.zero);
             var border = go.AddComponent<Line>();
-            border.Thickness = ViewSettings.lineWidth;
+            border.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
             border.EndCaps = LineEndCap.None;
-            border.Color = ViewUtils.ColorCharacter;
+            border.Color = ViewUtils.ColorLines;
             (border.Start, border.End) = GetBorderPoints(_Side, false, false);
             switch (_Side)
             {
@@ -218,14 +218,14 @@ namespace Games.RazorMaze.Views.MazeItems
             }
             corner.transform.SetLocalPosXY(GetCornerCenter(_Right, _Up, _Inner));
             corner.Type = DiscType.Arc;
-            corner.Radius = ViewSettings.cornerRadius * CoordinateConverter.GetScale();
-            corner.Thickness = ViewSettings.lineWidth;
+            corner.Radius = ViewSettings.CornerRadius * CoordinateConverter.GetScale();
+            corner.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
             var angles = GetCornerAngles(_Right, _Up, _Inner);
             corner.AngRadiansStart = Mathf.Deg2Rad * angles.x;
             corner.AngRadiansEnd = Mathf.Deg2Rad * angles.y;
-            corner.Color = ViewUtils.ColorCharacter;
+            corner.Color = ViewUtils.ColorLines;
             
-            float cr = ViewSettings.cornerRadius * CoordinateConverter.GetScale();
+            float cr = ViewSettings.CornerRadius * CoordinateConverter.GetScale();
 
             if (!_Right && !_Up)
             {
@@ -265,7 +265,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             Vector2 start, end;
             var pos = Props.Position.ToVector2();
-            var cr = ViewSettings.cornerRadius;
+            var cr = ViewSettings.CornerRadius;
             switch (_Side)
             {
                 case EMazeMoveDirection.Up:
@@ -298,7 +298,7 @@ namespace Games.RazorMaze.Views.MazeItems
             bool _Inner)
         {
             var pos = Props.Position.ToVector2();
-            var cr = ViewSettings.cornerRadius;
+            var cr = ViewSettings.CornerRadius;
             float xIndent = (_Right ? 1f : -1f) * (_Inner ? -1f : 1f);
             float yIndent = (_Up ? 1f : -1f) * (_Inner ? -1f : 1f);
             var crVec = cr * new Vector2(xIndent, yIndent);
@@ -325,11 +325,5 @@ namespace Games.RazorMaze.Views.MazeItems
         }
         
         #endregion
-        
-        public object Clone()
-        {
-            var res = new ViewMazeItemPath(CoordinateConverter, ContainersGetter, Data, ViewSettings);
-            return res;
-        }
     }
 }

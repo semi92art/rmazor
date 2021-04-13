@@ -9,7 +9,7 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         public ViewMazeItemProps Props { get; set; }
         
-        protected Transform Item;
+        protected Transform Item { get; set; }
 
         protected ICoordinateConverter CoordinateConverter { get; }
         protected IContainersGetter ContainersGetter { get; }

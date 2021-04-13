@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Constants;
 using Entities;
 using Extensions;
 using Games.RazorMaze.Models;
@@ -9,6 +9,7 @@ using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.MazeItems;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Utils;
 using Utils.Editor;
 
@@ -33,6 +34,9 @@ namespace Games.RazorMaze.Editor
         
         private void OnEnable()
         {
+            if (SceneManager.GetActiveScene().name != SceneNames.Prototyping)
+                return;
+            
             GameId = 1;
             m_Des = LevelDesigner.Instance;
             levels = MazeLevelUtils.LoadHeapLevels(GameId).Levels;
@@ -40,11 +44,16 @@ namespace Games.RazorMaze.Editor
 
         private void OnFocus()
         {
+            if (SceneManager.GetActiveScene().name != SceneNames.Prototyping)
+                return;
             m_Des = LevelDesigner.Instance;
         }
 
         public void OnGUI()
         {
+            if (SceneManager.GetActiveScene().name != SceneNames.Prototyping)
+                return;
+            
             EditorUtilsEx.HorizontalZone(() =>
             {
                 GUILayout.Label("Release view", GUILayout.Width(80));
@@ -143,7 +152,7 @@ namespace Games.RazorMaze.Editor
                 var converter = new CoordinateConverter();
                 converter.Init(_Info.Size);
                 var contGetter = new ContainersGetter(converter);
-                var mazeItemsCreator = new MazeItemsCreator(contGetter, converter, null);
+                var mazeItemsCreator = new MazeItemsCreator(contGetter, converter, null, null);
                 mazeItemsCreator.Editor = true;
                 m_Des.maze = mazeItemsCreator.CreateMazeItems(_Info)
                     .Cast<ViewMazeItemProt>()

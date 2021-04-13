@@ -41,6 +41,8 @@ MonoBehaviour:
       color: {r: 1, g: 1, b: 1, a: 1}
     - name: Character Tail
       color: {r: 1, g: 1, b: 1, a: 0.49019608}
+    - name: Lines
+      color: {r: 1, g: 1, b: 1, a: 1}
     colorList: []
   - name: Game 1
     showDetails: 0
