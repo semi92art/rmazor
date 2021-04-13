@@ -8,6 +8,7 @@ using Exceptions;
 using Extensions;
 using GameHelpers;
 using Managers;
+using TimeProviders;
 using TMPro;
 using UI.Entities;
 using UI.Factories;

@@ -4,6 +4,7 @@ using System.Linq;
 using Entities;
 using Exceptions;
 using Games.RazorMaze.Models.ProceedInfos;
+using TimeProviders;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityGameLoopDI;

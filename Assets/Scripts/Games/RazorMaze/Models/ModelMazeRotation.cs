@@ -1,4 +1,5 @@
-﻿using Utils;
+﻿using TimeProviders;
+using Utils;
 
 namespace Games.RazorMaze.Models
 {

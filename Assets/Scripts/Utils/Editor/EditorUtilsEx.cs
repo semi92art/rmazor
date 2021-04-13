@@ -20,52 +20,95 @@ namespace Utils.Editor
             GuiButtonAction(_Action.Method.Name.WithSpaces(), _Action, _Options);
         }
     
-        public static void GuiButtonAction<T>(string _Name, UnityAction<T> _Action, T _Arg, params GUILayoutOption[] _Options)
+        public static void GuiButtonAction<T>(
+            string _Name,
+            UnityAction<T> _Action, 
+            T _Arg, 
+            params GUILayoutOption[] _Options)
         {
             if (GUILayout.Button(_Name, _Options))
                 _Action?.Invoke(_Arg);
         }
 
-        public static void GuiButtonAction<T>(UnityAction<T> _Action, T _Arg, params GUILayoutOption[] _Options)
+        public static void GuiButtonAction<T>(
+            UnityAction<T> _Action,
+            T _Arg,
+            params GUILayoutOption[] _Options)
         {
             GuiButtonAction(_Action.Method.Name.WithSpaces(), _Action, _Arg, _Options);
         }
         
-        public static void GuiButtonAction<T1, T2>(string _Name, UnityAction<T1, T2> _Action, T1 _Arg1, T2 _Arg2, params GUILayoutOption[] _Options)
+        public static void GuiButtonAction<T1, T2>(
+            string _Name, 
+            UnityAction<T1, T2> _Action, 
+            T1 _Arg1,
+            T2 _Arg2,
+            params GUILayoutOption[] _Options)
         {
             if (GUILayout.Button(_Name, _Options))
                 _Action?.Invoke(_Arg1, _Arg2);
         }
 
-        public static void GuiButtonAction<T1, T2>(UnityAction<T1, T2> _Action, T1 _Arg1, T2 _Arg2, params GUILayoutOption[] _Options)
+        public static void GuiButtonAction<T1, T2>(
+            UnityAction<T1, T2> _Action,
+            T1 _Arg1,
+            T2 _Arg2,
+            params GUILayoutOption[] _Options)
         {
             GuiButtonAction(_Action.Method.Name.WithSpaces(), _Action, _Arg1, _Arg2, _Options);
         }
         
-        public static void GuiButtonAction<T1, T2, T3>(string _Name, UnityAction<T1, T2, T3> _Action, T1 _Arg1, T2 _Arg2, T3 _Arg3, params GUILayoutOption[] _Options)
+        public static void GuiButtonAction<T1, T2, T3>(
+            string _Name,
+            UnityAction<T1, T2, T3> _Action,
+            T1 _Arg1,
+            T2 _Arg2,
+            T3 _Arg3,
+            params GUILayoutOption[] _Options)
         {
             if (GUILayout.Button(_Name, _Options))
                 _Action?.Invoke(_Arg1, _Arg2, _Arg3);
         }
 
-        public static void GuiButtonAction<T1, T2, T3>(UnityAction<T1, T2, T3> _Action, T1 _Arg1, T2 _Arg2, T3 _Arg3, params GUILayoutOption[] _Options)
+        public static void GuiButtonAction<T1, T2, T3>(
+            UnityAction<T1, T2, T3> _Action,
+            T1 _Arg1, 
+            T2 _Arg2,
+            T3 _Arg3,
+            params GUILayoutOption[] _Options)
         {
             GuiButtonAction(_Action.Method.Name.WithSpaces(), _Action, _Arg1, _Arg2, _Arg3, _Options);
         }
         
-        public static void GuiButtonAction<T1, T2, T3, T4>(string _Name, UnityAction<T1, T2, T3, T4> _Action, T1 _Arg1, T2 _Arg2, T3 _Arg3, T4 _Arg4, params GUILayoutOption[] _Options)
+        public static void GuiButtonAction<T1, T2, T3, T4>(
+            string _Name,
+            UnityAction<T1, T2, T3, T4> _Action,
+            T1 _Arg1,
+            T2 _Arg2,
+            T3 _Arg3, 
+            T4 _Arg4,
+            params GUILayoutOption[] _Options)
         {
             if (GUILayout.Button(_Name, _Options))
                 _Action?.Invoke(_Arg1, _Arg2, _Arg3, _Arg4);
         }
 
-        public static void GuiButtonAction<T1, T2, T3, T4>(UnityAction<T1, T2, T3, T4> _Action, T1 _Arg1, T2 _Arg2, T3 _Arg3, T4 _Arg4, params GUILayoutOption[] _Options)
+        public static void GuiButtonAction<T1, T2, T3, T4>(
+            UnityAction<T1, T2, T3, T4> _Action,
+            T1 _Arg1,
+            T2 _Arg2,
+            T3 _Arg3, 
+            T4 _Arg4,
+            params GUILayoutOption[] _Options)
         {
             GuiButtonAction(_Action.Method.Name.WithSpaces(), _Action, _Arg1, _Arg2, _Arg3, _Arg4, _Options);
         }
         
-        public static void ScrollViewZone(ref Vector2 _ScrollPos, UnityAction _Action, bool _AlwaysShowHorizontal,
-            bool _AlwaysShowVertical)
+        public static void ScrollViewZone(
+            ref Vector2 _ScrollPos,
+            UnityAction _Action,
+            bool _AlwaysShowHorizontal = false,
+            bool _AlwaysShowVertical = false)
         {
             _ScrollPos = EditorGUILayout.BeginScrollView(_ScrollPos, _AlwaysShowHorizontal, _AlwaysShowVertical);
             _Action?.Invoke();

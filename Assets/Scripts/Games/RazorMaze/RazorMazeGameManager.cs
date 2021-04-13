@@ -2,6 +2,7 @@
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Views;
+using TimeProviders;
 using UnityEngine;
 using Utils;
 using Zenject;

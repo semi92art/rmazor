@@ -37,6 +37,10 @@ MonoBehaviour:
       color: {r: 0.48627454, g: 0.78823537, b: 1, a: 1}
     - name: Springboard
       color: {r: 0.40784317, g: 1, b: 0.78823537, a: 1}
+    - name: Character
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - name: Character Tail
+      color: {r: 1, g: 1, b: 1, a: 0.49019608}
     colorList: []
   - name: Game 1
     showDetails: 0

@@ -169,7 +169,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private static Color GetShapeColor(EMazeItemType _Type, bool _Inner, bool _IsNode)
         {
             if (_IsNode)
-                return ViewUtils.ColorMain;
+                return Application.isPlaying ? ViewUtils.ColorMain : Color.white;
 
             if (_Inner)
                 return ViewUtils.ColorHint;

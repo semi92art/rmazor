@@ -16,3 +16,5 @@ MonoBehaviour:
     array:
     - item: {fileID: 11400000, guid: 243986dd30cfcce4abbf025e950c2262, type: 2}
       name: model_settings
+    - item: {fileID: 11400000, guid: 95742306892dcc5439babdbcfba0b157, type: 2}
+      name: view_settings

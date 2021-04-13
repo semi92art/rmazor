@@ -33,8 +33,11 @@ namespace Utils
         {
             if (_Instance is T ptm && !ptm.IsNull())
                 return _Instance;
-            var go = new GameObject(_Name);
-            _Instance = go.AddComponent<T>();
+            
+            var go = GameObject.Find(_Name);
+            if (go == null || go.transform.parent != null)
+                go = new GameObject(_Name);
+            _Instance = go.GetOrAddComponent<T>();
             if (GameSettings.PlayMode)
                 UnityEngine.Object.DontDestroyOnLoad(go);
             return _Instance;

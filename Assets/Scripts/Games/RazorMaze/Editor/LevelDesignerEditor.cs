@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Entities;
 using Extensions;
@@ -37,6 +38,11 @@ namespace Games.RazorMaze.Editor
             levels = MazeLevelUtils.LoadHeapLevels(GameId).Levels;
         }
 
+        private void OnFocus()
+        {
+            m_Des = LevelDesigner.Instance;
+        }
+
         public void OnGUI()
         {
             EditorUtilsEx.HorizontalZone(() =>
@@ -47,10 +53,6 @@ namespace Games.RazorMaze.Editor
                 bool newReleaseView = EditorGUILayout.Toggle(releaseView, GUILayout.Width(35));
                 if (releaseView != newReleaseView)
                     GameClientUtils.GameMode = newReleaseView ? (int) EGameMode.Release : (int) EGameMode.Prototyping;
-                EditorUtilsEx.GUIEnabledZone(m_Des.size != default, () =>
-                {
-                    EditorUtilsEx.GuiButtonAction("Focus", FocusCamera, m_Des.size, GUILayout.Width(50));
-                });
             });
 
             EditorUtilsEx.HorizontalZone(() =>
@@ -142,6 +144,7 @@ namespace Games.RazorMaze.Editor
                 converter.Init(_Info.Size);
                 var contGetter = new ContainersGetter(converter);
                 var mazeItemsCreator = new MazeItemsCreator(contGetter, converter, null);
+                mazeItemsCreator.Editor = true;
                 m_Des.maze = mazeItemsCreator.CreateMazeItems(_Info)
                     .Cast<ViewMazeItemProt>()
                     .ToList();
@@ -151,7 +154,7 @@ namespace Games.RazorMaze.Editor
             });
         }
 
-        private static void FocusCamera(V2Int _Size)
+        public static void FocusCamera(V2Int _Size)
         {
             var converter = new CoordinateConverter();
             converter.Init(_Size);

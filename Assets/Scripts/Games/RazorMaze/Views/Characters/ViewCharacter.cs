@@ -5,6 +5,8 @@ using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeCommon;
+using Games.RazorMaze.Views.Utils;
+using Shapes;
 using UnityEngine;
 using Utils;
 
@@ -19,6 +21,7 @@ namespace Games.RazorMaze.Views.Characters
         private static int AnimKeyStartMove => AnimKeys.Anim;
         private static int AnimKeyBump => AnimKeys.Anim2;
 
+        private GameObject m_Head;
         private GameObject m_Character;
         private Animator m_Animator;
         private EMazeMoveDirection m_PrevVertDir;
@@ -32,17 +35,20 @@ namespace Games.RazorMaze.Views.Characters
         private IModelMazeData Data { get; }
         private IContainersGetter ContainersGetter { get; }
         private IViewMazeCommon ViewMazeCommon { get; }
+        private IViewCharacterTail Tail { get; }
 
         public ViewCharacter(
             ICoordinateConverter _CoordinateConverter, 
             IModelMazeData _Data, 
             IContainersGetter _ContainersGetter,
-            IViewMazeCommon _ViewMazeCommon)
+            IViewMazeCommon _ViewMazeCommon,
+            IViewCharacterTail _Tail)
         {
             CoordinateConverter = _CoordinateConverter;
             Data = _Data;
             ContainersGetter = _ContainersGetter;
             ViewMazeCommon = _ViewMazeCommon;
+            Tail = _Tail;
         }
         
         #endregion
@@ -54,13 +60,14 @@ namespace Games.RazorMaze.Views.Characters
             m_Animator.SetTrigger(AnimKeyStartJumping);
             var pos = CoordinateConverter.ToLocalCharacterPosition(Data.Info.Path[0]);
             SetPosition(pos);
+            Tail.Init();
         }
 
         public void OnMovingStarted(CharacterMovingEventArgs _Args)
         {
-            Dbg.Log("OnMovingStarted");
             m_Animator.SetTrigger(AnimKeyStartMove);
             SetOrientation();
+            Tail.ShowTail(_Args);
         }
 
         public void OnMoving(CharacterMovingEventArgs _Args)
@@ -69,12 +76,13 @@ namespace Games.RazorMaze.Views.Characters
             var nextPos = CoordinateConverter.ToLocalCharacterPosition(_Args.To);
             var pos = Vector2.Lerp(prevPos, nextPos, _Args.Progress);
             SetPosition(pos);
+            Tail.ShowTail(_Args);
         }
 
         public void OnMovingFinished(CharacterMovingEventArgs _Args)
         {
-            Dbg.Log("OnMovingFinished");
             m_Animator.SetTrigger(AnimKeyBump);
+            Tail.HideTail(_Args);
         }
 
         public void OnDeath() { }
@@ -86,8 +94,10 @@ namespace Games.RazorMaze.Views.Characters
             var go = ContainersGetter.CharacterContainer.gameObject;
             var prefab = PrefabUtilsEx.InitPrefab(go.transform, CommonPrefabSetNames.Views, "character");
             prefab.transform.SetLocalPosXY(Vector2.zero);
-            prefab.transform.localScale = Vector3.one * CoordinateConverter.GetScale() * 0.98f;
             m_Character = prefab;
+            m_Head = prefab.GetContentItem("head");
+            m_Head.transform.localScale = Vector3.one * CoordinateConverter.GetScale() * 0.98f;
+            prefab.GetCompItem<Rectangle>("head shape").Color = ViewUtils.ColorCharacter;
             m_Animator = prefab.GetCompItem<Animator>("animator");
         }
         
@@ -110,100 +120,12 @@ namespace Games.RazorMaze.Views.Characters
                     break;
                 case EMazeMoveDirection.Right:
                     LookAtByOrientation(EMazeMoveDirection.Right, false);
-                    // LookAtByOrientation(EMazeMoveDirection.Right, m_PrevVertDir == EMazeMoveDirection.Down);
                     break;
                 case EMazeMoveDirection.Left:
                     LookAtByOrientation(EMazeMoveDirection.Left, false);
-                    // LookAtByOrientation(EMazeMoveDirection.Left, m_PrevVertDir == EMazeMoveDirection.Down);
                     break;
                 default: throw new SwitchCaseNotImplementedException(direction);
             }
-            
-            //
-            // switch (Data.Orientation)
-            // {
-            //     case MazeOrientation.North:
-            //         switch (direction)
-            //         {
-            //             case EMazeMoveDirection.Up: 
-            //                 LookAtByOrientation(EMazeMoveDirection.Up, m_PrevHorDir == EMazeMoveDirection.Left);
-            //                 break;
-            //             case EMazeMoveDirection.Down:
-            //                 LookAtByOrientation(EMazeMoveDirection.Down, m_PrevHorDir == EMazeMoveDirection.Right);
-            //                 break;
-            //             case EMazeMoveDirection.Right:
-            //                 LookAtByOrientation(EMazeMoveDirection.Right, false);
-            //                 // LookAtByOrientation(EMazeMoveDirection.Right, m_PrevVertDir == EMazeMoveDirection.Down);
-            //                 break;
-            //             case EMazeMoveDirection.Left:
-            //                 LookAtByOrientation(EMazeMoveDirection.Left, false);
-            //                 // LookAtByOrientation(EMazeMoveDirection.Left, m_PrevVertDir == EMazeMoveDirection.Down);
-            //                 break;
-            //             default: throw new SwitchCaseNotImplementedException(direction);
-            //         }
-            //         break;
-            //     case MazeOrientation.East:
-            //         switch (direction)
-            //         {
-            //             case EMazeMoveDirection.Up:
-            //                 LookAtByOrientation(EMazeMoveDirection.Right, false);
-            //                 // LookAtByOrientation(EMazeMoveDirection.Right, m_PrevHorDir == EMazeMoveDirection.Left);
-            //                 break;
-            //             case EMazeMoveDirection.Down:
-            //                 LookAtByOrientation(EMazeMoveDirection.Left, false);
-            //                 // LookAtByOrientation(EMazeMoveDirection.Left, m_PrevHorDir == EMazeMoveDirection.Right);
-            //                 break;
-            //             case EMazeMoveDirection.Right:
-            //                 LookAtByOrientation(EMazeMoveDirection.Down, m_PrevVertDir == EMazeMoveDirection.Down);
-            //                 break;
-            //             case EMazeMoveDirection.Left:
-            //                 LookAtByOrientation(EMazeMoveDirection.Up, m_PrevVertDir == EMazeMoveDirection.Down);
-            //                 break;
-            //             default: throw new SwitchCaseNotImplementedException(direction);
-            //         }
-            //         break;
-            //     case MazeOrientation.South:
-            //         switch (direction)
-            //         {
-            //             case EMazeMoveDirection.Up:
-            //                 LookAtByOrientation(EMazeMoveDirection.Down, m_PrevHorDir == EMazeMoveDirection.Left);
-            //                 break;
-            //             case EMazeMoveDirection.Down:
-            //                 LookAtByOrientation(EMazeMoveDirection.Up, m_PrevHorDir == EMazeMoveDirection.Right);
-            //                 break;
-            //             case EMazeMoveDirection.Right:
-            //                 LookAtByOrientation(EMazeMoveDirection.Left, false);
-            //                 // LookAtByOrientation(EMazeMoveDirection.Left, m_PrevVertDir == EMazeMoveDirection.Down);
-            //                 break;
-            //             case EMazeMoveDirection.Left:
-            //                 LookAtByOrientation(EMazeMoveDirection.Right, false);
-            //                 // LookAtByOrientation(EMazeMoveDirection.Right, m_PrevVertDir == EMazeMoveDirection.Down);
-            //                 break;
-            //             default: throw new SwitchCaseNotImplementedException(direction);
-            //         }
-            //         break;
-            //     case MazeOrientation.West:
-            //         switch (direction)
-            //         {
-            //             case EMazeMoveDirection.Up:
-            //                 LookAtByOrientation(EMazeMoveDirection.Left, false);
-            //                 // LookAtByOrientation(EMazeMoveDirection.Left, m_PrevHorDir == EMazeMoveDirection.Left);
-            //                 break;
-            //             case EMazeMoveDirection.Down:
-            //                 LookAtByOrientation(EMazeMoveDirection.Right, false);
-            //                 // LookAtByOrientation(EMazeMoveDirection.Right, m_PrevHorDir == EMazeMoveDirection.Right);
-            //                 break;
-            //             case EMazeMoveDirection.Right:
-            //                 LookAtByOrientation(EMazeMoveDirection.Up, m_PrevVertDir == EMazeMoveDirection.Down);
-            //                 break;
-            //             case EMazeMoveDirection.Left:
-            //                 LookAtByOrientation(EMazeMoveDirection.Down, m_PrevVertDir == EMazeMoveDirection.Down);
-            //                 break;
-            //             default: throw new SwitchCaseNotImplementedException(direction);
-            //         }
-            //         break;
-            //     default: throw new SwitchCaseNotImplementedException(Data.Orientation);
-            // }
 
             switch (direction)
             {
@@ -234,9 +156,9 @@ namespace Games.RazorMaze.Views.Characters
                     throw new SwitchCaseNotImplementedException(_Direction);
             }
             
-            m_Character.transform.eulerAngles = Vector3.forward * angle;
-            var absScale = m_Character.transform.localScale.Abs();
-            m_Character.transform.localScale = new Vector3(absScale.x * horScale, absScale.y * vertScale, absScale.z);
+            m_Head.transform.eulerAngles = Vector3.forward * angle;
+            var absScale = m_Head.transform.localScale.Abs();
+            m_Head.transform.localScale = new Vector3(absScale.x * horScale, absScale.y * vertScale, absScale.z);
         }
     }
 }

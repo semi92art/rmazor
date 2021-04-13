@@ -5,6 +5,11 @@ namespace Extensions
 {
     public static class VectorExtensions
     {
+        public static Vector4 SetX (this Vector4 _V, float _X) => new Vector4(_X, _V.y, _V.z, _V.w);
+        public static Vector4 SetY (this Vector4 _V, float _Y) => new Vector4(_V.x, _Y, _V.z, _V.w);
+        public static Vector4 SetZ (this Vector4 _V, float _Z) => new Vector4(_V.x, _V.y, _Z, _V.w);
+        public static Vector4 SetW (this Vector4 _V, float _W) => new Vector4(_V.x, _V.y, _V.z, _W);
+        
         public static Vector2 XY    (this Vector3 _V) => new Vector2(_V.x, _V.y);
         public static Vector3 SetX  (this Vector3 _V, float _X) => new Vector3(_X, _V.y, _V.z);
         public static Vector3 SetY  (this Vector3 _V, float _Y) => new Vector3(_V.x, _Y, _V.z);

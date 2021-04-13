@@ -11,6 +11,7 @@ namespace Games.RazorMaze.Views.Helpers
 {
     public interface IMazeItemsCreator
     {
+        bool Editor { get; set; }
         List<IViewMazeItem> CreateMazeItems(MazeInfo _Info);
     }
     
@@ -35,6 +36,10 @@ namespace Games.RazorMaze.Views.Helpers
         
         #endregion
         
+        #region api
+
+        public bool Editor { get; set; }
+
         public List<IViewMazeItem> CreateMazeItems(MazeInfo _Info)
         {
             CoordinateConverter.Init(_Info.Size);
@@ -44,9 +49,12 @@ namespace Games.RazorMaze.Views.Helpers
                 AddPathItem(res, _Info, item);
             foreach (var item in _Info.MazeItems)
                 AddMazeItem(res, _Info, item);
-            // ViewMazeItemPath?.Object.SetActive(false);
             return res;
         }
+        
+        #endregion
+        
+        #region nonpublic methods
         
         private void AddPathItem(
             ICollection<IViewMazeItem> _Items,
@@ -108,6 +116,9 @@ namespace Games.RazorMaze.Views.Helpers
             MazeInfo _Info,
             MazeItem _Item)
         {
+            if (_Item.Type == EMazeItemType.Block && !Editor)
+                return;
+            
             var tr = new GameObject("Maze Item").transform;
             tr.SetParent(ContainersGetter.MazeItemsContainer);
             var item = tr.gameObject.AddComponent<ViewMazeItemProt>();
@@ -124,5 +135,7 @@ namespace Games.RazorMaze.Views.Helpers
             item.Init(props);
             _Items.Add(item);
         }
+        
+        #endregion
     }
 }

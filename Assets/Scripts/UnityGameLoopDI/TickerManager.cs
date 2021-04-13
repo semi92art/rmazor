@@ -61,26 +61,20 @@ namespace UnityGameLoopDI
 
         private void Update()
         {
-            if (!m_UpdateInfoDict.Any())
-                return;
-            foreach (var obj in m_UpdateInfoDict)
-                obj?.UpdateTick();
+            for (int i = 0; i < m_UpdateInfoDict.Count; i++)
+                m_UpdateInfoDict[i]?.UpdateTick();
         }
 
         private void FixedUpdate()
         {
-            if (!m_FixedUpdateInfoDict.Any())
-                return;
-            foreach (var obj in m_FixedUpdateInfoDict)
-                obj?.FixedUpdateTick();
+            for (int i = 0; i < m_FixedUpdateInfoDict.Count; i++)
+                m_FixedUpdateInfoDict[i]?.FixedUpdateTick();
         }
 
         private void LateUpdate()
         {
-            if (!m_LateUpdateInfoDict.Any())
-                return;
-            foreach (var obj in m_LateUpdateInfoDict)
-                obj?.LateUpdateTick();
+            for (int i = 0; i < m_LateUpdateInfoDict.Count; i++)
+                m_LateUpdateInfoDict[i]?.LateUpdateTick();
         }
         
         private void OnDrawGizmos()

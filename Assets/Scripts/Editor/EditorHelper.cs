@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Constants;
 using Entities;
+using Exceptions;
 using Managers;
 using Network;
 using Network.Packets;
@@ -16,6 +17,7 @@ using Extensions;
 using GameHelpers;
 using Games.RazorMaze;
 using PygmyMonkey.ColorPalette.Utils;
+using TimeProviders;
 using Utils;
 using Utils.Editor;
 
@@ -32,7 +34,10 @@ public class EditorHelper : EditorWindow
     private int m_Quality = -1;
     private int m_QualityCheck;
     private int m_TabPage;
+    private Vector2 m_CommonScrollPos;
+    private Vector2 m_CachedDataScrollPos;
     private Vector2 m_ModelSettingsScrollPos;
+    private Vector2 m_ViewSettingsScrollPos;
 
     [MenuItem("Tools/Helper", false, 0)]
     public static void ShowWindow()
@@ -74,125 +79,140 @@ public class EditorHelper : EditorWindow
 
     private void OnGUI()
     {
-        m_TabPage = GUILayout.Toolbar (m_TabPage, new [] {"Common", "Model Settings"});
+        m_TabPage = GUILayout.Toolbar (
+            m_TabPage, 
+            new [] {"Common", "Cached Data", "Model Settings", "View Settings"});
         switch (m_TabPage) 
         {
             case 0:
                 CommonTabPage();
                 break;
             case 1:
+                CachedDataTabPage();
+                break;
+            case 2:
                 ModelSettingsTabPage();
                 break;
+            case 3:
+                ViewSettingsTabPage();
+                break;
+            default: throw new SwitchCaseNotImplementedException(m_TabPage);
         }
     }
 
     private void CommonTabPage()
     {
-                if (Application.isPlaying)
-            GUILayout.Label($"Target FPS: {Application.targetFrameRate}");
-
-        GUI.enabled = Application.isPlaying;
-        if (!GUI.enabled)
-            GUILayout.Label("Available only in play mode:");
-        if (GUI.enabled)
-            GUILayout.Space(10);
-        
-        GUILayout.BeginHorizontal();
-        EditorUtilsEx.GuiButtonAction("Enable Daily Bonus", EnableDailyBonus);
-        GUILayout.Label("Day:");
-        m_DailyBonusIndex = EditorGUILayout.Popup(
-            m_DailyBonusIndex, new[] { "1", "2", "3", "4", "5", "6", "7" });
-        GUILayout.EndHorizontal();
-        
-        if (Application.isPlaying)
+        EditorUtilsEx.ScrollViewZone(ref m_CommonScrollPos, () =>
         {
+            if (Application.isPlaying)
+                GUILayout.Label($"Target FPS: {Application.targetFrameRate}");
+
+            GUI.enabled = Application.isPlaying;
+            if (!GUI.enabled)
+                GUILayout.Label("Available only in play mode:");
+            if (GUI.enabled)
+                GUILayout.Space(10);
+            
             GUILayout.BeginHorizontal();
-            var money = m_Money.CloneAlt();
-            foreach (var kvp in m_Money)
+            EditorUtilsEx.GuiButtonAction("Enable Daily Bonus", EnableDailyBonus);
+            GUILayout.Label("Day:");
+            m_DailyBonusIndex = EditorGUILayout.Popup(
+                m_DailyBonusIndex, new[] { "1", "2", "3", "4", "5", "6", "7" });
+            GUILayout.EndHorizontal();
+            
+            if (Application.isPlaying)
             {
-                GUILayout.Label($"{kvp.Key}:");
-                money[kvp.Key] = EditorGUILayout.LongField(money[kvp.Key]);
+                GUILayout.BeginHorizontal();
+                var money = m_Money.CloneAlt();
+                foreach (var kvp in m_Money)
+                {
+                    GUILayout.Label($"{kvp.Key}:");
+                    money[kvp.Key] = EditorGUILayout.LongField(money[kvp.Key]);
+                }
+                m_Money = money;
+                GUILayout.EndHorizontal();
+                
+                GUILayout.BeginHorizontal();
+                EditorUtilsEx.GuiButtonAction("Get From Bank", GetMoneyFromBank);
+                EditorUtilsEx.GuiButtonAction("Set Money", SetMoney);
+                GUILayout.EndHorizontal();
             }
-            m_Money = money;
+            
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Set Game Id:"))
+                SaveUtils.PutValue(SaveKey.GameId, m_GameId);
+            m_GameId = EditorGUILayout.IntField(m_GameId);
+            EditorUtilsEx.GuiButtonAction("Start Level:", GameLoader.LoadLevel, m_Level);
+            m_Level = EditorGUILayout.IntField(m_Level);
             GUILayout.EndHorizontal();
             
             GUILayout.BeginHorizontal();
-            EditorUtilsEx.GuiButtonAction("Get From Bank", GetMoneyFromBank);
-            EditorUtilsEx.GuiButtonAction("Set Money", SetMoney);
+            EditorUtilsEx.GuiButtonAction(PauseGame, true);
+            EditorUtilsEx.GuiButtonAction("Continue game", PauseGame, false);
             GUILayout.EndHorizontal();
-        }
-        
-        GUILayout.BeginHorizontal();
-        if (GUILayout.Button("Set Game Id:"))
-            SaveUtils.PutValue(SaveKey.GameId, m_GameId);
-        m_GameId = EditorGUILayout.IntField(m_GameId);
-        EditorUtilsEx.GuiButtonAction("Start Level:", GameLoader.LoadLevel, m_Level);
-        m_Level = EditorGUILayout.IntField(m_Level);
-        GUILayout.EndHorizontal();
-        
-        GUILayout.BeginHorizontal();
-        EditorUtilsEx.GuiButtonAction(PauseGame, true);
-        EditorUtilsEx.GuiButtonAction("Continue game", PauseGame, false);
-        GUILayout.EndHorizontal();
-        
-        EditorUtilsEx.DrawUiLine(Color.gray);
-        GUI.enabled = true;
+            
+            EditorUtilsEx.DrawUiLine(Color.gray);
+            GUI.enabled = true;
 
-        GUILayout.BeginHorizontal();
-        EditorUtilsEx.GuiButtonAction(CreateTestUsers, m_TestUsersCount);
-        GUILayout.Label("count:", GUILayout.Width(40));
-        m_TestUsersCount = EditorGUILayout.IntField(m_TestUsersCount);
-        GUILayout.EndHorizontal();
-        
-        EditorUtilsEx.GuiButtonAction("Delete test users", DeleteTestUsers);
-
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("Debug Server Url:");
-        m_DebugServerUrl = EditorGUILayout.TextField(m_DebugServerUrl);
-        if (!string.IsNullOrEmpty(m_DebugServerUrl) && m_DebugServerUrl.Last().InRange('/','\\'))
-            m_DebugServerUrl = m_DebugServerUrl.Remove(m_DebugServerUrl.Length - 1);
-        GUILayout.EndHorizontal();
-
-        EditorUtilsEx.GuiButtonAction("Set default api url", SetDefaultApiUrl);
-        EditorUtilsEx.GuiButtonAction("Delete all settings", DeleteAllSettings);
-        EditorUtilsEx.GuiButtonAction("Get ready to commit", GetReadyToCommit);
-        
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("Quality:");
-        m_Quality = EditorGUILayout.Popup(
-            m_Quality, new[] { "Normal", "Good" });
-        GUILayout.EndHorizontal();
-        
-        EditorUtilsEx.DrawUiLine(Color.gray);
-
-        GUILayout.BeginHorizontal();
-        EditorUtilsEx.GuiButtonAction(SceneNames.Preload, LoadScene, $"Assets/Scenes/{SceneNames.Preload}.unity");
-        EditorUtilsEx.GuiButtonAction(SceneNames.Main, LoadScene, $"Assets/Scenes/{SceneNames.Main}.unity");
-        EditorUtilsEx.GuiButtonAction(SceneNames.Level, LoadScene, $"Assets/Scenes/{SceneNames.Level}.unity");
-        EditorUtilsEx.GuiButtonAction(SceneNames.Prototyping,  LoadScene, $"Assets/Scenes/{SceneNames.Prototyping}.unity");
-        GUILayout.EndHorizontal();
-        
-        
-        EditorUtilsEx.DrawUiLine(Color.gray);
-        
-        GUILayout.Label("Cached data:");
-        foreach (var skVal in GetAllSaveKeyValues())
-        {
             GUILayout.BeginHorizontal();
-            GUILayout.Label(skVal.Key, GUILayout.Width(200));
-            Color defCol = GUI.contentColor;
-            if (skVal.Value == "empty")
-                GUI.contentColor = Color.yellow;
-            if (skVal.Value == "not exist")
-                GUI.contentColor = Color.red;
-            GUILayout.Label(skVal.Value);
-            GUI.contentColor = defCol;
+            EditorUtilsEx.GuiButtonAction(CreateTestUsers, m_TestUsersCount);
+            GUILayout.Label("count:", GUILayout.Width(40));
+            m_TestUsersCount = EditorGUILayout.IntField(m_TestUsersCount);
             GUILayout.EndHorizontal();
-        }
+            
+            EditorUtilsEx.GuiButtonAction("Delete test users", DeleteTestUsers);
 
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Debug Server Url:");
+            m_DebugServerUrl = EditorGUILayout.TextField(m_DebugServerUrl);
+            if (!string.IsNullOrEmpty(m_DebugServerUrl) && m_DebugServerUrl.Last().InRange('/','\\'))
+                m_DebugServerUrl = m_DebugServerUrl.Remove(m_DebugServerUrl.Length - 1);
+            GUILayout.EndHorizontal();
+
+            EditorUtilsEx.GuiButtonAction("Set default api url", SetDefaultApiUrl);
+            EditorUtilsEx.GuiButtonAction("Delete all settings", DeleteAllSettings);
+            EditorUtilsEx.GuiButtonAction("Get ready to commit", GetReadyToCommit);
+            
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Quality:");
+            m_Quality = EditorGUILayout.Popup(
+                m_Quality, new[] { "Normal", "Good" });
+            GUILayout.EndHorizontal();
+            
+            EditorUtilsEx.DrawUiLine(Color.gray);
+
+            GUILayout.BeginHorizontal();
+            EditorUtilsEx.GuiButtonAction(SceneNames.Preload, LoadScene, $"Assets/Scenes/{SceneNames.Preload}.unity");
+            EditorUtilsEx.GuiButtonAction(SceneNames.Main, LoadScene, $"Assets/Scenes/{SceneNames.Main}.unity");
+            EditorUtilsEx.GuiButtonAction(SceneNames.Level, LoadScene, $"Assets/Scenes/{SceneNames.Level}.unity");
+            EditorUtilsEx.GuiButtonAction(SceneNames.Prototyping,  LoadScene, $"Assets/Scenes/{SceneNames.Prototyping}.unity");
+            GUILayout.EndHorizontal();
+        });
+        
         UpdateTestUrl();
         UpdateGameId();
         UpdateQuality();
+    }
+
+    private void CachedDataTabPage()
+    {
+        EditorUtilsEx.ScrollViewZone(ref m_CachedDataScrollPos, () =>
+        {
+            GUILayout.Label("Cached data:");
+            foreach (var skVal in GetAllSaveKeyValues())
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Label(skVal.Key, GUILayout.Width(200));
+                Color defCol = GUI.contentColor;
+                if (skVal.Value == "empty")
+                    GUI.contentColor = Color.yellow;
+                if (skVal.Value == "not exist")
+                    GUI.contentColor = Color.red;
+                GUILayout.Label(skVal.Value);
+                GUI.contentColor = defCol;
+                GUILayout.EndHorizontal();
+            }
+        });
     }
 
     private void ModelSettingsTabPage()
@@ -205,6 +225,33 @@ public class EditorHelper : EditorWindow
         var fieldInfos = type.GetFields().ToList();
 
         EditorUtilsEx.ScrollViewZone(ref m_ModelSettingsScrollPos, () =>
+        {
+            foreach (var fieldInfo in fieldInfos)
+            {
+                var prop = serObj.FindProperty(fieldInfo.Name);
+                EditorGUILayout.PropertyField(prop);
+                float val = Convert.ToSingle(fieldInfo.GetValue(settings));
+                if (Math.Abs(val - prop.floatValue) > float.Epsilon)
+                {
+                    fieldInfo.SetValue(settings, prop.floatValue);
+                    EditorUtility.SetDirty(settings);
+                    AssetDatabase.SaveAssets();
+                    AssetDatabase.Refresh();
+                }
+            }
+        }, false, false);
+    }
+    
+    private void ViewSettingsTabPage()
+    {
+        var settings = PrefabUtilsEx.GetObject<ViewSettings>(
+            "model_settings", "view_settings");
+        var serObj = new SerializedObject(settings);
+
+        var type = typeof(ViewSettings);
+        var fieldInfos = type.GetFields().ToList();
+
+        EditorUtilsEx.ScrollViewZone(ref m_ViewSettingsScrollPos, () =>
         {
             foreach (var fieldInfo in fieldInfos)
             {

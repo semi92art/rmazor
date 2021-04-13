@@ -1,4 +1,5 @@
 ﻿using Exceptions;
+using Extensions;
 using Games.RazorMaze.Models;
 using UnityEngine;
 using Utils;
@@ -11,11 +12,14 @@ namespace Games.RazorMaze.Views.Utils
         
         public static int Set { get; set; } = 1;
 
+
         public static Color ColorMain => GetFromPalette("Main");
         public static Color ColorFill => GetFromPalette("Fill");
         public static Color ColorBlock => GetFromPalette("Block");
         public static Color ColorHint => GetFromPalette("Hint");
         
+        public static Color ColorCharacter => GetFromCommonPalette("Character");
+        public static Color ColorCharacterTail => GetFromCommonPalette("Character Tail");
         public static Color ColorTrap => GetFromCommonPalette("Trap");
         public static Color ColorTurret => GetFromCommonPalette("Turret");
         public static Color ColorPortal => GetFromCommonPalette("Portal");

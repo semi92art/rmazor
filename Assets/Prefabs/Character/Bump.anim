@@ -39,7 +39,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: Head
+    path: Container/Head
   m_ScaleCurves: []
   m_FloatCurves:
   - curve:
@@ -67,7 +67,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: height
-    path: Head
+    path: Container/Head
     classID: 114
     script: {fileID: 11500000, guid: 08f210828086c1a4398856e1ba65627c, type: 3}
   - curve:
@@ -95,7 +95,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: height
-    path: Head/Eyes/Eye 1
+    path: Container/Head/Eyes/Eye 1
     classID: 114
     script: {fileID: 11500000, guid: 08f210828086c1a4398856e1ba65627c, type: 3}
   - curve:
@@ -123,7 +123,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: width
-    path: Head/Eyes/Eye 1
+    path: Container/Head/Eyes/Eye 1
     classID: 114
     script: {fileID: 11500000, guid: 08f210828086c1a4398856e1ba65627c, type: 3}
   - curve:
@@ -151,7 +151,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: height
-    path: Head/Eyes/Eye 2
+    path: Container/Head/Eyes/Eye 2
     classID: 114
     script: {fileID: 11500000, guid: 08f210828086c1a4398856e1ba65627c, type: 3}
   - curve:
@@ -179,7 +179,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: width
-    path: Head/Eyes/Eye 2
+    path: Container/Head/Eyes/Eye 2
     classID: 114
     script: {fileID: 11500000, guid: 08f210828086c1a4398856e1ba65627c, type: 3}
   - curve:
@@ -207,7 +207,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: width
-    path: Head/Mouth
+    path: Container/Head/Mouth
     classID: 114
     script: {fileID: 11500000, guid: 08f210828086c1a4398856e1ba65627c, type: 3}
   - curve:
@@ -235,7 +235,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: width
-    path: Head
+    path: Container/Head
     classID: 114
     script: {fileID: 11500000, guid: 08f210828086c1a4398856e1ba65627c, type: 3}
   m_PPtrCurves: []
@@ -349,7 +349,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: height
-    path: Head
+    path: Container/Head
     classID: 114
     script: {fileID: 11500000, guid: 08f210828086c1a4398856e1ba65627c, type: 3}
   - curve:
@@ -377,7 +377,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: height
-    path: Head/Eyes/Eye 1
+    path: Container/Head/Eyes/Eye 1
     classID: 114
     script: {fileID: 11500000, guid: 08f210828086c1a4398856e1ba65627c, type: 3}
   - curve:
@@ -405,7 +405,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: width
-    path: Head/Eyes/Eye 1
+    path: Container/Head/Eyes/Eye 1
     classID: 114
     script: {fileID: 11500000, guid: 08f210828086c1a4398856e1ba65627c, type: 3}
   - curve:
@@ -433,7 +433,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: height
-    path: Head/Eyes/Eye 2
+    path: Container/Head/Eyes/Eye 2
     classID: 114
     script: {fileID: 11500000, guid: 08f210828086c1a4398856e1ba65627c, type: 3}
   - curve:
@@ -461,7 +461,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: width
-    path: Head/Eyes/Eye 2
+    path: Container/Head/Eyes/Eye 2
     classID: 114
     script: {fileID: 11500000, guid: 08f210828086c1a4398856e1ba65627c, type: 3}
   - curve:
@@ -489,7 +489,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: width
-    path: Head/Mouth
+    path: Container/Head/Mouth
     classID: 114
     script: {fileID: 11500000, guid: 08f210828086c1a4398856e1ba65627c, type: 3}
   - curve:
@@ -517,7 +517,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: width
-    path: Head
+    path: Container/Head
     classID: 114
     script: {fileID: 11500000, guid: 08f210828086c1a4398856e1ba65627c, type: 3}
   - curve:
@@ -545,7 +545,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.x
-    path: Head
+    path: Container/Head
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -573,7 +573,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.y
-    path: Head
+    path: Container/Head
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -601,7 +601,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.z
-    path: Head
+    path: Container/Head
     classID: 4
     script: {fileID: 0}
   m_EulerEditorCurves: []
