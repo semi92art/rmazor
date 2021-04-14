@@ -68,7 +68,7 @@ namespace Games.RazorMaze
         {
             CreateLevelsAssetIfNotExist(_GameId, _HeapIndex);
             var mazes = LoadHeapLevels(_GameId, _HeapIndex);
-            if (_Index.HasValue && _Index.Value < mazes.Levels.Count)
+            if (_Index.HasValue && _Index >= 0 && _Index.Value < mazes.Levels.Count)
                 mazes.Levels[_Index.Value] = _Info;
             else
                 mazes.Levels.Add(_Info);

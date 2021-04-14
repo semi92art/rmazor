@@ -113,7 +113,7 @@ namespace Games.RazorMaze.Editor
 
             EditorUtilsEx.HorizontalZone(() =>
             {
-                EditorUtilsEx.GuiButtonAction("Add to heap", SaveLevel, m_LevelGroup, m_LevelIndex + 1, _heapIndex, (MazeInfo)null, GUILayout.Width(100));
+                EditorUtilsEx.GuiButtonAction("Add to heap", SaveLevel, m_LevelGroup, -1, _heapIndex, (MazeInfo)null, GUILayout.Width(100));
                 GUILayout.Label("Heap:");
                 _heapIndex = 1 + EditorGUILayout.Popup(_heapIndex - 1,
                     Enumerable.Range(1, 10)
@@ -216,7 +216,7 @@ namespace Games.RazorMaze.Editor
                 MazeLevelUtils.SaveLevel(_gameId, info);
             else
             {
-                if (_LevelIndex < m_Levels.Count)
+                if (_LevelIndex < m_Levels.Count && _LevelIndex >= 0)
                     info.Comment = m_Levels[_LevelIndex].Comment;
                 MazeLevelUtils.SaveLevelToHeap(_gameId, info, _LevelIndex, _heapIndex);
                 ReloadHeapLevels();
