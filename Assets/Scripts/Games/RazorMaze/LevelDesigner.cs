@@ -42,7 +42,7 @@ namespace Games.RazorMaze
         [HideInInspector] public int group;
         [HideInInspector] public int index;
         [HideInInspector] public V2Int size;
-        
+        public GameObject mazeObject;
 
         private static MazeInfo MazeInfo
         {
@@ -80,6 +80,12 @@ namespace Games.RazorMaze
         
         public MazeInfo GetLevelInfoFromScene(bool _Full = true)
         {
+            mazeObject = GameObject.Find("Maze Items");
+            maze = new List<ViewMazeItemProt>();
+            foreach (Transform mazeObj in mazeObject.transform)
+            {
+                maze.Add(mazeObj.gameObject.GetComponent<ViewMazeItemProt>());
+            }
             var protItemStart = maze.FirstOrDefault(_Item => _Item.Props.IsStartNode);
             if (protItemStart == null)
             {
