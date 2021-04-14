@@ -113,5 +113,35 @@ namespace Extensions
                 return beh == null || beh.ToString() == "null" || beh.IsDestroyed();
             return _Item == null || _Item.ToString() == "null";
         }
+
+        public static T GotOrAddComponentOnNewChild<T>(
+            this GameObject _Parent,
+            string _Name, 
+            ref GameObject _Child,
+            Vector2? _LocalPosition = null) where T : Component
+        {
+            var go = _Child;
+            if (go == null) 
+                go = new GameObject(_Name);
+            go.SetParent(_Parent);
+            if (_LocalPosition.HasValue)
+                go.transform.SetLocalPosXY(_LocalPosition.Value);
+            _Child = go;
+            return go.GetOrAddComponent<T>();
+        }
+        
+        public static T AddComponentOnNewChild<T>(
+            this GameObject _Parent,
+            string _Name,
+            out GameObject _Child,
+            Vector2? _LocalPosition = null) where T : Component
+        {
+            var go = new GameObject(_Name);
+            go.SetParent(_Parent);
+            if (_LocalPosition.HasValue)
+                go.transform.SetLocalPosXY(_LocalPosition.Value);
+            _Child = go;
+            return go.GetOrAddComponent<T>();
+        }
     }
 }

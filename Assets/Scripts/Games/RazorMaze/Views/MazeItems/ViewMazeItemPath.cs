@@ -17,7 +17,6 @@ namespace Games.RazorMaze.Views.MazeItems
 
         #region nonpublic members
 
-        private GameObject m_GameObject;
         private Rectangle m_Shape;
         private Line m_LeftBorder, m_RightBorder, m_BottomBorder, m_TopBorder;
         private Disc m_BottomLeftCorner, m_BottomRightCorner, m_TopLeftCorner, m_TopRightCorner;
@@ -44,9 +43,7 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
 
         #region api
-
-        public GameObject Object => m_GameObject;
-
+        
         public override bool Active
         {
             get => m_Active;
@@ -73,24 +70,20 @@ namespace Games.RazorMaze.Views.MazeItems
         private void Fill() => m_Shape.Color = ViewUtils.ColorFill;
         private void Unfill() => m_Shape.Color = ViewUtils.ColorMain;
 
-        private void SetShape()
+        protected override void SetShape()
         {
-            var go = m_GameObject;
-            if (go == null)
-            {
-                go = new GameObject("Path Item");
-                go.SetParent(ContainersGetter.MazeItemsContainer);
-            }
-            go.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+            var go = Object;
+            var sh = ContainersGetter.MazeItemsContainer.gameObject
+                .GotOrAddComponentOnNewChild<Rectangle>("Path Item", ref go, 
+                    CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             go.DestroyChildrenSafe();
-            var sh = go.GetOrAddComponent<Rectangle>();
             sh.Width = sh.Height = CoordinateConverter.GetScale() * 0.99f;
             sh.Type = Rectangle.RectangleType.RoundedSolid;
             sh.CornerRadiusMode = Rectangle.RectangleCornerRadiusMode.PerCorner;
             sh.CornerRadiii = Vector4.zero;
             sh.Color = ViewUtils.ColorMain;
             sh.SortingOrder = ViewUtils.GetPathSortingOrder();
-            m_GameObject = go;
+            Object = go;
             m_Shape = sh;
             SetBordersAndCorners();
         }

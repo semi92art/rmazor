@@ -2,15 +2,14 @@
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using UnityEngine;
+using UnityGameLoopDI;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
-    public abstract class ViewMazeItemBase
+    public abstract class ViewMazeItemBase : Ticker
     {
         public ViewMazeItemProps Props { get; set; }
         
-        protected Transform Item { get; set; }
-
         protected ICoordinateConverter CoordinateConverter { get; }
         protected IContainersGetter ContainersGetter { get; }
 
@@ -19,8 +18,16 @@ namespace Games.RazorMaze.Views.MazeItems
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
         }
+
+        public virtual GameObject Object { get; protected set; }
         
         public virtual bool Active { get; set; }
+
+        public virtual void Init(ViewMazeItemProps _Props)
+        {
+            Props = _Props;
+            SetShape();
+        }
 
         public bool Equal(MazeItem _MazeItem)
         {
@@ -29,12 +36,14 @@ namespace Games.RazorMaze.Views.MazeItems
         
         public void SetLocalPosition(Vector2 _Position)
         {
-            Item.transform.SetLocalPosXY(_Position);
+            Object.transform.SetLocalPosXY(_Position);
         }
 
         public void SetLocalScale(float _Scale)
         {
-            Item.transform.localScale = _Scale * Vector3.one;
+            Object.transform.localScale = _Scale * Vector3.one;
         }
+
+        protected abstract void SetShape();
     }
 }

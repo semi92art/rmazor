@@ -6,6 +6,7 @@ using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeItems;
 using UnityEngine;
+using Zenject;
 
 namespace Games.RazorMaze.Views.Helpers
 {
@@ -23,17 +24,32 @@ namespace Games.RazorMaze.Views.Helpers
         private ICoordinateConverter CoordinateConverter { get; }
         private IViewMazeItemPath ItemPath { get; }
         private IViewMazeItemGravityBlock GravityBlock { get; }
+        private IViewMazeItemMovingTrap MovingTrap { get; }
+        private IViewMazeItemShredingerBlock ShredingerBlock { get; }
 
+        [Inject]
         public MazeItemsCreator(
             IContainersGetter _ContainersGetter,
             ICoordinateConverter _CoordinateConverter, 
             IViewMazeItemPath _ItemPath,
-            IViewMazeItemGravityBlock _GravityBlock)
+            IViewMazeItemGravityBlock _GravityBlock,
+            IViewMazeItemMovingTrap _MovingTrap,
+            IViewMazeItemShredingerBlock _ShredingerBlock)
         {
             ContainersGetter = _ContainersGetter;
             CoordinateConverter = _CoordinateConverter;
             ItemPath = _ItemPath;
             GravityBlock = _GravityBlock;
+            MovingTrap = _MovingTrap;
+            ShredingerBlock = _ShredingerBlock;
+        }
+        
+        public MazeItemsCreator(
+            IContainersGetter _ContainersGetter,
+            ICoordinateConverter _CoordinateConverter)
+        {
+            ContainersGetter = _ContainersGetter;
+            CoordinateConverter = _CoordinateConverter;
         }
         
         #endregion
@@ -107,13 +123,14 @@ namespace Games.RazorMaze.Views.Helpers
                 IsNode = false,
                 IsStartNode = false
             };
-            if (_Item.Type != EMazeItemType.GravityBlock 
-                || _Item.Type == EMazeItemType.GravityBlock && GravityBlock == null)
+            if (_Item.Type == EMazeItemType.GravityBlock && GravityBlock != null
+                || _Item.Type == EMazeItemType.TrapMoving && MovingTrap != null
+                || _Item.Type == EMazeItemType.ShredingerBlock && ShredingerBlock != null)
             {
-                AddMazeItemProt(_Items, _Info.Size, props);
+                AddMazeItemRelease(_Items, props);
                 return;
             }
-            AddMazeItemRelease(_Items, props);
+            AddMazeItemProt(_Items, _Info.Size, props);
         }
 
         private void AddMazeItemRelease(
@@ -126,7 +143,7 @@ namespace Games.RazorMaze.Views.Helpers
                 case EMazeItemType.GravityBlock:
                     item = (IViewMazeItemGravityBlock) GravityBlock.Clone(); break;
                 case EMazeItemType.ShredingerBlock:
-                    break;
+                    item = (IViewMazeItemShredingerBlock) ShredingerBlock.Clone(); break;
                 case EMazeItemType.Portal:
                     break;
                 case EMazeItemType.TrapReact:
@@ -134,7 +151,7 @@ namespace Games.RazorMaze.Views.Helpers
                 case EMazeItemType.TrapIncreasing:
                     break;
                 case EMazeItemType.TrapMoving:
-                    break;
+                    item = (IViewMazeItemMovingTrap) MovingTrap.Clone(); break;
                 case EMazeItemType.GravityTrap:
                     break;
                 case EMazeItemType.Turret:

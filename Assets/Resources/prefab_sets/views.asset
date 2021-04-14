@@ -17,3 +17,5 @@ MonoBehaviour:
     - item: {fileID: 1560829925993726868, guid: 2d68a274acd3438479edfdddeb2eb23a,
         type: 3}
       name: character
+    - item: {fileID: 21300000, guid: 97fc7d8dc2f81436284bb69d8008f07c, type: 3}
+      name: moving_trap

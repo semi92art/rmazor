@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lineWidth: 5
   cornerRadius: 20
+  movingTrapRotationSpeed: -500
+  shredingerLineOffsetSpeed: 200

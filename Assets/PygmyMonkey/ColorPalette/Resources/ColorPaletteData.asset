@@ -28,7 +28,7 @@ MonoBehaviour:
     showDetails: 1
     colorInfoList:
     - name: Trap
-      color: {r: 1, g: 0.28627452, b: 0.28627452, a: 1}
+      color: {r: 1, g: 1, b: 1, a: 1}
     - name: Turret
       color: {r: 1, g: 0.13725491, b: 0.69803923, a: 1}
     - name: Portal

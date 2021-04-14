@@ -14,7 +14,6 @@ namespace Games.RazorMaze.Views.MazeItems
 
         #region nonpublic members
 
-        private GameObject m_GameObject;
         private Rectangle m_Shape;
         private Disc m_Joint;
         
@@ -39,48 +38,33 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
         
         #region api
-        
-        public GameObject Object => m_GameObject;
-        
-        public void Init(ViewMazeItemProps _Props)
-        {
-            Props = _Props;
-            SetShape();
-            Item = m_GameObject.transform;
-        }
-        
+
         public object Clone() => new ViewMazeItemGravityBlock(CoordinateConverter, ContainersGetter, Data, ViewSettings);
 
         #endregion
         
         #region nonpublic methods
 
-        private void SetShape()
+        protected override void SetShape()
         {
-            var go = m_GameObject;
-            if (go == null)
-            {
-                go = new GameObject("Gravity Block");
-                go.SetParent(ContainersGetter.MazeItemsContainer);
-            }
-            go.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+            var go = Object;
+            var sh = ContainersGetter.MazeItemsContainer.gameObject
+                .GotOrAddComponentOnNewChild<Rectangle>("Gravity Block", ref go, 
+                    CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             go.DestroyChildrenSafe();
-            var sh = go.AddComponent<Rectangle>();
             sh.Width = sh.Height = CoordinateConverter.GetScale() * 0.9f;
             sh.Type = Rectangle.RectangleType.RoundedHollow;
             sh.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
             sh.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.GetScale();
             sh.Color = ViewUtils.ColorLines;
             sh.SortingOrder = ViewUtils.GetBlockSortingOrder(Props.Type);
-            var goJoint = new GameObject("Joint");
-            goJoint.SetParent(go);
-            var joint = goJoint.AddComponent<Disc>();
+            var joint = go.AddComponentOnNewChild<Disc>("Joint", out _, null);
             joint.transform.SetLocalPosXY(Vector2.zero);
             joint.Color = ViewUtils.ColorLines;
             joint.Radius = ViewSettings.LineWidth * CoordinateConverter.GetScale() * 2f;
             joint.SortingOrder = ViewUtils.GetBlockSortingOrder(Props.Type);
 
-            m_GameObject = go;
+            Object = go;
             m_Shape = sh;
             m_Joint = joint;
         }

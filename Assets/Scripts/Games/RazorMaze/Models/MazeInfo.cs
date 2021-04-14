@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Entities;
+using Newtonsoft.Json;
 
 namespace Games.RazorMaze.Models
 {
@@ -10,5 +11,6 @@ namespace Games.RazorMaze.Models
         public List<MazeItem> MazeItems { get; set; } = new List<MazeItem>();
         public int LevelGroup { get; set; }
         public int LevelIndex { get; set; }
+        [JsonProperty(PropertyName = "C")] public string Comment { get; set; }
     }
 }

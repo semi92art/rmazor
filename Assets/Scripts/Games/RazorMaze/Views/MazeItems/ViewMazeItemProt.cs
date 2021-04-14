@@ -187,7 +187,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 case EMazeItemType.TrapIncreasing:
                 case EMazeItemType.TrapMoving: 
                 case EMazeItemType.GravityTrap:
-                    return ViewUtils.ColorTrap;
+                    return new Color(1f, 0.29f, 0.29f);
                 case EMazeItemType.Turret: 
                 case EMazeItemType.TurretRotating:
                     return ViewUtils.ColorTurret;

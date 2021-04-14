@@ -23,22 +23,24 @@ namespace Games.RazorMaze.Views.Characters
         
         #region inject
 
-        [Inject(Id = "Game", Optional = true)] private ITimeProvider GameTimeProvider { get; }
         private IModelMazeData Data { get; }
         private ICoordinateConverter CoordinateConverter { get; }
         private IContainersGetter ContainersGetter { get; }
         private ModelSettings ModelSettings { get; }
+        private ITimeProvider GameTimeProvider { get; }
         
         public ViewCharacterTailSimple(
             IModelMazeData _Data,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            ModelSettings _ModelSettings)
+            ModelSettings _ModelSettings,
+            [Inject(Id = "Game")] ITimeProvider _GameTimeProvider)
         {
             Data = _Data;
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
             ModelSettings = _ModelSettings;
+            GameTimeProvider = _GameTimeProvider;
         }
         
         #endregion

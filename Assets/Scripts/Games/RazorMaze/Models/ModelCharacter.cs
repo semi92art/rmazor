@@ -140,9 +140,12 @@ namespace Games.RazorMaze.Models
                 .Any(_Inf => (_Inf.Value as MazeItemMovingProceedInfo).BusyPositions.Contains(_Position));
             bool isPortal = _Info.MazeItems
                 .Any(_O => _O.Position == _Position && _O.Type == EMazeItemType.Portal);
-            bool isShredingerAndPass = Data.ProceedInfos[EMazeItemType.ShredingerBlock].Values
-                .Any(_Inf => _Inf.Item.Position == _Position && _Inf.ProceedingStage == 0);
-            return (isNode && !isMazeItem && !isBuzyMazeItem) || isPortal || isShredingerAndPass;
+            var shredinger = Data.ProceedInfos[EMazeItemType.ShredingerBlock].Values
+                .FirstOrDefault(_Inf => _Inf.Item.Position == _Position);
+
+            if (shredinger != null)
+                return shredinger.ProceedingStage != 2;
+            return isNode && !isMazeItem && !isBuzyMazeItem || isPortal;
         }
         
         private IEnumerator MoveCharacterCore(V2Int _From, V2Int _To)
