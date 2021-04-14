@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Games.RazorMaze.Models.ProceedInfos;
 using UnityEngine;
 using UnityGameLoopDI;
 
@@ -10,11 +9,13 @@ namespace Games.RazorMaze.Models.ItemProceeders
     {
         public MazeItem Item { get; }
         public float ProjectileSpeed { get; }
+        public bool PreShoot { get; }
 
-        public TurretShotEventArgs(MazeItem _Item, float _ProjectileSpeed)
+        public TurretShotEventArgs(MazeItem _Item, float _ProjectileSpeed, bool _PreShoot)
         {
             Item = _Item;
             ProjectileSpeed = _ProjectileSpeed;
+            PreShoot = _PreShoot;
         }
     }
 
@@ -69,19 +70,29 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 foreach (var info in infos.Values.Where(_Info => !_Info.IsProceeding))
                 {
                     info.PauseTimer += Time.deltaTime;
-                    if (info.PauseTimer < Settings.turretShootInterval)
+                    if (info.PauseTimer < Settings.turretPreShootInterval)
                         continue;
                     info.PauseTimer = 0;
                     info.IsProceeding = true;
-                    ProceedTurret(info.Item);
+                    ProceedTurret(info.Item, true);
+                }
+                
+                foreach (var info in infos.Values.Where(_Info => _Info.IsProceeding))
+                {
+                    info.PauseTimer += Time.deltaTime;
+                    if (info.PauseTimer < Settings.turretShootInterval)
+                        continue;
+                    info.PauseTimer = 0;
+                    ProceedTurret(info.Item, false);
                     info.IsProceeding = false;
                 }
             }
         }
 
-        private void ProceedTurret(MazeItem _Item)
+        private void ProceedTurret(MazeItem _Item, bool _PreShoot)
         {
-            TurretShoot?.Invoke(new TurretShotEventArgs(_Item, Settings.turretProjectileSpeed * 0.1f));
+            TurretShoot?.Invoke(new TurretShotEventArgs(
+                _Item, Settings.turretProjectileSpeed * 0.1f, _PreShoot));
         }
         
         #endregion

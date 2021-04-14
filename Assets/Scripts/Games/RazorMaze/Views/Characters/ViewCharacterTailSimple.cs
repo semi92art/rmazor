@@ -34,7 +34,7 @@ namespace Games.RazorMaze.Views.Characters
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             ModelSettings _ModelSettings,
-            [Inject(Id = "Game")] ITimeProvider _GameTimeProvider)
+            IGameTimeProvider _GameTimeProvider)
         {
             Data = _Data;
             CoordinateConverter = _CoordinateConverter;

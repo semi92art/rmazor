@@ -71,7 +71,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             var go = Object;
             var saw = ContainersGetter.MazeItemsContainer.gameObject
-                .GotOrAddComponentOnNewChild<SpriteRenderer>(
+                .GetOrAddComponentOnNewChild<SpriteRenderer>(
                     "Moving Trap", 
                     ref go,
                     CoordinateConverter.ToLocalMazeItemPosition(Props.Position));

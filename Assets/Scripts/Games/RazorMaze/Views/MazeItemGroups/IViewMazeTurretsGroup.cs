@@ -1,5 +1,4 @@
-﻿using Games.RazorMaze.Models;
-using Games.RazorMaze.Models.ItemProceeders;
+﻿using Games.RazorMaze.Models.ItemProceeders;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {

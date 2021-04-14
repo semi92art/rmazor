@@ -12,48 +12,30 @@ using Utils;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
-    public class ViewMazeTurretsGroupProt : IViewMazeTurretsGroup
+    public class ViewMazeTurretsGroupProt : ViewMazeTurretsGroupBase
     {
         #region inject
-
-        private IModelMazeData Data { get; }
-        private IViewMazeCommon MazeCommon { get; }
-        private ICoordinateConverter Converter { get; }
-        private IContainersGetter ContainersGetter { get; }
-
+        
         public ViewMazeTurretsGroupProt(
             IModelMazeData _Data,
             IViewMazeCommon _MazeCommon, 
             ICoordinateConverter _Converter,
             IContainersGetter _ContainersGetter)
-        {
-            Data = _Data;
-            MazeCommon = _MazeCommon;
-            Converter = _Converter;
-            ContainersGetter = _ContainersGetter;
-        }
+            : base(_Data, _MazeCommon, _Converter, _ContainersGetter) { }
 
         #endregion
         
         #region api
         
-        public void Init() { }
-        
-        public void OnTurretShoot(TurretShotEventArgs _Args)
+        public override void OnTurretShoot(TurretShotEventArgs _Args)
         {
-            HandleTurretShot(_Args.Item, _Args.ProjectileSpeed);
-        }
-
-        #endregion
-        
-        #region nonpublic methods
-
-        private void HandleTurretShot(MazeItem _Item, float _Speed)
-        {
-            var pos = _Item.Position;
+            if (_Args.PreShoot)
+                return;
+            var mazeItem = _Args.Item;
+            var pos = mazeItem.Position;
             var go = new GameObject("Projectile");
             go.SetParent(ContainersGetter.MazeItemsContainer);
-            go.transform.SetLocalPosXY(Converter.ToLocalMazeItemPosition(_Item.Position));
+            go.transform.SetLocalPosXY(Converter.ToLocalMazeItemPosition(mazeItem.Position));
             var disc = go.AddComponent<Disc>();
             disc.Radius = 1f;
             disc.Color = Color.black;
@@ -64,15 +46,19 @@ namespace Games.RazorMaze.Views.MazeItemGroups
             bool isEnd = false;
             while (!isEnd)
             {
-                pos += _Item.Direction;
+                pos += mazeItem.Direction;
                 var item = Data.Info.MazeItems.FirstOrDefault(_Itm => _Itm.Position == pos);
                 if (item == null)
                     continue;
                 isEnd = true;
             }
             Coroutines.Run(HandleTurretShotCoroutine(
-                rb, _Item.Position, pos, _Item.Direction, _Speed));
+                rb, mazeItem.Position, pos, mazeItem.Direction, _Args.ProjectileSpeed));
         }
+        
+        #endregion
+
+        #region nonpublic methods
 
         private IEnumerator HandleTurretShotCoroutine(
             Rigidbody2D _Projectile,

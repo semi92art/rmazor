@@ -17,7 +17,8 @@ namespace Games.RazorMaze
 
         public float trapIncreasingIdleTime;
         public float trapIncreasingIncreasedTime;
-        
+
+        public float turretPreShootInterval;
         public float turretShootInterval;
         public float turretProjectileSpeed;
 

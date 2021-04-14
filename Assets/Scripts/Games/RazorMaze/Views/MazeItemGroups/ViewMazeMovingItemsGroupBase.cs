@@ -31,7 +31,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         protected IContainersGetter ContainersGetter { get; }
         protected IViewMazeCommon MazeCommon { get; }
 
-        public ViewMazeMovingItemsGroupBase(
+        protected ViewMazeMovingItemsGroupBase(
             IModelMazeData _Data,
             IMovingItemsProceeder _MovingItemsProceeder,
             ICoordinateConverter _CoordinateConverter,

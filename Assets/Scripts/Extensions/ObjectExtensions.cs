@@ -114,7 +114,7 @@ namespace Extensions
             return _Item == null || _Item.ToString() == "null";
         }
 
-        public static T GotOrAddComponentOnNewChild<T>(
+        public static T GetOrAddComponentOnNewChild<T>(
             this GameObject _Parent,
             string _Name, 
             ref GameObject _Child,

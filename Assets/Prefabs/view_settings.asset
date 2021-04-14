@@ -16,3 +16,4 @@ MonoBehaviour:
   cornerRadius: 20
   movingTrapRotationSpeed: -500
   shredingerLineOffsetSpeed: 200
+  turretBulletRotationSpeed: 200

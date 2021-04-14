@@ -29,13 +29,13 @@ namespace Games.RazorMaze.Views.MazeItems
         #region inject
         
         private ViewSettings ViewSettings { get; }
-        private ITimeProvider GameTimeProvider { get; }
+        private IGameTimeProvider GameTimeProvider { get; }
 
         public ViewMazeItemShredingerBlock(
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             ViewSettings _ViewSettings,
-            [Inject(Id = "Game")] ITimeProvider _GameTimeProvider)
+            IGameTimeProvider _GameTimeProvider)
             : base(_CoordinateConverter, _ContainersGetter)
         {
             ViewSettings = _ViewSettings;
@@ -87,7 +87,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             var go = Object;
             var sh = ContainersGetter.MazeItemsContainer.gameObject
-                .GotOrAddComponentOnNewChild<Rectangle>(
+                .GetOrAddComponentOnNewChild<Rectangle>(
                     "Shredinger Block",
                     ref go,
                     CoordinateConverter.ToLocalMazeItemPosition(Props.Position));

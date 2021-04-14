@@ -74,7 +74,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             var go = Object;
             var sh = ContainersGetter.MazeItemsContainer.gameObject
-                .GotOrAddComponentOnNewChild<Rectangle>("Path Item", ref go, 
+                .GetOrAddComponentOnNewChild<Rectangle>("Path Item", ref go, 
                     CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             go.DestroyChildrenSafe();
             sh.Width = sh.Height = CoordinateConverter.GetScale() * 0.99f;

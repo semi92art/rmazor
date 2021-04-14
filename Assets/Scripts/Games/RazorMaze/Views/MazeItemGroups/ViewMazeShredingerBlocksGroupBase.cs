@@ -10,7 +10,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         protected IViewMazeCommon MazeCommon { get; }
 
-        public ViewMazeShredingerBlocksGroupBase(IViewMazeCommon _MazeCommon)
+        protected ViewMazeShredingerBlocksGroupBase(IViewMazeCommon _MazeCommon)
         {
             MazeCommon = _MazeCommon;
         }

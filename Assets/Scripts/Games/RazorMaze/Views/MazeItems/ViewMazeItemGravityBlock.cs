@@ -49,7 +49,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             var go = Object;
             var sh = ContainersGetter.MazeItemsContainer.gameObject
-                .GotOrAddComponentOnNewChild<Rectangle>("Gravity Block", ref go, 
+                .GetOrAddComponentOnNewChild<Rectangle>("Gravity Block", ref go, 
                     CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             go.DestroyChildrenSafe();
             sh.Width = sh.Height = CoordinateConverter.GetScale() * 0.9f;

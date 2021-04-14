@@ -54,8 +54,8 @@ namespace Mono_Installers
             Container.Bind<IShredingerBlocksProceeder>()           .To<ShredingerBlocksProceeder>()            .AsSingle();
             Container.Bind<ISpringboardProceeder>()                .To<SpringboardProceeder>()                 .AsSingle();
             Container.Bind<IMazeItemsCreator>()                    .To<MazeItemsCreator>()                     .AsSingle();
-            Container.Bind<ITimeProvider>().WithId("Game").FromComponentsInNewPrefab(gameTimeProvider).AsCached();
-            Container.Bind<ITimeProvider>().WithId("UI")  .FromComponentsInNewPrefab(uiTimeProvider)  .AsCached();
+            Container.Bind<IGameTimeProvider>()                    .FromComponentsInNewPrefab(gameTimeProvider).AsSingle();
+            Container.Bind<IUiTimeProvider>()                      .FromComponentsInNewPrefab(uiTimeProvider)  .AsCached();
             
             #endregion
 
@@ -83,11 +83,13 @@ namespace Mono_Installers
             Container.Bind<IViewCharacterTail>()                    .To<ViewCharacterTailSimple>()              .AsSingle().When(_ => release);
             Container.Bind<IViewMazeMovingItemsGroup>()             .To<ViewMazeMovingItemsGroup>()             .AsSingle().When(_ => release);
             Container.Bind<IViewMazeShredingerBlocksGroup>()        .To<ViewMazeShredingerBlocksGroup>()        .AsSingle().When(_ => release);
+            Container.Bind<IViewMazeTurretsGroup>()                 .To<ViewMazeTurretsGroup>()                 .AsSingle().When(_ => release);
             
             Container.Bind<IViewMazeItemPath>()                     .To<ViewMazeItemPath>()                     .AsSingle().When(_ => release);
             Container.Bind<IViewMazeItemGravityBlock>()             .To<ViewMazeItemGravityBlock>()             .AsSingle().When(_ => release);
             Container.Bind<IViewMazeItemMovingTrap>()               .To<ViewMazeItemMovingTrap>()               .AsSingle().When(_ => release);
             Container.Bind<IViewMazeItemShredingerBlock>()          .To<ViewMazeItemShredingerBlock>()          .AsSingle().When(_ => release);
+            Container.Bind<IViewMazeItemTurret>()                   .To<ViewMazeItemTurret>()                   .AsSingle().When(_ => release);
 
             #endregion
 

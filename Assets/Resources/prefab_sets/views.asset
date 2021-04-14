@@ -19,3 +19,6 @@ MonoBehaviour:
       name: character
     - item: {fileID: 21300000, guid: 97fc7d8dc2f81436284bb69d8008f07c, type: 3}
       name: moving_trap
+    - item: {fileID: 7576702748604261066, guid: 414f36fb75e457b4baba389f5f1446ab,
+        type: 3}
+      name: turret_bullet

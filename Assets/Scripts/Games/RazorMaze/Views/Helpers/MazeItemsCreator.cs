@@ -26,6 +26,7 @@ namespace Games.RazorMaze.Views.Helpers
         private IViewMazeItemGravityBlock GravityBlock { get; }
         private IViewMazeItemMovingTrap MovingTrap { get; }
         private IViewMazeItemShredingerBlock ShredingerBlock { get; }
+        private IViewMazeItemTurret Turret { get; }
 
         [Inject]
         public MazeItemsCreator(
@@ -34,7 +35,8 @@ namespace Games.RazorMaze.Views.Helpers
             IViewMazeItemPath _ItemPath,
             IViewMazeItemGravityBlock _GravityBlock,
             IViewMazeItemMovingTrap _MovingTrap,
-            IViewMazeItemShredingerBlock _ShredingerBlock)
+            IViewMazeItemShredingerBlock _ShredingerBlock,
+            IViewMazeItemTurret _Turret)
         {
             ContainersGetter = _ContainersGetter;
             CoordinateConverter = _CoordinateConverter;
@@ -42,6 +44,7 @@ namespace Games.RazorMaze.Views.Helpers
             GravityBlock = _GravityBlock;
             MovingTrap = _MovingTrap;
             ShredingerBlock = _ShredingerBlock;
+            Turret = _Turret;
         }
         
         public MazeItemsCreator(
@@ -125,7 +128,8 @@ namespace Games.RazorMaze.Views.Helpers
             };
             if (_Item.Type == EMazeItemType.GravityBlock && GravityBlock != null
                 || _Item.Type == EMazeItemType.TrapMoving && MovingTrap != null
-                || _Item.Type == EMazeItemType.ShredingerBlock && ShredingerBlock != null)
+                || _Item.Type == EMazeItemType.ShredingerBlock && ShredingerBlock != null
+                || _Item.Type == EMazeItemType.Turret && Turret != null)
             {
                 AddMazeItemRelease(_Items, props);
                 return;
@@ -155,7 +159,7 @@ namespace Games.RazorMaze.Views.Helpers
                 case EMazeItemType.GravityTrap:
                     break;
                 case EMazeItemType.Turret:
-                    break;
+                    item = (IViewMazeItemTurret) Turret.Clone(); break;
                 case EMazeItemType.TurretRotating:
                     break;
                 case EMazeItemType.Springboard:
