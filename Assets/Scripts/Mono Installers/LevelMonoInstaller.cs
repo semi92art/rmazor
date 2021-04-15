@@ -32,64 +32,71 @@ namespace Mono_Installers
 
             #region model
             
-            Container.Bind<ModelSettings>()                        .FromScriptableObject(modelSettings)        .AsSingle();
-            Container.Bind<ViewSettings>()                         .FromScriptableObject(viewSettings)         .AsSingle();
-            Container.Bind<IViewGame>()                            .To<ViewGame>()                             .AsSingle();
-            Container.Bind<IGameManager>()                         .To<RazorMazeGameManager>()                 .AsSingle();
-            Container.Bind<IModelMazeData>()                       .To<ModelMazeData>()                        .AsSingle();
-            Container.Bind<IModelMazeRotation>()                   .To<ModelMazeRotation>()                    .AsSingle();
-            Container.Bind<IModelCharacter>()                      .To<ModelCharacter>()                       .AsSingle();
-            Container.Bind<IModelGame>()                           .To<ModelGame>()                            .AsSingle();
-            Container.Bind<ILevelStagingModel>()                   .To<LevelStagingModelDefault>()             .AsSingle();
-            Container.Bind<IScoringModel>()                        .To<ScoringModelDefault>()                  .AsSingle();
-            Container.Bind<IInputScheduler>()                      .To<InputScheduler>()                       .AsSingle();
-            Container.Bind<ICoordinateConverter>()                 .To<CoordinateConverter>()                  .AsSingle();
-            Container.Bind<IContainersGetter>()                    .To<ContainersGetter>()                     .AsSingle();
-            Container.Bind<IMovingItemsProceeder>()                .To<MovingItemsProceeder>()                 .AsSingle();
-            Container.Bind<IGravityItemsProceeder>()               .To<GravityItemsProceeder>()                .AsSingle();
-            Container.Bind<ITrapsReactProceeder>()                 .To<TrapsReactProceeder>()                  .AsSingle();
-            Container.Bind<ITurretsProceeder>()                    .To<TurretsProceeder>()                     .AsSingle();
-            Container.Bind<ITrapsIncreasingProceeder>()            .To<TrapsIncreasingProceeder>()             .AsSingle();
-            Container.Bind<IPortalsProceeder>()                    .To<PortalsProceeder>()                     .AsSingle();
-            Container.Bind<IShredingerBlocksProceeder>()           .To<ShredingerBlocksProceeder>()            .AsSingle();
-            Container.Bind<ISpringboardProceeder>()                .To<SpringboardProceeder>()                 .AsSingle();
-            Container.Bind<IMazeItemsCreator>()                    .To<MazeItemsCreator>()                     .AsSingle();
-            Container.Bind<IGameTimeProvider>()                    .FromComponentsInNewPrefab(gameTimeProvider).AsSingle();
-            Container.Bind<IUiTimeProvider>()                      .FromComponentsInNewPrefab(uiTimeProvider)  .AsCached();
+            Container.Bind<ModelSettings>()                        .FromScriptableObject(modelSettings)           .AsSingle();
+            Container.Bind<ViewSettings>()                         .FromScriptableObject(viewSettings)            .AsSingle();
+            Container.Bind<IViewGame>()                            .To<ViewGame>()                                .AsSingle();
+            Container.Bind<IGameManager>()                         .To<RazorMazeGameManager>()                    .AsSingle();
+            Container.Bind<IModelMazeData>()                       .To<ModelMazeData>()                           .AsSingle();
+            Container.Bind<IModelMazeRotation>()                   .To<ModelMazeRotation>()                       .AsSingle();
+            Container.Bind<IModelCharacter>()                      .To<ModelCharacter>()                          .AsSingle();
+            Container.Bind<IModelGame>()                           .To<ModelGame>()                               .AsSingle();
+            Container.Bind<ILevelStagingModel>()                   .To<LevelStagingModelDefault>()                .AsSingle();
+            Container.Bind<IScoringModel>()                        .To<ScoringModelDefault>()                     .AsSingle();
+            Container.Bind<IInputScheduler>()                      .To<InputScheduler>()                          .AsSingle();
+            Container.Bind<ICoordinateConverter>()                 .To<CoordinateConverter>()                     .AsSingle();
+            Container.Bind<IContainersGetter>()                    .To<ContainersGetter>()                        .AsSingle();
+            Container.Bind<IMovingItemsProceeder>()                .To<MovingItemsProceeder>()                    .AsSingle();
+            Container.Bind<IGravityItemsProceeder>()               .To<GravityItemsProceeder>()                   .AsSingle();
+            Container.Bind<ITrapsReactProceeder>()                 .To<TrapsReactProceeder>()                     .AsSingle();
+            Container.Bind<ITurretsProceeder>()                    .To<TurretsProceeder>()                        .AsSingle();
+            Container.Bind<ITrapsIncreasingProceeder>()            .To<TrapsIncreasingProceeder>()                .AsSingle();
+            Container.Bind<IPortalsProceeder>()                    .To<PortalsProceeder>()                        .AsSingle();
+            Container.Bind<IShredingerBlocksProceeder>()           .To<ShredingerBlocksProceeder>()               .AsSingle();
+            Container.Bind<ISpringboardProceeder>()                .To<SpringboardProceeder>()                    .AsSingle();
+            Container.Bind<IMazeItemsCreator>()                    .To<MazeItemsCreator>()                        .AsSingle();
+            Container.Bind<IGameTimeProvider>()                    .FromComponentsInNewPrefab(gameTimeProvider)   .AsSingle();
+            Container.Bind<IUiTimeProvider>()                      .FromComponentsInNewPrefab(uiTimeProvider)     .AsCached();
             
             #endregion
 
 
             #region view debug
 
-            Container.Bind<IViewCharacter>()                        .To<ViewCharacterProt>()                    .AsSingle().When(_ => prototyping);
-            Container.Bind<IViewMazeMovingItemsGroup>()             .To<ViewMazeMovingItemsGroupProt>()         .AsSingle().When(_ => prototyping);
-            Container.Bind<IViewMazeShredingerBlocksGroup>()        .To<ViewMazeShredingerBlocksGroupProt>()    .AsSingle().When(_ => prototyping);
-            Container.Bind<IViewMazeCommon>()                       .To<ViewMazeCommonProt>()                   .AsSingle();
-            Container.Bind<IViewMazeRotation>()                     .To<ViewMazeRotationProt>()                 .AsSingle();
-            Container.Bind<IViewMazeTrapsReactItemsGroup>()         .To<ViewMazeTrapsReactItemsGroupProt>()     .AsSingle();
-            Container.Bind<IViewMazeTrapsIncreasingItemsGroup>()    .To<ViewMazeTrapsIncreasingItemsGroupProt>().AsSingle();
-            Container.Bind<IViewMazeTurretsGroup>()                 .To<ViewMazeTurretsGroupProt>()             .AsSingle();
-            Container.Bind<IViewMazePortalsGroup>()                 .To<ViewMazePortalsGroupProt>()             .AsSingle();
-            Container.Bind<IViewMazeSpringboardItemsGroup>()        .To<ViewMazeSpringboardItemsGroupProt>()    .AsSingle();
-            Container.Bind<IViewUI>()                               .To<ViewUIProt>()                           .AsSingle();
-            Container.Bind<IInputConfigurator>()                    .To<RazorMazeInputConfiguratorProt>()       .AsSingle();
+            Container.Bind<IViewCharacter>()                        .To<ViewCharacterProt>()                      .AsSingle().When(_ => prototyping);
+            Container.Bind<IViewMazeMovingItemsGroup>()             .To<ViewMazeMovingItemsGroupProt>()           .AsSingle().When(_ => prototyping);
+            Container.Bind<IViewMazeShredingerBlocksGroup>()        .To<ViewMazeShredingerBlocksGroupProt>()      .AsSingle().When(_ => prototyping);
+            
+            Container.Bind<IViewMazeItemPath>()                     .To<ViewMazeItemPathProt>()                   .AsSingle().When(_ => prototyping);
+            Container.Bind<IViewMazeItemTurret>()                   .To<ViewMazeItemTurretProt>()                 .AsSingle().When(_ => prototyping);
+            Container.Bind<IViewMazeItemShredingerBlock>()          .To<ViewMazeItemShredingerBlockProt>()        .AsSingle().When(_ => prototyping);
+            Container.Bind<IViewMazeItemGravityBlock>()             .To<ViewMazeItemGravityBlockProt>()           .AsSingle().When(_ => prototyping);
+            Container.Bind<IViewMazeItemMovingTrap>()               .To<ViewMazeItemMovingTrapProt>()             .AsSingle().When(_ => prototyping);
+            
+            Container.Bind<IViewMazeCommon>()                       .To<ViewMazeCommonProt>()                     .AsSingle();
+            Container.Bind<IViewMazeRotation>()                     .To<ViewMazeRotationProt>()                   .AsSingle();
+            Container.Bind<IViewMazeTrapsReactItemsGroup>()         .To<ViewMazeTrapsReactItemsGroupProt>()       .AsSingle();
+            Container.Bind<IViewMazeTrapsIncreasingItemsGroup>()    .To<ViewMazeTrapsIncreasingItemsGroupProt>()  .AsSingle();
+            Container.Bind<IViewMazeTurretsGroup>()                 .To<ViewMazeTurretsGroupProt>()               .AsSingle();
+            Container.Bind<IViewMazePortalsGroup>()                 .To<ViewMazePortalsGroupProt>()               .AsSingle();
+            Container.Bind<IViewMazeSpringboardItemsGroup>()        .To<ViewMazeSpringboardItemsGroupProt>()      .AsSingle();
+            Container.Bind<IViewUI>()                               .To<ViewUIProt>()                             .AsSingle();
+            Container.Bind<IInputConfigurator>()                    .To<RazorMazeInputConfiguratorProt>()         .AsSingle();
             
             #endregion
             
             #region view release
             
-            Container.Bind<IViewCharacter>()                        .To<ViewCharacter>()                        .AsSingle().When(_ => release);
-            Container.Bind<IViewCharacterTail>()                    .To<ViewCharacterTailSimple>()              .AsSingle().When(_ => release);
-            Container.Bind<IViewMazeMovingItemsGroup>()             .To<ViewMazeMovingItemsGroup>()             .AsSingle().When(_ => release);
-            Container.Bind<IViewMazeShredingerBlocksGroup>()        .To<ViewMazeShredingerBlocksGroup>()        .AsSingle().When(_ => release);
-            Container.Bind<IViewMazeTurretsGroup>()                 .To<ViewMazeTurretsGroup>()                 .AsSingle().When(_ => release);
+            Container.Bind<IViewCharacter>()                        .To<ViewCharacter>()                          .AsSingle().When(_ => release);
+            Container.Bind<IViewCharacterTail>()                    .To<ViewCharacterTailSimple>()                .AsSingle().When(_ => release);
+            Container.Bind<IViewMazeMovingItemsGroup>()             .To<ViewMazeMovingItemsGroup>()               .AsSingle().When(_ => release);
+            Container.Bind<IViewMazeShredingerBlocksGroup>()        .To<ViewMazeShredingerBlocksGroup>()          .AsSingle().When(_ => release);
+            Container.Bind<IViewMazeTurretsGroup>()                 .To<ViewMazeTurretsGroup>()                   .AsSingle().When(_ => release);
             
-            Container.Bind<IViewMazeItemPath>()                     .To<ViewMazeItemPath>()                     .AsSingle().When(_ => release);
-            Container.Bind<IViewMazeItemGravityBlock>()             .To<ViewMazeItemGravityBlock>()             .AsSingle().When(_ => release);
-            Container.Bind<IViewMazeItemMovingTrap>()               .To<ViewMazeItemMovingTrap>()               .AsSingle().When(_ => release);
-            Container.Bind<IViewMazeItemShredingerBlock>()          .To<ViewMazeItemShredingerBlock>()          .AsSingle().When(_ => release);
-            Container.Bind<IViewMazeItemTurret>()                   .To<ViewMazeItemTurret>()                   .AsSingle().When(_ => release);
+            Container.Bind<IViewMazeItemPath>()                     .To<ViewMazeItemPath>()                       .AsSingle().When(_ => release);
+            Container.Bind<IViewMazeItemGravityBlock>()             .To<ViewMazeItemGravityBlock>()               .AsSingle().When(_ => release);
+            Container.Bind<IViewMazeItemMovingTrap>()               .To<ViewMazeItemMovingTrap>()                 .AsSingle().When(_ => release);
+            Container.Bind<IViewMazeItemShredingerBlock>()          .To<ViewMazeItemShredingerBlock>()            .AsSingle().When(_ => release);
+            Container.Bind<IViewMazeItemTurret>()                   .To<ViewMazeItemTurret>()                     .AsSingle().When(_ => release);
 
             #endregion
 

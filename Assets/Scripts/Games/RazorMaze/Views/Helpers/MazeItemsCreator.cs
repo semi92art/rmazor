@@ -89,7 +89,7 @@ namespace Games.RazorMaze.Views.Helpers
                 IsStartNode = isStartNode,
                 Position = _Position
             };
-            if (ItemPath != null)
+            if (!(ItemPath is ViewMazeItemPathProt))
             {
                 var item = (IViewMazeItemPath)ItemPath.Clone();
                 item.Init(props);
@@ -126,10 +126,10 @@ namespace Games.RazorMaze.Views.Helpers
                 IsNode = false,
                 IsStartNode = false
             };
-            if (_Item.Type == EMazeItemType.GravityBlock && GravityBlock != null
-                || _Item.Type == EMazeItemType.TrapMoving && MovingTrap != null
-                || _Item.Type == EMazeItemType.ShredingerBlock && ShredingerBlock != null
-                || _Item.Type == EMazeItemType.Turret && Turret != null)
+            if (   _Item.Type == EMazeItemType.GravityBlock    && !(GravityBlock is ViewMazeItemGravityBlockProt)
+                || _Item.Type == EMazeItemType.TrapMoving      && !(MovingTrap is ViewMazeItemMovingTrapProt)
+                || _Item.Type == EMazeItemType.ShredingerBlock && !(ShredingerBlock is ViewMazeItemShredingerBlockProt)
+                || _Item.Type == EMazeItemType.Turret          && !(Turret is ViewMazeItemTurretProt))
             {
                 AddMazeItemRelease(_Items, props);
                 return;

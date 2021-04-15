@@ -11,7 +11,7 @@ namespace Games.RazorMaze.Editor
     {
         static SceneViewFocuserEditor()
         {
-            ToolbarExtender.RightToolbarGUI.Add(OnToolbarGUI);
+            ToolbarExtender.RightToolbarGUI.Insert(0, OnToolbarGUI);
         }
 
         private static void OnToolbarGUI()
@@ -26,6 +26,5 @@ namespace Games.RazorMaze.Editor
                 LevelDesignerEditor.FocusCamera(LevelDesigner.Instance.size);
             }
         }
-
     }
 }

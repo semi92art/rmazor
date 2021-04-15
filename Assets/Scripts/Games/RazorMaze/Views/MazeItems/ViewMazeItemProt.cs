@@ -169,7 +169,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private static Color GetShapeColor(EMazeItemType _Type, bool _Inner, bool _IsNode)
         {
             if (_IsNode)
-                return Application.isPlaying ? ViewUtils.ColorMain : Color.white;
+                return Color.white;
 
             if (_Inner)
                 return ViewUtils.ColorHint;
@@ -245,7 +245,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private void DrawGizmosStartNode()
         {
             var p = (Vector3)ToWorldPosition(props.Position);
-            Gizmos.DrawSphere(p, 0.5f);
+            Gizmos.DrawSphere(p, 1f);
         }
         
         private void DrawGizmosTrapIncreasing()

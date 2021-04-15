@@ -61,16 +61,6 @@ namespace Games.RazorMaze.Editor
             
             EditorUtilsEx.HorizontalZone(() =>
             {
-                GUILayout.Label("Release view", GUILayout.Width(80));
-                int gameMode = GameClientUtils.GameMode;
-                bool releaseView = gameMode == (int) EGameMode.Release;
-                bool newReleaseView = EditorGUILayout.Toggle(releaseView, GUILayout.Width(35));
-                if (releaseView != newReleaseView)
-                    GameClientUtils.GameMode = newReleaseView ? (int) EGameMode.Release : (int) EGameMode.Prototyping;
-            });
-
-            EditorUtilsEx.HorizontalZone(() =>
-            {
                 GUILayout.Label("Size:", GUILayout.Width(35));
                 m_Des.sizeIdx = EditorGUILayout.Popup(m_Des.sizeIdx, 
                     LevelDesigner.Sizes.Select(_S => $"{LevelDesigner.MazeWidth}x{_S}").ToArray(),
