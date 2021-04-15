@@ -108,7 +108,8 @@ namespace Utils
                     continue;
                 _Action();
                 if (_WaitEndOfFrame)
-                    yield return new WaitForEndOfFrame();
+                    yield return new WaitForSecondsRealtime(Time.deltaTime);
+                // yield return new WaitForEndOfFrame();
             }
         
             _FinishAction?.Invoke();
