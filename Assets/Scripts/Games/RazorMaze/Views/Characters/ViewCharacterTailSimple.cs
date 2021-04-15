@@ -8,7 +8,6 @@ using Shapes;
 using TimeProviders;
 using UnityEngine;
 using Utils;
-using Zenject;
 
 namespace Games.RazorMaze.Views.Characters
 {

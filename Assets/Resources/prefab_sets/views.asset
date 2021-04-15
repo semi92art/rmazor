@@ -22,3 +22,6 @@ MonoBehaviour:
     - item: {fileID: 7576702748604261066, guid: 414f36fb75e457b4baba389f5f1446ab,
         type: 3}
       name: turret_bullet
+    - item: {fileID: 3637443925060811094, guid: fec643d02fe70da4cb94c3c55c147a1b,
+        type: 3}
+      name: turret_bullet_mask

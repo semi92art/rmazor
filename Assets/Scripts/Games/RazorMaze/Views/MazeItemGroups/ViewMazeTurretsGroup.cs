@@ -25,29 +25,29 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         public override void OnTurretShoot(TurretShotEventArgs _Args)
         {
             if (_Args.PreShoot)
-                HandleTurretPreShot(_Args.Item);
+                HandleTurretPreShot(_Args);
             else
-                HandleTurretShot(_Args.Item, _Args.ProjectileSpeed);
+                HandleTurretShot(_Args);
         }
 
         #endregion
 
         #region nonpublic methods
 
-        private void HandleTurretPreShot(MazeItem _Item)
+        private void HandleTurretPreShot(TurretShotEventArgs _Args)
         {
             var item = MazeCommon.MazeItems
                 .Where(_Itm => _Itm is IViewMazeItemTurret)
-                .FirstOrDefault(_Itm => _Itm.Equal(_Item)) as IViewMazeItemTurret;
-            item?.PreShoot();
+                .FirstOrDefault(_Itm => _Itm.Equal(_Args.Item)) as IViewMazeItemTurret;
+            item?.PreShoot(_Args);
         }
         
-        private void HandleTurretShot(MazeItem _Item, float _Speed)
+        private void HandleTurretShot(TurretShotEventArgs _Args)
         {
             var item = MazeCommon.MazeItems
                 .Where(_Itm => _Itm is IViewMazeItemTurret)
-                .FirstOrDefault(_Itm => _Itm.Equal(_Item)) as IViewMazeItemTurret;
-            item?.Shoot(_Speed);
+                .FirstOrDefault(_Itm => _Itm.Equal(_Args.Item)) as IViewMazeItemTurret;
+            item?.Shoot(_Args);
         }
         
         #endregion

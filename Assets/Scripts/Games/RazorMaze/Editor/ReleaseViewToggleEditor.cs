@@ -1,5 +1,6 @@
 ﻿using Constants;
 using Games.RazorMaze.Models;
+using Network;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -24,6 +25,7 @@ namespace Games.RazorMaze.Editor
             // lightMeter/greenLight
             if (SceneManager.GetActiveScene().name != SceneNames.Prototyping)
                 return;
+            _releaseView = GameClientUtils.GameMode == (int) EGameMode.Release;
             string iconName = _releaseView ? "lightMeter/greenLight" : "lightMeter/redLight";
             var toggleIm = EditorGUIUtility.IconContent(iconName).image;
             _releaseView = GUILayout.Toggle(

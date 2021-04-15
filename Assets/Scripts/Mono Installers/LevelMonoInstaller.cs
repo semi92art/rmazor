@@ -88,6 +88,7 @@ namespace Mono_Installers
             
             Container.Bind<IViewCharacter>()                        .To<ViewCharacter>()                          .AsSingle().When(_ => release);
             Container.Bind<IViewCharacterTail>()                    .To<ViewCharacterTailSimple>()                .AsSingle().When(_ => release);
+            Container.Bind<ITurretBulletTail>()                     .To<TurretBulletTailSimple>()                 .AsSingle().When(_ => release);
             Container.Bind<IViewMazeMovingItemsGroup>()             .To<ViewMazeMovingItemsGroup>()               .AsSingle().When(_ => release);
             Container.Bind<IViewMazeShredingerBlocksGroup>()        .To<ViewMazeShredingerBlocksGroup>()          .AsSingle().When(_ => release);
             Container.Bind<IViewMazeTurretsGroup>()                 .To<ViewMazeTurretsGroup>()                   .AsSingle().When(_ => release);

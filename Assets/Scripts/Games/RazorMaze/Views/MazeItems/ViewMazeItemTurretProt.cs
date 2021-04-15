@@ -1,16 +1,17 @@
 ﻿using Games.RazorMaze.Models;
+using Games.RazorMaze.Models.ItemProceeders;
 using UnityEngine;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
     public class ViewMazeItemTurretProt : IViewMazeItemTurret
     {
-        public void PreShoot()
+        public void PreShoot(TurretShotEventArgs _Args)
         {
             throw new System.NotImplementedException();
         }
 
-        public void Shoot(float _Speed)
+        public void Shoot(TurretShotEventArgs _Args)
         {
             throw new System.NotImplementedException();
         }

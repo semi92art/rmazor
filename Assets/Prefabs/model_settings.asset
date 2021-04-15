@@ -23,5 +23,5 @@ MonoBehaviour:
   trapIncreasingIncreasedTime: 1
   turretPreShootInterval: 2
   turretShootInterval: 0.5
-  turretProjectileSpeed: 1
+  turretProjectileSpeed: 1.5
   shredingerBlockProceedTime: 3
