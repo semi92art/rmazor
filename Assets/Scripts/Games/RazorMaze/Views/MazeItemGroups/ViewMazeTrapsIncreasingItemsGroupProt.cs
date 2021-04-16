@@ -27,8 +27,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         public void OnMazeTrapIncreasingStageChanged(MazeItemTrapIncreasingEventArgs _Args)
         {
-            var item = MazeCommon.MazeItems.First(_Item => _Item.Equal(_Args.Item));
-            HandleItemOnStage(_Args, item);
+            HandleItemOnStage(_Args, MazeCommon.GetItem(_Args.Item));
         }
 
         private void HandleItemOnStage(MazeItemTrapIncreasingEventArgs _Args, IViewMazeItem _Item)

@@ -21,8 +21,8 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         public virtual void OnShredingerBlockEvent(ShredingerBlockArgs _Args)
         {
-            var item = MazeCommon.MazeItems.First(_Item => _Item.Equal(_Args.Item));
-            if (_Args.Stage != 1)
+            var item = MazeCommon.GetItem(_Args.Item);
+            if (_Args.Stage != 1 && item != null)
                 item.Active = !_Args.Opened;
         }
         

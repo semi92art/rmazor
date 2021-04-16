@@ -2,8 +2,8 @@
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
-    public class ViewMazeSpringboardItemsGroupProt : IViewMazeSpringboardItemsGroup
+    public sealed class ViewMazeSpringboardItemsGroupProt : ViewMazeSpringboardItemsGroupBase
     {
-        public void OnSpringboardEvent(SpringboardEventArgs _Args) { }
+        public override void OnSpringboardEvent(SpringboardEventArgs _Args) { }
     }
 }

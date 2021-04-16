@@ -17,6 +17,7 @@ namespace Games.RazorMaze.Views.Characters
         #region nonpublic members
 
         private Triangle m_Tail;
+        private bool m_Hiding;
         
         #endregion
         
@@ -55,6 +56,7 @@ namespace Games.RazorMaze.Views.Characters
 
         public void ShowTail(CharacterMovingEventArgs _Args)
         {
+            m_Hiding = false;
             m_Tail.enabled = true;
             var dir = (_Args.To - _Args.From).Normalized;
             var a = _Args.From.ToVector2() - dir * 0.4f;
@@ -75,6 +77,7 @@ namespace Games.RazorMaze.Views.Characters
 
         private IEnumerator HideTailCoroutine(CharacterMovingEventArgs _Args)
         {
+            m_Hiding = true;
             var startA = (Vector2)m_Tail.A;
             var dir = (_Args.To - _Args.From).Normalized;
             var finishA = CoordinateConverter.ToLocalCharacterPosition(_Args.To.ToVector2() - dir * 0.4f);
@@ -88,7 +91,8 @@ namespace Games.RazorMaze.Views.Characters
                     m_Tail.A = Vector2.Lerp(startA, finishA, _Progress);
                 },
                 GameTimeProvider,
-                (_Breaked, _Progress) => m_Tail.enabled = false);
+                (_Breaked, _Progress) => m_Tail.enabled = false,
+                () => !m_Hiding);
         }
     }
 }

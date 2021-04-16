@@ -33,8 +33,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         public void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args)
         {
-            var item = MazeCommon.MazeItems.First(_Item => _Item.Equal(_Args.Item));
-            HandleItemOnStage(_Args, item);
+            HandleItemOnStage(_Args, MazeCommon.GetItem(_Args.Item));
         }
 
         private void HandleItemOnStage(MazeItemTrapReactEventArgs _Args, IViewMazeItem _Item)

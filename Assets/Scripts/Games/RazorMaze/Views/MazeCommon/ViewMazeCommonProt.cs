@@ -46,6 +46,17 @@ namespace Games.RazorMaze.Views.MazeCommon
             item.Active = true;
         }
 
+        public IViewMazeItem GetItem(MazeItem _Item)
+        {
+            return MazeItems.SingleOrDefault(_Itm => _Itm.Equal(_Item));
+        }
+
+        public T GetItem<T>(MazeItem _Item) where T : IViewMazeItem
+        {
+            var item = MazeItems.SingleOrDefault(_Itm => _Itm.Equal(_Item));
+            return (T) item;
+        }
+
         public void Init()
         {
             MazeItems = MazeItemsCreator.CreateMazeItems(Model.Info);

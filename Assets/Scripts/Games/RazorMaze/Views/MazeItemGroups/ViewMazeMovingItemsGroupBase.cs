@@ -71,9 +71,8 @@ namespace Games.RazorMaze.Views.MazeItemGroups
             if (!m_ItemsMoving.ContainsKey(_Args.Item))
                 return;
             var item = m_ItemsMoving[_Args.Item];
-            var mazeItem = MazeCommon.MazeItems.Single(_Item => _Item.Equal(_Args.Item));
             var pos = Vector2.Lerp(item.From, item.To, _Args.Progress);
-            mazeItem.SetLocalPosition(pos);
+            MazeCommon.GetItem(_Args.Item)?.SetLocalPosition(pos);
         }
         
         public void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
@@ -82,8 +81,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                 MarkMazeItemBusyPositions(_Args.Item, null);
             if (!m_ItemsMoving.ContainsKey(_Args.Item))
                 return;
-            var viewItem = MazeCommon.MazeItems.Single(_Item => _Item.Equal(_Args.Item));
-            viewItem.SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(_Args.To));
+            MazeCommon.GetItem(_Args.Item)?.SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(_Args.To));
             m_ItemsMoving.Remove(_Args.Item);
         }
         
