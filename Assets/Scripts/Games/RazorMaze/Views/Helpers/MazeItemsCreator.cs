@@ -28,6 +28,7 @@ namespace Games.RazorMaze.Views.Helpers
         private IViewMazeItemShredingerBlock ShredingerBlock { get; }
         private IViewMazeItemTurret Turret { get; }
         private IViewMazeItemSpringboard Springboard { get; }
+        private IViewMazeItemPortal Portal { get; }
 
         [Inject]
         public MazeItemsCreator(
@@ -38,7 +39,8 @@ namespace Games.RazorMaze.Views.Helpers
             IViewMazeItemMovingTrap _MovingTrap,
             IViewMazeItemShredingerBlock _ShredingerBlock,
             IViewMazeItemTurret _Turret,
-            IViewMazeItemSpringboard _Springboard)
+            IViewMazeItemSpringboard _Springboard,
+            IViewMazeItemPortal _Portal)
         {
             ContainersGetter = _ContainersGetter;
             CoordinateConverter = _CoordinateConverter;
@@ -48,6 +50,7 @@ namespace Games.RazorMaze.Views.Helpers
             ShredingerBlock = _ShredingerBlock;
             Turret = _Turret;
             Springboard = _Springboard;
+            Portal = _Portal;
         }
         
         public MazeItemsCreator(
@@ -133,7 +136,8 @@ namespace Games.RazorMaze.Views.Helpers
                 || _Item.Type == EMazeItemType.TrapMoving      && !(MovingTrap is ViewMazeItemMovingTrapProtFake)
                 || _Item.Type == EMazeItemType.ShredingerBlock && !(ShredingerBlock is ViewMazeItemShredingerBlockProtFake)
                 || _Item.Type == EMazeItemType.Turret          && !(Turret is ViewMazeItemTurretProtFake)
-                || _Item.Type == EMazeItemType.Springboard     && !(Springboard is ViewMazeItemSpringboardProtFake))
+                || _Item.Type == EMazeItemType.Springboard     && !(Springboard is ViewMazeItemSpringboardProtFake)
+                || _Item.Type == EMazeItemType.Portal          && !(Portal is ViewMazeItemPortalProtFake))
             {
                 AddMazeItemRelease(_Items, props);
                 return;
@@ -153,7 +157,7 @@ namespace Games.RazorMaze.Views.Helpers
                 case EMazeItemType.ShredingerBlock:
                     item = (IViewMazeItemShredingerBlock) ShredingerBlock.Clone(); break;
                 case EMazeItemType.Portal:
-                    break;
+                    item = (IViewMazeItemPortal) Portal.Clone(); break;
                 case EMazeItemType.TrapReact:
                     break;
                 case EMazeItemType.TrapIncreasing:

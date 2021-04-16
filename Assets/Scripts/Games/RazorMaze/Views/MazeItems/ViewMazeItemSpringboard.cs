@@ -36,14 +36,17 @@ namespace Games.RazorMaze.Views.MazeItems
         #region inject
         
         private IGameTimeProvider GameTimeProvider { get; }
-        
+        private ViewSettings ViewSettings { get; }
+
         public ViewMazeItemSpringboard(
             ICoordinateConverter _CoordinateConverter, 
             IContainersGetter _ContainersGetter,
-            IGameTimeProvider _GameTimeProvider) 
+            IGameTimeProvider _GameTimeProvider,
+            ViewSettings _ViewSettings) 
             : base(_CoordinateConverter, _ContainersGetter)
         {
             GameTimeProvider = _GameTimeProvider;
+            ViewSettings = _ViewSettings;
         }
         
         #endregion
@@ -55,7 +58,8 @@ namespace Games.RazorMaze.Views.MazeItems
             Coroutines.Run(JumpCoroutine());
         }
         
-        public object Clone() => new ViewMazeItemSpringboard(CoordinateConverter, ContainersGetter, GameTimeProvider);
+        public object Clone() => new ViewMazeItemSpringboard(
+            CoordinateConverter, ContainersGetter, GameTimeProvider, ViewSettings);
 
         #endregion
 
@@ -68,10 +72,10 @@ namespace Games.RazorMaze.Views.MazeItems
                 .GetOrAddComponentOnNewChild<Line>("Springboard Item", ref go,
                     CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             go.DestroyChildrenSafe();
-            pillar.Thickness = 0.1f * CoordinateConverter.GetScale();
-
             var sprbrd = go.AddComponentOnNewChild<Line>("Springboard", out _, Vector2.zero);
-            sprbrd.Thickness = 0.2f * CoordinateConverter.GetScale();
+            
+            pillar.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
+            sprbrd.Thickness = pillar.Thickness * 2f;
             
             pillar.EndCaps = sprbrd.EndCaps = LineEndCap.Round;
             pillar.Color = sprbrd.Color = ViewUtils.ColorLines;

@@ -107,18 +107,12 @@ namespace Games.RazorMaze
                     switch (item.Type)
                     {
                         case EMazeItemType.TrapReact:
-                            mazeProtItems.Add(new ViewMazeItemProps
-                            {
-                                Type = EMazeItemType.Block,
-                                Position = item.Position
-                            });
-                            break;
                         case EMazeItemType.Turret:
                         case EMazeItemType.TrapIncreasing:
                         case EMazeItemType.Block: 
-                        case EMazeItemType.Portal:
                             // do nothing
                             break;
+                        case EMazeItemType.Portal:
                         case EMazeItemType.ShredingerBlock:
                         case EMazeItemType.Springboard:
                         case EMazeItemType.TrapMoving:

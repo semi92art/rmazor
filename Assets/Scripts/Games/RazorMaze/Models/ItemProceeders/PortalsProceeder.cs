@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using UnityEngine;
 
 namespace Games.RazorMaze.Models.ItemProceeders
 {
@@ -55,6 +56,14 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     m_LastArgs = null;
                     return;
                 }
+                
+                var V = (_Args.To - _Args.From).Normalized;
+                var A = portalItem.Position.ToVector2();
+                var B = _Args.From.ToVector2() + V * _Args.Progress * (_Args.To - _Args.From).ToVector2().magnitude;
+                var C = V * (A - B);
+                var m = C.x + C.y;
+                if (m > 0f)
+                    return;
 
                 if (m_LastArgs != null)
                     return;

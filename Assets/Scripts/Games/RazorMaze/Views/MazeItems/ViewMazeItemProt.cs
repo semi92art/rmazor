@@ -312,8 +312,8 @@ namespace Games.RazorMaze.Views.MazeItems
             }
             var pos = ToWorldPosition(props.Position);
             var pairPos = ToWorldPosition(props.Pair);
-            Gizmos.DrawSphere(pos, 1);
-            Gizmos.DrawSphere(pairPos, 1);
+            Gizmos.DrawSphere(pos, 0.5f);
+            Gizmos.DrawSphere(pairPos, 0.5f);
             Gizmos.DrawLine(pos, pairPos);
         }
 

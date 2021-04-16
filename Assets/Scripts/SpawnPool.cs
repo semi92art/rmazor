@@ -20,7 +20,7 @@ public interface ISpawnPool<T> : IList<T>
     T FirstInactive { get; }
     T LastActive { get; }
     T LastInactive { get; }
-    void Activate(T _Item, Vector3 _Position, Func<bool> _Predicate = null, Action _OnFinish = null);
+    void Activate(T _Item, Func<bool> _Predicate = null, Action _OnFinish = null);
     void Deactivate(T _Item, Func<bool> _Predicate = null, Action _OnFinish = null);
 }
 
@@ -59,7 +59,6 @@ public class ComponentsSpawnPool<T> : ISpawnPool<T> where T : Component
         if (_Item == null)
             return;
         Collection.Add(_Item);
-        Activate(Collection.Last(), default, false);
     }
 
     public void AddRange(IEnumerable<T> _Items)
@@ -103,7 +102,7 @@ public class ComponentsSpawnPool<T> : ISpawnPool<T> where T : Component
         if (_Item == null)
             return;
         Collection.Insert(_Index, _Item);
-        Activate(Collection[_Index], default, false);
+        Activate(Collection[_Index], false);
     }
 
     public void RemoveAt(int _Index)
@@ -127,9 +126,9 @@ public class ComponentsSpawnPool<T> : ISpawnPool<T> where T : Component
     public T LastActive => GetFirstOrLastActiveOrInactive(false, true);
     public T LastInactive => GetFirstOrLastActiveOrInactive(false, false);
     
-    public virtual void Activate(T _Item, Vector3 _Position, Func<bool> _Predicate = null, Action _OnFinish = null)
+    public virtual void Activate(T _Item, Func<bool> _Predicate = null, Action _OnFinish = null)
     {
-        Activate(IndexOf(_Item), _Position, _Predicate, _OnFinish);
+        Activate(IndexOf(_Item), _Predicate, _OnFinish);
     }
     
     public virtual void Deactivate(T _Item, Func<bool> _Predicate = null, Action _OnFinish = null)
@@ -141,41 +140,40 @@ public class ComponentsSpawnPool<T> : ISpawnPool<T> where T : Component
     
     #region nonpublic methods
     
-    private void Activate(int _Index, Vector3 _Position, Func<bool> _Predicate = null, Action _OnFinish = null)
+    private void Activate(int _Index, Func<bool> _Predicate = null, Action _OnFinish = null)
     {
-        ActivateOrDeactivate(_Index, _Position, _Predicate, _OnFinish, true);
+        ActivateOrDeactivate(_Index, _Predicate, _OnFinish, true);
     }
     
     private void Deactivate(int _Index, Func<bool> _Predicate = null, Action _OnFinish = null)
     {
-        ActivateOrDeactivate(_Index, default, _Predicate, _OnFinish, false);
+        ActivateOrDeactivate(_Index, _Predicate, _OnFinish, false);
     }
 
-    private void ActivateOrDeactivate(int _Index, Vector3 _Position, Func<bool> _Predicate, Action _OnFinish, bool _Activate)
+    private void ActivateOrDeactivate(int _Index, Func<bool> _Predicate, Action _OnFinish, bool _Activate)
     {
         Coroutines.Run(Coroutines.WaitWhile(
         () => _Predicate?.Invoke() ?? false,
         () =>
         {
-            ActivateOrDeactivate(_Index, _Position, _Activate);
+            ActivateOrDeactivate(_Index, _Activate);
             _OnFinish?.Invoke();
         }));
     }
     
-    private void ActivateOrDeactivate(int _Index, Vector3 _Position, bool _Activate)
+    private void ActivateOrDeactivate(int _Index, bool _Activate)
     {
         if (!CommonUtils.IsInRange(_Index, 0, Collection.Count - 1))
             return;
         var item = Collection[_Index];
-        Activate(item, _Position, _Activate);
+        Activate(item, _Activate);
     }
 
-    protected virtual void Activate(T _Item, Vector3 _Position, bool _Active)
+    protected virtual void Activate(T _Item, bool _Active)
     {
         if (_Item == null || _Item.gameObject.activeSelf == _Active)
             return;
         _Item.gameObject.SetActive(_Active);
-        _Item.transform.position = _Position;
     }
 
     protected virtual T GetFirstOrLastActiveOrInactive(bool _First, bool _Active)
@@ -205,13 +203,12 @@ public class BehavioursSpawnPool<T> : ComponentsSpawnPool<T> where T : Behaviour
     
     #region nonpublic methods
     
-    protected override void Activate(T _Item, Vector3 _Position, bool _Active)
+    protected override void Activate(T _Item, bool _Active)
     {
         if (_Item == null || _Item.enabled == _Active)
             return;
         _Item.gameObject.SetActive(_Active);
         _Item.enabled = _Active;
-        _Item.transform.position = _Position;
     }
 
     protected override T GetFirstOrLastActiveOrInactive(bool _First, bool _Active)
@@ -237,14 +234,13 @@ public class ActivatedMonoBehavioursSpawnPool<T> : BehavioursSpawnPool<T> where 
     
     #region nonpublic methods
     
-    protected override void Activate(T _Item, Vector3 _Position, bool _Active)
+    protected override void Activate(T _Item, bool _Active)
     {
         if (_Item == null || _Item.Activated == _Active)
             return;
         _Item.gameObject.SetActive(_Active);
         _Item.enabled = _Active;
         _Item.Activated = _Active;
-        _Item.transform.position = _Position;
     }
 
     protected override T GetFirstOrLastActiveOrInactive(bool _First, bool _Active)

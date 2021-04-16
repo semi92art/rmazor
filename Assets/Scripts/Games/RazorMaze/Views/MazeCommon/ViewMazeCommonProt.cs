@@ -15,7 +15,7 @@ namespace Games.RazorMaze.Views.MazeCommon
     {
         #region inject
 
-        public IMazeItemsCreator MazeItemsCreator { get; }
+        private IMazeItemsCreator MazeItemsCreator { get; }
         private IModelMazeData Model { get; }
         private IContainersGetter ContainersGetter { get; }
         private ICoordinateConverter CoordinateConverter { get; }

@@ -29,4 +29,8 @@ namespace Games.RazorMaze.Views.MazeItems
     public class ViewMazeItemGravityBlockProtFake : ViewMazeItemProtFakeBase, IViewMazeItemGravityBlock { }
     public class ViewMazeItemMovingTrapProtFake : ViewMazeItemProtFakeBase, IViewMazeItemMovingTrap { }
     public class ViewMazeItemPathProtFake : ViewMazeItemProtFakeBase, IViewMazeItemPath { }
+    public class ViewMazeItemPortalProtFake : ViewMazeItemProtFakeBase, IViewMazeItemPortal
+    {
+        public void DoTeleport(PortalEventArgs _Args) => throw new System.NotImplementedException();
+    }
 }

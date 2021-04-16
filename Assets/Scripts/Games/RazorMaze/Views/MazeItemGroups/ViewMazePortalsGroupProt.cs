@@ -2,8 +2,8 @@
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
-    public class ViewMazePortalsGroupProt : IViewMazePortalsGroup
+    public class ViewMazePortalsGroupProt : ViewMazePortalsGroupBase
     {
-        public void OnPortalEvent(PortalEventArgs _Args) { }
+        public override void OnPortalEvent(PortalEventArgs _Args) { }
     }
 }
