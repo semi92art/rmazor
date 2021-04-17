@@ -1,5 +1,6 @@
 ﻿using Extensions;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
@@ -7,7 +8,14 @@ using UnityEngine;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
-    public interface IViewMazeItemGravityBlock : IViewMazeItem { }
+    public interface IViewMazeItemMovingBlock : IViewMazeItem
+    {
+        void OnMoveStarted(MazeItemMoveEventArgs _Args);
+        void OnMoving(MazeItemMoveEventArgs _Args);
+        void OnMoveFinished(MazeItemMoveEventArgs _Args);
+    }
+    
+    public interface IViewMazeItemGravityBlock : IViewMazeItemMovingBlock { }
     
     public class ViewMazeItemGravityBlock : ViewMazeItemBase, IViewMazeItemGravityBlock
     {
@@ -39,7 +47,23 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region api
 
-        public object Clone() => new ViewMazeItemGravityBlock(CoordinateConverter, ContainersGetter, Data, ViewSettings);
+        public void OnMoveStarted(MazeItemMoveEventArgs _Args)
+        {
+        }
+
+        public void OnMoving(MazeItemMoveEventArgs _Args)
+        {
+            var pos = Vector2.Lerp(_Args.From.ToVector2(), _Args.To.ToVector2(), _Args.Progress);
+            SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(pos));
+        }
+
+        public void OnMoveFinished(MazeItemMoveEventArgs _Args)
+        {
+            SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(_Args.To));
+        }
+        
+        public object Clone() => new ViewMazeItemGravityBlock(
+            CoordinateConverter, ContainersGetter, Data, ViewSettings);
 
         #endregion
         
@@ -58,7 +82,7 @@ namespace Games.RazorMaze.Views.MazeItems
             sh.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.GetScale();
             sh.Color = ViewUtils.ColorLines;
             sh.SortingOrder = ViewUtils.GetBlockSortingOrder(Props.Type);
-            var joint = go.AddComponentOnNewChild<Disc>("Joint", out _, null);
+            var joint = go.AddComponentOnNewChild<Disc>("Joint", out _);
             joint.transform.SetLocalPosXY(Vector2.zero);
             joint.Color = ViewUtils.ColorLines;
             joint.Radius = ViewSettings.LineWidth * CoordinateConverter.GetScale() * 2f;

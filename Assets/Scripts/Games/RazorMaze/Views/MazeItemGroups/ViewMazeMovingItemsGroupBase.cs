@@ -8,6 +8,7 @@ using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.MazeCommon;
+using Games.RazorMaze.Views.MazeItems;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using UnityEngine;
@@ -61,27 +62,26 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                 To = CoordinateConverter.ToLocalMazeItemPosition(_Args.To),
                 BusyPositions = new Dictionary<V2Int, Disc>()
             });
+            (MazeCommon.GetItem(_Args.Item) as IViewMazeItemMovingBlock)?.OnMoveStarted(_Args);
         }
 
         public void OnMazeItemMoveContinued(MazeItemMoveEventArgs _Args)
         {
-            if (_Args.Item.Type == EMazeItemType.GravityBlock)
-                MarkMazeItemBusyPositions(_Args.Item, 
-                    (Data.ProceedInfos[_Args.Item.Type][_Args.Item] as MazeItemMovingProceedInfo).BusyPositions);
+            if (_Args.Item.Type == EMazeItemType.GravityBlock || _Args.Item.Type == EMazeItemType.GravityTrap)
+                MarkMazeItemBusyPositions(_Args.Item, _Args.BusyPositions);
             if (!m_ItemsMoving.ContainsKey(_Args.Item))
                 return;
-            var item = m_ItemsMoving[_Args.Item];
-            var pos = Vector2.Lerp(item.From, item.To, _Args.Progress);
-            MazeCommon.GetItem(_Args.Item)?.SetLocalPosition(pos);
+            (MazeCommon.GetItem(_Args.Item) as IViewMazeItemMovingBlock)?.OnMoving(_Args);
         }
         
         public void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
         {
-            if (_Args.Item.Type == EMazeItemType.GravityBlock)
+            if (_Args.Item.Type == EMazeItemType.GravityBlock || _Args.Item.Type == EMazeItemType.GravityTrap)
                 MarkMazeItemBusyPositions(_Args.Item, null);
             if (!m_ItemsMoving.ContainsKey(_Args.Item))
                 return;
-            MazeCommon.GetItem(_Args.Item)?.SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(_Args.To));
+            
+            (MazeCommon.GetItem(_Args.Item) as IViewMazeItemMovingBlock)?.OnMoveFinished(_Args);
             m_ItemsMoving.Remove(_Args.Item);
         }
         

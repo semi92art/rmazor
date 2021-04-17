@@ -1,6 +1,7 @@
 ﻿using Extensions;
 using GameHelpers;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
 using UnityEngine;
@@ -8,7 +9,7 @@ using UnityGameLoopDI;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
-    public interface IViewMazeItemMovingTrap : IViewMazeItem { }
+    public interface IViewMazeItemMovingTrap : IViewMazeItemMovingBlock { }
     
     public class ViewMazeItemMovingTrap : ViewMazeItemBase, IViewMazeItemMovingTrap, IUpdateTick
     {
@@ -52,7 +53,22 @@ namespace Games.RazorMaze.Views.MazeItems
             base.Init(_Props);
             Active = true;
         }
-        
+
+        public void OnMoveStarted(MazeItemMoveEventArgs _Args)
+        {
+        }
+
+        public void OnMoving(MazeItemMoveEventArgs _Args)
+        {
+            var pos = Vector2.Lerp(_Args.From.ToVector2(), _Args.To.ToVector2(), _Args.Progress);
+            SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(pos));
+        }
+
+        public void OnMoveFinished(MazeItemMoveEventArgs _Args)
+        {
+            SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(_Args.To));
+        }
+
         public void UpdateTick()
         {
             if (!m_Rotate)

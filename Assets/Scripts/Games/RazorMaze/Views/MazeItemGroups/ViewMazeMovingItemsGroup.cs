@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Entities;
+using Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
@@ -32,7 +33,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
 
         public override void Init()
         {
-            DrawWallBlockMovingPaths(ViewUtils.ColorLines);
+            DrawWallBlockMovingPaths(ViewUtils.ColorLines.SetA(0.5f));
         }
 
         #endregion

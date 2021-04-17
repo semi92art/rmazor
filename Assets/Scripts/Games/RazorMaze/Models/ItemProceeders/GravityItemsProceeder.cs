@@ -81,23 +81,47 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     var pos = _Info.Item.Position;
                     bool doMoveByPath = false;
                     V2Int? altPos = null;
-                    while (RazorMazeUtils.IsValidPositionForMove(Data.Info, _Info.Item, pos + _DropDirection))
+
+                    // V2Int endPos = pos;
+                    // while (RazorMazeUtils.IsValidPositionForMove(
+                    //     Data.Info,
+                    //     _Info.Item,
+                    //     endPos + _DropDirection))
+                    // {
+                    //     endPos += _DropDirection;
+                    // }
+                    while (RazorMazeUtils.IsValidPositionForMove(
+                        Data.Info, 
+                        _Info.Item,
+                        pos + _DropDirection))
                     {
                         pos += _DropDirection;
-                        if (_CharacterPoint.HasValue && _CharacterPoint.Value == pos)
-                            altPos = pos - _DropDirection;
-                        var pos1 = pos;
-                        if (_Info.Item.Path.All(_Pos => pos1 != _Pos))
-                            continue;
-                        int fromPosIdx = _Info.Item.Path.IndexOf(_Info.Item.Position);
-                        if (fromPosIdx == -1)
-                        {
-                            doMoveByPath = true;
-                            break;
-                        }
-                        int toPosIds = _Info.Item.Path.IndexOf(pos);
-                        if (Math.Abs(toPosIds - fromPosIdx) > 1)
-                            continue;
+
+                        //if (_Info.Item.Type == EMazeItemType.GravityBlock)
+                        //{
+                            if (_CharacterPoint.HasValue && _CharacterPoint.Value == pos )
+                                altPos = pos - _DropDirection;
+                            var pos1 = pos;
+                            if (_Info.Item.Path.All(_Pos => pos1 != _Pos))
+                                continue;
+                            int fromPosIdx = _Info.Item.Path.IndexOf(_Info.Item.Position);
+                            if (fromPosIdx == -1)
+                            {
+                                doMoveByPath = true;
+                                break;
+                            }
+                            int toPosIds = _Info.Item.Path.IndexOf(pos);
+                            if (Math.Abs(toPosIds - fromPosIdx) > 1)
+                                continue;
+                        //}
+                        // else if (_Info.Item.Type == EMazeItemType.GravityTrap)
+                        // {
+                        //     if (pos != endPos)
+                        //         continue;
+                        // }
+ 
+                                
+                        
                         doMoveByPath = true;
                         break;
                     }
@@ -122,13 +146,14 @@ namespace Games.RazorMaze.Models.ItemProceeders
         {
             var item = _Info.Item;
             var busyPositions = _Info.BusyPositions;
-            MazeItemMoveStarted?.Invoke(new MazeItemMoveEventArgs(item, _From, _To, 0));
+            MazeItemMoveStarted?.Invoke(new MazeItemMoveEventArgs(
+                item, _From, _To, Settings.gravityTrapSpeed, 0, busyPositions));
             var direction = (_To - _From).Normalized;
             float distance = V2Int.Distance(_From, _To);
             yield return Coroutines.Lerp(
                 0f,
                 1f,
-                distance / Settings.movingItemsSpeed,
+                distance / Settings.gravityTrapSpeed,
                 _Progress =>
                 {
                     var addict = direction * (_Progress + 0.1f) * distance;
@@ -136,14 +161,16 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     busyPositions.Add(_From + addict.ToV2IntFloor());
                     if (busyPositions[0] != _To)
                         busyPositions.Add(_From + addict.ToV2IntCeil());
-                    MazeItemMoveContinued?.Invoke(new MazeItemMoveEventArgs(item, _From, _To, _Progress));
+                    MazeItemMoveContinued?.Invoke(new MazeItemMoveEventArgs(
+                        item, _From, _To, Settings.gravityTrapSpeed, _Progress, busyPositions));
                 },
                 GameTimeProvider.Instance,
                 (_Stopped, _Progress) =>
                 {
                     var to = !_Stopped ? _To : _Info.BusyPositions[0];  
                     item.Position = to;
-                    MazeItemMoveFinished?.Invoke(new MazeItemMoveEventArgs(item, _From, to, _Progress, _Stopped));
+                    MazeItemMoveFinished?.Invoke(new MazeItemMoveEventArgs(
+                        item, _From, to, Settings.gravityTrapSpeed, _Progress, busyPositions, _Stopped));
                     _Info.IsProceeding = false;
                     busyPositions.Clear();
                     busyPositions.Add(to);

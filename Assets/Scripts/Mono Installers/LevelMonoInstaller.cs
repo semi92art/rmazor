@@ -75,6 +75,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazeItemMovingTrap>()               .To<ViewMazeItemMovingTrapProtFake>()         .AsSingle().When(_ => prototyping);
             Container.Bind<IViewMazeItemSpringboard>()              .To<ViewMazeItemSpringboardProtFake>()        .AsSingle().When(_ => prototyping);
             Container.Bind<IViewMazeItemPortal>()                   .To<ViewMazeItemPortalProtFake>()             .AsSingle().When(_ => prototyping);
+            Container.Bind<IViewMazeItemGravityTrap>()              .To<ViewMazeItemGravityTrapProtFake>()        .AsSingle().When(_ => prototyping);
             
             Container.Bind<IViewMazeCommon>()                       .To<ViewMazeCommonProt>()                     .AsSingle();
             Container.Bind<IViewMazeRotation>()                     .To<ViewMazeRotationProt>()                   .AsSingle();
@@ -104,6 +105,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazeItemTurret>()                   .To<ViewMazeItemTurret>()                     .AsSingle().When(_ => release);
             Container.Bind<IViewMazeItemSpringboard>()              .To<ViewMazeItemSpringboard>()                .AsSingle().When(_ => release);
             Container.Bind<IViewMazeItemPortal>()                   .To<ViewMazeItemPortal>()                     .AsSingle().When(_ => release);
+            Container.Bind<IViewMazeItemGravityTrap>()              .To<ViewMazeItemGravityTrap>()                .AsSingle().When(_ => release);
 
             #endregion
 

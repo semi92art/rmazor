@@ -29,6 +29,7 @@ namespace Games.RazorMaze.Views.Helpers
         private IViewMazeItemTurret Turret { get; }
         private IViewMazeItemSpringboard Springboard { get; }
         private IViewMazeItemPortal Portal { get; }
+        private IViewMazeItemGravityTrap GravityTrap { get; }
 
         [Inject]
         public MazeItemsCreator(
@@ -40,7 +41,8 @@ namespace Games.RazorMaze.Views.Helpers
             IViewMazeItemShredingerBlock _ShredingerBlock,
             IViewMazeItemTurret _Turret,
             IViewMazeItemSpringboard _Springboard,
-            IViewMazeItemPortal _Portal)
+            IViewMazeItemPortal _Portal,
+            IViewMazeItemGravityTrap _GravityTrap)
         {
             ContainersGetter = _ContainersGetter;
             CoordinateConverter = _CoordinateConverter;
@@ -51,6 +53,7 @@ namespace Games.RazorMaze.Views.Helpers
             Turret = _Turret;
             Springboard = _Springboard;
             Portal = _Portal;
+            GravityTrap = _GravityTrap;
         }
         
         public MazeItemsCreator(
@@ -132,12 +135,13 @@ namespace Games.RazorMaze.Views.Helpers
                 IsNode = false,
                 IsStartNode = false
             };
-            if (   _Item.Type == EMazeItemType.GravityBlock    && !(GravityBlock is ViewMazeItemGravityBlockProtFake)
-                || _Item.Type == EMazeItemType.TrapMoving      && !(MovingTrap is ViewMazeItemMovingTrapProtFake)
+            if (   _Item.Type == EMazeItemType.GravityBlock    && !(GravityBlock    is ViewMazeItemGravityBlockProtFake)
+                || _Item.Type == EMazeItemType.TrapMoving      && !(MovingTrap      is ViewMazeItemMovingTrapProtFake)
                 || _Item.Type == EMazeItemType.ShredingerBlock && !(ShredingerBlock is ViewMazeItemShredingerBlockProtFake)
-                || _Item.Type == EMazeItemType.Turret          && !(Turret is ViewMazeItemTurretProtFake)
-                || _Item.Type == EMazeItemType.Springboard     && !(Springboard is ViewMazeItemSpringboardProtFake)
-                || _Item.Type == EMazeItemType.Portal          && !(Portal is ViewMazeItemPortalProtFake))
+                || _Item.Type == EMazeItemType.Turret          && !(Turret          is ViewMazeItemTurretProtFake)
+                || _Item.Type == EMazeItemType.Springboard     && !(Springboard     is ViewMazeItemSpringboardProtFake)
+                || _Item.Type == EMazeItemType.Portal          && !(Portal          is ViewMazeItemPortalProtFake)
+                || _Item.Type == EMazeItemType.GravityTrap     && !(GravityTrap     is ViewMazeItemGravityTrapProtFake))
             {
                 AddMazeItemRelease(_Items, props);
                 return;
@@ -152,28 +156,17 @@ namespace Games.RazorMaze.Views.Helpers
             IViewMazeItem item = null;
             switch (_Props.Type)
             {
-                case EMazeItemType.GravityBlock:
-                    item = (IViewMazeItemGravityBlock) GravityBlock.Clone(); break;
-                case EMazeItemType.ShredingerBlock:
-                    item = (IViewMazeItemShredingerBlock) ShredingerBlock.Clone(); break;
-                case EMazeItemType.Portal:
-                    item = (IViewMazeItemPortal) Portal.Clone(); break;
-                case EMazeItemType.TrapReact:
-                    break;
-                case EMazeItemType.TrapIncreasing:
-                    break;
-                case EMazeItemType.TrapMoving:
-                    item = (IViewMazeItemMovingTrap) MovingTrap.Clone(); break;
-                case EMazeItemType.GravityTrap:
-                    break;
-                case EMazeItemType.Turret:
-                    item = (IViewMazeItemTurret) Turret.Clone(); break;
-                case EMazeItemType.TurretRotating:
-                    break;
-                case EMazeItemType.Springboard:
-                    item = (IViewMazeItemSpringboard) Springboard.Clone(); break;
-                case EMazeItemType.Block:
-                    break;
+                case EMazeItemType.GravityBlock:    item = (IViewMazeItemGravityBlock) GravityBlock.Clone(); break;
+                case EMazeItemType.ShredingerBlock: item = (IViewMazeItemShredingerBlock) ShredingerBlock.Clone(); break;
+                case EMazeItemType.Portal:          item = (IViewMazeItemPortal) Portal.Clone(); break;
+                case EMazeItemType.TrapReact: break;
+                case EMazeItemType.TrapIncreasing: break;
+                case EMazeItemType.TrapMoving:      item = (IViewMazeItemMovingTrap) MovingTrap.Clone(); break;
+                case EMazeItemType.GravityTrap:     item = (IViewMazeItemGravityTrap) GravityTrap.Clone(); break;
+                case EMazeItemType.Turret:          item = (IViewMazeItemTurret) Turret.Clone(); break;
+                case EMazeItemType.TurretRotating: break;
+                case EMazeItemType.Springboard:     item = (IViewMazeItemSpringboard) Springboard.Clone(); break;
+                case EMazeItemType.Block: break;
                 default: throw new SwitchCaseNotImplementedException(_Props.Type);
             }
             if (item == null) return;

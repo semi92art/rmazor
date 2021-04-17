@@ -4,6 +4,7 @@ using System.Linq;
 using Entities;
 using Exceptions;
 using Games.RazorMaze.Models;
+using Utils;
 
 namespace Games.RazorMaze
 {
@@ -16,7 +17,13 @@ namespace Games.RazorMaze
             bool isOnNode = _Info.Path.Any(_N => _N == _Position);
             var blockItems = GetBlockMazeItems(_Info.MazeItems);
             bool isOnBlockItem = blockItems.Any(_N => _N.Position == _Position);
-            return isOnNode && !isOnBlockItem || _MazeItem.Path.Contains(_Position);
+
+            if ((!isOnNode || isOnBlockItem) && _MazeItem.Type == EMazeItemType.GravityTrap)
+            {
+                Dbg.Log($"isOnNode: {isOnNode}, isOnBlockItem: {isOnBlockItem}");
+            }
+            
+            return isOnNode && !isOnBlockItem;// || _MazeItem.Path.Contains(_Position);
         }
         
         public static V2Int GetDropDirection(MazeOrientation _Orientation)

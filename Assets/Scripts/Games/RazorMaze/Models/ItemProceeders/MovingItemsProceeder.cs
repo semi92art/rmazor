@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Entities;
 using Exceptions;
@@ -17,15 +18,25 @@ namespace Games.RazorMaze.Models.ItemProceeders
         public MazeItem Item { get; }
         public V2Int From { get; }
         public V2Int To { get; }
+        public float Speed { get; }
         public float Progress { get; }
+        public List<V2Int> BusyPositions { get; }
         public bool Stopped { get; }
 
-        public MazeItemMoveEventArgs(MazeItem _Item, V2Int _From, V2Int _To, float _Progress, bool _Stopped = false)
+        public MazeItemMoveEventArgs(
+            MazeItem _Item,
+            V2Int _From,
+            V2Int _To, 
+            float _Speed,
+            float _Progress, 
+            List<V2Int> _BusyPositions, bool _Stopped = false)
         {
             Item = _Item;
             From = _From;
             To = _To;
+            Speed = _Speed;
             Progress = _Progress;
+            BusyPositions = _BusyPositions;
             Stopped = _Stopped;
         }
     }
@@ -136,20 +147,24 @@ namespace Games.RazorMaze.Models.ItemProceeders
             V2Int _To,
             UnityAction _OnFinish)
         {
-            MazeItemMoveStarted?.Invoke(new MazeItemMoveEventArgs(_Item, _From, _To, 0));
+            var proceedInfo = Data.ProceedInfos[_Item.Type][_Item] as MazeItemMovingProceedInfo;
+            MazeItemMoveStarted?.Invoke(new MazeItemMoveEventArgs(
+                _Item, _From, _To, Settings.movingItemsSpeed,0, proceedInfo?.BusyPositions));
             float distance = V2Int.Distance(_From, _To);
             yield return Coroutines.Lerp(
                 0f,
                 1f,
                 distance / Settings.movingItemsSpeed,
-                _Progress => MazeItemMoveContinued?.Invoke(new MazeItemMoveEventArgs(_Item, _From, _To, _Progress)),
+                _Progress => MazeItemMoveContinued?.Invoke(
+                    new MazeItemMoveEventArgs(_Item, _From, _To, Settings.movingItemsSpeed,_Progress, proceedInfo?.BusyPositions)),
                 GameTimeProvider.Instance,
                 (_Stopped, _Progress) =>
                 {
                     _Item.Position = _To;
                     float progress = _Stopped ? _Progress : 1;
                     _OnFinish?.Invoke();
-                    MazeItemMoveFinished?.Invoke(new MazeItemMoveEventArgs(_Item, _From, _To, progress, _Stopped));
+                    MazeItemMoveFinished?.Invoke(new MazeItemMoveEventArgs(
+                        _Item, _From, _To, Settings.movingItemsSpeed,progress, proceedInfo?.BusyPositions, _Stopped));
                 });
         }
         

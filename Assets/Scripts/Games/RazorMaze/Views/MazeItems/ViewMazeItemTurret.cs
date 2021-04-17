@@ -124,6 +124,7 @@ namespace Games.RazorMaze.Views.MazeItems
             var tr = barrel.transform;
             (tr.localPosition, tr.localEulerAngles) = GetBarrelLocalPositionAndRotation();
             (barrel.Width, barrel.Height) = GetBarrelSize();
+            barrel.Height *= 0.1f;
 
             var bulletGo = PrefabUtilsEx.InitPrefab(
                 ContainersGetter.MazeItemsContainer, "views", "turret_bullet");
@@ -240,24 +241,15 @@ namespace Games.RazorMaze.Views.MazeItems
         
         private IEnumerator OpenBarrel(bool _Open, bool _Instantly)
         {
-            if (_Open)
-                m_Barrel.enabled = true;
             float barrelHeight = GetBarrelSize().Item2;
             if (_Instantly)
             {
-                m_Barrel.Height = barrelHeight * (_Open ? 1 : 0);
-                if (!_Open)
-                    m_Barrel.enabled = false;
+                m_Barrel.Height = barrelHeight * (_Open ? 1 : 0.1f);
                 yield break;
             }
-            yield return Coroutines.Lerp(0f, 1f, 0.1f,
-                _Progress => m_Barrel.Height = barrelHeight * (_Open ? _Progress : 1 - _Progress),
-                GameTimeProvider,
-                (_Breaked, _Progress) =>
-                {
-                    if (!_Open)
-                        m_Barrel.enabled = false;
-                });
+            yield return Coroutines.Lerp(_Open ? 0.1f : 1f, _Open ? 1f : 0.1f, 0.1f,
+                _Progress => m_Barrel.Height = barrelHeight * _Progress,
+                GameTimeProvider);
         }
         
         private Tuple<Vector2, Vector3> GetBarrelLocalPositionAndRotation()

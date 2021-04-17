@@ -15,6 +15,7 @@ MonoBehaviour:
   characterSpeed: 40
   mazeRotateSpeed: 5
   movingItemsSpeed: 6
+  gravityTrapSpeed: 10
   movingItemsPause: 1
   trapPreReactTime: 0.5
   trapReactTime: 0.5

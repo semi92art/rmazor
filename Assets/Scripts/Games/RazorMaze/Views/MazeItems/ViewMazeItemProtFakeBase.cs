@@ -26,11 +26,27 @@ namespace Games.RazorMaze.Views.MazeItems
         public void PreShoot(TurretShotEventArgs _Args) => throw new System.NotImplementedException();
         public void Shoot(TurretShotEventArgs _Args) => throw new System.NotImplementedException();
     }
-    public class ViewMazeItemGravityBlockProtFake : ViewMazeItemProtFakeBase, IViewMazeItemGravityBlock { }
-    public class ViewMazeItemMovingTrapProtFake : ViewMazeItemProtFakeBase, IViewMazeItemMovingTrap { }
+    public class ViewMazeItemGravityBlockProtFake : ViewMazeItemProtFakeBase, IViewMazeItemGravityBlock
+    {
+        public void OnMoveStarted(MazeItemMoveEventArgs _Args) => throw new System.NotImplementedException();
+        public void OnMoving(MazeItemMoveEventArgs _Args) => throw new System.NotImplementedException();
+        public void OnMoveFinished(MazeItemMoveEventArgs _Args) => throw new System.NotImplementedException();
+    }
+    public class ViewMazeItemMovingTrapProtFake : ViewMazeItemProtFakeBase, IViewMazeItemMovingTrap
+    {
+        public void OnMoveStarted(MazeItemMoveEventArgs _Args) => throw new System.NotImplementedException();
+        public void OnMoving(MazeItemMoveEventArgs _Args) => throw new System.NotImplementedException();
+        public void OnMoveFinished(MazeItemMoveEventArgs _Args) => throw new System.NotImplementedException();
+    }
     public class ViewMazeItemPathProtFake : ViewMazeItemProtFakeBase, IViewMazeItemPath { }
     public class ViewMazeItemPortalProtFake : ViewMazeItemProtFakeBase, IViewMazeItemPortal
     {
         public void DoTeleport(PortalEventArgs _Args) => throw new System.NotImplementedException();
+    }
+    public class ViewMazeItemGravityTrapProtFake : ViewMazeItemProtFakeBase, IViewMazeItemGravityTrap
+    {
+        public void OnMoveStarted(MazeItemMoveEventArgs _Args) => throw new System.NotImplementedException();
+        public void OnMoving(MazeItemMoveEventArgs _Args) => throw new System.NotImplementedException();
+        public void OnMoveFinished(MazeItemMoveEventArgs _Args) => throw new System.NotImplementedException();
     }
 }
