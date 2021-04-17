@@ -101,7 +101,7 @@ namespace Games.RazorMaze.Views.Helpers
                 IsStartNode = isStartNode,
                 Position = _Position
             };
-            if (!(ItemPath is ViewMazeItemPathProtFake))
+            if (ItemPath != null && !(ItemPath is ViewMazeItemPathProtFake))
             {
                 var item = (IViewMazeItemPath)ItemPath.Clone();
                 item.Init(props);
@@ -138,14 +138,14 @@ namespace Games.RazorMaze.Views.Helpers
                 IsNode = false,
                 IsStartNode = false
             };
-            if (   _Item.Type == EMazeItemType.GravityBlock    && !(GravityBlock    is ViewMazeItemGravityBlockProtFake)
-                || _Item.Type == EMazeItemType.TrapMoving      && !(MovingTrap      is ViewMazeItemMovingTrapProtFake)
-                || _Item.Type == EMazeItemType.ShredingerBlock && !(ShredingerBlock is ViewMazeItemShredingerBlockProtFake)
-                || _Item.Type == EMazeItemType.Turret          && !(Turret          is ViewMazeItemTurretProtFake)
-                || _Item.Type == EMazeItemType.Springboard     && !(Springboard     is ViewMazeItemSpringboardProtFake)
-                || _Item.Type == EMazeItemType.Portal          && !(Portal          is ViewMazeItemPortalProtFake)
-                || _Item.Type == EMazeItemType.GravityTrap     && !(GravityTrap     is ViewMazeItemGravityTrapProtFake)
-                || _Item.Type == EMazeItemType.TrapReact       && !(TrapReact       is ViewMazeItemTrapReactProtFake))
+            if (   _Item.Type == EMazeItemType.GravityBlock    && GravityBlock != null    && !(GravityBlock    is ViewMazeItemGravityBlockProtFake)
+                || _Item.Type == EMazeItemType.TrapMoving      && MovingTrap != null      && !(MovingTrap      is ViewMazeItemMovingTrapProtFake)
+                || _Item.Type == EMazeItemType.ShredingerBlock && ShredingerBlock != null && !(ShredingerBlock is ViewMazeItemShredingerBlockProtFake)
+                || _Item.Type == EMazeItemType.Turret          && Turret != null          && !(Turret          is ViewMazeItemTurretProtFake)
+                || _Item.Type == EMazeItemType.Springboard     && Springboard != null     && !(Springboard     is ViewMazeItemSpringboardProtFake)
+                || _Item.Type == EMazeItemType.Portal          && Portal != null          && !(Portal          is ViewMazeItemPortalProtFake)
+                || _Item.Type == EMazeItemType.GravityTrap     && GravityTrap != null     && !(GravityTrap     is ViewMazeItemGravityTrapProtFake)
+                || _Item.Type == EMazeItemType.TrapReact       && TrapReact != null       && !(TrapReact       is ViewMazeItemTrapReactProtFake))
             {
                 AddMazeItemRelease(_Items, props);
                 return;
