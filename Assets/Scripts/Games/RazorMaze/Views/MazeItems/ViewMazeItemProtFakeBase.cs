@@ -49,4 +49,9 @@ namespace Games.RazorMaze.Views.MazeItems
         public void OnMoving(MazeItemMoveEventArgs _Args) => throw new System.NotImplementedException();
         public void OnMoveFinished(MazeItemMoveEventArgs _Args) => throw new System.NotImplementedException();
     }
+    
+    public class ViewMazeItemTrapReactProtFake : ViewMazeItemProtFakeBase, IViewMazeItemTrapReact
+    {
+        public void OnTrapReact(MazeItemTrapReactEventArgs _Args) => throw new System.NotImplementedException();
+    }
 }

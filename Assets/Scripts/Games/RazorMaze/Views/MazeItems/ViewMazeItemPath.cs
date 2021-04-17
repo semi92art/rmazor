@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Entities;
 using Exceptions;
 using Extensions;
@@ -54,13 +55,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 else Unfill();
             }
         }
-        
-        public void Init(ViewMazeItemProps _Props)
-        {
-            Props = _Props;
-            SetShape();
-        }
-        
+
         public object Clone() => new ViewMazeItemPath(CoordinateConverter, ContainersGetter, Data, ViewSettings);
 
         #endregion
@@ -141,30 +136,30 @@ namespace Games.RazorMaze.Views.MazeItems
             if (!PathExist(pos + V2Int.left))
             {
                 if (PathExist(pos + V2Int.left + V2Int.down))
-                    m_LeftBorder.Start = GetBorderPoints(EMazeMoveDirection.Left, true, true).Item1;
+                    m_LeftBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Left, true, true).Item1;
                 if (PathExist(pos + V2Int.left + V2Int.up))
-                    m_LeftBorder.End = GetBorderPoints(EMazeMoveDirection.Left, true, true).Item2;
+                    m_LeftBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Left, true, true).Item2;
             }
             if (!PathExist(pos + V2Int.right))
             {
                 if (PathExist(pos + V2Int.right + V2Int.down))
-                    m_RightBorder.Start = GetBorderPoints(EMazeMoveDirection.Right, true, true).Item1;
+                    m_RightBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Right, true, true).Item1;
                 if (PathExist(pos + V2Int.right + V2Int.up))
-                    m_RightBorder.End = GetBorderPoints(EMazeMoveDirection.Right, true, true).Item2;
+                    m_RightBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Right, true, true).Item2;
             }
             if (!PathExist(pos + V2Int.down))
             {
                 if (PathExist(pos + V2Int.down + V2Int.left))
-                    m_BottomBorder.Start = GetBorderPoints(EMazeMoveDirection.Down, true, true).Item1;
+                    m_BottomBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Down, true, true).Item1;
                 if (PathExist(pos + V2Int.down + V2Int.right))
-                    m_BottomBorder.End = GetBorderPoints(EMazeMoveDirection.Down, true, true).Item2;
+                    m_BottomBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Down, true, true).Item2;
             }
             if (!PathExist(pos + V2Int.up))
             {
                 if (PathExist(pos + V2Int.up + V2Int.left))
-                    m_TopBorder.Start = GetBorderPoints(EMazeMoveDirection.Up, true, true).Item1;
+                    m_TopBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Up, true, true).Item1;
                 if (PathExist(pos + V2Int.up + V2Int.right))
-                    m_TopBorder.End = GetBorderPoints(EMazeMoveDirection.Up, true, true).Item2;
+                    m_TopBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Up, true, true).Item2;
             }
         }
         
@@ -177,7 +172,8 @@ namespace Games.RazorMaze.Views.MazeItems
             border.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
             border.EndCaps = LineEndCap.None;
             border.Color = ViewUtils.ColorLines;
-            (border.Start, border.End) = GetBorderPoints(_Side, false, false);
+            (border.Start, border.End, border.Dashed) = GetBorderPointsAndDashed(_Side, false, false);
+            border.DashSize = 1f;
             switch (_Side)
             {
                 case EMazeMoveDirection.Up: m_TopBorder = border; break;
@@ -224,37 +220,37 @@ namespace Games.RazorMaze.Views.MazeItems
             {
                 m_BottomLeftCorner = corner;
                 if (!_Inner) return;
-                m_BottomBorder.Start = GetBorderPoints(EMazeMoveDirection.Down, true, true).Item1;
-                m_LeftBorder.Start = GetBorderPoints(EMazeMoveDirection.Left, true, true).Item1;
+                m_BottomBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Down, true, true).Item1;
+                m_LeftBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Left, true, true).Item1;
                 m_Shape.CornerRadiii = m_Shape.CornerRadiii.SetX(cr);
             }
             else if (_Right && !_Up)
             {
                 m_BottomRightCorner = corner;
                 if (!_Inner) return;
-                m_BottomBorder.End = GetBorderPoints(EMazeMoveDirection.Down, true, true).Item2;
-                m_RightBorder.Start = GetBorderPoints(EMazeMoveDirection.Right, true, true).Item1;
+                m_BottomBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Down, true, true).Item2;
+                m_RightBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Right, true, true).Item1;
                 m_Shape.CornerRadiii = m_Shape.CornerRadiii.SetW(cr);
             }
             else if (!_Right && _Up)
             {
                 m_TopLeftCorner = corner;
                 if (!_Inner) return;
-                m_LeftBorder.End = GetBorderPoints(EMazeMoveDirection.Left, true, true).Item2;
-                m_TopBorder.Start = GetBorderPoints(EMazeMoveDirection.Up, true, true).Item1;
+                m_LeftBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Left, true, true).Item2;
+                m_TopBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Up, true, true).Item1;
                 m_Shape.CornerRadiii = m_Shape.CornerRadiii.SetY(cr);
             }
             else if (_Right && _Up)
             {
                 m_TopRightCorner = corner;
                 if (!_Inner) return;
-                m_TopBorder.End = GetBorderPoints(EMazeMoveDirection.Up, true, true).Item2;
-                m_RightBorder.End = GetBorderPoints(EMazeMoveDirection.Right, true, true).Item2;
+                m_TopBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Up, true, true).Item2;
+                m_RightBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Right, true, true).Item2;
                 m_Shape.CornerRadiii = m_Shape.CornerRadiii.SetZ(cr);
             }
         }
 
-        private Tuple<Vector2, Vector2> GetBorderPoints(EMazeMoveDirection _Side, bool _StartLimit, bool _EndLimit)
+        private Tuple<Vector2, Vector2, bool> GetBorderPointsAndDashed(EMazeMoveDirection _Side, bool _StartLimit, bool _EndLimit)
         {
             Vector2 start, end;
             var pos = Props.Position.ToVector2();
@@ -282,7 +278,14 @@ namespace Games.RazorMaze.Views.MazeItems
             }
             start = CoordinateConverter.ToLocalMazeItemPosition(start);
             end = CoordinateConverter.ToLocalMazeItemPosition(end);
-            return new Tuple<Vector2, Vector2>(start, end);
+
+            var dir = RazorMazeUtils.GetDirectionVector(_Side, MazeOrientation.North);
+            bool dashed = Data.Info.MazeItems.Any(_Item =>
+                _Item.Position == Props.Position + dir 
+                && _Item.Type == EMazeItemType.TrapReact 
+                && _Item.Direction == -dir);
+            
+            return new Tuple<Vector2, Vector2, bool>(start, end, dashed);
         }
 
         private Vector2 GetCornerCenter(

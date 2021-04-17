@@ -32,13 +32,11 @@ namespace Games.RazorMaze.Views.Utils
         {
             switch (_Type)
             {
-                case EMazeItemType.GravityTrap:
                 case EMazeItemType.GravityBlock:
+                case EMazeItemType.GravityTrap:
                     return PathItemOrder + 3;
                 case EMazeItemType.Block:
                     return PathItemOrder + 4;
-                case EMazeItemType.TrapReact:
-                    return PathItemOrder + 5;
                 case EMazeItemType.Portal:
                 case EMazeItemType.Turret:
                 case EMazeItemType.TrapIncreasing:
@@ -46,7 +44,9 @@ namespace Games.RazorMaze.Views.Utils
                 case EMazeItemType.TurretRotating:
                 case EMazeItemType.ShredingerBlock:
                 case EMazeItemType.Springboard:
-                    return PathItemOrder + 6;
+                    return PathItemOrder + 5;
+                case EMazeItemType.TrapReact:
+                    return PathItemOrder + 50;
                 default: throw new SwitchCaseNotImplementedException(_Type);
             }
         }

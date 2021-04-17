@@ -28,3 +28,5 @@ MonoBehaviour:
     - item: {fileID: 2184672177264980343, guid: 5cd7aa7d10af9624294285826f8f422c,
         type: 3}
       name: gravity_trap
+    - item: {fileID: 21300000, guid: e8ae85c2a8ee24f1faee1585c7ab403e, type: 3}
+      name: trap_react

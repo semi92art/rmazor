@@ -46,9 +46,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                 case TrapsReactProceeder.StageReact:      coroutine = HandleItemOnReact(_Item); break;
                 case TrapsReactProceeder.StageAfterReact: coroutine = HandleItemOnAfterReact(_Item); break;
             }
-
-            if (coroutine != null)
-                Coroutines.Run(coroutine);
+            Coroutines.Run(coroutine);
         }
 
         private IEnumerator HandleItemOnPreReact(IViewMazeItem _Item)
