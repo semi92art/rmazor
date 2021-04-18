@@ -31,6 +31,7 @@ namespace Games.RazorMaze.Views.Helpers
         private IViewMazeItemPortal          Portal { get; }
         private IViewMazeItemGravityTrap     GravityTrap { get; }
         private IViewMazeItemTrapReact       TrapReact { get; }
+        private IViewMazeItemTrapIncreasing  TrapIncreasing { get; }
 
         [Inject]
         public MazeItemsCreator(
@@ -44,7 +45,8 @@ namespace Games.RazorMaze.Views.Helpers
             IViewMazeItemSpringboard _Springboard,
             IViewMazeItemPortal _Portal,
             IViewMazeItemGravityTrap _GravityTrap,
-            IViewMazeItemTrapReact _TrapReact)
+            IViewMazeItemTrapReact _TrapReact,
+            IViewMazeItemTrapIncreasing _TrapIncreasing)
         {
             ContainersGetter = _ContainersGetter;
             CoordinateConverter = _CoordinateConverter;
@@ -57,6 +59,7 @@ namespace Games.RazorMaze.Views.Helpers
             Portal = _Portal;
             GravityTrap = _GravityTrap;
             TrapReact = _TrapReact;
+            TrapIncreasing = _TrapIncreasing;
         }
         
         public MazeItemsCreator(
@@ -145,7 +148,8 @@ namespace Games.RazorMaze.Views.Helpers
                 || _Item.Type == EMazeItemType.Springboard     && Springboard != null     && !(Springboard     is ViewMazeItemSpringboardProtFake)
                 || _Item.Type == EMazeItemType.Portal          && Portal != null          && !(Portal          is ViewMazeItemPortalProtFake)
                 || _Item.Type == EMazeItemType.GravityTrap     && GravityTrap != null     && !(GravityTrap     is ViewMazeItemGravityTrapProtFake)
-                || _Item.Type == EMazeItemType.TrapReact       && TrapReact != null       && !(TrapReact       is ViewMazeItemTrapReactProtFake))
+                || _Item.Type == EMazeItemType.TrapReact       && TrapReact != null       && !(TrapReact       is ViewMazeItemTrapReactProtFake)
+                || _Item.Type == EMazeItemType.TrapIncreasing  && TrapIncreasing != null  && !(TrapIncreasing  is ViewMazeItemTrapIncreasingProtFake))
             {
                 AddMazeItemRelease(_Items, props);
                 return;
@@ -164,7 +168,7 @@ namespace Games.RazorMaze.Views.Helpers
                 case EMazeItemType.ShredingerBlock: item = (IViewMazeItemShredingerBlock) ShredingerBlock.Clone(); break;
                 case EMazeItemType.Portal:          item = (IViewMazeItemPortal)          Portal         .Clone(); break;
                 case EMazeItemType.TrapReact:       item = (IViewMazeItemTrapReact)       TrapReact      .Clone(); break;
-                case EMazeItemType.TrapIncreasing: break;
+                case EMazeItemType.TrapIncreasing:  item = (IViewMazeItemTrapIncreasing)  TrapIncreasing .Clone(); break;
                 case EMazeItemType.TrapMoving:      item = (IViewMazeItemMovingTrap)      MovingTrap     .Clone(); break;
                 case EMazeItemType.GravityTrap:     item = (IViewMazeItemGravityTrap)     GravityTrap    .Clone(); break;
                 case EMazeItemType.Turret:          item = (IViewMazeItemTurret)          Turret         .Clone(); break;

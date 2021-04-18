@@ -54,4 +54,9 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         public void OnTrapReact(MazeItemTrapReactEventArgs _Args) => throw new System.NotImplementedException();
     }
+    
+    public class ViewMazeItemTrapIncreasingProtFake : ViewMazeItemProtFakeBase, IViewMazeItemTrapIncreasing
+    {
+        public void OnIncreasing(MazeItemTrapIncreasingEventArgs _Args) => throw new System.NotImplementedException();
+    }
 }

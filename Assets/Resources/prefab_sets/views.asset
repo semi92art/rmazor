@@ -30,3 +30,6 @@ MonoBehaviour:
       name: gravity_trap
     - item: {fileID: 21300000, guid: e8ae85c2a8ee24f1faee1585c7ab403e, type: 3}
       name: trap_react
+    - item: {fileID: 5059098813564520511, guid: 29946a834dfc30b458505c36c553b042,
+        type: 3}
+      name: trap_increasing

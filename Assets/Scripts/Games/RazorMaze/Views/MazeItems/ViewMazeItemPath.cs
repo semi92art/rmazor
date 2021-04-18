@@ -281,9 +281,9 @@ namespace Games.RazorMaze.Views.MazeItems
 
             var dir = RazorMazeUtils.GetDirectionVector(_Side, MazeOrientation.North);
             bool dashed = Data.Info.MazeItems.Any(_Item =>
-                _Item.Position == Props.Position + dir 
-                && _Item.Type == EMazeItemType.TrapReact 
-                && _Item.Direction == -dir);
+                _Item.Position == Props.Position + dir &&
+                (_Item.Type == EMazeItemType.TrapReact && _Item.Direction == -dir
+                || _Item.Type == EMazeItemType.TrapIncreasing));
             
             return new Tuple<Vector2, Vector2, bool>(start, end, dashed);
         }

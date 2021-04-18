@@ -1,6 +1,4 @@
 ﻿using System.Collections;
-using System.Linq;
-using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.MazeCommon;
 using Games.RazorMaze.Views.MazeItems;

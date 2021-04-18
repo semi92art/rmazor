@@ -100,13 +100,17 @@ namespace Games.RazorMaze.Models.ItemProceeders
         private IEnumerator ProceedTrap(IMazeItemProceedInfo _Info)
         {
             _Info.IsProceeding = true;
-            _Info.ProceedingStage = _Info.ProceedingStage == 0 ? 1 : 0;
+            _Info.ProceedingStage = _Info.ProceedingStage == StageIdle ? StageIncreased : StageIdle;
             float duration = GetStageDuration(_Info.ProceedingStage); 
-            TrapIncreasingStageChanged?.Invoke(new MazeItemTrapIncreasingEventArgs(_Info.Item, _Info.ProceedingStage, duration));
             float time = GameTimeProvider.Instance.Time;
             yield return Coroutines.WaitWhile(
                 () => time + duration > GameTimeProvider.Instance.Time,
-                () => _Info.IsProceeding = false);
+                () =>
+                {
+                    TrapIncreasingStageChanged?.Invoke(
+                    new MazeItemTrapIncreasingEventArgs(_Info.Item, _Info.ProceedingStage, duration));
+                    _Info.IsProceeding = false;
+                });
         }
         
         private float GetStageDuration(int _Stage)
