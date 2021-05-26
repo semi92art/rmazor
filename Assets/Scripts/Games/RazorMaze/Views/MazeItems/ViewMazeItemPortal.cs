@@ -6,6 +6,7 @@ using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeCommon;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
+using SpawnPools;
 using TimeProviders;
 using UnityEngine;
 using UnityGameLoopDI;
@@ -54,6 +55,8 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
 
         #region api
+        
+        public bool Activated { get; set; } // TODO
         
         public void UpdateTick()
         {

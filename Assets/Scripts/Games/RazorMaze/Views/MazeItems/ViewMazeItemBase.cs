@@ -8,6 +8,8 @@ namespace Games.RazorMaze.Views.MazeItems
 {
     public abstract class ViewMazeItemBase : Ticker
     {
+        protected bool m_Activated;
+        
         public ViewMazeItemProps Props { get; set; }
         
         protected ICoordinateConverter CoordinateConverter { get; }
@@ -19,9 +21,20 @@ namespace Games.RazorMaze.Views.MazeItems
             ContainersGetter = _ContainersGetter;
         }
 
+        public virtual bool Activated
+        {
+            get => m_Activated;
+            set
+            {
+                m_Activated = value;
+                if (Object.activeSelf != value)
+                    Object.SetActive(value);
+            }
+        }
+        
         public virtual GameObject Object { get; protected set; }
         
-        public virtual bool Active { get; set; }
+        public virtual bool Proceeding { get; set; }
 
         public virtual void Init(ViewMazeItemProps _Props)
         {

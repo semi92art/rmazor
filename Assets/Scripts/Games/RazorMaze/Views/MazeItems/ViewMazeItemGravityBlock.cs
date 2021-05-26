@@ -92,7 +92,6 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Shape = sh;
             m_Joint = joint;
         }
-
         
         #endregion
     }

@@ -62,6 +62,7 @@ namespace Mono_Installers
 
             #region view debug
 
+            Container.Bind<IViewMazeCommon>()                       .To<ViewMazeCommonProt>()                     .AsSingle();//.When(_ => prototyping);
             Container.Bind<IViewCharacter>()                        .To<ViewCharacterProt>()                      .AsSingle().When(_ => prototyping);
             Container.Bind<IViewMazeMovingItemsGroup>()             .To<ViewMazeMovingItemsGroupProt>()           .AsSingle().When(_ => prototyping);
             Container.Bind<IViewMazeShredingerBlocksGroup>()        .To<ViewMazeShredingerBlocksGroupProt>()      .AsSingle().When(_ => prototyping);
@@ -83,7 +84,6 @@ namespace Mono_Installers
             Container.Bind<IViewMazeItemTrapReact>()                .To<ViewMazeItemTrapReactProtFake>()          .AsSingle().When(_ => prototyping);
             Container.Bind<IViewMazeItemTrapIncreasing>()           .To<ViewMazeItemTrapIncreasingProtFake>()     .AsSingle().When(_ => prototyping);
             
-            Container.Bind<IViewMazeCommon>()                       .To<ViewMazeCommonProt>()                     .AsSingle();
             Container.Bind<IViewMazeRotation>()                     .To<ViewMazeRotationProt>()                   .AsSingle();
             Container.Bind<IInputConfigurator>()                    .To<RazorMazeInputConfiguratorProt>()         .AsSingle();
             Container.Bind<IViewUI>()                               .To<ViewUIProt>()                             .AsSingle();
@@ -92,6 +92,7 @@ namespace Mono_Installers
             
             #region view release
             
+            //Container.Bind<IViewMazeCommon>()                       .To<ViewMazeCommon>()                         .AsSingle().When(_ => prototyping);
             Container.Bind<IViewCharacter>()                        .To<ViewCharacter>()                          .AsSingle().When(_ => release);
             Container.Bind<IViewCharacterTail>()                    .To<ViewCharacterTailSimple>()                .AsSingle().When(_ => release);
             Container.Bind<ITurretBulletTail>()                     .To<TurretBulletTailSimple>()                 .AsSingle().When(_ => release);

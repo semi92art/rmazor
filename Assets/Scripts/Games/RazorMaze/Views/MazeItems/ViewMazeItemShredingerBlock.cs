@@ -46,7 +46,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region api
 
-        public override bool Active
+        public override bool Proceeding
         {
             get => m_Active;
             set
@@ -62,7 +62,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             Props = _Props;
             SetShape();
-            Active = false;
+            Proceeding = false;
         }
         
         public void UpdateTick()

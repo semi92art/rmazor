@@ -108,7 +108,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 .GetOrAddComponentOnNewChild<Rectangle>("Path Item", ref go,
                     CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             go.DestroyChildrenSafe();
-            sh.Width = sh.Height = CoordinateConverter.GetScale() * 0.99f;
+            sh.Width = sh.Height = CoordinateConverter.GetScale() * 1.03f;
             sh.Type = Rectangle.RectangleType.RoundedSolid;
             sh.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.GetScale();
             sh.Color = ViewUtils.ColorLines;
@@ -259,10 +259,13 @@ namespace Games.RazorMaze.Views.MazeItems
         
         private IEnumerator OpenBarrel(bool _Open, bool _Instantly)
         {
+            const float closedWidth = 0.1f;
+            const float openedWidth = 0.85f;
+            
             float barrelHeight = GetBarrelSize().Item2;
             if (_Instantly)
             {
-                m_Barrel.Height = barrelHeight * (_Open ? 1 : 0.1f);
+                m_Barrel.Height = barrelHeight * (_Open ? openedWidth : closedWidth);
                 yield break;
             }
 
@@ -276,7 +279,9 @@ namespace Games.RazorMaze.Views.MazeItems
                     _Progress => m_RotatingSpeed = ViewSettings.TurretBulletRotationSpeed * _Progress,
                     GameTimeProvider));
             }
-            yield return Coroutines.Lerp(_Open ? 0.1f : 1f, _Open ? 1f : 0.1f, 0.1f,
+            
+            yield return Coroutines.Lerp(
+                _Open ? closedWidth : openedWidth, _Open ? openedWidth : closedWidth, 0.1f,
                 _Progress => m_Barrel.Height = barrelHeight * _Progress,
                 GameTimeProvider);
         }
@@ -284,14 +289,14 @@ namespace Games.RazorMaze.Views.MazeItems
         private Tuple<Vector2, Vector3> GetBarrelLocalPositionAndRotation()
         {
             var dir = Props.Directions.First().ToVector2();
-            var localPos = dir * 0.25f * CoordinateConverter.GetScale();
+            var localPos = dir * (0.25f + 0.02f) * CoordinateConverter.GetScale();
             float angle = dir.x == 0 ? 90 : 0;
             return new Tuple<Vector2, Vector3>(localPos, Vector3.forward * angle);
         }
 
         private Tuple<float, float> GetBarrelSize()
         {
-            float width = CoordinateConverter.GetScale() * 0.5f;
+            float width = CoordinateConverter.GetScale() * (0.5f + 0.02f);
             float height = BulletContainerRadius * 2f * CoordinateConverter.GetScale();
             return new Tuple<float, float>(width, height);
         }
