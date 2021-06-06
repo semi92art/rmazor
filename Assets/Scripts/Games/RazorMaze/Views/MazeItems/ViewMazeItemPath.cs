@@ -45,7 +45,9 @@ namespace Games.RazorMaze.Views.MazeItems
 
         #region api
         
-        public override bool Active
+        public bool Activated { get; set; } // TODO
+        
+        public override bool Proceeding
         {
             get => m_Active;
             set

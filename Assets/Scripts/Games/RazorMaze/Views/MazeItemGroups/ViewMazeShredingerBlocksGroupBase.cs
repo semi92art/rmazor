@@ -23,7 +23,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         {
             var item = MazeCommon.GetItem(_Args.Item);
             if (_Args.Stage != 1 && item != null)
-                item.Active = !_Args.Opened;
+                item.Proceeding = !_Args.Opened;
         }
         
         #endregion

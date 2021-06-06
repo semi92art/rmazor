@@ -37,8 +37,8 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
         
         #region api
-        
-        public override bool Active
+
+        public override bool Proceeding
         {
             get => m_Rotate;
             set
@@ -51,7 +51,7 @@ namespace Games.RazorMaze.Views.MazeItems
         public override void Init(ViewMazeItemProps _Props)
         {
             base.Init(_Props);
-            Active = true;
+            Proceeding = true;
         }
 
         public void OnMoveStarted(MazeItemMoveEventArgs _Args)

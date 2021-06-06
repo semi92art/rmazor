@@ -32,10 +32,12 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
         
         #region api
+        
+        public bool Activated { get; set; }
 
         public GameObject Object => gameObject;
 
-        public bool Active
+        public bool Proceeding
         {
             get => m_Active;
             set

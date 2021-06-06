@@ -7,8 +7,9 @@ namespace Games.RazorMaze.Views.MazeItems
     public abstract class ViewMazeItemProtFakeBase : IViewMazeItem
     {
         public GameObject Object { get; }
-        public bool Active { get; set; }
+        public bool Proceeding { get; set; }
         public ViewMazeItemProps Props { get; set; }
+        public bool Activated { get; set; }
         
         public void Init(ViewMazeItemProps _Props) => throw new System.NotImplementedException();
         public void SetLocalPosition(Vector2 _Position) => throw new System.NotImplementedException();

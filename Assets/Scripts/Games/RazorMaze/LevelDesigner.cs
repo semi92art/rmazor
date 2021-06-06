@@ -29,11 +29,8 @@ namespace Games.RazorMaze
         }
 
         public const int MazeWidth = 12;
-        private const int MinSize = MazeWidth;
-        private const int MaxSize = 20;
-
         
-        public static List<int> Sizes => Enumerable.Range(MinSize, MaxSize - MinSize).ToList();
+        public static List<int> Sizes => Enumerable.Range(MazeWidth, 1).ToList();
         [HideInInspector] public string pathLengths;
         [HideInInspector] public int sizeIdx;
         [HideInInspector] public float aParam;

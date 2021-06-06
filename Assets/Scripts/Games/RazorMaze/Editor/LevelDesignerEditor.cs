@@ -49,6 +49,7 @@ namespace Games.RazorMaze.Editor
 
         private void OnFocus()
         {
+            _gameId = 1;
             if (SceneManager.GetActiveScene().name != SceneNames.Prototyping)
                 return;
             m_Des = LevelDesigner.Instance;
