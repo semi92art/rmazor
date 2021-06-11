@@ -85,22 +85,24 @@ namespace Games.RazorMaze.Editor
                 EditorUtilsEx.GUIColorZone(m_Des.valid ? Color.green : Color.red, 
                     () => GUILayout.Label($"Level is {(m_Des.valid ? "" : "not ")}valid"));
             });
-            EditorUtilsEx.HorizontalZone(() =>
-            {
-                GUILayout.Label("Group:", GUILayout.Width(45));
-                m_LevelGroup = EditorGUILayout.IntField( m_LevelGroup, GUILayout.Width(50));
-                GUILayout.Label("Index:", GUILayout.Width(45));
-                m_LevelIndex = EditorGUILayout.Popup(m_LevelIndex, 
-                    Enumerable.Range(1, MazeLevelUtils.LevelsInGroup)
-                        .Select(_Idx => _Idx.ToString()).ToArray(), GUILayout.Width(50));
-                if (m_Des.group != 0 && m_Des.index >= 0)
-                    GUILayout.Label($"Current: Group: {m_Des.group}, Index: {m_Des.index}");
-            });
-            EditorUtilsEx.HorizontalZone(() =>
-            {
-                EditorUtilsEx.GuiButtonAction(LoadLevel, m_LevelGroup, m_LevelIndex + 1, GUILayout.Width(100));
-                EditorUtilsEx.GuiButtonAction(SaveLevel, m_LevelGroup, m_LevelIndex + 1, 0, (MazeInfo)null, GUILayout.Width(100));
-            });
+            
+            // TODO скорее всего надо удалить
+            // EditorUtilsEx.HorizontalZone(() =>
+            // {
+            //     GUILayout.Label("Group:", GUILayout.Width(45));
+            //     m_LevelGroup = EditorGUILayout.IntField( m_LevelGroup, GUILayout.Width(50));
+            //     GUILayout.Label("Index:", GUILayout.Width(45));
+            //     m_LevelIndex = EditorGUILayout.Popup(m_LevelIndex, 
+            //         Enumerable.Range(1, MazeLevelUtils.LevelsInGroup)
+            //             .Select(_Idx => _Idx.ToString()).ToArray(), GUILayout.Width(50));
+            //     if (m_Des.group != 0 && m_Des.index >= 0)
+            //         GUILayout.Label($"Current: Group: {m_Des.group}, Index: {m_Des.index}");
+            // });
+            // EditorUtilsEx.HorizontalZone(() =>
+            // {
+            //     EditorUtilsEx.GuiButtonAction(LoadLevel, m_LevelGroup, m_LevelIndex + 1, GUILayout.Width(100));
+            //     EditorUtilsEx.GuiButtonAction(SaveLevel, m_LevelGroup, m_LevelIndex + 1, 0, (MazeInfo)null, GUILayout.Width(100));
+            // });
 
             EditorUtilsEx.HorizontalZone(() =>
             {
@@ -223,10 +225,11 @@ namespace Games.RazorMaze.Editor
                 {
                     EditorUtilsEx.HorizontalZone(() =>
                     {
-                        GUILayout.Label($"{++k}", GUILayout.Width(20));
-                        EditorUtilsEx.GuiButtonAction("Load", LoadLevel, level, GUILayout.Width(50));
-                        EditorUtilsEx.GuiButtonAction("Save to this", SaveLevel, 0, k - 1, _heapIndex, level, GUILayout.Width(100));
+                        GUILayout.Label($"{++k}", GUILayout.Width(30));
+                        EditorUtilsEx.GuiButtonAction("Load", LoadLevel, level, GUILayout.Width(40));
+                        EditorUtilsEx.GuiButtonAction("Save here", SaveLevel, 0, k - 1, _heapIndex, level, GUILayout.Width(100));
                         EditorUtilsEx.GuiButtonAction("Delete", DeleteLevelFromHeap, k - 1, _heapIndex, GUILayout.Width(50));
+                        
                         level.Comment = EditorGUILayout.TextField(level.Comment);
                         if (level.Comment != m_CommentsCheck[k - 1])
                             SaveLevel(0, k - 1, _heapIndex, level);

@@ -41,7 +41,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private SpriteMask m_BulletMask;
         private SpriteMask m_BulletMask2;
         private Disc m_BulletHolderBorder;
-
+        
         #endregion
         
         #region inject
