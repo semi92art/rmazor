@@ -127,12 +127,6 @@ namespace Games.RazorMaze.Prot.Editor
         
         private static void DrawControlsMovingBlock(ViewMazeItemProps _Props)
         {
-            if (!_Props.Path.Any())
-            {
-                EditorUtilsEx.SceneDirtyAction(() => 
-                    _Props.Path.AddRange(new [] {_Props.Position, _Props.Position}));
-            }
-            
             EditorUtilsEx.GUIColorZone(Color.black,() => GUILayout.Label("Path:"));
             bool pathExist = _Props.Path.Any();
             int lastPathIndex = _Props.Path.Count - 1;

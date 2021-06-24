@@ -20,6 +20,8 @@ namespace Games.RazorMaze
     {
         public const int LevelsInGroup = 3;
         private const int GroupsInAsset = 50;
+        private static int _heapIndex;
+        private static MazeLevelsList _levelsList;
         
         public static MazeInfo LoadLevel(int _GameId, int _LevelGroup, int _Index, int _HeapIndex, bool _FromBundle)
         {
@@ -64,15 +66,21 @@ namespace Games.RazorMaze
             AssetDatabase.Refresh();
         }
 
-        public static void SaveLevelToHeap(int _GameId, MazeInfo _Info, int? _Index, int _HeapIndex)
+        public static void SaveLevelToHeap(int _GameId, MazeInfo _Info, int? _Index, int _HeapIndex, bool _ToFile = true)
         {
             CreateLevelsAssetIfNotExist(_GameId, _HeapIndex);
-            var mazes = LoadHeapLevels(_GameId, _HeapIndex);
-            if (_Index.HasValue && _Index >= 0 && _Index.Value < mazes.Levels.Count)
-                mazes.Levels[_Index.Value] = _Info;
+            if (_levelsList == null || _heapIndex != _HeapIndex)
+            {
+                _levelsList = LoadHeapLevels(_GameId, _HeapIndex);
+                _heapIndex = _HeapIndex;
+            }
+            if (_Index.HasValue && _Index >= 0 && _Index.Value < _levelsList.Levels.Count)
+                _levelsList.Levels[_Index.Value] = _Info;
             else
-                mazes.Levels.Add(_Info);
-            string serialized = JsonConvert.SerializeObject(mazes, Formatting.None);
+                _levelsList.Levels.Add(_Info);
+            if (!_ToFile)
+                return;
+            string serialized = JsonConvert.SerializeObject(_levelsList, Formatting.None);
             File.WriteAllText(LevelsAssetPath(_GameId, _HeapIndex), serialized);
             var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(LevelsAssetPath(_GameId, _HeapIndex));
             EditorUtility.SetDirty(asset);
