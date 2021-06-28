@@ -51,8 +51,8 @@ namespace Games.RazorMaze.Views.Utils
             }
         }
 
-        public static int GetPathLineJointSortingOrder() => PathItemOrder + 1;
-        public static int GetPathLineSortingOrder() => PathItemOrder + 2;
+        public static int GetPathLineJointSortingOrder() => PathItemOrder + 2;
+        public static int GetPathLineSortingOrder() => PathItemOrder + 1;
 
 
         private static Color GetFromCommonPalette(string _Name) =>
