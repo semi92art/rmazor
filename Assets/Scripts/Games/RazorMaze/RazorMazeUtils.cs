@@ -130,6 +130,35 @@ namespace Games.RazorMaze
             }
             throw new ArgumentException("Wrong direction vector");
         }
+
+        public static List<V2Int> GetDirectPath(V2Int _From, V2Int _To)
+        {
+            int min, max;
+            IEnumerable<int> range;
+            IEnumerable<V2Int> result = null;
+            
+            if (_From.X == _To.X)
+            {
+                min = Math.Min(_From.Y, _To.Y);
+                max = Math.Max(_From.Y, _To.Y);
+                range = Enumerable.Range(min, max - min + 1);
+                result = range.Select(_V => new V2Int(_From.X, _V));
+                if (min == _To.Y) result = result.Reverse();
+            }
+
+            if (_From.Y == _To.Y)
+            {
+                min = Math.Min(_From.X, _To.X);
+                max = Math.Max(_From.X, _To.X);
+                range = Enumerable.Range(min, max - min + 1);
+                result = range.Select(_V => new V2Int(_V, _From.Y));
+                if (min == _To.X) result = result.Reverse();
+            }
+            
+            if (result == null)
+                throw new ArgumentException($"Cannot build direct path from {_From} to {_To}");
+            return result.ToList();
+        }
         
         #endregion
         

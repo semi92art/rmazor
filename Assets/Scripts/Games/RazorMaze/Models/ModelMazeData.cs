@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Entities;
@@ -51,7 +50,7 @@ namespace Games.RazorMaze.Models
             foreach (var type in types)
                 ProceedInfos.Add(type, new Dictionary<MazeItem, IMazeItemProceedInfo>());
         }
-        
+
         #endregion
 
         #region api
@@ -80,16 +79,24 @@ namespace Games.RazorMaze.Models
             }
         }
         
-        #endregion
-
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
-            if (!PathProceeds.ContainsKey(_Args.Current))
-                return;
-            if (PathProceeds[_Args.Current])
-                return;
-            PathProceeds[_Args.Current] = true;
-            PathProceedEvent?.Invoke(_Args.Current);
+            foreach (var pathItem in RazorMazeUtils.GetDirectPath(_Args.From, _Args.Current))
+                ProceedPathItem(pathItem);
         }
+        
+        #endregion
+        
+        #region nonpublic methods
+
+        private void ProceedPathItem(V2Int _PathItem)
+        {
+            if (!PathProceeds.ContainsKey(_PathItem) || PathProceeds[_PathItem])
+                return;
+            PathProceeds[_PathItem] = true;
+            PathProceedEvent?.Invoke(_PathItem); 
+        }
+        
+        #endregion
     }
 }
