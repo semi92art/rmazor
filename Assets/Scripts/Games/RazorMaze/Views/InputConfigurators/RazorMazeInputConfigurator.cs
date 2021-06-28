@@ -8,6 +8,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
     public class RazorMazeInputConfigurator : IInputConfigurator
     {
         private LeanTouch m_LeanTouch;
+        private bool m_Locked;
         
         public event IntHandler Command;
         public void ConfigureInput()
@@ -31,14 +32,14 @@ namespace Games.RazorMaze.Views.InputConfigurators
             m_LeanTouch = mts;
         }
 
-        public void LockInput()
+        public bool Locked
         {
-            m_LeanTouch.enabled = false;
-        }
-
-        public void UnlockInput()
-        {
-            m_LeanTouch.enabled = true;
+            get => m_Locked;
+            set
+            {
+                m_Locked = value;
+                m_LeanTouch.enabled = value;
+            }
         }
     }
 }

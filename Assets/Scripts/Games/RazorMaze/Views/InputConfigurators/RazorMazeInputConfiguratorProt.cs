@@ -4,15 +4,17 @@ using UnityGameLoopDI;
 
 namespace Games.RazorMaze.Views.InputConfigurators
 {
-    public class RazorMazeInputConfiguratorProt : Ticker, IInputConfigurator, IUpdateTick 
+    public class RazorMazeInputConfiguratorProt : Ticker, IInputConfigurator, IUpdateTick
     {
+        public bool Locked { get; set; }
         public event IntHandler Command;
         public void ConfigureInput() { }
-        
+
         public void UpdateTick()
         {
-            if (Command == null) 
+            if (Locked || Command == null) 
                 return;
+            
             if (Input.GetKeyDown(KeyCode.A))
                 Command.Invoke((int)EInputCommand.MoveLeft);
             else if (Input.GetKeyDown(KeyCode.D))
