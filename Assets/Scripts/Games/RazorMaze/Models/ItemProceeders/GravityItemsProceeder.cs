@@ -9,7 +9,7 @@ using Utils;
 
 namespace Games.RazorMaze.Models.ItemProceeders
 {
-    public interface IGravityItemsProceeder : IMovingItemsProceeder, ICharacterMoveContinued
+    public interface IGravityItemsProceeder : IMovingItemsProceeder, ICharacterMoveStarted
     {
         void OnMazeOrientationChanged();
     }
@@ -17,8 +17,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
     public class GravityItemsProceeder : ItemsProceederBase, IGravityItemsProceeder
     {
         #region nonpublic members
-        
-        private V2Int m_CharacterPosCheck;
+
         protected override EMazeItemType[] Types => new[] {EMazeItemType.GravityBlock, EMazeItemType.GravityTrap};
         
         #endregion
@@ -46,16 +45,13 @@ namespace Games.RazorMaze.Models.ItemProceeders
             MoveMazeItemsGravity(Data.Orientation, Data.CharacterInfo.Position);
         }
         
-        public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
+        public void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
         {
             if (!Data.ProceedingMazeItems)
                 return;
-            if (Data.CharacterInfo.Position == _Args.Current)
-                return;
-            m_CharacterPosCheck = _Args.Current;
-            MoveMazeItemsGravity(Data.Orientation, _Args.Current);
+            MoveMazeItemsGravity(Data.Orientation, _Args.To);
         }
-        
+
         #region nonpublic members
 
         
@@ -81,15 +77,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     var pos = _Info.Item.Position;
                     bool doMoveByPath = false;
                     V2Int? altPos = null;
-
-                    // V2Int endPos = pos;
-                    // while (RazorMazeUtils.IsValidPositionForMove(
-                    //     Data.Info,
-                    //     _Info.Item,
-                    //     endPos + _DropDirection))
-                    // {
-                    //     endPos += _DropDirection;
-                    // }
+                    
                     while (RazorMazeUtils.IsValidPositionForMove(
                         Data.Info, 
                         _Info.Item,
@@ -97,31 +85,21 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     {
                         pos += _DropDirection;
 
-                        //if (_Info.Item.Type == EMazeItemType.GravityBlock)
-                        //{
-                            if (_CharacterPoint.HasValue && _CharacterPoint.Value == pos )
-                                altPos = pos - _DropDirection;
-                            var pos1 = pos;
-                            if (_Info.Item.Path.All(_Pos => pos1 != _Pos))
-                                continue;
-                            int fromPosIdx = _Info.Item.Path.IndexOf(_Info.Item.Position);
-                            if (fromPosIdx == -1)
-                            {
-                                doMoveByPath = true;
-                                break;
-                            }
-                            int toPosIds = _Info.Item.Path.IndexOf(pos);
-                            if (Math.Abs(toPosIds - fromPosIdx) > 1)
-                                continue;
-                        //}
-                        // else if (_Info.Item.Type == EMazeItemType.GravityTrap)
-                        // {
-                        //     if (pos != endPos)
-                        //         continue;
-                        // }
- 
-                                
-                        
+                        if (_CharacterPoint.HasValue && _CharacterPoint.Value == pos )
+                            altPos = pos - _DropDirection;
+                        var pos1 = pos;
+                        if (_Info.Item.Path.All(_Pos => pos1 != _Pos))
+                            continue;
+                        int fromPosIdx = _Info.Item.Path.IndexOf(_Info.Item.Position);
+                        if (fromPosIdx == -1)
+                        {
+                            doMoveByPath = true;
+                            break;
+                        }
+                        int toPosIds = _Info.Item.Path.IndexOf(pos);
+                        if (Math.Abs(toPosIds - fromPosIdx) > 1)
+                            continue;
+
                         doMoveByPath = true;
                         break;
                     }
@@ -174,7 +152,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     _Info.IsProceeding = false;
                     busyPositions.Clear();
                     busyPositions.Add(to);
-                }, () => busyPositions.Any() && busyPositions.Last() == m_CharacterPosCheck);
+                });
         }
 
         #endregion
