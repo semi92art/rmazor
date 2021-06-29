@@ -43,7 +43,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
     
     public delegate void MazeItemMoveHandler(MazeItemMoveEventArgs Args);
     
-    public interface IMovingItemsProceeder : IOnMazeChanged
+    public interface IMovingItemsProceeder : IItemsProceeder, IOnMazeChanged
     {
         event MazeItemMoveHandler MazeItemMoveStarted;
         event MazeItemMoveHandler MazeItemMoveContinued;
@@ -57,8 +57,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         protected override EMazeItemType[] Types => new[] {EMazeItemType.TrapMoving};
         
         #endregion
-        
-        
+
         #region inject
         
         public MovingItemsProceeder(ModelSettings _Settings, IModelMazeData _Data) 
@@ -72,6 +71,16 @@ namespace Games.RazorMaze.Models.ItemProceeders
         public event MazeItemMoveHandler MazeItemMoveContinued;
         public event MazeItemMoveHandler MazeItemMoveFinished;
 
+        public void Start()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Stop()
+        {
+            throw new NotImplementedException();
+        }
+        
         public void OnMazeChanged(MazeInfo _Info)
         {
             CollectItems(_Info);

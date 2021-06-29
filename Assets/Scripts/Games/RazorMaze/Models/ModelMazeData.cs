@@ -22,6 +22,8 @@ namespace Games.RazorMaze.Models
     
     public interface IModelMazeData : IPreInit, ICharacterMoveContinued
     {
+        event NoArgsHandler MazeItemsProceedStarted;
+        event NoArgsHandler MazeItemsProceedStopped;
         event MazeInfoHandler MazeChanged;
         event PathProceedHandler PathProceedEvent;
         MazeInfo Info { get; set; }
@@ -38,6 +40,7 @@ namespace Games.RazorMaze.Models
         #region nonpublic members
         
         private MazeInfo m_Info;
+        private bool? m_ProceedingMazeItems;
 
         #endregion
         
@@ -54,7 +57,9 @@ namespace Games.RazorMaze.Models
         #endregion
 
         #region api
-        
+
+        public event NoArgsHandler MazeItemsProceedStarted;
+        public event NoArgsHandler MazeItemsProceedStopped;
         public event MazeInfoHandler MazeChanged;
         public event PathProceedHandler PathProceedEvent;
         public MazeOrientation Orientation { get; set; } = MazeOrientation.North;
@@ -64,7 +69,22 @@ namespace Games.RazorMaze.Models
             = new Dictionary<EMazeItemType, Dictionary<MazeItem, IMazeItemProceedInfo>>();
 
         public CharacterInfo CharacterInfo { get; } = new CharacterInfo();
-        public bool ProceedingMazeItems { get; set; }
+
+        public bool ProceedingMazeItems
+        {
+            get => m_ProceedingMazeItems ?? false;
+            set
+            {
+                if (m_ProceedingMazeItems.HasValue && m_ProceedingMazeItems.Value == value)
+                    return;
+                if (value)
+                    MazeItemsProceedStarted?.Invoke();
+                else
+                    MazeItemsProceedStopped?.Invoke();
+                m_ProceedingMazeItems = value;
+            }
+        }
+        
         public bool ProceedingControls { get; set; }
 
         public MazeInfo Info

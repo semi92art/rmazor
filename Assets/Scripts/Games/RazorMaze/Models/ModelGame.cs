@@ -72,9 +72,11 @@ namespace Games.RazorMaze.Models
         
         public void PreInit()
         {
+            Data.MazeItemsProceedStarted          += GravityItemsProceeder.Start;
+            Data.MazeItemsProceedStopped          += GravityItemsProceeder.Stop;
             Data.MazeChanged                      += MazeOnMazeChanged;
             MazeRotation.RotationFinished         += MazeOnRotationFinished;
-            Character.CharacterMoveStarted += CharacterOnMoveStarted;
+            Character.CharacterMoveStarted        += CharacterOnMoveStarted;
             Character.CharacterMoveContinued      += CharacterOnMoveContinued;
             Character.CharacterMoveFinished       += CharacterOnFinishMove; 
             InputScheduler.MoveCommand            += InputSchedulerOnMoveCommand;
