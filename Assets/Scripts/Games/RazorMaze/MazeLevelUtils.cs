@@ -21,14 +21,14 @@ namespace Games.RazorMaze
         public const int LevelsInGroup = 3;
         private const int GroupsInAsset = 50;
         
-        public static MazeInfo LoadLevel(int _GameId, int _LevelGroup, int _Index, int _HeapIndex, bool _FromBundle)
+        public static MazeInfo LoadLevel(int _GameId, int _Index, int _HeapIndex, bool _FromBundle)
         {
             var asset = PrefabUtilsEx.GetObject<TextAsset>(PrefabSetName(_GameId),
-                LevelsAssetName(_HeapIndex, _LevelGroup), _FromBundle);
+                LevelsAssetName(_HeapIndex), _FromBundle);
             var levelsListRaw = JsonConvert.DeserializeObject<MazeLevelsList>(asset.text);
             var levelsList = levelsListRaw.Levels;
             var result = levelsList
-                .FirstOrDefault(_L => _L.LevelGroup == _LevelGroup && _L.LevelIndex == _Index);
+                .FirstOrDefault(_L => _L.HeapLevelIndex == _Index);
             return result;
         }
         
@@ -45,20 +45,20 @@ namespace Games.RazorMaze
         
         public static void SaveLevel(int _GameId, MazeInfo _Info)
         {
-            CreateLevelsAssetIfNotExist(_GameId, 0, _Info.LevelGroup);
+            CreateLevelsAssetIfNotExist(_GameId, 0);
             var asset = PrefabUtilsEx.GetObject<TextAsset>(
-                PrefabSetName(_GameId), LevelsAssetName(0, _Info.LevelGroup), false);
+                PrefabSetName(_GameId), LevelsAssetName(0), false);
             var mazes = new MazeLevelsList {Levels = new List<MazeInfo>()};
             if (!string.IsNullOrEmpty(asset.text))
                 mazes = JsonConvert.DeserializeObject<MazeLevelsList>(
                     asset.text, new JsonSerializerSettings {Formatting = Formatting.None});
             var existingInfo = mazes.Levels.FirstOrDefault(_L => 
-                _L.LevelGroup == _Info.LevelGroup && _L.LevelIndex == _Info.LevelIndex);
+                _L.HeapLevelIndex == _Info.HeapLevelIndex);
             if (existingInfo != null)
                 mazes.Levels.Remove(existingInfo);
             mazes.Levels.Add(_Info);
             string serialized = JsonConvert.SerializeObject(mazes, Formatting.None);
-            File.WriteAllText(LevelsAssetPath(_GameId, 0, _Info.LevelGroup), serialized);
+            File.WriteAllText(LevelsAssetPath(_GameId, 0), serialized);
             EditorUtility.SetDirty(asset);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -92,11 +92,11 @@ namespace Games.RazorMaze
             AssetDatabase.Refresh();
         }
 
-        private static void CreateLevelsAssetIfNotExist(int _GameId, int _HeapIndex, int _LevelGroup = 0)
+        private static void CreateLevelsAssetIfNotExist(int _GameId, int _HeapIndex)
         {
             var tempInfo = new MazeLevelsList {Levels = new List<MazeInfo>()};
             string serialized = JsonConvert.SerializeObject(tempInfo, Formatting.None);
-            string assetPath = LevelsAssetPath(_GameId, _HeapIndex, _LevelGroup);
+            string assetPath = LevelsAssetPath(_GameId, _HeapIndex);
             if (!File.Exists(assetPath))
             {
                 string directory = Path.GetDirectoryName(assetPath);
@@ -112,19 +112,19 @@ namespace Games.RazorMaze
             string setName = PrefabSetName(_GameId);
             if (!ResLoader.PrefabSetExist(setName))
                 ResLoader.CreatePrefabSetIfNotExist(setName);
-            PrefabUtilsEx.SetPrefab(setName, LevelsAssetName(0, _LevelGroup), asset);
+            PrefabUtilsEx.SetPrefab(setName, LevelsAssetName(0), asset);
             
             AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
             AssetDatabase.SaveAssets();
         }
 
-        private static string LevelsAssetPath(int _GameId, int _HeapIndex, int _LevelGroup = 0) =>
-            $"Assets/Prefabs/Levels/Game_{_GameId}/{LevelsAssetName(_HeapIndex, _LevelGroup)}.json";
+        private static string LevelsAssetPath(int _GameId, int _HeapIndex) =>
+            $"Assets/Prefabs/Levels/Game_{_GameId}/{LevelsAssetName(_HeapIndex)}.json";
         
 #endif
         private static string PrefabSetName(int _GameId) => $"game_{_GameId}_levels";
 
-        private static string LevelsAssetName(int _HeapIndex, int _LevelGroup = 0)
+        private static string LevelsAssetName(int _HeapIndex)
         {
             string heapName;
             if (_HeapIndex <= 0)
@@ -133,7 +133,7 @@ namespace Games.RazorMaze
                 heapName = "heap";
             else heapName = $"heap_{_HeapIndex}";
             return _HeapIndex > 0 ? heapName :
-                $"levels_{(Mathf.FloorToInt(_LevelGroup / (float)GroupsInAsset) + 1).ToString()}";
+                $"levels_{(Mathf.FloorToInt(_HeapIndex / (float)GroupsInAsset) + 1).ToString()}";
         }
     }
 }
