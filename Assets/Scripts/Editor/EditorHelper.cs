@@ -18,6 +18,7 @@ using GameHelpers;
 using Games.RazorMaze;
 using PygmyMonkey.ColorPalette.Utils;
 using TimeProviders;
+using Unity.Android.Logcat;
 using Utils;
 using Utils.Editor;
 

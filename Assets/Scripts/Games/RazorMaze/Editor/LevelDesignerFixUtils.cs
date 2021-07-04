@@ -7,7 +7,7 @@ namespace Games.RazorMaze.Editor
     {
         public static void FixPaths()
         {
-            var levels = LevelDesignerEditor.Levels;
+            var levels = LevelDesignerEditor.m_Levels;
             int k = 0;
             var last = levels.Last();
             foreach (var lev in levels)

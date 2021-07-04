@@ -24,7 +24,7 @@ namespace Games.RazorMaze.Editor
         
         private static int _heapIndexCheck;
 
-        private List<MazeInfo> m_Levels;
+        public static List<MazeInfo> m_Levels;
         private ReorderableList m_ReorderableLevels;
             
         private List<string> m_CommentsCheck;
@@ -32,7 +32,8 @@ namespace Games.RazorMaze.Editor
         private int m_LevelIndex;
         private Vector2 m_HeapScroll;
 
-        Color m_Color = Color.red;
+        Color m_Color = Color.green;
+        Color m_secondColor = Color.red;
 
 
         private int m_TabPage;
@@ -64,23 +65,27 @@ namespace Games.RazorMaze.Editor
             {
                 var element = m_ReorderableLevels.list[index] as MazeInfo;
                 EditorGUI.LabelField(new Rect(rect.x,rect.y,40,EditorGUIUtility.singleLineHeight),$"{index}" );
-                element.Comment = EditorGUI.TextField(new Rect(rect.x+40,rect.y,200,EditorGUIUtility.singleLineHeight),element
-                    .Comment );
+                if (element != null)
+                    element.Comment = EditorGUI.TextField(
+                        new Rect(rect.x + 40, rect.y, 200, EditorGUIUtility.singleLineHeight), element
+                            .Comment);
             };
-            m_ReorderableLevels.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
+
+            m_ReorderableLevels.drawElementBackgroundCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
             {
                 if (index % 3 == 0)
                     m_Color = ChangeColor();
-                GUI.backgroundColor = m_Color;
+                GUI.backgroundColor = isFocused ? Color.blue : Color.gray;
+                GUI.contentColor = m_Color;
             };
         }
 
         private Color ChangeColor()
         {
-            if (m_Color == Color.blue)
-                return Color.red;
-            if (m_Color == Color.red)
-                return  Color.blue;
+            if (m_Color == Color.green)
+                return m_secondColor;
+            if (m_Color == m_secondColor)
+                return  Color.green;
             return Color.black;
         }
 
@@ -143,23 +148,6 @@ namespace Games.RazorMaze.Editor
                     () => GUILayout.Label($"Level is {(m_Des.valid ? "" : "not ")}valid"));
             });
             
-            // TODO скорее всего надо удалить
-            // EditorUtilsEx.HorizontalZone(() =>
-            // {
-            //     GUILayout.Label("Group:", GUILayout.Width(45));
-            //     m_LevelGroup = EditorGUILayout.IntField( m_LevelGroup, GUILayout.Width(50));
-            //     GUILayout.Label("Index:", GUILayout.Width(45));
-            //     m_LevelIndex = EditorGUILayout.Popup(m_LevelIndex, 
-            //         Enumerable.Range(1, MazeLevelUtils.LevelsInGroup)
-            //             .Select(_Idx => _Idx.ToString()).ToArray(), GUILayout.Width(50));
-            //     if (m_Des.group != 0 && m_Des.index >= 0)
-            //         GUILayout.Label($"Current: Group: {m_Des.group}, Index: {m_Des.index}");
-            // });
-            // EditorUtilsEx.HorizontalZone(() =>
-            // {
-            //     EditorUtilsEx.GuiButtonAction(LoadLevel, m_LevelGroup, m_LevelIndex + 1, GUILayout.Width(100));
-            //     EditorUtilsEx.GuiButtonAction(SaveLevel, m_LevelGroup, m_LevelIndex + 1, 0, (MazeInfo)null, GUILayout.Width(100));
-            // });
             EditorUtilsEx.HorizontalZone(() =>
             {
                 EditorUtilsEx.GuiButtonAction("Add to heap", SaveLevel, HeapIndex, -1, true, GUILayout.Width(100));
@@ -178,20 +166,9 @@ namespace Games.RazorMaze.Editor
                 EditorUtilsEx.GuiButtonAction("Save", SaveLevel, HeapIndex, m_ReorderableLevels.index, false,
                 GUILayout.Width(100));
                 EditorUtilsEx.GuiButtonAction("Delete",DeleteLevelFromHeap, HeapIndex,GUILayout.Width(100));
+                EditorUtilsEx.GuiButtonAction("Add Empty", AddEmptyLevel, GUILayout.Width(100));
             });
             
-            // EditorUtilsEx.HorizontalZone(() =>
-            // {
-            //     EditorUtilsEx.GuiButtonAction("Load", SaveLevel, m_LevelGroup, -1, _heapIndex, (MazeInfo)null, GUILayout.Width(100));
-            //     GUILayout.Label("Heap:");
-            //     _heapIndex = 1 + EditorGUILayout.Popup(_heapIndex - 1,
-            //                      Enumerable.Range(1, 10)
-            //                          .Select(_Idx => _Idx.ToString()).ToArray());
-            //     if (_heapIndex != _heapIndexCheck)
-            //         ReloadHeapLevels();
-            //     _heapIndexCheck = _heapIndex;
-            // });
-
             ShowHeap();
         }
 
@@ -214,6 +191,18 @@ namespace Games.RazorMaze.Editor
                 var info = LevelGenerator.CreateRandomLevelInfo(parms, out m_Des.valid);
                 LoadLevel(info);
             });
+        }
+
+        private void AddEmptyLevel()
+        {
+            if (m_ReorderableLevels.index==-1)
+                return;
+            var size = new V2Int(LevelDesigner.MazeWidth, LevelDesigner.Sizes[m_Des.sizeIdx]);
+            var info = LevelGenerator.CreateDefaultLevelInfo(size, true);
+            m_Levels.Insert(m_ReorderableLevels.index,info);
+            SaveHeap();
+            ReloadHeapLevels();
+            ReloadReorderableLevels();
         }
 
         private void CreateDefault()
@@ -284,7 +273,7 @@ namespace Games.RazorMaze.Editor
         {
             if (_LevelIndex==-1 && !newLevel)
                 return;
-            var _Info = newLevel? (MazeInfo)null:  (MazeInfo) m_ReorderableLevels.list[_LevelIndex];
+            var _Info = newLevel? null:  (MazeInfo) m_ReorderableLevels.list[_LevelIndex];
             var info = _Info ?? m_Des.GetLevelInfoFromScene(false);
             info.HeapLevelIndex = _LevelIndex;
             m_Des.index = _LevelIndex;
