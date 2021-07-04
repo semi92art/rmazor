@@ -127,9 +127,20 @@ namespace Games.RazorMaze
         private void OnMazeRotation(float _Progress) => View.MazeRotation.Rotate(_Progress);
         private void OnMazeRotationFinished(MazeRotateDirection _Direction, MazeOrientation _Orientation) => View.MazeRotation.FinishRotation();
         
-        private void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args) => View.MazeMovingItemsGroup.OnMazeItemMoveStarted(_Args);
+        private void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
+        {
+            View.MazeMovingItemsGroup.OnMazeItemMoveStarted(_Args);
+            if (_Args.Item.Type == EMazeItemType.GravityBlock)
+                View.InputConfigurator.Locked = true;
+        }
+
         private void OnMazeItemMoveContinued(MazeItemMoveEventArgs _Args) => View.MazeMovingItemsGroup.OnMazeItemMoveContinued(_Args);
-        private void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args) => View.MazeMovingItemsGroup.OnMazeItemMoveFinished(_Args);
+        private void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
+        {
+            View.MazeMovingItemsGroup.OnMazeItemMoveFinished(_Args);
+            if (_Args.Item.Type == EMazeItemType.GravityBlock)
+                View.InputConfigurator.Locked = false;
+        }
 
         private void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args) => View.MazeTrapsReactItemsGroup.OnMazeTrapReactStageChanged(_Args);
         private void OnMazeTrapIncreasingStageChanged(MazeItemTrapIncreasingEventArgs _Args) => View.MazeTrapsIncreasingItemsGroup.OnMazeTrapIncreasingStageChanged(_Args);

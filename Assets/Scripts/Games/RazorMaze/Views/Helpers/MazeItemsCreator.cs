@@ -138,6 +138,7 @@ namespace Games.RazorMaze.Views.Helpers
                 Position = _Item.Position,
                 Path = _Item.Path,
                 Directions = new List<V2Int>{_Item.Direction},
+                Pair = _Item.Pair,
                 IsNode = false,
                 IsStartNode = false
             };

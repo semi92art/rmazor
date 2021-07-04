@@ -84,18 +84,10 @@ public class EditorHelper : EditorWindow
             new [] {"Common", "Cached Data", "Model Settings", "View Settings"});
         switch (m_TabPage) 
         {
-            case 0:
-                CommonTabPage();
-                break;
-            case 1:
-                CachedDataTabPage();
-                break;
-            case 2:
-                ModelSettingsTabPage();
-                break;
-            case 3:
-                ViewSettingsTabPage();
-                break;
+            case 0: CommonTabPage();        break;
+            case 1: CachedDataTabPage();    break;
+            case 2: ModelSettingsTabPage(); break;
+            case 3: ViewSettingsTabPage();  break;
             default: throw new SwitchCaseNotImplementedException(m_TabPage);
         }
     }

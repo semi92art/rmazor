@@ -6,6 +6,8 @@ namespace Utils
 {
     public static class ColorUtils
     {
+        #region api
+        
         public static Color Empty => new Color(0, 0, 0, 0);
 
         public static Color CreateColor(int _R, int _G, int _B, int _A)
@@ -29,6 +31,15 @@ namespace Utils
         {
             return GetCurrentPalette().getColorFromName(_ColorName).color;
         }
+        
+        public static Color MixColors(Color _A, Color _B)
+        {
+            return (_A * _A.a + _B * _B.a * (1f - _A.a)) / (_A.a + _A.b * (1f - _A.a));
+        }
+        
+        #endregion
+        
+        #region nonpublic methods
 
         private static ColorPalette GetCurrentPalette()
         {
@@ -37,5 +48,7 @@ namespace Utils
             int paletteIdx = cpd.getPaletteIndexFromName(paletteName);
             return cpd.colorPaletteList[paletteIdx];
         }
+        
+        #endregion
     }
 }

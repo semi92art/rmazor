@@ -4,5 +4,6 @@
     {
         event IntHandler Command; 
         void ConfigureInput();
+        bool Locked { get; set; }
     }
 }

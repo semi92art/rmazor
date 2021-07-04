@@ -72,8 +72,11 @@ namespace Games.RazorMaze.Models
         
         public void PreInit()
         {
+            Data.MazeItemsProceedStarted          += GravityItemsProceeder.Start;
+            Data.MazeItemsProceedStopped          += GravityItemsProceeder.Stop;
             Data.MazeChanged                      += MazeOnMazeChanged;
             MazeRotation.RotationFinished         += MazeOnRotationFinished;
+            Character.CharacterMoveStarted        += CharacterOnMoveStarted;
             Character.CharacterMoveContinued      += CharacterOnMoveContinued;
             Character.CharacterMoveFinished       += CharacterOnFinishMove; 
             InputScheduler.MoveCommand            += InputSchedulerOnMoveCommand;
@@ -82,10 +85,15 @@ namespace Games.RazorMaze.Models
             SpringboardProceeder.SpringboardEvent += Character.OnSpringboard;
             Data.PreInit();
         }
-        
+
         public void Init()
         {
             Character.Init();
+        }
+        
+        private void CharacterOnMoveStarted(CharacterMovingEventArgs _Args)
+        {
+            GravityItemsProceeder.OnCharacterMoveStarted(_Args);
         }
 
         private void MazeOnMazeChanged(MazeInfo _Info)
@@ -119,7 +127,6 @@ namespace Games.RazorMaze.Models
             foreach (var proceeder in new ICharacterMoveContinued[]
             {
                 Data,
-                GravityItemsProceeder,
                 TrapsReactProceeder,
                 TrapsIncreasingProceeder,
                 PortalsProceeder,

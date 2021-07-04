@@ -11,6 +11,7 @@ using Games.RazorMaze.Views.MazeItems;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using UnityEngine;
+using Utils;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
@@ -112,7 +113,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                 go.transform.SetLocalPosXY(Vector2.zero);
                 var line = go.AddComponent<Polyline>();
                 line.Thickness = 0.3f;
-                line.Color = _LinesAndJointsColor;
+                line.Color = ColorUtils.MixColors(_LinesAndJointsColor, ViewUtils.ColorMain).SetA(1);
                 line.SetPoints(points);
                 line.Closed = false;
                 line.SortingOrder = ViewUtils.GetPathLineSortingOrder();
@@ -123,7 +124,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                     go1.SetParent(ContainersGetter.MazeItemsContainer);
                     var disc = go1.AddComponent<Disc>();
                     go1.transform.SetLocalPosXY(point);
-                    disc.Color = _LinesAndJointsColor;
+                    disc.Color = ColorUtils.MixColors(_LinesAndJointsColor, ViewUtils.ColorMain).SetA(1);
                     disc.Radius = 0.5f;
                     disc.Type = DiscType.Disc;
                     disc.SortingOrder = ViewUtils.GetPathLineJointSortingOrder();
