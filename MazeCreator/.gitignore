@@ -292,7 +292,6 @@ paket-files/
 .fake/
 
 # JetBrains Rider
-.idea/
 *.sln.iml
 
 # CodeRush personal settings
@@ -338,3 +337,9 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+
+
+
+
+MazeCreator/bin/*
+MazeCreator/obj/*

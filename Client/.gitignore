@@ -72,13 +72,9 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/build_info
 /[Aa]ssets/[Ss]treamingAssets/build_info.meta
 /[Aa]ssets/[Aa]ssetBundles
-.idea
 
 # Temporary files
 /[Bb]uilds
 ProjectSettings/AndroidLogcatSettings.asset
 Prototyping*
 Prototyping.meta*
-
-MazeCreator/MazeCreator/bin/*
-MazeCreator/MazeCreator/obj/*
