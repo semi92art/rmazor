@@ -60,6 +60,7 @@ namespace Games.RazorMaze.Views.MazeCommon
         public void Init()
         {
             MazeItems = MazeItemsCreator.CreateMazeItems(Model.Info);
+            MazeItems.First(_Item => _Item.Props.IsStartNode).Proceeding = true;
             ContainersGetter.MazeItemsContainer.SetLocalPosXY(Vector2.zero);
             ContainersGetter.MazeItemsContainer.PlusLocalPosY(CoordinateConverter.GetScale() * 0.5f);
         }
