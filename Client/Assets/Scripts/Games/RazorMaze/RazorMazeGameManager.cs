@@ -1,4 +1,5 @@
-﻿using Entities;
+﻿using System.Linq;
+using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Views;
@@ -119,7 +120,12 @@ namespace Games.RazorMaze
         
         private void OnCharacterHealthChanged(HealthPointsEventArgs _Args) => View.Character.OnHealthChanged(_Args);
         private void OnCharacterDeath() => View.Character.OnDeath();
-        private void OnCharacterMoveStarted(CharacterMovingEventArgs _Args) => View.Character.OnMovingStarted(_Args);
+        private void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
+        {
+            View.Character.OnMovingStarted(_Args);
+            View.MazeCommon.MazeItems.Single(_Item => _Item.Props.IsStartNode).Proceeding = true;
+        }
+
         private void OnCharacterMoveContinued(CharacterMovingEventArgs _Args) => View.Character.OnMoving(_Args);
         private void OnCharacterMoveFinished(CharacterMovingEventArgs _Args) => View.Character.OnMovingFinished(_Args);
         
