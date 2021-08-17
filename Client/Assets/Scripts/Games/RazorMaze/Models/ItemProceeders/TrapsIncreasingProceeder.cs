@@ -75,7 +75,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             ProceedTraps();
         }
         
-        void IUpdateTick.UpdateTick()
+        public void UpdateTick()
         {
             ProceedTraps();
         }

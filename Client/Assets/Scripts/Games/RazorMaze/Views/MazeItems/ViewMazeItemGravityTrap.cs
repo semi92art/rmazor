@@ -1,6 +1,4 @@
-﻿using System;
-using Entities;
-using Exceptions;
+﻿using Exceptions;
 using Extensions;
 using GameHelpers;
 using Games.RazorMaze.Models;
@@ -16,15 +14,19 @@ namespace Games.RazorMaze.Views.MazeItems
     
     public class ViewMazeItemGravityTrap : ViewMazeItemBase, IViewMazeItemGravityTrap, IUpdateTick
     {
-        
+        #region constants
 
+        private const float ShapeScale = 0.35f;
+
+        #endregion
+        
         #region nonpubilc members
 
-        private Transform m_Mace;
         private bool m_Rotate;
-        private Vector3 m_RotateDirection;
         private float m_RotationSpeed;
+        private Vector3 m_RotateDirection;
         private Vector3 m_Angles;
+        private Transform m_Mace;
 
         #endregion
         
@@ -59,7 +61,7 @@ namespace Games.RazorMaze.Views.MazeItems
             m_RotationSpeed = _Args.Speed;
             var dir = (_Args.To - _Args.From).Normalized;
             m_Angles = Vector3.zero;
-            m_RotateDirection = GetRotationDirection(dir) * 100f;
+            m_RotateDirection = GetRotationDirection(dir);
             m_Mace.rotation = Quaternion.Euler(Vector3.zero);
             m_Rotate = true;
         }
@@ -93,7 +95,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 Object.transform, "views", "gravity_trap");
             m_Mace = go.GetCompItem<Transform>("container");
             go.transform.SetLocalPosXY(Vector2.zero);
-            go.transform.localScale = Vector3.one * CoordinateConverter.GetScale() * 0.35f;
+            go.transform.localScale = Vector3.one * CoordinateConverter.GetScale() * ShapeScale;
         }
 
         private Vector3 GetRotationDirection(Vector2 _DropDirection)

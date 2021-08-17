@@ -1,58 +1,60 @@
-﻿using Exceptions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Exceptions;
 using Games.RazorMaze.Models.ItemProceeders;
 
 namespace Games.RazorMaze.Models
 {
     public interface IModelGame : IInit, IPreInit
     {
-        IModelMazeData                Data { get; }
-        IModelMazeRotation            MazeRotation { get; }
-        IMovingItemsProceeder         MovingItemsProceeder { get; }
-        IGravityItemsProceeder        GravityItemsProceeder { get; }
-        ITrapsReactProceeder          TrapsReactProceeder { get; }
-        ITrapsIncreasingProceeder     TrapsIncreasingProceeder { get; }
-        ITurretsProceeder             TurretsProceeder { get; }
-        IPortalsProceeder             PortalsProceeder { get; }
-        IShredingerBlocksProceeder    ShredingerBlocksProceeder { get; }
-        ISpringboardProceeder         SpringboardProceeder { get; }
-        IModelCharacter               Character { get; }
-        ILevelStagingModel            LevelStaging { get; }
-        IScoringModel                 Scoring { get; }
-        IInputScheduler               InputScheduler { get; }
+        IModelMazeData                            Data { get; }
+        IModelMazeRotation                        MazeRotation { get; }
+        IMovingItemsProceeder                     MovingItemsProceeder { get; }
+        IGravityItemsProceeder                    GravityItemsProceeder { get; }
+        ITrapsReactProceeder                      TrapsReactProceeder { get; }
+        ITrapsIncreasingProceeder                 TrapsIncreasingProceeder { get; }
+        ITurretsProceeder                         TurretsProceeder { get; }
+        IPortalsProceeder                         PortalsProceeder { get; }
+        IShredingerBlocksProceeder                ShredingerBlocksProceeder { get; }
+        ISpringboardProceeder                     SpringboardProceeder { get; }
+        IModelCharacter                           Character { get; }
+        ILevelStagingModel                        LevelStaging { get; }
+        IScoringModel                             Scoring { get; }
+        IInputScheduler                           InputScheduler { get; }
     }
     
     public class ModelGame : IModelGame
     {
-        public IModelMazeData                Data { get; }
-        public IModelMazeRotation            MazeRotation { get; }
-        public IMovingItemsProceeder         MovingItemsProceeder { get; }
-        public IGravityItemsProceeder        GravityItemsProceeder { get; }
-        public ITrapsReactProceeder          TrapsReactProceeder { get; }
-        public ITrapsIncreasingProceeder     TrapsIncreasingProceeder { get; }
-        public ITurretsProceeder             TurretsProceeder { get; }
-        public IPortalsProceeder             PortalsProceeder { get; }
-        public IShredingerBlocksProceeder    ShredingerBlocksProceeder { get; }
-        public ISpringboardProceeder         SpringboardProceeder { get; }
-        public IModelCharacter               Character { get; }
-        public ILevelStagingModel            LevelStaging { get; }
-        public IScoringModel                 Scoring { get; }
-        public IInputScheduler               InputScheduler { get; }
+        public IModelMazeData                     Data { get; }
+        public IModelMazeRotation                 MazeRotation { get; }
+        public IMovingItemsProceeder              MovingItemsProceeder { get; }
+        public IGravityItemsProceeder             GravityItemsProceeder { get; }
+        public ITrapsReactProceeder               TrapsReactProceeder { get; }
+        public ITrapsIncreasingProceeder          TrapsIncreasingProceeder { get; }
+        public ITurretsProceeder                  TurretsProceeder { get; }
+        public IPortalsProceeder                  PortalsProceeder { get; }
+        public IShredingerBlocksProceeder         ShredingerBlocksProceeder { get; }
+        public ISpringboardProceeder              SpringboardProceeder { get; }
+        public IModelCharacter                    Character { get; }
+        public ILevelStagingModel                 LevelStaging { get; }
+        public IScoringModel                      Scoring { get; }
+        public IInputScheduler                    InputScheduler { get; }
         
         public ModelGame(
-            IModelMazeData                _Data,
-            IModelMazeRotation            _MazeRotation,
-            IMovingItemsProceeder         _MovingItemsProceeder,
-            IGravityItemsProceeder        _GravityItemsProceeder,
-            ITrapsReactProceeder          _TrapsReactProceeder,
-            ITrapsIncreasingProceeder     _TrapsIncreasingProceeder,
-            ITurretsProceeder             _TurretsProceeder,
-            IPortalsProceeder             _PortalsProceeder,
-            IModelCharacter               _CharacterModel,
-            ILevelStagingModel            _StagingModel,
-            IScoringModel                 _ScoringModel,
-            IInputScheduler               _InputScheduler,
-            IShredingerBlocksProceeder    _ShredingerBlocksProceeder,
-            ISpringboardProceeder         _SpringboardProceeder)
+            IModelMazeData                        _Data,
+            IModelMazeRotation                    _MazeRotation,
+            IMovingItemsProceeder                 _MovingItemsProceeder,
+            IGravityItemsProceeder                _GravityItemsProceeder,
+            ITrapsReactProceeder                  _TrapsReactProceeder,
+            ITrapsIncreasingProceeder             _TrapsIncreasingProceeder,
+            ITurretsProceeder                     _TurretsProceeder,
+            IPortalsProceeder                     _PortalsProceeder,
+            IModelCharacter                       _CharacterModel,
+            ILevelStagingModel                    _StagingModel,
+            IScoringModel                         _ScoringModel,
+            IInputScheduler                       _InputScheduler,
+            IShredingerBlocksProceeder            _ShredingerBlocksProceeder,
+            ISpringboardProceeder                 _SpringboardProceeder)
         {
             Data                                  = _Data;
             MazeRotation                          = _MazeRotation;
@@ -72,8 +74,13 @@ namespace Games.RazorMaze.Models
         
         public void PreInit()
         {
-            Data.MazeItemsProceedStarted          += GravityItemsProceeder.Start;
-            Data.MazeItemsProceedStopped          += GravityItemsProceeder.Stop;
+            var proceeders = GetProceedersByInterface<IItemsProceeder>();
+            foreach (var proceeder in proceeders)
+            {
+                Data.MazeItemsProceedStarted += proceeder.Start;
+                Data.MazeItemsProceedStopped += proceeder.Stop;
+            }
+            
             Data.MazeChanged                      += MazeOnMazeChanged;
             MazeRotation.RotationFinished         += MazeOnRotationFinished;
             Character.CharacterMoveStarted        += CharacterOnMoveStarted;
@@ -91,28 +98,11 @@ namespace Games.RazorMaze.Models
             Character.Init();
         }
         
-        private void CharacterOnMoveStarted(CharacterMovingEventArgs _Args)
-        {
-            GravityItemsProceeder.OnCharacterMoveStarted(_Args);
-        }
-
         private void MazeOnMazeChanged(MazeInfo _Info)
         {
-            foreach (var item in new IOnMazeChanged []
-            {
-                Character,
-                MovingItemsProceeder,
-                GravityItemsProceeder,
-                TrapsReactProceeder,
-                TrapsIncreasingProceeder,
-                TurretsProceeder,
-                PortalsProceeder,
-                ShredingerBlocksProceeder,
-                SpringboardProceeder
-            })
-            {
-                item.OnMazeChanged(_Info);
-            }
+            var proceeders = GetProceedersByInterface<IOnMazeChanged>();
+            foreach (var proceeder in proceeders)
+                proceeder.OnMazeChanged(_Info);
         }
 
         private void MazeOnRotationFinished(MazeRotateDirection _Direction, MazeOrientation _Orientation)
@@ -121,21 +111,16 @@ namespace Games.RazorMaze.Models
             GravityItemsProceeder.OnMazeOrientationChanged();
         }
         
+        private void CharacterOnMoveStarted(CharacterMovingEventArgs _Args)
+        {
+            GravityItemsProceeder.OnCharacterMoveStarted(_Args);
+        }
 
         private void CharacterOnMoveContinued(CharacterMovingEventArgs _Args)
         {
-            foreach (var proceeder in new ICharacterMoveContinued[]
-            {
-                Data,
-                TrapsReactProceeder,
-                TrapsIncreasingProceeder,
-                PortalsProceeder,
-                ShredingerBlocksProceeder,
-                SpringboardProceeder
-            })
-            {
-                proceeder.OnCharacterMoveContinued(_Args);                
-            }
+            var proceeders = GetProceedersByInterface<ICharacterMoveContinued>();
+            foreach (var proceeder in proceeders)
+                proceeder.OnCharacterMoveContinued(_Args);
         }
         
         private void CharacterOnFinishMove(CharacterMovingEventArgs _Args) => InputScheduler.UnlockMovement();
@@ -162,11 +147,30 @@ namespace Games.RazorMaze.Models
             MazeRotateDirection dir;
             switch (_Command)
             {
-                case EInputCommand.RotateClockwise:        dir = MazeRotateDirection.Clockwise;        break;
-                case EInputCommand.RotateCounterClockwise: dir = MazeRotateDirection.CounterClockwise; break;
+                case EInputCommand.RotateClockwise:       
+                    dir = MazeRotateDirection.Clockwise;        break;
+                case EInputCommand.RotateCounterClockwise:
+                    dir = MazeRotateDirection.CounterClockwise; break;
                 default: throw new SwitchCaseNotImplementedException(_Command);
             }
             MazeRotation.Rotate(dir);
         }
+        
+        private List<T> GetProceedersByInterface<T>() where T : class
+        {
+            var result = new List<T>
+            {
+                Character                 as T,
+                MovingItemsProceeder      as T,
+                GravityItemsProceeder     as T,
+                TrapsReactProceeder       as T,
+                TrapsIncreasingProceeder  as T,
+                TurretsProceeder          as T,
+                PortalsProceeder          as T,
+                ShredingerBlocksProceeder as T,
+                SpringboardProceeder      as T
+            }.Where(_Proceeder => _Proceeder != null).ToList();
+            return result;
+        } 
     }
 }

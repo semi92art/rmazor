@@ -192,7 +192,7 @@ namespace Games.RazorMaze.Editor
 
         private void LoadLevel(int _Group, int _Index)
         {
-            var info = MazeLevelUtils.LoadLevel(GameId, _Group, _Index, 0, false);
+            var info = MazeLevelUtils.LoadLevel(GameId, _Group, _Index, HeapIndex, false);
             CreateObjects(info);
             FocusCamera(info.Size);
         }

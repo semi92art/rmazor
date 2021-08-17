@@ -16,9 +16,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
     
     public class GravityItemsProceeder : ItemsProceederBase, IGravityItemsProceeder
     {
-        private bool m_Proceeding;
-        private IGravityItemsProceeder m_GravityItemsProceederImplementation;
-
         #region nonpublic members
 
         protected override EMazeItemType[] Types => new[] {EMazeItemType.GravityBlock, EMazeItemType.GravityTrap};
@@ -36,14 +33,12 @@ namespace Games.RazorMaze.Models.ItemProceeders
         public event MazeItemMoveHandler MazeItemMoveContinued;
         public event MazeItemMoveHandler MazeItemMoveFinished;
 
-        public void Start()
+        public override void Start()
         {
-            m_Proceeding = true;
+            base.Start();
             MoveMazeItemsGravity(Data.Orientation, Data.CharacterInfo.Position);
         }
-
-        public void Stop() => m_Proceeding = false;
-
+        
         public void OnMazeChanged(MazeInfo _Info)
         {
             CollectItems(_Info);
@@ -63,8 +58,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             MoveMazeItemsGravity(Data.Orientation, _Args.To);
         }
 
-        #region nonpublic members
-
+        #region nonpublic methods
         
         private void MoveMazeItemsGravity(MazeOrientation _Orientation, V2Int _CharacterPoint)
         {

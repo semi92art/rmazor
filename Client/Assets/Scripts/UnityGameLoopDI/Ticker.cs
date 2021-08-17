@@ -1,13 +1,7 @@
-﻿using System;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine.SceneManagement;
 
 namespace UnityGameLoopDI
 {
-    public interface IUpdateTick { void UpdateTick(); }
-    public interface IFixedUpdateTick {void FixedUpdateTick(); }
-    public interface ILateUpdateTick { void LateUpdateTick(); }
-    public interface IDrawGizmosTick { void DrawGizmosTick(); }
-    
     public class Ticker
     {
         private bool m_WasUnregistered;
@@ -30,7 +24,7 @@ namespace UnityGameLoopDI
 
         private void OnActiveSceneChanged(Scene _Prev, Scene _Next)
         {
-            //Unregister(true);
+            //TODO
         }
     }
 }

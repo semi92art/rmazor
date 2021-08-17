@@ -8,10 +8,14 @@ namespace Games.RazorMaze.Views.MazeItems
 {
     public abstract class ViewMazeItemBase : Ticker
     {
+        #region nonpublic members
+        
         protected bool m_Activated;
         
-        public ViewMazeItemProps Props { get; set; }
-        
+        #endregion
+
+        #region inject
+
         protected ICoordinateConverter CoordinateConverter { get; }
         protected IContainersGetter ContainersGetter { get; }
 
@@ -21,6 +25,12 @@ namespace Games.RazorMaze.Views.MazeItems
             ContainersGetter = _ContainersGetter;
         }
 
+        #endregion
+        
+        #region api
+        
+        public ViewMazeItemProps Props { get; set; }
+        
         public virtual bool Activated
         {
             get => m_Activated;
@@ -56,7 +66,13 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             Object.transform.localScale = _Scale * Vector3.one;
         }
-
+        
+        #endregion
+        
+        #region nonpublic methods
+        
         protected abstract void SetShape();
+        
+        #endregion
     }
 }

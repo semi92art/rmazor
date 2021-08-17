@@ -6,12 +6,33 @@ using UnityGameLoopDI;
 
 namespace Games.RazorMaze.Models.ItemProceeders
 {
-    public abstract class ItemsProceederBase : Ticker
+    public interface IItemsProceeder
     {
+        void Start();
+        void Stop();
+    }
+    
+    public abstract class ItemsProceederBase : Ticker, IItemsProceeder
+    {
+        #region nonpublic members
+        
         protected abstract EMazeItemType[] Types { get; }
+        
+        protected bool m_Proceeding;
         protected ModelSettings Settings { get; }
         protected IModelMazeData Data { get; }
+        
+        #endregion
 
+        #region api
+
+        public virtual void Start() => m_Proceeding = true;
+        public virtual void Stop() => m_Proceeding = false;
+        
+        #endregion
+        
+        #region nonpublic methods
+        
         protected ItemsProceederBase(ModelSettings _Settings, IModelMazeData _Data)
         {
             Settings = _Settings;
@@ -49,5 +70,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         {
             return Data.ProceedInfos[_Type];
         }
+        
+        #endregion
     }
 }
