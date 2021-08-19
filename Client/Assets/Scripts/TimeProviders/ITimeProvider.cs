@@ -9,7 +9,7 @@ namespace TimeProviders
         void Reset();
     }
 
-    public abstract class TimeProviderBase : MonoBehaviour, ITimeProvider, ISingleton
+    public abstract class TimeProviderBase : MonoBehaviour, ITimeProvider
     {
         protected float Delta;
     

@@ -6,7 +6,7 @@ using UnityGameLoopDI;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
-    public abstract class ViewMazeItemBase : Ticker
+    public abstract class ViewMazeItemBase
     {
         #region nonpublic members
         
@@ -18,11 +18,17 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected ICoordinateConverter CoordinateConverter { get; }
         protected IContainersGetter ContainersGetter { get; }
+        protected ITicker Ticker { get; }
+        
 
-        protected ViewMazeItemBase (ICoordinateConverter _CoordinateConverter, IContainersGetter _ContainersGetter)
+        protected ViewMazeItemBase (
+            ICoordinateConverter _CoordinateConverter,
+            IContainersGetter _ContainersGetter,
+            ITicker _Ticker)
         {
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
+            Ticker = _Ticker;
         }
 
         #endregion
@@ -43,13 +49,14 @@ namespace Games.RazorMaze.Views.MazeItems
         }
         
         public virtual GameObject Object { get; protected set; }
-        
         public virtual bool Proceeding { get; set; }
+        
 
         public virtual void Init(ViewMazeItemProps _Props)
         {
             Props = _Props;
             SetShape();
+            Ticker.Register(this);
         }
 
         public bool Equal(MazeItem _MazeItem)

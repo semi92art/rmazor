@@ -9,6 +9,7 @@ using TMPro;
 using UI.Panels;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityGameLoopDI;
 
 namespace UI.PanelItems
 {
@@ -24,10 +25,11 @@ namespace UI.PanelItems
             string _Name,
             System.Func<List<string>> _ListOfItems,
             System.Action<string> _Select,
-            IEnumerable<GameObserver> _Observers)
+            IEnumerable<GameObserver> _Observers, 
+            ITicker _Ticker)
         {
             var observers = _Observers.ToArray();
-            base.Init(observers);
+            base.Init(observers, _Ticker);
             setting.text = _Value?.Invoke();
             name = $"{_Name} Setting";
             title.text = _Name;
@@ -39,6 +41,7 @@ namespace UI.PanelItems
                     return;
                 var selectorPanel = new SettingsSelectorPanel(
                     _MenuDialogViewer,
+                    _Ticker,
                     _Value?.Invoke(),
                     items, 
                     _Select);

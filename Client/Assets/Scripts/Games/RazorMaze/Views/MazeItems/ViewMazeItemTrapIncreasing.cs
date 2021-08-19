@@ -5,6 +5,7 @@ using GameHelpers;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
 using UnityEngine;
+using UnityGameLoopDI;
 using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
@@ -30,8 +31,9 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public ViewMazeItemTrapIncreasing(
             ICoordinateConverter _CoordinateConverter, 
-            IContainersGetter _ContainersGetter)
-            : base(_CoordinateConverter, _ContainersGetter)
+            IContainersGetter _ContainersGetter,
+            ITicker _Ticker)
+            : base(_CoordinateConverter, _ContainersGetter, _Ticker)
         {
         }
 
@@ -50,7 +52,7 @@ namespace Games.RazorMaze.Views.MazeItems
             m_PrevStage = _Args.Stage;
         }
         
-        public object Clone() => new ViewMazeItemTrapIncreasing(CoordinateConverter, ContainersGetter);
+        public object Clone() => new ViewMazeItemTrapIncreasing(CoordinateConverter, ContainersGetter, Ticker);
 
         #endregion
 

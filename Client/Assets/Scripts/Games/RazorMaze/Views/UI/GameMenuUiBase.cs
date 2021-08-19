@@ -29,7 +29,7 @@ namespace Games.RazorMaze.Views.UI
 
         #region constructor
 
-        protected ViewUIBase()
+        protected ViewUIBase(ITicker _Ticker) : base(_Ticker)
         {
             CreateCanvas();
             CreateDialogViewer();
@@ -70,7 +70,7 @@ namespace Games.RazorMaze.Views.UI
             }
             GameTimeProvider.Instance.Pause = true;
             var gameMenuPanel = new GameMenuPanel(DialogViewer,
-                () => GameTimeProvider.Instance.Pause = false);
+                () => GameTimeProvider.Instance.Pause = false, Ticker);
             gameMenuPanel.AddObservers(GetObservers());
             gameMenuPanel.Init();
             DialogViewer.Show(gameMenuPanel);

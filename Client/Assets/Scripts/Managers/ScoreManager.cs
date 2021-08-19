@@ -8,7 +8,7 @@ using Utils;
 
 namespace Managers
 {
-    public class ScoreManager : MonoBehaviour, ISingleton
+    public class ScoreManager : MonoBehaviour
     {
         #region singleton
 

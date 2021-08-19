@@ -14,6 +14,7 @@ using UI.Panels;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using UnityGameLoopDI;
 using Utils;
 
 namespace UI
@@ -58,8 +59,16 @@ namespace UI
         private MainBackgroundRenderer m_MainBackgroundRenderer;
 
         #endregion
+        
+        #region inject
+        
+        public MainMenuUi(ITicker _Ticker) : base(_Ticker)
+        { }
+        
+        #endregion
 
         #region api
+        
 
         public void InitDirty(RectTransform _Parent,
             IMenuDialogViewer _MenuDialogViewer,
@@ -100,7 +109,7 @@ namespace UI
 
         private void InitBankMiniPanel()
         {
-            var bmp = new BankMiniPanel(m_Parent, m_MenuDialogViewer, m_NotificationViewer);
+            var bmp = new BankMiniPanel(m_Parent, m_MenuDialogViewer, m_NotificationViewer, Ticker);
             bmp.AddObservers(GetObservers());
             m_BankMiniPanel = bmp;
             m_BankMiniPanel.Init();
@@ -349,7 +358,7 @@ namespace UI
         private void OnSelectGamePanelButtonClick()
         {
             Notify(this, NotifyMessageSelectGamePanelButtonClick);
-            var selectGamePanel = new SelectGamePanel(m_MenuDialogViewer, SetGameLogo);
+            var selectGamePanel = new SelectGamePanel(m_MenuDialogViewer, SetGameLogo, Ticker);
             selectGamePanel.AddObservers(GetObservers());
             selectGamePanel.Init();
             m_MenuDialogViewer.Show(selectGamePanel);
@@ -358,7 +367,7 @@ namespace UI
         private void OnSettingsButtonClick()
         {
             Notify(this, NotifyMessageSettingsButtonClick);
-            var settingsPanel = new SettingsPanel(m_MenuDialogViewer);
+            var settingsPanel = new SettingsPanel(m_MenuDialogViewer, Ticker);
             settingsPanel.AddObservers(GetObservers());
             settingsPanel.Init();
             m_MenuDialogViewer.Show(settingsPanel);
@@ -367,7 +376,7 @@ namespace UI
         private void OnShopButtonClick()
         {
             Notify(this, NotifyMessageShopButtonClick);
-            var shop = new ShopPanel(m_MenuDialogViewer.Container);
+            var shop = new ShopPanel(m_MenuDialogViewer.Container, Ticker);
             shop.AddObservers(GetObservers());
             shop.Init();
             m_MenuDialogViewer.Show(shop);
@@ -390,7 +399,7 @@ namespace UI
         {
             Notify(this, NotifyMessageDailyBonusButtonClick);
             var dailyBonusPanel = new DailyBonusPanel(
-                m_MenuDialogViewer, (IActionExecutor)m_BankMiniPanel);
+                m_MenuDialogViewer, (IActionExecutor)m_BankMiniPanel, Ticker);
             dailyBonusPanel.AddObservers(GetObservers());
             dailyBonusPanel.Init();
             m_MenuDialogViewer.Show(dailyBonusPanel);
@@ -399,7 +408,7 @@ namespace UI
         private void OnWheelOfFortuneButtonClick()
         {
             Notify(this, NotifyMessageWheelOfFortuneButtonClick);
-            var wofPanel = new WheelOfFortunePanel(m_MenuDialogViewer, m_NotificationViewer);
+            var wofPanel = new WheelOfFortunePanel(m_MenuDialogViewer, m_NotificationViewer, Ticker);
             wofPanel.AddObservers(GetObservers());
             wofPanel.Init();
             m_MenuDialogViewer.Show(wofPanel);

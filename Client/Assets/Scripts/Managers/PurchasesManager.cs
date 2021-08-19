@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 namespace Managers
 {
-    public class PurchasesManager : GameObserver, ISingleton
+    public class PurchasesManager : GameObserver
     {
         #region singleton
     

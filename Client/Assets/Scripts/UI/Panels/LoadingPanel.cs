@@ -7,12 +7,13 @@ using UI.Entities;
 using UI.Factories;
 using UI.Managers;
 using UnityEngine;
+using UnityGameLoopDI;
 
 namespace UI.Panels
 {
     public interface ILoadingHandler
     {
-        void SetProgress(float _Percents, List<string> _Infos);
+        void SetProgress(float _Percents, IEnumerable<string> _Infos);
         void Break(string _Error);
     }
     
@@ -29,7 +30,7 @@ namespace UI.Panels
 
         public MenuUiCategory Category => MenuUiCategory.Loading;
 
-        public LoadingPanel(IMenuDialogViewer _DialogViewer)
+        public LoadingPanel(IMenuDialogViewer _DialogViewer, ITicker _Ticker) : base(_Ticker)
         {
             m_DialogViewer = _DialogViewer;
         }
@@ -45,7 +46,7 @@ namespace UI.Panels
             Panel = prefab.RTransform();
         }
 
-        public void SetProgress(float _Percents, List<string> _Infos)
+        public void SetProgress(float _Percents, IEnumerable<string> _Infos)
         {
             m_View.SetProgress(_Percents, _Infos.Last());
         }

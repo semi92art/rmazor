@@ -21,7 +21,6 @@ namespace Games.RazorMaze.Views.MazeItems
     
     public class ViewMazeItemTrapReact : ViewMazeItemBase, IViewMazeItemTrapReact, IUpdateTick
     {
-
         #region nonpublic members
         
         private float StartPos => 0.1f;
@@ -41,9 +40,10 @@ namespace Games.RazorMaze.Views.MazeItems
         public ViewMazeItemTrapReact(
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            ViewSettings _ViewSettings,
-            IGameTimeProvider _GameTimeProvider)
-            : base(_CoordinateConverter, _ContainersGetter)
+            ITicker _Ticker,
+            IGameTimeProvider _GameTimeProvider,
+            ViewSettings _ViewSettings)
+            : base(_CoordinateConverter, _ContainersGetter, _Ticker)
         {
             ViewSettings = _ViewSettings;
             GameTimeProvider = _GameTimeProvider;
@@ -72,7 +72,7 @@ namespace Games.RazorMaze.Views.MazeItems
         }
         
         public object Clone() => new ViewMazeItemTrapReact(
-            CoordinateConverter, ContainersGetter, ViewSettings, GameTimeProvider);
+            CoordinateConverter, ContainersGetter, Ticker, GameTimeProvider, ViewSettings);
         
         public void OnTrapReact(MazeItemTrapReactEventArgs _Args)
         {
@@ -83,7 +83,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 case TrapsReactProceeder.StagePreReact:   coroutine = HandlePreReact(); break;
                 case TrapsReactProceeder.StageReact:      coroutine = HandleReact(); break;
                 case TrapsReactProceeder.StageAfterReact: coroutine = HandlePostReact(); break;
-                default: throw new ArgumentOutOfRangeException(nameof(_Args.Stage), $"Stage {_Args.Stage} was not implemented");
+                default: throw new ArgumentOutOfRangeException(
+                    nameof(_Args.Stage), $"Stage {_Args.Stage} was not implemented");
             }
             Coroutines.Run(coroutine);
         }

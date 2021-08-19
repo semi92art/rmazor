@@ -4,6 +4,7 @@ using Entities;
 using Managers;
 using Lean.Localization;
 using UnityEngine;
+using UnityGameLoopDI;
 using Utils;
 
 namespace Settings
@@ -16,6 +17,10 @@ namespace Settings
         public object Min => null;
         public object Max => null;
 
+        public SoundSetting(ITicker _Ticker) : base(_Ticker)
+        {
+        }
+        
         public object Get()
         {
             return SaveUtils.GetValue<bool>(SaveKey.SettingSoundOn);

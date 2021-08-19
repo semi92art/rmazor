@@ -37,8 +37,9 @@ namespace Games.RazorMaze.Views.MazeItems
         public ViewMazeItemGravityTrap(
             IModelMazeData _Data,
             ICoordinateConverter _CoordinateConverter,
-            IContainersGetter _ContainersGetter)
-            : base(_CoordinateConverter, _ContainersGetter)
+            IContainersGetter _ContainersGetter,
+            ITicker _Ticker)
+            : base(_CoordinateConverter, _ContainersGetter, _Ticker)
         {
             Data = _Data;
         }
@@ -79,7 +80,7 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Rotate = false;
         }
 
-        public object Clone() => new ViewMazeItemGravityTrap(Data, CoordinateConverter, ContainersGetter);
+        public object Clone() => new ViewMazeItemGravityTrap(Data, CoordinateConverter, ContainersGetter, Ticker);
 
         #endregion
         

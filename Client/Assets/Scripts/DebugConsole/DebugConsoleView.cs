@@ -12,7 +12,7 @@ using Utils;
 
 namespace DebugConsole
 {
-    public class DebugConsoleView : MonoBehaviour, ISingleton
+    public class DebugConsoleView : MonoBehaviour
     {
         #region singleton
         

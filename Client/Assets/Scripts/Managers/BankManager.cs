@@ -8,7 +8,7 @@ using Utils;
 
 namespace Managers
 {
-    public class BankManager : MonoBehaviour, ISingleton
+    public class BankManager : MonoBehaviour
     {
         #region singleton
     

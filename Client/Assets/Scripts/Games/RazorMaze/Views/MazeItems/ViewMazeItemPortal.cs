@@ -44,9 +44,10 @@ namespace Games.RazorMaze.Views.MazeItems
         public ViewMazeItemPortal(
             ICoordinateConverter _CoordinateConverter, 
             IContainersGetter _ContainersGetter,
-            ViewSettings _ViewSettings,
-            IGameTimeProvider _GameTimeProvider)
-            : base(_CoordinateConverter, _ContainersGetter)
+            ITicker _Ticker,
+            IGameTimeProvider _GameTimeProvider,
+            ViewSettings _ViewSettings)
+            : base(_CoordinateConverter, _ContainersGetter, _Ticker)
         {
             ViewSettings = _ViewSettings;
             GameTimeProvider = _GameTimeProvider;
@@ -72,7 +73,7 @@ namespace Games.RazorMaze.Views.MazeItems
         }
         
         public object Clone() => new ViewMazeItemPortal(
-            CoordinateConverter, ContainersGetter, ViewSettings, GameTimeProvider);
+            CoordinateConverter, ContainersGetter, Ticker, GameTimeProvider, ViewSettings);
 
         public void DoTeleport(PortalEventArgs _Args)
         {

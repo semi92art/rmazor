@@ -14,6 +14,14 @@ using Zenject;
 
 public class ApplicationInitializer : MonoBehaviour
 {
+    #region inject
+    
+    private ITicker Ticker { get; set; }
+
+    [Inject] public void Inject(ITicker _Ticker) => Ticker = _Ticker;
+    
+    #endregion
+    
     #region engine methods
 
     private static string _prevScene = SceneNames.Preload;
@@ -34,7 +42,7 @@ public class ApplicationInitializer : MonoBehaviour
     
     private void OnSceneLoaded(Scene _Scene, LoadSceneMode _)
     {
-        TickerManager.Instance.Clear();
+        Ticker.Clear();
         TimeOrLifesEndedPanel.TimesPanelCalled = 0;
         
         bool onStart = _prevScene.EqualsIgnoreCase(SceneNames.Preload);

@@ -12,7 +12,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         void Stop();
     }
     
-    public abstract class ItemsProceederBase : Ticker, IItemsProceeder
+    public abstract class ItemsProceederBase : IItemsProceeder
     {
         #region nonpublic members
         
@@ -21,6 +21,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         protected bool m_Proceeding;
         protected ModelSettings Settings { get; }
         protected IModelMazeData Data { get; }
+        protected ITicker Ticker { get; }
         
         #endregion
 
@@ -33,10 +34,12 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region nonpublic methods
         
-        protected ItemsProceederBase(ModelSettings _Settings, IModelMazeData _Data)
+        protected ItemsProceederBase(ModelSettings _Settings, IModelMazeData _Data, ITicker _Ticker)
         {
             Settings = _Settings;
             Data = _Data;
+            Ticker = _Ticker;
+            Ticker.Register(this);
         }
 
         protected void CollectItems(MazeInfo _Info)

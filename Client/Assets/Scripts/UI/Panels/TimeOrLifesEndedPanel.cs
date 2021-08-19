@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityGameLoopDI;
 
 namespace UI.Panels
 {
@@ -37,10 +38,11 @@ namespace UI.Panels
 
         public TimeOrLifesEndedPanel(
             IGameDialogViewer _DialogViewer,
+            ITicker _Ticker,
             bool _IsSecs,
             UnityAction _Continue = null,
             UnityAction<float> _SetAdditionalTime = null,
-            UnityAction<long> _SetAdditionalLife = null)
+            UnityAction<long> _SetAdditionalLife = null) : base(_Ticker)
         {
             m_DialogViewer = _DialogViewer;
             m_IsSecs = _IsSecs;
@@ -94,7 +96,7 @@ namespace UI.Panels
             {
                 m_DialogViewer.CloseAll();
                 m_Continue?.Invoke();
-            });
+            }, Ticker);
             countdownPanel.Init();
             m_DialogViewer.Show(countdownPanel);
         }

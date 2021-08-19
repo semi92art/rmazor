@@ -6,6 +6,7 @@ using Managers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityGameLoopDI;
 using Utils;
 using Entry = UnityEngine.EventSystems.EventTrigger.Entry;
 
@@ -30,9 +31,10 @@ namespace UI.PanelItems
             string _Text,
             System.Action<string> _Select,
             bool _IsOn,
-            IEnumerable<GameObserver> _Observers)
+            IEnumerable<GameObserver> _Observers,
+            ITicker _Ticker)
         {
-            base.Init(_Observers);
+            base.Init(_Observers, _Ticker);
             title.text = _Text;
             name = $"{_Text} Setting";
             m_OnSelect = _Select;

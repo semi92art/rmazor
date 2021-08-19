@@ -161,6 +161,7 @@ namespace Games.RazorMaze.Models
             var result = new List<T>
             {
                 Character                 as T,
+                Data                      as T, //TODO вынести все proceeder-ы из Data
                 MovingItemsProceeder      as T,
                 GravityItemsProceeder     as T,
                 TrapsReactProceeder       as T,

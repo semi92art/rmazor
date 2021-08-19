@@ -5,6 +5,7 @@ using Entities;
 using TMPro;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using UnityGameLoopDI;
 
 namespace UI.PanelItems
 {
@@ -20,9 +21,10 @@ namespace UI.PanelItems
             bool _IsOn, 
             string _Name,
             UnityAction<bool> _Action,
-            IEnumerable<GameObserver> _Observers)
+            IEnumerable<GameObserver> _Observers,
+            ITicker _Ticker)
         {
-            base.Init(_Observers);
+            base.Init(_Observers, _Ticker);
             name = $"{_Name} Setting";
             title.text = _Name;
             ToggleGroup tg = gameObject.AddComponent<ToggleGroup>();

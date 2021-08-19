@@ -6,11 +6,10 @@ using GameHelpers;
 using Managers;
 using TMPro;
 using UI.Factories;
-using UI.PanelItems;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using Utils;
+using UnityGameLoopDI;
 
 namespace UI.Panels
 {
@@ -34,9 +33,10 @@ namespace UI.Panels
 
         public WheelOfFortuneRewardPanel(
             INotificationViewer _NotificationViewer,
+            ITicker _Ticker,
             BankItemType _BankItemType,
             long _Reward,
-            UnityAction _OnClose)
+            UnityAction _OnClose) : base(_Ticker)
         {
             m_NotificationViewer = _NotificationViewer;
             m_BankItemType = _BankItemType;

@@ -13,7 +13,7 @@ public interface ICountdownController
     void StopCountdown();
 }
 
-public class CountdownController : Ticker, ICountdownController, IUpdateTick
+public class CountdownController : ICountdownController, IUpdateTick
 {
     #region protected members
 
@@ -28,6 +28,11 @@ public class CountdownController : Ticker, ICountdownController, IUpdateTick
     
     public event TimeHandler OnTimeChange;
     public event NoArgsHandler OnTimeEnded;
+
+    public CountdownController(ITicker _Ticker)
+    {
+        _Ticker.Register(this);
+    }
 
     public void SetDuration(float _Duration)
     {

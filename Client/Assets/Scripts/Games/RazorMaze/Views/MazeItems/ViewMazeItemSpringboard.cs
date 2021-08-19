@@ -10,6 +10,7 @@ using Shapes;
 using TimeProviders;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityGameLoopDI;
 using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
@@ -41,9 +42,10 @@ namespace Games.RazorMaze.Views.MazeItems
         public ViewMazeItemSpringboard(
             ICoordinateConverter _CoordinateConverter, 
             IContainersGetter _ContainersGetter,
+            ITicker _Ticker,
             IGameTimeProvider _GameTimeProvider,
             ViewSettings _ViewSettings) 
-            : base(_CoordinateConverter, _ContainersGetter)
+            : base(_CoordinateConverter, _ContainersGetter, _Ticker)
         {
             GameTimeProvider = _GameTimeProvider;
             ViewSettings = _ViewSettings;
@@ -59,7 +61,7 @@ namespace Games.RazorMaze.Views.MazeItems
         }
         
         public object Clone() => new ViewMazeItemSpringboard(
-            CoordinateConverter, ContainersGetter, GameTimeProvider, ViewSettings);
+            CoordinateConverter, ContainersGetter, Ticker, GameTimeProvider, ViewSettings);
 
         #endregion
 

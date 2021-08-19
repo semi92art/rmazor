@@ -60,8 +60,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         #region inject
         
-        public MovingItemsProceeder(ModelSettings _Settings, IModelMazeData _Data) 
-            : base(_Settings, _Data) { }
+        public MovingItemsProceeder(ModelSettings _Settings, IModelMazeData _Data, ITicker _Ticker) 
+            : base(_Settings, _Data, _Ticker) { }
         
         #endregion
         

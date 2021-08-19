@@ -10,11 +10,23 @@ namespace Entities
         protected abstract void OnNotify(object _Sender, string _NotifyMessage, params object[] _Args);
     }
 
-    public abstract class GameObservable : Ticker
+    public abstract class GameObservable
     {
+        #region nonpublic members
+        
         private readonly List<GameObserver> m_Observers = new List<GameObserver>();
+        protected ITicker Ticker { get; }
 
-        protected GameObservable()
+        #endregion
+        
+        protected GameObservable(ITicker _Ticker)
+        {
+            Ticker = _Ticker;
+            Ticker.Register(this);
+            AddObservers();
+        }
+        
+        protected virtual void AddObservers()
         {
             if (!m_Observers.Contains(AdsManager.Instance))
                 m_Observers.Add(AdsManager.Instance);
@@ -59,6 +71,9 @@ namespace Entities
     
     public class ObserverNotifyer : GameObservable
     {
+        public ObserverNotifyer(ITicker _Ticker) : base(_Ticker)
+        { }
+        
         public void RaiseNotify(object _Sender, string _NotifyMessage, params object[] _Args)
         {
             Notify(_Sender, _NotifyMessage, _Args);

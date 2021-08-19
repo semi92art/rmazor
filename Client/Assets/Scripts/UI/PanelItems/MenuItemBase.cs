@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Entities;
 using UnityEngine;
+using UnityGameLoopDI;
 
 namespace UI.PanelItems
 {
@@ -8,9 +9,9 @@ namespace UI.PanelItems
     {
         protected ObserverNotifyer Notifyer;
 
-        protected void Init(IEnumerable<GameObserver> _Observers)
+        protected void Init(IEnumerable<GameObserver> _Observers, ITicker _Ticker)
         {
-            Notifyer = new ObserverNotifyer();
+            Notifyer = new ObserverNotifyer(_Ticker);
             Notifyer.AddObservers(_Observers);
         }
     }

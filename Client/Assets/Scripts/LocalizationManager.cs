@@ -1,10 +1,9 @@
-﻿using System.IO;
-using Entities;
+﻿using Entities;
 using UnityEngine;
 using Lean.Localization;
 using Utils;
 
-public class LocalizationManager : ISingleton
+public class LocalizationManager
 {
     #region singleton
     

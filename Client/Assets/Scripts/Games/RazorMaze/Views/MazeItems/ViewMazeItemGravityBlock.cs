@@ -5,6 +5,7 @@ using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using UnityEngine;
+using UnityGameLoopDI;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
@@ -36,8 +37,9 @@ namespace Games.RazorMaze.Views.MazeItems
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IModelMazeData _Data,
+            ITicker _Ticker,            
             ViewSettings _ViewSettings) 
-            : base(_CoordinateConverter, _ContainersGetter)
+            : base(_CoordinateConverter, _ContainersGetter, _Ticker)
         {
             Data = _Data;
             ViewSettings = _ViewSettings;
@@ -63,7 +65,7 @@ namespace Games.RazorMaze.Views.MazeItems
         }
         
         public object Clone() => new ViewMazeItemGravityBlock(
-            CoordinateConverter, ContainersGetter, Data, ViewSettings);
+            CoordinateConverter, ContainersGetter, Data, Ticker, ViewSettings);
 
         #endregion
         

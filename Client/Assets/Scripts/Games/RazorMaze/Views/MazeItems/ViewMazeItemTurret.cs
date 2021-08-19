@@ -54,11 +54,12 @@ namespace Games.RazorMaze.Views.MazeItems
         public ViewMazeItemTurret(
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            ViewSettings _ViewSettings,
+            ITicker _Ticker,
             IModelMazeData _Data,
             IGameTimeProvider _GameTimeProvider,
-            ITurretBulletTail _BulletTail)
-            : base(_CoordinateConverter, _ContainersGetter)
+            ITurretBulletTail _BulletTail,
+            ViewSettings _ViewSettings)
+            : base(_CoordinateConverter, _ContainersGetter, _Ticker)
         {
             ViewSettings = _ViewSettings;
             Data = _Data;
@@ -95,7 +96,7 @@ namespace Games.RazorMaze.Views.MazeItems
         }
 
         public object Clone() => new ViewMazeItemTurret(
-            CoordinateConverter, ContainersGetter, ViewSettings, Data, GameTimeProvider, BulletTail);
+            CoordinateConverter, ContainersGetter, Ticker, Data, GameTimeProvider, BulletTail, ViewSettings);
         
         #endregion
         

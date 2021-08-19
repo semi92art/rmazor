@@ -1,9 +1,17 @@
 ﻿using UnityEngine.Events;
+using UnityGameLoopDI;
 
 namespace Games.RazorMaze.Views.UI
 {
     public class ViewUIProt : ViewUIBase
     {
+        #region inject
+
+        public ViewUIProt(ITicker _Ticker) : base(_Ticker)
+        { }
+        
+        #endregion
+        
         public override void OnBeforeLevelStarted(LevelStateChangedArgs _Args, UnityAction _StartLevel)
         {
             throw new System.NotImplementedException();

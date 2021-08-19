@@ -36,7 +36,8 @@ namespace UI.Panels
         public static PanelState PanelState { get; set; }
         public GameUiCategory Category => GameUiCategory.Settings;
 
-        public GameMenuPanel(IGameDialogViewer _DialogViewer, UnityAction _Continue)
+        public GameMenuPanel(IGameDialogViewer _DialogViewer, UnityAction _Continue, ITicker _Ticker) 
+            : base(_Ticker)
         {
             m_DialogViewer = _DialogViewer;
             m_Continue = _Continue;
@@ -91,7 +92,7 @@ namespace UI.Panels
                 PanelState &= ~PanelState.NeedToClose;
             }
             if (!PanelState.HasFlag(PanelState.Showing))
-                Unregister();
+                Ticker.Unregister(this);
         }
         
         #endregion

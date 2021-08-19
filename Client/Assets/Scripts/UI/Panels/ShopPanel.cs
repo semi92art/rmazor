@@ -12,6 +12,7 @@ using Constants;
 using Exceptions;
 using Managers;
 using Network;
+using UnityGameLoopDI;
 
 namespace UI.Panels
 {
@@ -49,7 +50,7 @@ namespace UI.Panels
 
         public MenuUiCategory Category => MenuUiCategory.Shop;
         
-        public ShopPanel(RectTransform _Container)
+        public ShopPanel(RectTransform _Container, ITicker _Ticker) : base(_Ticker)
         {
             m_Container = _Container;
         }
@@ -80,7 +81,7 @@ namespace UI.Panels
                     default:
                         throw new SwitchCaseNotImplementedException(shopItemProps.Type);
                 }
-                item.Init(shopItemProps, GetObservers());
+                item.Init(shopItemProps, GetObservers(), Ticker);
             }
 
             content.anchoredPosition = content.anchoredPosition.SetY(0);

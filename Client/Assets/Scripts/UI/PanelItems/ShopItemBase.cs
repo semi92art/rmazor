@@ -6,21 +6,20 @@ using Exceptions;
 using Extensions;
 using GameHelpers;
 using Managers;
-using Network;
-using Network.Packets;
 using TMPro;
 using UI.Entities;
 using UI.Factories;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using UnityGameLoopDI;
 using Utils;
 
 namespace UI.PanelItems
 {
     public interface IShopItem
     {
-        void Init(ShopItemProps _Props, IEnumerable<GameObserver> _Observers);
+        void Init(ShopItemProps _Props, IEnumerable<GameObserver> _Observers, ITicker _Ticker);
     }
 
     public abstract class ShopItemBase : MenuItemBase
@@ -44,9 +43,13 @@ namespace UI.PanelItems
             return (IShopItem)go.GetComponent<T>();
         }
 
-        protected void Init(UnityAction _Action, ShopItemProps _Props, IEnumerable<GameObserver> _Observers)
+        protected void Init(
+            UnityAction _Action,
+            ShopItemProps _Props,
+            IEnumerable<GameObserver> _Observers,
+            ITicker _Ticker)
         {
-            base.Init(_Observers);
+            base.Init(_Observers, _Ticker);
             button.SetOnClick(_Action);
             title.text = _Props.Title;
             if (!string.IsNullOrEmpty(_Props.Description))

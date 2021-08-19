@@ -9,7 +9,7 @@ using Utils;
 
 namespace Managers
 {
-    public class HierarchyOrderManager : MonoBehaviour, ISingleton
+    public class HierarchyOrderManager : MonoBehaviour
     {
         #region singleton
         

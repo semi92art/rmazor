@@ -1,15 +1,13 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Constants;
 using Entities;
 using Exceptions;
 using GameHelpers;
 using Managers;
-using Network;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using Utils;
+using UnityGameLoopDI;
 
 namespace UI.PanelItems
 {
@@ -20,7 +18,7 @@ namespace UI.PanelItems
         public static IShopItem Create(RectTransform _Parent) =>
             ShopItemBase.Create<ShopItemDefault>(_Parent, "shop_item_default");
         
-        public void Init(ShopItemProps _Props, IEnumerable<GameObserver> _Observers)
+        public void Init(ShopItemProps _Props, IEnumerable<GameObserver> _Observers, ITicker _Ticker)
         {
             UnityAction afterPurchaseAction;
             switch (_Props.Type)
@@ -43,7 +41,7 @@ namespace UI.PanelItems
                     _Props,
                     afterPurchaseAction);
             };
-            base.Init(action, _Props, _Observers);
+            base.Init(action, _Props, _Observers, _Ticker);
         }
     }
 }

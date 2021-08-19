@@ -12,7 +12,7 @@ using Debug = UnityEngine.Debug;
 
 namespace Network
 {
-    public class GameClient : ISingleton
+    public class GameClient
     {
         #region singleton
         

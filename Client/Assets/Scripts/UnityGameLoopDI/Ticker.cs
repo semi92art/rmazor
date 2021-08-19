@@ -1,30 +1,34 @@
 ﻿using UnityEngine.SceneManagement;
+using Utils;
 
 namespace UnityGameLoopDI
 {
-    public class Ticker
+    public interface ITicker
     {
-        private bool m_WasUnregistered;
+        void Register(object _Object);
+        void Unregister(object _Object);
+        void Clear();
+    }
+    
+    public class Ticker : ITicker
+    {
+        private static TickerManager _instance;
+        private static TickerManager Instance => 
+            CommonUtils.MonoBehSingleton(ref _instance, "Ticker Manager");
         
-        protected Ticker()
+        public void Register(object _Object)
         {
-            TickerManager.Instance.RegisterObject(this);
-            SceneManager.activeSceneChanged += OnActiveSceneChanged;
+            Instance.RegisterObject(_Object);
         }
 
-        protected void Unregister(bool _ChangeScene = false)
+        public void Unregister(object _Object)
         {
-            if (m_WasUnregistered)
-                return;
-            if (_ChangeScene)
-                SceneManager.activeSceneChanged -= OnActiveSceneChanged;
-            TickerManager.Instance.UnregisterObject(this);
-            m_WasUnregistered = true;
+            Instance.UnregisterObject(_Object);
         }
 
-        private void OnActiveSceneChanged(Scene _Prev, Scene _Next)
+        public void Clear()
         {
-            //TODO
+            Instance.Clear();
         }
     }
 }

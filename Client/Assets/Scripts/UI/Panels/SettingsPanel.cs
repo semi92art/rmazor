@@ -10,6 +10,7 @@ using UI.Managers;
 using UI.PanelItems;
 using UnityEngine;
 using Constants;
+using UnityGameLoopDI;
 
 namespace UI.Panels
 {
@@ -17,10 +18,11 @@ namespace UI.Panels
     {
         #region private members
         
-        private readonly IMenuDialogViewer m_DialogViewer;
-        private RectTransform m_Content;
         private static List<GameObject> _settingGoList;
         private static List<ISetting> _settingList;
+        
+        private readonly IMenuDialogViewer m_DialogViewer;
+        private RectTransform m_Content;
         
         private RectTransformLite SettingItemRectLite => new RectTransformLite
         {
@@ -36,7 +38,7 @@ namespace UI.Panels
         
         public MenuUiCategory Category => MenuUiCategory.Settings;
 
-        public SettingsPanel(IMenuDialogViewer _DialogViewer)
+        public SettingsPanel(IMenuDialogViewer _DialogViewer, ITicker _Ticker) : base(_Ticker)
         {
             m_DialogViewer = _DialogViewer;
         }
@@ -59,14 +61,14 @@ namespace UI.Panels
 
         private void InitSettingItems()
         {
-            var soundSetting = new SoundSetting();
+            var soundSetting = new SoundSetting(Ticker);
             soundSetting.AddObservers(GetObservers());
             _settingList.Add(soundSetting);
             _settingList.Add(new LanguageSetting());
             #if DEBUG
             _settingList.Add(new DebugSetting());
             #endif
-            foreach (ISetting setting  in _settingList)
+            foreach (var setting  in _settingList)
             {
                 InitSettingItem(setting);
             }
@@ -84,7 +86,7 @@ namespace UI.Panels
                         _IsOn =>
                     {
                         _Setting.Put(_IsOn);
-                    }, GetObservers());
+                    }, GetObservers(), Ticker);
                     break;
                 case SettingType.InPanelSelector:
                     var itemSelector = CreateInPanelSelectorSetting();
@@ -97,7 +99,7 @@ namespace UI.Panels
                         {
                             itemSelector.setting.text = _Value;
                             _Setting.Put(_Value);
-                        }, GetObservers());
+                        }, GetObservers(), Ticker);
                     break;
                 case SettingType.Slider:
                     var itemSlider = CreateSliderSetting();

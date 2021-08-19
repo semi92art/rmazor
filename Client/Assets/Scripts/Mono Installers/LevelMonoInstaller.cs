@@ -13,12 +13,13 @@ using Games.RazorMaze.Views.UI;
 using Games.RazorMaze.Views.Views;
 using TimeProviders;
 using UnityEngine;
+using UnityGameLoopDI;
 using Utils;
 using Zenject;
 
 namespace Mono_Installers
 {
-    public class LevelMonoInstaller : MonoInstaller
+    public class LevelMonoInstaller : MonoInstallerImplBase
     {
         public ModelSettings modelSettings;
         public ViewSettings viewSettings;
@@ -27,6 +28,8 @@ namespace Mono_Installers
         
         public override void InstallBindings()
         {
+            base.InstallBindings();
+            
             bool prototyping = GameClientUtils.GameMode == (int) EGameMode.Prototyping;
             bool release = GameClientUtils.GameMode == (int) EGameMode.Release;
 
@@ -116,7 +119,6 @@ namespace Mono_Installers
             Container.Bind<IViewMazeItemTrapIncreasing>()           .To<ViewMazeItemTrapIncreasing>()             .AsSingle().When(_ => release);
 
             #endregion
-
         }
     }
 }

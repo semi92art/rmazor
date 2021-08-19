@@ -11,6 +11,7 @@ using UI.Managers;
 using UI.Panels;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityGameLoopDI;
 using Utils;
 using Zenject;
 
@@ -39,8 +40,14 @@ namespace UI
         
         private IMainMenuUI MainMenuUI { get; set; }
 
-        [Inject]
-        public void Inject(IMainMenuUI _MainMenuUI)
+        // [Inject]
+        // public void Inject(IMainMenuUI _MainMenuUI, ITicker _Ticker)
+        // {
+        //     MainMenuUI = _MainMenuUI;
+        //     Ticker = _Ticker;
+        // }
+        
+        public MainMenuUiLoader(IMainMenuUI _MainMenuUI, ITicker _Ticker) : base(_Ticker)
         {
             MainMenuUI = _MainMenuUI;
         }
@@ -50,6 +57,8 @@ namespace UI
         
         #region api
 
+
+        
         public void Init(bool _OnStart)
         {
             DataFieldsMigrator.InitDefaultDataFieldValues();
@@ -106,7 +115,7 @@ namespace UI
         private void CreateDialogViewers()
         {
             m_MenuDialogViewer = MainMenuDialogViewer.Create(
-                m_Canvas.RTransform(), GetObservers());
+                m_Canvas.RTransform(), GetObservers(), Ticker);
             m_NotificationViewer = MainMenuNotificationViewer.Create(
                 m_Canvas.RTransform());
         }
@@ -122,7 +131,7 @@ namespace UI
         private void CreateLoadingPanel()
         {
             bool authFinished = false;
-            var loadingPanel = new LoadingPanel(m_MenuDialogViewer);
+            var loadingPanel = new LoadingPanel(m_MenuDialogViewer, Ticker);
             loadingPanel.Init();
             m_MenuDialogViewer.Show(loadingPanel);
             m_StartLoadingController = new LoadingController(loadingPanel, _LoadingResult =>

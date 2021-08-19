@@ -10,7 +10,7 @@ using Utils;
 
 namespace Managers
 {
-    public class AdsManager : GameObserver, ISingleton
+    public class AdsManager : GameObserver
     {
         #region singleton
     

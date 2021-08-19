@@ -10,6 +10,7 @@ using UI.PanelItems;
 using UnityEngine;
 using UnityEngine.UI;
 using Constants;
+using UnityGameLoopDI;
 
 namespace UI.Panels
 {
@@ -32,9 +33,10 @@ namespace UI.Panels
 
         public SettingsSelectorPanel(
             IMenuDialogViewer _DialogViewer,
+            ITicker _Ticker,
             string _Value,
             List<string> _Items,
-            System.Action<string> _Select)
+            System.Action<string> _Select) : base(_Ticker)
         {
             m_DialogViewer = _DialogViewer;
             m_DefaultValue = _Value;
@@ -81,7 +83,7 @@ namespace UI.Panels
             {
                 var sspiClone = sspi.Clone();
                 SettingSelectorItem si = sspiClone.GetComponent<SettingSelectorItem>();
-                si.Init(item, m_Select, item == m_DefaultValue, GetObservers());
+                si.Init(item, m_Select, item == m_DefaultValue, GetObservers(), Ticker);
                 selectorItems.Add(si);
             }
 

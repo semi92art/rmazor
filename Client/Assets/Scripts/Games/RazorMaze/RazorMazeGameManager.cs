@@ -12,7 +12,7 @@ namespace Games.RazorMaze
 {
     public interface IGameManager : IInit, IPreInit, IPostInit { }
     
-    public class RazorMazeGameManager : MonoBehaviour, ISingleton, IGameManager
+    public class RazorMazeGameManager : MonoBehaviour, IGameManager
     {
         #region singleton
 
@@ -65,7 +65,7 @@ namespace Games.RazorMaze
             var scoring                                         = Model.Scoring;
             var levelStaging                                    = Model.LevelStaging;
             
-            data.PathProceedEvent += DataOnPathProceedEvent;
+            data.PathProceedEvent                               += DataOnPathProceedEvent;
             
             rotation.RotationStarted                            += OnMazeRotationStarted;
             rotation.Rotation                                   += OnMazeRotation;

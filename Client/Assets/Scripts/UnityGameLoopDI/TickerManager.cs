@@ -5,16 +5,8 @@ using Utils;
 
 namespace UnityGameLoopDI
 {
-    public class TickerManager : MonoBehaviour, ISingleton
+    public class TickerManager : MonoBehaviour
     {
-        #region singleton
-        
-        private static TickerManager _instance;
-        public static TickerManager Instance => 
-            CommonUtils.MonoBehSingleton(ref _instance, "Ticker Manager");
-
-        #endregion
-
         #region nonpublic members
 
         private readonly List<IUpdateTick> m_UpdateInfoDict = new List<IUpdateTick>();
@@ -35,16 +27,23 @@ namespace UnityGameLoopDI
 
         public void UnregisterObject(object _Object)
         {
-            if (_Object == null)
-                return;
-            if (_Object is IUpdateTick onUpdateObj)
-                m_UpdateInfoDict.Remove(onUpdateObj);
-            if (_Object is IFixedUpdateTick onFixedUpdateObj)
-                m_FixedUpdateInfoDict.Remove(onFixedUpdateObj);
-            if (_Object is ILateUpdateTick onLateUpdateObj)
-                m_LateUpdateInfoDict.Remove(onLateUpdateObj);
-            if (_Object is IDrawGizmosTick onDrawGizmosObj)
-                m_DrawGizmosInfoDict.Remove(onDrawGizmosObj);
+            switch (_Object)
+            {
+                case null:
+                    return;
+                case IUpdateTick onUpdateObj:
+                    m_UpdateInfoDict.Remove(onUpdateObj);
+                    break;
+                case IFixedUpdateTick onFixedUpdateObj:
+                    m_FixedUpdateInfoDict.Remove(onFixedUpdateObj);
+                    break;
+                case ILateUpdateTick onLateUpdateObj:
+                    m_LateUpdateInfoDict.Remove(onLateUpdateObj);
+                    break;
+                case IDrawGizmosTick onDrawGizmosObj:
+                    m_DrawGizmosInfoDict.Remove(onDrawGizmosObj);
+                    break;
+            }
         }
 
         public void Clear()
@@ -91,15 +90,22 @@ namespace UnityGameLoopDI
         
         private void RegisterUpdateMethods(object _Object)
         {
-            if (_Object is IUpdateTick onUpdateObj)
-                m_UpdateInfoDict.Add(onUpdateObj);
-            if (_Object is IFixedUpdateTick onFixedUpdateObj)
-                m_FixedUpdateInfoDict.Add(onFixedUpdateObj);
-            if (_Object is ILateUpdateTick onLateUpdateObj)
-                m_LateUpdateInfoDict.Add(onLateUpdateObj);
-            if (_Object is IDrawGizmosTick onDrawGizmosObj)
-                m_DrawGizmosInfoDict.Add(onDrawGizmosObj);
-            
+            switch (_Object)
+            {
+                case IUpdateTick onUpdateObj:
+                    m_UpdateInfoDict.Add(onUpdateObj);
+                    break;
+                case IFixedUpdateTick onFixedUpdateObj:
+                    m_FixedUpdateInfoDict.Add(onFixedUpdateObj);
+                    break;
+                case ILateUpdateTick onLateUpdateObj:
+                    m_LateUpdateInfoDict.Add(onLateUpdateObj);
+                    break;
+                case IDrawGizmosTick onDrawGizmosObj:
+                    m_DrawGizmosInfoDict.Add(onDrawGizmosObj);
+                    break;
+            }
+
             RemoveNullObjects();
         }
 

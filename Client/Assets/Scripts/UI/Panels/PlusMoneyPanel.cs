@@ -9,6 +9,7 @@ using UI.Factories;
 using UI.Managers;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityGameLoopDI;
 
 namespace UI.Panels
 {
@@ -37,7 +38,8 @@ namespace UI.Panels
         public PlusMoneyPanel(
             IMenuDialogViewer _DialogViewer,
             INotificationViewer _NotificationViewer,
-            IActionExecutor _ActionExecutor)
+            IActionExecutor _ActionExecutor,
+            ITicker _Ticker) : base(_Ticker)
         {
             m_DialogViewer = _DialogViewer;
             m_NotificationViewer = _NotificationViewer;
@@ -66,7 +68,7 @@ namespace UI.Panels
         private void OnShopButtonClick()
         {
             Notify(this, NotifyMessageShopButtonClick);
-            var panel = new ShopPanel(m_DialogViewer.Container);
+            var panel = new ShopPanel(m_DialogViewer.Container, Ticker);
             panel.AddObservers(GetObservers());
             panel.Init();
             m_DialogViewer.Show(panel);
@@ -75,7 +77,7 @@ namespace UI.Panels
         private void OnDailyBonusButtonClick()
         {
             Notify(this, NotifyMessageDailyBonusButtonClick);
-            var panel = new DailyBonusPanel(m_DialogViewer, m_ActionExecutor);
+            var panel = new DailyBonusPanel(m_DialogViewer, m_ActionExecutor, Ticker);
             panel.AddObservers(GetObservers());
             panel.Init();
             m_DialogViewer.Show(panel);
@@ -84,7 +86,7 @@ namespace UI.Panels
         private void OnWheelOfFortuneButtonClick()
         {
             Notify(this, NotifyMessageWheelOfFortuneButtonClick);
-            var panel = new WheelOfFortunePanel(m_DialogViewer, m_NotificationViewer);
+            var panel = new WheelOfFortunePanel(m_DialogViewer, m_NotificationViewer, Ticker);
             panel.AddObservers(GetObservers());
             panel.Init();
             m_DialogViewer.Show(panel);

@@ -28,8 +28,9 @@ namespace Games.RazorMaze.Views.MazeItems
         public ViewMazeItemMovingTrap(
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
+            ITicker _Ticker,
             ViewSettings _ViewSettings) 
-            : base(_CoordinateConverter, _ContainersGetter)
+            : base(_CoordinateConverter, _ContainersGetter, _Ticker)
         {
             ViewSettings = _ViewSettings;
         }
@@ -77,7 +78,8 @@ namespace Games.RazorMaze.Views.MazeItems
             Object.transform.Rotate(Vector3.forward * rotSpeed);
         }
 
-        public object Clone() => new ViewMazeItemMovingTrap(CoordinateConverter, ContainersGetter, ViewSettings);
+        public object Clone() => new ViewMazeItemMovingTrap(
+            CoordinateConverter, ContainersGetter, Ticker, ViewSettings);
         
         #endregion
 

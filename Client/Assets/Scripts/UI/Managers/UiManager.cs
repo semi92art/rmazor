@@ -31,7 +31,7 @@ namespace UI.Managers
         Settings = 32
     }
     
-    public class UiManager : MonoBehaviour, ISingleton
+    public class UiManager : MonoBehaviour
     {
         #region singleton
         

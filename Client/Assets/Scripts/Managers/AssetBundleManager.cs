@@ -11,7 +11,7 @@ using Object = UnityEngine.Object;
 
 namespace Managers
 {
-    public class AssetBundleManager : MonoBehaviour, ISingleton
+    public class AssetBundleManager : MonoBehaviour
     {
         #region constants
 

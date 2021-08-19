@@ -9,6 +9,7 @@ using UI.Factories;
 using UI.Managers;
 using UI.PanelItems;
 using UnityEngine;
+using UnityGameLoopDI;
 using Utils;
 
 namespace UI.Panels
@@ -41,7 +42,8 @@ namespace UI.Panels
 
         public DailyBonusPanel(
             IMenuDialogViewer _DialogViewer, 
-            IActionExecutor _ActionExecutor)
+            IActionExecutor _ActionExecutor,
+            ITicker _Ticker) : base(_Ticker)
         {
             m_DialogViewer = _DialogViewer;
             m_ActionExecutor = _ActionExecutor;

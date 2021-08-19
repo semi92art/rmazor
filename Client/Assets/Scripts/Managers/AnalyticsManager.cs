@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Managers
 {
-    public class AnalyticsManager : GameObserver, ISingleton
+    public class AnalyticsManager : GameObserver
     {
         #region singleton
         

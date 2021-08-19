@@ -18,10 +18,9 @@ namespace Games.RazorMaze.Models
         void UnlockRotation();
     }
     
-    public class InputScheduler : Ticker, IInputScheduler, IUpdateTick
+    public class InputScheduler : IInputScheduler, IUpdateTick
     {
-        public event EInputCommandHandler MoveCommand;
-        public event EInputCommandHandler RotateCommand;
+        #region nonpublic members
         
         private readonly Queue<EInputCommand> m_MoveCommands = new Queue<EInputCommand>();
         private readonly Queue<EInputCommand> m_RotateCommands = new Queue<EInputCommand>();
@@ -30,7 +29,22 @@ namespace Games.RazorMaze.Models
         private bool m_RotationLocked;
         private int m_MoveCommandsCount;
         private int m_RotateCommandsCount;
+        
+        #endregion
+        
+        #region inject
 
+        public InputScheduler(ITicker _Ticker)
+        {
+            _Ticker.Register(this);
+        }
+        
+        #endregion
+        
+        #region api
+        
+        public event EInputCommandHandler MoveCommand;
+        public event EInputCommandHandler RotateCommand;
 
         public void AddCommand(EInputCommand _Command)
         {
@@ -63,6 +77,10 @@ namespace Games.RazorMaze.Models
             ScheduleMovement();
             ScheduleRotation();
         }
+        
+        #endregion
+
+        #region nonpublic methods
 
         private void ScheduleMovement()
         {
@@ -83,5 +101,7 @@ namespace Games.RazorMaze.Models
             m_RotationLocked = true;
             RotateCommand?.Invoke(cmd);
         }
+        
+        #endregion
     }
 }

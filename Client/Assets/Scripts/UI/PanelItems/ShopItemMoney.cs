@@ -7,6 +7,7 @@ using Managers;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using UnityGameLoopDI;
 
 namespace UI.PanelItems
 {
@@ -18,7 +19,7 @@ namespace UI.PanelItems
         public static IShopItem Create(RectTransform _Parent) =>
             ShopItemBase.Create<ShopItemMoney>(_Parent, "shop_item_money");
 
-        public void Init(ShopItemProps _Props, IEnumerable<GameObserver> _Observers)
+        public void Init(ShopItemProps _Props, IEnumerable<GameObserver> _Observers, ITicker _Ticker)
         {
             var rewards = _Props.Rewards;
             description.text = rewards[BankItemType.FirstCurrency].ToNumeric() + " " + "gold" + "\n" + 
@@ -38,7 +39,7 @@ namespace UI.PanelItems
                     (UnityAction) (() => BankManager.Instance.PlusBankItems(_Props.Rewards)));
             };
             
-            base.Init(action, _Props, _Observers);
+            base.Init(action, _Props, _Observers, _Ticker);
         }
     }
 }

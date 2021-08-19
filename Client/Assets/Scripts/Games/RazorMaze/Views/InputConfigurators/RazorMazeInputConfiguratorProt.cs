@@ -4,11 +4,20 @@ using UnityGameLoopDI;
 
 namespace Games.RazorMaze.Views.InputConfigurators
 {
-    public class RazorMazeInputConfiguratorProt : Ticker, IInputConfigurator, IUpdateTick
+    public class RazorMazeInputConfiguratorProt : IInputConfigurator, IUpdateTick
     {
+        #region inject
+
+        public RazorMazeInputConfiguratorProt(ITicker _Ticker) => _Ticker.Register(this);
+        
+        #endregion
+
+        #region api
+
         public bool Locked { get; set; }
         public event IntHandler Command;
-        public void ConfigureInput() { }
+        
+        public void ConfigureInput() { } //TODO
 
         public void UpdateTick()
         {
@@ -28,5 +37,8 @@ namespace Games.RazorMaze.Views.InputConfigurators
             else if (Input.GetKeyDown(KeyCode.Q))
                 Command.Invoke((int)EInputCommand.RotateCounterClockwise);
         }
+
+        #endregion
+
     }
 }

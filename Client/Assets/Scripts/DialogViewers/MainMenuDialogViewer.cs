@@ -3,13 +3,13 @@ using Constants;
 using Entities;
 using Extensions;
 using GameHelpers;
-using TMPro;
 using UI;
 using UI.Factories;
 using UI.Managers;
 using UI.Panels;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityGameLoopDI;
 using Utils;
 
 namespace DialogViewers
@@ -75,7 +75,8 @@ namespace DialogViewers
 
         public static IMenuDialogViewer Create(
             RectTransform _Parent,
-            IEnumerable<GameObserver> _Observers)
+            IEnumerable<GameObserver> _Observers,
+            ITicker _Ticker)
         {
             var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
@@ -84,7 +85,7 @@ namespace DialogViewers
                 "dialog_viewers",
                 "main_menu_viewer");
             var result = go.GetComponent<MainMenuDialogViewer>();
-            result.m_Notifyer = new ObserverNotifyer();
+            result.m_Notifyer = new ObserverNotifyer(_Ticker);
             result.m_Notifyer.AddObservers(_Observers);
             return result;
         }

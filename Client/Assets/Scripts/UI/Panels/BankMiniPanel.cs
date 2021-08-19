@@ -16,6 +16,7 @@ using UI.Managers;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using UnityGameLoopDI;
 using Utils;
 using Object = UnityEngine.Object;
 
@@ -91,7 +92,8 @@ namespace UI.Panels
         public BankMiniPanel(
             RectTransform _Parent,
             IMenuDialogViewer _DialogViewer,
-            INotificationViewer _NotificationViewer)
+            INotificationViewer _NotificationViewer,
+            ITicker _Ticker) : base(_Ticker)
         {
             m_Parent = _Parent;
             m_DialogViewer = _DialogViewer;
@@ -124,7 +126,7 @@ namespace UI.Panels
             m_PlusMoneyButton.SetOnClick(() =>
             {
                 Notify(this, CommonNotifyMessages.UiButtonClick);
-                var plusMoneyPanel = new PlusMoneyPanel(m_DialogViewer, m_NotificationViewer, this);
+                var plusMoneyPanel = new PlusMoneyPanel(m_DialogViewer, m_NotificationViewer, this, Ticker);
                 plusMoneyPanel.AddObservers(GetObservers());
                 plusMoneyPanel.Init();
                 m_DialogViewer.Show(plusMoneyPanel);

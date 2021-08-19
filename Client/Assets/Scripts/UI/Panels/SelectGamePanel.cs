@@ -9,6 +9,7 @@ using UI.Factories;
 using UI.Managers;
 using UI.PanelItems;
 using UnityEngine;
+using UnityGameLoopDI;
 using Utils;
 
 namespace UI.Panels
@@ -28,7 +29,8 @@ namespace UI.Panels
 
         public SelectGamePanel(
             IMenuDialogViewer _DialogViewer, 
-            System.Action<int> _SelectGame)
+            System.Action<int> _SelectGame,
+            ITicker _Ticker) : base(_Ticker)
         {
             m_DialogViewer = _DialogViewer;
             m_SelectGame = _SelectGame;
@@ -64,7 +66,7 @@ namespace UI.Panels
                     m_SelectGame.Invoke(cgiProps.GameId);
                     m_DialogViewer.Back();
                 };
-                cgi.Init(cgiProps, GetObservers());
+                cgi.Init(cgiProps, GetObservers(), Ticker);
             }
             
             Object.Destroy(cgiObj);

@@ -34,9 +34,10 @@ namespace Games.RazorMaze.Views.MazeItems
         public ViewMazeItemShredingerBlock(
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            ViewSettings _ViewSettings,
-            IGameTimeProvider _GameTimeProvider)
-            : base(_CoordinateConverter, _ContainersGetter)
+            ITicker _Ticker,
+            IGameTimeProvider _GameTimeProvider,
+            ViewSettings _ViewSettings)
+            : base(_CoordinateConverter, _ContainersGetter, _Ticker)
         {
             ViewSettings = _ViewSettings;
             GameTimeProvider = _GameTimeProvider;
@@ -77,7 +78,7 @@ namespace Games.RazorMaze.Views.MazeItems
         }
 
         public object Clone() => new ViewMazeItemShredingerBlock(
-            CoordinateConverter, ContainersGetter, ViewSettings, GameTimeProvider);
+            CoordinateConverter, ContainersGetter, Ticker, GameTimeProvider, ViewSettings);
 
         #endregion
         

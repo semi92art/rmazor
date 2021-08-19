@@ -1,10 +1,10 @@
-﻿using DialogViewers;
-using Extensions;
+﻿using Extensions;
 using GameHelpers;
 using UI.Factories;
 using UI.Managers;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityGameLoopDI;
 
 namespace UI.Panels
 {
@@ -21,7 +21,7 @@ namespace UI.Panels
 
         public GameUiCategory Category => GameUiCategory.Countdown;
 
-        public CountdownPanel(RectTransform _Container, UnityAction _OnCountdownFinish)
+        public CountdownPanel(RectTransform _Container, UnityAction _OnCountdownFinish, ITicker _Ticker) : base(_Ticker)
         {
             m_Container = _Container;
             m_OnCountdownFinish = _OnCountdownFinish;
