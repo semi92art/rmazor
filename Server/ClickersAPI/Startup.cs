@@ -18,6 +18,8 @@ namespace ClickersAPI
 {
     public class Startup
     {
+        private static string ConnectionString => "ReleaseMySQLConnection"; // "DebugMySqlConnection";
+
         public Startup(IConfiguration _Configuration)
         {
             Configuration = _Configuration;
@@ -27,20 +29,9 @@ namespace ClickersAPI
 
         public void ConfigureServices(IServiceCollection _Services)
         {
-            string connectionString = string.Empty;
-#if MySQL && DEBUG
-            connectionString = "DebugMySqlConnection";
-#elif MySQL && !DEBUG
-            connectionString = "ReleaseMySQLConnection";
-#elif !MySQL && DEBUG
-            connectionString = "DebugMSSqlConnection";
-#elif !MySQL && !DEBUG
-            connectionString = "ReleaseMSSqlConnection";
-#endif
-            
 #if MySQL
             _Services.AddDbContext<ApplicationDbContext>(_Options =>
-                _Options.UseMySql(Configuration.GetConnectionString(connectionString))
+                _Options.UseMySql(Configuration.GetConnectionString(ConnectionString))
                     .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 #else
             _Services.AddDbContext<ApplicationDbContext>(_Options =>
