@@ -2,6 +2,7 @@
 using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.MazeItems;
+using UnityGameLoopDI;
 
 namespace Games.RazorMaze.Views.MazeCommon
 {
@@ -11,5 +12,6 @@ namespace Games.RazorMaze.Views.MazeCommon
         void OnPathProceed(V2Int _PathItem);
         IViewMazeItem GetItem(MazeItem _Item);
         T GetItem<T>(MazeItem _Item) where T : IViewMazeItem;
+        event NoArgsHandler GameLoopUpdate;
     }
 }

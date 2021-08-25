@@ -3,6 +3,7 @@ using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.MazeItems;
+using UnityGameLoopDI;
 
 namespace Games.RazorMaze.Views.MazeCommon
 {
@@ -16,15 +17,15 @@ namespace Games.RazorMaze.Views.MazeCommon
         
         #endregion
         
-        
         #region inject
         
         public ViewMazeCommon(
+            ITicker _Ticker,
             IMazeItemsCreator _MazeItemsCreator, 
             IModelMazeData _Model,
             IContainersGetter _ContainersGetter, 
             ICoordinateConverter _CoordinateConverter) 
-            : base(_MazeItemsCreator, _Model, _ContainersGetter, _CoordinateConverter)
+            : base(_Ticker, _MazeItemsCreator, _Model, _ContainersGetter, _CoordinateConverter)
         { }
         
         #endregion

@@ -8,10 +8,11 @@ using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.MazeItems;
 using Games.RazorMaze.Views.Utils;
 using UnityEngine;
+using UnityGameLoopDI;
 
 namespace Games.RazorMaze.Views.MazeCommon
 {
-    public class ViewMazeCommonProt : IViewMazeCommon
+    public class ViewMazeCommonProt : IViewMazeCommon, IUpdateTick
     {
         #region inject
 
@@ -57,11 +58,18 @@ namespace Games.RazorMaze.Views.MazeCommon
             return (T) item;
         }
 
+        public event NoArgsHandler GameLoopUpdate;
+
         public void Init()
         {
             MazeItems = MazeItemsCreator.CreateMazeItems(Model.Info);
             ContainersGetter.MazeItemsContainer.SetLocalPosXY(Vector2.zero);
             ContainersGetter.MazeItemsContainer.PlusLocalPosY(CoordinateConverter.GetScale() * 0.5f);
+        }
+        
+        public void UpdateTick()
+        {
+            GameLoopUpdate?.Invoke();
         }
         
         #endregion

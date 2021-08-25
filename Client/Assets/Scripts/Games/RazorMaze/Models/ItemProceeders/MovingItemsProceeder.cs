@@ -8,7 +8,6 @@ using Games.RazorMaze.Models.ProceedInfos;
 using TimeProviders;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityGameLoopDI;
 using Utils;
 
 namespace Games.RazorMaze.Models.ItemProceeders
@@ -50,7 +49,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         event MazeItemMoveHandler MazeItemMoveFinished;
     }
 
-    public class MovingItemsProceeder : ItemsProceederBase, IUpdateTick, IMovingItemsProceeder
+    public class MovingItemsProceeder : ItemsProceederBase, IOnGameLoopUpdate, IMovingItemsProceeder
     {
         #region nonpublic members
         
@@ -60,8 +59,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         #region inject
         
-        public MovingItemsProceeder(ModelSettings _Settings, IModelMazeData _Data, ITicker _Ticker) 
-            : base(_Settings, _Data, _Ticker) { }
+        public MovingItemsProceeder(ModelSettings _Settings, IModelMazeData _Data) 
+            : base(_Settings, _Data) { }
         
         #endregion
         
@@ -76,17 +75,17 @@ namespace Games.RazorMaze.Models.ItemProceeders
             CollectItems(_Info);
         }
         
-        #endregion
-
-        #region nonpublic methods
-
-        void IUpdateTick.UpdateTick()
+        public void OnGameLoopUpdate()
         {
             if (!Data.ProceedingMazeItems)
                 return;
             ProceedMazeItemsMoving();
         }
+        
+        #endregion
 
+        #region nonpublic methods
+        
         private void ProceedMazeItemsMoving()
         {
             foreach (var type in Types)

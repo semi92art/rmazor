@@ -22,6 +22,7 @@ namespace Games.RazorMaze.Models
     
     public interface IModelMazeData : IPreInit, ICharacterMoveContinued
     {
+        event NoArgsHandler GameLoopUpdate;
         event NoArgsHandler MazeItemsProceedStarted;
         event NoArgsHandler MazeItemsProceedStopped;
         event MazeInfoHandler MazeChanged;
@@ -33,6 +34,7 @@ namespace Games.RazorMaze.Models
         CharacterInfo CharacterInfo { get; }
         bool ProceedingMazeItems { get; set; }
         bool ProceedingControls { get; set; }
+        void OnGameLoopUpdate();
     }
     
     public class ModelMazeData : IModelMazeData
@@ -58,6 +60,7 @@ namespace Games.RazorMaze.Models
 
         #region api
 
+        public event NoArgsHandler GameLoopUpdate;
         public event NoArgsHandler MazeItemsProceedStarted;
         public event NoArgsHandler MazeItemsProceedStopped;
         public event MazeInfoHandler MazeChanged;
@@ -86,6 +89,10 @@ namespace Games.RazorMaze.Models
         }
         
         public bool ProceedingControls { get; set; }
+        public void OnGameLoopUpdate()
+        {
+            GameLoopUpdate?.Invoke();
+        }
 
         public MazeInfo Info
         {

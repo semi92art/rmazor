@@ -2,7 +2,6 @@
 using System.Linq;
 using Entities;
 using Games.RazorMaze.Models.ProceedInfos;
-using UnityGameLoopDI;
 
 namespace Games.RazorMaze.Models.ItemProceeders
 {
@@ -21,7 +20,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
         protected bool m_Proceeding;
         protected ModelSettings Settings { get; }
         protected IModelMazeData Data { get; }
-        protected ITicker Ticker { get; }
         
         #endregion
 
@@ -34,12 +32,10 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region nonpublic methods
         
-        protected ItemsProceederBase(ModelSettings _Settings, IModelMazeData _Data, ITicker _Ticker)
+        protected ItemsProceederBase(ModelSettings _Settings, IModelMazeData _Data)
         {
             Settings = _Settings;
             Data = _Data;
-            Ticker = _Ticker;
-            Ticker.Register(this);
         }
 
         protected void CollectItems(MazeInfo _Info)

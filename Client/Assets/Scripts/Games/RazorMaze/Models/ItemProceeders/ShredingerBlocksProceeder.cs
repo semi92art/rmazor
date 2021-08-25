@@ -2,8 +2,6 @@
 using System.Collections;
 using System.Linq;
 using Games.RazorMaze.Models.ProceedInfos;
-using UnityEngine.Events;
-using UnityGameLoopDI;
 using Utils;
 
 namespace Games.RazorMaze.Models.ItemProceeders
@@ -40,8 +38,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region inject
         
-        public ShredingerBlocksProceeder(ModelSettings _Settings, IModelMazeData _Data, ITicker _Ticker) 
-            : base(_Settings, _Data, _Ticker) { }
+        public ShredingerBlocksProceeder(ModelSettings _Settings, IModelMazeData _Data) 
+            : base(_Settings, _Data) { }
         
         #endregion
         

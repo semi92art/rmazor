@@ -12,19 +12,19 @@ namespace Games.RazorMaze
 {
     public interface IGameManager : IInit, IPreInit, IPostInit { }
     
-    public class RazorMazeGameManager : MonoBehaviour, IGameManager
+    public class RazorMazeGameController : MonoBehaviour, IGameManager
     {
         #region singleton
 
-        private static RazorMazeGameManager _instance;
+        private static RazorMazeGameController _instance;
 
-        public static RazorMazeGameManager Instance
+        public static RazorMazeGameController Instance
         {
             get
             {
                 if (_instance != null) return _instance;
                 var go = CommonUtils.FindOrCreateGameObject("Game Manager", out bool _WasFound);
-                _instance = _WasFound ? go.GetComponent<RazorMazeGameManager>() : go.AddComponent<RazorMazeGameManager>();
+                _instance = _WasFound ? go.GetComponent<RazorMazeGameController>() : go.AddComponent<RazorMazeGameController>();
                 return _instance;
             }
         }
@@ -100,8 +100,14 @@ namespace Games.RazorMaze
             levelStaging.LevelFinished                          += OnLevelFinished;
             
             View.InputConfigurator.Command                      += OnInputCommand;
+            View.MazeCommon.GameLoopUpdate                      += OnGameLoopUpdate;
             
             Model.PreInit();
+        }
+
+        private void OnGameLoopUpdate()
+        {
+            Model.Data.OnGameLoopUpdate();
         }
 
         private void DataOnPathProceedEvent(V2Int _PathItem)

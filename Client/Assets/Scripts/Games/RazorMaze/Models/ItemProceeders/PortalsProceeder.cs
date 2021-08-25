@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Linq;
-using UnityEngine;
-using UnityGameLoopDI;
 
 namespace Games.RazorMaze.Models.ItemProceeders
 {
@@ -34,8 +32,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         #region inject
         
-        public PortalsProceeder(ModelSettings _Settings, IModelMazeData _Data, ITicker _Ticker) 
-            : base(_Settings, _Data, _Ticker) { }
+        public PortalsProceeder(ModelSettings _Settings, IModelMazeData _Data) 
+            : base(_Settings, _Data) { }
         
         #endregion
         

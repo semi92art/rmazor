@@ -67,10 +67,10 @@ namespace Games.RazorMaze
              
             SceneManager.sceneLoaded += (_Scene, _Mode) =>
             {
-                RazorMazeGameManager.Instance.PreInit();
-                RazorMazeGameManager.Instance.SetMazeInfo(MazeInfo);
-                RazorMazeGameManager.Instance.Init();
-                RazorMazeGameManager.Instance.PostInit();
+                RazorMazeGameController.Instance.PreInit();
+                RazorMazeGameController.Instance.SetMazeInfo(MazeInfo);
+                RazorMazeGameController.Instance.Init();
+                RazorMazeGameController.Instance.PostInit();
             };
             SceneManager.LoadScene(SceneNames.Level);
         }

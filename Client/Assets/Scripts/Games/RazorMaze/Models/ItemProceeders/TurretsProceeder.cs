@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Entities;
-using Games.RazorMaze.Models.ProceedInfos;
 using UnityEngine;
-using UnityGameLoopDI;
 
 namespace Games.RazorMaze.Models.ItemProceeders
 {
@@ -40,7 +38,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         event TurretShotEventHandler TurretShoot;
     }
     
-    public class TurretsProceeder : ItemsProceederBase, IUpdateTick, ITurretsProceeder
+    public class TurretsProceeder : ItemsProceederBase, IOnGameLoopUpdate, ITurretsProceeder
     {
         #region nonpubic members
         
@@ -51,8 +49,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region inject
         
-        public TurretsProceeder(ModelSettings _Settings, IModelMazeData _Data, ITicker _Ticker) 
-            : base(_Settings, _Data, _Ticker) { }
+        public TurretsProceeder(ModelSettings _Settings, IModelMazeData _Data) 
+            : base(_Settings, _Data) { }
         
         #endregion
         
@@ -65,17 +63,17 @@ namespace Games.RazorMaze.Models.ItemProceeders
             CollectItems(_Info);
         }
         
-        #endregion
-        
-        #region nonpublic methods
-
-        void IUpdateTick.UpdateTick()
+        public void OnGameLoopUpdate()
         {
             if (!Data.ProceedingMazeItems)
                 return;
             ProceedTurrets();
         }
-
+        
+        #endregion
+        
+        #region nonpublic methods
+        
         private void ProceedTurrets()
         {
             foreach (var type in Types)

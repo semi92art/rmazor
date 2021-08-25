@@ -74,12 +74,14 @@ namespace Games.RazorMaze.Models
         
         public void PreInit()
         {
-            var proceeders = GetProceedersByInterface<IItemsProceeder>();
-            foreach (var proceeder in proceeders)
+            foreach (var proceeder in GetInterfaceOfProceeders<IItemsProceeder>())
             {
                 Data.MazeItemsProceedStarted += proceeder.Start;
                 Data.MazeItemsProceedStopped += proceeder.Stop;
             }
+            
+            foreach (var item in GetInterfaceOfProceeders<IOnGameLoopUpdate>())
+                Data.GameLoopUpdate += item.OnGameLoopUpdate;
             
             Data.MazeChanged                      += MazeOnMazeChanged;
             MazeRotation.RotationFinished         += MazeOnRotationFinished;
@@ -90,6 +92,7 @@ namespace Games.RazorMaze.Models
             InputScheduler.RotateCommand          += InputSchedulerOnRotateCommand;
             PortalsProceeder.PortalEvent          += Character.OnPortal;
             SpringboardProceeder.SpringboardEvent += Character.OnSpringboard;
+            
             Data.PreInit();
         }
 
@@ -100,7 +103,7 @@ namespace Games.RazorMaze.Models
         
         private void MazeOnMazeChanged(MazeInfo _Info)
         {
-            var proceeders = GetProceedersByInterface<IOnMazeChanged>();
+            var proceeders = GetInterfaceOfProceeders<IOnMazeChanged>();
             foreach (var proceeder in proceeders)
                 proceeder.OnMazeChanged(_Info);
         }
@@ -118,7 +121,7 @@ namespace Games.RazorMaze.Models
 
         private void CharacterOnMoveContinued(CharacterMovingEventArgs _Args)
         {
-            var proceeders = GetProceedersByInterface<ICharacterMoveContinued>();
+            var proceeders = GetInterfaceOfProceeders<ICharacterMoveContinued>();
             foreach (var proceeder in proceeders)
                 proceeder.OnCharacterMoveContinued(_Args);
         }
@@ -156,7 +159,7 @@ namespace Games.RazorMaze.Models
             MazeRotation.Rotate(dir);
         }
         
-        private List<T> GetProceedersByInterface<T>() where T : class
+        private List<T> GetInterfaceOfProceeders<T>() where T : class
         {
             var result = new List<T>
             {

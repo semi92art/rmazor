@@ -38,7 +38,7 @@ namespace Mono_Installers
             Container.Bind<ModelSettings>()                        .FromScriptableObject(modelSettings)           .AsSingle();
             Container.Bind<ViewSettings>()                         .FromScriptableObject(viewSettings)            .AsSingle();
             Container.Bind<IViewGame>()                            .To<ViewGame>()                                .AsSingle();
-            Container.Bind<IGameManager>()                         .To<RazorMazeGameManager>()                    .AsSingle();
+            Container.Bind<IGameManager>()                         .To<RazorMazeGameController>()                 .AsSingle();
             Container.Bind<IModelMazeData>()                       .To<ModelMazeData>()                           .AsSingle();
             Container.Bind<IModelMazeRotation>()                   .To<ModelMazeRotation>()                       .AsSingle();
             Container.Bind<IModelCharacter>()                      .To<ModelCharacter>()                          .AsSingle();
