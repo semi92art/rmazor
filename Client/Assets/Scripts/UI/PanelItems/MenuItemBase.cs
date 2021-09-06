@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Entities;
+using Ticker;
 using UnityEngine;
-using UnityGameLoopDI;
 
 namespace UI.PanelItems
 {

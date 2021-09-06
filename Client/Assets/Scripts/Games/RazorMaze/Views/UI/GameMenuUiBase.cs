@@ -1,13 +1,13 @@
 ﻿using DialogViewers;
 using Entities;
 using Extensions;
+using Ticker;
 using TimeProviders;
 using UI.Factories;
 using UI.Panels;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using UnityGameLoopDI;
 
 namespace Games.RazorMaze.Views.UI
 {

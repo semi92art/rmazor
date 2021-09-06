@@ -1,5 +1,5 @@
-﻿using UnityEngine.Events;
-using UnityGameLoopDI;
+﻿using Ticker;
+using UnityEngine.Events;
 
 namespace Games.RazorMaze.Views.UI
 {

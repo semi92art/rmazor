@@ -12,7 +12,7 @@ using Constants;
 using Exceptions;
 using Managers;
 using Network;
-using UnityGameLoopDI;
+using Ticker;
 
 namespace UI.Panels
 {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Exceptions;
-using UnityGameLoopDI;
+using Ticker;
 
 namespace Games.RazorMaze.Models
 {

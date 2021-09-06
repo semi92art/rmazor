@@ -3,8 +3,8 @@ using Constants;
 using Entities;
 using Managers;
 using Lean.Localization;
+using Ticker;
 using UnityEngine;
-using UnityGameLoopDI;
 using Utils;
 
 namespace Settings

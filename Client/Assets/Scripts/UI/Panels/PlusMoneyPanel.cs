@@ -5,11 +5,11 @@ using Entities;
 using Extensions;
 using GameHelpers;
 using Managers;
+using Ticker;
 using UI.Factories;
 using UI.Managers;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityGameLoopDI;
 
 namespace UI.Panels
 {

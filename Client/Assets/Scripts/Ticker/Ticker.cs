@@ -1,7 +1,6 @@
-﻿using UnityEngine.SceneManagement;
-using Utils;
+﻿using Utils;
 
-namespace UnityGameLoopDI
+namespace Ticker
 {
     public interface ITicker
     {

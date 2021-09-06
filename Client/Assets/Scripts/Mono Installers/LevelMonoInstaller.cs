@@ -13,9 +13,7 @@ using Games.RazorMaze.Views.UI;
 using Games.RazorMaze.Views.Views;
 using TimeProviders;
 using UnityEngine;
-using UnityGameLoopDI;
 using Utils;
-using Zenject;
 
 namespace Mono_Installers
 {

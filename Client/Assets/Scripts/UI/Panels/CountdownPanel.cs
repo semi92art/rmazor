@@ -1,10 +1,10 @@
 ﻿using Extensions;
 using GameHelpers;
+using Ticker;
 using UI.Factories;
 using UI.Managers;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityGameLoopDI;
 
 namespace UI.Panels
 {

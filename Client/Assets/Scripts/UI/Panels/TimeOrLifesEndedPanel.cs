@@ -2,6 +2,7 @@
 using DialogViewers;
 using Extensions;
 using GameHelpers;
+using Ticker;
 using TMPro;
 using UI.Factories;
 using UI.Managers;
@@ -9,7 +10,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityGameLoopDI;
 
 namespace UI.Panels
 {

@@ -3,10 +3,10 @@ using Constants;
 using Entities;
 using Extensions;
 using GameHelpers;
+using Ticker;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityGameLoopDI;
 
 namespace UI.PanelItems
 {

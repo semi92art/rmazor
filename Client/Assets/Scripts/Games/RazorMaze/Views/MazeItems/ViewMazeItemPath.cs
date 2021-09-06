@@ -7,8 +7,8 @@ using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
+using Ticker;
 using UnityEngine;
-using UnityGameLoopDI;
 
 namespace Games.RazorMaze.Views.MazeItems
 {

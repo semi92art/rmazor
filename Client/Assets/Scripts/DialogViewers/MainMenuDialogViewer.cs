@@ -3,13 +3,13 @@ using Constants;
 using Entities;
 using Extensions;
 using GameHelpers;
+using Ticker;
 using UI;
 using UI.Factories;
 using UI.Managers;
 using UI.Panels;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityGameLoopDI;
 using Utils;
 
 namespace DialogViewers

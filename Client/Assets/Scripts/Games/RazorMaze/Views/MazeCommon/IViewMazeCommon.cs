@@ -2,7 +2,6 @@
 using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.MazeItems;
-using UnityGameLoopDI;
 
 namespace Games.RazorMaze.Views.MazeCommon
 {

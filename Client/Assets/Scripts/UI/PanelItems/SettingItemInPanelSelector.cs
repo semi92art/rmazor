@@ -5,11 +5,11 @@ using DialogViewers;
 using Entities;
 using Extensions;
 using Managers;
+using Ticker;
 using TMPro;
 using UI.Panels;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityGameLoopDI;
 
 namespace UI.PanelItems
 {

@@ -4,11 +4,11 @@ using Entities;
 using Extensions;
 using Managers;
 using Network;
+using Ticker;
 using UI;
 using UI.Panels;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityGameLoopDI;
 using Utils;
 using Zenject;
 

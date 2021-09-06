@@ -1,6 +1,6 @@
-﻿using TimeProviders;
+﻿using Ticker;
+using TimeProviders;
 using UnityEngine;
-using UnityGameLoopDI;
 
 public delegate void TimeHandler(float _Time);
 

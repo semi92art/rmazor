@@ -6,12 +6,12 @@ using Exceptions;
 using Extensions;
 using GameHelpers;
 using Managers;
+using Ticker;
 using UI.Factories;
 using UI.Managers;
 using UI.Panels;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityGameLoopDI;
 using Utils;
 using Zenject;
 

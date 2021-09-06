@@ -8,6 +8,7 @@ using Exceptions;
 using Extensions;
 using GameHelpers;
 using Managers;
+using Ticker;
 using TimeProviders;
 using TMPro;
 using UI.Entities;
@@ -16,7 +17,6 @@ using UI.Managers;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using UnityGameLoopDI;
 using Utils;
 using Object = UnityEngine.Object;
 

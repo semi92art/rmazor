@@ -4,10 +4,10 @@ using Entities;
 using Extensions;
 using GameHelpers;
 using Managers;
+using Ticker;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using UnityGameLoopDI;
 
 namespace UI.PanelItems
 {

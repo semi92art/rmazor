@@ -4,12 +4,12 @@ using DialogViewers;
 using Extensions;
 using GameHelpers;
 using Network;
+using Ticker;
 using UI.Entities;
 using UI.Factories;
 using UI.Managers;
 using UI.PanelItems;
 using UnityEngine;
-using UnityGameLoopDI;
 using Utils;
 
 namespace UI.Panels

@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using Games.RazorMaze.Models;
+﻿using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.MazeItems;
-using UnityGameLoopDI;
+using Ticker;
 
 namespace Games.RazorMaze.Views.MazeCommon
 {

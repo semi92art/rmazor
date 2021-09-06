@@ -9,9 +9,9 @@ using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
+using Ticker;
 using TimeProviders;
 using UnityEngine;
-using UnityGameLoopDI;
 using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems

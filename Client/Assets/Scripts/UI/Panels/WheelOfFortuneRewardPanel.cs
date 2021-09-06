@@ -4,12 +4,12 @@ using Exceptions;
 using Extensions;
 using GameHelpers;
 using Managers;
+using Ticker;
 using TMPro;
 using UI.Factories;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using UnityGameLoopDI;
 
 namespace UI.Panels
 {

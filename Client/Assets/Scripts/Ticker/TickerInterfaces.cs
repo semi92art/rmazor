@@ -1,4 +1,4 @@
-﻿namespace UnityGameLoopDI
+﻿namespace Ticker
 {
     public interface IUpdateTick { void UpdateTick(); }
     public interface IFixedUpdateTick {void FixedUpdateTick(); }

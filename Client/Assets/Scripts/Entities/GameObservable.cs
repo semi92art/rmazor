@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using Managers;
-using UnityGameLoopDI;
+using Ticker;
 
 namespace Entities
 {

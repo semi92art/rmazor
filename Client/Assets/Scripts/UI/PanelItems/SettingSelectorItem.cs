@@ -3,10 +3,10 @@ using System.Linq;
 using Constants;
 using Entities;
 using Managers;
+using Ticker;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityGameLoopDI;
 using Utils;
 using Entry = UnityEngine.EventSystems.EventTrigger.Entry;
 

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using Constants;
 using Entities;
+using Ticker;
 using TMPro;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using UnityGameLoopDI;
 
 namespace UI.PanelItems
 {

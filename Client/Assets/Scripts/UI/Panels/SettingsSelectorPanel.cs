@@ -10,7 +10,7 @@ using UI.PanelItems;
 using UnityEngine;
 using UnityEngine.UI;
 using Constants;
-using UnityGameLoopDI;
+using Ticker;
 
 namespace UI.Panels
 {

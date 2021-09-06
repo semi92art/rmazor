@@ -1,8 +1,8 @@
 ﻿using Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
+using Ticker;
 using UnityEngine;
-using UnityGameLoopDI;
 
 namespace Games.RazorMaze.Views.MazeItems
 {

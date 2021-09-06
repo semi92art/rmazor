@@ -5,6 +5,7 @@ using Extensions;
 using GameHelpers;
 using Lean.Localization;
 using Managers;
+using Ticker;
 using TMPro;
 using UI.Entities;
 using UI.Factories;
@@ -12,7 +13,6 @@ using UI.Managers;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using UnityGameLoopDI;
 using Utils;
 using WheelController = MkeyFW.WheelController;
 

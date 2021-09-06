@@ -3,11 +3,11 @@ using System.Linq;
 using DialogViewers;
 using Extensions;
 using GameHelpers;
+using Ticker;
 using UI.Entities;
 using UI.Factories;
 using UI.Managers;
 using UnityEngine;
-using UnityGameLoopDI;
 
 namespace UI.Panels
 {

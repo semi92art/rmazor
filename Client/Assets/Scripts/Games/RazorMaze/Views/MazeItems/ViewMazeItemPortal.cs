@@ -7,9 +7,9 @@ using Games.RazorMaze.Views.MazeCommon;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using SpawnPools;
+using Ticker;
 using TimeProviders;
 using UnityEngine;
-using UnityGameLoopDI;
 using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
