@@ -16,22 +16,26 @@ namespace Games.RazorMaze.Views.MazeCommon
     {
         #region inject
 
+        private ITicker Ticker { get; }
         private IMazeItemsCreator MazeItemsCreator { get; }
         private IModelMazeData Model { get; }
         private IContainersGetter ContainersGetter { get; }
         private ICoordinateConverter CoordinateConverter { get; }
 
         public ViewMazeCommonProt(
+            ITicker _Ticker,
             IMazeItemsCreator _MazeItemsCreator,
             IModelMazeData _Model,
             IContainersGetter _ContainersGetter, 
             ICoordinateConverter _CoordinateConverter)
         {
+            Ticker = _Ticker;
             MazeItemsCreator = _MazeItemsCreator;
             Model = _Model;
             ContainersGetter = _ContainersGetter;
             CoordinateConverter = _CoordinateConverter;
 
+            Ticker.Register(this);
             Camera.main.backgroundColor = ViewUtils.ColorMain;
         }
 

@@ -4,7 +4,6 @@ using System.Linq;
 using Entities;
 using Games.RazorMaze.Models.ProceedInfos;
 using TimeProviders;
-using UnityGameLoopDI;
 using Utils;
 
 namespace Games.RazorMaze.Models.ItemProceeders
@@ -30,7 +29,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         event MazeItemTrapIncreasingEventHandler TrapIncreasingStageChanged;
     }
     
-    public class TrapsIncreasingProceeder : ItemsProceederBase, IUpdateTick, ITrapsIncreasingProceeder
+    public class TrapsIncreasingProceeder : ItemsProceederBase, IOnGameLoopUpdate, ITrapsIncreasingProceeder
     {
         #region constants
         
@@ -75,7 +74,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             ProceedTraps();
         }
         
-        public void UpdateTick()
+        public void OnGameLoopUpdate()
         {
             ProceedTraps();
         }
