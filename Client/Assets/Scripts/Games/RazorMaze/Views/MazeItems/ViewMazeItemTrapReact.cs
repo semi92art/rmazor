@@ -34,19 +34,22 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region inject
         
-        private ViewSettings ViewSettings { get; }
         private IGameTimeProvider GameTimeProvider { get; }
+        private ModelSettings ModelSettings { get; }
+        private ViewSettings ViewSettings { get; }
 
         public ViewMazeItemTrapReact(
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             ITicker _Ticker,
             IGameTimeProvider _GameTimeProvider,
+            ModelSettings _ModelSettings,
             ViewSettings _ViewSettings)
             : base(_CoordinateConverter, _ContainersGetter, _Ticker)
         {
-            ViewSettings = _ViewSettings;
             GameTimeProvider = _GameTimeProvider;
+            ModelSettings = _ModelSettings;
+            ViewSettings = _ViewSettings;
         }
         
         #endregion
@@ -72,7 +75,7 @@ namespace Games.RazorMaze.Views.MazeItems
         }
         
         public object Clone() => new ViewMazeItemTrapReact(
-            CoordinateConverter, ContainersGetter, Ticker, GameTimeProvider, ViewSettings);
+            CoordinateConverter, ContainersGetter, Ticker, GameTimeProvider, ModelSettings, ViewSettings);
         
         public void OnTrapReact(MazeItemTrapReactEventArgs _Args)
         {
@@ -117,7 +120,7 @@ namespace Games.RazorMaze.Views.MazeItems
             var dir = Props.Directions.First().ToVector2();
             var trapTr = trap.transform;
             trapTr.SetLocalPosXY(dir * scale * StartPos);
-            trapTr.localScale = Vector3.one * scale;
+            trapTr.localScale = Vector3.one * scale * 0.95f;
             
             var maskGo = PrefabUtilsEx.InitPrefab(
                 ContainersGetter.MazeItemsContainer, "views", "turret_bullet_mask");
@@ -167,7 +170,7 @@ namespace Games.RazorMaze.Views.MazeItems
             yield return Coroutines.Lerp(
                 FinalPos,
                 StartPos,
-                0.1f,
+                ModelSettings.trapAfterReactTime,
                 _Progress => m_Trap.transform.SetLocalPosXY(dir * scale * _Progress),
                 GameTimeProvider
             );

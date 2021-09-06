@@ -87,9 +87,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 var infos = GetProceedInfos(type);
                 foreach (var info in infos.Values.Where(_Info => !_Info.IsProceeding))
                 {
-                    var item = info.Item;
-                    var trapExtractPos = item.Position + item.Direction;
-                    if (trapExtractPos != m_CharacterPosCheck)
+                    if (info.Item.Position + info.Item.Direction != m_CharacterPosCheck)
                         continue;
                     info.IsProceeding = true;
                     Coroutines.Run(ProceedTrap(info));
@@ -99,7 +97,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         private IEnumerator ProceedTrap(IMazeItemProceedInfo _Info)
         {
-            _Info.IsProceeding = true;
             _Info.ProceedingStage++;
             float duration = GetStageDuration(_Info.ProceedingStage); 
             TrapReactStageChanged?.Invoke(new MazeItemTrapReactEventArgs(_Info.Item, _Info.ProceedingStage, duration));
