@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Entities;
+using Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.MazeItems;
 using Ticker;
+using UnityEngine;
 
 namespace Games.RazorMaze.Views.MazeCommon
 {
@@ -39,23 +41,25 @@ namespace Games.RazorMaze.Views.MazeCommon
         
         #region api
         
-        public List<IViewMazeItem> MazeItems { get; private set; }
+        public event NoArgsHandler GameLoopUpdate;
+        public abstract List<IViewMazeItem> MazeItems { get; }
+
+        public virtual void Init()
+        {
+            ContainersGetter.MazeItemsContainer.SetLocalPosXY(Vector2.zero);
+            ContainersGetter.MazeItemsContainer.PlusLocalPosY(CoordinateConverter.GetScale() * 0.5f);
+        }
         
         public virtual void OnPathProceed(V2Int _PathItem)
         {
             var item = MazeItems.First(_Item => _Item.Props.Position == _PathItem && _Item.Props.IsNode);
             item.Proceeding = true;
         }
+        
+        public virtual void UpdateTick() => GameLoopUpdate?.Invoke();
 
-        public abstract void Init();
         public abstract IViewMazeItem GetItem(MazeItem _Item);
-        public abstract T GetItem<T>(MazeItem _Item) where T : IViewMazeItem;
-        public event NoArgsHandler GameLoopUpdate;
-
-        public void UpdateTick()
-        {
-            GameLoopUpdate?.Invoke();
-        }
+        public virtual T GetItem<T>(MazeItem _Item)  where T : IViewMazeItem => (T) GetItem(_Item);
 
         #endregion
 

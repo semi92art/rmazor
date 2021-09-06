@@ -249,10 +249,28 @@ public class EditorHelper : EditorWindow
             {
                 var prop = serObj.FindProperty(fieldInfo.Name);
                 EditorGUILayout.PropertyField(prop);
-                float val = Convert.ToSingle(fieldInfo.GetValue(settings));
-                if (Math.Abs(val - prop.floatValue) > float.Epsilon)
+                bool refresh = false;
+                if (fieldInfo.FieldType == typeof(float))
                 {
-                    fieldInfo.SetValue(settings, prop.floatValue);
+                    float val = Convert.ToSingle(fieldInfo.GetValue(settings));
+                    if (Math.Abs(val - prop.floatValue) > float.Epsilon)
+                    {
+                        fieldInfo.SetValue(settings, prop.floatValue);
+                        refresh = true;
+                    }
+                }
+                else if (fieldInfo.FieldType == typeof(int))
+                {
+                    int val = Convert.ToInt32(fieldInfo.GetValue(settings));
+                    if (val != prop.intValue)
+                    {
+                        fieldInfo.SetValue(settings, prop.intValue);
+                        refresh = true;
+                    }
+                }
+
+                if (refresh)
+                {
                     EditorUtility.SetDirty(settings);
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();

@@ -1,38 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Entities;
 using Exceptions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeItems;
-using UnityEngine;
+using SpawnPools;
 using Zenject;
 
 namespace Games.RazorMaze.Views.Helpers
 {
-    public interface IMazeItemsCreator
-    {
-        bool Editor { get; set; }
-        List<IViewMazeItem> CreateMazeItems(MazeInfo _Info);
-    }
-    
-    public class MazeItemsCreator : IMazeItemsCreator
+    public class MazeItemsCreator : MazeItemsCreatorBase
     {
         #region inject
         
-        private IContainersGetter            ContainersGetter { get; }
-        private ICoordinateConverter         CoordinateConverter { get; }
-        private IViewMazeItemPath            ItemPath { get; }
-        private IViewMazeItemGravityBlock    GravityBlock { get; }
-        private IViewMazeItemMovingTrap      MovingTrap { get; }
-        private IViewMazeItemShredingerBlock ShredingerBlock { get; }
-        private IViewMazeItemTurret          Turret { get; }
-        private IViewMazeItemSpringboard     Springboard { get; }
-        private IViewMazeItemPortal          Portal { get; }
-        private IViewMazeItemGravityTrap     GravityTrap { get; }
-        private IViewMazeItemTrapReact       TrapReact { get; }
-        private IViewMazeItemTrapIncreasing  TrapIncreasing { get; }
-
         [Inject]
         public MazeItemsCreator(
             IContainersGetter _ContainersGetter,
@@ -46,118 +28,91 @@ namespace Games.RazorMaze.Views.Helpers
             IViewMazeItemPortal _Portal,
             IViewMazeItemGravityTrap _GravityTrap,
             IViewMazeItemTrapReact _TrapReact,
-            IViewMazeItemTrapIncreasing _TrapIncreasing)
-        {
-            ContainersGetter = _ContainersGetter;
-            CoordinateConverter = _CoordinateConverter;
-            ItemPath = _ItemPath;
-            GravityBlock = _GravityBlock;
-            MovingTrap = _MovingTrap;
-            ShredingerBlock = _ShredingerBlock;
-            Turret = _Turret;
-            Springboard = _Springboard;
-            Portal = _Portal;
-            GravityTrap = _GravityTrap;
-            TrapReact = _TrapReact;
-            TrapIncreasing = _TrapIncreasing;
-        }
-        
-        public MazeItemsCreator(
-            IContainersGetter _ContainersGetter,
-            ICoordinateConverter _CoordinateConverter)
-        {
-            ContainersGetter = _ContainersGetter;
-            CoordinateConverter = _CoordinateConverter;
-        }
+            IViewMazeItemTrapIncreasing _TrapIncreasing) : base(
+            _ContainersGetter, 
+            _CoordinateConverter, 
+            _ItemPath,
+            _GravityBlock, 
+            _MovingTrap,
+            _ShredingerBlock,
+            _Turret, 
+            _Springboard,
+            _Portal,
+            _GravityTrap,
+            _TrapReact,
+            _TrapIncreasing) { }
         
         #endregion
-        
-        #region api
 
-        public bool Editor { get; set; }
-
-        public List<IViewMazeItem> CreateMazeItems(MazeInfo _Info)
+        public override void InitMazeItems(
+            MazeInfo _Info, 
+            SpawnPool<IViewMazeItemPath> _PathPool, 
+            Dictionary<EMazeItemType, 
+                SpawnPool<IViewMazeItem>> _BlockPools)
         {
             CoordinateConverter.Init(_Info.Size);
-            
-            var res = new List<IViewMazeItem>();
-            foreach (var item in _Info.Path)
-                AddPathItem(res, _Info, item);
-            foreach (var item in _Info.MazeItems)
-                AddMazeItem(res, _Info, item);
-            return res;
-        }
-        
-        #endregion
-        
-        #region nonpublic methods
-        
-        private void AddPathItem(
-            ICollection<IViewMazeItem> _Items,
-            MazeInfo _Info,
-            V2Int _Position)
-        {
-            bool isStartNode = !_Items.Any();
-            var props = new ViewMazeItemProps
+            foreach (var pathItemPos in _Info.Path)
             {
-                IsNode = true,
-                IsStartNode = isStartNode,
-                Position = _Position
-            };
-            if (ItemPath != null && !(ItemPath is ViewMazeItemPathProtFake))
-            {
-                var item = (IViewMazeItemPath)ItemPath.Clone();
-                item.Init(props);
-                _Items.Add(item);
-                return;
+                var props = new ViewMazeItemProps
+                {
+                    IsNode = true,
+                    IsStartNode = pathItemPos == _Info.Path.First(),
+                    Position = pathItemPos
+                };
+                var pathItemInPool = _PathPool.FirstInactive;
+                pathItemInPool.Init(props);
+                _PathPool.Activate(pathItemInPool);
             }
-            AddPathItemProt(_Items, _Info.Size, props);
+
+            foreach (var mazeItem in _Info.MazeItems.Where(_Item => _Item.Type != EMazeItemType.Block))
+            {
+                var props = new ViewMazeItemProps
+                {
+                    Type = mazeItem.Type,
+                    Position = mazeItem.Position,
+                    Path = mazeItem.Path,
+                    Directions = new List<V2Int>{mazeItem.Direction},
+                    Pair = mazeItem.Pair,
+                    IsNode = false,
+                    IsStartNode = false
+                };
+                var blockItemInPool = _BlockPools[mazeItem.Type].FirstInactive;
+                blockItemInPool.Init(props);
+                _BlockPools[mazeItem.Type].Activate(blockItemInPool);
+            }
         }
-        
-        private void AddPathItemProt(
-            ICollection<IViewMazeItem> _Items,
-            V2Int _MazeSize,
-            ViewMazeItemProps _Props) 
+
+        protected override void AddPathItem(ICollection<IViewMazeItem> _Items, MazeInfo _Info, V2Int _Position)
         {
-            var tr = new GameObject("Path Item").transform;
-            tr.SetParent(ContainersGetter.MazeItemsContainer);
-            var item = tr.gameObject.AddComponent<ViewMazeItemProt>();
-            item.MazeSize = _MazeSize; 
+            throw new Exception("this method is only for prototypes");
+        }
+
+        protected override void AddMazeItem(ICollection<IViewMazeItem> _Items, MazeInfo _Info, MazeItem _Item)
+        {
+            throw new Exception("this method is only for prototypes");
+            // var props = new ViewMazeItemProps
+            // {
+            //     Type = _Item.Type,
+            //     Position = _Item.Position,
+            //     Path = _Item.Path,
+            //     Directions = new List<V2Int>{_Item.Direction},
+            //     Pair = _Item.Pair,
+            //     IsNode = false,
+            //     IsStartNode = false
+            // };
+            // AddMazeItemRelease(_Items, props);
+        }
+
+        private void AddPathItemRelease(
+            ICollection<IViewMazeItem> _Items,
+            ViewMazeItemProps _Props)
+        {
+            if (ItemPath == null) return;
+            var item = (IViewMazeItemPath)ItemPath.Clone();
             item.Init(_Props);
             _Items.Add(item);
         }
         
-        private void AddMazeItem(
-            ICollection<IViewMazeItem> _Items,
-            MazeInfo _Info,
-            MazeItem _Item)
-        {
-            var props = new ViewMazeItemProps
-            {
-                Type = _Item.Type,
-                Position = _Item.Position,
-                Path = _Item.Path,
-                Directions = new List<V2Int>{_Item.Direction},
-                Pair = _Item.Pair,
-                IsNode = false,
-                IsStartNode = false
-            };
-            if (   _Item.Type == EMazeItemType.GravityBlock    && GravityBlock != null    && !(GravityBlock    is ViewMazeItemGravityBlockProtFake)
-                || _Item.Type == EMazeItemType.TrapMoving      && MovingTrap != null      && !(MovingTrap      is ViewMazeItemMovingTrapProtFake)
-                || _Item.Type == EMazeItemType.ShredingerBlock && ShredingerBlock != null && !(ShredingerBlock is ViewMazeItemShredingerBlockProtFake)
-                || _Item.Type == EMazeItemType.Turret          && Turret != null          && !(Turret          is ViewMazeItemTurretProtFake)
-                || _Item.Type == EMazeItemType.Springboard     && Springboard != null     && !(Springboard     is ViewMazeItemSpringboardProtFake)
-                || _Item.Type == EMazeItemType.Portal          && Portal != null          && !(Portal          is ViewMazeItemPortalProtFake)
-                || _Item.Type == EMazeItemType.GravityTrap     && GravityTrap != null     && !(GravityTrap     is ViewMazeItemGravityTrapProtFake)
-                || _Item.Type == EMazeItemType.TrapReact       && TrapReact != null       && !(TrapReact       is ViewMazeItemTrapReactProtFake)
-                || _Item.Type == EMazeItemType.TrapIncreasing  && TrapIncreasing != null  && !(TrapIncreasing  is ViewMazeItemTrapIncreasingProtFake))
-            {
-                AddMazeItemRelease(_Items, props);
-                return;
-            }
-            AddMazeItemProt(_Items, _Info.Size, props);
-        }
-
         private void AddMazeItemRelease(
             ICollection<IViewMazeItem> _Items,
             ViewMazeItemProps _Props)
@@ -182,25 +137,5 @@ namespace Games.RazorMaze.Views.Helpers
             item.Init(_Props);
             _Items.Add(item);
         }
-
-
-        private void AddMazeItemProt(
-            ICollection<IViewMazeItem> _Items,
-            V2Int _MazeSize,
-            ViewMazeItemProps _Props)
-        {
-            if (_Props.Type == EMazeItemType.Block && !Editor)
-                return;
-            
-            var tr = new GameObject("Maze Item").transform;
-            tr.SetParent(ContainersGetter.MazeItemsContainer);
-            var item = tr.gameObject.AddComponent<ViewMazeItemProt>();
-
-            item.MazeSize = _MazeSize;
-            item.Init(_Props);
-            _Items.Add(item);
-        }
-        
-        #endregion
     }
 }

@@ -17,3 +17,5 @@ MonoBehaviour:
   movingTrapRotationSpeed: 800
   shredingerLineOffsetSpeed: 200
   turretBulletRotationSpeed: 100
+  blockItemsCount: 100
+  pathItemsCount: 300

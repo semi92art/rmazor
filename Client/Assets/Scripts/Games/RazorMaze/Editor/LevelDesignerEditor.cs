@@ -155,8 +155,7 @@ namespace Games.RazorMaze.Editor
                 var converter = new CoordinateConverter();
                 converter.Init(_Info.Size);
                 var contGetter = new ContainersGetter(converter);
-                var mazeItemsCreator = new MazeItemsCreator(contGetter, converter);
-                mazeItemsCreator.Editor = true;
+                var mazeItemsCreator = new MazeItemsCreatorInEditor(contGetter, converter);
                 m_Des.maze = mazeItemsCreator.CreateMazeItems(_Info)
                     .Cast<ViewMazeItemProt>()
                     .ToList();

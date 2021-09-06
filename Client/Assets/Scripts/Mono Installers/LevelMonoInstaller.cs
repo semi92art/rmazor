@@ -54,7 +54,6 @@ namespace Mono_Installers
             Container.Bind<IPortalsProceeder>()                    .To<PortalsProceeder>()                        .AsSingle();
             Container.Bind<IShredingerBlocksProceeder>()           .To<ShredingerBlocksProceeder>()               .AsSingle();
             Container.Bind<ISpringboardProceeder>()                .To<SpringboardProceeder>()                    .AsSingle();
-            Container.Bind<IMazeItemsCreator>()                    .To<MazeItemsCreator>()                        .AsSingle();
             Container.Bind<IGameTimeProvider>()                    .FromComponentsInNewPrefab(gameTimeProvider)   .AsSingle();
             Container.Bind<IUiTimeProvider>()                      .FromComponentsInNewPrefab(uiTimeProvider)     .AsCached();
             
@@ -63,7 +62,8 @@ namespace Mono_Installers
 
             #region view debug
 
-            Container.Bind<IViewMazeCommon>()                       .To<ViewMazeCommonProt>()                     .AsSingle();//.When(_ => prototyping);
+            Container.Bind<IMazeItemsCreator>()                     .To<MazeItemsCreatorProt>()                   .AsSingle().When(_ => prototyping);
+            Container.Bind<IViewMazeCommon>()                       .To<ViewMazeCommonProt>()                     .AsSingle().When(_ => prototyping);
             Container.Bind<IViewCharacter>()                        .To<ViewCharacterProt>()                      .AsSingle().When(_ => prototyping);
             Container.Bind<IViewMazeMovingItemsGroup>()             .To<ViewMazeMovingItemsGroupProt>()           .AsSingle().When(_ => prototyping);
             Container.Bind<IViewMazeShredingerBlocksGroup>()        .To<ViewMazeShredingerBlocksGroupProt>()      .AsSingle().When(_ => prototyping);
@@ -93,7 +93,8 @@ namespace Mono_Installers
             
             #region view release
             
-            //Container.Bind<IViewMazeCommon>()                       .To<ViewMazeCommon>()                         .AsSingle().When(_ => prototyping);
+            Container.Bind<IMazeItemsCreator>()                     .To<MazeItemsCreator>()                       .AsSingle().When(_ => release);
+            Container.Bind<IViewMazeCommon>()                       .To<ViewMazeCommon>()                         .AsSingle().When(_ => release);
             Container.Bind<IViewCharacter>()                        .To<ViewCharacter>()                          .AsSingle().When(_ => release);
             Container.Bind<IViewCharacterTail>()                    .To<ViewCharacterTailSimple>()                .AsSingle().When(_ => release);
             Container.Bind<ITurretBulletTail>()                     .To<TurretBulletTailSimple>()                 .AsSingle().When(_ => release);

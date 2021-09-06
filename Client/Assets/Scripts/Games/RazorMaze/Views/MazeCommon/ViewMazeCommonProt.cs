@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Entities;
-using Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
@@ -12,70 +11,44 @@ using UnityEngine;
 
 namespace Games.RazorMaze.Views.MazeCommon
 {
-    public class ViewMazeCommonProt : IViewMazeCommon, IUpdateTick
+    public class ViewMazeCommonProt : ViewMazeCommonBase
     {
+        #region nonpublic members
+        
+        private List<IViewMazeItem> m_MazeItems;
+        
+        #endregion
+        
         #region inject
-
-        private ITicker Ticker { get; }
-        private IMazeItemsCreator MazeItemsCreator { get; }
-        private IModelMazeData Model { get; }
-        private IContainersGetter ContainersGetter { get; }
-        private ICoordinateConverter CoordinateConverter { get; }
-
+        
         public ViewMazeCommonProt(
             ITicker _Ticker,
             IMazeItemsCreator _MazeItemsCreator,
             IModelMazeData _Model,
             IContainersGetter _ContainersGetter, 
-            ICoordinateConverter _CoordinateConverter)
+            ICoordinateConverter _CoordinateConverter) : base(_Ticker, _MazeItemsCreator, _Model, _ContainersGetter, _CoordinateConverter)
         {
-            Ticker = _Ticker;
-            MazeItemsCreator = _MazeItemsCreator;
-            Model = _Model;
-            ContainersGetter = _ContainersGetter;
-            CoordinateConverter = _CoordinateConverter;
-
             Ticker.Register(this);
-            Camera.main.backgroundColor = ViewUtils.ColorMain;
         }
 
         #endregion
 
         #region api
-        
-        public List<IViewMazeItem> MazeItems { get; private set; }
-        
-        public void OnPathProceed(V2Int _PathItem)
-        {
-            var item = MazeItems.First(_Item => _Item.Props.Position == _PathItem && _Item.Props.IsNode);
-            item.Proceeding = true;
-        }
 
-        public IViewMazeItem GetItem(MazeItem _Item)
-        {
-            return MazeItems.SingleOrDefault(_Itm => _Itm.Equal(_Item));
-        }
+        public override List<IViewMazeItem> MazeItems => m_MazeItems;
 
-        public T GetItem<T>(MazeItem _Item) where T : IViewMazeItem
+        public override IViewMazeItem GetItem(MazeItem _Item)
         {
-            var item = MazeItems.SingleOrDefault(_Itm => _Itm.Equal(_Item));
-            return (T) item;
-        }
-
-        public event NoArgsHandler GameLoopUpdate;
-
-        public void Init()
-        {
-            MazeItems = MazeItemsCreator.CreateMazeItems(Model.Info);
-            ContainersGetter.MazeItemsContainer.SetLocalPosXY(Vector2.zero);
-            ContainersGetter.MazeItemsContainer.PlusLocalPosY(CoordinateConverter.GetScale() * 0.5f);
+            return m_MazeItems.SingleOrDefault(_Itm => _Itm.Equal(_Item));
         }
         
-        public void UpdateTick()
+        public override void Init()
         {
-            GameLoopUpdate?.Invoke();
+            Camera.main.backgroundColor = ViewUtils.ColorMain;
+            m_MazeItems = MazeItemsCreator.CreateMazeItems(Model.Info);
+            base.Init();
         }
-        
+
         #endregion
     }
 }

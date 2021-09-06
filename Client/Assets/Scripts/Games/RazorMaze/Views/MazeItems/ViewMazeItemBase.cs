@@ -61,6 +61,8 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public bool Equal(MazeItem _MazeItem)
         {
+            if (Props == null)
+                return false;
             return _MazeItem.Path == Props.Path && _MazeItem.Type == Props.Type;
         }
         
