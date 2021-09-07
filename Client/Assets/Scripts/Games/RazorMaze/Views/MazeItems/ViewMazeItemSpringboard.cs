@@ -80,7 +80,7 @@ namespace Games.RazorMaze.Views.MazeItems
             sprbrd.Thickness = pillar.Thickness * 2f;
             
             pillar.EndCaps = sprbrd.EndCaps = LineEndCap.Round;
-            pillar.Color = sprbrd.Color = ViewUtils.ColorLines;
+            pillar.Color = sprbrd.Color = DrawingUtils.ColorLines;
             (pillar.Start, pillar.End, sprbrd.Start, sprbrd.End) = GetSpringboardAndPillarEdges();
             m_Edge1Start = sprbrd.Start;
             m_Edge2Start = sprbrd.End;

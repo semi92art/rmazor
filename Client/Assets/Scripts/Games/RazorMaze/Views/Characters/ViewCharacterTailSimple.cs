@@ -50,7 +50,7 @@ namespace Games.RazorMaze.Views.Characters
             var go = new GameObject("Character Tail");
             go.SetParent(ContainersGetter.CharacterContainer);
             m_Tail = go.AddComponent<Triangle>();
-            m_Tail.Color = ViewUtils.ColorCharacterTail;
+            m_Tail.Color = DrawingUtils.ColorCharacterTail;
             m_Tail.enabled = false;
         }
 

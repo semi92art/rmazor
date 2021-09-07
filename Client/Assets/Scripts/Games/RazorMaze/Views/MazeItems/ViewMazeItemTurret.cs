@@ -112,30 +112,30 @@ namespace Games.RazorMaze.Views.MazeItems
             sh.Width = sh.Height = CoordinateConverter.GetScale() * 1.03f;
             sh.Type = Rectangle.RectangleType.RoundedSolid;
             sh.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.GetScale();
-            sh.Color = ViewUtils.ColorLines;
-            sh.SortingOrder = ViewUtils.GetBlockSortingOrder(Props.Type);
+            sh.Color = DrawingUtils.ColorLines;
+            sh.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
 
             var bullHold = go.AddComponentOnNewChild<Disc>("Bullet Holder", out _, Vector2.zero);
             bullHold.Radius = CoordinateConverter.GetScale() * BulletContainerRadius;
-            bullHold.Color = ViewUtils.ColorMain;
+            bullHold.Color = DrawingUtils.ColorMain;
             bullHold.Type = DiscType.Disc;
-            bullHold.SortingOrder = ViewUtils.GetBlockSortingOrder(Props.Type) + 1;
+            bullHold.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type) + 1;
             var bcb = bullHold.gameObject.AddComponentOnNewChild<Disc>("Border", out _, Vector2.zero);
             bcb.Radius = CoordinateConverter.GetScale() * BulletContainerRadius * 0.9f;
             bcb.Dashed = true;
             bcb.DashType = DashType.Rounded;
-            bcb.Color = ViewUtils.ColorLines;
+            bcb.Color = DrawingUtils.ColorLines;
             bcb.Type = DiscType.Ring;
             bcb.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale() * 0.5f;
-            bcb.SortingOrder = ViewUtils.GetBlockSortingOrder(Props.Type) + 2;
+            bcb.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type) + 2;
             bcb.DashSize = 2f;
             m_BulletHolderBorder = bcb;
             
 
             var barrel = go.AddComponentOnNewChild<Rectangle>("Barrel", out _, Vector2.zero);
             barrel.Type = Rectangle.RectangleType.HardSolid;
-            barrel.Color = ViewUtils.ColorMain;
-            barrel.SortingOrder = ViewUtils.GetBlockSortingOrder(Props.Type) + 1;
+            barrel.Color = DrawingUtils.ColorMain;
+            barrel.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type) + 1;
 
             var tr = barrel.transform;
             (tr.localPosition, tr.localEulerAngles) = GetBarrelLocalPositionAndRotation();
@@ -153,7 +153,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
             
             var bulletSprRend = m_Bullet.GetComponent<SpriteRenderer>();
-            bulletSprRend.sortingOrder = GetBulletSortingOrder(ViewUtils.GetBlockSortingOrder(Props.Type) + 2);
+            bulletSprRend.sortingOrder = GetBulletSortingOrder(DrawingUtils.GetBlockSortingOrder(Props.Type) + 2);
             m_BulletTail = bulletGo.GetCompItem<Triangle>("tail");
 
             var bulletFakeGo = PrefabUtilsEx.InitPrefab(
@@ -161,7 +161,7 @@ namespace Games.RazorMaze.Views.MazeItems
             m_BulletFakeContainer = bulletFakeGo.transform;
             
             m_BulletFake = bulletFakeGo.GetContentItem("bullet").transform;
-            m_BulletFake.GetComponent<SpriteRenderer>().sortingOrder = ViewUtils.GetBlockSortingOrder(Props.Type) + 2;
+            m_BulletFake.GetComponent<SpriteRenderer>().sortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type) + 2;
             bulletFakeGo.GetCompItem<Triangle>("tail").enabled = false;
 
             var bulletMaskGo = PrefabUtilsEx.InitPrefab(

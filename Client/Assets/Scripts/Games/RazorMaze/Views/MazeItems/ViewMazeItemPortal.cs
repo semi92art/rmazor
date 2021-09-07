@@ -107,7 +107,7 @@ namespace Games.RazorMaze.Views.MazeItems
                     ref go,
                     CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             center.Type = DiscType.Disc;
-            center.Color = ViewUtils.ColorLines;
+            center.Color = DrawingUtils.ColorLines;
             center.Radius = CoordinateConverter.GetScale() * 0.2f;
             go.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             go.DestroyChildrenSafe();
@@ -120,7 +120,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 var orbit = go.AddComponentOnNewChild<Disc>($"Orbit {i + 1}", out _, Vector2.zero);
                 orbit.Thickness = ViewSettings.LineWidth * scale * 0.5f;
                 orbit.Type = DiscType.Arc;
-                orbit.Color = ViewUtils.ColorLines;
+                orbit.Color = DrawingUtils.ColorLines;
                 m_Orbits.Add(orbit);
             }
 
@@ -173,7 +173,7 @@ namespace Games.RazorMaze.Views.MazeItems
             {
                 var gItem = Object.AddComponentOnNewChild<Disc>("Gravity Item", out _, Vector2.zero);
                 gItem.Radius = 0.025f * CoordinateConverter.GetScale();
-                gItem.Color = ViewUtils.ColorLines;
+                gItem.Color = DrawingUtils.ColorLines;
                 gItem.Type = DiscType.Disc;
                 m_GravityItems.Add(gItem);
                 m_GravityItems.Deactivate(gItem);

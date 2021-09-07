@@ -113,10 +113,10 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                 go.transform.SetLocalPosXY(Vector2.zero);
                 var line = go.AddComponent<Polyline>();
                 line.Thickness = 0.3f;
-                line.Color = ColorUtils.MixColors(_LinesAndJointsColor, ViewUtils.ColorMain).SetA(1);
+                line.Color = ColorUtils.MixColors(_LinesAndJointsColor, DrawingUtils.ColorMain).SetA(1);
                 line.SetPoints(points);
                 line.Closed = false;
-                line.SortingOrder = ViewUtils.GetPathLineSortingOrder();
+                line.SortingOrder = DrawingUtils.GetPathLineSortingOrder();
 
                 foreach (var point in points)
                 {
@@ -124,10 +124,10 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                     go1.SetParent(ContainersGetter.MazeItemsContainer);
                     var disc = go1.AddComponent<Disc>();
                     go1.transform.SetLocalPosXY(point);
-                    disc.Color = ColorUtils.MixColors(_LinesAndJointsColor, ViewUtils.ColorMain).SetA(1);
+                    disc.Color = ColorUtils.MixColors(_LinesAndJointsColor, DrawingUtils.ColorMain).SetA(1);
                     disc.Radius = 0.5f;
                     disc.Type = DiscType.Disc;
-                    disc.SortingOrder = ViewUtils.GetPathLineJointSortingOrder();
+                    disc.SortingOrder = DrawingUtils.GetPathLineJointSortingOrder();
                 }
             }
         }

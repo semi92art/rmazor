@@ -107,15 +107,15 @@ namespace Games.RazorMaze.Views.MazeItems
                     CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             Object = go;
             
-            line.Color = ViewUtils.ColorLines;
+            line.Color = DrawingUtils.ColorLines;
             line.EndCaps = LineEndCap.Round;
             line.Thickness = ViewSettings.LineWidth * scale;
 
             var trap = go.AddComponentOnNewChild<SpriteRenderer>("Trap Sprite", out _, Vector2.zero);
             trap.sprite = PrefabUtilsEx.GetObject<Sprite>("views", "trap_react");
-            trap.sortingOrder = ViewUtils.GetBlockSortingOrder(Props.Type);
+            trap.sortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
             (line.Start, line.End) = GetTrapPosRotAndLineEdges();
-            trap.color = ViewUtils.ColorLines;
+            trap.color = DrawingUtils.ColorLines;
             trap.maskInteraction = SpriteMaskInteraction.VisibleOutsideMask;
             var dir = Props.Directions.First().ToVector2();
             var trapTr = trap.transform;
@@ -130,7 +130,7 @@ namespace Games.RazorMaze.Views.MazeItems
             mask.enabled = true;
             mask.transform.localScale = Vector3.one * scale * 0.8f;
             mask.isCustomRangeActive = true;
-            mask.frontSortingOrder = ViewUtils.GetBlockSortingOrder(Props.Type);
+            mask.frontSortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
 
             m_Line = line;
             m_Trap = trap;

@@ -45,7 +45,7 @@ namespace Games.RazorMaze.Views.MazeCommon
         
         public override void Init()
         {
-            Camera.main.backgroundColor = ViewUtils.ColorMain;
+            Camera.main.backgroundColor = DrawingUtils.ColorBack;
             m_MazeItems = MazeItemsCreator.CreateMazeItems(Model.Info);
             base.Init();
         }

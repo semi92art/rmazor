@@ -44,7 +44,7 @@ namespace Games.RazorMaze.Views.MazeItems
             {
                 m_Active = value;
                 if (props.Type == EMazeItemType.ShredingerBlock)
-                    shape.Color = m_Active ? ViewUtils.ColorBlock : ViewUtils.ColorShredinger;
+                    shape.Color = m_Active ? DrawingUtils.ColorBlock : DrawingUtils.ColorShredinger;
             }
         }
 
@@ -165,7 +165,7 @@ namespace Games.RazorMaze.Views.MazeItems
         }
 
         private int GetShapeSortingOrder(EMazeItemType _Type, bool _IsPath) => 
-            _IsPath ? ViewUtils.GetPathSortingOrder() : ViewUtils.GetBlockSortingOrder(_Type);
+            _IsPath ? DrawingUtils.GetPathSortingOrder() : DrawingUtils.GetBlockSortingOrder(_Type);
 
 
         private static Color GetShapeColor(EMazeItemType _Type, bool _Inner, bool _IsNode)
@@ -174,17 +174,17 @@ namespace Games.RazorMaze.Views.MazeItems
                 return Color.white;
 
             if (_Inner)
-                return ViewUtils.ColorHint;
+                return DrawingUtils.ColorHint;
 
             switch (_Type)
             {
                 case EMazeItemType.Block:                   
                 case EMazeItemType.GravityBlock:
-                    return ViewUtils.ColorBlock;
+                    return DrawingUtils.ColorBlock;
                 case EMazeItemType.ShredingerBlock:
-                    return ViewUtils.ColorShredinger;
+                    return DrawingUtils.ColorShredinger;
                 case EMazeItemType.Portal:
-                    return ViewUtils.ColorPortal;
+                    return DrawingUtils.ColorPortal;
                 case EMazeItemType.TrapReact:               
                 case EMazeItemType.TrapIncreasing:
                 case EMazeItemType.TrapMoving: 
@@ -192,9 +192,9 @@ namespace Games.RazorMaze.Views.MazeItems
                     return new Color(1f, 0.29f, 0.29f);
                 case EMazeItemType.Turret: 
                 case EMazeItemType.TurretRotating:
-                    return ViewUtils.ColorTurret;
+                    return DrawingUtils.ColorTurret;
                 case EMazeItemType.Springboard:
-                    return ViewUtils.ColorSpringboard;
+                    return DrawingUtils.ColorSpringboard;
                 default: throw new SwitchCaseNotImplementedException(_Type);
             }
         }

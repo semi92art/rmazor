@@ -97,7 +97,7 @@ namespace Games.RazorMaze.Views.Characters
             m_Character = prefab;
             m_Head = prefab.GetContentItem("head");
             m_Head.transform.localScale = Vector3.one * CoordinateConverter.GetScale() * 0.98f;
-            prefab.GetCompItem<Rectangle>("head shape").Color = ViewUtils.ColorCharacter;
+            prefab.GetCompItem<Rectangle>("head shape").Color = DrawingUtils.ColorCharacter;
             m_Animator = prefab.GetCompItem<Animator>("animator");
         }
         

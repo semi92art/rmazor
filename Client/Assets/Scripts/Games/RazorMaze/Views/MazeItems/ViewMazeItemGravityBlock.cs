@@ -82,13 +82,13 @@ namespace Games.RazorMaze.Views.MazeItems
             sh.Type = Rectangle.RectangleType.RoundedHollow;
             sh.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
             sh.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.GetScale();
-            sh.Color = ViewUtils.ColorLines;
-            sh.SortingOrder = ViewUtils.GetBlockSortingOrder(Props.Type);
+            sh.Color = DrawingUtils.ColorLines;
+            sh.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
             var joint = go.AddComponentOnNewChild<Disc>("Joint", out _);
             joint.transform.SetLocalPosXY(Vector2.zero);
-            joint.Color = ViewUtils.ColorLines;
+            joint.Color = DrawingUtils.ColorLines;
             joint.Radius = ViewSettings.LineWidth * CoordinateConverter.GetScale() * 2f;
-            joint.SortingOrder = ViewUtils.GetBlockSortingOrder(Props.Type);
+            joint.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
 
             Object = go;
             m_Shape = sh;

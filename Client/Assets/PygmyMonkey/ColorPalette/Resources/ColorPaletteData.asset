@@ -22,7 +22,9 @@ MonoBehaviour:
     - name: Block
       color: {r: 0.5294118, g: 0.5294118, b: 0.5294118, a: 1}
     - name: Fill
-      color: {r: 0.745283, g: 0.2285066, b: 0.2285066, a: 1}
+      color: {r: 0.26666668, g: 0.32156864, b: 0.34901962, a: 1}
+    - name: Back
+      color: {r: 0.26508543, g: 0.31976113, b: 0.3490566, a: 1}
     colorList: []
   - name: View Common
     showDetails: 1

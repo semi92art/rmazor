@@ -100,8 +100,8 @@ namespace Games.RazorMaze.Views.MazeItems
             sh.Width = sh.Height = CoordinateConverter.GetScale() * 0.9f;
             sh.Type = Rectangle.RectangleType.RoundedHollow;
             sh.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.GetScale();
-            sh.Color = ViewUtils.ColorLines;
-            sh.SortingOrder = ViewUtils.GetBlockSortingOrder(Props.Type);
+            sh.Color = DrawingUtils.ColorLines;
+            sh.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
             sh.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
             m_Block = sh;
             
@@ -130,8 +130,8 @@ namespace Games.RazorMaze.Views.MazeItems
             {
                 line.Dashed = true;
                 line.DashType = DashType.Rounded;
-                line.Color = ViewUtils.ColorLines;
-                line.SortingOrder = ViewUtils.GetBlockSortingOrder(Props.Type);
+                line.Color = DrawingUtils.ColorLines;
+                line.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
                 line.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
             }
         }
@@ -182,8 +182,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 _Progress =>
                 {
                     foreach (var line in m_Lines)
-                        line.Color = ViewUtils.ColorLines.SetA(_Activate ? 1f - _Progress : _Progress);
-                    m_Block.Color = ViewUtils.ColorLines.SetA(_Activate ? _Progress : 1f - _Progress);
+                        line.Color = DrawingUtils.ColorLines.SetA(_Activate ? 1f - _Progress : _Progress);
+                    m_Block.Color = DrawingUtils.ColorLines.SetA(_Activate ? _Progress : 1f - _Progress);
                     m_Block.CornerRadius = cornerRadius * (_Activate ? _Progress : 1f - _Progress);
                 },
                 GameTimeProvider,

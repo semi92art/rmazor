@@ -95,8 +95,8 @@ namespace Games.RazorMaze.Views.MazeItems
                     CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             go.DestroyChildrenSafe();
             saw.sprite = PrefabUtilsEx.GetObject<Sprite>("views", "moving_trap");
-            saw.color = ViewUtils.ColorTrap;
-            saw.sortingOrder = ViewUtils.GetBlockSortingOrder(Props.Type);
+            saw.color = DrawingUtils.ColorTrap;
+            saw.sortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
             var coll = go.AddComponent<CircleCollider2D>();
             coll.radius = 0.5f;
 

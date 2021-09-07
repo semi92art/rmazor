@@ -5,7 +5,7 @@ using Utils;
 
 namespace Games.RazorMaze.Views.Utils
 {
-    public static class ViewUtils
+    public static class DrawingUtils
     {
         private const int PathItemOrder = 0;
         
@@ -15,6 +15,7 @@ namespace Games.RazorMaze.Views.Utils
         public static Color ColorMain => GetFromPalette("Main");
         public static Color ColorFill => GetFromPalette("Fill");
         public static Color ColorBlock => GetFromPalette("Block");
+        public static Color ColorBack => GetFromPalette("Back");
         public static Color ColorHint => GetFromPalette("Hint");
 
         public static Color ColorLines => GetFromCommonPalette("Lines");

@@ -16,7 +16,6 @@ namespace Games.RazorMaze.Views.MazeItems
     
     public class ViewMazeItemPath : ViewMazeItemBase, IViewMazeItemPath
     {
-
         #region nonpublic members
 
         private Rectangle m_Shape;
@@ -66,8 +65,8 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region nonpublic methods
         
-        private void Fill() => m_Shape.Color = ViewUtils.ColorFill;
-        private void Unfill() => m_Shape.Color = ViewUtils.ColorMain;
+        private void Fill() => m_Shape.Color = DrawingUtils.ColorFill;
+        private void Unfill() => m_Shape.Color = DrawingUtils.ColorMain;
 
         protected override void SetShape()
         {
@@ -76,12 +75,16 @@ namespace Games.RazorMaze.Views.MazeItems
                 .GetOrAddComponentOnNewChild<Rectangle>("Path Item", ref go, 
                     CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             go.DestroyChildrenSafe();
-            sh.Width = sh.Height = CoordinateConverter.GetScale() * 0.99f;
+            // sh.Width = sh.Height = CoordinateConverter.GetScale() * 0.99f;
+            sh.Width = sh.Height = CoordinateConverter.GetScale() * 0.6f;
             sh.Type = Rectangle.RectangleType.RoundedSolid;
-            sh.CornerRadiusMode = Rectangle.RectangleCornerRadiusMode.PerCorner;
+            // sh.CornerRadiusMode = Rectangle.RectangleCornerRadiusMode.PerCorner;
+            sh.CornerRadiusMode = Rectangle.RectangleCornerRadiusMode.Uniform;
             sh.CornerRadiii = Vector4.zero;
-            sh.Color = ViewUtils.ColorMain;
-            sh.SortingOrder = ViewUtils.GetPathSortingOrder();
+            float cr = (ViewSettings.CornerRadius) * CoordinateConverter.GetScale();
+            sh.CornerRadius = cr;
+            sh.Color = DrawingUtils.ColorMain;
+            sh.SortingOrder = DrawingUtils.GetPathSortingOrder();
             Object = go;
             m_Shape = sh;
             SetBordersAndCorners();
@@ -175,7 +178,7 @@ namespace Games.RazorMaze.Views.MazeItems
             var border = go.AddComponent<Line>();
             border.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
             border.EndCaps = LineEndCap.None;
-            border.Color = ViewUtils.ColorLines;
+            border.Color = DrawingUtils.ColorLines;
             (border.Start, border.End, border.Dashed) = GetBorderPointsAndDashed(_Side, false, false);
             border.DashSize = 1f;
             switch (_Side)
@@ -216,7 +219,7 @@ namespace Games.RazorMaze.Views.MazeItems
             var angles = GetCornerAngles(_Right, _Up, _Inner);
             corner.AngRadiansStart = Mathf.Deg2Rad * angles.x;
             corner.AngRadiansEnd = Mathf.Deg2Rad * angles.y;
-            corner.Color = ViewUtils.ColorLines;
+            corner.Color = DrawingUtils.ColorLines;
             
             float cr = ViewSettings.CornerRadius * CoordinateConverter.GetScale();
 
