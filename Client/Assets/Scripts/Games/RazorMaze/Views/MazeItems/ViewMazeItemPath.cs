@@ -21,7 +21,6 @@ namespace Games.RazorMaze.Views.MazeItems
         private Rectangle m_Shape;
         private Line m_LeftBorder, m_RightBorder, m_BottomBorder, m_TopBorder;
         private Disc m_BottomLeftCorner, m_BottomRightCorner, m_TopLeftCorner, m_TopRightCorner;
-        private bool m_Active;
         
         #endregion
         
@@ -45,21 +44,47 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
 
         #region api
-        
-        public bool Activated { get; set; } // TODO
+
+        public override bool Activated
+        {
+            get => base.Activated;
+            set
+            {
+                base.Activated = value;
+                
+                m_Shape.enabled = value;
+                if (!m_LeftBorder.IsNull())
+                    m_LeftBorder.enabled = value;
+                if (!m_RightBorder.IsNull())
+                    m_RightBorder.enabled = value;
+                if (!m_BottomBorder.IsNull())
+                    m_BottomBorder.enabled = value;
+                if (!m_TopBorder.IsNull())
+                    m_TopBorder.enabled = value;
+                
+                if (!m_BottomLeftCorner.IsNull())
+                    m_BottomLeftCorner.enabled = value;
+                if (!m_BottomRightCorner.IsNull())
+                    m_BottomRightCorner.enabled = value;
+                if (!m_TopLeftCorner.IsNull())
+                    m_TopLeftCorner.enabled = value;
+                if (!m_TopRightCorner.IsNull())
+                    m_TopRightCorner.enabled = value;
+            }
+        }
         
         public override bool Proceeding
         {
-            get => m_Active;
+            get => base.Proceeding;
             set
             {
-                m_Active = value;
+                base.Proceeding = value;
                 if (value) Fill();
                 else Unfill();
             }
         }
 
-        public object Clone() => new ViewMazeItemPath(CoordinateConverter, ContainersGetter, Data, Ticker, ViewSettings);
+        public override object Clone() => new ViewMazeItemPath(CoordinateConverter, ContainersGetter, Data, Ticker, ViewSettings);
 
         #endregion
         

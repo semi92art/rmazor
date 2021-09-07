@@ -13,17 +13,14 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         public void Init()
         {
-            //throw new System.NotImplementedException();
         }
 
         public void ShowTail(TurretShotEventArgs _Args)
         {
-            //throw new System.NotImplementedException();
         }
 
         public void HideTail(TurretShotEventArgs _Args)
         {
-            //throw new System.NotImplementedException();
         }
     }
 }

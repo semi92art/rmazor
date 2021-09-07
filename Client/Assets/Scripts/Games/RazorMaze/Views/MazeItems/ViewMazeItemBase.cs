@@ -6,11 +6,12 @@ using UnityEngine;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
-    public abstract class ViewMazeItemBase
+    public abstract class ViewMazeItemBase : IViewMazeItem
     {
         #region nonpublic members
         
-        protected bool m_Activated;
+        private bool m_Activated;
+        private bool m_Proceeding;
         
         #endregion
 
@@ -49,7 +50,14 @@ namespace Games.RazorMaze.Views.MazeItems
         }
         
         public virtual GameObject Object { get; protected set; }
-        public virtual bool Proceeding { get; set; }
+
+        public virtual bool Proceeding
+        {
+            get => m_Proceeding;
+            set => m_Proceeding = value;
+        }
+        
+        public abstract object Clone();
         
 
         public virtual void Init(ViewMazeItemProps _Props)

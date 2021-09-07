@@ -21,14 +21,18 @@ namespace Games.RazorMaze.Views.MazeItems
     
     public class ViewMazeItemTrapReact : ViewMazeItemBase, IViewMazeItemTrapReact, IUpdateTick
     {
+        #region constants
+
+        private const float StartPos = 0.1f;
+        private const float MiddlePos = 0.2f;
+        private const float FinalPos = 0.7f;
+        
+        #endregion
+        
         #region nonpublic members
         
-        private float StartPos => 0.1f;
-        private float MiddlePos => 0.2f;
-        private float FinalPos => 0.7f;
         private Line m_Line;
         private SpriteRenderer m_Trap;
-        private bool m_Rotate;
         
         #endregion
         
@@ -55,26 +59,27 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
         
         #region api
-        
-        public override bool Proceeding
+
+        public override bool Activated
         {
-            get => m_Rotate;
+            get => base.Activated;
             set
             {
-                if (value) StartRotation();
-                else StopRotation();
+                base.Activated = value;
+                m_Line.enabled = value;
+                m_Trap.enabled = value;
             }
         }
-        
+
         public void UpdateTick()
         {
-            if (!m_Rotate)
+            if (!Proceeding)
                 return;
             float rotSpeed = ViewSettings.MovingTrapRotationSpeed * Time.deltaTime; 
             m_Trap.transform.Rotate(Vector3.forward * rotSpeed);
         }
         
-        public object Clone() => new ViewMazeItemTrapReact(
+        public override object Clone() => new ViewMazeItemTrapReact(
             CoordinateConverter, ContainersGetter, Ticker, GameTimeProvider, ModelSettings, ViewSettings);
         
         public void OnTrapReact(MazeItemTrapReactEventArgs _Args)
@@ -186,16 +191,6 @@ namespace Games.RazorMaze.Views.MazeItems
             B *= CoordinateConverter.GetScale();
             C *= CoordinateConverter.GetScale();
             return new Tuple<Vector2, Vector2>(B, C);
-        }
-        
-        private void StartRotation()
-        {
-            m_Rotate = true;
-        }
-
-        private void StopRotation()
-        {
-            m_Rotate = false;
         }
 
         #endregion

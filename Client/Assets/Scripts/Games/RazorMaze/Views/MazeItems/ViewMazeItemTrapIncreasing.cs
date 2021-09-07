@@ -22,6 +22,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private static int AnimKeyOpen => AnimKeys.Anim;
         private static int AnimKeyClose => AnimKeys.Stop;
         private int m_PrevStage = TrapsIncreasingProceeder.StageIdle;
+        
         private Animator m_Animator;
         private AnimationEventCounter m_Counter;
         
@@ -40,7 +41,17 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
         
         #region api
-        
+
+        public override bool Activated
+        {
+            get => base.Activated;
+            set
+            {
+                base.Activated = value;
+                m_Animator.SetGoActive(value);
+            }
+        }
+
         public void OnIncreasing(MazeItemTrapIncreasingEventArgs _Args)
         {
             switch (_Args.Stage)
@@ -52,7 +63,7 @@ namespace Games.RazorMaze.Views.MazeItems
             m_PrevStage = _Args.Stage;
         }
         
-        public object Clone() => new ViewMazeItemTrapIncreasing(CoordinateConverter, ContainersGetter, Ticker);
+        public override object Clone() => new ViewMazeItemTrapIncreasing(CoordinateConverter, ContainersGetter, Ticker);
 
         #endregion
 

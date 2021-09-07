@@ -20,7 +20,6 @@ namespace Games.RazorMaze.Views.MazeItems
     
     public class ViewMazeItemGravityBlock : ViewMazeItemBase, IViewMazeItemGravityBlock
     {
-
         #region nonpublic members
 
         private Rectangle m_Shape;
@@ -49,9 +48,19 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region api
 
-        public void OnMoveStarted(MazeItemMoveEventArgs _Args)
+        public override bool Activated
         {
+            get => base.Activated;
+            set
+            {
+                base.Activated = value;
+                m_Shape.enabled = value;
+                m_Joint.enabled = value;
+            }
         }
+
+        public void OnMoveStarted(MazeItemMoveEventArgs _Args)
+        { }
 
         public void OnMoving(MazeItemMoveEventArgs _Args)
         {
@@ -64,7 +73,7 @@ namespace Games.RazorMaze.Views.MazeItems
             SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(_Args.To));
         }
         
-        public object Clone() => new ViewMazeItemGravityBlock(
+        public override object Clone() => new ViewMazeItemGravityBlock(
             CoordinateConverter, ContainersGetter, Data, Ticker, ViewSettings);
 
         #endregion

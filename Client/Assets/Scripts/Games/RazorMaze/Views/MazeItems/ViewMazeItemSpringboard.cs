@@ -22,12 +22,16 @@ namespace Games.RazorMaze.Views.MazeItems
     
     public class ViewMazeItemSpringboard : ViewMazeItemBase, IViewMazeItemSpringboard
     {
-
-        #region nonpublic members
-
+        #region constants
+        
         private const float SpringboardHeight = 0.3f;
         private const float SpringboardWidth = 0.4f;
         private const float JumpCoefficient = 0.2f;
+        
+        #endregion
+        
+        #region nonpublic members
+
         private Line m_Springboard;
         private Line m_Pillar;
         private Vector2 m_Edge1Start, m_Edge2Start;
@@ -55,12 +59,23 @@ namespace Games.RazorMaze.Views.MazeItems
 
         #region api
 
+        public override bool Activated
+        {
+            get => base.Activated;
+            set
+            {
+                base.Activated = value;
+                m_Springboard.enabled = value;
+                m_Pillar.enabled = value;
+            }
+        }
+
         public void MakeJump(SpringboardEventArgs _Args)
         {
             Coroutines.Run(JumpCoroutine());
         }
         
-        public object Clone() => new ViewMazeItemSpringboard(
+        public override object Clone() => new ViewMazeItemSpringboard(
             CoordinateConverter, ContainersGetter, Ticker, GameTimeProvider, ViewSettings);
 
         #endregion

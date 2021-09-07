@@ -39,6 +39,16 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region api
 
+        public override bool Activated
+        {
+            get => base.Activated;
+            set
+            {
+                base.Activated = value;
+                m_Saw.enabled = value;
+            }
+        }
+
         public override bool Proceeding
         {
             get => m_Rotate;
@@ -78,7 +88,7 @@ namespace Games.RazorMaze.Views.MazeItems
             Object.transform.Rotate(Vector3.forward * rotSpeed);
         }
 
-        public object Clone() => new ViewMazeItemMovingTrap(
+        public override object Clone() => new ViewMazeItemMovingTrap(
             CoordinateConverter, ContainersGetter, Ticker, ViewSettings);
         
         #endregion

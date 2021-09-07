@@ -48,6 +48,16 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region api
 
+        public override bool Activated
+        {
+            get => base.Activated;
+            set
+            {
+                base.Activated = value;
+                m_Mace.SetGoActive(value);
+            }
+        }
+
         public void UpdateTick()
         {
             if (!m_Rotate)
@@ -80,7 +90,7 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Rotate = false;
         }
 
-        public object Clone() => new ViewMazeItemGravityTrap(Data, CoordinateConverter, ContainersGetter, Ticker);
+        public override object Clone() => new ViewMazeItemGravityTrap(Data, CoordinateConverter, ContainersGetter, Ticker);
 
         #endregion
         

@@ -24,20 +24,26 @@ namespace Games.RazorMaze.Views.MazeItems
     
     public class ViewMazeItemTurret : ViewMazeItemBase, IViewMazeItemTurret, IUpdateTick
     {
+        #region constants
+        
+        private const float BulletContainerRadius = 0.4f;
+        
+        #endregion
+        
         #region nonpublic members
 
-        private const float BulletContainerRadius = 0.4f;
         private static int _bulletSortingOrder;
+        private float m_RotatingSpeed;
+        private bool m_Initialized;
+        private bool m_Moving;
+        private bool m_Rotating;
+        
         private Rectangle m_Barrel;
         private Transform m_BulletContainer;
         private Transform m_Bullet;
         private Triangle m_BulletTail;
         private Transform m_BulletFakeContainer;
         private Transform m_BulletFake;
-        private bool m_Initialized;
-        private bool m_Moving;
-        private bool m_Rotating;
-        private float m_RotatingSpeed;
         private SpriteMask m_BulletMask;
         private SpriteMask m_BulletMask2;
         private Disc m_BulletHolderBorder;
@@ -95,7 +101,7 @@ namespace Games.RazorMaze.Views.MazeItems
             m_BulletHolderBorder.DashOffset += 2f * Time.deltaTime;
         }
 
-        public object Clone() => new ViewMazeItemTurret(
+        public override object Clone() => new ViewMazeItemTurret(
             CoordinateConverter, ContainersGetter, Ticker, Data, GameTimeProvider, BulletTail, ViewSettings);
         
         #endregion

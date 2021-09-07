@@ -8,7 +8,6 @@ using Ticker;
 using TimeProviders;
 using UnityEngine;
 using Utils;
-using Zenject;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
@@ -18,11 +17,11 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         #region nonpublic members
 
-        private bool m_Active;
         private float m_LineOffset;
-        private Rectangle m_Block;
-        private List<Line> m_Lines = new List<Line>();
         private int m_DeactivationsCount;
+        
+        private Rectangle m_Block;
+        private readonly List<Line> m_Lines = new List<Line>();
         
         #endregion
         
@@ -47,12 +46,23 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region api
 
-        public override bool Proceeding
+        public override bool Activated
         {
-            get => m_Active;
+            get => base.Activated;
             set
             {
-                m_Active = value;
+                base.Activated = value;
+                m_Block.enabled = value;
+                m_Lines.ForEach(_Line => _Line.enabled = value);
+            }
+        }
+
+        public override bool Proceeding
+        {
+            get => base.Proceeding;
+            set
+            {
+                base.Proceeding = value;
                 if (value)
                     ActivateBlock();
                 else DeactivateBlock();
@@ -68,7 +78,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         public void UpdateTick()
         {
-            if (m_Active)
+            if (Proceeding)
                 return;
             m_LineOffset += Time.deltaTime * ViewSettings.ShredingerLineOffsetSpeed;
             foreach (var line in m_Lines)
@@ -77,7 +87,7 @@ namespace Games.RazorMaze.Views.MazeItems
             }
         }
 
-        public object Clone() => new ViewMazeItemShredingerBlock(
+        public override object Clone() => new ViewMazeItemShredingerBlock(
             CoordinateConverter, ContainersGetter, Ticker, GameTimeProvider, ViewSettings);
 
         #endregion
@@ -202,7 +212,5 @@ namespace Games.RazorMaze.Views.MazeItems
         }
 
         #endregion
-
-
     }
 }

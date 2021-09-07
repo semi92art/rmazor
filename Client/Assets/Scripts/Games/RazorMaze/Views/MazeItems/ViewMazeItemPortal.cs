@@ -3,7 +3,6 @@ using Entities;
 using Extensions;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
-using Games.RazorMaze.Views.MazeCommon;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using SpawnPools;
@@ -21,18 +20,24 @@ namespace Games.RazorMaze.Views.MazeItems
     
     public class ViewMazeItemPortal : ViewMazeItemBase, IViewMazeItemPortal, IUpdateTick
     {
-        #region nonpublic members
-
+        #region constants
+        
         private const float RotationSpeed = 5f;
         private const int OrbitsCount = 14;
         private const int GravityItemsCount = 30;
         private const float GravitySpawnTime = 1f;
         private const float GravityItemsSpeed = 1f;
+        
+        #endregion
+        
+        #region nonpublic members
+        
+        private bool m_Initialized;
+        private float m_GravitySpawnTimer;
+        
         private Disc m_Center;
         private readonly List<Disc> m_Orbits = new List<Disc>();
-        private bool m_Initialized;
-        private BehavioursSpawnPool<Disc> m_GravityItems = new BehavioursSpawnPool<Disc>();
-        private float m_GravitySpawnTimer;
+        private readonly BehavioursSpawnPool<Disc> m_GravityItems = new BehavioursSpawnPool<Disc>();
         
         #endregion
         
@@ -56,12 +61,24 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
 
         #region api
-        
-        public bool Activated { get; set; } // TODO
+
+        public override bool Activated
+        {
+            get => base.Activated;
+            set
+            {
+                base.Activated = value;
+                m_Center.enabled = value;
+                m_Orbits.ForEach(_Orbit => _Orbit.enabled = value);
+                if (value) return;
+                foreach (var item in m_GravityItems)
+                    m_GravityItems.Deactivate(item);
+            }
+        }
         
         public void UpdateTick()
         {
-            if (!m_Initialized)
+            if (!m_Initialized || !Activated)
                 return;
             for (int i = 0; i < m_Orbits.Count; i++)
             {
@@ -72,7 +89,7 @@ namespace Games.RazorMaze.Views.MazeItems
             UpdateGravityItems();
         }
         
-        public object Clone() => new ViewMazeItemPortal(
+        public override object Clone() => new ViewMazeItemPortal(
             CoordinateConverter, ContainersGetter, Ticker, GameTimeProvider, ViewSettings);
 
         public void DoTeleport(PortalEventArgs _Args)
