@@ -4,6 +4,7 @@ using System.Linq;
 using Entities;
 using Exceptions;
 using Games.RazorMaze.Models;
+using UnityEngine;
 using Utils;
 
 namespace Games.RazorMaze
@@ -23,7 +24,7 @@ namespace Games.RazorMaze
                 Dbg.Log($"isOnNode: {isOnNode}, isOnBlockItem: {isOnBlockItem}");
             }
             
-            return isOnNode && !isOnBlockItem;// || _MazeItem.Path.Contains(_Position);
+            return isOnNode && !isOnBlockItem;
         }
         
         public static V2Int GetDropDirection(MazeOrientation _Orientation)
@@ -131,7 +132,7 @@ namespace Games.RazorMaze
             throw new ArgumentException("Wrong direction vector");
         }
 
-        public static List<V2Int> GetDirectPath(V2Int _From, V2Int _To)
+        public static List<V2Int> GetFullPath(V2Int _From, V2Int _To)
         {
             int min, max;
             IEnumerable<int> range;
@@ -158,6 +159,34 @@ namespace Games.RazorMaze
             if (result == null)
                 throw new ArgumentException($"Cannot build direct path from {_From} to {_To}");
             return result.ToList();
+        }
+
+        public static bool PathContainsItem(V2Int _From, V2Int _To, V2Int _Point)
+        {
+            var fullPath = GetFullPath(_From, _To);
+            return fullPath.Contains(_Point);
+        }
+
+        /// <summary>
+        /// returns -1 if _A less than _B, 0 if _A equals _B, 1 if _A greater than _B
+        /// </summary>
+        /// <param name="_From">start path element</param>
+        /// <param name="_To">end path element</param>
+        /// <param name="_A">first path item</param>
+        /// <param name="_B">second path item</param>
+        /// <returns></returns>
+        public static int CompareItemsOnPath(V2Int _From, V2Int _To, V2Int _A, V2Int _B)
+        {
+            var fullPath = GetFullPath(_From, _To);
+            if (!fullPath.Contains(_A))
+                throw new ArgumentException($"Path from {_From} to {_To} does not contain point _A {_A}");
+            if (!fullPath.Contains(_B))
+                throw new ArgumentException($"Path from {_From} to {_To} does not contain point _B {_B}");
+            if (_A == _B)
+                return 0;
+            float distA = Vector2.Distance(_From.ToVector2(), _A.ToVector2());
+            float distB = Vector2.Distance(_From.ToVector2(), _B.ToVector2());
+            return distA < distB ? -1 : 1;
         }
         
         #endregion

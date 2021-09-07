@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Entities;
-using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Models.ProceedInfos;
 
 namespace Games.RazorMaze.Models
@@ -20,13 +19,13 @@ namespace Games.RazorMaze.Models
         public long HealthPoints { get; set; }
     }
     
-    public interface IModelMazeData : IPreInit, ICharacterMoveContinued
+    public interface IModelMazeData : IPreInit
     {
         event NoArgsHandler GameLoopUpdate;
         event NoArgsHandler MazeItemsProceedStarted;
         event NoArgsHandler MazeItemsProceedStopped;
         event MazeInfoHandler MazeChanged;
-        event PathProceedHandler PathProceedEvent;
+        
         MazeInfo Info { get; set; }
         MazeOrientation Orientation { get; set; }
         Dictionary<V2Int, bool> PathProceeds { get; }
@@ -64,7 +63,6 @@ namespace Games.RazorMaze.Models
         public event NoArgsHandler MazeItemsProceedStarted;
         public event NoArgsHandler MazeItemsProceedStopped;
         public event MazeInfoHandler MazeChanged;
-        public event PathProceedHandler PathProceedEvent;
         public MazeOrientation Orientation { get; set; } = MazeOrientation.North;
         public Dictionary<V2Int, bool> PathProceeds { get; private set; }
 
@@ -89,10 +87,8 @@ namespace Games.RazorMaze.Models
         }
         
         public bool ProceedingControls { get; set; }
-        public void OnGameLoopUpdate()
-        {
-            GameLoopUpdate?.Invoke();
-        }
+        
+        public void OnGameLoopUpdate() => GameLoopUpdate?.Invoke();
 
         public MazeInfo Info
         {
@@ -104,24 +100,6 @@ namespace Games.RazorMaze.Models
                 PathProceeds[m_Info.Path[0]] = true;
                 MazeChanged?.Invoke(m_Info);
             }
-        }
-        
-        public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
-        {
-            foreach (var pathItem in RazorMazeUtils.GetDirectPath(_Args.From, _Args.Current))
-                ProceedPathItem(pathItem);
-        }
-        
-        #endregion
-        
-        #region nonpublic methods
-
-        private void ProceedPathItem(V2Int _PathItem)
-        {
-            if (!PathProceeds.ContainsKey(_PathItem) || PathProceeds[_PathItem])
-                return;
-            PathProceeds[_PathItem] = true;
-            PathProceedEvent?.Invoke(_PathItem); 
         }
         
         #endregion

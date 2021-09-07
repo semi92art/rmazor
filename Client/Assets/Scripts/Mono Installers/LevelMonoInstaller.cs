@@ -3,7 +3,6 @@ using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Characters;
 using Games.RazorMaze.Views.ContainerGetters;
-using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeCommon;
@@ -47,6 +46,7 @@ namespace Mono_Installers
             Container.Bind<IInputScheduler>()                      .To<InputScheduler>()                          .AsSingle();
             Container.Bind<ICoordinateConverter>()                 .To<CoordinateConverter>()                     .AsSingle();
             Container.Bind<IContainersGetter>()                    .To<ContainersGetter>()                        .AsSingle();
+            Container.Bind<IPathItemsProceeder>()                  .To<PathItemsProceeder>()                      .AsSingle();
             Container.Bind<IMovingItemsProceeder>()                .To<MovingItemsProceeder>()                    .AsSingle();
             Container.Bind<IGravityItemsProceeder>()               .To<GravityItemsProceeder>()                   .AsSingle();
             Container.Bind<ITrapsReactProceeder>()                 .To<TrapsReactProceeder>()                     .AsSingle();

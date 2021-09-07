@@ -51,8 +51,8 @@ namespace Games.RazorMaze
         {
             GameTimeProvider.Instance.Reset();
 
-            var data = Model.Data;
             var rotation                                        = Model.MazeRotation;
+            var pathItemsProceeder                              = Model.PathItemsProceeder;
             var movingItemsProceeder                            = Model.MovingItemsProceeder;
             var gravityItemsProceeder                           = Model.GravityItemsProceeder;
             var trapsReactProceeder                             = Model.TrapsReactProceeder;
@@ -65,7 +65,7 @@ namespace Games.RazorMaze
             var scoring                                         = Model.Scoring;
             var levelStaging                                    = Model.LevelStaging;
             
-            data.PathProceedEvent                               += DataOnPathProceedEvent;
+            pathItemsProceeder.PathProceedEvent                 += DataOnPathProceedEvent;
             
             rotation.RotationStarted                            += OnMazeRotationStarted;
             rotation.Rotation                                   += OnMazeRotation;

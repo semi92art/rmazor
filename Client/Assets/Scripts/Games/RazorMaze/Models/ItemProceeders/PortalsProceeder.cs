@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using UnityEngine;
 
 namespace Games.RazorMaze.Models.ItemProceeders
 {
@@ -46,9 +47,29 @@ namespace Games.RazorMaze.Models.ItemProceeders
             foreach (var type in Types)
             {
                 var infos = GetProceedInfos(type);
-                var portalItem = (from info in infos.Values where 
-                        info.Item.Position == _Args.Current select info.Item)
-                    .FirstOrDefault();
+                var possiblePortals = (from info in infos.Values
+                        where RazorMazeUtils.PathContainsItem(_Args.From, _Args.To, info.Item.Position) 
+                              && RazorMazeUtils.CompareItemsOnPath(
+                            _Args.From, _Args.To, _Args.Current, info.Item.Position) >= 0
+                        select info.Item)
+                    .ToList();
+                MazeItem portalItem = null;
+
+                if (possiblePortals.Count == 1)
+                    portalItem = possiblePortals.First();
+                else if (possiblePortals.Count > 1)
+                {
+                    float distToStart = float.MaxValue;
+                    foreach (var possiblePortal in possiblePortals)
+                    {
+                        float newDistToStart = Vector2.Distance(
+                            _Args.From.ToVector2(), possiblePortal.Position.ToVector2());
+                        if (newDistToStart > distToStart)
+                            continue;
+                        portalItem = possiblePortal;
+                        distToStart = newDistToStart;
+                    }
+                }
 
                 if (portalItem == null)
                 {

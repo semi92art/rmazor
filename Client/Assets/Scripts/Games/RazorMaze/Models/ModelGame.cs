@@ -9,6 +9,7 @@ namespace Games.RazorMaze.Models
     {
         IModelMazeData                            Data { get; }
         IModelMazeRotation                        MazeRotation { get; }
+        IPathItemsProceeder                       PathItemsProceeder { get; }
         IMovingItemsProceeder                     MovingItemsProceeder { get; }
         IGravityItemsProceeder                    GravityItemsProceeder { get; }
         ITrapsReactProceeder                      TrapsReactProceeder { get; }
@@ -27,6 +28,7 @@ namespace Games.RazorMaze.Models
     {
         public IModelMazeData                     Data { get; }
         public IModelMazeRotation                 MazeRotation { get; }
+        public IPathItemsProceeder                PathItemsProceeder { get; }
         public IMovingItemsProceeder              MovingItemsProceeder { get; }
         public IGravityItemsProceeder             GravityItemsProceeder { get; }
         public ITrapsReactProceeder               TrapsReactProceeder { get; }
@@ -43,6 +45,7 @@ namespace Games.RazorMaze.Models
         public ModelGame(
             IModelMazeData                        _Data,
             IModelMazeRotation                    _MazeRotation,
+            IPathItemsProceeder                   _PathItemsProceeder,
             IMovingItemsProceeder                 _MovingItemsProceeder,
             IGravityItemsProceeder                _GravityItemsProceeder,
             ITrapsReactProceeder                  _TrapsReactProceeder,
@@ -58,6 +61,7 @@ namespace Games.RazorMaze.Models
         {
             Data                                  = _Data;
             MazeRotation                          = _MazeRotation;
+            PathItemsProceeder                    = _PathItemsProceeder;
             MovingItemsProceeder                  = _MovingItemsProceeder;
             GravityItemsProceeder                 = _GravityItemsProceeder;
             TrapsReactProceeder                   = _TrapsReactProceeder;
@@ -164,7 +168,7 @@ namespace Games.RazorMaze.Models
             var result = new List<T>
             {
                 Character                 as T,
-                Data                      as T, //TODO вынести все proceeder-ы из Data
+                PathItemsProceeder        as T,
                 MovingItemsProceeder      as T,
                 GravityItemsProceeder     as T,
                 TrapsReactProceeder       as T,

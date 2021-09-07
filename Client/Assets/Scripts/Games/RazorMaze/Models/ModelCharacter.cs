@@ -82,7 +82,7 @@ namespace Games.RazorMaze.Models
                 return;
             Data.CharacterInfo.MoveDirection = _Direction;
             var from = Data.CharacterInfo.Position;
-            var to = GetNewPosition(_Direction);
+            var to = GetNewPosition(from, _Direction);
             var cor = MoveCharacterCore(from, to);
             Coroutines.Run(cor);
         }
@@ -118,34 +118,59 @@ namespace Games.RazorMaze.Models
         
         #region nonpublic methods
 
-        private V2Int GetNewPosition(EMazeMoveDirection _Direction)
+        private V2Int GetNewPosition(V2Int _From, EMazeMoveDirection _Direction)
         {
             var nextPos = Data.CharacterInfo.Position;
             var dirVector = RazorMazeUtils.GetDirectionVector(_Direction, Data.Orientation);
-            while (ValidPosition(nextPos + dirVector, Data.Info))
+            while (IsNextPositionValid(_From, nextPos, nextPos + dirVector, Data.Info))
                 nextPos += dirVector;
             return nextPos;
         }
 
-        private bool ValidPosition(V2Int _Position, MazeInfo _Info)
+        private bool IsNextPositionValid(V2Int _From, V2Int _CurrentPosition, V2Int _NextPosition, MazeInfo _Info)
         {
-            bool isNode = _Info.Path.Any(_PathItem => _PathItem == _Position);
+            bool isNode = _Info.Path.Any(_PathItem => _PathItem == _NextPosition);
+
+            if (!isNode)
+            {
+                var shredinger = Data.ProceedInfos[EMazeItemType.ShredingerBlock].Values
+                    .FirstOrDefault(_Inf => _Inf.Item.Position == _NextPosition);
+
+                if (shredinger != null)
+                    return shredinger.ProceedingStage != 2;
+                
+                bool isPortal = _Info.MazeItems
+                    .Any(_O => _O.Position == _NextPosition && _O.Type == EMazeItemType.Portal);
+                return isPortal;
+            }
+
             bool isMazeItem = _Info.MazeItems.Any(_O => 
-                _O.Position == _Position
+                _O.Position == _NextPosition
                 && (_O.Type == EMazeItemType.Block
                     || _O.Type == EMazeItemType.TrapIncreasing
                     || _O.Type == EMazeItemType.Turret));
+
+            if (isMazeItem)
+                return false;
+            
             bool isBuzyMazeItem = Data.ProceedInfos[EMazeItemType.GravityBlock]
                 .Where(_Inf => _Inf.Value.Item.Type == EMazeItemType.GravityBlock)
-                .Any(_Inf => (_Inf.Value as MazeItemMovingProceedInfo).BusyPositions.Contains(_Position));
-            bool isPortal = _Info.MazeItems
-                .Any(_O => _O.Position == _Position && _O.Type == EMazeItemType.Portal);
-            var shredinger = Data.ProceedInfos[EMazeItemType.ShredingerBlock].Values
-                .FirstOrDefault(_Inf => _Inf.Item.Position == _Position);
+                .Any(_Inf => (_Inf.Value as MazeItemMovingProceedInfo)
+                    .BusyPositions.Contains(_NextPosition));
 
-            if (shredinger != null)
-                return shredinger.ProceedingStage != 2;
-            return isNode && !isMazeItem && !isBuzyMazeItem || isPortal;
+            if (isBuzyMazeItem)
+                return false;
+            
+
+            bool isPrevPortal = _Info.MazeItems
+                .Any(_O => _O.Position == _CurrentPosition && _O.Type == EMazeItemType.Portal);
+            bool isStartFromPortal = _Info.MazeItems
+                .Any(_O => _O.Position == _From && _O.Type == EMazeItemType.Portal);
+
+            if (isPrevPortal && !isStartFromPortal)
+                return false;
+
+            return true;
         }
         
         private IEnumerator MoveCharacterCore(V2Int _From, V2Int _To)
