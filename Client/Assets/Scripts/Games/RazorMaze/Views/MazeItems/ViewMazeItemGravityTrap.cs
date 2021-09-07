@@ -50,10 +50,10 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public override bool Activated
         {
-            get => base.Activated;
+            get => m_Activated;
             set
             {
-                base.Activated = value;
+                m_Activated = value;
                 m_Mace.SetGoActive(value);
             }
         }

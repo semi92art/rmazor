@@ -64,10 +64,10 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public override bool Activated
         {
-            get => base.Activated;
+            get => m_Activated;
             set
             {
-                base.Activated = value;
+                m_Activated = value;
                 m_Center.enabled = value;
                 m_Orbits.ForEach(_Orbit => _Orbit.enabled = value);
                 if (value) return;

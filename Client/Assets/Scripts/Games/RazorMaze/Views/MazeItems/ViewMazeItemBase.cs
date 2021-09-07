@@ -10,7 +10,7 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         #region nonpublic members
         
-        private bool m_Activated;
+        protected bool m_Activated;
         private bool m_Proceeding;
         
         #endregion

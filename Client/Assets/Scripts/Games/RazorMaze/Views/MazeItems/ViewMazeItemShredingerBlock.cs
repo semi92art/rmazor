@@ -48,10 +48,10 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public override bool Activated
         {
-            get => base.Activated;
+            get => m_Activated;
             set
             {
-                base.Activated = value;
+                m_Activated = value;
                 m_Block.enabled = value;
                 m_Lines.ForEach(_Line => _Line.enabled = value);
             }
@@ -71,8 +71,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public override void Init(ViewMazeItemProps _Props)
         {
-            Props = _Props;
-            SetShape();
+            base.Init(_Props);
             Proceeding = false;
         }
         

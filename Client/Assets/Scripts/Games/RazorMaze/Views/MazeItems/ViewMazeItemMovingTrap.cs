@@ -1,6 +1,5 @@
 ﻿using Extensions;
 using GameHelpers;
-using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
@@ -41,10 +40,10 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public override bool Activated
         {
-            get => base.Activated;
+            get => m_Activated;
             set
             {
-                base.Activated = value;
+                m_Activated = value;
                 m_Saw.enabled = value;
             }
         }
