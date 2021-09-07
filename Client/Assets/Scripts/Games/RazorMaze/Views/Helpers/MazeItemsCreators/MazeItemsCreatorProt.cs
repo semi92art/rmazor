@@ -8,7 +8,7 @@ using SpawnPools;
 using UnityEngine;
 using Zenject;
 
-namespace Games.RazorMaze.Views.Helpers
+namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
 {
     public class MazeItemsCreatorProt : MazeItemsCreatorBase
     {
@@ -43,10 +43,16 @@ namespace Games.RazorMaze.Views.Helpers
         
         #endregion
         
+        #region protected constructor
+        
         protected MazeItemsCreatorProt(
             IContainersGetter _ContainersGetter,
             ICoordinateConverter _CoordinateConverter) : base(_ContainersGetter, _CoordinateConverter)
         { }
+        
+        #endregion
+        
+        #region api
 
         public override void InitMazeItems(
             MazeInfo _Info,
@@ -56,6 +62,10 @@ namespace Games.RazorMaze.Views.Helpers
         {
             throw new System.NotImplementedException("This method is only for release");
         }
+        
+        #endregion
+        
+        #region nonpublic methods
 
         protected override void AddPathItem(ICollection<IViewMazeItem> _Items, MazeInfo _Info, V2Int _Position)
         {
@@ -114,5 +124,7 @@ namespace Games.RazorMaze.Views.Helpers
             item.Init(_Props);
             _Items.Add(item);
         }
+        
+        #endregion
     }
 }

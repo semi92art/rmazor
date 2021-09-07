@@ -3,7 +3,7 @@ using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.MazeItems;
 using SpawnPools;
 
-namespace Games.RazorMaze.Views.Helpers
+namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
 {
     public interface IMazeItemsCreator
     {

@@ -4,6 +4,7 @@ using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Characters;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
+using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeCommon;
 using Games.RazorMaze.Views.MazeItemGroups;

@@ -5,6 +5,7 @@ using Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
+using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.MazeItems;
 using Ticker;
 using UnityEngine;

@@ -6,10 +6,12 @@ using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeItems;
 using SpawnPools;
 
-namespace Games.RazorMaze.Views.Helpers
+namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
 {
     public abstract class MazeItemsCreatorBase : IMazeItemsCreator
     {
+        #region nonpublic members
+        
         protected IContainersGetter            ContainersGetter { get; }
         protected ICoordinateConverter         CoordinateConverter { get; }
         protected IViewMazeItemPath            ItemPath { get; }
@@ -23,6 +25,10 @@ namespace Games.RazorMaze.Views.Helpers
         protected IViewMazeItemTrapReact       TrapReact { get; }
         protected IViewMazeItemTrapIncreasing  TrapIncreasing { get; }
         
+        #endregion
+
+        #region protected constructor
+
         protected MazeItemsCreatorBase(
             IContainersGetter _ContainersGetter,
             ICoordinateConverter _CoordinateConverter, 
@@ -50,7 +56,10 @@ namespace Games.RazorMaze.Views.Helpers
             TrapReact = _TrapReact;
             TrapIncreasing = _TrapIncreasing;
         }
+
+        #endregion
         
+        #region api
         
         public virtual List<IViewMazeItem> CreateMazeItems(MazeInfo _Info)
         {
@@ -95,8 +104,14 @@ namespace Games.RazorMaze.Views.Helpers
         {
             return (IViewMazeItemPath)ItemPath.Clone();
         }
+        
+        #endregion
+
+        #region nonpublic methods
 
         protected abstract void AddPathItem(ICollection<IViewMazeItem> _Items, MazeInfo _Info, V2Int _Position);
         protected abstract void AddMazeItem(ICollection<IViewMazeItem> _Items, MazeInfo _Info, MazeItem _Item);
+
+        #endregion
     }
 }

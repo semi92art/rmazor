@@ -4,6 +4,7 @@ using System.Linq;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
+using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.MazeItems;
 using Games.RazorMaze.Views.Utils;
 using SpawnPools;

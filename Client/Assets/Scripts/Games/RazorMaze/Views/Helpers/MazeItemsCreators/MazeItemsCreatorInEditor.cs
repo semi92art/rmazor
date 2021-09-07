@@ -3,7 +3,7 @@ using Entities;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeItems;
 
-namespace Games.RazorMaze.Views.Helpers
+namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
 {
     public class MazeItemsCreatorInEditor : MazeItemsCreatorProt
     {
