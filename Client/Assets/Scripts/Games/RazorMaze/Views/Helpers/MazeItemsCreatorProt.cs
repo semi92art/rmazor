@@ -98,12 +98,12 @@ namespace Games.RazorMaze.Views.Helpers
             _Items.Add(item);
         }
         
-        private void AddMazeItemProt(
+        protected virtual void AddMazeItemProt(
             ICollection<IViewMazeItem> _Items,
             V2Int _MazeSize,
             ViewMazeItemProps _Props)
         {
-            if (_Props.Type == EMazeItemType.Block || this is MazeItemsCreatorInEditor)
+            if (_Props.Type == EMazeItemType.Block)
                 return;
             
             var tr = new GameObject("Maze Item").transform;
