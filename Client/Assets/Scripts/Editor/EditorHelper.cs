@@ -268,6 +268,15 @@ public class EditorHelper : EditorWindow
                         refresh = true;
                     }
                 }
+                else if (fieldInfo.FieldType == typeof(bool))
+                {
+                    bool val = Convert.ToBoolean(fieldInfo.GetValue(settings));
+                    if (val != prop.boolValue)
+                    {
+                        fieldInfo.SetValue(settings, prop.boolValue);
+                        refresh = true;
+                    }
+                }
 
                 if (refresh)
                 {

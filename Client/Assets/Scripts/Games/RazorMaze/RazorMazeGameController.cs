@@ -31,16 +31,24 @@ namespace Games.RazorMaze
 
         #endregion
         
+        #region nonpublic members
+
+        private bool m_FirstMoveDone;
+        
+        #endregion
+        
         #region inject
         
         private IModelGame           Model { get; set; }
         private IViewGame            View { get; set; }
+        private ViewSettings         ViewSettings { get; set; }
         
         [Inject]
-        public void Inject(IModelGame _ModelGame, IViewGame _ViewGame)
+        public void Inject(IModelGame _ModelGame, IViewGame _ViewGame, ViewSettings _ViewSettings)
         {
             Model = _ModelGame;
             View = _ViewGame;
+            ViewSettings = _ViewSettings;
         }
         
         #endregion
@@ -104,32 +112,31 @@ namespace Games.RazorMaze
             
             Model.PreInit();
         }
-
-        private void OnGameLoopUpdate()
-        {
-            Model.Data.OnGameLoopUpdate();
-        }
-
-        private void DataOnPathProceedEvent(V2Int _PathItem)
-        {
-            View.MazeCommon.OnPathProceed(_PathItem);
-        }
-
+        
         public void Init()
         {
             Model.Init();
             View.Init();
+
+            if (!ViewSettings.StartPathItemFilledOnStart)
+                UnfillStartPathItem();
         }
-
-
-        private void OnInputCommand(int _Value) => Model.InputScheduler.AddCommand((EInputCommand)_Value);
         
+        #endregion
+
+        #region event methods
+        
+        private void OnGameLoopUpdate() => Model.Data.OnGameLoopUpdate();
+        private void DataOnPathProceedEvent(V2Int _PathItem) => View.MazeCommon.OnPathProceed(_PathItem);
+        private void OnInputCommand(int _Value) => Model.InputScheduler.AddCommand((EInputCommand)_Value);
         private void OnCharacterHealthChanged(HealthPointsEventArgs _Args) => View.Character.OnHealthChanged(_Args);
         private void OnCharacterDeath() => View.Character.OnDeath();
         private void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
         {
             View.Character.OnMovingStarted(_Args);
-            View.MazeCommon.MazeItems.Single(_Item => _Item.Props.IsStartNode).Proceeding = true;
+            if (!m_FirstMoveDone && ViewSettings.StartPathItemFilledOnStart)
+                UnfillStartPathItem();
+            m_FirstMoveDone = true;
         }
 
         private void OnCharacterMoveContinued(CharacterMovingEventArgs _Args) => View.Character.OnMoving(_Args);
@@ -166,7 +173,12 @@ namespace Games.RazorMaze
 
         #endregion
     
-        #region protected methods
+        #region nonpublic methods
+
+        private void UnfillStartPathItem()
+        {
+            View.MazeCommon.MazeItems.Single(_Item => _Item.Props.IsStartNode).Proceeding = true;
+        }
         
         protected virtual void OnBeforeLevelStarted(LevelStateChangedArgs _Args)
         {

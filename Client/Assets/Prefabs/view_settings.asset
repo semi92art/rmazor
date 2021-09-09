@@ -19,3 +19,4 @@ MonoBehaviour:
   turretBulletRotationSpeed: 100
   blockItemsCount: 100
   pathItemsCount: 300
+  startPathItemFilledOnStart: 0
