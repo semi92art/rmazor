@@ -1,11 +1,10 @@
 ﻿using Constants;
-using Controllers;
 using Entities;
 using Extensions;
+using Games.RazorMaze;
 using Managers;
 using Network;
 using Ticker;
-using UI;
 using UI.Panels;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -33,26 +32,47 @@ public class ApplicationInitializer : MonoBehaviour
         AdsManager.Instance.Init();
         AnalyticsManager.Instance.Init();
         AssetBundleManager.Instance.Init();
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-        DebugConsole.DebugConsoleView.Instance.Init();
-#endif
+        InitDebugConsole();
         SceneManager.sceneLoaded += OnSceneLoaded;
-        SceneManager.LoadScene(1);
+        CommonUtils.LoadSceneCorrectly(Ticker, SceneNames.Main);
     }
     
     private void OnSceneLoaded(Scene _Scene, LoadSceneMode _)
     {
-        Ticker.Clear();
         TimeOrLifesEndedPanel.TimesPanelCalled = 0;
         
         bool onStart = _prevScene.EqualsIgnoreCase(SceneNames.Preload);
                 
         if (onStart)
+            InitDebugReporter();
+        
+        if (_Scene.name.EqualsIgnoreCase(SceneNames.Main))
         {
+            GameClientUtils.GameId = 1;
+            if (onStart)
+                LocalizationManager.Instance.Init();
+        }
+        
+        _prevScene = _Scene.name;
+    }
+
+    #endregion
+    
+    #region nonpublic methods
+
+    private static void InitDebugConsole()
+    {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            bool debugOn = SaveUtils.GetValue<bool>(SaveKeyDebug.DebugUtilsOn);
-            SaveUtils.PutValue(SaveKeyDebug.DebugUtilsOn, debugOn);
-            DebugConsole.DebugConsoleView.Instance.SetGoActive(debugOn);
+        DebugConsole.DebugConsoleView.Instance.Init();
+#endif
+    }
+    
+    private static void InitDebugReporter()
+    {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        bool debugOn = SaveUtils.GetValue<bool>(SaveKeyDebug.DebugUtilsOn);
+        SaveUtils.PutValue(SaveKeyDebug.DebugUtilsOn, debugOn);
+        DebugConsole.DebugConsoleView.Instance.SetGoActive(debugOn);
 #if !UNITY_EDITOR && DEVELOPMENT_BUILD
                     UiManager.Instance.DebugReporter = GameHelpers.PrefabUtilsEx.InitPrefab(
                         null,
@@ -61,16 +81,7 @@ public class ApplicationInitializer : MonoBehaviour
                     UiManager.Instance.DebugReporter.SetActive(debugOn);
 #endif
 #endif
-        }
-                
-        if (_Scene.name.EqualsIgnoreCase(SceneNames.Main))
-        {
-            if (onStart)
-                LocalizationManager.Instance.Init();
-        }
-
-        _prevScene = _Scene.name;
     }
-    
+
     #endregion
 }

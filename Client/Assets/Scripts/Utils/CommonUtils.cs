@@ -8,8 +8,10 @@ using System.Threading;
 using Extensions;
 using GameHelpers;
 using Network;
+using Ticker;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 namespace Utils
 {
@@ -291,6 +293,12 @@ namespace Utils
             if (go == null)
                 go = new GameObject(_Name);
             return go;
+        }
+
+        public static void LoadSceneCorrectly(ITicker _Ticker, string _SceneName)
+        {
+            _Ticker.Clear();
+            SceneManager.LoadScene(_SceneName);
         }
     }
 }

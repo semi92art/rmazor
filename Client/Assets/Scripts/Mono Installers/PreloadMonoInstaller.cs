@@ -1,11 +1,10 @@
-﻿using Zenject;
-
-namespace Mono_Installers
+﻿namespace Mono_Installers
 {
-    public class PreloadMonoInstaller : MonoInstaller
+    public class PreloadMonoInstaller : MonoInstallerImplBase
     {
         public override void InstallBindings()
         {
+            base.InstallBindings();
             Container.Bind<ApplicationInitializer>().FromComponentInHierarchy().AsSingle();
         }
     }

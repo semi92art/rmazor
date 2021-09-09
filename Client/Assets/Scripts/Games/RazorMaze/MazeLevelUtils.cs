@@ -18,19 +18,20 @@ namespace Games.RazorMaze
     
     public static class MazeLevelUtils
     {
+        public const int HeapIndexRelease = 0;
         public const int LevelsInGroup = 3;
         private const int GroupsInAsset = 50;
         private static int _heapIndex;
         private static MazeLevelsList _levelsList;
         
-        public static MazeInfo LoadLevel(int _GameId, int _LevelGroup, int _Index, int _HeapIndex, bool _FromBundle)
+        public static MazeInfo LoadLevel(int _GameId, int _LevelGroup, int _ShortLevelIndex, int _HeapIndex, bool _FromBundle)
         {
             var asset = PrefabUtilsEx.GetObject<TextAsset>(PrefabSetName(_GameId),
                 LevelsAssetName(_HeapIndex, _LevelGroup), _FromBundle);
             var levelsListRaw = JsonConvert.DeserializeObject<MazeLevelsList>(asset.text);
             var levelsList = levelsListRaw.Levels;
             var result = levelsList
-                .FirstOrDefault(_L => _L.LevelGroup == _LevelGroup && _L.LevelIndex == _Index);
+                .FirstOrDefault(_L => _L.LevelGroup == _LevelGroup && _L.LevelIndex == _ShortLevelIndex);
             return result;
         }
         
