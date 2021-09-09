@@ -115,7 +115,14 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
         {
             if (_Props.Type == EMazeItemType.Block)
                 return;
-            
+            AddMazeItemProtCore(_Items, _MazeSize, _Props);
+        }
+
+        protected void AddMazeItemProtCore(
+            ICollection<IViewMazeItem> _Items,
+            V2Int _MazeSize,
+            ViewMazeItemProps _Props)
+        {
             var tr = new GameObject("Maze Item").transform;
             tr.SetParent(ContainersGetter.MazeItemsContainer);
             var item = tr.gameObject.AddComponent<ViewMazeItemProt>();
