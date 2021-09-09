@@ -13,11 +13,10 @@ namespace Games.RazorMaze.Views.Utils
 
 
         public static Color ColorMain => GetFromPalette("Main");
-        public static Color ColorFill => GetFromPalette("Fill");
-        public static Color ColorBlock => GetFromPalette("Block");
         public static Color ColorBack => GetFromPalette("Back");
-        public static Color ColorHint => GetFromPalette("Hint");
 
+        public static Color ColorHint => GetFromCommonPalette("Hint");
+        public static Color ColorBlock => GetFromCommonPalette("Block");
         public static Color ColorLines => GetFromCommonPalette("Lines");
         public static Color ColorCharacter => GetFromCommonPalette("Character");
         public static Color ColorCharacterTail => GetFromCommonPalette("Character Tail");

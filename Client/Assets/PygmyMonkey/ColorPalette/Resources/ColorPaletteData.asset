@@ -18,11 +18,7 @@ MonoBehaviour:
     showDetails: 1
     colorInfoList:
     - name: Main
-      color: {r: 0.8679245, g: 0.55268776, b: 0.55268776, a: 1}
-    - name: Block
-      color: {r: 0.5294118, g: 0.5294118, b: 0.5294118, a: 1}
-    - name: Fill
-      color: {r: 0.26666668, g: 0.32156864, b: 0.34901962, a: 1}
+      color: {r: 1, g: 1, b: 1, a: 1}
     - name: Back
       color: {r: 0.26508543, g: 0.31976113, b: 0.3490566, a: 1}
     colorList: []
@@ -45,6 +41,10 @@ MonoBehaviour:
       color: {r: 1, g: 1, b: 1, a: 0.49019608}
     - name: Lines
       color: {r: 1, g: 1, b: 1, a: 1}
+    - name: Hint
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - name: Block
+      color: {r: 0.5294118, g: 0.5294118, b: 0.5294118, a: 1}
     colorList: []
   - name: Game 1
     showDetails: 0

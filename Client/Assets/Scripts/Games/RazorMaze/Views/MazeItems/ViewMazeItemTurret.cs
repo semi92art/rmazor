@@ -123,7 +123,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
             var bullHold = go.AddComponentOnNewChild<Disc>("Bullet Holder", out _, Vector2.zero);
             bullHold.Radius = CoordinateConverter.GetScale() * BulletContainerRadius;
-            bullHold.Color = DrawingUtils.ColorMain;
+            bullHold.Color = DrawingUtils.ColorBack;
             bullHold.Type = DiscType.Disc;
             bullHold.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type) + 1;
             var bcb = bullHold.gameObject.AddComponentOnNewChild<Disc>("Border", out _, Vector2.zero);
@@ -140,7 +140,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
             var barrel = go.AddComponentOnNewChild<Rectangle>("Barrel", out _, Vector2.zero);
             barrel.Type = Rectangle.RectangleType.HardSolid;
-            barrel.Color = DrawingUtils.ColorMain;
+            barrel.Color = DrawingUtils.ColorBack;
             barrel.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type) + 1;
 
             var tr = barrel.transform;

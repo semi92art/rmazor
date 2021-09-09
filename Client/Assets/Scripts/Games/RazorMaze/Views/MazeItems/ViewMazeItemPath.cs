@@ -90,8 +90,8 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region nonpublic methods
         
-        private void Fill() => m_Shape.Color = DrawingUtils.ColorFill;
-        private void Unfill() => m_Shape.Color = DrawingUtils.ColorMain;
+        private void Fill() => m_Shape.Color = DrawingUtils.ColorBack;
+        private void Unfill() => m_Shape.Color = DrawingUtils.ColorLines;
 
         protected override void SetShape()
         {
@@ -100,15 +100,12 @@ namespace Games.RazorMaze.Views.MazeItems
                 .GetOrAddComponentOnNewChild<Rectangle>("Path Item", ref go, 
                     CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             go.DestroyChildrenSafe();
-            // sh.Width = sh.Height = CoordinateConverter.GetScale() * 0.99f;
-            sh.Width = sh.Height = CoordinateConverter.GetScale() * 0.6f;
-            sh.Type = Rectangle.RectangleType.RoundedSolid;
-            // sh.CornerRadiusMode = Rectangle.RectangleCornerRadiusMode.PerCorner;
+            sh.Width = sh.Height = CoordinateConverter.GetScale() * 0.4f;
+            sh.Type = Rectangle.RectangleType.RoundedHollow;
             sh.CornerRadiusMode = Rectangle.RectangleCornerRadiusMode.Uniform;
-            sh.CornerRadiii = Vector4.zero;
-            float cr = (ViewSettings.CornerRadius) * CoordinateConverter.GetScale();
+            float cr = ViewSettings.CornerRadius * CoordinateConverter.GetScale() * 2f;
             sh.CornerRadius = cr;
-            sh.Color = DrawingUtils.ColorMain;
+            sh.Color = DrawingUtils.ColorLines;
             sh.SortingOrder = DrawingUtils.GetPathSortingOrder();
             Object = go;
             m_Shape = sh;
@@ -254,7 +251,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 if (!_Inner) return;
                 m_BottomBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Down, true, true).Item1;
                 m_LeftBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Left, true, true).Item1;
-                m_Shape.CornerRadiii = m_Shape.CornerRadiii.SetX(cr);
+                // m_Shape.CornerRadiii = m_Shape.CornerRadiii.SetX(cr);
             }
             else if (_Right && !_Up)
             {
@@ -262,7 +259,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 if (!_Inner) return;
                 m_BottomBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Down, true, true).Item2;
                 m_RightBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Right, true, true).Item1;
-                m_Shape.CornerRadiii = m_Shape.CornerRadiii.SetW(cr);
+                // m_Shape.CornerRadiii = m_Shape.CornerRadiii.SetW(cr);
             }
             else if (!_Right && _Up)
             {
@@ -270,7 +267,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 if (!_Inner) return;
                 m_LeftBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Left, true, true).Item2;
                 m_TopBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Up, true, true).Item1;
-                m_Shape.CornerRadiii = m_Shape.CornerRadiii.SetY(cr);
+                // m_Shape.CornerRadiii = m_Shape.CornerRadiii.SetY(cr);
             }
             else if (_Right && _Up)
             {
@@ -278,7 +275,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 if (!_Inner) return;
                 m_TopBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Up, true, true).Item2;
                 m_RightBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Right, true, true).Item2;
-                m_Shape.CornerRadiii = m_Shape.CornerRadiii.SetZ(cr);
+                // m_Shape.CornerRadiii = m_Shape.CornerRadiii.SetZ(cr);
             }
         }
 
