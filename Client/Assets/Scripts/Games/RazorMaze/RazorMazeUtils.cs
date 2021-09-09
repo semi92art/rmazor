@@ -12,6 +12,18 @@ namespace Games.RazorMaze
     public static class RazorMazeUtils
     {
         #region api
+        
+        public static List<MazeItem> GetBlockMazeItems(IEnumerable<MazeItem> _Items)
+        {
+            return _Items.Where(_Item =>
+                _Item.Type == EMazeItemType.Block
+                || _Item.Type == EMazeItemType.Turret
+                || _Item.Type == EMazeItemType.TrapReact
+                || _Item.Type == EMazeItemType.TrapIncreasing
+                || _Item.Type == EMazeItemType.TurretRotating
+                || _Item.Type == EMazeItemType.GravityBlock
+                || _Item.Type == EMazeItemType.ShredingerBlock).ToList();
+        }
 
         public static bool IsValidPositionForMove(MazeInfo _Info, MazeItem _MazeItem, V2Int _Position)
         {
@@ -188,24 +200,6 @@ namespace Games.RazorMaze
             float distB = Vector2.Distance(_From.ToVector2(), _B.ToVector2());
             return distA < distB ? -1 : 1;
         }
-        
-        #endregion
-        
-        #region nonpublic methods
-        
-        private static IEnumerable<MazeItem> GetBlockMazeItems(IEnumerable<MazeItem> _Items)
-        {
-            return _Items.Where(_Item =>
-                _Item.Type == EMazeItemType.Block
-                || _Item.Type == EMazeItemType.Turret
-                || _Item.Type == EMazeItemType.TrapReact
-                || _Item.Type == EMazeItemType.TrapIncreasing
-                || _Item.Type == EMazeItemType.TurretRotating
-                || _Item.Type == EMazeItemType.GravityBlock
-                || _Item.Type == EMazeItemType.ShredingerBlock);
-        }
-
-
         
         #endregion
     }

@@ -63,17 +63,21 @@ namespace Games.RazorMaze.Models.ItemProceeders
         private void MoveMazeItemsGravity(MazeOrientation _Orientation, V2Int _CharacterPoint)
         {
             var dropDirection = RazorMazeUtils.GetDropDirection(_Orientation);
-            foreach (var item in GetProceedInfos(EMazeItemType.GravityBlock).Values)
+            foreach (var item in Types.SelectMany(_Type => GetProceedInfos(_Type).Values))
                 MoveMazeItemGravity((MazeItemMovingProceedInfo)item, dropDirection, _CharacterPoint);
-            foreach (var item in GetProceedInfos(EMazeItemType.GravityTrap).Values)
-                MoveMazeItemGravity((MazeItemMovingProceedInfo)item, dropDirection);
         } 
         
         private void MoveMazeItemGravity(
             MazeItemMovingProceedInfo _Info, 
             V2Int _DropDirection,
-            V2Int? _CharacterPoint = null)
+            V2Int _CharacterPoint)
         {
+            var gravityItems = RazorMazeUtils
+                .GetBlockMazeItems(Data.Info.MazeItems)
+                .Where(_Item => _Item.Type == EMazeItemType.GravityBlock
+                                || _Item.Type == EMazeItemType.GravityTrap)
+                .ToList();
+
             Coroutines.Run(Coroutines.WaitWhile(
                 () => _Info.IsProceeding,
                 () =>
@@ -90,7 +94,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     {
                         pos += _DropDirection;
 
-                        if (_CharacterPoint.HasValue && _CharacterPoint.Value == pos )
+                        if (_CharacterPoint == pos && _Info.Item.Type == EMazeItemType.GravityBlock)
                             altPos = pos - _DropDirection;
                         var pos1 = pos;
                         if (_Info.Item.Path.All(_Pos => pos1 != _Pos))
@@ -107,6 +111,12 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
                         doMoveByPath = true;
                         break;
+                    }
+
+                    if (!doMoveByPath)
+                    {
+                        if (gravityItems.Any(_Item => _Item.Position == pos + _DropDirection))
+                            doMoveByPath = true;
                     }
 
                     if (!doMoveByPath || pos == _Info.Item.Position)
