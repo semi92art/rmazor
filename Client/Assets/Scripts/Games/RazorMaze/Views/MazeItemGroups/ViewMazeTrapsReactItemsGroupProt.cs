@@ -22,13 +22,12 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         }
 
         #endregion
-        
-        public void Init()
-        {
-            
-        }
-        
-        
+
+        public event NoArgsHandler Initialized;
+
+        public void Init() => Initialized?.Invoke();
+
+
         public void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args)
         {
             HandleItemOnStage(_Args, MazeCommon.GetItem(_Args.Item));

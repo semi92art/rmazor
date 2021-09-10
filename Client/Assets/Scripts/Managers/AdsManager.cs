@@ -10,7 +10,7 @@ using Utils;
 
 namespace Managers
 {
-    public class AdsManager : GameObserver
+    public class AdsManager : GameObserver, IInit
     {
         #region singleton
     
@@ -52,6 +52,8 @@ namespace Managers
             }
         }
 
+        public event NoArgsHandler Initialized;
+        
         public void Init()
         {
             new RequestConfiguration
@@ -65,7 +67,10 @@ namespace Managers
             m_RewardedAd.LoadAd(m_AdRequest);
             m_RewardedAd.OnPaidEvent += (_, _Args) => m_OnPaid?.Invoke();
             m_RewardedAd.OnAdClosed += (_, _Args) => m_RewardedAd.LoadAd(m_AdRequest);
+            
+            Initialized?.Invoke();
         }
+
 
         #endregion
 

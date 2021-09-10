@@ -6,7 +6,7 @@ namespace Ticker
     {
         void Register(object _Object);
         void Unregister(object _Object);
-        void Clear();
+        void ClearRegisteredObjects();
     }
     
     public class Ticker : ITicker
@@ -15,19 +15,10 @@ namespace Ticker
         private static TickerManager Instance => 
             CommonUtils.MonoBehSingleton(ref _instance, "Ticker Manager");
         
-        public void Register(object _Object)
-        {
-            Instance.RegisterObject(_Object);
-        }
+        public void Register(object _Object) => Instance.RegisterObject(_Object);
 
-        public void Unregister(object _Object)
-        {
-            Instance.UnregisterObject(_Object);
-        }
-
-        public void Clear()
-        {
-            Instance.Clear();
-        }
+        public void Unregister(object _Object) => Instance.UnregisterObject(_Object);
+        
+        public void ClearRegisteredObjects() => Instance.Clear();
     }
 }

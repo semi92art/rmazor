@@ -34,6 +34,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         public override void Init()
         {
             DrawWallBlockMovingPaths(DrawingUtils.ColorLines);
+            base.Init();
         }
 
         #endregion

@@ -4,6 +4,7 @@ using Constants;
 using Entities;
 using Exceptions;
 using Extensions;
+using Games.RazorMaze.Controllers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.MazeItems;
 using UnityEditor;

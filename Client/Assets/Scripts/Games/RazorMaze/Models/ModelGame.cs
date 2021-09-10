@@ -26,6 +26,11 @@ namespace Games.RazorMaze.Models
     
     public class ModelGame : IModelGame
     {
+        #region api
+        
+        public event NoArgsHandler PreInitialized;
+        public event NoArgsHandler Initialized;
+        
         public IModelMazeData                     Data { get; }
         public IModelMazeRotation                 MazeRotation { get; }
         public IPathItemsProceeder                PathItemsProceeder { get; }
@@ -75,7 +80,7 @@ namespace Games.RazorMaze.Models
             ShredingerBlocksProceeder             = _ShredingerBlocksProceeder;
             SpringboardProceeder                  = _SpringboardProceeder;
         }
-        
+
         public void PreInit()
         {
             foreach (var proceeder in GetInterfaceOfProceeders<IItemsProceeder>())
@@ -97,15 +102,21 @@ namespace Games.RazorMaze.Models
             PortalsProceeder.PortalEvent          += Character.OnPortal;
             SpringboardProceeder.SpringboardEvent += Character.OnSpringboard;
             
+            Data.PreInitialized += () => PreInitialized?.Invoke();
             Data.PreInit();
         }
-
+        
         public void Init()
         {
+            Character.Initialized += () => Initialized?.Invoke();
             Character.Init();
         }
         
-        private void MazeOnMazeChanged(MazeInfo _Info)
+        #endregion
+
+        #region nonpublic methods
+
+                private void MazeOnMazeChanged(MazeInfo _Info)
         {
             var proceeders = GetInterfaceOfProceeders<IOnMazeChanged>();
             foreach (var proceeder in proceeders)
@@ -180,5 +191,7 @@ namespace Games.RazorMaze.Models
             }.Where(_Proceeder => _Proceeder != null).ToList();
             return result;
         } 
+
+        #endregion
     }
 }

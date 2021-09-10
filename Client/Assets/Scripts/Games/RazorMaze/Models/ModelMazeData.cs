@@ -47,14 +47,17 @@ namespace Games.RazorMaze.Models
         
         #region constructor
         
+        public event NoArgsHandler PreInitialized;
+        
         public void PreInit()
         {
             ProceedInfos = new Dictionary<EMazeItemType, Dictionary<MazeItem, IMazeItemProceedInfo>>();
             var types = Enum.GetValues(typeof(EMazeItemType)).Cast<EMazeItemType>();
             foreach (var type in types)
                 ProceedInfos.Add(type, new Dictionary<MazeItem, IMazeItemProceedInfo>());
+            PreInitialized?.Invoke();
         }
-
+        
         #endregion
 
         #region api

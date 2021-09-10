@@ -4,6 +4,7 @@ using Games.RazorMaze.Views.MazeCommon;
 using Games.RazorMaze.Views.MazeItemGroups;
 using Games.RazorMaze.Views.Rotation;
 using Games.RazorMaze.Views.UI;
+using Utils;
 
 namespace Games.RazorMaze.Views.Views
 {
@@ -49,16 +50,47 @@ namespace Games.RazorMaze.Views.Views
             ShredingerBlocksGroup = _ShredingerBlocksGroup;
             SpringboardItemsGroup = _SpringboardItemsGroup;
         }
+        
+        public event NoArgsHandler Initialized;
 
         public void Init()
         {
+            bool mazeCommonInitialized = false;
+            bool mazeRotationInitialized = false;
+            bool mazeMovingItemsGroupInitialized = false;
+            bool mazeTrapsReactItemsGroupInitialized = false;
+            bool mazeTrapsIncreasingItemsGroupInitialized = false;
+            bool characterInitialized = false;
+            bool inputConfiguratorInitialized = false;
+
+            MazeCommon.Initialized                    += () => mazeCommonInitialized = true;
+            MazeRotation.Initialized                  += () => mazeRotationInitialized = true;
+            MazeMovingItemsGroup.Initialized          += () => mazeMovingItemsGroupInitialized = true;
+            MazeTrapsReactItemsGroup.Initialized      += () => mazeTrapsReactItemsGroupInitialized = true;
+            MazeTrapsIncreasingItemsGroup.Initialized += () => mazeTrapsIncreasingItemsGroupInitialized = true;
+            Character.Initialized                     += () => characterInitialized = true;
+            InputConfigurator.Initialized             += () => inputConfiguratorInitialized = true;
+            
             MazeCommon.Init();
             MazeRotation.Init();
             MazeMovingItemsGroup.Init();
             MazeTrapsReactItemsGroup.Init();
             MazeTrapsIncreasingItemsGroup.Init();
             Character.Init();
-            InputConfigurator.ConfigureInput();
+            InputConfigurator.Init();
+
+            System.Func<bool> allInitialized = () =>
+                mazeCommonInitialized
+                && mazeRotationInitialized
+                && mazeMovingItemsGroupInitialized
+                && mazeTrapsReactItemsGroupInitialized
+                && mazeTrapsIncreasingItemsGroupInitialized
+                && characterInitialized
+                && inputConfiguratorInitialized;
+
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !allInitialized.Invoke(), 
+                () => Initialized?.Invoke()));
         }
     }
 }

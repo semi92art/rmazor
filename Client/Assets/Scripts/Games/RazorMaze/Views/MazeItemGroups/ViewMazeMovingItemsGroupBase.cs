@@ -11,7 +11,6 @@ using Games.RazorMaze.Views.MazeItems;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using UnityEngine;
-using Utils;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
@@ -50,7 +49,12 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         #region api
 
-        public abstract void Init();
+        public event NoArgsHandler Initialized;
+
+        public virtual void Init()
+        {
+            Initialized?.Invoke();
+        }
 
         public void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
         {

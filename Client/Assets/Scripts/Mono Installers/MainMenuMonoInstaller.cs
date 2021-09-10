@@ -8,7 +8,7 @@ namespace Mono_Installers
         {
             base.InstallBindings();
             
-            Container.Bind<MainMenuStarter>().FromComponentInHierarchy().AsSingle();
+            Container.Bind<IntroSceneViewer>().FromComponentInHierarchy().AsSingle();
             Container.Bind<IMainMenuUiLoader>().To<MainMenuUiLoader>().AsSingle();
             Container.Bind<IMainMenuUI>().To<MainMenuUi>().AsSingle();
         }

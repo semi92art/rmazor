@@ -29,8 +29,10 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         #endregion
         
         #region api
-        
-        public virtual void Init() { }
+
+        public event NoArgsHandler Initialized;
+
+        public virtual void Init() => Initialized?.Invoke();
 
         public abstract void OnTurretShoot(TurretShotEventArgs _Args);
 

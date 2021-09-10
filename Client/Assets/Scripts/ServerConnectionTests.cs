@@ -26,7 +26,8 @@ public class ServerConnectionTests
     {
         //Arrange
         InitGameObjects();
-        GameClient.Instance.Init(true);
+        CommonUtils.Testing = true;
+        GameClient.Instance.Init();
         string url = $"{GameClientUtils.ServerApiUrl}/timetest";
 
         var request = new UnityWebRequest(url, "GET");
@@ -53,7 +54,8 @@ public class ServerConnectionTests
     {
         //Arrange
         InitGameObjects();
-        GameClient.Instance.Init(true);
+        CommonUtils.Testing = true;
+        GameClient.Instance.Init();
         bool requestSuccess = false;
         
         //Act
@@ -81,7 +83,8 @@ public class ServerConnectionTests
     {
         //Arrange
         InitGameObjects();
-        GameClient.Instance.Init(true);
+        CommonUtils.Testing = true;
+        GameClient.Instance.Init();
         bool requestSuccess = false;
         
         //Act

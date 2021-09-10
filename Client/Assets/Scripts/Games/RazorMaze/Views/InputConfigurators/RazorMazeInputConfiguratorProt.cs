@@ -16,8 +16,12 @@ namespace Games.RazorMaze.Views.InputConfigurators
 
         public bool Locked { get; set; }
         public event IntHandler Command;
-        
-        public void ConfigureInput() { } //TODO
+        public event NoArgsHandler Initialized;
+
+        public void Init()
+        {
+            Initialized?.Invoke();
+        }
 
         public void UpdateTick()
         {

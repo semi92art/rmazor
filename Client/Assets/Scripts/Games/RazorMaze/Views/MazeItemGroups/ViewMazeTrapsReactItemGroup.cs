@@ -18,8 +18,9 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         #endregion
         
         #region api
-        
-        public void Init() { }
+
+        public event NoArgsHandler Initialized;
+        public void Init() => Initialized?.Invoke();
 
         public void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args)
         {

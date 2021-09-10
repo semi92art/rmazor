@@ -57,8 +57,8 @@ namespace Games.RazorMaze.Views.MazeCommon
         public override void Init()
         {
             InitPools(Model.Info);
-            base.Init();
             Camera.main.backgroundColor = DrawingUtils.ColorBack; //TODO заменить на что-то адекватное
+            base.Init();
         }
 
         public override IViewMazeItem GetItem(MazeItem _Item)

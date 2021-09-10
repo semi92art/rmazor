@@ -4,7 +4,6 @@ using Entities;
 using Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
-using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.MazeItems;
 using Ticker;
@@ -43,12 +42,15 @@ namespace Games.RazorMaze.Views.MazeCommon
         #region api
         
         public event NoArgsHandler GameLoopUpdate;
+        public event NoArgsHandler Initialized;
         public abstract List<IViewMazeItem> MazeItems { get; }
+
 
         public virtual void Init()
         {
             ContainersGetter.MazeItemsContainer.SetLocalPosXY(Vector2.zero);
             ContainersGetter.MazeItemsContainer.PlusLocalPosY(CoordinateConverter.GetScale() * 0.5f);
+            Initialized?.Invoke();
         }
         
         public virtual void OnPathProceed(V2Int _PathItem)

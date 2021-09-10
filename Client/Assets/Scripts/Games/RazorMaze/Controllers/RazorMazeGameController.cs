@@ -8,7 +8,7 @@ using UnityEngine;
 using Utils;
 using Zenject;
 
-namespace Games.RazorMaze
+namespace Games.RazorMaze.Controllers
 {
     public interface IGameManager : IInit, IPreInit, IPostInit { }
     
@@ -30,13 +30,7 @@ namespace Games.RazorMaze
         }
 
         #endregion
-        
-        #region nonpublic members
 
-        private bool m_FirstMoveDone;
-        
-        #endregion
-        
         #region inject
         
         private IModelGame           Model { get; set; }
@@ -54,6 +48,10 @@ namespace Games.RazorMaze
         #endregion
         
         #region api
+
+        public event NoArgsHandler PreInitialized;
+        public event NoArgsHandler Initialized;
+        public event NoArgsHandler PostInitialized;
         
         public void PreInit()
         {
@@ -110,18 +108,30 @@ namespace Games.RazorMaze
             View.InputConfigurator.Command                      += OnInputCommand;
             View.MazeCommon.GameLoopUpdate                      += OnGameLoopUpdate;
             
+            Model.PreInitialized += () => PreInitialized?.Invoke();
             Model.PreInit();
         }
-        
+
         public void Init()
         {
+            bool modelInitialized = false;
+            bool viewInitialized = false;
+
+            Model.Initialized += () => modelInitialized = true;
+            View.Initialized  += () => viewInitialized = true;
+            
             Model.Init();
             View.Init();
 
-            if (!ViewSettings.StartPathItemFilledOnStart)
-                UnfillStartPathItem();
+            System.Func<bool> allInitialized = () => modelInitialized && viewInitialized;
+            
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !allInitialized.Invoke(),
+                () => Initialized?.Invoke()));
         }
+
         
+
         #endregion
 
         #region event methods
@@ -131,13 +141,7 @@ namespace Games.RazorMaze
         private void OnInputCommand(int _Value) => Model.InputScheduler.AddCommand((EInputCommand)_Value);
         private void OnCharacterHealthChanged(HealthPointsEventArgs _Args) => View.Character.OnHealthChanged(_Args);
         private void OnCharacterDeath() => View.Character.OnDeath();
-        private void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
-        {
-            View.Character.OnMovingStarted(_Args);
-            if (!m_FirstMoveDone && ViewSettings.StartPathItemFilledOnStart)
-                UnfillStartPathItem();
-            m_FirstMoveDone = true;
-        }
+        private void OnCharacterMoveStarted(CharacterMovingEventArgs _Args) => View.Character.OnMovingStarted(_Args);
 
         private void OnCharacterMoveContinued(CharacterMovingEventArgs _Args) => View.Character.OnMoving(_Args);
         private void OnCharacterMoveFinished(CharacterMovingEventArgs _Args) => View.Character.OnMovingFinished(_Args);
@@ -261,5 +265,7 @@ namespace Games.RazorMaze
             Model.Data.ProceedingControls = true;
             Model.Data.ProceedingMazeItems = true;
         }
+
+
     }
 }

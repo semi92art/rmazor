@@ -1,11 +1,9 @@
 ﻿using Constants;
 using Entities;
 using Extensions;
-using Games.RazorMaze;
 using Managers;
 using Network;
 using Ticker;
-using UI.Panels;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;
@@ -27,29 +25,24 @@ public class ApplicationInitializer : MonoBehaviour
     
     private void Start()
     {
-        DontDestroyOnLoad(gameObject);
-        GameClient.Instance.Init();
-        AdsManager.Instance.Init();
-        AnalyticsManager.Instance.Init();
-        AssetBundleManager.Instance.Init();
-        InitDebugConsole();
         SceneManager.sceneLoaded += OnSceneLoaded;
-        CommonUtils.LoadSceneCorrectly(Ticker, SceneNames.Main);
+        
+        InitDebugConsole();
+        InitGameManagers();
+        
+        Ticker.ClearRegisteredObjects();
+        SceneManager.LoadScene(SceneNames.Main);
     }
     
     private void OnSceneLoaded(Scene _Scene, LoadSceneMode _)
     {
-        TimeOrLifesEndedPanel.TimesPanelCalled = 0;
-        
-        bool onStart = _prevScene.EqualsIgnoreCase(SceneNames.Preload);
-                
-        if (onStart)
+        bool mainSceneLoadedFirstTime = _prevScene.EqualsIgnoreCase(SceneNames.Preload);
+        if (mainSceneLoadedFirstTime)
             InitDebugReporter();
-        
         if (_Scene.name.EqualsIgnoreCase(SceneNames.Main))
         {
-            GameClientUtils.GameId = 1;
-            if (onStart)
+            GameClientUtils.GameId = 1; // если игра будет только одна, то и париться с GameId нет смысла
+            if (mainSceneLoadedFirstTime)
                 LocalizationManager.Instance.Init();
         }
         
@@ -59,6 +52,19 @@ public class ApplicationInitializer : MonoBehaviour
     #endregion
     
     #region nonpublic methods
+    
+    private static void InitGameManagers()
+    {
+        var managers = new IInit[]
+        {
+            GameClient.Instance,
+            AdsManager.Instance,
+            AnalyticsManager.Instance,
+            AssetBundleManager.Instance
+        };
+        foreach (var manager in managers)
+            manager.Init();
+    }
 
     private static void InitDebugConsole()
     {
@@ -74,11 +80,11 @@ public class ApplicationInitializer : MonoBehaviour
         SaveUtils.PutValue(SaveKeyDebug.DebugUtilsOn, debugOn);
         DebugConsole.DebugConsoleView.Instance.SetGoActive(debugOn);
 #if !UNITY_EDITOR && DEVELOPMENT_BUILD
-                    UiManager.Instance.DebugReporter = GameHelpers.PrefabUtilsEx.InitPrefab(
-                        null,
-                        "debug_console",
-                        "reporter");
-                    UiManager.Instance.DebugReporter.SetActive(debugOn);
+        UI.Managers.UiManager.Instance.DebugReporter = GameHelpers.PrefabUtilsEx.InitPrefab(
+            null,
+            "debug_console",
+            "reporter");
+        UI.Managers.UiManager.Instance.DebugReporter.SetActive(debugOn);
 #endif
 #endif
     }

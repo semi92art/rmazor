@@ -8,10 +8,8 @@ using System.Threading;
 using Extensions;
 using GameHelpers;
 using Network;
-using Ticker;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.SceneManagement;
 
 namespace Utils
 {
@@ -19,7 +17,7 @@ namespace Utils
     {
         public const float SymbolWidth = 19;
         public static readonly System.Random RandomGen = new System.Random();
-        public static bool UnitTesting = false;
+        public static bool Testing = false;
 
 #if UNITY_ANDROID
         public static int GetAndroidSdkLevel() 
@@ -293,12 +291,6 @@ namespace Utils
             if (go == null)
                 go = new GameObject(_Name);
             return go;
-        }
-
-        public static void LoadSceneCorrectly(ITicker _Ticker, string _SceneName)
-        {
-            _Ticker.Clear();
-            SceneManager.LoadScene(_SceneName);
         }
     }
 }

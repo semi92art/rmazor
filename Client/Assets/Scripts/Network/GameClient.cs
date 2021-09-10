@@ -2,17 +2,15 @@
 using System.Diagnostics;
 using System.Text;
 using Entities;
-using GameHelpers;
 using Network.Packets;
 using UnityEngine.Networking;
 using Newtonsoft.Json;
 using TimeProviders;
 using Utils;
-using Debug = UnityEngine.Debug;
 
 namespace Network
 {
-    public class GameClient
+    public class GameClient : IInit
     {
         #region singleton
         
@@ -49,23 +47,23 @@ namespace Network
         
         #region api
 
+        public event NoArgsHandler Initialized;
         public readonly List<GameDataField> ExecutingGameFields = new List<GameDataField>();
         
-        public void Init(bool _TestMode = false)
+        public void Init()
         {
             if (GameClientUtils.GameId == 0)
                 GameClientUtils.GameId = GameClientUtils.DefaultGameId;
-
-            if (_TestMode)
-                CommonUtils.UnitTesting = true;
-            if (!_TestMode)
+            if (!CommonUtils.Testing)
             {
-                TestDatabaseConnection();
-                TestInternetConnection();
+                Initialized?.Invoke();
+                return;
             }
-            GameSettings.PlayMode = !_TestMode;
+            TestDatabaseConnection();
+            TestInternetConnection();
+            Initialized?.Invoke();
         }
-
+        
         public void Send(IPacket _Packet, bool _Async = true)
         {
             SendCore(_Packet, _Async);

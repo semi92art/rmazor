@@ -1,4 +1,5 @@
-﻿using Constants;
+﻿using System.Linq;
+using Constants;
 using Exceptions;
 using Extensions;
 using GameHelpers;
@@ -26,6 +27,7 @@ namespace Games.RazorMaze.Views.Characters
         private Animator m_Animator;
         private EMazeMoveDirection m_PrevVertDir;
         private EMazeMoveDirection m_PrevHorDir;
+        private bool m_FirstMoveDone;
         
         #endregion
         
@@ -36,22 +38,27 @@ namespace Games.RazorMaze.Views.Characters
         private IContainersGetter ContainersGetter { get; }
         private IViewMazeCommon ViewMazeCommon { get; }
         private IViewCharacterTail Tail { get; }
+        private ViewSettings ViewSettings { get; }
 
         public ViewCharacter(
             ICoordinateConverter _CoordinateConverter, 
             IModelMazeData _Data, 
             IContainersGetter _ContainersGetter,
             IViewMazeCommon _ViewMazeCommon,
-            IViewCharacterTail _Tail)
+            IViewCharacterTail _Tail,
+            ViewSettings _ViewSettings)
         {
             CoordinateConverter = _CoordinateConverter;
             Data = _Data;
             ContainersGetter = _ContainersGetter;
             ViewMazeCommon = _ViewMazeCommon;
             Tail = _Tail;
+            ViewSettings = _ViewSettings;
         }
         
         #endregion
+        
+        public event NoArgsHandler Initialized;
         
         public void Init()
         {
@@ -61,13 +68,23 @@ namespace Games.RazorMaze.Views.Characters
             var pos = CoordinateConverter.ToLocalCharacterPosition(Data.Info.Path[0]);
             SetPosition(pos);
             Tail.Init();
+            
+            if (!ViewSettings.StartPathItemFilledOnStart)
+                UnfillStartPathItem();
+            
+            Initialized?.Invoke();
         }
+
 
         public void OnMovingStarted(CharacterMovingEventArgs _Args)
         {
             m_Animator.SetTrigger(AnimKeyStartMove);
             SetOrientation();
             Tail.ShowTail(_Args);
+            
+            if (!m_FirstMoveDone && ViewSettings.StartPathItemFilledOnStart)
+                UnfillStartPathItem();
+            m_FirstMoveDone = true;
         }
 
         public void OnMoving(CharacterMovingEventArgs _Args)
@@ -159,6 +176,11 @@ namespace Games.RazorMaze.Views.Characters
             m_Head.transform.eulerAngles = Vector3.forward * angle;
             var absScale = m_Head.transform.localScale.Abs();
             m_Head.transform.localScale = new Vector3(absScale.x * horScale, absScale.y * vertScale, absScale.z);
+        }
+        
+        private void UnfillStartPathItem()
+        {
+            ViewMazeCommon.MazeItems.Single(_Item => _Item.Props.IsStartNode).Proceeding = true;
         }
     }
 }

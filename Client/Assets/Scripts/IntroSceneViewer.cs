@@ -1,37 +1,45 @@
-﻿using System;
-using Constants;
-using Controllers;
-using Entities;
+﻿using Constants;
 using Extensions;
 using Games.RazorMaze;
+using Games.RazorMaze.Controllers;
 using Managers;
 using Ticker;
-using UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;
 using Zenject;
 
-public class MainMenuStarter : MonoBehaviour
+public class IntroSceneViewer : MonoBehaviour
 {
-    [Inject]
-    
     private ITicker Ticker { get; set; }
     
-    public void Inject(ITicker _Ticker)
-    {
-        Ticker = _Ticker;
-    }
+    [Inject] public void Inject(ITicker _Ticker) => Ticker = _Ticker;
 
     private void Start()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
-        CommonUtils.LoadSceneCorrectly(Ticker, SceneNames.Level);
+        ShowIntroScene();
     }
 
-    private void OnSceneLoaded(Scene _Scene, LoadSceneMode _Mode)
+    private static void OnSceneLoaded(Scene _Scene, LoadSceneMode _Mode)
     {
         if (_Scene.name.EqualsIgnoreCase(SceneNames.Level))
+            InitGameController();
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void ShowIntroScene()
+    {
+        // TODO здесь показывать интруху
+        
+        Ticker.ClearRegisteredObjects();
+        SceneManager.LoadScene(SceneNames.Level);
+    }
+    
+    private static void InitGameController()
+    {
+        var controller = RazorMazeGameController.Instance;
+        controller.PreInitialized += () =>
         {
             var levelScoreEntity = ScoreManager.Instance.GetMainScore();
             Coroutines.Run(Coroutines.WaitWhile(
@@ -42,11 +50,11 @@ public class MainMenuStarter : MonoBehaviour
                     // FIXME заглушка для загрузки какого-то уровня
                     var info = MazeLevelUtils.LoadLevel(
                         GameClientUtils.GameId, 1, 1, MazeLevelUtils.HeapIndexRelease, false);
-                    RazorMazeGameController.Instance.PreInit();
-                    RazorMazeGameController.Instance.SetMazeInfo(info);
-                    RazorMazeGameController.Instance.Init();
-                    RazorMazeGameController.Instance.PostInit();
+                    controller.SetMazeInfo(info);
+                    controller.Init();
                 }));
-        }
+        };
+        controller.Initialized += () => controller.PostInit();
+        controller.PreInit();
     }
 }

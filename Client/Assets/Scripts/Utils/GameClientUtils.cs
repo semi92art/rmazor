@@ -83,7 +83,7 @@ namespace Utils
             get
             {
 #if UNITY_EDITOR
-                if (CommonUtils.UnitTesting)
+                if (CommonUtils.Testing)
                     return SaveUtils.GetValue<string>(SaveKeyDebug.ServerUrl);
                 return SaveUtils.GetValue<string>(SaveKeyDebug.ServerUrl);
 #else

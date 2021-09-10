@@ -336,7 +336,8 @@ public class EditorHelper : EditorWindow
 
     private void CreateTestUsers(int _Count)
     {
-        GameClient.Instance.Init(true);
+        CommonUtils.Testing = true;
+        GameClient.Instance.Init();
         int gameId = 1;
         for (int i = 0; i < _Count; i++)
         {
@@ -368,7 +369,8 @@ public class EditorHelper : EditorWindow
 
     private static void DeleteTestUsers()
     {
-        GameClient.Instance.Init(true);
+        CommonUtils.Testing = true;
+        GameClient.Instance.Init();
         IPacket packet = new DeleteTestUsersPacket();
         packet.OnSuccess(() =>
             {

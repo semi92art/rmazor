@@ -37,13 +37,16 @@ namespace Games.RazorMaze.Views.Characters
         #endregion
         
         #region api
-        
+
+        public event NoArgsHandler Initialized;
+
         public void Init()
         {
             CoordinateConverter.Init(ModelMazeData.Info.Size);
             InitShape(0.4f * CoordinateConverter.GetScale(), new Color(1f, 0.38f, 0f));
             var pos = CoordinateConverter.ToLocalCharacterPosition(ModelMazeData.Info.Path[0]);
             SetPosition(pos);
+            Initialized?.Invoke();
         }
 
         public void OnMovingStarted(CharacterMovingEventArgs _Args) { }

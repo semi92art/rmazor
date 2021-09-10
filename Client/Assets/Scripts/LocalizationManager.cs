@@ -3,7 +3,7 @@ using UnityEngine;
 using Lean.Localization;
 using Utils;
 
-public class LocalizationManager
+public class LocalizationManager : IInit
 {
     #region singleton
     
@@ -11,12 +11,7 @@ public class LocalizationManager
     public static LocalizationManager Instance => _instance ?? (_instance = new LocalizationManager());
 
     #endregion
-    
-    #region factory
 
-    
-    #endregion
-    
     #region nonpublic members
 
     private GameObject m_localizationObject;
@@ -25,13 +20,15 @@ public class LocalizationManager
 
     #region api
 
+    public event NoArgsHandler Initialized;
+
     public void Init()
     {
         if (m_localizationObject != null)
             return;
         m_localizationObject = new GameObject("Localization");
         Object.DontDestroyOnLoad(m_localizationObject);
-        LeanLocalization localization = m_localizationObject.AddComponent<LeanLocalization>();
+        var localization = m_localizationObject.AddComponent<LeanLocalization>();
         //add languages in list
         string[] cultres = {"en", "en-GB"};
         localization.AddLanguage("English", cultres);
@@ -76,6 +73,8 @@ public class LocalizationManager
         portCsv.Language = "Portugal";
         
         localization.SetCurrentLanguage(SaveUtils.GetValue<Language>(SaveKey.SettingLanguage).ToString());
+        
+        Initialized?.Invoke();
     }
    
     #endregion

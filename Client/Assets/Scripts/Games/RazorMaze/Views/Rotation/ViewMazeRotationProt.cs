@@ -23,11 +23,14 @@ namespace Games.RazorMaze.Views.Rotation
         }
         
         #endregion
-        
+
+        public event NoArgsHandler Initialized;
+
         public void Init()
         {
             m_Rb = ContainersGetter.MazeContainer.gameObject.AddComponent<Rigidbody2D>();
             m_Rb.gravityScale = 0;
+            Initialized?.Invoke();
         }
         
         public void StartRotation(MazeRotateDirection _Direction, MazeOrientation _Orientation)

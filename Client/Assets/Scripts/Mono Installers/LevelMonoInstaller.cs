@@ -1,4 +1,5 @@
 ﻿using Games.RazorMaze;
+using Games.RazorMaze.Controllers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Characters;
@@ -59,8 +60,7 @@ namespace Mono_Installers
             Container.Bind<IUiTimeProvider>()                      .FromComponentsInNewPrefab(uiTimeProvider)     .AsCached();
             
             #endregion
-
-
+            
             #region view debug
 
             Container.Bind<IMazeItemsCreator>()                     .To<MazeItemsCreatorProt>()                   .AsSingle().When(_ => prototyping);
@@ -86,9 +86,9 @@ namespace Mono_Installers
             Container.Bind<IViewMazeItemTrapReact>()                .To<ViewMazeItemTrapReactProtFake>()          .AsSingle().When(_ => prototyping);
             Container.Bind<IViewMazeItemTrapIncreasing>()           .To<ViewMazeItemTrapIncreasingProtFake>()     .AsSingle().When(_ => prototyping);
             
-            Container.Bind<IViewMazeRotation>()                     .To<ViewMazeRotationProt>()                   .AsSingle();
-            Container.Bind<IInputConfigurator>()                    .To<RazorMazeInputConfiguratorProt>()         .AsSingle();
-            Container.Bind<IViewUI>()                               .To<ViewUIProt>()                             .AsSingle();
+            Container.Bind<IViewMazeRotation>()                     .To<ViewMazeRotationProt>()                   .AsSingle();//.When(_ => prototyping);
+            Container.Bind<IInputConfigurator>()                    .To<RazorMazeInputConfiguratorProt>()         .AsSingle();//.When(_ => prototyping);
+            Container.Bind<IViewUI>()                               .To<ViewUIProt>()                             .AsSingle();//.When(_ => prototyping);
             
             #endregion
             
@@ -117,6 +117,10 @@ namespace Mono_Installers
             Container.Bind<IViewMazeItemGravityTrap>()              .To<ViewMazeItemGravityTrap>()                .AsSingle().When(_ => release);
             Container.Bind<IViewMazeItemTrapReact>()                .To<ViewMazeItemTrapReact>()                  .AsSingle().When(_ => release);
             Container.Bind<IViewMazeItemTrapIncreasing>()           .To<ViewMazeItemTrapIncreasing>()             .AsSingle().When(_ => release);
+            
+            // Container.Bind<IViewMazeRotation>()                     .To<ViewMazeRotation>()                   .AsSingle().When(_ => release);
+            // Container.Bind<IInputConfigurator>()                    .To<RazorMazeInputConfigurator>()         .AsSingle().When(_ => release);
+            // Container.Bind<IViewUI>()                               .To<ViewUI>()                             .AsSingle().When(_ => release);
 
             #endregion
         }

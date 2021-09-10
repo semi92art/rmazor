@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Extensions;
-using Network;
 using UnityEngine;
 using UnityEngine.Networking;
 using Utils;
@@ -11,7 +9,7 @@ using Object = UnityEngine.Object;
 
 namespace Managers
 {
-    public class AssetBundleManager : MonoBehaviour
+    public class AssetBundleManager : MonoBehaviour, IInit
     {
         #region constants
 
@@ -43,15 +41,28 @@ namespace Managers
 
         #endregion
         
-        #region api
+        #region nonpublic members
+
+        private bool m_Started;
         
-        public void Init() { } // only for calling IEnumerator Start()
-        public bool Initialized { get; private set; }
+        #endregion
+        
+        #region api
+
+        public void Init()
+        {
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !m_Started,
+                () => Coroutines.Run(LoadBundles())
+            ));
+        }
+        public event NoArgsHandler Initialized; // only for calling IEnumerator Start()
+        public bool BundlesLoaded { get; private set; }
         public List<string> Errors { get; } = new List<string>();
 
         public T GetAsset<T>(string _AssetName, string _BundleName) where T : Object
         {
-            if (!Initialized)
+            if (!BundlesLoaded)
                 Dbg.LogError("Bundles were not initialized");
             
             return m_Bundles[_BundleName].FirstOrDefault(
@@ -70,16 +81,19 @@ namespace Managers
         
         #region engine methods
 
-        private IEnumerator Start()
-        {
-            foreach (var bundleName in m_BundleNames)
-                yield return LoadBundle(bundleName);
-            Initialized = true;
-        }
-        
+        private void Start() => m_Started = true;
+
         #endregion
 
         #region nonpublic methods
+        
+        private IEnumerator LoadBundles()
+        {
+            foreach (var bundleName in m_BundleNames)
+                yield return LoadBundle(bundleName);
+            BundlesLoaded = true;
+            Initialized?.Invoke();
+        }
         
         private IEnumerator LoadBundle(string _BundleName)
         {
@@ -119,7 +133,7 @@ namespace Managers
             }
         }
 
-        private string GetRemotePath(string _Name)
+        private static string GetRemotePath(string _Name)
         {
             return string.Join("/", BundlesUri, CommonUtils.GetOsName(), _Name);
         }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Managers
 {
-    public class AnalyticsManager : GameObserver
+    public class AnalyticsManager : GameObserver, IInit
     {
         #region singleton
         
@@ -27,7 +27,11 @@ namespace Managers
            // analyticsEventTracker.m_Trigger.lifecycleEvent.
            //  
            //  Dbg.Log("Analytics enabled");
+           Initialized?.Invoke();
         }
+
+        public event NoArgsHandler Initialized;
+
         #endregion
 
         #region nonpublic methods

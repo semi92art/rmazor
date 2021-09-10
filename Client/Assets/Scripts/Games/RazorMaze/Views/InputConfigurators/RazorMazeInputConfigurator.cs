@@ -11,7 +11,9 @@ namespace Games.RazorMaze.Views.InputConfigurators
         private bool m_Locked;
         
         public event IntHandler Command;
-        public void ConfigureInput()
+        public event NoArgsHandler Initialized;
+
+        public void Init()
         {
             var touchSystemObj = new GameObject("Main Touch System");
             var mts = touchSystemObj.AddComponent<LeanTouch>();
@@ -30,6 +32,8 @@ namespace Games.RazorMaze.Views.InputConfigurators
             mts.FingerTexture = PrefabUtilsEx.GetObject<Texture2D>("icons", "finger_texture");
 #endif
             m_LeanTouch = mts;
+            
+            Initialized?.Invoke();
         }
 
         public bool Locked

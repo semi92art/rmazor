@@ -16,8 +16,11 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         }
         
         #endregion
+
+        public event NoArgsHandler Initialized;
         
-        public void Init() { }
+        public void Init() => Initialized?.Invoke();
+        
         public void OnMazeTrapIncreasingStageChanged(MazeItemTrapIncreasingEventArgs _Args)
         {
             MazeCommon.GetItem<IViewMazeItemTrapIncreasing>(_Args.Item).OnIncreasing(_Args);

@@ -208,7 +208,7 @@ GameObject:
   - component: {fileID: 1091273631}
   - component: {fileID: 1091273630}
   m_Layer: 0
-  m_Name: MainMenuStarter
+  m_Name: Intro Scene Viewer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

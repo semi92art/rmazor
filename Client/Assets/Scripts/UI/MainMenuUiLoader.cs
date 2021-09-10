@@ -185,7 +185,7 @@ namespace UI
             });
 
             m_StartLoadingController.StartStage(1, 
-                () => AssetBundleManager.Instance.Initialized, 
+                () => AssetBundleManager.Instance.BundlesLoaded, 
                 () => AssetBundleManager.Instance.Errors);
             
             m_StartLoadingController.StartStage(2,

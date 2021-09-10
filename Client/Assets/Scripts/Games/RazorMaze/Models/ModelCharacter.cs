@@ -74,8 +74,11 @@ namespace Games.RazorMaze.Models
         public void Init()
         {
             Data.CharacterInfo.HealthPoints = 1;
+            Initialized?.Invoke();
         }
-        
+
+        public event NoArgsHandler Initialized;
+
         public void Move(EMazeMoveDirection _Direction)
         {
             if (!Data.ProceedingControls)
