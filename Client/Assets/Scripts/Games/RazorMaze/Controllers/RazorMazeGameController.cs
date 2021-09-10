@@ -35,14 +35,12 @@ namespace Games.RazorMaze.Controllers
         
         private IModelGame           Model { get; set; }
         private IViewGame            View { get; set; }
-        private ViewSettings         ViewSettings { get; set; }
         
         [Inject]
-        public void Inject(IModelGame _ModelGame, IViewGame _ViewGame, ViewSettings _ViewSettings)
+        public void Inject(IModelGame _ModelGame, IViewGame _ViewGame)
         {
             Model = _ModelGame;
             View = _ViewGame;
-            ViewSettings = _ViewSettings;
         }
         
         #endregion
@@ -179,11 +177,6 @@ namespace Games.RazorMaze.Controllers
     
         #region nonpublic methods
 
-        private void UnfillStartPathItem()
-        {
-            View.MazeCommon.MazeItems.Single(_Item => _Item.Props.IsStartNode).Proceeding = true;
-        }
-        
         protected virtual void OnBeforeLevelStarted(LevelStateChangedArgs _Args)
         {
             Model.Scoring.Score = 0;
