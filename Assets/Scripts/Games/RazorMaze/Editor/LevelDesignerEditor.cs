@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Constants;
 using Entities;
 using Extensions;
@@ -33,7 +34,7 @@ namespace Games.RazorMaze.Editor
         private Vector2 m_HeapScroll;
 
         Color m_Color = Color.green;
-        Color m_secondColor = Color.red;
+        Color m_secondColor = Color.magenta;
 
 
         private int m_TabPage;
@@ -92,11 +93,13 @@ namespace Games.RazorMaze.Editor
         private void SaveHeap()
         {
             var index = 0;
-            foreach (var level in m_ReorderableLevels.list)
-            {
-                SaveLevel(HeapIndex,index);
-                index++;
-            }
+                foreach (var level in m_ReorderableLevels.list)
+                {
+                    Debug.Log($"Saving {index}");
+                    SaveLevel(HeapIndex, index, false, false);
+                    index++;
+                }
+                Debug.Log($"Heap saved");
         }
 
         private void OnFocus()
@@ -150,7 +153,8 @@ namespace Games.RazorMaze.Editor
             
             EditorUtilsEx.HorizontalZone(() =>
             {
-                EditorUtilsEx.GuiButtonAction("Add to heap", SaveLevel, HeapIndex, -1, true, GUILayout.Width(100));
+                EditorUtilsEx.GuiButtonAction("Add to heap", SaveLevel, HeapIndex, m_ReorderableLevels.count, true,true, GUILayout.Width
+                (100));
                 EditorUtilsEx.GuiButtonAction("Save Heap", SaveHeap, GUILayout.Width(100));
             });
             GUILayout.Label("Heap:");
@@ -163,7 +167,7 @@ namespace Games.RazorMaze.Editor
             EditorUtilsEx.HorizontalZone(() =>
             {
                 EditorUtilsEx.GuiButtonAction("Load", LoadLevel, GUILayout.Width(100));
-                EditorUtilsEx.GuiButtonAction("Save", SaveLevel, HeapIndex, m_ReorderableLevels.index, false,
+                EditorUtilsEx.GuiButtonAction("Save", SaveLevel, HeapIndex, m_ReorderableLevels.index, false,true,
                 GUILayout.Width(100));
                 EditorUtilsEx.GuiButtonAction("Delete",DeleteLevelFromHeap, HeapIndex,GUILayout.Width(100));
                 EditorUtilsEx.GuiButtonAction("Add Empty", AddEmptyLevel, GUILayout.Width(100));
@@ -264,29 +268,33 @@ namespace Games.RazorMaze.Editor
         {
             if (m_ReorderableLevels.index==-1)
                 return;
-            var info = MazeLevelUtils.LoadLevel(GameId, m_ReorderableLevels.index, 0, false);
+            var info = MazeLevelUtils.LoadLevel(GameId, m_ReorderableLevels.index, 1, false);
             CreateObjects(info);
             FocusCamera(info.Size);
         }
 
-        private void SaveLevel(int _HeapIndex, int _LevelIndex, bool newLevel = false)
+        private void SaveLevel(int _HeapIndex, int _LevelIndex, bool _NewLevel = false, bool _NeedReload = true)
         {
-            if (_LevelIndex==-1 && !newLevel)
+            if (_LevelIndex==-1 && !_NewLevel)
                 return;
-            var _Info = newLevel? null:  (MazeInfo) m_ReorderableLevels.list[_LevelIndex];
-            var info = _Info ?? m_Des.GetLevelInfoFromScene(false);
+            var mazeInfo = _NewLevel? null:  (MazeInfo) m_ReorderableLevels.list[_LevelIndex];
+            var info = mazeInfo ?? m_Des.GetLevelInfoFromScene(false);
             info.HeapLevelIndex = _LevelIndex;
             m_Des.index = _LevelIndex;
             if (_HeapIndex <= 0)
                 MazeLevelUtils.SaveLevel(GameId, info);
             else
             {
-                MazeLevelUtils.SaveLevelToHeap(GameId, info, _LevelIndex, HeapIndex);
+                MazeLevelUtils.SaveLevelToHeap(GameId, info, _LevelIndex, HeapIndex, info.HeapLevelIndex >=
+                                                                                     m_ReorderableLevels.list.Count -
+                                                                                     1);
+                if (!_NeedReload)
+                    return;
                 ReloadHeapLevels();
                 ReloadReorderableLevels();
             }
         }
-
+        
         private void ShowHeap()
         {
             EditorUtilsEx.ScrollViewZone(ref m_HeapScroll, () =>

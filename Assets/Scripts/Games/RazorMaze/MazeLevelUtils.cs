@@ -138,8 +138,8 @@ namespace Games.RazorMaze
             if (_HeapIndex <= 0)
                 heapName = null;
             else if (_HeapIndex == 1)
-                heapName = "heap";
-            else heapName = $"heap_{_HeapIndex}";
+                heapName = "levels";
+            else heapName = $"levels_{_HeapIndex}";
             return _HeapIndex > 0 ? heapName :
                 $"levels_{(Mathf.FloorToInt(_HeapIndex / (float)GroupsInAsset) + 1).ToString()}";
         }
