@@ -1,12 +1,12 @@
 ﻿using Games.RazorMaze.Views.Characters;
+using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.InputConfigurators;
-using Games.RazorMaze.Views.MazeCommon;
 using Games.RazorMaze.Views.MazeItemGroups;
 using Games.RazorMaze.Views.Rotation;
 using Games.RazorMaze.Views.UI;
 using Utils;
 
-namespace Games.RazorMaze.Views.Views
+namespace Games.RazorMaze.Views
 {
     public class ViewGame : IViewGame
     {
@@ -14,6 +14,7 @@ namespace Games.RazorMaze.Views.Views
         public IInputConfigurator InputConfigurator { get; }
         public IViewCharacter Character { get; }
         public IViewMazeCommon MazeCommon { get; }
+        public IViewMazeTransitioner MazeTransitioner { get; }
         public IViewMazeRotation MazeRotation { get; }
         public IViewMazeMovingItemsGroup MazeMovingItemsGroup { get; }
         public IViewMazeTrapsReactItemsGroup MazeTrapsReactItemsGroup { get; }
@@ -28,6 +29,7 @@ namespace Games.RazorMaze.Views.Views
             IInputConfigurator _InputConfigurator,
             IViewCharacter _Character,
             IViewMazeCommon _MazeCommon,
+            IViewMazeTransitioner _MazeTransitioner,
             IViewMazeRotation _MazeRotation,
             IViewMazeMovingItemsGroup _MazeMovingItemsGroup,
             IViewMazeTrapsReactItemsGroup _MazeTrapsReactItemsGroup,
@@ -41,6 +43,7 @@ namespace Games.RazorMaze.Views.Views
             InputConfigurator = _InputConfigurator;
             Character = _Character;
             MazeCommon = _MazeCommon;
+            MazeTransitioner = _MazeTransitioner;
             MazeRotation = _MazeRotation;
             MazeMovingItemsGroup = _MazeMovingItemsGroup;
             MazeTrapsReactItemsGroup = _MazeTrapsReactItemsGroup;

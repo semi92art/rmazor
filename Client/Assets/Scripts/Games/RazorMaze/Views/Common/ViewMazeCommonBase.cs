@@ -9,7 +9,7 @@ using Games.RazorMaze.Views.MazeItems;
 using Ticker;
 using UnityEngine;
 
-namespace Games.RazorMaze.Views.MazeCommon
+namespace Games.RazorMaze.Views.Common
 {
     public abstract class ViewMazeCommonBase : IViewMazeCommon, IUpdateTick
     {

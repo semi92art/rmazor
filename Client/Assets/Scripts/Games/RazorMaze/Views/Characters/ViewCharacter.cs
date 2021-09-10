@@ -4,8 +4,8 @@ using Exceptions;
 using Extensions;
 using GameHelpers;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
-using Games.RazorMaze.Views.MazeCommon;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using UnityEngine;
@@ -103,8 +103,6 @@ namespace Games.RazorMaze.Views.Characters
         }
 
         public void OnDeath() { }
-
-        public void OnHealthChanged(HealthPointsEventArgs _Args) { }
         
         private void InitPrefab()
         {

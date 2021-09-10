@@ -34,7 +34,6 @@ namespace Games.RazorMaze.Models
         event CharacterMovingHandler CharacterMoveStarted;
         event CharacterMovingHandler CharacterMoveContinued;
         event CharacterMovingHandler CharacterMoveFinished;
-        event HealthPointsChangedHandler HealthChanged;
         event NoArgsHandler Death;
         void Move(EMazeMoveDirection _Direction);
         void OnPortal(PortalEventArgs _Args);
@@ -67,7 +66,6 @@ namespace Games.RazorMaze.Models
         public event CharacterMovingHandler CharacterMoveStarted;
         public event CharacterMovingHandler CharacterMoveContinued;
         public event CharacterMovingHandler CharacterMoveFinished;
-        public event HealthPointsChangedHandler HealthChanged;
         public event NoArgsHandler Death;
         
 

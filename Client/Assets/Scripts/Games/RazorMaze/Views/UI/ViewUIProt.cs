@@ -22,7 +22,7 @@ namespace Games.RazorMaze.Views.UI
             throw new System.NotImplementedException();
         }
 
-        public override void OnLevelFinished(LevelStateChangedArgs _Args, UnityAction _Finish)
+        public override void OnLevelFinished(LevelFinishedEventArgs _Args, UnityAction _Finish)
         {
             throw new System.NotImplementedException();
         }

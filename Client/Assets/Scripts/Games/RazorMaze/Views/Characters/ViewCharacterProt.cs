@@ -1,7 +1,7 @@
 ﻿using Extensions;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
-using Games.RazorMaze.Views.MazeCommon;
 using Shapes;
 using UnityEngine;
 
@@ -62,9 +62,7 @@ namespace Games.RazorMaze.Views.Characters
         public void OnMovingFinished(CharacterMovingEventArgs _Args) { }
 
         public void OnDeath() { }
-
-        public void OnHealthChanged(HealthPointsEventArgs _Args) { }
-
+        
         #endregion
         
         #region nonpublic methods

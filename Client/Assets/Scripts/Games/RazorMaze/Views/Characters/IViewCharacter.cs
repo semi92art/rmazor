@@ -8,6 +8,5 @@ namespace Games.RazorMaze.Views.Characters
         void OnMoving(CharacterMovingEventArgs _Args);
         void OnMovingFinished(CharacterMovingEventArgs _Args);
         void OnDeath();
-        void OnHealthChanged(HealthPointsEventArgs _Args);
     }
 }

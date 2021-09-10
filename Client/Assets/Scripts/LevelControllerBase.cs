@@ -1,12 +1,20 @@
-﻿public interface ILevelStagingModel
+﻿using System;
+
+public class LevelStateChangedArgs : EventArgs { public int Level { get; set; } }
+public class LevelFinishedEventArgs : LevelStateChangedArgs { public bool Success { get; set; } }
+public delegate void LevelStateHandler(LevelStateChangedArgs _Args);
+public delegate void LevelFinishedHandler(LevelFinishedEventArgs _Args);
+
+
+public interface ILevelStagingModel
 {
     int Level { get; set; }
     event LevelStateHandler LevelBeforeStarted;
     event LevelStateHandler LevelStarted;
-    event LevelStateHandler LevelFinished;
+    event LevelFinishedHandler LevelFinished;
     void BeforeStartLevel();
     void StartLevel();
-    void FinishLevel();
+    void FinishLevel(bool _Success);
  }
 
 public abstract class LevelStagingModelBase : ILevelStagingModel
@@ -15,7 +23,7 @@ public abstract class LevelStagingModelBase : ILevelStagingModel
     
     public event LevelStateHandler LevelBeforeStarted;
     public event LevelStateHandler LevelStarted;
-    public event LevelStateHandler LevelFinished;
+    public event LevelFinishedHandler LevelFinished;
     
     public virtual void BeforeStartLevel()
     {
@@ -27,8 +35,8 @@ public abstract class LevelStagingModelBase : ILevelStagingModel
         LevelStarted?.Invoke(new LevelStateChangedArgs {Level = Level});
     }
         
-    public virtual void FinishLevel()
+    public virtual void FinishLevel(bool _Success)
     {
-        LevelFinished?.Invoke(new LevelStateChangedArgs{Level = Level});
+        LevelFinished?.Invoke(new LevelFinishedEventArgs{Level = Level, Success = _Success});
     }
 }

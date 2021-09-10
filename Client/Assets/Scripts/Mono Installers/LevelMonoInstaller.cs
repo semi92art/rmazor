@@ -2,16 +2,16 @@
 using Games.RazorMaze.Controllers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
+using Games.RazorMaze.Views;
 using Games.RazorMaze.Views.Characters;
+using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.InputConfigurators;
-using Games.RazorMaze.Views.MazeCommon;
 using Games.RazorMaze.Views.MazeItemGroups;
 using Games.RazorMaze.Views.MazeItems;
 using Games.RazorMaze.Views.Rotation;
 using Games.RazorMaze.Views.UI;
-using Games.RazorMaze.Views.Views;
 using TimeProviders;
 using UnityEngine;
 using Utils;
@@ -43,7 +43,6 @@ namespace Mono_Installers
             Container.Bind<IModelCharacter>()                      .To<ModelCharacter>()                          .AsSingle();
             Container.Bind<IModelGame>()                           .To<ModelGame>()                               .AsSingle();
             Container.Bind<ILevelStagingModel>()                   .To<LevelStagingModelDefault>()                .AsSingle();
-            Container.Bind<IScoringModel>()                        .To<ScoringModelDefault>()                     .AsSingle();
             Container.Bind<IInputScheduler>()                      .To<InputScheduler>()                          .AsSingle();
             Container.Bind<ICoordinateConverter>()                 .To<CoordinateConverter>()                     .AsSingle();
             Container.Bind<IContainersGetter>()                    .To<ContainersGetter>()                        .AsSingle();
@@ -65,6 +64,7 @@ namespace Mono_Installers
 
             Container.Bind<IMazeItemsCreator>()                     .To<MazeItemsCreatorProt>()                   .AsSingle().When(_ => prototyping);
             Container.Bind<IViewMazeCommon>()                       .To<ViewMazeCommonProt>()                     .AsSingle().When(_ => prototyping);
+            Container.Bind<IViewMazeTransitioner>()                 .To<ViewMazeTransitionerProt>()               .AsSingle().When(_ => prototyping);
             Container.Bind<IViewCharacter>()                        .To<ViewCharacterProt>()                      .AsSingle().When(_ => prototyping);
             Container.Bind<IViewMazeMovingItemsGroup>()             .To<ViewMazeMovingItemsGroupProt>()           .AsSingle().When(_ => prototyping);
             Container.Bind<IViewMazeShredingerBlocksGroup>()        .To<ViewMazeShredingerBlocksGroupProt>()      .AsSingle().When(_ => prototyping);
@@ -96,6 +96,7 @@ namespace Mono_Installers
             
             Container.Bind<IMazeItemsCreator>()                     .To<MazeItemsCreator>()                       .AsSingle().When(_ => release);
             Container.Bind<IViewMazeCommon>()                       .To<ViewMazeCommon>()                         .AsSingle().When(_ => release);
+            Container.Bind<IViewMazeTransitioner>()                 .To<ViewMazeTransitioner>()                   .AsSingle().When(_ => release);
             Container.Bind<IViewCharacter>()                        .To<ViewCharacter>()                          .AsSingle().When(_ => release);
             Container.Bind<IViewCharacterTail>()                    .To<ViewCharacterTailSimple>()                .AsSingle().When(_ => release);
             Container.Bind<ITurretBulletTail>()                     .To<TurretBulletTailSimple>()                 .AsSingle().When(_ => release);

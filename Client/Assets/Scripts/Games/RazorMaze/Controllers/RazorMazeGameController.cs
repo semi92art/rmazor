@@ -1,8 +1,7 @@
-﻿using System.Linq;
-using Entities;
+﻿using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
-using Games.RazorMaze.Views.Views;
+using Games.RazorMaze.Views;
 using TimeProviders;
 using UnityEngine;
 using Utils;
@@ -66,10 +65,10 @@ namespace Games.RazorMaze.Controllers
             var shredingerProceeder                             = Model.ShredingerBlocksProceeder;
             var springboardProceeder                            = Model.SpringboardProceeder;
             var character                                       = Model.Character;
-            var scoring                                         = Model.Scoring;
             var levelStaging                                    = Model.LevelStaging;
             
             pathItemsProceeder.PathProceedEvent                 += DataOnPathProceedEvent;
+            pathItemsProceeder.AllPathsProceededEvent           += OnAllPathsProceededEvent;
             
             rotation.RotationStarted                            += OnMazeRotationStarted;
             rotation.Rotation                                   += OnMazeRotation;
@@ -90,15 +89,11 @@ namespace Games.RazorMaze.Controllers
             shredingerProceeder.ShredingerBlockEvent            += OnShredingerBlockEvent;
             springboardProceeder.SpringboardEvent               += OnSpringboardEvent;
 
-            character.HealthChanged                             += OnCharacterHealthChanged;
             character.Death                                     += OnCharacterDeath;
             character.CharacterMoveStarted                      += OnCharacterMoveStarted;
             character.CharacterMoveContinued                    += OnCharacterMoveContinued;
             character.CharacterMoveFinished                     += OnCharacterMoveFinished;
             
-            scoring.ScoreChanged                                += OnScoreChanged;
-            scoring.NecessaryScoreReached                       += OnNecessaryScoreReached;
-
             levelStaging.LevelBeforeStarted                     += OnBeforeLevelStarted;
             levelStaging.LevelStarted                           += OnLevelStarted;
             levelStaging.LevelFinished                          += OnLevelFinished;
@@ -106,10 +101,13 @@ namespace Games.RazorMaze.Controllers
             View.InputConfigurator.Command                      += OnInputCommand;
             View.MazeCommon.GameLoopUpdate                      += OnGameLoopUpdate;
             
+            
             Model.PreInitialized += () => PreInitialized?.Invoke();
             Model.PreInit();
         }
-
+        
+        public void SetMazeInfo(MazeInfo _Info) => Model.Data.Info = _Info;
+        
         public void Init()
         {
             bool modelInitialized = false;
@@ -127,8 +125,12 @@ namespace Games.RazorMaze.Controllers
                 () => !allInitialized.Invoke(),
                 () => Initialized?.Invoke()));
         }
-
         
+        public void PostInit()
+        {
+            Model.Data.ProceedingControls = true;
+            Model.Data.ProceedingMazeItems = true;
+        }
 
         #endregion
 
@@ -137,8 +139,9 @@ namespace Games.RazorMaze.Controllers
         private void OnGameLoopUpdate() => Model.Data.OnGameLoopUpdate();
         private void DataOnPathProceedEvent(V2Int _PathItem) => View.MazeCommon.OnPathProceed(_PathItem);
         private void OnInputCommand(int _Value) => Model.InputScheduler.AddCommand((EInputCommand)_Value);
-        private void OnCharacterHealthChanged(HealthPointsEventArgs _Args) => View.Character.OnHealthChanged(_Args);
         private void OnCharacterDeath() => View.Character.OnDeath();
+        
+        private void OnAllPathsProceededEvent() => throw new System.NotImplementedException();
         private void OnCharacterMoveStarted(CharacterMovingEventArgs _Args) => View.Character.OnMovingStarted(_Args);
 
         private void OnCharacterMoveContinued(CharacterMovingEventArgs _Args) => View.Character.OnMoving(_Args);
@@ -169,34 +172,33 @@ namespace Games.RazorMaze.Controllers
         private void OnPortalEvent(PortalEventArgs _Args) => View.PortalsGroup.OnPortalEvent(_Args);
         private void OnShredingerBlockEvent(ShredingerBlockArgs _Args) => View.ShredingerBlocksGroup.OnShredingerBlockEvent(_Args);
         private void OnSpringboardEvent(SpringboardEventArgs _Args) => View.SpringboardItemsGroup.OnSpringboardEvent(_Args);
-
         
-        public void SetMazeInfo(MazeInfo _Info) => Model.Data.Info = _Info;
-
         #endregion
     
         #region nonpublic methods
 
         protected virtual void OnBeforeLevelStarted(LevelStateChangedArgs _Args)
         {
-            Model.Scoring.Score = 0;
             View.UI?.OnBeforeLevelStarted(_Args, () => Model.LevelStaging.StartLevel());
+            View.MazeTransitioner?.OnBeforeLevelStarted(_Args, () => { /*TODO*/});
         }
 
-        protected virtual void OnLevelStarted(LevelStateChangedArgs _Args) => View.UI?.OnLevelStarted(_Args);
+        protected virtual void OnLevelStarted(LevelStateChangedArgs _Args)
+        {
+            View.UI?.OnLevelStarted(_Args);
+            View.MazeTransitioner.OnLevelStarted(_Args);
+        }
 
-        protected virtual void OnLevelFinished(LevelStateChangedArgs _Args)
+        protected virtual void OnLevelFinished(LevelFinishedEventArgs _Args)
         {
             View.UI?.OnLevelFinished(_Args, () =>
                 {
                     Model.LevelStaging.Level++;
                     Model.LevelStaging.BeforeStartLevel();
                 });
+            View.MazeTransitioner.OnLevelFinished(_Args, () => { /*TODO*/});
         }
-
-        private void OnScoreChanged(int _Score) => throw new System.NotImplementedException();
-        protected virtual void OnNecessaryScoreReached() => Model.LevelStaging.FinishLevel();
-
+        
         #endregion
     
         #region engine methods
@@ -213,7 +215,6 @@ namespace Games.RazorMaze.Controllers
             var shredingerProceeder                             = Model.ShredingerBlocksProceeder;
             var springboardProceeder                            = Model.SpringboardProceeder;
             var character                                       = Model.Character;
-            var scoring                                         = Model.Scoring;
             var levelStaging                                    = Model.LevelStaging;
             
             rotation.RotationStarted                            -= OnMazeRotationStarted;
@@ -235,15 +236,11 @@ namespace Games.RazorMaze.Controllers
             shredingerProceeder.ShredingerBlockEvent            -= OnShredingerBlockEvent;
             springboardProceeder.SpringboardEvent               -= OnSpringboardEvent;
 
-            character.HealthChanged                             -= OnCharacterHealthChanged;
             character.Death                                     -= OnCharacterDeath;
             character.CharacterMoveStarted                      -= OnCharacterMoveStarted;
             character.CharacterMoveContinued                    -= OnCharacterMoveContinued;
             character.CharacterMoveFinished                     -= OnCharacterMoveFinished;
             
-            scoring.ScoreChanged                                -= OnScoreChanged;
-            scoring.NecessaryScoreReached                       -= OnNecessaryScoreReached;
-
             levelStaging.LevelBeforeStarted                     -= OnBeforeLevelStarted;
             levelStaging.LevelStarted                           -= OnLevelStarted;
             levelStaging.LevelFinished                          -= OnLevelFinished;
@@ -252,13 +249,5 @@ namespace Games.RazorMaze.Controllers
         }
 
         #endregion
-
-        public void PostInit()
-        {
-            Model.Data.ProceedingControls = true;
-            Model.Data.ProceedingMazeItems = true;
-        }
-
-
     }
 }

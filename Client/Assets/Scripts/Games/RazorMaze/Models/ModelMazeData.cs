@@ -10,7 +10,6 @@ namespace Games.RazorMaze.Models
     public enum EMazeMoveDirection { Up, Right, Down, Left }
     
     public delegate void MazeInfoHandler(MazeInfo Info);
-    public delegate void PathProceedHandler(V2Int PathItem);
 
     public class CharacterInfo
     {

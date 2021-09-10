@@ -8,7 +8,7 @@ using Games.RazorMaze.Views.Utils;
 using Ticker;
 using UnityEngine;
 
-namespace Games.RazorMaze.Views.MazeCommon
+namespace Games.RazorMaze.Views.Common
 {
     public class ViewMazeCommonProt : ViewMazeCommonBase
     {

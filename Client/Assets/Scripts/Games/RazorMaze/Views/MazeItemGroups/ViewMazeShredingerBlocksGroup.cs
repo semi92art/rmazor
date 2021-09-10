@@ -1,4 +1,4 @@
-﻿using Games.RazorMaze.Views.MazeCommon;
+﻿using Games.RazorMaze.Views.Common;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {

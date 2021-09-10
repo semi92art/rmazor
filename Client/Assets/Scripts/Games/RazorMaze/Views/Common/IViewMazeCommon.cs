@@ -3,7 +3,7 @@ using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.MazeItems;
 
-namespace Games.RazorMaze.Views.MazeCommon
+namespace Games.RazorMaze.Views.Common
 {
     public interface IViewMazeCommon : IInit
     {

@@ -6,8 +6,7 @@ namespace Games.RazorMaze.Views.UI
     public class ViewUI : ViewUIBase
     {
         public ViewUI(ITicker _Ticker) : base(_Ticker)
-        {
-        }
+        { }
 
         public override void OnBeforeLevelStarted(LevelStateChangedArgs _Args, UnityAction _StartLevel)
         {
@@ -19,7 +18,7 @@ namespace Games.RazorMaze.Views.UI
             throw new System.NotImplementedException();
         }
 
-        public override void OnLevelFinished(LevelStateChangedArgs _Args, UnityAction _Finish)
+        public override void OnLevelFinished(LevelFinishedEventArgs _Args, UnityAction _Finish)
         {
             throw new System.NotImplementedException();
         }

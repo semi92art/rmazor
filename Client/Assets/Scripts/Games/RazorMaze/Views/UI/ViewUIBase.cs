@@ -1,6 +1,7 @@
 ﻿using DialogViewers;
 using Entities;
 using Extensions;
+using Games.RazorMaze.Views.Common;
 using Ticker;
 using TimeProviders;
 using UI.Factories;
@@ -11,12 +12,8 @@ using UnityEngine.UI;
 
 namespace Games.RazorMaze.Views.UI
 {
-    public interface IViewUI
-    {
-        void OnBeforeLevelStarted(LevelStateChangedArgs _Args, UnityAction _StartLevel);
-        void OnLevelStarted(LevelStateChangedArgs _Args);
-        void OnLevelFinished(LevelStateChangedArgs _Args, UnityAction _Finish);
-    }
+    public interface IViewUI : IOnLevelStaging
+    { }
     
     public abstract class ViewUIBase : GameObservable, IViewUI, IUpdateTick
     {
@@ -88,7 +85,7 @@ namespace Games.RazorMaze.Views.UI
 
         public abstract void OnBeforeLevelStarted(LevelStateChangedArgs _Args, UnityAction _StartLevel);
         public abstract void OnLevelStarted(LevelStateChangedArgs _Args);
-        public abstract void OnLevelFinished(LevelStateChangedArgs _Args, UnityAction _Finish);
+        public abstract void OnLevelFinished(LevelFinishedEventArgs _Args, UnityAction _Finish);
         
 
         #endregion

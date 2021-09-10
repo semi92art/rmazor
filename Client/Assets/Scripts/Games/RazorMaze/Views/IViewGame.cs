@@ -1,11 +1,11 @@
 ﻿using Games.RazorMaze.Views.Characters;
+using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.InputConfigurators;
-using Games.RazorMaze.Views.MazeCommon;
 using Games.RazorMaze.Views.MazeItemGroups;
 using Games.RazorMaze.Views.Rotation;
 using Games.RazorMaze.Views.UI;
 
-namespace Games.RazorMaze.Views.Views
+namespace Games.RazorMaze.Views
 {
     public interface IViewGame : IInit
     {
@@ -13,6 +13,7 @@ namespace Games.RazorMaze.Views.Views
         IInputConfigurator                 InputConfigurator { get; }
         IViewCharacter                     Character { get; }
         IViewMazeCommon                    MazeCommon { get; }
+        IViewMazeTransitioner              MazeTransitioner { get; }
         IViewMazeRotation                  MazeRotation { get; }
         IViewMazeMovingItemsGroup          MazeMovingItemsGroup { get; }
         IViewMazeTrapsReactItemsGroup      MazeTrapsReactItemsGroup { get; }

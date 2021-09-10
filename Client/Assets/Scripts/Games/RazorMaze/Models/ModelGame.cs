@@ -20,7 +20,6 @@ namespace Games.RazorMaze.Models
         ISpringboardProceeder                     SpringboardProceeder { get; }
         IModelCharacter                           Character { get; }
         ILevelStagingModel                        LevelStaging { get; }
-        IScoringModel                             Scoring { get; }
         IInputScheduler                           InputScheduler { get; }
     }
     
@@ -44,7 +43,6 @@ namespace Games.RazorMaze.Models
         public ISpringboardProceeder              SpringboardProceeder { get; }
         public IModelCharacter                    Character { get; }
         public ILevelStagingModel                 LevelStaging { get; }
-        public IScoringModel                      Scoring { get; }
         public IInputScheduler                    InputScheduler { get; }
         
         public ModelGame(
@@ -59,7 +57,6 @@ namespace Games.RazorMaze.Models
             IPortalsProceeder                     _PortalsProceeder,
             IModelCharacter                       _CharacterModel,
             ILevelStagingModel                    _StagingModel,
-            IScoringModel                         _ScoringModel,
             IInputScheduler                       _InputScheduler,
             IShredingerBlocksProceeder            _ShredingerBlocksProceeder,
             ISpringboardProceeder                 _SpringboardProceeder)
@@ -75,7 +72,6 @@ namespace Games.RazorMaze.Models
             PortalsProceeder                      = _PortalsProceeder;
             Character                             = _CharacterModel;
             LevelStaging                          = _StagingModel;
-            Scoring                               = _ScoringModel;
             InputScheduler                        = _InputScheduler;
             ShredingerBlocksProceeder             = _ShredingerBlocksProceeder;
             SpringboardProceeder                  = _SpringboardProceeder;
@@ -92,20 +88,22 @@ namespace Games.RazorMaze.Models
             foreach (var item in GetInterfaceOfProceeders<IOnGameLoopUpdate>())
                 Data.GameLoopUpdate += item.OnGameLoopUpdate;
             
-            Data.MazeChanged                      += MazeOnMazeChanged;
-            MazeRotation.RotationFinished         += MazeOnRotationFinished;
-            Character.CharacterMoveStarted        += CharacterOnMoveStarted;
-            Character.CharacterMoveContinued      += CharacterOnMoveContinued;
-            Character.CharacterMoveFinished       += CharacterOnFinishMove; 
-            InputScheduler.MoveCommand            += InputSchedulerOnMoveCommand;
-            InputScheduler.RotateCommand          += InputSchedulerOnRotateCommand;
-            PortalsProceeder.PortalEvent          += Character.OnPortal;
-            SpringboardProceeder.SpringboardEvent += Character.OnSpringboard;
+            Data.MazeChanged                           += MazeOnMazeChanged;
+            MazeRotation.RotationFinished              += MazeOnRotationFinished;
+            Character.Death                            += OnCharacterDeath;
+            Character.CharacterMoveStarted             += CharacterOnMoveStarted;
+            Character.CharacterMoveContinued           += CharacterOnMoveContinued;
+            Character.CharacterMoveFinished            += CharacterOnFinishMove; 
+            InputScheduler.MoveCommand                 += InputSchedulerOnMoveCommand;
+            InputScheduler.RotateCommand               += InputSchedulerOnRotateCommand;
+            PortalsProceeder.PortalEvent               += Character.OnPortal;
+            SpringboardProceeder.SpringboardEvent      += Character.OnSpringboard;
+            PathItemsProceeder.AllPathsProceededEvent += AllPathsProceededEvent;
             
             Data.PreInitialized += () => PreInitialized?.Invoke();
             Data.PreInit();
         }
-        
+
         public void Init()
         {
             Character.Initialized += () => Initialized?.Invoke();
@@ -116,7 +114,11 @@ namespace Games.RazorMaze.Models
 
         #region nonpublic methods
 
-                private void MazeOnMazeChanged(MazeInfo _Info)
+        
+        private void OnCharacterDeath() => LevelStaging.FinishLevel(false);
+        private void AllPathsProceededEvent() => LevelStaging.FinishLevel(true);
+
+        private void MazeOnMazeChanged(MazeInfo _Info)
         {
             var proceeders = GetInterfaceOfProceeders<IOnMazeChanged>();
             foreach (var proceeder in proceeders)
