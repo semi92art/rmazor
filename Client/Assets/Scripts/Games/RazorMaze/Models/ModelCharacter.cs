@@ -134,16 +134,16 @@ namespace Games.RazorMaze.Models
 
             if (!isNode)
             {
-                var shredinger = Data.ProceedInfos[EMazeItemType.ShredingerBlock].Values
-                    .FirstOrDefault(_Inf => _Inf.Item.Position == _NextPosition);
-
-                if (shredinger != null)
-                    return shredinger.ProceedingStage != 2;
-                
                 bool isPortal = _Info.MazeItems
                     .Any(_O => _O.Position == _NextPosition && _O.Type == EMazeItemType.Portal);
                 return isPortal;
             }
+            
+            var shredinger = Data.ProceedInfos[EMazeItemType.ShredingerBlock].Values
+                .FirstOrDefault(_Inf => _Inf.Item.Position == _NextPosition);
+
+            if (shredinger != null)
+                return shredinger.ProceedingStage != ShredingerBlocksProceeder.StageClosed;
 
             bool isMazeItem = _Info.MazeItems.Any(_O => 
                 _O.Position == _NextPosition
@@ -161,7 +161,6 @@ namespace Games.RazorMaze.Models
 
             if (isBuzyMazeItem)
                 return false;
-            
 
             bool isPrevPortal = _Info.MazeItems
                 .Any(_O => _O.Position == _CurrentPosition && _O.Type == EMazeItemType.Portal);

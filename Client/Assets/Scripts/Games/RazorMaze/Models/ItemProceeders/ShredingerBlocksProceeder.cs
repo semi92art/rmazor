@@ -30,6 +30,14 @@ namespace Games.RazorMaze.Models.ItemProceeders
     
     public class ShredingerBlocksProceeder : ItemsProceederBase, IShredingerBlocksProceeder
     {
+        #region constants
+
+        public const int StageIdle = 0;
+        public const int StageOpened = 1;
+        public const int StageClosed = 2;
+        
+        #endregion
+        
         #region nonpublic members
         
         protected override EMazeItemType[] Types => new[] {EMazeItemType.ShredingerBlock};
@@ -61,15 +69,15 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 {
                     if (info.Item.Position == _Args.Current)
                     {
-                        SwitchStage(info, true, 1);
+                        SwitchStage(info, true, StageOpened);
                     }
                 }
                 
                 foreach (var info in infos.Values.Where(_Info => _Info.IsProceeding))
                 {
-                    if (info.Item.Position != _Args.Current && info.ProceedingStage == 1)
+                    if (info.Item.Position != _Args.Current && info.ProceedingStage == StageOpened)
                     {
-                        SwitchStage(info, true, 2);
+                        SwitchStage(info, true, StageClosed);
                         Coroutines.Run(ProceedBlock(info));
                     }
                 }
@@ -83,7 +91,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         private IEnumerator ProceedBlock(IMazeItemProceedInfo _Info)
         {
             yield return Coroutines.Delay(
-                () => SwitchStage(_Info, false, 0),
+                () => SwitchStage(_Info, false, StageIdle),
                 Settings.shredingerBlockProceedTime);
         }
 
@@ -92,7 +100,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             _Info.IsProceeding = _IsProceeding;
             _Info.ProceedingStage = _Stage;
             ShredingerBlockEvent?.Invoke(
-                new ShredingerBlockArgs(_Info.Item, _Stage, _Stage != 2));
+                new ShredingerBlockArgs(_Info.Item, _Stage, _Stage != StageClosed));
         }
         
         #endregion
