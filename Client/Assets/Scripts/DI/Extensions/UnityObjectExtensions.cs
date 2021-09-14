@@ -29,7 +29,7 @@ namespace Extensions
             else
                 Object.DestroyImmediate(_Component);
 #else
-            Object.Destroy(_GameObject);
+            Object.Destroy(_Component);
 #endif
         }
 
