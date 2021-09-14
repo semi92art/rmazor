@@ -27,21 +27,25 @@ namespace Games.RazorMaze.Views.MazeItems
         private Vector3 m_RotateDirection;
         private Vector3 m_Angles;
         private Transform m_Mace;
+        private Vector2 m_Position;
 
         #endregion
         
         #region inject
         
         private IModelMazeData Data { get; }
-        
+        private IModelCharacter Character { get; }
+
         public ViewMazeItemGravityTrap(
             IModelMazeData _Data,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
+            IModelCharacter _Character,
             ITicker _Ticker)
             : base(_CoordinateConverter, _ContainersGetter, _Ticker)
         {
             Data = _Data;
+            Character = _Character;
         }
         
         #endregion
@@ -65,6 +69,8 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Angles += m_RotateDirection * Time.deltaTime * m_RotationSpeed;
             m_Angles = ClampAngles(m_Angles);
             m_Mace.rotation = Quaternion.Euler(m_Angles);
+
+            CheckForCharacterDeath();
         }
         
         public void OnMoveStarted(MazeItemMoveEventArgs _Args)
@@ -79,18 +85,18 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public void OnMoving(MazeItemMoveEventArgs _Args)
         {
-            var pos = Vector2.Lerp(_Args.From.ToVector2(), _Args.To.ToVector2(), _Args.Progress);
-            SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(pos));
+            m_Position = Vector2.Lerp(_Args.From.ToVector2(), _Args.To.ToVector2(), _Args.Progress);
+            SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(m_Position));
         }
 
         public void OnMoveFinished(MazeItemMoveEventArgs _Args)
         {
-            Dbg.Log("OnMoveFinished");
             SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(_Args.To));
             m_Rotate = false;
         }
 
-        public override object Clone() => new ViewMazeItemGravityTrap(Data, CoordinateConverter, ContainersGetter, Ticker);
+        public override object Clone() =>
+            new ViewMazeItemGravityTrap(Data, CoordinateConverter, ContainersGetter, Character, Ticker);
 
         #endregion
         
@@ -135,6 +141,13 @@ namespace Games.RazorMaze.Views.MazeItems
             while (_Angle > 360f)
                 _Angle -= 360f;
             return _Angle;
+        }
+
+        private void CheckForCharacterDeath()
+        {
+            var cPos = Data.CharacterInfo.Position.ToVector2();
+            if (Vector2.Distance(cPos, m_Position) < 1f)
+                Character.RaiseDeath();
         }
         
         #endregion

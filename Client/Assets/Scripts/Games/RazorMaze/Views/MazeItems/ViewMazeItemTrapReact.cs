@@ -85,14 +85,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 return;
             float rotSpeed = ViewSettings.MovingTrapRotationSpeed * Time.deltaTime; 
             m_Trap.transform.Rotate(Vector3.forward * rotSpeed);
-
-            if (m_Progress < 0.3f)
-                return;
-            var dir = Props.Directions.First();
-            var pos = Props.Position;
-            if (Data.CharacterInfo.Position != dir + pos) 
-                return;
-            Character.RaiseDeath();
+            CheckForCharacterDeath();
         }
         
         public override object Clone() => new ViewMazeItemTrapReact(
@@ -215,6 +208,17 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Trap.transform.SetLocalPosXY(_Direction * _Scale * _Progress);
         }
 
+        private void CheckForCharacterDeath()
+        {
+            if (m_Progress < 0.3f)
+                return;
+            var dir = Props.Directions.First();
+            var pos = Props.Position;
+            if (Data.CharacterInfo.Position != dir + pos) 
+                return;
+            Character.RaiseDeath();
+        }
+        
         #endregion
     }
 }

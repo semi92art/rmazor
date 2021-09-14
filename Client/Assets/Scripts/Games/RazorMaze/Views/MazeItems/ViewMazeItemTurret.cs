@@ -323,7 +323,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 _bulletSortingOrder, _DefaultSortingOrder, _DefaultSortingOrder + 30);
             return _bulletSortingOrder;
         }
-        
+
         #endregion
     }
 }

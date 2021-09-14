@@ -1,5 +1,6 @@
 ﻿using Extensions;
 using GameHelpers;
+using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
@@ -17,20 +18,27 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private SpriteRenderer m_Saw;
         private bool m_Rotate;
+        private Vector2 m_Position;
         
         #endregion
         
         #region inject
-        
+
+        public IModelMazeData Data { get; }
+        public IModelCharacter Character { get; }
         private ViewSettings ViewSettings { get; }
         
         public ViewMazeItemMovingTrap(
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
+            IModelMazeData _Data,
+            IModelCharacter _Character,
             ITicker _Ticker,
             ViewSettings _ViewSettings) 
             : base(_CoordinateConverter, _ContainersGetter, _Ticker)
         {
+            Data = _Data;
+            Character = _Character;
             ViewSettings = _ViewSettings;
         }
         
@@ -70,8 +78,8 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public void OnMoving(MazeItemMoveEventArgs _Args)
         {
-            var pos = Vector2.Lerp(_Args.From.ToVector2(), _Args.To.ToVector2(), _Args.Progress);
-            SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(pos));
+            m_Position = Vector2.Lerp(_Args.From.ToVector2(), _Args.To.ToVector2(), _Args.Progress);
+            SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(m_Position));
         }
 
         public void OnMoveFinished(MazeItemMoveEventArgs _Args)
@@ -85,10 +93,12 @@ namespace Games.RazorMaze.Views.MazeItems
                 return;
             float rotSpeed = ViewSettings.MovingTrapRotationSpeed * Time.deltaTime; 
             Object.transform.Rotate(Vector3.forward * rotSpeed);
+            
+            CheckForCharacterDeath();
         }
 
         public override object Clone() => new ViewMazeItemMovingTrap(
-            CoordinateConverter, ContainersGetter, Ticker, ViewSettings);
+            CoordinateConverter, ContainersGetter, Data, Character, Ticker, ViewSettings);
         
         #endregion
 
@@ -124,8 +134,14 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             m_Rotate = false;
         }
+
+        private void CheckForCharacterDeath()
+        {
+            var cPos = Data.CharacterInfo.Position.ToVector2();
+            if (Vector2.Distance(cPos, m_Position) < 1f)
+                Character.RaiseDeath();
+        }
         
         #endregion
-
     }
 }
