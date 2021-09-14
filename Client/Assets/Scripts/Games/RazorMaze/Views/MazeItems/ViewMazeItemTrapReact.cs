@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using Extensions;
 using GameHelpers;
+using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
@@ -33,16 +34,21 @@ namespace Games.RazorMaze.Views.MazeItems
         
         private Line m_Line;
         private SpriteRenderer m_Trap;
+        private float m_Progress;
         
         #endregion
         
         #region inject
-        
+
+        public IModelMazeData Data { get; }
+        public IModelCharacter Character { get; }
         private IGameTimeProvider GameTimeProvider { get; }
         private ModelSettings ModelSettings { get; }
         private ViewSettings ViewSettings { get; }
 
         public ViewMazeItemTrapReact(
+            IModelMazeData _Data,
+            IModelCharacter _Character,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             ITicker _Ticker,
@@ -51,6 +57,8 @@ namespace Games.RazorMaze.Views.MazeItems
             ViewSettings _ViewSettings)
             : base(_CoordinateConverter, _ContainersGetter, _Ticker)
         {
+            Data = _Data;
+            Character = _Character;
             GameTimeProvider = _GameTimeProvider;
             ModelSettings = _ModelSettings;
             ViewSettings = _ViewSettings;
@@ -77,10 +85,18 @@ namespace Games.RazorMaze.Views.MazeItems
                 return;
             float rotSpeed = ViewSettings.MovingTrapRotationSpeed * Time.deltaTime; 
             m_Trap.transform.Rotate(Vector3.forward * rotSpeed);
+
+            if (m_Progress < 0.3f)
+                return;
+            var dir = Props.Directions.First();
+            var pos = Props.Position;
+            if (Data.CharacterInfo.Position != dir + pos) 
+                return;
+            Character.RaiseDeath();
         }
         
         public override object Clone() => new ViewMazeItemTrapReact(
-            CoordinateConverter, ContainersGetter, Ticker, GameTimeProvider, ModelSettings, ViewSettings);
+            Data, Character, CoordinateConverter, ContainersGetter, Ticker, GameTimeProvider, ModelSettings, ViewSettings);
         
         public void OnTrapReact(MazeItemTrapReactEventArgs _Args)
         {
@@ -150,7 +166,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 StartPos,
                 MiddlePos,
                 0.1f,
-                _Progress => m_Trap.transform.SetLocalPosXY(dir * scale * _Progress),
+                _Progress => SetReactProgress(dir, scale, _Progress),
                 GameTimeProvider
             );
         }
@@ -163,7 +179,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 MiddlePos,
                 FinalPos,
                 0.05f,
-                _Progress => m_Trap.transform.SetLocalPosXY(dir * scale * _Progress),
+                _Progress => SetReactProgress(dir, scale, _Progress),
                 GameTimeProvider
             );
         }
@@ -176,7 +192,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 FinalPos,
                 StartPos,
                 ModelSettings.trapAfterReactTime,
-                _Progress => m_Trap.transform.SetLocalPosXY(dir * scale * _Progress),
+                _Progress => SetReactProgress(dir, scale, _Progress),
                 GameTimeProvider
             );
         }
@@ -191,6 +207,12 @@ namespace Games.RazorMaze.Views.MazeItems
             B *= CoordinateConverter.GetScale();
             C *= CoordinateConverter.GetScale();
             return new Tuple<Vector2, Vector2>(B, C);
+        }
+
+        private void SetReactProgress(Vector2 _Direction, float _Scale, float _Progress)
+        {
+            m_Progress = _Progress;
+            m_Trap.transform.SetLocalPosXY(_Direction * _Scale * _Progress);
         }
 
         #endregion

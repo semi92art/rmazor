@@ -26,7 +26,6 @@ namespace Games.RazorMaze.Models
         }
     }
     
-    public delegate void HealthPointsChangedHandler(HealthPointsEventArgs _Args);
     public delegate void CharacterMovingHandler(CharacterMovingEventArgs _Args);
 
     public interface IModelCharacter : IInit, IOnMazeChanged
@@ -38,6 +37,7 @@ namespace Games.RazorMaze.Models
         void Move(EMazeMoveDirection _Direction);
         void OnPortal(PortalEventArgs _Args);
         void OnSpringboard(SpringboardEventArgs _Args);
+        void RaiseDeath();
     }
     
     public class ModelCharacter : IModelCharacter
@@ -113,6 +113,11 @@ namespace Games.RazorMaze.Models
                 newDirection = charInverseDir == V2Int.down ? V2Int.right : V2Int.down;
             Data.CharacterInfo.MoveDirection = RazorMazeUtils.GetMoveDirection(newDirection, Data.Orientation);
             Move(Data.CharacterInfo.MoveDirection);
+        }
+
+        public void RaiseDeath()
+        {
+            Death?.Invoke();
         }
 
         #endregion

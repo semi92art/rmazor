@@ -56,6 +56,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private IModelMazeData Data { get; }
         private IGameTimeProvider GameTimeProvider { get; }
         private ITurretBulletTail BulletTail { get; }
+        public IModelCharacter ModelCharacter { get; }
 
         public ViewMazeItemTurret(
             ICoordinateConverter _CoordinateConverter,
@@ -64,6 +65,7 @@ namespace Games.RazorMaze.Views.MazeItems
             IModelMazeData _Data,
             IGameTimeProvider _GameTimeProvider,
             ITurretBulletTail _BulletTail,
+            IModelCharacter _ModelCharacter,
             ViewSettings _ViewSettings)
             : base(_CoordinateConverter, _ContainersGetter, _Ticker)
         {
@@ -71,6 +73,7 @@ namespace Games.RazorMaze.Views.MazeItems
             Data = _Data;
             GameTimeProvider = _GameTimeProvider;
             BulletTail = _BulletTail;
+            ModelCharacter = _ModelCharacter;
         }
         
         #endregion
@@ -102,7 +105,7 @@ namespace Games.RazorMaze.Views.MazeItems
         }
 
         public override object Clone() => new ViewMazeItemTurret(
-            CoordinateConverter, ContainersGetter, Ticker, Data, GameTimeProvider, BulletTail, ViewSettings);
+            CoordinateConverter, ContainersGetter, Ticker, Data, GameTimeProvider, BulletTail, ModelCharacter, ViewSettings);
         
         #endregion
         
@@ -246,7 +249,12 @@ namespace Games.RazorMaze.Views.MazeItems
             yield return Coroutines.DoWhile(
                 () =>
                 {
-                    return !movedToTheEnd && point != Data.CharacterInfo.Position;
+                    if (point == Data.CharacterInfo.Position)
+                    {
+                        ModelCharacter.RaiseDeath();
+                        return false;
+                    }
+                    return !movedToTheEnd;
                 },
                 () =>
                 {

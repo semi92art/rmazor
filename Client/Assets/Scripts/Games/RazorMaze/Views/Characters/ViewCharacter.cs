@@ -102,7 +102,10 @@ namespace Games.RazorMaze.Views.Characters
             Tail.HideTail(_Args);
         }
 
-        public void OnDeath() { }
+        public void OnDeath()
+        {
+            Dbg.Log("Character OnDeath");
+        }
         
         private void InitPrefab()
         {
