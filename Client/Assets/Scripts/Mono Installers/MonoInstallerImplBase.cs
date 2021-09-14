@@ -1,4 +1,5 @@
-﻿using Ticker;
+﻿using Games.RazorMaze;
+using Ticker;
 using Zenject;
 
 namespace Mono_Installers
@@ -8,6 +9,7 @@ namespace Mono_Installers
         public override void InstallBindings()
         {
             Container.Bind<ITicker>().To<Ticker.Ticker>().AsSingle();
+            Container.Bind<ILevelsLoader>().To<LevelsLoader>().AsSingle();
         }
     }
 }

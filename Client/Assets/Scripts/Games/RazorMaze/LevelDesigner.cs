@@ -7,14 +7,18 @@ using Extensions;
 using Games.RazorMaze.Controllers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.MazeItems;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Games.RazorMaze
 {
+#if UNITY_EDITOR
     [InitializeOnLoad]
+#endif
     public class LevelDesigner : MonoBehaviour
     {
         private static LevelDesigner _instance;
@@ -37,8 +41,6 @@ namespace Games.RazorMaze
         [HideInInspector] public float aParam;
         [HideInInspector] public bool valid;
         [SerializeField] public List<ViewMazeItemProt> maze;
-        [HideInInspector] public int group;
-        [HideInInspector] public int index;
         [HideInInspector] public V2Int size;
         public GameObject mazeObject;
 
@@ -48,11 +50,13 @@ namespace Games.RazorMaze
             set => SaveUtils.PutValue(SaveKey.DesignerMazeInfo, value);
         }
         
+#if UNITY_EDITOR
+        
         static LevelDesigner()
         {
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
         }
-        
+
         private static void OnPlayModeStateChanged(PlayModeStateChange _Change)
         {
             var sceneName = SceneManager.GetActiveScene().name;
@@ -75,6 +79,8 @@ namespace Games.RazorMaze
             };
             SceneManager.LoadScene(SceneNames.Level);
         }
+        
+#endif
         
         public MazeInfo GetLevelInfoFromScene(bool _Full = true)
         {

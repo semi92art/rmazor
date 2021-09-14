@@ -4,8 +4,6 @@ namespace Utils.Editor
 {
     public static class GitUtils
     {
-        private const string DefaultGitDirectory = "./";
-        
         public static string RunGitCommand(string _GitCommand, string _GitDirectory = @".\")
         {
             ProcessStartInfo processInfo = new ProcessStartInfo("git", $"-C {_GitDirectory} {_GitCommand}")
