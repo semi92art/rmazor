@@ -14,7 +14,7 @@ namespace Games.RazorMaze.Views.MazeItems
 {
     public interface IViewMazeItemPath : IViewMazeItem { }
     
-    public class ViewMazeItemPath : ViewMazeItemBase, IViewMazeItemPath
+    public class ViewMazeItemPath : ViewMazeItemBase, IViewMazeItemPath, IUpdateTick
     {
         #region nonpublic members
 
@@ -200,7 +200,7 @@ namespace Games.RazorMaze.Views.MazeItems
             var border = go.AddComponent<Line>();
             border.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
             border.EndCaps = LineEndCap.None;
-            border.Color = DrawingUtils.ColorLines;
+            border.Color = DrawingUtils.ColorLines.SetA(0.5f);
             (border.Start, border.End, border.Dashed) = GetBorderPointsAndDashed(_Side, false, false);
             border.DashSize = 1f;
             switch (_Side)
@@ -237,21 +237,18 @@ namespace Games.RazorMaze.Views.MazeItems
             corner.transform.SetLocalPosXY(GetCornerCenter(_Right, _Up, _Inner));
             corner.Type = DiscType.Arc;
             corner.Radius = ViewSettings.CornerRadius * CoordinateConverter.GetScale();
-            corner.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
+            corner.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale() * 1.5f;
             var angles = GetCornerAngles(_Right, _Up, _Inner);
             corner.AngRadiansStart = Mathf.Deg2Rad * angles.x;
             corner.AngRadiansEnd = Mathf.Deg2Rad * angles.y;
             corner.Color = DrawingUtils.ColorLines;
             
-            float cr = ViewSettings.CornerRadius * CoordinateConverter.GetScale();
-
             if (!_Right && !_Up)
             {
                 m_BottomLeftCorner = corner;
                 if (!_Inner) return;
                 m_BottomBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Down, true, true).Item1;
                 m_LeftBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Left, true, true).Item1;
-                // m_Shape.CornerRadiii = m_Shape.CornerRadiii.SetX(cr);
             }
             else if (_Right && !_Up)
             {
@@ -259,7 +256,6 @@ namespace Games.RazorMaze.Views.MazeItems
                 if (!_Inner) return;
                 m_BottomBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Down, true, true).Item2;
                 m_RightBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Right, true, true).Item1;
-                // m_Shape.CornerRadiii = m_Shape.CornerRadiii.SetW(cr);
             }
             else if (!_Right && _Up)
             {
@@ -267,7 +263,6 @@ namespace Games.RazorMaze.Views.MazeItems
                 if (!_Inner) return;
                 m_LeftBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Left, true, true).Item2;
                 m_TopBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Up, true, true).Item1;
-                // m_Shape.CornerRadiii = m_Shape.CornerRadiii.SetY(cr);
             }
             else if (_Right && _Up)
             {
@@ -275,7 +270,6 @@ namespace Games.RazorMaze.Views.MazeItems
                 if (!_Inner) return;
                 m_TopBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Up, true, true).Item2;
                 m_RightBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Right, true, true).Item2;
-                // m_Shape.CornerRadiii = m_Shape.CornerRadiii.SetZ(cr);
             }
         }
 
@@ -344,11 +338,22 @@ namespace Games.RazorMaze.Views.MazeItems
             return _Inner ? new Vector2(180, 270) : new Vector2(0, 90);
         }
 
-        private bool PathExist(V2Int _Path)
-        {
-            return Data.Info.Path.Contains(_Path);
-        }
-        
+        private bool PathExist(V2Int _Path) => Data.Info.Path.Contains(_Path);
+
         #endregion
+
+        public void UpdateTick()
+        {
+            float dOffset = Time.deltaTime * 3f;
+            
+            if (!m_LeftBorder.IsNull() && m_LeftBorder.Dashed)
+                m_LeftBorder.DashOffset -= dOffset;
+            if (!m_RightBorder.IsNull() && m_RightBorder.Dashed)
+                m_RightBorder.DashOffset += dOffset;
+            if (!m_BottomBorder.IsNull() && m_BottomBorder.Dashed)
+                m_BottomBorder.DashOffset += dOffset;
+            if (!m_TopBorder.IsNull() && m_TopBorder.Dashed)
+                m_TopBorder.DashOffset -= dOffset;
+        }
     }
 }
