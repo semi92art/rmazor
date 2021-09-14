@@ -12,19 +12,23 @@ namespace Games.RazorMaze.Views.UI
         
         #endregion
         
+        #region api
+        
         public override void OnBeforeLevelStarted(LevelStateChangedArgs _Args, UnityAction _StartLevel)
         {
-            throw new System.NotImplementedException();
+            // TODO
         }
 
         public override void OnLevelStarted(LevelStateChangedArgs _Args)
         {
-            throw new System.NotImplementedException();
+            // TODO
         }
 
         public override void OnLevelFinished(LevelFinishedEventArgs _Args, UnityAction _Finish)
         {
-            throw new System.NotImplementedException();
+            // TODO
         }
+        
+        #endregion
     }
 }

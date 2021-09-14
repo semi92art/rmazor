@@ -62,8 +62,8 @@ namespace Games.RazorMaze.Views.Characters
             var a = _Args.From.ToVector2() - dir * 0.4f;
             var orth = new Vector2(dir.y, dir.x);
             var currPos = Vector2.Lerp(_Args.From.ToVector2(), _Args.To.ToVector2(), _Args.Progress);
-            var b = currPos + dir * 0.4f + orth * 0.3f;
-            var c = currPos + dir * 0.4f - orth * 0.3f;
+            var b = currPos - dir * 0.4f + orth * 0.3f;
+            var c = currPos - dir * 0.4f - orth * 0.3f;
             m_Tail.A = CoordinateConverter.ToLocalCharacterPosition(a);
             m_Tail.B = CoordinateConverter.ToLocalCharacterPosition(b);
             m_Tail.C = CoordinateConverter.ToLocalCharacterPosition(c);
