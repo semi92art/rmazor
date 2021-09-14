@@ -5,28 +5,33 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Utils.Editor;
-using Debug = UnityEngine.Debug;
 
 public static class BuildAssetBundles
 {
-    private const string BundlesLocalPath = "../bundles";
-    private const string GitRepo = "https://semi92art:Anthony_1980@github.com/semi92art/bundles.git";
+    private const string BundlesLocalPath = "../../bundles";
+    private const string UserName = "semi92art";
+    private const string Token = "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";
     private const string ProgressBarTitle = "Building Bundles";
+    private const string RepositoryName = "bundles";
     private static string BundlesPath => $"Assets/AssetBundles/{GetOsBundleSubPath()}";
+    private static string PushCommand => $"push https://{Token}@github.com/{UserName}/{RepositoryName}.git";
     
-    [MenuItem("Tools/Build Bundles")]
+    [MenuItem("Tools/Bundles/Build")]
     public static void BuildAllAssetBundles()
     {
-        EditorUtility.DisplayProgressBar(ProgressBarTitle, "Starting build...", 0f);
         if (!Directory.Exists(BundlesPath))
             Directory.CreateDirectory(BundlesPath);
-        BuildPipeline.BuildAssetBundles(BundlesPath,
-            BuildAssetBundleOptions.None, EditorUserBuildSettings.activeBuildTarget);
-
-        EditorUtility.ClearProgressBar();
-        EditorUtility.DisplayProgressBar(ProgressBarTitle, "Copy bundles to git folder...", 10f);
+        BuildPipeline.BuildAssetBundles(
+            BundlesPath,
+            BuildAssetBundleOptions.None,
+            EditorUserBuildSettings.activeBuildTarget);
         CopyBundlesToGitFolder();
-        
+    }
+
+    [MenuItem("Tools/Bundles/Push")]
+    public static void PushBundles()
+    {
+        EditorUtility.ClearProgressBar();
         EditorUtility.DisplayProgressBar(ProgressBarTitle, "Staging in git...", 20f);
         string unstagedFiles = GitUtils.RunGitCommand("ls-files --others --exclude-standard", BundlesLocalPath);
         if (!string.IsNullOrEmpty(unstagedFiles))
@@ -50,8 +55,8 @@ public static class BuildAssetBundles
         EditorUtility.DisplayProgressBar(ProgressBarTitle, "Commit in git...", 50f);
         GitUtils.RunGitCommand("commit -m 'UnityBuild'", BundlesLocalPath);
         EditorUtility.DisplayProgressBar(ProgressBarTitle, "Pushing to remote repository...", 70f);
-        GitUtils.RunGitCommand($"remote set-url origin {GitRepo}", BundlesLocalPath);
-        GitUtils.RunGitCommand("push origin HEAD", BundlesLocalPath);
+        // GitUtils.RunGitCommand($"remote set-url origin {RepositoryName}", BundlesLocalPath);
+        GitUtils.RunGitCommand(PushCommand, BundlesLocalPath);
         EditorUtility.ClearProgressBar();
     }
 
@@ -94,7 +99,7 @@ public static class BuildAssetBundles
         var newFileNames = fileNames
             .Select(_FileName => _FileName.Replace("Assets/", string.Empty))
             .Select(_FileName => _FileName.Replace("AssetBundles/", string.Empty))
-            .Select(_FileName => dInfo.Parent?.FullName + "/bundles/mgc/" + _FileName)
+            .Select(_FileName => dInfo.Parent?.Parent?.FullName + "/bundles/mgc/" + _FileName)
             .Select(_FileName => _FileName + ".unity3d")
             .ToArray();
 

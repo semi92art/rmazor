@@ -47,7 +47,8 @@ namespace Games.RazorMaze
                 MazeItems = mazeItemsPositions.Select(_Pos => new MazeItem
                 {
                     Position = _Pos, Type = EMazeItemType.Block, Path = new List<V2Int>{_Pos}
-                }).ToList()
+                }).ToList(),
+                Comment = "[Empty]"
             };
         }
         

@@ -12,8 +12,14 @@ using Zenject;
 public class IntroSceneViewer : MonoBehaviour
 {
     private ITicker Ticker { get; set; }
+    private ILevelsLoader LevelsLoader { get; set; }
     
-    [Inject] public void Inject(ITicker _Ticker) => Ticker = _Ticker;
+    [Inject]
+    public void Inject(ITicker _Ticker, ILevelsLoader _LevelsLoader)
+    {
+        Ticker = _Ticker;
+        LevelsLoader = _LevelsLoader;
+    }
 
     private void Start()
     {
@@ -21,7 +27,7 @@ public class IntroSceneViewer : MonoBehaviour
         ShowIntroScene();
     }
 
-    private static void OnSceneLoaded(Scene _Scene, LoadSceneMode _Mode)
+    private void OnSceneLoaded(Scene _Scene, LoadSceneMode _Mode)
     {
         if (_Scene.name.EqualsIgnoreCase(SceneNames.Level))
             InitGameController();
@@ -36,7 +42,7 @@ public class IntroSceneViewer : MonoBehaviour
         SceneManager.LoadScene(SceneNames.Level);
     }
     
-    private static void InitGameController()
+    private void InitGameController()
     {
         var controller = RazorMazeGameController.Instance;
         controller.PreInitialized += () =>
@@ -48,8 +54,7 @@ public class IntroSceneViewer : MonoBehaviour
                 {
                     // int level = levelScoreEntity.Scores.First().Value;
                     // FIXME заглушка для загрузки какого-то уровня
-                    var info = MazeLevelUtils.LoadLevel(
-                        GameClientUtils.GameId, 1, 1, MazeLevelUtils.HeapIndexRelease, false);
+                    var info = LevelsLoader.LoadLevel(GameClientUtils.GameId, 1, false);
                     controller.SetMazeInfo(info);
                     controller.Init();
                 }));

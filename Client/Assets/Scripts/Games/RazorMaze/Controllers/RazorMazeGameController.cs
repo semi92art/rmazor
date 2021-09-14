@@ -141,7 +141,11 @@ namespace Games.RazorMaze.Controllers
         private void OnInputCommand(int _Value) => Model.InputScheduler.AddCommand((EInputCommand)_Value);
         private void OnCharacterDeath() => View.Character.OnDeath();
         
-        private void OnAllPathsProceededEvent() => throw new System.NotImplementedException();
+        private void OnAllPathsProceededEvent()
+        {
+            //TODO
+        }
+
         private void OnCharacterMoveStarted(CharacterMovingEventArgs _Args) => View.Character.OnMovingStarted(_Args);
 
         private void OnCharacterMoveContinued(CharacterMovingEventArgs _Args) => View.Character.OnMoving(_Args);
