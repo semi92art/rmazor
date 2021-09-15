@@ -7,6 +7,7 @@
         MoveLeft,
         MoveRight,
         RotateClockwise,
-        RotateCounterClockwise
+        RotateCounterClockwise,
+        Restart
     }
 }

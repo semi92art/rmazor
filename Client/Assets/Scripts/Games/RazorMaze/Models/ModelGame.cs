@@ -90,20 +90,21 @@ namespace Games.RazorMaze.Models
             
             Data.MazeChanged                           += MazeOnMazeChanged;
             MazeRotation.RotationFinished              += MazeOnRotationFinished;
-            Character.Death                            += OnCharacterDeath;
+            Character.AliveOrDeath                            += OnCharacterAliveOrDeath;
             Character.CharacterMoveStarted             += CharacterOnMoveStarted;
             Character.CharacterMoveContinued           += CharacterOnMoveContinued;
             Character.CharacterMoveFinished            += CharacterOnFinishMove; 
             InputScheduler.MoveCommand                 += InputSchedulerOnMoveCommand;
             InputScheduler.RotateCommand               += InputSchedulerOnRotateCommand;
+            InputScheduler.OtherCommand                += InputSchedulerOnOtherCommand;
             PortalsProceeder.PortalEvent               += Character.OnPortal;
             SpringboardProceeder.SpringboardEvent      += Character.OnSpringboard;
-            PathItemsProceeder.AllPathsProceededEvent += AllPathsProceededEvent;
+            PathItemsProceeder.AllPathsProceededEvent  += AllPathsProceededEvent;
             
             Data.PreInitialized += () => PreInitialized?.Invoke();
             Data.PreInit();
         }
-
+        
         public void Init()
         {
             Character.Initialized += () => Initialized?.Invoke();
@@ -115,7 +116,12 @@ namespace Games.RazorMaze.Models
         #region nonpublic methods
 
         
-        private void OnCharacterDeath() => LevelStaging.FinishLevel(false);
+        private void OnCharacterAliveOrDeath(bool _Alive)
+        {
+            if (!_Alive)
+                LevelStaging.FinishLevel(false);
+        }
+
         private void AllPathsProceededEvent() => LevelStaging.FinishLevel(true);
 
         private void MazeOnMazeChanged(MazeInfo _Info)
@@ -127,7 +133,7 @@ namespace Games.RazorMaze.Models
 
         private void MazeOnRotationFinished(MazeRotateDirection _Direction, MazeOrientation _Orientation)
         {
-            InputScheduler.UnlockRotation();
+            InputScheduler.UnlockRotation(true);
             GravityItemsProceeder.OnMazeOrientationChanged();
         }
         
@@ -143,7 +149,7 @@ namespace Games.RazorMaze.Models
                 proceeder.OnCharacterMoveContinued(_Args);
         }
         
-        private void CharacterOnFinishMove(CharacterMovingEventArgs _Args) => InputScheduler.UnlockMovement();
+        private void CharacterOnFinishMove(CharacterMovingEventArgs _Args) => InputScheduler.UnlockMovement(true);
         
         private void InputSchedulerOnMoveCommand(EInputCommand _Command)
         {
@@ -174,6 +180,12 @@ namespace Games.RazorMaze.Models
                 default: throw new SwitchCaseNotImplementedException(_Command);
             }
             MazeRotation.Rotate(dir);
+        }
+        
+        private void InputSchedulerOnOtherCommand(EInputCommand _Command)
+        {
+            if (_Command == EInputCommand.Restart)
+                Data.RaiseMazeChanged();
         }
         
         private List<T> GetInterfaceOfProceeders<T>() where T : class

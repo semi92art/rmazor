@@ -10,12 +10,11 @@ namespace Games.RazorMaze.Models
     public interface IInputScheduler
     {
         event EInputCommandHandler MoveCommand; 
-        event EInputCommandHandler RotateCommand; 
+        event EInputCommandHandler RotateCommand;
+        event EInputCommandHandler OtherCommand;
         void AddCommand(EInputCommand _Command);
-        //void LockMovement();
-        void UnlockMovement();
-        //void LockRotation();
-        void UnlockRotation();
+        void UnlockMovement(bool _Unlock);
+        void UnlockRotation(bool _Unlock);
     }
     
     public class InputScheduler : IInputScheduler, IUpdateTick
@@ -24,11 +23,13 @@ namespace Games.RazorMaze.Models
         
         private readonly Queue<EInputCommand> m_MoveCommands = new Queue<EInputCommand>();
         private readonly Queue<EInputCommand> m_RotateCommands = new Queue<EInputCommand>();
+        private readonly Queue<EInputCommand> m_OtherCommands = new Queue<EInputCommand>();
 
         private bool m_MovementLocked;
         private bool m_RotationLocked;
         private int m_MoveCommandsCount;
         private int m_RotateCommandsCount;
+        private int m_OtherCommandsCount;
         
         #endregion
         
@@ -45,6 +46,7 @@ namespace Games.RazorMaze.Models
         
         public event EInputCommandHandler MoveCommand;
         public event EInputCommandHandler RotateCommand;
+        public event EInputCommandHandler OtherCommand;
 
         public void AddCommand(EInputCommand _Command)
         {
@@ -64,25 +66,30 @@ namespace Games.RazorMaze.Models
                     m_RotateCommands.Enqueue(_Command);
                     m_RotateCommandsCount++;
                     break;
+                case EInputCommand.Restart:
+                    m_OtherCommands.Enqueue(_Command);
+                    m_OtherCommandsCount++;
+                    break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Command);
             }
         }
 
-        public void UnlockMovement() => m_MovementLocked = false;
-        public void UnlockRotation() => m_RotationLocked = false;
+        public void UnlockMovement(bool _Unlock) => m_MovementLocked = !_Unlock;
+        public void UnlockRotation(bool _Unlock) => m_RotationLocked = !_Unlock;
 
         public void UpdateTick()
         {
-            ScheduleMovement();
-            ScheduleRotation();
+            ScheduleMovementCommands();
+            ScheduleRotationCommands();
+            ScheduleOtherCommands();
         }
         
         #endregion
 
         #region nonpublic methods
 
-        private void ScheduleMovement()
+        private void ScheduleMovementCommands()
         {
             if (m_MovementLocked || !m_MoveCommands.Any())
                 return;
@@ -92,7 +99,7 @@ namespace Games.RazorMaze.Models
             MoveCommand?.Invoke(cmd);
         }
 
-        private void ScheduleRotation()
+        private void ScheduleRotationCommands()
         {
             if (m_RotationLocked || !m_RotateCommands.Any())
                 return;
@@ -100,6 +107,15 @@ namespace Games.RazorMaze.Models
             m_RotateCommandsCount--;
             m_RotationLocked = true;
             RotateCommand?.Invoke(cmd);
+        }
+
+        private void ScheduleOtherCommands()
+        {
+            if (!m_OtherCommands.Any())
+                return;
+            var cmd = m_OtherCommands.Dequeue();
+            m_OtherCommandsCount--;
+            OtherCommand?.Invoke(cmd);
         }
         
         #endregion

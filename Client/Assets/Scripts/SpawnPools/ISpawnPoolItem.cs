@@ -1,8 +1,9 @@
 ﻿namespace SpawnPools
 {
-    public interface ISpawnPoolItem
+    public interface IActivated
     {
         bool Activated { get; set; }
-        //void Destroy();
     }
+    
+    public interface ISpawnPoolItem : IActivated { }
 }

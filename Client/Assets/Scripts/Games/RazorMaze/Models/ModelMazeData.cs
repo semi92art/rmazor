@@ -15,7 +15,7 @@ namespace Games.RazorMaze.Models
     {
         public V2Int Position { get; set; }
         public EMazeMoveDirection MoveDirection { get; set; }
-        public long HealthPoints { get; set; }
+        public bool Alive { get; set; }
     }
     
     public interface IModelMazeData : IPreInit
@@ -33,6 +33,7 @@ namespace Games.RazorMaze.Models
         bool ProceedingMazeItems { get; set; }
         bool ProceedingControls { get; set; }
         void OnGameLoopUpdate();
+        void RaiseMazeChanged();
     }
     
     public class ModelMazeData : IModelMazeData
@@ -91,6 +92,7 @@ namespace Games.RazorMaze.Models
         public bool ProceedingControls { get; set; }
         
         public void OnGameLoopUpdate() => GameLoopUpdate?.Invoke();
+        public void RaiseMazeChanged() => MazeChanged?.Invoke(Info);
 
         public MazeInfo Info
         {

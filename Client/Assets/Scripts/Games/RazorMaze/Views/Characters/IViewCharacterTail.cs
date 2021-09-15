@@ -1,10 +1,10 @@
 ﻿using Games.RazorMaze.Models;
+using SpawnPools;
 
 namespace Games.RazorMaze.Views.Characters
 {
-    public interface IViewCharacterTail
+    public interface IViewCharacterTail : IInit, IActivated
     {
-        void Init();
         void ShowTail(CharacterMovingEventArgs _Args);
         void HideTail(CharacterMovingEventArgs _Args);
     }

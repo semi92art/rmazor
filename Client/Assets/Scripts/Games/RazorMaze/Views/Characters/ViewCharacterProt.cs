@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Games.RazorMaze.Views.Characters
 {
-    public class ViewCharacterProt : IViewCharacter
+    public class ViewCharacterProt : ViewCharacterBase
     {
         #region nonpublic members
         
@@ -17,41 +17,25 @@ namespace Games.RazorMaze.Views.Characters
      
         #region inject
         
-        private ICoordinateConverter CoordinateConverter { get; }
-        private IModelMazeData ModelMazeData { get; }
-        private IContainersGetter ContainersGetter { get; }
-        private IViewMazeCommon ViewMazeCommon { get; }
-
         public ViewCharacterProt(
             ICoordinateConverter _CoordinateConverter, 
             IModelMazeData _ModelMazeData, 
             IContainersGetter _ContainersGetter,
             IViewMazeCommon _ViewMazeCommon)
-        {
-            CoordinateConverter = _CoordinateConverter;
-            ModelMazeData = _ModelMazeData;
-            ContainersGetter = _ContainersGetter;
-            ViewMazeCommon = _ViewMazeCommon;
-        }
+            : base(_CoordinateConverter, _ModelMazeData, _ContainersGetter, _ViewMazeCommon)
+        { }
         
         #endregion
         
         #region api
-
-        public event NoArgsHandler Initialized;
-
-        public void Init()
+        
+        public override void Init()
         {
-            CoordinateConverter.Init(ModelMazeData.Info.Size);
             InitShape(0.4f * CoordinateConverter.GetScale(), new Color(1f, 0.38f, 0f));
-            var pos = CoordinateConverter.ToLocalCharacterPosition(ModelMazeData.Info.Path[0]);
-            SetPosition(pos);
-            Initialized?.Invoke();
+            base.Init();
         }
-
-        public void OnMovingStarted(CharacterMovingEventArgs _Args) { }
-
-        public void OnMoving(CharacterMovingEventArgs _Args)
+        
+        public override void OnMoving(CharacterMovingEventArgs _Args)
         {
             var prevPos = CoordinateConverter.ToLocalCharacterPosition(_Args.From);
             var nextPos = CoordinateConverter.ToLocalCharacterPosition(_Args.To);
@@ -59,10 +43,6 @@ namespace Games.RazorMaze.Views.Characters
             SetPosition(pos);
         }
 
-        public void OnMovingFinished(CharacterMovingEventArgs _Args) { }
-
-        public void OnDeath() { }
-        
         #endregion
         
         #region nonpublic methods
@@ -76,11 +56,8 @@ namespace Games.RazorMaze.Views.Characters
             m_Shape.SortingOrder = 100;
         }
 
-        private void SetPosition(Vector2 _Position)
-        {
-            ContainersGetter.CharacterContainer.localPosition = _Position;
-        }
-        
         #endregion
+
+        
     }
 }

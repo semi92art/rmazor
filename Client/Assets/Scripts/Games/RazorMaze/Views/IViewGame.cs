@@ -22,5 +22,6 @@ namespace Games.RazorMaze.Views
         IViewMazePortalsGroup              PortalsGroup { get; }
         IViewMazeShredingerBlocksGroup     ShredingerBlocksGroup { get; }
         IViewMazeSpringboardItemsGroup     SpringboardItemsGroup { get; }
+        ICoordinateConverter               CoordinateConverter { get; }
     }
 }

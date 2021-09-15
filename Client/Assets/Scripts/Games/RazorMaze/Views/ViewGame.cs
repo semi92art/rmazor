@@ -23,6 +23,7 @@ namespace Games.RazorMaze.Views
         public IViewMazePortalsGroup PortalsGroup { get; }
         public IViewMazeShredingerBlocksGroup ShredingerBlocksGroup { get; }
         public IViewMazeSpringboardItemsGroup SpringboardItemsGroup { get; }
+        public ICoordinateConverter CoordinateConverter { get; }
 
         public ViewGame(
             IViewUI _UI,
@@ -37,7 +38,8 @@ namespace Games.RazorMaze.Views
             IViewMazeTurretsGroup _MazeTurretsGroup,
             IViewMazePortalsGroup _PortalsGroup,
             IViewMazeShredingerBlocksGroup _ShredingerBlocksGroup,
-            IViewMazeSpringboardItemsGroup _SpringboardItemsGroup)
+            IViewMazeSpringboardItemsGroup _SpringboardItemsGroup,
+            ICoordinateConverter _CoordinateConverter)
         {
             UI = _UI;
             InputConfigurator = _InputConfigurator;
@@ -52,6 +54,7 @@ namespace Games.RazorMaze.Views
             PortalsGroup = _PortalsGroup;
             ShredingerBlocksGroup = _ShredingerBlocksGroup;
             SpringboardItemsGroup = _SpringboardItemsGroup;
+            CoordinateConverter = _CoordinateConverter;
         }
         
         public event NoArgsHandler Initialized;

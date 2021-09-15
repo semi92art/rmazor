@@ -40,6 +40,8 @@ namespace Games.RazorMaze.Views.InputConfigurators
                 Command.Invoke((int)EInputCommand.RotateClockwise);
             else if (Input.GetKeyDown(KeyCode.Q))
                 Command.Invoke((int)EInputCommand.RotateCounterClockwise);
+            else if (Input.GetKeyDown(KeyCode.R))
+                Command.Invoke((int)EInputCommand.Restart);
         }
 
         #endregion

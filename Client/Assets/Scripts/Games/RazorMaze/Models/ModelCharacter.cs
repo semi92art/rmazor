@@ -33,7 +33,8 @@ namespace Games.RazorMaze.Models
         event CharacterMovingHandler CharacterMoveStarted;
         event CharacterMovingHandler CharacterMoveContinued;
         event CharacterMovingHandler CharacterMoveFinished;
-        event NoArgsHandler Death;
+        event BoolHandler AliveOrDeath;
+        event V2IntHandler PositionSet;
         void Move(EMazeMoveDirection _Direction);
         void OnPortal(PortalEventArgs _Args);
         void OnSpringboard(SpringboardEventArgs _Args);
@@ -52,11 +53,13 @@ namespace Games.RazorMaze.Models
 
         private ModelSettings Settings { get; }
         private IModelMazeData Data { get; }
+        private IInputScheduler InputScheduler { get; }
 
-        public ModelCharacter(ModelSettings _Settings, IModelMazeData _Data)
+        public ModelCharacter(ModelSettings _Settings, IModelMazeData _Data, IInputScheduler _InputScheduler)
         {
             Settings = _Settings;
             Data = _Data;
+            InputScheduler = _InputScheduler;
         }
         
         #endregion
@@ -66,12 +69,13 @@ namespace Games.RazorMaze.Models
         public event CharacterMovingHandler CharacterMoveStarted;
         public event CharacterMovingHandler CharacterMoveContinued;
         public event CharacterMovingHandler CharacterMoveFinished;
-        public event NoArgsHandler Death;
-        
+        public event BoolHandler AliveOrDeath;
+        public event V2IntHandler PositionSet;
+
 
         public void Init()
         {
-            Data.CharacterInfo.HealthPoints = 1;
+            Data.CharacterInfo.Alive = true;
             Initialized?.Invoke();
         }
 
@@ -80,6 +84,8 @@ namespace Games.RazorMaze.Models
         public void Move(EMazeMoveDirection _Direction)
         {
             if (!Data.ProceedingControls)
+                return;
+            if (!Data.CharacterInfo.Alive)
                 return;
             Data.CharacterInfo.MoveDirection = _Direction;
             var from = Data.CharacterInfo.Position;
@@ -91,6 +97,8 @@ namespace Games.RazorMaze.Models
         public void OnMazeChanged(MazeInfo _Info)
         {
             Data.CharacterInfo.Position = Data.Info.Path[0];
+            Revive();
+            PositionSet?.Invoke(Data.CharacterInfo.Position);
         }
 
         public void OnPortal(PortalEventArgs _Args)
@@ -117,7 +125,7 @@ namespace Games.RazorMaze.Models
 
         public void RaiseDeath()
         {
-            Death?.Invoke();
+            Die();
         }
 
         #endregion
@@ -198,9 +206,34 @@ namespace Games.RazorMaze.Models
                     CharacterMoveContinued?.Invoke(new CharacterMovingEventArgs(_From, _To, newPos, _Progress));
                 },
                 GameTimeProvider.Instance,
-                (_Stopped, _Progress) => CharacterMoveFinished?
-                    .Invoke(new CharacterMovingEventArgs(_From, _To, _To, _Progress)),
-                () => thisCount != m_Counter);
+                (_Stopped, _Progress) =>
+                {
+                    if (!_Stopped)
+                        CharacterMoveFinished?.Invoke(new CharacterMovingEventArgs(_From, _To, _To, _Progress));
+                },
+                () => thisCount != m_Counter || !Data.CharacterInfo.Alive);
+        }
+        
+        private void Revive()
+        {
+            if (Data.CharacterInfo.Alive)
+                return;
+            InputScheduler.UnlockMovement(true);
+            InputScheduler.UnlockRotation(true);
+            Data.CharacterInfo.Alive = true;
+            AliveOrDeath?.Invoke(true);
+        }
+        
+        private void Die()
+        {
+            if (!Data.CharacterInfo.Alive)
+                return;
+            Data.CharacterInfo.Alive = false;
+            InputScheduler.UnlockMovement(false);
+            InputScheduler.UnlockRotation(false);
+            AliveOrDeath?.Invoke(false);
+            
+            Dbg.Log("Character OnDeath");
         }
         
         #endregion

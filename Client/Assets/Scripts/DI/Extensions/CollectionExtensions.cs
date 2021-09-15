@@ -35,40 +35,26 @@ namespace Extensions
         {
             return _Items.All(_Collection.Contains);
         }
-
-        public static T Second<T>(this IEnumerable<T> _Collection)
-        {
-            using (var enumerator = _Collection.GetEnumerator())
-            {
-                MoveOnEnumerator(enumerator, 2);
-                return enumerator.Current;    
-            }
-        }
         
-        public static T Third<T>(this IEnumerable<T> _Collection)
-        {
-            using (var enumerator = _Collection.GetEnumerator())
-            {
-                MoveOnEnumerator(enumerator, 3);
-                return enumerator.Current;    
-            }
-        }
-        
-        public static T Fourth<T>(this IEnumerable<T> _Collection)
-        {
-            using (var enumerator = _Collection.GetEnumerator())
-            {
-                MoveOnEnumerator(enumerator, 4);
-                return enumerator.Current;    
-            }
-        }
-
         private static void MoveOnEnumerator<T>(IEnumerator<T> _Enumerator, int _Count)
         {
             foreach (var _ in Enumerable.Range(0, _Count))
             {
                 _Enumerator.MoveNext();
             }
+        }
+        
+        public static void Shuffle<T>(this IList<T> list)  
+        {  
+            var rng = new Random(); 
+            int n = list.Count;  
+            while (n > 1) {  
+                n--;  
+                int k = rng.Next(n + 1);  
+                T value = list[k];  
+                list[k] = list[n];  
+                list[n] = value;  
+            }  
         }
     }
 }

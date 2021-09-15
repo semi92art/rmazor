@@ -13,30 +13,27 @@ namespace Games.RazorMaze.Views.Characters
 {
     public class ViewCharacterTailSimple : IViewCharacterTail
     {
-
         #region nonpublic members
 
         private Triangle m_Tail;
         private bool m_Hiding;
+        private bool m_Activated;
         
         #endregion
         
         #region inject
 
-        private IModelMazeData Data { get; }
         private ICoordinateConverter CoordinateConverter { get; }
         private IContainersGetter ContainersGetter { get; }
         private ModelSettings ModelSettings { get; }
         private ITimeProvider GameTimeProvider { get; }
         
         public ViewCharacterTailSimple(
-            IModelMazeData _Data,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             ModelSettings _ModelSettings,
             IGameTimeProvider _GameTimeProvider)
         {
-            Data = _Data;
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
             ModelSettings = _ModelSettings;
@@ -44,6 +41,21 @@ namespace Games.RazorMaze.Views.Characters
         }
         
         #endregion
+        
+        #region api
+        
+        public event NoArgsHandler Initialized;
+
+        public bool Activated
+        {
+            get => m_Activated;
+            set
+            {
+                m_Activated = value;
+                if (!m_Tail.IsNull())
+                    m_Tail.enabled = value;
+            }
+        }
 
         public void Init()
         {
@@ -52,6 +64,7 @@ namespace Games.RazorMaze.Views.Characters
             m_Tail = go.AddComponent<Triangle>();
             m_Tail.Color = DrawingUtils.ColorCharacterTail;
             m_Tail.enabled = false;
+            Initialized?.Invoke();
         }
 
         public void ShowTail(CharacterMovingEventArgs _Args)
@@ -70,10 +83,11 @@ namespace Games.RazorMaze.Views.Characters
             m_Tail.gameObject.transform.SetPosXY(CoordinateConverter.GetCenter());
         }
 
-        public void HideTail(CharacterMovingEventArgs _Args)
-        {
-            Coroutines.Run(HideTailCoroutine(_Args));
-        }
+        public void HideTail(CharacterMovingEventArgs _Args) => Coroutines.Run(HideTailCoroutine(_Args));
+
+        #endregion
+
+        #region nonpublic methods
 
         private IEnumerator HideTailCoroutine(CharacterMovingEventArgs _Args)
         {
@@ -94,5 +108,7 @@ namespace Games.RazorMaze.Views.Characters
                 (_Breaked, _Progress) => m_Tail.enabled = false,
                 () => !m_Hiding);
         }
+
+        #endregion
     }
 }

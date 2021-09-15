@@ -89,10 +89,11 @@ namespace Games.RazorMaze.Controllers
             shredingerProceeder.ShredingerBlockEvent            += OnShredingerBlockEvent;
             springboardProceeder.SpringboardEvent               += OnSpringboardEvent;
 
-            character.Death                                     += OnCharacterDeath;
+            character.AliveOrDeath                              += OnCharacterAliveOrDeath;
             character.CharacterMoveStarted                      += OnCharacterMoveStarted;
             character.CharacterMoveContinued                    += OnCharacterMoveContinued;
             character.CharacterMoveFinished                     += OnCharacterMoveFinished;
+            character.PositionSet                               += OnCharacterPositionSet;
             
             levelStaging.LevelBeforeStarted                     += OnBeforeLevelStarted;
             levelStaging.LevelStarted                           += OnLevelStarted;
@@ -100,14 +101,17 @@ namespace Games.RazorMaze.Controllers
             
             View.InputConfigurator.Command                      += OnInputCommand;
             View.MazeCommon.GameLoopUpdate                      += OnGameLoopUpdate;
-            
-            
+
             Model.PreInitialized += () => PreInitialized?.Invoke();
             Model.PreInit();
         }
         
-        public void SetMazeInfo(MazeInfo _Info) => Model.Data.Info = _Info;
-        
+        public void SetMazeInfo(MazeInfo _Info)
+        {
+            View.CoordinateConverter.Init(_Info.Size);
+            Model.Data.Info = _Info;
+        }
+
         public void Init()
         {
             bool modelInitialized = false;
@@ -139,7 +143,7 @@ namespace Games.RazorMaze.Controllers
         private void OnGameLoopUpdate() => Model.Data.OnGameLoopUpdate();
         private void DataOnPathProceedEvent(V2Int _PathItem) => View.MazeCommon.OnPathProceed(_PathItem);
         private void OnInputCommand(int _Value) => Model.InputScheduler.AddCommand((EInputCommand)_Value);
-        private void OnCharacterDeath() => View.Character.OnDeath();
+        private void OnCharacterAliveOrDeath(bool _Alive) => View.Character.OnAliveOrDeath(_Alive);
         
         private void OnAllPathsProceededEvent()
         {
@@ -150,7 +154,8 @@ namespace Games.RazorMaze.Controllers
 
         private void OnCharacterMoveContinued(CharacterMovingEventArgs _Args) => View.Character.OnMoving(_Args);
         private void OnCharacterMoveFinished(CharacterMovingEventArgs _Args) => View.Character.OnMovingFinished(_Args);
-        
+        private void OnCharacterPositionSet(V2Int _Value) => View.Character.OnPositionSet(_Value);
+
         private void OnMazeRotationStarted(MazeRotateDirection _Direction, MazeOrientation _Orientation) => View.MazeRotation.StartRotation(_Direction, _Orientation);
         private void OnMazeRotation(float _Progress) => View.MazeRotation.Rotate(_Progress);
         private void OnMazeRotationFinished(MazeRotateDirection _Direction, MazeOrientation _Orientation) => View.MazeRotation.FinishRotation();
@@ -240,7 +245,7 @@ namespace Games.RazorMaze.Controllers
             shredingerProceeder.ShredingerBlockEvent            -= OnShredingerBlockEvent;
             springboardProceeder.SpringboardEvent               -= OnSpringboardEvent;
 
-            character.Death                                     -= OnCharacterDeath;
+            character.AliveOrDeath                                     -= OnCharacterAliveOrDeath;
             character.CharacterMoveStarted                      -= OnCharacterMoveStarted;
             character.CharacterMoveContinued                    -= OnCharacterMoveContinued;
             character.CharacterMoveFinished                     -= OnCharacterMoveFinished;
