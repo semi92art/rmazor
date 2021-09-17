@@ -31,7 +31,7 @@ namespace Games.RazorMaze.Editor
             m_GameId = _GameId;
             m_HeapIndex = _HeapIndex;
             var levels = m_LevelsSaver.LoadHeapLevels(_GameId, _HeapIndex).Levels;
-            m_List = new ReorderableList(levels, typeof(MazeInfo),false,true,false,false);
+            m_List = new ReorderableList(levels, typeof(MazeInfo),true,true,false,false);
             m_List.drawElementCallback = (_Rect, _Idx, _IsActive, _IsFocused) =>
             {
                 var elementColor = _IsFocused || m_SelectedIndexCheck == _Idx ? BackgroundSelectedColor : GetContentColor(_Idx);
@@ -57,6 +57,7 @@ namespace Games.RazorMaze.Editor
             m_List.drawElementBackgroundCallback = (_Rect, _Idx, _IsActive, _IsFocused) => GUI.contentColor = ContentColor;
             m_List.drawHeaderCallback = _Rect => EditorGUI.LabelField(_Rect, $"Levels in heap: {m_List.list.Count}");
             m_List.onSelectCallback = _List => m_SelectedIndexCheck = _List.index;
+            m_List.onChangedCallback += _List => Save();
         }
 
         public void DoLayoutList() => m_List.DoLayoutList();
