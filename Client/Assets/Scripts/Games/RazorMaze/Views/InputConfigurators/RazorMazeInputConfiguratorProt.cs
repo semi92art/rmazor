@@ -27,21 +27,35 @@ namespace Games.RazorMaze.Views.InputConfigurators
         {
             if (Locked || Command == null) 
                 return;
+            EInputCommand? commandKey = null;
             
             if (Input.GetKeyDown(KeyCode.A))
-                Command.Invoke((int)EInputCommand.MoveLeft);
+                commandKey = EInputCommand.MoveLeft;
             else if (Input.GetKeyDown(KeyCode.D))
-                Command.Invoke((int)EInputCommand.MoveRight);
+                commandKey = EInputCommand.MoveRight;
             else if (Input.GetKeyUp(KeyCode.W))
-                Command.Invoke((int)EInputCommand.MoveUp);
+                commandKey = EInputCommand.MoveUp;
             else if (Input.GetKeyDown(KeyCode.S))
-                Command.Invoke((int)EInputCommand.MoveDown);
+                commandKey = EInputCommand.MoveDown;
             else if (Input.GetKeyDown(KeyCode.E))
-                Command.Invoke((int)EInputCommand.RotateClockwise);
+                commandKey = EInputCommand.RotateClockwise;
             else if (Input.GetKeyDown(KeyCode.Q))
-                Command.Invoke((int)EInputCommand.RotateCounterClockwise);
+                commandKey = EInputCommand.RotateCounterClockwise;
+            else if (Input.GetKeyDown(KeyCode.L))
+                commandKey = EInputCommand.LoadLevel;
             else if (Input.GetKeyDown(KeyCode.R))
-                Command.Invoke((int)EInputCommand.Restart);
+                commandKey = EInputCommand.ReadyToContinueLevel;
+            else if (Input.GetKeyDown(KeyCode.C))
+                commandKey = EInputCommand.ContinueLevel;
+            else if (Input.GetKeyDown(KeyCode.P))
+                commandKey = EInputCommand.PauseLevel;
+            else if (Input.GetKeyDown(KeyCode.F))
+                commandKey = EInputCommand.FinishLevel;
+            else if (Input.GetKeyDown(KeyCode.U))
+                commandKey = EInputCommand.UnloadLevel;
+                
+            if (commandKey.HasValue)
+                Command.Invoke((int)commandKey.Value);
         }
 
         #endregion

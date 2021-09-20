@@ -2,6 +2,7 @@
 using System.Linq;
 using Exceptions;
 using Games.RazorMaze.Models.ItemProceeders;
+using Games.RazorMaze.Views;
 
 namespace Games.RazorMaze.Models
 {
@@ -79,18 +80,11 @@ namespace Games.RazorMaze.Models
 
         public void PreInit()
         {
-            foreach (var proceeder in GetInterfaceOfProceeders<IItemsProceeder>())
-            {
-                Data.MazeItemsProceedStarted += proceeder.Start;
-                Data.MazeItemsProceedStopped += proceeder.Stop;
-            }
-            
             foreach (var item in GetInterfaceOfProceeders<IOnGameLoopUpdate>())
                 Data.GameLoopUpdate += item.OnGameLoopUpdate;
             
-            Data.MazeChanged                           += MazeOnMazeChanged;
             MazeRotation.RotationFinished              += MazeOnRotationFinished;
-            Character.AliveOrDeath                            += OnCharacterAliveOrDeath;
+            Character.AliveOrDeath                     += OnCharacterAliveOrDeath;
             Character.CharacterMoveStarted             += CharacterOnMoveStarted;
             Character.CharacterMoveContinued           += CharacterOnMoveContinued;
             Character.CharacterMoveFinished            += CharacterOnFinishMove; 
@@ -100,6 +94,7 @@ namespace Games.RazorMaze.Models
             PortalsProceeder.PortalEvent               += Character.OnPortal;
             SpringboardProceeder.SpringboardEvent      += Character.OnSpringboard;
             PathItemsProceeder.AllPathsProceededEvent  += AllPathsProceededEvent;
+            LevelStaging.LevelStageChanged += LevelStageChanged;
             
             Data.PreInitialized += () => PreInitialized?.Invoke();
             Data.PreInit();
@@ -113,23 +108,15 @@ namespace Games.RazorMaze.Models
         
         #endregion
 
-        #region nonpublic methods
-
+        #region event methods
         
         private void OnCharacterAliveOrDeath(bool _Alive)
         {
             if (!_Alive)
-                LevelStaging.FinishLevel(false);
+                LevelStaging.FinishLevel();
         }
 
-        private void AllPathsProceededEvent() => LevelStaging.FinishLevel(true);
-
-        private void MazeOnMazeChanged(MazeInfo _Info)
-        {
-            var proceeders = GetInterfaceOfProceeders<IOnMazeChanged>();
-            foreach (var proceeder in proceeders)
-                proceeder.OnMazeChanged(_Info);
-        }
+        private void AllPathsProceededEvent() => LevelStaging.FinishLevel();
 
         private void MazeOnRotationFinished(MazeRotateDirection _Direction, MazeOrientation _Orientation)
         {
@@ -150,6 +137,17 @@ namespace Games.RazorMaze.Models
         }
         
         private void CharacterOnFinishMove(CharacterMovingEventArgs _Args) => InputScheduler.UnlockMovement(true);
+        
+        private void LevelStageChanged(LevelStageArgs _Args)
+        {
+            var proceeders = GetInterfaceOfProceeders<IOnLevelStageChanged>();
+            foreach (var proceeder in proceeders)
+                proceeder.OnLevelStageChanged(_Args);
+        }
+        
+        #endregion
+        
+        #region nonpublic methods
         
         private void InputSchedulerOnMoveCommand(EInputCommand _Command)
         {
@@ -184,8 +182,18 @@ namespace Games.RazorMaze.Models
         
         private void InputSchedulerOnOtherCommand(EInputCommand _Command)
         {
-            if (_Command == EInputCommand.Restart)
-                Data.RaiseMazeChanged();
+            if (_Command == EInputCommand.LoadLevel)
+                LevelStaging.LoadLevel(Data.Info, Data.LevelIndex);
+            else if (_Command == EInputCommand.ReadyToContinueLevel)
+                LevelStaging.ReadyToContinueLevel();
+            else if (_Command == EInputCommand.ContinueLevel)
+                LevelStaging.ContinueLevel();
+            else if (_Command == EInputCommand.FinishLevel)
+                LevelStaging.FinishLevel();
+            else if (_Command == EInputCommand.PauseLevel)
+                LevelStaging.PauseLevel();
+            else if (_Command == EInputCommand.UnloadLevel)
+                LevelStaging.UnloadLevel();
         }
         
         private List<T> GetInterfaceOfProceeders<T>() where T : class

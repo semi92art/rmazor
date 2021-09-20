@@ -1,48 +1,72 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Entities;
+using Exceptions;
 using Games.RazorMaze.Models.ProceedInfos;
+using Games.RazorMaze.Views;
 
 namespace Games.RazorMaze.Models.ItemProceeders
 {
-    public interface IItemsProceeder
-    {
-        void Start();
-        void Stop();
-    }
-    
+    public interface IItemsProceeder : IOnLevelStageChanged
+    { }
+
     public abstract class ItemsProceederBase : IItemsProceeder
     {
+        #region constants
+
+        public const int StageIdle = 0; 
+        
+        #endregion
+        
         #region nonpublic members
         
+        protected IMazeItemProceedInfo KillerProceedInfo { get; set; }
         protected abstract EMazeItemType[] Types { get; }
-        
-        protected bool m_Proceeding;
         protected ModelSettings Settings { get; }
         protected IModelMazeData Data { get; }
-        
+        protected IModelCharacter Character { get; }
+
         #endregion
 
         #region api
-
-        public virtual void Start() => m_Proceeding = true;
-        public virtual void Stop() => m_Proceeding = false;
+        
+        public virtual void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            switch (_Args.Stage)
+            {
+                case ELevelStage.Loaded:
+                    CollectItems(Data.Info); break;
+                case ELevelStage.Started:
+                case ELevelStage.Continued:
+                    StartProceed(true, true); break;
+                case ELevelStage.ReadyToContinue:
+                    StartProceed(true, true); break;
+                case ELevelStage.Paused:
+                case ELevelStage.Finished:
+                case ELevelStage.Unloaded:
+                    StartProceed(false); break;
+                default:
+                    throw new SwitchCaseNotImplementedException(_Args.Stage);
+            }
+        }
         
         #endregion
         
         #region nonpublic methods
         
-        protected ItemsProceederBase(ModelSettings _Settings, IModelMazeData _Data)
+        protected ItemsProceederBase(ModelSettings _Settings, IModelMazeData _Data, IModelCharacter _Character)
         {
             Settings = _Settings;
             Data = _Data;
+            Character = _Character;
         }
 
         protected void CollectItems(MazeInfo _Info)
         {
             var newInfos = _Info.MazeItems
                 .Where(_Item => Types.Contains(_Item.Type))
-                .Select(_Item => new MazeItemMovingProceedInfo
+                .Select(_Item => new MazeItemProceedInfo
                 {
                     Item = _Item,
                     MoveByPathDirection = EMazeItemMoveByPathDirection.Forward,
@@ -65,9 +89,25 @@ namespace Games.RazorMaze.Models.ItemProceeders
             }
         }
 
-        protected Dictionary<MazeItem, IMazeItemProceedInfo> GetProceedInfos(EMazeItemType _Type)
+        protected Dictionary<MazeItem, IMazeItemProceedInfo> GetProceedInfos(IEnumerable<EMazeItemType> _Types)
         {
-            return Data.ProceedInfos[_Type];
+            return _Types.SelectMany(_Type => Data.ProceedInfos[_Type]).ToDictionary(
+                _Kvp => _Kvp.Key,
+                _Kvp => _Kvp.Value);
+        }
+
+        private void StartProceed(bool _Proceed, bool? _ProceedKillerInfoIfTrue = null)
+        {
+            var infos = GetProceedInfos(Types);
+            foreach (var info in infos)
+            {
+                info.Value.IsProceeding = _Proceed;
+            }
+            if (_ProceedKillerInfoIfTrue.HasValue && !_ProceedKillerInfoIfTrue.Value && KillerProceedInfo != null)
+            {
+                KillerProceedInfo.IsProceeding = false;
+                KillerProceedInfo = null;
+            }
         }
         
         #endregion

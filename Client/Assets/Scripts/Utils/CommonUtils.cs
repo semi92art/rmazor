@@ -17,7 +17,6 @@ namespace Utils
     {
         public const float SymbolWidth = 19;
         public static readonly System.Random RandomGen = new System.Random();
-        public static bool Testing = false;
 
 #if UNITY_ANDROID
         public static int GetAndroidSdkLevel() 

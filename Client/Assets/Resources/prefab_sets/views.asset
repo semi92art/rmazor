@@ -33,3 +33,6 @@ MonoBehaviour:
     - item: {fileID: 5059098813564520511, guid: 29946a834dfc30b458505c36c553b042,
         type: 3}
       name: trap_increasing
+    - item: {fileID: 1560829925993726868, guid: c2c1f5da866cb11419b2a869e97445e1,
+        type: 3}
+      name: character_death

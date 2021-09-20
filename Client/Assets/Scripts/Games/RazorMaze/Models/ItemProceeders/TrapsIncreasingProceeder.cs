@@ -4,6 +4,7 @@ using System.Linq;
 using Entities;
 using Games.RazorMaze.Models.ProceedInfos;
 using TimeProviders;
+using UnityEngine;
 using Utils;
 
 namespace Games.RazorMaze.Models.ItemProceeders
@@ -24,7 +25,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
     
     public delegate void MazeItemTrapIncreasingEventHandler(MazeItemTrapIncreasingEventArgs Args);
     
-    public interface ITrapsIncreasingProceeder : IOnMazeChanged, ICharacterMoveContinued
+    public interface ITrapsIncreasingProceeder : IItemsProceeder, ICharacterMoveContinued
     {
         event MazeItemTrapIncreasingEventHandler TrapIncreasingStageChanged;
     }
@@ -33,22 +34,30 @@ namespace Games.RazorMaze.Models.ItemProceeders
     {
         #region constants
         
-        public const int StageIdle = 0;
         public const int StageIncreased = 1;
         
         #endregion
         
         #region nonpublic members
         
-        private V2Int m_CharacterPosCheck;
+        // private V2Int m_CharacterPosCheck;
         protected override EMazeItemType[] Types => new[] {EMazeItemType.TrapIncreasing};
 
         #endregion
         
         #region inject
         
-        public TrapsIncreasingProceeder(ModelSettings _Settings, IModelMazeData _Data) 
-            : base(_Settings, _Data) { }
+        private IGameTimeProvider GameTimeProvider { get; }
+        
+        public TrapsIncreasingProceeder(
+            ModelSettings _Settings,
+            IModelMazeData _Data,
+            IModelCharacter _Character,
+            IGameTimeProvider _GameTimeProvider) 
+            : base(_Settings, _Data, _Character)
+        {
+            GameTimeProvider = _GameTimeProvider;
+        }
 
         #endregion
         
@@ -56,22 +65,18 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         public event MazeItemTrapIncreasingEventHandler TrapIncreasingStageChanged;
         
-        public void OnMazeChanged(MazeInfo _Info)
-        {
-            CollectItems(_Info);
-        }
-        
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
-            if (!Data.ProceedingMazeItems)
-                return;
-            var addictRaw = (_Args.To.ToVector2() - _Args.From.ToVector2()) * _Args.Progress;
-            var addict = new V2Int(addictRaw);
-            var newPos = _Args.From + addict;
-            if (m_CharacterPosCheck == newPos)
-                return;
-            m_CharacterPosCheck = newPos;
-            ProceedTraps();
+            // FIXME возможно лишнее
+            // if (!Data.ProceedingMazeItems)
+            //     return;
+            // var addictRaw = (_Args.To.ToVector2() - _Args.From.ToVector2()) * _Args.Progress;
+            // var addict = new V2Int(addictRaw);
+            // var newPos = _Args.From + addict;
+            // if (m_CharacterPosCheck == newPos)
+            //     return;
+            // m_CharacterPosCheck = newPos;
+            // ProceedTraps();
         }
         
         public void OnGameLoopUpdate()
@@ -85,30 +90,33 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         private void ProceedTraps()
         {
-            foreach (var type in Types)
+            var infos = GetProceedInfos(Types).Values;
+            foreach (var info in infos
+                .Where(_Info => _Info.IsProceeding && _Info.ReadyToSwitchStage))
             {
-                var infos = GetProceedInfos(type);
-                foreach (var info in infos.Values.Where(_Info => !_Info.IsProceeding))
-                {
-                    info.IsProceeding = true;
-                    Coroutines.Run(ProceedTrap(info));
-                }
+                Coroutines.Run(ProceedTrap(info));
+            }
+            
+            foreach (var info in infos
+                .Where(_Info => _Info.IsProceeding && _Info.ProceedingStage == StageIncreased))
+            {
+                CheckForCharacterDeath(info, info.Item.Position);
             }
         }
         
         private IEnumerator ProceedTrap(IMazeItemProceedInfo _Info)
         {
-            _Info.IsProceeding = true;
             _Info.ProceedingStage = _Info.ProceedingStage == StageIdle ? StageIncreased : StageIdle;
+            _Info.ReadyToSwitchStage = false;
             float duration = GetStageDuration(_Info.ProceedingStage); 
-            float time = GameTimeProvider.Instance.Time;
+            float time = GameTimeProvider.Time;
             yield return Coroutines.WaitWhile(
-                () => time + duration > GameTimeProvider.Instance.Time,
+                () => time + duration > GameTimeProvider.Time,
                 () =>
                 {
                     TrapIncreasingStageChanged?.Invoke(
                     new MazeItemTrapIncreasingEventArgs(_Info.Item, _Info.ProceedingStage, duration));
-                    _Info.IsProceeding = false;
+                    _Info.ReadyToSwitchStage = true;
                 });
         }
         
@@ -122,6 +130,31 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     return Settings.trapIncreasingIncreasedTime;
                 default: return 0;
             }
+        }
+
+        private void CheckForCharacterDeath(IMazeItemProceedInfo _Info, V2Int _Position)
+        {
+            if (!Character.Alive)
+                return;
+            if (_Info.ProceedingStage != StageIncreased)
+                return;
+            var positions = new[]
+            {
+                _Position + V2Int.down,
+                _Position + V2Int.up,
+                _Position + V2Int.left,
+                _Position + V2Int.right,
+                _Position + V2Int.down + V2Int.left,
+                _Position + V2Int.down + V2Int.right,
+                _Position + V2Int.up + V2Int.left,
+                _Position + V2Int.up + V2Int.right
+            }.Select(_P => _P.ToVector2());
+            var cPos = Character.IsMoving ? 
+                Character.MovingInfo.PrecisePosition : Character.Position.ToVector2();
+            if (positions.Any(_P => Vector2.Distance(_P, cPos) + RazorMazeUtils.Epsilon > 1f)) 
+                return;
+            KillerProceedInfo = _Info;
+            Character.RaiseDeath();
         }
 
         #endregion

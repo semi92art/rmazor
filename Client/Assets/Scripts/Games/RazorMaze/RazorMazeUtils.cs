@@ -12,6 +12,8 @@ namespace Games.RazorMaze
     public static class RazorMazeUtils
     {
         #region api
+
+        public const float Epsilon = 1e-5f; 
         
         public static List<MazeItem> GetBlockMazeItems(IEnumerable<MazeItem> _Items)
         {
@@ -25,17 +27,11 @@ namespace Games.RazorMaze
                 || _Item.Type == EMazeItemType.ShredingerBlock).ToList();
         }
 
-        public static bool IsValidPositionForMove(MazeInfo _Info, MazeItem _MazeItem, V2Int _Position)
+        public static bool IsValidPositionForMove(MazeInfo _Info, V2Int _Position)
         {
             bool isOnNode = _Info.Path.Any(_N => _N == _Position);
             var blockItems = GetBlockMazeItems(_Info.MazeItems);
             bool isOnBlockItem = blockItems.Any(_N => _N.Position == _Position);
-
-            if ((!isOnNode || isOnBlockItem) && _MazeItem.Type == EMazeItemType.GravityTrap)
-            {
-                Dbg.Log($"isOnNode: {isOnNode}, isOnBlockItem: {isOnBlockItem}");
-            }
-            
             return isOnNode && !isOnBlockItem;
         }
         

@@ -1,5 +1,5 @@
 ﻿namespace Games.RazorMaze.Views.Common
 {
-    public interface IViewMazeTransitioner : IOnLevelStaging
+    public interface IViewMazeTransitioner : IOnLevelStageChanged
     { }
 }

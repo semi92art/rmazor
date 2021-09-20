@@ -115,14 +115,16 @@ namespace Utils.Editor
             EditorGUILayout.EndScrollView();
         }
 
-        public static void DrawUiLine(Color _C, int _Thickness = 2, int _Padding = 10)
+        public static void HorizontalLine(Color? _C = null, int _Thickness = 2, int _Padding = 10)
         {
-            Rect r = EditorGUILayout.GetControlRect(GUILayout.Height(_Padding+_Thickness));
+            if (_C == null)
+                _C = Color.gray;
+            var r = EditorGUILayout.GetControlRect(GUILayout.Height(_Padding+_Thickness));
             r.height = _Thickness;
             r.y += _Padding * 0.5f;
             r.x -= 2;
             r.width += 6;
-            EditorGUI.DrawRect(r, _C);
+            EditorGUI.DrawRect(r, _C.Value);
         }
 
         public static void HorizontalZone(UnityAction _Action)

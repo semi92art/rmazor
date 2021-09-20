@@ -1,6 +1,6 @@
 ﻿namespace Games.RazorMaze.Models.ProceedInfos
 {
-    public class MazeItemTrapReactProceedInfo : MazeItemProceedInfoBase
+    public class MazeItemTrapReactProceedInfo : MazeItemProceedInfo
     {
         
     }

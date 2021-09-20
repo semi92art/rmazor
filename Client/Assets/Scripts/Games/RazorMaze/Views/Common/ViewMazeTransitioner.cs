@@ -16,27 +16,15 @@ namespace Games.RazorMaze.Views.Common
         
         #region api
         
+        public void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            // TODO
+        }
+        
         #endregion
 
         #region nonpublic methods
 
-        public void OnBeforeLevelStarted(LevelStateChangedArgs _Args, UnityAction _StartLevel)
-        {
-            
-        }
-
-        public void OnLevelStarted(LevelStateChangedArgs _Args)
-        {
-            AppearAllMazeItems();
-        }
-
-        public void OnLevelFinished(LevelFinishedEventArgs _Args, UnityAction _Finish)
-        {
-            DisappearAllMazeItems();
-        }
-
-        #endregion
-        
         private void AppearAllMazeItems()
         {
             // TODO
@@ -46,5 +34,10 @@ namespace Games.RazorMaze.Views.Common
         {
             // TODO
         }
+
+        #endregion
+
+
+
     }
 }

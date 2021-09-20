@@ -9,38 +9,32 @@ using Zenject;
 
 namespace Games.RazorMaze.Controllers
 {
-    public interface IGameManager : IInit, IPreInit, IPostInit { }
-    
-    public class RazorMazeGameController : MonoBehaviour, IGameManager
+    public interface IGameController : IInit, IPreInit, IPostInit
     {
-        #region singleton
-
-        private static RazorMazeGameController _instance;
-
-        public static RazorMazeGameController Instance
+        IModelGame Model { get; }
+        IViewGame View { get; }
+    }
+    
+    public class RazorMazeGameController : MonoBehaviour, IGameController
+    {
+        #region factory
+        
+        public static IGameController CreateInstance()
         {
-            get
-            {
-                if (_instance != null) return _instance;
-                var go = CommonUtils.FindOrCreateGameObject("Game Manager", out bool _WasFound);
-                _instance = _WasFound ? go.GetComponent<RazorMazeGameController>() : go.AddComponent<RazorMazeGameController>();
-                return _instance;
-            }
+            var go = CommonUtils.FindOrCreateGameObject("Game Manager", out bool _WasFound);
+            var instance = _WasFound ? go.GetComponent<RazorMazeGameController>() 
+                : go.AddComponent<RazorMazeGameController>();
+            return instance;
         }
 
         #endregion
 
         #region inject
         
-        private IModelGame           Model { get; set; }
-        private IViewGame            View { get; set; }
-        
-        [Inject]
-        public void Inject(IModelGame _ModelGame, IViewGame _ViewGame)
-        {
-            Model = _ModelGame;
-            View = _ViewGame;
-        }
+        public IModelGame Model { get; private set; }
+        public IViewGame  View { get; private set; }
+
+        [Inject] public void Inject(IModelGame _Model, IViewGame _View) => (Model, View) = (_Model, _View);
         
         #endregion
         
@@ -68,7 +62,6 @@ namespace Games.RazorMaze.Controllers
             var levelStaging                                    = Model.LevelStaging;
             
             pathItemsProceeder.PathProceedEvent                 += DataOnPathProceedEvent;
-            pathItemsProceeder.AllPathsProceededEvent           += OnAllPathsProceededEvent;
             
             rotation.RotationStarted                            += OnMazeRotationStarted;
             rotation.Rotation                                   += OnMazeRotation;
@@ -95,9 +88,7 @@ namespace Games.RazorMaze.Controllers
             character.CharacterMoveFinished                     += OnCharacterMoveFinished;
             character.PositionSet                               += OnCharacterPositionSet;
             
-            levelStaging.LevelBeforeStarted                     += OnBeforeLevelStarted;
-            levelStaging.LevelStarted                           += OnLevelStarted;
-            levelStaging.LevelFinished                          += OnLevelFinished;
+            levelStaging.LevelStageChanged                      += OnLevelStageChanged;
             
             View.InputConfigurator.Command                      += OnInputCommand;
             View.MazeCommon.GameLoopUpdate                      += OnGameLoopUpdate;
@@ -105,7 +96,7 @@ namespace Games.RazorMaze.Controllers
             Model.PreInitialized += () => PreInitialized?.Invoke();
             Model.PreInit();
         }
-        
+
         public void SetMazeInfo(MazeInfo _Info)
         {
             View.CoordinateConverter.Init(_Info.Size);
@@ -133,7 +124,6 @@ namespace Games.RazorMaze.Controllers
         public void PostInit()
         {
             Model.Data.ProceedingControls = true;
-            Model.Data.ProceedingMazeItems = true;
         }
 
         #endregion
@@ -143,15 +133,9 @@ namespace Games.RazorMaze.Controllers
         private void OnGameLoopUpdate() => Model.Data.OnGameLoopUpdate();
         private void DataOnPathProceedEvent(V2Int _PathItem) => View.MazeCommon.OnPathProceed(_PathItem);
         private void OnInputCommand(int _Value) => Model.InputScheduler.AddCommand((EInputCommand)_Value);
-        private void OnCharacterAliveOrDeath(bool _Alive) => View.Character.OnAliveOrDeath(_Alive);
-        
-        private void OnAllPathsProceededEvent()
-        {
-            //TODO
-        }
+        private void OnCharacterAliveOrDeath(bool _Alive) => View.Character.OnRevivalOrDeath(_Alive);
 
         private void OnCharacterMoveStarted(CharacterMovingEventArgs _Args) => View.Character.OnMovingStarted(_Args);
-
         private void OnCharacterMoveContinued(CharacterMovingEventArgs _Args) => View.Character.OnMoving(_Args);
         private void OnCharacterMoveFinished(CharacterMovingEventArgs _Args) => View.Character.OnMovingFinished(_Args);
         private void OnCharacterPositionSet(V2Int _Value) => View.Character.OnPositionSet(_Value);
@@ -185,27 +169,11 @@ namespace Games.RazorMaze.Controllers
         #endregion
     
         #region nonpublic methods
-
-        protected virtual void OnBeforeLevelStarted(LevelStateChangedArgs _Args)
+        
+        private void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            View.UI?.OnBeforeLevelStarted(_Args, () => Model.LevelStaging.StartLevel());
-            View.MazeTransitioner?.OnBeforeLevelStarted(_Args, () => { /*TODO*/});
-        }
-
-        protected virtual void OnLevelStarted(LevelStateChangedArgs _Args)
-        {
-            View.UI?.OnLevelStarted(_Args);
-            View.MazeTransitioner.OnLevelStarted(_Args);
-        }
-
-        protected virtual void OnLevelFinished(LevelFinishedEventArgs _Args)
-        {
-            View.UI?.OnLevelFinished(_Args, () =>
-                {
-                    Model.LevelStaging.Level++;
-                    Model.LevelStaging.BeforeStartLevel();
-                });
-            View.MazeTransitioner.OnLevelFinished(_Args, () => { /*TODO*/});
+            View.UI.OnLevelStageChanged(_Args);
+            View.MazeTransitioner.OnLevelStageChanged(_Args);
         }
         
         #endregion
@@ -245,14 +213,12 @@ namespace Games.RazorMaze.Controllers
             shredingerProceeder.ShredingerBlockEvent            -= OnShredingerBlockEvent;
             springboardProceeder.SpringboardEvent               -= OnSpringboardEvent;
 
-            character.AliveOrDeath                                     -= OnCharacterAliveOrDeath;
+            character.AliveOrDeath                              -= OnCharacterAliveOrDeath;
             character.CharacterMoveStarted                      -= OnCharacterMoveStarted;
             character.CharacterMoveContinued                    -= OnCharacterMoveContinued;
             character.CharacterMoveFinished                     -= OnCharacterMoveFinished;
-            
-            levelStaging.LevelBeforeStarted                     -= OnBeforeLevelStarted;
-            levelStaging.LevelStarted                           -= OnLevelStarted;
-            levelStaging.LevelFinished                          -= OnLevelFinished;
+
+            levelStaging.LevelStageChanged                      -= OnLevelStageChanged;
             
             View.InputConfigurator.Command                      -= OnInputCommand;
         }

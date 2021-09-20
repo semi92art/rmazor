@@ -1,4 +1,5 @@
-﻿using Games.RazorMaze;
+﻿using GameHelpers;
+using Games.RazorMaze;
 using Ticker;
 using Zenject;
 

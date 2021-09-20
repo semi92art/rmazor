@@ -134,8 +134,6 @@ public class EditorHelper : EditorWindow
             if (GUILayout.Button("Set Game Id:"))
                 SaveUtils.PutValue(SaveKey.GameId, m_GameId);
             m_GameId = EditorGUILayout.IntField(m_GameId);
-            EditorUtilsEx.GuiButtonAction("Start Level:", GameLoader.LoadLevel, m_Level);
-            m_Level = EditorGUILayout.IntField(m_Level);
             GUILayout.EndHorizontal();
             
             GUILayout.BeginHorizontal();
@@ -143,7 +141,7 @@ public class EditorHelper : EditorWindow
             EditorUtilsEx.GuiButtonAction("Continue game", PauseGame, false);
             GUILayout.EndHorizontal();
             
-            EditorUtilsEx.DrawUiLine(Color.gray);
+            EditorUtilsEx.HorizontalLine(Color.gray);
             GUI.enabled = true;
 
             GUILayout.BeginHorizontal();
@@ -171,7 +169,7 @@ public class EditorHelper : EditorWindow
                 m_Quality, new[] { "Normal", "Good" });
             GUILayout.EndHorizontal();
             
-            EditorUtilsEx.DrawUiLine(Color.gray);
+            EditorUtilsEx.HorizontalLine(Color.gray);
 
             GUILayout.BeginHorizontal();
             EditorUtilsEx.GuiButtonAction(SceneNames.Preload, LoadScene, $"Assets/Scenes/{SceneNames.Preload}.unity");
@@ -336,7 +334,7 @@ public class EditorHelper : EditorWindow
 
     private void CreateTestUsers(int _Count)
     {
-        CommonUtils.Testing = true;
+        CommonData.Testing = true;
         GameClient.Instance.Init();
         int gameId = 1;
         for (int i = 0; i < _Count; i++)
@@ -369,7 +367,7 @@ public class EditorHelper : EditorWindow
 
     private static void DeleteTestUsers()
     {
-        CommonUtils.Testing = true;
+        CommonData.Testing = true;
         GameClient.Instance.Init();
         IPacket packet = new DeleteTestUsersPacket();
         packet.OnSuccess(() =>

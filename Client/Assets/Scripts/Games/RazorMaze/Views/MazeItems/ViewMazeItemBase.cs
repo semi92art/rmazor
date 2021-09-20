@@ -10,6 +10,7 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         #region nonpublic members
         
+        protected bool Initialized { get; private set; }
         protected bool m_Activated;
         private bool m_Proceeding;
         
@@ -65,6 +66,7 @@ namespace Games.RazorMaze.Views.MazeItems
             Props = _Props;
             SetShape();
             Ticker.Register(this);
+            Initialized = true;
         }
 
         public bool Equal(MazeItem _MazeItem)

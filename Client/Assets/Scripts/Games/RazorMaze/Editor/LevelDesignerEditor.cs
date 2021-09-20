@@ -31,6 +31,7 @@ namespace Games.RazorMaze.Editor
         private Vector2 m_HeapScroll;
         private int m_LevelIndex;
         private int m_TabPage;
+        private GUIStyle headerStyle;
         
         #endregion
 
@@ -47,17 +48,20 @@ namespace Games.RazorMaze.Editor
         {
             if (SceneManager.GetActiveScene().name != SceneNames.Prototyping)
                 return;
-
-            _heapIndex = 1;
-
+            if (ReorderableLevels == null)
+                (_heapIndex, _heapIndexCheck) = (1, 0);
             m_Des = LevelDesigner.Instance;
-            ReloadReorderableLevels();
         }
 
         private void OnBecameVisible()
         {
-            if (ReorderableLevels == null)
-                ReloadReorderableLevels();
+            headerStyle = new GUIStyle
+            {
+                fontSize = 15,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleCenter,
+                normal = {textColor = GUI.contentColor}
+            };
         }
         
         private void OnFocus()
@@ -113,7 +117,7 @@ namespace Games.RazorMaze.Editor
         {
             if (_LevelIndex == -1)
                 return;
-            var info = m_Des.GetLevelInfoFromScene(false);
+            var info = m_Des.GetLevelInfoFromScene();
             ReorderableLevels.Save(info, _LevelIndex);
         }
 
@@ -169,7 +173,19 @@ namespace Games.RazorMaze.Editor
         {
             if (SceneManager.GetActiveScene().name != SceneNames.Prototyping)
                 return;
-            
+            ShowRandomMazeGeneratorZone();
+            EditorUtilsEx.HorizontalLine(Color.gray);
+            ShowHeapZone();
+        }
+
+        private void ShowFixUtilsTabPage()
+        {
+            EditorUtilsEx.GuiButtonAction("Fix Paths", LevelDesignerFixUtils.FixPaths);
+        }
+
+        private void ShowRandomMazeGeneratorZone()
+        {
+            GUILayout.Label("Random Maze Generator", headerStyle);
             EditorUtilsEx.HorizontalZone(() =>
             {
                 GUILayout.Label("Size:", GUILayout.Width(35));
@@ -183,29 +199,46 @@ namespace Games.RazorMaze.Editor
             EditorUtilsEx.HorizontalZone(() =>
             {
                 GUILayout.Label("Path lengths:", GUILayout.Width(80));
-                m_Des.pathLengths = EditorGUILayout.TextField(m_Des.pathLengths, GUILayout.Width(100));
+                m_Des.pathLengths = EditorGUILayout.TextField(m_Des.pathLengths);
                 EditorUtilsEx.GuiButtonAction("Default", () => m_Des.pathLengths = "1,2,3", GUILayout.Width(60));
             });
             EditorUtilsEx.HorizontalZone(() =>
             {
-                EditorUtilsEx.GuiButtonAction("Create", CreateLevel, GUILayout.Width(50));
-                EditorUtilsEx.GuiButtonAction("Create Default", CreateDefault, GUILayout.Width(100));
-                EditorUtilsEx.GuiButtonAction("Check for validity", CheckForValidity, GUILayout.Width(120));
-                
-                EditorUtilsEx.GUIColorZone(m_Des.valid ? Color.green : Color.red, 
+                EditorUtilsEx.GuiButtonAction("Create", CreateLevel);
+                EditorUtilsEx.GuiButtonAction("Create Default", CreateDefault);
+
+            });
+            EditorUtilsEx.HorizontalZone(() =>
+            {
+                EditorUtilsEx.GuiButtonAction("Check validity", () =>
+                {
+                    var info = m_Des.GetLevelInfoFromScene();
+                    m_Des.valid = LevelAnalizator.IsValid(info, false);
+                }, GUILayout.Width(120));
+                EditorUtilsEx.GUIColorZone(m_Des.valid ?
+                        new Color(0.37f, 1f, 0.4f) : new Color(1f, 0.32f, 0.31f), 
                     () => GUILayout.Label($"Level is {(m_Des.valid ? "" : "not ")}valid"));
             });
+        }
+        
+        private void ShowHeapZone()
+        {
+            GUILayout.Label("Heap", headerStyle);
             EditorUtilsEx.HorizontalZone(() =>
             {
                 GUILayout.Label("Heap:");
                 _heapIndex = 1 + EditorGUILayout.Popup(_heapIndex - 1,
                     Enumerable.Range(1, 10)
-                        .Select(_Idx => _Idx.ToString()).ToArray());
+                        .Select(_Idx =>
+                        {
+                            string str = $"{_Idx}";
+                            if (_Idx == 1)
+                                return str + " (Release)";
+                            return str;
+                        }).ToArray());
             });
-            
             if (_heapIndex != _heapIndexCheck)
                 ReloadReorderableLevels(true);
-            
             _heapIndexCheck = _heapIndex;
             EditorUtilsEx.HorizontalZone(() =>
             {
@@ -214,17 +247,6 @@ namespace Games.RazorMaze.Editor
                 EditorUtilsEx.GuiButtonAction("Delete", ReorderableLevels.Delete, ReorderableLevels.Index);
                 EditorUtilsEx.GuiButtonAction("Add Empty", AddEmptyLevel);
             });
-            
-            ShowHeap();
-        }
-
-        private void ShowFixUtilsTabPage()
-        {
-            EditorUtilsEx.GuiButtonAction("Fix Paths", LevelDesignerFixUtils.FixPaths);
-        }
-        
-        private void ShowHeap()
-        {
             EditorUtilsEx.ScrollViewZone(ref m_HeapScroll, () => ReorderableLevels.DoLayoutList());
         }
         
@@ -248,20 +270,6 @@ namespace Games.RazorMaze.Editor
                 m_Des.size = _Info.Size;
             });
         }
-
-        public static void FocusCamera(V2Int _Size)
-        {
-            var converter = new CoordinateConverter();
-            converter.Init(_Size);
-            var bounds = new Bounds(converter.GetCenter(), GameUtils.GetVisibleBounds().size * 0.7f);
-            EditorUtilsEx.FocusSceneCamera(bounds);
-        }
-
-        private void CheckForValidity()
-        {
-            var info = m_Des.GetLevelInfoFromScene();
-            m_Des.valid = LevelAnalizator.IsValid(info, false);
-        }
         
         private void ClearLevel()
         {
@@ -271,6 +279,14 @@ namespace Games.RazorMaze.Editor
             foreach (var item in items.Where(_Item => _Item != null))
                 item.gameObject.DestroySafe();
             items.Clear();
+        }
+
+        public static void FocusCamera(V2Int _Size)
+        {
+            var converter = new CoordinateConverter();
+            converter.Init(_Size);
+            var bounds = new Bounds(converter.GetCenter(), GameUtils.GetVisibleBounds().size * 0.7f);
+            EditorUtilsEx.FocusSceneCamera(bounds);
         }
         
         #endregion

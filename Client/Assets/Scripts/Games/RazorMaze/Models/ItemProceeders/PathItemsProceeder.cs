@@ -31,7 +31,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
-            foreach (var pathItem in RazorMazeUtils.GetFullPath(_Args.From, _Args.Current))
+            foreach (var pathItem in RazorMazeUtils.GetFullPath(_Args.From, _Args.Position))
                 ProceedPathItem(pathItem);
         }
         

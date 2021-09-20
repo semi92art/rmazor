@@ -81,6 +81,8 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public void UpdateTick()
         {
+            if (!Initialized || !Activated)
+                return;
             if (!Proceeding)
                 return;
             float rotSpeed = ViewSettings.MovingTrapRotationSpeed * Time.deltaTime; 
@@ -214,7 +216,10 @@ namespace Games.RazorMaze.Views.MazeItems
                 return;
             var dir = Props.Directions.First();
             var pos = Props.Position;
-            if (Data.CharacterInfo.Position != dir + pos) 
+            var itemPos = (dir + pos).ToVector2();
+            var cPos = Character.IsMoving ? 
+                Character.MovingInfo.PrecisePosition : Character.Position.ToVector2();
+            if (Vector2.Distance(cPos, itemPos) + RazorMazeUtils.Epsilon > 1f) 
                 return;
             Character.RaiseDeath();
         }

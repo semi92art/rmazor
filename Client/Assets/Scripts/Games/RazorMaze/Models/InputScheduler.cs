@@ -66,7 +66,12 @@ namespace Games.RazorMaze.Models
                     m_RotateCommands.Enqueue(_Command);
                     m_RotateCommandsCount++;
                     break;
-                case EInputCommand.Restart:
+                case EInputCommand.LoadLevel:
+                case EInputCommand.ReadyToContinueLevel:
+                case EInputCommand.ContinueLevel:
+                case EInputCommand.FinishLevel:
+                case EInputCommand.PauseLevel:
+                case EInputCommand.UnloadLevel:
                     m_OtherCommands.Enqueue(_Command);
                     m_OtherCommandsCount++;
                     break;

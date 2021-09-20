@@ -386,7 +386,7 @@ namespace UI
         {
             Notify(this, NotifyMessagePlayButtonClick);
             (m_BankMiniPanel as BankMiniPanel)?.UnregisterFromEvents();
-            GameLoader.LoadLevel(1);
+            // GameLoader.LoadLevel(1);
         }
 
         private void OnRatingsButtonClick()

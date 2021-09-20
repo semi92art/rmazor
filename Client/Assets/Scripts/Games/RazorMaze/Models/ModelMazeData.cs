@@ -9,31 +9,18 @@ namespace Games.RazorMaze.Models
     public enum MazeOrientation { North, East, South, West }
     public enum EMazeMoveDirection { Up, Right, Down, Left }
     
-    public delegate void MazeInfoHandler(MazeInfo Info);
-
-    public class CharacterInfo
-    {
-        public V2Int Position { get; set; }
-        public EMazeMoveDirection MoveDirection { get; set; }
-        public bool Alive { get; set; }
-    }
     
     public interface IModelMazeData : IPreInit
     {
         event NoArgsHandler GameLoopUpdate;
-        event NoArgsHandler MazeItemsProceedStarted;
-        event NoArgsHandler MazeItemsProceedStopped;
-        event MazeInfoHandler MazeChanged;
         
+        int LevelIndex { get; set; }
         MazeInfo Info { get; set; }
         MazeOrientation Orientation { get; set; }
         Dictionary<V2Int, bool> PathProceeds { get; }
         Dictionary<EMazeItemType, Dictionary<MazeItem, IMazeItemProceedInfo>> ProceedInfos { get; }
-        CharacterInfo CharacterInfo { get; }
-        bool ProceedingMazeItems { get; set; }
         bool ProceedingControls { get; set; }
         void OnGameLoopUpdate();
-        void RaiseMazeChanged();
     }
     
     public class ModelMazeData : IModelMazeData
@@ -46,8 +33,6 @@ namespace Games.RazorMaze.Models
         #endregion
         
         #region constructor
-        
-        public event NoArgsHandler PreInitialized;
         
         public void PreInit()
         {
@@ -62,50 +47,55 @@ namespace Games.RazorMaze.Models
 
         #region api
 
+        public event NoArgsHandler PreInitialized;
         public event NoArgsHandler GameLoopUpdate;
-        public event NoArgsHandler MazeItemsProceedStarted;
-        public event NoArgsHandler MazeItemsProceedStopped;
-        public event MazeInfoHandler MazeChanged;
+        public int LevelIndex { get; set; }
         public MazeOrientation Orientation { get; set; } = MazeOrientation.North;
         public Dictionary<V2Int, bool> PathProceeds { get; private set; }
 
         public Dictionary<EMazeItemType, Dictionary<MazeItem, IMazeItemProceedInfo>> ProceedInfos { get; private set; } 
             = new Dictionary<EMazeItemType, Dictionary<MazeItem, IMazeItemProceedInfo>>();
 
-        public CharacterInfo CharacterInfo { get; } = new CharacterInfo();
-
-        public bool ProceedingMazeItems
-        {
-            get => m_ProceedingMazeItems ?? false;
-            set
-            {
-                if (m_ProceedingMazeItems.HasValue && m_ProceedingMazeItems.Value == value)
-                    return;
-                if (value)
-                    MazeItemsProceedStarted?.Invoke();
-                else
-                    MazeItemsProceedStopped?.Invoke();
-                m_ProceedingMazeItems = value;
-            }
-        }
-        
         public bool ProceedingControls { get; set; }
         
         public void OnGameLoopUpdate() => GameLoopUpdate?.Invoke();
-        public void RaiseMazeChanged() => MazeChanged?.Invoke(Info);
 
         public MazeInfo Info
         {
             get => m_Info;
             set
             {
-                m_Info = value;
+                m_Info = CorrectInfo(value);
                 PathProceeds = m_Info.Path.ToDictionary(_P => _P, _P => false);
                 PathProceeds[m_Info.Path[0]] = true;
-                MazeChanged?.Invoke(m_Info);
             }
         }
         
+        #endregion
+
+        #region nonpublic methods
+
+        private MazeInfo CorrectInfo(MazeInfo _Info)
+        {
+            var info = _Info;
+            var additionalPathPositions = info.MazeItems
+                .Where(_Item =>
+                    _Item.Type == EMazeItemType.Portal
+                    || _Item.Type == EMazeItemType.Springboard
+                    || _Item.Type == EMazeItemType.GravityBlock
+                    || _Item.Type == EMazeItemType.GravityTrap
+                    || _Item.Type == EMazeItemType.ShredingerBlock
+                    || _Item.Type == EMazeItemType.TrapMoving)
+                .Select(_Item => _Item.Position)
+                .ToList();
+            foreach (var pos in additionalPathPositions.Where(pos => !info.Path.Contains(pos)))
+            {
+                info.Path.Add(pos);
+            }
+
+            return info;
+        }
+
         #endregion
     }
 }

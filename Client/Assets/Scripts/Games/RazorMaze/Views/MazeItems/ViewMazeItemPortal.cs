@@ -78,7 +78,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         public void UpdateTick()
         {
-            if (!m_Initialized || !Activated)
+            if (!Initialized || !Activated)
                 return;
             for (int i = 0; i < m_Orbits.Count; i++)
             {

@@ -34,7 +34,6 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private static int _bulletSortingOrder;
         private float m_RotatingSpeed;
-        private bool m_Initialized;
         private bool m_Moving;
         private bool m_Rotating;
         
@@ -93,14 +92,13 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public void UpdateTick()
         {
-            if (!m_Initialized)
+            if (!Initialized || !Activated)
                 return;
             float rotSpeed = m_RotatingSpeed * Time.deltaTime;
             if (!m_Moving)
                 m_Bullet.localEulerAngles = m_BulletFake.localEulerAngles;
             else
                 m_Bullet.Rotate(Vector3.forward * rotSpeed);
-
             m_BulletHolderBorder.DashOffset += 2f * Time.deltaTime;
         }
 
@@ -140,7 +138,6 @@ namespace Games.RazorMaze.Views.MazeItems
             bcb.DashSize = 2f;
             m_BulletHolderBorder = bcb;
             
-
             var barrel = go.AddComponentOnNewChild<Rectangle>("Barrel", out _, Vector2.zero);
             barrel.Type = Rectangle.RectangleType.HardSolid;
             barrel.Color = DrawingUtils.ColorBack;
@@ -158,9 +155,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 Vector3.one * CoordinateConverter.GetScale() * BulletContainerRadius * 0.9f;
             m_BulletContainer.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             m_Bullet = bulletGo.GetContentItem("bullet").transform;
-            
 
-            
             var bulletSprRend = m_Bullet.GetComponent<SpriteRenderer>();
             bulletSprRend.sortingOrder = GetBulletSortingOrder(DrawingUtils.GetBlockSortingOrder(Props.Type) + 2);
             m_BulletTail = bulletGo.GetCompItem<Triangle>("tail");
@@ -190,10 +185,8 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Barrel = barrel;
             
             Coroutines.Run(HandleTurretPrePreShootCoroutine());
-            m_Initialized = true;
         }
-
-
+        
         private IEnumerator HandleTurretPrePreShootCoroutine()
         {
             m_BulletFakeContainer.transform.localScale = Vector3.zero;
@@ -249,7 +242,7 @@ namespace Games.RazorMaze.Views.MazeItems
             yield return Coroutines.DoWhile(
                 () =>
                 {
-                    if (point == Data.CharacterInfo.Position)
+                    if (point == ModelCharacter.Position)
                     {
                         ModelCharacter.RaiseDeath();
                         return false;
@@ -260,7 +253,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 {
                     pos += _Args.Direction.ToVector2() * _Args.ProjectileSpeed;
                     m_BulletContainer.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(pos));
-                    point = pos.ToV2IntRound();
+                    point = V2Int.Round(pos);
                     BulletTail.ShowTail(_Args);
                     if (point == _Args.To + _Args.Direction)
                         movedToTheEnd = true;

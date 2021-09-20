@@ -16,12 +16,18 @@ namespace Games.RazorMaze.Views.MazeItemGroups
     {
         #region inject
         
+        private IModelCharacter Character { get; }
+        
         public ViewMazeTurretsGroupProt(
             IModelMazeData _Data,
+            IModelCharacter _Character,
             IViewMazeCommon _MazeCommon, 
             ICoordinateConverter _Converter,
             IContainersGetter _ContainersGetter)
-            : base(_Data, _MazeCommon, _Converter, _ContainersGetter) { }
+            : base(_Data, _MazeCommon, _Converter, _ContainersGetter)
+        {
+            Character = _Character;
+        }
 
         #endregion
         
@@ -71,12 +77,12 @@ namespace Games.RazorMaze.Views.MazeItemGroups
             V2Int point = default;
             bool finish = false;
             yield return Coroutines.DoWhile(
-                () => !finish && point != Data.CharacterInfo.Position,
+                () => !finish && point != Character.Position,
                 () =>
                 {
                     pos += _Direction.ToVector2() * _Speed;
                     _Projectile.transform.SetLocalPosXY(Converter.ToLocalMazeItemPosition(pos));
-                    point = pos.ToV2IntRound();
+                    point = V2Int.Round(pos);
                     if (point == _To)
                         finish = true;
                 },

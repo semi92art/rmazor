@@ -8,6 +8,12 @@
         MoveRight,
         RotateClockwise,
         RotateCounterClockwise,
-        Restart
+        // Debug commands
+        LoadLevel,
+        ReadyToContinueLevel,
+        ContinueLevel,
+        PauseLevel,
+        FinishLevel,
+        UnloadLevel
     }
 }

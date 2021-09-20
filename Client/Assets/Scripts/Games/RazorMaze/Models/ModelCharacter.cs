@@ -4,6 +4,7 @@ using System.Linq;
 using Entities;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Models.ProceedInfos;
+using Games.RazorMaze.Views;
 using TimeProviders;
 using UnityEngine;
 using Utils;
@@ -12,24 +13,32 @@ namespace Games.RazorMaze.Models
 {
     public class CharacterMovingEventArgs : EventArgs
     {
+        public EMazeMoveDirection Direction { get; }
         public V2Int From { get; }
         public V2Int To { get; }
-        public V2Int Current { get; }
+        public V2Int Position { get; }
+        public Vector2 PrecisePosition { get; }
         public float Progress { get; }
 
-        public CharacterMovingEventArgs(V2Int _From, V2Int _To, V2Int _Current, float _Progress)
+        public CharacterMovingEventArgs(EMazeMoveDirection _Direction, V2Int _From, V2Int _To, float _Progress)
         {
+            Direction = _Direction;
             From = _From;
             To = _To;
-            Current = _Current;
+            PrecisePosition = V2Int.Lerp(_From, _To, _Progress);
+            Position = V2Int.Round(PrecisePosition);
             Progress = _Progress;
         }
     }
     
     public delegate void CharacterMovingHandler(CharacterMovingEventArgs _Args);
 
-    public interface IModelCharacter : IInit, IOnMazeChanged
+    public interface IModelCharacter : IInit, IOnLevelStageChanged
     {
+        bool Alive { get; }
+        V2Int Position { get; }
+        bool IsMoving { get; }
+        CharacterMovingEventArgs MovingInfo { get; }
         event CharacterMovingHandler CharacterMoveStarted;
         event CharacterMovingHandler CharacterMoveContinued;
         event CharacterMovingHandler CharacterMoveFinished;
@@ -40,32 +49,42 @@ namespace Games.RazorMaze.Models
         void OnSpringboard(SpringboardEventArgs _Args);
         void RaiseDeath();
     }
-    
+
     public class ModelCharacter : IModelCharacter
     {
         #region nonpublic members
 
         private int m_Counter;
-        
+
         #endregion
-        
+
         #region inject
 
         private ModelSettings Settings { get; }
         private IModelMazeData Data { get; }
         private IInputScheduler InputScheduler { get; }
+        private ILevelStagingModel LevelStagingModel { get; }
 
-        public ModelCharacter(ModelSettings _Settings, IModelMazeData _Data, IInputScheduler _InputScheduler)
+        public ModelCharacter(
+            ModelSettings _Settings, 
+            IModelMazeData _Data, 
+            IInputScheduler _InputScheduler,
+            ILevelStagingModel _LevelStagingModel)
         {
             Settings = _Settings;
             Data = _Data;
             InputScheduler = _InputScheduler;
+            LevelStagingModel = _LevelStagingModel;
         }
-        
+
         #endregion
-        
+
         #region api
 
+        public bool Alive { get; private set; }
+        public V2Int Position { get; private set; }
+        public bool IsMoving { get; private set; }
+        public CharacterMovingEventArgs MovingInfo { get; private set; }
         public event CharacterMovingHandler CharacterMoveStarted;
         public event CharacterMovingHandler CharacterMoveContinued;
         public event CharacterMovingHandler CharacterMoveFinished;
@@ -75,7 +94,7 @@ namespace Games.RazorMaze.Models
 
         public void Init()
         {
-            Data.CharacterInfo.Alive = true;
+            Alive = true;
             Initialized?.Invoke();
         }
 
@@ -85,42 +104,41 @@ namespace Games.RazorMaze.Models
         {
             if (!Data.ProceedingControls)
                 return;
-            if (!Data.CharacterInfo.Alive)
+            if (!Alive)
                 return;
-            Data.CharacterInfo.MoveDirection = _Direction;
-            var from = Data.CharacterInfo.Position;
+            if (LevelStagingModel.LevelStage == ELevelStage.ReadyToContinue)
+                LevelStagingModel.ContinueLevel();
+            
+            var from = Position;
             var to = GetNewPosition(from, _Direction);
-            var cor = MoveCharacterCore(from, to);
-            Coroutines.Run(cor);
+            Coroutines.Run(MoveCharacterCore(_Direction, from, to));
         }
 
-        public void OnMazeChanged(MazeInfo _Info)
+        public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            Data.CharacterInfo.Position = Data.Info.Path[0];
-            Revive();
-            PositionSet?.Invoke(Data.CharacterInfo.Position);
-        }
+            bool unlockMovement = _Args.Stage == ELevelStage.Started 
+                                  || _Args.Stage == ELevelStage.ReadyToContinue
+                                  || _Args.Stage == ELevelStage.Continued;
+            InputScheduler.UnlockMovement(unlockMovement);
 
+            if (_Args.Stage == ELevelStage.Loaded)
+            {
+                Position = Data.Info.Path.First();
+                PositionSet?.Invoke(Position);
+            }
+            else if (_Args.Stage == ELevelStage.ReadyToContinue)
+                Revive();
+        }
+        
         public void OnPortal(PortalEventArgs _Args)
         {
-            Data.CharacterInfo.Position = _Args.Item.Pair;
-            Move(Data.CharacterInfo.MoveDirection);
+            Position = _Args.Item.Pair;
+            Move(_Args.Direction);
         }
 
         public void OnSpringboard(SpringboardEventArgs _Args)
         {
-            var charInverseDir = -RazorMazeUtils.GetDirectionVector(Data.CharacterInfo.MoveDirection, Data.Orientation);
-            V2Int newDirection = default;
-            if (_Args.Item.Direction == V2Int.up + V2Int.left)
-                newDirection = charInverseDir == V2Int.up ? V2Int.left : V2Int.up;
-            else if (_Args.Item.Direction == V2Int.up + V2Int.right)
-                newDirection = charInverseDir == V2Int.up ? V2Int.right : V2Int.up;
-            else if (_Args.Item.Direction == V2Int.down + V2Int.left)
-                newDirection = charInverseDir == V2Int.down ? V2Int.left : V2Int.down;
-            else if (_Args.Item.Direction == V2Int.down + V2Int.right)
-                newDirection = charInverseDir == V2Int.down ? V2Int.right : V2Int.down;
-            Data.CharacterInfo.MoveDirection = RazorMazeUtils.GetMoveDirection(newDirection, Data.Orientation);
-            Move(Data.CharacterInfo.MoveDirection);
+            Move(_Args.Direction);
         }
 
         public void RaiseDeath()
@@ -134,7 +152,7 @@ namespace Games.RazorMaze.Models
 
         private V2Int GetNewPosition(V2Int _From, EMazeMoveDirection _Direction)
         {
-            var nextPos = Data.CharacterInfo.Position;
+            var nextPos = Position;
             var dirVector = RazorMazeUtils.GetDirectionVector(_Direction, Data.Orientation);
             while (IsNextPositionValid(_From, nextPos, nextPos + dirVector, Data.Info))
                 nextPos += dirVector;
@@ -169,7 +187,7 @@ namespace Games.RazorMaze.Models
             
             bool isBuzyMazeItem = Data.ProceedInfos[EMazeItemType.GravityBlock]
                 .Where(_Inf => _Inf.Value.Item.Type == EMazeItemType.GravityBlock)
-                .Any(_Inf => (_Inf.Value as MazeItemMovingProceedInfo)
+                .Any(_Inf => (_Inf.Value as MazeItemProceedInfo)
                     .BusyPositions.Contains(_NextPosition));
 
             if (isBuzyMazeItem)
@@ -182,16 +200,14 @@ namespace Games.RazorMaze.Models
 
             if (isPrevPortal && !isStartFromPortal)
                 return false;
-
             return true;
         }
         
-        private IEnumerator MoveCharacterCore(V2Int _From, V2Int _To)
+        private IEnumerator MoveCharacterCore(EMazeMoveDirection _Direction, V2Int _From, V2Int _To)
         {
-            m_Counter++;
-            int thisCount = m_Counter;
-            
-            CharacterMoveStarted?.Invoke(new CharacterMovingEventArgs(_From, _To, _From,0));
+            int thisCount = ++m_Counter;
+            (IsMoving, MovingInfo) = (true, new CharacterMovingEventArgs(_Direction, _From, _To, 0));
+            CharacterMoveStarted?.Invoke(MovingInfo);
             int pathLength = Mathf.RoundToInt(V2Int.Distance(_From, _To));
             yield return Coroutines.Lerp(
                 0f,
@@ -199,41 +215,46 @@ namespace Games.RazorMaze.Models
                 pathLength / Settings.characterSpeed,
                 _Progress =>
                 {
-                    var addictRaw = (_To.ToVector2() - _From.ToVector2()) * _Progress;
-                    var addict = new V2Int(addictRaw);
-                    var newPos = _From + addict;
-                    Data.CharacterInfo.Position = newPos;
-                    CharacterMoveContinued?.Invoke(new CharacterMovingEventArgs(_From, _To, newPos, _Progress));
+                    MovingInfo = new CharacterMovingEventArgs(_Direction, _From, _To, _Progress);
+                    Position = V2Int.Round(MovingInfo.PrecisePosition);
+                    CharacterMoveContinued?.Invoke(new CharacterMovingEventArgs(_Direction, _From, _To, _Progress));
                 },
                 GameTimeProvider.Instance,
                 (_Stopped, _Progress) =>
                 {
                     if (!_Stopped)
-                        CharacterMoveFinished?.Invoke(new CharacterMovingEventArgs(_From, _To, _To, _Progress));
+                    {
+                        CharacterMoveFinished?.Invoke(new CharacterMovingEventArgs(_Direction, _From, _To, 1));
+                        Position = _To;
+                        IsMoving = false;
+                    }
                 },
-                () => thisCount != m_Counter || !Data.CharacterInfo.Alive);
+                () => thisCount != m_Counter || !Alive);
         }
         
         private void Revive()
         {
-            if (Data.CharacterInfo.Alive)
+            if (Alive)
                 return;
+            Position = Data.PathProceeds.First().Key;
+            PositionSet?.Invoke(Position);
             InputScheduler.UnlockMovement(true);
-            InputScheduler.UnlockRotation(true);
-            Data.CharacterInfo.Alive = true;
             AliveOrDeath?.Invoke(true);
+            Alive = true;
+            
+            Dbg.Log("Character Revive");
         }
         
         private void Die()
         {
-            if (!Data.CharacterInfo.Alive)
+            if (!Alive)
                 return;
-            Data.CharacterInfo.Alive = false;
             InputScheduler.UnlockMovement(false);
-            InputScheduler.UnlockRotation(false);
             AliveOrDeath?.Invoke(false);
+            IsMoving = false;
+            Alive = false;
             
-            Dbg.Log("Character OnDeath");
+            Dbg.Log("Character Die");
         }
         
         #endregion

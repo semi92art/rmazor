@@ -26,7 +26,7 @@ public class ServerConnectionTests
     {
         //Arrange
         InitGameObjects();
-        CommonUtils.Testing = true;
+        CommonData.Testing = true;
         GameClient.Instance.Init();
         string url = $"{GameClientUtils.ServerApiUrl}/timetest";
 
@@ -54,7 +54,7 @@ public class ServerConnectionTests
     {
         //Arrange
         InitGameObjects();
-        CommonUtils.Testing = true;
+        CommonData.Testing = true;
         GameClient.Instance.Init();
         bool requestSuccess = false;
         
@@ -83,7 +83,7 @@ public class ServerConnectionTests
     {
         //Arrange
         InitGameObjects();
-        CommonUtils.Testing = true;
+        CommonData.Testing = true;
         GameClient.Instance.Init();
         bool requestSuccess = false;
         

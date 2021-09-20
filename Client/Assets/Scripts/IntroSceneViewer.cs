@@ -1,5 +1,6 @@
 ﻿using Constants;
 using Extensions;
+using GameHelpers;
 using Games.RazorMaze;
 using Games.RazorMaze.Controllers;
 using Managers;
@@ -44,7 +45,7 @@ public class IntroSceneViewer : MonoBehaviour
     
     private void InitGameController()
     {
-        var controller = RazorMazeGameController.Instance;
+        var controller = RazorMazeGameController.CreateInstance();
         controller.PreInitialized += () =>
         {
             var levelScoreEntity = ScoreManager.Instance.GetMainScore();
@@ -55,7 +56,7 @@ public class IntroSceneViewer : MonoBehaviour
                     // int level = levelScoreEntity.Scores.First().Value;
                     // FIXME заглушка для загрузки какого-то уровня
                     var info = LevelsLoader.LoadLevel(GameClientUtils.GameId, 1, false);
-                    controller.SetMazeInfo(info);
+                    controller.Model.LevelStaging.LoadLevel(info, 1);
                     controller.Init();
                 }));
         };

@@ -64,13 +64,13 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public void UpdateTick()
         {
+            if (!Initialized || !Activated)
+                return;
             if (!m_Rotate)
                 return;
             m_Angles += m_RotateDirection * Time.deltaTime * m_RotationSpeed;
             m_Angles = ClampAngles(m_Angles);
             m_Mace.rotation = Quaternion.Euler(m_Angles);
-
-            CheckForCharacterDeath();
         }
         
         public void OnMoveStarted(MazeItemMoveEventArgs _Args)
@@ -100,7 +100,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         #endregion
         
-        #region nonpubli methods
+        #region nonpublic methods
         
         protected override void SetShape()
         {
@@ -141,13 +141,6 @@ namespace Games.RazorMaze.Views.MazeItems
             while (_Angle > 360f)
                 _Angle -= 360f;
             return _Angle;
-        }
-
-        private void CheckForCharacterDeath()
-        {
-            var cPos = Data.CharacterInfo.Position.ToVector2();
-            if (Vector2.Distance(cPos, m_Position) < 1f)
-                Character.RaiseDeath();
         }
         
         #endregion

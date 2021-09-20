@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using Entities;
-using UnityEngine;
+using Games.RazorMaze.Models.ProceedInfos;
+using TimeProviders;
+using Utils;
 
 namespace Games.RazorMaze.Models.ItemProceeders
 {
@@ -33,13 +36,19 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
     public delegate void TurretShotEventHandler(TurretShotEventArgs Args);
     
-    public interface ITurretsProceeder : IOnMazeChanged
+    public interface ITurretsProceeder : IItemsProceeder
     {
         event TurretShotEventHandler TurretShoot;
     }
     
     public class TurretsProceeder : ItemsProceederBase, IOnGameLoopUpdate, ITurretsProceeder
     {
+        #region constants
+
+        public const int StageShoot = 1;
+        
+        #endregion
+        
         #region nonpubic members
         
         protected override EMazeItemType[] Types => 
@@ -49,8 +58,17 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region inject
         
-        public TurretsProceeder(ModelSettings _Settings, IModelMazeData _Data) 
-            : base(_Settings, _Data) { }
+        private IGameTimeProvider GameTimeProvider { get; }
+        
+        public TurretsProceeder(
+            ModelSettings _Settings,
+            IModelMazeData _Data,
+            IModelCharacter _Character,
+            IGameTimeProvider _GameTimeProvider) 
+            : base(_Settings, _Data, _Character)
+        {
+            GameTimeProvider = _GameTimeProvider;
+        }
         
         #endregion
         
@@ -58,15 +76,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         public event TurretShotEventHandler TurretShoot;
         
-        public void OnMazeChanged(MazeInfo _Info)
-        {
-            CollectItems(_Info);
-        }
-        
         public void OnGameLoopUpdate()
         {
-            if (!Data.ProceedingMazeItems)
-                return;
             ProceedTurrets();
         }
         
@@ -76,29 +87,26 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         private void ProceedTurrets()
         {
-            foreach (var type in Types)
+            var infos = GetProceedInfos(Types);
+            foreach (var info in infos.Values.Where(_Info => _Info.IsProceeding && _Info.ReadyToSwitchStage))
             {
-                var infos = GetProceedInfos(type);
-                foreach (var info in infos.Values.Where(_Info => !_Info.IsProceeding))
-                {
-                    info.PauseTimer += Time.deltaTime;
-                    if (info.PauseTimer < Settings.turretPreShootInterval)
-                        continue;
-                    info.PauseTimer = 0;
-                    info.IsProceeding = true;
-                    ProceedTurret(info.Item, true);
-                }
-                
-                foreach (var info in infos.Values.Where(_Info => _Info.IsProceeding))
-                {
-                    info.PauseTimer += Time.deltaTime;
-                    if (info.PauseTimer < Settings.turretShootInterval)
-                        continue;
-                    info.PauseTimer = 0;
-                    ProceedTurret(info.Item, false);
-                    info.IsProceeding = false;
-                }
+                Coroutines.Run(ProceedTurretCoroutine(info));
             }
+        }
+
+        private IEnumerator ProceedTurretCoroutine(IMazeItemProceedInfo _Info)
+        {
+            _Info.ReadyToSwitchStage = false;
+            _Info.ProceedingStage = _Info.ProceedingStage == StageIdle ? StageShoot : StageIdle;
+            float duration = GetStageDuration(_Info.ProceedingStage); 
+            float time = _Info.ProceedingStage == 0 ? Settings.turretPreShootInterval : Settings.turretShootInterval;
+            yield return Coroutines.WaitWhile(
+                () => time + duration > GameTimeProvider.Time,
+                () =>
+                {
+                    ProceedTurret(_Info.Item, _Info.ProceedingStage == StageIdle);
+                    _Info.ReadyToSwitchStage = true;
+                });
         }
 
         private void ProceedTurret(MazeItem _Item, bool _PreShoot)
@@ -127,8 +135,20 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 .FirstOrDefault(_Inf => _Inf.Item.Position == _Position);
 
             if (shredinger != null)
-                return shredinger.ProceedingStage != 2;
+                return shredinger.ProceedingStage != ShredingerBlocksProceeder.StageClosed;
             return isNode && !isMazeItem;
+        }
+        
+        private float GetStageDuration(int _Stage)
+        {
+            switch (_Stage)
+            {
+                case 0:
+                    return Settings.turretPreShootInterval;
+                case 1:
+                    return Settings.turretShootInterval;
+                default: return 0;
+            }
         }
         
         #endregion

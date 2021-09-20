@@ -30,7 +30,7 @@ namespace GameHelpers.Editor
                             $"Right: {bounds.max.x - m_Target.horMargin:f2}");
             GUILayout.Label($"Top: {bounds.max.y - m_Target.topMargin}\t\t" +
                             $"Bottom: {bounds.min.y + m_Target.bottomMargin}");
-            EditorUtilsEx.DrawUiLine(Color.gray);
+            EditorUtilsEx.HorizontalLine(Color.gray);
 
 
             if (GUILayout.Button("Generate Disc"))
@@ -49,7 +49,7 @@ namespace GameHelpers.Editor
             GUILayout.EndHorizontal();
             if (GUILayout.Button("Clear"))
                 m_Target.ClearDiscs();
-            EditorUtilsEx.DrawUiLine(Color.gray);
+            EditorUtilsEx.HorizontalLine(Color.gray);
             
             EditorUtilsEx.GuiButtonAction("Generate Edges", m_Target.GenerateEdges);
         }

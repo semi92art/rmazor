@@ -1,6 +1,6 @@
 ﻿namespace Games.RazorMaze.Models.ProceedInfos
 {
-    public class MazeItemTurretProceedInfo : MazeItemProceedInfoBase
+    public class MazeItemTurretProceedInfo : MazeItemProceedInfo
     {
         
     }

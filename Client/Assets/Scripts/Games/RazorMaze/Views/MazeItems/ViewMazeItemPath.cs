@@ -21,6 +21,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private Rectangle m_Shape;
         private Line m_LeftBorder, m_RightBorder, m_BottomBorder, m_TopBorder;
         private Disc m_BottomLeftCorner, m_BottomRightCorner, m_TopLeftCorner, m_TopRightCorner;
+        private bool m_LeftBorderInitialized, m_RightBorderInitialized, m_BottomBorderInitialized, m_TopBorderInitialized;
         
         #endregion
         
@@ -82,6 +83,23 @@ namespace Games.RazorMaze.Views.MazeItems
                 if (value) Fill();
                 else Unfill();
             }
+        }
+        
+        public void UpdateTick()
+        {
+            if (!Initialized || !Activated)
+                return;
+            
+            float dOffset = Time.deltaTime * 3f;
+            
+            if (m_LeftBorderInitialized && m_LeftBorder.Dashed)
+                m_LeftBorder.DashOffset -= dOffset;
+            if (m_RightBorderInitialized && m_RightBorder.Dashed)
+                m_RightBorder.DashOffset += dOffset;
+            if (m_BottomBorderInitialized && m_BottomBorder.Dashed)
+                m_BottomBorder.DashOffset += dOffset;
+            if (m_TopBorderInitialized && m_TopBorder.Dashed)
+                m_TopBorder.DashOffset -= dOffset;
         }
 
         public override object Clone() => new ViewMazeItemPath(CoordinateConverter, ContainersGetter, Data, Ticker, ViewSettings);
@@ -205,10 +223,10 @@ namespace Games.RazorMaze.Views.MazeItems
             border.DashSize = 1f;
             switch (_Side)
             {
-                case EMazeMoveDirection.Up: m_TopBorder = border; break;
-                case EMazeMoveDirection.Right: m_RightBorder = border; break;
-                case EMazeMoveDirection.Down: m_BottomBorder = border; break;
-                case EMazeMoveDirection.Left: m_LeftBorder = border; break;
+                case EMazeMoveDirection.Up: m_TopBorder = border; m_TopBorderInitialized = true; break;
+                case EMazeMoveDirection.Right: m_RightBorder = border; m_RightBorderInitialized = true; break;
+                case EMazeMoveDirection.Down: m_BottomBorder = border; m_BottomBorderInitialized = true; break;
+                case EMazeMoveDirection.Left: m_LeftBorder = border; m_LeftBorderInitialized = true; break;
                 default: throw new SwitchCaseNotImplementedException(_Side);
             }
         }
@@ -341,19 +359,5 @@ namespace Games.RazorMaze.Views.MazeItems
         private bool PathExist(V2Int _Path) => Data.Info.Path.Contains(_Path);
 
         #endregion
-
-        public void UpdateTick()
-        {
-            float dOffset = Time.deltaTime * 3f;
-            
-            if (!m_LeftBorder.IsNull() && m_LeftBorder.Dashed)
-                m_LeftBorder.DashOffset -= dOffset;
-            if (!m_RightBorder.IsNull() && m_RightBorder.Dashed)
-                m_RightBorder.DashOffset += dOffset;
-            if (!m_BottomBorder.IsNull() && m_BottomBorder.Dashed)
-                m_BottomBorder.DashOffset += dOffset;
-            if (!m_TopBorder.IsNull() && m_TopBorder.Dashed)
-                m_TopBorder.DashOffset -= dOffset;
-        }
     }
 }

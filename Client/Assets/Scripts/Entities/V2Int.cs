@@ -15,7 +15,6 @@ namespace Entities
 
         [JsonConstructor] public V2Int(int _X, int _Y) { x = _X; y = _Y; }
         public V2Int(Vector2Int _V) { x = _V.x; y = _V.y; }
-        public V2Int(Vector2 _V) { x = Mathf.RoundToInt(_V.x); y = Mathf.RoundToInt(_V.y); }
         public Vector2Int ToVector2Int() => new Vector2Int(X, Y);
         public Vector2 ToVector2() => new Vector2(X, Y);
         public static V2Int operator +(V2Int _V1, V2Int _V2) => new V2Int(_V1.X + _V2.X, _V1.Y + _V2.Y);
@@ -35,7 +34,15 @@ namespace Entities
         public V2Int PlusY(int _Y) => new V2Int(X, Y + _Y);
         public V2Int MinusY(int _Y) => new V2Int(X, Y - _Y);
         
-        public static float Distance(V2Int _V1, V2Int _V2) => Vector2Int.Distance(_V1.ToVector2Int(), _V2.ToVector2Int());
+        public static float Distance(V2Int _V1, V2Int _V2) 
+            => Vector2Int.Distance(_V1.ToVector2Int(), _V2.ToVector2Int());
+        public static Vector2 Lerp(V2Int _V1, V2Int _V2, float _C) =>
+            Vector2.Lerp(_V1.ToVector2(), _V2.ToVector2(), _C);
+        public static V2Int Floor(Vector2 _V) => new V2Int(Mathf.FloorToInt(_V.x), Mathf.FloorToInt(_V.y));
+        public static V2Int Ceil(Vector2 _V) => new V2Int(Mathf.CeilToInt(_V.x), Mathf.CeilToInt(_V.y));
+        public static V2Int Round(Vector2 _V) => new V2Int(Mathf.RoundToInt(_V.x), Mathf.RoundToInt(_V.y));
+        
+        
         public static V2Int up => new V2Int(Vector2Int.up);
         public static V2Int down => new V2Int(Vector2Int.down);
         public static V2Int left => new V2Int(Vector2Int.left);

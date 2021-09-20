@@ -55,7 +55,6 @@ public static class BuildAssetBundles
         EditorUtility.DisplayProgressBar(ProgressBarTitle, "Commit in git...", 50f);
         GitUtils.RunGitCommand("commit -m 'UnityBuild'", BundlesLocalPath);
         EditorUtility.DisplayProgressBar(ProgressBarTitle, "Pushing to remote repository...", 70f);
-        // GitUtils.RunGitCommand($"remote set-url origin {RepositoryName}", BundlesLocalPath);
         GitUtils.RunGitCommand(PushCommand, BundlesLocalPath);
         EditorUtility.ClearProgressBar();
     }

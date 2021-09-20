@@ -2,20 +2,26 @@
 using System.Collections;
 using System.Linq;
 using Entities;
-using Extensions;
 using Games.RazorMaze.Models.ProceedInfos;
 using TimeProviders;
+using UnityEngine;
 using Utils;
 
 namespace Games.RazorMaze.Models.ItemProceeders
 {
-    public interface IGravityItemsProceeder : IMovingItemsProceeder, ICharacterMoveStarted
+    public interface IGravityItemsProceeder : IMovingItemsProceeder, ICharacterMoveStarted, IOnGameLoopUpdate
     {
         void OnMazeOrientationChanged();
     }
     
     public class GravityItemsProceeder : ItemsProceederBase, IGravityItemsProceeder
     {
+        #region constants
+
+        public const int StageDrop = 1;
+        
+        #endregion
+        
         #region nonpublic members
 
         protected override EMazeItemType[] Types => new[] {EMazeItemType.GravityBlock, EMazeItemType.GravityTrap};
@@ -24,8 +30,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region inject
         
-        public GravityItemsProceeder(ModelSettings _Settings, IModelMazeData _Data) 
-            : base (_Settings, _Data) { }
+        public GravityItemsProceeder(ModelSettings _Settings, IModelMazeData _Data, IModelCharacter _Character) 
+            : base (_Settings, _Data, _Character) { }
         
         #endregion
         
@@ -33,29 +39,30 @@ namespace Games.RazorMaze.Models.ItemProceeders
         public event MazeItemMoveHandler MazeItemMoveContinued;
         public event MazeItemMoveHandler MazeItemMoveFinished;
 
-        public override void Start()
+        public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            base.Start();
-            MoveMazeItemsGravity(Data.Orientation, Data.CharacterInfo.Position);
-        }
-        
-        public void OnMazeChanged(MazeInfo _Info)
-        {
-            CollectItems(_Info);
+            base.OnLevelStageChanged(_Args);
+            if (_Args.Stage == ELevelStage.Started)
+                MoveMazeItemsGravity(Data.Orientation, Character.Position);
         }
 
         public void OnMazeOrientationChanged()
         {
-            if (!m_Proceeding)
-                return;
-            MoveMazeItemsGravity(Data.Orientation, Data.CharacterInfo.Position);
+            MoveMazeItemsGravity(Data.Orientation, Character.Position);
         }
         
         public void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
         {
-            if (!m_Proceeding)
-                return;
             MoveMazeItemsGravity(Data.Orientation, _Args.To);
+        }
+        
+        public void OnGameLoopUpdate()
+        {
+            var infos = GetProceedInfos(Types).Values;
+            foreach (var info in infos.Where(_Info => _Info.IsProceeding && _Info.ProceedingStage == StageIdle))
+            {
+                CheckForCharacterDeath(info, info.Item.Position.ToVector2());
+            }
         }
 
         #region nonpublic methods
@@ -63,12 +70,13 @@ namespace Games.RazorMaze.Models.ItemProceeders
         private void MoveMazeItemsGravity(MazeOrientation _Orientation, V2Int _CharacterPoint)
         {
             var dropDirection = RazorMazeUtils.GetDropDirection(_Orientation);
-            foreach (var item in Types.SelectMany(_Type => GetProceedInfos(_Type).Values))
-                MoveMazeItemGravity((MazeItemMovingProceedInfo)item, dropDirection, _CharacterPoint);
+            foreach (var info in GetProceedInfos(Types).Values
+                    .Where(_Info => _Info.IsProceeding && _Info.ProceedingStage == StageIdle))
+                MoveMazeItemGravity((MazeItemProceedInfo)info, dropDirection, _CharacterPoint);
         } 
         
         private void MoveMazeItemGravity(
-            MazeItemMovingProceedInfo _Info, 
+            MazeItemProceedInfo _Info, 
             V2Int _DropDirection,
             V2Int _CharacterPoint)
         {
@@ -77,23 +85,17 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 .Where(_Item => _Item.Type == EMazeItemType.GravityBlock
                                 || _Item.Type == EMazeItemType.GravityTrap)
                 .ToList();
-
+            _Info.ProceedingStage = StageDrop;
             Coroutines.Run(Coroutines.WaitWhile(
-                () => _Info.IsProceeding,
+                () => _Info.ProceedingStage == StageDrop,
                 () =>
                 {
-                    _Info.IsProceeding = true;
                     var pos = _Info.Item.Position;
                     bool doMoveByPath = false;
                     V2Int? altPos = null;
-                    
-                    while (RazorMazeUtils.IsValidPositionForMove(
-                        Data.Info, 
-                        _Info.Item,
-                        pos + _DropDirection))
+                    while (RazorMazeUtils.IsValidPositionForMove(Data.Info, pos + _DropDirection))
                     {
                         pos += _DropDirection;
-
                         if (_CharacterPoint == pos && _Info.Item.Type == EMazeItemType.GravityBlock)
                             altPos = pos - _DropDirection;
                         var pos1 = pos;
@@ -108,23 +110,19 @@ namespace Games.RazorMaze.Models.ItemProceeders
                         int toPosIds = _Info.Item.Path.IndexOf(pos);
                         if (Math.Abs(toPosIds - fromPosIdx) > 1)
                             continue;
-
                         doMoveByPath = true;
                         break;
                     }
-
                     if (!doMoveByPath)
                     {
                         if (gravityItems.Any(_Item => _Item.Position == pos + _DropDirection))
                             doMoveByPath = true;
                     }
-
                     if (!doMoveByPath || pos == _Info.Item.Position)
                     {
-                        _Info.IsProceeding = false;                       
+                        _Info.ProceedingStage = StageIdle;                       
                         return;
                     }
-                    
                     var from = _Info.Item.Position;
                     var to = altPos ?? pos;
 
@@ -133,7 +131,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         }
         
         private IEnumerator MoveMazeItemGravityCoroutine(
-            MazeItemMovingProceedInfo _Info,
+            MazeItemProceedInfo _Info,
             V2Int _From,
             V2Int _To)
         {
@@ -151,9 +149,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 {
                     var addict = direction * (_Progress + 0.1f) * distance;
                     busyPositions.Clear();
-                    busyPositions.Add(_From + addict.ToV2IntFloor());
+                    busyPositions.Add(_From + V2Int.Floor(addict));
                     if (busyPositions[0] != _To)
-                        busyPositions.Add(_From + addict.ToV2IntCeil());
+                        busyPositions.Add(_From + V2Int.Ceil(addict));
                     MazeItemMoveContinued?.Invoke(new MazeItemMoveEventArgs(
                         item, _From, _To, Settings.gravityTrapSpeed, _Progress, busyPositions));
                 },
@@ -164,10 +162,22 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     item.Position = to;
                     MazeItemMoveFinished?.Invoke(new MazeItemMoveEventArgs(
                         item, _From, to, Settings.gravityTrapSpeed, _Progress, busyPositions, _Stopped));
-                    _Info.IsProceeding = false;
+                    _Info.ProceedingStage = StageIdle;
                     busyPositions.Clear();
                     busyPositions.Add(to);
                 });
+        }
+        
+        private void CheckForCharacterDeath(IMazeItemProceedInfo _Info, Vector2 _ItemPrecisePosition)
+        {
+            if (!Character.Alive)
+                return;
+            var cPos = Character.IsMoving ?
+                Character.MovingInfo.PrecisePosition : Character.Position.ToVector2();
+            if (Vector2.Distance(cPos, _ItemPrecisePosition) + RazorMazeUtils.Epsilon > 1f)
+                return;
+            KillerProceedInfo = _Info;
+            Character.RaiseDeath();
         }
 
         #endregion

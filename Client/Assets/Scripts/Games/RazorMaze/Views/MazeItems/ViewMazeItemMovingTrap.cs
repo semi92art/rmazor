@@ -13,7 +13,6 @@ namespace Games.RazorMaze.Views.MazeItems
     
     public class ViewMazeItemMovingTrap : ViewMazeItemBase, IViewMazeItemMovingTrap, IUpdateTick
     {
-
         #region nonpublic members
 
         private SpriteRenderer m_Saw;
@@ -24,8 +23,8 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region inject
 
-        public IModelMazeData Data { get; }
-        public IModelCharacter Character { get; }
+        private IModelMazeData Data { get; }
+        private IModelCharacter Character { get; }
         private ViewSettings ViewSettings { get; }
         
         public ViewMazeItemMovingTrap(
@@ -71,15 +70,14 @@ namespace Games.RazorMaze.Views.MazeItems
             base.Init(_Props);
             Proceeding = true;
         }
-
-        public void OnMoveStarted(MazeItemMoveEventArgs _Args)
-        {
-        }
+        
+        public void OnMoveStarted(MazeItemMoveEventArgs _Args) { }
 
         public void OnMoving(MazeItemMoveEventArgs _Args)
         {
-            m_Position = Vector2.Lerp(_Args.From.ToVector2(), _Args.To.ToVector2(), _Args.Progress);
-            SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(m_Position));
+            var precisePosition = Vector2.Lerp(
+                _Args.From.ToVector2(), _Args.To.ToVector2(), _Args.Progress);
+            SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(precisePosition));
         }
 
         public void OnMoveFinished(MazeItemMoveEventArgs _Args)
@@ -89,12 +87,12 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public void UpdateTick()
         {
+            if (!Initialized || !Activated)
+                return;
             if (!m_Rotate)
                 return;
             float rotSpeed = ViewSettings.MovingTrapRotationSpeed * Time.deltaTime; 
             Object.transform.Rotate(Vector3.forward * rotSpeed);
-            
-            CheckForCharacterDeath();
         }
 
         public override object Clone() => new ViewMazeItemMovingTrap(
@@ -134,14 +132,6 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             m_Rotate = false;
         }
-
-        private void CheckForCharacterDeath()
-        {
-            var cPos = Data.CharacterInfo.Position.ToVector2();
-            if (Vector2.Distance(cPos, m_Position) < 1f)
-                Character.RaiseDeath();
-        }
-        
         #endregion
     }
 }

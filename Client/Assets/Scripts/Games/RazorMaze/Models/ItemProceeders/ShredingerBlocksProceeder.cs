@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using Games.RazorMaze.Models.ProceedInfos;
+using Games.RazorMaze.Views;
 using Utils;
 
 namespace Games.RazorMaze.Models.ItemProceeders
@@ -22,7 +23,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
     public delegate void ShredingerBlockHandler(ShredingerBlockArgs _Args);
 
-    public interface IShredingerBlocksProceeder : ICharacterMoveContinued, IOnMazeChanged
+    public interface IShredingerBlocksProceeder : IItemsProceeder, ICharacterMoveContinued
     {
         event ShredingerBlockHandler ShredingerBlockEvent;
     }
@@ -32,7 +33,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
     {
         #region constants
 
-        public const int StageIdle = 0;
         public const int StageOpened = 1;
         public const int StageClosed = 2;
         
@@ -46,8 +46,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region inject
         
-        public ShredingerBlocksProceeder(ModelSettings _Settings, IModelMazeData _Data) 
-            : base(_Settings, _Data) { }
+        public ShredingerBlocksProceeder(ModelSettings _Settings, IModelMazeData _Data, IModelCharacter _Character) 
+            : base(_Settings, _Data, _Character) { }
         
         #endregion
         
@@ -55,31 +55,23 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         public event ShredingerBlockHandler ShredingerBlockEvent;
 
-        public void OnMazeChanged(MazeInfo _Info)
-        {
-            CollectItems(_Info);
-        }
-
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
-            foreach (var type in Types)
+            var infos = GetProceedInfos(Types).Values;
+            foreach (var info in infos.Where(_Info => !_Info.IsProceeding))
             {
-                var infos = GetProceedInfos(type);
-                foreach (var info in infos.Values.Where(_Info => !_Info.IsProceeding))
+                if (info.Item.Position == _Args.Position)
                 {
-                    if (info.Item.Position == _Args.Current)
-                    {
-                        SwitchStage(info, true, StageOpened);
-                    }
+                    SwitchStage(info, true, StageOpened);
                 }
-                
-                foreach (var info in infos.Values.Where(_Info => _Info.IsProceeding))
+            }
+            
+            foreach (var info in infos.Where(_Info => _Info.IsProceeding))
+            {
+                if (info.Item.Position != _Args.Position && info.ProceedingStage == StageOpened)
                 {
-                    if (info.Item.Position != _Args.Current && info.ProceedingStage == StageOpened)
-                    {
-                        SwitchStage(info, true, StageClosed);
-                        Coroutines.Run(ProceedBlock(info));
-                    }
+                    SwitchStage(info, true, StageClosed);
+                    Coroutines.Run(ProceedBlock(info));
                 }
             }
         }

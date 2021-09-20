@@ -1,18 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using GameHelpers;
+using Games.RazorMaze;
 using Games.RazorMaze.Models;
 using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
 using Utils;
 
-namespace Games.RazorMaze
+namespace GameHelpers.Editor
 {
     public class LevelsSaverEditor : LevelsLoader
     {
-#if UNITY_EDITOR
-        
         public MazeLevelsList LoadHeapLevels(int _GameId, int _HeapIndex)
         {
             CreateLevelsAssetIfNotExist(_GameId, _HeapIndex);
@@ -61,7 +59,5 @@ namespace Games.RazorMaze
 
         private static string LevelsAssetPath(int _GameId, int _HeapIndex) =>
             $"Assets/Prefabs/Levels/Game_{_GameId}/{LevelsAssetName(_HeapIndex)}.json";
-        
-#endif
     }
 }

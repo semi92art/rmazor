@@ -71,7 +71,7 @@ public class LocalizationHelper : EditorWindow
         GUILayout.EndHorizontal();
         GUI.enabled = true;
         
-        EditorUtilsEx.DrawUiLine(Color.gray);
+        EditorUtilsEx.HorizontalLine(Color.gray);
         
         //values rows
         foreach (var kvp in m_LocalizedDict.ToArray())
@@ -92,7 +92,7 @@ public class LocalizationHelper : EditorWindow
             GUILayout.EndHorizontal();
         }
         
-        EditorUtilsEx.DrawUiLine(Color.gray);
+        EditorUtilsEx.HorizontalLine(Color.gray);
         
         GUILayout.Space(10);
         GUILayout.BeginHorizontal();

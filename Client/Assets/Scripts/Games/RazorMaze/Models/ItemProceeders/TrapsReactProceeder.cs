@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
-using Entities;
 using Games.RazorMaze.Models.ProceedInfos;
 using TimeProviders;
 using Utils;
@@ -24,7 +23,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
     public delegate void MazeItemTrapReactEventHandler(MazeItemTrapReactEventArgs _Args);
     
-    public interface ITrapsReactProceeder : IOnMazeChanged, ICharacterMoveContinued
+    public interface ITrapsReactProceeder : IItemsProceeder, ICharacterMoveContinued
     {
         event MazeItemTrapReactEventHandler TrapReactStageChanged;
     }
@@ -33,7 +32,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
     {
         #region constants
         
-        public const int StageIdle = 0;
         public const int StagePreReact = 1;
         public const int StageReact = 2;
         public const int StageAfterReact = 3;
@@ -42,15 +40,15 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region nonpublic members
         
-        private V2Int m_CharacterPosCheck;
+        // private V2Int m_CharacterPosCheck;
         protected override EMazeItemType[] Types => new[] {EMazeItemType.TrapReact};
 
         #endregion
 
         #region inject
         
-        public TrapsReactProceeder(ModelSettings _Settings, IModelMazeData _Data) 
-            : base(_Settings, _Data) { }
+        public TrapsReactProceeder(ModelSettings _Settings, IModelMazeData _Data, IModelCharacter _Character) 
+            : base(_Settings, _Data, _Character) { }
 
         #endregion
         
@@ -58,21 +56,17 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         public event MazeItemTrapReactEventHandler TrapReactStageChanged;
 
-        public void OnMazeChanged(MazeInfo _Info)
-        {
-            CollectItems(_Info);
-        }
-
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
-            if (!Data.ProceedingMazeItems)
-                return;
-            var addictRaw = (_Args.To.ToVector2() - _Args.From.ToVector2()) * _Args.Progress;
-            var addict = new V2Int(addictRaw);
-            var newPos = _Args.From + addict;
-            if (m_CharacterPosCheck == newPos)
-                return;
-            m_CharacterPosCheck = newPos;
+            // FIXME возможно лишнее
+            // if (!Data.ProceedingMazeItems)
+            //     return;
+            // var addictRaw = (_Args.To.ToVector2() - _Args.From.ToVector2()) * _Args.Progress;
+            // var addict = new V2Int(addictRaw);
+            // var newPos = _Args.From + addict;
+            // if (m_CharacterPosCheck == newPos)
+            //     return;
+            // m_CharacterPosCheck = newPos;
             ProceedTraps();
         }
 
@@ -82,24 +76,29 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         private void ProceedTraps()
         {
-            foreach (var type in Types)
+            var infos = GetProceedInfos(Types);
+            foreach (var info in infos.Values.Where(_Info => _Info.IsProceeding && _Info.ReadyToSwitchStage))
             {
-                var infos = GetProceedInfos(type);
-                foreach (var info in infos.Values.Where(_Info => !_Info.IsProceeding))
-                {
-                    if (info.Item.Position + info.Item.Direction != m_CharacterPosCheck)
-                        continue;
-                    info.IsProceeding = true;
-                    Coroutines.Run(ProceedTrap(info));
-                }
+                if (info.Item.Position + info.Item.Direction != Character.Position)
+                    continue;
+                Coroutines.Run(ProceedTrap(info));
             }
+            //
+            // foreach (var kvp in infos
+            //     .Where(_Kvp => 
+            //         _Kvp.Value.IsProceeding && _Kvp.Value.ProceedingStage == StageReact))
+            // {
+            //     CheckForCharacterDeath(kvp.Value, kvp.Key.Position, kvp.Key.Direction);
+            // }
         }
 
         private IEnumerator ProceedTrap(IMazeItemProceedInfo _Info)
         {
+            _Info.ReadyToSwitchStage = false;
             _Info.ProceedingStage++;
             float duration = GetStageDuration(_Info.ProceedingStage); 
-            TrapReactStageChanged?.Invoke(new MazeItemTrapReactEventArgs(_Info.Item, _Info.ProceedingStage, duration));
+            TrapReactStageChanged?.Invoke(
+                new MazeItemTrapReactEventArgs(_Info.Item, _Info.ProceedingStage, duration));
             float time = GameTimeProvider.Instance.Time;
             yield return Coroutines.WaitWhile(
                 () => time + duration > GameTimeProvider.Instance.Time,
@@ -108,7 +107,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     if (_Info.ProceedingStage == StageAfterReact)
                     {
                         _Info.ProceedingStage = StageIdle;
-                        _Info.IsProceeding = false;
+                        _Info.ReadyToSwitchStage = true;
                         return;
                     }
                     Coroutines.Run(ProceedTrap(_Info));
@@ -128,6 +127,14 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 default: return 0;
             }
         }
+
+        // private void CheckForCharacterDeath(IMazeItemProceedInfo _Info, V2Int _Position, V2Int _Direction)
+        // {
+        //     if (Character.Position != _Position + _Direction) 
+        //         return;
+        //     KillerProceedInfo = _Info;
+        //     Character.RaiseDeath();
+        // }
         
         #endregion
     }

@@ -83,7 +83,12 @@ namespace Games.RazorMaze.Views.Characters
             m_Tail.gameObject.transform.SetPosXY(CoordinateConverter.GetCenter());
         }
 
-        public void HideTail(CharacterMovingEventArgs _Args) => Coroutines.Run(HideTailCoroutine(_Args));
+        public void HideTail(CharacterMovingEventArgs _Args = null)
+        {
+            m_Tail.enabled = _Args != null;
+            if (_Args != null)                
+                Coroutines.Run(HideTailCoroutine(_Args));
+        }
 
         #endregion
 

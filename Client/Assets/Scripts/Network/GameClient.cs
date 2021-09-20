@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Text;
 using Entities;
+using GameHelpers;
 using Network.Packets;
 using UnityEngine.Networking;
 using Newtonsoft.Json;
@@ -54,7 +55,7 @@ namespace Network
         {
             if (GameClientUtils.GameId == 0)
                 GameClientUtils.GameId = GameClientUtils.DefaultGameId;
-            if (!CommonUtils.Testing)
+            if (!CommonData.Testing)
             {
                 Initialized?.Invoke();
                 return;

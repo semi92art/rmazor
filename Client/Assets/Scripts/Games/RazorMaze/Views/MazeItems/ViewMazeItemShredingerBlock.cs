@@ -77,6 +77,8 @@ namespace Games.RazorMaze.Views.MazeItems
         
         public void UpdateTick()
         {
+            if (!Initialized || !Activated)
+                return;
             if (Proceeding)
                 return;
             m_LineOffset += Time.deltaTime * ViewSettings.ShredingerLineOffsetSpeed;

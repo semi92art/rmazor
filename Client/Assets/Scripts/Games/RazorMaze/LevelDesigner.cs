@@ -2,7 +2,6 @@
 using System.Linq;
 using Constants;
 using Entities;
-using Exceptions;
 using Extensions;
 using Games.RazorMaze.Controllers;
 using Games.RazorMaze.Models;
@@ -65,24 +64,30 @@ namespace Games.RazorMaze
             
             if (_Change != PlayModeStateChange.EnteredPlayMode)
                 return;
-            
+
+            // MazeInfo = new LevelsLoader().LoadLevel(1, 1, false); 
             MazeInfo = Instance.GetLevelInfoFromScene();
             GameClientUtils.GameId = 1;
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
              
             SceneManager.sceneLoaded += (_Scene, _Mode) =>
             {
-                RazorMazeGameController.Instance.PreInit();
-                RazorMazeGameController.Instance.SetMazeInfo(MazeInfo);
-                RazorMazeGameController.Instance.Init();
-                RazorMazeGameController.Instance.PostInit();
+                var controller = RazorMazeGameController.CreateInstance();
+                controller.Initialized += () => controller.PostInit();
+                controller.PreInitialized += () =>
+                {
+                    controller.Model.LevelStaging.LoadLevel(MazeInfo, 1);
+                    controller.Model.LevelStaging.ReadyToContinueLevel();
+                    controller.Init();
+                };
+                controller.PreInit();
             };
             SceneManager.LoadScene(SceneNames.Level);
         }
         
 #endif
         
-        public MazeInfo GetLevelInfoFromScene(bool _Full = true)
+        public MazeInfo GetLevelInfoFromScene()
         {
             mazeObject = GameObject.Find("Maze Items");
             maze = new List<ViewMazeItemProt>();
@@ -104,32 +109,7 @@ namespace Games.RazorMaze
             var mazeProtItems = maze
                 .Where(_Item => !_Item.Props.IsNode)
                 .Select(_Item => _Item.Props).ToList();
-            if (_Full)
-            {
-                foreach (var item in mazeProtItems.ToList())
-                {
-                    switch (item.Type)
-                    {
-                        case EMazeItemType.TrapReact:
-                        case EMazeItemType.Turret:
-                        case EMazeItemType.TrapIncreasing:
-                        case EMazeItemType.Block: 
-                            // do nothing
-                            break;
-                        case EMazeItemType.Portal:
-                        case EMazeItemType.ShredingerBlock:
-                        case EMazeItemType.Springboard:
-                        case EMazeItemType.TrapMoving:
-                        case EMazeItemType.TurretRotating:
-                        case EMazeItemType.GravityBlock:
-                        case EMazeItemType.GravityTrap:
-                            path.Add(item.Position);
-                            break;
-                        default: throw new SwitchCaseNotImplementedException(item.Type);
-                    }
-                }
-            }
-            
+
             return new MazeInfo{
                 Size =  new V2Int(MazeWidth, Sizes[sizeIdx]),
                 Path = path,

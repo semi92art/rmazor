@@ -1,4 +1,5 @@
 ﻿using Entities;
+using GameHelpers;
 using UnityEngine;
 
 namespace Utils
@@ -83,7 +84,7 @@ namespace Utils
             get
             {
 #if UNITY_EDITOR
-                if (CommonUtils.Testing)
+                if (CommonData.Testing)
                     return SaveUtils.GetValue<string>(SaveKeyDebug.ServerUrl);
                 return SaveUtils.GetValue<string>(SaveKeyDebug.ServerUrl);
 #else
