@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Extensions;
+using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
@@ -27,20 +28,15 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region inject
         
-        private ViewSettings ViewSettings { get; }
-        private IGameTimeProvider GameTimeProvider { get; }
 
         public ViewMazeItemShredingerBlock(
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
+            IModelMazeData _Data,
             ITicker _Ticker,
             IGameTimeProvider _GameTimeProvider,
             ViewSettings _ViewSettings)
-            : base(_CoordinateConverter, _ContainersGetter, _Ticker)
-        {
-            ViewSettings = _ViewSettings;
-            GameTimeProvider = _GameTimeProvider;
-        }
+            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _Ticker) { }
         
         #endregion
         
@@ -89,7 +85,7 @@ namespace Games.RazorMaze.Views.MazeItems
         }
 
         public override object Clone() => new ViewMazeItemShredingerBlock(
-            CoordinateConverter, ContainersGetter, Ticker, GameTimeProvider, ViewSettings);
+            CoordinateConverter, ContainersGetter, Data, Ticker, GameTimeProvider, ViewSettings);
 
         #endregion
         
@@ -145,6 +141,24 @@ namespace Games.RazorMaze.Views.MazeItems
                 line.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
                 line.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
             }
+        }
+
+        protected override void Appear(bool _Appear)
+        {
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !Initialized,
+                () =>
+                {
+                    RazorMazeUtils.DoAppearTransitionSimple(
+                        _Appear,
+                        GameTimeProvider,
+                        new Dictionary<IEnumerable<ShapeRenderer>, Color>
+                        {
+                            {m_Lines, DrawingUtils.ColorLines},
+                            {new [] {m_Block}, DrawingUtils.ColorLines }
+                        });
+
+                }));
         }
 
         private List<Vector2> GetCornerPositions()

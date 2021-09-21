@@ -2,6 +2,7 @@
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Ticker;
+using TimeProviders;
 using UnityEngine;
 
 namespace Games.RazorMaze.Views.MazeItems
@@ -10,7 +11,7 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         #region nonpublic members
         
-        protected bool Initialized { get; private set; }
+        protected bool Initialized { get; set; }
         protected bool m_Activated;
         private bool m_Proceeding;
         
@@ -18,18 +19,27 @@ namespace Games.RazorMaze.Views.MazeItems
 
         #region inject
 
+        protected ViewSettings ViewSettings { get; }
+        protected IModelMazeData Data { get; }
         protected ICoordinateConverter CoordinateConverter { get; }
         protected IContainersGetter ContainersGetter { get; }
+        protected IGameTimeProvider GameTimeProvider { get; }
         protected ITicker Ticker { get; }
         
 
         protected ViewMazeItemBase (
+            ViewSettings _ViewSettings,
+            IModelMazeData _Data,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
+            IGameTimeProvider _GameTimeProvider,
             ITicker _Ticker)
         {
+            ViewSettings = _ViewSettings;
+            Data = _Data;
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
+            GameTimeProvider = _GameTimeProvider;
             Ticker = _Ticker;
         }
 
@@ -59,6 +69,14 @@ namespace Games.RazorMaze.Views.MazeItems
         }
         
         public abstract object Clone();
+
+        public virtual void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            if (_Args.Stage == ELevelStage.Loaded)
+                Appear(true);
+            else if (_Args.Stage == ELevelStage.Unloaded)
+                Appear(false);
+        }
         
 
         public virtual void Init(ViewMazeItemProps _Props)
@@ -91,7 +109,9 @@ namespace Games.RazorMaze.Views.MazeItems
         #region nonpublic methods
         
         protected abstract void SetShape();
-        
+        protected abstract void Appear(bool _Appear);
+
+
         #endregion
     }
 }

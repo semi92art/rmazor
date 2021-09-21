@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Entities;
 using Extensions;
@@ -38,24 +39,22 @@ namespace Games.RazorMaze.Views.MazeItems
         private bool m_Rotating;
         
         private Rectangle m_Barrel;
+        private Triangle m_BulletTail;
+        private Disc m_BulletHolderBorder;
+        
         private Transform m_BulletContainer;
         private Transform m_Bullet;
-        private Triangle m_BulletTail;
         private Transform m_BulletFakeContainer;
         private Transform m_BulletFake;
         private SpriteMask m_BulletMask;
         private SpriteMask m_BulletMask2;
-        private Disc m_BulletHolderBorder;
         
         #endregion
         
         #region inject
         
-        private ViewSettings ViewSettings { get; }
-        private IModelMazeData Data { get; }
-        private IGameTimeProvider GameTimeProvider { get; }
         private ITurretBulletTail BulletTail { get; }
-        public IModelCharacter ModelCharacter { get; }
+        private IModelCharacter ModelCharacter { get; }
 
         public ViewMazeItemTurret(
             ICoordinateConverter _CoordinateConverter,
@@ -66,11 +65,8 @@ namespace Games.RazorMaze.Views.MazeItems
             ITurretBulletTail _BulletTail,
             IModelCharacter _ModelCharacter,
             ViewSettings _ViewSettings)
-            : base(_CoordinateConverter, _ContainersGetter, _Ticker)
+            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _Ticker)
         {
-            ViewSettings = _ViewSettings;
-            Data = _Data;
-            GameTimeProvider = _GameTimeProvider;
             BulletTail = _BulletTail;
             ModelCharacter = _ModelCharacter;
         }
@@ -186,7 +182,25 @@ namespace Games.RazorMaze.Views.MazeItems
             
             Coroutines.Run(HandleTurretPrePreShootCoroutine());
         }
-        
+
+        protected override void Appear(bool _Appear)
+        {
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !Initialized,
+                () =>
+                {
+                    RazorMazeUtils.DoAppearTransitionSimple(
+                        _Appear,
+                        GameTimeProvider,
+                        new Dictionary<IEnumerable<ShapeRenderer>, Color>
+                        {
+                            {new [] {m_Barrel}, DrawingUtils.ColorBack},
+                            {new [] {m_BulletHolderBorder}, DrawingUtils.ColorLines}
+                        });
+
+                }));
+        }
+
         private IEnumerator HandleTurretPrePreShootCoroutine()
         {
             m_BulletFakeContainer.transform.localScale = Vector3.zero;

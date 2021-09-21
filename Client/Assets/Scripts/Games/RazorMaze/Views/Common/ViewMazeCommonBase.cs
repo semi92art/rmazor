@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using Entities;
 using Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
@@ -17,20 +15,20 @@ namespace Games.RazorMaze.Views.Common
 
         protected ITicker Ticker { get; }
         protected IMazeItemsCreator MazeItemsCreator { get; }
-        protected IModelMazeData Model { get; }
+        protected IModelMazeData ModelData { get; }
         protected IContainersGetter ContainersGetter { get; }
         protected ICoordinateConverter CoordinateConverter { get; }
 
         protected ViewMazeCommonBase(
             ITicker _Ticker,
             IMazeItemsCreator _MazeItemsCreator,
-            IModelMazeData _Model,
+            IModelMazeData _ModelData,
             IContainersGetter _ContainersGetter, 
             ICoordinateConverter _CoordinateConverter)
         {
             Ticker = _Ticker;
             MazeItemsCreator = _MazeItemsCreator;
-            Model = _Model;
+            ModelData = _ModelData;
             ContainersGetter = _ContainersGetter;
             CoordinateConverter = _CoordinateConverter;
             
@@ -52,13 +50,7 @@ namespace Games.RazorMaze.Views.Common
             ContainersGetter.MazeItemsContainer.PlusLocalPosY(CoordinateConverter.GetScale() * 0.5f);
             Initialized?.Invoke();
         }
-        
-        public virtual void OnPathProceed(V2Int _PathItem)
-        {
-            var item = MazeItems.First(_Item => _Item.Props.Position == _PathItem && _Item.Props.IsNode);
-            item.Proceeding = true;
-        }
-        
+
         public virtual void UpdateTick() => GameLoopUpdate?.Invoke();
 
         public abstract IViewMazeItem GetItem(MazeItem _Item);

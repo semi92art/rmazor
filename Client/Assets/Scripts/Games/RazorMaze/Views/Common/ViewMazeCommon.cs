@@ -17,7 +17,6 @@ namespace Games.RazorMaze.Views.Common
         #region nonpublic members
 
         private Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> m_BlockPools;
-        private SpawnPool<IViewMazeItemPath> m_PathsPool;
         
         #endregion
         
@@ -28,11 +27,11 @@ namespace Games.RazorMaze.Views.Common
         public ViewMazeCommon(
             ITicker _Ticker,
             IMazeItemsCreator _MazeItemsCreator, 
-            IModelMazeData _Model,
+            IModelMazeData _ModelData,
             IContainersGetter _ContainersGetter, 
             ICoordinateConverter _CoordinateConverter,
             ViewSettings _ViewSettings) 
-            : base(_Ticker, _MazeItemsCreator, _Model, _ContainersGetter, _CoordinateConverter)
+            : base(_Ticker, _MazeItemsCreator, _ModelData, _ContainersGetter, _CoordinateConverter)
         {
             ViewSettings = _ViewSettings;
         }
@@ -45,17 +44,17 @@ namespace Games.RazorMaze.Views.Common
         {
             get
             {
-                IEnumerable<IViewMazeItem> res = m_PathsPool.ToList();
-                res = m_BlockPools.Values
+                IEnumerable<IViewMazeItem> res = new List<IViewMazeItem>();
+                return m_BlockPools.Values
                     .Aggregate(res, (_Current, _Pool) => 
-                        _Current.Concat(_Pool));
-                return res.Where(_Item => _Item.Props != null).ToList();
+                        _Current.Concat(_Pool))
+                    .Where(_Item => _Item.Props != null).ToList();
             }
         }
 
         public override void Init()
         {
-            InitPools(Model.Info);
+            InitPools(ModelData.Info);
             Camera.main.backgroundColor = DrawingUtils.ColorBack; //TODO заменить на что-то адекватное
             base.Init();
         }
@@ -72,12 +71,12 @@ namespace Games.RazorMaze.Views.Common
         private void InitPools(MazeInfo _Info)
         {
             if (m_BlockPools == null)
-                InitPoolsOnStart();
-            DeactivateAllBlocksAndPaths();
-            MazeItemsCreator.InitMazeItems(_Info, m_PathsPool, m_BlockPools);
+                InitBlockPoolsOnStart();
+            DeactivateAllBlocks();
+            MazeItemsCreator.InitBlockItems(_Info, m_BlockPools);
         }
         
-        private void InitPoolsOnStart()
+        private void InitBlockPoolsOnStart()
         {
             m_BlockPools = new Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>>();
             var itemTypes = Enum
@@ -95,15 +94,9 @@ namespace Games.RazorMaze.Views.Common
                     .ToList();
                 pool.AddRange(blockItems);
             }
-            m_PathsPool = new SpawnPool<IViewMazeItemPath>();
-            var pathItems = Enumerable
-                .Range(0, ViewSettings.PathItemsCount)
-                .Select(_ => MazeItemsCreator.CloneDefaultPath())
-                .ToList();
-            m_PathsPool.AddRange(pathItems);
         }
 
-        private void DeactivateAllBlocksAndPaths()
+        private void DeactivateAllBlocks()
         {
             foreach (var pool in m_BlockPools.Values)
             {
@@ -111,10 +104,6 @@ namespace Games.RazorMaze.Views.Common
                 while ((activeItem = pool.FirstActive) != null)
                     pool.Deactivate(activeItem);
             }
-            
-            IViewMazeItemPath activePathItem;
-            while ((activePathItem = m_PathsPool.FirstActive) != null)
-                m_PathsPool.Deactivate(activePathItem);
         }
         
         #endregion

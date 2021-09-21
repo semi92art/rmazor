@@ -5,23 +5,21 @@ using Games.RazorMaze.Views.ContainerGetters;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
-    public abstract class ViewMazeTurretsGroupBase : IViewMazeTurretsGroup
+    public abstract class ViewMazeTurretsGroupBase : ViewMazeItemsGroupBase, IViewMazeTurretsGroup
     {
         #region inject
 
         protected IModelMazeData Data { get; }
-        protected IViewMazeCommon MazeCommon { get; }
         protected ICoordinateConverter Converter { get; }
         protected IContainersGetter ContainersGetter { get; }
 
         protected ViewMazeTurretsGroupBase(
             IModelMazeData _Data,
-            IViewMazeCommon _MazeCommon, 
+            IViewMazeCommon _Common, 
             ICoordinateConverter _Converter,
-            IContainersGetter _ContainersGetter)
+            IContainersGetter _ContainersGetter) : base(_Common)
         {
             Data = _Data;
-            MazeCommon = _MazeCommon;
             Converter = _Converter;
             ContainersGetter = _ContainersGetter;
         }
@@ -30,6 +28,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         #region api
 
+        public override EMazeItemType[] Types => new[] {EMazeItemType.Turret};
         public event NoArgsHandler Initialized;
 
         public virtual void Init() => Initialized?.Invoke();

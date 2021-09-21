@@ -1,4 +1,6 @@
-﻿using Games.RazorMaze.Views.Characters;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Games.RazorMaze.Views.Characters;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItemGroups;
@@ -14,8 +16,9 @@ namespace Games.RazorMaze.Views
         public IInputConfigurator InputConfigurator { get; }
         public IViewCharacter Character { get; }
         public IViewMazeCommon MazeCommon { get; }
-        public IViewMazeTransitioner MazeTransitioner { get; }
+        public IViewMazeEffector MazeEffector { get; }
         public IViewMazeRotation MazeRotation { get; }
+        public IViewMazePathItemsGroup MazePathItemsGroup { get; }
         public IViewMazeMovingItemsGroup MazeMovingItemsGroup { get; }
         public IViewMazeTrapsReactItemsGroup MazeTrapsReactItemsGroup { get; }
         public IViewMazeTrapsIncreasingItemsGroup MazeTrapsIncreasingItemsGroup { get; }
@@ -23,30 +26,30 @@ namespace Games.RazorMaze.Views
         public IViewMazePortalsGroup PortalsGroup { get; }
         public IViewMazeShredingerBlocksGroup ShredingerBlocksGroup { get; }
         public IViewMazeSpringboardItemsGroup SpringboardItemsGroup { get; }
-        public ICoordinateConverter CoordinateConverter { get; }
 
         public ViewGame(
             IViewUI _UI,
             IInputConfigurator _InputConfigurator,
             IViewCharacter _Character,
             IViewMazeCommon _MazeCommon,
-            IViewMazeTransitioner _MazeTransitioner,
+            IViewMazeEffector _MazeEffector,
             IViewMazeRotation _MazeRotation,
+            IViewMazePathItemsGroup _MazePathItemsGroup,
             IViewMazeMovingItemsGroup _MazeMovingItemsGroup,
             IViewMazeTrapsReactItemsGroup _MazeTrapsReactItemsGroup,
             IViewMazeTrapsIncreasingItemsGroup _MazeTrapsIncreasingItemsGroup,
             IViewMazeTurretsGroup _MazeTurretsGroup,
             IViewMazePortalsGroup _PortalsGroup,
             IViewMazeShredingerBlocksGroup _ShredingerBlocksGroup,
-            IViewMazeSpringboardItemsGroup _SpringboardItemsGroup,
-            ICoordinateConverter _CoordinateConverter)
+            IViewMazeSpringboardItemsGroup _SpringboardItemsGroup)
         {
             UI = _UI;
             InputConfigurator = _InputConfigurator;
             Character = _Character;
             MazeCommon = _MazeCommon;
-            MazeTransitioner = _MazeTransitioner;
+            MazeEffector = _MazeEffector;
             MazeRotation = _MazeRotation;
+            MazePathItemsGroup = _MazePathItemsGroup;
             MazeMovingItemsGroup = _MazeMovingItemsGroup;
             MazeTrapsReactItemsGroup = _MazeTrapsReactItemsGroup;
             MazeTrapsIncreasingItemsGroup = _MazeTrapsIncreasingItemsGroup;
@@ -54,49 +57,54 @@ namespace Games.RazorMaze.Views
             PortalsGroup = _PortalsGroup;
             ShredingerBlocksGroup = _ShredingerBlocksGroup;
             SpringboardItemsGroup = _SpringboardItemsGroup;
-            CoordinateConverter = _CoordinateConverter;
         }
         
         public event NoArgsHandler Initialized;
 
         public void Init()
         {
-            bool mazeCommonInitialized = false;
-            bool mazeRotationInitialized = false;
-            bool mazeMovingItemsGroupInitialized = false;
-            bool mazeTrapsReactItemsGroupInitialized = false;
-            bool mazeTrapsIncreasingItemsGroupInitialized = false;
-            bool characterInitialized = false;
-            bool inputConfiguratorInitialized = false;
-
-            MazeCommon.Initialized                    += () => mazeCommonInitialized = true;
-            MazeRotation.Initialized                  += () => mazeRotationInitialized = true;
-            MazeMovingItemsGroup.Initialized          += () => mazeMovingItemsGroupInitialized = true;
-            MazeTrapsReactItemsGroup.Initialized      += () => mazeTrapsReactItemsGroupInitialized = true;
-            MazeTrapsIncreasingItemsGroup.Initialized += () => mazeTrapsIncreasingItemsGroupInitialized = true;
-            Character.Initialized                     += () => characterInitialized = true;
-            InputConfigurator.Initialized             += () => inputConfiguratorInitialized = true;
+            var proceeders = GetInterfaceOfProceeders<IInit>();
+            int count = proceeders.Count;
+            bool[] initialized = new bool[count];
+            for (int i = 0; i < count; i++)
+            {
+                var i1 = i;
+                proceeders[i].Initialized += () => initialized[i1] = true;
+                proceeders[i].Init();
+            }
             
-            MazeCommon.Init();
-            MazeRotation.Init();
-            MazeMovingItemsGroup.Init();
-            MazeTrapsReactItemsGroup.Init();
-            MazeTrapsIncreasingItemsGroup.Init();
-            Character.Init();
-            InputConfigurator.Init();
-
-            System.Func<bool> allInitialized = () =>
-                mazeCommonInitialized
-                && mazeRotationInitialized
-                && mazeMovingItemsGroupInitialized
-                && mazeTrapsReactItemsGroupInitialized
-                && mazeTrapsIncreasingItemsGroupInitialized
-                && characterInitialized
-                && inputConfiguratorInitialized;
-
             Coroutines.Run(Coroutines.WaitWhile(
-                () => !allInitialized.Invoke(), 
+                () => initialized.Any(_Initialized => !_Initialized), 
                 () => Initialized?.Invoke()));
         }
+
+        public void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            var proceeders = GetInterfaceOfProceeders<IOnLevelStageChanged>();
+            foreach (var proceeder in proceeders)
+                proceeder.OnLevelStageChanged(_Args);
+        }
+        
+        private List<T> GetInterfaceOfProceeders<T>() where T : class
+        {
+            var result = new List<T>
+            {
+                UI                                 as T,
+                MazeCommon                         as T,
+                InputConfigurator                  as T,
+                Character                          as T,
+                MazeEffector                       as T,
+                MazeRotation                       as T,
+                MazePathItemsGroup                 as T,
+                MazeMovingItemsGroup               as T,
+                MazeTrapsReactItemsGroup           as T,
+                MazeTrapsIncreasingItemsGroup      as T,
+                MazeTurretsGroup                   as T,
+                PortalsGroup                       as T,
+                ShredingerBlocksGroup              as T,
+                SpringboardItemsGroup              as T
+            }.Where(_Proceeder => _Proceeder != null).ToList();
+            return result;
+        } 
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Games.RazorMaze.Models;
+﻿using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
@@ -13,10 +12,10 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         public ViewMazeTurretsGroup(
             IModelMazeData _Data,
-            IViewMazeCommon _MazeCommon,
+            IViewMazeCommon _Common,
             ICoordinateConverter _Converter,
             IContainersGetter _ContainersGetter)
-            : base(_Data, _MazeCommon, _Converter, _ContainersGetter) { }
+            : base(_Data, _Common, _Converter, _ContainersGetter) { }
         
         #endregion
         
@@ -36,18 +35,16 @@ namespace Games.RazorMaze.Views.MazeItemGroups
 
         private void HandleTurretPreShot(TurretShotEventArgs _Args)
         {
-            var item = MazeCommon.GetItem<IViewMazeItemTurret>(_Args.Item);
+            var item = Common.GetItem<IViewMazeItemTurret>(_Args.Item);
             item?.PreShoot(_Args);
         }
         
         private void HandleTurretShot(TurretShotEventArgs _Args)
         {
-            var item = MazeCommon.GetItem<IViewMazeItemTurret>(_Args.Item);
+            var item = Common.GetItem<IViewMazeItemTurret>(_Args.Item);
             item?.Shoot(_Args);
         }
         
         #endregion
-
-
     }
 }

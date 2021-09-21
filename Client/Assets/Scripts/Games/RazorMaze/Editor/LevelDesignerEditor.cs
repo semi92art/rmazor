@@ -49,7 +49,7 @@ namespace Games.RazorMaze.Editor
             if (SceneManager.GetActiveScene().name != SceneNames.Prototyping)
                 return;
             if (ReorderableLevels == null)
-                (_heapIndex, _heapIndexCheck) = (1, 0);
+                (_heapIndex, _heapIndexCheck) = (2, 0);
             m_Des = LevelDesigner.Instance;
         }
 

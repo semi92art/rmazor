@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Entities;
 using Exceptions;
@@ -8,7 +9,9 @@ using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
+using TimeProviders;
 using UnityEngine;
+using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
@@ -21,26 +24,29 @@ namespace Games.RazorMaze.Views.MazeItems
         private Rectangle m_Shape;
         private Line m_LeftBorder, m_RightBorder, m_BottomBorder, m_TopBorder;
         private Disc m_BottomLeftCorner, m_BottomRightCorner, m_TopLeftCorner, m_TopRightCorner;
-        private bool m_LeftBorderInitialized, m_RightBorderInitialized, m_BottomBorderInitialized, m_TopBorderInitialized;
+        private bool 
+            m_LeftBorderInitialized,
+            m_RightBorderInitialized, 
+            m_BottomBorderInitialized,
+            m_TopBorderInitialized;
+        private bool 
+            m_BottomLeftCornerInitialized,
+            m_BottomRightCornerInitialized,
+            m_TopLeftCornerInitialized,
+            m_TopRightCornerInitialized;
         
         #endregion
         
         #region inject
         
-        private IModelMazeData Data { get; }
-        private ViewSettings ViewSettings { get; }
-
         public ViewMazeItemPath(
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
+            IGameTimeProvider _GameTimeProvider,
             IModelMazeData _Data,
             ITicker _Ticker,
             ViewSettings _ViewSettings)
-            : base(_CoordinateConverter, _ContainersGetter, _Ticker)
-        {
-            Data = _Data;
-            ViewSettings = _ViewSettings;
-        }
+            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _Ticker) { }
         
         #endregion
 
@@ -52,25 +58,8 @@ namespace Games.RazorMaze.Views.MazeItems
             set
             {
                 m_Activated = value;
-                
-                m_Shape.enabled = value;
-                if (!m_LeftBorder.IsNull())
-                    m_LeftBorder.enabled = value;
-                if (!m_RightBorder.IsNull())
-                    m_RightBorder.enabled = value;
-                if (!m_BottomBorder.IsNull())
-                    m_BottomBorder.enabled = value;
-                if (!m_TopBorder.IsNull())
-                    m_TopBorder.enabled = value;
-                
-                if (!m_BottomLeftCorner.IsNull())
-                    m_BottomLeftCorner.enabled = value;
-                if (!m_BottomRightCorner.IsNull())
-                    m_BottomRightCorner.enabled = value;
-                if (!m_TopLeftCorner.IsNull())
-                    m_TopLeftCorner.enabled = value;
-                if (!m_TopRightCorner.IsNull())
-                    m_TopRightCorner.enabled = value;
+                if (!value)
+                    EnableInitializedShapes(false);
             }
         }
         
@@ -101,8 +90,17 @@ namespace Games.RazorMaze.Views.MazeItems
             if (m_TopBorderInitialized && m_TopBorder.Dashed)
                 m_TopBorder.DashOffset -= dOffset;
         }
+        
+        public override void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            if (_Args.Stage == ELevelStage.Loaded)
+                Appear(true);
+            else if (_Args.Stage == ELevelStage.Unloaded)
+                Appear(false);
+        }
 
-        public override object Clone() => new ViewMazeItemPath(CoordinateConverter, ContainersGetter, Data, Ticker, ViewSettings);
+        public override object Clone() => 
+            new ViewMazeItemPath(CoordinateConverter, ContainersGetter, GameTimeProvider, Data, Ticker, ViewSettings);
 
         #endregion
         
@@ -110,6 +108,39 @@ namespace Games.RazorMaze.Views.MazeItems
         
         private void Fill() => m_Shape.Color = DrawingUtils.ColorBack;
         private void Unfill() => m_Shape.Color = DrawingUtils.ColorLines;
+
+        public override void Init(ViewMazeItemProps _Props)
+        {
+            Props = _Props;
+            SetShape();
+            Ticker.Register(this);
+
+            Coroutines.Run(Coroutines.WaitWhile(
+                () =>
+                {
+                    bool res = true;
+                    if (m_LeftBorderInitialized)
+                        res &= !m_LeftBorder.IsNull();
+                    if (m_RightBorderInitialized)
+                        res &= !m_RightBorder.IsNull();
+                    if (m_BottomBorderInitialized)
+                        res &= !m_BottomBorder.IsNull();
+                    if (m_TopBorderInitialized)
+                        res &= !m_TopBorder.IsNull();
+        
+                    if (m_BottomLeftCornerInitialized)
+                        res &= !m_BottomLeftCorner.IsNull();
+                    if (m_BottomRightCornerInitialized)
+                        res &= !m_BottomRightCorner.IsNull();
+                    if (m_TopLeftCornerInitialized)
+                        res &= !m_TopLeftCorner.IsNull();
+                    if (m_TopRightCornerInitialized)
+                        res &= !m_TopRightCorner.IsNull();
+
+                    return !res;
+                },
+                () => Initialized = true));
+        }
 
         protected override void SetShape()
         {
@@ -128,6 +159,7 @@ namespace Games.RazorMaze.Views.MazeItems
             Object = go;
             m_Shape = sh;
             SetBordersAndCorners();
+            EnableInitializedShapes(false);
         }
 
         private void SetBordersAndCorners()
@@ -209,6 +241,21 @@ namespace Games.RazorMaze.Views.MazeItems
                     m_TopBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Up, true, true).Item2;
             }
         }
+
+        private void EnableInitializedShapes(bool _Enable)
+        {
+            if (!m_Shape.IsNull()) m_Shape.enabled                         = _Enable;
+            
+            if (!m_LeftBorder.IsNull()) m_LeftBorder.enabled               = _Enable;
+            if (!m_RightBorder.IsNull()) m_RightBorder.enabled             = _Enable;
+            if (!m_BottomBorder.IsNull()) m_BottomBorder.enabled           = _Enable;
+            if (!m_TopBorder.IsNull()) m_TopBorder.enabled                 = _Enable;
+            
+            if (!m_BottomLeftCorner.IsNull()) m_BottomLeftCorner.enabled   = _Enable;
+            if (!m_BottomRightCorner.IsNull()) m_BottomRightCorner.enabled = _Enable;
+            if (!m_TopLeftCorner.IsNull()) m_TopLeftCorner.enabled         = _Enable;
+            if (!m_TopRightCorner.IsNull()) m_TopRightCorner.enabled       = _Enable;
+        }
         
         private void InitBorder(EMazeMoveDirection _Side)
         {
@@ -264,6 +311,7 @@ namespace Games.RazorMaze.Views.MazeItems
             if (!_Right && !_Up)
             {
                 m_BottomLeftCorner = corner;
+                m_BottomLeftCornerInitialized = true;
                 if (!_Inner) return;
                 m_BottomBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Down, true, true).Item1;
                 m_LeftBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Left, true, true).Item1;
@@ -271,6 +319,7 @@ namespace Games.RazorMaze.Views.MazeItems
             else if (_Right && !_Up)
             {
                 m_BottomRightCorner = corner;
+                m_BottomRightCornerInitialized = true;
                 if (!_Inner) return;
                 m_BottomBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Down, true, true).Item2;
                 m_RightBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Right, true, true).Item1;
@@ -278,6 +327,7 @@ namespace Games.RazorMaze.Views.MazeItems
             else if (!_Right && _Up)
             {
                 m_TopLeftCorner = corner;
+                m_TopLeftCornerInitialized = true;
                 if (!_Inner) return;
                 m_LeftBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Left, true, true).Item2;
                 m_TopBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Up, true, true).Item1;
@@ -285,6 +335,7 @@ namespace Games.RazorMaze.Views.MazeItems
             else if (_Right && _Up)
             {
                 m_TopRightCorner = corner;
+                m_TopRightCornerInitialized = true;
                 if (!_Inner) return;
                 m_TopBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Up, true, true).Item2;
                 m_RightBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Right, true, true).Item2;
@@ -357,6 +408,40 @@ namespace Games.RazorMaze.Views.MazeItems
         }
 
         private bool PathExist(V2Int _Path) => Data.Info.Path.Contains(_Path);
+
+        protected override void Appear(bool _Appear)
+        {
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !Initialized,
+                () =>
+                {
+                    ShapeRenderer shape = null;
+                    if (_Appear && !Props.IsStartNode || !_Appear && !Proceeding)
+                        shape = m_Shape;
+                    
+                    RazorMazeUtils.DoAppearTransitionSimple(
+                        _Appear,
+                        GameTimeProvider,
+                        new Dictionary<IEnumerable<ShapeRenderer>, Color>
+                        {
+                            {
+                                new ShapeRenderer[]
+                                {
+                                    m_BottomLeftCorner,
+                                    m_BottomRightCorner,
+                                    m_TopLeftCorner,
+                                    m_TopRightCorner
+                                },
+                                DrawingUtils.ColorLines
+                            },
+                            {
+                                new[] {m_LeftBorder, m_RightBorder, m_BottomBorder, m_TopBorder},
+                                DrawingUtils.ColorLines.SetA(0.5f)
+                            },
+                            {new [] {shape}, DrawingUtils.ColorLines}
+                        });
+                }));
+        }
 
         #endregion
     }

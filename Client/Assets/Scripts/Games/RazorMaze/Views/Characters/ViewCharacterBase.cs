@@ -36,17 +36,17 @@ namespace Games.RazorMaze.Views.Characters
         public virtual bool Activated { get; set; }
 
         public virtual void Init() => Initialized?.Invoke();
-        public virtual void OnMovingStarted(CharacterMovingEventArgs _Args) { }
-        public virtual void OnMoving(CharacterMovingEventArgs _Args) { }
-        public virtual void OnMovingFinished(CharacterMovingEventArgs _Args) { }
-        public virtual void OnRevivalOrDeath(bool _Alive) { }
+        public abstract void OnMovingStarted(CharacterMovingEventArgs _Args);
+        public abstract void OnMoving(CharacterMovingEventArgs _Args);
+        public abstract void OnMovingFinished(CharacterMovingEventArgs _Args);
+        public abstract void OnRevivalOrDeath(bool _Alive);
+        public abstract void OnLevelStageChanged(LevelStageArgs _Args);
 
         public virtual void OnPositionSet(V2Int _Position)
         {
             CoordinateConverter.Init(ModelMazeData.Info.Size);
             SetPosition(CoordinateConverter.ToLocalCharacterPosition(_Position));
         }
-
         
         #endregion
         

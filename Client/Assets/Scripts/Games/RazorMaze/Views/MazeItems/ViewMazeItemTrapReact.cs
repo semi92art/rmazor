@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Extensions;
 using GameHelpers;
@@ -40,11 +41,8 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region inject
 
-        public IModelMazeData Data { get; }
         public IModelCharacter Character { get; }
-        private IGameTimeProvider GameTimeProvider { get; }
         private ModelSettings ModelSettings { get; }
-        private ViewSettings ViewSettings { get; }
 
         public ViewMazeItemTrapReact(
             IModelMazeData _Data,
@@ -55,13 +53,10 @@ namespace Games.RazorMaze.Views.MazeItems
             IGameTimeProvider _GameTimeProvider,
             ModelSettings _ModelSettings,
             ViewSettings _ViewSettings)
-            : base(_CoordinateConverter, _ContainersGetter, _Ticker)
+            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _Ticker)
         {
-            Data = _Data;
             Character = _Character;
-            GameTimeProvider = _GameTimeProvider;
             ModelSettings = _ModelSettings;
-            ViewSettings = _ViewSettings;
         }
         
         #endregion
@@ -98,7 +93,7 @@ namespace Games.RazorMaze.Views.MazeItems
             IEnumerator coroutine = null;
             switch (_Args.Stage)
             {
-                case TrapsReactProceeder.StageIdle: break;
+                case ItemsProceederBase.StageIdle: break;
                 case TrapsReactProceeder.StagePreReact:   coroutine = HandlePreReact(); break;
                 case TrapsReactProceeder.StageReact:      coroutine = HandleReact(); break;
                 case TrapsReactProceeder.StageAfterReact: coroutine = HandlePostReact(); break;
@@ -151,6 +146,29 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Line = line;
             m_Trap = trap;
             Proceeding = true;
+        }
+
+        protected override void Appear(bool _Appear)
+        {
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !Initialized,
+                () =>
+                {
+                    RazorMazeUtils.DoAppearTransitionSimple(
+                        _Appear,
+                        GameTimeProvider,
+                        new Dictionary<IEnumerable<ShapeRenderer>, Color>
+                        {
+                            {new [] {m_Line}, DrawingUtils.ColorLines}
+                        });
+                    RazorMazeUtils.DoAppearTransitionSimple(
+                        _Appear,
+                        GameTimeProvider,
+                        new Dictionary<IEnumerable<Renderer>, Color>
+                        {
+                            {new [] {m_Trap}, DrawingUtils.ColorLines}
+                        });
+                }));
         }
 
         private IEnumerator HandlePreReact()

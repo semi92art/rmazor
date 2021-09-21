@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
-    public interface IViewMazeItem : ICloneable, ISpawnPoolItem
+    public interface IViewMazeItem : ICloneable, ISpawnPoolItem, IOnLevelStageChanged
     {
         GameObject Object { get; }
         bool Proceeding { get; set; }

@@ -52,7 +52,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         #region nonpubic members
         
         protected override EMazeItemType[] Types => 
-            new[] {EMazeItemType.Turret, EMazeItemType.TurretRotating};
+            new[] {EMazeItemType.Turret, EMazeItemType.Attenuator};
         
         #endregion
         

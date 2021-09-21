@@ -1,27 +1,21 @@
-﻿using Games.RazorMaze.Models.ItemProceeders;
+﻿using Games.RazorMaze.Models;
+using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.MazeItems;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
-    public sealed class ViewMazeSpringboardItemsGroup : ViewMazeSpringboardItemsGroupBase
+    public sealed class ViewMazeSpringboardItemsGroup : ViewMazeItemsGroupBase, IViewMazeSpringboardItemsGroup
     {
-        #region inject
-
-        private IViewMazeCommon ViewMazeCommon { get; }
+        public ViewMazeSpringboardItemsGroup(IViewMazeCommon _Common) : base(_Common) { }
         
-        public ViewMazeSpringboardItemsGroup(IViewMazeCommon _ViewMazeCommon)
+        public override EMazeItemType[] Types => new[] {EMazeItemType.Springboard};
+        
+        public void OnSpringboardEvent(SpringboardEventArgs _Args)
         {
-            ViewMazeCommon = _ViewMazeCommon;
-        }
-        
-        #endregion
-        
-        
-        public override void OnSpringboardEvent(SpringboardEventArgs _Args)
-        {
-            var item = ViewMazeCommon.GetItem<IViewMazeItemSpringboard>(_Args.Item);
+            var item = Common.GetItem<IViewMazeItemSpringboard>(_Args.Item);
             item.MakeJump(_Args);
         }
+
     }
 }

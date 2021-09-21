@@ -1,11 +1,14 @@
-﻿using Extensions;
+﻿using System.Collections.Generic;
+using Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
+using TimeProviders;
 using UnityEngine;
+using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
@@ -29,20 +32,14 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region inject
         
-        private IModelMazeData Data { get; }
-        private ViewSettings ViewSettings { get; }
-
         public ViewMazeItemGravityBlock(
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
+            IGameTimeProvider _GameTimeProvider,
             IModelMazeData _Data,
             ITicker _Ticker,            
             ViewSettings _ViewSettings) 
-            : base(_CoordinateConverter, _ContainersGetter, _Ticker)
-        {
-            Data = _Data;
-            ViewSettings = _ViewSettings;
-        }
+            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _Ticker) { }
         
         #endregion
         
@@ -59,8 +56,7 @@ namespace Games.RazorMaze.Views.MazeItems
             }
         }
 
-        public void OnMoveStarted(MazeItemMoveEventArgs _Args)
-        { }
+        public void OnMoveStarted(MazeItemMoveEventArgs _Args) { }
 
         public void OnMoving(MazeItemMoveEventArgs _Args)
         {
@@ -74,8 +70,8 @@ namespace Games.RazorMaze.Views.MazeItems
         }
         
         public override object Clone() => new ViewMazeItemGravityBlock(
-            CoordinateConverter, ContainersGetter, Data, Ticker, ViewSettings);
-
+            CoordinateConverter, ContainersGetter, GameTimeProvider, Data, Ticker, ViewSettings);
+        
         #endregion
         
         #region nonpublic methods
@@ -102,6 +98,23 @@ namespace Games.RazorMaze.Views.MazeItems
             Object = go;
             m_Shape = sh;
             m_Joint = joint;
+        }
+
+
+        protected override void Appear(bool _Appear)
+        {
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !Initialized,
+                () =>
+                {
+                    RazorMazeUtils.DoAppearTransitionSimple(
+                        _Appear,
+                        GameTimeProvider,
+                        new Dictionary<IEnumerable<ShapeRenderer>, Color>
+                        {
+                            {new ShapeRenderer[] {m_Shape ,m_Joint}, DrawingUtils.ColorLines}
+                        });
+                }));
         }
         
         #endregion

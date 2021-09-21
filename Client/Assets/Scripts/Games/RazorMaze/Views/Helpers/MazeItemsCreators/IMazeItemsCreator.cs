@@ -8,10 +8,8 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
     public interface IMazeItemsCreator
     {
         List<IViewMazeItem> CreateMazeItems(MazeInfo _Info);
-        void InitMazeItems(
-            MazeInfo _Info, 
-            SpawnPool<IViewMazeItemPath> _PathPool,
-            Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> _BlockPools);
+        void InitPathItems(MazeInfo _Info, SpawnPool<IViewMazeItemPath> _PathPool);
+        void InitBlockItems(MazeInfo _Info, Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> _BlockPools);
         IViewMazeItem CloneDefaultBlock(EMazeItemType _Type);
         IViewMazeItemPath CloneDefaultPath();
     }

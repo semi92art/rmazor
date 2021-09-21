@@ -93,7 +93,6 @@ public class LevelStagingModel : ILevelStagingModel
 
     public void UnloadLevel()
     {
-        Data.Info = null;
         LevelStage = ELevelStage.Unloaded;
         InvokeLevelStageChanged();
     }

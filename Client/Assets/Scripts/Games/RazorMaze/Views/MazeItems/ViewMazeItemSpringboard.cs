@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
-using Entities;
 using Extensions;
+using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
@@ -40,18 +41,17 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region inject
         
-        private IGameTimeProvider GameTimeProvider { get; }
         private ViewSettings ViewSettings { get; }
 
         public ViewMazeItemSpringboard(
             ICoordinateConverter _CoordinateConverter, 
             IContainersGetter _ContainersGetter,
+            IModelMazeData _Data,
             ITicker _Ticker,
             IGameTimeProvider _GameTimeProvider,
             ViewSettings _ViewSettings) 
-            : base(_CoordinateConverter, _ContainersGetter, _Ticker)
+            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _Ticker)
         {
-            GameTimeProvider = _GameTimeProvider;
             ViewSettings = _ViewSettings;
         }
         
@@ -76,7 +76,7 @@ namespace Games.RazorMaze.Views.MazeItems
         }
         
         public override object Clone() => new ViewMazeItemSpringboard(
-            CoordinateConverter, ContainersGetter, Ticker, GameTimeProvider, ViewSettings);
+            CoordinateConverter, ContainersGetter, Data, Ticker, GameTimeProvider, ViewSettings);
 
         #endregion
 
@@ -103,7 +103,23 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Pillar = pillar;
             m_Springboard = sprbrd;
         }
-        
+
+        protected override void Appear(bool _Appear)
+        {
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !Initialized,
+                () =>
+                {
+                    RazorMazeUtils.DoAppearTransitionSimple(
+                        _Appear,
+                        GameTimeProvider,
+                        new Dictionary<IEnumerable<ShapeRenderer>, Color>
+                        {
+                            {new [] {m_Springboard, m_Pillar}, DrawingUtils.ColorLines}
+                        });
+                }));
+        }
+
         private IEnumerator JumpCoroutine()
         {
             UnityAction<float> doOnProgress = _Progress => (m_Springboard.Start, m_Springboard.End, m_Pillar.End) =

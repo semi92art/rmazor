@@ -88,21 +88,15 @@ namespace Games.RazorMaze.Controllers
             character.CharacterMoveFinished                     += OnCharacterMoveFinished;
             character.PositionSet                               += OnCharacterPositionSet;
             
-            levelStaging.LevelStageChanged                      += OnLevelStageChanged;
+            levelStaging.LevelStageChanged                      += View.OnLevelStageChanged;
             
             View.InputConfigurator.Command                      += OnInputCommand;
             View.MazeCommon.GameLoopUpdate                      += OnGameLoopUpdate;
 
-            Model.PreInitialized += () => PreInitialized?.Invoke();
+            Model.PreInitialized                                += OnModelPreInitialized;
             Model.PreInit();
         }
-
-        public void SetMazeInfo(MazeInfo _Info)
-        {
-            View.CoordinateConverter.Init(_Info.Size);
-            Model.Data.Info = _Info;
-        }
-
+        
         public void Init()
         {
             bool modelInitialized = false;
@@ -131,7 +125,7 @@ namespace Games.RazorMaze.Controllers
         #region event methods
         
         private void OnGameLoopUpdate() => Model.Data.OnGameLoopUpdate();
-        private void DataOnPathProceedEvent(V2Int _PathItem) => View.MazeCommon.OnPathProceed(_PathItem);
+        private void DataOnPathProceedEvent(V2Int _PathItem) => View.MazePathItemsGroup.OnPathProceed(_PathItem);
         private void OnInputCommand(int _Value) => Model.InputScheduler.AddCommand((EInputCommand)_Value);
         private void OnCharacterAliveOrDeath(bool _Alive) => View.Character.OnRevivalOrDeath(_Alive);
 
@@ -165,24 +159,17 @@ namespace Games.RazorMaze.Controllers
         private void OnPortalEvent(PortalEventArgs _Args) => View.PortalsGroup.OnPortalEvent(_Args);
         private void OnShredingerBlockEvent(ShredingerBlockArgs _Args) => View.ShredingerBlocksGroup.OnShredingerBlockEvent(_Args);
         private void OnSpringboardEvent(SpringboardEventArgs _Args) => View.SpringboardItemsGroup.OnSpringboardEvent(_Args);
+
+        private void OnModelPreInitialized() => PreInitialized?.Invoke();
         
         #endregion
-    
-        #region nonpublic methods
         
-        private void OnLevelStageChanged(LevelStageArgs _Args)
-        {
-            View.UI.OnLevelStageChanged(_Args);
-            View.MazeTransitioner.OnLevelStageChanged(_Args);
-        }
-        
-        #endregion
-    
         #region engine methods
 
         protected virtual void OnDestroy()
         {
             var rotation                                        = Model.MazeRotation;
+            var pathItemsProceeder                              = Model.PathItemsProceeder;
             var movingItemsProceeder                            = Model.MovingItemsProceeder;
             var gravityItemsProceeder                           = Model.GravityItemsProceeder;
             var trapsReactProceeder                             = Model.TrapsReactProceeder;
@@ -193,6 +180,8 @@ namespace Games.RazorMaze.Controllers
             var springboardProceeder                            = Model.SpringboardProceeder;
             var character                                       = Model.Character;
             var levelStaging                                    = Model.LevelStaging;
+            
+            pathItemsProceeder.PathProceedEvent                 -= DataOnPathProceedEvent;
             
             rotation.RotationStarted                            -= OnMazeRotationStarted;
             rotation.Rotation                                   -= OnMazeRotation;
@@ -217,10 +206,14 @@ namespace Games.RazorMaze.Controllers
             character.CharacterMoveStarted                      -= OnCharacterMoveStarted;
             character.CharacterMoveContinued                    -= OnCharacterMoveContinued;
             character.CharacterMoveFinished                     -= OnCharacterMoveFinished;
-
-            levelStaging.LevelStageChanged                      -= OnLevelStageChanged;
+            character.PositionSet                               -= OnCharacterPositionSet;
+            
+            levelStaging.LevelStageChanged                      -= View.OnLevelStageChanged;
             
             View.InputConfigurator.Command                      -= OnInputCommand;
+            View.MazeCommon.GameLoopUpdate                      -= OnGameLoopUpdate;
+
+            Model.PreInitialized                                -= OnModelPreInitialized;
         }
 
         #endregion

@@ -818,6 +818,22 @@ MonoBehaviour:
       name: counter
     - item: {fileID: 5059098813564520511}
       name: triggerer
+    - item: {fileID: 4437524263811026742}
+      name: blade_container_1
+    - item: {fileID: 1812606193686754284}
+      name: blade_container_2
+    - item: {fileID: 2644816165411980465}
+      name: blade_container_3
+    - item: {fileID: 5886397057207878708}
+      name: blade_container_4
+    - item: {fileID: 6790848557289920620}
+      name: blade_1
+    - item: {fileID: 1021985679241019523}
+      name: blade_2
+    - item: {fileID: 559375525048970296}
+      name: blade_3
+    - item: {fileID: 3526383146176656641}
+      name: blade_4
 --- !u!114 &5509618724373977563
 MonoBehaviour:
   m_ObjectHideFlags: 0

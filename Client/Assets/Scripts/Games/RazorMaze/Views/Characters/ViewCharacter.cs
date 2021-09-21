@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Constants;
 using Exceptions;
 using Extensions;
@@ -6,6 +7,7 @@ using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.MazeItemGroups;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using TimeProviders;
@@ -22,11 +24,13 @@ namespace Games.RazorMaze.Views.Characters
         private static int AnimKeyStartMove => AnimKeys.Anim;
         private static int AnimKeyBump => AnimKeys.Anim2;
 
+        private Rectangle m_HeadShape;
+        private Rectangle m_Eye1Shape, m_Eye2Shape;
+
         private GameObject m_Head;
         private Animator m_Animator;
         private EMazeMoveDirection m_PrevVertDir;
         private EMazeMoveDirection m_PrevHorDir;
-        private bool m_FirstMoveDone;
         private bool m_Activated;
         private bool m_Initialized;
         
@@ -48,7 +52,8 @@ namespace Games.RazorMaze.Views.Characters
             IViewCharacterTail _Tail,
             IViewCharacterEffector _Effector,
             IGameTimeProvider _GameTimeProvider,
-            ViewSettings _ViewSettings) : base(_CoordinateConverter, _Data, _ContainersGetter, _ViewMazeCommon)
+            ViewSettings _ViewSettings) 
+            : base(_CoordinateConverter, _Data, _ContainersGetter, _ViewMazeCommon)
         {
             Data = _Data;
             Tail = _Tail;
@@ -84,10 +89,15 @@ namespace Games.RazorMaze.Views.Characters
             
             InitPrefab();
             m_Animator.SetTrigger(AnimKeyStartJumping);
-            if (!ViewSettings.StartPathItemFilledOnStart)
-                UnfillStartPathItem();
             Coroutines.Run(Coroutines.WaitWhile(
-                () => !m_TailInitialized || !m_DeathEffectorInitialized,
+                () =>
+                {
+                    return !m_TailInitialized
+                           || !m_DeathEffectorInitialized
+                           || m_HeadShape.IsNull()
+                           || m_Eye1Shape.IsNull()
+                           || m_Eye2Shape.IsNull();
+                },
                 () =>
                 {
                     base.Init();
@@ -100,9 +110,6 @@ namespace Games.RazorMaze.Views.Characters
             m_Animator.SetTrigger(AnimKeyStartMove);
             SetOrientation(_Args.Direction);
             Tail.ShowTail(_Args);
-            if (!m_FirstMoveDone && ViewSettings.StartPathItemFilledOnStart)
-                UnfillStartPathItem();
-            m_FirstMoveDone = true;
         }
 
         public override void OnMoving(CharacterMovingEventArgs _Args)
@@ -135,7 +142,15 @@ namespace Games.RazorMaze.Views.Characters
                     Tail.HideTail();
                 }));
         }
-        
+
+        public override void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            if (_Args.Stage == ELevelStage.Loaded)
+                Appear(true);
+            else if (_Args.Stage == ELevelStage.Unloaded)
+                Appear(false);
+        }
+
         #endregion
         
         #region nonpublic methods
@@ -148,12 +163,13 @@ namespace Games.RazorMaze.Views.Characters
             m_Head = prefab.GetContentItem("head");
             var localScale = Vector3.one * CoordinateConverter.GetScale() * 0.98f;
             m_Head.transform.localScale = localScale;
-            
-            prefab.GetCompItem<Rectangle>("head shape").Color = DrawingUtils.ColorCharacter;
             m_Animator = prefab.GetCompItem<Animator>("animator");
-            var eye1 = prefab.GetCompItem<Rectangle>("eye_1");
-            var eye2 = prefab.GetCompItem<Rectangle>("eye_2");
-            eye1.Color = eye2.Color = DrawingUtils.ColorBack;
+            
+            m_HeadShape = prefab.GetCompItem<Rectangle>("head shape");
+            m_Eye1Shape = prefab.GetCompItem<Rectangle>("eye_1");
+            m_Eye2Shape = prefab.GetCompItem<Rectangle>("eye_2");
+
+            m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = false;
         }
 
         private void SetOrientation(EMazeMoveDirection _Direction)
@@ -208,10 +224,22 @@ namespace Games.RazorMaze.Views.Characters
             var absScale = m_Head.transform.localScale.Abs();
             m_Head.transform.localScale = new Vector3(absScale.x * horScale, absScale.y * vertScale, absScale.z);
         }
-        
-        private void UnfillStartPathItem()
+
+        private void Appear(bool _Appear)
         {
-            ViewMazeCommon.MazeItems.Single(_Item => _Item.Props.IsStartNode).Proceeding = true;
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !m_Initialized,
+                () =>
+                {
+                    RazorMazeUtils.DoAppearTransitionSimple(
+                        _Appear,
+                        GameTimeProvider,
+                        new Dictionary<IEnumerable<ShapeRenderer>, Color>
+                        {
+                            {new[] {m_HeadShape}, DrawingUtils.ColorCharacter},
+                            {new[] {m_Eye1Shape, m_Eye2Shape}, DrawingUtils.ColorBack}
+                        });
+                }));
         }
 
         #endregion

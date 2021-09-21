@@ -29,7 +29,6 @@ namespace Mono_Installers
         {
             base.InstallBindings();
             
-            bool prot = GameClientUtils.GameMode == (int) EGameMode.Prototyping;
             bool release = GameClientUtils.GameMode == (int) EGameMode.Release;
 
             #region model
@@ -60,49 +59,18 @@ namespace Mono_Installers
             
             #endregion
             
-            #region view debug
 
-            Container.Bind<IMazeItemsCreator>()                 .To<MazeItemsCreatorProt>()                 .AsSingle().When(_ => prot);
-            Container.Bind<IViewMazeCommon>()                   .To<ViewMazeCommonProt>()                   .AsSingle().When(_ => prot);
-            Container.Bind<IViewMazeTransitioner>()             .To<ViewMazeTransitionerFake>()             .AsSingle().When(_ => prot);
-            Container.Bind<IViewCharacter>()                    .To<ViewCharacterProt>()                    .AsSingle().When(_ => prot);
-            Container.Bind<IViewCharacterEffector>()            .To<ViewCharacterEffectorProt>()            .AsSingle().When(_ => prot);
-            Container.Bind<IViewCharacterTail>()                .To<ViewCharacterTailProt>()                .AsSingle().When(_ => prot);
-            Container.Bind<IViewMazeMovingItemsGroup>()         .To<ViewMazeMovingItemsGroupProt>()         .AsSingle().When(_ => prot);
-            Container.Bind<IViewMazeShredingerBlocksGroup>()    .To<ViewMazeShredingerBlocksGroupProt>()    .AsSingle().When(_ => prot);
-            Container.Bind<IViewMazeSpringboardItemsGroup>()    .To<ViewMazeSpringboardItemsGroupProt>()    .AsSingle().When(_ => prot);
-            Container.Bind<IViewMazePortalsGroup>()             .To<ViewMazePortalsGroupProt>()             .AsSingle().When(_ => prot);
-            Container.Bind<IViewMazeTrapsReactItemsGroup>()     .To<ViewMazeTrapsReactItemsGroupProt>()     .AsSingle().When(_ => prot);
-            Container.Bind<IViewMazeTurretsGroup>()             .To<ViewMazeTurretsGroupProt>()             .AsSingle().When(_ => prot);
-            Container.Bind<IViewMazeTrapsIncreasingItemsGroup>().To<ViewMazeTrapsIncreasingItemsGroupProt>().AsSingle().When(_ => prot);
-            
-            
-            Container.Bind<IViewMazeItemPath>()                 .To<ViewMazeItemPathProtFake>()             .AsSingle().When(_ => prot);
-            Container.Bind<IViewMazeItemTurret>()               .To<ViewMazeItemTurretProtFake>()           .AsSingle().When(_ => prot);
-            Container.Bind<IViewMazeItemShredingerBlock>()      .To<ViewMazeItemShredingerBlockProtFake>()  .AsSingle().When(_ => prot);
-            Container.Bind<IViewMazeItemGravityBlock>()         .To<ViewMazeItemGravityBlockProtFake>()     .AsSingle().When(_ => prot);
-            Container.Bind<IViewMazeItemMovingTrap>()           .To<ViewMazeItemMovingTrapProtFake>()       .AsSingle().When(_ => prot);
-            Container.Bind<IViewMazeItemSpringboard>()          .To<ViewMazeItemSpringboardProtFake>()      .AsSingle().When(_ => prot);
-            Container.Bind<IViewMazeItemPortal>()               .To<ViewMazeItemPortalProtFake>()           .AsSingle().When(_ => prot);
-            Container.Bind<IViewMazeItemGravityTrap>()          .To<ViewMazeItemGravityTrapProtFake>()      .AsSingle().When(_ => prot);
-            Container.Bind<IViewMazeItemTrapReact>()            .To<ViewMazeItemTrapReactProtFake>()        .AsSingle().When(_ => prot);
-            Container.Bind<IViewMazeItemTrapIncreasing>()       .To<ViewMazeItemTrapIncreasingProtFake>()   .AsSingle().When(_ => prot);
-            
-            Container.Bind<IViewMazeRotation>()                 .To<ViewMazeRotationProt>()                 .AsSingle();//.When(_ => prototyping);
-            Container.Bind<IInputConfigurator>()                .To<RazorMazeInputConfiguratorProt>()       .AsSingle();//.When(_ => prototyping);
-            Container.Bind<IViewUI>()                           .To<ViewUIProt>()                           .AsSingle();//.When(_ => prototyping);
-            
-            #endregion
             
             #region view release
             
             Container.Bind<IMazeItemsCreator>()                 .To<MazeItemsCreator>()                     .AsSingle().When(_ => release);
             Container.Bind<IViewMazeCommon>()                   .To<ViewMazeCommon>()                       .AsSingle().When(_ => release);
-            Container.Bind<IViewMazeTransitioner>()             .To<ViewMazeTransitioner>()                 .AsSingle().When(_ => release);
+            Container.Bind<IViewMazeEffector>()                 .To<ViewMazeEffector>()                     .AsSingle().When(_ => release);
             Container.Bind<IViewCharacter>()                    .To<ViewCharacter>()                        .AsSingle().When(_ => release);
             Container.Bind<IViewCharacterEffector>()            .To<ViewCharacterEffectorParticles>()       .AsSingle().When(_ => release);
             Container.Bind<IViewCharacterTail>()                .To<ViewCharacterTailSimple>()              .AsSingle().When(_ => release);
             Container.Bind<ITurretBulletTail>()                 .To<TurretBulletTailSimple>()               .AsSingle().When(_ => release);
+            Container.Bind<IViewMazePathItemsGroup>()           .To<ViewMazePathItemsGroup>()               .AsSingle().When(_ => release);
             Container.Bind<IViewMazeMovingItemsGroup>()         .To<ViewMazeMovingItemsGroup>()             .AsSingle().When(_ => release);
             Container.Bind<IViewMazeShredingerBlocksGroup>()    .To<ViewMazeShredingerBlocksGroup>()        .AsSingle().When(_ => release);
             Container.Bind<IViewMazeTurretsGroup>()             .To<ViewMazeTurretsGroup>()                 .AsSingle().When(_ => release);
@@ -122,6 +90,9 @@ namespace Mono_Installers
             Container.Bind<IViewMazeItemTrapReact>()            .To<ViewMazeItemTrapReact>()                .AsSingle().When(_ => release);
             Container.Bind<IViewMazeItemTrapIncreasing>()       .To<ViewMazeItemTrapIncreasing>()           .AsSingle().When(_ => release);
             
+            Container.Bind<IViewMazeRotation>()                 .To<ViewMazeRotationProt>()                 .AsSingle();//.When(_ => prototyping);
+            Container.Bind<IInputConfigurator>()                .To<RazorMazeInputConfiguratorProt>()       .AsSingle();//.When(_ => prototyping);
+            Container.Bind<IViewUI>()                           .To<ViewUIProt>()                           .AsSingle();//.When(_ => prototyping);
             // Container.Bind<IViewMazeRotation>()              .To<ViewMazeRotation>()                     .AsSingle().When(_ => release);
             // Container.Bind<IViewUI>()                        .To<ViewUI>()                               .AsSingle().When(_ => release);
 

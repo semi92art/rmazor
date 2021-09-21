@@ -45,11 +45,7 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
         
         #region api
 
-        public override void InitMazeItems(
-            MazeInfo _Info, 
-            SpawnPool<IViewMazeItemPath> _PathPool, 
-            Dictionary<EMazeItemType, 
-                SpawnPool<IViewMazeItem>> _BlockPools)
+        public override void InitPathItems(MazeInfo _Info, SpawnPool<IViewMazeItemPath> _PathPool)
         {
             CoordinateConverter.Init(_Info.Size);
             foreach (var pathItemPos in _Info.Path)
@@ -64,7 +60,11 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
                 pathItemInPool.Init(props);
                 _PathPool.Activate(pathItemInPool);
             }
+        }
 
+        public override void InitBlockItems(MazeInfo _Info, Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> _BlockPools)
+        {
+            CoordinateConverter.Init(_Info.Size);
             foreach (var mazeItem in _Info.MazeItems.Where(_Item => _Item.Type != EMazeItemType.Block))
             {
                 var props = new ViewMazeItemProps
@@ -82,21 +82,17 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
                 _BlockPools[mazeItem.Type].Activate(blockItemInPool);
             }
         }
-        
+
         #endregion
         
         #region nonpublic methods
-
-        protected override void AddPathItem(ICollection<IViewMazeItem> _Items, MazeInfo _Info, V2Int _Position)
-        {
-            throw new Exception("this method is only for prototypes");
-        }
-
-        protected override void AddMazeItem(ICollection<IViewMazeItem> _Items, MazeInfo _Info, MazeItem _Item)
-        {
-            throw new Exception("this method is only for prototypes");
-        }
         
+        protected override void AddPathItem(ICollection<IViewMazeItem> _Items, MazeInfo _Info, V2Int _Position)
+            => throw new Exception("this method is only for prototypes");
+
+        protected override void AddMazeItem(ICollection<IViewMazeItem> _Items, MazeInfo _Info, MazeItem _Item) 
+            => throw new Exception("this method is only for prototypes");
+
         #endregion
     }
 }

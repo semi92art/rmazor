@@ -1,11 +1,14 @@
-﻿using Extensions;
+﻿using System.Collections.Generic;
+using Extensions;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
 using Ticker;
+using TimeProviders;
 using UnityEngine;
+using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
@@ -23,22 +26,19 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region inject
 
-        private IModelMazeData Data { get; }
         private IModelCharacter Character { get; }
-        private ViewSettings ViewSettings { get; }
         
         public ViewMazeItemMovingTrap(
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IModelMazeData _Data,
+            IGameTimeProvider _GameTimeProvider,
             IModelCharacter _Character,
             ITicker _Ticker,
             ViewSettings _ViewSettings) 
-            : base(_CoordinateConverter, _ContainersGetter, _Ticker)
+            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _Ticker)
         {
-            Data = _Data;
             Character = _Character;
-            ViewSettings = _ViewSettings;
         }
         
         #endregion
@@ -51,7 +51,8 @@ namespace Games.RazorMaze.Views.MazeItems
             set
             {
                 m_Activated = value;
-                m_Saw.enabled = value;
+                if (!value)
+                    m_Saw.enabled = false;
             }
         }
 
@@ -96,7 +97,7 @@ namespace Games.RazorMaze.Views.MazeItems
         }
 
         public override object Clone() => new ViewMazeItemMovingTrap(
-            CoordinateConverter, ContainersGetter, Data, Character, Ticker, ViewSettings);
+            CoordinateConverter, ContainersGetter, Data, GameTimeProvider, Character, Ticker, ViewSettings);
         
         #endregion
 
@@ -114,6 +115,7 @@ namespace Games.RazorMaze.Views.MazeItems
             saw.sprite = PrefabUtilsEx.GetObject<Sprite>("views", "moving_trap");
             saw.color = DrawingUtils.ColorTrap;
             saw.sortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
+            saw.enabled = false;
             var coll = go.AddComponent<CircleCollider2D>();
             coll.radius = 0.5f;
 
@@ -122,7 +124,24 @@ namespace Games.RazorMaze.Views.MazeItems
             Object = go;
             m_Saw = saw;
         }
-        
+
+        protected override void Appear(bool _Appear)
+        {
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !Initialized,
+                () =>
+                {
+                    RazorMazeUtils.DoAppearTransitionSimple(
+                        _Appear,
+                        GameTimeProvider,
+                        new Dictionary<IEnumerable<Renderer>, Color>
+                        {
+                            {new [] {m_Saw}, DrawingUtils.ColorLines}
+                        });
+
+                }));
+        }
+
         private void StartRotation()
         {
             m_Rotate = true;

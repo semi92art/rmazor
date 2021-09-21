@@ -1,35 +1,32 @@
-﻿using Games.RazorMaze.Models.ItemProceeders;
+﻿using Games.RazorMaze.Models;
+using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.MazeItems;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
-    public class ViewMazeTrapsReactItemGroup : IViewMazeTrapsReactItemsGroup
+    public class ViewMazeTrapsReactItemGroup : ViewMazeItemsGroupBase, IViewMazeTrapsReactItemsGroup
     {
         #region inject
-
-        private IViewMazeCommon ViewMazeCommon { get; }
-
-        public ViewMazeTrapsReactItemGroup(IViewMazeCommon _ViewMazeCommon)
-        {
-            ViewMazeCommon = _ViewMazeCommon;
-        }
+        
+        public ViewMazeTrapsReactItemGroup(IViewMazeCommon _Common) : base (_Common) { }
         
         #endregion
         
         #region api
 
+        public override EMazeItemType[] Types => new[] {EMazeItemType.TrapReact};
         public event NoArgsHandler Initialized;
         public void Init() => Initialized?.Invoke();
 
         public void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args)
         {
-            ViewMazeCommon.GetItem<IViewMazeItemTrapReact>(_Args.Item).OnTrapReact(_Args);
+            Common.GetItem<IViewMazeItemTrapReact>(_Args.Item).OnTrapReact(_Args);
         }
         
         #endregion
-        
-        
 
+
+        
     }
 }

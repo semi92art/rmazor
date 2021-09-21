@@ -2,7 +2,7 @@
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
-    public interface IViewMazeTurretsGroup : IInit
+    public interface IViewMazeTurretsGroup : IInit, IOnLevelStageChanged, IMazeItemTypes
     {
         void OnTurretShoot(TurretShotEventArgs _Args);
     }

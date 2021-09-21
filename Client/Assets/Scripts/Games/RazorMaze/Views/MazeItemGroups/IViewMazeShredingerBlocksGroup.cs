@@ -2,7 +2,7 @@
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
-    public interface IViewMazeShredingerBlocksGroup
+    public interface IViewMazeShredingerBlocksGroup : IOnLevelStageChanged, IMazeItemTypes
     {
         void OnShredingerBlockEvent(ShredingerBlockArgs _Args);
     }

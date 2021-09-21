@@ -1,10 +1,14 @@
-﻿using Exceptions;
+﻿using System.Collections.Generic;
+using Exceptions;
 using Extensions;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.Utils;
+using Shapes;
 using Ticker;
+using TimeProviders;
 using UnityEngine;
 using Utils;
 
@@ -29,22 +33,25 @@ namespace Games.RazorMaze.Views.MazeItems
         private Transform m_Mace;
         private Vector2 m_Position;
 
+        private MeshRenderer m_MaceRenderer;
+        private Disc m_MaceDisc;
+        
         #endregion
         
         #region inject
         
-        private IModelMazeData Data { get; }
         private IModelCharacter Character { get; }
 
         public ViewMazeItemGravityTrap(
+            ViewSettings _ViewSettings,
             IModelMazeData _Data,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
+            IGameTimeProvider _GameTimeProvider,
             IModelCharacter _Character,
             ITicker _Ticker)
-            : base(_CoordinateConverter, _ContainersGetter, _Ticker)
+            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _Ticker)
         {
-            Data = _Data;
             Character = _Character;
         }
         
@@ -95,9 +102,9 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Rotate = false;
         }
 
-        public override object Clone() =>
-            new ViewMazeItemGravityTrap(Data, CoordinateConverter, ContainersGetter, Character, Ticker);
-
+        public override object Clone() => new ViewMazeItemGravityTrap(
+            ViewSettings, Data, CoordinateConverter, ContainersGetter, GameTimeProvider, Character, Ticker);
+        
         #endregion
         
         #region nonpublic methods
@@ -111,8 +118,35 @@ namespace Games.RazorMaze.Views.MazeItems
             var go = PrefabUtilsEx.InitPrefab(
                 Object.transform, "views", "gravity_trap");
             m_Mace = go.GetCompItem<Transform>("container");
+
+            m_MaceRenderer = go.GetCompItem<MeshRenderer>("renderer");
+            m_MaceDisc = go.GetCompItem<Disc>("disc");
+            
             go.transform.SetLocalPosXY(Vector2.zero);
             go.transform.localScale = Vector3.one * CoordinateConverter.GetScale() * ShapeScale;
+        }
+
+        protected override void Appear(bool _Appear)
+        {
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !Initialized,
+                () =>
+                {
+                    RazorMazeUtils.DoAppearTransitionSimple(
+                        _Appear,
+                        GameTimeProvider,
+                        new Dictionary<IEnumerable<ShapeRenderer>, Color>
+                        {
+                            {new [] {m_MaceDisc}, DrawingUtils.ColorLines}
+                        });
+                    RazorMazeUtils.DoAppearTransitionSimple(
+                        _Appear,
+                        GameTimeProvider,
+                        new Dictionary<IEnumerable<Renderer>, Color>
+                        {
+                            {new [] {m_MaceRenderer}, DrawingUtils.ColorLines}
+                        });
+                }));
         }
 
         private Vector3 GetRotationDirection(Vector2 _DropDirection)

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Entities;
 using Extensions;
+using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
@@ -31,7 +32,8 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
         
         #region nonpublic members
-        
+
+        private bool m_Appeared;
         private bool m_Initialized;
         private float m_GravitySpawnTimer;
         
@@ -42,21 +44,15 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
         
         #region inject
-        
-        private ViewSettings ViewSettings { get; }
-        private IGameTimeProvider GameTimeProvider { get; }
 
         public ViewMazeItemPortal(
             ICoordinateConverter _CoordinateConverter, 
             IContainersGetter _ContainersGetter,
+            IModelMazeData _Data,
             ITicker _Ticker,
             IGameTimeProvider _GameTimeProvider,
             ViewSettings _ViewSettings)
-            : base(_CoordinateConverter, _ContainersGetter, _Ticker)
-        {
-            ViewSettings = _ViewSettings;
-            GameTimeProvider = _GameTimeProvider;
-        }
+            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _Ticker) { }
         
         #endregion
 
@@ -86,12 +82,13 @@ namespace Games.RazorMaze.Views.MazeItems
                 float c = clockwise ? -1f : 1f;
                 m_Orbits[i].transform.Rotate(Vector3.forward * RotationSpeed * c * Time.deltaTime * 50f);
             }
-            UpdateGravityItems();
+            if (m_Appeared)
+                UpdateGravityItems();
         }
         
         public override object Clone() => new ViewMazeItemPortal(
-            CoordinateConverter, ContainersGetter, Ticker, GameTimeProvider, ViewSettings);
-
+            CoordinateConverter, ContainersGetter, Data, Ticker, GameTimeProvider, ViewSettings);
+        
         public void DoTeleport(PortalEventArgs _Args)
         {
             Coroutines.Run(Coroutines.Lerp(
@@ -182,6 +179,32 @@ namespace Games.RazorMaze.Views.MazeItems
             InitGravitySpawnPool();
             
             m_Initialized = true;
+        }
+
+        protected override void Appear(bool _Appear)
+        {
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !Initialized,
+                () =>
+                {
+                    RazorMazeUtils.DoAppearTransitionSimple(
+                        _Appear,
+                        GameTimeProvider,
+                        new Dictionary<IEnumerable<ShapeRenderer>, Color>
+                        {
+                            {new [] {m_Center}, DrawingUtils.ColorLines},
+                            {m_Orbits, DrawingUtils.ColorLines}
+                        },
+                        () =>
+                        {
+                            m_Appeared = _Appear;
+                            if (_Appear) 
+                                return;
+                            foreach (var item in m_GravityItems)
+                                m_GravityItems.Deactivate(item);
+                        });
+
+                }));
         }
 
         private void InitGravitySpawnPool()

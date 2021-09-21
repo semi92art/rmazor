@@ -6,19 +6,16 @@ namespace Games.RazorMaze.Models
 {
     public enum EMazeItemType
     {
-        // blocks
         Block,
         GravityBlock,
         ShredingerBlock,
         Portal,
-        // traps
         TrapReact,
         TrapIncreasing,
         TrapMoving,
         GravityTrap,
-        // turrets
         Turret,
-        TurretRotating,
+        Attenuator,
         Springboard
     }
 

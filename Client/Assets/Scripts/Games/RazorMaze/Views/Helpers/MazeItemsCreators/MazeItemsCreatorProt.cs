@@ -54,11 +54,12 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
         
         #region api
 
-        public override void InitMazeItems(
-            MazeInfo _Info,
-            SpawnPool<IViewMazeItemPath> _PathPool,
-            Dictionary<EMazeItemType,
-                SpawnPool<IViewMazeItem>> _BlockPools)
+        public override void InitPathItems(MazeInfo _Info, SpawnPool<IViewMazeItemPath> _PathPool)
+        {
+            throw new System.NotImplementedException("This method is only for release");
+        }
+
+        public override void InitBlockItems(MazeInfo _Info, Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> _BlockPools)
         {
             throw new System.NotImplementedException("This method is only for release");
         }
@@ -66,6 +67,8 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
         #endregion
         
         #region nonpublic methods
+
+
 
         protected override void AddPathItem(ICollection<IViewMazeItem> _Items, MazeInfo _Info, V2Int _Position)
         {

@@ -73,10 +73,8 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
             return res;
         }
 
-        public abstract void InitMazeItems(
-            MazeInfo _Info,
-            SpawnPool<IViewMazeItemPath> _PathPool,
-            Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> _BlockPools);
+        public abstract void InitPathItems(MazeInfo _Info, SpawnPool<IViewMazeItemPath> _PathPool);
+        public abstract void InitBlockItems(MazeInfo _Info, Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> _BlockPools);
 
         public IViewMazeItem CloneDefaultBlock(EMazeItemType _Type)
         {
@@ -92,7 +90,7 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
                 case EMazeItemType.TrapMoving:      item = MovingTrap; break;
                 case EMazeItemType.GravityTrap:     item = GravityTrap; break;
                 case EMazeItemType.Turret:          item = Turret; break;
-                case EMazeItemType.TurretRotating:  item = null; break;
+                case EMazeItemType.Attenuator:  item = null; break;
                 case EMazeItemType.Springboard:     item = Springboard; break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Type);

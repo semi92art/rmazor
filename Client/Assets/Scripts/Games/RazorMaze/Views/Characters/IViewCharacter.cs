@@ -4,7 +4,7 @@ using SpawnPools;
 
 namespace Games.RazorMaze.Views.Characters
 {
-    public interface IViewCharacter : IInit, IActivated, IOnRevivalOrDeath
+    public interface IViewCharacter : IInit, IActivated, IOnRevivalOrDeath, IOnLevelStageChanged
     {
         void OnMovingStarted(CharacterMovingEventArgs _Args);
         void OnMoving(CharacterMovingEventArgs _Args);

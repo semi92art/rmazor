@@ -71,7 +71,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         {
             var dropDirection = RazorMazeUtils.GetDropDirection(_Orientation);
             foreach (var info in GetProceedInfos(Types).Values
-                    .Where(_Info => _Info.IsProceeding && _Info.ProceedingStage == StageIdle))
+                    .Where(_Info => _Info.IsProceeding))
                 MoveMazeItemGravity((MazeItemProceedInfo)info, dropDirection, _CharacterPoint);
         } 
         
@@ -85,11 +85,11 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 .Where(_Item => _Item.Type == EMazeItemType.GravityBlock
                                 || _Item.Type == EMazeItemType.GravityTrap)
                 .ToList();
-            _Info.ProceedingStage = StageDrop;
             Coroutines.Run(Coroutines.WaitWhile(
                 () => _Info.ProceedingStage == StageDrop,
                 () =>
                 {
+                    _Info.ProceedingStage = StageDrop;
                     var pos = _Info.Item.Position;
                     bool doMoveByPath = false;
                     V2Int? altPos = null;

@@ -118,7 +118,7 @@ namespace Games.RazorMaze.Prot.Editor
                 case EMazeItemType.Block:
                 case EMazeItemType.ShredingerBlock:
                 case EMazeItemType.TrapIncreasing:
-                case EMazeItemType.TurretRotating:
+                case EMazeItemType.Attenuator:
                     // do nothing
                     break;
                 default: throw new SwitchCaseNotImplementedException(props.Type);
