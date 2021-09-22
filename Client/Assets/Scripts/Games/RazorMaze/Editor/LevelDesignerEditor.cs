@@ -236,6 +236,7 @@ namespace Games.RazorMaze.Editor
                                 return str + " (Release)";
                             return str;
                         }).ToArray());
+                EditorUtilsEx.GuiButtonAction("Reload", () => ReloadReorderableLevels(true));
             });
             if (_heapIndex != _heapIndexCheck)
                 ReloadReorderableLevels(true);
