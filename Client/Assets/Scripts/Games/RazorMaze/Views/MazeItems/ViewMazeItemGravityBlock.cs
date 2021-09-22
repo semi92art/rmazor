@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Extensions;
+using DI.Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;

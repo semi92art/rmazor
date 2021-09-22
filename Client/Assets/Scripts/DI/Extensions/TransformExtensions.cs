@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Utils;
 
-namespace Extensions
+namespace DI.Extensions
 {
     public static class TransformExtensions
     {

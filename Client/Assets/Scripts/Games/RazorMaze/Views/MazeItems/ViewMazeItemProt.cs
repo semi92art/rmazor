@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DI.Extensions;
 using Entities;
 using Exceptions;
-using Extensions;
 using GameHelpers;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Views.MazeItems.Props;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using UnityEngine;

@@ -2,6 +2,7 @@
 using Entities;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeItems;
+using Games.RazorMaze.Views.MazeItems.Props;
 
 namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
 {

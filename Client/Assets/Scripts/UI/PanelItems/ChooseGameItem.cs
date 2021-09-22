@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Constants;
+using DI.Extensions;
 using Entities;
-using Extensions;
 using GameHelpers;
 using Ticker;
 using TMPro;

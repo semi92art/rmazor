@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Exceptions;
-using Games.RazorMaze.Views;
 using Ticker;
 
 namespace Games.RazorMaze.Models
 {
     public delegate void EInputCommandHandler(EInputCommand _Command);
     
-    public interface IInputScheduler : IOnLevelStageChanged
+    public interface IInputScheduler
     {
         event EInputCommandHandler MoveCommand; 
         event EInputCommandHandler RotateCommand;
@@ -126,10 +125,5 @@ namespace Games.RazorMaze.Models
         }
         
         #endregion
-
-        public void OnLevelStageChanged(LevelStageArgs _Args)
-        {
-            
-        }
     }
 }

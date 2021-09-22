@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Constants;
+using DI.Extensions;
 using Exceptions;
-using Extensions;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Common;

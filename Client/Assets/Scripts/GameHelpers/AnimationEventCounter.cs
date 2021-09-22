@@ -1,13 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class AnimationEventCounter : MonoBehaviour
+namespace GameHelpers
 {
-    public int count;
-
-    public void OnEvent()
+    public class AnimationEventCounter : MonoBehaviour
     {
-        count++;
+        public int count;
+
+        public void OnEvent()
+        {
+            count++;
+        }
     }
 }

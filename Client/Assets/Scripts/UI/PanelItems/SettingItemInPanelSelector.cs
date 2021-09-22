@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Constants;
+using DI.Extensions;
 using DialogViewers;
 using Entities;
-using Extensions;
 using Managers;
 using Ticker;
 using TMPro;

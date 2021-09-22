@@ -1,6 +1,6 @@
 ﻿using Constants;
+using DI.Extensions;
 using Entities;
-using Extensions;
 using Managers;
 using Network;
 using Ticker;

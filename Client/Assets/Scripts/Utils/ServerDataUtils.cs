@@ -1,4 +1,4 @@
-﻿namespace DefaultNamespace
+﻿namespace Utils
 {
     public class ServerDataUtils
     {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
-using Extensions;
+using DI.Extensions;
 using GameHelpers;
 using Network;
 using UnityEngine;

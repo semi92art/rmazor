@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Exceptions;
-using Extensions;
 using GameHelpers;
 using Managers;
 using UnityEngine;
 using TMPro;
+using DI.Extensions;
 
 namespace MkeyFW
 {

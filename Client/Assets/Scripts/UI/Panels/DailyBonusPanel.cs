@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Constants;
+using DI.Extensions;
 using DialogViewers;
 using Entities;
-using Extensions;
 using GameHelpers;
 using Ticker;
 using UI.Entities;

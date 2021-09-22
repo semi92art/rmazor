@@ -1,6 +1,7 @@
-﻿using Extensions;
+﻿using DI.Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.MazeItems.Props;
 using Ticker;
 using TimeProviders;
 using UnityEngine;

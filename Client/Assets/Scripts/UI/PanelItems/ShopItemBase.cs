@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Constants;
+using DI.Extensions;
 using Entities;
 using Exceptions;
-using Extensions;
 using GameHelpers;
 using Managers;
 using Ticker;

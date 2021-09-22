@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DI.Extensions;
 using Entities;
 using Exceptions;
-using Extensions;
 using Games.RazorMaze.Models;
 using Shapes;
 using TimeProviders;

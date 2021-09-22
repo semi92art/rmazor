@@ -1,6 +1,6 @@
 ﻿using Constants;
+using DI.Extensions;
 using DialogViewers;
-using Extensions;
 using GameHelpers;
 using Ticker;
 using TMPro;

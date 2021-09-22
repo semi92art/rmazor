@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Entities;
-using Extensions;
 using GameHelpers;
 using UI.Factories;
 using UI.Managers;
@@ -9,6 +8,7 @@ using UI.PanelItems;
 using UnityEngine;
 using Utils;
 using Constants;
+using DI.Extensions;
 using Exceptions;
 using Managers;
 using Network;

@@ -1,6 +1,5 @@
 ﻿using DialogViewers;
 using System.Collections.Generic;
-using Extensions;
 using GameHelpers;
 using Settings;
 using TMPro;
@@ -10,6 +9,7 @@ using UI.Managers;
 using UI.PanelItems;
 using UnityEngine;
 using Constants;
+using DI.Extensions;
 using Ticker;
 
 namespace UI.Panels

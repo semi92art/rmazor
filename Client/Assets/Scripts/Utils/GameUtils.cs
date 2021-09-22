@@ -1,4 +1,4 @@
-﻿using Extensions;
+﻿using DI.Extensions;
 using UnityEngine;
 
 namespace Utils

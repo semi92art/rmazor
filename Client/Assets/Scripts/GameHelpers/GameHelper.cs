@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Extensions;
+using DI.Extensions;
 using Shapes;
 using UnityEngine;
 using Utils;

@@ -1,4 +1,4 @@
-﻿using Extensions;
+﻿using DI.Extensions;
 using GameHelpers;
 using Ticker;
 using UI.Factories;

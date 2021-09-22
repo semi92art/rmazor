@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using DI.Extensions;
 using Exceptions;
-using Extensions;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Entities;
 using Games.RazorMaze.Models;
 
-namespace Games.RazorMaze.Views.MazeItems
+namespace Games.RazorMaze.Views.MazeItems.Props
 {
     [Serializable]
     public class ViewMazeItemProps

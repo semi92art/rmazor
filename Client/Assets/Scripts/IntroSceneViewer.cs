@@ -1,5 +1,5 @@
 ﻿using Constants;
-using Extensions;
+using DI.Extensions;
 using GameHelpers;
 using Games.RazorMaze;
 using Games.RazorMaze.Controllers;

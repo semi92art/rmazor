@@ -5,7 +5,7 @@ namespace PygmyMonkey.ColorPalette
 {
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(ColorPaletteObject))]
-	public class ColorPaletteObjectEditor : Editor
+	public class ColorPaletteObjectEditor : UnityEditor.Editor
 	{
 		private SerializedProperty m_colorIndexProperty;
 		private SerializedProperty m_reactProperty;

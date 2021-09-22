@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Constants;
-using Extensions;
+using DI.Extensions;
 using GameHelpers;
 using TimeProviders;
 using UnityEngine;

@@ -1,7 +1,7 @@
 ﻿#if UNITY_EDITOR || DEVELOPMENT_BUILD
 
 using System.Collections.Generic;
-using Extensions;
+using DI.Extensions;
 using GameHelpers;
 using Network;
 using UI;

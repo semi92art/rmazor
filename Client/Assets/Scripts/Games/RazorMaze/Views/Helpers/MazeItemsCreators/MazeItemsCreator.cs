@@ -5,6 +5,7 @@ using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeItems;
+using Games.RazorMaze.Views.MazeItems.Props;
 using SpawnPools;
 using Zenject;
 

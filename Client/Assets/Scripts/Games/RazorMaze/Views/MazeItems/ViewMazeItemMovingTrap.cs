@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
-using Extensions;
+using DI.Extensions;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.MazeItems.Props;
 using Games.RazorMaze.Views.Utils;
 using Ticker;
 using TimeProviders;

@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Constants;
-using Extensions;
+using DI.Extensions;
 using GameHelpers;
 using UnityEngine;
 using Utils;

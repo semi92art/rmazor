@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Extensions;
+using DI.Extensions;
 using Games.RazorMaze.Models;
 using Newtonsoft.Json;
 using UnityEngine;

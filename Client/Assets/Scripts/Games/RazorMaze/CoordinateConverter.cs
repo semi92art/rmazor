@@ -1,5 +1,5 @@
-﻿using Entities;
-using Extensions;
+﻿using DI.Extensions;
+using Entities;
 using UnityEngine;
 using Utils;
 using Zenject;

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using DI.Extensions;
 using Entities;
 using Exceptions;
-using Extensions;
 using UI.Managers;
 using UI.Panels;
 using UnityEngine;

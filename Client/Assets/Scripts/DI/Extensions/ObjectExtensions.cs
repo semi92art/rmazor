@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Newtonsoft.Json;
 
-namespace Extensions
+namespace DI.Extensions
 {
     public static class ObjectExtensions
     {

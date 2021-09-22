@@ -1,6 +1,6 @@
 ﻿using Games.RazorMaze.Models.ItemProceeders;
 
-namespace Games.RazorMaze.Views.MazeItems
+namespace Games.RazorMaze.Views.MazeItems.Additional
 {
     // TODO
     public class TurretBulletTailSimple : ITurretBulletTail

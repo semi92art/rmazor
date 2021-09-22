@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Entities;
 
-namespace Extensions
+namespace DI.Extensions
 {
     public static class NumericExtensions
     {

@@ -1,10 +1,9 @@
-﻿using UI;
-using UI.Helpers;
+﻿using UI.Helpers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Extensions
+namespace DI.Extensions
 {
     public static class UiExtensions
     {

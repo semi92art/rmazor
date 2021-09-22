@@ -1,7 +1,7 @@
 ﻿using Constants;
+using DI.Extensions;
 using DialogViewers;
 using Exceptions;
-using Extensions;
 using GameHelpers;
 using Managers;
 using Ticker;

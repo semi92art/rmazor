@@ -1,5 +1,5 @@
 ﻿using Constants;
-using Extensions;
+using DI.Extensions;
 using Utils;
 
 namespace UI

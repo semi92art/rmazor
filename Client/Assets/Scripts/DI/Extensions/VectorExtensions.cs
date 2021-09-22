@@ -1,7 +1,6 @@
-﻿using Entities;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Extensions
+namespace DI.Extensions
 {
     public static class VectorExtensions
     {

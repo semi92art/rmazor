@@ -1,4 +1,4 @@
-﻿using Extensions;
+﻿using DI.Extensions;
 using UI.Entities;
 using UI.Helpers;
 using UnityEngine;

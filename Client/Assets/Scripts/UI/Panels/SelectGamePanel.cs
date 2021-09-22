@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Constants;
+using DI.Extensions;
 using DialogViewers;
-using Extensions;
 using GameHelpers;
 using Network;
 using Ticker;

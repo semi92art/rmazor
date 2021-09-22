@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using Extensions;
+using DI.Extensions;
 using UnityEditor;
 using UnityEngine;
 using Utils;

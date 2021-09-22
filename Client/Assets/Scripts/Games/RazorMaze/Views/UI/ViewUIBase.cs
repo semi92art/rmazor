@@ -1,6 +1,6 @@
-﻿using DialogViewers;
+﻿using DI.Extensions;
+using DialogViewers;
 using Entities;
-using Extensions;
 using Games.RazorMaze.Views.Common;
 using Ticker;
 using TimeProviders;

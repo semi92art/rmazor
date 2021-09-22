@@ -10,6 +10,7 @@ using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItemGroups;
 using Games.RazorMaze.Views.MazeItems;
+using Games.RazorMaze.Views.MazeItems.Additional;
 using Games.RazorMaze.Views.Rotation;
 using Games.RazorMaze.Views.UI;
 using TimeProviders;

@@ -1,7 +1,7 @@
 ﻿using Constants;
+using DI.Extensions;
 using DialogViewers;
 using Entities;
-using Extensions;
 using GameHelpers;
 using Lean.Localization;
 using Managers;

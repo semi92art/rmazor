@@ -1,8 +1,7 @@
-﻿using UI;
-using UI.Entities;
+﻿using UI.Entities;
 using UnityEngine;
 
-namespace Extensions
+namespace DI.Extensions
 {
     public static class RectTransformExtensions
     {

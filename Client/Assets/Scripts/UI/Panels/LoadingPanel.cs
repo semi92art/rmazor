@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using DI.Extensions;
 using DialogViewers;
-using Extensions;
 using GameHelpers;
 using Ticker;
 using UI.Entities;
