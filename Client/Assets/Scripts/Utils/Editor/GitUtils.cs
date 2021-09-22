@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 
 namespace Utils.Editor
 {
@@ -19,7 +20,7 @@ namespace Utils.Editor
             try {
                 process.Start();
             }
-            catch (System.Exception) {
+            catch (Exception) {
                 Dbg.LogError("Git is not set-up correctly, required to be on PATH, and to be a git project.");
                 throw;
             }
@@ -33,7 +34,7 @@ namespace Utils.Editor
             if (output.Contains("fatal"))
             {
                 string message = "Command: git " + _GitCommand + " Failed\n" + output + errorOutput;
-                throw new System.Exception(message);
+                throw new Exception(message);
             }
             if (errorOutput != "") 
                 Dbg.Log("Git Message: " + errorOutput);

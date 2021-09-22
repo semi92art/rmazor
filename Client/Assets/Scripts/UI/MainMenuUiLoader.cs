@@ -13,7 +13,6 @@ using UI.Panels;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils;
-using Zenject;
 
 namespace UI
 {

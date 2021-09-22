@@ -1,4 +1,6 @@
-﻿using DI.Extensions;
+﻿using System;
+using System.Reflection;
+using DI.Extensions;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -156,10 +158,10 @@ namespace Utils.Editor
 
         public static void ClearConsole()
         {
-            var logEntries = System.Type.GetType("UnityEditor.LogEntries, UnityEditor.dll");
+            var logEntries = Type.GetType("UnityEditor.LogEntries, UnityEditor.dll");
             var clearMethod = logEntries?.GetMethod(
                 "Clear", 
-                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
+                BindingFlags.Static | BindingFlags.Public);
             clearMethod?.Invoke(null, null);
         }
 

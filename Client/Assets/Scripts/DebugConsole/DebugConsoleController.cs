@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using Constants;
 using Entities;
-using UnityEngine;
+using Utils;
 
 namespace DebugConsole
 {
@@ -77,7 +77,7 @@ namespace DebugConsole
         
         public void AppendLogLine(string _Line)
         {
-            Utils.Dbg.Log(_Line);
+            Dbg.Log(_Line);
 
             if (Scrollback.Count >= ScrollbackSize)
                 Scrollback.Dequeue();

@@ -1,4 +1,5 @@
-﻿using Games.RazorMaze.Models;
+﻿using System;
+using Games.RazorMaze.Models;
 
 namespace Games.RazorMaze.Views.Rotation
 {
@@ -8,22 +9,22 @@ namespace Games.RazorMaze.Views.Rotation
         
         public void Init()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public void StartRotation(MazeRotateDirection _Direction, MazeOrientation _Orientation)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public void Rotate(float _Progress)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public void FinishRotation()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

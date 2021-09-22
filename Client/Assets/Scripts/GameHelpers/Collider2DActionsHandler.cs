@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace GameHelpers
@@ -6,9 +7,9 @@ namespace GameHelpers
     [RequireComponent(typeof(Collider2D))]
     public class Collider2DActionsHandler : MonoBehaviour
     {
-        [System.Serializable]
+        [Serializable]
         public class Collider2DEvent : UnityEvent<Collider2D>{ }
-        [System.Serializable]
+        [Serializable]
         public class Collision2DEvent : UnityEvent<Collision2D>{ }
         
         [SerializeField] public Collider2DEvent triggerEnterAction;

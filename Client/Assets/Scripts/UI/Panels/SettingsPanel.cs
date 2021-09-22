@@ -1,16 +1,16 @@
-﻿using DialogViewers;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Constants;
+using DI.Extensions;
+using DialogViewers;
 using GameHelpers;
 using Settings;
+using Ticker;
 using TMPro;
 using UI.Entities;
 using UI.Factories;
 using UI.Managers;
 using UI.PanelItems;
 using UnityEngine;
-using Constants;
-using DI.Extensions;
-using Ticker;
 
 namespace UI.Panels
 {

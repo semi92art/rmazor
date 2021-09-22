@@ -17,7 +17,7 @@ namespace UI.PanelItems
         [SerializeField] private Image secondCurrencyIcon;
 
         public static IShopItem Create(RectTransform _Parent) =>
-            ShopItemBase.Create<ShopItemMoney>(_Parent, "shop_item_money");
+            Create<ShopItemMoney>(_Parent, "shop_item_money");
 
         public void Init(ShopItemProps _Props, IEnumerable<GameObserver> _Observers, ITicker _Ticker)
         {

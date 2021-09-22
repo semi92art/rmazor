@@ -1,6 +1,8 @@
-﻿namespace Games.RazorMaze.Models
+﻿using System;
+
+namespace Games.RazorMaze.Models
 {
-    public class HealthPointsEventArgs : System.EventArgs
+    public class HealthPointsEventArgs : EventArgs
     {
         public long HealthPoints { get; }
         public HealthPointsEventArgs(long _HealthPoints) => HealthPoints = _HealthPoints;

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using Games.RazorMaze;
 using Games.RazorMaze.Models;
-using Managers;
 
 namespace Entities
 {

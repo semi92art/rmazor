@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml.Linq;
 using DI.Extensions;
 using UI.Entities;
+using UnityEditor;
 using UnityEngine;
 
 namespace Utils
@@ -55,8 +56,8 @@ namespace Utils
             if (PrefabSetExist(_PrefabSetName))
                 return GetPrefabSet(_PrefabSetName);
             var set = ScriptableObject.CreateInstance<PrefabSetObject>();
-            UnityEditor.AssetDatabase.CreateAsset(set, $"Assets/Resources/prefab_sets/{_PrefabSetName}.asset");
-            UnityEditor.AssetDatabase.SaveAssets();
+            AssetDatabase.CreateAsset(set, $"Assets/Resources/prefab_sets/{_PrefabSetName}.asset");
+            AssetDatabase.SaveAssets();
             return set;
         }
 #endif

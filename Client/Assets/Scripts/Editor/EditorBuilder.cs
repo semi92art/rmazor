@@ -4,6 +4,7 @@ using Constants;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
+using Utils;
 
 public class EditorBuilder : EditorWindow
 {
@@ -60,7 +61,7 @@ public class EditorBuilder : EditorWindow
     private void Build(bool _Development)
     {
         bool isAndroid = m_PlatformIdx == 0;
-        Utils.Dbg.Log($"Starting {(_Development ? "Development" : "Release")} Build." +
+        Dbg.Log($"Starting {(_Development ? "Development" : "Release")} Build." +
                 $" Game: {m_GameInfos[m_GamePopupIdx].Title};" +
                 $" Platform: {m_PlatformNames[m_PlatformIdx]}");
         var buildTarget = isAndroid ? BuildTargetGroup.Android : BuildTargetGroup.iOS;
@@ -91,10 +92,10 @@ public class EditorBuilder : EditorWindow
         switch (summary.result)
         {
             case BuildResult.Succeeded:
-                Utils.Dbg.Log("Build succeeded");
+                Dbg.Log("Build succeeded");
                 break;
             case BuildResult.Failed:
-                Utils.Dbg.LogError("Build failed");
+                Dbg.LogError("Build failed");
                 break;
         }
     }

@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
-using Exceptions;
-using UnityEditor;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Exceptions;
+using UnityEditor;
+using Utils;
 using Utils.Editor;
 
 public static class BuildAssetBundles
@@ -35,10 +36,10 @@ public static class BuildAssetBundles
         EditorUtility.DisplayProgressBar(ProgressBarTitle, "Staging in git...", 20f);
         string unstagedFiles = GitUtils.RunGitCommand("ls-files --others --exclude-standard", BundlesLocalPath);
         if (!string.IsNullOrEmpty(unstagedFiles))
-            Utils.Dbg.Log($"New Files: {unstagedFiles}");
+            Dbg.Log($"New Files: {unstagedFiles}");
         string modifiedFiles = GitUtils.RunGitCommand("diff --name-only", BundlesLocalPath);
         if (!string.IsNullOrEmpty(modifiedFiles))
-            Utils.Dbg.Log($"Modified Files: {modifiedFiles}");
+            Dbg.Log($"Modified Files: {modifiedFiles}");
         var fileNames = BundleFileNames(unstagedFiles, modifiedFiles);
         var sb = new StringBuilder();
         foreach (var fileName in fileNames)
@@ -49,7 +50,7 @@ public static class BuildAssetBundles
         
         string fileNamesText = sb.ToString();
         if (string.IsNullOrEmpty(fileNamesText) || string.IsNullOrWhiteSpace(fileNamesText))
-            Utils.Dbg.Log("No new bundles to push");
+            Dbg.Log("No new bundles to push");
 
         GitUtils.RunGitCommand($"stage {fileNamesText}", BundlesLocalPath);
         EditorUtility.DisplayProgressBar(ProgressBarTitle, "Commit in git...", 50f);
@@ -115,7 +116,7 @@ public static class BuildAssetBundles
                 if (int.TryParse(File.ReadAllText(versionFileName), out int ver))
                     File.WriteAllText(versionFileName, $"{++ver}");
                 else
-                    Utils.Dbg.LogError($"Cannot read version from existing file {versionFileName}");
+                    Dbg.LogError($"Cannot read version from existing file {versionFileName}");
             }
             File.Copy(fileNames[i], newFileNames[i], true);
         }

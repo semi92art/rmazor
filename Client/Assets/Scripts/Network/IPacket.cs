@@ -1,9 +1,11 @@
-﻿namespace Network
+﻿using System;
+
+namespace Network
 {
     public interface IOnPacketFinish
     {
-        IPacket OnSuccess(System.Action _Action);
-        IPacket OnFail(System.Action _Action);
+        IPacket OnSuccess(Action _Action);
+        IPacket OnFail(Action _Action);
     }
     
     

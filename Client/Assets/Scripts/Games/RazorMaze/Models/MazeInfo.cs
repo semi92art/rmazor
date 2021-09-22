@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Entities;
 using Newtonsoft.Json;
 
 namespace Games.RazorMaze.Models
 {
-    [System.Serializable]
+    [Serializable]
     public class MazeInfo
     {
         public V2Int Size { get; set; }

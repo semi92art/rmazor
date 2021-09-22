@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Entities;
 using Exceptions;
@@ -201,7 +202,7 @@ namespace Games.RazorMaze.Prot.Editor
         {
             UnityAction<IEnumerable<V2Int>> setDir = _Directions =>
                 EditorUtilsEx.SceneDirtyAction(() => _Props.Directions = _Directions.ToList());
-            System.Func<V2Int, Color> getCol = _Direction => _Props.Directions.Contains(_Direction) ? Color.green : Color.white;
+            Func<V2Int, Color> getCol = _Direction => _Props.Directions.Contains(_Direction) ? Color.green : Color.white;
             EditorUtilsEx.GUIColorZone(getCol(V2Int.up), () => EditorUtilsEx.GuiButtonAction("△", setDir, new []{V2Int.up}));
             EditorUtilsEx.HorizontalZone(() =>
             {
@@ -224,7 +225,7 @@ namespace Games.RazorMaze.Prot.Editor
                     else _Props.Directions.Add(_Direction);
                 });
             };
-            System.Func<V2Int, Color> getCol = _Direction => _Props.Directions.Contains(_Direction) ? Color.green : Color.white;
+            Func<V2Int, Color> getCol = _Direction => _Props.Directions.Contains(_Direction) ? Color.green : Color.white;
             EditorUtilsEx.GUIColorZone(getCol(V2Int.up), () => EditorUtilsEx.GuiButtonAction("△", setDir, V2Int.up));
             EditorUtilsEx.HorizontalZone(() =>
             {

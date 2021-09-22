@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Constants;
@@ -13,7 +12,6 @@ using Shapes;
 using TimeProviders;
 using UnityEngine;
 using Utils;
-using Random = UnityEngine.Random;
 
 namespace Games.RazorMaze.Views.Characters
 {

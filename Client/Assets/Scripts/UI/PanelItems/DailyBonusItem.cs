@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Constants;
 using DI.Extensions;
 using Entities;
@@ -10,7 +11,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using Utils;
-
 
 namespace UI.PanelItems
 {
@@ -48,7 +48,7 @@ namespace UI.PanelItems
                 BankManager.Instance.SetIncome(money, icon.RTransform());
                 BankManager.Instance.PlusBankItems(money);
             
-                SaveUtils.PutValue(SaveKey.DailyBonusLastDate, System.DateTime.Today);
+                SaveUtils.PutValue(SaveKey.DailyBonusLastDate, DateTime.Today);
                 SaveUtils.PutValue(SaveKey.DailyBonusLastItemClickedDay, _Props.Day);
                 iconAnimator.SetTrigger(AnimKeys.Stop);
             });

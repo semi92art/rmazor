@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
 using DI.Extensions;
 using GameHelpers;
-using Network;
 using UnityEngine;
 using UnityEngine.Events;
+using Object = UnityEngine.Object;
+using Random = System.Random;
 
 namespace Utils
 {
     public static class CommonUtils
     {
         public const float SymbolWidth = 19;
-        public static readonly System.Random RandomGen = new System.Random();
+        public static readonly Random RandomGen = new Random();
 
 #if UNITY_ANDROID
         public static int GetAndroidSdkLevel() 
@@ -38,7 +38,7 @@ namespace Utils
                 go = new GameObject(_Name);
             _Instance = go.GetOrAddComponent<T>();
             if (GameSettings.PlayMode)
-                UnityEngine.Object.DontDestroyOnLoad(go);
+                Object.DontDestroyOnLoad(go);
             return _Instance;
         }
 
@@ -89,7 +89,7 @@ namespace Utils
         /// </summary>
         /// <param name="_Random">Random generator</param>
         /// <returns>Random value in range of 0.0 and 1.0</returns>
-        public static float NextFloat(this System.Random _Random)
+        public static float NextFloat(this Random _Random)
         {
             return (float) _Random.NextDouble();
         }
@@ -99,7 +99,7 @@ namespace Utils
         /// </summary>
         /// <param name="_Random">Random generator</param>
         /// <returns>Random value in range of -1.0 and 1.0</returns>
-        public static float NextFloatAlt(this System.Random _Random)
+        public static float NextFloatAlt(this Random _Random)
         {
             return 2f * ((float) _Random.NextDouble() - 0.5f);
         }

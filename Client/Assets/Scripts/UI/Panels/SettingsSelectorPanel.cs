@@ -1,16 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Constants;
+using DI.Extensions;
 using DialogViewers;
-using Entities;
 using GameHelpers;
+using Ticker;
 using UI.Entities;
 using UI.Factories;
 using UI.Managers;
 using UI.PanelItems;
 using UnityEngine;
 using UnityEngine.UI;
-using Constants;
-using DI.Extensions;
-using Ticker;
+using Object = UnityEngine.Object;
 
 namespace UI.Panels
 {
@@ -20,7 +21,7 @@ namespace UI.Panels
         
         private readonly IMenuDialogViewer m_DialogViewer;
         private readonly List<string> m_Items;
-        private readonly System.Action<string> m_Select;
+        private readonly Action<string> m_Select;
         private readonly string m_DefaultValue;
         private RectTransform m_Content;
         private ToggleGroup m_ToggleGroup;
@@ -36,7 +37,7 @@ namespace UI.Panels
             ITicker _Ticker,
             string _Value,
             List<string> _Items,
-            System.Action<string> _Select) : base(_Ticker)
+            Action<string> _Select) : base(_Ticker)
         {
             m_DialogViewer = _DialogViewer;
             m_DefaultValue = _Value;

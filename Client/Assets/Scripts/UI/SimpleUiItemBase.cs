@@ -5,7 +5,6 @@ using DI.Extensions;
 using TimeProviders;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.UI.ProceduralImage;
 using Utils;
 

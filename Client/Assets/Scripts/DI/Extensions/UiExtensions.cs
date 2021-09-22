@@ -1,5 +1,6 @@
 ﻿using UI.Helpers;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -29,7 +30,7 @@ namespace DI.Extensions
             _UiBehaviour.RTransform().SetParent(_NewParent);
         }
 
-        public static void SetOnClick(this Button _Button, UnityEngine.Events.UnityAction _OnClick)
+        public static void SetOnClick(this Button _Button, UnityAction _OnClick)
         {
             var @event = new Button.ButtonClickedEvent();
             @event.AddListener(_OnClick);

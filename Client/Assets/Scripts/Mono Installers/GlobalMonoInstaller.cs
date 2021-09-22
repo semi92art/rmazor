@@ -1,5 +1,4 @@
-﻿using UI;
-using Zenject;
+﻿using Zenject;
 
 namespace Mono_Installers
 {

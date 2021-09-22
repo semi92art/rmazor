@@ -1,6 +1,6 @@
 ﻿using Entities;
-using UnityEngine;
 using Lean.Localization;
+using UnityEngine;
 using Utils;
 
 public class LocalizationManager : IInit

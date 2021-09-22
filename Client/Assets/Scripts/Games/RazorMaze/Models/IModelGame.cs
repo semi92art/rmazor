@@ -1,6 +1,4 @@
-﻿using Games.RazorMaze.Views;
-
-namespace Games.RazorMaze.Models
+﻿namespace Games.RazorMaze.Models
 {
 
 }

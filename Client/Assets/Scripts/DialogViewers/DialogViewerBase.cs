@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
-using Entities;
 using Exceptions;
 using UI.Managers;
 using UI.Panels;

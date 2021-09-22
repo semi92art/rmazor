@@ -1,14 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Constants;
 using Entities;
-using Managers;
 using Ticker;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Utils;
-using Entry = UnityEngine.EventSystems.EventTrigger.Entry;
 
 namespace UI.PanelItems
 {
@@ -20,7 +19,7 @@ namespace UI.PanelItems
 
         private bool m_IsInitialized;
         private IEnumerable<SettingSelectorItem> m_Items;
-        private System.Action<string> m_OnSelect;
+        private Action<string> m_OnSelect;
 
         public void SetItems(IEnumerable<SettingSelectorItem> _Items)
         {
@@ -29,7 +28,7 @@ namespace UI.PanelItems
         
         public void Init(
             string _Text,
-            System.Action<string> _Select,
+            Action<string> _Select,
             bool _IsOn,
             IEnumerable<GameObserver> _Observers,
             ITicker _Ticker)
@@ -38,7 +37,7 @@ namespace UI.PanelItems
             title.text = _Text;
             name = $"{_Text} Setting";
             m_OnSelect = _Select;
-            var pointerDown = new Entry { eventID = EventTriggerType.PointerDown };
+            var pointerDown = new EventTrigger.Entry { eventID = EventTriggerType.PointerDown };
             pointerDown.callback.AddListener(Select);
             trigger.triggers.Add(pointerDown);
 

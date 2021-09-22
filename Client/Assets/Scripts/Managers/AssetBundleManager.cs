@@ -5,7 +5,6 @@ using DI.Extensions;
 using UnityEngine;
 using UnityEngine.Networking;
 using Utils;
-using Object = UnityEngine.Object;
 
 namespace Managers
 {

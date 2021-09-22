@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Constants;
 using DI.Extensions;
 using DialogViewers;
@@ -11,6 +12,7 @@ using UI.Managers;
 using UI.PanelItems;
 using UnityEngine;
 using Utils;
+using Object = UnityEngine.Object;
 
 namespace UI.Panels
 {
@@ -103,8 +105,8 @@ namespace UI.Panels
 
         private bool IsDailyBonusGotToday()
         {
-            var lastDate = SaveUtils.GetValue<System.DateTime>(SaveKey.DailyBonusLastDate);
-            var today = System.DateTime.Now.Date;
+            var lastDate = SaveUtils.GetValue<DateTime>(SaveKey.DailyBonusLastDate);
+            var today = DateTime.Now.Date;
             int daysPast = Mathf.FloorToInt((float)(today - lastDate.Date).TotalDays);
             return daysPast == 0;
         }

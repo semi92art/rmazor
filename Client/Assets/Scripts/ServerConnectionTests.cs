@@ -1,14 +1,13 @@
 ﻿using System.Collections;
 using System.Threading.Tasks;
-using Constants;
 using GameHelpers;
 using Network;
 using Network.Packets;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.Networking;
 using UnityEngine.TestTools;
 using Utils;
-using Assert = UnityEngine.Assertions.Assert;
 
 public class ServerConnectionTests
 {

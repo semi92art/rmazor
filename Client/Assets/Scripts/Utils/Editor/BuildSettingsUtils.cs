@@ -1,6 +1,5 @@
 ﻿using Constants;
 using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
 
 namespace Utils.Editor

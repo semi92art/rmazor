@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 using Utils;
-using System.IO;
 using Utils.Editor;
 
 public class LocalizationHelper : EditorWindow
@@ -177,7 +178,7 @@ public class LocalizationHelper : EditorWindow
         foreach (var langKey in langKeysDict.Keys.ToArray())
                 langKeysDict[langKey].Add($"{kvp.Key} = {kvp.Value.Values[langKey]}\r\n");
 
-        var sb = new System.Text.StringBuilder();
+        var sb = new StringBuilder();
         foreach (var key in m_Assets.Keys.ToArray())
         {
             sb.Clear();

@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Linq;
 using Games.RazorMaze.Models.ProceedInfos;
-using Games.RazorMaze.Views;
 using Utils;
 
 namespace Games.RazorMaze.Models.ItemProceeders

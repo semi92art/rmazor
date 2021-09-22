@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using Constants;
 using Entities;
-using Managers;
 using Lean.Localization;
 using Ticker;
-using UnityEngine;
 using Utils;
 
 namespace Settings

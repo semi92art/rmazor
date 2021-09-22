@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using Games.RazorMaze.Views.Characters;
+﻿using Games.RazorMaze.Views.Characters;
 
 namespace Games.RazorMaze.Views.Common
 {

@@ -16,7 +16,7 @@ namespace UI.PanelItems
         [SerializeField] private Image icon;
 
         public static IShopItem Create(RectTransform _Parent) =>
-            ShopItemBase.Create<ShopItemDefault>(_Parent, "shop_item_default");
+            Create<ShopItemDefault>(_Parent, "shop_item_default");
         
         public void Init(ShopItemProps _Props, IEnumerable<GameObserver> _Observers, ITicker _Ticker)
         {

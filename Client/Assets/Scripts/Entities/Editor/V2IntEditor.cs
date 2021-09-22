@@ -1,6 +1,5 @@
 ﻿using UnityEditor;
 using UnityEngine;
-using Utils.Editor;
 
 namespace Entities.Editor
 {

@@ -1,6 +1,5 @@
 ﻿using Constants;
 using Games.RazorMaze.Models;
-using Network;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;

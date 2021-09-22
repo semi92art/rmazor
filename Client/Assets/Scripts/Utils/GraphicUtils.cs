@@ -1,5 +1,8 @@
-﻿using Entities;
+﻿using System;
+using System.Reflection;
+using Entities;
 using UnityEngine;
+using Object = System.Object;
 
 namespace Utils
 {
@@ -46,12 +49,12 @@ namespace Utils
 #if UNITY_EDITOR
         private static Vector2 GetMainGameViewSize()
         {
-            System.Type t = System.Type.GetType("UnityEditor.GameView,UnityEditor");
-            System.Reflection.MethodInfo getSizeOfMainGameView = 
+            Type t = Type.GetType("UnityEditor.GameView,UnityEditor");
+            MethodInfo getSizeOfMainGameView = 
                 t?.GetMethod(
                     "GetSizeOfMainGameView",
-                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-            System.Object res = getSizeOfMainGameView?.Invoke(null,null);
+                    BindingFlags.NonPublic | BindingFlags.Static);
+            Object res = getSizeOfMainGameView?.Invoke(null,null);
             return (Vector2?) res ?? Vector2.zero;
         }
 #endif

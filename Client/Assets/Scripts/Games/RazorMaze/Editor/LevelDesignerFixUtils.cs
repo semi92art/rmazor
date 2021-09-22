@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Games.RazorMaze.Models;
 using UnityEditor;
 
 namespace Games.RazorMaze.Editor

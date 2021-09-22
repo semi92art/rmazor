@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Entities;
 using Games.RazorMaze.Models;
 using UnityEngine;
-using Random = UnityEngine.Random;
-using Entities;
 
 namespace Games.RazorMaze
 {

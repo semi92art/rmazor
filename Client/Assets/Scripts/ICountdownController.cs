@@ -1,6 +1,6 @@
-﻿using Ticker;
+﻿using System;
+using Ticker;
 using TimeProviders;
-using UnityEngine;
 
 public delegate void TimeHandler(float _Time);
 
@@ -9,7 +9,7 @@ public interface ICountdownController
     event TimeHandler OnTimeChange;
     event NoArgsHandler OnTimeEnded;
     void SetDuration(float _Duration);
-    void StartCountdown(System.Func<bool> _StopPredicate);
+    void StartCountdown(Func<bool> _StopPredicate);
     void StopCountdown();
 }
 
@@ -18,7 +18,7 @@ public class CountdownController : ICountdownController, IUpdateTick
     #region protected members
 
     private bool m_DoUpdate;
-    private System.Func<bool> m_StopPredicate;
+    private Func<bool> m_StopPredicate;
     private float m_Duration;
     private float m_StartTime;
 
@@ -40,7 +40,7 @@ public class CountdownController : ICountdownController, IUpdateTick
         OnTimeChange?.Invoke(m_Duration);
     }
     
-    public void StartCountdown(System.Func<bool> _StopPredicate)
+    public void StartCountdown(Func<bool> _StopPredicate)
     {
         m_StartTime = GameTimeProvider.Instance.Time;
         m_StopPredicate = _StopPredicate;

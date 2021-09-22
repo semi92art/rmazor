@@ -1,17 +1,18 @@
-﻿using System.Linq;
-using UnityEngine;
+﻿using System;
+using System.Linq;
 using Malee.List;
+using UnityEngine;
 
 public class PrefabContent : MonoBehaviour
 {
-    [System.Serializable]
+    [Serializable]
     public class ContentItem
     {
         public GameObject item;
         public string name;
     }
     
-    [System.Serializable]
+    [Serializable]
     public class ContentList : ReorderableArray<ContentItem>
     { }
     

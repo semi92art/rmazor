@@ -3,7 +3,6 @@ using System.Linq;
 using Entities;
 using Lean.Localization;
 using UI.Panels;
-using UnityEngine;
 using Utils;
 
 namespace Settings

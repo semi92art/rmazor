@@ -1,7 +1,6 @@
 ﻿using Constants;
 using DI.Extensions;
 using GameHelpers;
-using Games.RazorMaze;
 using Games.RazorMaze.Controllers;
 using Managers;
 using Ticker;

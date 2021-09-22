@@ -1,4 +1,5 @@
-﻿using Entities;
+﻿using System;
+using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views;
@@ -108,7 +109,7 @@ namespace Games.RazorMaze.Controllers
             Model.Init();
             View.Init();
 
-            System.Func<bool> allInitialized = () => modelInitialized && viewInitialized;
+            Func<bool> allInitialized = () => modelInitialized && viewInitialized;
             
             Coroutines.Run(Coroutines.WaitWhile(
                 () => !allInitialized.Invoke(),

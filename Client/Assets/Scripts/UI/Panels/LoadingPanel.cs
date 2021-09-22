@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Constants;
 using DI.Extensions;
 using DialogViewers;
 using GameHelpers;
 using Ticker;
-using UI.Entities;
 using UI.Factories;
 using UI.Managers;
 using UnityEngine;
@@ -41,7 +41,7 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     m_DialogViewer.Container,
                     RtrLites.FullFill),
-                Constants.CommonPrefabSetNames.MainMenuDialogPanels, "loading_panel");
+                CommonPrefabSetNames.MainMenuDialogPanels, "loading_panel");
             m_View = prefab.GetComponent<LoadingPanelView>();
             Panel = prefab.RTransform();
         }

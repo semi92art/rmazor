@@ -1,6 +1,5 @@
 ﻿using Entities;
 using Ticker;
-using UI.Managers;
 using UnityEngine;
 
 namespace UI.Panels

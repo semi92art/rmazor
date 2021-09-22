@@ -1,14 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Constants;
 using DI.Extensions;
 using DialogViewers;
 using Entities;
-using Managers;
 using Ticker;
 using TMPro;
 using UI.Panels;
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI.PanelItems
@@ -21,10 +20,10 @@ namespace UI.PanelItems
 
         public void Init(
             IMenuDialogViewer _MenuDialogViewer,
-            System.Func<string> _Value,
+            Func<string> _Value,
             string _Name,
-            System.Func<List<string>> _ListOfItems,
-            System.Action<string> _Select,
+            Func<List<string>> _ListOfItems,
+            Action<string> _Select,
             IEnumerable<GameObserver> _Observers, 
             ITicker _Ticker)
         {

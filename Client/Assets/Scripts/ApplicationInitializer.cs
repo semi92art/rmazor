@@ -1,4 +1,5 @@
 ﻿using Constants;
+using DebugConsole;
 using DI.Extensions;
 using Entities;
 using Managers;
@@ -69,7 +70,7 @@ public class ApplicationInitializer : MonoBehaviour
     private static void InitDebugConsole()
     {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        DebugConsole.DebugConsoleView.Instance.Init();
+        DebugConsoleView.Instance.Init();
 #endif
     }
     
@@ -78,7 +79,7 @@ public class ApplicationInitializer : MonoBehaviour
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         bool debugOn = SaveUtils.GetValue<bool>(SaveKeyDebug.DebugUtilsOn);
         SaveUtils.PutValue(SaveKeyDebug.DebugUtilsOn, debugOn);
-        DebugConsole.DebugConsoleView.Instance.SetGoActive(debugOn);
+        DebugConsoleView.Instance.SetGoActive(debugOn);
 #if !UNITY_EDITOR && DEVELOPMENT_BUILD
         UI.Managers.UiManager.Instance.DebugReporter = GameHelpers.PrefabUtilsEx.InitPrefab(
             null,

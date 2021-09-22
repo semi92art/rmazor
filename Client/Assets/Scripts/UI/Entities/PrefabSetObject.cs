@@ -1,16 +1,18 @@
-﻿using Malee.List;
+﻿using System;
+using Malee.List;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace UI.Entities
 {
-    [System.Serializable]
+    [Serializable]
     public class Prefab
     {
         public Object item;
         public string name;
     }
     
-    [System.Serializable]
+    [Serializable]
     public class PrefabsList : ReorderableArray<Prefab> { }
 
     [CreateAssetMenu(fileName = "new_set", menuName = "Prefab Set", order = 1)]

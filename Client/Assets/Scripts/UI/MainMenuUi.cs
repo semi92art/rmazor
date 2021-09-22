@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Constants;
 using DI.Extensions;
 using DialogViewers;
@@ -16,6 +17,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using Utils;
+using Object = UnityEngine.Object;
 
 namespace UI
 {
@@ -344,10 +346,10 @@ namespace UI
 
         private void CheckIfDailyBonusNotChosenToday()
         {
-            System.DateTime lastDate = SaveUtils.GetValue<System.DateTime>(SaveKey.DailyBonusLastDate);
+            DateTime lastDate = SaveUtils.GetValue<DateTime>(SaveKey.DailyBonusLastDate);
             if (!m_DailyBonusAnimator.IsNull())
                 m_DailyBonusAnimator.SetTrigger(
-                    lastDate.Date == System.DateTime.Now.Date ?
+                    lastDate.Date == DateTime.Now.Date ?
                     AnimKeys.Stop : AnimKeys.Anim);
         }
         

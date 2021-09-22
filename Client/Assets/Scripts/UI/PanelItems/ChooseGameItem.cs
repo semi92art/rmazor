@@ -4,8 +4,8 @@ using DI.Extensions;
 using Entities;
 using GameHelpers;
 using Ticker;
-using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace UI.PanelItems
@@ -36,7 +36,7 @@ namespace UI.PanelItems
     {
         public int GameId { get; }
         public bool IsVisible { get; }
-        public UnityEngine.Events.UnityAction Click { get; set; }
+        public UnityAction Click { get; set; }
 
         public ChooseGameItemProps(
             int _GameId,

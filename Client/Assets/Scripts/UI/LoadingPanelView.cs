@@ -1,14 +1,11 @@
 ﻿using System.Linq;
 using Constants;
 using Lean.Localization;
-using PygmyMonkey.ColorPalette;
 using TimeProviders;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Utils;
-using ColorUtils = Utils.ColorUtils;
 
 namespace UI
 {

@@ -1,7 +1,7 @@
 ﻿using Constants;
 using UnityEditor;
-using UnityEngine.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityToolbarExtender;
 
 namespace Games.RazorMaze.Editor

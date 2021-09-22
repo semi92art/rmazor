@@ -1,4 +1,6 @@
-﻿namespace Network
+﻿using System;
+
+namespace Network
 {
     public class GameFieldDtoLite
     {
@@ -10,11 +12,11 @@
     public class GameFieldDto : GameFieldDtoLite
     {
         public object Value { get; set; }
-        public System.DateTime LastUpdate { get; set; }
+        public DateTime LastUpdate { get; set; }
 
         public GameFieldDto()
         {
-            LastUpdate = System.DateTime.Now;
+            LastUpdate = DateTime.Now;
         }
     }
 }

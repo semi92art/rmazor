@@ -1,9 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Constants;
 using DI.Extensions;
 using DialogViewers;
 using GameHelpers;
-using Network;
 using Ticker;
 using UI.Entities;
 using UI.Factories;
@@ -11,6 +11,7 @@ using UI.Managers;
 using UI.PanelItems;
 using UnityEngine;
 using Utils;
+using Object = UnityEngine.Object;
 
 namespace UI.Panels
 {
@@ -19,7 +20,7 @@ namespace UI.Panels
         #region private members
         
         private readonly IMenuDialogViewer m_DialogViewer;
-        private readonly System.Action<int> m_SelectGame;
+        private readonly Action<int> m_SelectGame;
 
         #endregion
 
@@ -29,7 +30,7 @@ namespace UI.Panels
 
         public SelectGamePanel(
             IMenuDialogViewer _DialogViewer, 
-            System.Action<int> _SelectGame,
+            Action<int> _SelectGame,
             ITicker _Ticker) : base(_Ticker)
         {
             m_DialogViewer = _DialogViewer;

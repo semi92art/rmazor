@@ -1,10 +1,12 @@
-﻿using Constants;
+﻿using System;
+using Constants;
 using DI.Extensions;
 using DialogViewers;
 using Entities;
 using GameHelpers;
 using Lean.Localization;
 using Managers;
+using MkeyFW;
 using Ticker;
 using TMPro;
 using UI.Entities;
@@ -14,7 +16,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using Utils;
-using WheelController = MkeyFW.WheelController;
+using Object = UnityEngine.Object;
 
 namespace UI.Panels
 {
@@ -112,7 +114,7 @@ namespace UI.Panels
             {
                 Notify(this, NotifyMessageSpinButtonClick);
                 Coroutines.Run(Coroutines.Action(() => m_WheelController.StartSpin()));
-                SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, System.DateTime.Now.Date);
+                SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, DateTime.Now.Date);
                 m_SpinButton.interactable = false;
             }
             else
@@ -135,14 +137,14 @@ namespace UI.Panels
 
         private void WatchAdFinishAction()
         {
-            SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, System.DateTime.Now.Date.AddDays(-1));
+            SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, DateTime.Now.Date.AddDays(-1));
             m_IsLocked = CheckIfWofSpinToday();
         }
         
         private bool CheckIfWofSpinToday()
         {
-            System.DateTime lastDate = SaveUtils.GetValue<System.DateTime>(SaveKey.WheelOfFortuneLastDate);
-            bool spinedToday = lastDate == System.DateTime.Now.Date;
+            DateTime lastDate = SaveUtils.GetValue<DateTime>(SaveKey.WheelOfFortuneLastDate);
+            bool spinedToday = lastDate == DateTime.Now.Date;
             m_Title.text = spinedToday ? LeanLocalization.GetTranslationText("WatchAd") : LeanLocalization.GetTranslationText("Spin");
             m_Title.RTransform().Set(new RectTransformLite
             {

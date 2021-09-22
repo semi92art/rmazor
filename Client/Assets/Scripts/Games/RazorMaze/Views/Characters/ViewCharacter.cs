@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Constants;
 using DI.Extensions;
 using Exceptions;
@@ -7,7 +6,6 @@ using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
-using Games.RazorMaze.Views.MazeItemGroups;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using TimeProviders;

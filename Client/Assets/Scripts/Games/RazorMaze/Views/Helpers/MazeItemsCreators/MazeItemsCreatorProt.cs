@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Entities;
 using Games.RazorMaze.Models;
@@ -57,12 +58,12 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
 
         public override void InitPathItems(MazeInfo _Info, SpawnPool<IViewMazeItemPath> _PathPool)
         {
-            throw new System.NotImplementedException("This method is only for release");
+            throw new NotImplementedException("This method is only for release");
         }
 
         public override void InitBlockItems(MazeInfo _Info, Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> _BlockPools)
         {
-            throw new System.NotImplementedException("This method is only for release");
+            throw new NotImplementedException("This method is only for release");
         }
         
         #endregion

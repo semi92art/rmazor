@@ -4,7 +4,6 @@ using DI.Extensions;
 using DialogViewers;
 using GameHelpers;
 using Ticker;
-using TMPro;
 using UI.Factories;
 using UI.Managers;
 using UnityEngine;

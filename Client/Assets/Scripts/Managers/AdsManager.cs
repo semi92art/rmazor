@@ -1,9 +1,5 @@
-﻿using System.Linq;
-using Constants;
-using Entities;
-using GameHelpers;
+﻿using Entities;
 using GoogleMobileAds.Api;
-using Network;
 using UI.Panels;
 using UnityEngine.Events;
 using Utils;
@@ -56,8 +52,7 @@ namespace Managers
         
         public void Init()
         {
-            new RequestConfiguration
-                    .Builder()
+            new RequestConfiguration.Builder()
                 .SetTestDeviceIds(ResLoader.GoogleTestDeviceIds)
                 .build();
             MobileAds.Initialize(_InitStatus => { });
