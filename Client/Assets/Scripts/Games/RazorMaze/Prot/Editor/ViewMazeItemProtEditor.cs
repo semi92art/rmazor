@@ -4,6 +4,7 @@ using Entities;
 using Exceptions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.MazeItems;
+using Games.RazorMaze.Views.MazeItems.Props;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;

@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Constants;
+using DI.Extensions;
 using Entities;
-using Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
