@@ -11,11 +11,11 @@ using Zenject;
 
 public class IntroSceneViewer : MonoBehaviour
 {
-    private ITicker Ticker { get; set; }
+    private IGameTicker Ticker { get; set; }
     private ILevelsLoader LevelsLoader { get; set; }
     
     [Inject]
-    public void Inject(ITicker _Ticker, ILevelsLoader _LevelsLoader)
+    public void Inject(IGameTicker _Ticker, ILevelsLoader _LevelsLoader)
     {
         Ticker = _Ticker;
         LevelsLoader = _LevelsLoader;

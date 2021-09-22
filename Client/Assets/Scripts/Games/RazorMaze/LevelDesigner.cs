@@ -65,7 +65,6 @@ namespace Games.RazorMaze
             if (_Change != PlayModeStateChange.EnteredPlayMode)
                 return;
 
-            // MazeInfo = new LevelsLoader().LoadLevel(1, 1, false); 
             MazeInfo = Instance.GetLevelInfoFromScene();
             GameClientUtils.GameId = 1;
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
@@ -77,7 +76,6 @@ namespace Games.RazorMaze
                 controller.PreInitialized += () =>
                 {
                     controller.Model.LevelStaging.LoadLevel(MazeInfo, 1);
-                    controller.Model.LevelStaging.ReadyToContinueLevel();
                     controller.Init();
                 };
                 controller.PreInit();

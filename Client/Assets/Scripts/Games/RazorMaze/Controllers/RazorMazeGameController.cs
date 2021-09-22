@@ -1,5 +1,6 @@
 ﻿using System;
 using Entities;
+using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views;
@@ -34,8 +35,10 @@ namespace Games.RazorMaze.Controllers
         
         public IModelGame Model { get; private set; }
         public IViewGame  View { get; private set; }
+        public ILevelsLoader LevelsLoader { get; private set; }
 
-        [Inject] public void Inject(IModelGame _Model, IViewGame _View) => (Model, View) = (_Model, _View);
+        [Inject] public void Inject(IModelGame _Model, IViewGame _View, ILevelsLoader _LevelsLoader) =>
+            (Model, View, LevelsLoader) = (_Model, _View, _LevelsLoader);
         
         #endregion
         
@@ -127,7 +130,11 @@ namespace Games.RazorMaze.Controllers
         
         private void OnGameLoopUpdate() => Model.Data.OnGameLoopUpdate();
         private void DataOnPathProceedEvent(V2Int _PathItem) => View.MazePathItemsGroup.OnPathProceed(_PathItem);
-        private void OnInputCommand(int _Value) => Model.InputScheduler.AddCommand((EInputCommand)_Value);
+        private void OnInputCommand(int _Value)
+        {
+            Model.InputScheduler.AddCommand(_Value);
+        }
+
         private void OnCharacterAliveOrDeath(bool _Alive) => View.Character.OnRevivalOrDeath(_Alive);
 
         private void OnCharacterMoveStarted(CharacterMovingEventArgs _Args) => View.Character.OnMovingStarted(_Args);

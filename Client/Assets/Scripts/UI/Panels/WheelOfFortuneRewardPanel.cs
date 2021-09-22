@@ -33,10 +33,10 @@ namespace UI.Panels
 
         public WheelOfFortuneRewardPanel(
             INotificationViewer _NotificationViewer,
-            ITicker _Ticker,
+            IUITicker _UITicker,
             BankItemType _BankItemType,
             long _Reward,
-            UnityAction _OnClose) : base(_Ticker)
+            UnityAction _OnClose) : base(_UITicker)
         {
             m_NotificationViewer = _NotificationViewer;
             m_BankItemType = _BankItemType;

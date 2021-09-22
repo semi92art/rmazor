@@ -33,27 +33,28 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region nonpublic members
 
+        private Vector2 m_Edge1Start, m_Edge2Start;
+        
+        #endregion
+
+        #region shapes
+
+        protected override object[] Shapes => new object[] {m_Springboard, m_Pillar};
         private Line m_Springboard;
         private Line m_Pillar;
-        private Vector2 m_Edge1Start, m_Edge2Start;
         
         #endregion
         
         #region inject
         
-        private ViewSettings ViewSettings { get; }
-
         public ViewMazeItemSpringboard(
             ICoordinateConverter _CoordinateConverter, 
             IContainersGetter _ContainersGetter,
             IModelMazeData _Data,
-            ITicker _Ticker,
+            IGameTicker _GameTicker,
             IGameTimeProvider _GameTimeProvider,
             ViewSettings _ViewSettings) 
-            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _Ticker)
-        {
-            ViewSettings = _ViewSettings;
-        }
+            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _GameTicker) { }
         
         #endregion
 
@@ -76,7 +77,7 @@ namespace Games.RazorMaze.Views.MazeItems
         }
         
         public override object Clone() => new ViewMazeItemSpringboard(
-            CoordinateConverter, ContainersGetter, Data, Ticker, GameTimeProvider, ViewSettings);
+            CoordinateConverter, ContainersGetter, Data, GameTicker, GameTimeProvider, ViewSettings);
 
         #endregion
 
@@ -102,22 +103,6 @@ namespace Games.RazorMaze.Views.MazeItems
 
             m_Pillar = pillar;
             m_Springboard = sprbrd;
-        }
-
-        protected override void Appear(bool _Appear)
-        {
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !Initialized,
-                () =>
-                {
-                    RazorMazeUtils.DoAppearTransitionSimple(
-                        _Appear,
-                        GameTimeProvider,
-                        new Dictionary<IEnumerable<ShapeRenderer>, Color>
-                        {
-                            {new [] {m_Springboard, m_Pillar}, DrawingUtils.ColorLines}
-                        });
-                }));
         }
 
         private IEnumerator JumpCoroutine()

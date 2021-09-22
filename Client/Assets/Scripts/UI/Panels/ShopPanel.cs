@@ -46,7 +46,7 @@ namespace UI.Panels
 
         public MenuUiCategory Category => MenuUiCategory.Shop;
         
-        public ShopPanel(RectTransform _Container, ITicker _Ticker) : base(_Ticker)
+        public ShopPanel(RectTransform _Container, IUITicker _UITicker) : base(_UITicker)
         {
             m_Container = _Container;
         }
@@ -77,7 +77,7 @@ namespace UI.Panels
                     default:
                         throw new SwitchCaseNotImplementedException(shopItemProps.Type);
                 }
-                item.Init(shopItemProps, GetObservers(), Ticker);
+                item.Init(shopItemProps, GetObservers(), UITicker);
             }
 
             content.anchoredPosition = content.anchoredPosition.SetY(0);

@@ -25,7 +25,7 @@ namespace UI.PanelItems
             Func<List<string>> _ListOfItems,
             Action<string> _Select,
             IEnumerable<GameObserver> _Observers, 
-            ITicker _Ticker)
+            IUITicker _Ticker)
         {
             var observers = _Observers.ToArray();
             base.Init(observers, _Ticker);

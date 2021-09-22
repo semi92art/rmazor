@@ -31,7 +31,7 @@ namespace UI.PanelItems
             Action<string> _Select,
             bool _IsOn,
             IEnumerable<GameObserver> _Observers,
-            ITicker _Ticker)
+            IUITicker _Ticker)
         {
             base.Init(_Observers, _Ticker);
             title.text = _Text;

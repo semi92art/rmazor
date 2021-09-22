@@ -8,7 +8,7 @@ namespace UI.Panels
     {
         public RectTransform Panel { get; protected set; }
         
-        protected DialogPanelBase(ITicker _Ticker) : base(_Ticker)
+        protected DialogPanelBase(IUITicker _UITicker) : base(_UITicker)
         { }
         
         public abstract void Init();

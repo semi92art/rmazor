@@ -40,7 +40,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region nonpublic members
         
-        // private V2Int m_CharacterPosCheck;
         protected override EMazeItemType[] Types => new[] {EMazeItemType.TrapReact};
 
         #endregion
@@ -58,15 +57,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
-            // FIXME возможно лишнее
-            // if (!Data.ProceedingMazeItems)
-            //     return;
-            // var addictRaw = (_Args.To.ToVector2() - _Args.From.ToVector2()) * _Args.Progress;
-            // var addict = new V2Int(addictRaw);
-            // var newPos = _Args.From + addict;
-            // if (m_CharacterPosCheck == newPos)
-            //     return;
-            // m_CharacterPosCheck = newPos;
             ProceedTraps();
         }
 
@@ -83,13 +73,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     continue;
                 Coroutines.Run(ProceedTrap(info));
             }
-            //
-            // foreach (var kvp in infos
-            //     .Where(_Kvp => 
-            //         _Kvp.Value.IsProceeding && _Kvp.Value.ProceedingStage == StageReact))
-            // {
-            //     CheckForCharacterDeath(kvp.Value, kvp.Key.Position, kvp.Key.Direction);
-            // }
         }
 
         private IEnumerator ProceedTrap(IMazeItemProceedInfo _Info)
@@ -127,14 +110,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 default: return 0;
             }
         }
-
-        // private void CheckForCharacterDeath(IMazeItemProceedInfo _Info, V2Int _Position, V2Int _Direction)
-        // {
-        //     if (Character.Position != _Position + _Direction) 
-        //         return;
-        //     KillerProceedInfo = _Info;
-        //     Character.RaiseDeath();
-        // }
         
         #endregion
     }

@@ -38,11 +38,11 @@ namespace UI.Panels
 
         public TimeOrLifesEndedPanel(
             IGameDialogViewer _DialogViewer,
-            ITicker _Ticker,
+            IUITicker _UITicker,
             bool _IsSecs,
             UnityAction _Continue = null,
             UnityAction<float> _SetAdditionalTime = null,
-            UnityAction<long> _SetAdditionalLife = null) : base(_Ticker)
+            UnityAction<long> _SetAdditionalLife = null) : base(_UITicker)
         {
             m_DialogViewer = _DialogViewer;
             m_IsSecs = _IsSecs;
@@ -96,7 +96,7 @@ namespace UI.Panels
             {
                 m_DialogViewer.CloseAll();
                 m_Continue?.Invoke();
-            }, Ticker);
+            }, UITicker);
             countdownPanel.Init();
             m_DialogViewer.Show(countdownPanel);
         }

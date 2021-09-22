@@ -136,8 +136,12 @@ namespace Games.RazorMaze.Models
                 proceeder.OnCharacterMoveContinued(_Args);
         }
         
-        private void CharacterOnFinishMove(CharacterMovingEventArgs _Args) => InputScheduler.UnlockMovement(true);
-        
+        private void CharacterOnFinishMove(CharacterMovingEventArgs _Args)
+        {
+            InputScheduler.UnlockMovement(true);
+            ShredingerBlocksProceeder.OnCharacterMoveFinished(_Args);
+        }
+
         private void LevelStageChanged(LevelStageArgs _Args)
         {
             var proceeders = GetInterfaceOfProceeders<IOnLevelStageChanged>();
@@ -149,50 +153,55 @@ namespace Games.RazorMaze.Models
         
         #region nonpublic methods
         
-        private void InputSchedulerOnMoveCommand(EInputCommand _Command)
+        private void InputSchedulerOnMoveCommand(int _Command, object[] _Args)
         {
             EMazeMoveDirection dir = default;
             switch (_Command)
             {
-                case EInputCommand.MoveUp:    dir = EMazeMoveDirection.Up;    break;
-                case EInputCommand.MoveDown:  dir = EMazeMoveDirection.Down;  break;
-                case EInputCommand.MoveLeft:  dir = EMazeMoveDirection.Left;  break;
-                case EInputCommand.MoveRight: dir = EMazeMoveDirection.Right; break;
-                case EInputCommand.RotateClockwise:
-                case EInputCommand.RotateCounterClockwise:
+                case (int)EInputCommand.MoveUp:    dir = EMazeMoveDirection.Up;    break;
+                case (int)EInputCommand.MoveDown:  dir = EMazeMoveDirection.Down;  break;
+                case (int)EInputCommand.MoveLeft:  dir = EMazeMoveDirection.Left;  break;
+                case (int)EInputCommand.MoveRight: dir = EMazeMoveDirection.Right; break;
+                case (int)EInputCommand.RotateClockwise:
+                case (int)EInputCommand.RotateCounterClockwise:
                     break;
                 default: throw new SwitchCaseNotImplementedException(_Command);
             }
             Character.Move(dir);
         }
         
-        private void InputSchedulerOnRotateCommand(EInputCommand _Command)
+        private void InputSchedulerOnRotateCommand(int _Command, object[] _Args)
         {
             MazeRotateDirection dir;
             switch (_Command)
             {
-                case EInputCommand.RotateClockwise:       
+                case (int)EInputCommand.RotateClockwise:       
                     dir = MazeRotateDirection.Clockwise;        break;
-                case EInputCommand.RotateCounterClockwise:
+                case (int)EInputCommand.RotateCounterClockwise:
                     dir = MazeRotateDirection.CounterClockwise; break;
                 default: throw new SwitchCaseNotImplementedException(_Command);
             }
             MazeRotation.Rotate(dir);
         }
         
-        private void InputSchedulerOnOtherCommand(EInputCommand _Command)
+        private void InputSchedulerOnOtherCommand(int _Command, object[] _Args)
         {
-            if (_Command == EInputCommand.LoadLevel)
+            if (_Command == (int) EInputCommand.LoadLevel)
+            {
+                // MazeInfo info = _Args[0] as MazeInfo;
+                // int levelIndex = (int) _Args[1];
+                // LevelStaging.LoadLevel(info, levelIndex);
                 LevelStaging.LoadLevel(Data.Info, Data.LevelIndex);
-            else if (_Command == EInputCommand.ReadyToContinueLevel)
+            }
+            else if (_Command == (int)EInputCommand.ReadyToContinueLevel)
                 LevelStaging.ReadyToContinueLevel();
-            else if (_Command == EInputCommand.ContinueLevel)
+            else if (_Command == (int)EInputCommand.ContinueLevel)
                 LevelStaging.ContinueLevel();
-            else if (_Command == EInputCommand.FinishLevel)
+            else if (_Command == (int)EInputCommand.FinishLevel)
                 LevelStaging.FinishLevel();
-            else if (_Command == EInputCommand.PauseLevel)
+            else if (_Command == (int)EInputCommand.PauseLevel)
                 LevelStaging.PauseLevel();
-            else if (_Command == EInputCommand.UnloadLevel)
+            else if (_Command == (int)EInputCommand.UnloadLevel)
                 LevelStaging.UnloadLevel();
         }
         

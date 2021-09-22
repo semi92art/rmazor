@@ -9,7 +9,7 @@ namespace UI.PanelItems
     {
         protected ObserverNotifyer Notifyer;
 
-        protected void Init(IEnumerable<GameObserver> _Observers, ITicker _Ticker)
+        protected void Init(IEnumerable<GameObserver> _Observers, IUITicker _Ticker)
         {
             Notifyer = new ObserverNotifyer(_Ticker);
             Notifyer.AddObservers(_Observers);

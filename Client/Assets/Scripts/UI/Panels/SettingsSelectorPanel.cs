@@ -34,10 +34,10 @@ namespace UI.Panels
 
         public SettingsSelectorPanel(
             IMenuDialogViewer _DialogViewer,
-            ITicker _Ticker,
+            IUITicker _UITicker,
             string _Value,
             List<string> _Items,
-            Action<string> _Select) : base(_Ticker)
+            Action<string> _Select) : base(_UITicker)
         {
             m_DialogViewer = _DialogViewer;
             m_DefaultValue = _Value;
@@ -84,7 +84,7 @@ namespace UI.Panels
             {
                 var sspiClone = sspi.Clone();
                 SettingSelectorItem si = sspiClone.GetComponent<SettingSelectorItem>();
-                si.Init(item, m_Select, item == m_DefaultValue, GetObservers(), Ticker);
+                si.Init(item, m_Select, item == m_DefaultValue, GetObservers(), UITicker);
                 selectorItems.Add(si);
             }
 

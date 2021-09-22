@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Models;
@@ -34,12 +35,20 @@ namespace Games.RazorMaze.Views.MazeItems
         #region nonpublic members
 
         private bool m_Appeared;
-        private bool m_Initialized;
         private float m_GravitySpawnTimer;
         
         private Disc m_Center;
         private readonly List<Disc> m_Orbits = new List<Disc>();
         private readonly BehavioursSpawnPool<Disc> m_GravityItems = new BehavioursSpawnPool<Disc>();
+        
+        #endregion
+        
+        #region shapes
+
+        protected override object[] Shapes => new object[] {m_Center}
+            .Concat(m_Orbits)
+            .Concat(m_GravityItems)
+            .ToArray();
         
         #endregion
         
@@ -49,24 +58,25 @@ namespace Games.RazorMaze.Views.MazeItems
             ICoordinateConverter _CoordinateConverter, 
             IContainersGetter _ContainersGetter,
             IModelMazeData _Data,
-            ITicker _Ticker,
+            IGameTicker _GameTicker,
             IGameTimeProvider _GameTimeProvider,
             ViewSettings _ViewSettings)
-            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _Ticker) { }
+            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _GameTicker) { }
         
         #endregion
 
         #region api
-
+        
         public override bool Activated
         {
             get => m_Activated;
             set
             {
                 m_Activated = value;
-                m_Center.enabled = value;
-                m_Orbits.ForEach(_Orbit => _Orbit.enabled = value);
-                if (value) return;
+                if (value) 
+                    return;
+                m_Center.enabled = false;
+                m_Orbits.ForEach(_Orbit => _Orbit.enabled = false);
                 foreach (var item in m_GravityItems)
                     m_GravityItems.Deactivate(item);
             }
@@ -87,7 +97,7 @@ namespace Games.RazorMaze.Views.MazeItems
         }
         
         public override object Clone() => new ViewMazeItemPortal(
-            CoordinateConverter, ContainersGetter, Data, Ticker, GameTimeProvider, ViewSettings);
+            CoordinateConverter, ContainersGetter, Data, GameTicker, GameTimeProvider, ViewSettings);
         
         public void DoTeleport(PortalEventArgs _Args)
         {
@@ -177,8 +187,6 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Orbits[13].AngRadiansEnd = 325f * deg2rad;
             
             InitGravitySpawnPool();
-            
-            m_Initialized = true;
         }
 
         protected override void Appear(bool _Appear)
@@ -190,18 +198,16 @@ namespace Games.RazorMaze.Views.MazeItems
                     RazorMazeUtils.DoAppearTransitionSimple(
                         _Appear,
                         GameTimeProvider,
-                        new Dictionary<IEnumerable<ShapeRenderer>, Color>
+                        new Dictionary<object[], Color>
                         {
                             {new [] {m_Center}, DrawingUtils.ColorLines},
-                            {m_Orbits, DrawingUtils.ColorLines}
+                            {m_Orbits.Cast<object>().ToArray(), DrawingUtils.ColorLines}
                         },
-                        () =>
+                        _OnFinish: () =>
                         {
                             m_Appeared = _Appear;
-                            if (_Appear) 
-                                return;
-                            foreach (var item in m_GravityItems)
-                                m_GravityItems.Deactivate(item);
+                            if (!_Appear)
+                                DeactivateShapes();
                         });
 
                 }));

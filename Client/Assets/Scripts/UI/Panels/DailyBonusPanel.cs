@@ -45,7 +45,7 @@ namespace UI.Panels
         public DailyBonusPanel(
             IMenuDialogViewer _DialogViewer, 
             IActionExecutor _ActionExecutor,
-            ITicker _Ticker) : base(_Ticker)
+            IUITicker _UITicker) : base(_UITicker)
         {
             m_DialogViewer = _DialogViewer;
             m_ActionExecutor = _ActionExecutor;

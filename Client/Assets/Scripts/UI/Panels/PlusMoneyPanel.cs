@@ -36,7 +36,7 @@ namespace UI.Panels
             IMenuDialogViewer _DialogViewer,
             INotificationViewer _NotificationViewer,
             IActionExecutor _ActionExecutor,
-            ITicker _Ticker) : base(_Ticker)
+            IUITicker _UITicker) : base(_UITicker)
         {
             m_DialogViewer = _DialogViewer;
             m_NotificationViewer = _NotificationViewer;
@@ -65,7 +65,7 @@ namespace UI.Panels
         private void OnShopButtonClick()
         {
             Notify(this, NotifyMessageShopButtonClick);
-            var panel = new ShopPanel(m_DialogViewer.Container, Ticker);
+            var panel = new ShopPanel(m_DialogViewer.Container, UITicker);
             panel.AddObservers(GetObservers());
             panel.Init();
             m_DialogViewer.Show(panel);
@@ -74,7 +74,7 @@ namespace UI.Panels
         private void OnDailyBonusButtonClick()
         {
             Notify(this, NotifyMessageDailyBonusButtonClick);
-            var panel = new DailyBonusPanel(m_DialogViewer, m_ActionExecutor, Ticker);
+            var panel = new DailyBonusPanel(m_DialogViewer, m_ActionExecutor, UITicker);
             panel.AddObservers(GetObservers());
             panel.Init();
             m_DialogViewer.Show(panel);
@@ -83,7 +83,7 @@ namespace UI.Panels
         private void OnWheelOfFortuneButtonClick()
         {
             Notify(this, NotifyMessageWheelOfFortuneButtonClick);
-            var panel = new WheelOfFortunePanel(m_DialogViewer, m_NotificationViewer, Ticker);
+            var panel = new WheelOfFortunePanel(m_DialogViewer, m_NotificationViewer, UITicker);
             panel.AddObservers(GetObservers());
             panel.Init();
             m_DialogViewer.Show(panel);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Entities;
 using Games.RazorMaze.Models.ProceedInfos;
@@ -40,8 +41,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region nonpublic members
         
-        // private V2Int m_CharacterPosCheck;
         protected override EMazeItemType[] Types => new[] {EMazeItemType.TrapIncreasing};
+        private readonly Queue<IEnumerator> m_Coroutines = new Queue<IEnumerator>();
 
         #endregion
         
@@ -65,23 +66,22 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         public event MazeItemTrapIncreasingEventHandler TrapIncreasingStageChanged;
         
-        public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
-        {
-            // FIXME возможно лишнее
-            // if (!Data.ProceedingMazeItems)
-            //     return;
-            // var addictRaw = (_Args.To.ToVector2() - _Args.From.ToVector2()) * _Args.Progress;
-            // var addict = new V2Int(addictRaw);
-            // var newPos = _Args.From + addict;
-            // if (m_CharacterPosCheck == newPos)
-            //     return;
-            // m_CharacterPosCheck = newPos;
-            // ProceedTraps();
-        }
+        public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args) { }
         
         public void OnGameLoopUpdate()
         {
             ProceedTraps();
+        }
+
+        public override void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            base.OnLevelStageChanged(_Args);
+            if (_Args.Stage == ELevelStage.ReadyToContinue)
+            {
+                foreach (var coroutine in m_Coroutines)
+                    Coroutines.Stop(coroutine);
+                m_Coroutines.Clear();
+            }
         }
         
         #endregion
@@ -94,20 +94,22 @@ namespace Games.RazorMaze.Models.ItemProceeders
             foreach (var info in infos
                 .Where(_Info => _Info.IsProceeding && _Info.ReadyToSwitchStage))
             {
-                Coroutines.Run(ProceedTrap(info));
-            }
-            
-            foreach (var info in infos
-                .Where(_Info => _Info.IsProceeding && _Info.ProceedingStage == StageIncreased))
-            {
-                CheckForCharacterDeath(info, info.Item.Position);
+                if (info.ReadyToSwitchStage)
+                {
+                    info.ReadyToSwitchStage = false;
+                    var coroutine = ProceedTrap(info);
+                    m_Coroutines.Enqueue(coroutine);
+                    Coroutines.Run(coroutine);
+                }
+                if (info.ProceedingStage == StageIncreased)
+                    CheckForCharacterDeath(info, info.Item.Position);
             }
         }
         
         private IEnumerator ProceedTrap(IMazeItemProceedInfo _Info)
         {
+            Dbg.Log("ProceedTrap coroutine");
             _Info.ProceedingStage = _Info.ProceedingStage == StageIdle ? StageIncreased : StageIdle;
-            _Info.ReadyToSwitchStage = false;
             float duration = GetStageDuration(_Info.ProceedingStage); 
             float time = GameTimeProvider.Time;
             yield return Coroutines.WaitWhile(

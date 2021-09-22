@@ -232,7 +232,7 @@ namespace Games.RazorMaze.Views.Characters
                     RazorMazeUtils.DoAppearTransitionSimple(
                         _Appear,
                         GameTimeProvider,
-                        new Dictionary<IEnumerable<ShapeRenderer>, Color>
+                        new Dictionary<object[], Color>
                         {
                             {new[] {m_HeadShape}, DrawingUtils.ColorCharacter},
                             {new[] {m_Eye1Shape, m_Eye2Shape}, DrawingUtils.ColorBack}

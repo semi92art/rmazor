@@ -21,7 +21,7 @@ namespace UI.Panels
 
         public GameUiCategory Category => GameUiCategory.Countdown;
 
-        public CountdownPanel(RectTransform _Container, UnityAction _OnCountdownFinish, ITicker _Ticker) : base(_Ticker)
+        public CountdownPanel(RectTransform _Container, UnityAction _OnCountdownFinish, IUITicker _UITicker) : base(_UITicker)
         {
             m_Container = _Container;
             m_OnCountdownFinish = _OnCountdownFinish;

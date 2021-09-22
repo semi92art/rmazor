@@ -43,7 +43,6 @@ namespace Mono_Installers
             Container.Bind<IModelCharacter>()                   .To<ModelCharacter>()                       .AsSingle();
             Container.Bind<IModelGame>()                        .To<ModelGame>()                            .AsSingle();
             Container.Bind<ILevelStagingModel>()                .To<LevelStagingModel>()                    .AsSingle();
-            Container.Bind<IInputScheduler>()                   .To<InputScheduler>()                       .AsSingle();
             Container.Bind<ICoordinateConverter>()              .To<CoordinateConverter>()                  .AsSingle();
             Container.Bind<IContainersGetter>()                 .To<ContainersGetter>()                     .AsSingle();
             Container.Bind<IPathItemsProceeder>()               .To<PathItemsProceeder>()                   .AsSingle();
@@ -59,9 +58,7 @@ namespace Mono_Installers
             Container.Bind<IUiTimeProvider>()                   .FromComponentsInNewPrefab(uiTimeProvider)  .AsCached();
             
             #endregion
-            
 
-            
             #region view release
             
             Container.Bind<IMazeItemsCreator>()                 .To<MazeItemsCreator>()                     .AsSingle().When(_ => release);
@@ -91,9 +88,8 @@ namespace Mono_Installers
             Container.Bind<IViewMazeItemTrapReact>()            .To<ViewMazeItemTrapReact>()                .AsSingle().When(_ => release);
             Container.Bind<IViewMazeItemTrapIncreasing>()       .To<ViewMazeItemTrapIncreasing>()           .AsSingle().When(_ => release);
             
-            Container.Bind<IViewMazeRotation>()                 .To<ViewMazeRotationProt>()                 .AsSingle();//.When(_ => prototyping);
-            Container.Bind<IInputConfigurator>()                .To<RazorMazeInputConfiguratorProt>()       .AsSingle();//.When(_ => prototyping);
-            Container.Bind<IViewUI>()                           .To<ViewUIProt>()                           .AsSingle();//.When(_ => prototyping);
+            Container.Bind<IViewMazeRotation>()                 .To<ViewMazeRotationProt>()                 .AsSingle();
+            Container.Bind<IViewUI>()                           .To<ViewUIProt>()                           .AsSingle();
             // Container.Bind<IViewMazeRotation>()              .To<ViewMazeRotation>()                     .AsSingle().When(_ => release);
             // Container.Bind<IViewUI>()                        .To<ViewUI>()                               .AsSingle().When(_ => release);
 
@@ -102,9 +98,18 @@ namespace Mono_Installers
             #region device
             
 #if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
-            Container.Bind<IInputConfigurator>()                 .To<RazorMazeInputConfigurator>()            .AsSingle();
+            
 #endif
             #endregion
+            
+            
+#if UNITY_EDITOR
+            Container.Bind<IInputScheduler>()                   .To<InputSchedulerInEditor>()                .AsSingle();
+            Container.Bind<IInputConfigurator>()                .To<RazorMazeInputConfiguratorProt>()        .AsSingle();
+#else
+            Container.Bind<IInputConfigurator>()                .To<RazorMazeInputConfigurator>()            .AsSingle();
+            Container.Bind<IInputScheduler>()                   .To<InputSchedulerInGame>()                  .AsSingle();
+#endif
         }
     }
 }

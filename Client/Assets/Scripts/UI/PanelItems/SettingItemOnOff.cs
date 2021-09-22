@@ -21,7 +21,7 @@ namespace UI.PanelItems
             string _Name,
             UnityAction<bool> _Action,
             IEnumerable<GameObserver> _Observers,
-            ITicker _Ticker)
+            IUITicker _Ticker)
         {
             base.Init(_Observers, _Ticker);
             name = $"{_Name} Setting";

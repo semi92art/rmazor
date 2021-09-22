@@ -18,7 +18,7 @@ namespace UI.PanelItems
         public static IShopItem Create(RectTransform _Parent) =>
             Create<ShopItemDefault>(_Parent, "shop_item_default");
         
-        public void Init(ShopItemProps _Props, IEnumerable<GameObserver> _Observers, ITicker _Ticker)
+        public void Init(ShopItemProps _Props, IEnumerable<GameObserver> _Observers, IUITicker _Ticker)
         {
             UnityAction afterPurchaseAction;
             switch (_Props.Type)

@@ -93,7 +93,7 @@ namespace UI.Panels
             RectTransform _Parent,
             IMenuDialogViewer _DialogViewer,
             INotificationViewer _NotificationViewer,
-            ITicker _Ticker) : base(_Ticker)
+            IUITicker _UITicker) : base(_UITicker)
         {
             m_Parent = _Parent;
             m_DialogViewer = _DialogViewer;
@@ -126,7 +126,7 @@ namespace UI.Panels
             m_PlusMoneyButton.SetOnClick(() =>
             {
                 Notify(this, CommonNotifyMessages.UiButtonClick);
-                var plusMoneyPanel = new PlusMoneyPanel(m_DialogViewer, m_NotificationViewer, this, Ticker);
+                var plusMoneyPanel = new PlusMoneyPanel(m_DialogViewer, m_NotificationViewer, this, UITicker);
                 plusMoneyPanel.AddObservers(GetObservers());
                 plusMoneyPanel.Init();
                 m_DialogViewer.Show(plusMoneyPanel);

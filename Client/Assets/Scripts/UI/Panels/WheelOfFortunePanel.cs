@@ -50,7 +50,7 @@ namespace UI.Panels
         public WheelOfFortunePanel(
             IMenuDialogViewer _DialogViewer,
             INotificationViewer _NotificationViewer,
-            ITicker _Ticker) : base(_Ticker)
+            IUITicker _UITicker) : base(_UITicker)
         {
             m_DialogViewer = _DialogViewer;
             m_NotificationViewer = _NotificationViewer;
@@ -126,7 +126,7 @@ namespace UI.Panels
         private void SpinFinishAction(BankItemType _BankItemType, long _Reward)
         {
             var rewardPanel = new WheelOfFortuneRewardPanel(
-                m_NotificationViewer, Ticker, _BankItemType, _Reward, () =>
+                m_NotificationViewer, UITicker, _BankItemType, _Reward, () =>
                     BankManager.Instance.PlusBankItems(_BankItemType, _Reward));
                     
             m_SpinButton.interactable = true;

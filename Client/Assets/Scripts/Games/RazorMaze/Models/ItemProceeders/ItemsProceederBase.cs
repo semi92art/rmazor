@@ -38,7 +38,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     CollectItems(Data.Info); break;
                 case ELevelStage.Started:
                 case ELevelStage.Continued:
-                    StartProceed(true, true); break;
+                    //StartProceed(true, true); 
+                    break;
                 case ELevelStage.ReadyToContinue:
                     StartProceed(true, true); break;
                 case ELevelStage.Paused:
@@ -101,6 +102,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             foreach (var info in infos)
             {
                 info.Value.IsProceeding = _Proceed;
+                info.Value.ReadyToSwitchStage = _Proceed;
             }
             if (_ProceedKillerInfoIfTrue.HasValue && !_ProceedKillerInfoIfTrue.Value && KillerProceedInfo != null)
             {

@@ -173,10 +173,10 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                     RazorMazeUtils.DoAppearTransitionSimple(
                         appear.Value,
                         GameTimeProvider,
-                        new Dictionary< IEnumerable<ShapeRenderer>, Color>
+                        new Dictionary<object[], Color>
                         {
-                            {m_PathLines, DrawingUtils.ColorLines},
-                            {m_PathJoints, DrawingUtils.ColorLines}
+                            {m_PathLines.Cast<object>().ToArray(), DrawingUtils.ColorLines},
+                            {m_PathJoints.Cast<object>().ToArray(), DrawingUtils.ColorLines}
                         });
                 }));
         }

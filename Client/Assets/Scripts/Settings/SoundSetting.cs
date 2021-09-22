@@ -15,7 +15,7 @@ namespace Settings
         public object Min => null;
         public object Max => null;
 
-        public SoundSetting(ITicker _Ticker) : base(_Ticker)
+        public SoundSetting(IUITicker _UITicker) : base(_UITicker)
         {
         }
         

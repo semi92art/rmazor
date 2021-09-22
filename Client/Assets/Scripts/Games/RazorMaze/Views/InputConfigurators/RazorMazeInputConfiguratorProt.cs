@@ -8,7 +8,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
     {
         #region inject
 
-        public RazorMazeInputConfiguratorProt(ITicker _Ticker) => _Ticker.Register(this);
+        public RazorMazeInputConfiguratorProt(IUITicker _UITicker) => _UITicker.Register(this);
         
         #endregion
 

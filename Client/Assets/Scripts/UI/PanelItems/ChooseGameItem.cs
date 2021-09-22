@@ -15,7 +15,7 @@ namespace UI.PanelItems
         public Button button;
         public Image icon;
 
-        public void Init(ChooseGameItemProps _Props, IEnumerable<GameObserver> _Observers, ITicker _Ticker)
+        public void Init(ChooseGameItemProps _Props, IEnumerable<GameObserver> _Observers, IUITicker _Ticker)
         {
             base.Init(_Observers, _Ticker);
             icon.sprite = GetLogo(_Props.GameId);

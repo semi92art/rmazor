@@ -30,7 +30,7 @@ namespace UI.Panels
 
         public MenuUiCategory Category => MenuUiCategory.Loading;
 
-        public LoadingPanel(IMenuDialogViewer _DialogViewer, ITicker _Ticker) : base(_Ticker)
+        public LoadingPanel(IMenuDialogViewer _DialogViewer, IUITicker _UITicker) : base(_UITicker)
         {
             m_DialogViewer = _DialogViewer;
         }

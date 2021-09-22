@@ -38,7 +38,7 @@ namespace UI.Panels
         
         public MenuUiCategory Category => MenuUiCategory.Settings;
 
-        public SettingsPanel(IMenuDialogViewer _DialogViewer, ITicker _Ticker) : base(_Ticker)
+        public SettingsPanel(IMenuDialogViewer _DialogViewer, IUITicker _UITicker) : base(_UITicker)
         {
             m_DialogViewer = _DialogViewer;
         }
@@ -61,7 +61,7 @@ namespace UI.Panels
 
         private void InitSettingItems()
         {
-            var soundSetting = new SoundSetting(Ticker);
+            var soundSetting = new SoundSetting(UITicker);
             soundSetting.AddObservers(GetObservers());
             _settingList.Add(soundSetting);
             _settingList.Add(new LanguageSetting());
@@ -86,7 +86,7 @@ namespace UI.Panels
                         _IsOn =>
                     {
                         _Setting.Put(_IsOn);
-                    }, GetObservers(), Ticker);
+                    }, GetObservers(), UITicker);
                     break;
                 case SettingType.InPanelSelector:
                     var itemSelector = CreateInPanelSelectorSetting();
@@ -99,7 +99,7 @@ namespace UI.Panels
                         {
                             itemSelector.setting.text = _Value;
                             _Setting.Put(_Value);
-                        }, GetObservers(), Ticker);
+                        }, GetObservers(), UITicker);
                     break;
                 case SettingType.Slider:
                     var itemSlider = CreateSliderSetting();

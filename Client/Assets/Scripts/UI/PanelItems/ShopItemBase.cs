@@ -19,7 +19,7 @@ namespace UI.PanelItems
 {
     public interface IShopItem
     {
-        void Init(ShopItemProps _Props, IEnumerable<GameObserver> _Observers, ITicker _Ticker);
+        void Init(ShopItemProps _Props, IEnumerable<GameObserver> _Observers, IUITicker _Ticker);
     }
 
     public abstract class ShopItemBase : MenuItemBase
@@ -47,7 +47,7 @@ namespace UI.PanelItems
             UnityAction _Action,
             ShopItemProps _Props,
             IEnumerable<GameObserver> _Observers,
-            ITicker _Ticker)
+            IUITicker _Ticker)
         {
             base.Init(_Observers, _Ticker);
             button.SetOnClick(_Action);

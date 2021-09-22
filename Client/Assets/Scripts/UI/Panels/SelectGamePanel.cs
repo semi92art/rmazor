@@ -31,7 +31,7 @@ namespace UI.Panels
         public SelectGamePanel(
             IMenuDialogViewer _DialogViewer, 
             Action<int> _SelectGame,
-            ITicker _Ticker) : base(_Ticker)
+            IUITicker _UITicker) : base(_UITicker)
         {
             m_DialogViewer = _DialogViewer;
             m_SelectGame = _SelectGame;
@@ -67,7 +67,7 @@ namespace UI.Panels
                     m_SelectGame.Invoke(cgiProps.GameId);
                     m_DialogViewer.Back();
                 };
-                cgi.Init(cgiProps, GetObservers(), Ticker);
+                cgi.Init(cgiProps, GetObservers(), UITicker);
             }
             
             Object.Destroy(cgiObj);

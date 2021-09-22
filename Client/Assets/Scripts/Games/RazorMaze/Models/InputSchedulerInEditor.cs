@@ -1,29 +1,30 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Exceptions;
 using Ticker;
 
 namespace Games.RazorMaze.Models
 {
-    public delegate void EInputCommandHandler(EInputCommand _Command);
+    public delegate void InputCommandHandler(int _Command, object[] _Args = null);
     
     public interface IInputScheduler
     {
-        event EInputCommandHandler MoveCommand; 
-        event EInputCommandHandler RotateCommand;
-        event EInputCommandHandler OtherCommand;
-        void AddCommand(EInputCommand _Command);
+        event InputCommandHandler MoveCommand; 
+        event InputCommandHandler RotateCommand;
+        event InputCommandHandler OtherCommand;
+        void AddCommand(int _Command, params object[] _Args);
         void UnlockMovement(bool _Unlock);
         void UnlockRotation(bool _Unlock);
     }
     
-    public class InputScheduler : IInputScheduler, IUpdateTick
+    public class InputSchedulerInEditor : IInputScheduler, IUpdateTick
     {
         #region nonpublic members
         
         private readonly Queue<EInputCommand> m_MoveCommands = new Queue<EInputCommand>();
         private readonly Queue<EInputCommand> m_RotateCommands = new Queue<EInputCommand>();
-        private readonly Queue<EInputCommand> m_OtherCommands = new Queue<EInputCommand>();
+        private readonly Queue<Tuple<EInputCommand, object[]>> m_OtherCommands = new Queue<Tuple<EInputCommand, object[]>>();
 
         private bool m_MovementLocked;
         private bool m_RotationLocked;
@@ -36,44 +37,44 @@ namespace Games.RazorMaze.Models
         
         #region inject
 
-        public InputScheduler(ITicker _Ticker)
+        public InputSchedulerInEditor(IUITicker _UITicker)
         {
-            _Ticker.Register(this);
+            _UITicker.Register(this);
         }
         
         #endregion
         
         #region api
         
-        public event EInputCommandHandler MoveCommand;
-        public event EInputCommandHandler RotateCommand;
-        public event EInputCommandHandler OtherCommand;
+        public event InputCommandHandler MoveCommand;
+        public event InputCommandHandler RotateCommand;
+        public event InputCommandHandler OtherCommand;
 
-        public void AddCommand(EInputCommand _Command)
+        public void AddCommand(int _Command, object[] _Args = null)
         {
             switch (_Command)
             {
-                case EInputCommand.MoveDown:
-                case EInputCommand.MoveLeft:
-                case EInputCommand.MoveRight:
-                case EInputCommand.MoveUp:
+                case (int)EInputCommand.MoveDown:
+                case (int)EInputCommand.MoveLeft:
+                case (int)EInputCommand.MoveRight:
+                case (int)EInputCommand.MoveUp:
                     if (m_MoveCommandsCount >= 3) return;
-                    m_MoveCommands.Enqueue(_Command);
+                    m_MoveCommands.Enqueue((EInputCommand)_Command);
                     m_MoveCommandsCount++;
                     break;
-                case EInputCommand.RotateClockwise:
-                case EInputCommand.RotateCounterClockwise:
+                case (int)EInputCommand.RotateClockwise:
+                case (int)EInputCommand.RotateCounterClockwise:
                     if (m_RotateCommandsCount >= 3) return;
-                    m_RotateCommands.Enqueue(_Command);
+                    m_RotateCommands.Enqueue((EInputCommand)_Command);
                     m_RotateCommandsCount++;
                     break;
-                case EInputCommand.LoadLevel:
-                case EInputCommand.ReadyToContinueLevel:
-                case EInputCommand.ContinueLevel:
-                case EInputCommand.FinishLevel:
-                case EInputCommand.PauseLevel:
-                case EInputCommand.UnloadLevel:
-                    m_OtherCommands.Enqueue(_Command);
+                case (int)EInputCommand.LoadLevel:
+                case (int)EInputCommand.ReadyToContinueLevel:
+                case (int)EInputCommand.ContinueLevel:
+                case (int)EInputCommand.FinishLevel:
+                case (int)EInputCommand.PauseLevel:
+                case (int)EInputCommand.UnloadLevel:
+                    m_OtherCommands.Enqueue(new Tuple<EInputCommand, object[]>((EInputCommand)_Command, _Args));
                     m_OtherCommandsCount++;
                     break;
                 default:
@@ -102,7 +103,7 @@ namespace Games.RazorMaze.Models
             var cmd = m_MoveCommands.Dequeue();
             m_MoveCommandsCount--;
             m_MovementLocked = true;
-            MoveCommand?.Invoke(cmd);
+            MoveCommand?.Invoke((int)cmd);
         }
 
         private void ScheduleRotationCommands()
@@ -112,7 +113,7 @@ namespace Games.RazorMaze.Models
             var cmd = m_RotateCommands.Dequeue();
             m_RotateCommandsCount--;
             m_RotationLocked = true;
-            RotateCommand?.Invoke(cmd);
+            RotateCommand?.Invoke((int)cmd);
         }
 
         private void ScheduleOtherCommands()
@@ -121,7 +122,7 @@ namespace Games.RazorMaze.Models
                 return;
             var cmd = m_OtherCommands.Dequeue();
             m_OtherCommandsCount--;
-            OtherCommand?.Invoke(cmd);
+            OtherCommand?.Invoke((int)cmd.Item1);
         }
         
         #endregion

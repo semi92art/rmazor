@@ -8,7 +8,8 @@ namespace Mono_Installers
     {
         public override void InstallBindings()
         {
-            Container.Bind<ITicker>().To<Ticker.Ticker>().AsSingle();
+            Container.Bind<IGameTicker>().To<GameTicker>().AsSingle();
+            Container.Bind<IUITicker>().To<UITicker>().AsSingle();
             Container.Bind<ILevelsLoader>().To<LevelsLoader>().AsSingle();
         }
     }

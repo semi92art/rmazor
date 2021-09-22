@@ -17,6 +17,8 @@ namespace Ticker
 
         #region api
 
+        public bool Pause { get; set; }
+        
         public void RegisterObject(object _Object)
         {
             if (_Object == null)
@@ -52,31 +54,39 @@ namespace Ticker
             m_FixedUpdateInfoDict.Clear();
             m_DrawGizmosInfoDict.Clear();
         }
-        
+
         #endregion
 
         #region engine methods
 
         private void Update()
         {
+            if (Pause)
+                return;
             for (int i = 0; i < m_UpdateInfoDict.Count; i++)
                 m_UpdateInfoDict[i]?.UpdateTick();
         }
 
         private void FixedUpdate()
         {
+            if (Pause)
+                return;
             for (int i = 0; i < m_FixedUpdateInfoDict.Count; i++)
                 m_FixedUpdateInfoDict[i]?.FixedUpdateTick();
         }
 
         private void LateUpdate()
         {
+            if (Pause)
+                return;
             for (int i = 0; i < m_LateUpdateInfoDict.Count; i++)
                 m_LateUpdateInfoDict[i]?.LateUpdateTick();
         }
         
         private void OnDrawGizmos()
         {
+            if (Pause)
+                return;
             if (!m_DrawGizmosInfoDict.Any())
                 return;
             foreach (var obj in m_DrawGizmosInfoDict)

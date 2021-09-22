@@ -8,6 +8,7 @@ using Games.RazorMaze.Views.MazeItems;
 using Games.RazorMaze.Views.Utils;
 using SpawnPools;
 using Ticker;
+using TimeProviders;
 using UnityEngine;
 
 namespace Games.RazorMaze.Views.Common
@@ -25,13 +26,14 @@ namespace Games.RazorMaze.Views.Common
         private ViewSettings ViewSettings { get; }
         
         public ViewMazeCommon(
-            ITicker _Ticker,
+            IGameTicker _GameTicker,
             IMazeItemsCreator _MazeItemsCreator, 
             IModelMazeData _ModelData,
             IContainersGetter _ContainersGetter, 
             ICoordinateConverter _CoordinateConverter,
+            IGameTimeProvider _GameTimeProvider,
             ViewSettings _ViewSettings) 
-            : base(_Ticker, _MazeItemsCreator, _ModelData, _ContainersGetter, _CoordinateConverter)
+            : base(_GameTicker, _MazeItemsCreator, _ModelData, _ContainersGetter, _CoordinateConverter, _GameTimeProvider)
         {
             ViewSettings = _ViewSettings;
         }

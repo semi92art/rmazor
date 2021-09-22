@@ -14,9 +14,9 @@ public class ApplicationInitializer : MonoBehaviour
 {
     #region inject
     
-    private ITicker Ticker { get; set; }
+    private IGameTicker GameTicker { get; set; }
 
-    [Inject] public void Inject(ITicker _Ticker) => Ticker = _Ticker;
+    [Inject] public void Inject(IGameTicker _GameTicker) => GameTicker = _GameTicker;
     
     #endregion
     
@@ -31,7 +31,7 @@ public class ApplicationInitializer : MonoBehaviour
         InitDebugConsole();
         InitGameManagers();
         
-        Ticker.ClearRegisteredObjects();
+        GameTicker.ClearRegisteredObjects();
         SceneManager.LoadScene(SceneNames.Main);
     }
     

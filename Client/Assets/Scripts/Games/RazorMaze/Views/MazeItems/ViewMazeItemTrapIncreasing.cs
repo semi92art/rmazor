@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Constants;
 using DI.Extensions;
 using GameHelpers;
@@ -27,14 +28,22 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private static int AnimKeyOpen => AnimKeys.Anim;
         private static int AnimKeyClose => AnimKeys.Stop;
-
-        private int m_PrevStage = ItemsProceederBase.StageIdle;
         
         private Animator m_Animator;
-        private AnimationEventCounter m_Counter;
+        private bool? m_TrapOpened;
+
+        #endregion
+
+        #region shapes
+
+        protected override object[] Shapes => new object[]{m_Center}
+            .Concat(m_Blades)
+            .Concat(m_BladeContainers)
+            .ToArray();
         private readonly List<Line> m_BladeContainers = new List<Line>();
         private readonly List<SpriteRenderer> m_Blades = new List<SpriteRenderer>();
-        
+        private Disc m_Center;
+
         #endregion
 
         #region inject
@@ -48,8 +57,8 @@ namespace Games.RazorMaze.Views.MazeItems
             IGameTimeProvider _GameTimeProvider,
             IModelMazeData _Data,
             IModelCharacter _Character,
-            ITicker _Ticker)
-            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _Ticker)
+            IGameTicker _GameTicker)
+            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _GameTicker)
         {
             Character = _Character;
         }
@@ -57,7 +66,7 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
         
         #region api
-
+        
         public override bool Activated
         {
             get => m_Activated;
@@ -75,12 +84,10 @@ namespace Games.RazorMaze.Views.MazeItems
                 case TrapsIncreasingProceeder.StageIncreased: OpenTrap(); break;
                 case TrapsIncreasingProceeder.StageIdle: CloseTrap();  break;
             }
-
-            m_PrevStage = _Args.Stage;
         }
         
         public override object Clone() => new ViewMazeItemTrapIncreasing(
-                ViewSettings, CoordinateConverter, ContainersGetter, GameTimeProvider, Data, Character, Ticker);
+                ViewSettings, CoordinateConverter, ContainersGetter, GameTimeProvider, Data, Character, GameTicker);
 
         #endregion
 
@@ -96,7 +103,7 @@ namespace Games.RazorMaze.Views.MazeItems
             prefab.transform.SetLocalPosXY(Vector2.zero);
             prefab.transform.localScale = Vector3.one * CoordinateConverter.GetScale();
             m_Animator = prefab.GetCompItem<Animator>("animator");
-            m_Counter = prefab.GetCompItem<AnimationEventCounter>("counter");
+            m_Center = prefab.GetCompItem<Disc>("center");
             
             m_BladeContainers.Clear();
             m_Blades.Clear();
@@ -111,43 +118,50 @@ namespace Games.RazorMaze.Views.MazeItems
             foreach (var blade in m_Blades)
                 blade.enabled = false;
         }
-
-        protected override void Appear(bool _Appear)
+        
+        private void OpenTrap()
         {
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !Initialized,
-                () =>
-                {
-                    RazorMazeUtils.DoAppearTransitionSimple(
-                        _Appear,
-                        GameTimeProvider,
-                        new Dictionary<IEnumerable<ShapeRenderer>, Color>
-                        {
-                            {m_BladeContainers, DrawingUtils.ColorLines}
-                        });
-                    RazorMazeUtils.DoAppearTransitionSimple(
-                        _Appear,
-                        GameTimeProvider,
-                        new Dictionary<IEnumerable<Renderer>, Color>
-                        {
-                            {m_Blades, DrawingUtils.ColorLines}
-                        });
-                }));
+            if (AppearingState != EAppearingState.Appeared)
+                return;
+            
+            if (m_TrapOpened.HasValue && m_TrapOpened.Value)
+                return;
+            Dbg.Log("Open Trap");
+            
+            m_TrapOpened = true;
+            Coroutines.Run(OpenTrapCoroutine(true));
         }
 
-        private void OpenTrap() => Coroutines.Run(OpenTrapCoroutine(true));
-
-        private void CloseTrap() => Coroutines.Run(OpenTrapCoroutine(false));
+        private void CloseTrap()
+        {
+            if (AppearingState != EAppearingState.Appeared)
+                return;
+            if (m_TrapOpened.HasValue && !m_TrapOpened.Value)
+                return;
+            Dbg.Log("Close Trap");
+            
+            m_TrapOpened = false;
+            Coroutines.Run(OpenTrapCoroutine(false));
+        }
 
         private IEnumerator OpenTrapCoroutine(bool _Open)
         {
-            if (!_Open)
-            {
-                int eventsCount = m_Counter.count;
-                while (eventsCount == m_Counter.count)
-                    yield return new WaitForSecondsRealtime(Time.deltaTime);
-            }
             m_Animator.SetTrigger(_Open ? AnimKeyOpen : AnimKeyClose);
+            yield return null;
+        }
+
+        protected override void Appear(bool _Appear)
+        {
+            if (_Appear)
+            {
+                m_Animator.ResetTrigger(AnimKeyClose);
+                m_Animator.ResetTrigger(AnimKeyOpen);
+            }
+            else
+            {
+                CloseTrap();
+            }
+            base.Appear(_Appear);
         }
 
         #endregion

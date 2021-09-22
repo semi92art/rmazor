@@ -1,11 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Exceptions;
 using Games.RazorMaze.Views.Characters;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItemGroups;
 using Games.RazorMaze.Views.Rotation;
 using Games.RazorMaze.Views.UI;
+using Ticker;
+using TimeProviders;
 using Utils;
 
 namespace Games.RazorMaze.Views
@@ -26,6 +30,9 @@ namespace Games.RazorMaze.Views
         public IViewMazePortalsGroup PortalsGroup { get; }
         public IViewMazeShredingerBlocksGroup ShredingerBlocksGroup { get; }
         public IViewMazeSpringboardItemsGroup SpringboardItemsGroup { get; }
+        
+        private IGameTimeProvider GameTimeProvider { get; }
+        private IGameTicker GameTicker { get; }
 
         public ViewGame(
             IViewUI _UI,
@@ -41,7 +48,9 @@ namespace Games.RazorMaze.Views
             IViewMazeTurretsGroup _MazeTurretsGroup,
             IViewMazePortalsGroup _PortalsGroup,
             IViewMazeShredingerBlocksGroup _ShredingerBlocksGroup,
-            IViewMazeSpringboardItemsGroup _SpringboardItemsGroup)
+            IViewMazeSpringboardItemsGroup _SpringboardItemsGroup,
+            IGameTimeProvider _GameTimeProvider,
+            IGameTicker _GameTicker)
         {
             UI = _UI;
             InputConfigurator = _InputConfigurator;
@@ -57,6 +66,8 @@ namespace Games.RazorMaze.Views
             PortalsGroup = _PortalsGroup;
             ShredingerBlocksGroup = _ShredingerBlocksGroup;
             SpringboardItemsGroup = _SpringboardItemsGroup;
+            GameTimeProvider = _GameTimeProvider;
+            GameTicker = _GameTicker;
         }
         
         public event NoArgsHandler Initialized;
@@ -83,6 +94,24 @@ namespace Games.RazorMaze.Views
             var proceeders = GetInterfaceOfProceeders<IOnLevelStageChanged>();
             foreach (var proceeder in proceeders)
                 proceeder.OnLevelStageChanged(_Args);
+            switch (_Args.Stage)
+            {
+                case ELevelStage.Loaded:
+                case ELevelStage.Started:
+                case ELevelStage.ReadyToContinue:
+                case ELevelStage.Continued:
+                case ELevelStage.Finished:
+                case ELevelStage.Unloaded:
+                    GameTimeProvider.Pause = false;
+                    GameTicker.Pause = false;
+                    break;
+                case ELevelStage.Paused:
+                    GameTimeProvider.Pause = true;
+                    GameTicker.Pause = true;
+                    break;
+                default:
+                    throw new SwitchCaseNotImplementedException(_Args.Stage);
+            }
         }
         
         private List<T> GetInterfaceOfProceeders<T>() where T : class

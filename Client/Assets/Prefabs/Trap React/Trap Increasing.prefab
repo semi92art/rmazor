@@ -834,6 +834,8 @@ MonoBehaviour:
       name: blade_3
     - item: {fileID: 3526383146176656641}
       name: blade_4
+    - item: {fileID: 1313957701647770393}
+      name: center
 --- !u!114 &5509618724373977563
 MonoBehaviour:
   m_ObjectHideFlags: 0

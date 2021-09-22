@@ -200,66 +200,42 @@ namespace Games.RazorMaze
             float distB = Vector2.Distance(_From.ToVector2(), _B.ToVector2());
             return distA < distB ? -1 : 1;
         }
-
+        
         public static void DoAppearTransitionSimple(
             bool _Appear,
             IGameTimeProvider _GameTimeProvider,
-            Dictionary<IEnumerable<ShapeRenderer>, Color> _Sets,
+            Dictionary<object[], Color> _Sets,
+            float _TransitionTime = 1f,
             UnityAction _OnFinish = null)
         {
-            const float transitionTime = 1f;
             foreach (var set in _Sets)
             {
                 var startCol = _Appear ? set.Value.SetA(0f) : set.Value;
                 var endCol = !_Appear ? set.Value.SetA(0f) : set.Value;
-                var shapes = set.Key.Where(_Shape => _Shape != null && !_Shape.IsNull()).ToList();
+                var shapes = set.Key.Where(_Shape => _Shape != null).ToList();
                 if (_Appear)
                     foreach (var shape in shapes)
-                        shape.enabled = true;
+                    {
+                        if (shape is ShapeRenderer shapeRenderer)
+                            shapeRenderer.enabled = true;
+                        else if (shape is SpriteRenderer spriteRenderer)
+                            spriteRenderer.enabled = true;
+                        else if (shape is MeshRenderer meshRenderer)
+                            meshRenderer.enabled = true;
+                    }
                 Coroutines.Run(Coroutines.Lerp(
                     0f,
                     1f,
-                    transitionTime,
+                    _TransitionTime,
                     _Progress =>
                     {
-                        foreach (var shape in shapes)
-                            shape.Color = Color.Lerp(startCol, endCol, _Progress);
-                    },
-                    _GameTimeProvider,
-                    (_Finished, _Progress) =>
-                    {
-                        if (!_Appear)
-                            foreach (var shape in shapes)
-                                shape.enabled = false;
-                        _OnFinish?.Invoke();
-                    }));
-            }
-        }
-
-        public static void DoAppearTransitionSimple(
-            bool _Appear,
-            IGameTimeProvider _GameTimeProvider,
-            Dictionary<IEnumerable<Renderer>, Color> _Sets)
-        {
-            const float transitionTime = 1f;
-            foreach (var set in _Sets)
-            {
-                var startCol = _Appear ? set.Value.SetA(0f): set.Value;
-                var endCol = !_Appear ? set.Value.SetA(0f) : set.Value;
-                var shapes = set.Key.Where(_Shape => !_Shape.IsNull()).ToList();
-                if (_Appear)
-                    foreach (var shape in shapes)
-                        shape.enabled = true;
-                Coroutines.Run(Coroutines.Lerp(
-                    0f,
-                    1f,
-                    transitionTime,
-                    _Progress =>
-                    {
+                        var col = Color.Lerp(startCol, endCol, _Progress);
                         foreach (var shape in shapes)
                         {
-                            if (shape is SpriteRenderer spriteRenderer)
-                                spriteRenderer.color = Color.Lerp(startCol, endCol, _Progress);
+                            if (shape is ShapeRenderer shapeRenderer)
+                                shapeRenderer.Color = col;
+                            else if (shape is SpriteRenderer spriteRenderer)
+                                spriteRenderer.color = col;
                             else if (shape is MeshRenderer meshRenderer)
                             {
                                 foreach (var material in meshRenderer.materials)
@@ -272,7 +248,15 @@ namespace Games.RazorMaze
                     {
                         if (!_Appear)
                             foreach (var shape in shapes)
-                                shape.enabled = false;
+                            {
+                                if (shape is ShapeRenderer shapeRenderer)
+                                    shapeRenderer.enabled = false;
+                                else if (shape is SpriteRenderer spriteRenderer)
+                                    spriteRenderer.enabled = false;
+                                else if (shape is MeshRenderer meshRenderer)
+                                    meshRenderer.enabled = false;
+                            }
+                        _OnFinish?.Invoke();
                     }));
             }
         }

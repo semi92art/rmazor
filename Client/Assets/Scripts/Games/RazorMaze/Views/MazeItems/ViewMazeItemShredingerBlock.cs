@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DI.Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
@@ -22,9 +23,14 @@ namespace Games.RazorMaze.Views.MazeItems
         private float m_LineOffset;
         private int m_DeactivationsCount;
         
+        #endregion
+
+        #region shapes
+
+        protected override object[] Shapes => new object[] {m_Block}.Concat(m_Lines).ToArray();
         private Rectangle m_Block;
         private readonly List<Line> m_Lines = new List<Line>();
-        
+
         #endregion
         
         #region inject
@@ -34,10 +40,10 @@ namespace Games.RazorMaze.Views.MazeItems
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IModelMazeData _Data,
-            ITicker _Ticker,
+            IGameTicker _GameTicker,
             IGameTimeProvider _GameTimeProvider,
             ViewSettings _ViewSettings)
-            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _Ticker) { }
+            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _GameTicker) { }
         
         #endregion
         
@@ -49,8 +55,11 @@ namespace Games.RazorMaze.Views.MazeItems
             set
             {
                 m_Activated = value;
-                m_Block.enabled = value;
-                m_Lines.ForEach(_Line => _Line.enabled = value);
+                if (!value)
+                {
+                    m_Block.enabled = false;
+                    m_Lines.ForEach(_Line => _Line.enabled = false);
+                }
             }
         }
 
@@ -60,6 +69,8 @@ namespace Games.RazorMaze.Views.MazeItems
             set
             {
                 base.Proceeding = value;
+                if (!Activated || AppearingState != EAppearingState.Appeared)
+                    return;
                 if (value)
                     ActivateBlock();
                 else DeactivateBlock();
@@ -86,7 +97,7 @@ namespace Games.RazorMaze.Views.MazeItems
         }
 
         public override object Clone() => new ViewMazeItemShredingerBlock(
-            CoordinateConverter, ContainersGetter, Data, Ticker, GameTimeProvider, ViewSettings);
+            CoordinateConverter, ContainersGetter, Data, GameTicker, GameTimeProvider, ViewSettings);
 
         #endregion
         
@@ -142,24 +153,6 @@ namespace Games.RazorMaze.Views.MazeItems
                 line.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
                 line.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
             }
-        }
-
-        protected override void Appear(bool _Appear)
-        {
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !Initialized,
-                () =>
-                {
-                    RazorMazeUtils.DoAppearTransitionSimple(
-                        _Appear,
-                        GameTimeProvider,
-                        new Dictionary<IEnumerable<ShapeRenderer>, Color>
-                        {
-                            {m_Lines, DrawingUtils.ColorLines},
-                            {new [] {m_Block}, DrawingUtils.ColorLines }
-                        });
-
-                }));
         }
 
         private List<Vector2> GetCornerPositions()
@@ -225,6 +218,42 @@ namespace Games.RazorMaze.Views.MazeItems
                 });
             if (!_Activate)
                 m_DeactivationsCount++;
+        }
+        
+        protected override void Appear(bool _Appear)
+        {
+            AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !Initialized,
+                () =>
+                {
+                    object[] shapes;
+                    if (_Appear)
+                    {
+                        m_Block.enabled = false;
+                        shapes = m_Lines.Cast<object>().ToArray();
+                    }
+                    else
+                    {
+                        shapes = Proceeding ? new object[]{m_Block} : m_Lines.Cast<object>().ToArray();
+                    }
+                    RazorMazeUtils.DoAppearTransitionSimple(
+                        _Appear,
+                        GameTimeProvider,
+                        new Dictionary<object[], Color>
+                        {
+                            {shapes, DrawingUtils.ColorLines}
+                        },
+                        _OnFinish: () =>
+                        {
+                            if (!_Appear)
+                            {
+                                DeactivateShapes();
+                            }
+                            AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared;
+                        });
+
+                }));
         }
 
         #endregion

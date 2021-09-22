@@ -40,13 +40,13 @@ namespace UI
         private IMainMenuUI MainMenuUI { get; set; }
 
         // [Inject]
-        // public void Inject(IMainMenuUI _MainMenuUI, ITicker _Ticker)
+        // public void Inject(IMainMenuUI _MainMenuUI, IUITicker _Ticker)
         // {
         //     MainMenuUI = _MainMenuUI;
         //     Ticker = _Ticker;
         // }
         
-        public MainMenuUiLoader(IMainMenuUI _MainMenuUI, ITicker _Ticker) : base(_Ticker)
+        public MainMenuUiLoader(IMainMenuUI _MainMenuUI, IUITicker _UITicker) : base(_UITicker)
         {
             MainMenuUI = _MainMenuUI;
         }
@@ -114,7 +114,7 @@ namespace UI
         private void CreateDialogViewers()
         {
             m_MenuDialogViewer = MainMenuDialogViewer.Create(
-                m_Canvas.RTransform(), GetObservers(), Ticker);
+                m_Canvas.RTransform(), GetObservers(), UITicker);
             m_NotificationViewer = MainMenuNotificationViewer.Create(
                 m_Canvas.RTransform());
         }
@@ -130,7 +130,7 @@ namespace UI
         private void CreateLoadingPanel()
         {
             bool authFinished = false;
-            var loadingPanel = new LoadingPanel(m_MenuDialogViewer, Ticker);
+            var loadingPanel = new LoadingPanel(m_MenuDialogViewer, UITicker);
             loadingPanel.Init();
             m_MenuDialogViewer.Show(loadingPanel);
             m_StartLoadingController = new LoadingController(loadingPanel, _LoadingResult =>

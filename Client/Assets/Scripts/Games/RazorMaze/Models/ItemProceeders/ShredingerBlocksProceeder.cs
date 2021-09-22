@@ -10,19 +10,17 @@ namespace Games.RazorMaze.Models.ItemProceeders
     {
         public MazeItem Item { get; }
         public int Stage { get; }
-        public bool Opened { get; }
 
-        public ShredingerBlockArgs(MazeItem _Item, int _Stage, bool _Opened)
+        public ShredingerBlockArgs(MazeItem _Item, int _Stage)
         {
             Item = _Item;
             Stage = _Stage;
-            Opened = _Opened;
         }
     }
 
     public delegate void ShredingerBlockHandler(ShredingerBlockArgs _Args);
 
-    public interface IShredingerBlocksProceeder : IItemsProceeder, ICharacterMoveContinued
+    public interface IShredingerBlocksProceeder : IItemsProceeder, ICharacterMoveContinued, ICharacterMoveFinished
     {
         event ShredingerBlockHandler ShredingerBlockEvent;
     }
@@ -31,9 +29,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
     public class ShredingerBlocksProceeder : ItemsProceederBase, IShredingerBlocksProceeder
     {
         #region constants
-
-        public const int StageOpened = 1;
-        public const int StageClosed = 2;
+        
+        public const int StageClosed = 1;
         
         #endregion
         
@@ -56,21 +53,21 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
+            // TODO если понадобится более быстрая активация блоков шредингера во время движения
+        }
+        
+        public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
+        {
             var infos = GetProceedInfos(Types).Values;
-            foreach (var info in infos.Where(_Info => !_Info.IsProceeding))
-            {
-                if (info.Item.Position == _Args.Position)
-                {
-                    SwitchStage(info, true, StageOpened);
-                }
-            }
-            
+            var path = RazorMazeUtils.GetFullPath(_Args.From, _Args.To);
             foreach (var info in infos.Where(_Info => _Info.IsProceeding))
             {
-                if (info.Item.Position != _Args.Position && info.ProceedingStage == StageOpened)
+                if (path.Contains(info.Item.Position)
+                    && info.Item.Position != _Args.To
+                    && info.ProceedingStage == StageIdle)
                 {
-                    SwitchStage(info, true, StageClosed);
-                    Coroutines.Run(ProceedBlock(info));
+                    SwitchStage(info, StageClosed);
+                    Coroutines.Run(ProceedBlock(info, StageIdle));
                 }
             }
         }
@@ -79,19 +76,18 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region nonpublic methods
 
-        private IEnumerator ProceedBlock(IMazeItemProceedInfo _Info)
+        private IEnumerator ProceedBlock(IMazeItemProceedInfo _Info, int _Stage)
         {
             yield return Coroutines.Delay(
-                () => SwitchStage(_Info, false, StageIdle),
+                () => SwitchStage(_Info, _Stage),
                 Settings.shredingerBlockProceedTime);
         }
 
-        private void SwitchStage(IMazeItemProceedInfo _Info, bool _IsProceeding, int _Stage)
+        private void SwitchStage(IMazeItemProceedInfo _Info, int _Stage)
         {
-            _Info.IsProceeding = _IsProceeding;
             _Info.ProceedingStage = _Stage;
             ShredingerBlockEvent?.Invoke(
-                new ShredingerBlockArgs(_Info.Item, _Stage, _Stage != StageClosed));
+                new ShredingerBlockArgs(_Info.Item, _Stage));
         }
         
         #endregion

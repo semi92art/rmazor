@@ -23,8 +23,9 @@ namespace Games.RazorMaze.Views.MazeItems
     
     public class ViewMazeItemGravityBlock : ViewMazeItemBase, IViewMazeItemGravityBlock
     {
-        #region nonpublic members
+        #region shapes
 
+        protected override object[] Shapes => new object[] {m_Shape, m_Joint};
         private Rectangle m_Shape;
         private Disc m_Joint;
         
@@ -37,9 +38,9 @@ namespace Games.RazorMaze.Views.MazeItems
             IContainersGetter _ContainersGetter,
             IGameTimeProvider _GameTimeProvider,
             IModelMazeData _Data,
-            ITicker _Ticker,            
+            IGameTicker _GameTicker,            
             ViewSettings _ViewSettings) 
-            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _Ticker) { }
+            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _GameTicker) { }
         
         #endregion
         
@@ -70,7 +71,7 @@ namespace Games.RazorMaze.Views.MazeItems
         }
         
         public override object Clone() => new ViewMazeItemGravityBlock(
-            CoordinateConverter, ContainersGetter, GameTimeProvider, Data, Ticker, ViewSettings);
+            CoordinateConverter, ContainersGetter, GameTimeProvider, Data, GameTicker, ViewSettings);
         
         #endregion
         
@@ -100,23 +101,6 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Joint = joint;
         }
 
-
-        protected override void Appear(bool _Appear)
-        {
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !Initialized,
-                () =>
-                {
-                    RazorMazeUtils.DoAppearTransitionSimple(
-                        _Appear,
-                        GameTimeProvider,
-                        new Dictionary<IEnumerable<ShapeRenderer>, Color>
-                        {
-                            {new ShapeRenderer[] {m_Shape ,m_Joint}, DrawingUtils.ColorLines}
-                        });
-                }));
-        }
-        
         #endregion
     }
 }

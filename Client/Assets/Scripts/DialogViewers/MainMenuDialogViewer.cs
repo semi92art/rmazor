@@ -76,7 +76,7 @@ namespace DialogViewers
         public static IMenuDialogViewer Create(
             RectTransform _Parent,
             IEnumerable<GameObserver> _Observers,
-            ITicker _Ticker)
+            IUITicker _UITicker)
         {
             var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
@@ -85,7 +85,7 @@ namespace DialogViewers
                 "dialog_viewers",
                 "main_menu_viewer");
             var result = go.GetComponent<MainMenuDialogViewer>();
-            result.m_Notifyer = new ObserverNotifyer(_Ticker);
+            result.m_Notifyer = new ObserverNotifyer(_UITicker);
             result.m_Notifyer.AddObservers(_Observers);
             return result;
         }

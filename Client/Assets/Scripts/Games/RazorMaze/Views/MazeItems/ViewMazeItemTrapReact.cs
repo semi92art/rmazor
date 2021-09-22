@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
 using GameHelpers;
@@ -33,9 +32,15 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region nonpublic members
         
+        private float m_Progress;
+        
+        #endregion
+        
+        #region shapes
+
+        protected override object[] Shapes => new object[] {m_Line, m_Trap};
         private Line m_Line;
         private SpriteRenderer m_Trap;
-        private float m_Progress;
         
         #endregion
         
@@ -49,11 +54,11 @@ namespace Games.RazorMaze.Views.MazeItems
             IModelCharacter _Character,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            ITicker _Ticker,
+            IGameTicker _GameTicker,
             IGameTimeProvider _GameTimeProvider,
             ModelSettings _ModelSettings,
             ViewSettings _ViewSettings)
-            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _Ticker)
+            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _GameTicker)
         {
             Character = _Character;
             ModelSettings = _ModelSettings;
@@ -86,7 +91,7 @@ namespace Games.RazorMaze.Views.MazeItems
         }
         
         public override object Clone() => new ViewMazeItemTrapReact(
-            Data, Character, CoordinateConverter, ContainersGetter, Ticker, GameTimeProvider, ModelSettings, ViewSettings);
+            Data, Character, CoordinateConverter, ContainersGetter, GameTicker, GameTimeProvider, ModelSettings, ViewSettings);
         
         public void OnTrapReact(MazeItemTrapReactEventArgs _Args)
         {
@@ -146,29 +151,6 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Line = line;
             m_Trap = trap;
             Proceeding = true;
-        }
-
-        protected override void Appear(bool _Appear)
-        {
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !Initialized,
-                () =>
-                {
-                    RazorMazeUtils.DoAppearTransitionSimple(
-                        _Appear,
-                        GameTimeProvider,
-                        new Dictionary<IEnumerable<ShapeRenderer>, Color>
-                        {
-                            {new [] {m_Line}, DrawingUtils.ColorLines}
-                        });
-                    RazorMazeUtils.DoAppearTransitionSimple(
-                        _Appear,
-                        GameTimeProvider,
-                        new Dictionary<IEnumerable<Renderer>, Color>
-                        {
-                            {new [] {m_Trap}, DrawingUtils.ColorLines}
-                        });
-                }));
         }
 
         private IEnumerator HandlePreReact()

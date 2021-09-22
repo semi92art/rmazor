@@ -19,7 +19,7 @@ namespace UI.PanelItems
         public static IShopItem Create(RectTransform _Parent) =>
             Create<ShopItemMoney>(_Parent, "shop_item_money");
 
-        public void Init(ShopItemProps _Props, IEnumerable<GameObserver> _Observers, ITicker _Ticker)
+        public void Init(ShopItemProps _Props, IEnumerable<GameObserver> _Observers, IUITicker _Ticker)
         {
             var rewards = _Props.Rewards;
             description.text = rewards[BankItemType.FirstCurrency].ToNumeric() + " " + "gold" + "\n" + 

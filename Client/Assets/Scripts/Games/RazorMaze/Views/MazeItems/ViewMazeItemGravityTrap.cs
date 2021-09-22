@@ -33,6 +33,11 @@ namespace Games.RazorMaze.Views.MazeItems
         private Transform m_Mace;
         private Vector2 m_Position;
 
+        #endregion
+        
+        #region shapes
+
+        protected override object[] Shapes => new object[] {m_MaceRenderer, m_MaceDisc};
         private MeshRenderer m_MaceRenderer;
         private Disc m_MaceDisc;
         
@@ -49,8 +54,8 @@ namespace Games.RazorMaze.Views.MazeItems
             IContainersGetter _ContainersGetter,
             IGameTimeProvider _GameTimeProvider,
             IModelCharacter _Character,
-            ITicker _Ticker)
-            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _Ticker)
+            IGameTicker _GameTicker)
+            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _GameTicker)
         {
             Character = _Character;
         }
@@ -103,7 +108,7 @@ namespace Games.RazorMaze.Views.MazeItems
         }
 
         public override object Clone() => new ViewMazeItemGravityTrap(
-            ViewSettings, Data, CoordinateConverter, ContainersGetter, GameTimeProvider, Character, Ticker);
+            ViewSettings, Data, CoordinateConverter, ContainersGetter, GameTimeProvider, Character, GameTicker);
         
         #endregion
         
@@ -125,30 +130,7 @@ namespace Games.RazorMaze.Views.MazeItems
             go.transform.SetLocalPosXY(Vector2.zero);
             go.transform.localScale = Vector3.one * CoordinateConverter.GetScale() * ShapeScale;
         }
-
-        protected override void Appear(bool _Appear)
-        {
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !Initialized,
-                () =>
-                {
-                    RazorMazeUtils.DoAppearTransitionSimple(
-                        _Appear,
-                        GameTimeProvider,
-                        new Dictionary<IEnumerable<ShapeRenderer>, Color>
-                        {
-                            {new [] {m_MaceDisc}, DrawingUtils.ColorLines}
-                        });
-                    RazorMazeUtils.DoAppearTransitionSimple(
-                        _Appear,
-                        GameTimeProvider,
-                        new Dictionary<IEnumerable<Renderer>, Color>
-                        {
-                            {new [] {m_MaceRenderer}, DrawingUtils.ColorLines}
-                        });
-                }));
-        }
-
+        
         private Vector3 GetRotationDirection(Vector2 _DropDirection)
         {
             switch (Data.Orientation)

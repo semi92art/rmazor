@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using DI.Extensions;
+﻿using DI.Extensions;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
@@ -9,7 +8,6 @@ using Games.RazorMaze.Views.Utils;
 using Ticker;
 using TimeProviders;
 using UnityEngine;
-using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
@@ -18,10 +16,16 @@ namespace Games.RazorMaze.Views.MazeItems
     public class ViewMazeItemMovingTrap : ViewMazeItemBase, IViewMazeItemMovingTrap, IUpdateTick
     {
         #region nonpublic members
-
-        private SpriteRenderer m_Saw;
+        
         private bool m_Rotate;
         private Vector2 m_Position;
+        
+        #endregion
+        
+        #region shapes
+
+        protected override object[] Shapes => new[] {m_Saw};
+        private SpriteRenderer m_Saw;
         
         #endregion
         
@@ -35,9 +39,9 @@ namespace Games.RazorMaze.Views.MazeItems
             IModelMazeData _Data,
             IGameTimeProvider _GameTimeProvider,
             IModelCharacter _Character,
-            ITicker _Ticker,
+            IGameTicker _GameTicker,
             ViewSettings _ViewSettings) 
-            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _Ticker)
+            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _GameTicker)
         {
             Character = _Character;
         }
@@ -45,7 +49,7 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
         
         #region api
-
+        
         public override bool Activated
         {
             get => m_Activated;
@@ -98,7 +102,7 @@ namespace Games.RazorMaze.Views.MazeItems
         }
 
         public override object Clone() => new ViewMazeItemMovingTrap(
-            CoordinateConverter, ContainersGetter, Data, GameTimeProvider, Character, Ticker, ViewSettings);
+            CoordinateConverter, ContainersGetter, Data, GameTimeProvider, Character, GameTicker, ViewSettings);
         
         #endregion
 
@@ -124,23 +128,6 @@ namespace Games.RazorMaze.Views.MazeItems
             
             Object = go;
             m_Saw = saw;
-        }
-
-        protected override void Appear(bool _Appear)
-        {
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !Initialized,
-                () =>
-                {
-                    RazorMazeUtils.DoAppearTransitionSimple(
-                        _Appear,
-                        GameTimeProvider,
-                        new Dictionary<IEnumerable<Renderer>, Color>
-                        {
-                            {new [] {m_Saw}, DrawingUtils.ColorLines}
-                        });
-
-                }));
         }
 
         private void StartRotation()

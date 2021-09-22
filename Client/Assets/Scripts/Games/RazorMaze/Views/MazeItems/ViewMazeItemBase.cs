@@ -1,18 +1,32 @@
-﻿using DI.Extensions;
+﻿using System.Collections.Generic;
+using DI.Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeItems.Props;
+using Games.RazorMaze.Views.Utils;
+using Shapes;
 using Ticker;
 using TimeProviders;
 using UnityEngine;
+using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
+    public enum EAppearingState
+    {
+        Appearing,
+        Appeared,
+        Dissapearing,
+        Dissapeared
+    }
+
     public abstract class ViewMazeItemBase : IViewMazeItem
     {
         #region nonpublic members
         
+        protected abstract object[] Shapes { get; }
         protected bool Initialized { get; set; }
+        protected EAppearingState AppearingState { get; set; }
         protected bool m_Activated;
         private bool m_Proceeding;
         
@@ -25,7 +39,7 @@ namespace Games.RazorMaze.Views.MazeItems
         protected ICoordinateConverter CoordinateConverter { get; }
         protected IContainersGetter ContainersGetter { get; }
         protected IGameTimeProvider GameTimeProvider { get; }
-        protected ITicker Ticker { get; }
+        protected IGameTicker GameTicker { get; }
         
 
         protected ViewMazeItemBase (
@@ -34,14 +48,14 @@ namespace Games.RazorMaze.Views.MazeItems
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTimeProvider _GameTimeProvider,
-            ITicker _Ticker)
+            IGameTicker _GameTicker)
         {
             ViewSettings = _ViewSettings;
             Data = _Data;
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
             GameTimeProvider = _GameTimeProvider;
-            Ticker = _Ticker;
+            GameTicker = _GameTicker;
         }
 
         #endregion
@@ -84,7 +98,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             Props = _Props;
             SetShape();
-            Ticker.Register(this);
+            GameTicker.Register(this);
             Initialized = true;
         }
 
@@ -110,8 +124,41 @@ namespace Games.RazorMaze.Views.MazeItems
         #region nonpublic methods
         
         protected abstract void SetShape();
-        protected abstract void Appear(bool _Appear);
+        protected virtual void Appear(bool _Appear)
+        {
+            AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !Initialized,
+                () =>
+                {
+                    RazorMazeUtils.DoAppearTransitionSimple(
+                        _Appear,
+                        GameTimeProvider,
+                        new Dictionary<object[], Color>
+                        {
+                            {Shapes, DrawingUtils.ColorLines}
+                        },
+                        _OnFinish: () =>
+                        {
+                            if (!_Appear)
+                                DeactivateShapes();
+                            AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared;
+                        });
+                }));
+        }
 
+        protected void DeactivateShapes()
+        {
+            foreach (var shape in Shapes)
+            {
+                if (shape is ShapeRenderer shapeRenderer && !shapeRenderer.IsNull())
+                    shapeRenderer.enabled = false;
+                else if (shape is SpriteRenderer spriteRenderer && !spriteRenderer.IsNull())
+                    spriteRenderer.enabled = false;
+                else if (shape is MeshRenderer meshRenderer && !meshRenderer.IsNull())
+                    meshRenderer.enabled = false;
+            }
+        }
 
         #endregion
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Entities;
 using Games.RazorMaze.Models.ProceedInfos;
@@ -51,8 +52,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region nonpubic members
         
-        protected override EMazeItemType[] Types => 
-            new[] {EMazeItemType.Turret, EMazeItemType.Attenuator};
+        protected override EMazeItemType[] Types => new[] {EMazeItemType.Turret};
+        private readonly Queue<IEnumerator> m_Coroutines = new Queue<IEnumerator>();
         
         #endregion
         
@@ -81,6 +82,17 @@ namespace Games.RazorMaze.Models.ItemProceeders
             ProceedTurrets();
         }
         
+        public override void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            base.OnLevelStageChanged(_Args);
+            if (_Args.Stage == ELevelStage.ReadyToContinue)
+            {
+                foreach (var coroutine in m_Coroutines)
+                    Coroutines.Stop(coroutine);
+                m_Coroutines.Clear();
+            }
+        }
+        
         #endregion
         
         #region nonpublic methods
@@ -90,16 +102,18 @@ namespace Games.RazorMaze.Models.ItemProceeders
             var infos = GetProceedInfos(Types);
             foreach (var info in infos.Values.Where(_Info => _Info.IsProceeding && _Info.ReadyToSwitchStage))
             {
-                Coroutines.Run(ProceedTurretCoroutine(info));
+                info.ReadyToSwitchStage = false;
+                var coroutine = ProceedTurretCoroutine(info);
+                m_Coroutines.Enqueue(coroutine);
+                Coroutines.Run(coroutine);
             }
         }
 
         private IEnumerator ProceedTurretCoroutine(IMazeItemProceedInfo _Info)
         {
-            _Info.ReadyToSwitchStage = false;
             _Info.ProceedingStage = _Info.ProceedingStage == StageIdle ? StageShoot : StageIdle;
             float duration = GetStageDuration(_Info.ProceedingStage); 
-            float time = _Info.ProceedingStage == 0 ? Settings.turretPreShootInterval : Settings.turretShootInterval;
+            float time = GameTimeProvider.Time;
             yield return Coroutines.WaitWhile(
                 () => time + duration > GameTimeProvider.Time,
                 () =>
