@@ -55,17 +55,31 @@ namespace Games.RazorMaze.Views.MazeItems
         #region inject
 
         public ViewMazeItemPortal(
+            ViewSettings _ViewSettings,
+            IModelGame _Model,
             ICoordinateConverter _CoordinateConverter, 
             IContainersGetter _ContainersGetter,
-            IModelMazeData _Data,
             IGameTicker _GameTicker,
-            IGameTimeProvider _GameTimeProvider,
-            ViewSettings _ViewSettings)
-            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _GameTicker) { }
+            IGameTimeProvider _GameTimeProvider)
+            : base(
+                _ViewSettings,
+                _Model,
+                _CoordinateConverter,
+                _ContainersGetter
+                , _GameTimeProvider,
+                _GameTicker) { }
         
         #endregion
 
         #region api
+        
+        public override object Clone() => new ViewMazeItemPortal(
+            ViewSettings,
+            Model, 
+            CoordinateConverter,
+            ContainersGetter,
+            GameTicker, 
+            GameTimeProvider);
         
         public override bool Activated
         {
@@ -95,10 +109,7 @@ namespace Games.RazorMaze.Views.MazeItems
             if (m_Appeared)
                 UpdateGravityItems();
         }
-        
-        public override object Clone() => new ViewMazeItemPortal(
-            CoordinateConverter, ContainersGetter, Data, GameTicker, GameTimeProvider, ViewSettings);
-        
+
         public void DoTeleport(PortalEventArgs _Args)
         {
             Coroutines.Run(Coroutines.Lerp(

@@ -46,27 +46,39 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region inject
 
-        public IModelCharacter Character { get; }
         private ModelSettings ModelSettings { get; }
 
         public ViewMazeItemTrapReact(
-            IModelMazeData _Data,
-            IModelCharacter _Character,
+            ViewSettings _ViewSettings,
+            ModelSettings _ModelSettings,
+            IModelGame _Model,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IGameTicker _GameTicker,
             IGameTimeProvider _GameTimeProvider,
-            ModelSettings _ModelSettings,
-            ViewSettings _ViewSettings)
-            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _GameTicker)
+            IGameTicker _GameTicker)
+            : base(
+                _ViewSettings,
+                _Model,
+                _CoordinateConverter,
+                _ContainersGetter,
+                _GameTimeProvider, 
+                _GameTicker)
         {
-            Character = _Character;
             ModelSettings = _ModelSettings;
         }
         
         #endregion
         
         #region api
+        
+        public override object Clone() => new ViewMazeItemTrapReact(
+            ViewSettings,
+            ModelSettings,
+            Model, 
+            CoordinateConverter,
+            ContainersGetter,
+            GameTimeProvider,
+            GameTicker);
 
         public override bool Activated
         {
@@ -89,10 +101,7 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Trap.transform.Rotate(Vector3.forward * rotSpeed);
             CheckForCharacterDeath();
         }
-        
-        public override object Clone() => new ViewMazeItemTrapReact(
-            Data, Character, CoordinateConverter, ContainersGetter, GameTicker, GameTimeProvider, ModelSettings, ViewSettings);
-        
+
         public void OnTrapReact(MazeItemTrapReactEventArgs _Args)
         {
             IEnumerator coroutine = null;
@@ -217,11 +226,12 @@ namespace Games.RazorMaze.Views.MazeItems
             var dir = Props.Directions.First();
             var pos = Props.Position;
             var itemPos = (dir + pos).ToVector2();
-            var cPos = Character.IsMoving ? 
-                Character.MovingInfo.PrecisePosition : Character.Position.ToVector2();
+            var character = Model.Character;
+            var cPos = character.IsMoving ? 
+                character.MovingInfo.PrecisePosition : character.Position.ToVector2();
             if (Vector2.Distance(cPos, itemPos) + RazorMazeUtils.Epsilon > 1f) 
                 return;
-            Character.RaiseDeath();
+            character.RaiseDeath();
         }
         
         #endregion

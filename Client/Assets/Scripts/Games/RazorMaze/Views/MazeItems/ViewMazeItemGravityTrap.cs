@@ -45,24 +45,32 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region inject
         
-        private IModelCharacter Character { get; }
-
         public ViewMazeItemGravityTrap(
             ViewSettings _ViewSettings,
-            IModelMazeData _Data,
+            IModelGame _Model,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTimeProvider _GameTimeProvider,
-            IModelCharacter _Character,
             IGameTicker _GameTicker)
-            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _GameTicker)
-        {
-            Character = _Character;
-        }
+            : base(
+                _ViewSettings,
+                _Model,
+                _CoordinateConverter,
+                _ContainersGetter,
+                _GameTimeProvider,
+                _GameTicker) { }
         
         #endregion
         
         #region api
+        
+        public override object Clone() => new ViewMazeItemGravityTrap(
+            ViewSettings,
+            Model,
+            CoordinateConverter,
+            ContainersGetter,
+            GameTimeProvider, 
+            GameTicker);
 
         public override bool Activated
         {
@@ -107,9 +115,6 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Rotate = false;
         }
 
-        public override object Clone() => new ViewMazeItemGravityTrap(
-            ViewSettings, Data, CoordinateConverter, ContainersGetter, GameTimeProvider, Character, GameTicker);
-        
         #endregion
         
         #region nonpublic methods
@@ -133,13 +138,13 @@ namespace Games.RazorMaze.Views.MazeItems
         
         private Vector3 GetRotationDirection(Vector2 _DropDirection)
         {
-            switch (Data.Orientation)
+            switch (Model.Data.Orientation)
             {
                 case MazeOrientation.North: return new Vector3(_DropDirection.y, _DropDirection.x);
                 case MazeOrientation.South: return new Vector3(-_DropDirection.y, -_DropDirection.x);
                 case MazeOrientation.East: return -_DropDirection;
                 case MazeOrientation.West: return _DropDirection;
-                default: throw new SwitchCaseNotImplementedException(Data.Orientation);
+                default: throw new SwitchCaseNotImplementedException(Model.Data.Orientation);
             }
         }
 

@@ -35,19 +35,32 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region inject
         
-
         public ViewMazeItemShredingerBlock(
+            ViewSettings _ViewSettings,
+            IModelGame _Model,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IModelMazeData _Data,
-            IGameTicker _GameTicker,
             IGameTimeProvider _GameTimeProvider,
-            ViewSettings _ViewSettings)
-            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _GameTicker) { }
+            IGameTicker _GameTicker)
+            : base(
+                _ViewSettings, 
+                _Model,
+                _CoordinateConverter, 
+                _ContainersGetter, 
+                _GameTimeProvider,
+                _GameTicker) { }
         
         #endregion
         
         #region api
+        
+        public override object Clone() => new ViewMazeItemShredingerBlock(
+            ViewSettings, 
+            Model,
+            CoordinateConverter,
+            ContainersGetter,
+            GameTimeProvider,
+            GameTicker);
 
         public override bool Activated
         {
@@ -95,10 +108,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 line.DashOffset = m_LineOffset;
             }
         }
-
-        public override object Clone() => new ViewMazeItemShredingerBlock(
-            CoordinateConverter, ContainersGetter, Data, GameTicker, GameTimeProvider, ViewSettings);
-
+        
         #endregion
         
         #region nonpublic methods

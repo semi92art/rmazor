@@ -34,17 +34,31 @@ namespace Games.RazorMaze.Views.MazeItems
         #region inject
         
         public ViewMazeItemGravityBlock(
+            ViewSettings _ViewSettings,
+            IModelGame _Model,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTimeProvider _GameTimeProvider,
-            IModelMazeData _Data,
-            IGameTicker _GameTicker,            
-            ViewSettings _ViewSettings) 
-            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _GameTicker) { }
+            IGameTicker _GameTicker) 
+            : base(
+                _ViewSettings,
+                _Model,
+                _CoordinateConverter,
+                _ContainersGetter,
+                _GameTimeProvider,
+                _GameTicker) { }
         
         #endregion
         
         #region api
+        
+        public override object Clone() => new ViewMazeItemGravityBlock(
+            ViewSettings,
+            Model,
+            CoordinateConverter, 
+            ContainersGetter, 
+            GameTimeProvider,
+            GameTicker);
 
         public override bool Activated
         {
@@ -69,10 +83,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(_Args.To));
         }
-        
-        public override object Clone() => new ViewMazeItemGravityBlock(
-            CoordinateConverter, ContainersGetter, GameTimeProvider, Data, GameTicker, ViewSettings);
-        
+
         #endregion
         
         #region nonpublic methods

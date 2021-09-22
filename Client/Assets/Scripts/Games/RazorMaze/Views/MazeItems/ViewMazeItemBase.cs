@@ -35,7 +35,7 @@ namespace Games.RazorMaze.Views.MazeItems
         #region inject
 
         protected ViewSettings ViewSettings { get; }
-        protected IModelMazeData Data { get; }
+        protected IModelGame Model { get; }
         protected ICoordinateConverter CoordinateConverter { get; }
         protected IContainersGetter ContainersGetter { get; }
         protected IGameTimeProvider GameTimeProvider { get; }
@@ -44,14 +44,14 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected ViewMazeItemBase (
             ViewSettings _ViewSettings,
-            IModelMazeData _Data,
+            IModelGame _Model,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTimeProvider _GameTimeProvider,
             IGameTicker _GameTicker)
         {
             ViewSettings = _ViewSettings;
-            Data = _Data;
+            Model = _Model;
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
             GameTimeProvider = _GameTimeProvider;

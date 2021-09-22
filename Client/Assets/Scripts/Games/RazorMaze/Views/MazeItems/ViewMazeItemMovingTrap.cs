@@ -30,25 +30,33 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
         
         #region inject
-
-        private IModelCharacter Character { get; }
         
         public ViewMazeItemMovingTrap(
+            ViewSettings _ViewSettings,
+            IModelGame _Model,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IModelMazeData _Data,
             IGameTimeProvider _GameTimeProvider,
-            IModelCharacter _Character,
-            IGameTicker _GameTicker,
-            ViewSettings _ViewSettings) 
-            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _GameTicker)
-        {
-            Character = _Character;
-        }
+            IGameTicker _GameTicker) 
+            : base(
+                _ViewSettings,
+                _Model, 
+                _CoordinateConverter,
+                _ContainersGetter,
+                _GameTimeProvider,
+                _GameTicker) { }
         
         #endregion
         
         #region api
+        
+        public override object Clone() => new ViewMazeItemMovingTrap(
+            ViewSettings,
+            Model, 
+            CoordinateConverter, 
+            ContainersGetter,
+            GameTimeProvider,
+            GameTicker);
         
         public override bool Activated
         {
@@ -100,9 +108,6 @@ namespace Games.RazorMaze.Views.MazeItems
             float rotSpeed = ViewSettings.MovingTrapRotationSpeed * Time.deltaTime; 
             Object.transform.Rotate(Vector3.forward * rotSpeed);
         }
-
-        public override object Clone() => new ViewMazeItemMovingTrap(
-            CoordinateConverter, ContainersGetter, Data, GameTimeProvider, Character, GameTicker, ViewSettings);
         
         #endregion
 

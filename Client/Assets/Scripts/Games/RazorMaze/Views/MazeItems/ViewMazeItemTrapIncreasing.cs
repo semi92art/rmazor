@@ -48,24 +48,32 @@ namespace Games.RazorMaze.Views.MazeItems
 
         #region inject
         
-        public IModelCharacter Character { get; }
-
         public ViewMazeItemTrapIncreasing(
             ViewSettings _ViewSettings,
+            IModelGame _Model,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTimeProvider _GameTimeProvider,
-            IModelMazeData _Data,
-            IModelCharacter _Character,
             IGameTicker _GameTicker)
-            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _GameTicker)
-        {
-            Character = _Character;
-        }
+            : base(
+                _ViewSettings,
+                _Model,
+                _CoordinateConverter,
+                _ContainersGetter,
+                _GameTimeProvider,
+                _GameTicker) { }
 
         #endregion
         
         #region api
+        
+        public override object Clone() => new ViewMazeItemTrapIncreasing(
+            ViewSettings,
+            Model,
+            CoordinateConverter, 
+            ContainersGetter,
+            GameTimeProvider,
+            GameTicker);
         
         public override bool Activated
         {
@@ -86,9 +94,6 @@ namespace Games.RazorMaze.Views.MazeItems
             }
         }
         
-        public override object Clone() => new ViewMazeItemTrapIncreasing(
-                ViewSettings, CoordinateConverter, ContainersGetter, GameTimeProvider, Data, Character, GameTicker);
-
         #endregion
 
         #region nonpublic methods
@@ -123,10 +128,9 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             if (AppearingState != EAppearingState.Appeared)
                 return;
-            
             if (m_TrapOpened.HasValue && m_TrapOpened.Value)
                 return;
-            Dbg.Log("Open Trap");
+            
             
             m_TrapOpened = true;
             Coroutines.Run(OpenTrapCoroutine(true));
@@ -138,8 +142,6 @@ namespace Games.RazorMaze.Views.MazeItems
                 return;
             if (m_TrapOpened.HasValue && !m_TrapOpened.Value)
                 return;
-            Dbg.Log("Close Trap");
-            
             m_TrapOpened = false;
             Coroutines.Run(OpenTrapCoroutine(false));
         }

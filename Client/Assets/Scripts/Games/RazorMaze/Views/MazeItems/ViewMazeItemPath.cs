@@ -44,18 +44,31 @@ namespace Games.RazorMaze.Views.MazeItems
         #region inject
         
         public ViewMazeItemPath(
+            ViewSettings _ViewSettings,
+            IModelGame _Model,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTimeProvider _GameTimeProvider,
-            IModelMazeData _Data,
-            IGameTicker _GameTicker,
-            ViewSettings _ViewSettings)
-            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _GameTicker) { }
+            IGameTicker _GameTicker)
+            : base(
+                _ViewSettings,
+                _Model,
+                _CoordinateConverter,
+                _ContainersGetter,
+                _GameTimeProvider,
+                _GameTicker) { }
         
         #endregion
 
         #region api
 
+        public override object Clone() => new ViewMazeItemPath(
+            ViewSettings,
+            Model,
+            CoordinateConverter,
+            ContainersGetter,
+            GameTimeProvider, 
+            GameTicker);
 
         public override bool Activated
         {
@@ -94,10 +107,7 @@ namespace Games.RazorMaze.Views.MazeItems
             if (m_TopBorderInited && m_TopBorder.Dashed)
                 m_TopBorder.DashOffset -= dOffset;
         }
-
-        public override object Clone() => 
-            new ViewMazeItemPath(CoordinateConverter, ContainersGetter, GameTimeProvider, Data, GameTicker, ViewSettings);
-
+        
         #endregion
         
         #region nonpublic methods
@@ -368,7 +378,7 @@ namespace Games.RazorMaze.Views.MazeItems
             end = CoordinateConverter.ToLocalMazeItemPosition(end);
 
             var dir = RazorMazeUtils.GetDirectionVector(_Side, MazeOrientation.North);
-            bool dashed = Data.Info.MazeItems.Any(_Item =>
+            bool dashed = Model.Data.Info.MazeItems.Any(_Item =>
                 _Item.Position == Props.Position + dir &&
                 (_Item.Type == EMazeItemType.TrapReact && _Item.Direction == -dir
                 || _Item.Type == EMazeItemType.TrapIncreasing));
@@ -403,7 +413,7 @@ namespace Games.RazorMaze.Views.MazeItems
             return _Inner ? new Vector2(180, 270) : new Vector2(0, 90);
         }
 
-        private bool PathExist(V2Int _Path) => Data.Info.Path.Contains(_Path);
+        private bool PathExist(V2Int _Path) => Model.Data.Info.Path.Contains(_Path);
 
         protected override void Appear(bool _Appear)
         {

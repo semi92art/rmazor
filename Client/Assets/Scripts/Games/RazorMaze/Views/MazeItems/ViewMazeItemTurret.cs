@@ -67,26 +67,38 @@ namespace Games.RazorMaze.Views.MazeItems
         #region inject
         
         private ITurretBulletTail BulletTail { get; }
-        private IModelCharacter ModelCharacter { get; }
 
         public ViewMazeItemTurret(
+            ViewSettings _ViewSettings,
+            IModelGame _Model,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IGameTicker _GameTicker,
-            IModelMazeData _Data,
             IGameTimeProvider _GameTimeProvider,
-            ITurretBulletTail _BulletTail,
-            IModelCharacter _ModelCharacter,
-            ViewSettings _ViewSettings)
-            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _GameTicker)
+            IGameTicker _GameTicker,
+            ITurretBulletTail _BulletTail)
+            : base(
+                _ViewSettings, 
+                _Model, 
+                _CoordinateConverter,
+                _ContainersGetter,
+                _GameTimeProvider, 
+                _GameTicker)
         {
             BulletTail = _BulletTail;
-            ModelCharacter = _ModelCharacter;
         }
         
         #endregion
         
         #region api
+        
+        public override object Clone() => new ViewMazeItemTurret(
+            ViewSettings,
+            Model,
+            CoordinateConverter, 
+            ContainersGetter, 
+            GameTimeProvider,
+            GameTicker,
+            BulletTail);
 
         public override void Init(ViewMazeItemProps _Props)
         {
@@ -111,11 +123,6 @@ namespace Games.RazorMaze.Views.MazeItems
             m_BulletHolderBorder.DashOffset += 2f * Time.deltaTime;
         }
 
-        
-
-        public override object Clone() => new ViewMazeItemTurret(
-            CoordinateConverter, ContainersGetter, GameTicker, Data, GameTimeProvider, BulletTail, ModelCharacter, ViewSettings);
-        
         #endregion
         
         #region nonpublic members
@@ -254,9 +261,9 @@ namespace Games.RazorMaze.Views.MazeItems
             yield return Coroutines.DoWhile(
                 () =>
                 {
-                    if (point == ModelCharacter.Position)
+                    if (point == Model.Character.Position)
                     {
-                        ModelCharacter.RaiseDeath();
+                        Model.Character.RaiseDeath();
                         return false;
                     }
                     return !movedToTheEnd;

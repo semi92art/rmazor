@@ -48,17 +48,26 @@ namespace Games.RazorMaze.Views.MazeItems
         #region inject
         
         public ViewMazeItemSpringboard(
+            ViewSettings _ViewSettings,
+            IModelGame _Model,
             ICoordinateConverter _CoordinateConverter, 
             IContainersGetter _ContainersGetter,
-            IModelMazeData _Data,
-            IGameTicker _GameTicker,
             IGameTimeProvider _GameTimeProvider,
-            ViewSettings _ViewSettings) 
-            : base(_ViewSettings, _Data, _CoordinateConverter, _ContainersGetter, _GameTimeProvider, _GameTicker) { }
+            IGameTicker _GameTicker) 
+            : base(
+                _ViewSettings,
+                _Model, 
+                _CoordinateConverter,
+                _ContainersGetter,
+                _GameTimeProvider, 
+                _GameTicker) { }
         
         #endregion
 
         #region api
+        
+        public override object Clone() => new ViewMazeItemSpringboard(
+            ViewSettings, Model, CoordinateConverter, ContainersGetter, GameTimeProvider, GameTicker);
 
         public override bool Activated
         {
@@ -75,9 +84,6 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             Coroutines.Run(JumpCoroutine());
         }
-        
-        public override object Clone() => new ViewMazeItemSpringboard(
-            CoordinateConverter, ContainersGetter, Data, GameTicker, GameTimeProvider, ViewSettings);
 
         #endregion
 
