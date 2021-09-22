@@ -65,9 +65,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
         #region api
 
         public event MazeItemTrapIncreasingEventHandler TrapIncreasingStageChanged;
-        
+
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args) { }
-        
+
         public void OnGameLoopUpdate()
         {
             ProceedTraps();
@@ -76,12 +76,11 @@ namespace Games.RazorMaze.Models.ItemProceeders
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
-            if (_Args.Stage == ELevelStage.ReadyToContinue)
-            {
-                foreach (var coroutine in m_Coroutines)
-                    Coroutines.Stop(coroutine);
-                m_Coroutines.Clear();
-            }
+            if (_Args.Stage != ELevelStage.ReadyToContinue)
+                return;
+            foreach (var coroutine in m_Coroutines)
+                Coroutines.Stop(coroutine);
+            m_Coroutines.Clear();
         }
         
         #endregion
@@ -92,7 +91,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         {
             var infos = GetProceedInfos(Types).Values;
             foreach (var info in infos
-                .Where(_Info => _Info.IsProceeding && _Info.ReadyToSwitchStage))
+                .Where(_Info => _Info.IsProceeding))
             {
                 if (info.ReadyToSwitchStage)
                 {
@@ -101,14 +100,11 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     m_Coroutines.Enqueue(coroutine);
                     Coroutines.Run(coroutine);
                 }
-                if (info.ProceedingStage == StageIncreased)
-                    CheckForCharacterDeath(info, info.Item.Position);
             }
         }
         
         private IEnumerator ProceedTrap(IMazeItemProceedInfo _Info)
         {
-            Dbg.Log("ProceedTrap coroutine");
             _Info.ProceedingStage = _Info.ProceedingStage == StageIdle ? StageIncreased : StageIdle;
             float duration = GetStageDuration(_Info.ProceedingStage); 
             float time = GameTimeProvider.Time;
@@ -132,31 +128,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     return Settings.trapIncreasingIncreasedTime;
                 default: return 0;
             }
-        }
-
-        private void CheckForCharacterDeath(IMazeItemProceedInfo _Info, V2Int _Position)
-        {
-            if (!Character.Alive)
-                return;
-            if (_Info.ProceedingStage != StageIncreased)
-                return;
-            var positions = new[]
-            {
-                _Position + V2Int.down,
-                _Position + V2Int.up,
-                _Position + V2Int.left,
-                _Position + V2Int.right,
-                _Position + V2Int.down + V2Int.left,
-                _Position + V2Int.down + V2Int.right,
-                _Position + V2Int.up + V2Int.left,
-                _Position + V2Int.up + V2Int.right
-            }.Select(_P => _P.ToVector2());
-            var cPos = Character.IsMoving ? 
-                Character.MovingInfo.PrecisePosition : Character.Position.ToVector2();
-            if (positions.Any(_P => Vector2.Distance(_P, cPos) + RazorMazeUtils.Epsilon > 1f)) 
-                return;
-            KillerProceedInfo = _Info;
-            Character.RaiseDeath();
         }
 
         #endregion

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Constants;
 using DI.Extensions;
+using Entities;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
@@ -21,7 +22,7 @@ namespace Games.RazorMaze.Views.MazeItems
         void OnIncreasing(MazeItemTrapIncreasingEventArgs _Args);
     }
     
-    public class ViewMazeItemTrapIncreasing : ViewMazeItemBase, IViewMazeItemTrapIncreasing
+    public class ViewMazeItemTrapIncreasing : ViewMazeItemBase, IViewMazeItemTrapIncreasing, IUpdateTick
     {
 
         #region nonpublic members
@@ -31,6 +32,8 @@ namespace Games.RazorMaze.Views.MazeItems
         
         private Animator m_Animator;
         private bool? m_TrapOpened;
+        private bool m_ReadyToKill;
+        private AnimationTriggerer m_Triggerer;
 
         #endregion
 
@@ -85,6 +88,13 @@ namespace Games.RazorMaze.Views.MazeItems
             }
         }
 
+        public override void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            base.OnLevelStageChanged(_Args);
+            if (_Args.Stage == ELevelStage.Finished && m_TrapOpened.HasValue && m_TrapOpened.Value)
+                CloseTrap();
+        }
+
         public void OnIncreasing(MazeItemTrapIncreasingEventArgs _Args)
         {
             switch (_Args.Stage)
@@ -109,6 +119,9 @@ namespace Games.RazorMaze.Views.MazeItems
             prefab.transform.localScale = Vector3.one * CoordinateConverter.GetScale();
             m_Animator = prefab.GetCompItem<Animator>("animator");
             m_Center = prefab.GetCompItem<Disc>("center");
+            m_Triggerer = prefab.GetCompItem<AnimationTriggerer>("triggerer");
+            m_Triggerer.Trigger1 += () => m_ReadyToKill = true;
+            m_Triggerer.Trigger2 += () => m_ReadyToKill = false;
             
             m_BladeContainers.Clear();
             m_Blades.Clear();
@@ -130,8 +143,9 @@ namespace Games.RazorMaze.Views.MazeItems
                 return;
             if (m_TrapOpened.HasValue && m_TrapOpened.Value)
                 return;
-            
-            
+            var stage = Model.LevelStaging.LevelStage;
+            if (stage == ELevelStage.Finished || stage == ELevelStage.Unloaded)
+                return;
             m_TrapOpened = true;
             Coroutines.Run(OpenTrapCoroutine(true));
         }
@@ -167,5 +181,29 @@ namespace Games.RazorMaze.Views.MazeItems
         }
 
         #endregion
+
+        public void UpdateTick()
+        {
+            if (!m_ReadyToKill)
+                return;
+            var positions = new[]
+            {
+                Props.Position + V2Int.down,
+                Props.Position + V2Int.up,
+                Props.Position + V2Int.left,
+                Props.Position + V2Int.right,
+                Props.Position + V2Int.down + V2Int.left,
+                Props.Position + V2Int.down + V2Int.right,
+                Props.Position + V2Int.up + V2Int.left,
+                Props.Position + V2Int.up + V2Int.right
+            }.Select(_P => _P.ToVector2());
+
+            var character = Model.Character;
+            var cPos = character.IsMoving ? 
+                character.MovingInfo.PrecisePosition : character.Position.ToVector2();
+            if (positions.All(_P => Vector2.Distance(_P, cPos) + RazorMazeUtils.Epsilon > 1f)) 
+                return;
+            character.RaiseDeath();
+        }
     }
 }

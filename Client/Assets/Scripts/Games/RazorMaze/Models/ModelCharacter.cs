@@ -111,6 +111,8 @@ namespace Games.RazorMaze.Models
             
             var from = Position;
             var to = GetNewPosition(from, _Direction);
+            (IsMoving, MovingInfo) = (true, new CharacterMovingEventArgs(_Direction, from, to, 0));
+            CharacterMoveStarted?.Invoke(MovingInfo);
             Coroutines.Run(MoveCharacterCore(_Direction, from, to));
         }
 
@@ -206,8 +208,6 @@ namespace Games.RazorMaze.Models
         private IEnumerator MoveCharacterCore(EMazeMoveDirection _Direction, V2Int _From, V2Int _To)
         {
             int thisCount = ++m_Counter;
-            (IsMoving, MovingInfo) = (true, new CharacterMovingEventArgs(_Direction, _From, _To, 0));
-            CharacterMoveStarted?.Invoke(MovingInfo);
             int pathLength = Mathf.RoundToInt(V2Int.Distance(_From, _To));
             yield return Coroutines.Lerp(
                 0f,
