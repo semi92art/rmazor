@@ -51,7 +51,14 @@ namespace Games.RazorMaze.Views.MazeItems
         #region shapes
 
         protected override object[] Shapes => new object[]
-            {m_Body, m_Barrel, m_BulletTail, m_BulletHolderBorder, m_BulletMask, m_BulletMask2};
+        {
+            m_Body,
+            m_Barrel,
+            m_BulletTail,
+            m_BulletHolderBorder,
+            m_BulletMask,
+            m_BulletMask2
+        };
 
         private Rectangle m_Body;
         private Rectangle m_Barrel;
@@ -99,6 +106,16 @@ namespace Games.RazorMaze.Views.MazeItems
             GameTimeProvider,
             GameTicker,
             BulletTail);
+
+        public override bool Activated
+        {
+            get => m_Activated;
+            set
+            {
+                m_Activated = value;
+                Object.SetActive(value);
+            }
+        }
 
         public override void Init(ViewMazeItemProps _Props)
         {

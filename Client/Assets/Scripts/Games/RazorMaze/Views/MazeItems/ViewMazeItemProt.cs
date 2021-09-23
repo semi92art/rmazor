@@ -37,6 +37,8 @@ namespace Games.RazorMaze.Views.MazeItems
         public bool Activated { get; set; }
 
         public GameObject Object => gameObject;
+        public EAppearingState AppearingState { get; set; }
+        public EProceedingStage ProceedingStage { get; set; }
 
         public bool Proceeding
         {
@@ -48,6 +50,8 @@ namespace Games.RazorMaze.Views.MazeItems
                     shape.Color = m_Active ? DrawingUtils.ColorBlock : DrawingUtils.ColorShredinger;
             }
         }
+
+        public bool InActiveStage { get; set; }
 
         public ViewMazeItemProps Props
         {

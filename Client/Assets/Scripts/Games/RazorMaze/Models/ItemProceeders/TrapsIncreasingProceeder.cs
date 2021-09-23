@@ -2,10 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Entities;
 using Games.RazorMaze.Models.ProceedInfos;
 using TimeProviders;
-using UnityEngine;
 using Utils;
 
 namespace Games.RazorMaze.Models.ItemProceeders
@@ -76,7 +74,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
-            if (_Args.Stage != ELevelStage.ReadyToContinue)
+            if (_Args.Stage != ELevelStage.ReadyToStartOrContinue)
                 return;
             foreach (var coroutine in m_Coroutines)
                 Coroutines.Stop(coroutine);

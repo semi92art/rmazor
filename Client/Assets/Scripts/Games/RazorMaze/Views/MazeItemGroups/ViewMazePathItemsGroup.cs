@@ -54,8 +54,8 @@ namespace Games.RazorMaze.Views.MazeItemGroups
 
         public void OnPathProceed(V2Int _PathItem)
         {
-            var item = PathItems.First(_Item => _Item.Props.Position == _PathItem && _Item.Props.IsNode);
-            item.Proceeding = true;
+            var item = PathItems.First(_Item => _Item.Props.Position == _PathItem);
+            item.Collected = true;
         }
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
@@ -106,7 +106,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         private void UnfillStartPathItem()
         {
-            PathItems.Single(_Item => _Item.Props.IsStartNode).Proceeding = true;
+            PathItems.Single(_Item => _Item.Props.IsStartNode).Collected = true;
         }
         
         #endregion

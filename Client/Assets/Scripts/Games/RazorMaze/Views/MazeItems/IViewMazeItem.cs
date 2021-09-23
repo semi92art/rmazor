@@ -9,7 +9,8 @@ namespace Games.RazorMaze.Views.MazeItems
     public interface IViewMazeItem : ICloneable, ISpawnPoolItem, IOnLevelStageChanged
     {
         GameObject Object { get; }
-        bool Proceeding { get; set; }
+        EAppearingState AppearingState { get; set; }
+        EProceedingStage ProceedingStage { get; set; }
         ViewMazeItemProps Props { get; set; }
         void Init(ViewMazeItemProps _Props);
         void SetLocalPosition(Vector2 _Position);

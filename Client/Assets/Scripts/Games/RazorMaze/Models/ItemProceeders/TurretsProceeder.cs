@@ -85,7 +85,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
-            if (_Args.Stage == ELevelStage.ReadyToContinue)
+            if (_Args.Stage == ELevelStage.ReadyToStartOrContinue)
             {
                 foreach (var coroutine in m_Coroutines)
                     Coroutines.Stop(coroutine);

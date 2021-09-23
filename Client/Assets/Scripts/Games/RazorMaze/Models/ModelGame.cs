@@ -196,7 +196,7 @@ namespace Games.RazorMaze.Models
             else if (_Command == (int)EInputCommand.ReadyToContinueLevel)
                 LevelStaging.ReadyToContinueLevel();
             else if (_Command == (int)EInputCommand.ContinueLevel)
-                LevelStaging.ContinueLevel();
+                LevelStaging.StartOrContinueLevel();
             else if (_Command == (int)EInputCommand.FinishLevel)
                 LevelStaging.FinishLevel();
             else if (_Command == (int)EInputCommand.PauseLevel)

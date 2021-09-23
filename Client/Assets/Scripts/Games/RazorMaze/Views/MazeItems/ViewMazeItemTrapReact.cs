@@ -79,26 +79,18 @@ namespace Games.RazorMaze.Views.MazeItems
             ContainersGetter,
             GameTimeProvider,
             GameTicker);
-
-        public override bool Activated
-        {
-            get => m_Activated;
-            set
-            {
-                m_Activated = value;
-                m_Line.enabled = value;
-                m_Trap.enabled = value;
-            }
-        }
+        
+        
 
         public void UpdateTick()
         {
             if (!Initialized || !Activated)
                 return;
-            if (!Proceeding)
+            if (ProceedingStage == EProceedingStage.Inactive)
                 return;
-            float rotSpeed = ViewSettings.MovingTrapRotationSpeed * Time.deltaTime; 
-            m_Trap.transform.Rotate(Vector3.forward * rotSpeed);
+            DoRotation();
+            if (ProceedingStage != EProceedingStage.ActiveAndWorking)
+                return;
             CheckForCharacterDeath();
         }
 
@@ -159,7 +151,12 @@ namespace Games.RazorMaze.Views.MazeItems
 
             m_Line = line;
             m_Trap = trap;
-            Proceeding = true;
+        }
+
+        private void DoRotation()
+        {
+            float rotSpeed = ViewSettings.MovingTrapRotationSpeed * Time.deltaTime; 
+            m_Trap.transform.Rotate(Vector3.forward * rotSpeed);
         }
 
         private IEnumerator HandlePreReact()

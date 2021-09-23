@@ -79,11 +79,9 @@ namespace Games.RazorMaze.Views.Characters
                 case ELevelStage.Loaded:
                     Activated = true;
                     break;
-                case ELevelStage.Started:
-                    break;
                 case ELevelStage.Paused:
                     break;
-                case ELevelStage.Continued:
+                case ELevelStage.StartedOrContinued:
                     break;
                 case ELevelStage.Finished:
                     break;

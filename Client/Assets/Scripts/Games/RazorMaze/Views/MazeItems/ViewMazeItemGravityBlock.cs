@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using DI.Extensions;
+﻿using DI.Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
@@ -8,7 +7,6 @@ using Shapes;
 using Ticker;
 using TimeProviders;
 using UnityEngine;
-using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
@@ -60,27 +58,20 @@ namespace Games.RazorMaze.Views.MazeItems
             GameTimeProvider,
             GameTicker);
 
-        public override bool Activated
-        {
-            get => m_Activated;
-            set
-            {
-                m_Activated = value;
-                m_Shape.enabled = value;
-                m_Joint.enabled = value;
-            }
-        }
-
         public void OnMoveStarted(MazeItemMoveEventArgs _Args) { }
 
         public void OnMoving(MazeItemMoveEventArgs _Args)
         {
+            if (ProceedingStage != EProceedingStage.ActiveAndWorking)
+                return;
             var pos = Vector2.Lerp(_Args.From.ToVector2(), _Args.To.ToVector2(), _Args.Progress);
             SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(pos));
         }
 
         public void OnMoveFinished(MazeItemMoveEventArgs _Args)
         {
+            if (ProceedingStage != EProceedingStage.ActiveAndWorking)
+                return;
             SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(_Args.To));
         }
 

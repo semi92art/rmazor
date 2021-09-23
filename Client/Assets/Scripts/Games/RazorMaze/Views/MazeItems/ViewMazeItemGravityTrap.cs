@@ -1,16 +1,13 @@
-﻿using System.Collections.Generic;
-using DI.Extensions;
+﻿using DI.Extensions;
 using Exceptions;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
-using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
 using TimeProviders;
 using UnityEngine;
-using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
@@ -72,25 +69,13 @@ namespace Games.RazorMaze.Views.MazeItems
             GameTimeProvider, 
             GameTicker);
 
-        public override bool Activated
-        {
-            get => m_Activated;
-            set
-            {
-                m_Activated = value;
-                m_Mace.SetGoActive(value);
-            }
-        }
-
         public void UpdateTick()
         {
             if (!Initialized || !Activated)
                 return;
-            if (!m_Rotate)
+            if (ProceedingStage != EProceedingStage.ActiveAndWorking)
                 return;
-            m_Angles += m_RotateDirection * Time.deltaTime * m_RotationSpeed;
-            m_Angles = ClampAngles(m_Angles);
-            m_Mace.rotation = Quaternion.Euler(m_Angles);
+            DoRotation();
         }
         
         public void OnMoveStarted(MazeItemMoveEventArgs _Args)
@@ -134,6 +119,15 @@ namespace Games.RazorMaze.Views.MazeItems
             
             go.transform.SetLocalPosXY(Vector2.zero);
             go.transform.localScale = Vector3.one * CoordinateConverter.GetScale() * ShapeScale;
+        }
+
+        private void DoRotation()
+        {
+            if (!m_Rotate)
+                return;
+            m_Angles += m_RotateDirection * Time.deltaTime * m_RotationSpeed;
+            m_Angles = ClampAngles(m_Angles);
+            m_Mace.rotation = Quaternion.Euler(m_Angles);
         }
         
         private Vector3 GetRotationDirection(Vector2 _DropDirection)

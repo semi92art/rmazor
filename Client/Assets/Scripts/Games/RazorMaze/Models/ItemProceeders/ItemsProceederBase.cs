@@ -36,11 +36,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
             {
                 case ELevelStage.Loaded:
                     CollectItems(Data.Info); break;
-                case ELevelStage.Started:
-                case ELevelStage.Continued:
-                    //StartProceed(true, true); 
+                case ELevelStage.StartedOrContinued:
                     break;
-                case ELevelStage.ReadyToContinue:
+                case ELevelStage.ReadyToStartOrContinue:
                     StartProceed(true, true); break;
                 case ELevelStage.Paused:
                 case ELevelStage.Finished:

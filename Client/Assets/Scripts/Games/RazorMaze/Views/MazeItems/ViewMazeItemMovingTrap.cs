@@ -3,7 +3,6 @@ using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
-using Games.RazorMaze.Views.MazeItems.Props;
 using Games.RazorMaze.Views.Utils;
 using Ticker;
 using TimeProviders;
@@ -17,14 +16,14 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         #region nonpublic members
         
-        private bool m_Rotate;
         private Vector2 m_Position;
+        private bool m_Rotating;
         
         #endregion
         
         #region shapes
 
-        protected override object[] Shapes => new[] {m_Saw};
+        protected override object[] Shapes => new object[] {m_Saw};
         private SpriteRenderer m_Saw;
         
         #endregion
@@ -57,38 +56,26 @@ namespace Games.RazorMaze.Views.MazeItems
             ContainersGetter,
             GameTimeProvider,
             GameTicker);
-        
-        public override bool Activated
+
+        public override EProceedingStage ProceedingStage
         {
-            get => m_Activated;
+            get => base.ProceedingStage;
             set
             {
-                m_Activated = value;
-                if (!value)
-                    m_Saw.enabled = false;
+                base.ProceedingStage = value;
+                if (value == EProceedingStage.Inactive)
+                    StopRotation();
+                else
+                    StartRotation();
             }
         }
 
-        public override bool Proceeding
-        {
-            get => m_Rotate;
-            set
-            {
-                if (value) StartRotation();
-                else StopRotation();
-            }
-        }
-
-        public override void Init(ViewMazeItemProps _Props)
-        {
-            base.Init(_Props);
-            Proceeding = true;
-        }
-        
         public void OnMoveStarted(MazeItemMoveEventArgs _Args) { }
 
         public void OnMoving(MazeItemMoveEventArgs _Args)
         {
+            if (ProceedingStage != EProceedingStage.ActiveAndWorking)
+                return;
             var precisePosition = Vector2.Lerp(
                 _Args.From.ToVector2(), _Args.To.ToVector2(), _Args.Progress);
             SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(precisePosition));
@@ -96,6 +83,8 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public void OnMoveFinished(MazeItemMoveEventArgs _Args)
         {
+            if (ProceedingStage != EProceedingStage.ActiveAndWorking)
+                return;
             SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(_Args.To));
         }
 
@@ -103,10 +92,9 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             if (!Initialized || !Activated)
                 return;
-            if (!m_Rotate)
+            if (ProceedingStage != EProceedingStage.ActiveAndWorking)
                 return;
-            float rotSpeed = ViewSettings.MovingTrapRotationSpeed * Time.deltaTime; 
-            Object.transform.Rotate(Vector3.forward * rotSpeed);
+            DoRotation();
         }
         
         #endregion
@@ -135,14 +123,22 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Saw = saw;
         }
 
+        private void DoRotation()
+        {
+            if (!m_Rotating)
+                return;
+            float rotSpeed = ViewSettings.MovingTrapRotationSpeed * Time.deltaTime; 
+            Object.transform.Rotate(Vector3.forward * rotSpeed);
+        }
+
         private void StartRotation()
         {
-            m_Rotate = true;
+            m_Rotating = true;
         }
 
         private void StopRotation()
         {
-            m_Rotate = false;
+            m_Rotating = false;
         }
         #endregion
     }

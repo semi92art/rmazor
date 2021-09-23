@@ -1,6 +1,7 @@
 ﻿using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
+using Games.RazorMaze.Views.MazeItems;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
@@ -12,8 +13,8 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         public void OnShredingerBlockEvent(ShredingerBlockArgs _Args)
         {
-            var item = Common.GetItem(_Args.Item);
-            item.Proceeding = _Args.Stage == ShredingerBlocksProceeder.StageClosed;
+            var item = Common.GetItem<IViewMazeItemShredingerBlock>(_Args.Item);
+            item.BlockClosed = _Args.Stage == ShredingerBlocksProceeder.StageClosed;
         }
     }
 }

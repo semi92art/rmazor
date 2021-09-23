@@ -106,8 +106,8 @@ namespace Games.RazorMaze.Models
                 return;
             if (!Alive)
                 return;
-            if (LevelStagingModel.LevelStage == ELevelStage.ReadyToContinue)
-                LevelStagingModel.ContinueLevel();
+            if (LevelStagingModel.LevelStage == ELevelStage.ReadyToStartOrContinue)
+                LevelStagingModel.StartOrContinueLevel();
             
             var from = Position;
             var to = GetNewPosition(from, _Direction);
@@ -118,9 +118,8 @@ namespace Games.RazorMaze.Models
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            bool unlockMovement = _Args.Stage == ELevelStage.Started 
-                                  || _Args.Stage == ELevelStage.ReadyToContinue
-                                  || _Args.Stage == ELevelStage.Continued;
+            bool unlockMovement = _Args.Stage == ELevelStage.StartedOrContinued 
+                                  || _Args.Stage == ELevelStage.ReadyToStartOrContinue;
             InputScheduler.UnlockMovement(unlockMovement);
 
             if (_Args.Stage == ELevelStage.Loaded)
@@ -128,7 +127,7 @@ namespace Games.RazorMaze.Models
                 Position = Data.Info.Path.First();
                 PositionSet?.Invoke(Position);
             }
-            else if (_Args.Stage == ELevelStage.ReadyToContinue)
+            else if (_Args.Stage == ELevelStage.ReadyToStartOrContinue)
                 Revive();
         }
         

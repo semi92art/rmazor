@@ -4,10 +4,9 @@ using Games.RazorMaze.Models;
 public enum ELevelStage
 {
     Loaded,
-    Started,
+    ReadyToStartOrContinue,
+    StartedOrContinued,
     Paused,
-    ReadyToContinue,
-    Continued,
     Finished,
     Unloaded
 }
@@ -28,10 +27,9 @@ public interface ILevelStagingModel
     ELevelStage LevelStage { get; }
     event LevelStageHandler LevelStageChanged;
     void LoadLevel(MazeInfo _Info, int _LevelIndex);
-    void StartLevel();
     void PauseLevel();
     void ReadyToContinueLevel();
-    void ContinueLevel();
+    void StartOrContinueLevel();
     void FinishLevel();
     void UnloadLevel();
 }
@@ -61,12 +59,6 @@ public class LevelStagingModel : ILevelStagingModel
         InvokeLevelStageChanged();
     }
 
-    public virtual void StartLevel()
-    {
-        LevelStage = ELevelStage.Started;
-        InvokeLevelStageChanged();
-    }
-
     public void PauseLevel()
     {
         LevelStage = ELevelStage.Paused;
@@ -75,13 +67,13 @@ public class LevelStagingModel : ILevelStagingModel
 
     public void ReadyToContinueLevel()
     {
-        LevelStage = ELevelStage.ReadyToContinue;
+        LevelStage = ELevelStage.ReadyToStartOrContinue;
         InvokeLevelStageChanged();
     }
 
-    public void ContinueLevel()
+    public void StartOrContinueLevel()
     {
-        LevelStage = ELevelStage.Continued;
+        LevelStage = ELevelStage.StartedOrContinued;
         InvokeLevelStageChanged();
     }
 

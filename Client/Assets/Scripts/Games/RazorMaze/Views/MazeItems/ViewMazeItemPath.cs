@@ -16,7 +16,10 @@ using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
-    public interface IViewMazeItemPath : IViewMazeItem { }
+    public interface IViewMazeItemPath : IViewMazeItem
+    {
+        bool Collected { get; set; }
+    }
     
     public class ViewMazeItemPath : ViewMazeItemBase, IViewMazeItemPath, IUpdateTick
     {
@@ -36,6 +39,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region nonpublic members
 
+        private bool m_Collect;
         private bool m_LeftBorderInited, m_RightBorderInited, m_BottomBorderInited, m_TopBorderInited;
         private bool m_BottomLeftCornerInited, m_BottomRightCornerInited, m_TopLeftCornerInited, m_TopRightCornerInited;
         
@@ -79,15 +83,14 @@ namespace Games.RazorMaze.Views.MazeItems
                 EnableInitializedShapes(value);
             }
         }
-        
-        public override bool Proceeding
+
+        public bool Collected
         {
-            get => base.Proceeding;
+            get => m_Collect;
             set
             {
-                base.Proceeding = value;
-                if (value) Fill();
-                else Unfill();
+                m_Collect = value;
+                Collect(value);
             }
         }
         
@@ -111,9 +114,12 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
         
         #region nonpublic methods
-        
-        private void Fill() => m_Shape.Color = DrawingUtils.ColorLines.SetA(0f);
-        private void Unfill() => m_Shape.Color = DrawingUtils.ColorLines;
+
+        private void Collect(bool _Collect)
+        {
+            m_Shape.Color = _Collect ? DrawingUtils.ColorLines.SetA(0f) : DrawingUtils.ColorLines;
+        }
+
 
         public override void Init(ViewMazeItemProps _Props)
         {
@@ -418,14 +424,14 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override void Appear(bool _Appear)
         {
             if (_Appear)
-                base.Proceeding = false;
+                Collected = false;
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
             Coroutines.Run(Coroutines.WaitWhile(
                 () => !Initialized,
                 () =>
                 {
                     ShapeRenderer shape = null;
-                    if (_Appear && !Props.IsStartNode || !_Appear && !Proceeding)
+                    if (_Appear && !Props.IsStartNode || !_Appear && !Collected)
                         shape = m_Shape;
                     
                     RazorMazeUtils.DoAppearTransitionSimple(

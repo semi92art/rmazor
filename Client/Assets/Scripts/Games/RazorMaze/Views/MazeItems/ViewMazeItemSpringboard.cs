@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
 using Games.RazorMaze.Models;
@@ -69,17 +68,6 @@ namespace Games.RazorMaze.Views.MazeItems
         public override object Clone() => new ViewMazeItemSpringboard(
             ViewSettings, Model, CoordinateConverter, ContainersGetter, GameTimeProvider, GameTicker);
 
-        public override bool Activated
-        {
-            get => m_Activated;
-            set
-            {
-                m_Activated = value;
-                m_Springboard.enabled = value;
-                m_Pillar.enabled = value;
-            }
-        }
-
         public void MakeJump(SpringboardEventArgs _Args)
         {
             Coroutines.Run(JumpCoroutine());
@@ -137,9 +125,9 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             var V = Props.Directions.First().ToVector2();
             var Vorth = new Vector2(-V.x, V.y);
-            var Vx = Vector2.right * V.x;
-            var Vy = Vector2.up * V.y;
-            var A = -V * 0.5f;
+            // var Vx = Vector2.right * V.x;
+            // var Vy = Vector2.up * V.y;
+            // var A = -V * 0.5f;
             var A1 = -V * 0.4f;
             var D = A1 + V * SpringboardHeight;
             var B = D - Vorth * SpringboardWidth * 0.5f;

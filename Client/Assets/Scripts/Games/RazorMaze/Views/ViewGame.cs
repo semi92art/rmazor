@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Exceptions;
 using Games.RazorMaze.Views.Characters;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.InputConfigurators;
@@ -94,24 +92,8 @@ namespace Games.RazorMaze.Views
             var proceeders = GetInterfaceOfProceeders<IOnLevelStageChanged>();
             foreach (var proceeder in proceeders)
                 proceeder.OnLevelStageChanged(_Args);
-            switch (_Args.Stage)
-            {
-                case ELevelStage.Loaded:
-                case ELevelStage.Started:
-                case ELevelStage.ReadyToContinue:
-                case ELevelStage.Continued:
-                case ELevelStage.Finished:
-                case ELevelStage.Unloaded:
-                    GameTimeProvider.Pause = false;
-                    GameTicker.Pause = false;
-                    break;
-                case ELevelStage.Paused:
-                    GameTimeProvider.Pause = true;
-                    GameTicker.Pause = true;
-                    break;
-                default:
-                    throw new SwitchCaseNotImplementedException(_Args.Stage);
-            }
+            GameTimeProvider.Pause = _Args.Stage == ELevelStage.Paused;
+            GameTicker.Pause = _Args.Stage == ELevelStage.Paused;
         }
         
         private List<T> GetInterfaceOfProceeders<T>() where T : class

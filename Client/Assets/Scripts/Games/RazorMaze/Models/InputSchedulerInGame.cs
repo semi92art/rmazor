@@ -1,4 +1,6 @@
-﻿namespace Games.RazorMaze.Models
+﻿using System;
+
+namespace Games.RazorMaze.Models
 {
     public class InputSchedulerInGame : IInputScheduler
     {
@@ -9,17 +11,17 @@
 
         public void AddCommand(int _Command, object[] _Args = null)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public void UnlockMovement(bool _Unlock)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public void UnlockRotation(bool _Unlock)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

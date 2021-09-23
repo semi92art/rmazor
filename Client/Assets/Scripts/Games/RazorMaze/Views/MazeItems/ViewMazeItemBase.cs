@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DI.Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
@@ -20,15 +21,20 @@ namespace Games.RazorMaze.Views.MazeItems
         Dissapeared
     }
 
+    public enum EProceedingStage
+    {
+        Inactive,
+        Active,
+        ActiveAndWorking
+    }
+
     public abstract class ViewMazeItemBase : IViewMazeItem
     {
         #region nonpublic members
         
         protected abstract object[] Shapes { get; }
         protected bool Initialized { get; set; }
-        protected EAppearingState AppearingState { get; set; }
         protected bool m_Activated;
-        private bool m_Proceeding;
         
         #endregion
 
@@ -63,6 +69,7 @@ namespace Games.RazorMaze.Views.MazeItems
         #region api
         
         public ViewMazeItemProps Props { get; set; }
+        public abstract object Clone();
         
         public virtual bool Activated
         {
@@ -70,20 +77,15 @@ namespace Games.RazorMaze.Views.MazeItems
             set
             {
                 m_Activated = value;
-                if (Object.activeSelf != value)
-                    Object.SetActive(value);
+                if (!value)
+                    DeactivateShapes();
             }
         }
         
         public virtual GameObject Object { get; protected set; }
-
-        public virtual bool Proceeding
-        {
-            get => m_Proceeding;
-            set => m_Proceeding = value;
-        }
         
-        public abstract object Clone();
+        public virtual EAppearingState AppearingState { get; set; }
+        public virtual EProceedingStage ProceedingStage { get; set; }
 
         public virtual void OnLevelStageChanged(LevelStageArgs _Args)
         {
@@ -91,9 +93,26 @@ namespace Games.RazorMaze.Views.MazeItems
                 Appear(true);
             else if (_Args.Stage == ELevelStage.Unloaded)
                 Appear(false);
+            
+            switch (_Args.Stage)
+            {
+                case ELevelStage.Loaded:
+                case ELevelStage.Finished:
+                    ProceedingStage = EProceedingStage.Active;
+                    break;
+                case ELevelStage.ReadyToStartOrContinue:
+                case ELevelStage.StartedOrContinued:
+                    ProceedingStage = EProceedingStage.ActiveAndWorking;
+                    break;
+                case ELevelStage.Paused:
+                case ELevelStage.Unloaded:
+                    ProceedingStage = EProceedingStage.Inactive;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
         
-
         public virtual void Init(ViewMazeItemProps _Props)
         {
             Props = _Props;
@@ -109,21 +128,28 @@ namespace Games.RazorMaze.Views.MazeItems
             return _MazeItem.Path == Props.Path && _MazeItem.Type == Props.Type;
         }
         
-        public void SetLocalPosition(Vector2 _Position)
-        {
-            Object.transform.SetLocalPosXY(_Position);
-        }
+        public void SetLocalPosition(Vector2 _Position) => Object.transform.SetLocalPosXY(_Position);
+        public void SetLocalScale(float _Scale) => Object.transform.localScale = _Scale * Vector3.one;
 
-        public void SetLocalScale(float _Scale)
-        {
-            Object.transform.localScale = _Scale * Vector3.one;
-        }
-        
         #endregion
         
         #region nonpublic methods
         
         protected abstract void SetShape();
+
+        protected void DeactivateShapes()
+        {
+            foreach (var shape in Shapes)
+            {
+                if (shape is ShapeRenderer shapeRenderer && !shapeRenderer.IsNull())
+                    shapeRenderer.enabled = false;
+                else if (shape is SpriteRenderer spriteRenderer && !spriteRenderer.IsNull())
+                    spriteRenderer.enabled = false;
+                else if (shape is MeshRenderer meshRenderer && !meshRenderer.IsNull())
+                    meshRenderer.enabled = false;
+            }
+        }
+        
         protected virtual void Appear(bool _Appear)
         {
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
@@ -145,19 +171,6 @@ namespace Games.RazorMaze.Views.MazeItems
                             AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared;
                         });
                 }));
-        }
-
-        protected void DeactivateShapes()
-        {
-            foreach (var shape in Shapes)
-            {
-                if (shape is ShapeRenderer shapeRenderer && !shapeRenderer.IsNull())
-                    shapeRenderer.enabled = false;
-                else if (shape is SpriteRenderer spriteRenderer && !spriteRenderer.IsNull())
-                    spriteRenderer.enabled = false;
-                else if (shape is MeshRenderer meshRenderer && !meshRenderer.IsNull())
-                    meshRenderer.enabled = false;
-            }
         }
 
         #endregion
