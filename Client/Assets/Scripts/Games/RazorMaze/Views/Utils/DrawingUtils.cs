@@ -26,7 +26,10 @@ namespace Games.RazorMaze.Views.Utils
         public static Color ColorShredinger => GetFromCommonPalette("Shredinger");
         public static Color ColorSpringboard => GetFromCommonPalette("Springboard");
 
+        public static int GetBackgroundItemSortingOrder() => PathItemOrder - 1;
         public static int GetPathSortingOrder() => PathItemOrder;
+        public static int GetPathLineSortingOrder() => PathItemOrder + 1;
+        public static int GetPathLineJointSortingOrder() => PathItemOrder + 2;
 
         public static int GetBlockSortingOrder(EMazeItemType _Type)
         {
@@ -51,8 +54,7 @@ namespace Games.RazorMaze.Views.Utils
             }
         }
 
-        public static int GetPathLineJointSortingOrder() => PathItemOrder + 2;
-        public static int GetPathLineSortingOrder() => PathItemOrder + 1;
+
 
 
         private static Color GetFromCommonPalette(string _Name) =>

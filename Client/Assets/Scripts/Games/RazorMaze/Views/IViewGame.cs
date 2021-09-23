@@ -12,14 +12,14 @@ namespace Games.RazorMaze.Views
         IViewUI                            UI { get; }
         IInputConfigurator                 InputConfigurator { get; }
         IViewCharacter                     Character { get; }
-        IViewMazeCommon                    MazeCommon { get; }
-        IViewMazeEffector                  MazeEffector { get; }
-        IViewMazeRotation                  MazeRotation { get; }
-        IViewMazePathItemsGroup            MazePathItemsGroup { get; }
-        IViewMazeMovingItemsGroup          MazeMovingItemsGroup { get; }
-        IViewMazeTrapsReactItemsGroup      MazeTrapsReactItemsGroup { get; }
-        IViewMazeTrapsIncreasingItemsGroup MazeTrapsIncreasingItemsGroup { get; }
-        IViewMazeTurretsGroup              MazeTurretsGroup { get; }
+        IViewMazeCommon                    Common { get; }
+        IViewMazeBackground                  Background { get; }
+        IViewMazeRotation                  Rotation { get; }
+        IViewMazePathItemsGroup            PathItemsGroup { get; }
+        IViewMazeMovingItemsGroup          MovingItemsGroup { get; }
+        IViewMazeTrapsReactItemsGroup      TrapsReactItemsGroup { get; }
+        IViewMazeTrapsIncreasingItemsGroup TrapsIncreasingItemsGroup { get; }
+        IViewMazeTurretsGroup              TurretsGroup { get; }
         IViewMazePortalsGroup              PortalsGroup { get; }
         IViewMazeShredingerBlocksGroup     ShredingerBlocksGroup { get; }
         IViewMazeSpringboardItemsGroup     SpringboardItemsGroup { get; }

@@ -7,5 +7,6 @@ namespace Games.RazorMaze.Views.ContainerGetters
         Transform MazeContainer { get; }
         Transform MazeItemsContainer { get; }
         Transform CharacterContainer { get; }
+        Transform BackgroundContainer { get; }
     }
 }

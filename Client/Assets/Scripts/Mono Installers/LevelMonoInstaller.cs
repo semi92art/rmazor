@@ -62,7 +62,7 @@ namespace Mono_Installers
             
             Container.Bind<IMazeItemsCreator>()                 .To<MazeItemsCreator>()                     .AsSingle().When(_ => release);
             Container.Bind<IViewMazeCommon>()                   .To<ViewMazeCommon>()                       .AsSingle().When(_ => release);
-            Container.Bind<IViewMazeEffector>()                 .To<ViewMazeEffector>()                     .AsSingle().When(_ => release);
+            Container.Bind<IViewMazeBackground>()               .To<ViewMazeBackground>()                   .AsSingle().When(_ => release);
             Container.Bind<IViewCharacter>()                    .To<ViewCharacter>()                        .AsSingle().When(_ => release);
             Container.Bind<IViewCharacterEffector>()            .To<ViewCharacterEffectorParticles>()       .AsSingle().When(_ => release);
             Container.Bind<IViewCharacterTail>()                .To<ViewCharacterTailSimple>()              .AsSingle().When(_ => release);

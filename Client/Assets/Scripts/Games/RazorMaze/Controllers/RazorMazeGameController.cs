@@ -103,7 +103,7 @@ namespace Games.RazorMaze.Controllers
             levelStaging.LevelStageChanged                      += View.OnLevelStageChanged;
             
             View.InputConfigurator.Command                      += OnInputCommand;
-            View.MazeCommon.GameLoopUpdate                      += OnGameLoopUpdate;
+            View.Common.GameLoopUpdate                      += OnGameLoopUpdate;
 
             Model.PreInitialized                                += OnModelPreInitialized;
             Model.PreInit();
@@ -137,7 +137,7 @@ namespace Games.RazorMaze.Controllers
         #region event methods
         
         private void OnGameLoopUpdate() => Model.Data.OnGameLoopUpdate();
-        private void DataOnPathProceedEvent(V2Int _PathItem) => View.MazePathItemsGroup.OnPathProceed(_PathItem);
+        private void DataOnPathProceedEvent(V2Int _PathItem) => View.PathItemsGroup.OnPathProceed(_PathItem);
         private void OnInputCommand(int _Value)
         {
             Model.InputScheduler.AddCommand(_Value);
@@ -150,28 +150,28 @@ namespace Games.RazorMaze.Controllers
         private void OnCharacterMoveFinished(CharacterMovingEventArgs _Args) => View.Character.OnMovingFinished(_Args);
         private void OnCharacterPositionSet(V2Int _Value) => View.Character.OnPositionSet(_Value);
 
-        private void OnMazeRotationStarted(MazeRotateDirection _Direction, MazeOrientation _Orientation) => View.MazeRotation.StartRotation(_Direction, _Orientation);
-        private void OnMazeRotation(float _Progress) => View.MazeRotation.Rotate(_Progress);
-        private void OnMazeRotationFinished(MazeRotateDirection _Direction, MazeOrientation _Orientation) => View.MazeRotation.FinishRotation();
+        private void OnMazeRotationStarted(MazeRotateDirection _Direction, MazeOrientation _Orientation) => View.Rotation.StartRotation(_Direction, _Orientation);
+        private void OnMazeRotation(float _Progress) => View.Rotation.Rotate(_Progress);
+        private void OnMazeRotationFinished(MazeRotateDirection _Direction, MazeOrientation _Orientation) => View.Rotation.FinishRotation();
         
         private void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
         {
-            View.MazeMovingItemsGroup.OnMazeItemMoveStarted(_Args);
+            View.MovingItemsGroup.OnMazeItemMoveStarted(_Args);
             if (_Args.Item.Type == EMazeItemType.GravityBlock)
                 View.InputConfigurator.Locked = true;
         }
 
-        private void OnMazeItemMoveContinued(MazeItemMoveEventArgs _Args) => View.MazeMovingItemsGroup.OnMazeItemMoveContinued(_Args);
+        private void OnMazeItemMoveContinued(MazeItemMoveEventArgs _Args) => View.MovingItemsGroup.OnMazeItemMoveContinued(_Args);
         private void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
         {
-            View.MazeMovingItemsGroup.OnMazeItemMoveFinished(_Args);
+            View.MovingItemsGroup.OnMazeItemMoveFinished(_Args);
             if (_Args.Item.Type == EMazeItemType.GravityBlock)
                 View.InputConfigurator.Locked = false;
         }
 
-        private void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args) => View.MazeTrapsReactItemsGroup.OnMazeTrapReactStageChanged(_Args);
-        private void OnMazeTrapIncreasingStageChanged(MazeItemTrapIncreasingEventArgs _Args) => View.MazeTrapsIncreasingItemsGroup.OnMazeTrapIncreasingStageChanged(_Args);
-        private void OnTurretShoot(TurretShotEventArgs _Args) => View.MazeTurretsGroup.OnTurretShoot(_Args);
+        private void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args) => View.TrapsReactItemsGroup.OnMazeTrapReactStageChanged(_Args);
+        private void OnMazeTrapIncreasingStageChanged(MazeItemTrapIncreasingEventArgs _Args) => View.TrapsIncreasingItemsGroup.OnMazeTrapIncreasingStageChanged(_Args);
+        private void OnTurretShoot(TurretShotEventArgs _Args) => View.TurretsGroup.OnTurretShoot(_Args);
         private void OnPortalEvent(PortalEventArgs _Args) => View.PortalsGroup.OnPortalEvent(_Args);
         private void OnShredingerBlockEvent(ShredingerBlockArgs _Args) => View.ShredingerBlocksGroup.OnShredingerBlockEvent(_Args);
         private void OnSpringboardEvent(SpringboardEventArgs _Args) => View.SpringboardItemsGroup.OnSpringboardEvent(_Args);
@@ -227,7 +227,7 @@ namespace Games.RazorMaze.Controllers
             levelStaging.LevelStageChanged                      -= View.OnLevelStageChanged;
             
             View.InputConfigurator.Command                      -= OnInputCommand;
-            View.MazeCommon.GameLoopUpdate                      -= OnGameLoopUpdate;
+            View.Common.GameLoopUpdate                      -= OnGameLoopUpdate;
 
             Model.PreInitialized                                -= OnModelPreInitialized;
         }

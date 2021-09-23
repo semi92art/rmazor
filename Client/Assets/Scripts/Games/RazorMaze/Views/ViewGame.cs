@@ -16,14 +16,14 @@ namespace Games.RazorMaze.Views
         public IViewUI UI { get; }
         public IInputConfigurator InputConfigurator { get; }
         public IViewCharacter Character { get; }
-        public IViewMazeCommon MazeCommon { get; }
-        public IViewMazeEffector MazeEffector { get; }
-        public IViewMazeRotation MazeRotation { get; }
-        public IViewMazePathItemsGroup MazePathItemsGroup { get; }
-        public IViewMazeMovingItemsGroup MazeMovingItemsGroup { get; }
-        public IViewMazeTrapsReactItemsGroup MazeTrapsReactItemsGroup { get; }
-        public IViewMazeTrapsIncreasingItemsGroup MazeTrapsIncreasingItemsGroup { get; }
-        public IViewMazeTurretsGroup MazeTurretsGroup { get; }
+        public IViewMazeCommon Common { get; }
+        public IViewMazeBackground Background { get; }
+        public IViewMazeRotation Rotation { get; }
+        public IViewMazePathItemsGroup PathItemsGroup { get; }
+        public IViewMazeMovingItemsGroup MovingItemsGroup { get; }
+        public IViewMazeTrapsReactItemsGroup TrapsReactItemsGroup { get; }
+        public IViewMazeTrapsIncreasingItemsGroup TrapsIncreasingItemsGroup { get; }
+        public IViewMazeTurretsGroup TurretsGroup { get; }
         public IViewMazePortalsGroup PortalsGroup { get; }
         public IViewMazeShredingerBlocksGroup ShredingerBlocksGroup { get; }
         public IViewMazeSpringboardItemsGroup SpringboardItemsGroup { get; }
@@ -34,14 +34,14 @@ namespace Games.RazorMaze.Views
             IViewUI _UI,
             IInputConfigurator _InputConfigurator,
             IViewCharacter _Character,
-            IViewMazeCommon _MazeCommon,
-            IViewMazeEffector _MazeEffector,
-            IViewMazeRotation _MazeRotation,
-            IViewMazePathItemsGroup _MazePathItemsGroup,
-            IViewMazeMovingItemsGroup _MazeMovingItemsGroup,
-            IViewMazeTrapsReactItemsGroup _MazeTrapsReactItemsGroup,
-            IViewMazeTrapsIncreasingItemsGroup _MazeTrapsIncreasingItemsGroup,
-            IViewMazeTurretsGroup _MazeTurretsGroup,
+            IViewMazeCommon _Common,
+            IViewMazeBackground _Background,
+            IViewMazeRotation _Rotation,
+            IViewMazePathItemsGroup _PathItemsGroup,
+            IViewMazeMovingItemsGroup _MovingItemsGroup,
+            IViewMazeTrapsReactItemsGroup _TrapsReactItemsGroup,
+            IViewMazeTrapsIncreasingItemsGroup _TrapsIncreasingItemsGroup,
+            IViewMazeTurretsGroup _TurretsGroup,
             IViewMazePortalsGroup _PortalsGroup,
             IViewMazeShredingerBlocksGroup _ShredingerBlocksGroup,
             IViewMazeSpringboardItemsGroup _SpringboardItemsGroup,
@@ -50,14 +50,14 @@ namespace Games.RazorMaze.Views
             UI = _UI;
             InputConfigurator = _InputConfigurator;
             Character = _Character;
-            MazeCommon = _MazeCommon;
-            MazeEffector = _MazeEffector;
-            MazeRotation = _MazeRotation;
-            MazePathItemsGroup = _MazePathItemsGroup;
-            MazeMovingItemsGroup = _MazeMovingItemsGroup;
-            MazeTrapsReactItemsGroup = _MazeTrapsReactItemsGroup;
-            MazeTrapsIncreasingItemsGroup = _MazeTrapsIncreasingItemsGroup;
-            MazeTurretsGroup = _MazeTurretsGroup;
+            Common = _Common;
+            Background = _Background;
+            Rotation = _Rotation;
+            PathItemsGroup = _PathItemsGroup;
+            MovingItemsGroup = _MovingItemsGroup;
+            TrapsReactItemsGroup = _TrapsReactItemsGroup;
+            TrapsIncreasingItemsGroup = _TrapsIncreasingItemsGroup;
+            TurretsGroup = _TurretsGroup;
             PortalsGroup = _PortalsGroup;
             ShredingerBlocksGroup = _ShredingerBlocksGroup;
             SpringboardItemsGroup = _SpringboardItemsGroup;
@@ -96,16 +96,16 @@ namespace Games.RazorMaze.Views
             var result = new List<T>
             {
                 UI                                 as T,
-                MazeCommon                         as T,
+                Common                         as T,
                 InputConfigurator                  as T,
                 Character                          as T,
-                MazeEffector                       as T,
-                MazeRotation                       as T,
-                MazePathItemsGroup                 as T,
-                MazeMovingItemsGroup               as T,
-                MazeTrapsReactItemsGroup           as T,
-                MazeTrapsIncreasingItemsGroup      as T,
-                MazeTurretsGroup                   as T,
+                Background                         as T,
+                Rotation                           as T,
+                PathItemsGroup                     as T,
+                MovingItemsGroup                   as T,
+                TrapsReactItemsGroup               as T,
+                TrapsIncreasingItemsGroup          as T,
+                TurretsGroup                       as T,
                 PortalsGroup                       as T,
                 ShredingerBlocksGroup              as T,
                 SpringboardItemsGroup              as T
