@@ -61,7 +61,7 @@ namespace UI.Panels
 
         private void InitSettingItems()
         {
-            var soundSetting = new SoundSetting(UITicker);
+            var soundSetting = new SoundSetting((IUITicker)Ticker);
             soundSetting.AddObservers(GetObservers());
             _settingList.Add(soundSetting);
             _settingList.Add(new LanguageSetting());
@@ -86,7 +86,7 @@ namespace UI.Panels
                         _IsOn =>
                     {
                         _Setting.Put(_IsOn);
-                    }, GetObservers(), UITicker);
+                    }, GetObservers(), (IUITicker)Ticker);
                     break;
                 case SettingType.InPanelSelector:
                     var itemSelector = CreateInPanelSelectorSetting();
@@ -99,7 +99,7 @@ namespace UI.Panels
                         {
                             itemSelector.setting.text = _Value;
                             _Setting.Put(_Value);
-                        }, GetObservers(), UITicker);
+                        }, GetObservers(), (IUITicker)Ticker);
                     break;
                 case SettingType.Slider:
                     var itemSlider = CreateSliderSetting();

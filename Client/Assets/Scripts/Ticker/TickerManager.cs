@@ -8,6 +8,7 @@ namespace Ticker
     {
         #region nonpublic members
 
+        private float m_Delta;
         private readonly List<IUpdateTick> m_UpdateInfoDict = new List<IUpdateTick>();
         private readonly List<IFixedUpdateTick> m_FixedUpdateInfoDict = new List<IFixedUpdateTick>();
         private readonly List<ILateUpdateTick> m_LateUpdateInfoDict = new List<ILateUpdateTick>();
@@ -17,7 +18,13 @@ namespace Ticker
 
         #region api
 
+        public float Time { get; private set; }
         public bool Pause { get; set; }
+
+        public void Reset()
+        {
+            
+        }
         
         public void RegisterObject(object _Object)
         {
@@ -61,6 +68,12 @@ namespace Ticker
 
         private void Update()
         {
+            if (Pause)
+            {
+                m_Delta += UnityEngine.Time.deltaTime;
+                return;
+            }
+            Time = UnityEngine.Time.time - m_Delta;
             if (Pause)
                 return;
             for (int i = 0; i < m_UpdateInfoDict.Count; i++)

@@ -91,7 +91,7 @@ namespace UI.Panels
                 PanelState &= ~PanelState.NeedToClose;
             }
             if (!PanelState.HasFlag(PanelState.Showing))
-                UITicker.Unregister(this);
+                Ticker.Unregister(this);
         }
         
         #endregion

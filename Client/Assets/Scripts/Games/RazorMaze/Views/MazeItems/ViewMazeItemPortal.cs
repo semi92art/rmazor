@@ -9,7 +9,6 @@ using Games.RazorMaze.Views.Utils;
 using Shapes;
 using SpawnPools;
 using Ticker;
-using TimeProviders;
 using UnityEngine;
 using Utils;
 
@@ -59,14 +58,12 @@ namespace Games.RazorMaze.Views.MazeItems
             IModelGame _Model,
             ICoordinateConverter _CoordinateConverter, 
             IContainersGetter _ContainersGetter,
-            IGameTicker _GameTicker,
-            IGameTimeProvider _GameTimeProvider)
+            IGameTicker _GameTicker)
             : base(
                 _ViewSettings,
                 _Model,
                 _CoordinateConverter,
-                _ContainersGetter
-                , _GameTimeProvider,
+                _ContainersGetter,
                 _GameTicker) { }
         
         #endregion
@@ -78,8 +75,7 @@ namespace Games.RazorMaze.Views.MazeItems
             Model, 
             CoordinateConverter,
             ContainersGetter,
-            GameTicker, 
-            GameTimeProvider);
+            GameTicker);
         
         public override bool Activated
         {
@@ -117,7 +113,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 3f,
                 0.07f,
                 _Progress => m_Center.Radius = CoordinateConverter.GetScale() * 0.2f * _Progress,
-                GameTimeProvider,
+                GameTicker,
                 (_Breaked, _Prgrss) =>
                 {
                     Coroutines.Run(Coroutines.Lerp(
@@ -125,7 +121,7 @@ namespace Games.RazorMaze.Views.MazeItems
                         1f,
                         0.07f,
                         _Progress => m_Center.Radius = CoordinateConverter.GetScale() * 0.2f * _Progress,
-                        GameTimeProvider));
+                        GameTicker));
                 }));
         }
 
@@ -208,7 +204,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 {
                     RazorMazeUtils.DoAppearTransitionSimple(
                         _Appear,
-                        GameTimeProvider,
+                        GameTicker,
                         new Dictionary<object[], Color>
                         {
                             {new [] {m_Center}, DrawingUtils.ColorLines},
@@ -255,14 +251,14 @@ namespace Games.RazorMaze.Views.MazeItems
                 1f,
                 0.5f,
                 _Progress => item.Color = item.Color.SetA(_Progress * 0.7f),
-                GameTimeProvider));
+                GameTicker));
             
             Coroutines.Run(Coroutines.Lerp(
                 1f,
                 0f,
                 dist * GravityItemsSpeed,
                 _Progress => item.transform.SetLocalPosXY(v * dist * _Progress),
-                GameTimeProvider,
+                GameTicker,
                 (_Breaked, _Progress) =>
                 {
                     item.Color = item.Color.SetA(0f);

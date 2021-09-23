@@ -9,7 +9,7 @@ using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
-using TimeProviders;
+using Ticker;
 using UnityEngine;
 using Utils;
 
@@ -29,18 +29,18 @@ namespace Games.RazorMaze.Views.Characters
         
         private ICoordinateConverter CoordinateConverter { get; }
         private IContainersGetter ContainersGetter { get; }
-        private IGameTimeProvider GameTimeProvider { get; }
+        public IGameTicker GameTicker { get; }
         public IModelCharacter ModelCharacter { get; }
 
         public ViewCharacterEffectorParticles(
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IGameTimeProvider _GameTimeProvider,
+            IGameTicker _GameTicker,
             IModelCharacter _ModelCharacter)
         {
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
-            GameTimeProvider = _GameTimeProvider;
+            GameTicker = _GameTicker;
             ModelCharacter = _ModelCharacter;
         }
         
@@ -147,7 +147,7 @@ namespace Games.RazorMaze.Views.Characters
                         shape.Color = DrawingUtils.ColorLines.SetA(1f - _Progress);
                     }
                 },
-                GameTimeProvider,
+                GameTicker,
                 (_Finished, _Progress) => Activated = false);
         }
         

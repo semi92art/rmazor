@@ -67,7 +67,7 @@ namespace UI.Panels
                     m_SelectGame.Invoke(cgiProps.GameId);
                     m_DialogViewer.Back();
                 };
-                cgi.Init(cgiProps, GetObservers(), UITicker);
+                cgi.Init(cgiProps, GetObservers(), (IUITicker)Ticker);
             }
             
             Object.Destroy(cgiObj);

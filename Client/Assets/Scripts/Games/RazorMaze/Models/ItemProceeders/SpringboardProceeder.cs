@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Entities;
+using Ticker;
 
 namespace Games.RazorMaze.Models.ItemProceeders
 {
@@ -34,8 +35,12 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region inject
         
-        public SpringboardProceeder(ModelSettings _Settings, IModelMazeData _Data, IModelCharacter _Character)
-            : base (_Settings, _Data, _Character) { }
+        public SpringboardProceeder(
+            ModelSettings _Settings,
+            IModelMazeData _Data,
+            IModelCharacter _Character, 
+            IGameTicker _Ticker)
+            : base (_Settings, _Data, _Character, _Ticker) { }
         
         #endregion
         

@@ -4,6 +4,7 @@ using Entities;
 using Exceptions;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views;
+using Ticker;
 
 namespace Games.RazorMaze.Models.ItemProceeders
 {
@@ -25,6 +26,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         protected ModelSettings Settings { get; }
         protected IModelMazeData Data { get; }
         protected IModelCharacter Character { get; }
+        protected IGameTicker GameTicker { get; }
 
         #endregion
 
@@ -53,11 +55,16 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region nonpublic methods
         
-        protected ItemsProceederBase(ModelSettings _Settings, IModelMazeData _Data, IModelCharacter _Character)
+        protected ItemsProceederBase(
+            ModelSettings _Settings, 
+            IModelMazeData _Data,
+            IModelCharacter _Character,
+            IGameTicker _GameTicker)
         {
             Settings = _Settings;
             Data = _Data;
             Character = _Character;
+            GameTicker = _GameTicker;
         }
 
         protected void CollectItems(MazeInfo _Info)

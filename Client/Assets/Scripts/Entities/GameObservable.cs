@@ -16,14 +16,14 @@ namespace Entities
         #region nonpublic members
         
         private readonly List<GameObserver> m_Observers = new List<GameObserver>();
-        protected IUITicker UITicker { get; }
+        protected ITicker Ticker { get; }
 
         #endregion
         
-        protected GameObservable(IUITicker _UITicker)
+        protected GameObservable(ITicker _Ticker)
         {
-            UITicker = _UITicker;
-            UITicker.Register(this);
+            Ticker = _Ticker;
+            Ticker.Register(this);
             AddObservers();
         }
         

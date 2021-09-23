@@ -2,7 +2,6 @@
 using DialogViewers;
 using Entities;
 using Ticker;
-using TimeProviders;
 using UI.Factories;
 using UI.Panels;
 using UnityEngine;
@@ -62,9 +61,9 @@ namespace Games.RazorMaze.Views.UI
                 GameMenuPanel.PanelState |= PanelState.NeedToClose;
                 return;
             }
-            GameTimeProvider.Instance.Pause = true;
+            Ticker.Pause = true;
             var gameMenuPanel = new GameMenuPanel(DialogViewer,
-                () => GameTimeProvider.Instance.Pause = false, UITicker);
+                () => Ticker.Pause = false, (IUITicker)Ticker);
             gameMenuPanel.AddObservers(GetObservers());
             gameMenuPanel.Init();
             DialogViewer.Show(gameMenuPanel);

@@ -13,7 +13,6 @@ using Games.RazorMaze.Views.MazeItems;
 using Games.RazorMaze.Views.MazeItems.Additional;
 using Games.RazorMaze.Views.Rotation;
 using Games.RazorMaze.Views.UI;
-using TimeProviders;
 using UnityEngine;
 using Utils;
 
@@ -54,8 +53,8 @@ namespace Mono_Installers
             Container.Bind<IPortalsProceeder>()                 .To<PortalsProceeder>()                     .AsSingle();
             Container.Bind<IShredingerBlocksProceeder>()        .To<ShredingerBlocksProceeder>()            .AsSingle();
             Container.Bind<ISpringboardProceeder>()             .To<SpringboardProceeder>()                 .AsSingle();
-            Container.Bind<IGameTimeProvider>()                 .FromComponentsInNewPrefab(gameTimeProvider).AsSingle();
-            Container.Bind<IUiTimeProvider>()                   .FromComponentsInNewPrefab(uiTimeProvider)  .AsCached();
+            // Container.Bind<IGameTimeProvider>()                 .FromComponentsInNewPrefab(gameTimeProvider).AsSingle();
+            // Container.Bind<IUiTimeProvider>()                   .FromComponentsInNewPrefab(uiTimeProvider)  .AsCached();
             
             #endregion
 

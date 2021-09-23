@@ -126,7 +126,7 @@ namespace UI.Panels
         private void SpinFinishAction(BankItemType _BankItemType, long _Reward)
         {
             var rewardPanel = new WheelOfFortuneRewardPanel(
-                m_NotificationViewer, UITicker, _BankItemType, _Reward, () =>
+                m_NotificationViewer, (IUITicker)Ticker, _BankItemType, _Reward, () =>
                     BankManager.Instance.PlusBankItems(_BankItemType, _Reward));
                     
             m_SpinButton.interactable = true;

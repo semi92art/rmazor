@@ -5,7 +5,7 @@ using Entities;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views;
-using TimeProviders;
+using Ticker;
 using UnityEngine;
 using Utils;
 
@@ -64,17 +64,20 @@ namespace Games.RazorMaze.Models
         private IModelMazeData Data { get; }
         private IInputScheduler InputScheduler { get; }
         private ILevelStagingModel LevelStagingModel { get; }
+        private IGameTicker GameTicker { get; }
 
         public ModelCharacter(
             ModelSettings _Settings, 
             IModelMazeData _Data, 
             IInputScheduler _InputScheduler,
-            ILevelStagingModel _LevelStagingModel)
+            ILevelStagingModel _LevelStagingModel,
+            IGameTicker _GameTicker)
         {
             Settings = _Settings;
             Data = _Data;
             InputScheduler = _InputScheduler;
             LevelStagingModel = _LevelStagingModel;
+            GameTicker = _GameTicker;
         }
 
         #endregion
@@ -218,7 +221,7 @@ namespace Games.RazorMaze.Models
                     Position = V2Int.Round(MovingInfo.PrecisePosition);
                     CharacterMoveContinued?.Invoke(new CharacterMovingEventArgs(_Direction, _From, _To, _Progress));
                 },
-                GameTimeProvider.Instance,
+                GameTicker,
                 (_Stopped, _Progress) =>
                 {
                     if (!_Stopped)

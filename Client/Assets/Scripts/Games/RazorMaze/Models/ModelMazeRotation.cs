@@ -1,4 +1,4 @@
-﻿using TimeProviders;
+﻿using Ticker;
 using Utils;
 
 namespace Games.RazorMaze.Models
@@ -18,13 +18,16 @@ namespace Games.RazorMaze.Models
     {
         private ModelSettings Settings { get; }
         private IModelMazeData Data { get; }
+        private IGameTicker GameTicker { get; }
 
         public ModelMazeRotation(
             ModelSettings _Settings,
-            IModelMazeData _Data)
+            IModelMazeData _Data,
+            IGameTicker _GameTicker)
         {
             Settings = _Settings;
             Data = _Data;
+            GameTicker = _GameTicker;
         }
         
         
@@ -47,7 +50,7 @@ namespace Games.RazorMaze.Models
                 1f, 
                 1 / Settings.mazeRotateSpeed, 
                 _Val => Rotation?.Invoke(_Val),
-                GameTimeProvider.Instance, 
+                GameTicker, 
                 (_Stopped, _Progress) =>
                 {
                     RotationFinished?.Invoke(_Direction, Data.Orientation);

@@ -5,7 +5,7 @@ using Entities;
 using GameHelpers;
 using Network.Packets;
 using Newtonsoft.Json;
-using TimeProviders;
+using Ticker;
 using UnityEngine.Networking;
 using Utils;
 
@@ -141,7 +141,7 @@ namespace Network
                 Coroutines.Run(Coroutines.Action(() => SendRequestToDatabase(testPacket, 2f)));
             }, 5f,
             float.MaxValue,
-            UiTimeProvider.Instance,
+            UITicker.Instance, // FIXME костыль
             () => false));
         }
 
@@ -161,7 +161,7 @@ namespace Network
             },
             5f,
             float.MaxValue,
-            UiTimeProvider.Instance,
+            UITicker.Instance, // FIXME костыль
             () => false));
         }
 

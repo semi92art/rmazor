@@ -13,7 +13,6 @@ using Network;
 using Network.Packets;
 using PygmyMonkey.ColorPalette;
 using PygmyMonkey.ColorPalette.Utils;
-using TimeProviders;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -135,12 +134,7 @@ public class EditorHelper : EditorWindow
                 SaveUtils.PutValue(SaveKey.GameId, m_GameId);
             m_GameId = EditorGUILayout.IntField(m_GameId);
             GUILayout.EndHorizontal();
-            
-            GUILayout.BeginHorizontal();
-            EditorUtilsEx.GuiButtonAction(PauseGame, true);
-            EditorUtilsEx.GuiButtonAction("Continue game", PauseGame, false);
-            GUILayout.EndHorizontal();
-            
+
             EditorUtilsEx.HorizontalLine(Color.gray);
             GUI.enabled = true;
 
@@ -401,12 +395,6 @@ public class EditorHelper : EditorWindow
             SceneManager.LoadScene(_Name);
         else if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
             EditorSceneManager.OpenScene(_Name);
-    }
-    
-    private static void PauseGame(bool _Pause)
-    {
-        UiTimeProvider.Instance.Pause = _Pause;
-        GameTimeProvider.Instance.Pause = _Pause;
     }
 
     private void SetDefaultApiUrl()

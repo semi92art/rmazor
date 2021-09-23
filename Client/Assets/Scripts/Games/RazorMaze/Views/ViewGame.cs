@@ -7,7 +7,6 @@ using Games.RazorMaze.Views.MazeItemGroups;
 using Games.RazorMaze.Views.Rotation;
 using Games.RazorMaze.Views.UI;
 using Ticker;
-using TimeProviders;
 using Utils;
 
 namespace Games.RazorMaze.Views
@@ -29,7 +28,6 @@ namespace Games.RazorMaze.Views
         public IViewMazeShredingerBlocksGroup ShredingerBlocksGroup { get; }
         public IViewMazeSpringboardItemsGroup SpringboardItemsGroup { get; }
         
-        private IGameTimeProvider GameTimeProvider { get; }
         private IGameTicker GameTicker { get; }
 
         public ViewGame(
@@ -47,7 +45,6 @@ namespace Games.RazorMaze.Views
             IViewMazePortalsGroup _PortalsGroup,
             IViewMazeShredingerBlocksGroup _ShredingerBlocksGroup,
             IViewMazeSpringboardItemsGroup _SpringboardItemsGroup,
-            IGameTimeProvider _GameTimeProvider,
             IGameTicker _GameTicker)
         {
             UI = _UI;
@@ -64,7 +61,6 @@ namespace Games.RazorMaze.Views
             PortalsGroup = _PortalsGroup;
             ShredingerBlocksGroup = _ShredingerBlocksGroup;
             SpringboardItemsGroup = _SpringboardItemsGroup;
-            GameTimeProvider = _GameTimeProvider;
             GameTicker = _GameTicker;
         }
         
@@ -92,7 +88,6 @@ namespace Games.RazorMaze.Views
             var proceeders = GetInterfaceOfProceeders<IOnLevelStageChanged>();
             foreach (var proceeder in proceeders)
                 proceeder.OnLevelStageChanged(_Args);
-            GameTimeProvider.Pause = _Args.Stage == ELevelStage.Paused;
             GameTicker.Pause = _Args.Stage == ELevelStage.Paused;
         }
         

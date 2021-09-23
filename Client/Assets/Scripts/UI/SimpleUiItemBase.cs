@@ -2,7 +2,7 @@
 using System.Linq;
 using Constants;
 using DI.Extensions;
-using TimeProviders;
+using Ticker;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI.ProceduralImage;
@@ -55,7 +55,8 @@ namespace UI
                     if (transCount != m_TransitionCount) return;
                     background.color = _Color;
                 },
-                UiTimeProvider.Instance));
+                new UITicker())); //FIXME
+                // UiTimeProvider.Instance));
         }
     }
 }

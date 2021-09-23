@@ -10,7 +10,7 @@ using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.MazeItems;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
-using TimeProviders;
+using Ticker;
 using UnityEngine;
 using Utils;
 
@@ -33,7 +33,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         private IMovingItemsProceeder MovingItemsProceeder { get; }
         private ICoordinateConverter CoordinateConverter { get; }
         private IContainersGetter ContainersGetter { get; }
-        private IGameTimeProvider GameTimeProvider { get; }
+        public IGameTicker GameTicker { get; }
 
         public ViewMazeMovingItemsGroup(
             IModelMazeData _Data,
@@ -41,13 +41,13 @@ namespace Games.RazorMaze.Views.MazeItemGroups
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IViewMazeCommon _Common,
-            IGameTimeProvider _GameTimeProvider) : base(_Common)
+            IGameTicker _GameTicker) : base(_Common)
         {
             Data = _Data;
             MovingItemsProceeder = _MovingItemsProceeder;
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
-            GameTimeProvider = _GameTimeProvider;
+            GameTicker = _GameTicker;
         }
         
         #endregion
@@ -172,7 +172,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                 {
                     RazorMazeUtils.DoAppearTransitionSimple(
                         appear.Value,
-                        GameTimeProvider,
+                        GameTicker,
                         new Dictionary<object[], Color>
                         {
                             {m_PathLines.Cast<object>().ToArray(), DrawingUtils.ColorLines},

@@ -13,7 +13,6 @@ using Games.RazorMaze.Views.MazeItems.Props;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
-using TimeProviders;
 using UnityEngine;
 using Utils;
 
@@ -80,7 +79,6 @@ namespace Games.RazorMaze.Views.MazeItems
             IModelGame _Model,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IGameTimeProvider _GameTimeProvider,
             IGameTicker _GameTicker,
             ITurretBulletTail _BulletTail)
             : base(
@@ -88,7 +86,6 @@ namespace Games.RazorMaze.Views.MazeItems
                 _Model, 
                 _CoordinateConverter,
                 _ContainersGetter,
-                _GameTimeProvider, 
                 _GameTicker)
         {
             BulletTail = _BulletTail;
@@ -103,7 +100,6 @@ namespace Games.RazorMaze.Views.MazeItems
             Model,
             CoordinateConverter, 
             ContainersGetter, 
-            GameTimeProvider,
             GameTicker,
             BulletTail);
 
@@ -233,7 +229,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 0.2f,
                 _Progress => m_BulletFakeContainer.transform.localScale =
                         Vector3.one * _Progress * CoordinateConverter.GetScale() * BulletContainerRadius * 0.9f,
-                GameTimeProvider);
+                GameTicker);
         }
         
         private IEnumerator HandleTurretPreShootCoroutine()
@@ -243,7 +239,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 1f, 
                 0.2f, 
                 _Progress => { },
-                GameTimeProvider,
+                GameTicker,
                 (_Breaked, _Progress) =>
                 {
                     m_Bullet.SetGoActive(true);
@@ -321,13 +317,13 @@ namespace Games.RazorMaze.Views.MazeItems
                     1f,
                     0.1f, 
                     _Progress => m_RotatingSpeed = ViewSettings.TurretBulletRotationSpeed * _Progress,
-                    GameTimeProvider));
+                    GameTicker));
             }
             
             yield return Coroutines.Lerp(
                 _Open ? closedWidth : openedWidth, _Open ? openedWidth : closedWidth, 0.1f,
                 _Progress => m_Barrel.Height = barrelHeight * _Progress,
-                GameTimeProvider);
+                GameTicker);
         }
         
         private Tuple<Vector2, Vector3> GetBarrelLocalPositionAndRotation()
@@ -385,7 +381,7 @@ namespace Games.RazorMaze.Views.MazeItems
                     
                     RazorMazeUtils.DoAppearTransitionSimple(
                         _Appear,
-                        GameTimeProvider,
+                        GameTicker,
                         new Dictionary<object[], Color>
                         {
                             {new object [] {m_BulletHolderBorder, m_Body}, DrawingUtils.ColorLines},

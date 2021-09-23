@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Games.RazorMaze.Models.ProceedInfos;
-using TimeProviders;
+using Ticker;
 using Utils;
 
 namespace Games.RazorMaze.Models.ItemProceeders
@@ -46,17 +46,12 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region inject
         
-        private IGameTimeProvider GameTimeProvider { get; }
-        
         public TrapsIncreasingProceeder(
             ModelSettings _Settings,
             IModelMazeData _Data,
             IModelCharacter _Character,
-            IGameTimeProvider _GameTimeProvider) 
-            : base(_Settings, _Data, _Character)
-        {
-            GameTimeProvider = _GameTimeProvider;
-        }
+            IGameTicker _GameTicker) 
+            : base(_Settings, _Data, _Character, _GameTicker) { }
 
         #endregion
         
@@ -104,10 +99,10 @@ namespace Games.RazorMaze.Models.ItemProceeders
         private IEnumerator ProceedTrap(IMazeItemProceedInfo _Info)
         {
             _Info.ProceedingStage = _Info.ProceedingStage == StageIdle ? StageIncreased : StageIdle;
-            float duration = GetStageDuration(_Info.ProceedingStage); 
-            float time = GameTimeProvider.Time;
+            float duration = GetStageDuration(_Info.ProceedingStage);
+            float time = GameTicker.Time;
             yield return Coroutines.WaitWhile(
-                () => time + duration > GameTimeProvider.Time,
+                () => time + duration > GameTicker.Time,
                 () =>
                 {
                     TrapIncreasingStageChanged?.Invoke(

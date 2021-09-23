@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Linq;
 using Games.RazorMaze.Models.ProceedInfos;
-using TimeProviders;
+using Ticker;
 using Utils;
 
 namespace Games.RazorMaze.Models.ItemProceeders
@@ -46,8 +46,12 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         #region inject
         
-        public TrapsReactProceeder(ModelSettings _Settings, IModelMazeData _Data, IModelCharacter _Character) 
-            : base(_Settings, _Data, _Character) { }
+        public TrapsReactProceeder(
+            ModelSettings _Settings,
+            IModelMazeData _Data,
+            IModelCharacter _Character,
+            IGameTicker _GameTicker) 
+            : base(_Settings, _Data, _Character, _GameTicker) { }
 
         #endregion
         
@@ -82,9 +86,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
             float duration = GetStageDuration(_Info.ProceedingStage); 
             TrapReactStageChanged?.Invoke(
                 new MazeItemTrapReactEventArgs(_Info.Item, _Info.ProceedingStage, duration));
-            float time = GameTimeProvider.Instance.Time;
+            float time = GameTicker.Time;
             yield return Coroutines.WaitWhile(
-                () => time + duration > GameTimeProvider.Instance.Time,
+                () => time + duration > GameTicker.Time,
                 () =>
                 {
                     if (_Info.ProceedingStage == StageAfterReact)

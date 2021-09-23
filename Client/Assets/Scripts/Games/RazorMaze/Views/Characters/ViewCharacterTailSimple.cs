@@ -5,7 +5,7 @@ using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
-using TimeProviders;
+using Ticker;
 using UnityEngine;
 using Utils;
 
@@ -26,18 +26,18 @@ namespace Games.RazorMaze.Views.Characters
         private ICoordinateConverter CoordinateConverter { get; }
         private IContainersGetter ContainersGetter { get; }
         private ModelSettings ModelSettings { get; }
-        private ITimeProvider GameTimeProvider { get; }
-        
+        private IGameTicker GameTicker { get; }
+
         public ViewCharacterTailSimple(
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             ModelSettings _ModelSettings,
-            IGameTimeProvider _GameTimeProvider)
+            IGameTicker _GameTicker)
         {
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
             ModelSettings = _ModelSettings;
-            GameTimeProvider = _GameTimeProvider;
+            GameTicker = _GameTicker;
         }
         
         #endregion
@@ -109,7 +109,7 @@ namespace Games.RazorMaze.Views.Characters
                 {
                     m_Tail.A = Vector2.Lerp(startA, finishA, _Progress);
                 },
-                GameTimeProvider,
+                GameTicker,
                 (_Breaked, _Progress) => m_Tail.enabled = false,
                 () => !m_Hiding);
         }

@@ -9,7 +9,6 @@ using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
-using TimeProviders;
 using UnityEngine;
 using Utils;
 
@@ -54,14 +53,12 @@ namespace Games.RazorMaze.Views.MazeItems
             IModelGame _Model,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IGameTimeProvider _GameTimeProvider,
             IGameTicker _GameTicker)
             : base(
                 _ViewSettings,
                 _Model,
                 _CoordinateConverter,
                 _ContainersGetter,
-                _GameTimeProvider, 
                 _GameTicker)
         {
             ModelSettings = _ModelSettings;
@@ -77,7 +74,6 @@ namespace Games.RazorMaze.Views.MazeItems
             Model, 
             CoordinateConverter,
             ContainersGetter,
-            GameTimeProvider,
             GameTicker);
         
         
@@ -168,7 +164,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 MiddlePos,
                 0.1f,
                 _Progress => SetReactProgress(dir, scale, _Progress),
-                GameTimeProvider
+                GameTicker
             );
         }
 
@@ -181,7 +177,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 FinalPos,
                 0.05f,
                 _Progress => SetReactProgress(dir, scale, _Progress),
-                GameTimeProvider
+                GameTicker
             );
         }
 
@@ -194,7 +190,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 StartPos,
                 ModelSettings.trapAfterReactTime,
                 _Progress => SetReactProgress(dir, scale, _Progress),
-                GameTimeProvider
+                GameTicker
             );
         }
 

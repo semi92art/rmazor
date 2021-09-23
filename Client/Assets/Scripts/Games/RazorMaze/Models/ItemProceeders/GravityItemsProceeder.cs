@@ -3,7 +3,7 @@ using System.Collections;
 using System.Linq;
 using Entities;
 using Games.RazorMaze.Models.ProceedInfos;
-using TimeProviders;
+using Ticker;
 using UnityEngine;
 using Utils;
 
@@ -30,8 +30,12 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region inject
         
-        public GravityItemsProceeder(ModelSettings _Settings, IModelMazeData _Data, IModelCharacter _Character) 
-            : base (_Settings, _Data, _Character) { }
+        public GravityItemsProceeder(
+            ModelSettings _Settings,
+            IModelMazeData _Data, 
+            IModelCharacter _Character,
+            IGameTicker _GameTicker) 
+            : base (_Settings, _Data, _Character, _GameTicker) { }
         
         #endregion
         
@@ -155,7 +159,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     MazeItemMoveContinued?.Invoke(new MazeItemMoveEventArgs(
                         item, _From, _To, Settings.gravityTrapSpeed, _Progress, busyPositions));
                 },
-                GameTimeProvider.Instance,
+                GameTicker,
                 (_Stopped, _Progress) =>
                 {
                     var to = !_Stopped ? _To : _Info.BusyPositions[0];  

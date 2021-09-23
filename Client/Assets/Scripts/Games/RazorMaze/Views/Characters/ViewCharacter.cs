@@ -8,7 +8,7 @@ using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
-using TimeProviders;
+using Ticker;
 using UnityEngine;
 using Utils;
 
@@ -39,7 +39,7 @@ namespace Games.RazorMaze.Views.Characters
         private IModelMazeData Data { get; }
         private IViewCharacterTail Tail { get; }
         private IViewCharacterEffector Effector { get; }
-        private IGameTimeProvider GameTimeProvider { get; }
+        private IGameTicker GameTicker { get; }
         private ViewSettings ViewSettings { get; }
 
         public ViewCharacter(
@@ -49,14 +49,14 @@ namespace Games.RazorMaze.Views.Characters
             IViewMazeCommon _ViewMazeCommon,
             IViewCharacterTail _Tail,
             IViewCharacterEffector _Effector,
-            IGameTimeProvider _GameTimeProvider,
+            IGameTicker _GameTicker,
             ViewSettings _ViewSettings) 
             : base(_CoordinateConverter, _Data, _ContainersGetter, _ViewMazeCommon)
         {
             Data = _Data;
             Tail = _Tail;
             Effector = _Effector;
-            GameTimeProvider = _GameTimeProvider;
+            GameTicker = _GameTicker;
             ViewSettings = _ViewSettings;
         }
         
@@ -231,7 +231,7 @@ namespace Games.RazorMaze.Views.Characters
                 {
                     RazorMazeUtils.DoAppearTransitionSimple(
                         _Appear,
-                        GameTimeProvider,
+                        GameTicker,
                         new Dictionary<object[], Color>
                         {
                             {new[] {m_HeadShape}, DrawingUtils.ColorCharacter},

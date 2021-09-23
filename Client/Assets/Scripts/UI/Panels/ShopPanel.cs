@@ -77,7 +77,7 @@ namespace UI.Panels
                     default:
                         throw new SwitchCaseNotImplementedException(shopItemProps.Type);
                 }
-                item.Init(shopItemProps, GetObservers(), UITicker);
+                item.Init(shopItemProps, GetObservers(), (IUITicker)Ticker);
             }
 
             content.anchoredPosition = content.anchoredPosition.SetY(0);

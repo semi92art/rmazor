@@ -3,7 +3,6 @@ using System.Linq;
 using Constants;
 using DI.Extensions;
 using GameHelpers;
-using TimeProviders;
 using UnityEngine;
 using Utils;
 #if UNITY_EDITOR
@@ -62,17 +61,20 @@ public class CircleTransparentTransitionRenderer : MonoBehaviour, ITransitionRen
     public void StartTransition(bool _Fast = false)
     {
         AnimationCurve ac = _Fast ? fastCurve : curve;
-        float startTime = UiTimeProvider.Instance.Time;
+        float startTime = default; // FIXME
+        // float startTime = UiTimeProvider.Instance.Time;
         bool doEvent = false;
         
         Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
         {
             m_Material.SetFloat(AlphaCoeff, -1);
             Coroutines.Run(Coroutines.DoWhile(
-                () => UiTimeProvider.Instance.Time - startTime < ac.keys.Last().time,
+                () => default, // FIXME
+                // () => UiTimeProvider.Instance.Time - startTime < ac.keys.Last().time,
                 () =>
                 {
-                    float dt = UiTimeProvider.Instance.Time - startTime;
+                    float dt = default; // FIXME
+                    // float dt = UiTimeProvider.Instance.Time - startTime;
                     m_Material.SetFloat(AlphaCoeff, ac.Evaluate(dt));
                     if (doEvent || !(dt > ac.keys.Last().time * 0.5f)) 
                         return;

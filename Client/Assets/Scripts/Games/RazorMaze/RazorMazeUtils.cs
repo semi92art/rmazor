@@ -6,7 +6,7 @@ using Entities;
 using Exceptions;
 using Games.RazorMaze.Models;
 using Shapes;
-using TimeProviders;
+using Ticker;
 using UnityEngine;
 using UnityEngine.Events;
 using Utils;
@@ -203,7 +203,7 @@ namespace Games.RazorMaze
         
         public static void DoAppearTransitionSimple(
             bool _Appear,
-            IGameTimeProvider _GameTimeProvider,
+            IGameTicker _GameTicker,
             Dictionary<object[], Color> _Sets,
             float _TransitionTime = 1f,
             UnityAction _OnFinish = null)
@@ -243,7 +243,7 @@ namespace Games.RazorMaze
                             }
                         }
                     },
-                    _GameTimeProvider,
+                    _GameTicker,
                     (_Finished, _Progress) =>
                     {
                         if (!_Appear)

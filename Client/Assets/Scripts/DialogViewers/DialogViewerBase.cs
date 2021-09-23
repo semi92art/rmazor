@@ -178,7 +178,9 @@ namespace DialogViewers
                 if (!GraphicsAlphas.ContainsKey(instId))
                     GraphicsAlphas.Add(instId, new GraphicAlphas(fromPanel));
                 Coroutines.Run(Coroutines.DoTransparentTransition(
-                    fromPanel, GraphicsAlphas[instId].Alphas, TransitionTime, true,
+                    fromPanel, GraphicsAlphas[instId].Alphas, TransitionTime,
+                    default, // FIXME
+                    true,
                     () =>
                     {
                         if (!_GoBack)
@@ -196,7 +198,9 @@ namespace DialogViewers
                 if (!GraphicsAlphas.ContainsKey(instId))
                     GraphicsAlphas.Add(instId, new GraphicAlphas(toPanel));
                 StartCoroutine(Coroutines.DoTransparentTransition(
-                    toPanel, GraphicsAlphas[instId].Alphas, TransitionTime, false, 
+                    toPanel, GraphicsAlphas[instId].Alphas, TransitionTime,
+                    default, // FIXME
+                    false, 
                     () => background.enabled = true));
                 _ItemTo.DialogPanel.OnDialogEnable();
             }
@@ -228,6 +232,7 @@ namespace DialogViewers
                         item.Key,
                         GraphicsAlphas[item.Key.GetInstanceID()].Alphas, 
                         TransitionTime,
+                        default, // FIXME
                         !show.Value,
                         () =>
                         {

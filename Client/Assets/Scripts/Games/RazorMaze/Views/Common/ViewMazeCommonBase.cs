@@ -5,7 +5,6 @@ using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.MazeItems;
 using Ticker;
-using TimeProviders;
 using UnityEngine;
 
 namespace Games.RazorMaze.Views.Common
@@ -19,22 +18,19 @@ namespace Games.RazorMaze.Views.Common
         protected IModelMazeData ModelData { get; }
         protected IContainersGetter ContainersGetter { get; }
         protected ICoordinateConverter CoordinateConverter { get; }
-        protected IGameTimeProvider GameTimeProvider { get; }
 
         protected ViewMazeCommonBase(
             IGameTicker _GameTicker,
             IMazeItemsCreator _MazeItemsCreator,
             IModelMazeData _ModelData,
             IContainersGetter _ContainersGetter, 
-            ICoordinateConverter _CoordinateConverter,
-            IGameTimeProvider _GameTimeProvider)
+            ICoordinateConverter _CoordinateConverter)
         {
             GameTicker = _GameTicker;
             MazeItemsCreator = _MazeItemsCreator;
             ModelData = _ModelData;
             ContainersGetter = _ContainersGetter;
             CoordinateConverter = _CoordinateConverter;
-            GameTimeProvider = _GameTimeProvider;
 
             GameTicker.Register(this);
         }

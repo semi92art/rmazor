@@ -5,7 +5,7 @@ using System.Linq;
 using Entities;
 using Exceptions;
 using Games.RazorMaze.Models.ProceedInfos;
-using TimeProviders;
+using Ticker;
 using UnityEngine;
 using UnityEngine.Events;
 using Utils;
@@ -65,8 +65,12 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         #region inject
         
-        public TrapsMovingProceeder(ModelSettings _Settings, IModelMazeData _Data, IModelCharacter _Character) 
-            : base(_Settings, _Data, _Character) { }
+        public TrapsMovingProceeder(
+            ModelSettings _Settings, 
+            IModelMazeData _Data,
+            IModelCharacter _Character,
+            IGameTicker _GameTicker)
+            : base(_Settings, _Data, _Character, _GameTicker) { }
         
         #endregion
         
@@ -161,7 +165,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                         new MazeItemMoveEventArgs(_Info.Item, _From, _To, Settings.movingItemsSpeed, _Progress,
                             _Info.BusyPositions));
                 },
-                GameTimeProvider.Instance,
+                GameTicker,
                 (_Stopped, _Progress) =>
                 {
                     _Info.Item.Position = _To;

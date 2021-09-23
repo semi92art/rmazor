@@ -7,7 +7,6 @@ using Games.RazorMaze.Views.MazeItems.Props;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
-using TimeProviders;
 using UnityEngine;
 using Utils;
 
@@ -44,7 +43,6 @@ namespace Games.RazorMaze.Views.MazeItems
         protected IModelGame Model { get; }
         protected ICoordinateConverter CoordinateConverter { get; }
         protected IContainersGetter ContainersGetter { get; }
-        protected IGameTimeProvider GameTimeProvider { get; }
         protected IGameTicker GameTicker { get; }
         
 
@@ -53,14 +51,12 @@ namespace Games.RazorMaze.Views.MazeItems
             IModelGame _Model,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IGameTimeProvider _GameTimeProvider,
             IGameTicker _GameTicker)
         {
             ViewSettings = _ViewSettings;
             Model = _Model;
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
-            GameTimeProvider = _GameTimeProvider;
             GameTicker = _GameTicker;
         }
 
@@ -159,7 +155,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 {
                     RazorMazeUtils.DoAppearTransitionSimple(
                         _Appear,
-                        GameTimeProvider,
+                        GameTicker,
                         new Dictionary<object[], Color>
                         {
                             {Shapes, DrawingUtils.ColorLines}

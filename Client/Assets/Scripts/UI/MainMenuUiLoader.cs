@@ -114,7 +114,7 @@ namespace UI
         private void CreateDialogViewers()
         {
             m_MenuDialogViewer = MainMenuDialogViewer.Create(
-                m_Canvas.RTransform(), GetObservers(), UITicker);
+                m_Canvas.RTransform(), GetObservers(), (IUITicker)Ticker);
             m_NotificationViewer = MainMenuNotificationViewer.Create(
                 m_Canvas.RTransform());
         }
@@ -130,7 +130,7 @@ namespace UI
         private void CreateLoadingPanel()
         {
             bool authFinished = false;
-            var loadingPanel = new LoadingPanel(m_MenuDialogViewer, UITicker);
+            var loadingPanel = new LoadingPanel(m_MenuDialogViewer, (IUITicker)Ticker);
             loadingPanel.Init();
             m_MenuDialogViewer.Show(loadingPanel);
             m_StartLoadingController = new LoadingController(loadingPanel, _LoadingResult =>

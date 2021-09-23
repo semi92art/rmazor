@@ -91,14 +91,14 @@ namespace UI.Panels
 
         private void Continue()
         {
-            var countdownPanel = new CountdownPanel(
-                m_DialogViewer.Container, () =>
-            {
-                m_DialogViewer.CloseAll();
-                m_Continue?.Invoke();
-            }, UITicker);
-            countdownPanel.Init();
-            m_DialogViewer.Show(countdownPanel);
+            // var countdownPanel = new CountdownPanel(
+            //     m_DialogViewer.Container, () =>
+            // {
+            //     m_DialogViewer.CloseAll();
+            //     m_Continue?.Invoke();
+            // }, Ticker);
+            // countdownPanel.Init();
+            // m_DialogViewer.Show(countdownPanel);
         }
 
         private void OnFinishButtonClick()

@@ -84,7 +84,7 @@ namespace UI.Panels
             {
                 var sspiClone = sspi.Clone();
                 SettingSelectorItem si = sspiClone.GetComponent<SettingSelectorItem>();
-                si.Init(item, m_Select, item == m_DefaultValue, GetObservers(), UITicker);
+                si.Init(item, m_Select, item == m_DefaultValue, GetObservers(), (IUITicker)Ticker);
                 selectorItems.Add(si);
             }
 

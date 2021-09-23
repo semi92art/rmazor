@@ -8,7 +8,6 @@ using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
-using TimeProviders;
 using UnityEngine;
 using UnityEngine.Events;
 using Utils;
@@ -51,14 +50,12 @@ namespace Games.RazorMaze.Views.MazeItems
             IModelGame _Model,
             ICoordinateConverter _CoordinateConverter, 
             IContainersGetter _ContainersGetter,
-            IGameTimeProvider _GameTimeProvider,
             IGameTicker _GameTicker) 
             : base(
                 _ViewSettings,
                 _Model, 
                 _CoordinateConverter,
                 _ContainersGetter,
-                _GameTimeProvider, 
                 _GameTicker) { }
         
         #endregion
@@ -66,7 +63,11 @@ namespace Games.RazorMaze.Views.MazeItems
         #region api
         
         public override object Clone() => new ViewMazeItemSpringboard(
-            ViewSettings, Model, CoordinateConverter, ContainersGetter, GameTimeProvider, GameTicker);
+            ViewSettings, 
+            Model, 
+            CoordinateConverter, 
+            ContainersGetter,
+            GameTicker);
 
         public void MakeJump(SpringboardEventArgs _Args)
         {
@@ -109,7 +110,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 JumpCoefficient,
                 0.05f,
                 _Progress => doOnProgress(_Progress),
-                GameTimeProvider,
+                GameTicker,
                 (_, __) =>
                 {
                     Coroutines.Run(Coroutines.Lerp(
@@ -117,7 +118,7 @@ namespace Games.RazorMaze.Views.MazeItems
                         0,
                         0.05f,
                         _Progress => doOnProgress(_Progress),
-                        GameTimeProvider));
+                        GameTicker));
                 });
         }
         

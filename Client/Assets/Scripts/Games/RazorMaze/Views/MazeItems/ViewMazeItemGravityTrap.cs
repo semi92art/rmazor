@@ -6,7 +6,6 @@ using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
 using Shapes;
 using Ticker;
-using TimeProviders;
 using UnityEngine;
 
 namespace Games.RazorMaze.Views.MazeItems
@@ -47,14 +46,12 @@ namespace Games.RazorMaze.Views.MazeItems
             IModelGame _Model,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IGameTimeProvider _GameTimeProvider,
             IGameTicker _GameTicker)
             : base(
                 _ViewSettings,
                 _Model,
                 _CoordinateConverter,
                 _ContainersGetter,
-                _GameTimeProvider,
                 _GameTicker) { }
         
         #endregion
@@ -66,7 +63,6 @@ namespace Games.RazorMaze.Views.MazeItems
             Model,
             CoordinateConverter,
             ContainersGetter,
-            GameTimeProvider, 
             GameTicker);
 
         public void UpdateTick()

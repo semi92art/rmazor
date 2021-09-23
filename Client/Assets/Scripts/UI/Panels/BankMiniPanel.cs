@@ -9,7 +9,6 @@ using Exceptions;
 using GameHelpers;
 using Managers;
 using Ticker;
-using TimeProviders;
 using TMPro;
 using UI.Entities;
 using UI.Factories;
@@ -126,7 +125,7 @@ namespace UI.Panels
             m_PlusMoneyButton.SetOnClick(() =>
             {
                 Notify(this, CommonNotifyMessages.UiButtonClick);
-                var plusMoneyPanel = new PlusMoneyPanel(m_DialogViewer, m_NotificationViewer, this, UITicker);
+                var plusMoneyPanel = new PlusMoneyPanel(m_DialogViewer, m_NotificationViewer, this, (IUITicker)Ticker);
                 plusMoneyPanel.AddObservers(GetObservers());
                 plusMoneyPanel.Init();
                 m_DialogViewer.Show(plusMoneyPanel);
@@ -161,7 +160,8 @@ namespace UI.Panels
                         GetMoneyPanelWidth(maxMoneyTextLength),
                         0.3f,
                         SetMoneyPanelWidth,
-                        UiTimeProvider.Instance));
+                        new UITicker())); //FIXME
+                        // UiTimeProvider.Instance));
                 }));
         }
 
@@ -246,7 +246,8 @@ namespace UI.Panels
                         to,
                         IncomeAnimDeltaTime * IncomeCoinsAnimOnScreen,
                         _Pos => coin.Item.position = _Pos,
-                        UiTimeProvider.Instance,
+                        new UITicker(), // FIXME
+                        // UiTimeProvider.Instance,
                         (_Breaked, _Progress) =>
                         {
                             coin.IsBusy = false;
@@ -257,7 +258,8 @@ namespace UI.Panels
                 },
                 IncomeAnimDeltaTime,
                 IncomeAnimTime,
-                UiTimeProvider.Instance,
+                new UITicker(), // FIXME
+                // UiTimeProvider.Instance,
                 _OnFinish:() =>
                 {
                     Coroutines.Run(Coroutines.WaitWhile(
@@ -298,11 +300,12 @@ namespace UI.Panels
                             m_GoldCount.rectTransform.sizeDelta.SetX(GetTextWidth(newMaxCountTextLength));
 
                         Coroutines.Run(Coroutines.Lerp(
-                            currentPanelWidth, 
+                            currentPanelWidth,
                             newPanelWidth,
-                            0.3f, 
-                            _Width => m_MoneyPanel.sizeDelta = m_MoneyPanel.sizeDelta.SetX(_Width), 
-                            UiTimeProvider.Instance));
+                            0.3f,
+                            _Width => m_MoneyPanel.sizeDelta = m_MoneyPanel.sizeDelta.SetX(_Width),
+                            new UITicker())); // FIXME
+                            // UiTimeProvider.Instance));
                     }
                     
                     Coroutines.Run(Coroutines.Lerp(
@@ -315,7 +318,8 @@ namespace UI.Panels
                                 m_GoldCount.text = _Value.ToNumeric();
                             else if (rewardType == BankItemType.SecondCurrency)
                                 m_DiamondsCount.text = _Value.ToNumeric();
-                        }, UiTimeProvider.Instance));
+                        }, new UITicker())); // FIXME
+                        // UiTimeProvider.Instance));
                 }));
             }
         }

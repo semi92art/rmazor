@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
 using GameHelpers;
-using TimeProviders;
+using Ticker;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -118,6 +118,7 @@ namespace Utils
             RectTransform _Item,
             Dictionary<Graphic, float> _GraphicsAndAlphas,
             float _Time,
+            ITicker _Ticker,
             bool _Disappear = false,
             UnityAction _OnFinish = null)
         {
@@ -132,11 +133,11 @@ namespace Utils
                 button.Key.enabled = false;
 
             //do transition for graphic elements
-            float currTime = UiTimeProvider.Instance.Time;
+            float currTime = _Ticker.Time;
             if (!_Disappear)
-                while (UiTimeProvider.Instance.Time < currTime + _Time)
+                while (_Ticker.Time < currTime + _Time)
                 {
-                    float timeCoeff = (currTime + _Time - UiTimeProvider.Instance.Time) / _Time;
+                    float timeCoeff = (currTime + _Time - _Ticker.Time) / _Time;
                     float alphaCoeff = 1 - timeCoeff;
                     var collection = graphicsAndAlphas.ToList();
                     foreach (var ga in from ga 
@@ -168,16 +169,16 @@ namespace Utils
             UnityAction _Action,
             float _RepeatDelta,
             float _RepeatTime,
-            ITimeProvider _TimeProvider,
+            ITicker _Ticker,
             Func<bool> _DoStop = null,
             UnityAction _OnFinish = null)
         {
             if (_Action == null)
                 yield break;
             
-            float startTime = _TimeProvider.Time;
+            float startTime = _Ticker.Time;
             
-            while (_TimeProvider.Time - startTime < _RepeatTime 
+            while (_Ticker.Time - startTime < _RepeatTime 
                    && (_DoStop == null || !_DoStop()))
             {
                 _Action();
@@ -191,15 +192,15 @@ namespace Utils
             UnityAction _Action,
             float _RepeatDelta,
             long _RepeatCount,
-            ITimeProvider _TimeProvider,
+            ITicker _Ticker,
             Func<bool> _DoStop = null,
             UnityAction _OnFinish = null)
         {
             if (_Action == null)
                 yield break;
             float repeatTime = _RepeatDelta * _RepeatCount;
-            float startTime = _TimeProvider.Time;
-            while (_TimeProvider.Time - startTime < repeatTime 
+            float startTime = _Ticker.Time;
+            while (_Ticker.Time - startTime < repeatTime 
                    && (_DoStop == null || !_DoStop()))
             {
                 _Action();

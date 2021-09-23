@@ -4,7 +4,7 @@ using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views;
-using TimeProviders;
+using Ticker;
 using UnityEngine;
 using Utils;
 using Zenject;
@@ -36,9 +36,17 @@ namespace Games.RazorMaze.Controllers
         public IModelGame Model { get; private set; }
         public IViewGame  View { get; private set; }
         public ILevelsLoader LevelsLoader { get; private set; }
+        public IGameTicker GameTicker { get; private set; }
+        public IUITicker UITicker { get; private set; }
 
-        [Inject] public void Inject(IModelGame _Model, IViewGame _View, ILevelsLoader _LevelsLoader) =>
-            (Model, View, LevelsLoader) = (_Model, _View, _LevelsLoader);
+        [Inject] public void Inject(
+            IModelGame _Model,
+            IViewGame _View, 
+            ILevelsLoader _LevelsLoader,
+            IGameTicker _GameTicker,
+            IUITicker _UITicker) =>
+            (Model, View, LevelsLoader, GameTicker, UITicker) =
+            (_Model, _View, _LevelsLoader, _GameTicker, _UITicker);
         
         #endregion
         
@@ -50,7 +58,7 @@ namespace Games.RazorMaze.Controllers
         
         public void PreInit()
         {
-            GameTimeProvider.Instance.Reset();
+            GameTicker.Reset();
 
             var rotation                                        = Model.MazeRotation;
             var pathItemsProceeder                              = Model.PathItemsProceeder;
