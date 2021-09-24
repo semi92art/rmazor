@@ -103,14 +103,14 @@ namespace Games.RazorMaze.Views.Characters
                 }));
         }
         
-        public override void OnMovingStarted(CharacterMovingEventArgs _Args)
+        public override void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
         {
             m_Animator.SetTrigger(AnimKeyStartMove);
             SetOrientation(_Args.Direction);
             Tail.ShowTail(_Args);
         }
 
-        public override void OnMoving(CharacterMovingEventArgs _Args)
+        public override void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
             var prevPos = CoordinateConverter.ToLocalCharacterPosition(_Args.From);
             var nextPos = CoordinateConverter.ToLocalCharacterPosition(_Args.To);
@@ -119,7 +119,7 @@ namespace Games.RazorMaze.Views.Characters
             Tail.ShowTail(_Args);
         }
 
-        public override void OnMovingFinished(CharacterMovingEventArgs _Args)
+        public override void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
         {
             m_Animator.SetTrigger(AnimKeyBump);
             Tail.HideTail(_Args);

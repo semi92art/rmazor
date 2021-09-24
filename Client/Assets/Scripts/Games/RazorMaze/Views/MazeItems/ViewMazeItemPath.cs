@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
 using Entities;
 using Exceptions;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeItems.Props;
 using Games.RazorMaze.Views.Utils;
@@ -15,7 +17,7 @@ using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
-    public interface IViewMazeItemPath : IViewMazeItem
+    public interface IViewMazeItemPath : IViewMazeItem, ICharacterMoveFinished
     {
         bool Collected { get; set; }
     }
@@ -90,38 +92,11 @@ namespace Games.RazorMaze.Views.MazeItems
             }
         }
         
-        public void UpdateTick()
-        {
-            if (!Initialized || !Activated)
-                return;
-            
-            float dOffset = Time.deltaTime * 3f;
-            
-            if (m_LeftBorderInited && m_LeftBorder.Dashed)
-                m_LeftBorder.DashOffset -= dOffset;
-            if (m_RightBorderInited && m_RightBorder.Dashed)
-                m_RightBorder.DashOffset += dOffset;
-            if (m_BottomBorderInited && m_BottomBorder.Dashed)
-                m_BottomBorder.DashOffset += dOffset;
-            if (m_TopBorderInited && m_TopBorder.Dashed)
-                m_TopBorder.DashOffset -= dOffset;
-        }
-        
-        #endregion
-        
-        #region nonpublic methods
-
-        private void Collect(bool _Collect)
-        {
-            m_Shape.Color = _Collect ? DrawingUtils.ColorLines.SetA(0f) : DrawingUtils.ColorLines;
-        }
-
-
         public override void Init(ViewMazeItemProps _Props)
         {
             Props = _Props;
             SetShape();
-            GameTicker.Register(this);
+            // GameTicker.Register(this);
 
             Coroutines.Run(Coroutines.WaitWhile(
                 () =>
@@ -148,6 +123,38 @@ namespace Games.RazorMaze.Views.MazeItems
                     return !res;
                 },
                 () => Initialized = true));
+        }
+        
+        public void UpdateTick()
+        {
+            if (!Initialized || !Activated)
+                return;
+            
+            float dOffset = Time.deltaTime * 3f;
+            
+            if (m_LeftBorderInited && m_LeftBorder.Dashed)
+                m_LeftBorder.DashOffset -= dOffset;
+            if (m_RightBorderInited && m_RightBorder.Dashed)
+                m_RightBorder.DashOffset += dOffset;
+            if (m_BottomBorderInited && m_BottomBorder.Dashed)
+                m_BottomBorder.DashOffset += dOffset;
+            if (m_TopBorderInited && m_TopBorder.Dashed)
+                m_TopBorder.DashOffset -= dOffset;
+        }
+        
+        public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
+        {
+            if (_Args.Position == Props.Position)
+                Coroutines.Run(OnFinishMoveCoroutine(_Args.Direction));
+        }
+        
+        #endregion
+        
+        #region nonpublic methods
+
+        private void Collect(bool _Collect)
+        {
+            m_Shape.Color = _Collect ? DrawingUtils.ColorLines.SetA(0f) : DrawingUtils.ColorLines;
         }
 
         protected override void SetShape()
@@ -458,6 +465,42 @@ namespace Games.RazorMaze.Views.MazeItems
                             AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared;
                         });
                 }));
+        }
+
+        private IEnumerator OnFinishMoveCoroutine(EMazeMoveDirection _Direction)
+        {
+            float delta = 0.5f;
+            float duration = 0.1f;
+            var dir = RazorMazeUtils.GetDirectionVector(_Direction, Model.Data.Orientation).ToVector2();
+            Line border = null;
+            if (dir == Vector2.up)
+                border = m_TopBorder;
+            else if (dir == Vector2.down)
+                border = m_BottomBorder;
+            else if (dir == Vector2.right)
+                border = m_RightBorder;
+            else if (dir == Vector2.left)
+                border = m_LeftBorder;
+            
+            if (border.IsNull())
+                yield break;
+            
+            var startPos = border.transform.localPosition;
+            yield return Coroutines.Lerp(
+                0f,
+                delta,
+                duration * 0.5f,
+                _Progress => border.transform.localPosition = startPos + (Vector3) dir * _Progress,
+                GameTicker,
+                (_Finished, _) =>
+                {
+                    Coroutines.Run(Coroutines.Lerp(
+                        delta,
+                        0f,
+                        duration * 0.5f,
+                        _Progress => border.transform.localPosition = startPos + (Vector3) dir * _Progress,
+                        GameTicker));
+                });
         }
 
         #endregion

@@ -36,9 +36,9 @@ namespace Games.RazorMaze.Views.Characters
         public virtual bool Activated { get; set; }
 
         public virtual void Init() => Initialized?.Invoke();
-        public abstract void OnMovingStarted(CharacterMovingEventArgs _Args);
-        public abstract void OnMoving(CharacterMovingEventArgs _Args);
-        public abstract void OnMovingFinished(CharacterMovingEventArgs _Args);
+        public abstract void OnCharacterMoveStarted(CharacterMovingEventArgs _Args);
+        public abstract void OnCharacterMoveContinued(CharacterMovingEventArgs _Args);
+        public abstract void OnCharacterMoveFinished(CharacterMovingEventArgs _Args);
         public abstract void OnRevivalOrDeath(bool _Alive);
         public abstract void OnLevelStageChanged(LevelStageArgs _Args);
 

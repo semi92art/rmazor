@@ -1,4 +1,5 @@
-﻿using Games.RazorMaze.Views.Characters;
+﻿using Games.RazorMaze.Models.ItemProceeders;
+using Games.RazorMaze.Views.Characters;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItemGroups;
@@ -7,7 +8,7 @@ using Games.RazorMaze.Views.UI;
 
 namespace Games.RazorMaze.Views
 {
-    public interface IViewGame : IInit, IOnLevelStageChanged
+    public interface IViewGame : IInit, IOnLevelStageChanged, ICharacterMoveStarted, ICharacterMoveContinued, ICharacterMoveFinished
     {
         IViewUI                            UI { get; }
         IInputConfigurator                 InputConfigurator { get; }

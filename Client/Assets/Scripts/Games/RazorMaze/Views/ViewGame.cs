@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Games.RazorMaze.Models;
+using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Characters;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.InputConfigurators;
@@ -91,12 +93,33 @@ namespace Games.RazorMaze.Views
             GameTicker.Pause = _Args.Stage == ELevelStage.Paused;
         }
         
+        public void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
+        {
+            var proceeders = GetInterfaceOfProceeders<ICharacterMoveStarted>();
+            foreach (var proceeder in proceeders)
+                proceeder.OnCharacterMoveStarted(_Args);
+        }
+
+        public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
+        {
+            var proceeders = GetInterfaceOfProceeders<ICharacterMoveContinued>();
+            foreach (var proceeder in proceeders)
+                proceeder.OnCharacterMoveContinued(_Args);
+        }
+        
+        public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
+        {
+            var proceeders = GetInterfaceOfProceeders<ICharacterMoveFinished>();
+            foreach (var proceeder in proceeders)
+                proceeder.OnCharacterMoveFinished(_Args);
+        }
+        
         private List<T> GetInterfaceOfProceeders<T>() where T : class
         {
             var result = new List<T>
             {
                 UI                                 as T,
-                Common                         as T,
+                Common                             as T,
                 InputConfigurator                  as T,
                 Character                          as T,
                 Background                         as T,
@@ -111,6 +134,6 @@ namespace Games.RazorMaze.Views
                 SpringboardItemsGroup              as T
             }.Where(_Proceeder => _Proceeder != null).ToList();
             return result;
-        } 
+        }
     }
 }

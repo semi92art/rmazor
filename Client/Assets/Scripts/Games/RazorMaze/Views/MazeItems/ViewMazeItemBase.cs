@@ -58,6 +58,8 @@ namespace Games.RazorMaze.Views.MazeItems
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
             GameTicker = _GameTicker;
+            
+            GameTicker.Register(this);
         }
 
         #endregion
@@ -113,7 +115,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             Props = _Props;
             SetShape();
-            GameTicker.Register(this);
+            // GameTicker.Register(this);
             Initialized = true;
         }
 

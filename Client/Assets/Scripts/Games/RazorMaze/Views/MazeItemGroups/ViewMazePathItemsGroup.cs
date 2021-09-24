@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Entities;
 using Games.RazorMaze.Models;
@@ -73,6 +74,13 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         {
             if (!m_FirstMoveDone && ViewSettings.StartPathItemFilledOnStart)
                 UnfillStartPathItem();
+            m_FirstMoveDone = true;
+        }
+        
+        public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
+        {
+            foreach (var pathItem in PathItems)
+                pathItem.OnCharacterMoveFinished(_Args);
         }
 
         #endregion

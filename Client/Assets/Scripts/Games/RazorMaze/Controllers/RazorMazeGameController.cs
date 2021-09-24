@@ -95,9 +95,9 @@ namespace Games.RazorMaze.Controllers
             springboardProceeder.SpringboardEvent               += OnSpringboardEvent;
 
             character.AliveOrDeath                              += OnCharacterAliveOrDeath;
-            character.CharacterMoveStarted                      += OnCharacterMoveStarted;
-            character.CharacterMoveContinued                    += OnCharacterMoveContinued;
-            character.CharacterMoveFinished                     += OnCharacterMoveFinished;
+            character.CharacterMoveStarted                      += View.OnCharacterMoveStarted;
+            character.CharacterMoveContinued                    += View.OnCharacterMoveContinued;
+            character.CharacterMoveFinished                     += View.OnCharacterMoveFinished;
             character.PositionSet                               += OnCharacterPositionSet;
             
             levelStaging.LevelStageChanged                      += View.OnLevelStageChanged;
@@ -144,10 +144,7 @@ namespace Games.RazorMaze.Controllers
         }
 
         private void OnCharacterAliveOrDeath(bool _Alive) => View.Character.OnRevivalOrDeath(_Alive);
-
-        private void OnCharacterMoveStarted(CharacterMovingEventArgs _Args) => View.Character.OnMovingStarted(_Args);
-        private void OnCharacterMoveContinued(CharacterMovingEventArgs _Args) => View.Character.OnMoving(_Args);
-        private void OnCharacterMoveFinished(CharacterMovingEventArgs _Args) => View.Character.OnMovingFinished(_Args);
+        
         private void OnCharacterPositionSet(V2Int _Value) => View.Character.OnPositionSet(_Value);
 
         private void OnMazeRotationStarted(MazeRotateDirection _Direction, MazeOrientation _Orientation) => View.Rotation.StartRotation(_Direction, _Orientation);
@@ -219,15 +216,15 @@ namespace Games.RazorMaze.Controllers
             springboardProceeder.SpringboardEvent               -= OnSpringboardEvent;
 
             character.AliveOrDeath                              -= OnCharacterAliveOrDeath;
-            character.CharacterMoveStarted                      -= OnCharacterMoveStarted;
-            character.CharacterMoveContinued                    -= OnCharacterMoveContinued;
-            character.CharacterMoveFinished                     -= OnCharacterMoveFinished;
+            character.CharacterMoveStarted                      -= View.OnCharacterMoveStarted;
+            character.CharacterMoveContinued                    -= View.OnCharacterMoveContinued;
+            character.CharacterMoveFinished                     -= View.OnCharacterMoveFinished;
             character.PositionSet                               -= OnCharacterPositionSet;
             
             levelStaging.LevelStageChanged                      -= View.OnLevelStageChanged;
             
             View.InputConfigurator.Command                      -= OnInputCommand;
-            View.Common.GameLoopUpdate                      -= OnGameLoopUpdate;
+            View.Common.GameLoopUpdate                          -= OnGameLoopUpdate;
 
             Model.PreInitialized                                -= OnModelPreInitialized;
         }
