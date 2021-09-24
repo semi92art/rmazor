@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DI.Extensions;
+using Exceptions;
 using Games.RazorMaze.Views.Characters;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
@@ -27,13 +28,14 @@ namespace Games.RazorMaze.Views.Common
         #region nonpublic members
 
         private bool m_Initialized;
+        private bool m_LoadedFirstTime;
         private Transform m_Container;
+        private readonly System.Random m_Random = new System.Random(); 
         private readonly Color m_Color = DrawingUtils.ColorLines.SetA(0.05f);
         private readonly List<ShapeRenderer> m_Sources = new List<ShapeRenderer>();
         private readonly BehavioursSpawnPool<ShapeRenderer> m_Pool = new BehavioursSpawnPool<ShapeRenderer>();
         private readonly List<Vector2> m_Speeds = new List<Vector2>(PoolSize);
         private Bounds m_ScreenBounds;
-        private readonly System.Random m_Random = new System.Random(); 
 
         private readonly Type[] m_PossibleSourceTypes = 
         {
@@ -87,10 +89,11 @@ namespace Games.RazorMaze.Views.Common
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage == ELevelStage.Loaded)
-                OnLevelLoad();
-            else if (_Args.Stage == ELevelStage.Unloaded)
-                OnLevelUnload();
+            if (_Args.Stage == ELevelStage.Loaded && ! m_LoadedFirstTime)
+            {
+                Coroutines.Run(LoadCoroutine(true));
+                m_LoadedFirstTime = true;
+            }
         }
         
         public void UpdateTick()
@@ -141,7 +144,7 @@ namespace Games.RazorMaze.Views.Common
                 var source = m_Sources[randIdx];
                 var newGo = Object.Instantiate(source.gameObject);
                 newGo.SetParent(ContainersGetter.BackgroundContainer);
-                var pos = RandomPositionInMarginRect();
+                var pos = RandomPositionOnScreen();
                 newGo.transform.SetPosXY(pos);
                 Component newSourceRaw = null;
                 foreach (var possibleType in m_PossibleSourceTypes)
@@ -170,15 +173,11 @@ namespace Games.RazorMaze.Views.Common
                 shape.transform.PlusPosXY(speed.x, speed.y);
                 if (IsInsideOfScreenBounds(shape.transform.position.XY(), new Vector2(1f, 1f)))
                     continue;
-                shape.transform.SetPosXY(RandomPositionInMarginRect(false, new Vector2(1f, 1f)));
+                shape.transform.SetPosXY(RandomPositionOnScreen(false, new Vector2(1f, 1f)));
             }
         }
         
-        private void OnLevelLoad() => Coroutines.Run(LoadCoroutine(true));
-
-        private void OnLevelUnload() => Coroutines.Run(LoadCoroutine(false));
-        
-        private Vector2 RandomPositionInMarginRect(bool _Inside = true, Vector2? _Padding = null)
+        private Vector2 RandomPositionOnScreen(bool _Inside = true, Vector2? _Padding = null)
         {
             if (!_Inside && !_Padding.HasValue)
                 return default;
@@ -186,18 +185,34 @@ namespace Games.RazorMaze.Views.Common
             float xDelta, yDelta;
             if (_Inside)
             {
-                xDelta = m_Random.NextFloatAlt() * m_ScreenBounds.size.x;
-                yDelta = m_Random.NextFloatAlt() * m_ScreenBounds.size.y;
+                xDelta = m_Random.NextFloatAlt() * m_ScreenBounds.size.x * 0.5f;
+                yDelta = m_Random.NextFloatAlt() * m_ScreenBounds.size.y * 0.5f;
             }
             else
             {
-                bool right = m_Random.NextFloatAlt() > 0;
-                bool top = m_Random.NextFloatAlt() > 0;
+                int posCase = m_Random.Next(1, 4);
 
-                xDelta = m_Random.NextFloatAlt() * _Padding.Value.x +
-                         (right ? 1f : -1f) * 0.5f * (m_ScreenBounds.size.x + _Padding.Value.x);
-                yDelta = m_Random.NextFloatAlt() * _Padding.Value.y +
-                         (top ? 1f : -1f) * 0.5f * (m_ScreenBounds.size.y + _Padding.Value.y);
+                switch (posCase)
+                {
+                    case 1: // right
+                        xDelta = m_ScreenBounds.size.x * 0.5f + _Padding.Value.x;
+                        yDelta = m_ScreenBounds.size.y * 0.5f * m_Random.NextFloatAlt();
+                        break;
+                    case 2: // left
+                        xDelta = -m_ScreenBounds.size.x * 0.5f - _Padding.Value.x;
+                        yDelta = m_ScreenBounds.size.y * 0.5f * m_Random.NextFloatAlt();
+                        break;
+                    case 3: // top
+                        xDelta = m_ScreenBounds.size.x * 0.5f * m_Random.NextFloatAlt();
+                        yDelta = m_ScreenBounds.size.y * 0.5f + _Padding.Value.y;
+                        break;
+                    case 4: // bottom
+                        xDelta = m_ScreenBounds.size.x * 0.5f * m_Random.NextFloatAlt();
+                        yDelta = -m_ScreenBounds.size.y * 0.5f - _Padding.Value.y;
+                        break;
+                    default:
+                        throw new SwitchCaseNotImplementedException(posCase);
+                }
             }
             
             float x = m_ScreenBounds.center.x + xDelta;
@@ -216,33 +231,31 @@ namespace Games.RazorMaze.Views.Common
         }
 
         private Vector2 RandomSpeed() =>
-            new Vector2(m_Random.NextFloatAlt() * 2f, m_Random.NextFloatAlt() * 2f);
+            new Vector2(m_Random.NextFloatAlt(), m_Random.NextFloatAlt());
         
         private IEnumerator LoadCoroutine(bool _Load)
         {
-            yield return null;
-        
-            // var startColor = _Load ? m_Color.SetA(0f) : m_Color;
-            // var endColor = !_Load ?  m_Color.SetA(0f) : m_Color;
-            //
-            // yield return Coroutines.Lerp(
-            //     startColor,
-            //     endColor,
-            //     LoadTime,
-            //     _Color =>
-            //     {
-            //         foreach (var shape in m_Pool)
-            //             shape.Color = _Color;
-            //     },
-            //     GameTicker,
-            //     (_Finished, _Progress) =>
-            //     {
-            //         foreach (var shape in m_Pool)
-            //             shape.Color = endColor;
-            //     });
+            var startColor = _Load ? m_Color.SetA(0f) : m_Color;
+            var endColor = !_Load ?  m_Color.SetA(0f) : m_Color;
+            
+            yield return Coroutines.Lerp(
+                startColor,
+                endColor,
+                LoadTime,
+                _Color =>
+                {
+                    foreach (var shape in m_Pool)
+                        shape.Color = _Color;
+                },
+                GameTicker,
+                (_Finished, _Progress) =>
+                {
+                    foreach (var shape in m_Pool)
+                        shape.Color = endColor;
+                });
         }
 
-        // TODO взято из RandomPositionGenerator, 05ab3159
+        // TODO взято из RandomPositionGenerator, 05ab3159, может пригодиться
         // private Vector2 Next(float _Indent)
         // {
         //     bool generated = false;
