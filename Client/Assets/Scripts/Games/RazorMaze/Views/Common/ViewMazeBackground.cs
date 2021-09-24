@@ -52,21 +52,15 @@ namespace Games.RazorMaze.Views.Common
 
         private ICoordinateConverter CoordinateConverter { get; }
         private IContainersGetter ContainersGetter { get; }
-        private IViewMazeCommon ViewMazeCommon { get; }
-        private IViewCharacter Character { get; }
         private IGameTicker GameTicker { get; }
 
         public ViewMazeBackground(
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IViewMazeCommon _ViewMazeCommon, 
-            IViewCharacter _Character,
             IGameTicker _GameTicker)
         {
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
-            ViewMazeCommon = _ViewMazeCommon;
-            Character = _Character;
             GameTicker = _GameTicker;
             
             GameTicker.Register(this);
@@ -77,6 +71,13 @@ namespace Games.RazorMaze.Views.Common
         #region api
         
         public event NoArgsHandler Initialized;
+
+        public Color BackgroundColor
+        {
+            get => Camera.main.backgroundColor;
+            private set => Camera.main.backgroundColor = value;
+        }
+        public event ColorHandler BackgroundColorChanged;
         
         public void Init()
         {
@@ -89,11 +90,13 @@ namespace Games.RazorMaze.Views.Common
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage == ELevelStage.Loaded && ! m_LoadedFirstTime)
+            if (_Args.Stage == ELevelStage.Loaded)
             {
-                Coroutines.Run(LoadCoroutine(true));
-                m_LoadedFirstTime = true;
+                Coroutines.Run(LoadLevelCoroutine(_Args.LevelIndex));
+                if (!m_LoadedFirstTime)
+                    Coroutines.Run(LoadCoroutine(true));
             }
+            m_LoadedFirstTime = true;
         }
         
         public void UpdateTick()
@@ -255,6 +258,39 @@ namespace Games.RazorMaze.Views.Common
                 });
         }
 
+        private IEnumerator LoadLevelCoroutine(int _Level)
+        {
+            const float duration = 2f;
+            int colorIdx = (_Level / 3) % 10;
+            float hStart = MathUtils.ClampInverse(
+                _Level % 3 == 0 ? colorIdx - 1 : colorIdx, 0, 10) / 10f;
+            float hEnd = colorIdx / 10f;
+
+            float s = 52f / 100f;
+            float v = 42f / 100f;
+            var startColor = Color.HSVToRGB(hStart, s, v);
+            var endColor = Color.HSVToRGB(hEnd, s, v);
+            
+            if ((_Level + 1) % 3 == 0)
+            {
+                SetBackgroundColor(endColor);
+                yield break;
+            }
+            
+            yield return Coroutines.Lerp(
+                startColor,
+                endColor,
+                duration,
+                SetBackgroundColor,
+                GameTicker);
+        }
+
+        private void SetBackgroundColor(Color _Color)
+        {
+            BackgroundColor = _Color;
+            BackgroundColorChanged?.Invoke(_Color);
+        }
+
         // TODO взято из RandomPositionGenerator, 05ab3159, может пригодиться
         // private Vector2 Next(float _Indent)
         // {
@@ -290,9 +326,7 @@ namespace Games.RazorMaze.Views.Common
         //         Debug.LogWarning("Disc was not generated because of not enough space");
         //     return result;
         // }
-        
 
-        
         #endregion
     }
 }

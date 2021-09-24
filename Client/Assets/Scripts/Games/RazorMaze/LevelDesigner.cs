@@ -41,6 +41,7 @@ namespace Games.RazorMaze
         [HideInInspector] public bool valid;
         [SerializeField] public List<ViewMazeItemProt> maze;
         [HideInInspector] public V2Int size;
+        
         public GameObject mazeObject;
 
         private static MazeInfo MazeInfo
@@ -75,7 +76,8 @@ namespace Games.RazorMaze
                 controller.Initialized += () => controller.PostInit();
                 controller.PreInitialized += () =>
                 {
-                    controller.Model.LevelStaging.LoadLevel(MazeInfo, 1);
+                    int selectedLevel = SaveUtils.GetValue<int>(SaveKey.DesignerSelectedLevel);
+                    controller.Model.LevelStaging.LoadLevel(MazeInfo, selectedLevel);
                     controller.Init();
                 };
                 controller.PreInit();

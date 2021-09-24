@@ -6,6 +6,7 @@ using Games.RazorMaze.Models;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Games.RazorMaze.Editor
 {
@@ -30,11 +31,11 @@ namespace Games.RazorMaze.Editor
         #region api
 
         public List<MazeInfo> Levels => m_List.list.Cast<MazeInfo>().ToList();
-        public int Index => m_List.index;
+        public int SelectedIndex => m_List.index;
         public int Count => m_List.count;
         
 
-        public HeapReorderableList(int _GameId, int _HeapIndex)
+        public HeapReorderableList(int _GameId, int _HeapIndex, UnityAction<int> _OnSelect)
         {
             m_GameId = _GameId;
             m_HeapIndex = _HeapIndex;
@@ -54,9 +55,13 @@ namespace Games.RazorMaze.Editor
                 false)
             {
                 headerHeight = LineHeight * 2f + LineHeight * filters.Count,
-                drawElementBackgroundCallback = DrawElementBackgroundCallback,
+                drawElementBackgroundCallback = OnDrawElementBackgroundCallback,
                 drawHeaderCallback = OnDrawHeaderCallback,
-                onSelectCallback = _List => m_SelectedIndexCheck = _List.index,
+                onSelectCallback = _List =>
+                {
+                    m_SelectedIndexCheck = _List.index;
+                    _OnSelect?.Invoke(_List.index);
+                },
                 onChangedCallback = _List => Save(),
                 drawElementCallback = OnDrawElementCallback
             };
@@ -132,7 +137,7 @@ namespace Games.RazorMaze.Editor
             }
         }
         
-        private void DrawElementBackgroundCallback(Rect _Rect, int _Index, bool _IsActive, bool _IsFocused)
+        private void OnDrawElementBackgroundCallback(Rect _Rect, int _Index, bool _IsActive, bool _IsFocused)
         {
             GUI.contentColor = ContentColor;
         }

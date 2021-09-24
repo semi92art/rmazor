@@ -157,6 +157,9 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         {
             base.OnLevelStageChanged(_Args);
 
+            if (!m_PathLines.Any() || !m_PathJoints.Any())
+                return;
+
             bool? appear = null;
             if (_Args.Stage == ELevelStage.Loaded)
                 appear = true;

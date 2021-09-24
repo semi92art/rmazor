@@ -12,3 +12,4 @@ public delegate void Vector2IntVector2IntHandler(Vector2Int Value1, Vector2Int V
 public delegate void LongHandler(long Value);
 public delegate void FloatHandler(float Value);
 public delegate void DoubleHandler(double Value);
+public delegate void ColorHandler(Color Color);

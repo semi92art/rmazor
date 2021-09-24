@@ -18,7 +18,7 @@ namespace Games.RazorMaze.Editor
     {
         #region static members
         
-        public static HeapReorderableList ReorderableLevels;
+        public static HeapReorderableList LevelsList;
         private static int _gameId = 1;
         private static int _heapIndex;
         private static int _heapIndexCheck;
@@ -48,7 +48,7 @@ namespace Games.RazorMaze.Editor
         {
             if (SceneManager.GetActiveScene().name != SceneNames.Prototyping)
                 return;
-            if (ReorderableLevels == null)
+            if (LevelsList == null)
                 (_heapIndex, _heapIndexCheck) = (2, 0);
             m_Des = LevelDesigner.Instance;
         }
@@ -87,9 +87,9 @@ namespace Games.RazorMaze.Editor
         
         private void LoadLevel()
         {
-            if (ReorderableLevels.Index == -1)
+            if (LevelsList.SelectedIndex == -1)
                 return;
-            var info = ReorderableLevels.Levels[ReorderableLevels.Index];
+            var info = LevelsList.Levels[LevelsList.SelectedIndex];
             CreateObjects(info);
             FocusCamera(info.Size);
         }
@@ -102,11 +102,14 @@ namespace Games.RazorMaze.Editor
 
         private void ReloadReorderableLevels(bool _Forced = false)
         {
-            if (!_Forced && ReorderableLevels != null)
+            if (!_Forced && LevelsList != null)
                 return;
-            if (ReorderableLevels == null)
-                ReorderableLevels = new HeapReorderableList(_gameId, _heapIndex);
-            else ReorderableLevels.Reload(_heapIndex);
+            if (LevelsList == null)
+                LevelsList = new HeapReorderableList(_gameId, _heapIndex, _SelectedIndex =>
+                {
+                    SaveUtils.PutValue(SaveKey.DesignerSelectedLevel, _SelectedIndex);
+                });
+            else LevelsList.Reload(_heapIndex);
         }
         
         #endregion
@@ -118,7 +121,7 @@ namespace Games.RazorMaze.Editor
             if (_LevelIndex == -1)
                 return;
             var info = m_Des.GetLevelInfoFromScene();
-            ReorderableLevels.Save(info, _LevelIndex);
+            LevelsList.Save(info, _LevelIndex);
         }
 
         #endregion
@@ -155,14 +158,14 @@ namespace Games.RazorMaze.Editor
         
         private void AddEmptyLevel()
         {
-            var idx = ReorderableLevels.Index;
+            var idx = LevelsList.SelectedIndex;
             var size = new V2Int(LevelDesigner.MazeWidth, LevelDesigner.Sizes[m_Des.sizeIdx]);
             var info = LevelGenerator.CreateDefaultLevelInfo(size, true);
-            if (idx < ReorderableLevels.Count - 1 && idx != -1)
-                ReorderableLevels.Insert(idx + 1, info);
+            if (idx < LevelsList.Count - 1 && idx != -1)
+                LevelsList.Insert(idx + 1, info);
             else 
-                ReorderableLevels.Add(info);
-            ReorderableLevels.Save();
+                LevelsList.Add(info);
+            LevelsList.Save();
         }
         
         #endregion
@@ -244,11 +247,11 @@ namespace Games.RazorMaze.Editor
             EditorUtilsEx.HorizontalZone(() =>
             {
                 EditorUtilsEx.GuiButtonAction("Load", LoadLevel);
-                EditorUtilsEx.GuiButtonAction("Save", SaveLevel, _heapIndex, ReorderableLevels.Index);
-                EditorUtilsEx.GuiButtonAction("Delete", ReorderableLevels.Delete, ReorderableLevels.Index);
+                EditorUtilsEx.GuiButtonAction("Save", SaveLevel, _heapIndex, LevelsList.SelectedIndex);
+                EditorUtilsEx.GuiButtonAction("Delete", LevelsList.Delete, LevelsList.SelectedIndex);
                 EditorUtilsEx.GuiButtonAction("Add Empty", AddEmptyLevel);
             });
-            EditorUtilsEx.ScrollViewZone(ref m_HeapScroll, () => ReorderableLevels.DoLayoutList());
+            EditorUtilsEx.ScrollViewZone(ref m_HeapScroll, () => LevelsList.DoLayoutList());
         }
         
         #endregion

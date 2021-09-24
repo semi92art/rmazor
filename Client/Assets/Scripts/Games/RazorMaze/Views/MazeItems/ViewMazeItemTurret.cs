@@ -7,6 +7,7 @@ using Entities;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
+using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeItems.Additional;
 using Games.RazorMaze.Views.MazeItems.Props;
@@ -18,7 +19,7 @@ using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
-    public interface IViewMazeItemTurret : IViewMazeItem
+    public interface IViewMazeItemTurret : IViewMazeItem, IOnBackgroundColorChanged
     {
         void PreShoot(TurretShotEventArgs _Args);
         void Shoot(TurretShotEventArgs _Args);
@@ -54,6 +55,7 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Body,
             m_Barrel,
             m_BulletTail,
+            m_BulletHolder,
             m_BulletHolderBorder,
             m_BulletMask,
             m_BulletMask2
@@ -62,6 +64,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private Rectangle m_Body;
         private Rectangle m_Barrel;
         private Triangle m_BulletTail;
+        private Disc m_BulletHolder;
         private Disc m_BulletHolderBorder;
         private SpriteRenderer m_BulletRenderer;
         private SpriteRenderer m_BulletFakeRenderer;
@@ -73,6 +76,7 @@ namespace Games.RazorMaze.Views.MazeItems
         #region inject
         
         private ITurretBulletTail BulletTail { get; }
+        private IViewMazeBackground Background { get; }
 
         public ViewMazeItemTurret(
             ViewSettings _ViewSettings,
@@ -80,7 +84,8 @@ namespace Games.RazorMaze.Views.MazeItems
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
-            ITurretBulletTail _BulletTail)
+            ITurretBulletTail _BulletTail,
+            IViewMazeBackground _Background)
             : base(
                 _ViewSettings, 
                 _Model, 
@@ -89,6 +94,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 _GameTicker)
         {
             BulletTail = _BulletTail;
+            Background = _Background;
         }
         
         #endregion
@@ -101,7 +107,8 @@ namespace Games.RazorMaze.Views.MazeItems
             CoordinateConverter, 
             ContainersGetter, 
             GameTicker,
-            BulletTail);
+            BulletTail,
+            Background);
 
         public override bool Activated
         {
@@ -135,7 +142,12 @@ namespace Games.RazorMaze.Views.MazeItems
                 m_Bullet.Rotate(Vector3.forward * m_RotatingSpeed * Time.deltaTime);
             m_BulletHolderBorder.DashOffset += 2f * Time.deltaTime;
         }
-
+        
+        public void OnBackgroundColorChanged(Color _Color)
+        {
+            m_BulletHolder.Color = m_Barrel.Color = _Color;
+        }
+        
         #endregion
         
         #region nonpublic members
@@ -154,21 +166,22 @@ namespace Games.RazorMaze.Views.MazeItems
             sh.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
             m_Body = sh;
 
-            var bullHold = go.AddComponentOnNewChild<Disc>("Bullet Holder", out _, Vector2.zero);
-            bullHold.Radius = CoordinateConverter.GetScale() * BulletContainerRadius;
-            bullHold.Color = DrawingUtils.ColorBack;
-            bullHold.Type = DiscType.Disc;
-            bullHold.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type) + 1;
-            var bcb = bullHold.gameObject.AddComponentOnNewChild<Disc>("Border", out _, Vector2.zero);
-            bcb.Radius = CoordinateConverter.GetScale() * BulletContainerRadius * 0.9f;
-            bcb.Dashed = true;
-            bcb.DashType = DashType.Rounded;
-            bcb.Color = DrawingUtils.ColorLines;
-            bcb.Type = DiscType.Ring;
-            bcb.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale() * 0.5f;
-            bcb.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type) + 2;
-            bcb.DashSize = 2f;
-            m_BulletHolderBorder = bcb;
+            var bh = go.AddComponentOnNewChild<Disc>("Bullet Holder", out _, Vector2.zero);
+            bh.Radius = CoordinateConverter.GetScale() * BulletContainerRadius;
+            bh.Color = DrawingUtils.ColorBack;
+            bh.Type = DiscType.Disc;
+            bh.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type) + 1;
+            m_BulletHolder = bh;
+            var bhb = bh.gameObject.AddComponentOnNewChild<Disc>("Border", out _, Vector2.zero);
+            bhb.Radius = CoordinateConverter.GetScale() * BulletContainerRadius * 0.9f;
+            bhb.Dashed = true;
+            bhb.DashType = DashType.Rounded;
+            bhb.Color = DrawingUtils.ColorLines;
+            bhb.Type = DiscType.Ring;
+            bhb.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale() * 0.5f;
+            bhb.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type) + 2;
+            bhb.DashSize = 2f;
+            m_BulletHolderBorder = bhb;
             
             var barrel = go.AddComponentOnNewChild<Rectangle>("Barrel", out _, Vector2.zero);
             barrel.Type = Rectangle.RectangleType.HardSolid;
@@ -352,15 +365,16 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override void Appear(bool _Appear)
         {
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
+            m_BulletHolder.enabled = true;
+            m_BulletHolder.Color = Background.BackgroundColor;
             m_Barrel.enabled = true;
-            m_Barrel.Color = DrawingUtils.ColorBack;
+            m_Barrel.Color = Background.BackgroundColor;
             if (_Appear)
             {
                 m_Moving = false;
                 Coroutines.Run(HandleTurretPrePreShootCoroutine());
                 Coroutines.Run(OpenBarrel(false, true));
             }
-
             Coroutines.Run(Coroutines.WaitWhile(
                 () => !Initialized,
                 () =>

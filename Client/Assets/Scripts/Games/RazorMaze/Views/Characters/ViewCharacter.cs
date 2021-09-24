@@ -149,6 +149,11 @@ namespace Games.RazorMaze.Views.Characters
                 Appear(false);
         }
 
+        public override void OnBackgroundColorChanged(Color _Color)
+        {
+            m_Eye1Shape.Color = m_Eye2Shape.Color = _Color;
+        }
+
         #endregion
         
         #region nonpublic methods

@@ -70,15 +70,19 @@ namespace Games.RazorMaze.Views
 
         public void Init()
         {
-            var proceeders = GetInterfaceOfProceeders<IInit>();
-            int count = proceeders.Count;
+            var initProceeders = GetInterfaceOfProceeders<IInit>();
+            int count = initProceeders.Count;
             bool[] initialized = new bool[count];
             for (int i = 0; i < count; i++)
             {
                 var i1 = i;
-                proceeders[i].Initialized += () => initialized[i1] = true;
-                proceeders[i].Init();
+                initProceeders[i].Initialized += () => initialized[i1] = true;
+                initProceeders[i].Init();
             }
+
+            var iBackColChangedProceeders = GetInterfaceOfProceeders<IOnBackgroundColorChanged>();
+            foreach (var proceeder in iBackColChangedProceeders)
+                Background.BackgroundColorChanged += proceeder.OnBackgroundColorChanged;
             
             Coroutines.Run(Coroutines.WaitWhile(
                 () => initialized.Any(_Initialized => !_Initialized), 

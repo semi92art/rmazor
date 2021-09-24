@@ -26,6 +26,7 @@ namespace Entities
         public static SaveKey GameDataFieldValue(int _AccountId, int _GameId, ushort _FieldId) =>
             new SaveKey($"df_value_cache_{_AccountId}_{_GameId}_{_FieldId}", typeof(GameDataField));
         public static SaveKey DesignerMazeInfo => new SaveKey("designer_maze_info", typeof(MazeInfo));
+        public static SaveKey DesignerSelectedLevel => new SaveKey("designer_selected_leve", typeof(int));
 
         #endregion
     

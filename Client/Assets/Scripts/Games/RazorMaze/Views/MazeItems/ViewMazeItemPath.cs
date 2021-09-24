@@ -469,8 +469,8 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private IEnumerator OnFinishMoveCoroutine(EMazeMoveDirection _Direction)
         {
-            float delta = 0.5f;
-            float duration = 0.1f;
+            const float delta = 0.5f;
+            const float duration = 0.1f;
             var dir = RazorMazeUtils.GetDirectionVector(_Direction, Model.Data.Orientation).ToVector2();
             Line border = null;
             if (dir == Vector2.up)

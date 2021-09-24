@@ -41,6 +41,7 @@ namespace Games.RazorMaze.Views.Characters
         public abstract void OnCharacterMoveFinished(CharacterMovingEventArgs _Args);
         public abstract void OnRevivalOrDeath(bool _Alive);
         public abstract void OnLevelStageChanged(LevelStageArgs _Args);
+        public abstract void OnBackgroundColorChanged(Color _Color);
 
         public virtual void OnPositionSet(V2Int _Position)
         {
@@ -56,5 +57,6 @@ namespace Games.RazorMaze.Views.Characters
             ContainersGetter.CharacterContainer.localPosition = _Position;
         
         #endregion
+
     }
 }
