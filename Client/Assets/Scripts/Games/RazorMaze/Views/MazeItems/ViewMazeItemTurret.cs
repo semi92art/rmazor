@@ -56,7 +56,9 @@ namespace Games.RazorMaze.Views.MazeItems
             m_BulletTail,
             m_BulletHolderBorder,
             m_BulletMask,
-            m_BulletMask2
+            m_BulletMask2,
+            m_BulletRenderer,
+            m_BulletFakeRenderer
         };
 
         private Disc m_Body;
@@ -191,15 +193,15 @@ namespace Games.RazorMaze.Views.MazeItems
             m_BulletFakeContainer = bulletFakeGo.transform;
             m_BulletFakeRenderer = bulletFakeGo.GetCompItem<SpriteRenderer>("bullet");
             
-            m_BulletFake = bulletFakeGo.GetContentItem("bullet").transform;
-            m_BulletFake.GetComponent<SpriteRenderer>().sortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type) + 2;
+            m_BulletFake = m_BulletFakeRenderer.transform;
             bulletFakeGo.GetCompItem<Triangle>("tail").enabled = false;
 
             var bulletMaskGo = PrefabUtilsEx.InitPrefab(
                 ContainersGetter.MazeItemsContainer, "views", "turret_bullet_mask");
             var bm = bulletMaskGo.GetCompItem<SpriteMask>("mask");
-            var bulletMaskGo2 = PrefabUtilsEx.InitPrefab(
-                ContainersGetter.MazeItemsContainer, "views", "turret_bullet_mask");
+            var bulletMaskGo2 = UnityEngine.Object.Instantiate(bulletMaskGo);
+            bulletMaskGo2.SetParent(ContainersGetter.MazeItemsContainer);
+            
             var bm2 = bulletMaskGo2.GetCompItem<SpriteMask>("mask");
             bm.enabled = bm2.enabled = false;
             bm.isCustomRangeActive = bm2.isCustomRangeActive = true;
