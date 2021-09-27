@@ -1,53 +1,44 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
-using Games.RazorMaze.Views.ContainerGetters;
-using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.MazeItems;
-using Games.RazorMaze.Views.Utils;
 using Shapes;
-using Ticker;
 using UnityEngine;
-using Utils;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
     public class ViewMazeMovingItemsGroup : ViewMazeItemsGroupBase, IViewMazeMovingItemsGroup
     {
+        #region types
+        
+        private class ViewMovingItemInfo
+        {
+            public Vector2 From { get; set; }
+            public Vector2 To { get; set; }
+            public Dictionary<V2Int, Disc> BusyPositions { get; set; }
+        }
+        
+        #endregion
+        
         #region nonpublic members
         
-        private readonly Dictionary<MazeItem, ViewMovingItemInfo> m_ItemsMoving = new Dictionary<MazeItem, ViewMovingItemInfo>();
-        private readonly List<Polyline> m_PathLines = new List<Polyline>();
-        private readonly List<Disc> m_PathJoints = new List<Disc>();
-        private bool m_Initialized;
+        private readonly Dictionary<MazeItem, ViewMovingItemInfo> m_ItemsMoving =
+            new Dictionary<MazeItem, ViewMovingItemInfo>();
         
         #endregion
         
         #region inject
         
-        private IModelMazeData Data { get; }
-        private IMovingItemsProceeder MovingItemsProceeder { get; }
         private ICoordinateConverter CoordinateConverter { get; }
-        private IContainersGetter ContainersGetter { get; }
-        public IGameTicker GameTicker { get; }
-
+        
         public ViewMazeMovingItemsGroup(
-            IModelMazeData _Data,
-            IMovingItemsProceeder _MovingItemsProceeder,
             ICoordinateConverter _CoordinateConverter,
-            IContainersGetter _ContainersGetter,
-            IViewMazeCommon _Common,
-            IGameTicker _GameTicker) : base(_Common)
+            IViewMazeCommon _Common)
+            : base(_Common)
         {
-            Data = _Data;
-            MovingItemsProceeder = _MovingItemsProceeder;
             CoordinateConverter = _CoordinateConverter;
-            ContainersGetter = _ContainersGetter;
-            GameTicker = _GameTicker;
         }
         
         #endregion
@@ -55,15 +46,11 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         #region api
 
         public override EMazeItemType[] Types => new[]
-            {EMazeItemType.GravityBlock, EMazeItemType.GravityTrap, EMazeItemType.TrapMoving};
-        public event NoArgsHandler Initialized;
-
-        public void Init()
         {
-            DrawWallBlockMovingPaths(DrawingUtils.ColorLines);
-            Initialized?.Invoke();
-            m_Initialized = true;
-        }
+            EMazeItemType.GravityBlock, 
+            EMazeItemType.GravityTrap,
+            EMazeItemType.TrapMoving
+        };
 
         public void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
         {
@@ -94,87 +81,6 @@ namespace Games.RazorMaze.Views.MazeItemGroups
             m_ItemsMoving.Remove(_Args.Item);
         }
         
-        #endregion
-        
-        #region nonpublic methods
-
-        private void DrawWallBlockMovingPaths(Color _LinesAndJointsColor)
-        {
-            m_PathLines.Clear();
-            m_PathJoints.Clear();
-            
-            var items = Data.Info.MazeItems
-                .Where(_O => _O.Type == EMazeItemType.GravityBlock
-                             || _O.Type == EMazeItemType.GravityTrap
-                             || _O.Type == EMazeItemType.TrapMoving);
-            foreach (var obs in items)
-            {
-                var points = obs.Path
-                    .Select(_P => CoordinateConverter.ToLocalMazeItemPosition(_P))
-                    .ToList();
-
-                var go = new GameObject("Line");
-                go.SetParent(ContainersGetter.MazeItemsContainer);
-                go.transform.SetLocalPosXY(Vector2.zero);
-                var line = go.AddComponent<Polyline>();
-                line.Thickness = 0.3f;
-                line.Color = _LinesAndJointsColor;
-                line.SetPoints(points);
-                line.Closed = false;
-                line.SortingOrder = DrawingUtils.GetPathLineSortingOrder();
-                m_PathLines.Add(line);
-                
-                foreach (var point in points)
-                {
-                    var go1 = new GameObject("Joint");
-                    go1.SetParent(ContainersGetter.MazeItemsContainer);
-                    var joint = go1.AddComponent<Disc>();
-                    go1.transform.SetLocalPosXY(point);
-                    joint.Color = _LinesAndJointsColor;
-                    joint.Radius = 0.5f;
-                    joint.Type = DiscType.Disc;
-                    joint.SortingOrder = DrawingUtils.GetPathLineJointSortingOrder();
-                    m_PathJoints.Add(joint);
-                }
-            }
-            
-            foreach (var line in m_PathLines)
-                line.enabled = false;
-            foreach (var joint in m_PathJoints)
-                joint.enabled = false;
-        }
-
-        public override void OnLevelStageChanged(LevelStageArgs _Args)
-        {
-            base.OnLevelStageChanged(_Args);
-            
-            bool? appear = null;
-            if (_Args.Stage == ELevelStage.Loaded)
-                appear = true;
-            else if (_Args.Stage == ELevelStage.Unloaded)
-                appear = false;
-
-            if (!appear.HasValue)
-                return;
-            
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !m_Initialized,
-                () =>
-                {
-                    if (!m_PathLines.Any() || !m_PathJoints.Any())
-                        return;
-                    
-                    RazorMazeUtils.DoAppearTransitionSimple(
-                        appear.Value,
-                        GameTicker,
-                        new Dictionary<object[], Color>
-                        {
-                            {m_PathLines.Cast<object>().ToArray(), DrawingUtils.ColorLines},
-                            {m_PathJoints.Cast<object>().ToArray(), DrawingUtils.ColorLines}
-                        });
-                }));
-        }
-
         #endregion
     }
 }
