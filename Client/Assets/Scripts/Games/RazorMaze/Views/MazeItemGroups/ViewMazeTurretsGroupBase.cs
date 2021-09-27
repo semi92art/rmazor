@@ -1,11 +1,7 @@
-﻿using System;
-using System.Linq;
-using Games.RazorMaze.Models;
+﻿using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
-using Games.RazorMaze.Views.MazeItems;
-using UnityEngine;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
@@ -34,17 +30,12 @@ namespace Games.RazorMaze.Views.MazeItemGroups
 
         public override EMazeItemType[] Types => new[] {EMazeItemType.Turret};
         public event NoArgsHandler Initialized;
-
+        public event NoArgsHandler PostInitialized;
         public virtual void Init() => Initialized?.Invoke();
-
+        public virtual void PostInit() => PostInitialized?.Invoke();
         public abstract void OnTurretShoot(TurretShotEventArgs _Args);
 
         #endregion
 
-        public void OnBackgroundColorChanged(Color _Color)
-        {
-            foreach (var item in GetItems().Cast<IViewMazeItemTurret>().Where(_Item => _Item.Activated))
-                item.OnBackgroundColorChanged(_Color);
-        }
     }
 }

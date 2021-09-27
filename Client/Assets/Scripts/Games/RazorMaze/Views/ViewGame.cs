@@ -67,6 +67,7 @@ namespace Games.RazorMaze.Views
         }
         
         public event NoArgsHandler Initialized;
+        public event NoArgsHandler PostInitialized;
 
         public void Init()
         {
@@ -87,6 +88,22 @@ namespace Games.RazorMaze.Views
             Coroutines.Run(Coroutines.WaitWhile(
                 () => initialized.Any(_Initialized => !_Initialized), 
                 () => Initialized?.Invoke()));
+        }
+        
+        public void PostInit()
+        {
+            var initProceeders = GetInterfaceOfProceeders<IPostInit>();
+            int count = initProceeders.Count;
+            bool[] postInited = new bool[count];
+            for (int i = 0; i < count; i++)
+            {
+                var i1 = i;
+                initProceeders[i].PostInitialized += () => postInited[i1] = true;
+                initProceeders[i].PostInit();
+            }
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => postInited.Any(_PostInited => !_PostInited), 
+                () => PostInitialized?.Invoke()));
         }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)

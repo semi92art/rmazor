@@ -19,10 +19,11 @@ using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
-    public interface IViewMazeItemTurret : IViewMazeItem, IOnBackgroundColorChanged
+    public interface IViewMazeItemTurret : IViewMazeItem
     {
         void PreShoot(TurretShotEventArgs _Args);
         void Shoot(TurretShotEventArgs _Args);
+        void SetBulletSortingOrder(int _Order);
     }
     
     public class ViewMazeItemTurret : ViewMazeItemBase, IViewMazeItemTurret, IUpdateTick
@@ -40,11 +41,10 @@ namespace Games.RazorMaze.Views.MazeItems
         private bool m_Moving;
         private bool m_Rotating;
         
-        private Transform m_BulletContainer;
+        private Transform m_BulletTr;
         private Transform m_Bullet;
         private Transform m_BulletFakeContainer;
         private Transform m_BulletFake;
-
         
         #endregion
         
@@ -53,24 +53,20 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override object[] Shapes => new object[]
         {
             m_Body,
-            m_Barrel,
             m_BulletTail,
-            m_BulletHolder,
             m_BulletHolderBorder,
             m_BulletMask,
             m_BulletMask2
         };
 
-        private Rectangle m_Body;
-        private Rectangle m_Barrel;
+        private Disc m_Body;
         private Triangle m_BulletTail;
-        private Disc m_BulletHolder;
         private Disc m_BulletHolderBorder;
         private SpriteRenderer m_BulletRenderer;
         private SpriteRenderer m_BulletFakeRenderer;
         private SpriteMask m_BulletMask;
         private SpriteMask m_BulletMask2;
-        
+
         #endregion
         
         #region inject
@@ -129,6 +125,12 @@ namespace Games.RazorMaze.Views.MazeItems
         public void PreShoot(TurretShotEventArgs _Args) => Coroutines.Run(HandleTurretPreShootCoroutine());
 
         public void Shoot(TurretShotEventArgs _Args) => Coroutines.Run(HandleTurretShootCoroutine(_Args));
+        public void SetBulletSortingOrder(int _Order)
+        {
+            m_BulletRenderer.sortingOrder = _Order;
+            m_BulletMask.frontSortingOrder = m_BulletMask2.frontSortingOrder = _Order;
+            m_BulletMask.backSortingOrder = m_BulletMask2.backSortingOrder = _Order - 1;
+        }
 
         public void UpdateTick()
         {
@@ -142,37 +144,27 @@ namespace Games.RazorMaze.Views.MazeItems
                 m_Bullet.Rotate(Vector3.forward * m_RotatingSpeed * Time.deltaTime);
             m_BulletHolderBorder.DashOffset += 2f * Time.deltaTime;
         }
-        
-        public void OnBackgroundColorChanged(Color _Color)
-        {
-            m_BulletHolder.Color = m_Barrel.Color = _Color;
-        }
-        
+
         #endregion
         
-        #region nonpublic members
+        #region nonpublic methods
 
         protected override void SetShape()
         {
             var go = Object;
-            var sh = ContainersGetter.MazeItemsContainer.gameObject
-                .GetOrAddComponentOnNewChild<Rectangle>("Turret", ref go,
-                    CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
-            go.DestroyChildrenSafe();
-            sh.Width = sh.Height = CoordinateConverter.GetScale() * 1.03f;
-            sh.Type = Rectangle.RectangleType.RoundedSolid;
-            sh.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.GetScale();
-            sh.Color = DrawingUtils.ColorLines;
-            sh.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
-            m_Body = sh;
 
-            var bh = go.AddComponentOnNewChild<Disc>("Bullet Holder", out _, Vector2.zero);
-            bh.Radius = CoordinateConverter.GetScale() * BulletContainerRadius;
-            bh.Color = DrawingUtils.ColorBack;
-            bh.Type = DiscType.Disc;
-            bh.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type) + 1;
-            m_BulletHolder = bh;
-            var bhb = bh.gameObject.AddComponentOnNewChild<Disc>("Border", out _, Vector2.zero);
+            var sh = ContainersGetter.MazeItemsContainer.gameObject.GetOrAddComponentOnNewChild<Disc>(
+                "Turret",
+                ref go,
+                CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+            sh.Radius = CoordinateConverter.GetScale() * 0.5f;
+            sh.Type = DiscType.Arc;
+            sh.ArcEndCaps = ArcEndCap.Round;
+            sh.Color = DrawingUtils.ColorLines;
+            sh.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
+            m_Body = sh;
+            
+            var bhb = sh.gameObject.AddComponentOnNewChild<Disc>("Border", out _, Vector2.zero);
             bhb.Radius = CoordinateConverter.GetScale() * BulletContainerRadius * 0.9f;
             bhb.Dashed = true;
             bhb.DashType = DashType.Rounded;
@@ -182,27 +174,16 @@ namespace Games.RazorMaze.Views.MazeItems
             bhb.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type) + 2;
             bhb.DashSize = 2f;
             m_BulletHolderBorder = bhb;
-            
-            var barrel = go.AddComponentOnNewChild<Rectangle>("Barrel", out _, Vector2.zero);
-            barrel.Type = Rectangle.RectangleType.HardSolid;
-            barrel.Color = DrawingUtils.ColorBack;
-            barrel.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type) + 1;
-
-            var tr = barrel.transform;
-            (tr.localPosition, tr.localEulerAngles) = GetBarrelLocalPositionAndRotation();
-            (barrel.Width, barrel.Height) = GetBarrelSize();
-            barrel.Height *= 0.1f;
 
             var bulletGo = PrefabUtilsEx.InitPrefab(
                 ContainersGetter.MazeItemsContainer, "views", "turret_bullet");
-            m_BulletContainer = bulletGo.transform;
-            m_BulletContainer.transform.localScale =
+            m_BulletTr = bulletGo.transform;
+            m_BulletTr.transform.localScale =
                 Vector3.one * CoordinateConverter.GetScale() * BulletContainerRadius * 0.9f;
-            m_BulletContainer.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+            m_BulletTr.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             m_Bullet = bulletGo.GetContentItem("bullet").transform;
-
+            
             m_BulletRenderer = m_Bullet.GetComponent<SpriteRenderer>();
-            m_BulletRenderer.sortingOrder = GetBulletSortingOrder(DrawingUtils.GetBlockSortingOrder(Props.Type) + 2);
             m_BulletTail = bulletGo.GetCompItem<Triangle>("tail");
 
             var bulletFakeGo = PrefabUtilsEx.InitPrefab(
@@ -221,14 +202,15 @@ namespace Games.RazorMaze.Views.MazeItems
                 ContainersGetter.MazeItemsContainer, "views", "turret_bullet_mask");
             var bm2 = bulletMaskGo2.GetCompItem<SpriteMask>("mask");
             bm.enabled = bm2.enabled = false;
+            bm.isCustomRangeActive = bm2.isCustomRangeActive = true;
             bm.transform.localScale = bm2.transform.localScale = CoordinateConverter.GetScale() * Vector3.one;
             bm.isCustomRangeActive = bm2.isCustomRangeActive = true;
-            bm.frontSortingOrder = bm2.frontSortingOrder = m_BulletRenderer.sortingOrder;
             
             Object = go;
             m_BulletMask = bm;
             m_BulletMask2 = bm2;
-            m_Barrel = barrel;
+            
+            DeactivateShapes();
         }
         
         private IEnumerator HandleTurretPrePreShootCoroutine()
@@ -256,7 +238,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 (_Breaked, _Progress) =>
                 {
                     m_Bullet.SetGoActive(true);
-                    m_BulletContainer.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+                    m_BulletTr.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
                     m_BulletFake.SetGoActive(false);
                     Coroutines.Run(OpenBarrel(true, false));
                 });
@@ -281,8 +263,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 },
                 0.2f));
 
-            // Dbg.Log("m_Moving = true HandleTurretShootCoroutine");
-            // m_Moving = true;
+            // m_Moving = true; // FIXME нахуя здесь это нужно было ???
             m_RotatingSpeed = ViewSettings.TurretBulletRotationSpeed;
             yield return Coroutines.DoWhile(
                 () =>
@@ -297,7 +278,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 () =>
                 {
                     pos += _Args.Direction.ToVector2() * _Args.ProjectileSpeed;
-                    m_BulletContainer.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(pos));
+                    m_BulletTr.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(pos));
                     point = V2Int.Round(pos);
                     BulletTail.ShowTail(_Args);
                     if (point == _Args.To + _Args.Direction)
@@ -312,13 +293,19 @@ namespace Games.RazorMaze.Views.MazeItems
         
         private IEnumerator OpenBarrel(bool _Open, bool _Instantly)
         {
-            const float closedWidth = 0.1f;
-            const float openedWidth = 0.85f;
-            
-            float barrelHeight = GetBarrelSize().Item2;
+            float openedStart, openedEnd, closedStart, closedEnd;
+            (openedStart, openedEnd) = GetBarrelDiscAngles(true);
+            (closedStart, closedEnd) = GetBarrelDiscAngles(false);
+
+            float startFrom = _Open ? closedStart : openedStart;
+            float startTo = !_Open ? closedStart : openedStart;
+            float endFrom = _Open ? closedEnd : openedEnd;
+            float endTo = !_Open ? closedEnd : openedEnd;
+
             if (_Instantly)
             {
-                m_Barrel.Height = barrelHeight * (_Open ? openedWidth : closedWidth);
+                m_Body.AngRadiansStart = startTo;
+                m_Body.AngRadiansEnd = endTo;
                 yield break;
             }
 
@@ -334,41 +321,48 @@ namespace Games.RazorMaze.Views.MazeItems
             }
             
             yield return Coroutines.Lerp(
-                _Open ? closedWidth : openedWidth, _Open ? openedWidth : closedWidth, 0.1f,
-                _Progress => m_Barrel.Height = barrelHeight * _Progress,
+                0f,
+                1f,
+                0.1f,
+                _Progress =>
+                {
+                    m_Body.AngRadiansStart = Mathf.Lerp(startFrom, startTo, _Progress);
+                    m_Body.AngRadiansEnd = Mathf.Lerp(endFrom, endTo, _Progress);
+                },
                 GameTicker);
         }
-        
-        private Tuple<Vector2, Vector3> GetBarrelLocalPositionAndRotation()
+
+        private Tuple<float, float> GetBarrelDiscAngles(bool _Opened)
         {
-            var dir = Props.Directions.First().ToVector2();
-            var localPos = dir * (0.25f + 0.02f) * CoordinateConverter.GetScale();
-            float angle = dir.x == 0 ? 90 : 0;
-            return new Tuple<Vector2, Vector3>(localPos, Vector3.forward * angle);
+            var dir = Props.Directions.First();
+            float angleStart = 0f;
+            float angleEnd = 0f;
+            if (dir == V2Int.left)
+            {
+                angleStart = _Opened ? -135f : -160f;
+                angleEnd = _Opened ? 135f : 160f;
+            }
+            else if (dir == V2Int.right)
+            {
+                angleStart = _Opened ? 45f : 20f;
+                angleEnd = _Opened ? 315f : 340f;
+            }
+            else if (dir == V2Int.up)
+            {
+                angleStart = _Opened ? -225f : -250f;
+                angleEnd = _Opened ? 45f : 70f;
+            }
+            else if (dir == V2Int.down)
+            {
+                angleStart = _Opened ? -45f : -70f;
+                angleEnd = _Opened ? 225f : 250f;
+            }
+            return new Tuple<float, float>(angleStart * Mathf.Deg2Rad, angleEnd * Mathf.Deg2Rad);
         }
 
-        private Tuple<float, float> GetBarrelSize()
-        {
-            float width = CoordinateConverter.GetScale() * (0.5f + 0.02f);
-            float height = BulletContainerRadius * 2f * CoordinateConverter.GetScale();
-            return new Tuple<float, float>(width, height);
-        }
-
-        private int GetBulletSortingOrder(int _DefaultSortingOrder)
-        {
-            _bulletSortingOrder++;
-            _bulletSortingOrder = MathUtils.ClampInverse(
-                _bulletSortingOrder, _DefaultSortingOrder, _DefaultSortingOrder + 30);
-            return _bulletSortingOrder;
-        }
-        
         protected override void Appear(bool _Appear)
         {
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
-            m_BulletHolder.enabled = true;
-            m_BulletHolder.Color = Background.BackgroundColor;
-            m_Barrel.enabled = true;
-            m_Barrel.Color = Background.BackgroundColor;
             if (_Appear)
             {
                 m_Moving = false;

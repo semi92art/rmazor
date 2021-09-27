@@ -1,13 +1,21 @@
-﻿using Games.RazorMaze.Models;
+﻿using System.Linq;
+using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeItems;
+using Games.RazorMaze.Views.Utils;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
     public class ViewMazeTurretsGroup : ViewMazeTurretsGroupBase
     {
+        #region nonpublic members
+
+        private int m_BulletCounter;
+        
+        #endregion
+        
         #region inject
         
         public ViewMazeTurretsGroup(
@@ -20,6 +28,16 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         #endregion
         
         #region api
+
+        public override void PostInit()
+        {
+            foreach (var item in GetItems().Cast<IViewMazeItemTurret>())
+            {
+                int sortingOrder = DrawingUtils.GetBlockSortingOrder(EMazeItemType.Turret) + m_BulletCounter++;
+                item.SetBulletSortingOrder(sortingOrder);
+            }
+            base.PostInit();
+        }
 
         public override void OnTurretShoot(TurretShotEventArgs _Args)
         {
@@ -43,6 +61,11 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         {
             var item = Common.GetItem<IViewMazeItemTurret>(_Args.Item);
             item?.Shoot(_Args);
+        }
+
+        private int GetBulletSortingOrder()
+        {
+            return DrawingUtils.GetBlockSortingOrder(EMazeItemType.Turret) + m_BulletCounter++;
         }
         
         #endregion

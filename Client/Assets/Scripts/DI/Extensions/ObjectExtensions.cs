@@ -114,6 +114,8 @@ namespace DI.Extensions
             return _Item == null || _Item.ToString() == "null";
         }
 
+        public static bool IsNotNull<T>(this T _Item) where T : Component => !IsNull(_Item);
+
         public static T GetOrAddComponentOnNewChild<T>(
             this GameObject _Parent,
             string _Name, 

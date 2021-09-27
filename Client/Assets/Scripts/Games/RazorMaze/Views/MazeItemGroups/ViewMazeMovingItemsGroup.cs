@@ -80,8 +80,6 @@ namespace Games.RazorMaze.Views.MazeItemGroups
 
         public void OnMazeItemMoveContinued(MazeItemMoveEventArgs _Args)
         {
-            if (_Args.Item.Type == EMazeItemType.GravityBlock || _Args.Item.Type == EMazeItemType.GravityTrap)
-                MarkMazeItemBusyPositions(_Args.Item, _Args.BusyPositions);
             if (!m_ItemsMoving.ContainsKey(_Args.Item))
                 return;
             (Common.GetItem(_Args.Item) as IViewMazeItemMovingBlock)?.OnMoving(_Args);
@@ -89,8 +87,6 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         public void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
         {
-            if (_Args.Item.Type == EMazeItemType.GravityBlock || _Args.Item.Type == EMazeItemType.GravityTrap)
-                MarkMazeItemBusyPositions(_Args.Item, null);
             if (!m_ItemsMoving.ContainsKey(_Args.Item))
                 return;
             
@@ -103,11 +99,6 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         #region nonpublic methods
 
         private void DrawWallBlockMovingPaths(Color _LinesAndJointsColor)
-        {
-            DrawWallBlockMovingPathsCore(_LinesAndJointsColor);
-        }
-
-        private void DrawWallBlockMovingPathsCore(Color _LinesAndJointsColor)
         {
             m_PathLines.Clear();
             m_PathJoints.Clear();
@@ -146,7 +137,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                     m_PathJoints.Add(joint);
                 }
             }
-
+            
             foreach (var line in m_PathLines)
                 line.enabled = false;
             foreach (var joint in m_PathJoints)
@@ -156,10 +147,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
-
-            if (!m_PathLines.Any() || !m_PathJoints.Any())
-                return;
-
+            
             bool? appear = null;
             if (_Args.Stage == ELevelStage.Loaded)
                 appear = true;
@@ -173,6 +161,9 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                 () => !m_Initialized,
                 () =>
                 {
+                    if (!m_PathLines.Any() || !m_PathJoints.Any())
+                        return;
+                    
                     RazorMazeUtils.DoAppearTransitionSimple(
                         appear.Value,
                         GameTicker,
@@ -183,9 +174,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                         });
                 }));
         }
-        
-        private void MarkMazeItemBusyPositions(MazeItem _Item, IEnumerable<V2Int> _Positions) { }
-        
+
         #endregion
     }
 }

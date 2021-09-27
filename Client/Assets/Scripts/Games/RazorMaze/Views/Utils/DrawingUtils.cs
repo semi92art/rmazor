@@ -41,7 +41,6 @@ namespace Games.RazorMaze.Views.Utils
                 case EMazeItemType.Block:
                     return PathItemOrder + 4;
                 case EMazeItemType.Portal:
-                case EMazeItemType.Turret:
                 case EMazeItemType.TrapIncreasing:
                 case EMazeItemType.TrapMoving:
                 case EMazeItemType.Attenuator:
@@ -50,12 +49,11 @@ namespace Games.RazorMaze.Views.Utils
                     return PathItemOrder + 5;
                 case EMazeItemType.TrapReact:
                     return PathItemOrder + 50;
+                case EMazeItemType.Turret:
+                    return PathItemOrder + 51;
                 default: throw new SwitchCaseNotImplementedException(_Type);
             }
         }
-
-
-
 
         private static Color GetFromCommonPalette(string _Name) =>
             ColorUtils.GetColorFromPalette("View Common", _Name);

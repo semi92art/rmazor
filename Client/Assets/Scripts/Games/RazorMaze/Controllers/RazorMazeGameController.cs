@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Entities;
 using GameHelpers;
 using Games.RazorMaze.Models;
@@ -111,25 +113,38 @@ namespace Games.RazorMaze.Controllers
         
         public void Init()
         {
-            bool modelInitialized = false;
-            bool viewInitialized = false;
+            var initProceeders = GetInterfaceOfProceeders<IInit>();
+            int count = initProceeders.Count;
+            bool[] initialized = new bool[count];
+            for (int i = 0; i < count; i++)
+            {
+                var i1 = i;
+                initProceeders[i].Initialized += () => initialized[i1] = true;
+                initProceeders[i].Init();
+            }
 
-            Model.Initialized += () => modelInitialized = true;
-            View.Initialized  += () => viewInitialized = true;
-            
-            Model.Init();
-            View.Init();
-
-            Func<bool> allInitialized = () => modelInitialized && viewInitialized;
-            
             Coroutines.Run(Coroutines.WaitWhile(
-                () => !allInitialized.Invoke(),
+                () => initialized.Any(_Initialized => !_Initialized), 
                 () => Initialized?.Invoke()));
         }
         
         public void PostInit()
         {
             Model.Data.ProceedingControls = true;
+            
+            var initProceeders = GetInterfaceOfProceeders<IPostInit>();
+            int count = initProceeders.Count;
+            bool[] postInited = new bool[count];
+            for (int i = 0; i < count; i++)
+            {
+                var i1 = i;
+                initProceeders[i].PostInitialized += () => postInited[i1] = true;
+                initProceeders[i].PostInit();
+            }
+
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => postInited.Any(_PostInited => !_PostInited), 
+                () => PostInitialized?.Invoke()));
         }
 
         #endregion
@@ -227,6 +242,16 @@ namespace Games.RazorMaze.Controllers
             View.Common.GameLoopUpdate                          -= OnGameLoopUpdate;
 
             Model.PreInitialized                                -= OnModelPreInitialized;
+        }
+        
+        private List<T> GetInterfaceOfProceeders<T>() where T : class
+        {
+            var result = new List<T>
+            {
+                Model as T,
+                View as T
+            }.Where(_Proceeder => _Proceeder != null).ToList();
+            return result;
         }
 
         #endregion

@@ -8,7 +8,7 @@ using Games.RazorMaze.Views.UI;
 
 namespace Games.RazorMaze.Views
 {
-    public interface IViewGame : IInit, IOnLevelStageChanged, ICharacterMoveStarted, ICharacterMoveContinued, ICharacterMoveFinished
+    public interface IViewGame : IInit, IPostInit, IOnLevelStageChanged, ICharacterMoveStarted, ICharacterMoveContinued, ICharacterMoveFinished
     {
         IViewUI                            UI { get; }
         IInputConfigurator                 InputConfigurator { get; }
