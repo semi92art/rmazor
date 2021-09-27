@@ -18,7 +18,7 @@ namespace Games.RazorMaze.Views.MazeItems
     
     public interface IViewMazeItemGravityBlock : IViewMazeItemMovingBlock { }
     
-    public class ViewMazeItemGravityBlock : ViewMazeItemBase, IViewMazeItemGravityBlock
+    public class ViewMazeItemGravityBlock : ViewMazeItemMovingBase, IViewMazeItemGravityBlock
     {
         #region shapes
 
@@ -97,6 +97,8 @@ namespace Games.RazorMaze.Views.MazeItems
             Object = go;
             m_Shape = sh;
             m_Joint = joint;
+            
+            base.SetShape();
         }
 
         #endregion

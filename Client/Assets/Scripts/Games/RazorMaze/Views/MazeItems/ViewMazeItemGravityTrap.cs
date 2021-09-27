@@ -12,7 +12,7 @@ namespace Games.RazorMaze.Views.MazeItems
 {
     public interface IViewMazeItemGravityTrap : IViewMazeItemMovingBlock { }
     
-    public class ViewMazeItemGravityTrap : ViewMazeItemBase, IViewMazeItemGravityTrap, IUpdateTick
+    public class ViewMazeItemGravityTrap : ViewMazeItemMovingBase, IViewMazeItemGravityTrap, IUpdateTick
     {
         #region constants
 
@@ -115,6 +115,8 @@ namespace Games.RazorMaze.Views.MazeItems
             
             go.transform.SetLocalPosXY(Vector2.zero);
             go.transform.localScale = Vector3.one * CoordinateConverter.GetScale() * ShapeScale;
+            
+            base.SetShape();
         }
 
         private void DoRotation()

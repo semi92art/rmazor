@@ -15,7 +15,7 @@ namespace Games.RazorMaze.Views.MazeItems
 {
     public interface IViewMazeItemMovingTrap : IViewMazeItemMovingBlock { }
     
-    public class ViewMazeItemMovingTrap : ViewMazeItemBase, IViewMazeItemMovingTrap, IUpdateTick
+    public class ViewMazeItemMovingTrap : ViewMazeItemMovingBase, IViewMazeItemMovingTrap, IUpdateTick
     {
         #region nonpublic members
         
@@ -26,14 +26,12 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region shapes
 
-        protected override object[] Shapes => new object[] {m_Saw}
-            .Concat(m_PathLines)
-            .Concat(m_PathJoints)
+        protected override object[] Shapes => base.Shapes
+            .Concat(new object[] {m_Saw})
             .ToArray();
+
         private SpriteRenderer m_Saw;
-        private readonly List<Polyline> m_PathLines = new List<Polyline>();
-        private readonly List<Disc> m_PathJoints = new List<Disc>();
-        
+
         #endregion
         
         #region inject
@@ -127,53 +125,7 @@ namespace Games.RazorMaze.Views.MazeItems
             Object = go;
             m_Saw = saw;
 
-            InitWallBlockMovingPaths();
-        }
-        
-        private void InitWallBlockMovingPaths()
-        {
-            m_PathLines.Clear();
-            m_PathJoints.Clear();
-            
-            var items = Model.Data.Info.MazeItems
-                .Where(_O => _O.Type == EMazeItemType.GravityBlock
-                             || _O.Type == EMazeItemType.GravityTrap
-                             || _O.Type == EMazeItemType.TrapMoving);
-            foreach (var obs in items)
-            {
-                var points = obs.Path
-                    .Select(_P => CoordinateConverter.ToLocalMazeItemPosition(_P))
-                    .ToList();
-
-                var go = new GameObject("Line");
-                go.SetParent(ContainersGetter.MazeItemsContainer);
-                go.transform.SetLocalPosXY(Vector2.zero);
-                var line = go.AddComponent<Polyline>();
-                line.Thickness = 0.3f;
-                line.Color = DrawingUtils.ColorLines;
-                line.SetPoints(points);
-                line.Closed = false;
-                line.SortingOrder = DrawingUtils.GetPathLineSortingOrder();
-                m_PathLines.Add(line);
-                
-                foreach (var point in points)
-                {
-                    var go1 = new GameObject("Joint");
-                    go1.SetParent(ContainersGetter.MazeItemsContainer);
-                    var joint = go1.AddComponent<Disc>();
-                    go1.transform.SetLocalPosXY(point);
-                    joint.Color = DrawingUtils.ColorLines;
-                    joint.Radius = 0.5f;
-                    joint.Type = DiscType.Disc;
-                    joint.SortingOrder = DrawingUtils.GetPathLineJointSortingOrder();
-                    m_PathJoints.Add(joint);
-                }
-            }
-            
-            foreach (var line in m_PathLines)
-                line.enabled = false;
-            foreach (var joint in m_PathJoints)
-                joint.enabled = false;
+            base.SetShape();
         }
 
         private void DoRotation()
@@ -206,11 +158,7 @@ namespace Games.RazorMaze.Views.MazeItems
                     {
                         {new object[] {m_Saw}, DrawingUtils.ColorLines}
                     };
-                    if (m_PathLines.Any())
-                        sets.Add(m_PathLines.Cast<object>().ToArray(), DrawingUtils.ColorLines);
-                    if (m_PathJoints.Any())
-                        sets.Add(m_PathJoints.Cast<object>().ToArray(), DrawingUtils.ColorLines);
-                    
+
                     RazorMazeUtils.DoAppearTransitionSimple(
                         _Appear,
                         GameTicker,
