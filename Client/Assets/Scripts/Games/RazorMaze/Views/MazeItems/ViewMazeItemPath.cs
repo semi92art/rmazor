@@ -535,6 +535,7 @@ namespace Games.RazorMaze.Views.MazeItems
                     ShapeRenderer shape = null;
                     if (_Appear && !Props.IsStartNode || !_Appear && !Collected)
                         shape = m_Shape;
+                    else m_Shape.enabled = false;
 
                     RazorMazeUtils.DoAppearTransitionSimple(
                         _Appear,

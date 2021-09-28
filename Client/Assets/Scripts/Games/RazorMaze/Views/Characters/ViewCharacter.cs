@@ -38,7 +38,7 @@ namespace Games.RazorMaze.Views.Characters
         
         #region inject
         
-        private IModelMazeData Data { get; }
+        private IModelData Data { get; }
         private IViewCharacterTail Tail { get; }
         private IViewCharacterEffector Effector { get; }
         private IGameTicker GameTicker { get; }
@@ -46,7 +46,7 @@ namespace Games.RazorMaze.Views.Characters
 
         public ViewCharacter(
             ICoordinateConverter _CoordinateConverter, 
-            IModelMazeData _Data, 
+            IModelData _Data, 
             IContainersGetter _ContainersGetter,
             IViewMazeCommon _ViewMazeCommon,
             IViewCharacterTail _Tail,

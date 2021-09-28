@@ -38,9 +38,9 @@ public class LevelStagingModel : ILevelStagingModel
 {
     #region inject
     
-    private IModelMazeData Data { get; }
+    private IModelData Data { get; }
 
-    public LevelStagingModel(IModelMazeData _Data)
+    public LevelStagingModel(IModelData _Data)
     {
         Data = _Data;
     }

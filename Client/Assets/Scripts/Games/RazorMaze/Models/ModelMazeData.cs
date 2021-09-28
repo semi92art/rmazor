@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Entities;
 using Games.RazorMaze.Models.ProceedInfos;
 
 namespace Games.RazorMaze.Models
@@ -11,7 +10,7 @@ namespace Games.RazorMaze.Models
 
     public delegate void MazeInfoHandler(MazeInfo Info);
     
-    public interface IModelMazeData : IPreInit
+    public interface IModelData : IPreInit
     {
         event MazeInfoHandler MazeInfoSet;
         event NoArgsHandler GameLoopUpdate;
@@ -23,7 +22,7 @@ namespace Games.RazorMaze.Models
         void OnGameLoopUpdate();
     }
     
-    public class ModelMazeData : IModelMazeData
+    public class ModelData : IModelData
     {
         #region nonpublic members
         

@@ -28,7 +28,7 @@ namespace Games.RazorMaze.Views.Common
         public ViewMazeCommon(
             IGameTicker _GameTicker,
             IMazeItemsCreator _MazeItemsCreator, 
-            IModelMazeData _ModelData,
+            IModelData _ModelData,
             IContainersGetter _ContainersGetter, 
             ICoordinateConverter _CoordinateConverter,
             ViewSettings _ViewSettings) 

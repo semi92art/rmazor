@@ -17,12 +17,12 @@ namespace Games.RazorMaze.Models
     public class ModelMazeRotation : IModelMazeRotation
     {
         private ModelSettings Settings { get; }
-        private IModelMazeData Data { get; }
+        private IModelData Data { get; }
         private IGameTicker GameTicker { get; }
 
         public ModelMazeRotation(
             ModelSettings _Settings,
-            IModelMazeData _Data,
+            IModelData _Data,
             IGameTicker _GameTicker)
         {
             Settings = _Settings;

@@ -47,7 +47,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
     {
         protected MovingItemsProceederBase(
             ModelSettings _Settings, 
-            IModelMazeData _Data, 
+            IModelData _Data, 
             IModelCharacter _Character,
             IGameTicker _GameTicker) 
             : base(_Settings, _Data, _Character, _GameTicker) { }

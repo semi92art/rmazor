@@ -23,11 +23,11 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         #region inject
         
         private ViewSettings ViewSettings { get; }
-        private IModelMazeData ModelData { get; }
+        private IModelData ModelData { get; }
         private IMazeItemsCreator MazeItemsCreator { get; }
 
         public ViewMazePathItemsGroup(ViewSettings _ViewSettings,
-            IModelMazeData _ModelData,
+            IModelData _ModelData,
             IMazeItemsCreator _MazeItemsCreator)
         {
             ViewSettings = _ViewSettings;

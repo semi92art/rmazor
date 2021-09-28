@@ -55,7 +55,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         public TurretsProceeder(
             ModelSettings _Settings,
-            IModelMazeData _Data,
+            IModelData _Data,
             IModelCharacter _Character,
             IGameTicker _GameTicker,
             IShredingerBlocksProceeder _ShredingersProceeder) 

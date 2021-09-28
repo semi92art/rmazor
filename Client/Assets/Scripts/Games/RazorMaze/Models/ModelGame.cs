@@ -8,7 +8,7 @@ namespace Games.RazorMaze.Models
 {
     public interface IModelGame : IInit, IPreInit
     {
-        IModelMazeData                            Data { get; }
+        IModelData                            Data { get; }
         IModelMazeRotation                        MazeRotation { get; }
         IPathItemsProceeder                       PathItemsProceeder { get; }
         ITrapsMovingProceeder                     TrapsMovingProceeder { get; }
@@ -31,7 +31,7 @@ namespace Games.RazorMaze.Models
         public event NoArgsHandler PreInitialized;
         public event NoArgsHandler Initialized;
         
-        public IModelMazeData                     Data { get; }
+        public IModelData                     Data { get; }
         public IModelMazeRotation                 MazeRotation { get; }
         public IPathItemsProceeder                PathItemsProceeder { get; }
         public ITrapsMovingProceeder              TrapsMovingProceeder { get; }
@@ -47,7 +47,7 @@ namespace Games.RazorMaze.Models
         public IInputScheduler                    InputScheduler { get; }
         
         public ModelGame(
-            IModelMazeData                        _Data,
+            IModelData                        _Data,
             IModelMazeRotation                    _MazeRotation,
             IPathItemsProceeder                   _PathItemsProceeder,
             ITrapsMovingProceeder                 _TrapsMovingProceeder,

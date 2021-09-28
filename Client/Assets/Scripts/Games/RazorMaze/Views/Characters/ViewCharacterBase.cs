@@ -11,18 +11,18 @@ namespace Games.RazorMaze.Views.Characters
         #region constructor
 
         protected ICoordinateConverter CoordinateConverter { get; }
-        protected IModelMazeData ModelMazeData { get; }
+        protected IModelData ModelData { get; }
         protected IContainersGetter ContainersGetter { get; }
         protected IViewMazeCommon ViewMazeCommon { get; }
 
         protected ViewCharacterBase(
             ICoordinateConverter _CoordinateConverter, 
-            IModelMazeData _ModelMazeData, 
+            IModelData _ModelData, 
             IContainersGetter _ContainersGetter,
             IViewMazeCommon _ViewMazeCommon)
         {
             CoordinateConverter = _CoordinateConverter;
-            ModelMazeData = _ModelMazeData;
+            ModelData = _ModelData;
             ContainersGetter = _ContainersGetter;
             ViewMazeCommon = _ViewMazeCommon;
         }
@@ -44,7 +44,7 @@ namespace Games.RazorMaze.Views.Characters
 
         public virtual void OnPositionSet(V2Int _Position)
         {
-            CoordinateConverter.Init(ModelMazeData.Info.Size);
+            CoordinateConverter.Init(ModelData.Info.Size);
             SetPosition(CoordinateConverter.ToLocalCharacterPosition(_Position));
         }
         

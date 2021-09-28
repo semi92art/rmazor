@@ -6,7 +6,6 @@ using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
-using Shapes;
 using Ticker;
 using UnityEngine;
 using Utils;
@@ -94,8 +93,6 @@ namespace Games.RazorMaze.Views.MazeItems
         public void UpdateTick()
         {
             if (!Initialized || !Activated)
-                return;
-            if (ProceedingStage != EProceedingStage.ActiveAndWorking)
                 return;
             DoRotation();
         }

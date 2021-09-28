@@ -9,12 +9,12 @@ namespace Games.RazorMaze.Views.MazeItemGroups
     {
         #region inject
 
-        protected IModelMazeData Data { get; }
+        protected IModelData Data { get; }
         protected ICoordinateConverter Converter { get; }
         protected IContainersGetter ContainersGetter { get; }
 
         protected ViewMazeTurretsGroupBase(
-            IModelMazeData _Data,
+            IModelData _Data,
             IViewMazeCommon _Common, 
             ICoordinateConverter _Converter,
             IContainersGetter _ContainersGetter) : base(_Common)

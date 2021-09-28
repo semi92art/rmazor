@@ -19,7 +19,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         #region inject
         
         public ViewMazeTurretsGroup(
-            IModelMazeData _Data,
+            IModelData _Data,
             IViewMazeCommon _Common,
             ICoordinateConverter _Converter,
             IContainersGetter _ContainersGetter)

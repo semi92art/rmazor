@@ -28,7 +28,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         protected IMazeItemProceedInfo KillerProceedInfo { get; set; }
         protected ModelSettings Settings { get; }
-        protected IModelMazeData Data { get; }
+        protected IModelData Data { get; }
         protected IModelCharacter Character { get; }
         protected IGameTicker GameTicker { get; }
 
@@ -56,8 +56,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 case ELevelStage.Paused:
                     PauseProceed(); break;
                 case ELevelStage.Unloaded:
+                case ELevelStage.Finished:
                     FinishProceed(true); break;
-                case ELevelStage.Finished: break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Args.Stage);
             }
@@ -77,7 +77,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         protected ItemsProceederBase(
             ModelSettings _Settings, 
-            IModelMazeData _Data,
+            IModelData _Data,
             IModelCharacter _Character,
             IGameTicker _GameTicker)
         {

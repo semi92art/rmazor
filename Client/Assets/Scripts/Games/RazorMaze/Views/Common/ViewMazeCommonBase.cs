@@ -16,14 +16,14 @@ namespace Games.RazorMaze.Views.Common
 
         protected IGameTicker GameTicker { get; }
         protected IMazeItemsCreator MazeItemsCreator { get; }
-        protected IModelMazeData ModelData { get; }
+        protected IModelData ModelData { get; }
         protected IContainersGetter ContainersGetter { get; }
         protected ICoordinateConverter CoordinateConverter { get; }
 
         protected ViewMazeCommonBase(
             IGameTicker _GameTicker,
             IMazeItemsCreator _MazeItemsCreator,
-            IModelMazeData _ModelData,
+            IModelData _ModelData,
             IContainersGetter _ContainersGetter, 
             ICoordinateConverter _CoordinateConverter)
         {

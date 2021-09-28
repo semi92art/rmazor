@@ -18,9 +18,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
     {
         #region inject
         
-        private IModelMazeData Data { get; }
+        private IModelData Data { get; }
 
-        public PathItemsProceeder(IModelMazeData _Data)
+        public PathItemsProceeder(IModelData _Data)
         {
             Data = _Data;
         }

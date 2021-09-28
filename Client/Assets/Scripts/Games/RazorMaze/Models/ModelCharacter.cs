@@ -63,7 +63,7 @@ namespace Games.RazorMaze.Models
         #region inject
 
         private ModelSettings Settings { get; }
-        private IModelMazeData Data { get; }
+        private IModelData Data { get; }
         private IPathItemsProceeder PathItemsProceeder { get; }
         private IInputScheduler InputScheduler { get; }
         private ILevelStagingModel LevelStagingModel { get; }
@@ -71,7 +71,7 @@ namespace Games.RazorMaze.Models
 
         public ModelCharacter(
             ModelSettings _Settings, 
-            IModelMazeData _Data, 
+            IModelData _Data, 
             IPathItemsProceeder _PathItemsProceeder,
             IInputScheduler _InputScheduler,
             ILevelStagingModel _LevelStagingModel,
