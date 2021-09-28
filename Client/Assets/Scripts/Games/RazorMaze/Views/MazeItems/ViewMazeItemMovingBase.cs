@@ -24,7 +24,9 @@ namespace Games.RazorMaze.Views.MazeItems
         protected readonly List<Disc> m_PathJoints = new List<Disc>();
 
         #endregion
-        
+
+        #region constructor
+
         protected ViewMazeItemMovingBase(
             ViewSettings _ViewSettings,
             IModelGame _Model,
@@ -37,6 +39,24 @@ namespace Games.RazorMaze.Views.MazeItems
                 _CoordinateConverter,
                 _ContainersGetter,
                 _GameTicker) { }
+
+        #endregion
+
+        #region api
+
+        public override void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            base.OnLevelStageChanged(_Args);
+
+            if (_Args.Stage == ELevelStage.Loaded || _Args.Stage == ELevelStage.ReadyToStartOrContinue)
+            {
+                Object.transform.localPosition = CoordinateConverter.ToLocalMazeItemPosition(Props.Position);
+            }
+        }
+
+        #endregion
+        
+        #region nonpublic methods
 
         protected virtual void InitWallBlockMovingPaths()
         {
@@ -97,11 +117,11 @@ namespace Games.RazorMaze.Views.MazeItems
                 () => !Initialized,
                 () =>
                 {
-                    var sets = new Dictionary<object[], Color>();
+                    var sets = new Dictionary<object[], System.Func<Color>>();
                     if (m_PathLines.Any())
-                        sets.Add(m_PathLines.Cast<object>().ToArray(), DrawingUtils.ColorLines);
+                        sets.Add(m_PathLines.Cast<object>().ToArray(), () => DrawingUtils.ColorLines);
                     if (m_PathJoints.Any())
-                        sets.Add(m_PathJoints.Cast<object>().ToArray(), DrawingUtils.ColorLines);
+                        sets.Add(m_PathJoints.Cast<object>().ToArray(), () => DrawingUtils.ColorLines);
                     
                     RazorMazeUtils.DoAppearTransitionSimple(
                         _Appear,
@@ -109,5 +129,7 @@ namespace Games.RazorMaze.Views.MazeItems
                         sets);
                 }));
         }
+        
+        #endregion
     }
 }

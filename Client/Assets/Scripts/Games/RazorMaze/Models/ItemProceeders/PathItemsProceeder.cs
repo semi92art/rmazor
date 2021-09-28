@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Entities;
 
 namespace Games.RazorMaze.Models.ItemProceeders
@@ -7,6 +8,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
     
     public interface IPathItemsProceeder : ICharacterMoveContinued
     {
+        void OnMazeInfoSet(MazeInfo _Info);
+        Dictionary<V2Int, bool> PathProceeds { get; }
         event PathProceedHandler PathProceedEvent;
         event NoArgsHandler AllPathsProceededEvent;
     }
@@ -25,7 +28,14 @@ namespace Games.RazorMaze.Models.ItemProceeders
         #endregion
         
         #region api
-        
+
+        public void OnMazeInfoSet(MazeInfo _Info)
+        {
+            PathProceeds = _Info.Path.ToDictionary(_P => _P, _P => false);
+            PathProceeds[_Info.Path[0]] = true;
+        }
+
+        public Dictionary<V2Int, bool> PathProceeds { get; private set; }
         public event PathProceedHandler PathProceedEvent;
         public event NoArgsHandler AllPathsProceededEvent;
 
@@ -41,12 +51,12 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         private void ProceedPathItem(V2Int _PathItem)
         {
-            if (!Data.PathProceeds.ContainsKey(_PathItem) || Data.PathProceeds[_PathItem])
+            if (!PathProceeds.ContainsKey(_PathItem) || PathProceeds[_PathItem])
                 return;
-            Data.PathProceeds[_PathItem] = true;
+            PathProceeds[_PathItem] = true;
             PathProceedEvent?.Invoke(_PathItem); 
             
-            if (Data.PathProceeds.Values.All(_Proceeded => _Proceeded))
+            if (PathProceeds.Values.All(_Proceeded => _Proceeded))
                 AllPathsProceededEvent?.Invoke();
         }
         

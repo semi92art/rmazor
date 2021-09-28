@@ -539,7 +539,7 @@ namespace Games.RazorMaze.Views.MazeItems
                     RazorMazeUtils.DoAppearTransitionSimple(
                         _Appear,
                         GameTicker,
-                        new Dictionary<object[], Color>
+                        new Dictionary<object[], Func<Color>>
                         {
                             {
                                 new object[]
@@ -549,13 +549,13 @@ namespace Games.RazorMaze.Views.MazeItems
                                     m_TopLeftCorner,
                                     m_TopRightCorner
                                 },
-                                DrawingUtils.ColorLines
+                                () => DrawingUtils.ColorLines
                             },
                             {
                                 new object[] {m_LeftBorder, m_RightBorder, m_BottomBorder, m_TopBorder},
-                                DrawingUtils.ColorLines.SetA(0.5f)
+                                () => DrawingUtils.ColorLines.SetA(0.5f)
                             },
-                            {new object[] {shape}, DrawingUtils.ColorLines}
+                            {new object[] {shape}, () => DrawingUtils.ColorLines}
                         },
                         _OnFinish: () =>
                         {

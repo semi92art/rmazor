@@ -218,9 +218,9 @@ namespace Games.RazorMaze.Views.MazeItems
                     RazorMazeUtils.DoAppearTransitionSimple(
                         _Appear,
                         GameTicker,
-                        new Dictionary<object[], Color>
+                        new Dictionary<object[], System.Func<Color>>
                         {
-                            {shapes, DrawingUtils.ColorLines}
+                            {shapes, () => DrawingUtils.ColorLines}
                         },
                         _OnFinish: () =>
                         {

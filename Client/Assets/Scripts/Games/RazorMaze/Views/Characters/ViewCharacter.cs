@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Constants;
 using DI.Extensions;
 using Exceptions;
@@ -31,7 +32,8 @@ namespace Games.RazorMaze.Views.Characters
         private EMazeMoveDirection m_PrevHorDir;
         private bool m_Activated;
         private bool m_Initialized;
-        
+        private Color m_BackColor;
+
         #endregion
         
         #region inject
@@ -139,6 +141,8 @@ namespace Games.RazorMaze.Views.Characters
                     m_Animator.SetTrigger(AnimKeyStartJumping);
                     Tail.HideTail();
                 }));
+            if (!_Alive)
+                Coroutines.Run(ShakeMaze());
         }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
@@ -151,7 +155,13 @@ namespace Games.RazorMaze.Views.Characters
 
         public override void OnBackgroundColorChanged(Color _Color)
         {
-            m_Eye1Shape.Color = m_Eye2Shape.Color = _Color;
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !m_Initialized,
+                () =>
+                {
+                    m_BackColor = _Color;
+                    m_Eye1Shape.Color = m_Eye2Shape.Color = _Color;
+                }));
         }
 
         #endregion
@@ -237,12 +247,35 @@ namespace Games.RazorMaze.Views.Characters
                     RazorMazeUtils.DoAppearTransitionSimple(
                         _Appear,
                         GameTicker,
-                        new Dictionary<object[], Color>
+                        new Dictionary<object[], System.Func<Color>>
                         {
-                            {new[] {m_HeadShape}, DrawingUtils.ColorCharacter},
-                            {new[] {m_Eye1Shape, m_Eye2Shape}, DrawingUtils.ColorBack}
+                            {new object[] {m_HeadShape}, () => DrawingUtils.ColorCharacter},
+                            {new object[] {m_Eye1Shape, m_Eye2Shape}, () => m_BackColor}
                         });
                 }));
+        }
+
+        private IEnumerator ShakeMaze()
+        {
+            var defPos = ContainersGetter.MazeContainer.position;
+            const float duration = 0.5f;
+            yield return Coroutines.Lerp(
+                1f,
+                0f,
+                duration,
+                _Progress =>
+                {
+                    float amplitude = 0.25f * _Progress;
+                    Vector2 res;
+                    res.x = defPos.x + amplitude * Mathf.Sin(GameTicker.Time * 200f);
+                    res.y = defPos.y + amplitude * Mathf.Cos(GameTicker.Time * 100f);
+                    ContainersGetter.MazeContainer.position = res;
+                },
+                GameTicker,
+                (_Finished, _Progress) =>
+                {
+                    ContainersGetter.MazeContainer.position = defPos;
+                });
         }
 
         #endregion

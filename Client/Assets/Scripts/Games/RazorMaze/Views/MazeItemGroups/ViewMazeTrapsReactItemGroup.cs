@@ -21,7 +21,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
 
         public void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args)
         {
-            Common.GetItem<IViewMazeItemTrapReact>(_Args.Item).OnTrapReact(_Args);
+            Common.GetItem<IViewMazeItemTrapReact>(_Args.Info).OnTrapReact(_Args);
         }
         
         #endregion

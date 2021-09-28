@@ -126,7 +126,11 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public void PreShoot(TurretShotEventArgs _Args) => Coroutines.Run(HandleTurretPreShootCoroutine());
 
-        public void Shoot(TurretShotEventArgs _Args) => Coroutines.Run(HandleTurretShootCoroutine(_Args));
+        public void Shoot(TurretShotEventArgs _Args)
+        {
+            Coroutines.Run(HandleTurretShootCoroutine(_Args));
+        }
+
         public void SetBulletSortingOrder(int _Order)
         {
             m_BulletRenderer.sortingOrder = _Order;
@@ -215,20 +219,6 @@ namespace Games.RazorMaze.Views.MazeItems
             DeactivateShapes();
         }
         
-        private IEnumerator HandleTurretPrePreShootCoroutine()
-        {
-            m_BulletFakeContainer.transform.localScale = Vector3.zero;
-            m_BulletFake.SetGoActive(true);
-            m_BulletFakeContainer.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
-            yield return Coroutines.Lerp(
-                0f, 
-                1f,
-                0.2f,
-                _Progress => m_BulletFakeContainer.transform.localScale =
-                        Vector3.one * _Progress * CoordinateConverter.GetScale() * BulletContainerRadius * 0.9f,
-                GameTicker);
-        }
-        
         private IEnumerator HandleTurretPreShootCoroutine()
         {
             yield return Coroutines.Lerp(
@@ -243,6 +233,12 @@ namespace Games.RazorMaze.Views.MazeItems
                     m_BulletTr.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
                     m_BulletFake.SetGoActive(false);
                     Coroutines.Run(OpenBarrel(true, false));
+                    Coroutines.Run(Coroutines.Lerp(
+                        0f, 
+                        1f,
+                        0.1f, 
+                        _Prgrss => m_RotatingSpeed = ViewSettings.TurretBulletRotationSpeed * _Prgrss,
+                        GameTicker));
                 });
         }
         
@@ -257,15 +253,15 @@ namespace Games.RazorMaze.Views.MazeItems
             V2Int point = default;
             bool movedToTheEnd = false;
 
+            m_Moving = true;
             Coroutines.Run(Coroutines.Delay(
                 () =>
                 {
                     Coroutines.Run(OpenBarrel(false, false));
-                    Coroutines.Run(HandleTurretPrePreShootCoroutine());
+                    Coroutines.Run(ProceedBulletFakeBeforeShootCoroutine());
                 },
                 0.2f));
-
-            // m_Moving = true; // FIXME нахуя здесь это нужно было ???
+            
             m_RotatingSpeed = ViewSettings.TurretBulletRotationSpeed;
             yield return Coroutines.DoWhile(
                 () =>
@@ -293,6 +289,20 @@ namespace Games.RazorMaze.Views.MazeItems
                 });
         }
         
+        private IEnumerator ProceedBulletFakeBeforeShootCoroutine()
+        {
+            m_BulletFakeContainer.transform.localScale = Vector3.zero;
+            m_BulletFake.SetGoActive(true);
+            m_BulletFakeContainer.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+            yield return Coroutines.Lerp(
+                0f, 
+                1f,
+                0.2f,
+                _Progress => m_BulletFakeContainer.transform.localScale =
+                    Vector3.one * _Progress * CoordinateConverter.GetScale() * BulletContainerRadius * 0.9f,
+                GameTicker);
+        }
+        
         private IEnumerator OpenBarrel(bool _Open, bool _Instantly)
         {
             float openedStart, openedEnd, closedStart, closedEnd;
@@ -311,17 +321,6 @@ namespace Games.RazorMaze.Views.MazeItems
                 yield break;
             }
 
-            if (_Open)
-            {
-                m_Moving = true;
-                Coroutines.Run(Coroutines.Lerp(
-                    0f, 
-                    1f,
-                    0.1f, 
-                    _Progress => m_RotatingSpeed = ViewSettings.TurretBulletRotationSpeed * _Progress,
-                    GameTicker));
-            }
-            
             yield return Coroutines.Lerp(
                 0f,
                 1f,
@@ -368,7 +367,7 @@ namespace Games.RazorMaze.Views.MazeItems
             if (_Appear)
             {
                 m_Moving = false;
-                Coroutines.Run(HandleTurretPrePreShootCoroutine());
+                m_BulletFake.SetGoActive(false);
                 Coroutines.Run(OpenBarrel(false, true));
             }
             Coroutines.Run(Coroutines.WaitWhile(
@@ -392,10 +391,10 @@ namespace Games.RazorMaze.Views.MazeItems
                     RazorMazeUtils.DoAppearTransitionSimple(
                         _Appear,
                         GameTicker,
-                        new Dictionary<object[], Color>
+                        new Dictionary<object[], Func<Color>>
                         {
-                            {new object [] {m_BulletHolderBorder, m_Body}, DrawingUtils.ColorLines},
-                            {bulletRenderers, bulletRenderersCol}
+                            {new object [] {m_BulletHolderBorder, m_Body}, () => DrawingUtils.ColorLines},
+                            {bulletRenderers, () => bulletRenderersCol}
                         },
                         _OnFinish: () =>
                         {

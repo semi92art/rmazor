@@ -13,7 +13,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         public void OnShredingerBlockEvent(ShredingerBlockArgs _Args)
         {
-            var item = Common.GetItem<IViewMazeItemShredingerBlock>(_Args.Item);
+            var item = Common.GetItem<IViewMazeItemShredingerBlock>(_Args.Info);
             item.BlockClosed = _Args.Stage == ShredingerBlocksProceeder.StageClosed;
         }
     }

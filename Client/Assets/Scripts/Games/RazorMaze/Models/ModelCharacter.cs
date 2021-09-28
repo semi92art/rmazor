@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Entities;
 using Games.RazorMaze.Models.ItemProceeders;
@@ -39,6 +40,7 @@ namespace Games.RazorMaze.Models
         V2Int Position { get; }
         bool IsMoving { get; }
         CharacterMovingEventArgs MovingInfo { get; }
+        Func<EMazeItemType, IEnumerable<IMazeItemProceedInfo>> GetProceedInfos { get; set; }
         event CharacterMovingHandler CharacterMoveStarted;
         event CharacterMovingHandler CharacterMoveContinued;
         event CharacterMovingHandler CharacterMoveFinished;
@@ -62,6 +64,7 @@ namespace Games.RazorMaze.Models
 
         private ModelSettings Settings { get; }
         private IModelMazeData Data { get; }
+        private IPathItemsProceeder PathItemsProceeder { get; }
         private IInputScheduler InputScheduler { get; }
         private ILevelStagingModel LevelStagingModel { get; }
         private IGameTicker GameTicker { get; }
@@ -69,12 +72,14 @@ namespace Games.RazorMaze.Models
         public ModelCharacter(
             ModelSettings _Settings, 
             IModelMazeData _Data, 
+            IPathItemsProceeder _PathItemsProceeder,
             IInputScheduler _InputScheduler,
             ILevelStagingModel _LevelStagingModel,
             IGameTicker _GameTicker)
         {
             Settings = _Settings;
             Data = _Data;
+            PathItemsProceeder = _PathItemsProceeder;
             InputScheduler = _InputScheduler;
             LevelStagingModel = _LevelStagingModel;
             GameTicker = _GameTicker;
@@ -88,6 +93,7 @@ namespace Games.RazorMaze.Models
         public V2Int Position { get; private set; }
         public bool IsMoving { get; private set; }
         public CharacterMovingEventArgs MovingInfo { get; private set; }
+        public Func<EMazeItemType, IEnumerable<IMazeItemProceedInfo>> GetProceedInfos { get; set; }
         public event CharacterMovingHandler CharacterMoveStarted;
         public event CharacterMovingHandler CharacterMoveContinued;
         public event CharacterMovingHandler CharacterMoveFinished;
@@ -136,7 +142,7 @@ namespace Games.RazorMaze.Models
         
         public void OnPortal(PortalEventArgs _Args)
         {
-            Position = _Args.Item.Pair;
+            Position = _Args.Info.Pair;
             Move(_Args.Direction);
         }
 
@@ -174,8 +180,8 @@ namespace Games.RazorMaze.Models
                 return isPortal;
             }
             
-            var shredinger = Data.ProceedInfos[EMazeItemType.ShredingerBlock].Values
-                .FirstOrDefault(_Inf => _Inf.Item.Position == _NextPosition);
+            var shredinger = GetProceedInfos(EMazeItemType.ShredingerBlock)
+                .FirstOrDefault(_Inf => _Inf.CurrentPosition == _NextPosition);
 
             if (shredinger != null)
                 return shredinger.ProceedingStage != ShredingerBlocksProceeder.StageClosed;
@@ -189,10 +195,9 @@ namespace Games.RazorMaze.Models
             if (isMazeItem)
                 return false;
             
-            bool isBuzyMazeItem = Data.ProceedInfos[EMazeItemType.GravityBlock]
-                .Where(_Inf => _Inf.Value.Item.Type == EMazeItemType.GravityBlock)
-                .Any(_Inf => (_Inf.Value as MazeItemProceedInfo)
-                    .BusyPositions.Contains(_NextPosition));
+            bool isBuzyMazeItem = GetProceedInfos(EMazeItemType.GravityBlock)
+                .Where(_Inf => _Inf.Type == EMazeItemType.GravityBlock)
+                .Any(_Inf => _Inf.BusyPositions.Contains(_NextPosition));
 
             if (isBuzyMazeItem)
                 return false;
@@ -238,13 +243,11 @@ namespace Games.RazorMaze.Models
         {
             if (Alive)
                 return;
-            Position = Data.PathProceeds.First().Key;
+            Position = PathItemsProceeder.PathProceeds.First().Key;
             PositionSet?.Invoke(Position);
             InputScheduler.UnlockMovement(true);
             AliveOrDeath?.Invoke(true);
             Alive = true;
-            
-            Dbg.Log("Character Revive");
         }
         
         private void Die()
@@ -255,8 +258,6 @@ namespace Games.RazorMaze.Models
             AliveOrDeath?.Invoke(false);
             IsMoving = false;
             Alive = false;
-            
-            Dbg.Log("Character Die");
         }
         
         #endregion

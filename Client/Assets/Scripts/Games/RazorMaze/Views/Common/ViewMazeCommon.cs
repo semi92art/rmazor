@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.MazeItems;
@@ -58,9 +59,9 @@ namespace Games.RazorMaze.Views.Common
             base.Init();
         }
 
-        public override IViewMazeItem GetItem(MazeItem _Item)
+        public override IViewMazeItem GetItem(IMazeItemProceedInfo _Info)
         {
-            return m_BlockPools[_Item.Type].SingleOrDefault(_Itm => _Itm.Equal(_Item));
+            return m_BlockPools[_Info.Type].SingleOrDefault(_Itm => _Itm.Equal(_Info));
         }
         
         #endregion

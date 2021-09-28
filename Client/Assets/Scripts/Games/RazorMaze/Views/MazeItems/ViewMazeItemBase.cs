@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DI.Extensions;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeItems.Props;
 using Games.RazorMaze.Views.Utils;
@@ -115,15 +117,22 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             Props = _Props;
             SetShape();
-            // GameTicker.Register(this);
             Initialized = true;
         }
 
-        public bool Equal(MazeItem _MazeItem)
+        public bool Equal(IMazeItemProceedInfo _Info)
         {
             if (Props == null)
                 return false;
-            return _MazeItem.Path == Props.Path && _MazeItem.Type == Props.Type;
+            if (_Info.Type != Props.Type)
+                return false;
+            if (_Info.StartPosition != Props.Position)
+                return false;
+            if (_Info.Path.Count != Props.Path.Count)
+                return false;
+            if (_Info.Path.Where((_Pos, _Index) => _Pos != Props.Path[_Index]).Any())
+                return false;
+            return true;
         }
         
         public void SetLocalPosition(Vector2 _Position) => Object.transform.SetLocalPosXY(_Position);
@@ -158,9 +167,9 @@ namespace Games.RazorMaze.Views.MazeItems
                     RazorMazeUtils.DoAppearTransitionSimple(
                         _Appear,
                         GameTicker,
-                        new Dictionary<object[], Color>
+                        new Dictionary<object[], Func<Color>>
                         {
-                            {Shapes, DrawingUtils.ColorLines}
+                            {Shapes, () => DrawingUtils.ColorLines}
                         },
                         _OnFinish: () =>
                         {

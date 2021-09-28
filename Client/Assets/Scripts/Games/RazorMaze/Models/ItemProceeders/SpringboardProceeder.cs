@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Entities;
+using Games.RazorMaze.Models.ProceedInfos;
 using Ticker;
 
 namespace Games.RazorMaze.Models.ItemProceeders
@@ -8,12 +9,12 @@ namespace Games.RazorMaze.Models.ItemProceeders
     public class SpringboardEventArgs : EventArgs
     {
         public EMazeMoveDirection Direction { get; }
-        public MazeItem Item { get; }
+        public IMazeItemProceedInfo Info { get; }
 
-        public SpringboardEventArgs(EMazeMoveDirection _Direction, MazeItem _Item)
+        public SpringboardEventArgs(EMazeMoveDirection _Direction, IMazeItemProceedInfo _Info)
         {
             Direction = _Direction;
-            Item = _Item;
+            Info = _Info;
         }
     }
 
@@ -29,8 +30,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         #region nonpbulic members
 
         private SpringboardEventArgs m_LastArgs;
-        protected override EMazeItemType[] Types => new[] {EMazeItemType.Springboard};
-        
+
         #endregion
         
         #region inject
@@ -46,15 +46,16 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region api
         
+        public override EMazeItemType[] Types => new[] {EMazeItemType.Springboard};
         public event SpringboardEventHandler SpringboardEvent;
 
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
-            var infos = GetProceedInfos(Types).Values;
-            var item = (from info in infos where info.Item.Position == _Args.Position select info.Item)
+            var info = (from inf in GetProceedInfos(Types)
+                    where inf.CurrentPosition == _Args.Position select inf)
                 .FirstOrDefault();
 
-            if (item == null)
+            if (info == null)
             {
                 m_LastArgs = null;
                 return;
@@ -65,17 +66,17 @@ namespace Games.RazorMaze.Models.ItemProceeders
             
             var charInverseDir = -RazorMazeUtils.GetDirectionVector(_Args.Direction, Data.Orientation);
             V2Int newDirection = default;
-            if (item.Direction == V2Int.up + V2Int.left)
+            if (info.Direction == V2Int.up + V2Int.left)
                 newDirection = charInverseDir == V2Int.up ? V2Int.left : V2Int.up;
-            else if (item.Direction == V2Int.up + V2Int.right)
+            else if (info.Direction == V2Int.up + V2Int.right)
                 newDirection = charInverseDir == V2Int.up ? V2Int.right : V2Int.up;
-            else if (item.Direction == V2Int.down + V2Int.left)
+            else if (info.Direction == V2Int.down + V2Int.left)
                 newDirection = charInverseDir == V2Int.down ? V2Int.left : V2Int.down;
-            else if (item.Direction == V2Int.down + V2Int.right)
+            else if (info.Direction == V2Int.down + V2Int.right)
                 newDirection = charInverseDir == V2Int.down ? V2Int.right : V2Int.down;
             var moveDirection = RazorMazeUtils.GetMoveDirection(newDirection, Data.Orientation);
             
-            m_LastArgs = new SpringboardEventArgs(moveDirection, item);
+            m_LastArgs = new SpringboardEventArgs(moveDirection, info);
             SpringboardEvent?.Invoke(m_LastArgs);
         }
         

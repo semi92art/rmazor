@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Games.RazorMaze.Models.ProceedInfos;
 using Ticker;
@@ -10,11 +9,11 @@ namespace Games.RazorMaze.Models.ItemProceeders
 {
     public class MazeItemTrapIncreasingEventArgs : EventArgs
     {
-        public MazeItem Item { get; }
+        public IMazeItemProceedInfo Item { get; }
         public int Stage { get; }
         public float Duration { get; }
 
-        public MazeItemTrapIncreasingEventArgs(MazeItem _Item, int _Stage, float _Duration)
+        public MazeItemTrapIncreasingEventArgs(IMazeItemProceedInfo _Item, int _Stage, float _Duration)
         {
             Item = _Item;
             Stage = _Stage;
@@ -36,14 +35,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         public const int StageIncreased = 1;
         
         #endregion
-        
-        #region nonpublic members
-        
-        protected override EMazeItemType[] Types => new[] {EMazeItemType.TrapIncreasing};
-        private readonly Queue<IEnumerator> m_Coroutines = new Queue<IEnumerator>();
 
-        #endregion
-        
         #region inject
         
         public TrapsIncreasingProceeder(
@@ -57,6 +49,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region api
 
+        public override EMazeItemType[] Types => new[] {EMazeItemType.TrapIncreasing};
         public event MazeItemTrapIncreasingEventHandler TrapIncreasingStageChanged;
 
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args) { }
@@ -66,32 +59,19 @@ namespace Games.RazorMaze.Models.ItemProceeders
             ProceedTraps();
         }
 
-        public override void OnLevelStageChanged(LevelStageArgs _Args)
-        {
-            base.OnLevelStageChanged(_Args);
-            if (_Args.Stage != ELevelStage.ReadyToStartOrContinue)
-                return;
-            foreach (var coroutine in m_Coroutines)
-                Coroutines.Stop(coroutine);
-            m_Coroutines.Clear();
-        }
-        
         #endregion
         
         #region nonpublic methods
 
         private void ProceedTraps()
         {
-            var infos = GetProceedInfos(Types).Values;
-            foreach (var info in infos
+            foreach (var info in GetProceedInfos(Types)
                 .Where(_Info => _Info.IsProceeding))
             {
                 if (info.ReadyToSwitchStage)
                 {
                     info.ReadyToSwitchStage = false;
-                    var coroutine = ProceedTrap(info);
-                    m_Coroutines.Enqueue(coroutine);
-                    Coroutines.Run(coroutine);
+                    ProceedCoroutine(ProceedTrap(info));
                 }
             }
         }
@@ -106,7 +86,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 () =>
                 {
                     TrapIncreasingStageChanged?.Invoke(
-                    new MazeItemTrapIncreasingEventArgs(_Info.Item, _Info.ProceedingStage, duration));
+                    new MazeItemTrapIncreasingEventArgs(_Info, _Info.ProceedingStage, duration));
                     _Info.ReadyToSwitchStage = true;
                 });
         }

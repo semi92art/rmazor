@@ -1,15 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Entities;
 using Exceptions;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views;
 using Ticker;
+using Utils;
 
 namespace Games.RazorMaze.Models.ItemProceeders
 {
     public interface IItemsProceeder : IOnLevelStageChanged
-    { }
+    {
+        Dictionary<EMazeItemType, List<IMazeItemProceedInfo>> ProceedInfos { get; }
+        EMazeItemType[] Types { get; }
+    }
 
     public abstract class ItemsProceederBase : IItemsProceeder
     {
@@ -22,15 +27,20 @@ namespace Games.RazorMaze.Models.ItemProceeders
         #region nonpublic members
         
         protected IMazeItemProceedInfo KillerProceedInfo { get; set; }
-        protected abstract EMazeItemType[] Types { get; }
         protected ModelSettings Settings { get; }
         protected IModelMazeData Data { get; }
         protected IModelCharacter Character { get; }
         protected IGameTicker GameTicker { get; }
 
+        private readonly Queue<IEnumerator> m_Coroutines = new Queue<IEnumerator>();
+
         #endregion
 
         #region api
+        
+        public abstract EMazeItemType[] Types { get; }
+        public Dictionary<EMazeItemType, List<IMazeItemProceedInfo>> ProceedInfos { get; } =
+            new Dictionary<EMazeItemType, List<IMazeItemProceedInfo>>();
         
         public virtual void OnLevelStageChanged(LevelStageArgs _Args)
         {
@@ -39,15 +49,25 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 case ELevelStage.Loaded:
                     CollectItems(Data.Info); break;
                 case ELevelStage.StartedOrContinued:
+                    ContinueProceed();
                     break;
                 case ELevelStage.ReadyToStartOrContinue:
-                    StartProceed(true, true); break;
+                    StartProceed(true); break;
                 case ELevelStage.Paused:
-                case ELevelStage.Finished:
+                    PauseProceed(); break;
                 case ELevelStage.Unloaded:
-                    StartProceed(false); break;
+                    FinishProceed(true); break;
+                case ELevelStage.Finished: break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Args.Stage);
+            }
+            
+            if (_Args.Stage == ELevelStage.Loaded 
+                ||_Args.Stage == ELevelStage.ReadyToStartOrContinue)
+            {
+                foreach (var coroutine in m_Coroutines)
+                    Coroutines.Stop(coroutine);
+                m_Coroutines.Clear();
             }
         }
         
@@ -69,51 +89,85 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         protected void CollectItems(MazeInfo _Info)
         {
+            ProceedInfos.Clear();
+            foreach (var type in Types)
+                ProceedInfos.Add(type, new List<IMazeItemProceedInfo>());
+
             var newInfos = _Info.MazeItems
                 .Where(_Item => Types.Contains(_Item.Type))
-                .Select(_Item => new MazeItemProceedInfo
+                .Select(_Item =>
                 {
-                    Item = _Item,
-                    MoveByPathDirection = EMazeItemMoveByPathDirection.Forward,
-                    IsProceeding = false,
-                    PauseTimer = 0,
-                    BusyPositions = new List<V2Int>{_Item.Position},
-                    ProceedingStage = 0
+                    IMazeItemProceedInfo res = new MazeItemProceedInfo
+                    {
+                        MoveByPathDirection = EMazeItemMoveByPathDirection.Forward,
+                        IsProceeding = false,
+                        PauseTimer = 0,
+                        BusyPositions = new List<V2Int> {_Item.Position},
+                        ProceedingStage = 0
+                    };
+                    res.SetItem(_Item);
+                    return res;
                 });
-            var infos = Data.ProceedInfos;
             foreach (var newInfo in newInfos)
             {
-                if (!infos.ContainsKey(newInfo.Item.Type))
-                    infos.Add(newInfo.Item.Type, new Dictionary<MazeItem, IMazeItemProceedInfo>());
-                var dict = infos[newInfo.Item.Type];
-                
-                if (!dict.ContainsKey(newInfo.Item))
-                    dict.Add(newInfo.Item, newInfo);
-                else
-                    dict[newInfo.Item] = newInfo;
+                var list = ProceedInfos[newInfo.Type];
+                if (!list.Contains(newInfo))
+                    list.Add(newInfo);
             }
         }
 
-        protected Dictionary<MazeItem, IMazeItemProceedInfo> GetProceedInfos(IEnumerable<EMazeItemType> _Types)
+        protected List<IMazeItemProceedInfo> GetProceedInfos(IEnumerable<EMazeItemType> _Types)
         {
-            return _Types.SelectMany(_Type => Data.ProceedInfos[_Type]).ToDictionary(
-                _Kvp => _Kvp.Key,
-                _Kvp => _Kvp.Value);
+            return _Types.SelectMany(_Type => ProceedInfos[_Type]).ToList();
         }
-
-        private void StartProceed(bool _Proceed, bool? _ProceedKillerInfoIfTrue = null)
+        
+        private void StartProceed(bool? _ProceedKillerInfoIfTrue = null)
         {
             var infos = GetProceedInfos(Types);
             foreach (var info in infos)
             {
-                info.Value.IsProceeding = _Proceed;
-                info.Value.ReadyToSwitchStage = _Proceed;
+                info.IsProceeding = true;
+                info.ReadyToSwitchStage = true;
+                info.CurrentPosition = info.StartPosition;
+                info.ProceedingStage = StageIdle;
             }
             if (_ProceedKillerInfoIfTrue.HasValue && !_ProceedKillerInfoIfTrue.Value && KillerProceedInfo != null)
             {
                 KillerProceedInfo.IsProceeding = false;
                 KillerProceedInfo = null;
             }
+        }
+        
+        private void ContinueProceed()
+        {
+            foreach (var info in GetProceedInfos(Types))
+                info.IsProceeding = true;
+        }
+
+        private void PauseProceed()
+        {
+            foreach (var info in GetProceedInfos(Types))
+                info.IsProceeding = false;
+        }
+
+        private void FinishProceed(bool _DropInfo)
+        {
+            var infos = GetProceedInfos(Types);
+            foreach (var info in infos)
+            {
+                info.IsProceeding = false;
+                info.ReadyToSwitchStage = false;
+                if (_DropInfo)
+                {
+                    info.CurrentPosition = info.StartPosition;
+                }
+            }
+        }
+
+        protected void ProceedCoroutine(IEnumerator _Coroutine)
+        {
+            m_Coroutines.Enqueue(_Coroutine);
+            Coroutines.Run(_Coroutine);
         }
         
         #endregion

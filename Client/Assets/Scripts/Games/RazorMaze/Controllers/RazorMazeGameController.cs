@@ -64,7 +64,7 @@ namespace Games.RazorMaze.Controllers
 
             var rotation                                        = Model.MazeRotation;
             var pathItemsProceeder                              = Model.PathItemsProceeder;
-            var movingItemsProceeder                            = Model.MovingItemsProceeder;
+            var trapsMovingProceeder                            = Model.TrapsMovingProceeder;
             var gravityItemsProceeder                           = Model.GravityItemsProceeder;
             var trapsReactProceeder                             = Model.TrapsReactProceeder;
             var trapsIncreasingProceeder                        = Model.TrapsIncreasingProceeder;
@@ -81,9 +81,9 @@ namespace Games.RazorMaze.Controllers
             rotation.Rotation                                   += OnMazeRotation;
             rotation.RotationFinished                           += OnMazeRotationFinished;
             
-            movingItemsProceeder.MazeItemMoveStarted            += OnMazeItemMoveStarted;
-            movingItemsProceeder.MazeItemMoveContinued          += OnMazeItemMoveContinued;
-            movingItemsProceeder.MazeItemMoveFinished           += OnMazeItemMoveFinished;
+            trapsMovingProceeder.MazeItemMoveStarted            += OnMazeItemMoveStarted;
+            trapsMovingProceeder.MazeItemMoveContinued          += OnMazeItemMoveContinued;
+            trapsMovingProceeder.MazeItemMoveFinished           += OnMazeItemMoveFinished;
 
             gravityItemsProceeder.MazeItemMoveStarted           += OnMazeItemMoveStarted;
             gravityItemsProceeder.MazeItemMoveContinued         += OnMazeItemMoveContinued;
@@ -105,10 +105,20 @@ namespace Games.RazorMaze.Controllers
             levelStaging.LevelStageChanged                      += View.OnLevelStageChanged;
             
             View.InputConfigurator.Command                      += OnInputCommand;
-            View.Common.GameLoopUpdate                      += OnGameLoopUpdate;
-
-            Model.PreInitialized                                += OnModelPreInitialized;
-            Model.PreInit();
+            View.Common.GameLoopUpdate                          += OnGameLoopUpdate;
+            
+            var iPreInits = GetInterfaceOfProceeders<IPreInit>();
+            int count = iPreInits.Count;
+            bool[] preInited = new bool[count];
+            for (int i = 0; i < count; i++)
+            {
+                var i1 = i;
+                iPreInits[i].PreInitialized += () => preInited[i1] = true;
+                iPreInits[i].PreInit();
+            }
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => preInited.Any(_PreInited => !_PreInited), 
+                () => PreInitialized?.Invoke()));
         }
         
         public void Init()
@@ -169,15 +179,19 @@ namespace Games.RazorMaze.Controllers
         private void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
         {
             View.MovingItemsGroup.OnMazeItemMoveStarted(_Args);
-            if (_Args.Item.Type == EMazeItemType.GravityBlock)
+            if (_Args.Info.Type == EMazeItemType.GravityBlock)
                 View.InputConfigurator.Locked = true;
         }
 
-        private void OnMazeItemMoveContinued(MazeItemMoveEventArgs _Args) => View.MovingItemsGroup.OnMazeItemMoveContinued(_Args);
+        private void OnMazeItemMoveContinued(MazeItemMoveEventArgs _Args)
+        {
+            View.MovingItemsGroup.OnMazeItemMoveContinued(_Args);
+        }
+
         private void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
         {
             View.MovingItemsGroup.OnMazeItemMoveFinished(_Args);
-            if (_Args.Item.Type == EMazeItemType.GravityBlock)
+            if (_Args.Info.Type == EMazeItemType.GravityBlock)
                 View.InputConfigurator.Locked = false;
         }
 
@@ -187,8 +201,6 @@ namespace Games.RazorMaze.Controllers
         private void OnPortalEvent(PortalEventArgs _Args) => View.PortalsGroup.OnPortalEvent(_Args);
         private void OnShredingerBlockEvent(ShredingerBlockArgs _Args) => View.ShredingerBlocksGroup.OnShredingerBlockEvent(_Args);
         private void OnSpringboardEvent(SpringboardEventArgs _Args) => View.SpringboardItemsGroup.OnSpringboardEvent(_Args);
-
-        private void OnModelPreInitialized() => PreInitialized?.Invoke();
         
         #endregion
         
@@ -198,7 +210,7 @@ namespace Games.RazorMaze.Controllers
         {
             var rotation                                        = Model.MazeRotation;
             var pathItemsProceeder                              = Model.PathItemsProceeder;
-            var movingItemsProceeder                            = Model.MovingItemsProceeder;
+            var movingItemsProceeder                            = Model.TrapsMovingProceeder;
             var gravityItemsProceeder                           = Model.GravityItemsProceeder;
             var trapsReactProceeder                             = Model.TrapsReactProceeder;
             var trapsIncreasingProceeder                        = Model.TrapsIncreasingProceeder;
@@ -240,8 +252,6 @@ namespace Games.RazorMaze.Controllers
             
             View.InputConfigurator.Command                      -= OnInputCommand;
             View.Common.GameLoopUpdate                          -= OnGameLoopUpdate;
-
-            Model.PreInitialized                                -= OnModelPreInitialized;
         }
         
         private List<T> GetInterfaceOfProceeders<T>() where T : class

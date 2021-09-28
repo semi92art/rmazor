@@ -11,7 +11,7 @@ namespace Games.RazorMaze.Models
         IModelMazeData                            Data { get; }
         IModelMazeRotation                        MazeRotation { get; }
         IPathItemsProceeder                       PathItemsProceeder { get; }
-        IMovingItemsProceeder                     MovingItemsProceeder { get; }
+        ITrapsMovingProceeder                     TrapsMovingProceeder { get; }
         IGravityItemsProceeder                    GravityItemsProceeder { get; }
         ITrapsReactProceeder                      TrapsReactProceeder { get; }
         ITrapsIncreasingProceeder                 TrapsIncreasingProceeder { get; }
@@ -34,7 +34,7 @@ namespace Games.RazorMaze.Models
         public IModelMazeData                     Data { get; }
         public IModelMazeRotation                 MazeRotation { get; }
         public IPathItemsProceeder                PathItemsProceeder { get; }
-        public IMovingItemsProceeder              MovingItemsProceeder { get; }
+        public ITrapsMovingProceeder              TrapsMovingProceeder { get; }
         public IGravityItemsProceeder             GravityItemsProceeder { get; }
         public ITrapsReactProceeder               TrapsReactProceeder { get; }
         public ITrapsIncreasingProceeder          TrapsIncreasingProceeder { get; }
@@ -50,7 +50,7 @@ namespace Games.RazorMaze.Models
             IModelMazeData                        _Data,
             IModelMazeRotation                    _MazeRotation,
             IPathItemsProceeder                   _PathItemsProceeder,
-            IMovingItemsProceeder                 _MovingItemsProceeder,
+            ITrapsMovingProceeder                 _TrapsMovingProceeder,
             IGravityItemsProceeder                _GravityItemsProceeder,
             ITrapsReactProceeder                  _TrapsReactProceeder,
             ITrapsIncreasingProceeder             _TrapsIncreasingProceeder,
@@ -65,7 +65,7 @@ namespace Games.RazorMaze.Models
             Data                                  = _Data;
             MazeRotation                          = _MazeRotation;
             PathItemsProceeder                    = _PathItemsProceeder;
-            MovingItemsProceeder                  = _MovingItemsProceeder;
+            TrapsMovingProceeder                  = _TrapsMovingProceeder;
             GravityItemsProceeder                 = _GravityItemsProceeder;
             TrapsReactProceeder                   = _TrapsReactProceeder;
             TrapsIncreasingProceeder              = _TrapsIncreasingProceeder;
@@ -82,7 +82,8 @@ namespace Games.RazorMaze.Models
         {
             foreach (var item in GetInterfaceOfProceeders<IOnGameLoopUpdate>())
                 Data.GameLoopUpdate += item.OnGameLoopUpdate;
-            
+
+            Data.MazeInfoSet                           += PathItemsProceeder.OnMazeInfoSet;
             MazeRotation.RotationFinished              += MazeOnRotationFinished;
             Character.AliveOrDeath                     += OnCharacterAliveOrDeath;
             Character.CharacterMoveStarted             += CharacterOnMoveStarted;
@@ -94,7 +95,16 @@ namespace Games.RazorMaze.Models
             PortalsProceeder.PortalEvent               += Character.OnPortal;
             SpringboardProceeder.SpringboardEvent      += Character.OnSpringboard;
             PathItemsProceeder.AllPathsProceededEvent  += AllPathsProceededEvent;
-            LevelStaging.LevelStageChanged += LevelStageChanged;
+            LevelStaging.LevelStageChanged             += LevelStageChanged;
+
+            Character.GetProceedInfos = _Type =>
+            {
+                var allProceeders = GetInterfaceOfProceeders<IItemsProceeder>();
+                var result = allProceeders
+                    .Where(_P => _P.Types.Contains(_Type))
+                    .SelectMany(_P => _P.ProceedInfos[_Type]);
+                return result;
+            };
             
             Data.PreInitialized += () => PreInitialized?.Invoke();
             Data.PreInit();
@@ -186,23 +196,29 @@ namespace Games.RazorMaze.Models
         
         private void InputSchedulerOnOtherCommand(int _Command, object[] _Args)
         {
-            if (_Command == (int) EInputCommand.LoadLevel)
+            switch (_Command)
             {
-                // MazeInfo info = _Args[0] as MazeInfo;
-                // int levelIndex = (int) _Args[1];
-                // LevelStaging.LoadLevel(info, levelIndex);
-                LevelStaging.LoadLevel(Data.Info, Data.LevelIndex);
+                case (int) EInputCommand.LoadLevel:
+                    LevelStaging.LoadLevel(Data.Info, Data.LevelIndex);
+                    break;
+                case (int)EInputCommand.ReadyToContinueLevel:
+                    LevelStaging.ReadyToContinueLevel();
+                    break;
+                case (int)EInputCommand.ContinueLevel:
+                    LevelStaging.StartOrContinueLevel();
+                    break;
+                case (int)EInputCommand.FinishLevel:
+                    LevelStaging.FinishLevel();
+                    break;
+                case (int)EInputCommand.PauseLevel:
+                    LevelStaging.PauseLevel();
+                    break;
+                case (int)EInputCommand.UnloadLevel:
+                    LevelStaging.UnloadLevel();
+                    break;
+                default:
+                    throw new SwitchCaseNotImplementedException(_Command);
             }
-            else if (_Command == (int)EInputCommand.ReadyToContinueLevel)
-                LevelStaging.ReadyToContinueLevel();
-            else if (_Command == (int)EInputCommand.ContinueLevel)
-                LevelStaging.StartOrContinueLevel();
-            else if (_Command == (int)EInputCommand.FinishLevel)
-                LevelStaging.FinishLevel();
-            else if (_Command == (int)EInputCommand.PauseLevel)
-                LevelStaging.PauseLevel();
-            else if (_Command == (int)EInputCommand.UnloadLevel)
-                LevelStaging.UnloadLevel();
         }
         
         private List<T> GetInterfaceOfProceeders<T>() where T : class
@@ -211,7 +227,7 @@ namespace Games.RazorMaze.Models
             {
                 Character                 as T,
                 PathItemsProceeder        as T,
-                MovingItemsProceeder      as T,
+                TrapsMovingProceeder      as T,
                 GravityItemsProceeder     as T,
                 TrapsReactProceeder       as T,
                 TrapsIncreasingProceeder  as T,

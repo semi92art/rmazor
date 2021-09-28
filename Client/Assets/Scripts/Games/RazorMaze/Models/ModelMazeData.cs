@@ -8,17 +8,17 @@ namespace Games.RazorMaze.Models
 {
     public enum MazeOrientation { North, East, South, West }
     public enum EMazeMoveDirection { Up, Right, Down, Left }
-    
+
+    public delegate void MazeInfoHandler(MazeInfo Info);
     
     public interface IModelMazeData : IPreInit
     {
+        event MazeInfoHandler MazeInfoSet;
         event NoArgsHandler GameLoopUpdate;
         
         int LevelIndex { get; set; }
         MazeInfo Info { get; set; }
         MazeOrientation Orientation { get; set; }
-        Dictionary<V2Int, bool> PathProceeds { get; }
-        Dictionary<EMazeItemType, Dictionary<MazeItem, IMazeItemProceedInfo>> ProceedInfos { get; }
         bool ProceedingControls { get; set; }
         void OnGameLoopUpdate();
     }
@@ -48,10 +48,10 @@ namespace Games.RazorMaze.Models
         #region api
 
         public event NoArgsHandler PreInitialized;
+        public event MazeInfoHandler MazeInfoSet;
         public event NoArgsHandler GameLoopUpdate;
         public int LevelIndex { get; set; }
         public MazeOrientation Orientation { get; set; } = MazeOrientation.North;
-        public Dictionary<V2Int, bool> PathProceeds { get; private set; }
 
         public Dictionary<EMazeItemType, Dictionary<MazeItem, IMazeItemProceedInfo>> ProceedInfos { get; private set; } 
             = new Dictionary<EMazeItemType, Dictionary<MazeItem, IMazeItemProceedInfo>>();
@@ -66,8 +66,7 @@ namespace Games.RazorMaze.Models
             set
             {
                 m_Info = CorrectInfo(value);
-                PathProceeds = m_Info.Path.ToDictionary(_P => _P, _P => false);
-                PathProceeds[m_Info.Path[0]] = true;
+                MazeInfoSet?.Invoke(m_Info);
             }
         }
         

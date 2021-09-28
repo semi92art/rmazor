@@ -29,7 +29,6 @@ namespace Games.RazorMaze.Views.Characters
 
         #endregion
         
-        
         #region api
         
         public event NoArgsHandler Initialized;

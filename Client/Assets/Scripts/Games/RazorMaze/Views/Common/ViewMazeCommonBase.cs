@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using DI.Extensions;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.MazeItems;
@@ -56,8 +57,8 @@ namespace Games.RazorMaze.Views.Common
             GameLoopUpdate?.Invoke();
         }
 
-        public abstract IViewMazeItem GetItem(MazeItem _Item);
-        public virtual T GetItem<T>(MazeItem _Item)  where T : IViewMazeItem => (T) GetItem(_Item);
+        public abstract IViewMazeItem GetItem(IMazeItemProceedInfo _Info);
+        public virtual T GetItem<T>(IMazeItemProceedInfo _Info)  where T : IViewMazeItem => (T) GetItem(_Info);
 
         #endregion
 

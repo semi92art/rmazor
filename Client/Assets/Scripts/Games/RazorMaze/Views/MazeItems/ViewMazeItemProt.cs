@@ -6,6 +6,7 @@ using Entities;
 using Exceptions;
 using GameHelpers;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.MazeItems.Props;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
@@ -75,9 +76,19 @@ namespace Games.RazorMaze.Views.MazeItems
             transform.localScale = _Scale * Vector3.one;
         }
 
-        public bool Equal(MazeItem _MazeItem)
+        public bool Equal(IMazeItemProceedInfo _Info)
         {
-            return _MazeItem.Path == props.Path && _MazeItem.Type == props.Type;
+            if (Props == null)
+                return false;
+            if (_Info.Type != Props.Type)
+                return false;
+            if (_Info.StartPosition != Props.Position)
+                return false;
+            if (_Info.Path.Count != Props.Path.Count)
+                return false;
+            if (_Info.Path.Where((_Pos, _Index) => _Pos != Props.Path[_Index]).Any())
+                return false;
+            return true;
         }
         
         #endregion

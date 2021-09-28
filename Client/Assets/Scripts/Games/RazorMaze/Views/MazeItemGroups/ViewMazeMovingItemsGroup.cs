@@ -2,6 +2,7 @@
 using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
+using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.MazeItems;
 using Shapes;
@@ -24,8 +25,8 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         #region nonpublic members
         
-        private readonly Dictionary<MazeItem, ViewMovingItemInfo> m_ItemsMoving =
-            new Dictionary<MazeItem, ViewMovingItemInfo>();
+        private readonly Dictionary<IMazeItemProceedInfo, ViewMovingItemInfo> m_ItemsMoving =
+            new Dictionary<IMazeItemProceedInfo, ViewMovingItemInfo>();
         
         #endregion
         
@@ -54,31 +55,31 @@ namespace Games.RazorMaze.Views.MazeItemGroups
 
         public void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
         {
-            if (m_ItemsMoving.ContainsKey(_Args.Item))
-                m_ItemsMoving.Remove(_Args.Item);
-            m_ItemsMoving.Add(_Args.Item, new ViewMovingItemInfo
+            if (m_ItemsMoving.ContainsKey(_Args.Info))
+                m_ItemsMoving.Remove(_Args.Info);
+            m_ItemsMoving.Add(_Args.Info, new ViewMovingItemInfo
             {
                 From = CoordinateConverter.ToLocalMazeItemPosition(_Args.From),
                 To = CoordinateConverter.ToLocalMazeItemPosition(_Args.To),
                 BusyPositions = new Dictionary<V2Int, Disc>()
             });
-            (Common.GetItem(_Args.Item) as IViewMazeItemMovingBlock)?.OnMoveStarted(_Args);
+            (Common.GetItem(_Args.Info) as IViewMazeItemMovingBlock)?.OnMoveStarted(_Args);
         }
 
         public void OnMazeItemMoveContinued(MazeItemMoveEventArgs _Args)
         {
-            if (!m_ItemsMoving.ContainsKey(_Args.Item))
+            if (!m_ItemsMoving.ContainsKey(_Args.Info))
                 return;
-            (Common.GetItem(_Args.Item) as IViewMazeItemMovingBlock)?.OnMoving(_Args);
+            (Common.GetItem(_Args.Info) as IViewMazeItemMovingBlock)?.OnMoving(_Args);
         }
         
         public void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
         {
-            if (!m_ItemsMoving.ContainsKey(_Args.Item))
+            if (!m_ItemsMoving.ContainsKey(_Args.Info))
                 return;
             
-            (Common.GetItem(_Args.Item) as IViewMazeItemMovingBlock)?.OnMoveFinished(_Args);
-            m_ItemsMoving.Remove(_Args.Item);
+            (Common.GetItem(_Args.Info) as IViewMazeItemMovingBlock)?.OnMoveFinished(_Args);
+            m_ItemsMoving.Remove(_Args.Info);
         }
         
         #endregion

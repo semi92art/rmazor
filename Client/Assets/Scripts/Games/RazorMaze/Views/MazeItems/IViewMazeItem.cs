@@ -1,5 +1,6 @@
 ﻿using System;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.MazeItems.Props;
 using SpawnPools;
 using UnityEngine;
@@ -15,6 +16,6 @@ namespace Games.RazorMaze.Views.MazeItems
         void Init(ViewMazeItemProps _Props);
         void SetLocalPosition(Vector2 _Position);
         void SetLocalScale(float _Scale);
-        bool Equal(MazeItem _MazeItem);
+        bool Equal(IMazeItemProceedInfo _MazeItem);
     }
 }

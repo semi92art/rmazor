@@ -53,13 +53,13 @@ namespace Games.RazorMaze.Views.MazeItemGroups
 
         private void HandleTurretPreShot(TurretShotEventArgs _Args)
         {
-            var item = Common.GetItem<IViewMazeItemTurret>(_Args.Item);
+            var item = Common.GetItem<IViewMazeItemTurret>(_Args.Info);
             item?.PreShoot(_Args);
         }
         
         private void HandleTurretShot(TurretShotEventArgs _Args)
         {
-            var item = Common.GetItem<IViewMazeItemTurret>(_Args.Item);
+            var item = Common.GetItem<IViewMazeItemTurret>(_Args.Info);
             item?.Shoot(_Args);
         }
 

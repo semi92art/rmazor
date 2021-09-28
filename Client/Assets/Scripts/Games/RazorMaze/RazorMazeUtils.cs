@@ -204,14 +204,16 @@ namespace Games.RazorMaze
         public static void DoAppearTransitionSimple(
             bool _Appear,
             IGameTicker _GameTicker,
-            Dictionary<object[], Color> _Sets,
+            Dictionary<object[], Func<Color>> _Sets,
             float _TransitionTime = 1f,
             UnityAction _OnFinish = null)
         {
             foreach (var set in _Sets)
             {
-                var startCol = _Appear ? set.Value.SetA(0f) : set.Value;
-                var endCol = !_Appear ? set.Value.SetA(0f) : set.Value;
+                Func<Color> toAlpha0 = () => set.Value().SetA(0f); 
+                
+                var startCol = _Appear ? toAlpha0 : set.Value;
+                var endCol = !_Appear ? toAlpha0 : set.Value;
                 var shapes = set.Key.Where(_Shape => _Shape != null).ToList();
                 if (_Appear)
                     foreach (var shape in shapes)
@@ -229,7 +231,7 @@ namespace Games.RazorMaze
                     _TransitionTime,
                     _Progress =>
                     {
-                        var col = Color.Lerp(startCol, endCol, _Progress);
+                        var col = Color.Lerp(startCol(), endCol(), _Progress);
                         foreach (var shape in shapes)
                         {
                             if (shape is ShapeRenderer shapeRenderer)
@@ -239,7 +241,7 @@ namespace Games.RazorMaze
                             else if (shape is MeshRenderer meshRenderer)
                             {
                                 foreach (var material in meshRenderer.materials)
-                                    material.color = Color.Lerp(startCol, endCol, _Progress);
+                                    material.color = col;
                             }
                         }
                     },

@@ -154,9 +154,9 @@ namespace Games.RazorMaze.Views.MazeItems
                 () => !Initialized,
                 () =>
                 {
-                    var sets = new Dictionary<object[], Color>
+                    var sets = new Dictionary<object[], System.Func<Color>>
                     {
-                        {new object[] {m_Saw}, DrawingUtils.ColorLines}
+                        {new object[] {m_Saw}, () => DrawingUtils.ColorLines}
                     };
 
                     RazorMazeUtils.DoAppearTransitionSimple(

@@ -13,7 +13,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         public void OnSpringboardEvent(SpringboardEventArgs _Args)
         {
-            var item = Common.GetItem<IViewMazeItemSpringboard>(_Args.Item);
+            var item = Common.GetItem<IViewMazeItemSpringboard>(_Args.Info);
             item.MakeJump(_Args);
         }
 

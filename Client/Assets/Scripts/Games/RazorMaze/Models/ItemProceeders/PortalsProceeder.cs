@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Games.RazorMaze.Models.ProceedInfos;
 using Ticker;
 using UnityEngine;
 
@@ -8,12 +9,12 @@ namespace Games.RazorMaze.Models.ItemProceeders
     public class PortalEventArgs : EventArgs
     {
         public EMazeMoveDirection Direction { get; }
-        public MazeItem Item { get; }
+        public IMazeItemProceedInfo Info { get; }
 
-        public PortalEventArgs(EMazeMoveDirection _Direction, MazeItem _Item)
+        public PortalEventArgs(EMazeMoveDirection _Direction, IMazeItemProceedInfo _Info)
         {
             Direction = _Direction;
-            Item = _Item;
+            Info = _Info;
         }
     }
 
@@ -30,8 +31,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         #region nonpublic members
 
         private PortalEventArgs m_LastArgs;
-        protected override EMazeItemType[] Types => new[] {EMazeItemType.Portal};
-        
+
         #endregion
 
         #region inject
@@ -47,18 +47,18 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region api
         
+        public override EMazeItemType[] Types => new[] {EMazeItemType.Portal};
         public event PortalEventHandler PortalEvent;
         
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
-            var infos = GetProceedInfos(Types);
-            var possiblePortals = (from info in infos.Values
-                    where RazorMazeUtils.PathContainsItem(_Args.From, _Args.To, info.Item.Position) 
+            var possiblePortals = (from info in GetProceedInfos(Types)
+                    where RazorMazeUtils.PathContainsItem(_Args.From, _Args.To, info.CurrentPosition) 
                           && RazorMazeUtils.CompareItemsOnPath(
-                        _Args.From, _Args.To, _Args.Position, info.Item.Position) >= 0
-                    select info.Item)
+                        _Args.From, _Args.To, _Args.Position, info.CurrentPosition) >= 0
+                    select info)
                 .ToList();
-            MazeItem portalItem = null;
+            IMazeItemProceedInfo portalItem = null;
 
             if (possiblePortals.Count == 1)
                 portalItem = possiblePortals.First();
@@ -68,7 +68,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 foreach (var possiblePortal in possiblePortals)
                 {
                     float newDistToStart = Vector2.Distance(
-                        _Args.From.ToVector2(), possiblePortal.Position.ToVector2());
+                        _Args.From.ToVector2(), possiblePortal.CurrentPosition.ToVector2());
                     if (newDistToStart > distToStart)
                         continue;
                     portalItem = possiblePortal;
@@ -83,7 +83,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             }
             
             var V = (_Args.To - _Args.From).Normalized;
-            var A = portalItem.Position.ToVector2();
+            var A = portalItem.CurrentPosition.ToVector2();
             var B = _Args.From.ToVector2() + V * _Args.Progress * (_Args.To - _Args.From).ToVector2().magnitude;
             var C = V * (A - B);
             var m = C.x + C.y;

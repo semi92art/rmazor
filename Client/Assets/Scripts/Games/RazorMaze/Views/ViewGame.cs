@@ -4,6 +4,7 @@ using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Characters;
 using Games.RazorMaze.Views.Common;
+using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItemGroups;
 using Games.RazorMaze.Views.Rotation;
@@ -15,6 +16,7 @@ namespace Games.RazorMaze.Views
 {
     public class ViewGame : IViewGame
     {
+        public IContainersGetter ContainersGetter { get; }
         public IViewUI UI { get; }
         public IInputConfigurator InputConfigurator { get; }
         public IViewCharacter Character { get; }
@@ -33,6 +35,7 @@ namespace Games.RazorMaze.Views
         private IGameTicker GameTicker { get; }
 
         public ViewGame(
+            IContainersGetter _ContainersGetter,
             IViewUI _UI,
             IInputConfigurator _InputConfigurator,
             IViewCharacter _Character,
@@ -49,6 +52,7 @@ namespace Games.RazorMaze.Views
             IViewMazeSpringboardItemsGroup _SpringboardItemsGroup,
             IGameTicker _GameTicker)
         {
+            ContainersGetter = _ContainersGetter;
             UI = _UI;
             InputConfigurator = _InputConfigurator;
             Character = _Character;
@@ -66,8 +70,29 @@ namespace Games.RazorMaze.Views
             GameTicker = _GameTicker;
         }
         
+        public event NoArgsHandler PreInitialized;
         public event NoArgsHandler Initialized;
         public event NoArgsHandler PostInitialized;
+        
+        public void PreInit()
+        {
+            var iBackColChangedProceeders = GetInterfaceOfProceeders<IOnBackgroundColorChanged>();
+            foreach (var proceeder in iBackColChangedProceeders)
+                Background.BackgroundColorChanged += proceeder.OnBackgroundColorChanged;
+            
+            var initProceeders = GetInterfaceOfProceeders<IPreInit>();
+            int count = initProceeders.Count;
+            bool[] preInited = new bool[count];
+            for (int i = 0; i < count; i++)
+            {
+                var i1 = i;
+                initProceeders[i].PreInitialized += () => preInited[i1] = true;
+                initProceeders[i].PreInit();
+            }
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => preInited.Any(_PreInited => !_PreInited), 
+                () => PreInitialized?.Invoke()));
+        }
 
         public void Init()
         {
@@ -80,10 +105,6 @@ namespace Games.RazorMaze.Views
                 initProceeders[i].Initialized += () => initialized[i1] = true;
                 initProceeders[i].Init();
             }
-
-            var iBackColChangedProceeders = GetInterfaceOfProceeders<IOnBackgroundColorChanged>();
-            foreach (var proceeder in iBackColChangedProceeders)
-                Background.BackgroundColorChanged += proceeder.OnBackgroundColorChanged;
             
             Coroutines.Run(Coroutines.WaitWhile(
                 () => initialized.Any(_Initialized => !_Initialized), 

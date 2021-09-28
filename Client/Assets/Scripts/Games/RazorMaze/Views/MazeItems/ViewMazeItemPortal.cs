@@ -205,10 +205,10 @@ namespace Games.RazorMaze.Views.MazeItems
                     RazorMazeUtils.DoAppearTransitionSimple(
                         _Appear,
                         GameTicker,
-                        new Dictionary<object[], Color>
+                        new Dictionary<object[], System.Func<Color>>
                         {
-                            {new [] {m_Center}, DrawingUtils.ColorLines},
-                            {m_Orbits.Cast<object>().ToArray(), DrawingUtils.ColorLines}
+                            {new [] {m_Center}, () => DrawingUtils.ColorLines},
+                            {m_Orbits.Cast<object>().ToArray(), () => DrawingUtils.ColorLines}
                         },
                         _OnFinish: () =>
                         {

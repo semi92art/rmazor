@@ -45,7 +45,7 @@ namespace Mono_Installers
             Container.Bind<ICoordinateConverter>()              .To<CoordinateConverter>()                  .AsSingle();
             Container.Bind<IContainersGetter>()                 .To<ContainersGetter>()                     .AsSingle();
             Container.Bind<IPathItemsProceeder>()               .To<PathItemsProceeder>()                   .AsSingle();
-            Container.Bind<IMovingItemsProceeder>()             .To<TrapsMovingProceeder>()                 .AsSingle();
+            Container.Bind<ITrapsMovingProceeder>()             .To<TrapsMovingProceeder>()                 .AsSingle();
             Container.Bind<IGravityItemsProceeder>()            .To<GravityItemsProceeder>()                .AsSingle();
             Container.Bind<ITrapsReactProceeder>()              .To<TrapsReactProceeder>()                  .AsSingle();
             Container.Bind<ITurretsProceeder>()                 .To<TurretsProceeder>()                     .AsSingle();

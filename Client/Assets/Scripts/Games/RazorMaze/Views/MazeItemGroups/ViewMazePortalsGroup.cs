@@ -20,10 +20,10 @@ namespace Games.RazorMaze.Views.MazeItemGroups
 
         public void OnPortalEvent(PortalEventArgs _Args)
         {
-            Common.GetItem<IViewMazeItemPortal>(_Args.Item).DoTeleport(_Args);
+            Common.GetItem<IViewMazeItemPortal>(_Args.Info).DoTeleport(_Args);
             var pairPortal = Common.MazeItems
                 .Where(_Item => _Item is IViewMazeItemPortal)
-                .SingleOrDefault(_Item => _Item.Props.Position == _Args.Item.Pair) as IViewMazeItemPortal;
+                .SingleOrDefault(_Item => _Item.Props.Position == _Args.Info.Pair) as IViewMazeItemPortal;
             pairPortal?.DoTeleport(_Args);
         }
         

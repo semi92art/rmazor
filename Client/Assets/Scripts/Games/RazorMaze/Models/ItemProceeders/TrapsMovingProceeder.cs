@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Linq;
 using Entities;
 using Exceptions;
@@ -12,55 +10,16 @@ using Utils;
 
 namespace Games.RazorMaze.Models.ItemProceeders
 {
-    public class MazeItemMoveEventArgs : EventArgs
-    {
-        public MazeItem Item { get; }
-        public V2Int From { get; }
-        public V2Int To { get; }
-        public float Speed { get; }
-        public float Progress { get; }
-        public List<V2Int> BusyPositions { get; }
-        public bool Stopped { get; }
 
-        public MazeItemMoveEventArgs(
-            MazeItem _Item,
-            V2Int _From,
-            V2Int _To, 
-            float _Speed,
-            float _Progress, 
-            List<V2Int> _BusyPositions, bool _Stopped = false)
-        {
-            Item = _Item;
-            From = _From;
-            To = _To;
-            Speed = _Speed;
-            Progress = _Progress;
-            BusyPositions = _BusyPositions;
-            Stopped = _Stopped;
-        }
-    }
+    public interface ITrapsMovingProceeder : IMovingItemsProceeder { }
     
-    public delegate void MazeItemMoveHandler(MazeItemMoveEventArgs Args);
-    
-    public interface IMovingItemsProceeder : IItemsProceeder
-    {
-        event MazeItemMoveHandler MazeItemMoveStarted;
-        event MazeItemMoveHandler MazeItemMoveContinued;
-        event MazeItemMoveHandler MazeItemMoveFinished;
-    }
 
-    public class TrapsMovingProceeder : ItemsProceederBase, IOnGameLoopUpdate, IMovingItemsProceeder
+    public class TrapsMovingProceeder : MovingItemsProceederBase, IOnGameLoopUpdate, ITrapsMovingProceeder
     {
         #region constants
 
         public const int StageMoving = 1;
 
-        #endregion
-        
-        #region nonpublic members
-        
-        protected override EMazeItemType[] Types => new[] {EMazeItemType.TrapMoving};
-        
         #endregion
 
         #region inject
@@ -76,9 +35,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region api
         
-        public event MazeItemMoveHandler MazeItemMoveStarted;
-        public event MazeItemMoveHandler MazeItemMoveContinued;
-        public event MazeItemMoveHandler MazeItemMoveFinished;
+        public override EMazeItemType[] Types => new[] {EMazeItemType.TrapMoving};
 
         public void OnGameLoopUpdate()
         {
@@ -91,12 +48,12 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         private void ProceedTrapsMoving()
         {
-            var infos = GetProceedInfos(Types).Values;
+            var infos = GetProceedInfos(Types);
             foreach (var info in infos.Where(_Info => _Info.IsProceeding))
             {
                 if (info.ProceedingStage != StageIdle)
                     continue;
-                CheckForCharacterDeath(info, info.Item.Position.ToVector2());
+                CheckForCharacterDeath(info, info.CurrentPosition.ToVector2());
                 info.PauseTimer += Time.deltaTime;
                 if (info.PauseTimer < Settings.movingItemsPause)
                     continue;
@@ -110,11 +67,10 @@ namespace Games.RazorMaze.Models.ItemProceeders
             IMazeItemProceedInfo _Info, 
             UnityAction _OnFinish)
         {
-            var item = _Info.Item;
-            V2Int from = item.Position;
+            V2Int from = _Info.CurrentPosition;
             V2Int to;
-            int idx = item.Path.IndexOf(item.Position);
-            var path = item.Path.ToList();
+            int idx = _Info.Path.IndexOf(_Info.CurrentPosition);
+            var path = _Info.Path.ToList();
             switch (_Info.MoveByPathDirection)
             {
                 case EMazeItemMoveByPathDirection.Forward:
@@ -139,7 +95,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     break;
                 default: throw new SwitchCaseNotImplementedException(_Info.MoveByPathDirection);
             }
-            Coroutines.Run(MoveTrapMovingCoroutine(_Info, from, to, _OnFinish));
+            var coroutine = MoveTrapMovingCoroutine(_Info, from, to, _OnFinish);
+            ProceedCoroutine(coroutine);
         }
         
         private IEnumerator MoveTrapMovingCoroutine(
@@ -149,8 +106,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
             UnityAction _OnFinish)
         {
             _Info.IsMoving = true;
-            MazeItemMoveStarted?.Invoke(new MazeItemMoveEventArgs(
-                _Info.Item, _From, _To, Settings.movingItemsSpeed,0, _Info.BusyPositions));
+            InvokeMoveStarted(new MazeItemMoveEventArgs(
+                _Info, _From, _To, Settings.movingItemsSpeed,0, _Info.BusyPositions));
             float distance = V2Int.Distance(_From, _To);
             yield return Coroutines.Lerp(
                 0f,
@@ -159,21 +116,20 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 _Progress =>
                 {
                     var precisePosition = V2Int.Lerp(_From, _To, _Progress);
-                    _Info.Item.Position = V2Int.Round(precisePosition);
+                    _Info.CurrentPosition = V2Int.Round(precisePosition);
                     CheckForCharacterDeath(_Info, precisePosition);
-                    MazeItemMoveContinued?.Invoke(
-                        new MazeItemMoveEventArgs(_Info.Item, _From, _To, Settings.movingItemsSpeed, _Progress,
-                            _Info.BusyPositions));
+                    InvokeMoveContinued(new MazeItemMoveEventArgs(
+                        _Info, _From, _To, Settings.movingItemsSpeed, _Progress, _Info.BusyPositions));
                 },
                 GameTicker,
                 (_Stopped, _Progress) =>
                 {
-                    _Info.Item.Position = _To;
+                    _Info.CurrentPosition = _To;
                     float progress = _Stopped ? _Progress : 1;
                     _Info.IsMoving = false;
                     _OnFinish?.Invoke();
-                    MazeItemMoveFinished?.Invoke(new MazeItemMoveEventArgs(
-                        _Info.Item, _From, _To, Settings.movingItemsSpeed,progress, _Info.BusyPositions, _Stopped));
+                    InvokeMoveFinished(new MazeItemMoveEventArgs(
+                        _Info, _From, _To, Settings.movingItemsSpeed,progress, _Info.BusyPositions, _Stopped));
                 });
         }
         
