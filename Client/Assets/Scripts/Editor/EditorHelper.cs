@@ -53,14 +53,14 @@ public class EditorHelper : EditorWindow
     }
     
 #if UNITY_ANDROID
-    // [MenuItem("Tools/Android Logcat",false, 4)]
-    // public static void ShowAndroidLogcatWindow()
-    // {
-    //     Type tLogcat = typeof(ColumnData).Assembly.GetType("Unity.Android.Logcat.AndroidLogcatConsoleWindow");
-    //     MethodInfo mInfoShow = tLogcat?.GetMethod("ShowWindow",
-    //         BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
-    //     mInfoShow?.Invoke(null, null);
-    // }
+    [MenuItem("Tools/Android Logcat",false, 4)]
+    public static void ShowAndroidLogcatWindow()
+    {
+        Type tLogcat = typeof(ColumnData).Assembly.GetType("Unity.Android.Logcat.AndroidLogcatConsoleWindow");
+        MethodInfo mInfoShow = tLogcat?.GetMethod("ShowWindow",
+            BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+        mInfoShow?.Invoke(null, null);
+    }
 #endif
     
     [MenuItem("Tools/Color Palette", false, 5)]
