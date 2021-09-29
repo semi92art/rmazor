@@ -6,10 +6,8 @@ using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.MazeItems;
-using Games.RazorMaze.Views.Utils;
 using SpawnPools;
 using Ticker;
-using UnityEngine;
 
 namespace Games.RazorMaze.Views.Common
 {

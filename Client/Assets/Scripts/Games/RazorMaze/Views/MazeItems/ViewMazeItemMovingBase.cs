@@ -15,11 +15,6 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         #region shapes
         
-        protected override object[] Shapes => m_PathLines
-            .Cast<object>()
-            .Concat(m_PathJoints)
-            .ToArray();
-
         protected readonly List<Polyline> m_PathLines = new List<Polyline>();
         protected readonly List<Disc> m_PathJoints = new List<Disc>();
 
@@ -63,43 +58,36 @@ namespace Games.RazorMaze.Views.MazeItems
             m_PathLines.Clear();
             m_PathJoints.Clear();
             
-            var items = Model.Data.Info.MazeItems
-                .Where(_O => _O.Type == EMazeItemType.GravityBlock
-                             || _O.Type == EMazeItemType.GravityTrap
-                             || _O.Type == EMazeItemType.TrapMoving);
-            foreach (var obs in items)
-            {
-                var points = obs.Path
-                    .Select(_P => CoordinateConverter.ToLocalMazeItemPosition(_P))
-                    .ToList();
+            var points = Props.Path
+                .Select(_P => CoordinateConverter.ToLocalMazeItemPosition(_P))
+                .ToList();
 
-                var go = new GameObject("Line");
-                go.SetParent(ContainersGetter.MazeItemsContainer);
-                go.transform.SetLocalPosXY(Vector2.zero);
-                var line = go.AddComponent<Polyline>();
-                line.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
-                line.Color = DrawingUtils.ColorLines.SetA(0.5f);
-                line.SetPoints(points);
-                line.Closed = false;
-                line.SortingOrder = DrawingUtils.GetPathLineSortingOrder();
-                m_PathLines.Add(line);
-                
-                foreach (var point in points)
-                {
-                    var go1 = new GameObject("Joint");
-                    go1.SetParent(ContainersGetter.MazeItemsContainer);
-                    var joint = go1.AddComponent<Disc>();
-                    go1.transform.SetLocalPosXY(point);
-                    joint.Color = DrawingUtils.ColorLines;
-                    joint.Radius = ViewSettings.LineWidth * CoordinateConverter.GetScale() * 2f;
-                    joint.Type = DiscType.Disc;
-                    joint.SortingOrder = DrawingUtils.GetPathLineJointSortingOrder();
-                    m_PathJoints.Add(joint);
-                }
-            }
+            var go = new GameObject("Line");
+            go.SetParent(ContainersGetter.MazeItemsContainer);
+            go.transform.SetLocalPosXY(Vector2.zero);
+            var line = go.AddComponent<Polyline>();
+            line.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
+            line.Color = DrawingUtils.ColorLines.SetA(0.5f);
+            line.SetPoints(points);
+            line.Closed = false;
+            line.SortingOrder = DrawingUtils.GetPathLineSortingOrder();
+            m_PathLines.Add(line);
             
-            foreach (var line in m_PathLines)
-                line.enabled = false;
+            foreach (var point in points)
+            {
+                var go1 = new GameObject("Joint");
+                go1.SetParent(ContainersGetter.MazeItemsContainer);
+                var joint = go1.AddComponent<Disc>();
+                go1.transform.SetLocalPosXY(point);
+                joint.Color = DrawingUtils.ColorLines;
+                joint.Radius = ViewSettings.LineWidth * CoordinateConverter.GetScale() * 2f;
+                joint.Type = DiscType.Disc;
+                joint.SortingOrder = DrawingUtils.GetPathLineJointSortingOrder();
+                m_PathJoints.Add(joint);
+            }
+                
+            foreach (var pathLine in m_PathLines)
+                pathLine.enabled = false;
             foreach (var joint in m_PathJoints)
                 joint.enabled = false;
         }
@@ -127,7 +115,7 @@ namespace Games.RazorMaze.Views.MazeItems
                         _Appear,
                         GameTicker,
                         sets,
-                        Props.Position);
+                        Props.Path.First());
                 }));
         }
         

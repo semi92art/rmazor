@@ -9,6 +9,7 @@ namespace Games.RazorMaze
         public float mazeRotateSpeed;
         
         public float movingItemsSpeed;
+        public float gravityBlockSpeed;
         public float gravityTrapSpeed;
         public float movingItemsPause;
         

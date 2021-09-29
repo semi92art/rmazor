@@ -25,7 +25,7 @@ MonoBehaviour:
     - item: {fileID: 3637443925060811094, guid: fec643d02fe70da4cb94c3c55c147a1b,
         type: 3}
       name: turret_bullet_mask
-    - item: {fileID: 2184672177264980343, guid: 5cd7aa7d10af9624294285826f8f422c,
+    - item: {fileID: 2184672177264980343, guid: 53c46a0773884dd4b9770b2fb98d5b84,
         type: 3}
       name: gravity_trap
     - item: {fileID: 21300000, guid: e8ae85c2a8ee24f1faee1585c7ab403e, type: 3}
@@ -36,3 +36,7 @@ MonoBehaviour:
     - item: {fileID: 1560829925993726868, guid: c2c1f5da866cb11419b2a869e97445e1,
         type: 3}
       name: character_death
+    - item: {fileID: 2100000, guid: 3ba73979777cd734c906045e7efd18c8, type: 2}
+      name: mace_body_opaque_material
+    - item: {fileID: 2100000, guid: f19307ea754c8294b9060c337fc628b5, type: 2}
+      name: mace_body_transparent_material

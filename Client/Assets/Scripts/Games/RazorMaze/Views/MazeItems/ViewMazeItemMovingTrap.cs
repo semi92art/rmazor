@@ -25,9 +25,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region shapes
 
-        protected override object[] Shapes => base.Shapes
-            .Concat(new object[] {m_Saw})
-            .ToArray();
+        protected override object[] Shapes => new object[] {m_Saw};
 
         private SpriteRenderer m_Saw;
 

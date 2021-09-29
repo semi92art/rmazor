@@ -132,6 +132,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 return false;
             if (_Info.Path.Where((_Pos, _Index) => _Pos != Props.Path[_Index]).Any())
                 return false;
+            if (Props.Directions.Any() && _Info.Direction != Props.Directions.First())
+                return false;
             return true;
         }
         

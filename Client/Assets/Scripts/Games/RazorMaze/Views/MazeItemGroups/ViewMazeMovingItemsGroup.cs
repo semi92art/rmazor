@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
@@ -7,10 +9,11 @@ using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.MazeItems;
 using Shapes;
 using UnityEngine;
+using Utils;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
-    public class ViewMazeMovingItemsGroup : ViewMazeItemsGroupBase, IViewMazeMovingItemsGroup
+    public class ViewMazeMovingItemsGroup : ViewMazeItemsGroupBase, IViewMazeMovingItemsGroup, IOnBackgroundColorChanged
     {
         #region types
         
@@ -27,6 +30,8 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         private readonly Dictionary<IMazeItemProceedInfo, ViewMovingItemInfo> m_ItemsMoving =
             new Dictionary<IMazeItemProceedInfo, ViewMovingItemInfo>();
+
+        private bool m_CommonInitialized;
         
         #endregion
         
@@ -40,6 +45,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
             : base(_Common)
         {
             CoordinateConverter = _CoordinateConverter;
+            _Common.Initialized += () => m_CommonInitialized = true;
         }
         
         #endregion
@@ -80,6 +86,20 @@ namespace Games.RazorMaze.Views.MazeItemGroups
             
             (Common.GetItem(_Args.Info) as IViewMazeItemMovingBlock)?.OnMoveFinished(_Args);
             m_ItemsMoving.Remove(_Args.Info);
+        }
+        
+        public void OnBackgroundColorChanged(Color _Color)
+        {
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !m_CommonInitialized,
+                () =>
+                {
+                    var items = GetItems()
+                        .Select(_Item => _Item as IOnBackgroundColorChanged)
+                        .Where(_Item => _Item != null);
+                    foreach (var item in items)
+                        item.OnBackgroundColorChanged(_Color);
+                }));
         }
         
         #endregion

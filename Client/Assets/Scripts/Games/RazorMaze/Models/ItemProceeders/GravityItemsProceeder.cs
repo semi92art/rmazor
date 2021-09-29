@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Entities;
 using Games.RazorMaze.Models.ProceedInfos;
@@ -63,38 +64,34 @@ namespace Games.RazorMaze.Models.ItemProceeders
             var dropDirection = RazorMazeUtils.GetDropDirection(_Orientation);
             foreach (var info in GetProceedInfos(Types).Where(_Info => _Info.IsProceeding))
             {
-                var coroutine = MoveMazeItemGravityCoroutine(
-                    (MazeItemProceedInfo)info,
-                    dropDirection,
-                    _CharacterPoint);
+                IEnumerator coroutine = null;
+                if (info.Type == EMazeItemType.GravityBlock)
+                    coroutine = MoveGravityBlockCoroutine(info, dropDirection, _CharacterPoint);
+                else if (info.Type == EMazeItemType.GravityTrap)
+                    coroutine = MoveGravityTrapCoroutine(info, dropDirection);
                 ProceedCoroutine(coroutine);
             }
-        } 
-        
+        }
 
-        private IEnumerator MoveMazeItemGravityCoroutine(
-            MazeItemProceedInfo _Info,
+        private IEnumerator MoveGravityBlockCoroutine(
+            IMazeItemProceedInfo _Info,
             V2Int _DropDirection,
             V2Int _CharacterPoint)
         {
-            var gravityItems = RazorMazeUtils
-                .GetBlockMazeItems(Data.Info.MazeItems)
-                .Where(_Item => _Item.Type == EMazeItemType.GravityBlock
-                                || _Item.Type == EMazeItemType.GravityTrap)
+            var gravityProceedInfos = ProceedInfos
+                .SelectMany(_Infos => _Infos.Value)
                 .ToList();
-            
             yield return Coroutines.WaitWhile(
                 () => _Info.ProceedingStage == StageDrop,
                 () =>
                 {
-                    _Info.ProceedingStage = StageDrop;
                     var pos = _Info.CurrentPosition;
-                    bool doMoveByPath = false;
+                    bool doMove = false;
                     V2Int? altPos = null;
-                    while (RazorMazeUtils.IsValidPositionForMove(Data.Info, pos + _DropDirection))
+                    while (IsValidPositionForMove(Data.Info, pos + _DropDirection, gravityProceedInfos))
                     {
                         pos += _DropDirection;
-                        if (_CharacterPoint == pos && _Info.Type == EMazeItemType.GravityBlock)
+                        if (_CharacterPoint == pos)
                             altPos = pos - _DropDirection;
                         var pos1 = pos;
                         if (_Info.Path.All(_Pos => pos1 != _Pos))
@@ -102,21 +99,16 @@ namespace Games.RazorMaze.Models.ItemProceeders
                         int fromPosIdx = _Info.Path.IndexOf(_Info.CurrentPosition);
                         if (fromPosIdx == -1)
                         {
-                            doMoveByPath = true;
+                            doMove = true;
                             break;
                         }
                         int toPosIds = _Info.Path.IndexOf(pos);
                         if (Math.Abs(toPosIds - fromPosIdx) > 1)
                             continue;
-                        doMoveByPath = true;
+                        doMove = true;
                         break;
                     }
-                    if (!doMoveByPath)
-                    {
-                        if (gravityItems.Any(_Item => _Item.Position == pos + _DropDirection))
-                            doMoveByPath = true;
-                    }
-                    if (!doMoveByPath || pos == _Info.CurrentPosition)
+                    if (!doMove || pos == _Info.CurrentPosition)
                     {
                         _Info.ProceedingStage = StageIdle;                       
                         return;
@@ -124,6 +116,32 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     var from = _Info.CurrentPosition;
                     var to = altPos ?? pos;
 
+                    if (from == to)
+                        return;
+                    _Info.ProceedingStage = StageDrop;
+                    Coroutines.Run(MoveMazeItemGravityCoroutineCore(_Info, from, to));
+                });
+        }
+
+        private IEnumerator MoveGravityTrapCoroutine(
+            IMazeItemProceedInfo _Info,
+            V2Int _DropDirection)
+        {
+            var gravityProceedInfos = ProceedInfos
+                .SelectMany(_Infos => _Infos.Value)
+                .ToList();
+            yield return Coroutines.WaitWhile(
+                () => _Info.ProceedingStage == StageDrop,
+                () =>
+                {
+                    var pos = _Info.CurrentPosition;
+                    while (IsValidPositionForMove(Data.Info, pos + _DropDirection, gravityProceedInfos))
+                        pos += _DropDirection;
+                    var from = _Info.CurrentPosition;
+                    var to = pos;
+                    if (from == to)
+                        return;
+                    _Info.ProceedingStage = StageDrop;
                     Coroutines.Run(MoveMazeItemGravityCoroutineCore(_Info, from, to));
                 });
         }
@@ -133,15 +151,18 @@ namespace Games.RazorMaze.Models.ItemProceeders
             V2Int _From,
             V2Int _To)
         {
+            float speed = _Info.Type == EMazeItemType.GravityBlock
+                ? Settings.gravityBlockSpeed
+                : Settings.gravityTrapSpeed;
             var busyPositions = _Info.BusyPositions;
             InvokeMoveStarted(new MazeItemMoveEventArgs(
-                _Info, _From, _To, Settings.gravityTrapSpeed, 0, busyPositions));
+                _Info, _From, _To, speed, 0, busyPositions));
             var direction = (_To - _From).Normalized;
             float distance = V2Int.Distance(_From, _To);
             yield return Coroutines.Lerp(
                 0f,
                 1f,
-                distance / Settings.gravityTrapSpeed,
+                distance / speed,
                 _Progress =>
                 {
                     var addict = direction * (_Progress + 0.1f) * distance;
@@ -150,7 +171,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     if (busyPositions[0] != _To)
                         busyPositions.Add(_From + V2Int.Ceil(addict));
                     InvokeMoveContinued(new MazeItemMoveEventArgs(
-                        _Info, _From, _To, Settings.gravityTrapSpeed, _Progress, busyPositions));
+                        _Info, _From, _To, speed, _Progress, busyPositions));
                 },
                 GameTicker,
                 (_Stopped, _Progress) =>
@@ -158,11 +179,33 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     var to = !_Stopped ? _To : _Info.BusyPositions[0];  
                     _Info.CurrentPosition = to;
                     InvokeMoveFinished(new MazeItemMoveEventArgs(
-                        _Info, _From, to, Settings.gravityTrapSpeed, _Progress, busyPositions, _Stopped));
+                        _Info, _From, to, speed, _Progress, busyPositions, _Stopped));
                     _Info.ProceedingStage = StageIdle;
                     busyPositions.Clear();
                     busyPositions.Add(to);
                 });
+        }
+
+        private static bool IsValidPositionForMove(
+            MazeInfo _Info,
+            V2Int _Position,
+            IEnumerable<IMazeItemProceedInfo> _Infos)
+        {
+            bool isOnNode = _Info.Path.Any(_N => _N == _Position);
+            var staticBlockItems = GetStaticBlockItems(_Info.MazeItems);
+            bool isOnStaticBlockItem = staticBlockItems.Any(_N => _N.Position == _Position);
+            bool isOnMovingBlockItem = _Infos.Any(_Inf => _Inf.CurrentPosition == _Position);
+            return isOnNode && !isOnStaticBlockItem && !isOnMovingBlockItem;
+        }
+        
+        private static IEnumerable<MazeItem> GetStaticBlockItems(IEnumerable<MazeItem> _Items)
+        {
+            return _Items.Where(_Item =>
+                _Item.Type == EMazeItemType.Block
+                || _Item.Type == EMazeItemType.Turret
+                || _Item.Type == EMazeItemType.TrapReact
+                || _Item.Type == EMazeItemType.TrapIncreasing
+                || _Item.Type == EMazeItemType.ShredingerBlock);
         }
 
         #endregion

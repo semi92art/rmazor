@@ -5,6 +5,7 @@ using DI.Extensions;
 using Entities;
 using Exceptions;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Models.ProceedInfos;
 using Shapes;
 using Ticker;
 using UnityEngine;
@@ -18,26 +19,6 @@ namespace Games.RazorMaze
         #region api
 
         public const float Epsilon = 1e-5f;
-        
-        public static List<MazeItem> GetBlockMazeItems(IEnumerable<MazeItem> _Items)
-        {
-            return _Items.Where(_Item =>
-                _Item.Type == EMazeItemType.Block
-                || _Item.Type == EMazeItemType.Turret
-                || _Item.Type == EMazeItemType.TrapReact
-                || _Item.Type == EMazeItemType.TrapIncreasing
-                || _Item.Type == EMazeItemType.Attenuator
-                || _Item.Type == EMazeItemType.GravityBlock
-                || _Item.Type == EMazeItemType.ShredingerBlock).ToList();
-        }
-
-        public static bool IsValidPositionForMove(MazeInfo _Info, V2Int _Position)
-        {
-            bool isOnNode = _Info.Path.Any(_N => _N == _Position);
-            var blockItems = GetBlockMazeItems(_Info.MazeItems);
-            bool isOnBlockItem = blockItems.Any(_N => _N.Position == _Position);
-            return isOnNode && !isOnBlockItem;
-        }
         
         public static V2Int GetDropDirection(MazeOrientation _Orientation)
         {
