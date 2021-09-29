@@ -6,7 +6,7 @@ using Utils;
 
 namespace Games.RazorMaze.Views.Rotation
 {
-    public class ViewMazeRotationProt : IViewMazeRotation
+    public class ViewRotationSimple : IViewRotation
     {
         private Rigidbody2D m_Rb;
         private float m_StartAngle;
@@ -17,7 +17,7 @@ namespace Games.RazorMaze.Views.Rotation
         
         private IContainersGetter ContainersGetter { get; }
         
-        public ViewMazeRotationProt(IContainersGetter _ContainersGetter)
+        public ViewRotationSimple(IContainersGetter _ContainersGetter)
         {
             ContainersGetter = _ContainersGetter;
         }

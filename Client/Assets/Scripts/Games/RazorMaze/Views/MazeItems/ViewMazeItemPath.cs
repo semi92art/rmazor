@@ -457,8 +457,8 @@ namespace Games.RazorMaze.Views.MazeItems
             end = CoordinateConverter.ToLocalMazeItemPosition(end);
 
             var dir = RazorMazeUtils.GetDirectionVector(_Side, MazeOrientation.North);
-            bool dashed = Model.Data.Info.MazeItems.Any(_Item =>
-                _Item.Position == Props.Position + dir &&
+            bool dashed = Model.GetAllProceedInfos().Any(_Item =>
+                _Item.CurrentPosition == Props.Position + dir &&
                 (_Item.Type == EMazeItemType.TrapReact && _Item.Direction == -dir
                 || _Item.Type == EMazeItemType.TrapIncreasing));
             
@@ -492,24 +492,28 @@ namespace Games.RazorMaze.Views.MazeItems
             return _Inner ? new Vector2(180, 270) : new Vector2(0, 90);
         }
 
-        private bool PathExist(V2Int _Position) => Model.Data.Info.Path.Contains(_Position);
+        private bool PathExist(V2Int _Position) => Model.PathItemsProceeder.PathProceeds.Keys.Contains(_Position);
 
-        private bool BlockExist(V2Int _Position) => Model.Data.Info.MazeItems.Any(_Item =>
-            _Item.Position == _Position && _Item.Type != EMazeItemType.Block);
+        private bool BlockExist(V2Int _Position) => Model.GetAllProceedInfos().Any(_Item =>
+            _Item.CurrentPosition == _Position && _Item.Type != EMazeItemType.Block);
 
-        private bool TurretExist(V2Int _Position) => Model.Data.Info.MazeItems
-            .Any(_Item => _Item.Position == _Position && _Item.Type == EMazeItemType.Turret);
+        private bool TurretExist(V2Int _Position) => Model.GetAllProceedInfos().Any(_Item => 
+            _Item.CurrentPosition == _Position && _Item.Type == EMazeItemType.Turret);
 
         private V2Int TurretDirection(V2Int _Position) =>
-            Model.Data.Info.MazeItems
-                .First(_Item => _Item.Position == _Position && _Item.Type == EMazeItemType.Turret)
+            Model.GetAllProceedInfos()
+                .First(_Item => _Item.CurrentPosition == _Position 
+                                && _Item.Type == EMazeItemType.Turret)
                 .Direction;
         
-        private bool SpringboardExist(V2Int _Position) => Model.Data.Info.MazeItems
-            .Any(_Item => _Item.Position == _Position && _Item.Type == EMazeItemType.Springboard);
+        private bool SpringboardExist(V2Int _Position) => Model.GetAllProceedInfos()
+            .Any(_Item => _Item.CurrentPosition == _Position
+                          && _Item.Type == EMazeItemType.Springboard);
+        
         private V2Int SpringboardDirection(V2Int _Position) =>
-            Model.Data.Info.MazeItems
-                .First(_Item => _Item.Position == _Position && _Item.Type == EMazeItemType.Springboard)
+            Model.GetAllProceedInfos()
+                .First(_Item => _Item.CurrentPosition == _Position
+                                && _Item.Type == EMazeItemType.Springboard)
                 .Direction;
 
         private Vector3 Average(Vector3 _A, Vector3 _B) => (_A + _B) * 0.5f;

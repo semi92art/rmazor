@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Entities;
 using Games.RazorMaze.Models.ProceedInfos;
@@ -41,27 +42,27 @@ namespace Games.RazorMaze.Models.ItemProceeders
         event TurretShotEventHandler TurretShoot;
     }
     
-    public class TurretsProceeder : ItemsProceederBase, IOnGameLoopUpdate, ITurretsProceeder
+    public class TurretsProceeder : ItemsProceederBase, IOnGameLoopUpdate, ITurretsProceeder, IGetAllProceedInfos
     {
-
-        #region constants and nonpublic members
+        #region constants
 
         public const int StageShoot = 1;
-        private IShredingerBlocksProceeder ShredingersProceeder { get; }
         
         #endregion
 
         #region inject
+        
+        private IPathItemsProceeder PathItemsProceeder { get; }
         
         public TurretsProceeder(
             ModelSettings _Settings,
             IModelData _Data,
             IModelCharacter _Character,
             IGameTicker _GameTicker,
-            IShredingerBlocksProceeder _ShredingersProceeder) 
+            IPathItemsProceeder _PathItemsProceeder) 
             : base(_Settings, _Data, _Character, _GameTicker)
         {
-            ShredingersProceeder = _ShredingersProceeder;
+            PathItemsProceeder = _PathItemsProceeder;
         }
         
         #endregion
@@ -70,6 +71,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         public override EMazeItemType[] Types => new[] {EMazeItemType.Turret};
         public event TurretShotEventHandler TurretShoot;
+        public Func<IEnumerable<IMazeItemProceedInfo>> GetAllProceedInfos { private get; set; }
         
         public void OnGameLoopUpdate()
         {
@@ -107,7 +109,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         private void ProceedTurret(IMazeItemProceedInfo _Info, bool _PreShoot)
         {
             var to = _Info.CurrentPosition + _Info.Direction;
-            while (ValidPosition(to, Data.Info))
+            while (ValidPosition(to))
                 to += _Info.Direction;
             TurretShoot?.Invoke(new TurretShotEventArgs(
                 _Info, 
@@ -118,20 +120,22 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 _PreShoot));
         }
         
-        private bool ValidPosition(V2Int _Position, MazeInfo _Info)
+        private bool ValidPosition(V2Int _Position)
         {
-            bool isNode = _Info.Path.Any(_PathItem => _PathItem == _Position);
-            bool isMazeItem = _Info.MazeItems.Any(_O => 
-                _O.Position == _Position
+            bool isOnNode = PathItemsProceeder.PathProceeds.Keys.Any(_Pos => _Pos == _Position);
+            bool isMazeItem = GetAllProceedInfos().Any(_O => 
+                _O.CurrentPosition == _Position
                 && (_O.Type == EMazeItemType.Block
                     || _O.Type == EMazeItemType.TrapIncreasing
                     || _O.Type == EMazeItemType.Turret));
-            var shredinger = ShredingersProceeder.ProceedInfos[EMazeItemType.ShredingerBlock]
-                .FirstOrDefault(_Inf => _Inf.CurrentPosition == _Position);
+            var shredinger = GetAllProceedInfos()
+                .FirstOrDefault(_Info =>
+                    _Info.Type == EMazeItemType.ShredingerBlock
+                    && _Info.CurrentPosition == _Position);
 
             if (shredinger != null)
                 return shredinger.ProceedingStage != ShredingerBlocksProceeder.StageClosed;
-            return isNode && !isMazeItem;
+            return isOnNode && !isMazeItem;
         }
         
         private float GetStageDuration(int _Stage)

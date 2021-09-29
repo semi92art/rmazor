@@ -14,7 +14,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         void OnMazeOrientationChanged();
     }
     
-    public class GravityItemsProceeder : MovingItemsProceederBase, IGravityItemsProceeder
+    public class GravityItemsProceeder : MovingItemsProceederBase, IGravityItemsProceeder, IGetAllProceedInfos
     {
         #region constants
 
@@ -24,12 +24,18 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         #region inject
         
+        private IPathItemsProceeder PathItemsProceeder { get; }
+        
         public GravityItemsProceeder(
             ModelSettings _Settings,
             IModelData _Data, 
             IModelCharacter _Character,
-            IGameTicker _GameTicker) 
-            : base (_Settings, _Data, _Character, _GameTicker) { }
+            IGameTicker _GameTicker,
+            IPathItemsProceeder _PathItemsProceeder) 
+            : base (_Settings, _Data, _Character, _GameTicker)
+        {
+            PathItemsProceeder = _PathItemsProceeder;
+        }
         
         #endregion
         
@@ -37,6 +43,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         public override EMazeItemType[] Types => new[] {EMazeItemType.GravityBlock, EMazeItemType.GravityTrap};
 
+        public Func<IEnumerable<IMazeItemProceedInfo>> GetAllProceedInfos { private get; set; }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
@@ -88,7 +95,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     var pos = _Info.CurrentPosition;
                     bool doMove = false;
                     V2Int? altPos = null;
-                    while (IsValidPositionForMove(Data.Info, pos + _DropDirection, gravityProceedInfos))
+                    while (IsValidPositionForMove(pos + _DropDirection, gravityProceedInfos))
                     {
                         pos += _DropDirection;
                         if (_CharacterPoint == pos)
@@ -135,7 +142,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 () =>
                 {
                     var pos = _Info.CurrentPosition;
-                    while (IsValidPositionForMove(Data.Info, pos + _DropDirection, gravityProceedInfos))
+                    while (IsValidPositionForMove(pos + _DropDirection, gravityProceedInfos))
                         pos += _DropDirection;
                     var from = _Info.CurrentPosition;
                     var to = pos;
@@ -186,19 +193,18 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 });
         }
 
-        private static bool IsValidPositionForMove(
-            MazeInfo _Info,
+        private bool IsValidPositionForMove(
             V2Int _Position,
             IEnumerable<IMazeItemProceedInfo> _Infos)
         {
-            bool isOnNode = _Info.Path.Any(_N => _N == _Position);
-            var staticBlockItems = GetStaticBlockItems(_Info.MazeItems);
-            bool isOnStaticBlockItem = staticBlockItems.Any(_N => _N.Position == _Position);
+            bool isOnNode = PathItemsProceeder.PathProceeds.Keys.Any(_Pos => _Pos == _Position);
+            var staticBlockItems = GetStaticBlockItems(GetAllProceedInfos());
+            bool isOnStaticBlockItem = staticBlockItems.Any(_N => _N.CurrentPosition == _Position);
             bool isOnMovingBlockItem = _Infos.Any(_Inf => _Inf.CurrentPosition == _Position);
             return isOnNode && !isOnStaticBlockItem && !isOnMovingBlockItem;
         }
         
-        private static IEnumerable<MazeItem> GetStaticBlockItems(IEnumerable<MazeItem> _Items)
+        private static IEnumerable<IMazeItemProceedInfo> GetStaticBlockItems(IEnumerable<IMazeItemProceedInfo> _Items)
         {
             return _Items.Where(_Item =>
                 _Item.Type == EMazeItemType.Block

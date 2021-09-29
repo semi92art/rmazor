@@ -4,7 +4,7 @@ namespace Games.RazorMaze.Views.Rotation
 {
 
     
-    public interface IViewMazeRotation : IInit
+    public interface IViewRotation : IInit
     {
         void StartRotation(MazeRotateDirection _Direction, MazeOrientation _Orientation);
         void Rotate(float _Progress);

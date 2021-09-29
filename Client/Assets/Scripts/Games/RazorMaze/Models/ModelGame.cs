@@ -2,13 +2,14 @@
 using System.Linq;
 using Exceptions;
 using Games.RazorMaze.Models.ItemProceeders;
+using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views;
 
 namespace Games.RazorMaze.Models
 {
     public interface IModelGame : IInit, IPreInit
     {
-        IModelData                            Data { get; }
+        IModelData                                Data { get; }
         IModelMazeRotation                        MazeRotation { get; }
         IPathItemsProceeder                       PathItemsProceeder { get; }
         ITrapsMovingProceeder                     TrapsMovingProceeder { get; }
@@ -22,6 +23,7 @@ namespace Games.RazorMaze.Models
         IModelCharacter                           Character { get; }
         ILevelStagingModel                        LevelStaging { get; }
         IInputScheduler                           InputScheduler { get; }
+        IEnumerable<IMazeItemProceedInfo> GetAllProceedInfos();
     }
     
     public class ModelGame : IModelGame
@@ -31,7 +33,7 @@ namespace Games.RazorMaze.Models
         public event NoArgsHandler PreInitialized;
         public event NoArgsHandler Initialized;
         
-        public IModelData                     Data { get; }
+        public IModelData                         Data { get; }
         public IModelMazeRotation                 MazeRotation { get; }
         public IPathItemsProceeder                PathItemsProceeder { get; }
         public ITrapsMovingProceeder              TrapsMovingProceeder { get; }
@@ -45,9 +47,9 @@ namespace Games.RazorMaze.Models
         public IModelCharacter                    Character { get; }
         public ILevelStagingModel                 LevelStaging { get; }
         public IInputScheduler                    InputScheduler { get; }
-        
+
         public ModelGame(
-            IModelData                        _Data,
+            IModelData                            _Data,
             IModelMazeRotation                    _MazeRotation,
             IPathItemsProceeder                   _PathItemsProceeder,
             ITrapsMovingProceeder                 _TrapsMovingProceeder,
@@ -96,24 +98,26 @@ namespace Games.RazorMaze.Models
             SpringboardProceeder.SpringboardEvent      += Character.OnSpringboard;
             PathItemsProceeder.AllPathsProceededEvent  += AllPathsProceededEvent;
             LevelStaging.LevelStageChanged             += LevelStageChanged;
-
-            Character.GetProceedInfos = _Type =>
-            {
-                var allProceeders = GetInterfaceOfProceeders<IItemsProceeder>();
-                var result = allProceeders
-                    .Where(_P => _P.Types.Contains(_Type))
-                    .SelectMany(_P => _P.ProceedInfos[_Type]);
-                return result;
-            };
             
-            Data.PreInitialized += () => PreInitialized?.Invoke();
-            Data.PreInit();
+            var getProceedInfosItems = GetInterfaceOfProceeders<IGetAllProceedInfos>();
+            foreach (var item in getProceedInfosItems)
+                item.GetAllProceedInfos = GetAllProceedInfos;
+            PreInitialized?.Invoke();
         }
         
         public void Init()
         {
             Character.Initialized += () => Initialized?.Invoke();
             Character.Init();
+        }
+        
+        public IEnumerable<IMazeItemProceedInfo> GetAllProceedInfos()
+        {
+            var itemProceeders = GetInterfaceOfProceeders<IItemsProceeder>();
+            var result = itemProceeders
+                .SelectMany(_P => _P.ProceedInfos.Values
+                    .SelectMany(_V => _V));
+            return result;
         }
         
         #endregion

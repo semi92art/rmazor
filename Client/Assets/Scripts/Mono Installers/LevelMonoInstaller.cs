@@ -87,7 +87,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazeItemTrapReact>()            .To<ViewMazeItemTrapReact>()                .AsSingle().When(_ => release);
             Container.Bind<IViewMazeItemTrapIncreasing>()       .To<ViewMazeItemTrapIncreasing>()           .AsSingle().When(_ => release);
             
-            Container.Bind<IViewMazeRotation>()                 .To<ViewMazeRotationProt>()                 .AsSingle();
+            Container.Bind<IViewRotation>()                 .To<ViewRotationSimple>()                 .AsSingle();
             Container.Bind<IViewUI>()                           .To<ViewUIProt>()                           .AsSingle();
             // Container.Bind<IViewMazeRotation>()              .To<ViewMazeRotation>()                     .AsSingle().When(_ => release);
             // Container.Bind<IViewUI>()                        .To<ViewUI>()                               .AsSingle().When(_ => release);

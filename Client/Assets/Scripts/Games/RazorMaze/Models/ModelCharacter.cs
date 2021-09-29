@@ -36,13 +36,12 @@ namespace Games.RazorMaze.Models
     
     public delegate void CharacterMovingHandler(CharacterMovingEventArgs _Args);
 
-    public interface IModelCharacter : IInit, IOnLevelStageChanged
+    public interface IModelCharacter : IInit, IOnLevelStageChanged, IGetAllProceedInfos
     {
         bool Alive { get; }
         V2Int Position { get; }
         bool IsMoving { get; }
         CharacterMovingEventArgs MovingInfo { get; }
-        Func<EMazeItemType, IEnumerable<IMazeItemProceedInfo>> GetProceedInfos { get; set; }
         event CharacterMovingHandler CharacterMoveStarted;
         event CharacterMovingHandler CharacterMoveContinued;
         event CharacterMovingHandler CharacterMoveFinished;
@@ -95,7 +94,7 @@ namespace Games.RazorMaze.Models
         public V2Int Position { get; private set; }
         public bool IsMoving { get; private set; }
         public CharacterMovingEventArgs MovingInfo { get; private set; }
-        public Func<EMazeItemType, IEnumerable<IMazeItemProceedInfo>> GetProceedInfos { get; set; }
+        public Func<IEnumerable<IMazeItemProceedInfo>> GetAllProceedInfos { private get; set; }
         public event CharacterMovingHandler CharacterMoveStarted;
         public event CharacterMovingHandler CharacterMoveContinued;
         public event CharacterMovingHandler CharacterMoveFinished;
@@ -136,7 +135,7 @@ namespace Games.RazorMaze.Models
 
             if (_Args.Stage == ELevelStage.Loaded)
             {
-                Position = Data.Info.Path.First();
+                Position = PathItemsProceeder.PathProceeds.Keys.First();
                 PositionSet?.Invoke(Position);
             }
             else if (_Args.Stage == ELevelStage.ReadyToStartOrContinue)
@@ -174,19 +173,22 @@ namespace Games.RazorMaze.Models
 
         private bool IsNextPositionValid(V2Int _From, V2Int _CurrentPosition, V2Int _NextPosition, out V2Int? _ShredingerBlockPosWhoStopped)
         {
+            var proceedInfos = GetAllProceedInfos().ToList();
             _ShredingerBlockPosWhoStopped = null;
-            var info = Data.Info;
-            bool isNode = info.Path.Any(_PathItem => _PathItem == _NextPosition);
-
+            bool isNode = PathItemsProceeder.PathProceeds.Keys
+                .Any(_PathItem => _PathItem == _NextPosition);
             if (!isNode)
             {
-                bool isPortal = info.MazeItems
-                    .Any(_O => _O.Position == _NextPosition && _O.Type == EMazeItemType.Portal);
+                bool isPortal = GetAllProceedInfos()
+                    .Any(_O => _O.CurrentPosition == _NextPosition 
+                               && _O.Type == EMazeItemType.Portal);
                 return isPortal;
             }
             
-            var shredinger = GetProceedInfos(EMazeItemType.ShredingerBlock)
-                .FirstOrDefault(_Info => _Info.CurrentPosition == _NextPosition);
+            var shredinger = GetAllProceedInfos()
+                .FirstOrDefault(
+                    _Info => _Info.Type == EMazeItemType.ShredingerBlock
+                             && _Info.CurrentPosition == _NextPosition);
 
             if (shredinger != null)
             {
@@ -194,8 +196,8 @@ namespace Games.RazorMaze.Models
                 return shredinger.ProceedingStage == ItemsProceederBase.StageIdle;
             }
 
-            bool isMazeItem = info.MazeItems.Any(_O => 
-                _O.Position == _NextPosition
+            bool isMazeItem = proceedInfos.Any(_O => 
+                _O.CurrentPosition == _NextPosition
                 && (_O.Type == EMazeItemType.Block
                     || _O.Type == EMazeItemType.TrapIncreasing
                     || _O.Type == EMazeItemType.Turret));
@@ -203,17 +205,17 @@ namespace Games.RazorMaze.Models
             if (isMazeItem)
                 return false;
             
-            bool isBuzyMazeItem = GetProceedInfos(EMazeItemType.GravityBlock)
+            bool isBuzyMazeItem = GetAllProceedInfos()
                 .Where(_Info => _Info.Type == EMazeItemType.GravityBlock)
                 .Any(_Info => _Info.BusyPositions.Contains(_NextPosition));
 
             if (isBuzyMazeItem)
                 return false;
 
-            bool isPrevPortal = info.MazeItems
-                .Any(_O => _O.Position == _CurrentPosition && _O.Type == EMazeItemType.Portal);
-            bool isStartFromPortal = info.MazeItems
-                .Any(_O => _O.Position == _From && _O.Type == EMazeItemType.Portal);
+            bool isPrevPortal = proceedInfos
+                .Any(_O => _O.CurrentPosition == _CurrentPosition && _O.Type == EMazeItemType.Portal);
+            bool isStartFromPortal = proceedInfos
+                .Any(_O => _O.CurrentPosition == _From && _O.Type == EMazeItemType.Portal);
 
             if (isPrevPortal && !isStartFromPortal)
                 return false;

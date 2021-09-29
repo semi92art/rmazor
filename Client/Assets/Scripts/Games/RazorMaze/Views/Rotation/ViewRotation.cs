@@ -3,7 +3,7 @@ using Games.RazorMaze.Models;
 
 namespace Games.RazorMaze.Views.Rotation
 {
-    public class ViewMazeRotation : IViewMazeRotation
+    public class ViewRotation : IViewRotation
     {
         public event NoArgsHandler Initialized;
         

@@ -10,7 +10,7 @@ namespace Games.RazorMaze.Models
 
     public delegate void MazeInfoHandler(MazeInfo Info);
     
-    public interface IModelData : IPreInit
+    public interface IModelData
     {
         event MazeInfoHandler MazeInfoSet;
         event NoArgsHandler GameLoopUpdate;
@@ -30,30 +30,14 @@ namespace Games.RazorMaze.Models
         private bool? m_ProceedingMazeItems;
 
         #endregion
-        
-        #region constructor
-        
-        public void PreInit()
-        {
-            ProceedInfos = new Dictionary<EMazeItemType, Dictionary<MazeItem, IMazeItemProceedInfo>>();
-            var types = Enum.GetValues(typeof(EMazeItemType)).Cast<EMazeItemType>();
-            foreach (var type in types)
-                ProceedInfos.Add(type, new Dictionary<MazeItem, IMazeItemProceedInfo>());
-            PreInitialized?.Invoke();
-        }
-        
-        #endregion
 
         #region api
-
-        public event NoArgsHandler PreInitialized;
+        
         public event MazeInfoHandler MazeInfoSet;
         public event NoArgsHandler GameLoopUpdate;
         public int LevelIndex { get; set; }
         public MazeOrientation Orientation { get; set; } = MazeOrientation.North;
 
-        public Dictionary<EMazeItemType, Dictionary<MazeItem, IMazeItemProceedInfo>> ProceedInfos { get; private set; } 
-            = new Dictionary<EMazeItemType, Dictionary<MazeItem, IMazeItemProceedInfo>>();
 
         public bool ProceedingControls { get; set; }
         
