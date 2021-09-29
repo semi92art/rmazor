@@ -210,6 +210,7 @@ namespace Games.RazorMaze.Views.MazeItems
                             {new [] {m_Center}, () => DrawingUtils.ColorLines},
                             {m_Orbits.Cast<object>().ToArray(), () => DrawingUtils.ColorLines}
                         },
+                        Props.Position,
                         _OnFinish: () =>
                         {
                             m_Appeared = _Appear;

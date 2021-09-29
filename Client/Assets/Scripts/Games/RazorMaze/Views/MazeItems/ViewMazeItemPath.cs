@@ -512,14 +512,15 @@ namespace Games.RazorMaze.Views.MazeItems
                 duration * 0.5f,
                 _Progress => border.transform.localPosition = startPos + (Vector3) dir * _Progress,
                 GameTicker,
-                (_Finished, _) =>
+                (_, __) =>
                 {
                     Coroutines.Run(Coroutines.Lerp(
                         delta,
                         0f,
                         duration * 0.5f,
                         _Progress => border.transform.localPosition = startPos + (Vector3) dir * _Progress,
-                        GameTicker));
+                        GameTicker,
+                        (___, ____) => border.transform.localPosition = startPos));
                 });
         }
 
@@ -558,6 +559,7 @@ namespace Games.RazorMaze.Views.MazeItems
                             },
                             {new object[] {shape}, () => DrawingUtils.ColorLines}
                         },
+                        Props.Position,
                         _OnFinish: () =>
                         {
                             if (!_Appear)

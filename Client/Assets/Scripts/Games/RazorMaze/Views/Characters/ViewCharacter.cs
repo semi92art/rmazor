@@ -38,7 +38,6 @@ namespace Games.RazorMaze.Views.Characters
         
         #region inject
         
-        private IModelData Data { get; }
         private IViewCharacterTail Tail { get; }
         private IViewCharacterEffector Effector { get; }
         private IGameTicker GameTicker { get; }
@@ -46,16 +45,15 @@ namespace Games.RazorMaze.Views.Characters
 
         public ViewCharacter(
             ICoordinateConverter _CoordinateConverter, 
-            IModelData _Data, 
+            IModelGame _Model,
             IContainersGetter _ContainersGetter,
             IViewMazeCommon _ViewMazeCommon,
             IViewCharacterTail _Tail,
             IViewCharacterEffector _Effector,
             IGameTicker _GameTicker,
             ViewSettings _ViewSettings) 
-            : base(_CoordinateConverter, _Data, _ContainersGetter, _ViewMazeCommon)
+            : base(_CoordinateConverter, _Model, _ContainersGetter, _ViewMazeCommon)
         {
-            Data = _Data;
             Tail = _Tail;
             Effector = _Effector;
             GameTicker = _GameTicker;
@@ -251,7 +249,8 @@ namespace Games.RazorMaze.Views.Characters
                         {
                             {new object[] {m_HeadShape}, () => DrawingUtils.ColorCharacter},
                             {new object[] {m_Eye1Shape, m_Eye2Shape}, () => m_BackColor}
-                        });
+                        },
+                        Model.Character.Position);
                 }));
         }
 

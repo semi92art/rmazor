@@ -420,6 +420,7 @@ namespace Games.RazorMaze.Views.MazeItems
                             {new object [] {m_BulletHolderBorder, m_Body}, () => DrawingUtils.ColorLines},
                             {bulletRenderers, () => bulletRenderersCol}
                         },
+                        Props.Position,
                         _OnFinish: () =>
                         {
                             if (!_Appear)

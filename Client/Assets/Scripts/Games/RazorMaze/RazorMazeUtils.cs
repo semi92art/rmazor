@@ -205,62 +205,68 @@ namespace Games.RazorMaze
             bool _Appear,
             IGameTicker _GameTicker,
             Dictionary<object[], Func<Color>> _Sets,
-            float _TransitionTime = 1f,
+            V2Int _ItemPosition,
+            float _TransitionTime = 0.3f,
             UnityAction _OnFinish = null)
         {
-            foreach (var set in _Sets)
+            float delay = (_Appear ? _ItemPosition.Y : 10 -_ItemPosition.Y) * 0.05f;
+            
+            Coroutines.Run(Coroutines.Delay(() =>
             {
-                Func<Color> toAlpha0 = () => set.Value().SetA(0f); 
-                
-                var startCol = _Appear ? toAlpha0 : set.Value;
-                var endCol = !_Appear ? toAlpha0 : set.Value;
-                var shapes = set.Key.Where(_Shape => _Shape != null).ToList();
-                if (_Appear)
-                    foreach (var shape in shapes)
-                    {
-                        if (shape is ShapeRenderer shapeRenderer)
-                            shapeRenderer.enabled = true;
-                        else if (shape is SpriteRenderer spriteRenderer)
-                            spriteRenderer.enabled = true;
-                        else if (shape is MeshRenderer meshRenderer)
-                            meshRenderer.enabled = true;
-                    }
-                Coroutines.Run(Coroutines.Lerp(
-                    0f,
-                    1f,
-                    _TransitionTime,
-                    _Progress =>
-                    {
-                        var col = Color.Lerp(startCol(), endCol(), _Progress);
+                foreach (var set in _Sets)
+                {
+                    Func<Color> toAlpha0 = () => set.Value().SetA(0f); 
+                    
+                    var startCol = _Appear ? toAlpha0 : set.Value;
+                    var endCol = !_Appear ? toAlpha0 : set.Value;
+                    var shapes = set.Key.Where(_Shape => _Shape != null).ToList();
+                    if (_Appear)
                         foreach (var shape in shapes)
                         {
                             if (shape is ShapeRenderer shapeRenderer)
-                                shapeRenderer.Color = col;
+                                shapeRenderer.enabled = true;
                             else if (shape is SpriteRenderer spriteRenderer)
-                                spriteRenderer.color = col;
+                                spriteRenderer.enabled = true;
                             else if (shape is MeshRenderer meshRenderer)
-                            {
-                                foreach (var material in meshRenderer.materials)
-                                    material.color = col;
-                            }
+                                meshRenderer.enabled = true;
                         }
-                    },
-                    _GameTicker,
-                    (_Finished, _Progress) =>
-                    {
-                        if (!_Appear)
+                    Coroutines.Run(Coroutines.Lerp(
+                        0f,
+                        1f,
+                        _TransitionTime,
+                        _Progress =>
+                        {
+                            var col = Color.Lerp(startCol(), endCol(), _Progress);
                             foreach (var shape in shapes)
                             {
                                 if (shape is ShapeRenderer shapeRenderer)
-                                    shapeRenderer.enabled = false;
+                                    shapeRenderer.Color = col;
                                 else if (shape is SpriteRenderer spriteRenderer)
-                                    spriteRenderer.enabled = false;
+                                    spriteRenderer.color = col;
                                 else if (shape is MeshRenderer meshRenderer)
-                                    meshRenderer.enabled = false;
+                                {
+                                    foreach (var material in meshRenderer.materials)
+                                        material.color = col;
+                                }
                             }
-                        _OnFinish?.Invoke();
-                    }));
-            }
+                        },
+                        _GameTicker,
+                        (_Finished, _Progress) =>
+                        {
+                            if (!_Appear)
+                                foreach (var shape in shapes)
+                                {
+                                    if (shape is ShapeRenderer shapeRenderer)
+                                        shapeRenderer.enabled = false;
+                                    else if (shape is SpriteRenderer spriteRenderer)
+                                        spriteRenderer.enabled = false;
+                                    else if (shape is MeshRenderer meshRenderer)
+                                        meshRenderer.enabled = false;
+                                }
+                            _OnFinish?.Invoke();
+                        }));
+                }
+            }, delay));
         }
         
         #endregion

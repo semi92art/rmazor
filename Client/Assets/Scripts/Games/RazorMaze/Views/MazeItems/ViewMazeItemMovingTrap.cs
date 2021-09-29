@@ -159,7 +159,8 @@ namespace Games.RazorMaze.Views.MazeItems
                     RazorMazeUtils.DoAppearTransitionSimple(
                         _Appear,
                         GameTicker,
-                        sets);
+                        sets,
+                        Props.Position);
                 }));
         }
 

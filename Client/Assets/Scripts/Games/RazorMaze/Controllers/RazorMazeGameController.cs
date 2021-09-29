@@ -117,7 +117,7 @@ namespace Games.RazorMaze.Controllers
                 iPreInits[i].PreInit();
             }
             Coroutines.Run(Coroutines.WaitWhile(
-                () => preInited.Any(_PreInited => !_PreInited), 
+                () => preInited.Any(_PreInitialized => !_PreInitialized), 
                 () => PreInitialized?.Invoke()));
         }
         
@@ -153,7 +153,7 @@ namespace Games.RazorMaze.Controllers
             }
 
             Coroutines.Run(Coroutines.WaitWhile(
-                () => postInited.Any(_PostInited => !_PostInited), 
+                () => postInited.Any(_PostInitialized => !_PostInitialized), 
                 () => PostInitialized?.Invoke()));
         }
 

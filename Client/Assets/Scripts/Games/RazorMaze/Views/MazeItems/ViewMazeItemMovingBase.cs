@@ -77,8 +77,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 go.SetParent(ContainersGetter.MazeItemsContainer);
                 go.transform.SetLocalPosXY(Vector2.zero);
                 var line = go.AddComponent<Polyline>();
-                line.Thickness = 0.3f;
-                line.Color = DrawingUtils.ColorLines;
+                line.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
+                line.Color = DrawingUtils.ColorLines.SetA(0.5f);
                 line.SetPoints(points);
                 line.Closed = false;
                 line.SortingOrder = DrawingUtils.GetPathLineSortingOrder();
@@ -91,7 +91,7 @@ namespace Games.RazorMaze.Views.MazeItems
                     var joint = go1.AddComponent<Disc>();
                     go1.transform.SetLocalPosXY(point);
                     joint.Color = DrawingUtils.ColorLines;
-                    joint.Radius = 0.5f;
+                    joint.Radius = ViewSettings.LineWidth * CoordinateConverter.GetScale() * 2f;
                     joint.Type = DiscType.Disc;
                     joint.SortingOrder = DrawingUtils.GetPathLineJointSortingOrder();
                     m_PathJoints.Add(joint);
@@ -119,14 +119,15 @@ namespace Games.RazorMaze.Views.MazeItems
                 {
                     var sets = new Dictionary<object[], System.Func<Color>>();
                     if (m_PathLines.Any())
-                        sets.Add(m_PathLines.Cast<object>().ToArray(), () => DrawingUtils.ColorLines);
+                        sets.Add(m_PathLines.Cast<object>().ToArray(), () => DrawingUtils.ColorLines.SetA(0.5f));
                     if (m_PathJoints.Any())
                         sets.Add(m_PathJoints.Cast<object>().ToArray(), () => DrawingUtils.ColorLines);
                     
                     RazorMazeUtils.DoAppearTransitionSimple(
                         _Appear,
                         GameTicker,
-                        sets);
+                        sets,
+                        Props.Position);
                 }));
         }
         

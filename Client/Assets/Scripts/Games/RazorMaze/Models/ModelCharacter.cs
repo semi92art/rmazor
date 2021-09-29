@@ -20,8 +20,9 @@ namespace Games.RazorMaze.Models
         public V2Int Position { get; }
         public Vector2 PrecisePosition { get; }
         public float Progress { get; }
+        public V2Int? ShredingerBlockPosWhoStopped { get; }
 
-        public CharacterMovingEventArgs(EMazeMoveDirection _Direction, V2Int _From, V2Int _To, float _Progress)
+        public CharacterMovingEventArgs(EMazeMoveDirection _Direction, V2Int _From, V2Int _To, float _Progress, V2Int? _ShredingerBlockPosWhoStopped)
         {
             Direction = _Direction;
             From = _From;
@@ -29,6 +30,7 @@ namespace Games.RazorMaze.Models
             PrecisePosition = V2Int.Lerp(_From, _To, _Progress);
             Position = V2Int.Round(PrecisePosition);
             Progress = _Progress;
+            ShredingerBlockPosWhoStopped = _ShredingerBlockPosWhoStopped;
         }
     }
     
@@ -119,10 +121,11 @@ namespace Games.RazorMaze.Models
                 LevelStagingModel.StartOrContinueLevel();
             
             var from = Position;
-            var to = GetNewPosition(from, _Direction);
-            (IsMoving, MovingInfo) = (true, new CharacterMovingEventArgs(_Direction, from, to, 0));
+            V2Int? shredingerBlockPosWhoStopped;
+            var to = GetNewPosition(from, _Direction, out shredingerBlockPosWhoStopped);
+            (IsMoving, MovingInfo) = (true, new CharacterMovingEventArgs(_Direction, from, to, 0, shredingerBlockPosWhoStopped));
             CharacterMoveStarted?.Invoke(MovingInfo);
-            Coroutines.Run(MoveCharacterCore(_Direction, from, to));
+            Coroutines.Run(MoveCharacterCore(_Direction, from, to, shredingerBlockPosWhoStopped));
         }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
@@ -160,33 +163,38 @@ namespace Games.RazorMaze.Models
         
         #region nonpublic methods
 
-        private V2Int GetNewPosition(V2Int _From, EMazeMoveDirection _Direction)
+        private V2Int GetNewPosition(V2Int _From, EMazeMoveDirection _Direction, out V2Int? _ShredingerBlockPosWhoStopped)
         {
             var nextPos = Position;
             var dirVector = RazorMazeUtils.GetDirectionVector(_Direction, Data.Orientation);
-            while (IsNextPositionValid(_From, nextPos, nextPos + dirVector, Data.Info))
+            while (IsNextPositionValid(_From, nextPos, nextPos + dirVector, out _ShredingerBlockPosWhoStopped))
                 nextPos += dirVector;
             return nextPos;
         }
 
-        private bool IsNextPositionValid(V2Int _From, V2Int _CurrentPosition, V2Int _NextPosition, MazeInfo _Info)
+        private bool IsNextPositionValid(V2Int _From, V2Int _CurrentPosition, V2Int _NextPosition, out V2Int? _ShredingerBlockPosWhoStopped)
         {
-            bool isNode = _Info.Path.Any(_PathItem => _PathItem == _NextPosition);
+            _ShredingerBlockPosWhoStopped = null;
+            var info = Data.Info;
+            bool isNode = info.Path.Any(_PathItem => _PathItem == _NextPosition);
 
             if (!isNode)
             {
-                bool isPortal = _Info.MazeItems
+                bool isPortal = info.MazeItems
                     .Any(_O => _O.Position == _NextPosition && _O.Type == EMazeItemType.Portal);
                 return isPortal;
             }
             
             var shredinger = GetProceedInfos(EMazeItemType.ShredingerBlock)
-                .FirstOrDefault(_Inf => _Inf.CurrentPosition == _NextPosition);
+                .FirstOrDefault(_Info => _Info.CurrentPosition == _NextPosition);
 
             if (shredinger != null)
-                return shredinger.ProceedingStage != ShredingerBlocksProceeder.StageClosed;
+            {
+                _ShredingerBlockPosWhoStopped = _NextPosition;
+                return shredinger.ProceedingStage == ItemsProceederBase.StageIdle;
+            }
 
-            bool isMazeItem = _Info.MazeItems.Any(_O => 
+            bool isMazeItem = info.MazeItems.Any(_O => 
                 _O.Position == _NextPosition
                 && (_O.Type == EMazeItemType.Block
                     || _O.Type == EMazeItemType.TrapIncreasing
@@ -196,15 +204,15 @@ namespace Games.RazorMaze.Models
                 return false;
             
             bool isBuzyMazeItem = GetProceedInfos(EMazeItemType.GravityBlock)
-                .Where(_Inf => _Inf.Type == EMazeItemType.GravityBlock)
-                .Any(_Inf => _Inf.BusyPositions.Contains(_NextPosition));
+                .Where(_Info => _Info.Type == EMazeItemType.GravityBlock)
+                .Any(_Info => _Info.BusyPositions.Contains(_NextPosition));
 
             if (isBuzyMazeItem)
                 return false;
 
-            bool isPrevPortal = _Info.MazeItems
+            bool isPrevPortal = info.MazeItems
                 .Any(_O => _O.Position == _CurrentPosition && _O.Type == EMazeItemType.Portal);
-            bool isStartFromPortal = _Info.MazeItems
+            bool isStartFromPortal = info.MazeItems
                 .Any(_O => _O.Position == _From && _O.Type == EMazeItemType.Portal);
 
             if (isPrevPortal && !isStartFromPortal)
@@ -212,7 +220,7 @@ namespace Games.RazorMaze.Models
             return true;
         }
         
-        private IEnumerator MoveCharacterCore(EMazeMoveDirection _Direction, V2Int _From, V2Int _To)
+        private IEnumerator MoveCharacterCore(EMazeMoveDirection _Direction, V2Int _From, V2Int _To, V2Int? _ShredingerBlockPosWhoStopped)
         {
             int thisCount = ++m_Counter;
             int pathLength = Mathf.RoundToInt(V2Int.Distance(_From, _To));
@@ -222,16 +230,16 @@ namespace Games.RazorMaze.Models
                 pathLength / Settings.characterSpeed,
                 _Progress =>
                 {
-                    MovingInfo = new CharacterMovingEventArgs(_Direction, _From, _To, _Progress);
+                    MovingInfo = new CharacterMovingEventArgs(_Direction, _From, _To, _Progress, _ShredingerBlockPosWhoStopped);
                     Position = V2Int.Round(MovingInfo.PrecisePosition);
-                    CharacterMoveContinued?.Invoke(new CharacterMovingEventArgs(_Direction, _From, _To, _Progress));
+                    CharacterMoveContinued?.Invoke(new CharacterMovingEventArgs(_Direction, _From, _To, _Progress, _ShredingerBlockPosWhoStopped));
                 },
                 GameTicker,
                 (_Stopped, _Progress) =>
                 {
                     if (!_Stopped)
                     {
-                        CharacterMoveFinished?.Invoke(new CharacterMovingEventArgs(_Direction, _From, _To, 1));
+                        CharacterMoveFinished?.Invoke(new CharacterMovingEventArgs(_Direction, _From, _To, 1, _ShredingerBlockPosWhoStopped));
                         Position = _To;
                         IsMoving = false;
                     }

@@ -171,6 +171,7 @@ namespace Games.RazorMaze.Views.MazeItems
                         {
                             {Shapes, () => DrawingUtils.ColorLines}
                         },
+                        Props.Position,
                         _OnFinish: () =>
                         {
                             if (!_Appear)
