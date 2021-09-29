@@ -145,8 +145,13 @@ namespace Games.RazorMaze.Views.MazeItems
         
         public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
         {
-            if (_Args.Position == Props.Position)
-                Coroutines.Run(OnFinishMoveCoroutine(_Args.Direction));
+            if (_Args.Position != Props.Position)
+                return;
+            var springboardInfos = 
+                Model.SpringboardProceeder.ProceedInfos[EMazeItemType.Springboard];
+            if (springboardInfos.Any(_Info => _Info.CurrentPosition == Props.Position))
+                return;
+            Coroutines.Run(OnFinishMoveCoroutine(_Args.Direction));
         }
         
         #endregion
@@ -203,13 +208,29 @@ namespace Games.RazorMaze.Views.MazeItems
         private void InitInnerCorners()
         {
             var pos = Props.Position;
-            if (!PathExist(pos + V2Int.left) && !PathExist(pos + V2Int.down))
+            bool initLeftBottomCorner = !PathExist(pos + V2Int.left)
+                                      && !PathExist(pos + V2Int.down)
+                                      || SpringboardExist(pos) 
+                                      && SpringboardDirection(pos) == V2Int.right + V2Int.up;
+            if (initLeftBottomCorner)
                 InitCorner(false, false, true);
-            if (!PathExist(pos + V2Int.left) && !PathExist(pos + V2Int.up))
+            bool initLeftTopCorner = !PathExist(pos + V2Int.left)
+                                     && !PathExist(pos + V2Int.up)
+                                     || SpringboardExist(pos)
+                                     && SpringboardDirection(pos) == V2Int.right + V2Int.down;
+            if (initLeftTopCorner)
                 InitCorner(false, true, true);
-            if (!PathExist(pos + V2Int.right) && !PathExist(pos + V2Int.down))
+            bool initRightBottomCorner = !PathExist(pos + V2Int.right)
+                                         && !PathExist(pos + V2Int.down)
+                                         || SpringboardExist(pos)
+                                         && SpringboardDirection(pos) == V2Int.left + V2Int.up;
+            if (initRightBottomCorner)
                 InitCorner(true, false, true);
-            if (!PathExist(pos + V2Int.right) && !PathExist(pos + V2Int.up))
+            bool initRightTopCorner = !PathExist(pos + V2Int.right)
+                                      && !PathExist(pos + V2Int.up)
+                                      || SpringboardExist(pos)
+                                      && SpringboardDirection(pos) == V2Int.left + V2Int.down;
+            if (initRightTopCorner)
                 InitCorner(true, true, true);
         }
 
@@ -483,6 +504,13 @@ namespace Games.RazorMaze.Views.MazeItems
         private V2Int TurretDirection(V2Int _Position) =>
             Model.Data.Info.MazeItems
                 .First(_Item => _Item.Position == _Position && _Item.Type == EMazeItemType.Turret)
+                .Direction;
+        
+        private bool SpringboardExist(V2Int _Position) => Model.Data.Info.MazeItems
+            .Any(_Item => _Item.Position == _Position && _Item.Type == EMazeItemType.Springboard);
+        private V2Int SpringboardDirection(V2Int _Position) =>
+            Model.Data.Info.MazeItems
+                .First(_Item => _Item.Position == _Position && _Item.Type == EMazeItemType.Springboard)
                 .Direction;
 
         private Vector3 Average(Vector3 _A, Vector3 _B) => (_A + _B) * 0.5f;
