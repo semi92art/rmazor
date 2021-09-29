@@ -72,6 +72,7 @@ namespace Games.RazorMaze.Views.MazeItems
             if (ProceedingStage != EProceedingStage.ActiveAndWorking)
                 return;
             DoRotation();
+            CheckForCharacterDeath();
         }
         
         public void OnMoveStarted(MazeItemMoveEventArgs _Args)
@@ -154,6 +155,14 @@ namespace Games.RazorMaze.Views.MazeItems
             while (_Angle > 360f)
                 _Angle -= 360f;
             return _Angle;
+        }
+        
+        private void CheckForCharacterDeath()
+        {
+            var ch = Model.Character;
+            var cPos = ch.IsMoving ? ch.MovingInfo.PrecisePosition : ch.Position.ToVector2();
+            if (Vector2.Distance(cPos, m_Position) < 1f)
+                ch.RaiseDeath();
         }
         
         #endregion

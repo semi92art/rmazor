@@ -4,12 +4,11 @@ using System.Linq;
 using Entities;
 using Games.RazorMaze.Models.ProceedInfos;
 using Ticker;
-using UnityEngine;
 using Utils;
 
 namespace Games.RazorMaze.Models.ItemProceeders
 {
-    public interface IGravityItemsProceeder : IMovingItemsProceeder, ICharacterMoveStarted, IOnGameLoopUpdate
+    public interface IGravityItemsProceeder : IMovingItemsProceeder, ICharacterMoveStarted
     {
         void OnMazeOrientationChanged();
     }
@@ -54,16 +53,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         {
             MoveMazeItemsGravity(Data.Orientation, _Args.To);
         }
-        
-        public void OnGameLoopUpdate()
-        {
-            foreach (var info in GetProceedInfos(Types)
-                .Where(_Info => _Info.IsProceeding && _Info.ProceedingStage == StageIdle))
-            {
-                CheckForCharacterDeath(info, info.CurrentPosition.ToVector2());
-            }
-        }
-        
+
         #endregion
 
         #region nonpublic methods
@@ -173,18 +163,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     busyPositions.Clear();
                     busyPositions.Add(to);
                 });
-        }
-        
-        private void CheckForCharacterDeath(IMazeItemProceedInfo _Info, Vector2 _ItemPrecisePosition)
-        {
-            if (!Character.Alive)
-                return;
-            var cPos = Character.IsMoving ?
-                Character.MovingInfo.PrecisePosition : Character.Position.ToVector2();
-            if (Vector2.Distance(cPos, _ItemPrecisePosition) + RazorMazeUtils.Epsilon > 1f)
-                return;
-            KillerProceedInfo = _Info;
-            Character.RaiseDeath();
         }
 
         #endregion
