@@ -5,7 +5,6 @@ using DI.Extensions;
 using Entities;
 using Exceptions;
 using Games.RazorMaze.Models;
-using Games.RazorMaze.Models.ProceedInfos;
 using Shapes;
 using Ticker;
 using UnityEngine;
@@ -208,8 +207,6 @@ namespace Games.RazorMaze
                                 shapeRenderer.enabled = true;
                             else if (shape is SpriteRenderer spriteRenderer)
                                 spriteRenderer.enabled = true;
-                            else if (shape is MeshRenderer meshRenderer)
-                                meshRenderer.enabled = true;
                         }
                     Coroutines.Run(Coroutines.Lerp(
                         0f,
@@ -224,11 +221,6 @@ namespace Games.RazorMaze
                                     shapeRenderer.Color = col;
                                 else if (shape is SpriteRenderer spriteRenderer)
                                     spriteRenderer.color = col;
-                                else if (shape is MeshRenderer meshRenderer)
-                                {
-                                    foreach (var material in meshRenderer.materials)
-                                        material.color = col;
-                                }
                             }
                         },
                         _GameTicker,
@@ -241,8 +233,6 @@ namespace Games.RazorMaze
                                         shapeRenderer.enabled = false;
                                     else if (shape is SpriteRenderer spriteRenderer)
                                         spriteRenderer.enabled = false;
-                                    else if (shape is MeshRenderer meshRenderer)
-                                        meshRenderer.enabled = false;
                                 }
                             _OnFinish?.Invoke();
                         }));
