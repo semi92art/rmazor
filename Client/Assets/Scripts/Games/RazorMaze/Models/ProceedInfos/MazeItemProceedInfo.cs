@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Entities;
-using Games.RazorMaze.Models.ItemProceeders;
 
 namespace Games.RazorMaze.Models.ProceedInfos
 {

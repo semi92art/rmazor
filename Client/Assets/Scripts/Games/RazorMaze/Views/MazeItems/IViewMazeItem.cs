@@ -1,5 +1,4 @@
 ﻿using System;
-using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.MazeItems.Props;
 using SpawnPools;

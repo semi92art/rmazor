@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using DI.Extensions;
 using Exceptions;
-using Games.RazorMaze.Views.Characters;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
@@ -12,7 +11,7 @@ using Ticker;
 using UnityEngine;
 using Utils;
 using Object = UnityEngine.Object;
-using Random = UnityEngine.Random;
+using Random = System.Random;
 
 namespace Games.RazorMaze.Views.Common
 {
@@ -30,7 +29,7 @@ namespace Games.RazorMaze.Views.Common
         private bool m_Initialized;
         private bool m_LoadedFirstTime;
         private Transform m_Container;
-        private readonly System.Random m_Random = new System.Random(); 
+        private readonly Random m_Random = new Random(); 
         private readonly Color m_Color = DrawingUtils.ColorLines.SetA(0.05f);
         private readonly List<ShapeRenderer> m_Sources = new List<ShapeRenderer>();
         private readonly BehavioursSpawnPool<ShapeRenderer> m_Pool = new BehavioursSpawnPool<ShapeRenderer>();
@@ -143,7 +142,7 @@ namespace Games.RazorMaze.Views.Common
         {
             for (int i = 0; i < PoolSize; i++)
             {
-                int randIdx = Mathf.FloorToInt(Random.value * m_Sources.Count);
+                int randIdx = Mathf.FloorToInt(UnityEngine.Random.value * m_Sources.Count);
                 var source = m_Sources[randIdx];
                 var newGo = Object.Instantiate(source.gameObject);
                 newGo.SetParent(ContainersGetter.BackgroundContainer);

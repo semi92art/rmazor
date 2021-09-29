@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Constants;
 using DI.Extensions;
@@ -245,7 +246,7 @@ namespace Games.RazorMaze.Views.Characters
                     RazorMazeUtils.DoAppearTransitionSimple(
                         _Appear,
                         GameTicker,
-                        new Dictionary<object[], System.Func<Color>>
+                        new Dictionary<object[], Func<Color>>
                         {
                             {new object[] {m_HeadShape}, () => DrawingUtils.ColorCharacter},
                             {new object[] {m_Eye1Shape, m_Eye2Shape}, () => m_BackColor}

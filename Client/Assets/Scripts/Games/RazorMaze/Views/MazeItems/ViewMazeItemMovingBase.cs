@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
 using Games.RazorMaze.Models;
@@ -105,7 +106,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 () => !Initialized,
                 () =>
                 {
-                    var sets = new Dictionary<object[], System.Func<Color>>();
+                    var sets = new Dictionary<object[], Func<Color>>();
                     if (m_PathLines.Any())
                         sets.Add(m_PathLines.Cast<object>().ToArray(), () => DrawingUtils.ColorLines.SetA(0.5f));
                     if (m_PathJoints.Any())

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
 using Entities;
@@ -11,6 +12,7 @@ using SpawnPools;
 using Ticker;
 using UnityEngine;
 using Utils;
+using Random = UnityEngine.Random;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
@@ -205,7 +207,7 @@ namespace Games.RazorMaze.Views.MazeItems
                     RazorMazeUtils.DoAppearTransitionSimple(
                         _Appear,
                         GameTicker,
-                        new Dictionary<object[], System.Func<Color>>
+                        new Dictionary<object[], Func<Color>>
                         {
                             {new [] {m_Center}, () => DrawingUtils.ColorLines},
                             {m_Orbits.Cast<object>().ToArray(), () => DrawingUtils.ColorLines}

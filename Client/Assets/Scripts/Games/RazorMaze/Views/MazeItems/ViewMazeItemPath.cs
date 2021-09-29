@@ -10,7 +10,6 @@ using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeItems.Props;
 using Games.RazorMaze.Views.Utils;
-using JetBrains.Annotations;
 using Shapes;
 using Ticker;
 using UnityEngine;

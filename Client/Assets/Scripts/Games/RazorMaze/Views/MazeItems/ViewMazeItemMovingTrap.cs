@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using DI.Extensions;
 using GameHelpers;
 using Games.RazorMaze.Models;
@@ -149,7 +149,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 () => !Initialized,
                 () =>
                 {
-                    var sets = new Dictionary<object[], System.Func<Color>>
+                    var sets = new Dictionary<object[], Func<Color>>
                     {
                         {new object[] {m_Saw}, () => DrawingUtils.ColorLines}
                     };
