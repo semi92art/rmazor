@@ -1,6 +1,7 @@
 ﻿using Constants;
 using DI.Extensions;
 using DialogViewers;
+using Entities;
 using GameHelpers;
 using Ticker;
 using TMPro;
@@ -38,11 +39,13 @@ namespace UI.Panels
 
         public TimeOrLifesEndedPanel(
             IGameDialogViewer _DialogViewer,
+            IGameObservable _GameObservable,
             IUITicker _UITicker,
             bool _IsSecs,
             UnityAction _Continue = null,
             UnityAction<float> _SetAdditionalTime = null,
-            UnityAction<long> _SetAdditionalLife = null) : base(_UITicker)
+            UnityAction<long> _SetAdditionalLife = null) 
+            : base(_GameObservable, _UITicker)
         {
             m_DialogViewer = _DialogViewer;
             m_IsSecs = _IsSecs;
@@ -53,6 +56,7 @@ namespace UI.Panels
         
         public override void Init()
         {
+            base.Init();
             GameObject go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_DialogViewer.Container,

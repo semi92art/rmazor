@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Constants;
 using DI.Extensions;
 using DialogViewers;
+using Entities;
 using GameHelpers;
 using Ticker;
 using UI.Entities;
@@ -34,10 +35,11 @@ namespace UI.Panels
 
         public SettingsSelectorPanel(
             IMenuDialogViewer _DialogViewer,
-            IUITicker _UITicker,
             string _Value,
             List<string> _Items,
-            Action<string> _Select) : base(_UITicker)
+            Action<string> _Select,
+            IGameObservable _GameObservable,
+            IUITicker _UITicker) : base(_GameObservable, _UITicker)
         {
             m_DialogViewer = _DialogViewer;
             m_DefaultValue = _Value;
@@ -47,6 +49,7 @@ namespace UI.Panels
         
         public override void Init()
         {
+            base.Init();
             var sp = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_DialogViewer.Container,
@@ -84,7 +87,7 @@ namespace UI.Panels
             {
                 var sspiClone = sspi.Clone();
                 SettingSelectorItem si = sspiClone.GetComponent<SettingSelectorItem>();
-                si.Init(item, m_Select, item == m_DefaultValue, GetObservers(), (IUITicker)Ticker);
+                si.Init(item, m_Select, item == m_DefaultValue, GameObservable);
                 selectorItems.Add(si);
             }
 

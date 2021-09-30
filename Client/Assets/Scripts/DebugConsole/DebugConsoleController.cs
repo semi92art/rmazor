@@ -3,12 +3,13 @@
 using System;
 using System.Collections.Generic;
 using Constants;
+using Constants.NotifyMessages;
 using Entities;
 using Utils;
 
 namespace DebugConsole
 {
-    public class DebugConsoleController : GameObserver
+    public class DebugConsoleController : IGameObserver
     {
         #region event declarations
 
@@ -45,14 +46,6 @@ namespace DebugConsole
 
         #endregion
 
-        #region public properties
-        public string[] Log { get; private set; }
-        public Queue<string> Scrollback { get; } = new Queue<string>(ScrollbackSize);
-        public Dictionary<string, CommandRegistration> Commands { get;} = new Dictionary<string, CommandRegistration>();
-        public List<string> CommandHistory { get; } = new List<string>();
-        
-        #endregion
-
         #region constructor
 
         public DebugConsoleController()
@@ -63,7 +56,12 @@ namespace DebugConsole
 
         #endregion
 
-        #region public methods
+        #region api
+        
+        public string[] Log { get; private set; }
+        public Queue<string> Scrollback { get; } = new Queue<string>(ScrollbackSize);
+        public Dictionary<string, CommandRegistration> Commands { get;} = new Dictionary<string, CommandRegistration>();
+        public List<string> CommandHistory { get; } = new List<string>();
 
         public void RaiseLogChangedEvent(string[] _Args)
         {
@@ -105,13 +103,26 @@ namespace DebugConsole
             RunCommand(commandSplit[0].ToLower(), args);
             CommandHistory.Add(_CommandString);
         }
+        
+        public void OnNotify(string _NotifyMessage, params object[] _Args)
+        {
+            if (_NotifyMessage != CommonNotifyMessages.RegisterCommand || _Args.Length < 3)
+                return;
+
+            var command = _Args[0] as string;
+            var handler = _Args[1] as CommandHandler;
+            string description = string.Empty;
+            if (_Args.Length > 2)
+                description = _Args[2] as string;
+            
+            if (!string.IsNullOrEmpty(command) && handler != null)
+                RegisterCommand(command, handler, description);
+        }
 
         #endregion
 
         #region nonpublic methods
         
-        
-
         private void RunCommand(string _Command, string[] _Args)
         {
             if (!Commands.TryGetValue(_Command, out var reg))
@@ -147,21 +158,6 @@ namespace DebugConsole
             char[] parmCharsArr = new char[parmChars.Count];
             parmChars.CopyTo(parmCharsArr, 0);
             return (new string(parmCharsArr)).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-        }
-        
-        protected override void OnNotify(object _Sender, string _NotifyMessage, params object[] _Args)
-        {
-            if (_NotifyMessage != CommonNotifyMessages.RegisterCommand || _Args.Length < 3)
-                return;
-
-            var command = _Args[0] as string;
-            var handler = _Args[1] as CommandHandler;
-            string description = string.Empty;
-            if (_Args.Length > 2)
-                description = _Args[2] as string;
-            
-            if (!string.IsNullOrEmpty(command) && handler != null)
-                RegisterCommand(command, handler, description);
         }
 
         #endregion

@@ -3,6 +3,7 @@ using System.Linq;
 using Constants;
 using DI.Extensions;
 using DialogViewers;
+using Entities;
 using GameHelpers;
 using Ticker;
 using UI.Entities;
@@ -31,7 +32,8 @@ namespace UI.Panels
         public SelectGamePanel(
             IMenuDialogViewer _DialogViewer, 
             Action<int> _SelectGame,
-            IUITicker _UITicker) : base(_UITicker)
+            IGameObservable _GameObservable,
+            IUITicker _UITicker) : base(_GameObservable, _UITicker)
         {
             m_DialogViewer = _DialogViewer;
             m_SelectGame = _SelectGame;
@@ -39,6 +41,7 @@ namespace UI.Panels
 
         public override void Init()
         {
+            base.Init();
             GameObject selectGamePanel = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_DialogViewer.Container,
@@ -67,7 +70,7 @@ namespace UI.Panels
                     m_SelectGame.Invoke(cgiProps.GameId);
                     m_DialogViewer.Back();
                 };
-                cgi.Init(cgiProps, GetObservers(), (IUITicker)Ticker);
+                cgi.Init(cgiProps, GameObservable);
             }
             
             Object.Destroy(cgiObj);

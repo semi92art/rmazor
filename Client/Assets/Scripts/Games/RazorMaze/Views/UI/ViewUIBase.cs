@@ -11,19 +11,24 @@ namespace Games.RazorMaze.Views.UI
 {
     public interface IViewUI : IOnLevelStageChanged { }
     
-    public abstract class ViewUIBase : GameObservable, IViewUI, IUpdateTick
+    public abstract class ViewUIBase : IViewUI, IUpdateTick
     {
+
         #region nonpublic members
         
         protected IGameDialogViewer DialogViewer;
         protected Canvas Canvas;
+        protected readonly IGameObservable m_GameObservable;
+        protected readonly IUITicker m_UITicker;
         
         #endregion
 
         #region constructor
 
-        protected ViewUIBase(IUITicker _UITicker) : base(_UITicker)
+        protected ViewUIBase(IGameObservable _GameObservable, IUITicker _UITicker)
         {
+            m_GameObservable = _GameObservable;
+            m_UITicker = _UITicker;
             CreateCanvas();
             CreateDialogViewer();
         }
@@ -61,12 +66,12 @@ namespace Games.RazorMaze.Views.UI
                 GameMenuPanel.PanelState |= PanelState.NeedToClose;
                 return;
             }
-            Ticker.Pause = true;
+            // FIXME
+            m_UITicker.Pause = true;
             var gameMenuPanel = new GameMenuPanel(DialogViewer,
-                () => Ticker.Pause = false, (IUITicker)Ticker);
-            gameMenuPanel.AddObservers(GetObservers());
-            gameMenuPanel.Init();
-            DialogViewer.Show(gameMenuPanel);
+                () => m_UITicker.Pause = false, m_GameObservable, m_UITicker);
+             gameMenuPanel.Init();
+             DialogViewer.Show(gameMenuPanel);
         }
         
         public void UpdateTick()

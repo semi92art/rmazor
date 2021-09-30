@@ -1,83 +1,82 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
+using Controllers;
 using DebugConsole;
 using Managers;
-using Ticker;
 
 namespace Entities
 {
-    public abstract class GameObserver
+    public interface IGameObservable
     {
-        protected abstract void OnNotify(object _Sender, string _NotifyMessage, params object[] _Args);
+        void Notify(string _NotifyMessage, params object[] _Args);
+        void AddObserver(IGameObserver _Observer);
+        void AddObservers(IEnumerable<IGameObserver> _Observers);
+        void RemoveObserver(IGameObserver _Observer);
+        List<IGameObserver> GetObservers();
     }
 
-    public abstract class GameObservable
+    public class GameObservable : IGameObservable
     {
         #region nonpublic members
         
-        private readonly List<GameObserver> m_Observers = new List<GameObserver>();
-        protected ITicker Ticker { get; }
+        private readonly List<IGameObserver> m_Observers = new List<IGameObserver>();
 
         #endregion
         
-        protected GameObservable(ITicker _Ticker)
+        #region inject
+        
+        private ISoundGameObserver SoundGameObserver { get; }
+
+        public GameObservable(ISoundGameObserver _SoundGameObserver)
         {
-            Ticker = _Ticker;
-            Ticker.Register(this);
-            AddObservers();
+            SoundGameObserver = _SoundGameObserver;
+            AddDefaultObservers();
         }
         
-        protected virtual void AddObservers()
+        #endregion
+
+        #region api
+
+        public void Notify(string _NotifyMessage, params object[] _Args)
         {
-            if (!m_Observers.Contains(AdsManager.Instance))
-                m_Observers.Add(AdsManager.Instance);
-            if (!m_Observers.Contains(AnalyticsManager.Instance))
-                m_Observers.Add(AnalyticsManager.Instance);
-            if (!m_Observers.Contains(PurchasesManager.Instance))
-                m_Observers.Add(PurchasesManager.Instance);
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (!m_Observers.Contains(DebugConsoleView.Instance.Controller))
-                m_Observers.Add(DebugConsoleView.Instance.Controller);
-#endif
-        }
-        
-        protected void Notify(object _Sender, string _NotifyMessage, params object[] _Args)
-        {
-            MethodInfo mInfoOnNotify = typeof(GameObserver).GetMethod("OnNotify",
-                BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var observer in m_Observers)
-                mInfoOnNotify?.Invoke(observer, new[] {_Sender, _NotifyMessage, _Args});
+                observer.OnNotify(_NotifyMessage, _Args);
         }
 
-        public void AddObserver(GameObserver _Observer)
+        public void AddObserver(IGameObserver _Observer)
         {
             m_Observers.Add(_Observer);
         }
 
-        public void AddObservers(IEnumerable<GameObserver> _Observers)
+        public void AddObservers(IEnumerable<IGameObserver> _Observers)
         {
             m_Observers.AddRange(_Observers);
         }
 
-        public void RemoveObserver(GameObserver _Observer)
+        public void RemoveObserver(IGameObserver _Observer)
         {
             m_Observers.Remove(_Observer);
         }
 
-        public List<GameObserver> GetObservers()
+        public List<IGameObserver> GetObservers()
         {
             return m_Observers;
         }
-    }
-    
-    public class ObserverNotifyer : GameObservable
-    {
-        public ObserverNotifyer(IUITicker _UITicker) : base(_UITicker)
-        { }
+
+        #endregion
         
-        public void RaiseNotify(object _Sender, string _NotifyMessage, params object[] _Args)
+        private void AddDefaultObservers()
         {
-            Notify(_Sender, _NotifyMessage, _Args);
+            m_Observers.AddRange(new IGameObserver[]
+            {
+                SoundGameObserver,
+                AdsManager.Instance,
+                AnalyticsManager.Instance,
+                PurchasesManager.Instance
+            });
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            m_Observers.Add(DebugConsoleView.Instance.Controller);
+#endif
         }
     }
 }

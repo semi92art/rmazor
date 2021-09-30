@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using Constants;
+﻿using Constants;
+using Constants.NotifyMessages;
 using DI.Extensions;
 using Entities;
 using GameHelpers;
-using Ticker;
 using UI;
 using UI.Factories;
 using UI.Managers;
@@ -36,7 +35,7 @@ namespace DialogViewers
         private Button m_GoBackButton;
         private Button m_CloseButton;
         private Animator m_ButtonsAnim;
-        private ObserverNotifyer m_Notifyer;
+        private IGameObservable m_GameObservable;
 
         #endregion
     
@@ -59,12 +58,12 @@ namespace DialogViewers
             
             m_GoBackButton.SetOnClick(() =>
             {
-                m_Notifyer.RaiseNotify(this, CommonNotifyMessages.UiButtonClick);
+                m_GameObservable.Notify(SoundNotifyMessages.PlayAudioClip, AudioClipNames.UIButtonClick);
                 Back();
             });
             m_CloseButton.SetOnClick(() =>
             {
-                m_Notifyer.RaiseNotify(this, CommonNotifyMessages.UiButtonClick);
+                m_GameObservable.Notify(SoundNotifyMessages.PlayAudioClip, AudioClipNames.UIButtonClick);
                 CloseAll();
             });
         }
@@ -75,8 +74,7 @@ namespace DialogViewers
 
         public static IMenuDialogViewer Create(
             RectTransform _Parent,
-            IEnumerable<GameObserver> _Observers,
-            IUITicker _UITicker)
+            IGameObservable _GameObservable)
         {
             var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
@@ -85,8 +83,7 @@ namespace DialogViewers
                 "dialog_viewers",
                 "main_menu_viewer");
             var result = go.GetComponent<MainMenuDialogViewer>();
-            result.m_Notifyer = new ObserverNotifyer(_UITicker);
-            result.m_Notifyer.AddObservers(_Observers);
+            result.m_GameObservable = _GameObservable;
             return result;
         }
 

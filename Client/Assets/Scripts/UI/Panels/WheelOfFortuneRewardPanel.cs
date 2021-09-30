@@ -1,6 +1,7 @@
 ﻿using Constants;
 using DI.Extensions;
 using DialogViewers;
+using Entities;
 using Exceptions;
 using GameHelpers;
 using Managers;
@@ -33,10 +34,11 @@ namespace UI.Panels
 
         public WheelOfFortuneRewardPanel(
             INotificationViewer _NotificationViewer,
+            IGameObservable _GameObservable,
             IUITicker _UITicker,
             BankItemType _BankItemType,
             long _Reward,
-            UnityAction _OnClose) : base(_UITicker)
+            UnityAction _OnClose) : base(_GameObservable, _UITicker)
         {
             m_NotificationViewer = _NotificationViewer;
             m_BankItemType = _BankItemType;
@@ -46,6 +48,7 @@ namespace UI.Panels
         
         public override void Init()
         {
+            base.Init();
             var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_NotificationViewer.Container,

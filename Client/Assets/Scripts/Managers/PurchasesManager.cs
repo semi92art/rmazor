@@ -1,4 +1,4 @@
-﻿using Constants;
+﻿using Constants.NotifyMessages;
 using Entities;
 using Exceptions;
 using UI.PanelItems;
@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 namespace Managers
 {
-    public class PurchasesManager : GameObserver
+    public class PurchasesManager : IGameObserver
     {
         #region singleton
     
@@ -15,9 +15,9 @@ namespace Managers
     
         #endregion
         
-        #region nonpublic methods
+        #region api
         
-        protected override void OnNotify(object _Sender, string _NotifyMessage, params object[] _Args)
+        public void OnNotify(string _NotifyMessage, params object[] _Args)
         {
             if (_NotifyMessage != CommonNotifyMessages.PurchaseCommand) return;
             if (_Args == null || _Args.Length < 2) return;

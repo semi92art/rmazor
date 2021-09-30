@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Constants;
+using Constants.NotifyMessages;
 using DI.Extensions;
 using Entities;
 using GameHelpers;
@@ -15,13 +16,15 @@ namespace UI.PanelItems
         public Button button;
         public Image icon;
 
-        public void Init(ChooseGameItemProps _Props, IEnumerable<GameObserver> _Observers, IUITicker _Ticker)
+        public void Init(
+            ChooseGameItemProps _Props,
+            IGameObservable _GameObservable)
         {
-            base.Init(_Observers, _Ticker);
+            base.Init(_GameObservable);
             icon.sprite = GetLogo(_Props.GameId);
             button.SetOnClick(() =>
             {
-                Notifyer.RaiseNotify(this, CommonNotifyMessages.UiButtonClick);
+                GameObservable.Notify(SoundNotifyMessages.PlayAudioClip, AudioClipNames.UIButtonClick);
                 _Props.Click?.Invoke();
             });
         }

@@ -50,7 +50,9 @@ namespace UI.Panels
         public WheelOfFortunePanel(
             IMenuDialogViewer _DialogViewer,
             INotificationViewer _NotificationViewer,
-            IUITicker _UITicker) : base(_UITicker)
+            IGameObservable _GameObservable,
+            IUITicker _UITicker)
+            : base(_GameObservable, _UITicker)
         {
             m_DialogViewer = _DialogViewer;
             m_NotificationViewer = _NotificationViewer;
@@ -63,6 +65,7 @@ namespace UI.Panels
 
         public override void Init()
         {
+            base.Init();
             GameObject wofPan = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_DialogViewer.Container,
@@ -112,22 +115,26 @@ namespace UI.Panels
         {
             if (!m_IsLocked)
             {
-                Notify(this, NotifyMessageSpinButtonClick);
+                GameObservable.Notify(NotifyMessageSpinButtonClick);
                 Coroutines.Run(Coroutines.Action(() => m_WheelController.StartSpin()));
                 SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, DateTime.Now.Date);
                 m_SpinButton.interactable = false;
             }
             else
             {
-                Notify(this, NotifyMessageWatchAdButtonClick, (UnityAction)WatchAdFinishAction);
+                GameObservable.Notify(NotifyMessageWatchAdButtonClick, (UnityAction)WatchAdFinishAction);
             }
         }
 
         private void SpinFinishAction(BankItemType _BankItemType, long _Reward)
         {
             var rewardPanel = new WheelOfFortuneRewardPanel(
-                m_NotificationViewer, (IUITicker)Ticker, _BankItemType, _Reward, () =>
-                    BankManager.Instance.PlusBankItems(_BankItemType, _Reward));
+                m_NotificationViewer,
+                GameObservable, 
+                (IUITicker)Ticker,
+                _BankItemType, 
+                _Reward, 
+                () => BankManager.Instance.PlusBankItems(_BankItemType, _Reward));
                     
             m_SpinButton.interactable = true;
             m_IsLocked = CheckIfWofSpinToday();

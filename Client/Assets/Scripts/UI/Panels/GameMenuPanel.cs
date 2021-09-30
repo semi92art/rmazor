@@ -2,6 +2,7 @@
 using Constants;
 using DI.Extensions;
 using DialogViewers;
+using Entities;
 using GameHelpers;
 using Ticker;
 using UI.Factories;
@@ -35,8 +36,12 @@ namespace UI.Panels
         public static PanelState PanelState { get; set; }
         public GameUiCategory Category => GameUiCategory.Settings;
 
-        public GameMenuPanel(IGameDialogViewer _DialogViewer, UnityAction _Continue, IUITicker _UITicker) 
-            : base(_UITicker)
+        public GameMenuPanel(
+            IGameDialogViewer _DialogViewer, 
+            UnityAction _Continue,
+            IGameObservable _GameObservable,
+            IUITicker _UITicker) 
+            : base(_GameObservable, _UITicker)
         {
             m_DialogViewer = _DialogViewer;
             m_Continue = _Continue;
@@ -53,6 +58,7 @@ namespace UI.Panels
 
         public override void Init()
         {
+            base.Init();
             GameObject go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_DialogViewer.Container,

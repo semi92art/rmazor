@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Constants;
+using Constants.NotifyMessages;
 using Entities;
 using Exceptions;
 using GameHelpers;
@@ -18,7 +19,9 @@ namespace UI.PanelItems
         public static IShopItem Create(RectTransform _Parent) =>
             Create<ShopItemDefault>(_Parent, "shop_item_default");
         
-        public void Init(ShopItemProps _Props, IEnumerable<GameObserver> _Observers, IUITicker _Ticker)
+        public void Init(
+            ShopItemProps _Props,
+            IGameObservable _GameObservable)
         {
             UnityAction afterPurchaseAction;
             switch (_Props.Type)
@@ -34,14 +37,10 @@ namespace UI.PanelItems
             
             UnityAction action = () =>
             {
-                Notifyer.RaiseNotify(this, CommonNotifyMessages.UiButtonClick);
-                Notifyer.RaiseNotify(
-                    this,
-                    CommonNotifyMessages.PurchaseCommand,
-                    _Props,
-                    afterPurchaseAction);
+                GameObservable.Notify(SoundNotifyMessages.PlayAudioClip, AudioClipNames.UIButtonClick);
+                GameObservable.Notify(CommonNotifyMessages.PurchaseCommand, _Props, afterPurchaseAction);
             };
-            base.Init(action, _Props, _Observers, _Ticker);
+            base.Init(action, _Props, _GameObservable);
         }
     }
 }

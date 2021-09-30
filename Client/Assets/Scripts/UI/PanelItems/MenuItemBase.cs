@@ -1,18 +1,16 @@
-﻿using System.Collections.Generic;
-using Entities;
-using Ticker;
+﻿using Entities;
 using UnityEngine;
 
 namespace UI.PanelItems
 {
     public abstract class MenuItemBase : MonoBehaviour
     {
-        protected ObserverNotifyer Notifyer;
-
-        protected void Init(IEnumerable<GameObserver> _Observers, IUITicker _Ticker)
+        protected IGameObservable GameObservable { get; private set; }
+        
+        protected void Init( 
+            IGameObservable _GameObservable)
         {
-            Notifyer = new ObserverNotifyer(_Ticker);
-            Notifyer.AddObservers(_Observers);
+            GameObservable = _GameObservable;
         }
     }
 }

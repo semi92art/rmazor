@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Constants;
+using Constants.NotifyMessages;
 using Entities;
-using Ticker;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -30,10 +30,9 @@ namespace UI.PanelItems
             string _Text,
             Action<string> _Select,
             bool _IsOn,
-            IEnumerable<GameObserver> _Observers,
-            IUITicker _Ticker)
+            IGameObservable _GameObservable)
         {
-            base.Init(_Observers, _Ticker);
+            base.Init(_GameObservable);
             title.text = _Text;
             name = $"{_Text} Setting";
             m_OnSelect = _Select;
@@ -52,7 +51,7 @@ namespace UI.PanelItems
         {
             if (!m_IsInitialized) 
                 return;
-            Notifyer.RaiseNotify(this, CommonNotifyMessages.UiButtonClick);
+            GameObservable.Notify(SoundNotifyMessages.PlayAudioClip, AudioClipNames.UIButtonClick);
             m_OnSelect?.Invoke(title.text);
 
             foreach (var item in m_Items.ToArray())

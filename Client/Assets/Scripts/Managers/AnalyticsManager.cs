@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Managers
 {
-    public class AnalyticsManager : GameObserver, IInit
+    public class AnalyticsManager : IGameObserver, IInit
     {
         #region singleton
         
@@ -20,9 +20,12 @@ namespace Managers
         #endregion
 
         #region api
+        
+        public event NoArgsHandler Initialized;
 
         public void Init()
-        {
+        { 
+            // TODO
            // AnalyticsEventTracker analyticsEventTracker = _analyticsObject.AddComponent<AnalyticsEventTracker>();
            // analyticsEventTracker.m_Trigger.lifecycleEvent.
            //  
@@ -30,27 +33,11 @@ namespace Managers
            Initialized?.Invoke();
         }
 
-        public event NoArgsHandler Initialized;
-
-        #endregion
-
-        #region nonpublic methods
-        
-        protected override void OnNotify(object _Sender, string _NotifyMessage, params object[] _Args)
+        public void OnNotify( string _NotifyMessage, params object[] _Args)
         {
-            switch (_Sender)
-            {
-                case MainMenuUi _:
-                    switch (_NotifyMessage)
-                    {
-                        case MainMenuUi.NotifyMessageSelectGamePanelButtonClick:
-                            // TODO
-                            break;
-                    }
-                    break;
-            }
+            // TODO
         }
-        
+
         #endregion
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Constants;
+using Constants.NotifyMessages;
 using Entities;
 using Ticker;
 using TMPro;
@@ -20,10 +21,9 @@ namespace UI.PanelItems
             bool _IsOn, 
             string _Name,
             UnityAction<bool> _Action,
-            IEnumerable<GameObserver> _Observers,
-            IUITicker _Ticker)
+            IGameObservable _GameObservable)
         {
-            base.Init(_Observers, _Ticker);
+            base.Init(_GameObservable);
             name = $"{_Name} Setting";
             title.text = _Name;
             ToggleGroup tg = gameObject.AddComponent<ToggleGroup>();
@@ -38,9 +38,9 @@ namespace UI.PanelItems
             onText.text = "On";
 
             onToggle.onValueChanged.AddListener(_V =>
-                Notifyer.RaiseNotify(this, CommonNotifyMessages.UiButtonClick));
+                GameObservable.Notify(SoundNotifyMessages.PlayAudioClip, AudioClipNames.UIButtonClick));
             offToggle.onValueChanged.AddListener(_V =>
-                Notifyer.RaiseNotify(this, CommonNotifyMessages.UiButtonClick));
+                GameObservable.Notify(SoundNotifyMessages.PlayAudioClip, AudioClipNames.UIButtonClick));
             onToggle.onValueChanged.AddListener(_Action);
         }
     }

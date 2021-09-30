@@ -19,7 +19,9 @@ namespace UI.PanelItems
 {
     public interface IShopItem
     {
-        void Init(ShopItemProps _Props, IEnumerable<GameObserver> _Observers, IUITicker _Ticker);
+        void Init(
+            ShopItemProps _Props,
+            IGameObservable _GameObservable);
     }
 
     public abstract class ShopItemBase : MenuItemBase
@@ -46,10 +48,9 @@ namespace UI.PanelItems
         protected void Init(
             UnityAction _Action,
             ShopItemProps _Props,
-            IEnumerable<GameObserver> _Observers,
-            IUITicker _Ticker)
+            IGameObservable _GameObservable)
         {
-            base.Init(_Observers, _Ticker);
+            base.Init(_GameObservable);
             button.SetOnClick(_Action);
             title.text = _Props.Title;
             if (!string.IsNullOrEmpty(_Props.Description))

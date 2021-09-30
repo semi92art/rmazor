@@ -21,7 +21,7 @@ namespace UI
         void Init(bool _OnStart);
     }
     
-    public class MainMenuUiLoader : GameObservable, IMainMenuUiLoader
+    public class MainMenuUiLoader : IMainMenuUiLoader
     {
         #region nonpublic members
 
@@ -37,26 +37,23 @@ namespace UI
 
         #region inject
         
-        private IMainMenuUI MainMenuUI { get; set; }
+        private IMainMenuUI MainMenuUI { get; }
+        private IGameObservable GameObservable { get; }
+        private IUITicker UITicker { get; }
 
-        // [Inject]
-        // public void Inject(IMainMenuUI _MainMenuUI, IUITicker _Ticker)
-        // {
-        //     MainMenuUI = _MainMenuUI;
-        //     Ticker = _Ticker;
-        // }
-        
-        public MainMenuUiLoader(IMainMenuUI _MainMenuUI, IUITicker _UITicker) : base(_UITicker)
+        public MainMenuUiLoader(
+            IMainMenuUI _MainMenuUI,
+            IGameObservable _GameObservable,
+            IUITicker _UITicker)
         {
             MainMenuUI = _MainMenuUI;
+            GameObservable = _GameObservable;
+            UITicker = _UITicker;
         }
         
         #endregion
-        
-        
+
         #region api
-
-
         
         public void Init(bool _OnStart)
         {
@@ -114,7 +111,7 @@ namespace UI
         private void CreateDialogViewers()
         {
             m_MenuDialogViewer = MainMenuDialogViewer.Create(
-                m_Canvas.RTransform(), GetObservers(), (IUITicker)Ticker);
+                m_Canvas.RTransform(), GameObservable);
             m_NotificationViewer = MainMenuNotificationViewer.Create(
                 m_Canvas.RTransform());
         }
@@ -130,7 +127,7 @@ namespace UI
         private void CreateLoadingPanel()
         {
             bool authFinished = false;
-            var loadingPanel = new LoadingPanel(m_MenuDialogViewer, (IUITicker)Ticker);
+            var loadingPanel = new LoadingPanel(m_MenuDialogViewer, GameObservable, UITicker);
             loadingPanel.Init();
             m_MenuDialogViewer.Show(loadingPanel);
             m_StartLoadingController = new LoadingController(loadingPanel, _LoadingResult =>
@@ -214,7 +211,6 @@ namespace UI
                 m_MenuDialogViewer,
                 m_NotificationViewer,
                 m_MainBackgroundRenderer);
-            (MainMenuUI as MainMenuUi)?.AddObservers(GetObservers());
             MainMenuUI.Init();
         }
 

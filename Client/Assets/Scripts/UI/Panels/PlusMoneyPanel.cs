@@ -1,6 +1,7 @@
 ﻿using Constants;
 using DI.Extensions;
 using DialogViewers;
+using Entities;
 using GameHelpers;
 using Ticker;
 using UI.Factories;
@@ -36,7 +37,8 @@ namespace UI.Panels
             IMenuDialogViewer _DialogViewer,
             INotificationViewer _NotificationViewer,
             IActionExecutor _ActionExecutor,
-            IUITicker _UITicker) : base(_UITicker)
+            IGameObservable _GameObservable,
+            IUITicker _UITicker) : base(_GameObservable, _UITicker)
         {
             m_DialogViewer = _DialogViewer;
             m_NotificationViewer = _NotificationViewer;
@@ -45,6 +47,7 @@ namespace UI.Panels
         
         public override void Init()
         {
+            base.Init();
             GameObject go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_DialogViewer.Container,
@@ -64,27 +67,24 @@ namespace UI.Panels
 
         private void OnShopButtonClick()
         {
-            Notify(this, NotifyMessageShopButtonClick);
-            var panel = new ShopPanel(m_DialogViewer.Container, (IUITicker)Ticker);
-            panel.AddObservers(GetObservers());
+            GameObservable.Notify(NotifyMessageShopButtonClick);
+            var panel = new ShopPanel(m_DialogViewer.Container, GameObservable, (IUITicker)Ticker);
             panel.Init();
             m_DialogViewer.Show(panel);
         }
 
         private void OnDailyBonusButtonClick()
         {
-            Notify(this, NotifyMessageDailyBonusButtonClick);
-            var panel = new DailyBonusPanel(m_DialogViewer, m_ActionExecutor, (IUITicker)Ticker);
-            panel.AddObservers(GetObservers());
+            GameObservable.Notify(NotifyMessageDailyBonusButtonClick);
+            var panel = new DailyBonusPanel(m_DialogViewer, m_ActionExecutor, GameObservable, (IUITicker)Ticker);
             panel.Init();
             m_DialogViewer.Show(panel);
         }
 
         private void OnWheelOfFortuneButtonClick()
         {
-            Notify(this, NotifyMessageWheelOfFortuneButtonClick);
-            var panel = new WheelOfFortunePanel(m_DialogViewer, m_NotificationViewer, (IUITicker)Ticker);
-            panel.AddObservers(GetObservers());
+            GameObservable.Notify(NotifyMessageWheelOfFortuneButtonClick);
+            var panel = new WheelOfFortunePanel(m_DialogViewer, m_NotificationViewer, GameObservable, (IUITicker)Ticker);
             panel.Init();
             m_DialogViewer.Show(panel);
         }

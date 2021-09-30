@@ -6,7 +6,7 @@ using Utils;
 
 namespace Managers
 {
-    public class AdsManager : GameObserver, IInit
+    public class AdsManager : IGameObserver, IInit
     {
         #region singleton
     
@@ -66,6 +66,11 @@ namespace Managers
             Initialized?.Invoke();
         }
 
+        public void OnNotify(string _NotifyMessage, params object[] _Args)
+        {
+            if (_NotifyMessage == WheelOfFortunePanel.NotifyMessageWatchAdButtonClick)
+                ShowRewardedAd(_Args[0] as UnityAction);
+        }
 
         #endregion
 
@@ -90,12 +95,6 @@ namespace Managers
                 m_RewardedAd.Show();
             else
                 m_RewardedAd.LoadAd(m_AdRequest);
-        }
-        
-        protected override void OnNotify(object _Sender, string _NotifyMessage, params object[] _Args)
-        {
-            if (_NotifyMessage == WheelOfFortunePanel.NotifyMessageWatchAdButtonClick)
-                ShowRewardedAd(_Args[0] as UnityAction);
         }
 
         #endregion

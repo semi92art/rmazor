@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Constants;
 using DI.Extensions;
+using Entities;
 using Exceptions;
 using GameHelpers;
 using Managers;
@@ -46,13 +47,17 @@ namespace UI.Panels
 
         public MenuUiCategory Category => MenuUiCategory.Shop;
         
-        public ShopPanel(RectTransform _Container, IUITicker _UITicker) : base(_UITicker)
+        public ShopPanel(
+            RectTransform _Container,
+            IGameObservable _GameObservable,
+            IUITicker _UITicker) : base(_GameObservable, _UITicker)
         {
             m_Container = _Container;
         }
 
         public override void Init()
         {
+            base.Init();
             GameObject go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_Container,
@@ -77,7 +82,7 @@ namespace UI.Panels
                     default:
                         throw new SwitchCaseNotImplementedException(shopItemProps.Type);
                 }
-                item.Init(shopItemProps, GetObservers(), (IUITicker)Ticker);
+                item.Init(shopItemProps, GameObservable);
             }
 
             content.anchoredPosition = content.anchoredPosition.SetY(0);

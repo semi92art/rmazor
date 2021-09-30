@@ -2,6 +2,7 @@
 using Constants;
 using DI.Extensions;
 using DialogViewers;
+using Entities;
 using GameHelpers;
 using Settings;
 using Ticker;
@@ -38,13 +39,17 @@ namespace UI.Panels
         
         public MenuUiCategory Category => MenuUiCategory.Settings;
 
-        public SettingsPanel(IMenuDialogViewer _DialogViewer, IUITicker _UITicker) : base(_UITicker)
+        public SettingsPanel(
+            IMenuDialogViewer _DialogViewer,
+            IGameObservable _GameObservable,
+            IUITicker _UITicker) : base(_GameObservable, _UITicker)
         {
             m_DialogViewer = _DialogViewer;
         }
         
         public override void Init()
         {
+            base.Init();
             var sp = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(m_DialogViewer.Container, RtrLites.FullFill),
                 CommonPrefabSetNames.MainMenuDialogPanels, "settings_panel");
@@ -61,8 +66,7 @@ namespace UI.Panels
 
         private void InitSettingItems()
         {
-            var soundSetting = new SoundSetting((IUITicker)Ticker);
-            soundSetting.AddObservers(GetObservers());
+            var soundSetting = new SoundSetting(GameObservable);
             _settingList.Add(soundSetting);
             _settingList.Add(new LanguageSetting());
             #if DEBUG
@@ -86,7 +90,7 @@ namespace UI.Panels
                         _IsOn =>
                     {
                         _Setting.Put(_IsOn);
-                    }, GetObservers(), (IUITicker)Ticker);
+                    }, GameObservable);
                     break;
                 case SettingType.InPanelSelector:
                     var itemSelector = CreateInPanelSelectorSetting();
@@ -99,7 +103,7 @@ namespace UI.Panels
                         {
                             itemSelector.setting.text = _Value;
                             _Setting.Put(_Value);
-                        }, GetObservers(), (IUITicker)Ticker);
+                        }, GameObservable, (IUITicker)Ticker);
                     break;
                 case SettingType.Slider:
                     var itemSlider = CreateSliderSetting();

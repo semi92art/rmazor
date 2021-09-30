@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Constants;
+using Constants.NotifyMessages;
 using DI.Extensions;
 using DialogViewers;
 using Entities;
@@ -45,7 +46,8 @@ namespace UI.Panels
         public DailyBonusPanel(
             IMenuDialogViewer _DialogViewer, 
             IActionExecutor _ActionExecutor,
-            IUITicker _UITicker) : base(_UITicker)
+            IGameObservable _GameObservable,
+            IUITicker _UITicker) : base(_GameObservable, _UITicker)
         {
             m_DialogViewer = _DialogViewer;
             m_ActionExecutor = _ActionExecutor;
@@ -53,6 +55,7 @@ namespace UI.Panels
 
         public override void Init()
         {
+            base.Init();
             var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_DialogViewer.Container,
@@ -94,7 +97,7 @@ namespace UI.Panels
 
                 dbProps.Click = () =>
                 {
-                    Notify(this, CommonNotifyMessages.UiButtonClick, dbProps.Day);
+                    GameObservable.Notify(SoundNotifyMessages.PlayAudioClip);
                     m_DialogViewer.Back();
                 };
                 

@@ -3,6 +3,7 @@ using System.Linq;
 using Constants;
 using DI.Extensions;
 using DialogViewers;
+using Entities;
 using GameHelpers;
 using Ticker;
 using UI.Factories;
@@ -26,17 +27,21 @@ namespace UI.Panels
 
         #endregion
         
-        #region public api
+        #region api
 
         public MenuUiCategory Category => MenuUiCategory.Loading;
 
-        public LoadingPanel(IMenuDialogViewer _DialogViewer, IUITicker _UITicker) : base(_UITicker)
+        public LoadingPanel(
+            IMenuDialogViewer _DialogViewer,
+            IGameObservable _GameObservable,
+            IUITicker _UITicker) : base(_GameObservable, _UITicker)
         {
             m_DialogViewer = _DialogViewer;
         }
 
         public override void Init()
         {
+            base.Init();
             GameObject prefab = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_DialogViewer.Container,
