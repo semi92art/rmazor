@@ -5,8 +5,8 @@ namespace Games.RazorMaze.Views.UI
 {
     public class ViewUI : ViewUIBase
     {
-        public ViewUI(IGameObservable _GameObservable, IUITicker _UITicker) 
-            : base(_GameObservable, _UITicker) { }
+        public ViewUI(IManagersGetter _Managers, IUITicker _UITicker) 
+            : base(_Managers, _UITicker) { }
         
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {

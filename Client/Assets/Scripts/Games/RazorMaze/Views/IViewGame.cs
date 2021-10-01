@@ -9,9 +9,14 @@ using Games.RazorMaze.Views.UI;
 
 namespace Games.RazorMaze.Views
 {
-    public interface IViewGame : 
-        IPreInit, IInit, IPostInit, IOnLevelStageChanged, 
-        ICharacterMoveStarted, ICharacterMoveContinued, ICharacterMoveFinished
+    public interface IViewGame :
+        IPreInit, 
+        IInit,
+        IPostInit, 
+        IOnLevelStageChanged,
+        ICharacterMoveStarted,
+        ICharacterMoveContinued,
+        ICharacterMoveFinished
     {
         IContainersGetter                  ContainersGetter { get; }
         IViewUI                            UI { get; }
@@ -19,7 +24,7 @@ namespace Games.RazorMaze.Views
         IViewCharacter                     Character { get; }
         IViewMazeCommon                    Common { get; }
         IViewMazeBackground                Background { get; }
-        IViewRotation                  Rotation { get; }
+        IViewRotation                      Rotation { get; }
         IViewMazePathItemsGroup            PathItemsGroup { get; }
         IViewMazeMovingItemsGroup          MovingItemsGroup { get; }
         IViewMazeTrapsReactItemsGroup      TrapsReactItemsGroup { get; }
@@ -28,5 +33,6 @@ namespace Games.RazorMaze.Views
         IViewMazePortalsGroup              PortalsGroup { get; }
         IViewMazeShredingerBlocksGroup     ShredingerBlocksGroup { get; }
         IViewMazeSpringboardItemsGroup     SpringboardItemsGroup { get; }
+        
     }
 }

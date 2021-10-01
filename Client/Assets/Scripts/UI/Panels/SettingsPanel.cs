@@ -41,8 +41,8 @@ namespace UI.Panels
 
         public SettingsPanel(
             IMenuDialogViewer _DialogViewer,
-            IGameObservable _GameObservable,
-            IUITicker _UITicker) : base(_GameObservable, _UITicker)
+            IManagersGetter _Managers,
+            IUITicker _UITicker) : base(_Managers, _UITicker)
         {
             m_DialogViewer = _DialogViewer;
         }
@@ -66,7 +66,7 @@ namespace UI.Panels
 
         private void InitSettingItems()
         {
-            var soundSetting = new SoundSetting(GameObservable);
+            var soundSetting = new SoundSetting(Managers);
             _settingList.Add(soundSetting);
             _settingList.Add(new LanguageSetting());
             #if DEBUG
@@ -90,7 +90,7 @@ namespace UI.Panels
                         _IsOn =>
                     {
                         _Setting.Put(_IsOn);
-                    }, GameObservable);
+                    }, Managers);
                     break;
                 case SettingType.InPanelSelector:
                     var itemSelector = CreateInPanelSelectorSetting();
@@ -103,7 +103,7 @@ namespace UI.Panels
                         {
                             itemSelector.setting.text = _Value;
                             _Setting.Put(_Value);
-                        }, GameObservable, (IUITicker)Ticker);
+                        }, Managers, (IUITicker)Ticker);
                     break;
                 case SettingType.Slider:
                     var itemSlider = CreateSliderSetting();

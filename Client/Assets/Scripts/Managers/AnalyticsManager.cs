@@ -1,10 +1,13 @@
-﻿using Entities;
-using UI;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Managers
 {
-    public class AnalyticsManager : IGameObserver, IInit
+    public interface IAnalyticsManager : IInit
+    {
+        void OnAnalytic(string _AnalyticCode);
+    }
+    
+    public class AnalyticsManager : IAnalyticsManager
     {
         #region singleton
         
@@ -33,10 +36,11 @@ namespace Managers
            Initialized?.Invoke();
         }
 
-        public void OnNotify( string _NotifyMessage, params object[] _Args)
+        public void OnAnalytic(string _AnalyticCode)
         {
             // TODO
         }
+
 
         #endregion
     }

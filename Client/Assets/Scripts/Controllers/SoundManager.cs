@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Constants.NotifyMessages;
 using Entities;
 using GameHelpers;
 using UnityEngine;
@@ -8,9 +7,14 @@ using Utils;
 
 namespace Controllers
 {
-    public interface ISoundGameObserver : IGameObserver { }
+    public interface ISoundManager
+    {
+        void PlayClip(string _Name, bool _Cycling = false, float? _Volume = null);
+        void EnableSound(bool _Enable);
+        void StopPlayingClips();
+    }
     
-    public class SoundGameObserver : ISoundGameObserver
+    public class SoundManager : ISoundManager
     {
         #region nonpublic members
     
@@ -20,40 +24,14 @@ namespace Controllers
         #endregion
 
         #region api
-
-        public void OnNotify(string _NotifyMessage, params object[] _Args)
-        {
-            int argsCount = _Args.Length;
-            switch (_NotifyMessage)
-            {
-                // case SoundNotifyMessages.PlayMainMenuTheme:
-                //     PlayClip("main_menu_theme", true, 0.1f);
-                //     break;
-                case SoundNotifyMessages.PlayAudioClip:
-                    if (argsCount == 0)
-                        break;
-                    PlayClip(
-                        (string)_Args[0],
-                        argsCount > 1 && (bool)_Args[1],
-                        argsCount > 2 ? (float?)_Args[2] : null);
-                    break;
-                case SoundNotifyMessages.SwitchSoundSetting:
-                    EnableSound((bool) _Args[0]);
-                    break;
-            }
-        }
-
-        #endregion
         
-        #region nonpublic methods
-        
-        private void PlayClip(string _Name, bool _Cycling = false, float? _Volume = null)
+        public void PlayClip(string _Name, bool _Cycling = false, float? _Volume = null)
         {
             var clip = PrefabUtilsEx.GetObject<AudioClip>("sounds", _Name);
             PlayClipCore(clip, _Cycling, _Volume);
         }
         
-        private void EnableSound(bool _Enable)
+        public void EnableSound(bool _Enable)
         {
             SaveUtils.PutValue(SaveKey.SettingSoundOn, _Enable);
             foreach (var clip in m_Clips
@@ -61,11 +39,15 @@ namespace Controllers
                 clip.Value.volume = _Enable ? 1 : 0;
         }
         
-        private void StopPlayingClips()
+        public void StopPlayingClips()
         {
             foreach (var clip in m_Clips.Values.ToArray())
                 clip.Stop();
         }
+
+        #endregion
+        
+        #region nonpublic methods
 
         private void PlayClipCore(AudioClip _Clip, bool _Cycling, float? _Volume = null)
         {

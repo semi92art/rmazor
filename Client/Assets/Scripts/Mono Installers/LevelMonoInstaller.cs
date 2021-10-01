@@ -37,7 +37,7 @@ namespace Mono_Installers
             Container.Bind<ViewSettings>()                      .FromScriptableObject(viewSettings)         .AsSingle();
             Container.Bind<IViewGame>()                         .To<ViewGame>()                             .AsSingle();
             Container.Bind<IGameController>()                   .To<RazorMazeGameController>()              .AsSingle();
-            Container.Bind<IModelData>()                    .To<ModelData>()                        .AsSingle();
+            Container.Bind<IModelData>()                        .To<ModelData>()                            .AsSingle();
             Container.Bind<IModelMazeRotation>()                .To<ModelMazeRotation>()                    .AsSingle();
             Container.Bind<IModelCharacter>()                   .To<ModelCharacter>()                       .AsSingle();
             Container.Bind<IModelGame>()                        .To<ModelGame>()                            .AsSingle();
@@ -87,7 +87,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazeItemTrapReact>()            .To<ViewMazeItemTrapReact>()                .AsSingle().When(_ => release);
             Container.Bind<IViewMazeItemTrapIncreasing>()       .To<ViewMazeItemTrapIncreasing>()           .AsSingle().When(_ => release);
             
-            Container.Bind<IViewRotation>()                 .To<ViewRotationSimple>()                 .AsSingle();
+            Container.Bind<IViewRotation>()                     .To<ViewRotationSimple>()                   .AsSingle();
             Container.Bind<IViewUI>()                           .To<ViewUIProt>()                           .AsSingle();
             // Container.Bind<IViewMazeRotation>()              .To<ViewMazeRotation>()                     .AsSingle().When(_ => release);
             // Container.Bind<IViewUI>()                        .To<ViewUI>()                               .AsSingle().When(_ => release);

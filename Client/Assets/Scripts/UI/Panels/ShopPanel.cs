@@ -49,8 +49,8 @@ namespace UI.Panels
         
         public ShopPanel(
             RectTransform _Container,
-            IGameObservable _GameObservable,
-            IUITicker _UITicker) : base(_GameObservable, _UITicker)
+            IManagersGetter _Managers,
+            IUITicker _UITicker) : base(_Managers, _UITicker)
         {
             m_Container = _Container;
         }
@@ -82,7 +82,7 @@ namespace UI.Panels
                     default:
                         throw new SwitchCaseNotImplementedException(shopItemProps.Type);
                 }
-                item.Init(shopItemProps, GameObservable);
+                item.Init(shopItemProps, Managers);
             }
 
             content.anchoredPosition = content.anchoredPosition.SetY(0);

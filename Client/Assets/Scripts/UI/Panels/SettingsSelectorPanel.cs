@@ -38,8 +38,8 @@ namespace UI.Panels
             string _Value,
             List<string> _Items,
             Action<string> _Select,
-            IGameObservable _GameObservable,
-            IUITicker _UITicker) : base(_GameObservable, _UITicker)
+            IManagersGetter _Managers,
+            IUITicker _UITicker) : base(_Managers, _UITicker)
         {
             m_DialogViewer = _DialogViewer;
             m_DefaultValue = _Value;
@@ -87,7 +87,7 @@ namespace UI.Panels
             {
                 var sspiClone = sspi.Clone();
                 SettingSelectorItem si = sspiClone.GetComponent<SettingSelectorItem>();
-                si.Init(item, m_Select, item == m_DefaultValue, GameObservable);
+                si.Init(item, m_Select, item == m_DefaultValue, Managers);
                 selectorItems.Add(si);
             }
 

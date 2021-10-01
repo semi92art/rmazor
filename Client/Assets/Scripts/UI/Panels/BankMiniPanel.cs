@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Constants;
-using Constants.NotifyMessages;
+
 using DI.Extensions;
 using DialogViewers;
 using Entities;
@@ -60,7 +60,7 @@ namespace UI.Panels
 
         private readonly IMenuDialogViewer m_DialogViewer;
         private readonly INotificationViewer m_NotificationViewer;
-        private readonly IGameObservable m_GameObservable;
+        private readonly IManagersGetter m_Managers;
         private readonly IUITicker m_UITicker;
         private readonly RectTransform m_Parent;
         private readonly List<CoinAnimObject> m_CoinsPool = 
@@ -95,13 +95,13 @@ namespace UI.Panels
             RectTransform _Parent,
             IMenuDialogViewer _DialogViewer,
             INotificationViewer _NotificationViewer,
-            IGameObservable _GameObservable,
+            IManagersGetter _Managers,
             IUITicker _UITicker)
         {
             m_Parent = _Parent;
             m_DialogViewer = _DialogViewer;
             m_NotificationViewer = _NotificationViewer;
-            m_GameObservable = _GameObservable;
+            m_Managers = _Managers;
             m_UITicker = _UITicker;
         }
 
@@ -130,12 +130,12 @@ namespace UI.Panels
 
             m_PlusMoneyButton.SetOnClick(() =>
             {
-                m_GameObservable.Notify(SoundNotifyMessages.PlayAudioClip, AudioClipNames.UIButtonClick);
+                m_Managers.Notify(_SM => _SM.PlayClip(AudioClipNames.UIButtonClick));
                 var plusMoneyPanel = new PlusMoneyPanel(
                     m_DialogViewer,
                     m_NotificationViewer, 
                     this, 
-                    m_GameObservable,
+                    m_Managers,
                     m_UITicker);
                 plusMoneyPanel.Init();
                 m_DialogViewer.Show(plusMoneyPanel);

@@ -31,8 +31,7 @@ namespace UI
     {
         #region notify messages
 
-        public const string NotifyMessageMainMenuLoaded = nameof(NotifyMessageMainMenuLoaded);
-        public const string NotifyMessageSelectGamePanelButtonClick = nameof(NotifyMessageSelectGamePanelButtonClick);
+        public const string NotifyMessageSelectGamePanelButtonClick = "SelectGamePanelButtonClick";
         public const string NotifyMessageProfileButtonClick = nameof(NotifyMessageProfileButtonClick);
         public const string NotifyMessageSettingsButtonClick = nameof(NotifyMessageSettingsButtonClick);
         public const string NotifyMessageLoginButtonClick = nameof(NotifyMessageLoginButtonClick);
@@ -64,12 +63,12 @@ namespace UI
         
         #region inject
         
-        private IGameObservable GameObservable { get; }
+        private IManagersGetter Managers { get; }
         private IUITicker UITicker { get; }
         
-        public MainMenuUi(IGameObservable _GameObservable, IUITicker _UITicker)
+        public MainMenuUi(IManagersGetter _Managers, IUITicker _UITicker)
         {
-            GameObservable = _GameObservable;
+            Managers = _Managers;
             UITicker = _UITicker;
         }
         
@@ -106,7 +105,10 @@ namespace UI
         
         public void Show()
         {
-            GameObservable.Notify(NotifyMessageMainMenuLoaded);
+            Managers.Notify(_SM =>
+            {
+                _SM.PlayClip(AudioClipNames.MainMenuTheme, true, 0.1f);
+            });
             m_BankMiniPanel.Show();
             m_MainMenu.SetGoActive(true);
         }
@@ -117,7 +119,7 @@ namespace UI
 
         private void InitBankMiniPanel()
         {
-            var bmp = new BankMiniPanel(m_Parent, m_MenuDialogViewer, m_NotificationViewer, GameObservable, UITicker);
+            var bmp = new BankMiniPanel(m_Parent, m_MenuDialogViewer, m_NotificationViewer, Managers, UITicker);
             m_BankMiniPanel = bmp;
             m_BankMiniPanel.Init();
         }
@@ -364,57 +366,58 @@ namespace UI
 
         private void OnSelectGamePanelButtonClick()
         {
-            GameObservable.Notify(NotifyMessageSelectGamePanelButtonClick);
-            var selectGamePanel = new SelectGamePanel(m_MenuDialogViewer, SetGameLogo, GameObservable, UITicker);
+            UIUtils.OnButtonClick(Managers, NotifyMessageSelectGamePanelButtonClick);
+            var selectGamePanel = new SelectGamePanel(m_MenuDialogViewer, SetGameLogo, Managers, UITicker);
             selectGamePanel.Init();
             m_MenuDialogViewer.Show(selectGamePanel);
         }
 
         private void OnSettingsButtonClick()
         {
-            GameObservable.Notify(NotifyMessageSettingsButtonClick);
-            var settingsPanel = new SettingsPanel(m_MenuDialogViewer, GameObservable, UITicker);
+            UIUtils.OnButtonClick(Managers, NotifyMessageSettingsButtonClick);
+            var settingsPanel = new SettingsPanel(m_MenuDialogViewer, Managers, UITicker);
             settingsPanel.Init();
             m_MenuDialogViewer.Show(settingsPanel);
         }
 
         private void OnShopButtonClick()
         {
-            GameObservable.Notify(NotifyMessageShopButtonClick);
-            var shop = new ShopPanel(m_MenuDialogViewer.Container, GameObservable, UITicker);
+            UIUtils.OnButtonClick(Managers, NotifyMessageShopButtonClick);
+            var shop = new ShopPanel(m_MenuDialogViewer.Container, Managers, UITicker);
             shop.Init();
             m_MenuDialogViewer.Show(shop);
         }
 
         private void OnPlayButtonClick()
         {
-            GameObservable.Notify(NotifyMessagePlayButtonClick);
+            UIUtils.OnButtonClick(Managers, NotifyMessagePlayButtonClick);
             (m_BankMiniPanel as BankMiniPanel)?.UnregisterFromEvents();
             // GameLoader.LoadLevel(1);
         }
 
         private void OnRatingsButtonClick()
         {
-            GameObservable.Notify(NotifyMessageRatingsButtonClick);
+            UIUtils.OnButtonClick(Managers, NotifyMessageRatingsButtonClick);
             ScoreManager.Instance.ShowLeaderboard();
         }
 
         private void OnDailyBonusButtonClick()
         {
-            GameObservable.Notify(NotifyMessageDailyBonusButtonClick);
+            UIUtils.OnButtonClick(Managers, NotifyMessageDailyBonusButtonClick);
             var dailyBonusPanel = new DailyBonusPanel(
-                m_MenuDialogViewer, (IActionExecutor)m_BankMiniPanel, GameObservable, UITicker);
+                m_MenuDialogViewer, (IActionExecutor)m_BankMiniPanel, Managers, UITicker);
             dailyBonusPanel.Init();
             m_MenuDialogViewer.Show(dailyBonusPanel);
         }
 
         private void OnWheelOfFortuneButtonClick()
         {
-            GameObservable.Notify(NotifyMessageWheelOfFortuneButtonClick);
-            var wofPanel = new WheelOfFortunePanel(m_MenuDialogViewer, m_NotificationViewer, GameObservable, UITicker);
+            UIUtils.OnButtonClick(Managers, NotifyMessageWheelOfFortuneButtonClick);
+            var wofPanel = new WheelOfFortunePanel(m_MenuDialogViewer, m_NotificationViewer, Managers, UITicker);
             wofPanel.Init();
             m_MenuDialogViewer.Show(wofPanel);
         }
+
         
         #endregion
     }

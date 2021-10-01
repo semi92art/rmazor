@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Constants;
-using Constants.NotifyMessages;
+
 using DI.Extensions;
 using Entities;
 using GameHelpers;
@@ -18,13 +18,13 @@ namespace UI.PanelItems
 
         public void Init(
             ChooseGameItemProps _Props,
-            IGameObservable _GameObservable)
+            IManagersGetter _Managers)
         {
-            base.Init(_GameObservable);
+            base.Init(_Managers);
             icon.sprite = GetLogo(_Props.GameId);
             button.SetOnClick(() =>
             {
-                GameObservable.Notify(SoundNotifyMessages.PlayAudioClip, AudioClipNames.UIButtonClick);
+                Managers.Notify(_SM => _SM.PlayClip(AudioClipNames.UIButtonClick));
                 _Props.Click?.Invoke();
             });
         }

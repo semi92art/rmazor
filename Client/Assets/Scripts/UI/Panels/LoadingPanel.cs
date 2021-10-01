@@ -33,8 +33,8 @@ namespace UI.Panels
 
         public LoadingPanel(
             IMenuDialogViewer _DialogViewer,
-            IGameObservable _GameObservable,
-            IUITicker _UITicker) : base(_GameObservable, _UITicker)
+            IManagersGetter _Managers,
+            IUITicker _UITicker) : base(_Managers, _UITicker)
         {
             m_DialogViewer = _DialogViewer;
         }

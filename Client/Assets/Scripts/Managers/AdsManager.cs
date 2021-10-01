@@ -1,12 +1,17 @@
 ﻿using Entities;
 using GoogleMobileAds.Api;
-using UI.Panels;
 using UnityEngine.Events;
 using Utils;
 
 namespace Managers
 {
-    public class AdsManager : IGameObserver, IInit
+    public interface IAdsManager : IInit
+    {
+        bool ShowAds { get; set; }
+        void ShowRewardedAd(UnityAction _OnPaid);
+    }
+    
+    public class AdsManager : IAdsManager 
     {
         #region singleton
     
@@ -65,11 +70,14 @@ namespace Managers
             
             Initialized?.Invoke();
         }
-
-        public void OnNotify(string _NotifyMessage, params object[] _Args)
+        
+        public void ShowRewardedAd(UnityAction _OnPaid)
         {
-            if (_NotifyMessage == WheelOfFortunePanel.NotifyMessageWatchAdButtonClick)
-                ShowRewardedAd(_Args[0] as UnityAction);
+            m_OnPaid = _OnPaid;
+            if (m_RewardedAd.IsLoaded())
+                m_RewardedAd.Show();
+            else
+                m_RewardedAd.LoadAd(m_AdRequest);
         }
 
         #endregion
@@ -88,15 +96,6 @@ namespace Managers
             return true;
         }
         
-        private void ShowRewardedAd(UnityAction _OnPaid)
-        {
-            m_OnPaid = _OnPaid;
-            if (m_RewardedAd.IsLoaded())
-                m_RewardedAd.Show();
-            else
-                m_RewardedAd.LoadAd(m_AdRequest);
-        }
-
         #endregion
         
     }

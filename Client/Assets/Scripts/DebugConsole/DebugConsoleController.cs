@@ -2,14 +2,16 @@
 
 using System;
 using System.Collections.Generic;
-using Constants;
-using Constants.NotifyMessages;
-using Entities;
 using Utils;
 
 namespace DebugConsole
 {
-    public class DebugConsoleController : IGameObserver
+    public interface IDebugConsoleController
+    {
+        void RegisterCommand(string _Command, DebugConsoleController.CommandHandler _Handler, string _Description);
+    }
+    
+    public class DebugConsoleController : IDebugConsoleController
     {
         #region event declarations
 
@@ -102,21 +104,6 @@ namespace DebugConsole
             }
             RunCommand(commandSplit[0].ToLower(), args);
             CommandHistory.Add(_CommandString);
-        }
-        
-        public void OnNotify(string _NotifyMessage, params object[] _Args)
-        {
-            if (_NotifyMessage != CommonNotifyMessages.RegisterCommand || _Args.Length < 3)
-                return;
-
-            var command = _Args[0] as string;
-            var handler = _Args[1] as CommandHandler;
-            string description = string.Empty;
-            if (_Args.Length > 2)
-                description = _Args[2] as string;
-            
-            if (!string.IsNullOrEmpty(command) && handler != null)
-                RegisterCommand(command, handler, description);
         }
 
         #endregion

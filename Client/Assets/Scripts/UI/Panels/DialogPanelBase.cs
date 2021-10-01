@@ -6,13 +6,13 @@ namespace UI.Panels
 {
     public abstract class DialogPanelBase : IDialogPanel
     {
-        public IGameObservable GameObservable { get; }
+        public IManagersGetter Managers { get; }
         protected ITicker Ticker { get; }
         public RectTransform Panel { get; protected set; }
 
-        protected DialogPanelBase(IGameObservable _GameObservable, ITicker _Ticker)
+        protected DialogPanelBase(IManagersGetter _Managers, ITicker _Ticker)
         {
-            GameObservable = _GameObservable;
+            Managers = _Managers;
             Ticker = _Ticker;
         }
 

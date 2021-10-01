@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Constants;
-using Constants.NotifyMessages;
 using DI.Extensions;
 using DialogViewers;
 using Entities;
@@ -25,16 +23,16 @@ namespace UI.PanelItems
             string _Name,
             Func<List<string>> _ListOfItems,
             Action<string> _Select,
-            IGameObservable _GameObservable,
+            IManagersGetter _ManagersGetter,
             IUITicker _UITicker)
         {
-            base.Init(_GameObservable);
+            base.Init(_ManagersGetter);
             setting.text = _Value?.Invoke();
             name = $"{_Name} Setting";
             title.text = _Name;
             button.SetOnClick(() =>
             {
-                GameObservable.Notify(SoundNotifyMessages.PlayAudioClip, AudioClipNames.UIButtonClick);
+                Managers.Notify(_SM => _SM.PlayClip(AudioClipNames.UIButtonClick));
                 var items = _ListOfItems?.Invoke();
                 if (items == null)
                     return;
@@ -43,7 +41,7 @@ namespace UI.PanelItems
                     _Value?.Invoke(),
                     items, 
                     _Select,
-                    _GameObservable,
+                    _ManagersGetter,
                     _UITicker);
                 selectorPanel.Init();
                 _MenuDialogViewer.Show(selectorPanel);

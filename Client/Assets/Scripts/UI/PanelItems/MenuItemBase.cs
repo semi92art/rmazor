@@ -5,12 +5,12 @@ namespace UI.PanelItems
 {
     public abstract class MenuItemBase : MonoBehaviour
     {
-        protected IGameObservable GameObservable { get; private set; }
+        protected IManagersGetter Managers { get; private set; }
         
         protected void Init( 
-            IGameObservable _GameObservable)
+            IManagersGetter _Managers)
         {
-            GameObservable = _GameObservable;
+            Managers = _Managers;
         }
     }
 }

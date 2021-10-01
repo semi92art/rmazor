@@ -1,5 +1,5 @@
 ﻿using Constants;
-using Constants.NotifyMessages;
+
 using DI.Extensions;
 using Entities;
 using GameHelpers;
@@ -20,7 +20,7 @@ namespace UI.PanelItems
 
         public void Init(
             ShopItemProps _Props,
-            IGameObservable _GameObservable)
+            IManagersGetter _Managers)
         {
             var rewards = _Props.Rewards;
             description.text = rewards[BankItemType.FirstCurrency].ToNumeric() + " " + "gold" + "\n" + 
@@ -32,12 +32,20 @@ namespace UI.PanelItems
             
             UnityAction action = () =>
             {
-                GameObservable.Notify(SoundNotifyMessages.PlayAudioClip, AudioClipNames.UIButtonClick);
-                GameObservable.Notify(CommonNotifyMessages.PurchaseCommand, _Props, 
-                    (UnityAction) (() => BankManager.Instance.PlusBankItems(_Props.Rewards)));
+                Managers.Notify(
+                    _SM =>
+                    {
+                        _SM.PlayClip(AudioClipNames.UIButtonClick);
+                    },
+                    _OnPurchasesManager: _PM =>
+                    {
+                        _PM.Purchase(_Props.PurchaseCode, 
+                            () => BankManager.Instance.PlusBankItems(_Props.Rewards));
+                    });
+   
             };
             
-            base.Init(action, _Props, _GameObservable);
+            base.Init(action, _Props, _Managers);
         }
     }
 }

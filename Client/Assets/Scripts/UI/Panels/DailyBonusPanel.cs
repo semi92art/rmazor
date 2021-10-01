@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Constants;
-using Constants.NotifyMessages;
+
 using DI.Extensions;
 using DialogViewers;
 using Entities;
@@ -46,8 +46,8 @@ namespace UI.Panels
         public DailyBonusPanel(
             IMenuDialogViewer _DialogViewer, 
             IActionExecutor _ActionExecutor,
-            IGameObservable _GameObservable,
-            IUITicker _UITicker) : base(_GameObservable, _UITicker)
+            IManagersGetter _Managers,
+            IUITicker _UITicker) : base(_Managers, _UITicker)
         {
             m_DialogViewer = _DialogViewer;
             m_ActionExecutor = _ActionExecutor;
@@ -97,7 +97,7 @@ namespace UI.Panels
 
                 dbProps.Click = () =>
                 {
-                    GameObservable.Notify(SoundNotifyMessages.PlayAudioClip);
+                    Managers.Notify(_SM => _SM.PlayClip(AudioClipNames.UIButtonClick));
                     m_DialogViewer.Back();
                 };
                 

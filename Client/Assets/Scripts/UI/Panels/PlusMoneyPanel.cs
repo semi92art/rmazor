@@ -8,6 +8,7 @@ using UI.Factories;
 using UI.Managers;
 using UnityEngine;
 using UnityEngine.UI;
+using Utils;
 
 namespace UI.Panels
 {
@@ -37,8 +38,8 @@ namespace UI.Panels
             IMenuDialogViewer _DialogViewer,
             INotificationViewer _NotificationViewer,
             IActionExecutor _ActionExecutor,
-            IGameObservable _GameObservable,
-            IUITicker _UITicker) : base(_GameObservable, _UITicker)
+            IManagersGetter _Managers,
+            IUITicker _UITicker) : base(_Managers, _UITicker)
         {
             m_DialogViewer = _DialogViewer;
             m_NotificationViewer = _NotificationViewer;
@@ -67,24 +68,24 @@ namespace UI.Panels
 
         private void OnShopButtonClick()
         {
-            GameObservable.Notify(NotifyMessageShopButtonClick);
-            var panel = new ShopPanel(m_DialogViewer.Container, GameObservable, (IUITicker)Ticker);
+            UIUtils.OnButtonClick(Managers, NotifyMessageShopButtonClick);
+            var panel = new ShopPanel(m_DialogViewer.Container, Managers, (IUITicker)Ticker);
             panel.Init();
             m_DialogViewer.Show(panel);
         }
 
         private void OnDailyBonusButtonClick()
         {
-            GameObservable.Notify(NotifyMessageDailyBonusButtonClick);
-            var panel = new DailyBonusPanel(m_DialogViewer, m_ActionExecutor, GameObservable, (IUITicker)Ticker);
+            UIUtils.OnButtonClick(Managers, NotifyMessageDailyBonusButtonClick);
+            var panel = new DailyBonusPanel(m_DialogViewer, m_ActionExecutor, Managers, (IUITicker)Ticker);
             panel.Init();
             m_DialogViewer.Show(panel);
         }
 
         private void OnWheelOfFortuneButtonClick()
         {
-            GameObservable.Notify(NotifyMessageWheelOfFortuneButtonClick);
-            var panel = new WheelOfFortunePanel(m_DialogViewer, m_NotificationViewer, GameObservable, (IUITicker)Ticker);
+            UIUtils.OnButtonClick(Managers, NotifyMessageWheelOfFortuneButtonClick);
+            var panel = new WheelOfFortunePanel(m_DialogViewer, m_NotificationViewer, Managers, (IUITicker)Ticker);
             panel.Init();
             m_DialogViewer.Show(panel);
         }

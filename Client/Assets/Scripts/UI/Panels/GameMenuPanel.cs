@@ -39,9 +39,9 @@ namespace UI.Panels
         public GameMenuPanel(
             IGameDialogViewer _DialogViewer, 
             UnityAction _Continue,
-            IGameObservable _GameObservable,
+            IManagersGetter _Managers,
             IUITicker _UITicker) 
-            : base(_GameObservable, _UITicker)
+            : base(_Managers, _UITicker)
         {
             m_DialogViewer = _DialogViewer;
             m_Continue = _Continue;

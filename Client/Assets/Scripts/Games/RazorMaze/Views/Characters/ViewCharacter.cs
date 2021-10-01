@@ -53,7 +53,11 @@ namespace Games.RazorMaze.Views.Characters
             IViewCharacterEffector _Effector,
             IGameTicker _GameTicker,
             ViewSettings _ViewSettings) 
-            : base(_CoordinateConverter, _Model, _ContainersGetter, _ViewMazeCommon)
+            : base(
+                _CoordinateConverter, 
+                _Model, 
+                _ContainersGetter,
+                _ViewMazeCommon)
         {
             Tail = _Tail;
             Effector = _Effector;

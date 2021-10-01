@@ -1,12 +1,13 @@
-﻿using Constants.NotifyMessages;
-using Entities;
-using Exceptions;
-using UI.PanelItems;
-using UnityEngine.Events;
+﻿using UnityEngine.Events;
 
 namespace Managers
 {
-    public class PurchasesManager : IGameObserver
+    public interface IPurchasesManager
+    {
+        void Purchase(string _PurchaseCode, UnityAction _OnPurchase);
+    }
+    
+    public class PurchasesManager : IPurchasesManager
     {
         #region singleton
     
@@ -17,35 +18,13 @@ namespace Managers
         
         #region api
         
-        public void OnNotify(string _NotifyMessage, params object[] _Args)
+        public void Purchase(string _PurchaseCode, UnityAction _OnPurchase)
         {
-            if (_NotifyMessage != CommonNotifyMessages.PurchaseCommand) return;
-            if (_Args == null || _Args.Length < 2) return;
-            if (!(_Args[0] is ShopItemProps props)) return;
-            if (!(_Args[1] is UnityAction action)) return;
-
-            int? purchaseId = null;
-
-            switch (props.Type)
-            {
-                case ShopItemType.NoAds:
-                    break;
-                case ShopItemType.Money:
-                    switch (props.Size)
-                    {
-                        case ShopItemSize.Small:
-                            break;
-                        case ShopItemSize.Big:
-                            break;
-                        default:
-                            throw new SwitchCaseNotImplementedException(props.Size);
-                    }
-                    break;
-                default:
-                    throw new SwitchCaseNotImplementedException(props.Type);
-            }
+            throw new System.NotImplementedException();
         }
-        
+
         #endregion
+
+
     }
 }

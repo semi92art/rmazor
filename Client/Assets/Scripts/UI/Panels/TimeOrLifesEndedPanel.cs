@@ -39,13 +39,13 @@ namespace UI.Panels
 
         public TimeOrLifesEndedPanel(
             IGameDialogViewer _DialogViewer,
-            IGameObservable _GameObservable,
+            IManagersGetter _Managers,
             IUITicker _UITicker,
             bool _IsSecs,
             UnityAction _Continue = null,
             UnityAction<float> _SetAdditionalTime = null,
             UnityAction<long> _SetAdditionalLife = null) 
-            : base(_GameObservable, _UITicker)
+            : base(_Managers, _UITicker)
         {
             m_DialogViewer = _DialogViewer;
             m_IsSecs = _IsSecs;

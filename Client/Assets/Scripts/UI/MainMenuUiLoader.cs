@@ -38,16 +38,16 @@ namespace UI
         #region inject
         
         private IMainMenuUI MainMenuUI { get; }
-        private IGameObservable GameObservable { get; }
+        private IManagersGetter Managers { get; }
         private IUITicker UITicker { get; }
 
         public MainMenuUiLoader(
             IMainMenuUI _MainMenuUI,
-            IGameObservable _GameObservable,
+            IManagersGetter _Managers,
             IUITicker _UITicker)
         {
             MainMenuUI = _MainMenuUI;
-            GameObservable = _GameObservable;
+            Managers = _Managers;
             UITicker = _UITicker;
         }
         
@@ -111,7 +111,7 @@ namespace UI
         private void CreateDialogViewers()
         {
             m_MenuDialogViewer = MainMenuDialogViewer.Create(
-                m_Canvas.RTransform(), GameObservable);
+                m_Canvas.RTransform(), Managers);
             m_NotificationViewer = MainMenuNotificationViewer.Create(
                 m_Canvas.RTransform());
         }
@@ -127,7 +127,7 @@ namespace UI
         private void CreateLoadingPanel()
         {
             bool authFinished = false;
-            var loadingPanel = new LoadingPanel(m_MenuDialogViewer, GameObservable, UITicker);
+            var loadingPanel = new LoadingPanel(m_MenuDialogViewer, Managers, UITicker);
             loadingPanel.Init();
             m_MenuDialogViewer.Show(loadingPanel);
             m_StartLoadingController = new LoadingController(loadingPanel, _LoadingResult =>

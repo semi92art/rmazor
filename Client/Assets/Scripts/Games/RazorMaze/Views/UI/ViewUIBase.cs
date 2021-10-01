@@ -18,16 +18,16 @@ namespace Games.RazorMaze.Views.UI
         
         protected IGameDialogViewer DialogViewer;
         protected Canvas Canvas;
-        protected readonly IGameObservable m_GameObservable;
+        protected readonly IManagersGetter Managers;
         protected readonly IUITicker m_UITicker;
         
         #endregion
 
         #region constructor
 
-        protected ViewUIBase(IGameObservable _GameObservable, IUITicker _UITicker)
+        protected ViewUIBase(IManagersGetter _Managers, IUITicker _UITicker)
         {
-            m_GameObservable = _GameObservable;
+            Managers = _Managers;
             m_UITicker = _UITicker;
             CreateCanvas();
             CreateDialogViewer();
@@ -69,7 +69,7 @@ namespace Games.RazorMaze.Views.UI
             // FIXME
             m_UITicker.Pause = true;
             var gameMenuPanel = new GameMenuPanel(DialogViewer,
-                () => m_UITicker.Pause = false, m_GameObservable, m_UITicker);
+                () => m_UITicker.Pause = false, Managers, m_UITicker);
              gameMenuPanel.Init();
              DialogViewer.Show(gameMenuPanel);
         }

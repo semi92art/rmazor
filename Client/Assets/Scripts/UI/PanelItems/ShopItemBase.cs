@@ -21,7 +21,7 @@ namespace UI.PanelItems
     {
         void Init(
             ShopItemProps _Props,
-            IGameObservable _GameObservable);
+            IManagersGetter _Managers);
     }
 
     public abstract class ShopItemBase : MenuItemBase
@@ -48,9 +48,9 @@ namespace UI.PanelItems
         protected void Init(
             UnityAction _Action,
             ShopItemProps _Props,
-            IGameObservable _GameObservable)
+            IManagersGetter _Managers)
         {
-            base.Init(_GameObservable);
+            base.Init(_Managers);
             button.SetOnClick(_Action);
             title.text = _Props.Title;
             if (!string.IsNullOrEmpty(_Props.Description))
@@ -115,6 +115,7 @@ namespace UI.PanelItems
         public string Description { get; }
         public float Price { get; }
         public ShopItemSize Size { get; }
+        public string PurchaseCode { get; } // TODO
 
         public ShopItemProps(
             ShopItemType _Type,

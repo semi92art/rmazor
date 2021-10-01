@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Constants;
-using Constants.NotifyMessages;
+
 using Entities;
 using Exceptions;
 using GameHelpers;
@@ -21,7 +21,7 @@ namespace UI.PanelItems
         
         public void Init(
             ShopItemProps _Props,
-            IGameObservable _GameObservable)
+            IManagersGetter _Managers)
         {
             UnityAction afterPurchaseAction;
             switch (_Props.Type)
@@ -37,10 +37,11 @@ namespace UI.PanelItems
             
             UnityAction action = () =>
             {
-                GameObservable.Notify(SoundNotifyMessages.PlayAudioClip, AudioClipNames.UIButtonClick);
-                GameObservable.Notify(CommonNotifyMessages.PurchaseCommand, _Props, afterPurchaseAction);
+                Managers.Notify(
+                    _SM => _SM.PlayClip(AudioClipNames.UIButtonClick),
+                    _OnPurchasesManager: _PM => _PM.Purchase(_Props.PurchaseCode, afterPurchaseAction));
             };
-            base.Init(action, _Props, _GameObservable);
+            base.Init(action, _Props, _Managers);
         }
     }
 }

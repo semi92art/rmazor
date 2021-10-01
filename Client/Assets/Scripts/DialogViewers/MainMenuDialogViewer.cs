@@ -1,5 +1,4 @@
 ﻿using Constants;
-using Constants.NotifyMessages;
 using DI.Extensions;
 using Entities;
 using GameHelpers;
@@ -35,7 +34,7 @@ namespace DialogViewers
         private Button m_GoBackButton;
         private Button m_CloseButton;
         private Animator m_ButtonsAnim;
-        private IGameObservable m_GameObservable;
+        private IManagersGetter Managers { get; set; }
 
         #endregion
     
@@ -58,12 +57,12 @@ namespace DialogViewers
             
             m_GoBackButton.SetOnClick(() =>
             {
-                m_GameObservable.Notify(SoundNotifyMessages.PlayAudioClip, AudioClipNames.UIButtonClick);
+                Managers.Notify(_SM => _SM.PlayClip(AudioClipNames.UIButtonClick));
                 Back();
             });
             m_CloseButton.SetOnClick(() =>
             {
-                m_GameObservable.Notify(SoundNotifyMessages.PlayAudioClip, AudioClipNames.UIButtonClick);
+                Managers.Notify(_SM => _SM.PlayClip(AudioClipNames.UIButtonClick));
                 CloseAll();
             });
         }
@@ -74,7 +73,7 @@ namespace DialogViewers
 
         public static IMenuDialogViewer Create(
             RectTransform _Parent,
-            IGameObservable _GameObservable)
+            IManagersGetter _Managers)
         {
             var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
@@ -83,7 +82,7 @@ namespace DialogViewers
                 "dialog_viewers",
                 "main_menu_viewer");
             var result = go.GetComponent<MainMenuDialogViewer>();
-            result.m_GameObservable = _GameObservable;
+            result.Managers = _Managers;
             return result;
         }
 

@@ -50,9 +50,9 @@ namespace UI.Panels
         public WheelOfFortunePanel(
             IMenuDialogViewer _DialogViewer,
             INotificationViewer _NotificationViewer,
-            IGameObservable _GameObservable,
+            IManagersGetter _Managers,
             IUITicker _UITicker)
-            : base(_GameObservable, _UITicker)
+            : base(_Managers, _UITicker)
         {
             m_DialogViewer = _DialogViewer;
             m_NotificationViewer = _NotificationViewer;
@@ -115,14 +115,15 @@ namespace UI.Panels
         {
             if (!m_IsLocked)
             {
-                GameObservable.Notify(NotifyMessageSpinButtonClick);
+                UIUtils.OnButtonClick(Managers, NotifyMessageSpinButtonClick);
                 Coroutines.Run(Coroutines.Action(() => m_WheelController.StartSpin()));
                 SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, DateTime.Now.Date);
                 m_SpinButton.interactable = false;
             }
             else
             {
-                GameObservable.Notify(NotifyMessageWatchAdButtonClick, (UnityAction)WatchAdFinishAction);
+                UIUtils.OnButtonClick(Managers, NotifyMessageWatchAdButtonClick);
+                Managers.Notify(_OnAdsManager: _AM => _AM.ShowRewardedAd(WatchAdFinishAction));
             }
         }
 
@@ -130,7 +131,7 @@ namespace UI.Panels
         {
             var rewardPanel = new WheelOfFortuneRewardPanel(
                 m_NotificationViewer,
-                GameObservable, 
+                Managers, 
                 (IUITicker)Ticker,
                 _BankItemType, 
                 _Reward, 
