@@ -4,10 +4,13 @@
 - Репозиторий RestAPI на DockerHub: `drago1/clickersapi`
 - [Логи RestAPI на сервере](http://77.37.152.15:9000/#/home), Логин: `vip_admin`, Пароль: `anthony1980`
 - [Zeplin](https://zpl.io/aXB9Rzx)
-- Бесплатная музыка:
-	1. [Инструментал](https://freemusicarchive.org/home)
-	2. [Биты](https://getbeat.ru/)
-	3. [Игровые биты](https://www.dl-sounds.com/royalty-free/category/game-film/video-game/)
+- Музыка и звуковые эффекты:
+	1. [freemusicarchive](https://freemusicarchive.org/home)
+	2. [getbeat](https://getbeat.ru/)
+	3. [dl-sounds](https://www.dl-sounds.com/royalty-free/category/game-film/video-game/)
+	4. [videvo](https://www.videvo.net/)
+	5. [storyblocks](https://www.storyblocks.com/audio)
+	6. [8 bit generator](https://sfxr.me/)
 
 ---
 

@@ -1,5 +1,7 @@
 fileFormatVersion: 2
 guid: 14d87574c5b2d7e4c94488e135efb1d6
+labels:
+- Africa
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 11400000

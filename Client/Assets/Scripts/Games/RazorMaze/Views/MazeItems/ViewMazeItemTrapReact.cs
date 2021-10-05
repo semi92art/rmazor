@@ -2,10 +2,12 @@
 using System.Collections;
 using System.Linq;
 using DI.Extensions;
+using Entities;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
@@ -26,6 +28,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private const float StartPos = 0.1f;
         private const float MiddlePos = 0.2f;
         private const float FinalPos = 0.7f;
+        private const string SoundClipNameTrapReactOut = "trap_react_out"; 
         
         #endregion
         
@@ -53,13 +56,17 @@ namespace Games.RazorMaze.Views.MazeItems
             IModelGame _Model,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IGameTicker _GameTicker)
+            IGameTicker _GameTicker,
+            IViewAppearTransitioner _Transitioner,
+            IManagersGetter _Managers)
             : base(
                 _ViewSettings,
                 _Model,
                 _CoordinateConverter,
                 _ContainersGetter,
-                _GameTicker)
+                _GameTicker,
+                _Transitioner,
+                _Managers)
         {
             ModelSettings = _ModelSettings;
         }
@@ -74,7 +81,9 @@ namespace Games.RazorMaze.Views.MazeItems
             Model, 
             CoordinateConverter,
             ContainersGetter,
-            GameTicker);
+            GameTicker,
+            Transitioner,
+            Managers);
         
         
 
@@ -97,7 +106,10 @@ namespace Games.RazorMaze.Views.MazeItems
             {
                 case ItemsProceederBase.StageIdle: break;
                 case TrapsReactProceeder.StagePreReact:   coroutine = HandlePreReact(); break;
-                case TrapsReactProceeder.StageReact:      coroutine = HandleReact(); break;
+                case TrapsReactProceeder.StageReact:
+                    Managers.Notify(_SM => 
+                        _SM.PlayClip(SoundClipNameTrapReactOut, _Tags: $"{_Args.Info}"));
+                    coroutine = HandleReact(); break;
                 case TrapsReactProceeder.StageAfterReact: coroutine = HandlePostReact(); break;
                 default: throw new ArgumentOutOfRangeException(
                     nameof(_Args.Stage), $"Stage {_Args.Stage} was not implemented");

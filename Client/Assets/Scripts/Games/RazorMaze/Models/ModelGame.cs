@@ -23,7 +23,7 @@ namespace Games.RazorMaze.Models
         IModelCharacter                           Character { get; }
         ILevelStagingModel                        LevelStaging { get; }
         IInputScheduler                           InputScheduler { get; }
-        IEnumerable<IMazeItemProceedInfo> GetAllProceedInfos();
+        IEnumerable<IMazeItemProceedInfo>         GetAllProceedInfos();
     }
     
     public class ModelGame : IModelGame
@@ -82,9 +82,6 @@ namespace Games.RazorMaze.Models
 
         public void PreInit()
         {
-            foreach (var item in GetInterfaceOfProceeders<IOnGameLoopUpdate>())
-                Data.GameLoopUpdate += item.OnGameLoopUpdate;
-
             Data.MazeInfoSet                           += PathItemsProceeder.OnMazeInfoSet;
             MazeRotation.RotationFinished              += MazeOnRotationFinished;
             Character.AliveOrDeath                     += OnCharacterAliveOrDeath;
@@ -99,7 +96,8 @@ namespace Games.RazorMaze.Models
             PathItemsProceeder.AllPathsProceededEvent  += AllPathsProceededEvent;
             LevelStaging.LevelStageChanged             += LevelStageChanged;
             
-            var getProceedInfosItems = GetInterfaceOfProceeders<IGetAllProceedInfos>();
+            var getProceedInfosItems = 
+                RazorMazeUtils.GetInterfaceOfProceeders<IGetAllProceedInfos>(GetProceeders());
             foreach (var item in getProceedInfosItems)
                 item.GetAllProceedInfos = GetAllProceedInfos;
             PreInitialized?.Invoke();
@@ -113,7 +111,8 @@ namespace Games.RazorMaze.Models
         
         public IEnumerable<IMazeItemProceedInfo> GetAllProceedInfos()
         {
-            var itemProceeders = GetInterfaceOfProceeders<IItemsProceeder>();
+            var itemProceeders =
+                RazorMazeUtils.GetInterfaceOfProceeders<IItemsProceeder>(GetProceeders());
             var result = itemProceeders
                 .SelectMany(_P => _P.ProceedInfos.Values
                     .SelectMany(_V => _V));
@@ -145,7 +144,8 @@ namespace Games.RazorMaze.Models
 
         private void CharacterOnMoveContinued(CharacterMovingEventArgs _Args)
         {
-            var proceeders = GetInterfaceOfProceeders<ICharacterMoveContinued>();
+            var proceeders = 
+                RazorMazeUtils.GetInterfaceOfProceeders<ICharacterMoveContinued>(GetProceeders());
             foreach (var proceeder in proceeders)
                 proceeder.OnCharacterMoveContinued(_Args);
         }
@@ -158,7 +158,8 @@ namespace Games.RazorMaze.Models
 
         private void LevelStageChanged(LevelStageArgs _Args)
         {
-            var proceeders = GetInterfaceOfProceeders<IOnLevelStageChanged>();
+            var proceeders = 
+                RazorMazeUtils.GetInterfaceOfProceeders<IOnLevelStageChanged>(GetProceeders());
             foreach (var proceeder in proceeders)
                 proceeder.OnLevelStageChanged(_Args);
         }
@@ -225,21 +226,22 @@ namespace Games.RazorMaze.Models
             }
         }
         
-        private List<T> GetInterfaceOfProceeders<T>() where T : class
+        private List<object> GetProceeders()
         {
-            var result = new List<T>
+            var result = new List<object>
             {
-                Character                 as T,
-                PathItemsProceeder        as T,
-                TrapsMovingProceeder      as T,
-                GravityItemsProceeder     as T,
-                TrapsReactProceeder       as T,
-                TrapsIncreasingProceeder  as T,
-                TurretsProceeder          as T,
-                PortalsProceeder          as T,
-                ShredingerBlocksProceeder as T,
-                SpringboardProceeder      as T
-            }.Where(_Proceeder => _Proceeder != null).ToList();
+                Character,
+                PathItemsProceeder,
+                TrapsMovingProceeder,
+                GravityItemsProceeder,
+                TrapsReactProceeder,
+                TrapsIncreasingProceeder,
+                TurretsProceeder,
+                PortalsProceeder,
+                ShredingerBlocksProceeder,
+                SpringboardProceeder
+            }.Where(_Proceeder => _Proceeder != null)
+                .ToList();
             return result;
         } 
 

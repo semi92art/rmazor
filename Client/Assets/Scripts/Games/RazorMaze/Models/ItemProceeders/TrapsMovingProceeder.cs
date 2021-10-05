@@ -14,7 +14,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
     public interface ITrapsMovingProceeder : IMovingItemsProceeder { }
     
 
-    public class TrapsMovingProceeder : MovingItemsProceederBase, IOnGameLoopUpdate, ITrapsMovingProceeder
+    public class TrapsMovingProceeder : MovingItemsProceederBase, IUpdateTick, ITrapsMovingProceeder
     {
         #region constants
 
@@ -37,7 +37,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         public override EMazeItemType[] Types => new[] {EMazeItemType.TrapMoving};
 
-        public void OnGameLoopUpdate()
+        public void UpdateTick()
         {
             ProceedTrapsMoving();
         }

@@ -10,11 +10,13 @@ namespace Games.RazorMaze.Models.ItemProceeders
     {
         public EMazeMoveDirection Direction { get; }
         public IMazeItemProceedInfo Info { get; }
+        public bool IsPortFrom { get; }
 
-        public PortalEventArgs(EMazeMoveDirection _Direction, IMazeItemProceedInfo _Info)
+        public PortalEventArgs(EMazeMoveDirection _Direction, IMazeItemProceedInfo _Info, bool _IsPortFrom)
         {
             Direction = _Direction;
             Info = _Info;
+            IsPortFrom = _IsPortFrom;
         }
     }
 
@@ -93,7 +95,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             if (m_LastArgs != null)
                 return;
 
-            m_LastArgs = new PortalEventArgs(_Args.Direction, portalItem);
+            m_LastArgs = new PortalEventArgs(_Args.Direction, portalItem, _Args.Position != _Args.From);
             PortalEvent?.Invoke(m_LastArgs);
         }
 

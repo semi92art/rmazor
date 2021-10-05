@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
+using Entities;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
@@ -12,8 +15,21 @@ using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
-    public abstract class ViewMazeItemMovingBase : ViewMazeItemBase
+    public interface IViewMazeItemMovingBlock : IViewMazeItem
     {
+        void OnMoveStarted(MazeItemMoveEventArgs _Args);
+        void OnMoving(MazeItemMoveEventArgs _Args);
+        void OnMoveFinished(MazeItemMoveEventArgs _Args);
+    }
+    
+    public abstract class ViewMazeItemMovingBase : ViewMazeItemBase, IViewMazeItemMovingBlock
+    {
+        #region constants
+
+        protected const string SoundClipNameBlockDrop = "block_drop";
+        
+        #endregion
+        
         #region shapes
         
         protected readonly List<Polyline> m_PathLines = new List<Polyline>();
@@ -28,13 +44,17 @@ namespace Games.RazorMaze.Views.MazeItems
             IModelGame _Model,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IGameTicker _GameTicker) :
-            base(
+            IGameTicker _GameTicker,
+            IViewAppearTransitioner _Transitioner,
+            IManagersGetter _Managers) 
+            : base(
                 _ViewSettings, 
                 _Model,
                 _CoordinateConverter,
                 _ContainersGetter,
-                _GameTicker) { }
+                _GameTicker,
+                _Transitioner,
+                _Managers) { }
 
         #endregion
 
@@ -48,6 +68,14 @@ namespace Games.RazorMaze.Views.MazeItems
             {
                 Object.transform.localPosition = CoordinateConverter.ToLocalMazeItemPosition(Props.Position);
             }
+        }
+        
+        public virtual void OnMoveStarted(MazeItemMoveEventArgs _Args) { }
+        public abstract void OnMoving(MazeItemMoveEventArgs _Args);
+
+        public virtual void OnMoveFinished(MazeItemMoveEventArgs _Args)
+        {
+            Managers.Notify(_SM => _SM.PlayClip(SoundClipNameBlockDrop));
         }
 
         #endregion
@@ -112,7 +140,7 @@ namespace Games.RazorMaze.Views.MazeItems
                     if (m_PathJoints.Any())
                         sets.Add(m_PathJoints.Cast<object>().ToArray(), () => DrawingUtils.ColorLines);
                     
-                    RazorMazeUtils.DoAppearTransitionSimple(
+                    Transitioner.DoAppearTransitionSimple(
                         _Appear,
                         GameTicker,
                         sets,

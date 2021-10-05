@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
+using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
@@ -21,6 +23,13 @@ namespace Games.RazorMaze.Views.MazeItems
     
     public class ViewMazeItemShredingerBlock : ViewMazeItemBase, IViewMazeItemShredingerBlock, IUpdateTick
     {
+        #region constants
+
+        private const string SoundClipNameOpenBlock = "shredinger_open";
+        private const string SoundClipNameCloseBlock = "shredinger_close";
+        
+        #endregion
+        
         #region nonpublic members
 
         private float m_LineOffset;
@@ -50,13 +59,17 @@ namespace Games.RazorMaze.Views.MazeItems
             IModelGame _Model,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IGameTicker _GameTicker)
+            IGameTicker _GameTicker,
+            IViewAppearTransitioner _Transitioner,
+            IManagersGetter _Managers)
             : base(
                 _ViewSettings, 
                 _Model,
                 _CoordinateConverter, 
                 _ContainersGetter, 
-                _GameTicker) { }
+                _GameTicker,
+                _Transitioner,
+                _Managers) { }
         
         #endregion
         
@@ -67,7 +80,9 @@ namespace Games.RazorMaze.Views.MazeItems
             Model,
             CoordinateConverter,
             ContainersGetter,
-            GameTicker);
+            GameTicker,
+            Transitioner,
+            Managers);
         
         public bool BlockClosed
         {
@@ -222,9 +237,17 @@ namespace Games.RazorMaze.Views.MazeItems
                 line.DashOffset = m_LineOffset;
         }
         
-        private void CloseBlock() => Coroutines.Run(CloseBlock(true));
+        private void CloseBlock()
+        {
+            Managers.Notify(_SM => _SM.PlayClip(SoundClipNameCloseBlock));
+            Coroutines.Run(CloseBlock(true));
+        }
 
-        private void OpenBlock() => Coroutines.Run(CloseBlock(false));
+        private void OpenBlock()
+        {
+            Managers.Notify(_SM => _SM.PlayClip(SoundClipNameOpenBlock));
+            Coroutines.Run(CloseBlock(false));
+        }
 
         private IEnumerator CloseBlock(bool _Close)
         {
@@ -387,7 +410,7 @@ namespace Games.RazorMaze.Views.MazeItems
                             ? new object[] {m_Block}
                             : m_OpenedLines.Cast<object>().Concat(m_OpenedCorners).ToArray();
                     }
-                    RazorMazeUtils.DoAppearTransitionSimple(
+                    Transitioner.DoAppearTransitionSimple(
                         _Appear,
                         GameTicker,
                         new Dictionary<object[], Func<Color>>
@@ -395,7 +418,7 @@ namespace Games.RazorMaze.Views.MazeItems
                             {shapes, () => DrawingUtils.ColorLines}
                         },
                         Props.Position,
-                        _OnFinish: () =>
+                        () =>
                         {
                             if (!_Appear)
                                 DeactivateShapes();

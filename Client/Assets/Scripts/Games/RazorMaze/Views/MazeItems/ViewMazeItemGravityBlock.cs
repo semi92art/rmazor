@@ -1,7 +1,9 @@
 ﻿using DI.Extensions;
+using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
@@ -9,12 +11,7 @@ using UnityEngine;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
-    public interface IViewMazeItemMovingBlock : IViewMazeItem
-    {
-        void OnMoveStarted(MazeItemMoveEventArgs _Args);
-        void OnMoving(MazeItemMoveEventArgs _Args);
-        void OnMoveFinished(MazeItemMoveEventArgs _Args);
-    }
+
     
     public interface IViewMazeItemGravityBlock : IViewMazeItemMovingBlock { }
     
@@ -35,13 +32,17 @@ namespace Games.RazorMaze.Views.MazeItems
             IModelGame _Model,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IGameTicker _GameTicker) 
+            IGameTicker _GameTicker,
+            IViewAppearTransitioner _Transitioner,
+            IManagersGetter _Managers)
             : base(
                 _ViewSettings,
                 _Model,
                 _CoordinateConverter,
                 _ContainersGetter,
-                _GameTicker) { }
+                _GameTicker,
+                _Transitioner,
+                _Managers) { }
         
         #endregion
         
@@ -52,11 +53,11 @@ namespace Games.RazorMaze.Views.MazeItems
             Model,
             CoordinateConverter, 
             ContainersGetter, 
-            GameTicker);
-
-        public void OnMoveStarted(MazeItemMoveEventArgs _Args) { }
-
-        public void OnMoving(MazeItemMoveEventArgs _Args)
+            GameTicker,
+            Transitioner,
+            Managers);
+        
+        public override void OnMoving(MazeItemMoveEventArgs _Args)
         {
             if (ProceedingStage != EProceedingStage.ActiveAndWorking)
                 return;
@@ -64,11 +65,13 @@ namespace Games.RazorMaze.Views.MazeItems
             SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(pos));
         }
 
-        public void OnMoveFinished(MazeItemMoveEventArgs _Args)
+        public override void OnMoveFinished(MazeItemMoveEventArgs _Args)
         {
+            base.OnMoveFinished(_Args);
             if (ProceedingStage != EProceedingStage.ActiveAndWorking)
                 return;
             SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(_Args.To));
+            Managers.Notify();
         }
 
         #endregion

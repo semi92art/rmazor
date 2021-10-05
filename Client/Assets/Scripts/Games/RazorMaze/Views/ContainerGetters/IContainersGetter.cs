@@ -8,5 +8,6 @@ namespace Games.RazorMaze.Views.ContainerGetters
         Transform MazeItemsContainer { get; }
         Transform CharacterContainer { get; }
         Transform BackgroundContainer { get; }
+        Transform AudioSourcesContainer { get; }
     }
 }

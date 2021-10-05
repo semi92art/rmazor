@@ -9,6 +9,7 @@ using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.MazeItems.Additional;
 using Games.RazorMaze.Views.MazeItems.Props;
 using Games.RazorMaze.Views.Utils;
@@ -31,12 +32,12 @@ namespace Games.RazorMaze.Views.MazeItems
         #region constants
         
         private const float BulletContainerRadius = 0.4f;
+        private const string SoundClipNameBulletFly = "shuriken";
         
         #endregion
         
         #region nonpublic members
 
-        private static int _bulletSortingOrder;
         private float m_RotatingSpeed;
         private bool m_BulletRotating;
         
@@ -82,13 +83,17 @@ namespace Games.RazorMaze.Views.MazeItems
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             ITurretBulletTail _BulletTail,
-            IViewMazeBackground _Background)
+            IViewMazeBackground _Background,
+            IViewAppearTransitioner _Transitioner,
+            IManagersGetter _Managers)
             : base(
                 _ViewSettings, 
                 _Model, 
                 _CoordinateConverter,
                 _ContainersGetter,
-                _GameTicker)
+                _GameTicker,
+                _Transitioner,
+                _Managers)
         {
             BulletTail = _BulletTail;
             Background = _Background;
@@ -105,7 +110,9 @@ namespace Games.RazorMaze.Views.MazeItems
             ContainersGetter, 
             GameTicker,
             BulletTail,
-            Background);
+            Background,
+            Transitioner,
+            Managers);
 
         public override bool Activated
         {
@@ -325,6 +332,10 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private IEnumerator DoShoot(TurretShotEventArgs _Args)
         {
+            Managers.Notify(_SM => _SM.PlayClip(
+                SoundClipNameBulletFly,
+                true));
+            
             var fromPos = _Args.From.ToVector2();
             V2Int point = default;
             bool movedToTheEnd = false;
@@ -353,6 +364,8 @@ namespace Games.RazorMaze.Views.MazeItems
                     m_BulletRotating = false;
                     m_Bullet.SetGoActive(false);
                     BulletTail.HideTail(_Args);
+                    Managers.Notify(_SM => _SM.StopClip(
+                        SoundClipNameBulletFly));
                 });
         }
 
@@ -412,7 +425,7 @@ namespace Games.RazorMaze.Views.MazeItems
                         bulletRenderersCol = m_BulletFakeRenderer.color;
                     }
                     
-                    RazorMazeUtils.DoAppearTransitionSimple(
+                    Transitioner.DoAppearTransitionSimple(
                         _Appear,
                         GameTicker,
                         new Dictionary<object[], Func<Color>>
@@ -421,7 +434,7 @@ namespace Games.RazorMaze.Views.MazeItems
                             {bulletRenderers, () => bulletRenderersCol}
                         },
                         Props.Position,
-                        _OnFinish: () =>
+                        () =>
                         {
                             if (!_Appear)
                             {

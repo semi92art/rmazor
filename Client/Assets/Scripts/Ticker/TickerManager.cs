@@ -8,6 +8,7 @@ namespace Ticker
     {
         #region nonpublic members
 
+        private bool m_Paused;
         private float m_Delta;
         private readonly List<IUpdateTick> m_UpdateInfoDict = new List<IUpdateTick>();
         private readonly List<IFixedUpdateTick> m_FixedUpdateInfoDict = new List<IFixedUpdateTick>();
@@ -18,12 +19,28 @@ namespace Ticker
 
         #region api
 
+        public event NoArgsHandler Paused;
+        public event NoArgsHandler UnPaused;
         public float Time { get; private set; }
-        public bool Pause { get; set; }
+
+        public bool Pause
+        {
+            get => m_Paused;
+            set
+            {
+                m_Paused = value;
+                if (value)
+                    Paused?.Invoke();
+                else 
+                    UnPaused?.Invoke();
+            }
+        }
 
         public void Reset()
         {
-            
+            Pause = false;
+            Time = 0f;
+            m_Delta = 0f;
         }
         
         public void RegisterObject(object _Object)

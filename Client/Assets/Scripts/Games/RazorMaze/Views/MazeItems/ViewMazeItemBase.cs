@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
+using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.MazeItems.Props;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
@@ -46,21 +48,27 @@ namespace Games.RazorMaze.Views.MazeItems
         protected ICoordinateConverter CoordinateConverter { get; }
         protected IContainersGetter ContainersGetter { get; }
         protected IGameTicker GameTicker { get; }
-        
+        protected IViewAppearTransitioner Transitioner { get; }
+        protected IManagersGetter Managers { get; }
+
 
         protected ViewMazeItemBase (
             ViewSettings _ViewSettings,
             IModelGame _Model,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IGameTicker _GameTicker)
+            IGameTicker _GameTicker,
+            IViewAppearTransitioner _Transitioner,
+            IManagersGetter _Managers)
         {
             ViewSettings = _ViewSettings;
             Model = _Model;
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
             GameTicker = _GameTicker;
-            
+            Transitioner = _Transitioner;
+            Managers = _Managers;
+
             GameTicker.Register(this);
         }
 
@@ -166,7 +174,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 () => !Initialized,
                 () =>
                 {
-                    RazorMazeUtils.DoAppearTransitionSimple(
+                    Transitioner.DoAppearTransitionSimple(
                         _Appear,
                         GameTicker,
                         new Dictionary<object[], Func<Color>>
@@ -174,7 +182,7 @@ namespace Games.RazorMaze.Views.MazeItems
                             {Shapes, () => DrawingUtils.ColorLines}
                         },
                         Props.Position,
-                        _OnFinish: () =>
+                        () =>
                         {
                             if (!_Appear)
                                 DeactivateShapes();

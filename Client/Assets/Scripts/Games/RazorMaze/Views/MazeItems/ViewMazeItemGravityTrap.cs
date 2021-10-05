@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
+using Entities;
 using Exceptions;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
@@ -18,11 +20,13 @@ namespace Games.RazorMaze.Views.MazeItems
 {
     public interface IViewMazeItemGravityTrap : IViewMazeItemMovingBlock { }
     
-    public class ViewMazeItemGravityTrap : ViewMazeItemMovingBase, IViewMazeItemGravityTrap, IUpdateTick, IOnBackgroundColorChanged
+    public class ViewMazeItemGravityTrap : 
+        ViewMazeItemMovingBase, IViewMazeItemGravityTrap, IUpdateTick, IOnBackgroundColorChanged
     {
         #region constants
 
         private const float ShapeScale = 0.35f;
+        private const string SoundClipNameTrapMoving = "mace_roll";
 
         #endregion
         
@@ -58,13 +62,17 @@ namespace Games.RazorMaze.Views.MazeItems
             IModelGame _Model,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IGameTicker _GameTicker)
+            IGameTicker _GameTicker,
+            IViewAppearTransitioner _Transitioner,
+            IManagersGetter _Managers)
             : base(
                 _ViewSettings,
                 _Model,
                 _CoordinateConverter,
                 _ContainersGetter,
-                _GameTicker)
+                _GameTicker,
+                _Transitioner,
+                _Managers)
         { }
         
         #endregion
@@ -76,7 +84,9 @@ namespace Games.RazorMaze.Views.MazeItems
             Model,
             CoordinateConverter,
             ContainersGetter,
-            GameTicker);
+            GameTicker,
+            Transitioner,
+            Managers);
 
         public void UpdateTick()
         {
@@ -88,26 +98,36 @@ namespace Games.RazorMaze.Views.MazeItems
             CheckForCharacterDeath();
         }
         
-        public void OnMoveStarted(MazeItemMoveEventArgs _Args)
+        public override void OnMoveStarted(MazeItemMoveEventArgs _Args)
         {
+            if (ProceedingStage != EProceedingStage.ActiveAndWorking)
+                return;
             m_RotationSpeed = _Args.Speed;
             var dir = (_Args.To - _Args.From).Normalized;
             m_Angles = Vector3.zero;
             m_RotateDirection = GetRotationDirection(dir);
             m_MaceTr.rotation = Quaternion.Euler(Vector3.zero);
             m_Rotate = true;
+            Managers.Notify(_SM => _SM.PlayClip(
+                SoundClipNameTrapMoving, true, 
+                _Tags: $"{_Args.Info.GetHashCode()}"));
         }
 
-        public void OnMoving(MazeItemMoveEventArgs _Args)
+        public override void OnMoving(MazeItemMoveEventArgs _Args)
         {
+            if (ProceedingStage != EProceedingStage.ActiveAndWorking)
+                return;
             m_Position = Vector2.Lerp(_Args.From.ToVector2(), _Args.To.ToVector2(), _Args.Progress);
             SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(m_Position));
         }
 
-        public void OnMoveFinished(MazeItemMoveEventArgs _Args)
+        public override void OnMoveFinished(MazeItemMoveEventArgs _Args)
         {
+            base.OnMoveFinished(_Args);
             SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(_Args.To));
             m_Rotate = false;
+            Managers.Notify(_SM => _SM.StopClip(
+                SoundClipNameTrapMoving, _Tags: $"{_Args.Info.GetHashCode()}"));
         }
         
         public void OnBackgroundColorChanged(Color _Color)
@@ -194,7 +214,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 () => !Initialized,
                 () =>
                 {
-                    RazorMazeUtils.DoAppearTransitionSimple(
+                    Transitioner.DoAppearTransitionSimple(
                         _Appear,
                         GameTicker,
                         new Dictionary<object[], Func<Color>>
@@ -202,7 +222,7 @@ namespace Games.RazorMaze.Views.MazeItems
                             {new object[]{m_OuterDisc}.Concat(m_Cones).ToArray(), () => DrawingUtils.ColorLines},
                         },
                         Props.Position,
-                        _OnFinish: () =>
+                        () =>
                         {
                             if (!_Appear)
                             {

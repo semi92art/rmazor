@@ -1,4 +1,4 @@
-﻿namespace Games.RazorMaze.Models
+﻿﻿namespace Games.RazorMaze.Models
 {
     public interface IOnGameLoopUpdate
     {

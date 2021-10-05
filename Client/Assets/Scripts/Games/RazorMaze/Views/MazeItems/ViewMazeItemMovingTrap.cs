@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using DI.Extensions;
+using Entities;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Utils;
 using Ticker;
 using UnityEngine;
@@ -16,6 +18,12 @@ namespace Games.RazorMaze.Views.MazeItems
     
     public class ViewMazeItemMovingTrap : ViewMazeItemMovingBase, IViewMazeItemMovingTrap, IUpdateTick
     {
+        #region constants
+
+        private const string SoundClipNameMoveTrap = "saw_working";
+        
+        #endregion
+        
         #region nonpublic members
         
         private Vector2 m_Position;
@@ -38,13 +46,17 @@ namespace Games.RazorMaze.Views.MazeItems
             IModelGame _Model,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IGameTicker _GameTicker) 
+            IGameTicker _GameTicker,
+            IViewAppearTransitioner _Transitioner,
+            IManagersGetter _Managers)
             : base(
                 _ViewSettings,
                 _Model, 
                 _CoordinateConverter,
                 _ContainersGetter,
-                _GameTicker) { }
+                _GameTicker,
+                _Transitioner,
+                _Managers) { }
         
         #endregion
         
@@ -55,7 +67,9 @@ namespace Games.RazorMaze.Views.MazeItems
             Model, 
             CoordinateConverter, 
             ContainersGetter,
-            GameTicker);
+            GameTicker,
+            Transitioner,
+            Managers);
 
         public override EProceedingStage ProceedingStage
         {
@@ -70,9 +84,7 @@ namespace Games.RazorMaze.Views.MazeItems
             }
         }
 
-        public void OnMoveStarted(MazeItemMoveEventArgs _Args) { }
-
-        public void OnMoving(MazeItemMoveEventArgs _Args)
+        public override void OnMoving(MazeItemMoveEventArgs _Args)
         {
             if (ProceedingStage != EProceedingStage.ActiveAndWorking)
                 return;
@@ -81,10 +93,8 @@ namespace Games.RazorMaze.Views.MazeItems
             SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(precisePosition));
         }
 
-        public void OnMoveFinished(MazeItemMoveEventArgs _Args)
+        public override void OnMoveFinished(MazeItemMoveEventArgs _Args)
         {
-            if (ProceedingStage != EProceedingStage.ActiveAndWorking)
-                return;
             SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(_Args.To));
         }
 
@@ -133,18 +143,21 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private void StartRotation()
         {
+            Managers.Notify(_SM => _SM.PlayClip(
+                SoundClipNameMoveTrap, true, _Tags: $"{GetHashCode()}"));
             m_Rotating = true;
         }
 
         private void StopRotation()
         {
+            Managers.Notify(_SM => _SM.StopClip(
+                SoundClipNameMoveTrap, _Tags: $"{GetHashCode()}"));
             m_Rotating = false;
         }
 
         protected override void Appear(bool _Appear)
         {
             base.Appear(_Appear);
-            
             Coroutines.Run(Coroutines.WaitWhile(
                 () => !Initialized,
                 () =>
@@ -153,8 +166,7 @@ namespace Games.RazorMaze.Views.MazeItems
                     {
                         {new object[] {m_Saw}, () => DrawingUtils.ColorLines}
                     };
-
-                    RazorMazeUtils.DoAppearTransitionSimple(
+                    Transitioner.DoAppearTransitionSimple(
                         _Appear,
                         GameTicker,
                         sets,

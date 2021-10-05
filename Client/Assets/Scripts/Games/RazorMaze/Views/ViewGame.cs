@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Characters;
@@ -16,6 +17,13 @@ namespace Games.RazorMaze.Views
 {
     public class ViewGame : IViewGame
     {
+        #region constants
+
+        private const string SoundClipNameLevelStart = "level_start";
+        private const string SoundClipNameLevelComplete = "level_complete";
+        
+        #endregion
+        
         public IContainersGetter ContainersGetter { get; }
         public IViewUI UI { get; }
         public IInputConfigurator InputConfigurator { get; }
@@ -33,6 +41,7 @@ namespace Games.RazorMaze.Views
         public IViewMazeSpringboardItemsGroup SpringboardItemsGroup { get; }
         
         private IGameTicker GameTicker { get; }
+        public IManagersGetter Managers { get; }
 
         public ViewGame(
             IContainersGetter _ContainersGetter,
@@ -50,7 +59,8 @@ namespace Games.RazorMaze.Views
             IViewMazePortalsGroup _PortalsGroup,
             IViewMazeShredingerBlocksGroup _ShredingerBlocksGroup,
             IViewMazeSpringboardItemsGroup _SpringboardItemsGroup,
-            IGameTicker _GameTicker)
+            IGameTicker _GameTicker,
+            IManagersGetter _Managers)
         {
             ContainersGetter = _ContainersGetter;
             UI = _UI;
@@ -68,6 +78,7 @@ namespace Games.RazorMaze.Views
             ShredingerBlocksGroup = _ShredingerBlocksGroup;
             SpringboardItemsGroup = _SpringboardItemsGroup;
             GameTicker = _GameTicker;
+            Managers = _Managers;
         }
         
         public event NoArgsHandler PreInitialized;
@@ -76,105 +87,102 @@ namespace Games.RazorMaze.Views
         
         public void PreInit()
         {
-            var iBackColChangedProceeders = GetInterfaceOfProceeders<IOnBackgroundColorChanged>();
+            var iBackColChangedProceeders = 
+                RazorMazeUtils.GetInterfaceOfProceeders<IOnBackgroundColorChanged>(GetProceeders());
             foreach (var proceeder in iBackColChangedProceeders)
                 Background.BackgroundColorChanged += proceeder.OnBackgroundColorChanged;
             
-            var initProceeders = GetInterfaceOfProceeders<IPreInit>();
-            int count = initProceeders.Count;
-            bool[] preInited = new bool[count];
-            for (int i = 0; i < count; i++)
-            {
-                var i1 = i;
-                initProceeders[i].PreInitialized += () => preInited[i1] = true;
-                initProceeders[i].PreInit();
-            }
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => preInited.Any(_PreInited => !_PreInited), 
-                () => PreInitialized?.Invoke()));
+            RazorMazeUtils.CallInits<IPreInit>(GetProceeders(),
+                _PreInitedArray =>
+                {
+                    Coroutines.Run(Coroutines.WaitWhile(
+                        () => _PreInitedArray.Any(_PreInited => !_PreInited), 
+                        () => PreInitialized?.Invoke()));
+                });
         }
 
         public void Init()
         {
-            var initProceeders = GetInterfaceOfProceeders<IInit>();
-            int count = initProceeders.Count;
-            bool[] initialized = new bool[count];
-            for (int i = 0; i < count; i++)
-            {
-                var i1 = i;
-                initProceeders[i].Initialized += () => initialized[i1] = true;
-                initProceeders[i].Init();
-            }
-            
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => initialized.Any(_Initialized => !_Initialized), 
-                () => Initialized?.Invoke()));
+            RazorMazeUtils.CallInits<IInit>(GetProceeders(),
+                _InitedArray =>
+                {
+                    Coroutines.Run(Coroutines.WaitWhile(
+                        () => _InitedArray.Any(_Inited => !_Inited), 
+                        () => Initialized?.Invoke()));
+                });
         }
         
         public void PostInit()
         {
-            var initProceeders = GetInterfaceOfProceeders<IPostInit>();
-            int count = initProceeders.Count;
-            bool[] postInited = new bool[count];
-            for (int i = 0; i < count; i++)
-            {
-                var i1 = i;
-                initProceeders[i].PostInitialized += () => postInited[i1] = true;
-                initProceeders[i].PostInit();
-            }
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => postInited.Any(_PostInited => !_PostInited), 
-                () => PostInitialized?.Invoke()));
+            RazorMazeUtils.CallInits<IPostInit>(GetProceeders(),
+                _PostInitedArray =>
+                {
+                    Coroutines.Run(Coroutines.WaitWhile(
+                        () => _PostInitedArray.Any(_PostInited => !_PostInited), 
+                        () => PostInitialized?.Invoke()));
+                });
         }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            var proceeders = GetInterfaceOfProceeders<IOnLevelStageChanged>();
+            var proceeders =
+                RazorMazeUtils.GetInterfaceOfProceeders<IOnLevelStageChanged>(GetProceeders());
             foreach (var proceeder in proceeders)
                 proceeder.OnLevelStageChanged(_Args);
             GameTicker.Pause = _Args.Stage == ELevelStage.Paused;
+
+            if (_Args.Stage == ELevelStage.Loaded)
+                Managers.Notify(_SM => _SM.PlayClip(SoundClipNameLevelStart));
+            else if (_Args.Stage == ELevelStage.Finished)
+                Managers.Notify(_SM => _SM.PlayClip(SoundClipNameLevelComplete));
         }
         
         public void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
         {
-            var proceeders = GetInterfaceOfProceeders<ICharacterMoveStarted>();
+            var proceeders = 
+                RazorMazeUtils.GetInterfaceOfProceeders<ICharacterMoveStarted>(GetProceeders());
             foreach (var proceeder in proceeders)
                 proceeder.OnCharacterMoveStarted(_Args);
         }
 
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
-            var proceeders = GetInterfaceOfProceeders<ICharacterMoveContinued>();
+            var proceeders =
+                RazorMazeUtils.GetInterfaceOfProceeders<ICharacterMoveContinued>(GetProceeders());
             foreach (var proceeder in proceeders)
                 proceeder.OnCharacterMoveContinued(_Args);
         }
         
         public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
         {
-            var proceeders = GetInterfaceOfProceeders<ICharacterMoveFinished>();
+            var proceeders =
+                RazorMazeUtils.GetInterfaceOfProceeders<ICharacterMoveFinished>(GetProceeders());
             foreach (var proceeder in proceeders)
                 proceeder.OnCharacterMoveFinished(_Args);
         }
         
-        private List<T> GetInterfaceOfProceeders<T>() where T : class
+        
+        
+        private List<object> GetProceeders()
         {
-            var result = new List<T>
+            var result = new List<object>
             {
-                UI                                 as T,
-                Common                             as T,
-                InputConfigurator                  as T,
-                Character                          as T,
-                Background                         as T,
-                Rotation                           as T,
-                PathItemsGroup                     as T,
-                MovingItemsGroup                   as T,
-                TrapsReactItemsGroup               as T,
-                TrapsIncreasingItemsGroup          as T,
-                TurretsGroup                       as T,
-                PortalsGroup                       as T,
-                ShredingerBlocksGroup              as T,
-                SpringboardItemsGroup              as T
-            }.Where(_Proceeder => _Proceeder != null).ToList();
+                UI,                         
+                Common,
+                InputConfigurator,
+                Character,
+                Background,
+                Rotation,
+                PathItemsGroup,
+                MovingItemsGroup,
+                TrapsReactItemsGroup,
+                TrapsIncreasingItemsGroup,
+                TurretsGroup,
+                PortalsGroup,
+                ShredingerBlocksGroup,
+                SpringboardItemsGroup    
+            }.Where(_Proceeder => _Proceeder != null)
+                .ToList();
             return result;
         }
     }

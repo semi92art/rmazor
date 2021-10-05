@@ -8,6 +8,7 @@ using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.Helpers;
 using Shapes;
 using Ticker;
 using UnityEngine;
@@ -22,7 +23,15 @@ namespace Games.RazorMaze.Views.MazeItems
     
     public class ViewMazeItemTrapIncreasing : ViewMazeItemBase, IViewMazeItemTrapIncreasing, IUpdateTick
     {
+        #region constants
 
+        private const string SoundClipNameTrapIncreasingOpen = "sword_open";
+        private const string SoundClipNameTrapIncreasingRotate = "sword_rotating";
+        private const string SoundClipNameTrapIncreasingClose = "sword_close";
+
+        #endregion
+        
+        
         #region nonpublic members
 
         private static int AnimKeyOpen => AnimKeys.Anim;
@@ -54,13 +63,17 @@ namespace Games.RazorMaze.Views.MazeItems
             IModelGame _Model,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IGameTicker _GameTicker)
+            IGameTicker _GameTicker,
+            IViewAppearTransitioner _Transitioner,
+            IManagersGetter _Managers)
             : base(
                 _ViewSettings,
                 _Model,
                 _CoordinateConverter,
                 _ContainersGetter,
-                _GameTicker) { }
+                _GameTicker,
+                _Transitioner,
+                _Managers) { }
 
         #endregion
         
@@ -71,7 +84,9 @@ namespace Games.RazorMaze.Views.MazeItems
             Model,
             CoordinateConverter, 
             ContainersGetter,
-            GameTicker);
+            GameTicker,
+            Transitioner,
+            Managers);
         
         public override bool Activated
         {
@@ -117,6 +132,7 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Triggerer = prefab.GetCompItem<AnimationTriggerer>("triggerer");
             m_Triggerer.Trigger1 += () => m_ReadyToKill = true;
             m_Triggerer.Trigger2 += () => m_ReadyToKill = false;
+            m_Triggerer.Trigger3 += OnRotationStopped;
             
             m_BladeContainers.Clear();
             m_Blades.Clear();
@@ -131,7 +147,12 @@ namespace Games.RazorMaze.Views.MazeItems
             foreach (var blade in m_Blades)
                 blade.enabled = false;
         }
-        
+
+        private void OnRotationStopped()
+        {
+            Managers.Notify(_SM => _SM.StopClip(SoundClipNameTrapIncreasingRotate));
+        }
+
         private void OpenTrap()
         {
             if (AppearingState != EAppearingState.Appeared)
@@ -143,6 +164,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 return;
             m_TrapOpened = true;
             Coroutines.Run(OpenTrapCoroutine(true));
+            Managers.Notify(_SM => _SM.PlayClip(SoundClipNameTrapIncreasingOpen));
         }
 
         private void CloseTrap()
@@ -153,6 +175,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 return;
             m_TrapOpened = false;
             Coroutines.Run(OpenTrapCoroutine(false));
+            Managers.Notify(_SM => _SM.PlayClip(SoundClipNameTrapIncreasingClose));
         }
 
         private IEnumerator OpenTrapCoroutine(bool _Open)

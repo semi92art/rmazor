@@ -28,7 +28,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         event MazeItemTrapIncreasingEventHandler TrapIncreasingStageChanged;
     }
     
-    public class TrapsIncreasingProceeder : ItemsProceederBase, IOnGameLoopUpdate, ITrapsIncreasingProceeder
+    public class TrapsIncreasingProceeder : ItemsProceederBase, IUpdateTick, ITrapsIncreasingProceeder
     {
         #region constants
         
@@ -54,7 +54,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args) { }
 
-        public void OnGameLoopUpdate()
+        public void UpdateTick()
         {
             ProceedTraps();
         }

@@ -10,13 +10,11 @@ namespace Games.RazorMaze.Models
     public interface IModelData
     {
         event MazeInfoHandler MazeInfoSet;
-        event NoArgsHandler GameLoopUpdate;
         
         int LevelIndex { get; set; }
         MazeInfo Info { get; set; }
         MazeOrientation Orientation { get; set; }
         bool ProceedingControls { get; set; }
-        void OnGameLoopUpdate();
     }
     
     public class ModelData : IModelData
@@ -31,23 +29,14 @@ namespace Games.RazorMaze.Models
         #region api
         
         public event MazeInfoHandler MazeInfoSet;
-        public event NoArgsHandler GameLoopUpdate;
         public int LevelIndex { get; set; }
         public MazeOrientation Orientation { get; set; } = MazeOrientation.North;
-
-
         public bool ProceedingControls { get; set; }
-        
-        public void OnGameLoopUpdate() => GameLoopUpdate?.Invoke();
 
         public MazeInfo Info
         {
             get => m_Info;
-            set
-            {
-                m_Info = CorrectInfo(value);
-                MazeInfoSet?.Invoke(m_Info);
-            }
+            set => MazeInfoSet?.Invoke(m_Info = CorrectInfo(value));
         }
         
         #endregion
@@ -67,11 +56,11 @@ namespace Games.RazorMaze.Models
                     || _Item.Type == EMazeItemType.TrapMoving)
                 .Select(_Item => _Item.Position)
                 .ToList();
-            foreach (var pos in additionalPathPositions.Where(pos => !info.Path.Contains(pos)))
+            foreach (var pos in additionalPathPositions
+                .Where(pos => !info.Path.Contains(pos)))
             {
                 info.Path.Add(pos);
             }
-
             return info;
         }
 

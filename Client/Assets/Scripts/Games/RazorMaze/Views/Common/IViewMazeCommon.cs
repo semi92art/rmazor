@@ -9,6 +9,5 @@ namespace Games.RazorMaze.Views.Common
         List<IViewMazeItem> MazeItems { get; }
         IViewMazeItem GetItem(IMazeItemProceedInfo _Item);
         T GetItem<T>(IMazeItemProceedInfo _Item) where T : IViewMazeItem;
-        event NoArgsHandler GameLoopUpdate;
     }
 }

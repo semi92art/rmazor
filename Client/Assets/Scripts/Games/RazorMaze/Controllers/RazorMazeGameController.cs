@@ -36,9 +36,9 @@ namespace Games.RazorMaze.Controllers
         
         public IModelGame Model { get; private set; }
         public IViewGame  View { get; private set; }
-        public ILevelsLoader LevelsLoader { get; private set; }
-        public IGameTicker GameTicker { get; private set; }
-        public IUITicker UITicker { get; private set; }
+        private ILevelsLoader LevelsLoader { get; set; }
+        private IGameTicker GameTicker { get; set; }
+        private IUITicker UITicker { get; set; }
 
         [Inject] public void Inject(
             IModelGame _Model,
@@ -102,65 +102,44 @@ namespace Games.RazorMaze.Controllers
             character.PositionSet                               += OnCharacterPositionSet;
             
             levelStaging.LevelStageChanged                      += View.OnLevelStageChanged;
-            
             View.InputConfigurator.Command                      += OnInputCommand;
-            View.Common.GameLoopUpdate                          += OnGameLoopUpdate;
             
-            var iPreInits = GetInterfaceOfProceeders<IPreInit>();
-            int count = iPreInits.Count;
-            bool[] preInited = new bool[count];
-            for (int i = 0; i < count; i++)
-            {
-                var i1 = i;
-                iPreInits[i].PreInitialized += () => preInited[i1] = true;
-                iPreInits[i].PreInit();
-            }
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => preInited.Any(_PreInitialized => !_PreInitialized), 
-                () => PreInitialized?.Invoke()));
+            RazorMazeUtils.CallInits<IPreInit>(GetProceeders(),
+                _PreInitedArray =>
+                {
+                    Coroutines.Run(Coroutines.WaitWhile(
+                        () => _PreInitedArray.Any(_PreInited => !_PreInited), 
+                        () => PreInitialized?.Invoke()));
+                });
         }
         
         public void Init()
         {
-            var initProceeders = GetInterfaceOfProceeders<IInit>();
-            int count = initProceeders.Count;
-            bool[] initialized = new bool[count];
-            for (int i = 0; i < count; i++)
-            {
-                var i1 = i;
-                initProceeders[i].Initialized += () => initialized[i1] = true;
-                initProceeders[i].Init();
-            }
-
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => initialized.Any(_Initialized => !_Initialized), 
-                () => Initialized?.Invoke()));
+            RazorMazeUtils.CallInits<IInit>(GetProceeders(),
+                _InitedArray =>
+                {
+                    Coroutines.Run(Coroutines.WaitWhile(
+                        () => _InitedArray.Any(_Inited => !_Inited), 
+                        () => Initialized?.Invoke()));
+                });
         }
         
         public void PostInit()
         {
             Model.Data.ProceedingControls = true;
-            
-            var initProceeders = GetInterfaceOfProceeders<IPostInit>();
-            int count = initProceeders.Count;
-            bool[] postInited = new bool[count];
-            for (int i = 0; i < count; i++)
-            {
-                var i1 = i;
-                initProceeders[i].PostInitialized += () => postInited[i1] = true;
-                initProceeders[i].PostInit();
-            }
-
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => postInited.Any(_PostInitialized => !_PostInitialized), 
-                () => PostInitialized?.Invoke()));
+            RazorMazeUtils.CallInits<IPostInit>(GetProceeders(),
+                _PostInitedArray =>
+                {
+                    Coroutines.Run(Coroutines.WaitWhile(
+                        () => _PostInitedArray.Any(_PostInited => !_PostInited), 
+                        () => PostInitialized?.Invoke()));
+                });
         }
 
         #endregion
 
         #region event methods
         
-        private void OnGameLoopUpdate() => Model.Data.OnGameLoopUpdate();
         private void DataOnPathProceedEvent(V2Int _PathItem) => View.PathItemsGroup.OnPathProceed(_PathItem);
         private void OnInputCommand(int _Value)
         {
@@ -248,18 +227,17 @@ namespace Games.RazorMaze.Controllers
             character.PositionSet                               -= OnCharacterPositionSet;
             
             levelStaging.LevelStageChanged                      -= View.OnLevelStageChanged;
-            
             View.InputConfigurator.Command                      -= OnInputCommand;
-            View.Common.GameLoopUpdate                          -= OnGameLoopUpdate;
         }
         
-        private List<T> GetInterfaceOfProceeders<T>() where T : class
+        private List<object> GetProceeders()
         {
-            var result = new List<T>
+            var result = new List<object>
             {
-                Model as T,
-                View as T
-            }.Where(_Proceeder => _Proceeder != null).ToList();
+                Model,
+                View
+            }.Where(_Proceeder => _Proceeder != null)
+                .ToList();
             return result;
         }
 

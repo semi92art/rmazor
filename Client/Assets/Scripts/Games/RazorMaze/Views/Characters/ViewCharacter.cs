@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using Constants;
 using DI.Extensions;
+using Entities;
 using Exceptions;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
@@ -18,6 +20,13 @@ namespace Games.RazorMaze.Views.Characters
 {
     public class ViewCharacter : ViewCharacterBase
     {
+        #region constants
+
+        private const string SoundClipNameCharacterMoveEnd = "character_move_end";
+        private const string SoundClipNameCharacterDeath = "character_death";
+        
+        #endregion
+        
         #region nonpublic members
 
         private static int AnimKeyStartJumping => AnimKeys.Anim3;
@@ -42,6 +51,8 @@ namespace Games.RazorMaze.Views.Characters
         private IViewCharacterTail Tail { get; }
         private IViewCharacterEffector Effector { get; }
         private IGameTicker GameTicker { get; }
+        private IViewAppearTransitioner Transitioner { get; }
+        private IManagersGetter Managers { get; }
         private ViewSettings ViewSettings { get; }
 
         public ViewCharacter(
@@ -52,6 +63,8 @@ namespace Games.RazorMaze.Views.Characters
             IViewCharacterTail _Tail,
             IViewCharacterEffector _Effector,
             IGameTicker _GameTicker,
+            IViewAppearTransitioner _Transitioner,
+            IManagersGetter _Managers,
             ViewSettings _ViewSettings) 
             : base(
                 _CoordinateConverter, 
@@ -62,7 +75,9 @@ namespace Games.RazorMaze.Views.Characters
             Tail = _Tail;
             Effector = _Effector;
             GameTicker = _GameTicker;
+            Transitioner = _Transitioner;
             ViewSettings = _ViewSettings;
+            Managers = _Managers;
         }
         
         #endregion
@@ -128,6 +143,7 @@ namespace Games.RazorMaze.Views.Characters
         {
             m_Animator.SetTrigger(AnimKeyBump);
             Tail.HideTail(_Args);
+            Managers.Notify(_SM => _SM.PlayClip(SoundClipNameCharacterMoveEnd));
         }
         
         public override void OnRevivalOrDeath(bool _Alive)
@@ -145,7 +161,10 @@ namespace Games.RazorMaze.Views.Characters
                     Tail.HideTail();
                 }));
             if (!_Alive)
+            {
+                Managers.Notify(_SM => _SM.PlayClip(SoundClipNameCharacterDeath));
                 Coroutines.Run(ShakeMaze());
+            }
         }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
@@ -247,7 +266,7 @@ namespace Games.RazorMaze.Views.Characters
                 () => !m_Initialized,
                 () =>
                 {
-                    RazorMazeUtils.DoAppearTransitionSimple(
+                    Transitioner.DoAppearTransitionSimple(
                         _Appear,
                         GameTicker,
                         new Dictionary<object[], Func<Color>>

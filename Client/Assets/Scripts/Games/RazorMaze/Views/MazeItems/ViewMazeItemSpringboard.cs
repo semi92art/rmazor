@@ -2,9 +2,11 @@
 using System.Collections;
 using System.Linq;
 using DI.Extensions;
+using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
@@ -23,9 +25,10 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         #region constants
         
-        private const float SpringboardHeight = 0.3f;
-        private const float SpringboardWidth = 0.4f;
-        private const float JumpCoefficient = 0.2f;
+        private const float  SpringboardHeight = 0.3f;
+        private const float  SpringboardWidth  = 0.4f;
+        private const float  JumpCoefficient   = 0.2f;
+        private const string SpringboardJumpSoundClipName = "springboard_jump";
         
         #endregion
         
@@ -50,13 +53,17 @@ namespace Games.RazorMaze.Views.MazeItems
             IModelGame _Model,
             ICoordinateConverter _CoordinateConverter, 
             IContainersGetter _ContainersGetter,
-            IGameTicker _GameTicker) 
+            IGameTicker _GameTicker,
+            IViewAppearTransitioner _Transitioner,
+            IManagersGetter _Managers) 
             : base(
                 _ViewSettings,
                 _Model, 
                 _CoordinateConverter,
                 _ContainersGetter,
-                _GameTicker) { }
+                _GameTicker,
+                _Transitioner,
+                _Managers) { }
         
         #endregion
 
@@ -67,10 +74,13 @@ namespace Games.RazorMaze.Views.MazeItems
             Model, 
             CoordinateConverter, 
             ContainersGetter,
-            GameTicker);
+            GameTicker,
+            Transitioner,
+            Managers);
 
         public void MakeJump(SpringboardEventArgs _Args)
         {
+            Managers.Notify(_SM => _SM.PlayClip(SpringboardJumpSoundClipName));
             Coroutines.Run(JumpCoroutine());
         }
 
@@ -126,9 +136,6 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             var V = Props.Directions.First().ToVector2();
             var Vorth = new Vector2(-V.x, V.y);
-            // var Vx = Vector2.right * V.x;
-            // var Vy = Vector2.up * V.y;
-            // var A = -V * 0.5f;
             var A1 = -V * 0.4f;
             var D = A1 + V * SpringboardHeight;
             var B = D - Vorth * SpringboardWidth * 0.5f;

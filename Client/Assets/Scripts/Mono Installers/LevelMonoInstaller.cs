@@ -6,6 +6,7 @@ using Games.RazorMaze.Views;
 using Games.RazorMaze.Views.Characters;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItemGroups;
@@ -63,6 +64,7 @@ namespace Mono_Installers
             Container.Bind<IMazeItemsCreator>()                 .To<MazeItemsCreator>()                     .AsSingle().When(_ => release);
             Container.Bind<IViewMazeCommon>()                   .To<ViewMazeCommon>()                       .AsSingle().When(_ => release);
             Container.Bind<IViewMazeBackground>()               .To<ViewMazeBackground>()                   .AsSingle().When(_ => release);
+            Container.Bind<IViewAppearTransitioner>()           .To<ViewAppearTransitioner>()               .AsSingle();
             Container.Bind<IViewCharacter>()                    .To<ViewCharacter>()                        .AsSingle().When(_ => release);
             Container.Bind<IViewCharacterEffector>()            .To<ViewCharacterEffectorParticles>()       .AsSingle().When(_ => release);
             Container.Bind<IViewCharacterTail>()                .To<ViewCharacterTailSimple>()              .AsSingle().When(_ => release);

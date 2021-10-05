@@ -8,6 +8,7 @@ using Exceptions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.MazeItems.Props;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
@@ -24,6 +25,12 @@ namespace Games.RazorMaze.Views.MazeItems
     
     public class ViewMazeItemPath : ViewMazeItemBase, IViewMazeItemPath, IUpdateTick
     {
+        #region constants
+
+        private const string SoundClipNameCollectPoint = "collect_point"; 
+
+        #endregion
+        
         #region shapes
 
         protected override object[] Shapes => new object[]
@@ -53,13 +60,17 @@ namespace Games.RazorMaze.Views.MazeItems
             IModelGame _Model,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IGameTicker _GameTicker)
+            IGameTicker _GameTicker,
+            IViewAppearTransitioner _Transitioner,
+            IManagersGetter _Managers)
             : base(
                 _ViewSettings,
                 _Model,
                 _CoordinateConverter,
                 _ContainersGetter,
-                _GameTicker) { }
+                _GameTicker,
+                _Transitioner,
+                _Managers) { }
         
         #endregion
 
@@ -70,7 +81,9 @@ namespace Games.RazorMaze.Views.MazeItems
             Model,
             CoordinateConverter,
             ContainersGetter,
-            GameTicker);
+            GameTicker,
+            Transitioner,
+            Managers);
 
         public override bool Activated
         {
@@ -159,6 +172,11 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private void Collect(bool _Collect)
         {
+            if (_Collect)
+            {
+                Managers.Notify(_SM => _SM.PlayClip(
+                    SoundClipNameCollectPoint, _Tags: Props.Position.ToString()));
+            }
             m_Shape.Color = _Collect ? DrawingUtils.ColorLines.SetA(0f) : DrawingUtils.ColorLines;
         }
 
@@ -567,9 +585,9 @@ namespace Games.RazorMaze.Views.MazeItems
                     ShapeRenderer shape = null;
                     if (_Appear && !Props.IsStartNode || !_Appear && !Collected)
                         shape = m_Shape;
-                    else m_Shape.enabled = false;
-
-                    RazorMazeUtils.DoAppearTransitionSimple(
+                    else
+                        m_Shape.enabled = false;
+                    Transitioner.DoAppearTransitionSimple(
                         _Appear,
                         GameTicker,
                         new Dictionary<object[], Func<Color>>
@@ -591,7 +609,7 @@ namespace Games.RazorMaze.Views.MazeItems
                             {new object[] {shape}, () => DrawingUtils.ColorLines}
                         },
                         Props.Position,
-                        _OnFinish: () =>
+                        () =>
                         {
                             if (!_Appear)
                                 DeactivateShapes();

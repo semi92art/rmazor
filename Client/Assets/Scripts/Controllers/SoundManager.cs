@@ -1,76 +1,193 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using DI.Extensions;
 using Entities;
 using GameHelpers;
+using Games.RazorMaze.Views.ContainerGetters;
+using Ticker;
 using UnityEngine;
 using Utils;
 
 namespace Controllers
 {
-    public interface ISoundManager
+    public class AudioClipInfo
     {
-        void PlayClip(string _Name, bool _Cycling = false, float? _Volume = null);
-        void EnableSound(bool _Enable);
-        void StopPlayingClips();
+        public string ClipName { get; }
+        public AudioClip AudioClip { get; }
+        public AudioSource Source { get; }
+        public float Volume { get; set; }
+        public bool OnPause { get; set; }
+        public IEnumerable<string> Tags { get; }
+
+        public AudioClipInfo(
+            string _ClipName, 
+            AudioClip _AudioClip, 
+            AudioSource _Source, 
+            float _Volume, 
+            IEnumerable<string> _Tags)
+        {
+            ClipName = _ClipName;
+            AudioClip = _AudioClip;
+            Source = _Source;
+            Volume = _Volume;
+            Tags = _Tags;
+        }
     }
     
-    public class SoundManager : ISoundManager
+    public interface ISoundManager
+    {
+        void PlayClip(
+            string _ClipName,
+            bool _Loop = false,
+            float _Volume = 1f,
+            float _AttenuationSecs = 0f,
+            params string[] _Tags);
+        void PauseClip(string _ClipName, params string[] _Tags);
+        void UnPauseClip(string _ClipName, params string[] _Tags);
+        void StopClip(string _ClipName, float _AttenuationSecs = 0f, params string[] _Tags);
+        void EnableSound(bool _Enable, params string[] _Tags);
+    }
+    
+    public class SoundManager : ISoundManager, IUpdateTick
     {
         #region nonpublic members
-    
-        private readonly Dictionary<GameObject,AudioSource> m_Clips
-            = new Dictionary<GameObject, AudioSource>();
+
+        private readonly List<AudioClipInfo> m_ClipInfos = new List<AudioClipInfo>();
+        
+        #endregion
+        
+        #region inject
+        
+        private IContainersGetter ContainersGetter { get; }
+        private IGameTicker GameTicker { get; }
+        private IUITicker UITicker { get; }
+
+        public SoundManager(
+            IContainersGetter _ContainersGetter,
+            IGameTicker _GameTicker,
+            IUITicker _UITicker)
+        {
+            ContainersGetter = _ContainersGetter;
+            GameTicker = _GameTicker;
+            UITicker = _UITicker;
+            
+            GameTicker.Register(this);
+        }
 
         #endregion
 
         #region api
-        
-        public void PlayClip(string _Name, bool _Cycling = false, float? _Volume = null)
+
+        public void PlayClip(
+            string _ClipName, 
+            bool _Loop = false,
+            float _Volume = 1f,
+            float _AttenuationSecs = 0f,
+            params string[] _Tags)
         {
-            var clip = PrefabUtilsEx.GetObject<AudioClip>("sounds", _Name);
-            PlayClipCore(clip, _Cycling, _Volume);
-        }
-        
-        public void EnableSound(bool _Enable)
-        {
-            SaveUtils.PutValue(SaveKey.SettingSoundOn, _Enable);
-            foreach (var clip in m_Clips
-                .Where(_Clip => _Clip.Key != null))
-                clip.Value.volume = _Enable ? 1 : 0;
-        }
-        
-        public void StopPlayingClips()
-        {
-            foreach (var clip in m_Clips.Values.ToArray())
-                clip.Stop();
+            var clipInfo = GetInfo(_ClipName, _Tags);
+            if (clipInfo == null)
+            {
+                var clip = PrefabUtilsEx.GetObject<AudioClip>("sounds", _ClipName);
+                if (clip == null)
+                    return;
+                var go = new GameObject($"AudioClip_{_ClipName}");
+                go.SetParent(ContainersGetter.AudioSourcesContainer);
+                var audioSource = go.AddComponent<AudioSource>();
+                audioSource.clip = clip;
+                audioSource.volume = _Volume * (SaveUtils.GetValue<bool>(SaveKey.SettingSoundOn) ? 1 : 0);
+                audioSource.loop = _Loop;
+                clipInfo = new AudioClipInfo(_ClipName, clip, audioSource, _Volume, _Tags);
+                m_ClipInfos.Add(clipInfo);
+            }
+
+            clipInfo.Source.Play();
+            if (_AttenuationSecs > float.Epsilon)
+                Coroutines.Run(AttenuateCoroutine(clipInfo, _AttenuationSecs, true));
+            else
+                clipInfo.Source.volume = _Volume;
         }
 
+        public void PauseClip(string _ClipName, params string[] _Tags)
+        {
+            PauseClipCore(_ClipName, _Tags, true);
+        }
+        
+        public void UnPauseClip(string _ClipName, params string[] _Tags)
+        {
+            PauseClipCore(_ClipName, _Tags, false);
+        }
+
+        public void StopClip(string _ClipName, float _AttenuationSecs = 0, params string[] _Tags)
+        {
+            var clipInfo = GetInfo(_ClipName, _Tags);
+            if (clipInfo == null)
+                return;
+            clipInfo.OnPause = false;
+            if (_AttenuationSecs > float.Epsilon)
+                Coroutines.Run(AttenuateCoroutine(clipInfo, _AttenuationSecs, false));
+            else
+                clipInfo.Source.Stop();
+        }
+
+        public void EnableSound(bool _Enable, params string[] _Tags)
+        {
+            foreach (var info in m_ClipInfos.Where(_Info => !_Info.Source.isPlaying))
+            {
+                if (_Tags != null && _Tags.Any() && info.Tags.Any(_Tags.Contains))
+                    info.Source.volume = _Enable ? info.Volume : 0f;
+            }
+            if (_Tags == null || !_Tags.Any())
+                SaveUtils.PutValue(SaveKey.SettingSoundOn, _Enable);
+        }
+        
         #endregion
         
         #region nonpublic methods
 
-        private void PlayClipCore(AudioClip _Clip, bool _Cycling, float? _Volume = null)
+        private IEnumerator AttenuateCoroutine(AudioClipInfo _Info, float _Seconds, bool _AttenuateUp)
         {
-            var go = new GameObject($"AudioClip_{_Clip.name}");
-            var audioSource = go.AddComponent<AudioSource>();
-            audioSource.clip = _Clip;
-            audioSource.volume = (_Volume ?? 1f) * (SaveUtils.GetValue<bool>(SaveKey.SettingSoundOn) ? 1 : 0);
-            audioSource.loop = _Cycling;
-            m_Clips.Add(go, audioSource);
-
-            Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
-            {
-                Coroutines.Run(Coroutines.WaitWhile(
-                () => audioSource.isPlaying,
-                () =>
+            float startVolume = _AttenuateUp ? 0f : _Info.Volume;
+            float endVolume = !_AttenuateUp ? 0f : _Info.Volume;
+            yield return Coroutines.Lerp(
+                startVolume,
+                endVolume,
+                _Seconds,
+                _Volume => _Info.Source.volume = _Volume,
+                _Info.Tags.Contains("ui") ? (ITicker)UITicker : GameTicker,
+                (_, __) =>
                 {
-                    m_Clips.Remove(go);
-                    Object.Destroy(go);
-                }));
-            }));
-            audioSource.Play();
+                    if (!_AttenuateUp) 
+                        _Info.Source.Stop();
+                });
+        }
+
+        private AudioClipInfo GetInfo(string _ClipName, string[] _Tags, bool _FullMatch = false)
+        {
+            return m_ClipInfos.FirstOrDefault(_Info =>
+                _Info.ClipName == _ClipName
+                && _FullMatch ? _Info.Tags.All(_Tags.Contains)
+                    : _Tags.All(_Info.Tags.Contains));
         }
         
+        private void PauseClipCore(string _ClipName, string[] _Tags, bool _Pause)
+        {
+            var clipInfo = GetInfo(_ClipName, _Tags);
+            if (clipInfo == null)
+                return;
+            if (_Pause)
+                clipInfo.Source.Pause();
+            else 
+                clipInfo.Source.UnPause();
+            clipInfo.OnPause = _Pause;
+        }
+
         #endregion
+
+        public void UpdateTick()
+        {
+            // TODO
+        }
     }
 }

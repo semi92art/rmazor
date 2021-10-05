@@ -114,6 +114,7 @@ namespace Games.RazorMaze.Views.Common
             int sortingOrder = DrawingUtils.GetBackgroundItemSortingOrder();
 
             var source1Go = new GameObject("Background Source 1");
+            source1Go.SetParent(ContainersGetter.BackgroundContainer);
             var source1 = source1Go.AddComponent<Disc>();
             source1.Color = m_Color;
             source1.Radius = CoordinateConverter.GetScale() * 0.3f;
@@ -122,6 +123,7 @@ namespace Games.RazorMaze.Views.Common
             m_Sources.Add(source1);
             
             var source2Go = new GameObject("Background Source 2");
+            source2Go.SetParent(ContainersGetter.BackgroundContainer);
             var source2 = source2Go.AddComponent<Disc>();
             source2.Color = m_Color;
             source2.Radius = CoordinateConverter.GetScale() * 0.2f;
@@ -130,6 +132,7 @@ namespace Games.RazorMaze.Views.Common
             m_Sources.Add(source2);
             
             var source3Go = new GameObject("Background Source 3");
+            source3Go.SetParent(ContainersGetter.BackgroundContainer);
             var source3 = source3Go.AddComponent<Disc>();
             source3.Color = m_Color;
             source3.Radius = CoordinateConverter.GetScale() * 0.1f;

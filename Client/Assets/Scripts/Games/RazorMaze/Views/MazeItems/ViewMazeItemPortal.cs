@@ -6,6 +6,7 @@ using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using SpawnPools;
@@ -25,11 +26,12 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         #region constants
         
-        private const float RotationSpeed = 5f;
-        private const int OrbitsCount = 14;
-        private const int GravityItemsCount = 30;
-        private const float GravitySpawnTime = 1f;
-        private const float GravityItemsSpeed = 1f;
+        private const float  RotationSpeed       = 5f;
+        private const int    OrbitsCount         = 14;
+        private const int    GravityItemsCount   = 30;
+        private const float  GravitySpawnTime    = 1f;
+        private const float  GravityItemsSpeed   = 1f;
+        private const string PortalSoundClipName = "portal";
         
         #endregion
         
@@ -60,13 +62,17 @@ namespace Games.RazorMaze.Views.MazeItems
             IModelGame _Model,
             ICoordinateConverter _CoordinateConverter, 
             IContainersGetter _ContainersGetter,
-            IGameTicker _GameTicker)
+            IGameTicker _GameTicker,
+            IViewAppearTransitioner _Transitioner,
+            IManagersGetter _Managers)
             : base(
                 _ViewSettings,
                 _Model,
                 _CoordinateConverter,
                 _ContainersGetter,
-                _GameTicker) { }
+                _GameTicker,
+                _Transitioner,
+                _Managers) { }
         
         #endregion
 
@@ -77,7 +83,9 @@ namespace Games.RazorMaze.Views.MazeItems
             Model, 
             CoordinateConverter,
             ContainersGetter,
-            GameTicker);
+            GameTicker,
+            Transitioner,
+            Managers);
         
         public override bool Activated
         {
@@ -110,13 +118,15 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public void DoTeleport(PortalEventArgs _Args)
         {
+            if (_Args.IsPortFrom)
+                Managers.Notify(_SM => _SM.PlayClip(PortalSoundClipName));
             Coroutines.Run(Coroutines.Lerp(
                 1f, 
                 3f,
                 0.07f,
                 _Progress => m_Center.Radius = CoordinateConverter.GetScale() * 0.2f * _Progress,
                 GameTicker,
-                (_Breaked, _Prgrss) =>
+                (_, __) =>
                 {
                     Coroutines.Run(Coroutines.Lerp(
                         3f,
@@ -204,7 +214,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 () => !Initialized,
                 () =>
                 {
-                    RazorMazeUtils.DoAppearTransitionSimple(
+                    Transitioner.DoAppearTransitionSimple(
                         _Appear,
                         GameTicker,
                         new Dictionary<object[], Func<Color>>
@@ -213,7 +223,7 @@ namespace Games.RazorMaze.Views.MazeItems
                             {m_Orbits.Cast<object>().ToArray(), () => DrawingUtils.ColorLines}
                         },
                         Props.Position,
-                        _OnFinish: () =>
+                        () =>
                         {
                             m_Appeared = _Appear;
                             if (!_Appear)

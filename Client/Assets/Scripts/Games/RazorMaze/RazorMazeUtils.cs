@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DI.Extensions;
 using Entities;
 using Exceptions;
 using Games.RazorMaze.Models;
-using Shapes;
-using Ticker;
 using UnityEngine;
 using UnityEngine.Events;
-using Utils;
 
 namespace Games.RazorMaze
 {
@@ -181,65 +177,42 @@ namespace Games.RazorMaze
             return distA < distB ? -1 : 1;
         }
         
-        public static void DoAppearTransitionSimple(
-            bool _Appear,
-            IGameTicker _GameTicker,
-            Dictionary<object[], Func<Color>> _Sets,
-            V2Int _ItemPosition,
-            float _TransitionTime = 0.3f,
-            UnityAction _OnFinish = null)
+        public static void CallInits<T>(
+            List<object> _InitObjects, 
+            UnityAction<bool[]> _OnFinish) 
+            where T : class
         {
-            float delay = (_Appear ? _ItemPosition.Y : 10 -_ItemPosition.Y) * 0.05f;
-            
-            Coroutines.Run(Coroutines.Delay(() =>
+            var type = typeof(T);
+            var initObjects = GetInterfaceOfProceeders<T>(_InitObjects).ToList();
+            int count = initObjects.Count;
+            var inited = new bool[count];
+            for (int i = 0; i < count; i++)
             {
-                foreach (var set in _Sets)
+                var i1 = i;
+                if (type == typeof(IPreInit) && initObjects[i] is IPreInit preInitObj)
                 {
-                    Func<Color> toAlpha0 = () => set.Value().SetA(0f); 
-                    
-                    var startCol = _Appear ? toAlpha0 : set.Value;
-                    var endCol = !_Appear ? toAlpha0 : set.Value;
-                    var shapes = set.Key.Where(_Shape => _Shape != null).ToList();
-                    if (_Appear)
-                        foreach (var shape in shapes)
-                        {
-                            if (shape is ShapeRenderer shapeRenderer)
-                                shapeRenderer.enabled = true;
-                            else if (shape is SpriteRenderer spriteRenderer)
-                                spriteRenderer.enabled = true;
-                        }
-                    Coroutines.Run(Coroutines.Lerp(
-                        0f,
-                        1f,
-                        _TransitionTime,
-                        _Progress =>
-                        {
-                            var col = Color.Lerp(startCol(), endCol(), _Progress);
-                            foreach (var shape in shapes)
-                            {
-                                if (shape is ShapeRenderer shapeRenderer)
-                                    shapeRenderer.Color = col;
-                                else if (shape is SpriteRenderer spriteRenderer)
-                                    spriteRenderer.color = col;
-                            }
-                        },
-                        _GameTicker,
-                        (_Finished, _Progress) =>
-                        {
-                            if (!_Appear)
-                                foreach (var shape in shapes)
-                                {
-                                    if (shape is ShapeRenderer shapeRenderer)
-                                        shapeRenderer.enabled = false;
-                                    else if (shape is SpriteRenderer spriteRenderer)
-                                        spriteRenderer.enabled = false;
-                                }
-                            _OnFinish?.Invoke();
-                        }));
+                    preInitObj.PreInitialized += () => inited[i1] = true;
+                    preInitObj.PreInit();
                 }
-            }, delay));
+                else if (type == typeof(IInit) && initObjects[i] is IInit initObj)
+                {
+                    initObj.Initialized += () => inited[i1] = true;
+                    initObj.Init(); 
+                }
+                else if (type == typeof(IPostInit) && initObjects[i] is IPostInit postInitObj)
+                {
+                    postInitObj.PostInitialized += () => inited[i1] = true;
+                    postInitObj.PostInit();
+                }
+            }
+            _OnFinish?.Invoke(inited);
         }
         
+        public static List<T> GetInterfaceOfProceeders<T>(IEnumerable<object> _Proceeders) where T : class
+        {
+            return _Proceeders.Where(_Proceeder => _Proceeder is T).Cast<T>().ToList();
+        }
+
         #endregion
     }
 }

@@ -18,21 +18,38 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
     public abstract class ItemsProceederBase : IItemsProceeder
     {
+        #region nonpublic members
+        
+        private readonly Queue<IEnumerator> m_Coroutines = new Queue<IEnumerator>();
+        protected IMazeItemProceedInfo KillerProceedInfo { get; set; }
+        
+        #endregion
+        
         #region constants
 
         public const int StageIdle = 0; 
         
         #endregion
         
-        #region nonpublic members
+        #region inject
         
-        protected IMazeItemProceedInfo KillerProceedInfo { get; set; }
         protected ModelSettings Settings { get; }
         protected IModelData Data { get; }
         protected IModelCharacter Character { get; }
         protected IGameTicker GameTicker { get; }
-
-        private readonly Queue<IEnumerator> m_Coroutines = new Queue<IEnumerator>();
+        
+        protected ItemsProceederBase(
+            ModelSettings _Settings, 
+            IModelData _Data,
+            IModelCharacter _Character,
+            IGameTicker _GameTicker)
+        {
+            Settings = _Settings;
+            Data = _Data;
+            Character = _Character;
+            GameTicker = _GameTicker;
+            GameTicker.Register(this);
+        }
 
         #endregion
 
@@ -75,19 +92,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region nonpublic methods
         
-        protected ItemsProceederBase(
-            ModelSettings _Settings, 
-            IModelData _Data,
-            IModelCharacter _Character,
-            IGameTicker _GameTicker)
-        {
-            Settings = _Settings;
-            Data = _Data;
-            Character = _Character;
-            GameTicker = _GameTicker;
-        }
-
-        protected void CollectItems(MazeInfo _Info)
+        private void CollectItems(MazeInfo _Info)
         {
             ProceedInfos.Clear();
             foreach (var type in Types)
@@ -116,9 +121,10 @@ namespace Games.RazorMaze.Models.ItemProceeders
             }
         }
 
-        protected List<IMazeItemProceedInfo> GetProceedInfos(IEnumerable<EMazeItemType> _Types)
+        protected IEnumerable<IMazeItemProceedInfo> GetProceedInfos(IEnumerable<EMazeItemType> _Types)
         {
-            return _Types.SelectMany(_Type => ProceedInfos[_Type]).ToList();
+            return _Types.SelectMany(_Type => 
+                ProceedInfos.ContainsKey(_Type) ? ProceedInfos[_Type] : new List<IMazeItemProceedInfo>());
         }
         
         private void StartProceed(bool? _ProceedKillerInfoIfTrue = null)
@@ -131,7 +137,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 info.CurrentPosition = info.StartPosition;
                 info.ProceedingStage = StageIdle;
             }
-            if (_ProceedKillerInfoIfTrue.HasValue && !_ProceedKillerInfoIfTrue.Value && KillerProceedInfo != null)
+            if (_ProceedKillerInfoIfTrue.HasValue
+                && !_ProceedKillerInfoIfTrue.Value 
+                && KillerProceedInfo != null)
             {
                 KillerProceedInfo.IsProceeding = false;
                 KillerProceedInfo = null;

@@ -42,7 +42,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         event TurretShotEventHandler TurretShoot;
     }
     
-    public class TurretsProceeder : ItemsProceederBase, IOnGameLoopUpdate, ITurretsProceeder, IGetAllProceedInfos
+    public class TurretsProceeder : ItemsProceederBase, IUpdateTick, ITurretsProceeder, IGetAllProceedInfos
     {
         #region constants
 
@@ -73,7 +73,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         public event TurretShotEventHandler TurretShoot;
         public Func<IEnumerable<IMazeItemProceedInfo>> GetAllProceedInfos { private get; set; }
         
-        public void OnGameLoopUpdate()
+        public void UpdateTick()
         {
             ProceedTurrets();
         }

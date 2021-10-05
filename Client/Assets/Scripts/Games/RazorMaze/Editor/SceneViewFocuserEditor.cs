@@ -23,6 +23,7 @@ namespace Games.RazorMaze.Editor
                 new GUIContent(null, tex, "Focus SceneView when entering play mode"),
                 "Command"))
             {
+                SceneView.lastActiveSceneView.in2DMode = true; 
                 LevelDesignerEditor.FocusCamera(LevelDesigner.Instance.size);
             }
         }

@@ -16,7 +16,7 @@ namespace Games.RazorMaze.Editor
         
         static ReleaseViewToggleEditor()
         {
-            ToolbarExtender.RightToolbarGUI.Add(OnToolbarGUI);
+            // ToolbarExtender.RightToolbarGUI.Add(OnToolbarGUI);
         }
 
         private static void OnToolbarGUI()
