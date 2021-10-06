@@ -78,3 +78,5 @@ crashlytics-build.properties
 ProjectSettings/AndroidLogcatSettings.asset
 Prototyping*
 Prototyping.meta*
+
+!/_Other/*

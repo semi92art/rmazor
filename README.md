@@ -14,6 +14,13 @@
 
 ---
 
+#### Настройка рабочего окружения
+
+1. Скачать и установить [Unity 2019.4.16f1](https://download.unity3d.com/download_unity/e05b6e02d63e/Windows64EditorInstaller/UnitySetup64.exe?_ga=2.211196373.1330797353.1633497524-1378656195.1586531758),
+2. Скачать и установить [поддержку Android](https://download.unity3d.com/download_unity/e05b6e02d63e/TargetSupportInstaller/UnitySetup-Android-Support-for-Editor-2019.4.16f1.exe?_ga=2.186602985.1330797353.1633497524-1378656195.1586531758)
+3. Скачать и установить [поддержку iOS](https://download.unity3d.com/download_unity/e05b6e02d63e/TargetSupportInstaller/UnitySetup-iOS-Support-for-Editor-2019.4.16f1.exe?_ga=2.186602985.1330797353.1633497524-1378656195.1586531758)
+4. Скопировать содержимое папки [cache](Client/_Other/cache) в папку C:\Users\[Имя пользователя]\AppData\Local\Unity\cache
+
 #### Коды ошибок
 В коде клиента константы кодов ошибок хранятся в классе `ServerErrorCodes`.
 |  Код   | Сообщение                                                     | В каком случае может возникнуть                                                      |
@@ -25,11 +32,6 @@
 |  5  | Валидация базы данных завершилась неудачей | При перезаписи полей любой из таблиц БД |
 |  6  | Account с таким Name уже существует | При регистрации аккаутна по логину и паролю |
 | 7    | Account с таким DeviceId уже существует     | При регистрации гостевого аккаунта по Id устройства          |
-| 8    | -                                           | -                                                            |
-| 9    | -                                           | -                                                            |
-| 10   | -                                           | -                                                            |
-| 11   | -                                           | -                                                            |
-|  12  | - | -                                                            |
 
 ### Clickers API
 ####  Команды Ubuntu
