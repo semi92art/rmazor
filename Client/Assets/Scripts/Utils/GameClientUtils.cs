@@ -42,12 +42,6 @@ namespace Utils
             set => SaveUtils.PutValue(SaveKey.GameId, value);
         }
 
-        public static int GameMode
-        {
-            get => SaveUtils.GetValue<int>(SaveKey.GameMode);
-            set => SaveUtils.PutValue(SaveKey.GameMode, value);
-        }
-
         public static string DeviceId
         {
             get

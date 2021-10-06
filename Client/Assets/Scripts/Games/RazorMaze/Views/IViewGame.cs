@@ -28,7 +28,7 @@ namespace Games.RazorMaze.Views
         IViewMazePathItemsGroup            PathItemsGroup { get; }
         IViewMazeMovingItemsGroup          MovingItemsGroup { get; }
         IViewMazeTrapsReactItemsGroup      TrapsReactItemsGroup { get; }
-        IViewMazeTrapsIncreasingItemsGroup TrapsIncreasingItemsGroup { get; }
+        IViewMazeTrapsIncItemsGroup TrapsIncItemsGroup { get; }
         IViewMazeTurretsGroup              TurretsGroup { get; }
         IViewMazePortalsGroup              PortalsGroup { get; }
         IViewMazeShredingerBlocksGroup     ShredingerBlocksGroup { get; }

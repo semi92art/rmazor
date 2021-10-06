@@ -174,7 +174,7 @@ namespace Games.RazorMaze.Controllers
         }
 
         private void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args) => View.TrapsReactItemsGroup.OnMazeTrapReactStageChanged(_Args);
-        private void OnMazeTrapIncreasingStageChanged(MazeItemTrapIncreasingEventArgs _Args) => View.TrapsIncreasingItemsGroup.OnMazeTrapIncreasingStageChanged(_Args);
+        private void OnMazeTrapIncreasingStageChanged(MazeItemTrapIncreasingEventArgs _Args) => View.TrapsIncItemsGroup.OnMazeTrapIncreasingStageChanged(_Args);
         private void OnTurretShoot(TurretShotEventArgs _Args) => View.TurretsGroup.OnTurretShoot(_Args);
         private void OnPortalEvent(PortalEventArgs _Args) => View.PortalsGroup.OnPortalEvent(_Args);
         private void OnShredingerBlockEvent(ShredingerBlockArgs _Args) => View.ShredingerBlocksGroup.OnShredingerBlockEvent(_Args);

@@ -34,7 +34,7 @@ namespace Games.RazorMaze.Views
         public IViewMazePathItemsGroup PathItemsGroup { get; }
         public IViewMazeMovingItemsGroup MovingItemsGroup { get; }
         public IViewMazeTrapsReactItemsGroup TrapsReactItemsGroup { get; }
-        public IViewMazeTrapsIncreasingItemsGroup TrapsIncreasingItemsGroup { get; }
+        public IViewMazeTrapsIncItemsGroup TrapsIncItemsGroup { get; }
         public IViewMazeTurretsGroup TurretsGroup { get; }
         public IViewMazePortalsGroup PortalsGroup { get; }
         public IViewMazeShredingerBlocksGroup ShredingerBlocksGroup { get; }
@@ -54,7 +54,7 @@ namespace Games.RazorMaze.Views
             IViewMazePathItemsGroup _PathItemsGroup,
             IViewMazeMovingItemsGroup _MovingItemsGroup,
             IViewMazeTrapsReactItemsGroup _TrapsReactItemsGroup,
-            IViewMazeTrapsIncreasingItemsGroup _TrapsIncreasingItemsGroup,
+            IViewMazeTrapsIncItemsGroup _TrapsIncItemsGroup,
             IViewMazeTurretsGroup _TurretsGroup,
             IViewMazePortalsGroup _PortalsGroup,
             IViewMazeShredingerBlocksGroup _ShredingerBlocksGroup,
@@ -72,7 +72,7 @@ namespace Games.RazorMaze.Views
             PathItemsGroup = _PathItemsGroup;
             MovingItemsGroup = _MovingItemsGroup;
             TrapsReactItemsGroup = _TrapsReactItemsGroup;
-            TrapsIncreasingItemsGroup = _TrapsIncreasingItemsGroup;
+            TrapsIncItemsGroup = _TrapsIncItemsGroup;
             TurretsGroup = _TurretsGroup;
             PortalsGroup = _PortalsGroup;
             ShredingerBlocksGroup = _ShredingerBlocksGroup;
@@ -176,7 +176,7 @@ namespace Games.RazorMaze.Views
                 PathItemsGroup,
                 MovingItemsGroup,
                 TrapsReactItemsGroup,
-                TrapsIncreasingItemsGroup,
+                TrapsIncItemsGroup,
                 TurretsGroup,
                 PortalsGroup,
                 ShredingerBlocksGroup,

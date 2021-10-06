@@ -2,7 +2,7 @@
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
-    public interface IViewMazeTrapsIncreasingItemsGroup : IInit, IOnLevelStageChanged, IMazeItemTypes
+    public interface IViewMazeTrapsIncItemsGroup : IInit, IOnLevelStageChanged, IMazeItemTypes
     {
         void OnMazeTrapIncreasingStageChanged(MazeItemTrapIncreasingEventArgs _Args);
     }

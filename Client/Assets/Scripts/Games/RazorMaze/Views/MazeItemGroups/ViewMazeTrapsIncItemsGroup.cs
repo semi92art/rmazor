@@ -5,11 +5,11 @@ using Games.RazorMaze.Views.MazeItems;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
-    public class ViewMazeTrapsIncreasingItemsGroup : ViewMazeItemsGroupBase, IViewMazeTrapsIncreasingItemsGroup
+    public class ViewMazeTrapsIncItemsGroup : ViewMazeItemsGroupBase, IViewMazeTrapsIncItemsGroup
     {
         #region inject
         
-        public ViewMazeTrapsIncreasingItemsGroup(IViewMazeCommon _Common) : base(_Common) { }
+        public ViewMazeTrapsIncItemsGroup(IViewMazeCommon _Common) : base(_Common) { }
         
         #endregion
 
