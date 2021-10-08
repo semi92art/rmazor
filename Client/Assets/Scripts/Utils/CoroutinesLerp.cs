@@ -113,7 +113,6 @@ namespace Utils
                     yield return new WaitForEndOfFrame();
                     continue;
                 }
-                
                 float timeCoeff = 1 - (currTime + _Time - _Ticker.Time) / _Time;
                 progress = MathUtils.Lerp(_From, _To, timeCoeff);
                 if (_ProgressFormula != null)
@@ -157,9 +156,10 @@ namespace Utils
                     yield return new WaitForEndOfFrame();
                     continue;
                 }
-                
                 float timeCoeff = 1 - (currTime + _Time - _Ticker.Time) / _Time;
                 progress = Mathf.Lerp(_From, _To, timeCoeff);
+                if (_ProgressFormula != null)
+                    progress = _ProgressFormula(progress);
                 _OnProgress(progress);
                 yield return new WaitForEndOfFrame();
             }
@@ -199,6 +199,8 @@ namespace Utils
                 }
                 float timeCoeff = 1 - (currTime + _Time - _Ticker.Time) / _Time;
                 progress = Mathf.RoundToInt(Mathf.Lerp(_From, _To, timeCoeff));
+                if (_ProgressFormula != null)
+                    progress = _ProgressFormula(progress);
                 _OnProgress(progress);
                 yield return new WaitForEndOfFrame();
             }
@@ -216,7 +218,8 @@ namespace Utils
             UnityAction<Color> _OnProgress,
             ITicker _Ticker,
             UnityAction<bool, Color> _OnFinish = null,
-            Func<bool> _OnBreak = null)
+            Func<bool> _OnBreak = null,
+            Func<Color, Color> _ProgressFormula = null)
         {
             if (_OnProgress == null)
                 yield break;
@@ -230,19 +233,19 @@ namespace Utils
                     breaked = true;
                     break;
                 }
-                
                 if (_Ticker.Pause)
                 {
                     yield return new WaitForEndOfFrame();
                     continue;
                 }
-                
                 float timeCoeff = 1 - (currTime + _Time - _Ticker.Time) / _Time;
                 float r = Mathf.Lerp(_From.r, _To.r, timeCoeff);
                 float g = Mathf.Lerp(_From.g, _To.g, timeCoeff);
                 float b = Mathf.Lerp(_From.b, _To.b, timeCoeff);
                 float a = Mathf.Lerp(_From.a, _To.a, timeCoeff);
                 progress = new Color(r, g, b, a);
+                if (_ProgressFormula != null)
+                    progress = _ProgressFormula(progress);
                 _OnProgress(progress);
                 yield return new WaitForEndOfFrame();
             }
@@ -260,7 +263,8 @@ namespace Utils
             UnityAction<Vector2> _OnProgress,
             ITicker _Ticker,
             UnityAction<bool, Vector2> _OnFinish = null,
-            Func<bool> _OnBreak = null)
+            Func<bool> _OnBreak = null,
+            Func<Vector2, Vector2> _ProgressFormula = null)
         {
             if (_OnProgress == null)
                 yield break;
@@ -274,9 +278,10 @@ namespace Utils
                     breaked = true;
                     break;
                 }
-                
                 float timeCoeff = 1 - (currTime + _Time - _Ticker.Time) / _Time;
                 progress = Vector2.Lerp(_From, _To, timeCoeff);
+                if (_ProgressFormula != null)
+                    progress = _ProgressFormula(progress);
                 _OnProgress(progress);
                 yield return new WaitForEndOfFrame();
             }
@@ -294,7 +299,8 @@ namespace Utils
             UnityAction<Vector3> _OnProgress,
             ITicker _Ticker,
             UnityAction<bool, Vector3> _OnFinish = null,
-            Func<bool> _OnBreak = null)
+            Func<bool> _OnBreak = null,
+            Func<Vector3, Vector3> _ProgressFormula = null)
         {
             if (_OnProgress == null)
                 yield break;
@@ -310,6 +316,8 @@ namespace Utils
                 }
                 float timeCoeff = 1 - (currTime + _Time - _Ticker.Time) / _Time;
                 progress = Vector3.Lerp(_From, _To, timeCoeff);
+                if (_ProgressFormula != null)
+                    progress = _ProgressFormula(progress);
                 _OnProgress(progress);
                 yield return new WaitForEndOfFrame();
             }
