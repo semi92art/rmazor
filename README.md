@@ -19,35 +19,32 @@
 1. Скачать и установить [Unity 2019.4.16f1](https://download.unity3d.com/download_unity/e05b6e02d63e/Windows64EditorInstaller/UnitySetup64.exe?_ga=2.211196373.1330797353.1633497524-1378656195.1586531758),
 2. Скачать и установить [поддержку Android](https://download.unity3d.com/download_unity/e05b6e02d63e/TargetSupportInstaller/UnitySetup-Android-Support-for-Editor-2019.4.16f1.exe?_ga=2.186602985.1330797353.1633497524-1378656195.1586531758)
 3. Скачать и установить [поддержку iOS](https://download.unity3d.com/download_unity/e05b6e02d63e/TargetSupportInstaller/UnitySetup-iOS-Support-for-Editor-2019.4.16f1.exe?_ga=2.186602985.1330797353.1633497524-1378656195.1586531758)
-4. Скопировать содержимое папки [cache](Client/_Other/cache) в папку C:\Users\[Имя пользователя]\AppData\Local\Unity\cache
 
-#### Коды ошибок
-В коде клиента константы кодов ошибок хранятся в классе `ServerErrorCodes`.
-|  Код   | Сообщение                                                     | В каком случае может возникнуть                                                      |
-| :-- | :----------------------------------------------------------- | :----------------------------------------------------------- |
-|  1  | AccountEntity не найден по DeviceId | При поиске аккаунта по Id устройства |
-|  2  | Неверные логин или пароль | При попытке входа по логину и паролю |
-|  3  | Entity с таким AccountId и GameId не найден | В случае, если в таблице DataFieldValue нет совпадений по полям AccountId и GameId |
-|  4  | Запрос составлен неправильно | В случае неправильного составления запроса к WebAPI |
-|  5  | Валидация базы данных завершилась неудачей | При перезаписи полей любой из таблиц БД |
-|  6  | Account с таким Name уже существует | При регистрации аккаутна по логину и паролю |
-| 7    | Account с таким DeviceId уже существует     | При регистрации гостевого аккаунта по Id устройства          |
+---
 
-### Clickers API
-####  Команды Ubuntu
-- Системный мониторинг: `glances`
-- Убить процесс через PID: `sudo kill -9 [PID]`
-- Запустить процесс в бэкграунде, который будет выполнять файл каждые 60 секунд: `setsid forever watch -n 60 [путь к файлу]`
-- Отобразить информацию о процессе, запущенном в бэкграунде, выполняющем файл: `ps -auxwww --sort=start_time | grep -i [имя файла]`
-##### Удаление пользователя
-1. Ищем все процессы, запущенные пользователем через `ps -aux | grep [имя пользователя]`
-2. Удостоверяемся, что не запущены процессы, влияющие на работу системы и убиваем их через `sudo pkill -u [имя пользователя]`
-3. Еще раз проверяем, остались ли запущенные пользователем процессы с помощью команды из п.1. Если таковые остались, убиваем каждый через `sudo kill -9 [PID процесса]`
-4. Удаляем пользователя с помощью команды `sudo deluser [имя пользователя]`
-#### Команды на боевом сервере
-- Пул образа из DockerHub + запуск: `/home/artem/Documents/refresh_clapi1.sh`
+#### Устранение неполадок при первом запуске
 
-#### Команды DotNet EF Core
-- Создание миграции: `dotnet ef migrations add MigrationName`
-- Обновление БД по миграции: `dotnet ef database update MigrationName`
-- Обновление утилит dotnet: `dotnet tool update --global dotnet-ef`
+Если при загрузке Unity появляется окно, изображенное на рис. 1: 
+<p align="center">
+	<img width="400" height="350" src="Client/_Other/error1.png">
+</p>
+<center>Рисунок 1</center>
+то в этом случае нужно выполнить следующие действия:
+
+1. Скопировать содержимое папки [cache](Client/_Other/cache) в папку C:\Users\[Имя пользователя]\AppData\Local\Unity\cache
+2. С помощью Unity Package Manager (рис. 2) Добавить ссылку на git репозиторий:
+<code>https://github.com/marijnz/unity-toolbar-extender.git</code>
+
+<p align="center">
+	<img width="400" height="200" src="Client/_Other/add_package_from_git_url.png">
+</p>
+<center>Рисунок 2</center>
+
+Если при запуске Unity появляются ошибки, связанные с Layout-ом, которые невозможно исправить простыми способами, требуется заменить содержимое файла <code>Client/Library/CurrentLayout-default.dwlt</code>  на содержимое файла <code>Client/_Other/Default.dwlt</code>
+
+---
+
+#### Другие ресурсы
+
+[README Web Api-шки](Server/README.md)
+
