@@ -200,7 +200,7 @@ namespace Games.RazorMaze.Views.MazeItems
             yield return Coroutines.Lerp(
                 FinalPos,
                 StartPos,
-                ModelSettings.trapAfterReactTime,
+                ModelSettings.TrapAfterReactTime,
                 _Progress => SetReactProgress(dir, scale, _Progress),
                 GameTicker
             );

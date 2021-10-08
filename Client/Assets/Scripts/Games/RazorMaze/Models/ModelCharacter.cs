@@ -229,7 +229,7 @@ namespace Games.RazorMaze.Models
             yield return Coroutines.Lerp(
                 0f,
                 1f,
-                pathLength / Settings.characterSpeed,
+                pathLength / Settings.CharacterSpeed,
                 _Progress =>
                 {
                     MovingInfo = new CharacterMovingEventArgs(_Direction, _From, _To, _Progress, _ShredingerBlockPosWhoStopped);

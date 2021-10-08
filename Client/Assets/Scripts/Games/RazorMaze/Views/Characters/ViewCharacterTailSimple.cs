@@ -104,7 +104,7 @@ namespace Games.RazorMaze.Views.Characters
             yield return Coroutines.Lerp(
                 0f,
                 1f,
-                distance / ModelSettings.characterSpeed,
+                distance / ModelSettings.CharacterSpeed,
                 _Progress =>
                 {
                     m_Tail.A = Vector2.Lerp(startA, finishA, _Progress);

@@ -80,7 +80,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         {
             yield return Coroutines.Delay(
                 () => SwitchStage(_Info, _Stage),
-                Settings.shredingerBlockProceedTime);
+                Settings.ShredingerBlockProceedTime);
         }
 
         private void SwitchStage(IMazeItemProceedInfo _Info, int _Stage)

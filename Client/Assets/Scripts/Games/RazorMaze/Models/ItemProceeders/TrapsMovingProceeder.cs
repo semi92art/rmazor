@@ -55,7 +55,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     continue;
                 CheckForCharacterDeath(info, info.CurrentPosition.ToVector2());
                 info.PauseTimer += Time.deltaTime;
-                if (info.PauseTimer < Settings.movingItemsPause)
+                if (info.PauseTimer < Settings.MovingItemsPause)
                     continue;
                 info.PauseTimer = 0;
                 info.ProceedingStage = StageMoving;
@@ -107,19 +107,19 @@ namespace Games.RazorMaze.Models.ItemProceeders
         {
             _Info.IsMoving = true;
             InvokeMoveStarted(new MazeItemMoveEventArgs(
-                _Info, _From, _To, Settings.movingItemsSpeed,0, _Info.BusyPositions));
+                _Info, _From, _To, Settings.MovingItemsSpeed,0, _Info.BusyPositions));
             float distance = V2Int.Distance(_From, _To);
             yield return Coroutines.Lerp(
                 0f,
                 1f,
-                distance / Settings.movingItemsSpeed,
+                distance / Settings.MovingItemsSpeed,
                 _Progress =>
                 {
                     var precisePosition = V2Int.Lerp(_From, _To, _Progress);
                     _Info.CurrentPosition = V2Int.Round(precisePosition);
                     CheckForCharacterDeath(_Info, precisePosition);
                     InvokeMoveContinued(new MazeItemMoveEventArgs(
-                        _Info, _From, _To, Settings.movingItemsSpeed, _Progress, _Info.BusyPositions));
+                        _Info, _From, _To, Settings.MovingItemsSpeed, _Progress, _Info.BusyPositions));
                 },
                 GameTicker,
                 (_Stopped, _Progress) =>
@@ -129,7 +129,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     _Info.IsMoving = false;
                     _OnFinish?.Invoke();
                     InvokeMoveFinished(new MazeItemMoveEventArgs(
-                        _Info, _From, _To, Settings.movingItemsSpeed,progress, _Info.BusyPositions, _Stopped));
+                        _Info, _From, _To, Settings.MovingItemsSpeed,progress, _Info.BusyPositions, _Stopped));
                 });
         }
         

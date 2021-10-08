@@ -100,11 +100,11 @@ namespace Games.RazorMaze.Models.ItemProceeders
             switch (_Stage)
             {
                 case StagePreReact:
-                    return Settings.trapPreReactTime;
+                    return Settings.TrapPreReactTime;
                 case StageReact:
-                    return Settings.trapReactTime;
+                    return Settings.TrapReactTime;
                 case StageAfterReact:
-                    return Settings.trapAfterReactTime;
+                    return Settings.TrapAfterReactTime;
                 default: return 0;
             }
         }

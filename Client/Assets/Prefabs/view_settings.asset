@@ -20,3 +20,4 @@ MonoBehaviour:
   blockItemsCount: 100
   pathItemsCount: 300
   startPathItemFilledOnStart: 0
+  mazeRotationSpeed: 5

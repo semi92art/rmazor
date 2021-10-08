@@ -159,8 +159,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
             V2Int _To)
         {
             float speed = _Info.Type == EMazeItemType.GravityBlock
-                ? Settings.gravityBlockSpeed
-                : Settings.gravityTrapSpeed;
+                ? Settings.GravityBlockSpeed
+                : Settings.GravityTrapSpeed;
             var busyPositions = _Info.BusyPositions;
             InvokeMoveStarted(new MazeItemMoveEventArgs(
                 _Info, _From, _To, speed, 0, busyPositions));

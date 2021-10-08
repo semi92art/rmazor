@@ -116,7 +116,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 _Info.CurrentPosition, 
                 to,
                 _Info.Direction,
-                Settings.turretProjectileSpeed * 0.1f,
+                Settings.TurretProjectileSpeed * 0.1f,
                 _PreShoot));
         }
         
@@ -143,9 +143,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
             switch (_Stage)
             {
                 case 0:
-                    return Settings.turretPreShootInterval;
+                    return Settings.TurretPreShootInterval;
                 case 1:
-                    return Settings.turretShootInterval;
+                    return Settings.TurretShootInterval;
                 default: return 0;
             }
         }

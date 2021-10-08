@@ -96,9 +96,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
             switch (_Stage)
             {
                 case StageIdle:
-                    return Settings.trapIncreasingIdleTime;
+                    return Settings.TrapIncreasingIdleTime;
                 case StageIncreased:
-                    return Settings.trapIncreasingIncreasedTime;
+                    return Settings.TrapIncreasingIncreasedTime;
                 default: return 0;
             }
         }
