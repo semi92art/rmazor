@@ -30,7 +30,7 @@ namespace Games.RazorMaze.Views
         public IViewCharacter Character { get; }
         public IViewMazeCommon Common { get; }
         public IViewMazeBackground Background { get; }
-        public IViewRotation Rotation { get; }
+        public IViewMazeRotation MazeRotation { get; }
         public IViewMazePathItemsGroup PathItemsGroup { get; }
         public IViewMazeMovingItemsGroup MovingItemsGroup { get; }
         public IViewMazeTrapsReactItemsGroup TrapsReactItemsGroup { get; }
@@ -50,7 +50,7 @@ namespace Games.RazorMaze.Views
             IViewCharacter _Character,
             IViewMazeCommon _Common,
             IViewMazeBackground _Background,
-            IViewRotation _Rotation,
+            IViewMazeRotation _MazeRotation,
             IViewMazePathItemsGroup _PathItemsGroup,
             IViewMazeMovingItemsGroup _MovingItemsGroup,
             IViewMazeTrapsReactItemsGroup _TrapsReactItemsGroup,
@@ -68,7 +68,7 @@ namespace Games.RazorMaze.Views
             Character = _Character;
             Common = _Common;
             Background = _Background;
-            Rotation = _Rotation;
+            MazeRotation = _MazeRotation;
             PathItemsGroup = _PathItemsGroup;
             MovingItemsGroup = _MovingItemsGroup;
             TrapsReactItemsGroup = _TrapsReactItemsGroup;
@@ -172,7 +172,7 @@ namespace Games.RazorMaze.Views
                 InputConfigurator,
                 Character,
                 Background,
-                Rotation,
+                MazeRotation,
                 PathItemsGroup,
                 MovingItemsGroup,
                 TrapsReactItemsGroup,

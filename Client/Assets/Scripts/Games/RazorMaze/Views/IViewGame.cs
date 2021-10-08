@@ -24,7 +24,7 @@ namespace Games.RazorMaze.Views
         IViewCharacter                     Character { get; }
         IViewMazeCommon                    Common { get; }
         IViewMazeBackground                Background { get; }
-        IViewRotation                      Rotation { get; }
+        IViewMazeRotation                      MazeRotation { get; }
         IViewMazePathItemsGroup            PathItemsGroup { get; }
         IViewMazeMovingItemsGroup          MovingItemsGroup { get; }
         IViewMazeTrapsReactItemsGroup      TrapsReactItemsGroup { get; }

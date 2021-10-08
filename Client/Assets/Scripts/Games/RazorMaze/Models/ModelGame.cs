@@ -83,7 +83,7 @@ namespace Games.RazorMaze.Models
         public void PreInit()
         {
             Data.MazeInfoSet                           += PathItemsProceeder.OnMazeInfoSet;
-            MazeRotation.RotationFinished              += MazeOnRotationFinished;
+            MazeRotation.RotationFinishedInternal              += MazeOnRotationFinishedInternal;
             Character.AliveOrDeath                     += OnCharacterAliveOrDeath;
             Character.CharacterMoveStarted             += CharacterOnMoveStarted;
             Character.CharacterMoveContinued           += CharacterOnMoveContinued;
@@ -131,7 +131,7 @@ namespace Games.RazorMaze.Models
 
         private void AllPathsProceededEvent() => LevelStaging.FinishLevel();
 
-        private void MazeOnRotationFinished(MazeRotateDirection _Direction, MazeOrientation _Orientation)
+        private void MazeOnRotationFinishedInternal(MazeRotateDirection _Direction, MazeOrientation _Orientation)
         {
             InputScheduler.UnlockRotation(true);
             GravityItemsProceeder.OnMazeOrientationChanged();
@@ -196,7 +196,7 @@ namespace Games.RazorMaze.Models
                     dir = MazeRotateDirection.CounterClockwise; break;
                 default: throw new SwitchCaseNotImplementedException(_Command);
             }
-            MazeRotation.Rotate(dir);
+            MazeRotation.StartRotation(dir);
         }
         
         private void InputSchedulerOnOtherCommand(int _Command, object[] _Args)

@@ -15,7 +15,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
         #region api
 
         public bool Locked { get; set; }
-        public event IntHandler Command;
+        public event IntHandlerWithArgs Command;
         public event NoArgsHandler Initialized;
 
         public void Init()
@@ -55,7 +55,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
                 commandKey = EInputCommand.UnloadLevel;
                 
             if (commandKey.HasValue)
-                Command.Invoke((int)commandKey.Value);
+                Command.Invoke((int)commandKey.Value, null);
         }
 
         #endregion

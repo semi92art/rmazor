@@ -9,9 +9,9 @@ namespace Games.RazorMaze.Models
     public interface IModelMazeRotation
     {
         event MazeOrientationHandler RotationStarted;
-        event FloatHandler Rotation;
-        event MazeOrientationHandler RotationFinished;
-        void Rotate(MazeRotateDirection _Direction);
+        event MazeOrientationHandler RotationFinishedInternal;
+        void StartRotation(MazeRotateDirection _Direction);
+        void OnRotationFinished(MazeRotateDirection _Direction, MazeOrientation _Orientation);
     }
     
     public class ModelMazeRotation : IModelMazeRotation
@@ -30,31 +30,21 @@ namespace Games.RazorMaze.Models
             GameTicker = _GameTicker;
         }
         
-        
         public event MazeOrientationHandler RotationStarted;
-        public event FloatHandler Rotation;
-        public event MazeOrientationHandler RotationFinished;
+        public event MazeOrientationHandler RotationFinishedInternal;
         
         
-        public void Rotate(MazeRotateDirection _Direction)
+        public void StartRotation(MazeRotateDirection _Direction)
         {
             if (!Data.ProceedingControls)
                 return;
-            int orient = (int) Data.Orientation;
-            int addict = _Direction == MazeRotateDirection.Clockwise ? 1 : -1;
-            orient = MathUtils.ClampInverse(orient + addict, 0, 3);
-            Data.Orientation = (MazeOrientation) orient;
             RotationStarted?.Invoke(_Direction, Data.Orientation);
-            Coroutines.Run(Coroutines.Lerp(
-                0f, 
-                1f, 
-                1 / Settings.mazeRotateSpeed, 
-                _Val => Rotation?.Invoke(_Val),
-                GameTicker, 
-                (_Stopped, _Progress) =>
-                {
-                    RotationFinished?.Invoke(_Direction, Data.Orientation);
-                }));
+        }
+
+        public void OnRotationFinished(MazeRotateDirection _Direction, MazeOrientation _Orientation)
+        {
+            Data.Orientation = _Orientation;
+            RotationFinishedInternal?.Invoke(_Direction, _Orientation);
         }
     }
 }

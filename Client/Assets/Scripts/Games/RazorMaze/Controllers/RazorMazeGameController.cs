@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Entities;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
@@ -74,35 +73,34 @@ namespace Games.RazorMaze.Controllers
             var character                                       = Model.Character;
             var levelStaging                                    = Model.LevelStaging;
             
-            pathItemsProceeder.PathProceedEvent                 += DataOnPathProceedEvent;
+            pathItemsProceeder.PathProceedEvent                 += View.PathItemsGroup.OnPathProceed;
             
-            rotation.RotationStarted                            += OnMazeRotationStarted;
-            rotation.Rotation                                   += OnMazeRotation;
-            rotation.RotationFinished                           += OnMazeRotationFinished;
+            rotation.RotationStarted                            += View.MazeRotation.StartRotation;
+            View.MazeRotation.RotationFinished                  += Model.MazeRotation.OnRotationFinished;
             
             trapsMovingProceeder.MazeItemMoveStarted            += OnMazeItemMoveStarted;
-            trapsMovingProceeder.MazeItemMoveContinued          += OnMazeItemMoveContinued;
+            trapsMovingProceeder.MazeItemMoveContinued          += View.MovingItemsGroup.OnMazeItemMoveContinued;
             trapsMovingProceeder.MazeItemMoveFinished           += OnMazeItemMoveFinished;
 
             gravityItemsProceeder.MazeItemMoveStarted           += OnMazeItemMoveStarted;
-            gravityItemsProceeder.MazeItemMoveContinued         += OnMazeItemMoveContinued;
+            gravityItemsProceeder.MazeItemMoveContinued         += View.MovingItemsGroup.OnMazeItemMoveContinued;
             gravityItemsProceeder.MazeItemMoveFinished          += OnMazeItemMoveFinished;
             
-            trapsReactProceeder.TrapReactStageChanged           += OnMazeTrapReactStageChanged;
-            trapsIncreasingProceeder.TrapIncreasingStageChanged += OnMazeTrapIncreasingStageChanged;
-            turretsProceeder.TurretShoot                        += OnTurretShoot;
-            portalsProceeder.PortalEvent                        += OnPortalEvent;
-            shredingerProceeder.ShredingerBlockEvent            += OnShredingerBlockEvent;
-            springboardProceeder.SpringboardEvent               += OnSpringboardEvent;
+            trapsReactProceeder.TrapReactStageChanged           += View.TrapsReactItemsGroup.OnMazeTrapReactStageChanged;
+            trapsIncreasingProceeder.TrapIncreasingStageChanged += View.TrapsIncItemsGroup.OnMazeTrapIncreasingStageChanged;
+            turretsProceeder.TurretShoot                        += View.TurretsGroup.OnTurretShoot;
+            portalsProceeder.PortalEvent                        += View.PortalsGroup.OnPortalEvent;
+            shredingerProceeder.ShredingerBlockEvent            += View.ShredingerBlocksGroup.OnShredingerBlockEvent;
+            springboardProceeder.SpringboardEvent               += View.SpringboardItemsGroup.OnSpringboardEvent;
 
-            character.AliveOrDeath                              += OnCharacterAliveOrDeath;
+            character.AliveOrDeath                              += View.Character.OnRevivalOrDeath;
             character.CharacterMoveStarted                      += View.OnCharacterMoveStarted;
             character.CharacterMoveContinued                    += View.OnCharacterMoveContinued;
             character.CharacterMoveFinished                     += View.OnCharacterMoveFinished;
-            character.PositionSet                               += OnCharacterPositionSet;
+            character.PositionSet                               += View.Character.OnPositionSet;
             
             levelStaging.LevelStageChanged                      += View.OnLevelStageChanged;
-            View.InputConfigurator.Command                      += OnInputCommand;
+            View.InputConfigurator.Command                      += Model.InputScheduler.AddCommand;
             
             RazorMazeUtils.CallInits<IPreInit>(GetProceeders(),
                 _PreInitedArray =>
@@ -140,30 +138,11 @@ namespace Games.RazorMaze.Controllers
 
         #region event methods
         
-        private void DataOnPathProceedEvent(V2Int _PathItem) => View.PathItemsGroup.OnPathProceed(_PathItem);
-        private void OnInputCommand(int _Value)
-        {
-            Model.InputScheduler.AddCommand(_Value);
-        }
-
-        private void OnCharacterAliveOrDeath(bool _Alive) => View.Character.OnRevivalOrDeath(_Alive);
-        
-        private void OnCharacterPositionSet(V2Int _Value) => View.Character.OnPositionSet(_Value);
-
-        private void OnMazeRotationStarted(MazeRotateDirection _Direction, MazeOrientation _Orientation) => View.Rotation.StartRotation(_Direction, _Orientation);
-        private void OnMazeRotation(float _Progress) => View.Rotation.Rotate(_Progress);
-        private void OnMazeRotationFinished(MazeRotateDirection _Direction, MazeOrientation _Orientation) => View.Rotation.FinishRotation();
-        
         private void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
         {
             View.MovingItemsGroup.OnMazeItemMoveStarted(_Args);
             if (_Args.Info.Type == EMazeItemType.GravityBlock)
                 View.InputConfigurator.Locked = true;
-        }
-
-        private void OnMazeItemMoveContinued(MazeItemMoveEventArgs _Args)
-        {
-            View.MovingItemsGroup.OnMazeItemMoveContinued(_Args);
         }
 
         private void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
@@ -173,13 +152,6 @@ namespace Games.RazorMaze.Controllers
                 View.InputConfigurator.Locked = false;
         }
 
-        private void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args) => View.TrapsReactItemsGroup.OnMazeTrapReactStageChanged(_Args);
-        private void OnMazeTrapIncreasingStageChanged(MazeItemTrapIncreasingEventArgs _Args) => View.TrapsIncItemsGroup.OnMazeTrapIncreasingStageChanged(_Args);
-        private void OnTurretShoot(TurretShotEventArgs _Args) => View.TurretsGroup.OnTurretShoot(_Args);
-        private void OnPortalEvent(PortalEventArgs _Args) => View.PortalsGroup.OnPortalEvent(_Args);
-        private void OnShredingerBlockEvent(ShredingerBlockArgs _Args) => View.ShredingerBlocksGroup.OnShredingerBlockEvent(_Args);
-        private void OnSpringboardEvent(SpringboardEventArgs _Args) => View.SpringboardItemsGroup.OnSpringboardEvent(_Args);
-        
         #endregion
         
         #region engine methods
@@ -199,35 +171,34 @@ namespace Games.RazorMaze.Controllers
             var character                                       = Model.Character;
             var levelStaging                                    = Model.LevelStaging;
             
-            pathItemsProceeder.PathProceedEvent                 -= DataOnPathProceedEvent;
+            pathItemsProceeder.PathProceedEvent                 -= View.PathItemsGroup.OnPathProceed;
             
-            rotation.RotationStarted                            -= OnMazeRotationStarted;
-            rotation.Rotation                                   -= OnMazeRotation;
-            rotation.RotationFinished                           -= OnMazeRotationFinished;
+            rotation.RotationStarted                            -= View.MazeRotation.StartRotation;
+            rotation.RotationFinishedInternal                           -= Model.MazeRotation.OnRotationFinished;
             
             movingItemsProceeder.MazeItemMoveStarted            -= OnMazeItemMoveStarted;
-            movingItemsProceeder.MazeItemMoveContinued          -= OnMazeItemMoveContinued;
+            movingItemsProceeder.MazeItemMoveContinued          -= View.MovingItemsGroup.OnMazeItemMoveContinued;
             movingItemsProceeder.MazeItemMoveFinished           -= OnMazeItemMoveFinished;
 
             gravityItemsProceeder.MazeItemMoveStarted           -= OnMazeItemMoveStarted;
-            gravityItemsProceeder.MazeItemMoveContinued         -= OnMazeItemMoveContinued;
+            gravityItemsProceeder.MazeItemMoveContinued         -= View.MovingItemsGroup.OnMazeItemMoveContinued;
             gravityItemsProceeder.MazeItemMoveFinished          -= OnMazeItemMoveFinished;
             
-            trapsReactProceeder.TrapReactStageChanged           -= OnMazeTrapReactStageChanged;
-            trapsIncreasingProceeder.TrapIncreasingStageChanged -= OnMazeTrapIncreasingStageChanged;
-            turretsProceeder.TurretShoot                        -= OnTurretShoot;
-            portalsProceeder.PortalEvent                        -= OnPortalEvent;
-            shredingerProceeder.ShredingerBlockEvent            -= OnShredingerBlockEvent;
-            springboardProceeder.SpringboardEvent               -= OnSpringboardEvent;
+            trapsReactProceeder.TrapReactStageChanged           -= View.TrapsReactItemsGroup.OnMazeTrapReactStageChanged;
+            trapsIncreasingProceeder.TrapIncreasingStageChanged -= View.TrapsIncItemsGroup.OnMazeTrapIncreasingStageChanged;
+            turretsProceeder.TurretShoot                        -= View.TurretsGroup.OnTurretShoot;
+            portalsProceeder.PortalEvent                        -= View.PortalsGroup.OnPortalEvent;
+            shredingerProceeder.ShredingerBlockEvent            -= View.ShredingerBlocksGroup.OnShredingerBlockEvent;
+            springboardProceeder.SpringboardEvent               -= View.SpringboardItemsGroup.OnSpringboardEvent;
 
-            character.AliveOrDeath                              -= OnCharacterAliveOrDeath;
+            character.AliveOrDeath                              -= View.Character.OnRevivalOrDeath;
             character.CharacterMoveStarted                      -= View.OnCharacterMoveStarted;
             character.CharacterMoveContinued                    -= View.OnCharacterMoveContinued;
             character.CharacterMoveFinished                     -= View.OnCharacterMoveFinished;
-            character.PositionSet                               -= OnCharacterPositionSet;
+            character.PositionSet                               -= View.Character.OnPositionSet;
             
             levelStaging.LevelStageChanged                      -= View.OnLevelStageChanged;
-            View.InputConfigurator.Command                      -= OnInputCommand;
+            View.InputConfigurator.Command                      -= Model.InputScheduler.AddCommand;
         }
         
         private List<object> GetProceeders()

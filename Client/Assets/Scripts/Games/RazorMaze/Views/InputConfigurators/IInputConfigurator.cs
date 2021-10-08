@@ -2,7 +2,7 @@
 {
     public interface IInputConfigurator : IInit
     {
-        event IntHandler Command; 
+        event IntHandlerWithArgs Command; 
         bool Locked { get; set; }
     }
 }
