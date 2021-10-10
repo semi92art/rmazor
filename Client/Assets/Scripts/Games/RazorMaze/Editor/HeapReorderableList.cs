@@ -155,7 +155,6 @@ namespace Games.RazorMaze.Editor
         public void SetupLoadedLevel(int _Index)
         {
             m_LoadedIndex = _Index;
-            var element = m_List.list[_Index] as MazeInfo;
         }
 
         private void OnDrawElementCallback(Rect _Rect, int _Index, bool _IsActive, bool _IsFocused)
