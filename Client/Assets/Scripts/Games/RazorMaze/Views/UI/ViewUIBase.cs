@@ -13,11 +13,10 @@ namespace Games.RazorMaze.Views.UI
     
     public abstract class ViewUIBase : IViewUI, IUpdateTick
     {
-
         #region nonpublic members
         
-        protected IGameDialogViewer DialogViewer;
         protected Canvas Canvas;
+        protected IGameDialogViewer DialogViewer;
         protected readonly IManagersGetter Managers;
         protected readonly IUITicker m_UITicker;
         
@@ -87,7 +86,5 @@ namespace Games.RazorMaze.Views.UI
         public abstract void OnLevelStageChanged(LevelStageArgs _Args);
 
         #endregion
-
-
     }
 }

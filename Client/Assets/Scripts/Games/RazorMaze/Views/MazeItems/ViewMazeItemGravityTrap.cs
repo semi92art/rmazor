@@ -14,6 +14,7 @@ using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
 using UnityEngine;
+using UnityEngine.Events;
 using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
@@ -21,7 +22,10 @@ namespace Games.RazorMaze.Views.MazeItems
     public interface IViewMazeItemGravityTrap : IViewMazeItemMovingBlock { }
     
     public class ViewMazeItemGravityTrap : 
-        ViewMazeItemMovingBase, IViewMazeItemGravityTrap, IUpdateTick, IOnBackgroundColorChanged
+        ViewMazeItemMovingBase, 
+        IViewMazeItemGravityTrap,
+        IUpdateTick,
+        IOnBackgroundColorChanged
     {
         #region constants
 
@@ -39,19 +43,18 @@ namespace Games.RazorMaze.Views.MazeItems
         private Vector2 m_Position;
         private Transform m_MaceTr;
         private Color m_BackColor;
+        
+        
 
         #endregion
         
         #region shapes
 
-        protected override object[] Shapes =>
-            new object[] {m_OuterDisc, m_InnerDisc}
-                .Concat(m_Cones)
-                .ToArray();
+        protected override object[] DefaultColorShapes => new object[] {m_OuterDisc}.Concat(m_Cones).ToArray();
         private Disc m_OuterDisc;
         private Disc m_InnerDisc;
         private List<Cone> m_Cones;
-        
+
         #endregion
         
         #region inject
@@ -88,9 +91,19 @@ namespace Games.RazorMaze.Views.MazeItems
             Transitioner,
             Managers);
 
+        public override bool ActivatedInSpawnPool
+        {
+            get => base.ActivatedInSpawnPool;
+            set
+            {
+                m_InnerDisc.enabled = false;
+                base.ActivatedInSpawnPool = value;
+            }
+        }
+
         public void UpdateTick()
         {
-            if (!Initialized || !Activated)
+            if (!Initialized || !ActivatedInSpawnPool)
                 return;
             if (ProceedingStage != EProceedingStage.ActiveAndWorking)
                 return;
@@ -140,11 +153,10 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region nonpublic methods
         
-        protected override void SetShape()
+        protected override void InitShape()
         {
             Object = new GameObject("Gravity Trap");
             Object.SetParent(ContainersGetter.MazeItemsContainer.gameObject);
-            Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
 
             var go = PrefabUtilsEx.InitPrefab(
                 Object.transform, "views", "gravity_trap");
@@ -156,8 +168,12 @@ namespace Games.RazorMaze.Views.MazeItems
             
             go.transform.SetLocalPosXY(Vector2.zero);
             go.transform.localScale = Vector3.one * CoordinateConverter.GetScale() * ShapeScale;
-            
-            base.SetShape();
+        }
+
+        protected override void UpdateShape()
+        {
+            Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+            base.UpdateShape();
         }
 
         private void DoRotation()
@@ -205,32 +221,18 @@ namespace Games.RazorMaze.Views.MazeItems
                 ch.RaiseDeath();
         }
 
-        protected override void Appear(bool _Appear)
+        protected override void OnAppearStart(bool _Appear)
         {
-            AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
             if (_Appear)
                 m_InnerDisc.enabled = true;
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !Initialized,
-                () =>
-                {
-                    Transitioner.DoAppearTransitionSimple(
-                        _Appear,
-                        GameTicker,
-                        new Dictionary<object[], Func<Color>>
-                        {
-                            {new object[]{m_OuterDisc}.Concat(m_Cones).ToArray(), () => DrawingUtils.ColorLines},
-                        },
-                        Props.Position,
-                        () =>
-                        {
-                            if (!_Appear)
-                            {
-                                m_InnerDisc.enabled = false;
-                            }
-                            AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared;
-                        });
-                }));
+            base.OnAppearStart(_Appear);
+        }
+
+        protected override void OnAppearFinish(bool _Appear)
+        {
+            if (!_Appear)
+                m_InnerDisc.enabled = false;
+            base.OnAppearFinish(_Appear);
         }
 
         #endregion

@@ -1,5 +1,4 @@
 ﻿using Controllers;
-using DebugConsole;
 using Managers;
 
 namespace Entities
@@ -12,7 +11,7 @@ namespace Entities
     public interface IManagersGetter
     {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        IDebugConsoleController DebugConsole { get; }
+        DebugConsole.IDebugConsoleController Console { get; }
 #endif
         void Notify(
             SoundManagerHandler     _OnSoundManager = null,
@@ -48,7 +47,7 @@ namespace Entities
         
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
 
-        public IDebugConsoleController DebugConsole { get; } = DebugConsoleView.Instance.Controller;
+        public DebugConsole.IDebugConsoleController Console { get; } = DebugConsole.DebugConsoleView.Instance.Controller;
         
 #endif
 

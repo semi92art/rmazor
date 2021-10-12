@@ -2,7 +2,7 @@
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
-    public interface IViewMazeMovingItemsGroup : IMazeItemTypes
+    public interface IViewMazeMovingItemsGroup : IViewMazeItemGroup
     {
         void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args);
         void OnMazeItemMoveContinued(MazeItemMoveEventArgs _Args);

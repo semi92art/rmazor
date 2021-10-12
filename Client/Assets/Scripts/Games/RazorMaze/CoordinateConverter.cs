@@ -8,7 +8,7 @@ namespace Games.RazorMaze
 {
     public interface ICoordinateConverter
     {
-        void Init(V2Int _MazeSize);
+        void SetMazeSize(V2Int _MazeSize);
         float GetScale();
         Vector2 GetCenter();
         Vector2 ToLocalMazeItemPosition(V2Int _Point);
@@ -36,7 +36,7 @@ namespace Games.RazorMaze
 
         [Inject] public CoordinateConverter() => SetCenter();
 
-        public void Init(V2Int _MazeSize)
+        public void SetMazeSize(V2Int _MazeSize)
         {
             m_MazeSize = _MazeSize;
             CheckForInitialization();

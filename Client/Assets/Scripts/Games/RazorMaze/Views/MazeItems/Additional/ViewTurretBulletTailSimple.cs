@@ -3,7 +3,7 @@
 namespace Games.RazorMaze.Views.MazeItems.Additional
 {
     // TODO
-    public class TurretBulletTailSimple : ITurretBulletTail
+    public class ViewTurretBulletTailSimple : IViewTurretBulletTail
     {
         public void Init() { }
         public void ShowTail(TurretShotEventArgs _Args) { }

@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Exceptions;
+using Games.RazorMaze.Models.InputSchedulers;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views;
 
 namespace Games.RazorMaze.Models
 {
-    public interface IModelGame : IInit, IPreInit
+    public interface IModelGame : IInit, IOnLevelStageChanged
     {
         IModelData                                Data { get; }
         IModelMazeRotation                        MazeRotation { get; }
@@ -21,7 +21,7 @@ namespace Games.RazorMaze.Models
         IShredingerBlocksProceeder                ShredingerBlocksProceeder { get; }
         ISpringboardProceeder                     SpringboardProceeder { get; }
         IModelCharacter                           Character { get; }
-        ILevelStagingModel                        LevelStaging { get; }
+        IModelLevelStaging                        LevelStaging { get; }
         IInputScheduler                           InputScheduler { get; }
         IEnumerable<IMazeItemProceedInfo>         GetAllProceedInfos();
     }
@@ -30,7 +30,6 @@ namespace Games.RazorMaze.Models
     {
         #region api
         
-        public event NoArgsHandler PreInitialized;
         public event NoArgsHandler Initialized;
         
         public IModelData                         Data { get; }
@@ -45,7 +44,7 @@ namespace Games.RazorMaze.Models
         public IShredingerBlocksProceeder         ShredingerBlocksProceeder { get; }
         public ISpringboardProceeder              SpringboardProceeder { get; }
         public IModelCharacter                    Character { get; }
-        public ILevelStagingModel                 LevelStaging { get; }
+        public IModelLevelStaging                 LevelStaging { get; }
         public IInputScheduler                    InputScheduler { get; }
 
         public ModelGame(
@@ -59,7 +58,7 @@ namespace Games.RazorMaze.Models
             ITurretsProceeder                     _TurretsProceeder,
             IPortalsProceeder                     _PortalsProceeder,
             IModelCharacter                       _CharacterModel,
-            ILevelStagingModel                    _StagingModel,
+            IModelLevelStaging                    _Staging,
             IInputScheduler                       _InputScheduler,
             IShredingerBlocksProceeder            _ShredingerBlocksProceeder,
             ISpringboardProceeder                 _SpringboardProceeder)
@@ -74,64 +73,54 @@ namespace Games.RazorMaze.Models
             TurretsProceeder                      = _TurretsProceeder;
             PortalsProceeder                      = _PortalsProceeder;
             Character                             = _CharacterModel;
-            LevelStaging                          = _StagingModel;
+            LevelStaging                          = _Staging;
             InputScheduler                        = _InputScheduler;
             ShredingerBlocksProceeder             = _ShredingerBlocksProceeder;
             SpringboardProceeder                  = _SpringboardProceeder;
         }
 
-        public void PreInit()
+        public void Init()
         {
-            Data.MazeInfoSet                           += PathItemsProceeder.OnMazeInfoSet;
-            MazeRotation.RotationFinishedInternal              += MazeOnRotationFinishedInternal;
-            Character.AliveOrDeath                     += OnCharacterAliveOrDeath;
+            LevelStaging.LevelStageChanged             += OnLevelStageChanged;
+            LevelStaging.LevelStageChanged             += MazeRotation.OnLevelStageChanged;
+            MazeRotation.RotationFinishedInternal      += MazeOnRotationFinishedInternal;
             Character.CharacterMoveStarted             += CharacterOnMoveStarted;
             Character.CharacterMoveContinued           += CharacterOnMoveContinued;
-            Character.CharacterMoveFinished            += CharacterOnFinishMove; 
-            InputScheduler.MoveCommand                 += InputSchedulerOnMoveCommand;
-            InputScheduler.RotateCommand               += InputSchedulerOnRotateCommand;
-            InputScheduler.OtherCommand                += InputSchedulerOnOtherCommand;
+            Character.CharacterMoveFinished            += CharacterOnFinishMove;
             PortalsProceeder.PortalEvent               += Character.OnPortal;
             SpringboardProceeder.SpringboardEvent      += Character.OnSpringboard;
             PathItemsProceeder.AllPathsProceededEvent  += AllPathsProceededEvent;
-            LevelStaging.LevelStageChanged             += LevelStageChanged;
-            
-            var getProceedInfosItems = 
-                RazorMazeUtils.GetInterfaceOfProceeders<IGetAllProceedInfos>(GetProceeders());
+
+            var getProceedInfosItems = GetInterfaceOfProceeders<IGetAllProceedInfos>(GetProceeders());
             foreach (var item in getProceedInfosItems)
                 item.GetAllProceedInfos = GetAllProceedInfos;
-            PreInitialized?.Invoke();
+
+            Initialized?.Invoke();
         }
-        
-        public void Init()
-        {
-            Character.Initialized += () => Initialized?.Invoke();
-            Character.Init();
-        }
-        
+
         public IEnumerable<IMazeItemProceedInfo> GetAllProceedInfos()
         {
-            var itemProceeders =
-                RazorMazeUtils.GetInterfaceOfProceeders<IItemsProceeder>(GetProceeders());
+            var itemProceeders = GetInterfaceOfProceeders<IItemsProceeder>(GetProceeders());
             var result = itemProceeders
                 .SelectMany(_P => _P.ProceedInfos.Values
                     .SelectMany(_V => _V));
             return result;
         }
         
+        public void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            var proceeders = GetInterfaceOfProceeders<IOnLevelStageChanged>(GetProceeders());
+            foreach (var proceeder in proceeders)
+                proceeder.OnLevelStageChanged(_Args);
+        }
+        
         #endregion
 
         #region event methods
         
-        private void OnCharacterAliveOrDeath(bool _Alive)
-        {
-            if (!_Alive)
-                LevelStaging.FinishLevel();
-        }
-
         private void AllPathsProceededEvent() => LevelStaging.FinishLevel();
 
-        private void MazeOnRotationFinishedInternal(MazeRotateDirection _Direction, MazeOrientation _Orientation)
+        private void MazeOnRotationFinishedInternal(MazeRotationEventArgs _Args)
         {
             InputScheduler.UnlockRotation(true);
             GravityItemsProceeder.OnMazeOrientationChanged();
@@ -144,8 +133,7 @@ namespace Games.RazorMaze.Models
 
         private void CharacterOnMoveContinued(CharacterMovingEventArgs _Args)
         {
-            var proceeders = 
-                RazorMazeUtils.GetInterfaceOfProceeders<ICharacterMoveContinued>(GetProceeders());
+            var proceeders = GetInterfaceOfProceeders<ICharacterMoveContinued>(GetProceeders());
             foreach (var proceeder in proceeders)
                 proceeder.OnCharacterMoveContinued(_Args);
         }
@@ -156,82 +144,16 @@ namespace Games.RazorMaze.Models
             ShredingerBlocksProceeder.OnCharacterMoveFinished(_Args);
         }
 
-        private void LevelStageChanged(LevelStageArgs _Args)
-        {
-            var proceeders = 
-                RazorMazeUtils.GetInterfaceOfProceeders<IOnLevelStageChanged>(GetProceeders());
-            foreach (var proceeder in proceeders)
-                proceeder.OnLevelStageChanged(_Args);
-        }
-        
         #endregion
         
         #region nonpublic methods
-        
-        private void InputSchedulerOnMoveCommand(int _Command, object[] _Args)
-        {
-            EMazeMoveDirection dir = default;
-            switch (_Command)
-            {
-                case (int)EInputCommand.MoveUp:    dir = EMazeMoveDirection.Up;    break;
-                case (int)EInputCommand.MoveDown:  dir = EMazeMoveDirection.Down;  break;
-                case (int)EInputCommand.MoveLeft:  dir = EMazeMoveDirection.Left;  break;
-                case (int)EInputCommand.MoveRight: dir = EMazeMoveDirection.Right; break;
-                case (int)EInputCommand.RotateClockwise:
-                case (int)EInputCommand.RotateCounterClockwise:
-                    break;
-                default: throw new SwitchCaseNotImplementedException(_Command);
-            }
-            Character.Move(dir);
-        }
-        
-        private void InputSchedulerOnRotateCommand(int _Command, object[] _Args)
-        {
-            MazeRotateDirection dir;
-            switch (_Command)
-            {
-                case (int)EInputCommand.RotateClockwise:       
-                    dir = MazeRotateDirection.Clockwise;        break;
-                case (int)EInputCommand.RotateCounterClockwise:
-                    dir = MazeRotateDirection.CounterClockwise; break;
-                default: throw new SwitchCaseNotImplementedException(_Command);
-            }
-            MazeRotation.StartRotation(dir);
-        }
-        
-        private void InputSchedulerOnOtherCommand(int _Command, object[] _Args)
-        {
-            switch (_Command)
-            {
-                case (int) EInputCommand.LoadLevel:
-                    LevelStaging.LoadLevel(Data.Info, Data.LevelIndex);
-                    break;
-                case (int)EInputCommand.ReadyToContinueLevel:
-                    LevelStaging.ReadyToContinueLevel();
-                    break;
-                case (int)EInputCommand.ContinueLevel:
-                    LevelStaging.StartOrContinueLevel();
-                    break;
-                case (int)EInputCommand.FinishLevel:
-                    LevelStaging.FinishLevel();
-                    break;
-                case (int)EInputCommand.PauseLevel:
-                    LevelStaging.PauseLevel();
-                    break;
-                case (int)EInputCommand.UnloadLevel:
-                    LevelStaging.UnloadLevel();
-                    break;
-                default:
-                    throw new SwitchCaseNotImplementedException(_Command);
-            }
-        }
-        
+
         private List<object> GetProceeders()
         {
             var result = new List<object>
             {
-                Character,
                 PathItemsProceeder,
+                Character,
                 TrapsMovingProceeder,
                 GravityItemsProceeder,
                 TrapsReactProceeder,
@@ -239,11 +161,19 @@ namespace Games.RazorMaze.Models
                 TurretsProceeder,
                 PortalsProceeder,
                 ShredingerBlocksProceeder,
-                SpringboardProceeder
+                SpringboardProceeder,
+                InputScheduler,
+                LevelStaging,
+                MazeRotation
             }.Where(_Proceeder => _Proceeder != null)
                 .ToList();
             return result;
         } 
+        
+        private static List<T> GetInterfaceOfProceeders<T>(IEnumerable<object> _Proceeders) where T : class
+        {
+            return _Proceeders.Where(_Proceeder => _Proceeder is T).Cast<T>().ToList();
+        }
 
         #endregion
     }

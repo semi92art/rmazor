@@ -2,12 +2,10 @@
 
 namespace Games.RazorMaze.Views.Rotation
 {
-
-    
-    public interface IViewMazeRotation : IInit
+    public interface IViewMazeRotation : IInit, IOnLevelStageChanged
     {
         event FloatHandler RotationContinued;
         event MazeOrientationHandler RotationFinished;
-        void StartRotation(MazeRotateDirection _Direction, MazeOrientation _Orientation);
+        void StartRotation(MazeRotationEventArgs _Args);
     }
 }

@@ -48,7 +48,6 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
 
         public override void InitPathItems(MazeInfo _Info, SpawnPool<IViewMazeItemPath> _PathPool)
         {
-            CoordinateConverter.Init(_Info.Size);
             foreach (var pathItemPos in _Info.Path)
             {
                 var props = new ViewMazeItemProps
@@ -63,9 +62,8 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
             }
         }
 
-        public override void InitBlockItems(MazeInfo _Info, Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> _BlockPools)
+        public override void InitAndActivateBlockItems(MazeInfo _Info, Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> _BlockPools)
         {
-            CoordinateConverter.Init(_Info.Size);
             foreach (var mazeItem in _Info.MazeItems.Where(_Item => _Item.Type != EMazeItemType.Block))
             {
                 var props = new ViewMazeItemProps

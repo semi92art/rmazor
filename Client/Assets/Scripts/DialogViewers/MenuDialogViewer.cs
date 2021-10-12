@@ -17,7 +17,7 @@ namespace DialogViewers
         void AddNotDialogItem(RectTransform _Item, MenuUiCategory _Categories);
     }
     
-    public class MainMenuDialogViewer : DialogViewerBase, IMenuDialogViewer
+    public class MenuDialogViewer : DialogViewerBase, IMenuDialogViewer
     {
         #region nonpublic members
 
@@ -81,7 +81,7 @@ namespace DialogViewers
                     RtrLites.FullFill),
                 "dialog_viewers",
                 "main_menu_viewer");
-            var result = go.GetComponent<MainMenuDialogViewer>();
+            var result = go.GetComponent<MenuDialogViewer>();
             result.Managers = _Managers;
             return result;
         }

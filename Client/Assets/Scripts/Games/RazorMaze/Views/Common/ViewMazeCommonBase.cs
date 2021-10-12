@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Games.RazorMaze.Views.Common
 {
-    public abstract class ViewMazeCommonBase : IViewMazeCommon, IUpdateTick
+    public abstract class ViewMazeCommonBase : IViewMazeCommon
     {
         #region inject
 
@@ -40,28 +40,13 @@ namespace Games.RazorMaze.Views.Common
         
         #region api
         
-        public event NoArgsHandler GameLoopUpdate;
         public event NoArgsHandler Initialized;
         public abstract List<IViewMazeItem> MazeItems { get; }
-
-
-        public virtual void Init()
-        {
-            ContainersGetter.MazeItemsContainer.SetLocalPosXY(Vector2.zero);
-            ContainersGetter.MazeItemsContainer.PlusLocalPosY(CoordinateConverter.GetScale() * 0.5f);
-            Initialized?.Invoke();
-        }
-
-        public virtual void UpdateTick()
-        {
-            GameLoopUpdate?.Invoke();
-        }
-
+        public virtual void Init() => Initialized?.Invoke();
         public abstract IViewMazeItem GetItem(IMazeItemProceedInfo _Info);
         public virtual T GetItem<T>(IMazeItemProceedInfo _Info)  where T : IViewMazeItem => (T) GetItem(_Info);
+        public abstract void OnLevelStageChanged(LevelStageArgs _Args);
 
         #endregion
-
-
     }
 }

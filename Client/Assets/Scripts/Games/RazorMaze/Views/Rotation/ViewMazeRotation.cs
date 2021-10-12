@@ -20,21 +20,24 @@ namespace Games.RazorMaze.Views.Rotation
         private ViewSettings ViewSettings { get; }
         private IContainersGetter ContainersGetter { get; }
         private IGameTicker GameTicker { get; }
+        private IModelGame Model { get; }
 
         public ViewMazeRotation(
             ViewSettings _ViewSettings,
             IContainersGetter _ContainersGetter, 
-            IGameTicker _GameTicker)
+            IGameTicker _GameTicker,
+            IModelGame _Model)
         {
             ViewSettings = _ViewSettings;
             ContainersGetter = _ContainersGetter;
             GameTicker = _GameTicker;
+            Model = _Model;
         }
         
         #endregion
 
         #region api
-
+        
         public override event FloatHandler RotationContinued;
         public override event MazeOrientationHandler RotationFinished;
 
@@ -45,42 +48,60 @@ namespace Games.RazorMaze.Views.Rotation
             base.Init();
         }
 
-        public override void StartRotation(MazeRotateDirection _Direction, MazeOrientation _Orientation)
+        public override void StartRotation(MazeRotationEventArgs _Args)
         {
-            Coroutines.Run(RotationCoroutine(_Direction, _Orientation));
+            Coroutines.Run(RotationCoroutine(_Args));
+        }
+
+        public override void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+
         }
 
         #endregion
 
         #region nonpublic methods
 
-        private IEnumerator RotationCoroutine(
-            MazeRotateDirection _Direction,
-            MazeOrientation _Orientation)
+        private IEnumerator RotationCoroutine(MazeRotationEventArgs _Args)
         {
-            float startAngle = GetAngleByOrientation(_Orientation);
-            float dirCoeff = _Direction == MazeRotateDirection.Clockwise ? -1 : 1;
-            const float skidAngle = 5f;
+            const float skidAngle = 3f;
+            float startAngle = GetAngleByOrientation(_Args.CurrentOrientation);
+            float dirCoeff = _Args.Direction == MazeRotateDirection.Clockwise ? -1 : 1;
+            float rotAngDist = GetRotationAngleDistance(_Args);
             float realSkidAngle = skidAngle * dirCoeff;
-            float endAngle = startAngle + 90f * dirCoeff;
+            float endAngle = startAngle + rotAngDist * dirCoeff;
             
             yield return Coroutines.Lerp(
                 startAngle, 
                 endAngle + realSkidAngle, 
-                1 / ViewSettings.MazeRotationSpeed,
+                rotAngDist / (90f * ViewSettings.MazeRotationSpeed),
                 _Angle => m_Rb.SetRotation(_Angle),
                 GameTicker, 
                 (_, __) =>
                 {
-                    var nextOrientation = GetNextOrientation(_Direction, _Orientation);
-                    RotationFinished?.Invoke(_Direction, nextOrientation);
+                    RotationFinished?.Invoke(_Args);
                     Coroutines.Run(Coroutines.Lerp(
                         endAngle + realSkidAngle,
                         endAngle,
-                        1 / ViewSettings.MazeRotationSpeed,
+                        1 / (ViewSettings.MazeRotationSpeed * 2f),
                         _Angle => m_Rb.SetRotation(_Angle),
                         GameTicker));
                 });
+        }
+
+        private float GetRotationAngleDistance(MazeRotationEventArgs _Args)
+        {
+            var dir = _Args.Direction;
+            var from = (int)_Args.CurrentOrientation;
+            var to = (int)_Args.NextOrientation;
+
+            if (from == to)
+                return 0f;
+            if (dir == MazeRotateDirection.Clockwise && to < from)
+                return 90f * (4 - from + to);
+            if (dir == MazeRotateDirection.CounterClockwise && to > from)
+                return 90f * (4 - to + from);
+            return 90f * Mathf.Abs(to - from);
         }
 
         #endregion

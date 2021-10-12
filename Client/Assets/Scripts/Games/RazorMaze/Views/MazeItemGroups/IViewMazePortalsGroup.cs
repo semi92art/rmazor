@@ -2,7 +2,9 @@
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
-    public interface IViewMazePortalsGroup : IOnLevelStageChanged, IMazeItemTypes
+    public interface IViewMazePortalsGroup :
+        IOnLevelStageChanged,
+        IViewMazeItemGroup
     {
         void OnPortalEvent(PortalEventArgs _Args);
     }

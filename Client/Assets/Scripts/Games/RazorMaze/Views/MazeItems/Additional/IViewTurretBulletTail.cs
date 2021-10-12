@@ -2,7 +2,7 @@
 
 namespace Games.RazorMaze.Views.MazeItems.Additional
 {
-    public interface ITurretBulletTail
+    public interface IViewTurretBulletTail
     {
         void Init();
         void ShowTail(TurretShotEventArgs _Args);

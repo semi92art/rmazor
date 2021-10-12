@@ -2,6 +2,7 @@
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.MazeItems;
 using UnityEngine;
 
 namespace Games.RazorMaze.Views.Characters
@@ -32,23 +33,17 @@ namespace Games.RazorMaze.Views.Characters
         
         #region api
         
-        public event NoArgsHandler Initialized;
+        
+        public EAppearingState AppearingState { get; protected set; }
         public virtual bool Activated { get; set; }
 
-        public virtual void Init() => Initialized?.Invoke();
         public abstract void OnCharacterMoveStarted(CharacterMovingEventArgs _Args);
         public abstract void OnCharacterMoveContinued(CharacterMovingEventArgs _Args);
         public abstract void OnCharacterMoveFinished(CharacterMovingEventArgs _Args);
-        public abstract void OnRevivalOrDeath(bool _Alive);
         public abstract void OnLevelStageChanged(LevelStageArgs _Args);
         public abstract void OnBackgroundColorChanged(Color _Color);
+        public abstract void Appear(bool _Appear);
 
-        public virtual void OnPositionSet(V2Int _Position)
-        {
-            CoordinateConverter.Init(Model.Data.Info.Size);
-            SetPosition(CoordinateConverter.ToLocalCharacterPosition(_Position));
-        }
-        
         #endregion
         
         #region nonpublic methods
@@ -57,6 +52,5 @@ namespace Games.RazorMaze.Views.Characters
             ContainersGetter.CharacterContainer.localPosition = _Position;
         
         #endregion
-
     }
 }

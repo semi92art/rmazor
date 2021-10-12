@@ -29,8 +29,6 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         private readonly Dictionary<IMazeItemProceedInfo, ViewMovingItemInfo> m_ItemsMoving =
             new Dictionary<IMazeItemProceedInfo, ViewMovingItemInfo>();
-
-        private bool m_CommonInitialized;
         
         #endregion
         
@@ -44,7 +42,6 @@ namespace Games.RazorMaze.Views.MazeItemGroups
             : base(_Common)
         {
             CoordinateConverter = _CoordinateConverter;
-            _Common.Initialized += () => m_CommonInitialized = true;
         }
         
         #endregion
@@ -89,16 +86,11 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         public void OnBackgroundColorChanged(Color _Color)
         {
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !m_CommonInitialized,
-                () =>
-                {
-                    var items = GetItems()
-                        .Select(_Item => _Item as IOnBackgroundColorChanged)
-                        .Where(_Item => _Item != null);
-                    foreach (var item in items)
-                        item.OnBackgroundColorChanged(_Color);
-                }));
+            var items = GetItems()
+                .Select(_Item => _Item as IOnBackgroundColorChanged)
+                .Where(_Item => _Item != null);
+            foreach (var item in items)
+                item.OnBackgroundColorChanged(_Color);
         }
         
         #endregion

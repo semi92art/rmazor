@@ -35,9 +35,14 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region api
         
-        public bool Activated { get; set; }
+        public bool ActivatedInSpawnPool { get; set; }
 
         public GameObject Object => gameObject;
+        public void Appear(bool _Appear)
+        {
+            throw new NotImplementedException();
+        }
+
         public EAppearingState AppearingState { get; set; }
         public EProceedingStage ProceedingStage { get; set; }
 
@@ -78,19 +83,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public bool Equal(IMazeItemProceedInfo _Info)
         {
-            if (Props == null)
-                return false;
-            if (_Info.Type != Props.Type)
-                return false;
-            if (_Info.StartPosition != Props.Position)
-                return false;
-            if (_Info.Path.Count != Props.Path.Count)
-                return false;
-            if (_Info.Path.Where((_Pos, _Index) => _Pos != Props.Path[_Index]).Any())
-                return false;
-            if (Props.Directions.Any() && _Info.Direction != Props.Directions.First())
-                return false;
-            return true;
+            return Props != null && Props.Equals(_Info);
         }
         
         #endregion
@@ -121,7 +114,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private void SetShapeAndHint(EMazeItemType _Type, bool _IsNode)
         {
             var converter = new CoordinateConverter();
-            converter.Init(MazeSize);
+            converter.SetMazeSize(MazeSize);
             
             gameObject.DestroyChildrenSafe();
             transform.SetLocalPosXY(converter.ToLocalMazeItemPosition(props.Position));
@@ -139,7 +132,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private void SetShapeByType(EMazeItemType _Type, bool _IsNode)
         {
             var converter = new CoordinateConverter();
-            converter.Init(MazeSize);
+            converter.SetMazeSize(MazeSize);
             var sh = gameObject.GetOrAddComponent<Rectangle>();
             sh.Width = 0.97f * converter.GetScale();
             sh.Height = 0.97f * converter.GetScale();
@@ -366,14 +359,14 @@ namespace Games.RazorMaze.Views.MazeItems
         private Vector2 ToWorldPosition(V2Int _Point)
         {
             var converter = new CoordinateConverter();
-            converter.Init(MazeSize);
+            converter.SetMazeSize(MazeSize);
             return converter.ToLocalMazeItemPosition(_Point).PlusY(converter.GetCenter().y);
         }
         
         private Vector2 ToWorldPosition(Vector2 _Point)
         {
             var converter = new CoordinateConverter();
-            converter.Init(MazeSize);
+            converter.SetMazeSize(MazeSize);
             return converter.ToLocalMazeItemPosition(_Point).PlusY(converter.GetCenter().y);
         }
         

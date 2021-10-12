@@ -36,7 +36,7 @@ namespace Games.RazorMaze.Models
     
     public delegate void CharacterMovingHandler(CharacterMovingEventArgs _Args);
 
-    public interface IModelCharacter : IInit, IOnLevelStageChanged, IGetAllProceedInfos
+    public interface IModelCharacter : IOnLevelStageChanged, IGetAllProceedInfos
     {
         bool Alive { get; }
         V2Int Position { get; }
@@ -45,8 +45,6 @@ namespace Games.RazorMaze.Models
         event CharacterMovingHandler CharacterMoveStarted;
         event CharacterMovingHandler CharacterMoveContinued;
         event CharacterMovingHandler CharacterMoveFinished;
-        event BoolHandler AliveOrDeath;
-        event V2IntHandler PositionSet;
         void Move(EMazeMoveDirection _Direction);
         void OnPortal(PortalEventArgs _Args);
         void OnSpringboard(SpringboardEventArgs _Args);
@@ -66,23 +64,20 @@ namespace Games.RazorMaze.Models
         private ModelSettings Settings { get; }
         private IModelData Data { get; }
         private IPathItemsProceeder PathItemsProceeder { get; }
-        private IInputScheduler InputScheduler { get; }
-        private ILevelStagingModel LevelStagingModel { get; }
+        private IModelLevelStaging LevelStaging { get; }
         private IGameTicker GameTicker { get; }
 
         public ModelCharacter(
             ModelSettings _Settings, 
             IModelData _Data, 
             IPathItemsProceeder _PathItemsProceeder,
-            IInputScheduler _InputScheduler,
-            ILevelStagingModel _LevelStagingModel,
+            IModelLevelStaging _LevelStaging,
             IGameTicker _GameTicker)
         {
             Settings = _Settings;
             Data = _Data;
             PathItemsProceeder = _PathItemsProceeder;
-            InputScheduler = _InputScheduler;
-            LevelStagingModel = _LevelStagingModel;
+            LevelStaging = _LevelStaging;
             GameTicker = _GameTicker;
         }
 
@@ -90,7 +85,7 @@ namespace Games.RazorMaze.Models
 
         #region api
 
-        public bool Alive { get; private set; }
+        public bool Alive { get; private set; } = true;
         public V2Int Position { get; private set; }
         public bool IsMoving { get; private set; }
         public CharacterMovingEventArgs MovingInfo { get; private set; }
@@ -98,17 +93,6 @@ namespace Games.RazorMaze.Models
         public event CharacterMovingHandler CharacterMoveStarted;
         public event CharacterMovingHandler CharacterMoveContinued;
         public event CharacterMovingHandler CharacterMoveFinished;
-        public event BoolHandler AliveOrDeath;
-        public event V2IntHandler PositionSet;
-
-
-        public void Init()
-        {
-            Alive = true;
-            Initialized?.Invoke();
-        }
-
-        public event NoArgsHandler Initialized;
 
         public void Move(EMazeMoveDirection _Direction)
         {
@@ -116,8 +100,8 @@ namespace Games.RazorMaze.Models
                 return;
             if (!Alive)
                 return;
-            if (LevelStagingModel.LevelStage == ELevelStage.ReadyToStartOrContinue)
-                LevelStagingModel.StartOrContinueLevel();
+            if (LevelStaging.LevelStage == ELevelStage.ReadyToStartOrContinue)
+                LevelStaging.StartOrContinueLevel();
             
             var from = Position;
             V2Int? shredingerBlockPosWhoStopped;
@@ -129,17 +113,12 @@ namespace Games.RazorMaze.Models
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            bool unlockMovement = _Args.Stage == ELevelStage.StartedOrContinued 
-                                  || _Args.Stage == ELevelStage.ReadyToStartOrContinue;
-            InputScheduler.UnlockMovement(unlockMovement);
-
             if (_Args.Stage == ELevelStage.Loaded)
             {
                 Position = PathItemsProceeder.PathProceeds.Keys.First();
-                PositionSet?.Invoke(Position);
             }
             else if (_Args.Stage == ELevelStage.ReadyToStartOrContinue)
-                Revive();
+                Revive(false);
         }
         
         public void OnPortal(PortalEventArgs _Args)
@@ -249,14 +228,13 @@ namespace Games.RazorMaze.Models
                 () => thisCount != m_Counter || !Alive);
         }
         
-        private void Revive()
+        private void Revive(bool _WithNotify = true)
         {
             if (Alive)
                 return;
             Position = PathItemsProceeder.PathProceeds.First().Key;
-            PositionSet?.Invoke(Position);
-            InputScheduler.UnlockMovement(true);
-            AliveOrDeath?.Invoke(true);
+            if (_WithNotify)
+                LevelStaging.ReadyToStartOrContinueLevel();
             Alive = true;
         }
         
@@ -264,12 +242,11 @@ namespace Games.RazorMaze.Models
         {
             if (!Alive)
                 return;
-            InputScheduler.UnlockMovement(false);
-            AliveOrDeath?.Invoke(false);
+            LevelStaging.KillCharacter();
             IsMoving = false;
             Alive = false;
         }
-        
+
         #endregion
     }
 }

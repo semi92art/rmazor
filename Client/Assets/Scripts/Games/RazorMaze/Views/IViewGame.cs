@@ -10,9 +10,7 @@ using Games.RazorMaze.Views.UI;
 namespace Games.RazorMaze.Views
 {
     public interface IViewGame :
-        IPreInit, 
         IInit,
-        IPostInit, 
         IOnLevelStageChanged,
         ICharacterMoveStarted,
         ICharacterMoveContinued,
@@ -20,15 +18,17 @@ namespace Games.RazorMaze.Views
     {
         IContainersGetter                  ContainersGetter { get; }
         IViewUI                            UI { get; }
+        IViewLevelStageController          LevelStageController { get; }
         IInputConfigurator                 InputConfigurator { get; }
         IViewCharacter                     Character { get; }
         IViewMazeCommon                    Common { get; }
         IViewMazeBackground                Background { get; }
-        IViewMazeRotation                      MazeRotation { get; }
+        IViewMazeRotation                  MazeRotation { get; }
+        
         IViewMazePathItemsGroup            PathItemsGroup { get; }
         IViewMazeMovingItemsGroup          MovingItemsGroup { get; }
         IViewMazeTrapsReactItemsGroup      TrapsReactItemsGroup { get; }
-        IViewMazeTrapsIncItemsGroup TrapsIncItemsGroup { get; }
+        IViewMazeTrapsIncItemsGroup        TrapsIncItemsGroup { get; }
         IViewMazeTurretsGroup              TurretsGroup { get; }
         IViewMazePortalsGroup              PortalsGroup { get; }
         IViewMazeShredingerBlocksGroup     ShredingerBlocksGroup { get; }

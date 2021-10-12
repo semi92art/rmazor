@@ -17,15 +17,17 @@ namespace Games.RazorMaze.Views
 {
     public class ViewGame : IViewGame
     {
-        #region constants
+        #region nonpublic members
 
-        private const string SoundClipNameLevelStart = "level_start";
-        private const string SoundClipNameLevelComplete = "level_complete";
+        private readonly List<bool> m_InitChecks = new List<bool>();
         
         #endregion
         
+        #region inject
+        
         public IContainersGetter ContainersGetter { get; }
         public IViewUI UI { get; }
+        public IViewLevelStageController LevelStageController { get; }
         public IInputConfigurator InputConfigurator { get; }
         public IViewCharacter Character { get; }
         public IViewMazeCommon Common { get; }
@@ -41,7 +43,7 @@ namespace Games.RazorMaze.Views
         public IViewMazeSpringboardItemsGroup SpringboardItemsGroup { get; }
         
         private IGameTicker GameTicker { get; }
-        public IManagersGetter Managers { get; }
+        private IManagersGetter Managers { get; }
 
         public ViewGame(
             IContainersGetter _ContainersGetter,
@@ -60,7 +62,7 @@ namespace Games.RazorMaze.Views
             IViewMazeShredingerBlocksGroup _ShredingerBlocksGroup,
             IViewMazeSpringboardItemsGroup _SpringboardItemsGroup,
             IGameTicker _GameTicker,
-            IManagersGetter _Managers)
+            IManagersGetter _Managers, IViewLevelStageController _LevelStageController)
         {
             ContainersGetter = _ContainersGetter;
             UI = _UI;
@@ -79,111 +81,110 @@ namespace Games.RazorMaze.Views
             SpringboardItemsGroup = _SpringboardItemsGroup;
             GameTicker = _GameTicker;
             Managers = _Managers;
+            LevelStageController = _LevelStageController;
         }
         
-        public event NoArgsHandler PreInitialized;
-        public event NoArgsHandler Initialized;
-        public event NoArgsHandler PostInitialized;
-        
-        public void PreInit()
-        {
-            var iBackColChangedProceeders = 
-                RazorMazeUtils.GetInterfaceOfProceeders<IOnBackgroundColorChanged>(GetProceeders());
-            foreach (var proceeder in iBackColChangedProceeders)
-                Background.BackgroundColorChanged += proceeder.OnBackgroundColorChanged;
-            
-            RazorMazeUtils.CallInits<IPreInit>(GetProceeders(),
-                _PreInitedArray =>
-                {
-                    Coroutines.Run(Coroutines.WaitWhile(
-                        () => _PreInitedArray.Any(_PreInited => !_PreInited), 
-                        () => PreInitialized?.Invoke()));
-                });
-        }
+        #endregion
 
+        #region api
+        
+        public event NoArgsHandler Initialized;
+        
         public void Init()
         {
-            RazorMazeUtils.CallInits<IInit>(GetProceeders(),
-                _InitedArray =>
-                {
-                    Coroutines.Run(Coroutines.WaitWhile(
-                        () => _InitedArray.Any(_Inited => !_Inited), 
-                        () => Initialized?.Invoke()));
-                });
+            var proceeders = GetProceeders();
+            var iBackColChangedProceeders = GetInterfaceOfProceeders<IOnBackgroundColorChanged>(proceeders);
+            foreach (var proceeder in iBackColChangedProceeders)
+                Background.BackgroundColorChanged += proceeder.OnBackgroundColorChanged;
+
+            var mazeItemGroups = GetInterfaceOfProceeders<IOnLevelStageChanged>(proceeders);
+            LevelStageController.RegisterProceeders(mazeItemGroups);
+            
+            CallInits<IInit>();
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => m_InitChecks.Any(_Inited => !_Inited), 
+                () => Initialized?.Invoke()));
         }
         
-        public void PostInit()
-        {
-            RazorMazeUtils.CallInits<IPostInit>(GetProceeders(),
-                _PostInitedArray =>
-                {
-                    Coroutines.Run(Coroutines.WaitWhile(
-                        () => _PostInitedArray.Any(_PostInited => !_PostInited), 
-                        () => PostInitialized?.Invoke()));
-                });
-        }
-
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            var proceeders =
-                RazorMazeUtils.GetInterfaceOfProceeders<IOnLevelStageChanged>(GetProceeders());
-            foreach (var proceeder in proceeders)
-                proceeder.OnLevelStageChanged(_Args);
-            GameTicker.Pause = _Args.Stage == ELevelStage.Paused;
+            LevelStageController.OnLevelStageChanged(_Args);
 
-            if (_Args.Stage == ELevelStage.Loaded)
-                Managers.Notify(_SM => _SM.PlayClip(SoundClipNameLevelStart));
-            else if (_Args.Stage == ELevelStage.Finished)
-                Managers.Notify(_SM => _SM.PlayClip(SoundClipNameLevelComplete));
         }
         
         public void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
         {
-            var proceeders = 
-                RazorMazeUtils.GetInterfaceOfProceeders<ICharacterMoveStarted>(GetProceeders());
+            var proceeders = GetInterfaceOfProceeders<ICharacterMoveStarted>(GetProceeders());
             foreach (var proceeder in proceeders)
                 proceeder.OnCharacterMoveStarted(_Args);
         }
 
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
-            var proceeders =
-                RazorMazeUtils.GetInterfaceOfProceeders<ICharacterMoveContinued>(GetProceeders());
+            var proceeders = GetInterfaceOfProceeders<ICharacterMoveContinued>(GetProceeders());
             foreach (var proceeder in proceeders)
                 proceeder.OnCharacterMoveContinued(_Args);
         }
         
         public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
         {
-            var proceeders =
-                RazorMazeUtils.GetInterfaceOfProceeders<ICharacterMoveFinished>(GetProceeders());
+            var proceeders = GetInterfaceOfProceeders<ICharacterMoveFinished>(GetProceeders());
             foreach (var proceeder in proceeders)
                 proceeder.OnCharacterMoveFinished(_Args);
         }
+
+        #endregion
         
-        
+        #region nonpublic methods
         
         private List<object> GetProceeders()
         {
             var result = new List<object>
-            {
-                UI,                         
-                Common,
-                InputConfigurator,
-                Character,
-                Background,
-                MazeRotation,
-                PathItemsGroup,
-                MovingItemsGroup,
-                TrapsReactItemsGroup,
-                TrapsIncItemsGroup,
-                TurretsGroup,
-                PortalsGroup,
-                ShredingerBlocksGroup,
-                SpringboardItemsGroup    
-            }.Where(_Proceeder => _Proceeder != null)
+                {
+                    UI,                         
+                    Common,
+                    InputConfigurator,
+                    Character,
+                    Background,
+                    MazeRotation,
+                    PathItemsGroup,
+                    MovingItemsGroup,
+                    TrapsReactItemsGroup,
+                    TrapsIncItemsGroup,
+                    TurretsGroup,
+                    PortalsGroup,
+                    ShredingerBlocksGroup,
+                    SpringboardItemsGroup    
+                }.Where(_Proceeder => _Proceeder != null)
                 .ToList();
             return result;
         }
+        
+        private void CallInits<T>() 
+            where T : class
+        {
+            var type = typeof(T);
+            var initObjects = GetInterfaceOfProceeders<T>(GetProceeders()).ToList();
+            int count = initObjects.Count;
+            m_InitChecks.Clear();
+            for (int i = 0; i < count; i++)
+                m_InitChecks.Add(false);
+            for (int i = 0; i < count; i++)
+            {
+                var i1 = i;
+                if (type == typeof(IInit) && initObjects[i] is IInit initObj)
+                {
+                    initObj.Initialized += () => m_InitChecks[i1] = true;
+                    initObj.Init(); 
+                }
+            }
+        }
+        
+        private static List<T> GetInterfaceOfProceeders<T>(IEnumerable<object> _Proceeders) where T : class
+        {
+            return _Proceeders.Where(_Proceeder => _Proceeder is T).Cast<T>().ToList();
+        }
+        
+        #endregion
     }
 }

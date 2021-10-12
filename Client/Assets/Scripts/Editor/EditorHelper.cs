@@ -19,6 +19,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;
 using Utils.Editor;
+using Object = UnityEngine.Object;
 
 public class EditorHelper : EditorWindow
 {
@@ -203,76 +204,61 @@ public class EditorHelper : EditorWindow
     {
         var settings = PrefabUtilsEx.GetObject<ModelSettings>(
             "model_settings", "model_settings");
-        var serObj = new SerializedObject(settings);
-
         var type = typeof(ModelSettings);
-        var fieldInfos = type.GetFields().ToList();
-
-        EditorUtilsEx.ScrollViewZone(ref m_ModelSettingsScrollPos, () =>
-        {
-            foreach (var fieldInfo in fieldInfos)
-            {
-                var prop = serObj.FindProperty(fieldInfo.Name);
-                EditorGUILayout.PropertyField(prop);
-                float val = Convert.ToSingle(fieldInfo.GetValue(settings));
-                if (Math.Abs(val - prop.floatValue) > float.Epsilon)
-                {
-                    fieldInfo.SetValue(settings, prop.floatValue);
-                    EditorUtility.SetDirty(settings);
-                    AssetDatabase.SaveAssets();
-                    AssetDatabase.Refresh();
-                }
-            }
-        });
+        var fieldInfos = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
+        SettingsTabPageCore(settings, fieldInfos);
     }
     
     private void ViewSettingsTabPage()
     {
         var settings = PrefabUtilsEx.GetObject<ViewSettings>(
             "model_settings", "view_settings");
-        var serObj = new SerializedObject(settings);
-
         var type = typeof(ViewSettings);
         var fieldInfos = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
+        SettingsTabPageCore(settings, fieldInfos);
+    }
 
+    private void SettingsTabPageCore(Object _Settings, IEnumerable<FieldInfo> _FieldInfos)
+    {
+        var serObj = new SerializedObject(_Settings);
         EditorUtilsEx.ScrollViewZone(ref m_ViewSettingsScrollPos, () =>
         {
-            foreach (var fieldInfo in fieldInfos)
+            foreach (var fieldInfo in _FieldInfos)
             {
                 var prop = serObj.FindProperty(fieldInfo.Name);
                 EditorGUILayout.PropertyField(prop);
                 bool refresh = false;
                 if (fieldInfo.FieldType == typeof(float))
                 {
-                    float val = Convert.ToSingle(fieldInfo.GetValue(settings));
+                    float val = Convert.ToSingle(fieldInfo.GetValue(_Settings));
                     if (Math.Abs(val - prop.floatValue) > float.Epsilon)
                     {
-                        fieldInfo.SetValue(settings, prop.floatValue);
+                        fieldInfo.SetValue(_Settings, prop.floatValue);
                         refresh = true;
                     }
                 }
                 else if (fieldInfo.FieldType == typeof(int))
                 {
-                    int val = Convert.ToInt32(fieldInfo.GetValue(settings));
+                    int val = Convert.ToInt32(fieldInfo.GetValue(_Settings));
                     if (val != prop.intValue)
                     {
-                        fieldInfo.SetValue(settings, prop.intValue);
+                        fieldInfo.SetValue(_Settings, prop.intValue);
                         refresh = true;
                     }
                 }
                 else if (fieldInfo.FieldType == typeof(bool))
                 {
-                    bool val = Convert.ToBoolean(fieldInfo.GetValue(settings));
+                    bool val = Convert.ToBoolean(fieldInfo.GetValue(_Settings));
                     if (val != prop.boolValue)
                     {
-                        fieldInfo.SetValue(settings, prop.boolValue);
+                        fieldInfo.SetValue(_Settings, prop.boolValue);
                         refresh = true;
                     }
                 }
 
                 if (refresh)
                 {
-                    EditorUtility.SetDirty(settings);
+                    EditorUtility.SetDirty(_Settings);
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();
                 }

@@ -29,22 +29,22 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         #region api
 
-        public override void PostInit()
-        {
-            foreach (var item in GetItems().Cast<IViewMazeItemTurret>())
-            {
-                int sortingOrder = DrawingUtils.GetBlockSortingOrder(EMazeItemType.Turret) + m_BulletCounter++;
-                item.SetBulletSortingOrder(sortingOrder);
-            }
-            base.PostInit();
-        }
-
         public override void OnTurretShoot(TurretShotEventArgs _Args)
         {
             if (_Args.PreShoot)
                 HandleTurretPreShot(_Args);
             else
                 HandleTurretShot(_Args);
+        }
+        
+        public override void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            base.OnLevelStageChanged(_Args);
+            foreach (var item in GetItems().Cast<IViewMazeItemTurret>())
+            {
+                int sortingOrder = DrawingUtils.GetBlockSortingOrder(EMazeItemType.Turret) + m_BulletCounter++;
+                item.SetBulletSortingOrder(sortingOrder);
+            }
         }
 
         #endregion

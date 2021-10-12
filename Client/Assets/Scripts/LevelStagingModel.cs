@@ -8,6 +8,7 @@ public enum ELevelStage
     StartedOrContinued,
     Paused,
     Finished,
+    CharacterKilled,
     Unloaded
 }
 
@@ -15,32 +16,34 @@ public class LevelStageArgs : EventArgs
 {
     public int LevelIndex { get; }
     public ELevelStage Stage { get; }
+    public ELevelStage PreviousStage { get; }
 
-    public LevelStageArgs(int _LevelIndex, ELevelStage _LevelStage) =>
-        (LevelIndex, Stage) = (_LevelIndex, _LevelStage);
+    public LevelStageArgs(int _LevelIndex, ELevelStage _LevelStage, ELevelStage _PreviousStage) =>
+        (LevelIndex, Stage, PreviousStage) = (_LevelIndex, _LevelStage, _PreviousStage);
 }
 public delegate void LevelStageHandler(LevelStageArgs _Args);
 
 
-public interface ILevelStagingModel
+public interface IModelLevelStaging
 {
     ELevelStage LevelStage { get; }
     event LevelStageHandler LevelStageChanged;
     void LoadLevel(MazeInfo _Info, int _LevelIndex);
-    void PauseLevel();
-    void ReadyToContinueLevel();
+    void ReadyToStartOrContinueLevel();
     void StartOrContinueLevel();
+    void PauseLevel();
     void FinishLevel();
+    void KillCharacter();
     void UnloadLevel();
 }
 
-public class LevelStagingModel : ILevelStagingModel
+public class ModelLevelStaging : IModelLevelStaging, IInit
 {
     #region inject
     
     private IModelData Data { get; }
 
-    public LevelStagingModel(IModelData _Data)
+    public ModelLevelStaging(IModelData _Data)
     {
         Data = _Data;
     }
@@ -49,54 +52,61 @@ public class LevelStagingModel : ILevelStagingModel
     
     #region api
 
-    public ELevelStage LevelStage { get; private set; }
+    public ELevelStage LevelStage { get; private set; } = ELevelStage.Unloaded;
     public event LevelStageHandler LevelStageChanged;
+    public event NoArgsHandler Initialized;
+    
+    public void Init()
+    {
+        Initialized?.Invoke();
+    }
     
     public virtual void LoadLevel(MazeInfo _Info, int _LevelIndex)
     {
         (Data.Info, Data.LevelIndex) = (_Info, _LevelIndex);
-        LevelStage = ELevelStage.Loaded;
-        InvokeLevelStageChanged();
+        InvokeLevelStageChanged(ELevelStage.Loaded);
     }
 
-    public void PauseLevel()
+    public void ReadyToStartOrContinueLevel()
     {
-        LevelStage = ELevelStage.Paused;
-        InvokeLevelStageChanged();
-    }
-
-    public void ReadyToContinueLevel()
-    {
-        LevelStage = ELevelStage.ReadyToStartOrContinue;
-        InvokeLevelStageChanged();
+        InvokeLevelStageChanged(ELevelStage.ReadyToStartOrContinue);
     }
 
     public void StartOrContinueLevel()
     {
-        LevelStage = ELevelStage.StartedOrContinued;
-        InvokeLevelStageChanged();
+        InvokeLevelStageChanged(ELevelStage.StartedOrContinued);
+    }
+
+    public void PauseLevel()
+    {
+        InvokeLevelStageChanged(ELevelStage.Paused);
     }
 
     public void FinishLevel()
     {
-        LevelStage = ELevelStage.Finished;
-        InvokeLevelStageChanged();
+        InvokeLevelStageChanged(ELevelStage.Finished);
+    }
+
+    public void KillCharacter()
+    {
+        InvokeLevelStageChanged(ELevelStage.CharacterKilled);
     }
 
     public void UnloadLevel()
     {
-        LevelStage = ELevelStage.Unloaded;
-        InvokeLevelStageChanged();
+        InvokeLevelStageChanged(ELevelStage.Unloaded);
     }
 
     #endregion
 
     #region nonpublic methods
 
-    private void InvokeLevelStageChanged()
+    private void InvokeLevelStageChanged(ELevelStage _Stage)
     {
-        LevelStageChanged?.Invoke(new LevelStageArgs(Data.LevelIndex, LevelStage));
+        var prevStage = LevelStage;
+        LevelStage = _Stage;
+        LevelStageChanged?.Invoke(new LevelStageArgs(Data.LevelIndex, LevelStage, prevStage));
     }
-
+    
     #endregion
 }

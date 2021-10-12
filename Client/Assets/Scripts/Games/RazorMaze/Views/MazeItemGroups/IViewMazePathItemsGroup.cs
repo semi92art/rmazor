@@ -5,7 +5,11 @@ using Games.RazorMaze.Views.MazeItems;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
-    public interface IViewMazePathItemsGroup : IInit, IOnLevelStageChanged, ICharacterMoveStarted, ICharacterMoveFinished
+    public interface IViewMazePathItemsGroup :
+        IInit,
+        IOnLevelStageChanged,
+        ICharacterMoveStarted, 
+        ICharacterMoveFinished
     {
         List<IViewMazeItemPath> PathItems { get; }
         void OnPathProceed(V2Int _PathItem);

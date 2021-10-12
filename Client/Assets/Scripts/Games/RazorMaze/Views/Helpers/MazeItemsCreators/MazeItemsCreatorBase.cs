@@ -63,8 +63,7 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
         
         public virtual List<IViewMazeItem> CreateMazeItems(MazeInfo _Info)
         {
-            CoordinateConverter.Init(_Info.Size);
-            
+            // CoordinateConverter.SetMazeSize(_Info.Size);
             var res = new List<IViewMazeItem>();
             foreach (var item in _Info.Path)
                 AddPathItem(res, _Info, item);
@@ -74,7 +73,7 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
         }
 
         public abstract void InitPathItems(MazeInfo _Info, SpawnPool<IViewMazeItemPath> _PathPool);
-        public abstract void InitBlockItems(MazeInfo _Info, Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> _BlockPools);
+        public abstract void InitAndActivateBlockItems(MazeInfo _Info, Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> _BlockPools);
 
         public IViewMazeItem CloneDefaultBlock(EMazeItemType _Type)
         {

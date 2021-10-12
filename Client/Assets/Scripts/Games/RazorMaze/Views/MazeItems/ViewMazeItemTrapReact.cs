@@ -40,7 +40,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region shapes
 
-        protected override object[] Shapes => new object[] {m_Line, m_Trap};
+        protected override object[] DefaultColorShapes => new object[] {m_Line, m_Trap};
         private Line m_Line;
         private SpriteRenderer m_Trap;
         
@@ -86,10 +86,9 @@ namespace Games.RazorMaze.Views.MazeItems
             Managers);
         
         
-
         public void UpdateTick()
         {
-            if (!Initialized || !Activated)
+            if (!Initialized || !ActivatedInSpawnPool)
                 return;
             if (ProceedingStage == EProceedingStage.Inactive)
                 return;
@@ -121,15 +120,14 @@ namespace Games.RazorMaze.Views.MazeItems
 
         #region nonpublic methods
         
-        protected override void SetShape()
+        protected override void InitShape()
         {
             var scale = CoordinateConverter.GetScale();
             var go = Object;
             var line = ContainersGetter.MazeItemsContainer.gameObject
                 .GetOrAddComponentOnNewChild<Line>(
                     "Trap React Item",
-                    ref go,
-                    CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+                    ref go);
             Object = go;
             
             line.Color = DrawingUtils.ColorLines;
@@ -139,13 +137,9 @@ namespace Games.RazorMaze.Views.MazeItems
             var trap = go.AddComponentOnNewChild<SpriteRenderer>("Trap Sprite", out _, Vector2.zero);
             trap.sprite = PrefabUtilsEx.GetObject<Sprite>("views", "trap_react");
             trap.sortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
-            (line.Start, line.End) = GetTrapPosRotAndLineEdges();
             trap.color = DrawingUtils.ColorLines;
             trap.maskInteraction = SpriteMaskInteraction.VisibleOutsideMask;
-            var dir = Props.Directions.First().ToVector2();
-            var trapTr = trap.transform;
-            trapTr.SetLocalPosXY(dir * scale * StartPos);
-            trapTr.localScale = Vector3.one * scale * 0.95f;
+            
             
             var maskGo = PrefabUtilsEx.InitPrefab(
                 ContainersGetter.MazeItemsContainer, "views", "turret_bullet_mask");
@@ -159,6 +153,17 @@ namespace Games.RazorMaze.Views.MazeItems
 
             m_Line = line;
             m_Trap = trap;
+        }
+
+        protected override void UpdateShape()
+        {
+            m_Line.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+            (m_Line.Start, m_Line.End) = GetTrapPosRotAndLineEdges();
+            var scale = CoordinateConverter.GetScale();
+            var dir = Props.Directions.First().ToVector2();
+            var trapTr = m_Trap.transform;
+            trapTr.SetLocalPosXY(dir * scale * StartPos);
+            trapTr.localScale = Vector3.one * scale * 0.95f;
         }
 
         private void DoRotation()

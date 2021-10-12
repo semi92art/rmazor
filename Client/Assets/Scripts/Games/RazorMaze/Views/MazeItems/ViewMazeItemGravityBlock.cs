@@ -19,7 +19,7 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         #region shapes
 
-        protected override object[] Shapes => new object[] {m_Shape, m_Joint};
+        protected override object[] DefaultColorShapes => new object[] {m_Shape, m_Joint};
         private Rectangle m_Shape;
         private Disc m_Joint;
         
@@ -78,13 +78,11 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region nonpublic methods
 
-        protected override void SetShape()
+        protected override void InitShape()
         {
             var go = Object;
             var sh = ContainersGetter.MazeItemsContainer.gameObject
-                .GetOrAddComponentOnNewChild<Rectangle>("Gravity Block", ref go, 
-                    CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
-            go.DestroyChildrenSafe();
+                .GetOrAddComponentOnNewChild<Rectangle>("Gravity Block", ref go);
             sh.Width = sh.Height = CoordinateConverter.GetScale() * 0.9f;
             sh.Type = Rectangle.RectangleType.RoundedHollow;
             sh.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
@@ -100,8 +98,12 @@ namespace Games.RazorMaze.Views.MazeItems
             Object = go;
             m_Shape = sh;
             m_Joint = joint;
-            
-            base.SetShape();
+        }
+
+        protected override void UpdateShape()
+        {
+            m_Shape.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+            base.UpdateShape();
         }
 
         #endregion

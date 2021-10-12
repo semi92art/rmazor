@@ -4,14 +4,3 @@
     void Init();
 }
 
-public interface IPreInit
-{
-    event NoArgsHandler PreInitialized;
-    void PreInit();
-}
-
-public interface IPostInit
-{
-    event NoArgsHandler PostInitialized;
-    void PostInit();
-}

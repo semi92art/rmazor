@@ -1,17 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using GameHelpers;
-using Games.RazorMaze.Models;
+﻿using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views;
-using Ticker;
 using UnityEngine;
 using Utils;
 using Zenject;
 
 namespace Games.RazorMaze.Controllers
 {
-    public interface IGameController : IInit, IPreInit, IPostInit
+    public interface IGameController : IInit
     {
         IModelGame Model { get; }
         IViewGame View { get; }
@@ -35,31 +31,26 @@ namespace Games.RazorMaze.Controllers
         
         public IModelGame Model { get; private set; }
         public IViewGame  View { get; private set; }
-        private ILevelsLoader LevelsLoader { get; set; }
-        private IGameTicker GameTicker { get; set; }
-        private IUITicker UITicker { get; set; }
+        private ICoordinateConverter CoordinateConverter { get; set; }
 
         [Inject] public void Inject(
             IModelGame _Model,
-            IViewGame _View, 
-            ILevelsLoader _LevelsLoader,
-            IGameTicker _GameTicker,
-            IUITicker _UITicker) =>
-            (Model, View, LevelsLoader, GameTicker, UITicker) =
-            (_Model, _View, _LevelsLoader, _GameTicker, _UITicker);
+            IViewGame _View,
+            ICoordinateConverter _CoordinateConverter) =>
+            (Model, View, CoordinateConverter) =
+            (_Model, _View, _CoordinateConverter);
         
         #endregion
         
         #region api
 
-        public event NoArgsHandler PreInitialized;
         public event NoArgsHandler Initialized;
-        public event NoArgsHandler PostInitialized;
         
-        public void PreInit()
+        public void Init()
         {
-            GameTicker.Reset();
-
+            Model.Init();
+            View.Init();
+            
             var rotation                                        = Model.MazeRotation;
             var pathItemsProceeder                              = Model.PathItemsProceeder;
             var trapsMovingProceeder                            = Model.TrapsMovingProceeder;
@@ -93,47 +84,17 @@ namespace Games.RazorMaze.Controllers
             shredingerProceeder.ShredingerBlockEvent            += View.ShredingerBlocksGroup.OnShredingerBlockEvent;
             springboardProceeder.SpringboardEvent               += View.SpringboardItemsGroup.OnSpringboardEvent;
 
-            character.AliveOrDeath                              += View.Character.OnRevivalOrDeath;
             character.CharacterMoveStarted                      += View.OnCharacterMoveStarted;
             character.CharacterMoveContinued                    += View.OnCharacterMoveContinued;
             character.CharacterMoveFinished                     += View.OnCharacterMoveFinished;
-            character.PositionSet                               += View.Character.OnPositionSet;
             
             levelStaging.LevelStageChanged                      += View.OnLevelStageChanged;
             View.InputConfigurator.Command                      += Model.InputScheduler.AddCommand;
-            
-            RazorMazeUtils.CallInits<IPreInit>(GetProceeders(),
-                _PreInitedArray =>
-                {
-                    Coroutines.Run(Coroutines.WaitWhile(
-                        () => _PreInitedArray.Any(_PreInited => !_PreInited), 
-                        () => PreInitialized?.Invoke()));
-                });
-        }
-        
-        public void Init()
-        {
-            RazorMazeUtils.CallInits<IInit>(GetProceeders(),
-                _InitedArray =>
-                {
-                    Coroutines.Run(Coroutines.WaitWhile(
-                        () => _InitedArray.Any(_Inited => !_Inited), 
-                        () => Initialized?.Invoke()));
-                });
-        }
-        
-        public void PostInit()
-        {
-            Model.Data.ProceedingControls = true;
-            RazorMazeUtils.CallInits<IPostInit>(GetProceeders(),
-                _PostInitedArray =>
-                {
-                    Coroutines.Run(Coroutines.WaitWhile(
-                        () => _PostInitedArray.Any(_PostInited => !_PostInited), 
-                        () => PostInitialized?.Invoke()));
-                });
-        }
 
+            Model.Data.ProceedingControls = true;
+            Initialized?.Invoke();
+        }
+        
         #endregion
 
         #region event methods
@@ -174,7 +135,6 @@ namespace Games.RazorMaze.Controllers
             pathItemsProceeder.PathProceedEvent                 -= View.PathItemsGroup.OnPathProceed;
             
             rotation.RotationStarted                            -= View.MazeRotation.StartRotation;
-            rotation.RotationFinishedInternal                           -= Model.MazeRotation.OnRotationFinished;
             
             movingItemsProceeder.MazeItemMoveStarted            -= OnMazeItemMoveStarted;
             movingItemsProceeder.MazeItemMoveContinued          -= View.MovingItemsGroup.OnMazeItemMoveContinued;
@@ -191,25 +151,12 @@ namespace Games.RazorMaze.Controllers
             shredingerProceeder.ShredingerBlockEvent            -= View.ShredingerBlocksGroup.OnShredingerBlockEvent;
             springboardProceeder.SpringboardEvent               -= View.SpringboardItemsGroup.OnSpringboardEvent;
 
-            character.AliveOrDeath                              -= View.Character.OnRevivalOrDeath;
             character.CharacterMoveStarted                      -= View.OnCharacterMoveStarted;
             character.CharacterMoveContinued                    -= View.OnCharacterMoveContinued;
             character.CharacterMoveFinished                     -= View.OnCharacterMoveFinished;
-            character.PositionSet                               -= View.Character.OnPositionSet;
             
             levelStaging.LevelStageChanged                      -= View.OnLevelStageChanged;
             View.InputConfigurator.Command                      -= Model.InputScheduler.AddCommand;
-        }
-        
-        private List<object> GetProceeders()
-        {
-            var result = new List<object>
-            {
-                Model,
-                View
-            }.Where(_Proceeder => _Proceeder != null)
-                .ToList();
-            return result;
         }
 
         #endregion

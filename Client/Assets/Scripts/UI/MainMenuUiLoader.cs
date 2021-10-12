@@ -60,7 +60,6 @@ namespace UI
             DataFieldsMigrator.InitDefaultDataFieldValues();
             CreateCanvas();
             CreateDialogViewers();
-            CreateBackground();
             CreateTransitionRenderer();
 
             PreloadMainMenu();
@@ -91,26 +90,9 @@ namespace UI
                 GraphicRaycaster.BlockingObjects.None);
         }
 
-        private void CreateBackground()
-        {
-            var backgroundPanel = CreateMainMenuBackgroundPanel();
-            m_MainBackgroundRenderer = MainBackgroundRenderer.Create();
-            RawImage rImage = backgroundPanel.GetCompItem<RawImage>("raw_image");
-            rImage.texture = m_MainBackgroundRenderer.Texture;
-
-            m_MenuDialogViewer.AddNotDialogItem(backgroundPanel.RTransform(),
-                MenuUiCategory.Loading 
-                | MenuUiCategory.Settings 
-                | MenuUiCategory.Shop 
-                | MenuUiCategory.DailyBonus 
-                | MenuUiCategory.MainMenu 
-                | MenuUiCategory.SelectGame 
-                | MenuUiCategory.PlusMoney);
-        }
-
         private void CreateDialogViewers()
         {
-            m_MenuDialogViewer = MainMenuDialogViewer.Create(
+            m_MenuDialogViewer = MenuDialogViewer.Create(
                 m_Canvas.RTransform(), Managers);
             m_NotificationViewer = MainMenuNotificationViewer.Create(
                 m_Canvas.RTransform());

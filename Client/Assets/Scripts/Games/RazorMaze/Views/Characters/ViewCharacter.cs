@@ -10,6 +10,7 @@ using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
+using Games.RazorMaze.Views.MazeItems;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
@@ -27,15 +28,19 @@ namespace Games.RazorMaze.Views.Characters
         
         #endregion
         
+        #region shapes
+        
+        private Rectangle m_HeadShape;
+        private Rectangle m_Eye1Shape, m_Eye2Shape;
+        
+        #endregion
+        
         #region nonpublic members
 
         private static int AnimKeyStartJumping => AnimKeys.Anim3;
         private static int AnimKeyStartMove => AnimKeys.Anim;
         private static int AnimKeyBump => AnimKeys.Anim2;
-
-        private Rectangle m_HeadShape;
-        private Rectangle m_Eye1Shape, m_Eye2Shape;
-
+        
         private GameObject m_Head;
         private Animator m_Animator;
         private EMazeMoveDirection m_PrevVertDir;
@@ -89,40 +94,25 @@ namespace Games.RazorMaze.Views.Characters
             get => m_Activated;
             set
             {
+                if (value)
+                {
+                    if (!m_Initialized)
+                    {
+                        InitPrefab();
+                        m_Initialized = true;
+                    }
+                    UpdatePrefab();
+                }
+                
                 m_Activated = value;
-                m_Head.SetActive(value);
+                m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = value;
                 Tail.Activated = value;
                 Effector.Activated = value;
+                if (value)
+                    m_Animator.SetTrigger(AnimKeyStartJumping);
             }
         }
-        
-        public override void Init()
-        {
-            bool m_TailInitialized = false;
-            bool m_DeathEffectorInitialized = false;
-            Tail.Initialized += () => m_TailInitialized = true;
-            Effector.Initialized += () => m_DeathEffectorInitialized = true;
-            Tail.Init();
-            Effector.Init();
-            
-            InitPrefab();
-            m_Animator.SetTrigger(AnimKeyStartJumping);
-            Coroutines.Run(Coroutines.WaitWhile(
-                () =>
-                {
-                    return !m_TailInitialized
-                           || !m_DeathEffectorInitialized
-                           || m_HeadShape.IsNull()
-                           || m_Eye1Shape.IsNull()
-                           || m_Eye2Shape.IsNull();
-                },
-                () =>
-                {
-                    base.Init();
-                    m_Initialized = true;
-                }));
-        }
-        
+
         public override void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
         {
             m_Animator.SetTrigger(AnimKeyStartMove);
@@ -145,45 +135,55 @@ namespace Games.RazorMaze.Views.Characters
             Tail.HideTail(_Args);
             Managers.Notify(_SM => _SM.PlayClip(SoundClipNameCharacterMoveEnd));
         }
-        
-        public override void OnRevivalOrDeath(bool _Alive)
-        {
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !m_Initialized,
-                () =>
-                {
-                    m_Head.SetActive(_Alive);
-                    Tail.Activated = _Alive;
-                    Effector.OnRevivalOrDeath(_Alive);
-                    if (!_Alive) 
-                        return;
-                    m_Animator.SetTrigger(AnimKeyStartJumping);
-                    Tail.HideTail();
-                }));
-            if (!_Alive)
-            {
-                Managers.Notify(_SM => _SM.PlayClip(SoundClipNameCharacterDeath));
-                Coroutines.Run(ShakeMaze());
-            }
-        }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage == ELevelStage.Loaded)
-                Appear(true);
-            else if (_Args.Stage == ELevelStage.Unloaded)
-                Appear(false);
+            switch (_Args.Stage)
+            {
+                case ELevelStage.Loaded:
+                    SetPosition(CoordinateConverter.ToLocalCharacterPosition(Model.Character.Position));
+                    Activated = true;
+                    break;
+                case ELevelStage.CharacterKilled:
+                    m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = false;
+                    Tail.HideTail();
+                    Managers.Notify(_SM => _SM.PlayClip(SoundClipNameCharacterDeath));
+                    Coroutines.Run(ShakeMaze());
+                    break;
+                case ELevelStage.ReadyToStartOrContinue:
+                    SetPosition(CoordinateConverter.ToLocalCharacterPosition(Model.Character.Position));
+                    m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = true;
+                    Tail.Activated = true;
+                    m_Animator.SetTrigger(AnimKeyStartJumping);
+                    Tail.HideTail();
+                    break;
+            }
+            Effector.OnLevelStageChanged(_Args);
         }
 
         public override void OnBackgroundColorChanged(Color _Color)
         {
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !m_Initialized,
-                () =>
+            m_BackColor = _Color;
+            m_Eye1Shape.Color = m_Eye2Shape.Color = _Color;
+        }
+        
+        public override void Appear(bool _Appear)
+        {
+            Tail.HideTail();
+            AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
+            if (_Appear)
+                m_Animator.SetTrigger(AnimKeyStartJumping);
+            Transitioner.DoAppearTransitionSimple(
+                _Appear,
+                GameTicker,
+                new Dictionary<object[], Func<Color>>
                 {
-                    m_BackColor = _Color;
-                    m_Eye1Shape.Color = m_Eye2Shape.Color = _Color;
-                }));
+                    {new object[] {m_HeadShape}, () => DrawingUtils.ColorCharacter},
+                    {new object[] {m_Eye1Shape, m_Eye2Shape}, () => m_BackColor}
+                },
+                Model.Character.Position,
+                () => AppearingState = _Appear ?
+                    EAppearingState.Appeared : EAppearingState.Dissapeared);
         }
 
         #endregion
@@ -196,8 +196,7 @@ namespace Games.RazorMaze.Views.Characters
             var prefab = PrefabUtilsEx.InitPrefab(go.transform, CommonPrefabSetNames.Views, "character");
             prefab.transform.SetLocalPosXY(Vector2.zero);
             m_Head = prefab.GetContentItem("head");
-            var localScale = Vector3.one * CoordinateConverter.GetScale() * 0.98f;
-            m_Head.transform.localScale = localScale;
+
             m_Animator = prefab.GetCompItem<Animator>("animator");
             
             m_HeadShape = prefab.GetCompItem<Rectangle>("head shape");
@@ -205,6 +204,14 @@ namespace Games.RazorMaze.Views.Characters
             m_Eye2Shape = prefab.GetCompItem<Rectangle>("eye_2");
 
             m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = false;
+            
+            m_Initialized = true;
+        }
+
+        private void UpdatePrefab()
+        {
+            var localScale = Vector3.one * CoordinateConverter.GetScale() * 0.98f;
+            m_Head.transform.localScale = localScale;
         }
 
         private void SetOrientation(EMazeMoveDirection _Direction)
@@ -244,7 +251,6 @@ namespace Games.RazorMaze.Views.Characters
         private void LookAtByOrientation(EMazeMoveDirection _Direction, bool _Inverse)
         {
             float angle, horScale;
-            float vertScale = _Inverse ? -1f : 1f;
             switch (_Direction)
             {
                 case EMazeMoveDirection.Up:    (angle, horScale) = (90f, 1f);  break;
@@ -257,27 +263,10 @@ namespace Games.RazorMaze.Views.Characters
             
             m_Head.transform.eulerAngles = Vector3.forward * angle;
             var absScale = m_Head.transform.localScale.Abs();
+            float vertScale = _Inverse ? -1f : 1f;
             m_Head.transform.localScale = new Vector3(absScale.x * horScale, absScale.y * vertScale, absScale.z);
         }
-
-        private void Appear(bool _Appear)
-        {
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !m_Initialized,
-                () =>
-                {
-                    Transitioner.DoAppearTransitionSimple(
-                        _Appear,
-                        GameTicker,
-                        new Dictionary<object[], Func<Color>>
-                        {
-                            {new object[] {m_HeadShape}, () => DrawingUtils.ColorCharacter},
-                            {new object[] {m_Eye1Shape, m_Eye2Shape}, () => m_BackColor}
-                        },
-                        Model.Character.Position);
-                }));
-        }
-
+        
         private IEnumerator ShakeMaze()
         {
             var defPos = ContainersGetter.MazeContainer.position;

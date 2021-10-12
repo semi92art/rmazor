@@ -61,7 +61,7 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
             throw new NotImplementedException("This method is only for release");
         }
 
-        public override void InitBlockItems(MazeInfo _Info, Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> _BlockPools)
+        public override void InitAndActivateBlockItems(MazeInfo _Info, Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> _BlockPools)
         {
             throw new NotImplementedException("This method is only for release");
         }

@@ -37,21 +37,16 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region nonpublic members
 
-        private bool m_Appeared;
         private float m_GravitySpawnTimer;
-        
-        private Disc m_Center;
-        private readonly List<Disc> m_Orbits = new List<Disc>();
-        private readonly BehavioursSpawnPool<Disc> m_GravityItems = new BehavioursSpawnPool<Disc>();
         
         #endregion
         
         #region shapes
 
-        protected override object[] Shapes => new object[] {m_Center}
-            .Concat(m_Orbits)
-            .Concat(m_GravityItems)
-            .ToArray();
+        protected override object[] DefaultColorShapes => new object[] {m_Center}.Concat(m_Orbits).ToArray();
+        private Disc m_Center;
+        private readonly List<Disc> m_Orbits = new List<Disc>();
+        private readonly BehavioursSpawnPool<Disc> m_GravityItems = new BehavioursSpawnPool<Disc>();
         
         #endregion
         
@@ -86,25 +81,21 @@ namespace Games.RazorMaze.Views.MazeItems
             GameTicker,
             Transitioner,
             Managers);
-        
-        public override bool Activated
+
+        public override bool ActivatedInSpawnPool
         {
-            get => m_Activated;
+            get => base.ActivatedInSpawnPool;
             set
             {
-                m_Activated = value;
-                if (value) 
-                    return;
-                m_Center.enabled = false;
-                m_Orbits.ForEach(_Orbit => _Orbit.enabled = false);
                 foreach (var item in m_GravityItems)
                     m_GravityItems.Deactivate(item);
+                base.ActivatedInSpawnPool = value;
             }
         }
-        
+
         public void UpdateTick()
         {
-            if (!Initialized || !Activated)
+            if (!Initialized || !ActivatedInSpawnPool)
                 return;
             for (int i = 0; i < m_Orbits.Count; i++)
             {
@@ -112,7 +103,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 float c = clockwise ? -1f : 1f;
                 m_Orbits[i].transform.Rotate(Vector3.forward * RotationSpeed * c * Time.deltaTime * 50f);
             }
-            if (m_Appeared)
+            if (AppearingState == EAppearingState.Appeared)
                 UpdateGravityItems();
         }
 
@@ -141,14 +132,14 @@ namespace Games.RazorMaze.Views.MazeItems
 
         #region nonpublic methods
 
-        protected override void SetShape()
+        protected override void InitShape()
         {
             var go = Object;
             var center = ContainersGetter.MazeItemsContainer.gameObject
                 .GetOrAddComponentOnNewChild<Disc>(
                     "Portal Item",
                     ref go,
-                    CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+                    Vector2.zero);
             center.Type = DiscType.Disc;
             center.Color = DrawingUtils.ColorLines;
             center.Radius = CoordinateConverter.GetScale() * 0.2f;
@@ -208,31 +199,11 @@ namespace Games.RazorMaze.Views.MazeItems
             InitGravitySpawnPool();
         }
 
-        protected override void Appear(bool _Appear)
+        protected override void UpdateShape()
         {
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !Initialized,
-                () =>
-                {
-                    Transitioner.DoAppearTransitionSimple(
-                        _Appear,
-                        GameTicker,
-                        new Dictionary<object[], Func<Color>>
-                        {
-                            {new [] {m_Center}, () => DrawingUtils.ColorLines},
-                            {m_Orbits.Cast<object>().ToArray(), () => DrawingUtils.ColorLines}
-                        },
-                        Props.Position,
-                        () =>
-                        {
-                            m_Appeared = _Appear;
-                            if (!_Appear)
-                                DeactivateShapes();
-                        });
-
-                }));
+            m_Center.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
         }
-
+        
         private void InitGravitySpawnPool()
         {
             for (int i = 0; i < GravityItemsCount; i++)
@@ -278,6 +249,15 @@ namespace Games.RazorMaze.Views.MazeItems
                     m_GravityItems.Deactivate(item);
                 }));
             m_GravitySpawnTimer = 0f;
+        }
+
+        protected override Dictionary<object[], Func<Color>> GetAppearSets(bool _Appear)
+        {
+            return new Dictionary<object[], Func<Color>>
+            {
+                {new[] {m_Center}, () => DrawingUtils.ColorLines},
+                {m_Orbits.Cast<object>().ToArray(), () => DrawingUtils.ColorLines}
+            };
         }
 
         #endregion

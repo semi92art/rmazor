@@ -60,6 +60,19 @@ namespace Games.RazorMaze.Views.MazeItems
 
         #region api
 
+        public override bool ActivatedInSpawnPool
+        {
+            get => base.ActivatedInSpawnPool;
+            set
+            {
+                foreach (var pathLine in m_PathLines)
+                    pathLine.enabled = false;
+                foreach (var pathJoint in m_PathJoints)
+                    pathJoint.enabled = false;
+                base.ActivatedInSpawnPool = value;
+            }
+        }
+
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
@@ -82,8 +95,18 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region nonpublic methods
 
+        protected override void UpdateShape()
+        {
+            InitWallBlockMovingPaths();
+        }
+        
         protected virtual void InitWallBlockMovingPaths()
         {
+            foreach (var pathLine in m_PathLines)
+                pathLine.gameObject.DestroySafe();
+            foreach (var joint in m_PathJoints)
+                joint.gameObject.DestroySafe();
+            
             m_PathLines.Clear();
             m_PathJoints.Clear();
             
@@ -121,33 +144,16 @@ namespace Games.RazorMaze.Views.MazeItems
                 joint.enabled = false;
         }
 
-        protected override void SetShape()
+        protected override Dictionary<object[], Func<Color>> GetAppearSets(bool _Appear)
         {
-            InitWallBlockMovingPaths();
+            var sets = base.GetAppearSets(_Appear);
+            if (m_PathLines.Any())
+                sets.Add(m_PathLines.Cast<object>().ToArray(), () => DrawingUtils.ColorLines.SetA(0.5f));
+            if (m_PathJoints.Any())
+                sets.Add(m_PathJoints.Cast<object>().ToArray(), () => DrawingUtils.ColorLines);
+            return sets;
         }
 
-        protected override void Appear(bool _Appear)
-        {
-            base.Appear(_Appear);
-            
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !Initialized,
-                () =>
-                {
-                    var sets = new Dictionary<object[], Func<Color>>();
-                    if (m_PathLines.Any())
-                        sets.Add(m_PathLines.Cast<object>().ToArray(), () => DrawingUtils.ColorLines.SetA(0.5f));
-                    if (m_PathJoints.Any())
-                        sets.Add(m_PathJoints.Cast<object>().ToArray(), () => DrawingUtils.ColorLines);
-                    
-                    Transitioner.DoAppearTransitionSimple(
-                        _Appear,
-                        GameTicker,
-                        sets,
-                        Props.Path.First());
-                }));
-        }
-        
         #endregion
     }
 }

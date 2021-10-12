@@ -2,7 +2,9 @@
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
-    public interface IViewMazeSpringboardItemsGroup : IOnLevelStageChanged, IMazeItemTypes
+    public interface IViewMazeSpringboardItemsGroup :
+        IOnLevelStageChanged, 
+        IViewMazeItemGroup
     {
         void OnSpringboardEvent(SpringboardEventArgs _Args);
     }

@@ -41,12 +41,13 @@ namespace Games.RazorMaze.Views.MazeItems
         private bool? m_TrapOpened;
         private bool m_ReadyToKill;
         private AnimationTriggerer m_Triggerer;
+        private List<Vector2> m_DeathZone;
 
         #endregion
 
         #region shapes
 
-        protected override object[] Shapes => new object[]{m_Center}
+        protected override object[] DefaultColorShapes => new object[]{m_Center}
             .Concat(m_Blades)
             .Concat(m_BladeContainers)
             .ToArray();
@@ -87,14 +88,14 @@ namespace Games.RazorMaze.Views.MazeItems
             GameTicker,
             Transitioner,
             Managers);
-        
-        public override bool Activated
+
+        public override bool ActivatedInSpawnPool
         {
-            get => m_Activated;
+            get => base.ActivatedInSpawnPool;
             set
             {
-                m_Activated = value;
                 m_Animator.SetGoActive(value);
+                base.ActivatedInSpawnPool = value;
             }
         }
 
@@ -114,15 +115,23 @@ namespace Games.RazorMaze.Views.MazeItems
             }
         }
         
+        public void UpdateTick()
+        {
+            if (!m_ReadyToKill)
+                return;
+
+
+            CheckForCharacterDeath();
+        }
+
         #endregion
 
         #region nonpublic methods
 
-        protected override void SetShape()
+        protected override void InitShape()
         {
             Object = new GameObject("Trap Increasing");
             Object.SetParent(ContainersGetter.MazeItemsContainer);
-            Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             var prefab = PrefabUtilsEx.InitPrefab(
                 Object.transform, "views", "trap_increasing");
             prefab.transform.SetLocalPosXY(Vector2.zero);
@@ -146,6 +155,24 @@ namespace Games.RazorMaze.Views.MazeItems
                 bladeContainer.enabled = false;
             foreach (var blade in m_Blades)
                 blade.enabled = false;
+        }
+
+        protected override void UpdateShape()
+        {
+            Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+
+            m_DeathZone = new List<V2Int>
+            {
+                Props.Position + V2Int.down,
+                Props.Position + V2Int.up,
+                Props.Position + V2Int.left,
+                Props.Position + V2Int.right,
+                Props.Position + V2Int.down + V2Int.left,
+                Props.Position + V2Int.down + V2Int.right,
+                Props.Position + V2Int.up + V2Int.left,
+                Props.Position + V2Int.up + V2Int.right
+            }.Select(_P => _P.ToVector2())
+                .ToList();
         }
 
         private void OnRotationStopped()
@@ -184,10 +211,11 @@ namespace Games.RazorMaze.Views.MazeItems
             yield return null;
         }
 
-        protected override void Appear(bool _Appear)
+        protected override void OnAppearStart(bool _Appear)
         {
             if (_Appear)
             {
+                m_Animator.enabled = true;
                 m_Animator.ResetTrigger(AnimKeyClose);
                 m_Animator.ResetTrigger(AnimKeyOpen);
             }
@@ -195,33 +223,28 @@ namespace Games.RazorMaze.Views.MazeItems
             {
                 CloseTrap();
             }
-            base.Appear(_Appear);
+            base.OnAppearStart(_Appear);
         }
 
-        #endregion
-
-        public void UpdateTick()
+        protected override void OnAppearFinish(bool _Appear)
         {
-            if (!m_ReadyToKill)
-                return;
-            var positions = new[]
-            {
-                Props.Position + V2Int.down,
-                Props.Position + V2Int.up,
-                Props.Position + V2Int.left,
-                Props.Position + V2Int.right,
-                Props.Position + V2Int.down + V2Int.left,
-                Props.Position + V2Int.down + V2Int.right,
-                Props.Position + V2Int.up + V2Int.left,
-                Props.Position + V2Int.up + V2Int.right
-            }.Select(_P => _P.ToVector2());
+            if (!_Appear)
+                m_Animator.enabled = false;
+            base.OnAppearFinish(_Appear);
+        }
 
+        private void CheckForCharacterDeath()
+        {
+            const float distance = 0.5f;
             var character = Model.Character;
             var cPos = character.IsMoving ? 
                 character.MovingInfo.PrecisePosition : character.Position.ToVector2();
-            if (positions.All(_P => Vector2.Distance(_P, cPos) + RazorMazeUtils.Epsilon > 1f)) 
+            if (m_DeathZone.All(_P =>
+                Vector2.Distance(_P, cPos) + RazorMazeUtils.Epsilon > distance)) 
                 return;
             character.RaiseDeath();
         }
+
+        #endregion
     }
 }

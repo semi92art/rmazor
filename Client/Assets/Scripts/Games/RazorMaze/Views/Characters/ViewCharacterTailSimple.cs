@@ -18,6 +18,7 @@ namespace Games.RazorMaze.Views.Characters
         private Triangle m_Tail;
         private bool m_Hiding;
         private bool m_Activated;
+        private bool m_Initialized;
         
         #endregion
         
@@ -44,27 +45,22 @@ namespace Games.RazorMaze.Views.Characters
         
         #region api
         
-        public event NoArgsHandler Initialized;
 
         public bool Activated
         {
             get => m_Activated;
             set
             {
+                if (value)
+                {
+                    if (!m_Initialized)
+                    {
+                        InitShape();
+                        m_Initialized = true;
+                    }
+                }
                 m_Activated = value;
-                if (!m_Tail.IsNull())
-                    m_Tail.enabled = value;
             }
-        }
-
-        public void Init()
-        {
-            var go = new GameObject("Character Tail");
-            go.SetParent(ContainersGetter.CharacterContainer);
-            m_Tail = go.AddComponent<Triangle>();
-            m_Tail.Color = DrawingUtils.ColorCharacterTail;
-            m_Tail.enabled = false;
-            Initialized?.Invoke();
         }
 
         public void ShowTail(CharacterMovingEventArgs _Args)
@@ -93,6 +89,15 @@ namespace Games.RazorMaze.Views.Characters
         #endregion
 
         #region nonpublic methods
+
+        private void InitShape()
+        {
+            var go = new GameObject("Character Tail");
+            go.SetParent(ContainersGetter.CharacterContainer);
+            m_Tail = go.AddComponent<Triangle>();
+            m_Tail.Color = DrawingUtils.ColorCharacterTail;
+            m_Tail.enabled = false;
+        }
 
         private IEnumerator HideTailCoroutine(CharacterMovingEventArgs _Args)
         {

@@ -73,14 +73,12 @@ namespace Games.RazorMaze
             SceneManager.sceneLoaded += (_Scene, _Mode) =>
             {
                 var controller = RazorMazeGameController.CreateInstance();
-                controller.Initialized += () => controller.PostInit();
-                controller.PreInitialized += () =>
+                controller.Initialized += () =>
                 {
                     int selectedLevel = SaveUtils.GetValue<int>(SaveKey.DesignerSelectedLevel);
                     controller.Model.LevelStaging.LoadLevel(MazeInfo, selectedLevel);
-                    controller.Init();
                 };
-                controller.PreInit();
+                controller.Init();
             };
             SceneManager.LoadScene(SceneNames.Level);
         }

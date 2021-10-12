@@ -200,8 +200,9 @@ namespace Games.RazorMaze.Editor
 
         private static Color GetContentColor(int _Index)
         {
-            int a = _Index % 6;
-            return a < 3 ? new Color(0.2f, 0.2f, 0.2f) : new Color(0.32f, 0.32f, 0.32f);
+            int a = _Index % (RazorMazeUtils.LevelsInGroup * 2);
+            return a < RazorMazeUtils.LevelsInGroup ?
+                new Color(0.2f, 0.2f, 0.2f) : new Color(0.32f, 0.32f, 0.32f);
         }
 
 

@@ -70,6 +70,7 @@ namespace Games.RazorMaze.Views.Common
         #region api
         
         public event NoArgsHandler Initialized;
+        
 
         public Color BackgroundColor
         {
@@ -86,7 +87,7 @@ namespace Games.RazorMaze.Views.Common
             Initialized?.Invoke();
             m_Initialized = true;
         }
-        
+
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             if (_Args.Stage == ELevelStage.Loaded)
@@ -117,7 +118,7 @@ namespace Games.RazorMaze.Views.Common
             source1Go.SetParent(ContainersGetter.BackgroundContainer);
             var source1 = source1Go.AddComponent<Disc>();
             source1.Color = m_Color;
-            source1.Radius = CoordinateConverter.GetScale() * 0.3f;
+            source1.Radius = 0.25f;
             source1.SortingOrder = sortingOrder;
             source1.enabled = false;
             m_Sources.Add(source1);
@@ -126,7 +127,7 @@ namespace Games.RazorMaze.Views.Common
             source2Go.SetParent(ContainersGetter.BackgroundContainer);
             var source2 = source2Go.AddComponent<Disc>();
             source2.Color = m_Color;
-            source2.Radius = CoordinateConverter.GetScale() * 0.2f;
+            source2.Radius = 0.5f;
             source2.SortingOrder = sortingOrder;
             source2.enabled = false;
             m_Sources.Add(source2);
@@ -135,7 +136,7 @@ namespace Games.RazorMaze.Views.Common
             source3Go.SetParent(ContainersGetter.BackgroundContainer);
             var source3 = source3Go.AddComponent<Disc>();
             source3.Color = m_Color;
-            source3.Radius = CoordinateConverter.GetScale() * 0.1f;
+            source3.Radius = 1f;
             source3.SortingOrder = sortingOrder;
             source3.enabled = false;
             m_Sources.Add(source3);
@@ -292,42 +293,6 @@ namespace Games.RazorMaze.Views.Common
             BackgroundColor = _Color;
             BackgroundColorChanged?.Invoke(_Color);
         }
-
-        // TODO взято из RandomPositionGenerator, 05ab3159, может пригодиться
-        // private Vector2 Next(float _Indent)
-        // {
-        //     bool generated = false;
-        //     Vector2 result = default;
-        //     for (int i = 0; i < 10000; i++)
-        //     {
-        //         bool intersects = false;
-        //         Vector2 pos = RandomPositionInMarginRect(_Indent);
-        //         foreach (var pool in m_Pools)
-        //         {
-        //             foreach (var point in pool)
-        //             {
-        //                 if (!point.Activated)
-        //                     continue;
-        //                 var dscPos = point.transform.position;
-        //                 if (!GeometryUtils.CirclesIntersect(
-        //                     pos, _Indent, dscPos, point.Radius))
-        //                     continue;
-        //                 intersects = true;
-        //                 break;
-        //             }
-        //         }
-        //         if (intersects) 
-        //             continue;
-        //
-        //         generated = true;
-        //         result = pos;
-        //         break;
-        //     }
-        //
-        //     if (!generated)
-        //         Debug.LogWarning("Disc was not generated because of not enough space");
-        //     return result;
-        // }
 
         #endregion
     }

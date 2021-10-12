@@ -40,7 +40,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         #region shapes
 
-        protected override object[] Shapes => new object[] {m_Springboard, m_Pillar};
+        protected override object[] DefaultColorShapes => new object[] {m_Springboard, m_Pillar};
         private Line m_Springboard;
         private Line m_Pillar;
         
@@ -88,26 +88,25 @@ namespace Games.RazorMaze.Views.MazeItems
 
         #region nonpublic methods
         
-        protected override void SetShape()
+        protected override void InitShape()
         {
             var go = Object;
-            var pillar = ContainersGetter.MazeItemsContainer.gameObject
-                .GetOrAddComponentOnNewChild<Line>("Springboard Item", ref go,
-                    CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+            m_Pillar = ContainersGetter.MazeItemsContainer.gameObject
+                .GetOrAddComponentOnNewChild<Line>("Springboard Item", ref go);
             go.DestroyChildrenSafe();
-            var sprbrd = go.AddComponentOnNewChild<Line>("Springboard", out _, Vector2.zero);
-            
-            pillar.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
-            sprbrd.Thickness = pillar.Thickness * 2f;
-            
-            pillar.EndCaps = sprbrd.EndCaps = LineEndCap.Round;
-            pillar.Color = sprbrd.Color = DrawingUtils.ColorLines;
-            (pillar.Start, pillar.End, sprbrd.Start, sprbrd.End) = GetSpringboardAndPillarEdges();
-            m_Edge1Start = sprbrd.Start;
-            m_Edge2Start = sprbrd.End;
+            m_Springboard = go.AddComponentOnNewChild<Line>("Springboard", out _, Vector2.zero);
+            m_Pillar.EndCaps = m_Springboard.EndCaps = LineEndCap.Round;
+            m_Pillar.Color = m_Springboard.Color = DrawingUtils.ColorLines;
+        }
 
-            m_Pillar = pillar;
-            m_Springboard = sprbrd;
+        protected override void UpdateShape()
+        {
+            m_Pillar.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+            m_Pillar.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
+            m_Springboard.Thickness = m_Pillar.Thickness * 2f;
+            (m_Pillar.Start, m_Pillar.End, m_Springboard.Start, m_Springboard.End) = GetSpringboardAndPillarEdges();
+            m_Edge1Start = m_Springboard.Start;
+            m_Edge2Start = m_Springboard.End;
         }
 
         private IEnumerator JumpCoroutine()

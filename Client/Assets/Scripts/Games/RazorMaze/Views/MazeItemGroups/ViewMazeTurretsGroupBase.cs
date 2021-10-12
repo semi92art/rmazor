@@ -30,9 +30,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
 
         public override EMazeItemType[] Types => new[] {EMazeItemType.Turret};
         public event NoArgsHandler Initialized;
-        public event NoArgsHandler PostInitialized;
         public virtual void Init() => Initialized?.Invoke();
-        public virtual void PostInit() => PostInitialized?.Invoke();
         public abstract void OnTurretShoot(TurretShotEventArgs _Args);
 
         #endregion

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using DI.Extensions;
 using Entities;
+using Exceptions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.ContainerGetters;
@@ -35,10 +35,10 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         #region nonpublic members
         
-        protected abstract object[] Shapes { get; }
+        protected abstract object[] DefaultColorShapes { get; }
         protected bool Initialized { get; set; }
-        protected bool m_Activated;
-        
+        protected bool m_ActivatedInSpawnPool;
+
         #endregion
 
         #region inject
@@ -79,14 +79,13 @@ namespace Games.RazorMaze.Views.MazeItems
         public ViewMazeItemProps Props { get; set; }
         public abstract object Clone();
         
-        public virtual bool Activated
+        public virtual bool ActivatedInSpawnPool
         {
-            get => m_Activated;
+            get => m_ActivatedInSpawnPool;
             set
             {
-                m_Activated = value;
-                if (!value)
-                    DeactivateShapes();
+                m_ActivatedInSpawnPool = value;
+                ActivateShapes(false);
             }
         }
         
@@ -97,17 +96,13 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public virtual void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage == ELevelStage.Loaded)
-                Appear(true);
-            else if (_Args.Stage == ELevelStage.Unloaded)
-                Appear(false);
-            
             switch (_Args.Stage)
             {
                 case ELevelStage.Loaded:
                 case ELevelStage.Finished:
                     ProceedingStage = EProceedingStage.Active;
                     break;
+                case ELevelStage.CharacterKilled:
                 case ELevelStage.ReadyToStartOrContinue:
                 case ELevelStage.StartedOrContinued:
                     ProceedingStage = EProceedingStage.ActiveAndWorking;
@@ -117,78 +112,88 @@ namespace Games.RazorMaze.Views.MazeItems
                     ProceedingStage = EProceedingStage.Inactive;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new SwitchCaseNotImplementedException(_Args.Stage);
             }
         }
         
         public virtual void Init(ViewMazeItemProps _Props)
         {
             Props = _Props;
-            SetShape();
+            if (!Initialized)
+                InitShape();
+            UpdateShape();
             Initialized = true;
         }
 
         public bool Equal(IMazeItemProceedInfo _Info)
         {
-            if (Props == null)
-                return false;
-            if (_Info.Type != Props.Type)
-                return false;
-            if (_Info.StartPosition != Props.Position)
-                return false;
-            if (_Info.Path.Count != Props.Path.Count)
-                return false;
-            if (_Info.Path.Where((_Pos, _Index) => _Pos != Props.Path[_Index]).Any())
-                return false;
-            if (Props.Directions.Any() && _Info.Direction != Props.Directions.First())
-                return false;
-            return true;
+            return Props != null && Props.Equals(_Info);
         }
         
-        public void SetLocalPosition(Vector2 _Position) => Object.transform.SetLocalPosXY(_Position);
-        public void SetLocalScale(float _Scale) => Object.transform.localScale = _Scale * Vector3.one;
+        public void SetLocalPosition(Vector2 _Position)
+        {
+            Object.transform.SetLocalPosXY(_Position);
+        }
+
+        public void SetLocalScale(float _Scale)
+        {
+            Object.transform.localScale = _Scale * Vector3.one;
+        }
+
+        public virtual void Appear(bool _Appear)
+        {
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !Initialized,
+                () =>
+                {
+                    OnAppearStart(_Appear);
+                    Transitioner.DoAppearTransitionSimple(
+                        _Appear,
+                        GameTicker,
+                        GetAppearSets(_Appear),
+                        Props.Position,
+                        () => OnAppearFinish(_Appear));
+                }));
+        }
 
         #endregion
         
         #region nonpublic methods
         
-        protected abstract void SetShape();
+        protected abstract void InitShape();
+        protected abstract void UpdateShape();
 
-        protected void DeactivateShapes()
-        {
-            foreach (var shape in Shapes)
-            {
-                if (shape is ShapeRenderer shapeRenderer && !shapeRenderer.IsNull())
-                    shapeRenderer.enabled = false;
-                else if (shape is SpriteRenderer spriteRenderer && !spriteRenderer.IsNull())
-                    spriteRenderer.enabled = false;
-                else if (shape is MeshRenderer meshRenderer && !meshRenderer.IsNull())
-                    meshRenderer.enabled = false;
-            }
-        }
-        
-        protected virtual void Appear(bool _Appear)
+        protected virtual void OnAppearStart(bool _Appear)
         {
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !Initialized,
-                () =>
-                {
-                    Transitioner.DoAppearTransitionSimple(
-                        _Appear,
-                        GameTicker,
-                        new Dictionary<object[], Func<Color>>
-                        {
-                            {Shapes, () => DrawingUtils.ColorLines}
-                        },
-                        Props.Position,
-                        () =>
-                        {
-                            if (!_Appear)
-                                DeactivateShapes();
-                            AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared;
-                        });
-                }));
+            if (_Appear)
+                ActivateShapes(true);
+        }
+
+        protected virtual Dictionary<object[], Func<Color>> GetAppearSets(bool _Appear)
+        {
+            return new Dictionary<object[], Func<Color>>
+            {
+                {DefaultColorShapes, () => DrawingUtils.ColorLines}
+            };
+        }
+
+        protected virtual void OnAppearFinish(bool _Appear)
+        {
+            if (!_Appear)
+                ActivateShapes(false);
+            AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared;
+        }
+
+        protected void ActivateShapes(bool _Activate)
+        {
+            foreach (var shape in DefaultColorShapes)
+            {
+                if (shape is ShapeRenderer shapeRenderer && !shapeRenderer.IsNull())
+                    shapeRenderer.enabled = _Activate;
+                else if (shape is SpriteRenderer spriteRenderer && !spriteRenderer.IsNull())
+                    spriteRenderer.enabled = _Activate;
+            }
         }
 
         #endregion

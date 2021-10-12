@@ -4,13 +4,9 @@ namespace Games.RazorMaze.Models
 {
     public enum MazeOrientation { North, East, South, West }
     public enum EMazeMoveDirection { Up, Right, Down, Left }
-
-    public delegate void MazeInfoHandler(MazeInfo Info);
     
     public interface IModelData
     {
-        event MazeInfoHandler MazeInfoSet;
-        
         int LevelIndex { get; set; }
         MazeInfo Info { get; set; }
         MazeOrientation Orientation { get; set; }
@@ -28,7 +24,6 @@ namespace Games.RazorMaze.Models
 
         #region api
         
-        public event MazeInfoHandler MazeInfoSet;
         public int LevelIndex { get; set; }
         public MazeOrientation Orientation { get; set; } = MazeOrientation.North;
         public bool ProceedingControls { get; set; }
@@ -36,9 +31,9 @@ namespace Games.RazorMaze.Models
         public MazeInfo Info
         {
             get => m_Info;
-            set => MazeInfoSet?.Invoke(m_Info = CorrectInfo(value));
+            set => m_Info = CorrectInfo(value);
         }
-        
+
         #endregion
 
         #region nonpublic methods

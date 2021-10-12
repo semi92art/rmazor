@@ -5,7 +5,6 @@ using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.MazeItems;
 using SpawnPools;
-using Utils;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
@@ -41,13 +40,12 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         public event NoArgsHandler Initialized;
 
-        public List<IViewMazeItemPath> PathItems => m_PathsPool.Where(_Item => _Item.Activated).ToList();
+        public List<IViewMazeItemPath> PathItems => m_PathsPool.Where(_Item => _Item.ActivatedInSpawnPool).ToList();
 
         public void Init()
         {
-            InitPools(ModelData.Info);
-            if (!ViewSettings.StartPathItemFilledOnStart)
-                UnfillStartPathItem();
+            if (m_PathsPool == null)
+                InitPoolsOnStart();
             Initialized?.Invoke();
             m_Initialized = true;
         }
@@ -57,16 +55,18 @@ namespace Games.RazorMaze.Views.MazeItemGroups
             var item = PathItems.First(_Item => _Item.Props.Position == _PathItem);
             item.Collected = true;
         }
-        
+
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !m_Initialized,
-                () =>
-                {
-                    foreach (var item in PathItems)
-                        item.OnLevelStageChanged(_Args);
-                }));
+            if (_Args.Stage == ELevelStage.Loaded)
+            {
+                DeactivateAllPaths();
+                MazeItemsCreator.InitPathItems(ModelData.Info, m_PathsPool);
+                if (!ViewSettings.StartPathItemFilledOnStart)
+                    UnfillStartPathItem();
+            }
+            foreach (var item in PathItems)
+                item.OnLevelStageChanged(_Args);
         }
         
         public void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
@@ -85,14 +85,6 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         #endregion
         
         #region nonpublic methods
-
-        private void InitPools(MazeInfo _Info)
-        {
-            if (m_PathsPool == null)
-                InitPoolsOnStart();
-            DeactivateAllPaths();
-            MazeItemsCreator.InitPathItems(_Info, m_PathsPool);
-        }
         
         private void InitPoolsOnStart()
         {

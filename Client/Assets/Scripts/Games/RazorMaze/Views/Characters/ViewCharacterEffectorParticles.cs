@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Constants;
 using DI.Extensions;
-using Exceptions;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
@@ -19,6 +18,7 @@ namespace Games.RazorMaze.Views.Characters
     {
         #region nonpublic members
 
+        private bool m_Initialized;
         private bool m_Activated;
         private GameObject m_DeathShapesContainer;
         private List<ShapeRenderer> m_DeathShapes;
@@ -48,46 +48,29 @@ namespace Games.RazorMaze.Views.Characters
 
         #region api
         
-        public event NoArgsHandler Initialized;
 
         public bool Activated
         {
             get => m_Activated;
             set
             {
+                if (value)
+                {
+                    if (!m_Initialized)
+                        InitPrefab();
+                    UpdatePrefab();    
+                }
                 m_Activated = value;
                 m_DeathShapes.ForEach(_Shape => _Shape.enabled = value);
             }
         }
-        public void Init()
-        {
-            InitPrefab();
-            Initialized?.Invoke();
-        }
 
-        public void OnRevivalOrDeath(bool _Alive)
-        {
-            if (_Alive)
-                m_DeathShapes.ForEach(_Shape => _Shape.enabled = false);
-            else Coroutines.Run(DeathCoroutine());
-        }
-        
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            switch (_Args.Stage)
-            {
-                case ELevelStage.Loaded:
-                    Activated = true;
-                    break;
-                case ELevelStage.Paused:
-                    break;
-                case ELevelStage.StartedOrContinued:
-                    break;
-                case ELevelStage.Finished:
-                    break;
-                default:
-                    throw new SwitchCaseNotImplementedException(_Args.Stage);
-            }
+            if (_Args.Stage == ELevelStage.CharacterKilled)
+                Coroutines.Run(DeathCoroutine());
+            else
+                m_DeathShapes.ForEach(_Shape => _Shape.enabled = false);
         }
         
         #endregion
@@ -101,8 +84,6 @@ namespace Games.RazorMaze.Views.Characters
                 CommonPrefabSetNames.Views,
                 "character_death");
             m_DeathShapesContainer = prefab.GetContentItem("death items");
-            var localScale = Vector3.one * CoordinateConverter.GetScale() * 0.98f;
-            m_DeathShapesContainer.transform.localScale = localScale;
             var deathShapeTypes = new[]
             {
                 typeof(Disc), typeof(Rectangle), typeof(Line), 
@@ -114,6 +95,14 @@ namespace Games.RazorMaze.Views.Characters
                 .ToList();
             m_DeathShapes.ForEach(_Shape => _Shape.enabled = false);
             m_DeathShapes.Shuffle();
+            
+            m_Initialized = true;
+        }
+
+        private void UpdatePrefab()
+        {
+            var localScale = Vector3.one * CoordinateConverter.GetScale() * 0.98f;
+            m_DeathShapesContainer.transform.localScale = localScale;
         }
         
         private IEnumerator DeathCoroutine()
