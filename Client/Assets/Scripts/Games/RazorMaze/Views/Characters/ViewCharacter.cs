@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Constants;
 using DI.Extensions;
 using Entities;
@@ -116,11 +117,11 @@ namespace Games.RazorMaze.Views.Characters
             }
         }
 
-        public override void OnRotationFinished(MazeRotationEventArgs _Args)
+        public override void OnRotationAfterFinished(MazeRotationEventArgs _Args)
         {
             if (m_NeedToInvokeOnReadyToContinue)
             {
-                OnReadyToContinue();
+                SetDefaultCharacterState();
                 m_NeedToInvokeOnReadyToContinue = false;
             }
         }
@@ -145,6 +146,7 @@ namespace Games.RazorMaze.Views.Characters
         {
             m_Animator.SetTrigger(AnimKeyBump);
             Tail.HideTail(_Args);
+            Coroutines.Run(HitMaze(_Args));
             Managers.Notify(_SM => _SM.PlayClip(SoundClipNameCharacterMoveEnd));
         }
 
@@ -153,8 +155,14 @@ namespace Games.RazorMaze.Views.Characters
             switch (_Args.Stage)
             {
                 case ELevelStage.Loaded:
-                    SetPosition(CoordinateConverter.ToLocalCharacterPosition(Model.Character.Position));
+                    SetDefaultCharacterState();
                     Activated = true;
+                    break;
+                case ELevelStage.ReadyToStartOrContinue:
+                    if (m_OrientationCache == MazeOrientation.North)
+                        SetDefaultCharacterState();
+                    else
+                        m_NeedToInvokeOnReadyToContinue = true;
                     break;
                 case ELevelStage.CharacterKilled:
                     m_OrientationCache = Model.Data.Orientation;
@@ -162,12 +170,6 @@ namespace Games.RazorMaze.Views.Characters
                     Tail.HideTail();
                     Managers.Notify(_SM => _SM.PlayClip(SoundClipNameCharacterDeath));
                     Coroutines.Run(ShakeMaze());
-                    break;
-                case ELevelStage.ReadyToStartOrContinue:
-                    if (m_OrientationCache == MazeOrientation.North)
-                        OnReadyToContinue();
-                    else
-                        m_NeedToInvokeOnReadyToContinue = true;
                     break;
             }
             Effector.OnLevelStageChanged(_Args);
@@ -300,15 +302,43 @@ namespace Games.RazorMaze.Views.Characters
                     ContainersGetter.MazeContainer.position = defPos;
                 });
         }
-
-        private void OnReadyToContinue()
+        
+        private IEnumerator HitMaze(CharacterMovingEventArgs _Args)
         {
-            SetPosition(CoordinateConverter.ToLocalCharacterPosition(Model.Character.Position));
-            LookAtByOrientation(EMazeMoveDirection.Right, false);
-            m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = true;
-            m_Animator.SetTrigger(AnimKeyStartJumping);
-            Tail.Activated = true;
-            Tail.HideTail();
+            const float amplitude = 0.5f;
+            var dir = RazorMazeUtils.GetDirectionVector(_Args.Direction, MazeOrientation.North);
+            Vector2 defPos = ContainersGetter.MazeContainer.position;
+            const float duration = 0.1f;
+            yield return Coroutines.Lerp(
+                0f,
+                1f,
+                duration,
+                _Progress =>
+                {
+                    float distance = _Progress < 0.5f ? _Progress * amplitude : (1f - _Progress) * amplitude;
+                    var res = defPos + distance * dir.ToVector2();
+                    ContainersGetter.MazeContainer.position = res;
+                },
+                GameTicker,
+                (_Finished, _Progress) =>
+                {
+                    ContainersGetter.MazeContainer.position = defPos;
+                });
+        }
+
+        private void SetDefaultCharacterState()
+        {
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !m_Initialized,
+                () =>
+                {
+                    SetPosition(CoordinateConverter.ToLocalCharacterPosition(Model.Data.Info.Path.First()));
+                    LookAtByOrientation(EMazeMoveDirection.Right, false);
+                    m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = true;
+                    m_Animator.SetTrigger(AnimKeyStartJumping);
+                    Tail.Activated = true;
+                    Tail.HideTail();
+                }));
         }
 
         #endregion

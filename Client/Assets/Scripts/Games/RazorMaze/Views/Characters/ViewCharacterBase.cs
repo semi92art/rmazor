@@ -35,7 +35,7 @@ namespace Games.RazorMaze.Views.Characters
         
         public EAppearingState AppearingState { get; protected set; }
         public virtual bool Activated { get; set; }
-        public abstract void OnRotationFinished(MazeRotationEventArgs _Args);
+        public abstract void OnRotationAfterFinished(MazeRotationEventArgs _Args);
         public abstract void OnCharacterMoveStarted(CharacterMovingEventArgs _Args);
         public abstract void OnCharacterMoveContinued(CharacterMovingEventArgs _Args);
         public abstract void OnCharacterMoveFinished(CharacterMovingEventArgs _Args);

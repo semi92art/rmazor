@@ -93,8 +93,6 @@ namespace Games.RazorMaze.Views
         
         public void Init()
         {
-            MazeRotation.RotationFinished += Character.OnRotationFinished;
-            
             var proceeders = GetProceeders();
             var iBackColChangedProceeders = GetInterfaceOfProceeders<IOnBackgroundColorChanged>(proceeders);
             foreach (var proceeder in iBackColChangedProceeders)

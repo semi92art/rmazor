@@ -38,6 +38,7 @@ namespace Games.RazorMaze.Views.UI
         private IDialogPanels DialogPanels { get; }
         private ITransitionRenderer TransitionRenderer { get; }
         private ILoadingController LoadingController { get; }
+        private IViewUIPrompts ViewUIPrompts { get; }
 
         public ViewUI(
             IManagersGetter _Managers,
@@ -46,7 +47,8 @@ namespace Games.RazorMaze.Views.UI
             INotificationViewer _NotificationViewer,
             IDialogPanels _DialogPanels,
             ITransitionRenderer _TransitionRenderer,
-            ILoadingController _LoadingController)
+            ILoadingController _LoadingController,
+            IViewUIPrompts _ViewUIPrompts)
         {
             Managers = _Managers;
             UITicker = _UITicker;
@@ -55,6 +57,7 @@ namespace Games.RazorMaze.Views.UI
             DialogPanels = _DialogPanels;
             TransitionRenderer = _TransitionRenderer;
             LoadingController = _LoadingController;
+            ViewUIPrompts = _ViewUIPrompts;
 
             _UITicker.Register(this);
         }
@@ -76,7 +79,7 @@ namespace Games.RazorMaze.Views.UI
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            // TODO
+            ViewUIPrompts.OnLevelStageChanged(_Args);
         }
  
 
@@ -127,7 +130,7 @@ namespace Games.RazorMaze.Views.UI
                 () => authFinishedArgs.Value, () => null);
         }
         
-                private void OnLoadingResult(LoadingResult _Result)
+        private void OnLoadingResult(LoadingResult _Result)
         {
             switch (_Result)
             {

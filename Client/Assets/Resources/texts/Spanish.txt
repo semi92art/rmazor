@@ -37,3 +37,4 @@ OrGoTo = o ir a
 Register = Registrarse
 YourReward = tu recompensa:
 Get = obtener
+swipe_to_start = 

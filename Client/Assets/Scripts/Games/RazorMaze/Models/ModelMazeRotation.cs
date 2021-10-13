@@ -13,15 +13,18 @@ namespace Games.RazorMaze.Models
         public MazeRotateDirection Direction { get; }
         public MazeOrientation CurrentOrientation { get; }
         public MazeOrientation NextOrientation { get; }
+        public bool Instantly { get; }
 
         public MazeRotationEventArgs(
             MazeRotateDirection _Direction, 
             MazeOrientation _CurrentOrientation,
-            MazeOrientation _NextOrientation)
+            MazeOrientation _NextOrientation,
+            bool _Instantly)
         {
             Direction = _Direction;
             CurrentOrientation = _CurrentOrientation;
             NextOrientation = _NextOrientation;
+            Instantly = _Instantly;
         }
     }
     
@@ -69,7 +72,7 @@ namespace Games.RazorMaze.Models
             var currOrientation = Data.Orientation;
             Data.Orientation = _NextOrientation ?? GetNextOrientation(_Direction, currOrientation);
             var args = new MazeRotationEventArgs(
-                _Direction, currOrientation, Data.Orientation);
+                _Direction, currOrientation, Data.Orientation, false);
             RotationStarted?.Invoke(args);
         }
 
@@ -96,6 +99,14 @@ namespace Games.RazorMaze.Models
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
+            var stage = _Args.Stage;
+            if (stage == ELevelStage.Unloaded)
+            {
+                Data.Orientation = MazeOrientation.North;
+                var args = new MazeRotationEventArgs(
+                    default, default, Data.Orientation, true);
+                RotationStarted?.Invoke(args);
+            }
             if (_Args.Stage == ELevelStage.ReadyToStartOrContinue)
             {
                 if (Data.Orientation == MazeOrientation.North)
@@ -105,7 +116,8 @@ namespace Games.RazorMaze.Models
                     : MazeRotateDirection.Clockwise;
                 var currOrient = Data.Orientation;
                 Data.Orientation = MazeOrientation.North;
-                var args = new MazeRotationEventArgs(rotDir, currOrient, Data.Orientation);
+                var args = new MazeRotationEventArgs(
+                    rotDir, currOrient, Data.Orientation, false);
                 RotationStarted?.Invoke(args);
             }
         }

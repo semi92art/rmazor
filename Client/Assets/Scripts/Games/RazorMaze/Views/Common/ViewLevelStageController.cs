@@ -5,6 +5,7 @@ using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Characters;
 using Games.RazorMaze.Views.MazeItemGroups;
 using Games.RazorMaze.Views.MazeItems;
+using Mono_Installers;
 using Ticker;
 using Utils;
 
@@ -94,7 +95,11 @@ namespace Games.RazorMaze.Views.Common
                         return character.AppearingState != EAppearingState.Appeared
                                || mazeItems.Any(_Item => _Item.AppearingState != EAppearingState.Appeared);
                     },
-                    () => Model.LevelStaging.ReadyToStartOrContinueLevel()));
+                    () =>
+                    {
+                        if (!LevelMonoInstaller.Release) 
+                            Model.LevelStaging.ReadyToStartOrContinueLevel(); 
+                    }));
             }
             else if (_Args.Stage == ELevelStage.Finished)
             {

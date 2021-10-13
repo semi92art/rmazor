@@ -113,6 +113,7 @@ namespace Mono_Installers
             Container.Bind<ILoadingController>()            .To<LoadingController>()             .AsSingle().When(_ => Release);
             Container.Bind<IDailyBonusDialogPanel>()        .To<DailyBonusPanel>()               .AsSingle().When(_ => Release);
             Container.Bind<ISettingDialogPanel>()           .To<SettingsPanel>()                 .AsSingle().When(_ => Release);
+            Container.Bind<IViewUIPrompts>().To<ViewUIPrompts>().AsSingle().When(_ => Release);
             
 #if UNITY_EDITOR
             Container.Bind<IInputConfigurator>()            .To<RazorMazeInputConfiguratorProt>().AsSingle();

@@ -58,8 +58,8 @@ public class IntroSceneViewer : MonoBehaviour
                     int level = levelScoreEntity.Scores.First().Value;
                     Dbg.Log($"Current level from cache: {level}");
                     // FIXME заглушка для загрузки уровня
-                    var info = LevelsLoader.LoadLevel(1, 1);
-                    controller.Model.LevelStaging.LoadLevel(info, 1);
+                    var info = LevelsLoader.LoadLevel(1, 0);
+                    controller.Model.LevelStaging.LoadLevel(info, 0);
                 }));
         };
         controller.Init();

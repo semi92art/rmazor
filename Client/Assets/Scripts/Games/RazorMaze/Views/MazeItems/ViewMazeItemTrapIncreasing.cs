@@ -152,7 +152,11 @@ namespace Games.RazorMaze.Views.MazeItems
             }
 
             foreach (var bladeContainer in m_BladeContainers)
+            {
+                bladeContainer.Thickness = 0.07f;
+                bladeContainer.EndCaps = LineEndCap.None;
                 bladeContainer.enabled = false;
+            }
             foreach (var blade in m_Blades)
                 blade.enabled = false;
         }

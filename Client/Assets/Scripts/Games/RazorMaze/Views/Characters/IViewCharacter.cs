@@ -14,6 +14,6 @@ namespace Games.RazorMaze.Views.Characters
         IOnBackgroundColorChanged,
         IAppear
     {
-        void OnRotationFinished(MazeRotationEventArgs _Args);
+        void OnRotationAfterFinished(MazeRotationEventArgs _Args);
     }
 }
