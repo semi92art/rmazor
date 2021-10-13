@@ -26,7 +26,8 @@ namespace Games.RazorMaze.Editor
 
         private int m_HeapIndex;
         private int m_SelectedIndexCheck = -1;
-        private int m_LoadedIndex;
+        private int m_LoadedLevelIndex = -1;
+        private int m_LoadedLevelHeapIndex = -1;
 
         #endregion
 
@@ -153,9 +154,10 @@ namespace Games.RazorMaze.Editor
             GUI.contentColor = ContentColor;
         }
 
-        public void SetupLoadedLevel(int _Index)
+        public void SetupLoadedLevel(int _LevelIndex, int _HeapIndex)
         {
-            m_LoadedIndex = _Index;
+            m_LoadedLevelIndex = _LevelIndex;
+            m_LoadedLevelHeapIndex = _HeapIndex;
         }
 
         private void OnDrawElementCallback(Rect _Rect, int _Index, bool _IsActive, bool _IsFocused)
@@ -163,7 +165,7 @@ namespace Games.RazorMaze.Editor
             var elementColor = _IsFocused || m_SelectedIndexCheck == _Index
                 ? BackgroundSelectedLevelColor
                 : GetContentColor(_Index);
-            if (m_LoadedIndex == _Index)
+            if (m_LoadedLevelIndex == _Index && m_LoadedLevelHeapIndex == m_HeapIndex)
                 elementColor = BackgroundLoadedLevelColor;
             EditorGUI.DrawRect(new Rect(
                 _Rect.x,

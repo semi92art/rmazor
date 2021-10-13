@@ -35,10 +35,10 @@ namespace Games.RazorMaze.Editor
         private LevelDesigner m_Des;
         private Vector2 m_HeapScroll;
         private int m_LevelIndex;
+        private int m_LoadedLevelHeapIndex = -1;
+        private int m_LoadedLevelIndex = -1;
         private int m_TabPage;
         private GUIStyle headerStyle;
-
-        private int m_loadedLevelIndex = -1;
 
         #endregion
 
@@ -97,8 +97,9 @@ namespace Games.RazorMaze.Editor
             var info = LevelsList.Levels[LevelsList.SelectedIndex];
             CreateObjects(info);
             FocusCamera(info.Size);
-            m_loadedLevelIndex = LevelsList.SelectedIndex;
-            LevelsList.SetupLoadedLevel(m_loadedLevelIndex);
+            m_LoadedLevelIndex = LevelsList.SelectedIndex;
+            m_LoadedLevelHeapIndex = HeapIndex;
+            LevelsList.SetupLoadedLevel(m_LoadedLevelIndex, m_LoadedLevelHeapIndex);
         }
         
         private void LoadLevel(MazeInfo _Info)
@@ -111,12 +112,16 @@ namespace Games.RazorMaze.Editor
         {
             if (!_Forced && LevelsList != null)
                 return;
+            
             if (LevelsList == null)
                 LevelsList = new HeapReorderableList(_gameId, HeapIndex, _SelectedIndex =>
                 {
                     SaveUtils.PutValue(SaveKey.DesignerSelectedLevel, _SelectedIndex);
                 });
             else LevelsList.Reload(HeapIndex);
+            
+            if (m_LoadedLevelIndex != -1)
+                LevelsList.SetupLoadedLevel(m_LoadedLevelIndex, m_LoadedLevelHeapIndex);
         }
         
         #endregion
@@ -253,7 +258,7 @@ namespace Games.RazorMaze.Editor
             _heapIndexCheck = HeapIndex;
             EditorUtilsEx.HorizontalZone(() =>
             {
-                GUILayout.Label($"Current level: Heap {HeapIndex} level {m_loadedLevelIndex + 1}");
+                GUILayout.Label($"Current level: heap {m_LoadedLevelHeapIndex}, index {m_LoadedLevelIndex + 1}", EditorStyles.boldLabel);
             });
             EditorUtilsEx.HorizontalZone(() =>
             {
