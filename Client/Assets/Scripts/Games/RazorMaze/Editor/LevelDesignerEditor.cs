@@ -20,7 +20,12 @@ namespace Games.RazorMaze.Editor
         
         public static HeapReorderableList LevelsList;
         private static int _gameId = 1;
-        private static int _heapIndex;
+
+        private static int HeapIndex
+        {
+            get => SaveUtils.GetValue<int>(SaveKey.DesignerHeapIndex);
+            set => SaveUtils.PutValue(SaveKey.DesignerHeapIndex, value);
+        }
         private static int _heapIndexCheck;
         
         #endregion
@@ -30,9 +35,11 @@ namespace Games.RazorMaze.Editor
         private LevelDesigner m_Des;
         private Vector2 m_HeapScroll;
         private int m_LevelIndex;
+        private int m_LoadedLevelHeapIndex = -1;
+        private int m_LoadedLevelIndex = -1;
         private int m_TabPage;
         private GUIStyle headerStyle;
-        
+
         #endregion
 
         #region engine methods
@@ -48,8 +55,6 @@ namespace Games.RazorMaze.Editor
         {
             if (SceneManager.GetActiveScene().name != SceneNames.Prototyping)
                 return;
-            if (LevelsList == null)
-                (_heapIndex, _heapIndexCheck) = (2, 0);
             m_Des = LevelDesigner.Instance;
         }
 
@@ -92,6 +97,9 @@ namespace Games.RazorMaze.Editor
             var info = LevelsList.Levels[LevelsList.SelectedIndex];
             CreateObjects(info);
             FocusCamera(info.Size);
+            m_LoadedLevelIndex = LevelsList.SelectedIndex;
+            m_LoadedLevelHeapIndex = HeapIndex;
+            LevelsList.SetupLoadedLevel(m_LoadedLevelIndex, m_LoadedLevelHeapIndex);
         }
         
         private void LoadLevel(MazeInfo _Info)
@@ -104,12 +112,16 @@ namespace Games.RazorMaze.Editor
         {
             if (!_Forced && LevelsList != null)
                 return;
+            
             if (LevelsList == null)
-                LevelsList = new HeapReorderableList(_gameId, _heapIndex, _SelectedIndex =>
+                LevelsList = new HeapReorderableList(_gameId, HeapIndex, _SelectedIndex =>
                 {
                     SaveUtils.PutValue(SaveKey.DesignerSelectedLevel, _SelectedIndex);
                 });
-            else LevelsList.Reload(_heapIndex);
+            else LevelsList.Reload(HeapIndex);
+            
+            if (m_LoadedLevelIndex != -1)
+                LevelsList.SetupLoadedLevel(m_LoadedLevelIndex, m_LoadedLevelHeapIndex);
         }
         
         #endregion
@@ -230,24 +242,28 @@ namespace Games.RazorMaze.Editor
             EditorUtilsEx.HorizontalZone(() =>
             {
                 GUILayout.Label("Heap:");
-                _heapIndex = 1 + EditorGUILayout.Popup(_heapIndex - 1,
-                    Enumerable.Range(1, 10)
-                        .Select(_Idx =>
-                        {
-                            string str = $"{_Idx}";
-                            if (_Idx == 1)
-                                return str + " (Release)";
-                            return str;
-                        }).ToArray());
+                HeapIndex = 1 + EditorGUILayout.Popup(HeapIndex - 1,
+                                Enumerable.Range(1, 10)
+                                    .Select(_Idx =>
+                                    {
+                                        string str = $"{_Idx}";
+                                        if (_Idx == 1)
+                                            return str + " (Release)";
+                                        return str;
+                                    }).ToArray());
                 EditorUtilsEx.GuiButtonAction("Reload", () => ReloadReorderableLevels(true));
             });
-            if (_heapIndex != _heapIndexCheck)
+            if (HeapIndex != _heapIndexCheck)
                 ReloadReorderableLevels(true);
-            _heapIndexCheck = _heapIndex;
+            _heapIndexCheck = HeapIndex;
+            EditorUtilsEx.HorizontalZone(() =>
+            {
+                GUILayout.Label($"Current level: heap {m_LoadedLevelHeapIndex}, index {m_LoadedLevelIndex + 1}", EditorStyles.boldLabel);
+            });
             EditorUtilsEx.HorizontalZone(() =>
             {
                 EditorUtilsEx.GuiButtonAction("Load", LoadLevel);
-                EditorUtilsEx.GuiButtonAction("Save", SaveLevel, _heapIndex, LevelsList.SelectedIndex);
+                EditorUtilsEx.GuiButtonAction("Save", SaveLevel, HeapIndex, LevelsList.SelectedIndex);
                 EditorUtilsEx.GuiButtonAction("Delete", LevelsList.Delete, LevelsList.SelectedIndex);
                 EditorUtilsEx.GuiButtonAction("Add Empty", AddEmptyLevel);
             });
