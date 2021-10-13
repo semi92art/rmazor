@@ -118,7 +118,6 @@ namespace Games.RazorMaze.Editor
             EditorGUI.LabelField(rect, $"Levels in heap: {m_List.list.Count}");
             rect = new Rect(_Rect.x, _Rect.y + LineHeight, _Rect.width, EditorGUIUtility.singleLineHeight);
             EditorGUI.LabelField(rect, "Filters:");
-            var width = _Rect.width;
             var k = 0;
             foreach (var filter in m_Filters
                 .ToList()
@@ -127,36 +126,20 @@ namespace Games.RazorMaze.Editor
                 float yPos = _Rect.y + 2f * LineHeight + LineHeight * k;
                 float xPos = _Rect.x;
                 float width = 20f;
-                rect = new Rect(
-                    xPos,
-                    yPos,
-                    width,
-                    EditorGUIUtility.singleLineHeight);
+                UnityAction updateRect = () => rect = new Rect(xPos, yPos, width, EditorGUIUtility.singleLineHeight);
+                updateRect();
                 EditorGUI.DrawRect(rect, FilterColors[k++]);
                 xPos += width;
-                width = 100f;
-                rect = new Rect(
-                    xPos,
-                    yPos,
-                    width,
-                    EditorGUIUtility.singleLineHeight);
-                var levelsWithThisFilterCount = Levels
-                    .Count(_Level => _Level.MazeItems
-                        .Any(_Item => _Item.Type == filter));
-                EditorGUI.LabelField(rect, $"Count: {levelsWithThisFilterCount}");
-                rect = new Rect(
-                    xPos,
-                    yPos,
-                    width,
-                    EditorGUIUtility.singleLineHeight);
+                width = 20f;
+                updateRect();
                 m_Filters[filter] = EditorGUI.Toggle(rect, m_Filters[filter]);
                 xPos += width;
-                width = 70f;
-                rect = new Rect(
-                    xPos,
-                    yPos,
-                    width,
-                    EditorGUIUtility.singleLineHeight);
+                width = 100f;
+                updateRect();
+                EditorGUI.LabelField(rect, filter.ToString());
+                xPos += width;
+                width = 100f;
+                updateRect();
                 int levelsWithThisFilterCount = Levels
                     .Count(_Level => _Level.MazeItems
                         .Any(_Item => _Item.Type == filter));
@@ -227,8 +210,7 @@ namespace Games.RazorMaze.Editor
             var a = _Index % 6;
             return a < 3 ? new Color(0.2f, 0.2f, 0.2f) : new Color(0.32f, 0.32f, 0.32f);
         }
-
-
+        
         private static readonly Color[] FilterColors =
         {
             new Color(1f, 0f, 0.01f),
