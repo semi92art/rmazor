@@ -13,27 +13,27 @@ namespace Games.RazorMaze.Editor
     public class HeapReorderableList
     {
         #region nonpublic members
-        
+
         private static readonly float LineHeight = EditorGUIUtility.singleLineHeight;
         private static readonly Color ContentColor = Color.white;
         private static readonly Color BackgroundSelectedColor = new Color(0.16f, 0.27f, 0.58f);
-        
+
         private readonly ReorderableList m_List;
         private readonly LevelsSaverEditor m_LevelsSaver = new LevelsSaverEditor();
         private readonly int m_GameId;
         private readonly Dictionary<EMazeItemType, bool> m_Filters = new Dictionary<EMazeItemType, bool>();
-        
+
         private int m_HeapIndex;
-        private int m_SelectedIndexCheck;
+        private int m_SelectedIndexCheck = -1;
+        private int m_LoadedIndex;
 
         #endregion
-        
+
         #region api
 
         public List<MazeInfo> Levels => m_List.list.Cast<MazeInfo>().ToList();
         public int SelectedIndex => m_List.index;
         public int Count => m_List.count;
-        
 
         public HeapReorderableList(int _GameId, int _HeapIndex, UnityAction<int> _OnSelect)
         {
@@ -67,9 +67,21 @@ namespace Games.RazorMaze.Editor
             };
         }
 
-        public void DoLayoutList() => m_List.DoLayoutList();
-        public void Insert(int _Index, MazeInfo _Info) => m_List.list.Insert(_Index, _Info);
-        public void Add(MazeInfo _Info) => m_List.list.Add(_Info);
+        public void DoLayoutList()
+        {
+            m_List.DoLayoutList();
+        }
+
+        public void Insert(int _Index, MazeInfo _Info)
+        {
+            m_List.list.Insert(_Index, _Info);
+        }
+
+        public void Add(MazeInfo _Info)
+        {
+            m_List.list.Add(_Info);
+        }
+
         public void Reload(int _HeapIndex)
         {
             m_HeapIndex = _HeapIndex;
@@ -97,7 +109,7 @@ namespace Games.RazorMaze.Editor
         }
 
         #endregion
-        
+
         #region nonpublic methods
 
         private void OnDrawHeaderCallback(Rect _Rect)
@@ -106,7 +118,8 @@ namespace Games.RazorMaze.Editor
             EditorGUI.LabelField(rect, $"Levels in heap: {m_List.list.Count}");
             rect = new Rect(_Rect.x, _Rect.y + LineHeight, _Rect.width, EditorGUIUtility.singleLineHeight);
             EditorGUI.LabelField(rect, "Filters:");
-            int k = 0;
+            var width = _Rect.width;
+            var k = 0;
             foreach (var filter in m_Filters
                 .ToList()
                 .Select(_Kvp => _Kvp.Key))
@@ -127,9 +140,10 @@ namespace Games.RazorMaze.Editor
                     yPos,
                     width,
                     EditorGUIUtility.singleLineHeight);
-                EditorGUI.LabelField(rect, filter.ToString());
-                xPos += width;
-                width = 20f;
+                var levelsWithThisFilterCount = Levels
+                    .Count(_Level => _Level.MazeItems
+                        .Any(_Item => _Item.Type == filter));
+                EditorGUI.LabelField(rect, $"Count: {levelsWithThisFilterCount}");
                 rect = new Rect(
                     xPos,
                     yPos,
@@ -149,29 +163,38 @@ namespace Games.RazorMaze.Editor
                 EditorGUI.LabelField(rect, $"Count: {levelsWithThisFilterCount}");
             }
         }
-        
+
         private void OnDrawElementBackgroundCallback(Rect _Rect, int _Index, bool _IsActive, bool _IsFocused)
         {
             GUI.contentColor = ContentColor;
         }
-        
+
+        public void SetupLoadedLevel(int _Index)
+        {
+            m_LoadedIndex = _Index;
+            var element = m_List.list[_Index] as MazeInfo;
+        }
+
         private void OnDrawElementCallback(Rect _Rect, int _Index, bool _IsActive, bool _IsFocused)
         {
-            var elementColor = _IsFocused || m_SelectedIndexCheck == _Index ? 
-                BackgroundSelectedColor : GetContentColor(_Index);
+            var elementColor = _IsFocused || m_SelectedIndexCheck == _Index
+                ? BackgroundSelectedColor
+                : GetContentColor(_Index);
+            if (m_LoadedIndex == _Index)
+                elementColor = new Color(0f, 1f, 0.19f, 0.43f);
             EditorGUI.DrawRect(new Rect(
                 _Rect.x,
-                _Rect.y, 
+                _Rect.y,
                 _Rect.width,
                 LineHeight), elementColor);
             var element = m_List.list[_Index] as MazeInfo;
-            EditorGUI.LabelField(new Rect(_Rect.x,_Rect.y,40, LineHeight),$"{_Index + 1}" );
+            EditorGUI.LabelField(new Rect(_Rect.x, _Rect.y, 40, LineHeight), $"{_Index + 1}");
             if (element == null)
                 return;
             element.Comment = EditorGUI.TextField(
                 new Rect(
                     _Rect.x + 40,
-                    _Rect.y, 
+                    _Rect.y,
                     _Rect.width - 3f * 40f,
                     LineHeight),
                 element.Comment);
@@ -179,34 +202,34 @@ namespace Games.RazorMaze.Editor
                 .Where(_Kvp => _Kvp.Value)
                 .Select(_Kvp => _Kvp.Key)
                 .ToList();
-            int k = 0;
+            var k = 0;
             foreach (var filter in m_Filters
                 .ToList()
                 .Select(_Kvp => _Kvp.Key))
             {
                 if (selectedFilters.Contains(filter)
-                && element.MazeItems.Any(_Item => _Item.Type == filter))
+                    && element.MazeItems.Any(_Item => _Item.Type == filter))
                 {
-                    float w = 2f * 40f;
+                    var w = 2f * 40f;
                     EditorGUI.DrawRect(new Rect(
                         _Rect.x + 40f + _Rect.width - 3f * 40f + w / m_Filters.Count * k,
-                        _Rect.y, 
+                        _Rect.y,
                         w / m_Filters.Count,
                         LineHeight), FilterColors[k]);
                 }
+
                 k++;
             }
         }
 
         private static Color GetContentColor(int _Index)
         {
-            int a = _Index % (RazorMazeUtils.LevelsInGroup * 2);
-            return a < RazorMazeUtils.LevelsInGroup ?
-                new Color(0.2f, 0.2f, 0.2f) : new Color(0.32f, 0.32f, 0.32f);
+            var a = _Index % 6;
+            return a < 3 ? new Color(0.2f, 0.2f, 0.2f) : new Color(0.32f, 0.32f, 0.32f);
         }
 
 
-        private static Color[] FilterColors =
+        private static readonly Color[] FilterColors =
         {
             new Color(1f, 0f, 0.01f),
             new Color(1f, 0.66f, 0f),
@@ -217,7 +240,7 @@ namespace Games.RazorMaze.Editor
             new Color(0.7f, 0f, 1f),
             new Color(1f, 0f, 0.64f),
             new Color(0.94f, 1f, 0.96f),
-            Color.black,
+            Color.black
         };
 
         #endregion
