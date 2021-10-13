@@ -40,7 +40,7 @@ namespace Games.RazorMaze.Editor
 
         private int m_loadedLevelIndex = -1;
 
-            #endregion
+        #endregion
 
         #region engine methods
         

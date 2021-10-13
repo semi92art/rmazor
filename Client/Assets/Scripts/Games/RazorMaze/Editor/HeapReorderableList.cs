@@ -16,7 +16,8 @@ namespace Games.RazorMaze.Editor
 
         private static readonly float LineHeight = EditorGUIUtility.singleLineHeight;
         private static readonly Color ContentColor = Color.white;
-        private static readonly Color BackgroundSelectedColor = new Color(0.16f, 0.27f, 0.58f);
+        private static readonly Color BackgroundSelectedLevelColor = new Color(0.16f, 0.27f, 0.58f);
+        private static readonly Color BackgroundLoadedLevelColor = new Color(0f, 1f, 0.19f, 0.43f);
 
         private readonly ReorderableList m_List;
         private readonly LevelsSaverEditor m_LevelsSaver = new LevelsSaverEditor();
@@ -160,10 +161,10 @@ namespace Games.RazorMaze.Editor
         private void OnDrawElementCallback(Rect _Rect, int _Index, bool _IsActive, bool _IsFocused)
         {
             var elementColor = _IsFocused || m_SelectedIndexCheck == _Index
-                ? BackgroundSelectedColor
+                ? BackgroundSelectedLevelColor
                 : GetContentColor(_Index);
             if (m_LoadedIndex == _Index)
-                elementColor = new Color(0f, 1f, 0.19f, 0.43f);
+                elementColor = BackgroundLoadedLevelColor;
             EditorGUI.DrawRect(new Rect(
                 _Rect.x,
                 _Rect.y,
@@ -192,22 +193,22 @@ namespace Games.RazorMaze.Editor
                 if (selectedFilters.Contains(filter)
                     && element.MazeItems.Any(_Item => _Item.Type == filter))
                 {
-                    var w = 2f * 40f;
+                    float w = 2f * 40f;
                     EditorGUI.DrawRect(new Rect(
                         _Rect.x + 40f + _Rect.width - 3f * 40f + w / m_Filters.Count * k,
                         _Rect.y,
                         w / m_Filters.Count,
                         LineHeight), FilterColors[k]);
                 }
-
                 k++;
             }
         }
 
         private static Color GetContentColor(int _Index)
         {
-            int a = _Index % 6;
-            return a < 3 ? new Color(0.2f, 0.2f, 0.2f) : new Color(0.32f, 0.32f, 0.32f);
+            int a = _Index % (RazorMazeUtils.LevelsInGroup * 2);
+            return a < RazorMazeUtils.LevelsInGroup ?
+                new Color(0.2f, 0.2f, 0.2f) : new Color(0.32f, 0.32f, 0.32f);
         }
         
         private static readonly Color[] FilterColors =
