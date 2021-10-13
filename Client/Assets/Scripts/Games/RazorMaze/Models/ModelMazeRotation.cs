@@ -1,6 +1,7 @@
 ﻿using Exceptions;
 using Games.RazorMaze.Views;
 using Ticker;
+using UnityEngine.Events;
 using Utils;
 
 namespace Games.RazorMaze.Models
@@ -52,7 +53,7 @@ namespace Games.RazorMaze.Models
         
         public event MazeOrientationHandler RotationStarted;
         public event MazeOrientationHandler RotationFinishedInternal;
-        public event NoArgsHandler Initialized;
+        public event UnityAction Initialized;
         
         public void Init()
         {

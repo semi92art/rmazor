@@ -15,6 +15,12 @@ namespace Games.RazorMaze.Models.InputSchedulers
     
     public class InputSchedulerGameProceeder : IUpdateTick, IInputSchedulerGameProceeder
     {
+        #region constants
+
+        private const int MaxCommandsCount = 3;
+
+        #endregion
+        
         #region nonpublic members
 
         private readonly Queue<int> m_MoveCommands = new Queue<int>();
@@ -65,21 +71,38 @@ namespace Games.RazorMaze.Models.InputSchedulers
                 case InputCommands.MoveLeft:
                 case InputCommands.MoveRight:
                 case InputCommands.MoveUp:
-                    if (m_MoveCommandsCount >= 3) return;
+                    if (m_MoveCommandsCount >= MaxCommandsCount) return;
                     m_MoveCommands.Enqueue(_Command);
                     m_MoveCommandsCount++;
                     break;
                 case InputCommands.RotateClockwise:
                 case InputCommands.RotateCounterClockwise:
-                    if (m_RotateCommandsCount >= 3) return;
+                    if (m_RotateCommandsCount >= MaxCommandsCount) return;
                     m_RotateCommands.Enqueue(_Command);
                     m_RotateCommandsCount++;
                     break;
             }
         }
         
-        public void UnlockMovement(bool _Unlock) => m_MovementLocked = !_Unlock;
-        public void UnlockRotation(bool _Unlock) => m_RotationLocked = !_Unlock;
+        public void UnlockMovement(bool _Unlock)
+        {
+            if (!_Unlock)
+            {
+                m_MoveCommands.Clear();
+                m_MoveCommandsCount = 0;
+            }
+            m_MovementLocked = !_Unlock;
+        }
+
+        public void UnlockRotation(bool _Unlock)
+        {
+            if (!_Unlock)
+            {
+                m_RotateCommands.Clear();
+                m_RotateCommandsCount = 0;
+            }
+            m_RotationLocked = !_Unlock;
+        }
 
         #endregion
 

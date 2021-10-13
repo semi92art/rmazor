@@ -53,7 +53,7 @@ namespace Managers
             }
         }
 
-        public event NoArgsHandler Initialized;
+        public event UnityAction Initialized;
         
         public void Init()
         {

@@ -1,6 +1,8 @@
-﻿public interface IInit
+﻿using UnityEngine.Events;
+
+public interface IInit
 {
-    event NoArgsHandler Initialized;
+    event UnityAction Initialized;
     void Init();
 }
 

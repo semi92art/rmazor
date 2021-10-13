@@ -1,8 +1,10 @@
 ﻿using System.Collections;
+using DI.Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Ticker;
 using UnityEngine;
+using UnityEngine.Events;
 using Utils;
 
 namespace Games.RazorMaze.Views.Rotation
@@ -38,14 +40,13 @@ namespace Games.RazorMaze.Views.Rotation
 
         #region api
         
-        public override event FloatHandler RotationContinued;
+        public override event UnityAction<float> RotationContinued;
         public override event MazeOrientationHandler RotationFinished;
 
         public override void Init()
         {
             m_Rb = ContainersGetter.MazeContainer.gameObject.AddComponent<Rigidbody2D>();
             m_Rb.gravityScale = 0;
-            base.Init();
         }
 
         public override void StartRotation(MazeRotationEventArgs _Args)

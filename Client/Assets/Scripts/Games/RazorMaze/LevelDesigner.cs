@@ -10,6 +10,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;
 #if UNITY_EDITOR
+using Mono_Installers;
 using UnityEditor;
 #endif
 
@@ -69,6 +70,7 @@ namespace Games.RazorMaze
             MazeInfo = Instance.GetLevelInfoFromScene();
             GameClientUtils.GameId = 1;
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+            LevelMonoInstaller.Release = false;
              
             SceneManager.sceneLoaded += (_Scene, _Mode) =>
             {

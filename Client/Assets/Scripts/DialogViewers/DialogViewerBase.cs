@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
-using Exceptions;
-using UI.Managers;
+using Entities;
+using Ticker;
+using UI;
 using UI.Panels;
 using UnityEngine;
 using UnityEngine.Events;
@@ -11,15 +12,16 @@ using Utils;
 
 namespace DialogViewers
 {
-    public abstract class DialogViewerBase : MonoBehaviour, IDialogViewer, IActionExecutor
+    public interface IDialogViewer : IDialogViewerBase
     {
-        #region constants
-
-        protected const int MenuUiCategoryType = 0;
-        protected const int GameUiCategoryType = 1;
-        
-        #endregion
-        
+        void AddNotDialogItem(RectTransform _Item, EUiCategory _Categories);
+        void Show(IDialogPanel _ItemTo, bool _HidePrevious = true);
+        void RemoveNotDialogItem(RectTransform _Item);
+        void CloseAll();
+    }
+    
+    public abstract class DialogViewerBase : IDialogViewer, IAction, IUpdateTick
+    {
         #region types
         
         protected class GraphicAlphas
@@ -36,23 +38,14 @@ namespace DialogViewers
         
         protected class VisibleInCategories
         {
-            public MenuUiCategory MenuCategories { get; }
-            public GameUiCategory GameCategories { get; }
+            public EUiCategory Categories { get; }
             public bool IsVisible { get; set; }
 
             public VisibleInCategories(
-                MenuUiCategory _MenuCategories,
+                EUiCategory _Categories,
                 bool _IsVisible)
             {
-                MenuCategories = _MenuCategories;
-                IsVisible = _IsVisible;
-            }
-            
-            public VisibleInCategories(
-                GameUiCategory _GameCategories,
-                bool _IsVisible)
-            {
-                GameCategories = _GameCategories;
+                Categories = _Categories;
                 IsVisible = _IsVisible;
             }
         }
@@ -67,16 +60,11 @@ namespace DialogViewers
         }
         
         #endregion
-        
-        #region serialized fields
-    
-        [SerializeField] protected Image background;
-        [SerializeField] protected RectTransform dialogContainer;
-    
-        #endregion
-        
+
         #region nonpublic members
-        
+
+        protected Image m_Background;
+        protected RectTransform m_DialogContainer;
         protected readonly Dictionary<RectTransform, VisibleInCategories> NotDialogs =
             new Dictionary<RectTransform, VisibleInCategories>();
         protected readonly Stack<Panel> PanelStack = new Stack<Panel>();
@@ -88,17 +76,37 @@ namespace DialogViewers
         
         #endregion
 
+        #region inject
+
+        protected IManagersGetter Managers { get; }
+        protected IUITicker Ticker { get; }
+        
+        protected DialogViewerBase(IManagersGetter _Managers, IUITicker _Ticker)
+        {
+            Managers = _Managers;
+            Ticker = _Ticker;
+            _Ticker.Register(this);
+        }
+        
+        #endregion
+
         #region api
         
-        public RectTransform Container => dialogContainer;
-        public virtual void Back()
+        public RectTransform Container => m_DialogContainer;
+        public event UnityAction Initialized;
+        public UnityAction Action { get; set; }
+        
+        public virtual void Init(RectTransform _Parent)
         {
-            int uiCategoryType = MenuUiCategoryType;
-            if (this as GameDialogViewer != null)
-                uiCategoryType = GameUiCategoryType;
-            ShowCore(PanelStack.GetItem(1), true, true, uiCategoryType);
+            Initialized?.Invoke();
         }
 
+        public virtual void Back()
+        {
+            ShowCore(PanelStack.GetItem(1), true, true);
+        }
+
+        public abstract void AddNotDialogItem(RectTransform _Item, EUiCategory _Categories);
         public abstract void Show(IDialogPanel _ItemTo, bool _HidePrevious = true);
 
         public virtual void RemoveNotDialogItem(RectTransform _Item)
@@ -114,7 +122,6 @@ namespace DialogViewers
             if (!PanelStack.Any())
                 return;
             var lastPanel = PanelStack.Pop();
-            int uiCategoryType = lastPanel.DialogPanel is IMenuUiCategory ? MenuUiCategoryType : GameUiCategoryType;
             var panelsToDestroy = new List<Panel>();
             while (PanelStack.Count > 0)
                 panelsToDestroy.Add(PanelStack.Pop());
@@ -123,20 +130,14 @@ namespace DialogViewers
                 .Where(_Panel => _Panel != null)
                 .Select(_Panel => _Panel.DialogPanel))
             {
-                Destroy(pan.Panel.gameObject);
+                Object.Destroy(pan.Panel.gameObject);
             }
             
             PanelStack.Push(lastPanel);
-            ShowCore(null, true, true, uiCategoryType);
+            ShowCore(null, true, true);
         }
-
-        public UnityAction Action { get; set; }
         
-        #endregion
-        
-        #region engine methods
-        
-        protected virtual void Update()
+        public virtual void UpdateTick()
         {
             if (Input.GetKeyDown(KeyCode.Escape))
                 Back();
@@ -144,11 +145,12 @@ namespace DialogViewers
         
         #endregion
 
+        #region nonpublic methods
+
         protected void ShowCore(
             Panel _ItemTo,
             bool _HidePrevious,
-            bool _GoBack,
-            int _UiCategoryType)
+            bool _GoBack)
         {
             Panel itemFrom = !PanelStack.Any() ? null : PanelStack.Peek();
             if (itemFrom == null && _ItemTo == null)
@@ -156,21 +158,8 @@ namespace DialogViewers
 
             RectTransform fromPanel = itemFrom?.DialogPanel.Panel;
             RectTransform toPanel = _ItemTo?.DialogPanel.Panel;
-            var menuCat = MenuUiCategory.Nothing;
-            var gameCat = GameUiCategory.Nothing;
-            switch (_UiCategoryType)
-            {
-                case MenuUiCategoryType:
-                    UiManager.Instance.CurrentMenuCategory = menuCat = 
-                        ((IMenuUiCategory)_ItemTo?.DialogPanel)?.Category ?? MenuUiCategory.MainMenu;
-                    break;
-                case GameUiCategoryType:
-                    UiManager.Instance.CurrentGameCategory = gameCat =
-                        ((IGameUiCategory)_ItemTo?.DialogPanel)?.Category ?? GameUiCategory.Game;
-                    break;
-                default:
-                    throw new SwitchCaseNotImplementedException(_UiCategoryType);
-            }
+            EUiCategory menuCat = _ItemTo?.DialogPanel?.Category ?? EUiCategory.MainMenu;
+
 
             if (itemFrom != null && fromPanel != null && _HidePrevious)
             {
@@ -179,16 +168,16 @@ namespace DialogViewers
                     GraphicsAlphas.Add(instId, new GraphicAlphas(fromPanel));
                 Coroutines.Run(Coroutines.DoTransparentTransition(
                     fromPanel, GraphicsAlphas[instId].Alphas, TransitionTime,
-                    default, // FIXME
+                    Ticker,
                     true,
                     () =>
                     {
                         if (!_GoBack)
                             return;
-                        Destroy(fromPanel.gameObject);
+                        Object.Destroy(fromPanel.gameObject);
                         var monobeh = itemFrom.DialogPanel as MonoBehaviour;
                         if (monobeh != null)
-                            Destroy(monobeh.gameObject);
+                            Object.Destroy(monobeh.gameObject);
                     }));
             }
 
@@ -197,11 +186,11 @@ namespace DialogViewers
                 int instId = toPanel.GetInstanceID();
                 if (!GraphicsAlphas.ContainsKey(instId))
                     GraphicsAlphas.Add(instId, new GraphicAlphas(toPanel));
-                StartCoroutine(Coroutines.DoTransparentTransition(
+                Coroutines.Run(Coroutines.DoTransparentTransition(
                     toPanel, GraphicsAlphas[instId].Alphas, TransitionTime,
-                    default, // FIXME
+                    Ticker,
                     false, 
-                    () => background.enabled = true));
+                    () => m_Background.enabled = true));
                 _ItemTo.DialogPanel.OnDialogEnable();
             }
 
@@ -210,21 +199,10 @@ namespace DialogViewers
                 foreach (var item in NotDialogs)
                 {
                     bool? show = null;
-                    if (_UiCategoryType == MenuUiCategoryType)
-                    {
-                        if (!item.Value.IsVisible && (menuCat & item.Value.MenuCategories) != 0)
-                            show = true;
-                        else if (item.Value.IsVisible && (menuCat & item.Value.MenuCategories) == 0)
-                            show = false;
-                    }
-                    else if (_UiCategoryType == GameUiCategoryType)
-                    {
-                        if (!item.Value.IsVisible && (gameCat & item.Value.GameCategories) != 0)
-                            show = true;
-                        else if (item.Value.IsVisible && (gameCat & item.Value.GameCategories) == 0)
-                            show = false;
-                    }
-
+                    if (!item.Value.IsVisible && (menuCat & item.Value.Categories) != 0)
+                        show = true;
+                    else if (item.Value.IsVisible && (menuCat & item.Value.Categories) == 0)
+                        show = false;
                     if (!show.HasValue) 
                         continue;
                     NotDialogs[item.Key].IsVisible = show.Value;
@@ -232,7 +210,7 @@ namespace DialogViewers
                         item.Key,
                         GraphicsAlphas[item.Key.GetInstanceID()].Alphas, 
                         TransitionTime,
-                        default, // FIXME
+                        Ticker,
                         !show.Value,
                         () =>
                         {
@@ -242,21 +220,20 @@ namespace DialogViewers
                 }
             }
 
-            FinishShowing(itemFrom, _ItemTo, _GoBack, toPanel, _UiCategoryType);
+            FinishShowing(itemFrom, _ItemTo, _GoBack, toPanel);
         }
 
         protected virtual void FinishShowing(
             Panel _ItemFrom,
             Panel _ItemTo,
             bool _GoBack,
-            RectTransform _PanelTo,
-            int _UiCategoryType)
+            RectTransform _PanelTo)
         {
-            background.enabled = background.raycastTarget = !(_PanelTo == null && _GoBack);
+            m_Background.enabled = m_Background.raycastTarget = !(_PanelTo == null && _GoBack);
             ClearGraphicsAlphas();
         
             if (_PanelTo == null)
-                ClearPanelStack(_UiCategoryType);
+                ClearPanelStack();
             else
             {
                 if (!PanelStack.Any())
@@ -277,7 +254,7 @@ namespace DialogViewers
             }
         }
         
-        protected void ClearPanelStack(int _UiCategoryType)
+        protected void ClearPanelStack()
         {
             var list = new List<Panel>();
             while(PanelStack.Any())
@@ -286,8 +263,10 @@ namespace DialogViewers
                 where item != null
                 select item.DialogPanel as MonoBehaviour)
             {
-                Destroy(monobeh);
+                Object.Destroy(monobeh);
             }
         }
+
+        #endregion
     }
 }

@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using DI.Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.MazeItems;
 using Ticker;
-using UnityEngine;
+using UnityEngine.Events;
 
 namespace Games.RazorMaze.Views.Common
 {
@@ -40,7 +39,7 @@ namespace Games.RazorMaze.Views.Common
         
         #region api
         
-        public event NoArgsHandler Initialized;
+        public event UnityAction Initialized;
         public abstract List<IViewMazeItem> MazeItems { get; }
         public virtual void Init() => Initialized?.Invoke();
         public abstract IViewMazeItem GetItem(IMazeItemProceedInfo _Info);

@@ -11,6 +11,7 @@ using Games.RazorMaze.Views.MazeItemGroups;
 using Games.RazorMaze.Views.Rotation;
 using Games.RazorMaze.Views.UI;
 using Ticker;
+using UnityEngine.Events;
 using Utils;
 
 namespace Games.RazorMaze.Views
@@ -88,7 +89,7 @@ namespace Games.RazorMaze.Views
 
         #region api
         
-        public event NoArgsHandler Initialized;
+        public event UnityAction Initialized;
         
         public void Init()
         {
@@ -101,9 +102,11 @@ namespace Games.RazorMaze.Views
             LevelStageController.RegisterProceeders(mazeItemGroups);
             
             CallInits<IInit>();
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => m_InitChecks.Any(_Inited => !_Inited), 
-                () => Initialized?.Invoke()));
+            // Coroutines.Run(Coroutines.WaitWhile(
+            //     () => m_InitChecks.Any(_Inited => !_Inited), 
+            //     () => Initialized?.Invoke()));
+
+            Initialized?.Invoke();
         }
         
         public void OnLevelStageChanged(LevelStageArgs _Args)

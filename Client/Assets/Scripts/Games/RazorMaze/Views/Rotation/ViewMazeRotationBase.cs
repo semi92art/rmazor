@@ -1,5 +1,6 @@
 ﻿using Exceptions;
 using Games.RazorMaze.Models;
+using UnityEngine.Events;
 
 namespace Games.RazorMaze.Views.Rotation
 {
@@ -7,8 +8,8 @@ namespace Games.RazorMaze.Views.Rotation
     {
         #region api
 
-        public event NoArgsHandler Initialized;
-        public abstract event FloatHandler RotationContinued;
+        public event UnityAction Initialized;
+        public abstract event UnityAction<float> RotationContinued;
         public abstract event MazeOrientationHandler RotationFinished;
         
         public virtual void Init() => Initialized?.Invoke();

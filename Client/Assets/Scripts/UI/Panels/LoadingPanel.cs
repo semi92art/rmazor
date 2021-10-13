@@ -7,47 +7,50 @@ using Entities;
 using GameHelpers;
 using Ticker;
 using UI.Factories;
-using UI.Managers;
 using UnityEngine;
 
 namespace UI.Panels
 {
-    public interface ILoadingHandler
+
+    
+    public interface ILoadingDialogPanel : IDialogPanel
     {
         void SetProgress(float _Percents, IEnumerable<string> _Infos);
         void Break(string _Error);
     }
     
-    public class LoadingPanel : DialogPanelBase, IMenuUiCategory, ILoadingHandler
+    public class LoadingPanel : DialogPanelBase, ILoadingDialogPanel
     {
         #region nonpublic members
 
-        private readonly IMenuDialogViewer m_DialogViewer;
         private LoadingPanelView m_View;
+
+        #endregion
+
+        #region inject
+
+        public LoadingPanel(
+            IDialogViewer _DialogViewer,
+            IManagersGetter _Managers,
+            IUITicker _UITicker) 
+            : base(_Managers, _UITicker, _DialogViewer) { }
 
         #endregion
         
         #region api
 
-        public MenuUiCategory Category => MenuUiCategory.Loading;
-
-        public LoadingPanel(
-            IMenuDialogViewer _DialogViewer,
-            IManagersGetter _Managers,
-            IUITicker _UITicker) : base(_Managers, _UITicker)
-        {
-            m_DialogViewer = _DialogViewer;
-        }
+        public override EUiCategory Category => EUiCategory.Loading;
 
         public override void Init()
         {
             base.Init();
             GameObject prefab = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_DialogViewer.Container,
+                    DialogViewer.Container,
                     RtrLites.FullFill),
                 CommonPrefabSetNames.MainMenuDialogPanels, "loading_panel");
             m_View = prefab.GetComponent<LoadingPanelView>();
+            m_View.Init(Ticker);
             Panel = prefab.RTransform();
         }
 

@@ -14,9 +14,20 @@ public class ApplicationInitializer : MonoBehaviour
     #region inject
     
     private IGameTicker GameTicker { get; set; }
+    private IAdsManager AdsManager { get; set; }
+    private IAnalyticsManager AnalyticsManager { get; set; }
 
-    [Inject] public void Inject(IGameTicker _GameTicker) => GameTicker = _GameTicker;
-    
+    [Inject] 
+    public void Inject(
+        IGameTicker _GameTicker,
+        IAdsManager _AdsManager,
+        IAnalyticsManager _AnalyticsManager)
+    {
+        GameTicker = _GameTicker;
+        AdsManager = _AdsManager;
+        AnalyticsManager = _AnalyticsManager;
+    }
+
     #endregion
     
     #region engine methods
@@ -53,17 +64,11 @@ public class ApplicationInitializer : MonoBehaviour
     
     #region nonpublic methods
     
-    private static void InitGameManagers()
+    private void InitGameManagers()
     {
-        var managers = new IInit[]
-        {
-            GameClient.Instance,
-            AdsManager.Instance,
-            AnalyticsManager.Instance,
-            AssetBundleManager.Instance
-        };
-        foreach (var manager in managers)
-            manager.Init();
+        GameClient.Instance.Init();
+        AdsManager.Init();
+        AnalyticsManager.Init();
     }
 
     private static void InitDebugConsole()

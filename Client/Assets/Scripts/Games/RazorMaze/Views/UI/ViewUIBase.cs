@@ -1,36 +1,31 @@
-﻿using DI.Extensions;
-using DialogViewers;
-using Entities;
-using Ticker;
-using UI.Factories;
-using UI.Panels;
+﻿using UI.Factories;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Games.RazorMaze.Views.UI
 {
-    public interface IViewUI : IOnLevelStageChanged { }
+    public interface IViewUI : IInit, IOnLevelStageChanged { }
     
-    public abstract class ViewUIBase : IViewUI, IUpdateTick
+    public abstract class ViewUIBase : IViewUI
     {
         #region nonpublic members
         
-        protected Canvas Canvas;
-        protected IGameDialogViewer DialogViewer;
-        protected readonly IManagersGetter Managers;
-        protected readonly IUITicker m_UITicker;
+        protected Canvas m_Canvas;
         
         #endregion
+        
+        #region api
 
-        #region constructor
-
-        protected ViewUIBase(IManagersGetter _Managers, IUITicker _UITicker)
+        public event UnityAction Initialized;
+        
+        public virtual void Init()
         {
-            Managers = _Managers;
-            m_UITicker = _UITicker;
             CreateCanvas();
-            CreateDialogViewer();
+            Initialized?.Invoke();
         }
+        
+        public abstract void OnLevelStageChanged(LevelStageArgs _Args);
 
         #endregion
         
@@ -38,7 +33,7 @@ namespace Games.RazorMaze.Views.UI
         
         protected void CreateCanvas()
         {
-            Canvas = UiFactory.UiCanvas(
+            m_Canvas = UiFactory.UiCanvas(
                 "MenuCanvas",
                 RenderMode.ScreenSpaceOverlay,
                 false,
@@ -52,38 +47,11 @@ namespace Games.RazorMaze.Views.UI
                 true,
                 GraphicRaycaster.BlockingObjects.None);
         }
-        
-        protected void CreateDialogViewer()
-        {
-            DialogViewer = GameDialogViewer.Create(Canvas.RTransform());
-        }
 
-        protected void OnGameMenuButtonClick()
+        protected void RaiseInitializedEvent()
         {
-            if (GameMenuPanel.PanelState.HasFlag(PanelState.Showing))
-            {
-                GameMenuPanel.PanelState |= PanelState.NeedToClose;
-                return;
-            }
-            // FIXME
-            m_UITicker.Pause = true;
-            var gameMenuPanel = new GameMenuPanel(DialogViewer,
-                () => m_UITicker.Pause = false, Managers, m_UITicker);
-             gameMenuPanel.Init();
-             DialogViewer.Show(gameMenuPanel);
+            Initialized?.Invoke();
         }
-        
-        public void UpdateTick()
-        {
-            if (Input.GetKeyDown(KeyCode.Escape))
-                OnGameMenuButtonClick();
-        }
-        
-        #endregion
-        
-        #region api
-
-        public abstract void OnLevelStageChanged(LevelStageArgs _Args);
 
         #endregion
     }

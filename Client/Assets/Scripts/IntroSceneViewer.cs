@@ -4,6 +4,7 @@ using DI.Extensions;
 using GameHelpers;
 using Games.RazorMaze.Controllers;
 using Managers;
+using Mono_Installers;
 using Ticker;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -40,6 +41,7 @@ public class IntroSceneViewer : MonoBehaviour
         // TODO здесь показывать интруху
         
         Ticker.ClearRegisteredObjects();
+        LevelMonoInstaller.Release = true;
         SceneManager.LoadScene(SceneNames.Level);
     }
 
@@ -58,7 +60,6 @@ public class IntroSceneViewer : MonoBehaviour
                     // FIXME заглушка для загрузки уровня
                     var info = LevelsLoader.LoadLevel(1, 1);
                     controller.Model.LevelStaging.LoadLevel(info, 1);
-                    controller.Init();
                 }));
         };
         controller.Init();

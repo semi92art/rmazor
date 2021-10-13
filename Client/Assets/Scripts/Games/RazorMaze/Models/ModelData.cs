@@ -26,7 +26,7 @@ namespace Games.RazorMaze.Models
         
         public int LevelIndex { get; set; }
         public MazeOrientation Orientation { get; set; } = MazeOrientation.North;
-        public bool ProceedingControls { get; set; }
+        public bool ProceedingControls { get; set; } = true;
 
         public MazeInfo Info
         {

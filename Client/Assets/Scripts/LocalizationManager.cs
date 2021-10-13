@@ -1,6 +1,7 @@
 ﻿using Entities;
 using Lean.Localization;
 using UnityEngine;
+using UnityEngine.Events;
 using Utils;
 
 public class LocalizationManager : IInit
@@ -20,7 +21,7 @@ public class LocalizationManager : IInit
 
     #region api
 
-    public event NoArgsHandler Initialized;
+    public event UnityAction Initialized;
 
     public void Init()
     {

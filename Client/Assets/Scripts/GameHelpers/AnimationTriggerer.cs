@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 
 namespace GameHelpers
 {
     public class AnimationTriggerer : MonoBehaviour
     {
-        public NoArgsHandler Trigger1;
-        public NoArgsHandler Trigger2;
-        public NoArgsHandler Trigger3;
+        public UnityAction Trigger1;
+        public UnityAction Trigger2;
+        public UnityAction Trigger3;
 
         public void RaiseTrigger1() => Trigger1?.Invoke();
         public void RaiseTrigger2() => Trigger2?.Invoke();

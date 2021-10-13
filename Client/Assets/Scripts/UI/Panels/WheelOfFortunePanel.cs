@@ -11,16 +11,17 @@ using Ticker;
 using TMPro;
 using UI.Entities;
 using UI.Factories;
-using UI.Managers;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 using Utils;
-using Object = UnityEngine.Object;
 
 namespace UI.Panels
 {
-    public class WheelOfFortunePanel : DialogPanelBase, IMenuUiCategory
+    public interface IWheelOfFortuneDialogPanel : IDialogPanel
+    {
+    }
+    
+    public class WheelOfFortunePanel : DialogPanelBase, IWheelOfFortuneDialogPanel
     {
         #region notify messages
 
@@ -31,8 +32,6 @@ namespace UI.Panels
         
         #region nonpublic members
         
-        private readonly IMenuDialogViewer m_DialogViewer;
-        private readonly INotificationViewer m_NotificationViewer;
         private GameObject m_Wheel;
         private WheelController m_WheelController;
         private Button m_SpinButton;
@@ -42,33 +41,44 @@ namespace UI.Panels
         private bool m_IsLocked;
         
         #endregion
+
+        #region inject
+
+        private IWheelOfFortuneRewardPanel RewardPanel { get; }
+        private INotificationViewer NotificationViewer { get; }
         
-        #region api
-
-        public MenuUiCategory Category => MenuUiCategory.WheelOfFortune;
-
         public WheelOfFortunePanel(
-            IMenuDialogViewer _DialogViewer,
+            IWheelOfFortuneRewardPanel _RewardPanel,
+            IDialogViewer _DialogViewer,
             INotificationViewer _NotificationViewer,
             IManagersGetter _Managers,
             IUITicker _UITicker)
-            : base(_Managers, _UITicker)
+            : base(_Managers, _UITicker, _DialogViewer)
         {
-            m_DialogViewer = _DialogViewer;
-            m_NotificationViewer = _NotificationViewer;
-            UiManager.Instance.OnCurrentMenuCategoryChanged += (_Prev, _New) =>
-            {
-                if (_New != Category)
-                    OnPanelClose();
-            };
+            RewardPanel = _RewardPanel;
+            NotificationViewer = _NotificationViewer;
         }
+
+        #endregion
+        
+        #region api
+
+        public override EUiCategory Category => EUiCategory.WheelOfFortune;
+
+
 
         public override void Init()
         {
+            // UiManager.Instance.OnCurrentMenuCategoryChanged += (_Prev, _New) =>
+            // {
+            //     if (_New != Category)
+            //         OnPanelClose();
+            // };
+            
             base.Init();
             GameObject wofPan = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_DialogViewer.Container,
+                    DialogViewer.Container,
                     RtrLites.FullFill),
                 CommonPrefabSetNames.MainMenuDialogPanels, "wof_panel");
 
@@ -108,7 +118,7 @@ namespace UI.Panels
 
             m_IsLocked = CheckIfWofSpinToday();
             m_SpinButton.SetOnClick(StartSpinOrWatchAd);
-            m_WheelController.Init(m_DialogViewer, SpinFinishAction);
+            m_WheelController.Init(DialogViewer, SpinFinishAction);
         }
 
         private void StartSpinOrWatchAd()
@@ -129,18 +139,14 @@ namespace UI.Panels
 
         private void SpinFinishAction(BankItemType _BankItemType, long _Reward)
         {
-            var rewardPanel = new WheelOfFortuneRewardPanel(
-                m_NotificationViewer,
-                Managers, 
-                (IUITicker)Ticker,
-                _BankItemType, 
-                _Reward, 
-                () => BankManager.Instance.PlusBankItems(_BankItemType, _Reward));
-                    
             m_SpinButton.interactable = true;
             m_IsLocked = CheckIfWofSpinToday();
-            rewardPanel.Init();
-            m_NotificationViewer.Show(rewardPanel);
+            RewardPanel.PreInit(
+                _BankItemType,
+                _Reward, 
+                () => BankManager.Instance.PlusBankItems(_BankItemType, _Reward));
+            RewardPanel.Init();
+            NotificationViewer.Show(RewardPanel);
         }
 
         private void WatchAdFinishAction()
@@ -166,15 +172,15 @@ namespace UI.Panels
             return spinedToday;
         }
 
-        private void OnPanelClose()
-        {
-            IActionExecutor actionExecutor = (IActionExecutor) m_DialogViewer;
-            actionExecutor.Action = () =>
-            {
-                if (m_Wheel != null && UiManager.Instance.CurrentMenuCategory == MenuUiCategory.MainMenu)
-                    Object.Destroy(m_Wheel);    
-            };
-        }
+        // private void OnPanelClose()
+        // {
+        //     IAction action = (IAction) DialogViewer;
+        //     action.Action = () =>
+        //     {
+        //         if (m_Wheel != null && UiManager.Instance.CurrentCategory == EUiCategory.MainMenu)
+        //             Object.Destroy(m_Wheel);    
+        //     };
+        // }
 
         #endregion
     }

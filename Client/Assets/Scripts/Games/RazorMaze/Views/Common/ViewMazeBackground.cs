@@ -9,6 +9,7 @@ using Shapes;
 using SpawnPools;
 using Ticker;
 using UnityEngine;
+using UnityEngine.Events;
 using Utils;
 using Object = UnityEngine.Object;
 using Random = System.Random;
@@ -69,15 +70,14 @@ namespace Games.RazorMaze.Views.Common
         
         #region api
         
-        public event NoArgsHandler Initialized;
-        
+        public event UnityAction Initialized;
 
         public Color BackgroundColor
         {
             get => Camera.main.backgroundColor;
             private set => Camera.main.backgroundColor = value;
         }
-        public event ColorHandler BackgroundColorChanged;
+        public event UnityAction<Color> BackgroundColorChanged;
         
         public void Init()
         {

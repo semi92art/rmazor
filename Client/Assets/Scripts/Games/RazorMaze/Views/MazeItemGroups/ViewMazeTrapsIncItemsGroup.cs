@@ -2,6 +2,7 @@
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.MazeItems;
+using UnityEngine.Events;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
@@ -14,7 +15,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         #endregion
 
         public override EMazeItemType[] Types => new[] {EMazeItemType.TrapIncreasing};
-        public event NoArgsHandler Initialized;
+        public event UnityAction Initialized;
         
         public void Init() => Initialized?.Invoke();
         

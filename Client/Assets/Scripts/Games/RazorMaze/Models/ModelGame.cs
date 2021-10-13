@@ -4,6 +4,7 @@ using Games.RazorMaze.Models.InputSchedulers;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views;
+using UnityEngine.Events;
 
 namespace Games.RazorMaze.Models
 {
@@ -30,7 +31,7 @@ namespace Games.RazorMaze.Models
     {
         #region api
         
-        public event NoArgsHandler Initialized;
+        public event UnityAction Initialized;
         
         public IModelData                         Data { get; }
         public IModelMazeRotation                 MazeRotation { get; }

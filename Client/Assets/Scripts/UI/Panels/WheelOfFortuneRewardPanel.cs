@@ -14,44 +14,61 @@ using UnityEngine.UI;
 
 namespace UI.Panels
 {
-    public class WheelOfFortuneRewardPanel : DialogPanelBase
+    public interface IWheelOfFortuneRewardPanel : IDialogPanel
+    {
+        void PreInit(BankItemType BankItemType, long _Reward, UnityAction _OnClose);
+    }
+    
+    public class WheelOfFortuneRewardPanel : DialogPanelBase, IWheelOfFortuneRewardPanel
     {
         #region nonpublic members
         
         private static int AkShow => AnimKeys.Anim;
-        private readonly INotificationViewer m_NotificationViewer;
-        private readonly BankItemType m_BankItemType;
-        private readonly long m_Reward;
-        private readonly UnityAction m_OnClose;
+        private BankItemType m_BankItemType;
+        private long m_Reward;
+        private UnityAction m_OnClose;
         private Animator m_Animator;
         private Image m_RewardIcon;
         private TextMeshProUGUI m_RewardCount;
         private Button m_GetButton;
 
         #endregion
+
+        #region inject
+
+        private INotificationViewer NotificationViewer { get; }
+        
+        public WheelOfFortuneRewardPanel(
+            IDialogViewer _DialogViewer,
+            INotificationViewer _NotificationViewer,
+            IManagersGetter _Managers,
+            IUITicker _UITicker) 
+            : base(_Managers, _UITicker, _DialogViewer)
+        {
+            NotificationViewer = _NotificationViewer;
+        }
+        
+        #endregion
         
         #region api
 
-        public WheelOfFortuneRewardPanel(
-            INotificationViewer _NotificationViewer,
-            IManagersGetter _Managers,
-            IUITicker _UITicker,
-            BankItemType _BankItemType,
-            long _Reward,
-            UnityAction _OnClose) : base(_Managers, _UITicker)
+
+
+        public override EUiCategory Category => EUiCategory.WheelOfFortune;
+        
+        public void PreInit(BankItemType _BankItemType, long _Reward, UnityAction _OnClose)
         {
-            m_NotificationViewer = _NotificationViewer;
             m_BankItemType = _BankItemType;
             m_Reward = _Reward;
             m_OnClose = _OnClose;
         }
-        
+
         public override void Init()
         {
             base.Init();
             var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_NotificationViewer.Container,
+                    NotificationViewer.Container,
                     RtrLites.FullFill),
                 CommonPrefabSetNames.MainMenuDialogPanels, "wof_reward_panel");
             Panel = go.RTransform();
@@ -62,7 +79,7 @@ namespace UI.Panels
             m_Animator = go.GetCompItem<Animator>("animator");
             m_GetButton = go.GetCompItem<Button>("get_button");
             
-            m_GetButton.SetOnClick(() => m_NotificationViewer.Back());
+            m_GetButton.SetOnClick(() => NotificationViewer.Back());
             
             string iconName;
             string prefabSet;

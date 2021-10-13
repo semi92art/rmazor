@@ -85,7 +85,7 @@ namespace GameHelpers
             T content = set.prefabs.FirstOrDefault(_P => _P.name == _ObjectName)?.item as T;
 
             if (content == null && _FromBundles)
-                content = AssetBundleManager.Instance.GetAsset<T>(_ObjectName, _PrefabSetName);
+                content = AssetBundleManager.GetAsset<T>(_ObjectName, _PrefabSetName);
             
             if (content == null)
                 Dbg.LogError($"Content of set {_PrefabSetName} with name {_ObjectName} was not set");

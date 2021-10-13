@@ -2,6 +2,7 @@
 using System.Linq;
 using Entities;
 using Games.RazorMaze.Views;
+using UnityEngine.Events;
 
 namespace Games.RazorMaze.Models.ItemProceeders
 {
@@ -11,7 +12,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
     {
         Dictionary<V2Int, bool> PathProceeds { get; }
         event PathProceedHandler PathProceedEvent;
-        event NoArgsHandler AllPathsProceededEvent;
+        event UnityAction AllPathsProceededEvent;
     }
     
     public class PathItemsProceeder : IPathItemsProceeder, IOnLevelStageChanged
@@ -31,7 +32,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         public Dictionary<V2Int, bool> PathProceeds { get; private set; }
         public event PathProceedHandler PathProceedEvent;
-        public event NoArgsHandler AllPathsProceededEvent;
+        public event UnityAction AllPathsProceededEvent;
 
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {

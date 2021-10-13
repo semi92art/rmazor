@@ -5,6 +5,7 @@ using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.MazeItems;
 using SpawnPools;
+using UnityEngine.Events;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
@@ -38,7 +39,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         #region api
         
-        public event NoArgsHandler Initialized;
+        public event UnityAction Initialized;
 
         public List<IViewMazeItemPath> PathItems => m_PathsPool.Where(_Item => _Item.ActivatedInSpawnPool).ToList();
 

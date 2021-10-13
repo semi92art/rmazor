@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Networking;
 using Utils;
 
 namespace Managers
 {
-    public class AssetBundleManager : MonoBehaviour, IInit
+    public static class AssetBundleManager
     {
         #region constants
 
-        private const string SoundsBundle = "sounds";
-        private const string LevelsBundle = "levels";
+        private const string SoundsBundleName = "sounds";
+        private const string LevelsBundleName = "levels";
+        private const string CommonBundleName = "common";
+        private const string BundlesUri = "https://raw.githubusercontent.com/semi92art/bundles/main/mgc";
         
         #endregion
         
@@ -33,33 +36,29 @@ namespace Managers
         
         #endregion
         
-        #region singleton
-    
-        private static AssetBundleManager _instance;
-        public static AssetBundleManager Instance => CommonUtils.MonoBehSingleton(ref _instance, "Asset Bundle Manager");
-
-        #endregion
-        
         #region nonpublic members
 
-        private bool m_Started;
+        private static readonly string[] m_BundleNames = {SoundsBundleName, LevelsBundleName};
+        private static readonly Dictionary<string, List<AssetInfo>> m_Bundles = new Dictionary<string, List<AssetInfo>>();
         
         #endregion
         
+        #region constructor
+
+        static AssetBundleManager()
+        {
+            Coroutines.Run(LoadBundles());
+        }
+        
+        #endregion
+
         #region api
 
-        public void Init()
-        {
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !m_Started,
-                () => Coroutines.Run(LoadBundles())
-            ));
-        }
-        public event NoArgsHandler Initialized; // only for calling IEnumerator Start()
-        public bool BundlesLoaded { get; private set; }
-        public List<string> Errors { get; } = new List<string>();
+        public static event UnityAction Initialized; // only for calling IEnumerator Start()
+        public static bool BundlesLoaded { get; private set; }
+        public static List<string> Errors { get; } = new List<string>();
 
-        public T GetAsset<T>(string _AssetName, string _BundleName) where T : Object
+        public static T GetAsset<T>(string _AssetName, string _BundleName) where T : Object
         {
             if (!BundlesLoaded)
                 Dbg.LogError("Bundles were not initialized");
@@ -69,24 +68,10 @@ namespace Managers
         }
         
         #endregion
-        
-        #region nonpublic members
-        
-        private readonly string[] m_BundleNames = {SoundsBundle};//, LevelsBundle};
-        private const string BundlesUri = "https://raw.githubusercontent.com/semi92art/bundles/main/mgc";
-        private readonly Dictionary<string, List<AssetInfo>> m_Bundles = new Dictionary<string, List<AssetInfo>>();
-        
-        #endregion
-        
-        #region engine methods
-
-        private void Start() => m_Started = true;
-
-        #endregion
 
         #region nonpublic methods
         
-        private IEnumerator LoadBundles()
+        private static IEnumerator LoadBundles()
         {
             foreach (var bundleName in m_BundleNames)
                 yield return LoadBundle(bundleName);
@@ -94,7 +79,7 @@ namespace Managers
             Initialized?.Invoke();
         }
         
-        private IEnumerator LoadBundle(string _BundleName)
+        private static IEnumerator LoadBundle(string _BundleName)
         {
             while (!Caching.ready)
                 yield return null;

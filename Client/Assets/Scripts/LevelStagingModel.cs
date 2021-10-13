@@ -1,5 +1,6 @@
 ﻿using System;
 using Games.RazorMaze.Models;
+using UnityEngine.Events;
 
 public enum ELevelStage
 {
@@ -54,7 +55,7 @@ public class ModelLevelStaging : IModelLevelStaging, IInit
 
     public ELevelStage LevelStage { get; private set; } = ELevelStage.Unloaded;
     public event LevelStageHandler LevelStageChanged;
-    public event NoArgsHandler Initialized;
+    public event UnityAction Initialized;
     
     public void Init()
     {

@@ -2,6 +2,7 @@
 using GameHelpers;
 using Lean.Touch;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Games.RazorMaze.Views.InputConfigurators
 {
@@ -10,8 +11,8 @@ namespace Games.RazorMaze.Views.InputConfigurators
         private LeanTouch m_LeanTouch;
         private bool m_Locked;
         
-        public event IntHandlerWithArgs Command;
-        public event NoArgsHandler Initialized;
+        public event UnityAction<int, object[]> Command;
+        public event UnityAction Initialized;
 
         public void Init()
         {

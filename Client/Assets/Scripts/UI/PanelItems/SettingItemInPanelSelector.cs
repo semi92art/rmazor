@@ -18,13 +18,13 @@ namespace UI.PanelItems
         public TextMeshProUGUI setting;
 
         public void Init(
-            IMenuDialogViewer _MenuDialogViewer,
+            IDialogViewer _UiDialogViewer,
             Func<string> _Value,
             string _Name,
             Func<List<string>> _ListOfItems,
-            Action<string> _Select,
+            Action<string> _OnSelect,
             IManagersGetter _ManagersGetter,
-            IUITicker _UITicker)
+            ISettingSelectorDialogPanel _SelectorPanel)
         {
             base.Init(_ManagersGetter);
             setting.text = _Value?.Invoke();
@@ -36,15 +36,9 @@ namespace UI.PanelItems
                 var items = _ListOfItems?.Invoke();
                 if (items == null)
                     return;
-                var selectorPanel = new SettingsSelectorPanel(
-                    _MenuDialogViewer,
-                    _Value?.Invoke(),
-                    items, 
-                    _Select,
-                    _ManagersGetter,
-                    _UITicker);
-                selectorPanel.Init();
-                _MenuDialogViewer.Show(selectorPanel);
+                _SelectorPanel.PreInit(_Value?.Invoke(), items, _OnSelect);
+                _SelectorPanel.Init();
+                _UiDialogViewer.Show(_SelectorPanel);
             });
         }
     }

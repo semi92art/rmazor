@@ -5,6 +5,7 @@ using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.Common;
+using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItems;
 using Shapes;
 using UnityEngine;
@@ -35,13 +36,16 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         #region inject
         
         private ICoordinateConverter CoordinateConverter { get; }
-        
+        private IInputConfigurator InputConfigurator { get; }
+
         public ViewMazeMovingItemsGroup(
             ICoordinateConverter _CoordinateConverter,
-            IViewMazeCommon _Common)
+            IViewMazeCommon _Common,
+            IInputConfigurator _InputConfigurator)
             : base(_Common)
         {
             CoordinateConverter = _CoordinateConverter;
+            InputConfigurator = _InputConfigurator;
         }
         
         #endregion
@@ -57,6 +61,9 @@ namespace Games.RazorMaze.Views.MazeItemGroups
 
         public void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
         {
+            var type = _Args.Info.Type;
+            if (type == EMazeItemType.GravityBlock || type == EMazeItemType.GravityTrap)
+                InputConfigurator.Locked = true;
             if (m_ItemsMoving.ContainsKey(_Args.Info))
                 m_ItemsMoving.Remove(_Args.Info);
             m_ItemsMoving.Add(_Args.Info, new ViewMovingItemInfo
@@ -77,9 +84,11 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         public void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
         {
+            var type = _Args.Info.Type;
+            if (type == EMazeItemType.GravityBlock || type == EMazeItemType.GravityTrap)
+                InputConfigurator.Locked = false;
             if (!m_ItemsMoving.ContainsKey(_Args.Info))
                 return;
-            
             (Common.GetItem(_Args.Info) as IViewMazeItemMovingBlock)?.OnMoveFinished(_Args);
             m_ItemsMoving.Remove(_Args.Info);
         }

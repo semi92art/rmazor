@@ -1,8 +1,10 @@
-﻿namespace Games.RazorMaze.Views.InputConfigurators
+﻿using UnityEngine.Events;
+
+namespace Games.RazorMaze.Views.InputConfigurators
 {
     public interface IInputConfigurator : IInit
     {
-        event IntHandlerWithArgs Command; 
+        event UnityAction<int, object[]> Command; 
         bool Locked { get; set; }
     }
 }

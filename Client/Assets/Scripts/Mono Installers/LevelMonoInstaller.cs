@@ -1,4 +1,6 @@
-﻿using Games.RazorMaze;
+﻿using Controllers;
+using DialogViewers;
+using Games.RazorMaze;
 using Games.RazorMaze.Controllers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.InputSchedulers;
@@ -15,11 +17,13 @@ using Games.RazorMaze.Views.MazeItems;
 using Games.RazorMaze.Views.MazeItems.Additional;
 using Games.RazorMaze.Views.Rotation;
 using Games.RazorMaze.Views.UI;
+using UI.Panels;
 
 namespace Mono_Installers
 {
     public class LevelMonoInstaller : MonoInstallerImplBase
     {
+        public static bool Release;
         public ModelSettings modelSettings;
         public ViewSettings viewSettings;
 
@@ -62,7 +66,8 @@ namespace Mono_Installers
             
             Container.Bind<IViewGame>()                     .To<ViewGame>()                      .AsSingle();
             Container.Bind<IViewMazeCommon>()               .To<ViewMazeCommon>()                .AsSingle();
-            Container.Bind<IViewUI>()                       .To<ViewUI>()                        .AsSingle();
+            Container.Bind<IViewUI>()                       .To<ViewUI>()                        .AsSingle().When(_ => Release);
+            Container.Bind<IViewUI>()                       .To<ViewUIProt>()                    .AsSingle().When(_ => !Release);
             Container.Bind<IViewMazeRotation>()             .To<ViewMazeRotation>()              .AsSingle();
             Container.Bind<IViewMazeBackground>()           .To<ViewMazeBackground>()            .AsSingle();
             Container.Bind<IViewAppearTransitioner>()       .To<ViewAppearTransitioner>()        .AsSingle();
@@ -93,6 +98,21 @@ namespace Mono_Installers
             Container.Bind<IViewMazePortalsGroup>()         .To<ViewMazePortalsGroup>()          .AsSingle();
             Container.Bind<IViewMazeTrapsReactItemsGroup>() .To<ViewMazeTrapsReactItemGroup>()   .AsSingle();
             Container.Bind<IViewMazeTrapsIncItemsGroup>()   .To<ViewMazeTrapsIncItemsGroup>()    .AsSingle();
+
+            Container.Bind<IDialogPanels>()                 .To<DialogPanels>()                  .AsSingle().When(_ => Release);
+            Container.Bind<IGameMenuDialogPanel>()          .To<GameMenuPanel>()                 .AsSingle().When(_ => Release);
+            Container.Bind<ILoadingDialogPanel>()           .To<LoadingPanel>()                  .AsSingle().When(_ => Release);
+            Container.Bind<ISelectGameDialogPanel>()        .To<SelectGamePanel>()               .AsSingle().When(_ => Release);
+            Container.Bind<ISettingSelectorDialogPanel>()   .To<SettingsSelectorPanel>()         .AsSingle().When(_ => Release);
+            Container.Bind<IShopDialogPanel>()              .To<ShopPanel>()                     .AsSingle().When(_ => Release);
+            Container.Bind<IWheelOfFortuneDialogPanel>()    .To<WheelOfFortunePanel>()           .AsSingle().When(_ => Release);
+            Container.Bind<IWheelOfFortuneRewardPanel>()    .To<WheelOfFortuneRewardPanel>()     .AsSingle().When(_ => Release);
+            Container.Bind<IDialogViewer>()                 .To<UiDialogViewer>()                .AsSingle().When(_ => Release);
+            Container.Bind<INotificationViewer>()           .To<NotificationViewer>()            .AsSingle().When(_ => Release);
+            Container.Bind<ITransitionRenderer>()           .To<CircleTransitionRenderer>()      .AsSingle().When(_ => Release);
+            Container.Bind<ILoadingController>()            .To<LoadingController>()             .AsSingle().When(_ => Release);
+            Container.Bind<IDailyBonusDialogPanel>()        .To<DailyBonusPanel>()               .AsSingle().When(_ => Release);
+            Container.Bind<ISettingDialogPanel>()           .To<SettingsPanel>()                 .AsSingle().When(_ => Release);
             
 #if UNITY_EDITOR
             Container.Bind<IInputConfigurator>()            .To<RazorMazeInputConfiguratorProt>().AsSingle();

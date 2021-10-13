@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 
 namespace Managers
 {
@@ -24,7 +25,7 @@ namespace Managers
 
         #region api
         
-        public event NoArgsHandler Initialized;
+        public event UnityAction Initialized;
 
         public void Init()
         { 

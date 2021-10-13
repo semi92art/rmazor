@@ -1,6 +1,7 @@
 ﻿using Games.RazorMaze.Models;
 using Ticker;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Games.RazorMaze.Views.InputConfigurators
 {
@@ -15,8 +16,8 @@ namespace Games.RazorMaze.Views.InputConfigurators
         #region api
 
         public bool Locked { get; set; }
-        public event IntHandlerWithArgs Command;
-        public event NoArgsHandler Initialized;
+        public event UnityAction<int, object[]> Command;
+        public event UnityAction Initialized;
 
         public void Init()
         {
