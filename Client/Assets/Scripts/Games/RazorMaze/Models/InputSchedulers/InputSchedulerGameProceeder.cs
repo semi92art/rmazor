@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Exceptions;
+using Games.RazorMaze.Views;
 using Ticker;
 
 namespace Games.RazorMaze.Models.InputSchedulers
 {
-    public interface IInputSchedulerGameProceeder : IAddCommand
+    public interface IInputSchedulerGameProceeder : IAddCommand, IOnLevelStageChanged
     {
         event InputCommandHandler MoveCommand; 
         event InputCommandHandler RotateCommand;
@@ -13,7 +14,7 @@ namespace Games.RazorMaze.Models.InputSchedulers
         void UnlockRotation(bool _Unlock);
     }
     
-    public class InputSchedulerGameProceeder : IUpdateTick, IInputSchedulerGameProceeder
+    public class InputSchedulerGameProceeder : IInputSchedulerGameProceeder, IUpdateTick
     {
         #region constants
 
@@ -86,21 +87,11 @@ namespace Games.RazorMaze.Models.InputSchedulers
         
         public void UnlockMovement(bool _Unlock)
         {
-            if (!_Unlock)
-            {
-                m_MoveCommands.Clear();
-                m_MoveCommandsCount = 0;
-            }
             m_MovementLocked = !_Unlock;
         }
 
         public void UnlockRotation(bool _Unlock)
         {
-            if (!_Unlock)
-            {
-                m_RotateCommands.Clear();
-                m_RotateCommandsCount = 0;
-            }
             m_RotationLocked = !_Unlock;
         }
 
@@ -160,5 +151,16 @@ namespace Games.RazorMaze.Models.InputSchedulers
         }
 
         #endregion
+
+        public void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            if (_Args.Stage != ELevelStage.StartedOrContinued)
+            {
+                m_MoveCommands.Clear();
+                m_MoveCommandsCount = 0;
+                m_RotateCommands.Clear();
+                m_RotateCommandsCount = 0;
+            }
+        }
     }
 }

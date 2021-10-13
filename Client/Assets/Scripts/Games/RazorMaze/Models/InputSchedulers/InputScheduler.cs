@@ -1,6 +1,4 @@
-﻿using Games.RazorMaze.Views;
-
-namespace Games.RazorMaze.Models.InputSchedulers
+﻿namespace Games.RazorMaze.Models.InputSchedulers
 {
     public delegate void InputCommandHandler(int _Command, object[] _Args = null);
 
@@ -11,7 +9,7 @@ namespace Games.RazorMaze.Models.InputSchedulers
     
     public interface IInputScheduler : IInputSchedulerGameProceeder, IInputSchedulerUiProceeder { }
     
-    public class InputScheduler : IInputScheduler, IOnLevelStageChanged
+    public class InputScheduler : IInputScheduler
     {
         #region inject
         
@@ -56,6 +54,8 @@ namespace Games.RazorMaze.Models.InputSchedulers
                                   || _Args.Stage == ELevelStage.ReadyToStartOrContinue;
             UnlockMovement(unlockMoveAndRot);
             UnlockRotation(unlockMoveAndRot);
+            InputSchedulerGameProceeder.OnLevelStageChanged(_Args);
+            InputSchedulerUiProceeder.OnLevelStageChanged(_Args);
         }
 
         #endregion

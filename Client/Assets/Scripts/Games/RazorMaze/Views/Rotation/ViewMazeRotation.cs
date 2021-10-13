@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using DI.Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Ticker;
@@ -49,7 +48,7 @@ namespace Games.RazorMaze.Views.Rotation
             m_Rb.gravityScale = 0;
         }
 
-        public override void StartRotation(MazeRotationEventArgs _Args)
+        public override void OnRotationStarted(MazeRotationEventArgs _Args)
         {
             Coroutines.Run(RotationCoroutine(_Args));
         }

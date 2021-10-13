@@ -25,6 +25,7 @@ namespace Games.RazorMaze.Views.Characters
 
         private const string SoundClipNameCharacterMoveEnd = "character_move_end";
         private const string SoundClipNameCharacterDeath = "character_death";
+        private const float RelativeLocalScale = 0.98f;
         
         #endregion
         
@@ -43,11 +44,13 @@ namespace Games.RazorMaze.Views.Characters
         
         private GameObject m_Head;
         private Animator m_Animator;
-        private EMazeMoveDirection m_PrevVertDir;
-        private EMazeMoveDirection m_PrevHorDir;
+        private EMazeMoveDirection m_PrevVertDir = EMazeMoveDirection.Up;
+        private EMazeMoveDirection m_PrevHorDir = EMazeMoveDirection.Right;
         private bool m_Activated;
         private bool m_Initialized;
         private Color m_BackColor;
+        private bool m_NeedToInvokeOnReadyToContinue;
+        private MazeOrientation m_OrientationCache = MazeOrientation.North;
 
         #endregion
         
@@ -113,6 +116,15 @@ namespace Games.RazorMaze.Views.Characters
             }
         }
 
+        public override void OnRotationFinished(MazeRotationEventArgs _Args)
+        {
+            if (m_NeedToInvokeOnReadyToContinue)
+            {
+                OnReadyToContinue();
+                m_NeedToInvokeOnReadyToContinue = false;
+            }
+        }
+
         public override void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
         {
             m_Animator.SetTrigger(AnimKeyStartMove);
@@ -145,17 +157,17 @@ namespace Games.RazorMaze.Views.Characters
                     Activated = true;
                     break;
                 case ELevelStage.CharacterKilled:
+                    m_OrientationCache = Model.Data.Orientation;
                     m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = false;
                     Tail.HideTail();
                     Managers.Notify(_SM => _SM.PlayClip(SoundClipNameCharacterDeath));
                     Coroutines.Run(ShakeMaze());
                     break;
                 case ELevelStage.ReadyToStartOrContinue:
-                    SetPosition(CoordinateConverter.ToLocalCharacterPosition(Model.Character.Position));
-                    m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = true;
-                    Tail.Activated = true;
-                    m_Animator.SetTrigger(AnimKeyStartJumping);
-                    Tail.HideTail();
+                    if (m_OrientationCache == MazeOrientation.North)
+                        OnReadyToContinue();
+                    else
+                        m_NeedToInvokeOnReadyToContinue = true;
                     break;
             }
             Effector.OnLevelStageChanged(_Args);
@@ -196,21 +208,17 @@ namespace Games.RazorMaze.Views.Characters
             var prefab = PrefabUtilsEx.InitPrefab(go.transform, CommonPrefabSetNames.Views, "character");
             prefab.transform.SetLocalPosXY(Vector2.zero);
             m_Head = prefab.GetContentItem("head");
-
             m_Animator = prefab.GetCompItem<Animator>("animator");
-            
             m_HeadShape = prefab.GetCompItem<Rectangle>("head shape");
             m_Eye1Shape = prefab.GetCompItem<Rectangle>("eye_1");
             m_Eye2Shape = prefab.GetCompItem<Rectangle>("eye_2");
-
             m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = false;
-            
             m_Initialized = true;
         }
 
         private void UpdatePrefab()
         {
-            var localScale = Vector3.one * CoordinateConverter.GetScale() * 0.98f;
+            var localScale = Vector3.one * CoordinateConverter.GetScale() * RelativeLocalScale;
             m_Head.transform.localScale = localScale;
         }
 
@@ -248,7 +256,7 @@ namespace Games.RazorMaze.Views.Characters
             }
         }
 
-        private void LookAtByOrientation(EMazeMoveDirection _Direction, bool _Inverse)
+        private void LookAtByOrientation(EMazeMoveDirection _Direction, bool _VerticalInverse, bool _LocalAngles = false)
         {
             float angle, horScale;
             switch (_Direction)
@@ -260,11 +268,14 @@ namespace Games.RazorMaze.Views.Characters
                 default:
                     throw new SwitchCaseNotImplementedException(_Direction);
             }
-            
-            m_Head.transform.eulerAngles = Vector3.forward * angle;
-            var absScale = m_Head.transform.localScale.Abs();
-            float vertScale = _Inverse ? -1f : 1f;
-            m_Head.transform.localScale = new Vector3(absScale.x * horScale, absScale.y * vertScale, absScale.z);
+
+            if (_LocalAngles)
+                m_Head.transform.localEulerAngles = Vector3.forward * angle;
+            else
+                m_Head.transform.eulerAngles = Vector3.forward * angle;
+            float vertScale = _VerticalInverse ? -1f : 1f;
+            float scaleCoeff = CoordinateConverter.GetScale() * RelativeLocalScale;
+            m_Head.transform.localScale = scaleCoeff * new Vector3(horScale, vertScale, 1f);
         }
         
         private IEnumerator ShakeMaze()
@@ -288,6 +299,16 @@ namespace Games.RazorMaze.Views.Characters
                 {
                     ContainersGetter.MazeContainer.position = defPos;
                 });
+        }
+
+        private void OnReadyToContinue()
+        {
+            SetPosition(CoordinateConverter.ToLocalCharacterPosition(Model.Character.Position));
+            LookAtByOrientation(EMazeMoveDirection.Right, false);
+            m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = true;
+            m_Animator.SetTrigger(AnimKeyStartJumping);
+            Tail.Activated = true;
+            Tail.HideTail();
         }
 
         #endregion

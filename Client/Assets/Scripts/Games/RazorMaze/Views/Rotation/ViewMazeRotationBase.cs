@@ -13,7 +13,7 @@ namespace Games.RazorMaze.Views.Rotation
         public abstract event MazeOrientationHandler RotationFinished;
         
         public virtual void Init() => Initialized?.Invoke();
-        public abstract void StartRotation(MazeRotationEventArgs _Args);
+        public abstract void OnRotationStarted(MazeRotationEventArgs _Args);
         public abstract void OnLevelStageChanged(LevelStageArgs _Args);
 
         #endregion

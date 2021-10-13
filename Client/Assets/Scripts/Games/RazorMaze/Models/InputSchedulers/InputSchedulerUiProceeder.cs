@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using GameHelpers;
+using Games.RazorMaze.Views;
 using Ticker;
 
 namespace Games.RazorMaze.Models.InputSchedulers
 {
-    public interface IInputSchedulerUiProceeder : IAddCommand
+    public interface IInputSchedulerUiProceeder : IAddCommand, IOnLevelStageChanged
     {
         event InputCommandHandler UiCommand;
     }
@@ -64,6 +65,11 @@ namespace Games.RazorMaze.Models.InputSchedulers
                     m_UiCommands.Enqueue(new Tuple<int, object[]>(_Command, _Args));
                     break;
             }
+        }
+        
+        public void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            
         }
 
         #endregion

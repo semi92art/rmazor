@@ -1,4 +1,4 @@
-﻿using Entities;
+﻿using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
 using SpawnPools;
@@ -9,9 +9,11 @@ namespace Games.RazorMaze.Views.Characters
         IActivated,
         IOnLevelStageChanged,
         ICharacterMoveStarted,
-        ICharacterMoveContinued, 
-        ICharacterMoveFinished, 
+        ICharacterMoveContinued,
+        ICharacterMoveFinished,
         IOnBackgroundColorChanged,
         IAppear
-    { }
+    {
+        void OnRotationFinished(MazeRotationEventArgs _Args);
+    }
 }

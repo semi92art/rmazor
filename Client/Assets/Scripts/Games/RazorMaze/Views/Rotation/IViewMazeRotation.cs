@@ -7,6 +7,6 @@ namespace Games.RazorMaze.Views.Rotation
     {
         event UnityAction<float> RotationContinued;
         event MazeOrientationHandler RotationFinished;
-        void StartRotation(MazeRotationEventArgs _Args);
+        void OnRotationStarted(MazeRotationEventArgs _Args);
     }
 }
