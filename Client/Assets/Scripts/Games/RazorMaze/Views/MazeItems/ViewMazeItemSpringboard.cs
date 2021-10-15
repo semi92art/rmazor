@@ -91,7 +91,7 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override void InitShape()
         {
             var go = Object;
-            m_Pillar = ContainersGetter.MazeItemsContainer.gameObject
+            m_Pillar = ContainersGetter.GetContainer(ContainerNames.MazeItems).gameObject
                 .GetOrAddComponentOnNewChild<Line>("Springboard Item", ref go);
             go.DestroyChildrenSafe();
             m_Springboard = go.AddComponentOnNewChild<Line>("Springboard", out _, Vector2.zero);
@@ -102,7 +102,7 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override void UpdateShape()
         {
             m_Pillar.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
-            m_Pillar.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
+            m_Pillar.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
             m_Springboard.Thickness = m_Pillar.Thickness * 2f;
             (m_Pillar.Start, m_Pillar.End, m_Springboard.Start, m_Springboard.End) = GetSpringboardAndPillarEdges();
             m_Edge1Start = m_Springboard.Start;
@@ -139,10 +139,10 @@ namespace Games.RazorMaze.Views.MazeItems
             var D = A1 + V * SpringboardHeight;
             var B = D - Vorth * SpringboardWidth * 0.5f;
             var C = D + Vorth * SpringboardWidth * 0.5f;
-            A1 *= CoordinateConverter.GetScale();
-            B *= CoordinateConverter.GetScale();
-            C *= CoordinateConverter.GetScale();
-            D *= CoordinateConverter.GetScale();
+            A1 *= CoordinateConverter.Scale;
+            B *= CoordinateConverter.Scale;
+            C *= CoordinateConverter.Scale;
+            D *= CoordinateConverter.Scale;
             return new Tuple<Vector2, Vector2, Vector2, Vector2>(A1, D, B, C);
         }
 

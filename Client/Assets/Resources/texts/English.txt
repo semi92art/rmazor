@@ -38,3 +38,4 @@ Register = Register
 YourReward = your reward:
 Get = get
 swipe_to_start = swipe to start
+touch_to_rotate = touch to rotate

@@ -162,11 +162,12 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected override void InitShape()
         {
+            var mazeItemsCont = ContainersGetter.GetContainer(ContainerNames.MazeItems);
             var go = Object;
-            var sh = ContainersGetter.MazeItemsContainer.gameObject.GetOrAddComponentOnNewChild<Disc>(
+            var sh = mazeItemsCont.gameObject.GetOrAddComponentOnNewChild<Disc>(
                 "Turret",
                 ref go);
-            sh.Radius = CoordinateConverter.GetScale() * 0.5f;
+            sh.Radius = CoordinateConverter.Scale * 0.5f;
             sh.Type = DiscType.Arc;
             sh.ArcEndCaps = ArcEndCap.Round;
             sh.Color = DrawingUtils.ColorLines;
@@ -182,9 +183,9 @@ namespace Games.RazorMaze.Views.MazeItems
             m_BulletHolderBorder = bhb;
 
             var bulletGo = PrefabUtilsEx.InitPrefab(
-                ContainersGetter.MazeItemsContainer, "views", "turret_bullet");
+                mazeItemsCont, "views", "turret_bullet");
             var bulletFakeGo = UnityEngine.Object.Instantiate(bulletGo);
-            bulletFakeGo.SetParent(ContainersGetter.MazeItemsContainer);
+            bulletFakeGo.SetParent(mazeItemsCont);
             bulletFakeGo.name = "Turret Bullet Fake";
             
             m_BulletFakeContainer = bulletFakeGo.transform;
@@ -197,9 +198,9 @@ namespace Games.RazorMaze.Views.MazeItems
             m_BulletRenderer = m_Bullet.GetComponent<SpriteRenderer>();
 
             var bmGo = PrefabUtilsEx.InitPrefab(
-                ContainersGetter.MazeItemsContainer, "views", "turret_bullet_mask");
+                mazeItemsCont, "views", "turret_bullet_mask");
             var bmGo2 = UnityEngine.Object.Instantiate(bmGo);
-            bmGo2.SetParent(ContainersGetter.MazeItemsContainer);
+            bmGo2.SetParent(mazeItemsCont);
             
             var bm = bmGo.GetCompItem<SpriteMask>("mask");
             var bm2 = bmGo2.GetCompItem<SpriteMask>("mask");
@@ -214,7 +215,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected override void UpdateShape()
         {
-            var scale = CoordinateConverter.GetScale();
+            var scale = CoordinateConverter.Scale;
             m_Body.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             m_Body.Thickness = ViewSettings.LineWidth * scale;
             m_BulletTr.transform.localScale = Vector3.one * scale * BulletContainerRadius * 0.9f;
@@ -291,7 +292,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 1f,
                 0.2f,
                 _Progress => m_BulletFakeContainer.transform.localScale =
-                    Vector3.one * _Progress * CoordinateConverter.GetScale() * BulletContainerRadius * 0.9f,
+                    Vector3.one * _Progress * CoordinateConverter.Scale * BulletContainerRadius * 0.9f,
                 GameTicker);
         }
         
@@ -344,7 +345,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 {
                     if (point == Model.Character.Position)
                     {
-                        Model.Character.RaiseDeath();
+                        Model.LevelStaging.KillCharacter();
                         return false;
                     }
                     return !movedToTheEnd;

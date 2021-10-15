@@ -154,19 +154,19 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override void InitShape()
         {
             var go = Object;
-            var sh = ContainersGetter.MazeItemsContainer.gameObject
+            var sh = ContainersGetter.GetContainer(ContainerNames.MazeItems).gameObject
                 .GetOrAddComponentOnNewChild<Rectangle>(
                     "Shredinger Block",
                     ref go,
                     Vector2.zero);
             Object = go;
             
-            sh.Width = sh.Height = CoordinateConverter.GetScale() * 0.9f;
+            sh.Width = sh.Height = CoordinateConverter.Scale * 0.9f;
             sh.Type = Rectangle.RectangleType.RoundedHollow;
-            sh.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.GetScale();
+            sh.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale;
             sh.Color = DrawingUtils.ColorLines;
             sh.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
-            sh.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
+            sh.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
             m_ClosedBlock = sh;
             
             var lLeft    = go.AddComponentOnNewChild<Line>("Left Line",     out _, Vector2.zero);
@@ -198,7 +198,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 line.DashType = DashType.Rounded;
                 line.Color = DrawingUtils.ColorLines;
                 line.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
-                line.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
+                line.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
             }
 
             List<Vector2> cPoss, cAngs;
@@ -242,7 +242,7 @@ namespace Games.RazorMaze.Views.MazeItems
             foreach (var corner in m_OpenedCorners)
             {
                 corner.Radius = GetCornerRadius();
-                corner.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
+                corner.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
             }
         }
 
@@ -410,7 +410,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private List<Vector2> GetCornerPositions()
         {
             const float c = 0.43f;
-            float s = CoordinateConverter.GetScale();
+            float s = CoordinateConverter.Scale;
             var bottomLeft  = (Vector2.down + Vector2.left)  * (c * s);
             var bottomRight = (Vector2.down + Vector2.right) * (c * s);
             var topLeft     = (Vector2.up   + Vector2.left)  * (c * s);
@@ -422,7 +422,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             const float c1 = 0.43f;
             const float c2 = 0.1f;
-            float s = CoordinateConverter.GetScale();
+            float s = CoordinateConverter.Scale;
             var bottomLeft  = (Vector2.down + Vector2.left  * c2) * (c1 * s);
             var bottomRight = (Vector2.down + Vector2.right * c2) * (c1 * s);
             var topLeft     = (Vector2.up   + Vector2.left  * c2) * (c1 * s);
@@ -430,7 +430,7 @@ namespace Games.RazorMaze.Views.MazeItems
             return new List<Vector2> {bottomLeft, topLeft, topRight, bottomRight};
         }
 
-        private float GetCornerRadius() => ViewSettings.CornerRadius * CoordinateConverter.GetScale() * 0.5f;
+        private float GetCornerRadius() => ViewSettings.CornerRadius * CoordinateConverter.Scale * 0.5f;
 
         #endregion
     }

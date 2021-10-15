@@ -115,7 +115,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 1f, 
                 3f,
                 0.07f,
-                _Progress => m_Center.Radius = CoordinateConverter.GetScale() * 0.2f * _Progress,
+                _Progress => m_Center.Radius = CoordinateConverter.Scale * 0.2f * _Progress,
                 GameTicker,
                 (_, __) =>
                 {
@@ -123,7 +123,7 @@ namespace Games.RazorMaze.Views.MazeItems
                         3f,
                         1f,
                         0.07f,
-                        _Progress => m_Center.Radius = CoordinateConverter.GetScale() * 0.2f * _Progress,
+                        _Progress => m_Center.Radius = CoordinateConverter.Scale * 0.2f * _Progress,
                         GameTicker));
                 }));
         }
@@ -135,20 +135,20 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override void InitShape()
         {
             var go = Object;
-            var center = ContainersGetter.MazeItemsContainer.gameObject
+            var center = ContainersGetter.GetContainer(ContainerNames.MazeItems).gameObject
                 .GetOrAddComponentOnNewChild<Disc>(
                     "Portal Item",
                     ref go,
                     Vector2.zero);
             center.Type = DiscType.Disc;
             center.Color = DrawingUtils.ColorLines;
-            center.Radius = CoordinateConverter.GetScale() * 0.2f;
+            center.Radius = CoordinateConverter.Scale * 0.2f;
             go.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             go.DestroyChildrenSafe();
             m_Center = center;
             Object = go;
 
-            var scale = CoordinateConverter.GetScale();
+            var scale = CoordinateConverter.Scale;
             for (int i = 0; i < OrbitsCount; i++)
             {
                 var orbit = go.AddComponentOnNewChild<Disc>($"Orbit {i + 1}", out _, Vector2.zero);
@@ -209,7 +209,7 @@ namespace Games.RazorMaze.Views.MazeItems
             for (int i = 0; i < GravityItemsCount; i++)
             {
                 var gItem = Object.AddComponentOnNewChild<Disc>("Gravity Item", out _, Vector2.zero);
-                gItem.Radius = 0.025f * CoordinateConverter.GetScale();
+                gItem.Radius = 0.025f * CoordinateConverter.Scale;
                 gItem.Color = DrawingUtils.ColorLines;
                 gItem.Type = DiscType.Disc;
                 m_GravityItems.Add(gItem);
@@ -227,7 +227,7 @@ namespace Games.RazorMaze.Views.MazeItems
             m_GravityItems.Activate(item);
             float angle = Random.value * 2f * Mathf.PI;
             var v = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
-            float dist = 1f + Random.value * CoordinateConverter.GetScale() * 1f;
+            float dist = 1f + Random.value * CoordinateConverter.Scale * 1f;
             item.transform.SetLocalPosXY(v * dist);
 
             Coroutines.Run(Coroutines.Lerp(

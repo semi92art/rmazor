@@ -131,17 +131,16 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override void InitShape()
         {
             Object = new GameObject("Trap Increasing");
-            Object.SetParent(ContainersGetter.MazeItemsContainer);
+            Object.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems));
             var prefab = PrefabUtilsEx.InitPrefab(
                 Object.transform, "views", "trap_increasing");
             prefab.transform.SetLocalPosXY(Vector2.zero);
-            prefab.transform.localScale = Vector3.one * CoordinateConverter.GetScale();
+            prefab.transform.localScale = Vector3.one * CoordinateConverter.Scale;
             m_Animator = prefab.GetCompItem<Animator>("animator");
             m_Center = prefab.GetCompItem<Disc>("center");
             m_Triggerer = prefab.GetCompItem<AnimationTriggerer>("triggerer");
             m_Triggerer.Trigger1 += () => m_ReadyToKill = true;
             m_Triggerer.Trigger2 += () => m_ReadyToKill = false;
-            m_Triggerer.Trigger3 += OnRotationStopped;
             
             m_BladeContainers.Clear();
             m_Blades.Clear();
@@ -179,11 +178,6 @@ namespace Games.RazorMaze.Views.MazeItems
                 .ToList();
         }
 
-        private void OnRotationStopped()
-        {
-            Managers.Notify(_SM => _SM.StopClip(SoundClipNameTrapIncreasingRotate));
-        }
-
         private void OpenTrap()
         {
             if (AppearingState != EAppearingState.Appeared)
@@ -206,6 +200,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 return;
             m_TrapOpened = false;
             Coroutines.Run(OpenTrapCoroutine(false));
+            Managers.Notify(_SM => _SM.StopClip(SoundClipNameTrapIncreasingRotate));
             Managers.Notify(_SM => _SM.PlayClip(SoundClipNameTrapIncreasingClose));
         }
 
@@ -239,6 +234,8 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private void CheckForCharacterDeath()
         {
+            if (!Model.Character.Alive)
+                return;
             const float distance = 0.5f;
             var character = Model.Character;
             var cPos = character.IsMoving ? 
@@ -246,7 +243,7 @@ namespace Games.RazorMaze.Views.MazeItems
             if (m_DeathZone.All(_P =>
                 Vector2.Distance(_P, cPos) + RazorMazeUtils.Epsilon > distance)) 
                 return;
-            character.RaiseDeath();
+            Model.LevelStaging.KillCharacter();
         }
 
         #endregion

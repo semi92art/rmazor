@@ -2,9 +2,10 @@
 
 namespace Games.RazorMaze.Views.InputConfigurators
 {
-    public interface IInputConfigurator : IInit
+    public interface IViewInputConfigurator : IInit
     {
         event UnityAction<int, object[]> Command; 
         bool Locked { get; set; }
+        void RaiseCommand(int _Key, object[] _Args);
     }
 }

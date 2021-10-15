@@ -112,10 +112,11 @@ namespace Games.RazorMaze.Views.Common
 
         private void InitSources()
         {
+            var backgroundCont = ContainersGetter.GetContainer(ContainerNames.Background);
             int sortingOrder = DrawingUtils.GetBackgroundItemSortingOrder();
 
             var source1Go = new GameObject("Background Source 1");
-            source1Go.SetParent(ContainersGetter.BackgroundContainer);
+            source1Go.SetParent(backgroundCont);
             var source1 = source1Go.AddComponent<Disc>();
             source1.Color = m_Color;
             source1.Radius = 0.25f;
@@ -124,7 +125,7 @@ namespace Games.RazorMaze.Views.Common
             m_Sources.Add(source1);
             
             var source2Go = new GameObject("Background Source 2");
-            source2Go.SetParent(ContainersGetter.BackgroundContainer);
+            source2Go.SetParent(backgroundCont);
             var source2 = source2Go.AddComponent<Disc>();
             source2.Color = m_Color;
             source2.Radius = 0.5f;
@@ -133,7 +134,7 @@ namespace Games.RazorMaze.Views.Common
             m_Sources.Add(source2);
             
             var source3Go = new GameObject("Background Source 3");
-            source3Go.SetParent(ContainersGetter.BackgroundContainer);
+            source3Go.SetParent(backgroundCont);
             var source3 = source3Go.AddComponent<Disc>();
             source3.Color = m_Color;
             source3.Radius = 1f;
@@ -149,7 +150,7 @@ namespace Games.RazorMaze.Views.Common
                 int randIdx = Mathf.FloorToInt(UnityEngine.Random.value * m_Sources.Count);
                 var source = m_Sources[randIdx];
                 var newGo = Object.Instantiate(source.gameObject);
-                newGo.SetParent(ContainersGetter.BackgroundContainer);
+                newGo.SetParent(ContainersGetter.GetContainer(ContainerNames.Background));
                 var pos = RandomPositionOnScreen();
                 newGo.transform.SetPosXY(pos);
                 Component newSourceRaw = null;

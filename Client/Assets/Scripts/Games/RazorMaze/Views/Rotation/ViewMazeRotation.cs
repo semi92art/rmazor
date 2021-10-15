@@ -48,8 +48,9 @@ namespace Games.RazorMaze.Views.Rotation
 
         public override void Init()
         {
-            m_Rb = ContainersGetter.MazeContainer.gameObject.AddComponent<Rigidbody2D>();
+            m_Rb = ContainersGetter.GetContainer(ContainerNames.Maze).gameObject.AddComponent<Rigidbody2D>();
             m_Rb.gravityScale = 0;
+            m_Rb.constraints = RigidbodyConstraints2D.FreezePosition;
         }
 
         public override void OnRotationStarted(MazeRotationEventArgs _Args)

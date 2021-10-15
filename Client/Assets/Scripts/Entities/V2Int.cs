@@ -49,5 +49,7 @@ namespace Entities
         public static V2Int right => new V2Int(Vector2Int.right);
         public static V2Int one => new V2Int(Vector2Int.one);
         public static V2Int zero => new V2Int(Vector2Int.zero);
+        
+        public static implicit operator Vector2(V2Int _V) => _V.ToVector2();
     }
 }

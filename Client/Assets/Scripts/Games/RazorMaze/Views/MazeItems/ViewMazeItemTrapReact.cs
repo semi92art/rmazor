@@ -122,9 +122,10 @@ namespace Games.RazorMaze.Views.MazeItems
         
         protected override void InitShape()
         {
-            var scale = CoordinateConverter.GetScale();
+            var mazeItemsCont = ContainersGetter.GetContainer(ContainerNames.MazeItems);
+            var scale = CoordinateConverter.Scale;
             var go = Object;
-            var line = ContainersGetter.MazeItemsContainer.gameObject
+            var line = mazeItemsCont.gameObject
                 .GetOrAddComponentOnNewChild<Line>(
                     "Trap React Item",
                     ref go);
@@ -142,7 +143,7 @@ namespace Games.RazorMaze.Views.MazeItems
             
             
             var maskGo = PrefabUtilsEx.InitPrefab(
-                ContainersGetter.MazeItemsContainer, "views", "turret_bullet_mask");
+                mazeItemsCont, "views", "turret_bullet_mask");
             var mask = maskGo.GetCompItem<SpriteMask>("mask");
             maskGo.SetParent(Object);
             maskGo.transform.SetLocalPosXY(Vector2.zero);
@@ -159,7 +160,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             m_Line.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             (m_Line.Start, m_Line.End) = GetTrapPosRotAndLineEdges();
-            var scale = CoordinateConverter.GetScale();
+            var scale = CoordinateConverter.Scale;
             var dir = Props.Directions.First().ToVector2();
             var trapTr = m_Trap.transform;
             trapTr.SetLocalPosXY(dir * scale * StartPos);
@@ -174,7 +175,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private IEnumerator HandlePreReact()
         {
-            var scale = CoordinateConverter.GetScale();
+            var scale = CoordinateConverter.Scale;
             var dir = Props.Directions.First().ToVector2();
             yield return Coroutines.Lerp(
                 StartPos,
@@ -187,7 +188,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private IEnumerator HandleReact()
         {
-            var scale = CoordinateConverter.GetScale();
+            var scale = CoordinateConverter.Scale;
             var dir = Props.Directions.First().ToVector2();
             yield return Coroutines.Lerp(
                 MiddlePos,
@@ -200,7 +201,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private IEnumerator HandlePostReact()
         {
-            var scale = CoordinateConverter.GetScale();
+            var scale = CoordinateConverter.Scale;
             var dir = Props.Directions.First().ToVector2();
             yield return Coroutines.Lerp(
                 FinalPos,
@@ -218,8 +219,8 @@ namespace Games.RazorMaze.Views.MazeItems
             var A = dir * 0.35f;
             var B = A + dirOrth * 0.45f;
             var C = A - dirOrth * 0.45f;
-            B *= CoordinateConverter.GetScale();
-            C *= CoordinateConverter.GetScale();
+            B *= CoordinateConverter.Scale;
+            C *= CoordinateConverter.Scale;
             return new Tuple<Vector2, Vector2>(B, C);
         }
 
@@ -241,7 +242,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 character.MovingInfo.PrecisePosition : character.Position.ToVector2();
             if (Vector2.Distance(cPos, itemPos) + RazorMazeUtils.Epsilon > 1f) 
                 return;
-            character.RaiseDeath();
+            Model.LevelStaging.KillCharacter();
         }
         
         #endregion

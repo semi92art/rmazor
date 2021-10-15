@@ -28,8 +28,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
             ModelSettings _Settings, 
             IModelData _Data,
             IModelCharacter _Character,
+            IModelLevelStaging _LevelStaging,
             IGameTicker _GameTicker)
-            : base(_Settings, _Data, _Character, _GameTicker) { }
+            : base(_Settings, _Data, _Character, _LevelStaging, _GameTicker) { }
         
         #endregion
         
@@ -142,7 +143,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             if (Vector2.Distance(cPos, _ItemPrecisePosition) + RazorMazeUtils.Epsilon > 1f)
                 return;
             KillerProceedInfo = _Info;
-            Character.RaiseDeath();
+            LevelStaging.KillCharacter();
         }
 
         #endregion

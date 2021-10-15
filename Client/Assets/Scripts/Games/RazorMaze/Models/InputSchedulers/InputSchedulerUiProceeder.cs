@@ -62,6 +62,7 @@ namespace Games.RazorMaze.Models.InputSchedulers
                 case InputCommands.FinishLevel:
                 case InputCommands.PauseLevel:
                 case InputCommands.UnloadLevel:
+                case InputCommands.KillCharacter:
                     m_UiCommands.Enqueue(new Tuple<int, object[]>(_Command, _Args));
                     break;
             }
@@ -118,6 +119,9 @@ namespace Games.RazorMaze.Models.InputSchedulers
                     break;
                 case InputCommands.UnloadLevel:
                     LevelStaging.UnloadLevel();
+                    break;
+                case InputCommands.KillCharacter:
+                    LevelStaging.KillCharacter();
                     break;
             }
         }

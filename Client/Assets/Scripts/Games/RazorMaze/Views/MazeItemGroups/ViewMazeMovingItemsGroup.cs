@@ -36,12 +36,12 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         #region inject
         
         private ICoordinateConverter CoordinateConverter { get; }
-        private IInputConfigurator InputConfigurator { get; }
+        private IViewInputConfigurator InputConfigurator { get; }
 
         public ViewMazeMovingItemsGroup(
             ICoordinateConverter _CoordinateConverter,
             IViewMazeCommon _Common,
-            IInputConfigurator _InputConfigurator)
+            IViewInputConfigurator _InputConfigurator)
             : base(_Common)
         {
             CoordinateConverter = _CoordinateConverter;

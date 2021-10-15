@@ -115,10 +115,10 @@ namespace Games.RazorMaze.Views.MazeItems
                 .ToList();
 
             var go = new GameObject("Line");
-            go.SetParent(ContainersGetter.MazeItemsContainer);
+            go.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems));
             go.transform.SetLocalPosXY(Vector2.zero);
             var line = go.AddComponent<Polyline>();
-            line.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
+            line.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
             line.Color = DrawingUtils.ColorLines.SetA(0.5f);
             line.SetPoints(points);
             line.Closed = false;
@@ -128,11 +128,11 @@ namespace Games.RazorMaze.Views.MazeItems
             foreach (var point in points)
             {
                 var go1 = new GameObject("Joint");
-                go1.SetParent(ContainersGetter.MazeItemsContainer);
+                go1.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems));
                 var joint = go1.AddComponent<Disc>();
                 go1.transform.SetLocalPosXY(point);
                 joint.Color = DrawingUtils.ColorLines;
-                joint.Radius = ViewSettings.LineWidth * CoordinateConverter.GetScale() * 2f;
+                joint.Radius = ViewSettings.LineWidth * CoordinateConverter.Scale * 2f;
                 joint.Type = DiscType.Disc;
                 joint.SortingOrder = DrawingUtils.GetPathLineJointSortingOrder();
                 m_PathJoints.Add(joint);

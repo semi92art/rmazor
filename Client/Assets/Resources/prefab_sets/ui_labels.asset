@@ -16,4 +16,7 @@ MonoBehaviour:
     array:
     - item: {fileID: 3177347172963282559, guid: 6dc154a480e2cd44b99d194cbc232d58,
         type: 3}
-      name: swipe_to_start
+      name: prompt_how_to_move
+    - item: {fileID: 3177347172963282559, guid: 4c34bef045cbcdf43a39ce248ca4e7ad,
+        type: 3}
+      name: prompt_how_to_rotate

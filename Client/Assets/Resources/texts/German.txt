@@ -38,3 +38,4 @@ Register = Registrieren
 YourReward = deine Belohnung:
 Get = bekommen
 swipe_to_start = 
+touch_to_rotate = 

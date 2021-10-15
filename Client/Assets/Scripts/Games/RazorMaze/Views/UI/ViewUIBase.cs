@@ -34,7 +34,7 @@ namespace Games.RazorMaze.Views.UI
         protected void CreateCanvas()
         {
             m_Canvas = UiFactory.UiCanvas(
-                "MenuCanvas",
+                GetType().Name + " Canvas",
                 RenderMode.ScreenSpaceOverlay,
                 false,
                 0,

@@ -114,7 +114,7 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override void InitShape()
         {
             var go = Object;
-            var saw = ContainersGetter.MazeItemsContainer.gameObject
+            var saw = ContainersGetter.GetContainer(ContainerNames.MazeItems).gameObject
                 .GetOrAddComponentOnNewChild<SpriteRenderer>("Moving Trap", ref go);
             go.DestroyChildrenSafe();
             saw.sprite = PrefabUtilsEx.GetObject<Sprite>("views", "moving_trap");
@@ -124,7 +124,7 @@ namespace Games.RazorMaze.Views.MazeItems
             var coll = go.AddComponent<CircleCollider2D>();
             coll.radius = 0.5f;
 
-            go.transform.localScale = Vector3.one * CoordinateConverter.GetScale();
+            go.transform.localScale = Vector3.one * CoordinateConverter.Scale;
             
             Object = go;
             m_Saw = saw;

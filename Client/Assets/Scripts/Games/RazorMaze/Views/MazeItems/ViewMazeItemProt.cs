@@ -114,7 +114,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private void SetShapeAndHint(EMazeItemType _Type, bool _IsNode)
         {
             var converter = new CoordinateConverter();
-            converter.SetMazeSize(MazeSize);
+            converter.MazeSize = MazeSize;
             
             gameObject.DestroyChildrenSafe();
             transform.SetLocalPosXY(converter.ToLocalMazeItemPosition(props.Position));
@@ -132,10 +132,10 @@ namespace Games.RazorMaze.Views.MazeItems
         private void SetShapeByType(EMazeItemType _Type, bool _IsNode)
         {
             var converter = new CoordinateConverter();
-            converter.SetMazeSize(MazeSize);
+            converter.MazeSize = MazeSize;
             var sh = gameObject.GetOrAddComponent<Rectangle>();
-            sh.Width = 0.97f * converter.GetScale();
-            sh.Height = 0.97f * converter.GetScale();
+            sh.Width = 0.97f * converter.Scale;
+            sh.Height = 0.97f * converter.Scale;
             sh.Type = Rectangle.RectangleType.RoundedSolid;
             sh.CornerRadius = 0.1f;
             shape = sh;
@@ -359,15 +359,15 @@ namespace Games.RazorMaze.Views.MazeItems
         private Vector2 ToWorldPosition(V2Int _Point)
         {
             var converter = new CoordinateConverter();
-            converter.SetMazeSize(MazeSize);
-            return converter.ToLocalMazeItemPosition(_Point).PlusY(converter.GetCenter().y);
+            converter.MazeSize = MazeSize;
+            return converter.ToLocalMazeItemPosition(_Point).PlusY(converter.GetMazeCenter().y);
         }
         
         private Vector2 ToWorldPosition(Vector2 _Point)
         {
             var converter = new CoordinateConverter();
-            converter.SetMazeSize(MazeSize);
-            return converter.ToLocalMazeItemPosition(_Point).PlusY(converter.GetCenter().y);
+            converter.MazeSize = MazeSize;
+            return converter.ToLocalMazeItemPosition(_Point).PlusY(converter.GetMazeCenter().y);
         }
         
         #endregion

@@ -81,18 +81,18 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override void InitShape()
         {
             var go = Object;
-            var sh = ContainersGetter.MazeItemsContainer.gameObject
+            var sh = ContainersGetter.GetContainer(ContainerNames.MazeItems).gameObject
                 .GetOrAddComponentOnNewChild<Rectangle>("Gravity Block", ref go);
-            sh.Width = sh.Height = CoordinateConverter.GetScale() * 0.9f;
+            sh.Width = sh.Height = CoordinateConverter.Scale * 0.9f;
             sh.Type = Rectangle.RectangleType.RoundedHollow;
-            sh.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
-            sh.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.GetScale();
+            sh.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
+            sh.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale;
             sh.Color = DrawingUtils.ColorLines;
             sh.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
             var joint = go.AddComponentOnNewChild<Disc>("Joint", out _);
             joint.transform.SetLocalPosXY(Vector2.zero);
             joint.Color = DrawingUtils.ColorLines;
-            joint.Radius = ViewSettings.LineWidth * CoordinateConverter.GetScale() * 2f;
+            joint.Radius = ViewSettings.LineWidth * CoordinateConverter.Scale * 2f;
             joint.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
 
             Object = go;

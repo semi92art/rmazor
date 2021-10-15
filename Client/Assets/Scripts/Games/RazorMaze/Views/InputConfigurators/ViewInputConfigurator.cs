@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 namespace Games.RazorMaze.Views.InputConfigurators
 {
-    public class RazorMazeInputConfigurator : IInputConfigurator
+    public class ViewInputConfigurator : IViewInputConfigurator
     {
         private LeanTouch m_LeanTouch;
         private bool m_Locked;
@@ -14,7 +14,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
         public event UnityAction<int, object[]> Command;
         public event UnityAction Initialized;
 
-        public void Init()
+        public virtual void Init()
         {
             var touchSystemObj = new GameObject("Main Touch System");
             var mts = touchSystemObj.AddComponent<LeanTouch>();
@@ -43,8 +43,18 @@ namespace Games.RazorMaze.Views.InputConfigurators
             set
             {
                 m_Locked = value;
-                m_LeanTouch.enabled = value;
+                m_LeanTouch.enabled = !value;
             }
+        }
+
+        public void RaiseCommand(int _Key, object[] _Args)
+        {
+            Command?.Invoke(_Key, _Args);
+        }
+
+        protected bool IsCommandEventNull()
+        {
+            return Command == null;
         }
     }
 }

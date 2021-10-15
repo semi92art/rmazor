@@ -37,4 +37,5 @@ OrGoTo = или перейти в
 Register = Зарегистрироваться
 YourReward = ваша награда:
 Get = Получить
-swipe_to_start = свайпните, чтобы начать
+swipe_to_start = проведите пальцем, чтобы начать
+touch_to_rotate = нажмите, чтобы вращать

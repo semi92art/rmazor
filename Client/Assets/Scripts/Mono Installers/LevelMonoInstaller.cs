@@ -60,7 +60,7 @@ namespace Mono_Installers
             
             Container.Bind<ViewSettings>()                  .FromScriptableObject(viewSettings)  .AsSingle();
             
-            Container.Bind<ICoordinateConverter>()          .To<CoordinateConverter>()           .AsSingle();
+            Container.Bind<ICoordinateConverter>()      .To<CoordinateConverter>()       .AsSingle();
             Container.Bind<IContainersGetter>()             .To<ContainersGetter>()              .AsSingle();
             Container.Bind<IMazeItemsCreator>()             .To<MazeItemsCreator>()              .AsSingle();
             
@@ -113,12 +113,13 @@ namespace Mono_Installers
             Container.Bind<ILoadingController>()            .To<LoadingController>()             .AsSingle().When(_ => Release);
             Container.Bind<IDailyBonusDialogPanel>()        .To<DailyBonusPanel>()               .AsSingle().When(_ => Release);
             Container.Bind<ISettingDialogPanel>()           .To<SettingsPanel>()                 .AsSingle().When(_ => Release);
-            Container.Bind<IViewUIPrompts>().To<ViewUIPrompts>().AsSingle().When(_ => Release);
+            Container.Bind<IViewUIPrompts>()                .To<ViewUIPrompts>()                 .AsSingle().When(_ => Release);
+            Container.Bind<IViewUIGameControls>()           .To<ViewUIGameControls>()            .AsSingle().When(_ => Release);
             
 #if UNITY_EDITOR
-            Container.Bind<IInputConfigurator>()            .To<RazorMazeInputConfiguratorProt>().AsSingle();
+            Container.Bind<IViewInputConfigurator>()        .To<ViewInputConfiguratorInEditor>() .AsSingle();
 #else
-            Container.Bind<IInputConfigurator>()            .To<RazorMazeInputConfigurator>()    .AsSingle();
+            Container.Bind<IViewInputConfigurator>()        .To<ViewInputConfigurator>()         .AsSingle();
 #endif
             
             #endregion

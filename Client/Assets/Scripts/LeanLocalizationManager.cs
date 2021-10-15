@@ -4,15 +4,13 @@ using UnityEngine;
 using UnityEngine.Events;
 using Utils;
 
-public class LocalizationManager : IInit
+public interface ILocalizationManager : IInit
 {
-    #region singleton
-    
-    private static LocalizationManager _instance;
-    public static LocalizationManager Instance => _instance ?? (_instance = new LocalizationManager());
+    string GetTranslation(string _Key);
+}
 
-    #endregion
-
+public class LeanLocalizationManager : ILocalizationManager
+{
     #region nonpublic members
 
     private GameObject m_localizationObject;
@@ -30,7 +28,7 @@ public class LocalizationManager : IInit
         m_localizationObject = new GameObject("Localization");
         Object.DontDestroyOnLoad(m_localizationObject);
         var localization = m_localizationObject.AddComponent<LeanLocalization>();
-        //add languages in list
+
         string[] cultres = {"en", "en-GB"};
         localization.AddLanguage("English", cultres);
         cultres = new [] {"ru", "ru-RUS"};
@@ -74,9 +72,13 @@ public class LocalizationManager : IInit
         portCsv.Language = "Portugal";
         
         localization.SetCurrentLanguage(SaveUtils.GetValue<Language>(SaveKey.SettingLanguage).ToString());
-        
         Initialized?.Invoke();
     }
-   
+
+    public string GetTranslation(string _Key)
+    {
+        return LeanLocalization.GetTranslationText(_Key);
+    }
+
     #endregion
 }

@@ -156,7 +156,7 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override void InitShape()
         {
             Object = new GameObject("Gravity Trap");
-            Object.SetParent(ContainersGetter.MazeItemsContainer.gameObject);
+            Object.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems).gameObject);
 
             var go = PrefabUtilsEx.InitPrefab(
                 Object.transform, "views", "gravity_trap");
@@ -167,7 +167,7 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Cones = go.GetContentItem("cones").GetComponentsInChildren<Cone>().ToList();
             
             go.transform.SetLocalPosXY(Vector2.zero);
-            go.transform.localScale = Vector3.one * CoordinateConverter.GetScale() * ShapeScale;
+            go.transform.localScale = Vector3.one * CoordinateConverter.Scale * ShapeScale;
         }
 
         protected override void UpdateShape()
@@ -218,7 +218,7 @@ namespace Games.RazorMaze.Views.MazeItems
             var ch = Model.Character;
             var cPos = ch.IsMoving ? ch.MovingInfo.PrecisePosition : ch.Position.ToVector2();
             if (Vector2.Distance(cPos, m_Position) < 1f)
-                ch.RaiseDeath();
+                Model.LevelStaging.KillCharacter();
         }
 
         protected override void OnAppearStart(bool _Appear)

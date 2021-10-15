@@ -76,7 +76,7 @@ namespace Games.RazorMaze.Views.Characters
             m_Tail.A = CoordinateConverter.ToLocalCharacterPosition(a);
             m_Tail.B = CoordinateConverter.ToLocalCharacterPosition(b);
             m_Tail.C = CoordinateConverter.ToLocalCharacterPosition(c);
-            m_Tail.gameObject.transform.SetPosXY(CoordinateConverter.GetCenter());
+            m_Tail.gameObject.transform.SetPosXY(CoordinateConverter.GetMazeCenter());
         }
 
         public void HideTail(CharacterMovingEventArgs _Args = null)
@@ -93,7 +93,7 @@ namespace Games.RazorMaze.Views.Characters
         private void InitShape()
         {
             var go = new GameObject("Character Tail");
-            go.SetParent(ContainersGetter.CharacterContainer);
+            go.SetParent(ContainersGetter.GetContainer(ContainerNames.Character));
             m_Tail = go.AddComponent<Triangle>();
             m_Tail.Color = DrawingUtils.ColorCharacterTail;
             m_Tail.enabled = false;

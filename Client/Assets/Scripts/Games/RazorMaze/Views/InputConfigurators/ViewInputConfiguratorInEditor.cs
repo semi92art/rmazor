@@ -1,32 +1,22 @@
 ﻿using Games.RazorMaze.Models;
 using Ticker;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Games.RazorMaze.Views.InputConfigurators
 {
-    public class RazorMazeInputConfiguratorProt : IInputConfigurator, IUpdateTick
+    public class ViewInputConfiguratorInEditor : ViewInputConfigurator, IUpdateTick
     {
         #region inject
 
-        public RazorMazeInputConfiguratorProt(IUITicker _UITicker) => _UITicker.Register(this);
+        public ViewInputConfiguratorInEditor(IUITicker _UITicker) => _UITicker.Register(this);
         
         #endregion
 
         #region api
-
-        public bool Locked { get; set; }
-        public event UnityAction<int, object[]> Command;
-        public event UnityAction Initialized;
-
-        public void Init()
-        {
-            Initialized?.Invoke();
-        }
-
+        
         public void UpdateTick()
         {
-            if (Locked || Command == null) 
+            if (Locked || IsCommandEventNull()) 
                 return;
             int? commandKey = null;
             ProceedMovement(ref commandKey);
@@ -34,7 +24,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
             ProceedLevelStatement(ref commandKey);
                 
             if (commandKey.HasValue)
-                Command?.Invoke(commandKey.Value, null);
+                RaiseCommand(commandKey.Value, null);
         }
 
         #endregion

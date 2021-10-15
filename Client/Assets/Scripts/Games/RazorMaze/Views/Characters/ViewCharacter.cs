@@ -131,6 +131,7 @@ namespace Games.RazorMaze.Views.Characters
             m_Animator.SetTrigger(AnimKeyStartMove);
             SetOrientation(_Args.Direction);
             Tail.ShowTail(_Args);
+            Effector.OnCharacterMoveStarted(_Args);
         }
 
         public override void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
@@ -148,6 +149,7 @@ namespace Games.RazorMaze.Views.Characters
             Tail.HideTail(_Args);
             Coroutines.Run(HitMaze(_Args));
             Managers.Notify(_SM => _SM.PlayClip(SoundClipNameCharacterMoveEnd));
+            Effector.OnCharacterMoveFinished(_Args);
         }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
@@ -206,7 +208,7 @@ namespace Games.RazorMaze.Views.Characters
         
         private void InitPrefab()
         {
-            var go = ContainersGetter.CharacterContainer.gameObject;
+            var go = ContainersGetter.GetContainer(ContainerNames.Character).gameObject;
             var prefab = PrefabUtilsEx.InitPrefab(go.transform, CommonPrefabSetNames.Views, "character");
             prefab.transform.SetLocalPosXY(Vector2.zero);
             m_Head = prefab.GetContentItem("head");
@@ -220,7 +222,7 @@ namespace Games.RazorMaze.Views.Characters
 
         private void UpdatePrefab()
         {
-            var localScale = Vector3.one * CoordinateConverter.GetScale() * RelativeLocalScale;
+            var localScale = Vector3.one * CoordinateConverter.Scale * RelativeLocalScale;
             m_Head.transform.localScale = localScale;
         }
 
@@ -276,13 +278,14 @@ namespace Games.RazorMaze.Views.Characters
             else
                 m_Head.transform.eulerAngles = Vector3.forward * angle;
             float vertScale = _VerticalInverse ? -1f : 1f;
-            float scaleCoeff = CoordinateConverter.GetScale() * RelativeLocalScale;
+            float scaleCoeff = CoordinateConverter.Scale * RelativeLocalScale;
             m_Head.transform.localScale = scaleCoeff * new Vector3(horScale, vertScale, 1f);
         }
         
         private IEnumerator ShakeMaze()
         {
-            var defPos = ContainersGetter.MazeContainer.position;
+            var mazeCont = ContainersGetter.GetContainer(ContainerNames.Maze);
+            var defPos = mazeCont.position;
             const float duration = 0.5f;
             yield return Coroutines.Lerp(
                 1f,
@@ -294,20 +297,21 @@ namespace Games.RazorMaze.Views.Characters
                     Vector2 res;
                     res.x = defPos.x + amplitude * Mathf.Sin(GameTicker.Time * 200f);
                     res.y = defPos.y + amplitude * Mathf.Cos(GameTicker.Time * 100f);
-                    ContainersGetter.MazeContainer.position = res;
+                    mazeCont.position = res;
                 },
                 GameTicker,
                 (_Finished, _Progress) =>
                 {
-                    ContainersGetter.MazeContainer.position = defPos;
+                    mazeCont.position = defPos;
                 });
         }
         
         private IEnumerator HitMaze(CharacterMovingEventArgs _Args)
         {
+            var mazeCont = ContainersGetter.GetContainer(ContainerNames.Maze);
             const float amplitude = 0.5f;
             var dir = RazorMazeUtils.GetDirectionVector(_Args.Direction, MazeOrientation.North);
-            Vector2 defPos = ContainersGetter.MazeContainer.position;
+            Vector2 defPos = mazeCont.position;
             const float duration = 0.1f;
             yield return Coroutines.Lerp(
                 0f,
@@ -317,12 +321,12 @@ namespace Games.RazorMaze.Views.Characters
                 {
                     float distance = _Progress < 0.5f ? _Progress * amplitude : (1f - _Progress) * amplitude;
                     var res = defPos + distance * dir.ToVector2();
-                    ContainersGetter.MazeContainer.position = res;
+                    mazeCont.position = res;
                 },
                 GameTicker,
                 (_Finished, _Progress) =>
                 {
-                    ContainersGetter.MazeContainer.position = defPos;
+                    mazeCont.position = defPos;
                 });
         }
 

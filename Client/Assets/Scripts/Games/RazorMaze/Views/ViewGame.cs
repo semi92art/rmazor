@@ -29,7 +29,7 @@ namespace Games.RazorMaze.Views
         public IContainersGetter ContainersGetter { get; }
         public IViewUI UI { get; }
         public IViewLevelStageController LevelStageController { get; }
-        public IInputConfigurator InputConfigurator { get; }
+        public IViewInputConfigurator InputConfigurator { get; }
         public IViewCharacter Character { get; }
         public IViewMazeCommon Common { get; }
         public IViewMazeBackground Background { get; }
@@ -49,7 +49,7 @@ namespace Games.RazorMaze.Views
         public ViewGame(
             IContainersGetter _ContainersGetter,
             IViewUI _UI,
-            IInputConfigurator _InputConfigurator,
+            IViewInputConfigurator _InputConfigurator,
             IViewCharacter _Character,
             IViewMazeCommon _Common,
             IViewMazeBackground _Background,

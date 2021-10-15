@@ -281,7 +281,7 @@ namespace Games.RazorMaze.Editor
                 var container = CommonUtils.FindOrCreateGameObject("Maze", out _).transform;
                 container.gameObject.DestroyChildrenSafe();
                 var converter = new CoordinateConverter();
-                converter.SetMazeSize(_Info.Size);
+                converter.MazeSize = _Info.Size;
                 var contGetter = new ContainersGetter(converter);
                 var mazeItemsCreator = new MazeItemsCreatorInEditor(contGetter, converter);
                 m_Des.maze = mazeItemsCreator.CreateMazeItems(_Info)
@@ -304,8 +304,8 @@ namespace Games.RazorMaze.Editor
         public static void FocusCamera(V2Int _Size)
         {
             var converter = new CoordinateConverter();
-            converter.SetMazeSize(_Size);
-            var bounds = new Bounds(converter.GetCenter(), GameUtils.GetVisibleBounds().size * 0.7f);
+            converter.MazeSize = _Size;
+            var bounds = new Bounds(converter.GetMazeCenter(), GameUtils.GetVisibleBounds().size * 0.7f);
             EditorUtilsEx.FocusSceneCamera(bounds);
         }
         

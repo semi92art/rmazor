@@ -48,7 +48,6 @@ namespace Games.RazorMaze.Models
         void Move(EMazeMoveDirection _Direction);
         void OnPortal(PortalEventArgs _Args);
         void OnSpringboard(SpringboardEventArgs _Args);
-        void RaiseDeath();
     }
 
     public class ModelCharacter : IModelCharacter
@@ -119,6 +118,8 @@ namespace Games.RazorMaze.Models
             }
             else if (_Args.Stage == ELevelStage.ReadyToStartOrContinue)
                 Revive(false);
+            else if (_Args.Stage == ELevelStage.CharacterKilled)
+                Die();
         }
         
         public void OnPortal(PortalEventArgs _Args)
@@ -130,11 +131,6 @@ namespace Games.RazorMaze.Models
         public void OnSpringboard(SpringboardEventArgs _Args)
         {
             Move(_Args.Direction);
-        }
-
-        public void RaiseDeath()
-        {
-            Die();
         }
 
         #endregion
@@ -242,7 +238,6 @@ namespace Games.RazorMaze.Models
         {
             if (!Alive)
                 return;
-            LevelStaging.KillCharacter();
             IsMoving = false;
             Alive = false;
         }

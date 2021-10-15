@@ -48,7 +48,7 @@ namespace Games.RazorMaze.Views.Characters
         #region nonpublic methods
         
         protected void SetPosition(Vector2 _Position) =>
-            ContainersGetter.CharacterContainer.localPosition = _Position;
+            ContainersGetter.GetContainer(ContainerNames.Character).localPosition = _Position;
         
         #endregion
     }

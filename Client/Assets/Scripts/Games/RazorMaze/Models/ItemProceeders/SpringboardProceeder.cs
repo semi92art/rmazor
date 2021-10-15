@@ -38,9 +38,10 @@ namespace Games.RazorMaze.Models.ItemProceeders
         public SpringboardProceeder(
             ModelSettings _Settings,
             IModelData _Data,
-            IModelCharacter _Character, 
+            IModelCharacter _Character,
+            IModelLevelStaging _LevelStaging,
             IGameTicker _Ticker)
-            : base (_Settings, _Data, _Character, _Ticker) { }
+            : base (_Settings, _Data, _Character, _LevelStaging, _Ticker) { }
         
         #endregion
         

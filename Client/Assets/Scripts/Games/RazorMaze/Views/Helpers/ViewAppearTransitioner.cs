@@ -4,6 +4,7 @@ using System.Linq;
 using DI.Extensions;
 using Entities;
 using Exceptions;
+using Games.RazorMaze.Models;
 using Shapes;
 using Ticker;
 using UnityEngine;
@@ -16,33 +17,46 @@ namespace Games.RazorMaze.Views.Helpers
     {
         Circled,
         TopToBottom,
-        Random
+        Random,
+        WithoutDelay
     }
     
     public interface IViewAppearTransitioner
     {
-        EAppearTransitionType AppearTransitionType { get; }
         void DoAppearTransitionSimple(
             bool _Appear,
             IGameTicker _GameTicker,
             Dictionary<object[], Func<Color>> _Sets,
-            V2Int _ItemPosition,
-            UnityAction _OnFinish = null);
+            V2Int? _ItemPosition = null,
+            UnityAction _OnFinish = null,
+            EAppearTransitionType _Type = EAppearTransitionType.Circled);
     }
 
     public class ViewAppearTransitioner : IViewAppearTransitioner
     {
-        public EAppearTransitionType AppearTransitionType { get; } = EAppearTransitionType.Circled;
+        #region inject
+        
+        private IModelGame Model { get; }
 
+        public ViewAppearTransitioner(IModelGame _Model)
+        {
+            Model = _Model;
+        }
+
+        #endregion
+
+        #region api
+        
         public void DoAppearTransitionSimple(
             bool _Appear,
             IGameTicker _GameTicker,
             Dictionary<object[], Func<Color>> _Sets,
-            V2Int _ItemPosition,
-            UnityAction _OnFinish = null)
+            V2Int? _ItemPosition = null,
+            UnityAction _OnFinish = null,
+            EAppearTransitionType _Type = EAppearTransitionType.Circled)
         {
             const float transitionTime = 0.3f;
-            float delay = GetDelay(_Appear, _ItemPosition);
+            float delay = GetDelay(_Appear, _Type, _ItemPosition);
             
             foreach (var set in _Sets)
             {
@@ -112,20 +126,33 @@ namespace Games.RazorMaze.Views.Helpers
             }
         }
 
-        private float GetDelay(bool _Appear, V2Int _Position)
+
+        #endregion
+        
+
+        private float GetDelay(bool _Appear, EAppearTransitionType _Type, V2Int? _Position = null)
         {
-            switch (AppearTransitionType)
+            const float coeff = 0.05f;
+            var mazeSize = Model.Data.Info.Size;
+
+            switch (_Type)
             {
                 case EAppearTransitionType.Circled:
+                    if (!_Position.HasValue)
+                        return 0f;
                     return Mathf.Sqrt(
-                        Mathf.Pow(Mathf.Abs(5f - _Position.X), 2)
-                        + Mathf.Pow(Mathf.Abs(5f - _Position.Y), 2)) * 0.05f;
+                        Mathf.Pow(Mathf.Abs(mazeSize.X * 0.5f - _Position.Value.X), 2)
+                        + Mathf.Pow(Mathf.Abs(mazeSize.Y * 0.5f - _Position.Value.Y), 2)) * coeff;
                 case EAppearTransitionType.TopToBottom:
-                    return (_Appear ? _Position.Y : 10 -_Position.Y) * 0.05f;
+                    if (!_Position.HasValue)
+                        return 0f;
+                    return (_Appear ? _Position.Value.Y : mazeSize.Y -_Position.Value.Y) * coeff;
                 case EAppearTransitionType.Random:
-                    return UnityEngine.Random.value * 10f * 0.05f;
+                    return UnityEngine.Random.value * 10f * coeff;
+                case EAppearTransitionType.WithoutDelay:
+                    return 0;
                 default:
-                    throw new SwitchCaseNotImplementedException(AppearTransitionType);
+                    throw new SwitchCaseNotImplementedException(_Type);
             }
         }
     }
