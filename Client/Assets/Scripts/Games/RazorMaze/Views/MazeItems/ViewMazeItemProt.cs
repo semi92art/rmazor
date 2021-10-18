@@ -19,46 +19,43 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         #region serialized fields
         
-        [HideInInspector, SerializeField] public ShapeRenderer shape;
-        [SerializeField] private SpriteRenderer hint;
-        [HideInInspector] public EMazeItemType typeCheck;
         [SerializeField] private ViewMazeItemProps props;
-        [HideInInspector] public V2Int MazeSize;
+        [SerializeField, HideInInspector] private ShapeRenderer shape;
+        [SerializeField, HideInInspector] private SpriteRenderer hint;
+        [SerializeField, HideInInspector] private V2Int mazeSize;
         
         #endregion
-        
+
         #region nonpublic members
-        
-        private bool m_Active;
+
+        private IMazeCoordinateConverter m_Converter;
+        private IMazeCoordinateConverter Converter
+        {
+            get
+            {
+                if (m_Converter == null || !m_Converter.Initialized())
+                {
+                    m_Converter = new MazeCoordinateConverter();
+                    m_Converter.Init(
+                        MazeCoordinateConverter.DefaultLeftOffset, 
+                        MazeCoordinateConverter.DefaultRightOffset,
+                        MazeCoordinateConverter.DefaultBottomOffset, 
+                        MazeCoordinateConverter.DefaultTopOffset);
+                    m_Converter.MazeSize = mazeSize;
+                }
+                return m_Converter;
+            }
+        }
 
         #endregion
         
         #region api
         
-        public bool ActivatedInSpawnPool { get; set; }
-
-        public GameObject Object => gameObject;
-        public void Appear(bool _Appear)
+        public V2Int MazeSize
         {
-            throw new NotImplementedException();
+            set => mazeSize = value;
         }
-
-        public EAppearingState AppearingState { get; set; }
-        public EProceedingStage ProceedingStage { get; set; }
-
-        public bool Proceeding
-        {
-            get => m_Active;
-            set
-            {
-                m_Active = value;
-                if (props.Type == EMazeItemType.ShredingerBlock)
-                    shape.Color = m_Active ? DrawingUtils.ColorBlock : DrawingUtils.ColorShredinger;
-            }
-        }
-
-        public bool InActiveStage { get; set; }
-
+        
         public ViewMazeItemProps Props
         {
             get => props;
@@ -92,7 +89,6 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public void SetType(EMazeItemType _Type, bool _IsNode, bool _IsStartNode)
         {
-            typeCheck = _Type;
             props.Type = _Type;
             props.IsNode = _IsNode;
             props.IsStartNode = _IsStartNode;
@@ -103,8 +99,8 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public void SetSpringboardDirection(V2Int _Direction)
         {
-            props.Directions = new List<V2Int>{_Direction};
-            SetShapeAndHint(EMazeItemType.Springboard, false);
+            props.Directions[0] = _Direction;
+            // SetShapeAndHint(EMazeItemType.Springboard, false);
         }
         
         #endregion
@@ -113,11 +109,8 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private void SetShapeAndHint(EMazeItemType _Type, bool _IsNode)
         {
-            var converter = new CoordinateConverter();
-            converter.MazeSize = MazeSize;
-            
             gameObject.DestroyChildrenSafe();
-            transform.SetLocalPosXY(converter.ToLocalMazeItemPosition(props.Position));
+            transform.SetLocalPosXY(Converter.ToLocalMazeItemPosition(props.Position));
 
             SetShapeByType(_Type, _IsNode);
             if (props.IsNode)
@@ -131,11 +124,9 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private void SetShapeByType(EMazeItemType _Type, bool _IsNode)
         {
-            var converter = new CoordinateConverter();
-            converter.MazeSize = MazeSize;
             var sh = gameObject.GetOrAddComponent<Rectangle>();
-            sh.Width = 0.97f * converter.Scale;
-            sh.Height = 0.97f * converter.Scale;
+            sh.Width = 0.97f * Converter.Scale;
+            sh.Height = 0.97f * Converter.Scale;
             sh.Type = Rectangle.RectangleType.RoundedSolid;
             sh.CornerRadius = 0.1f;
             shape = sh;
@@ -164,7 +155,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 case EMazeItemType.GravityBlock:            objectName = "block-gravity"; break;
                 case EMazeItemType.GravityTrap:             objectName = "trap-gravity"; break;
                 case EMazeItemType.TrapIncreasing:          objectName = "trap-increase"; break;
-                case EMazeItemType.Attenuator:          objectName = "turret-rotate"; break;
+                case EMazeItemType.Attenuator:              objectName = "turret-rotate"; break;
                 case EMazeItemType.TrapReact:               objectName = "trap-react"; break;
                 default: throw new SwitchCaseNotImplementedException(_Type);
             }
@@ -218,11 +209,10 @@ namespace Games.RazorMaze.Views.MazeItems
 
             if (props.IsNode)
             {
-                if (props.IsStartNode)
-                {
-                    Gizmos.color = Color.yellow;
-                    DrawGizmosStartNode();
-                }
+                if (!props.IsStartNode) 
+                    return;
+                Gizmos.color = Color.yellow;
+                DrawGizmosStartNode();
                 return;
             }
 
@@ -358,28 +348,26 @@ namespace Games.RazorMaze.Views.MazeItems
         
         private Vector2 ToWorldPosition(V2Int _Point)
         {
-            var converter = new CoordinateConverter();
-            converter.MazeSize = MazeSize;
-            return converter.ToLocalMazeItemPosition(_Point).PlusY(converter.GetMazeCenter().y);
+            return Converter.ToLocalMazeItemPosition(_Point).PlusY(Converter.GetMazeCenter().y);
         }
         
         private Vector2 ToWorldPosition(Vector2 _Point)
         {
-            var converter = new CoordinateConverter();
-            converter.MazeSize = MazeSize;
-            return converter.ToLocalMazeItemPosition(_Point).PlusY(converter.GetMazeCenter().y);
+            return Converter.ToLocalMazeItemPosition(_Point).PlusY(Converter.GetMazeCenter().y);
         }
         
         #endregion
 
-        public object Clone()
-        {
-            throw new NotImplementedException();
-        }
+        #region unused api
+        
+        public EAppearingState AppearingState { get; set; }
+        public EProceedingStage ProceedingStage { get; set; }
+        public bool ActivatedInSpawnPool { get; set; }
+        public GameObject Object => gameObject;
+        public void Appear(bool _Appear) { }
+        public object Clone() => null;
+        public void OnLevelStageChanged(LevelStageArgs _Args) { }
 
-        public void OnLevelStageChanged(LevelStageArgs _Args)
-        {
-            // TODO
-        }
+        #endregion
     }
 }

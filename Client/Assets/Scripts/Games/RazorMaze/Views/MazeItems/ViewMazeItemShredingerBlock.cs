@@ -33,13 +33,15 @@ namespace Games.RazorMaze.Views.MazeItems
         #region nonpublic members
 
         private float m_LineOffset;
-        private bool m_BlockClosed;
+        private bool m_IsBlockClosed;
         private bool m_IsCloseCoroutineRunning;
         private bool m_IsOpenCoroutineRunning;
         
         #endregion
 
         #region shapes
+
+        protected override string ObjectName => "Shredinger Block";
 
         protected override object[] DefaultColorShapes =>
             new object[] {m_ClosedBlock}
@@ -57,7 +59,7 @@ namespace Games.RazorMaze.Views.MazeItems
         public ViewMazeItemShredingerBlock(
             ViewSettings _ViewSettings,
             IModelGame _Model,
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
@@ -86,10 +88,10 @@ namespace Games.RazorMaze.Views.MazeItems
         
         public bool BlockClosed
         {
-            get => m_BlockClosed;
+            get => m_IsBlockClosed;
             set
             {
-                m_BlockClosed = value;
+                m_IsBlockClosed = value;
                 if (!ActivatedInSpawnPool)
                     return;
                 if (value)
@@ -102,7 +104,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             base.OnLevelStageChanged(_Args);
             if (_Args.Stage == ELevelStage.Loaded)
-                m_BlockClosed = false;
+                m_IsBlockClosed = false;
         }
 
         public void UpdateTick()
@@ -153,30 +155,20 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected override void InitShape()
         {
-            var go = Object;
-            var sh = ContainersGetter.GetContainer(ContainerNames.MazeItems).gameObject
-                .GetOrAddComponentOnNewChild<Rectangle>(
-                    "Shredinger Block",
-                    ref go,
-                    Vector2.zero);
-            Object = go;
+            var closedBlock = Object.AddComponentOnNewChild<Rectangle>("Shredinger Block", out _);
+            closedBlock.Type = Rectangle.RectangleType.RoundedHollow;
+            closedBlock.Color = DrawingUtils.ColorLines;
+            closedBlock.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
+            m_ClosedBlock = closedBlock;
             
-            sh.Width = sh.Height = CoordinateConverter.Scale * 0.9f;
-            sh.Type = Rectangle.RectangleType.RoundedHollow;
-            sh.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale;
-            sh.Color = DrawingUtils.ColorLines;
-            sh.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
-            sh.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
-            m_ClosedBlock = sh;
-            
-            var lLeft    = go.AddComponentOnNewChild<Line>("Left Line",     out _, Vector2.zero);
-            var lRight   = go.AddComponentOnNewChild<Line>("Right Line",    out _, Vector2.zero);
-            var lBottom1 = go.AddComponentOnNewChild<Line>("Bottom Line 1", out _, Vector2.zero);
-            var lBottom2 = go.AddComponentOnNewChild<Line>("Bottom Line 2", out _, Vector2.zero);
-            var lTop1    = go.AddComponentOnNewChild<Line>("Top Line 1",    out _, Vector2.zero);
-            var lTop2    = go.AddComponentOnNewChild<Line>("Top Line 2",    out _, Vector2.zero);
-            var lCenter1 = go.AddComponentOnNewChild<Line>("Center Line 1", out _, Vector2.zero);
-            var lCenter2 = go.AddComponentOnNewChild<Line>("Center Line 2", out _, Vector2.zero);
+            var lLeft    = Object.AddComponentOnNewChild<Line>("Left Line",     out _);
+            var lRight   = Object.AddComponentOnNewChild<Line>("Right Line",    out _);
+            var lBottom1 = Object.AddComponentOnNewChild<Line>("Bottom Line 1", out _);
+            var lBottom2 = Object.AddComponentOnNewChild<Line>("Bottom Line 2", out _);
+            var lTop1    = Object.AddComponentOnNewChild<Line>("Top Line 1",    out _);
+            var lTop2    = Object.AddComponentOnNewChild<Line>("Top Line 2",    out _);
+            var lCenter1 = Object.AddComponentOnNewChild<Line>("Center Line 1", out _);
+            var lCenter2 = Object.AddComponentOnNewChild<Line>("Center Line 2", out _);
 
             var lp = GetLineStartEndPositions();
             (lBottom1.Start, lBottom1.End) = (lp[0], lp[1]);
@@ -198,20 +190,19 @@ namespace Games.RazorMaze.Views.MazeItems
                 line.DashType = DashType.Rounded;
                 line.Color = DrawingUtils.ColorLines;
                 line.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
-                line.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
             }
 
             List<Vector2> cPoss, cAngs;
             (cPoss, cAngs) = GetCornerCenterPositionsAndAngles();
 
-            var cBL  = go.AddComponentOnNewChild<Disc>("Bottom Left Corner",     out _, Vector2.zero);
-            var cTL  = go.AddComponentOnNewChild<Disc>("Top Left Corner",        out _, Vector2.zero);
-            var cBR  = go.AddComponentOnNewChild<Disc>("Bottom Right Corner",    out _, Vector2.zero);
-            var cTR  = go.AddComponentOnNewChild<Disc>("Top Right Corner",       out _, Vector2.zero);
-            var cBC1 = go.AddComponentOnNewChild<Disc>("Bottom Center Corner 1", out _, Vector2.zero);
-            var cBC2 = go.AddComponentOnNewChild<Disc>("Bottom Center Corner 2", out _, Vector2.zero);
-            var cTC1 = go.AddComponentOnNewChild<Disc>("Top Center Corner 1",    out _, Vector2.zero);
-            var cTC2 = go.AddComponentOnNewChild<Disc>("Top Center Corner 2",    out _, Vector2.zero);
+            var cBL  = Object.AddComponentOnNewChild<Disc>("Bottom Left Corner",     out _);
+            var cTL  = Object.AddComponentOnNewChild<Disc>("Top Left Corner",        out _);
+            var cBR  = Object.AddComponentOnNewChild<Disc>("Bottom Right Corner",    out _);
+            var cTR  = Object.AddComponentOnNewChild<Disc>("Top Right Corner",       out _);
+            var cBC1 = Object.AddComponentOnNewChild<Disc>("Bottom Center Corner 1", out _);
+            var cBC2 = Object.AddComponentOnNewChild<Disc>("Bottom Center Corner 2", out _);
+            var cTC1 = Object.AddComponentOnNewChild<Disc>("Top Center Corner 1",    out _);
+            var cTC2 = Object.AddComponentOnNewChild<Disc>("Top Center Corner 2",    out _);
 
             (cBL.transform.localPosition, cBL.AngRadiansStart, cBL.AngRadiansEnd)    = (cPoss[0], cAngs[0].x, cAngs[0].y);
             (cTL.transform.localPosition, cTL.AngRadiansStart, cTL.AngRadiansEnd)    = (cPoss[1], cAngs[1].x, cAngs[1].y);
@@ -238,11 +229,17 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override void UpdateShape()
         {
             Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
-            
+            m_ClosedBlock.Width = m_ClosedBlock.Height = CoordinateConverter.Scale * 0.9f;
+            m_ClosedBlock.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale;
+            m_ClosedBlock.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
             foreach (var corner in m_OpenedCorners)
             {
                 corner.Radius = GetCornerRadius();
                 corner.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
+            }
+            foreach (var line in m_OpenedLines)
+            {
+                line.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
             }
         }
 

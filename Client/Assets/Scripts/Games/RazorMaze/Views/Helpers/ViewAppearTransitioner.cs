@@ -7,6 +7,7 @@ using Exceptions;
 using Games.RazorMaze.Models;
 using Shapes;
 using Ticker;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using Utils;
@@ -72,6 +73,8 @@ namespace Games.RazorMaze.Views.Helpers
                         shapeRenderer.Color = startCol();
                     else if (shape is SpriteRenderer spriteRenderer)
                         spriteRenderer.color = startCol();
+                    else if (shape is TextMeshPro textMeshPro)
+                        textMeshPro.color = startCol();
                 }
                 
                 if (_Appear)
@@ -81,6 +84,8 @@ namespace Games.RazorMaze.Views.Helpers
                             shapeRenderer.enabled = true;
                         else if (shape is SpriteRenderer spriteRenderer)
                             spriteRenderer.enabled = true;
+                        else if (shape is TextMeshPro textMeshPro)
+                            textMeshPro.enabled = true;
                     }
 
                 Coroutines.Run(Coroutines.Delay(() =>
@@ -98,6 +103,8 @@ namespace Games.RazorMaze.Views.Helpers
                                         shapeRenderer.Color = col;
                                     else if (shape is SpriteRenderer spriteRenderer)
                                         spriteRenderer.color = col;
+                                    else if (shape is TextMeshPro textMeshPro)
+                                        textMeshPro.color = col;
                                 }
                             },
                             _GameTicker,
@@ -109,6 +116,8 @@ namespace Games.RazorMaze.Views.Helpers
                                         shapeRenderer.Color = endCol();
                                     else if (shape is SpriteRenderer spriteRenderer)
                                         spriteRenderer.color = endCol();
+                                    else if (shape is TextMeshPro textMeshPro)
+                                        textMeshPro.color = endCol();
                                 }
                                 
                                 if (!_Appear)
@@ -118,6 +127,8 @@ namespace Games.RazorMaze.Views.Helpers
                                             shapeRenderer.enabled = false;
                                         else if (shape is SpriteRenderer spriteRenderer)
                                             spriteRenderer.enabled = false;
+                                        else if (shape is TextMeshPro textMeshPro)
+                                            textMeshPro.enabled = false;
                                     }
                                 _OnFinish?.Invoke();
                             }));
@@ -129,7 +140,6 @@ namespace Games.RazorMaze.Views.Helpers
 
         #endregion
         
-
         private float GetDelay(bool _Appear, EAppearTransitionType _Type, V2Int? _Position = null)
         {
             const float coeff = 0.05f;

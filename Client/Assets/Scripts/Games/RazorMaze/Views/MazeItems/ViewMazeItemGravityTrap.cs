@@ -43,13 +43,12 @@ namespace Games.RazorMaze.Views.MazeItems
         private Vector2 m_Position;
         private Transform m_MaceTr;
         private Color m_BackColor;
-        
-        
 
         #endregion
         
         #region shapes
 
+        protected override string ObjectName => "Gravity Trap Block";
         protected override object[] DefaultColorShapes => new object[] {m_OuterDisc}.Concat(m_Cones).ToArray();
         private Disc m_OuterDisc;
         private Disc m_InnerDisc;
@@ -63,7 +62,7 @@ namespace Games.RazorMaze.Views.MazeItems
         public ViewMazeItemGravityTrap(
             ViewSettings _ViewSettings,
             IModelGame _Model,
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
@@ -155,24 +154,19 @@ namespace Games.RazorMaze.Views.MazeItems
         
         protected override void InitShape()
         {
-            Object = new GameObject("Gravity Trap");
-            Object.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems).gameObject);
-
             var go = PrefabUtilsEx.InitPrefab(
                 Object.transform, "views", "gravity_trap");
             m_MaceTr = go.GetCompItem<Transform>("container");
-
             m_OuterDisc = go.GetCompItem<Disc>("outer disc");
             m_InnerDisc = go.GetCompItem<Disc>("inner disc");
             m_Cones = go.GetContentItem("cones").GetComponentsInChildren<Cone>().ToList();
-            
             go.transform.SetLocalPosXY(Vector2.zero);
-            go.transform.localScale = Vector3.one * CoordinateConverter.Scale * ShapeScale;
         }
 
         protected override void UpdateShape()
         {
             Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+            Object.transform.localScale = Vector3.one * CoordinateConverter.Scale * ShapeScale;
             base.UpdateShape();
         }
 
@@ -217,9 +211,14 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             var ch = Model.Character;
             var cPos = ch.IsMoving ? ch.MovingInfo.PrecisePosition : ch.Position.ToVector2();
-            if (Vector2.Distance(cPos, m_Position) < 1f)
-                Model.LevelStaging.KillCharacter();
+            if (Vector2.Distance(cPos, m_Position) > 1f)
+                return;
+            if (!Model.Character.Alive)
+                return;
+            Model.LevelStaging.KillCharacter();
         }
+
+        protected override void InitWallBlockMovingPaths() { }
 
         protected override void OnAppearStart(bool _Appear)
         {

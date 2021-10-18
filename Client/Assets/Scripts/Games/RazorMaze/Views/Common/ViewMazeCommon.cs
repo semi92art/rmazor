@@ -32,7 +32,7 @@ namespace Games.RazorMaze.Views.Common
             IMazeItemsCreator _MazeItemsCreator, 
             IModelData _ModelData,
             IContainersGetter _ContainersGetter, 
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             IManagersGetter _Managers,
             ViewSettings _ViewSettings) 
             : base(_GameTicker, _MazeItemsCreator, _ModelData, _ContainersGetter, _CoordinateConverter)

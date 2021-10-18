@@ -28,13 +28,13 @@ namespace Games.RazorMaze.Views.Characters
         
         #region inject
         
-        private ICoordinateConverter CoordinateConverter { get; }
+        private IMazeCoordinateConverter CoordinateConverter { get; }
         private IContainersGetter ContainersGetter { get; }
         private IGameTicker GameTicker { get; }
         private IModelGame Model { get; }
 
         public ViewCharacterEffectorParticles(
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IModelGame _Model)
@@ -72,6 +72,16 @@ namespace Games.RazorMaze.Views.Characters
                 Coroutines.Run(DeathCoroutine());
             else
                 m_DeathShapes.ForEach(_Shape => _Shape.enabled = false);
+        }
+        
+        public void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
+        {
+            m_MoveDirection = _Args.Direction;
+        }
+
+        public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
+        {
+            m_MoveDirection = null;
         }
         
         #endregion
@@ -168,15 +178,5 @@ namespace Games.RazorMaze.Views.Characters
         }
         
         #endregion
-
-        public void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
-        {
-            m_MoveDirection = _Args.Direction;
-        }
-
-        public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
-        {
-            m_MoveDirection = null;
-        }
     }
 }

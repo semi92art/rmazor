@@ -17,5 +17,8 @@
         public const int PauseLevel                     = 13;
         public const int FinishLevel                    = 14;
         public const int KillCharacter                  = 15;
+        public const int LoadRandomLevel                = 16;
+        public const int ShopMenu                       = 17;
+        public const int SettingsMenu                   = 18;
     }
 }

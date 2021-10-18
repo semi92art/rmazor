@@ -19,6 +19,7 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         #region shapes
 
+        protected override string ObjectName => "Gravity Block";
         protected override object[] DefaultColorShapes => new object[] {m_Shape, m_Joint};
         private Rectangle m_Shape;
         private Disc m_Joint;
@@ -30,7 +31,7 @@ namespace Games.RazorMaze.Views.MazeItems
         public ViewMazeItemGravityBlock(
             ViewSettings _ViewSettings,
             IModelGame _Model,
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
@@ -80,30 +81,26 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected override void InitShape()
         {
-            var go = Object;
-            var sh = ContainersGetter.GetContainer(ContainerNames.MazeItems).gameObject
-                .GetOrAddComponentOnNewChild<Rectangle>("Gravity Block", ref go);
-            sh.Width = sh.Height = CoordinateConverter.Scale * 0.9f;
+            var sh = Object.AddComponentOnNewChild<Rectangle>("Block", out _);
             sh.Type = Rectangle.RectangleType.RoundedHollow;
-            sh.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
-            sh.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale;
             sh.Color = DrawingUtils.ColorLines;
             sh.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
-            var joint = go.AddComponentOnNewChild<Disc>("Joint", out _);
+            var joint = Object.AddComponentOnNewChild<Disc>("Joint", out _);
             joint.transform.SetLocalPosXY(Vector2.zero);
             joint.Color = DrawingUtils.ColorLines;
             joint.Radius = ViewSettings.LineWidth * CoordinateConverter.Scale * 2f;
             joint.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
-
-            Object = go;
             m_Shape = sh;
             m_Joint = joint;
         }
 
         protected override void UpdateShape()
         {
-            m_Shape.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             base.UpdateShape();
+            m_Shape.Width = m_Shape.Height = CoordinateConverter.Scale * 0.9f;
+            m_Shape.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
+            m_Shape.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale;
+            m_Joint.Radius = ViewSettings.LineWidth * CoordinateConverter.Scale * 2f;
         }
 
         #endregion

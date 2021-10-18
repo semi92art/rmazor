@@ -40,9 +40,11 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region shapes
 
+        protected override string ObjectName => "Trap React Block";
         protected override object[] DefaultColorShapes => new object[] {m_Line, m_Trap};
         private Line m_Line;
         private SpriteRenderer m_Trap;
+        private SpriteMask m_Mask;
         
         #endregion
         
@@ -54,7 +56,7 @@ namespace Games.RazorMaze.Views.MazeItems
             ViewSettings _ViewSettings,
             ModelSettings _ModelSettings,
             IModelGame _Model,
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
@@ -122,49 +124,35 @@ namespace Games.RazorMaze.Views.MazeItems
         
         protected override void InitShape()
         {
-            var mazeItemsCont = ContainersGetter.GetContainer(ContainerNames.MazeItems);
-            var scale = CoordinateConverter.Scale;
-            var go = Object;
-            var line = mazeItemsCont.gameObject
-                .GetOrAddComponentOnNewChild<Line>(
-                    "Trap React Item",
-                    ref go);
-            Object = go;
-            
+            var line = Object.gameObject.AddComponentOnNewChild<Line>("Trap React Item", out _);
             line.Color = DrawingUtils.ColorLines;
             line.EndCaps = LineEndCap.Round;
-            line.Thickness = ViewSettings.LineWidth * scale;
-
-            var trap = go.AddComponentOnNewChild<SpriteRenderer>("Trap Sprite", out _, Vector2.zero);
+            var trap = Object.AddComponentOnNewChild<SpriteRenderer>("Trap Sprite", out _);
             trap.sprite = PrefabUtilsEx.GetObject<Sprite>("views", "trap_react");
             trap.sortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
             trap.color = DrawingUtils.ColorLines;
             trap.maskInteraction = SpriteMaskInteraction.VisibleOutsideMask;
-            
-            
             var maskGo = PrefabUtilsEx.InitPrefab(
-                mazeItemsCont, "views", "turret_bullet_mask");
+                Object.transform, "views", "turret_bullet_mask");
             var mask = maskGo.GetCompItem<SpriteMask>("mask");
             maskGo.SetParent(Object);
             maskGo.transform.SetLocalPosXY(Vector2.zero);
             mask.enabled = true;
-            mask.transform.localScale = Vector3.one * scale * 0.8f;
             mask.isCustomRangeActive = true;
             mask.frontSortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
-
-            m_Line = line;
-            m_Trap = trap;
+            (m_Trap, m_Line, m_Mask) = (trap, line, mask);
         }
 
         protected override void UpdateShape()
         {
-            m_Line.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             (m_Line.Start, m_Line.End) = GetTrapPosRotAndLineEdges();
             var scale = CoordinateConverter.Scale;
             var dir = Props.Directions.First().ToVector2();
             var trapTr = m_Trap.transform;
             trapTr.SetLocalPosXY(dir * scale * StartPos);
             trapTr.localScale = Vector3.one * scale * 0.95f;
+            m_Line.Thickness = ViewSettings.LineWidth * scale;
+            m_Mask.transform.localScale = Vector3.one * scale * 0.8f;
         }
 
         private void DoRotation()
@@ -232,6 +220,8 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private void CheckForCharacterDeath()
         {
+            if (!Model.Character.Alive)
+                return;
             if (m_Progress < 0.3f)
                 return;
             var dir = Props.Directions.First();

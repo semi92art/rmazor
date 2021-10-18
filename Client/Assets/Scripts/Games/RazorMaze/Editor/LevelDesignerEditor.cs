@@ -78,6 +78,12 @@ namespace Games.RazorMaze.Editor
         
         public void OnGUI()
         {
+            if (SceneManager.GetActiveScene().name != SceneNames.Prototyping)
+            {
+                GUILayout.Label($"Level designer available only on scene {SceneNames.Prototyping}.unity");   
+                return;
+            }
+            
             m_TabPage = GUILayout.Toolbar (m_TabPage, new [] {"Levels", "Fix Utils"});
             switch (m_TabPage)
             {
@@ -186,9 +192,7 @@ namespace Games.RazorMaze.Editor
         
         private void ShowLevelsTabPage()
         {
-            if (SceneManager.GetActiveScene().name != SceneNames.Prototyping)
-                return;
-            ShowRandomMazeGeneratorZone();
+            ShowMazeGeneratorZone();
             EditorUtilsEx.HorizontalLine(Color.gray);
             ShowHeapZone();
         }
@@ -198,9 +202,9 @@ namespace Games.RazorMaze.Editor
             EditorUtilsEx.GuiButtonAction("Fix Paths", LevelDesignerFixUtils.FixPaths);
         }
 
-        private void ShowRandomMazeGeneratorZone()
+        private void ShowMazeGeneratorZone()
         {
-            GUILayout.Label("Random Maze Generator", headerStyle);
+            GUILayout.Label("Maze Generator", headerStyle);
             EditorUtilsEx.HorizontalZone(() =>
             {
                 GUILayout.Label("Size:", GUILayout.Width(35));
@@ -256,10 +260,15 @@ namespace Games.RazorMaze.Editor
             if (HeapIndex != _heapIndexCheck)
                 ReloadReorderableLevels(true);
             _heapIndexCheck = HeapIndex;
-            EditorUtilsEx.HorizontalZone(() =>
+            if (m_LoadedLevelIndex >= 0 && m_LoadedLevelHeapIndex >= 0)
             {
-                GUILayout.Label($"Current level: heap {m_LoadedLevelHeapIndex}, index {m_LoadedLevelIndex + 1}", EditorStyles.boldLabel);
-            });
+                EditorUtilsEx.HorizontalZone(() =>
+                {
+                    GUILayout.Label("Current level: " +
+                                    $"heap {m_LoadedLevelHeapIndex}, " +
+                                    $"index {m_LoadedLevelIndex + 1}", EditorStyles.boldLabel);
+                });    
+            }
             EditorUtilsEx.HorizontalZone(() =>
             {
                 EditorUtilsEx.GuiButtonAction("Load", LoadLevel);
@@ -280,7 +289,12 @@ namespace Games.RazorMaze.Editor
             {
                 var container = CommonUtils.FindOrCreateGameObject("Maze", out _).transform;
                 container.gameObject.DestroyChildrenSafe();
-                var converter = new CoordinateConverter();
+                var converter = new MazeCoordinateConverter();
+                converter.Init(
+                    MazeCoordinateConverter.DefaultLeftOffset, 
+                    MazeCoordinateConverter.DefaultRightOffset,
+                    MazeCoordinateConverter.DefaultBottomOffset, 
+                    MazeCoordinateConverter.DefaultTopOffset);
                 converter.MazeSize = _Info.Size;
                 var contGetter = new ContainersGetter(converter);
                 var mazeItemsCreator = new MazeItemsCreatorInEditor(contGetter, converter);
@@ -303,7 +317,12 @@ namespace Games.RazorMaze.Editor
 
         public static void FocusCamera(V2Int _Size)
         {
-            var converter = new CoordinateConverter();
+            var converter = new MazeCoordinateConverter();
+            converter.Init(
+                MazeCoordinateConverter.DefaultLeftOffset, 
+                MazeCoordinateConverter.DefaultRightOffset,
+                MazeCoordinateConverter.DefaultBottomOffset, 
+                MazeCoordinateConverter.DefaultTopOffset);
             converter.MazeSize = _Size;
             var bounds = new Bounds(converter.GetMazeCenter(), GameUtils.GetVisibleBounds().size * 0.7f);
             EditorUtilsEx.FocusSceneCamera(bounds);

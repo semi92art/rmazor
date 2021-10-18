@@ -39,3 +39,4 @@ YourReward = sua recompensa:
 Get = pegue
 swipe_to_start = 
 touch_to_rotate = 
+level = 

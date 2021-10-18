@@ -51,9 +51,9 @@ namespace Games.RazorMaze.Prot.Editor
             {
                 if (targetsCopy.Length == 1)
                 {
-                    props.Type = (EMazeItemType)EditorGUI.EnumPopup(popupRect, props.Type);
-                    if (targetsCopy[0].typeCheck != props.Type)
-                        targetsCopy[0].SetType(props.Type, false, false);
+                    var type = (EMazeItemType)EditorGUI.EnumPopup(popupRect, props.Type);
+                    if (props.Type != type)
+                        targetsCopy[0].SetType(type, false, false);
                 }
                 else
                 {

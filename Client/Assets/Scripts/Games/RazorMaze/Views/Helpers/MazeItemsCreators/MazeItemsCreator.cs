@@ -18,7 +18,7 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
         [Inject]
         public MazeItemsCreator(
             IContainersGetter _ContainersGetter,
-            ICoordinateConverter _CoordinateConverter, 
+            IMazeCoordinateConverter _CoordinateConverter, 
             IViewMazeItemPath _ItemPath,
             IViewMazeItemGravityBlock _GravityBlock,
             IViewMazeItemMovingTrap _MovingTrap,

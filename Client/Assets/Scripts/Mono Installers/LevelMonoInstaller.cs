@@ -60,7 +60,7 @@ namespace Mono_Installers
             
             Container.Bind<ViewSettings>()                  .FromScriptableObject(viewSettings)  .AsSingle();
             
-            Container.Bind<ICoordinateConverter>()      .To<CoordinateConverter>()       .AsSingle();
+            Container.Bind<IMazeCoordinateConverter>()      .To<MazeCoordinateConverter>()       .AsSingle();
             Container.Bind<IContainersGetter>()             .To<ContainersGetter>()              .AsSingle();
             Container.Bind<IMazeItemsCreator>()             .To<MazeItemsCreator>()              .AsSingle();
             

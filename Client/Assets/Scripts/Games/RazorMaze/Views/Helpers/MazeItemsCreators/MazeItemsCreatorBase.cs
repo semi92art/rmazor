@@ -13,7 +13,7 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
         #region nonpublic members
         
         protected IContainersGetter            ContainersGetter { get; }
-        protected ICoordinateConverter         CoordinateConverter { get; }
+        protected IMazeCoordinateConverter         CoordinateConverter { get; }
         protected IViewMazeItemPath            ItemPath { get; }
         protected IViewMazeItemGravityBlock    GravityBlock { get; }
         protected IViewMazeItemMovingTrap      MovingTrap { get; }
@@ -31,7 +31,7 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
 
         protected MazeItemsCreatorBase(
             IContainersGetter _ContainersGetter,
-            ICoordinateConverter _CoordinateConverter, 
+            IMazeCoordinateConverter _CoordinateConverter, 
             IViewMazeItemPath _ItemPath                   = null,
             IViewMazeItemGravityBlock _GravityBlock       = null,
             IViewMazeItemMovingTrap _MovingTrap           = null,

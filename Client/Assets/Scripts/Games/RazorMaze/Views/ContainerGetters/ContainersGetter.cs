@@ -16,9 +16,9 @@ namespace Games.RazorMaze.Views.ContainerGetters
         
         #region inject
 
-        private ICoordinateConverter CoordinateConverter { get; }
+        private IMazeCoordinateConverter CoordinateConverter { get; }
 
-        public ContainersGetter(ICoordinateConverter _CoordinateConverter)
+        public ContainersGetter(IMazeCoordinateConverter _CoordinateConverter)
         {
             CoordinateConverter = _CoordinateConverter;
         }

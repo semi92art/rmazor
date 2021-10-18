@@ -50,12 +50,12 @@ namespace Games.RazorMaze.Views.Common
         
         #region inject
 
-        private ICoordinateConverter CoordinateConverter { get; }
+        private IMazeCoordinateConverter CoordinateConverter { get; }
         private IContainersGetter ContainersGetter { get; }
         private IGameTicker GameTicker { get; }
 
         public ViewMazeBackground(
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker)
         {

@@ -30,7 +30,6 @@ public class EditorHelper : EditorWindow
     private string m_TestUrlCheck;
     private int m_GameId = -1;
     private int m_GameIdCheck;
-    private int m_Level = -1;
     private int m_Quality = -1;
     private int m_QualityCheck;
     private int m_TabPage;
@@ -105,73 +104,99 @@ public class EditorHelper : EditorWindow
             if (GUI.enabled)
                 GUILayout.Space(10);
             
-            GUILayout.BeginHorizontal();
-            EditorUtilsEx.GuiButtonAction("Enable Daily Bonus", EnableDailyBonus);
-            GUILayout.Label("Day:");
-            m_DailyBonusIndex = EditorGUILayout.Popup(
-                m_DailyBonusIndex, new[] { "1", "2", "3", "4", "5", "6", "7" });
-            GUILayout.EndHorizontal();
+            EditorUtilsEx.HorizontalZone(() =>
+            {
+                EditorUtilsEx.GuiButtonAction("Enable Daily Bonus", EnableDailyBonus);
+                GUILayout.Label("Day:");
+                m_DailyBonusIndex = EditorGUILayout.Popup(
+                    m_DailyBonusIndex, new[] { "1", "2", "3", "4", "5", "6", "7" });
+            });
             
             if (Application.isPlaying)
             {
-                GUILayout.BeginHorizontal();
-                var money = m_Money.CloneAlt();
-                foreach (var kvp in m_Money)
+                EditorUtilsEx.HorizontalZone(() =>
                 {
-                    GUILayout.Label($"{kvp.Key}:");
-                    money[kvp.Key] = EditorGUILayout.LongField(money[kvp.Key]);
-                }
-                m_Money = money;
-                GUILayout.EndHorizontal();
-                
-                GUILayout.BeginHorizontal();
-                EditorUtilsEx.GuiButtonAction("Get From Bank", GetMoneyFromBank);
-                EditorUtilsEx.GuiButtonAction("Set Money", SetMoney);
-                GUILayout.EndHorizontal();
+                    var money = m_Money.CloneAlt();
+                    foreach (var kvp in m_Money)
+                    {
+                        GUILayout.Label($"{kvp.Key}:");
+                        money[kvp.Key] = EditorGUILayout.LongField(money[kvp.Key]);
+                    }
+
+                    m_Money = money;
+                });
+
+                EditorUtilsEx.HorizontalZone(() =>
+                {
+                    EditorUtilsEx.GuiButtonAction("Get From Bank", GetMoneyFromBank);
+                    EditorUtilsEx.GuiButtonAction("Set Money", SetMoney);
+                });
             }
             
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Set Game Id:"))
-                SaveUtils.PutValue(SaveKey.GameId, m_GameId);
-            m_GameId = EditorGUILayout.IntField(m_GameId);
-            GUILayout.EndHorizontal();
-
+            EditorUtilsEx.HorizontalZone(() =>
+            {
+                if (GUILayout.Button("Set Game Id:"))
+                    SaveUtils.PutValue(SaveKey.GameId, m_GameId);
+                m_GameId = EditorGUILayout.IntField(m_GameId);
+            });
+            
             EditorUtilsEx.HorizontalLine(Color.gray);
             GUI.enabled = true;
-
-            GUILayout.BeginHorizontal();
-            EditorUtilsEx.GuiButtonAction(CreateTestUsers, m_TestUsersCount);
-            GUILayout.Label("count:", GUILayout.Width(40));
-            m_TestUsersCount = EditorGUILayout.IntField(m_TestUsersCount);
-            GUILayout.EndHorizontal();
+            
+            EditorUtilsEx.HorizontalZone(() =>
+            {
+                EditorUtilsEx.GuiButtonAction(CreateTestUsers, m_TestUsersCount);
+                GUILayout.Label("count:", GUILayout.Width(40));
+                m_TestUsersCount = EditorGUILayout.IntField(m_TestUsersCount);
+            });
             
             EditorUtilsEx.GuiButtonAction("Delete test users", DeleteTestUsers);
 
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Debug Server Url:");
-            m_DebugServerUrl = EditorGUILayout.TextField(m_DebugServerUrl);
-            if (!string.IsNullOrEmpty(m_DebugServerUrl) && m_DebugServerUrl.Last().InRange('/','\\'))
-                m_DebugServerUrl = m_DebugServerUrl.Remove(m_DebugServerUrl.Length - 1);
-            GUILayout.EndHorizontal();
-
+            EditorUtilsEx.HorizontalZone(() =>
+            {
+                GUILayout.Label("Debug Server Url:");
+                m_DebugServerUrl = EditorGUILayout.TextField(m_DebugServerUrl);
+                if (!string.IsNullOrEmpty(m_DebugServerUrl) && m_DebugServerUrl.Last().InRange('/','\\'))
+                    m_DebugServerUrl = m_DebugServerUrl.Remove(m_DebugServerUrl.Length - 1);
+            });
+            
             EditorUtilsEx.GuiButtonAction("Set default api url", SetDefaultApiUrl);
             EditorUtilsEx.GuiButtonAction("Delete all settings", DeleteAllSettings);
             EditorUtilsEx.GuiButtonAction("Get ready to commit", GetReadyToCommit);
             
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Quality:");
-            m_Quality = EditorGUILayout.Popup(
-                m_Quality, new[] { "Normal", "Good" });
-            GUILayout.EndHorizontal();
+            EditorUtilsEx.HorizontalZone(() =>
+            {
+                GUILayout.Label("Quality:");
+                m_Quality = EditorGUILayout.Popup(
+                    m_Quality, new[] { "Normal", "Good" });
+            });
             
             EditorUtilsEx.HorizontalLine(Color.gray);
+            
+            var headerStyle = new GUIStyle
+            {
+                fontSize = 15,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleCenter,
+                normal = {textColor = GUI.contentColor}
+            };
+            GUILayout.Label("Scenes", headerStyle);
 
-            GUILayout.BeginHorizontal();
-            EditorUtilsEx.GuiButtonAction(SceneNames.Preload, LoadScene, $"Assets/Scenes/{SceneNames.Preload}.unity");
-            EditorUtilsEx.GuiButtonAction(SceneNames.Main, LoadScene, $"Assets/Scenes/{SceneNames.Main}.unity");
-            EditorUtilsEx.GuiButtonAction(SceneNames.Level, LoadScene, $"Assets/Scenes/{SceneNames.Level}.unity");
-            EditorUtilsEx.GuiButtonAction(SceneNames.Prototyping,  LoadScene, $"Assets/Scenes/{SceneNames.Prototyping}.unity");
-            GUILayout.EndHorizontal();
+            foreach (var sceneName in new []
+            {
+                SceneNames.Preload, 
+                SceneNames.Main,
+                SceneNames.Level,
+                SceneNames.Prototyping
+            })
+            {
+                EditorUtilsEx.GuiButtonAction(
+                    sceneName,
+                    LoadScene, 
+                    $"Assets/Scenes/{sceneName}.unity",
+                    GUILayout.Height(30f));
+                
+            }
         });
         
         UpdateTestUrl();

@@ -55,7 +55,9 @@ namespace Games.RazorMaze.Views.InputConfigurators
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                if (Input.GetKey(KeyCode.LeftShift))
+                if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftAlt))
+                    _CommandKey = InputCommands.LoadRandomLevel;
+                else if (Input.GetKey(KeyCode.LeftShift))
                     _CommandKey = InputCommands.LoadNextLevel;
                 else if (Input.GetKey(KeyCode.LeftAlt))
                     _CommandKey = InputCommands.LoadFirstLevelFromCurrentGroup;

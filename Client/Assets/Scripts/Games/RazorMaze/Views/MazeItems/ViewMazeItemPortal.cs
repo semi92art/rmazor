@@ -43,6 +43,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region shapes
 
+        protected override string ObjectName => "Portal Block";
         protected override object[] DefaultColorShapes => new object[] {m_Center}.Concat(m_Orbits).ToArray();
         private Disc m_Center;
         private readonly List<Disc> m_Orbits = new List<Disc>();
@@ -55,7 +56,7 @@ namespace Games.RazorMaze.Views.MazeItems
         public ViewMazeItemPortal(
             ViewSettings _ViewSettings,
             IModelGame _Model,
-            ICoordinateConverter _CoordinateConverter, 
+            IMazeCoordinateConverter _CoordinateConverter, 
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
@@ -134,24 +135,15 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected override void InitShape()
         {
-            var go = Object;
-            var center = ContainersGetter.GetContainer(ContainerNames.MazeItems).gameObject
-                .GetOrAddComponentOnNewChild<Disc>(
-                    "Portal Item",
-                    ref go,
-                    Vector2.zero);
+            var center = Object.AddComponentOnNewChild<Disc>("Portal Item", out _);
             center.Type = DiscType.Disc;
             center.Color = DrawingUtils.ColorLines;
-            center.Radius = CoordinateConverter.Scale * 0.2f;
-            go.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
-            go.DestroyChildrenSafe();
             m_Center = center;
-            Object = go;
 
             var scale = CoordinateConverter.Scale;
             for (int i = 0; i < OrbitsCount; i++)
             {
-                var orbit = go.AddComponentOnNewChild<Disc>($"Orbit {i + 1}", out _, Vector2.zero);
+                var orbit = Object.AddComponentOnNewChild<Disc>($"Orbit {i + 1}", out _, Vector2.zero);
                 orbit.Thickness = ViewSettings.LineWidth * scale * 0.5f;
                 orbit.Type = DiscType.Arc;
                 orbit.Color = DrawingUtils.ColorLines;
@@ -201,7 +193,8 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected override void UpdateShape()
         {
-            m_Center.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+            Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+            m_Center.Radius = CoordinateConverter.Scale * 0.2f;
         }
         
         private void InitGravitySpawnPool()

@@ -49,7 +49,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
-            if (_Args.Stage == ELevelStage.StartedOrContinued)
+            if (_Args.Stage == ELevelStage.ReadyToStartOrContinue && Data.Orientation == MazeOrientation.North)
                 MoveMazeItemsGravity(Data.Orientation, Character.Position);
         }
 

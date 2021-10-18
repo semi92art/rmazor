@@ -65,7 +65,7 @@ namespace Games.RazorMaze.Views.Characters
         private ViewSettings ViewSettings { get; }
 
         public ViewCharacter(
-            ICoordinateConverter _CoordinateConverter, 
+            IMazeCoordinateConverter _CoordinateConverter, 
             IModelGame _Model,
             IContainersGetter _ContainersGetter,
             IViewMazeCommon _ViewMazeCommon,

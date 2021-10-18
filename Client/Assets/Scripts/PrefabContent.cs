@@ -3,6 +3,7 @@ using System.Linq;
 using Malee.List;
 using UnityEngine;
 
+[DisallowMultipleComponent]
 public class PrefabContent : MonoBehaviour
 {
     [Serializable]

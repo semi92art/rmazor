@@ -33,6 +33,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region shapes
 
+        protected override string ObjectName => "Moving Trap Block";
         protected override object[] DefaultColorShapes => new object[] {m_Saw};
 
         private SpriteRenderer m_Saw;
@@ -44,7 +45,7 @@ namespace Games.RazorMaze.Views.MazeItems
         public ViewMazeItemMovingTrap(
             ViewSettings _ViewSettings,
             IModelGame _Model,
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
@@ -113,26 +114,19 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected override void InitShape()
         {
-            var go = Object;
-            var saw = ContainersGetter.GetContainer(ContainerNames.MazeItems).gameObject
-                .GetOrAddComponentOnNewChild<SpriteRenderer>("Moving Trap", ref go);
-            go.DestroyChildrenSafe();
+            var saw = Object.AddComponentOnNewChild<SpriteRenderer>("Moving Trap", out _);
             saw.sprite = PrefabUtilsEx.GetObject<Sprite>("views", "moving_trap");
             saw.color = DrawingUtils.ColorTrap;
             saw.sortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
             saw.enabled = false;
-            var coll = go.AddComponent<CircleCollider2D>();
+            var coll = Object.AddComponent<CircleCollider2D>();
             coll.radius = 0.5f;
-
-            go.transform.localScale = Vector3.one * CoordinateConverter.Scale;
-            
-            Object = go;
             m_Saw = saw;
         }
 
         protected override void UpdateShape()
         {
-            m_Saw.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+            Object.transform.localScale = Vector3.one * CoordinateConverter.Scale;
             base.UpdateShape();
         }
 
@@ -141,7 +135,7 @@ namespace Games.RazorMaze.Views.MazeItems
             if (!m_Rotating)
                 return;
             float rotSpeed = ViewSettings.MovingTrapRotationSpeed * Time.deltaTime; 
-            Object.transform.Rotate(Vector3.forward * rotSpeed);
+            m_Saw.transform.Rotate(Vector3.forward * rotSpeed);
         }
 
         private void StartRotation()

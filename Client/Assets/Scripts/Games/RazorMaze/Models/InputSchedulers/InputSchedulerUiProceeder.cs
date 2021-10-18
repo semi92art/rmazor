@@ -4,6 +4,9 @@ using System.Linq;
 using GameHelpers;
 using Games.RazorMaze.Views;
 using Ticker;
+using UnityEngine;
+using Utils;
+using Random = System.Random;
 
 namespace Games.RazorMaze.Models.InputSchedulers
 {
@@ -57,6 +60,7 @@ namespace Games.RazorMaze.Models.InputSchedulers
                 case InputCommands.LoadCurrentLevel:
                 case InputCommands.LoadNextLevel:
                 case InputCommands.LoadFirstLevelFromCurrentGroup:
+                case InputCommands.LoadRandomLevel:
                 case InputCommands.ReadyToContinueLevel:
                 case InputCommands.ContinueLevel:
                 case InputCommands.FinishLevel:
@@ -102,6 +106,13 @@ namespace Games.RazorMaze.Models.InputSchedulers
                 case InputCommands.LoadFirstLevelFromCurrentGroup:
                     int group = Data.LevelIndex / RazorMazeUtils.LevelsInGroup;
                     levelIndex = group * RazorMazeUtils.LevelsInGroup;
+                    info = LevelsLoader.LoadLevel(1, levelIndex); 
+                    LevelStaging.LoadLevel(info, levelIndex);
+                    break;
+                case InputCommands.LoadRandomLevel:
+                    levelIndex = Mathf.RoundToInt(
+                        UnityEngine.Random.value *
+                        LevelsLoader.GetLevelsCount(1));
                     info = LevelsLoader.LoadLevel(1, levelIndex); 
                     LevelStaging.LoadLevel(info, levelIndex);
                     break;

@@ -21,7 +21,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         public ViewMazeTurretsGroup(
             IModelData _Data,
             IViewMazeCommon _Common,
-            ICoordinateConverter _Converter,
+            IMazeCoordinateConverter _Converter,
             IContainersGetter _ContainersGetter)
             : base(_Data, _Common, _Converter, _ContainersGetter) { }
         

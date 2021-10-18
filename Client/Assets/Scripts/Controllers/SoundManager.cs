@@ -93,7 +93,7 @@ namespace Controllers
                 if (clip == null)
                     return;
                 var go = new GameObject($"AudioClip_{_ClipName}");
-                go.SetParent(ContainersGetter.GetContainer(ContainerNames.Character));
+                go.SetParent(ContainersGetter.GetContainer(ContainerNames.AudioSources));
                 var audioSource = go.AddComponent<AudioSource>();
                 audioSource.clip = clip;
                 audioSource.volume = _Volume * (SaveUtils.GetValue<bool>(SaveKey.SettingSoundOn) ? 1 : 0);

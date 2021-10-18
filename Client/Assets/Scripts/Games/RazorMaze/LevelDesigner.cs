@@ -34,8 +34,8 @@ namespace Games.RazorMaze
         }
 
         public const int MazeWidth = 12;
+        public static List<int> Sizes => Enumerable.Range(MazeWidth, 4).ToList();
         
-        public static List<int> Sizes => Enumerable.Range(MazeWidth, 1).ToList();
         [HideInInspector] public string pathLengths;
         [HideInInspector] public int sizeIdx;
         [HideInInspector] public float aParam;

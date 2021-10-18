@@ -390,7 +390,7 @@ GameObject:
   - component: {fileID: 1943395277398426443}
   - component: {fileID: 4331088762514232024}
   m_Layer: 0
-  m_Name: Rotate Clockwise Button
+  m_Name: Rotate Counter Clockwise Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -446,7 +446,7 @@ MonoBehaviour:
   angRadiansEnd: 2.3561945
   radius: 4.59
   radiusSpace: 0
-  thickness: 0.08
+  thickness: 0.2
   thicknessSpace: 0
   arcEndCaps: 0
   matchDashSpacingToSize: 1

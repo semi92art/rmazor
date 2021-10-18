@@ -51,14 +51,14 @@ namespace Games.RazorMaze.Views.UI
         private IModelGame Model { get; }
         private IGameTicker GameTicker { get; }
         private IContainersGetter ContainersGetter { get; }
-        private ICoordinateConverter CoordinateConverter { get; }
+        private IMazeCoordinateConverter CoordinateConverter { get; }
         private ILocalizationManager LocalizationManager { get; }
 
         public ViewUIPrompts(
             IModelGame _Model,
             IGameTicker _GameTicker,
             IContainersGetter _ContainersGetter,
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             ILocalizationManager _LocalizationManager)
         {
             Model = _Model;
@@ -115,7 +115,7 @@ namespace Games.RazorMaze.Views.UI
         private void ShowPromptHowToMove()
         {
             var go = PrefabUtilsEx.InitPrefab(
-                null, "ui_labels", "prompt_how_to_move");
+                null, "ui_game", "prompt_how_to_move");
             go.transform.position = CoordinateConverter.GetMazeCenter();
             var text = go.GetCompItem<TextMeshPro>("label");
             text.text = LocalizationManager.GetTranslation(KeyPromptHowToMove);
@@ -133,7 +133,7 @@ namespace Games.RazorMaze.Views.UI
         private void ShowPromptHowToRotate()
         {
             var go = PrefabUtilsEx.InitPrefab(
-                null, "ui_labels", "prompt_how_to_rotate");
+                null, "ui_game", "prompt_how_to_rotate");
             go.transform.position = CoordinateConverter.GetMazeCenter();
             var text = go.GetCompItem<TextMeshPro>("label");
             text.text = LocalizationManager.GetTranslation(KeyPromptHowToRotate);

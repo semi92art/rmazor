@@ -35,6 +35,7 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         #region nonpublic members
         
+        protected abstract string ObjectName { get; }
         protected abstract object[] DefaultColorShapes { get; }
         protected bool Initialized { get; set; }
         protected bool m_ActivatedInSpawnPool;
@@ -45,7 +46,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected ViewSettings ViewSettings { get; }
         protected IModelGame Model { get; }
-        protected ICoordinateConverter CoordinateConverter { get; }
+        protected IMazeCoordinateConverter CoordinateConverter { get; }
         protected IContainersGetter ContainersGetter { get; }
         protected IGameTicker GameTicker { get; }
         protected IViewAppearTransitioner Transitioner { get; }
@@ -55,7 +56,7 @@ namespace Games.RazorMaze.Views.MazeItems
         protected ViewMazeItemBase (
             ViewSettings _ViewSettings,
             IModelGame _Model,
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
@@ -120,7 +121,12 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             Props = _Props;
             if (!Initialized)
+            {
+                Object = new GameObject(ObjectName);
                 InitShape();
+            }
+            Object.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems).gameObject);
+            Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             UpdateShape();
             Initialized = true;
         }
