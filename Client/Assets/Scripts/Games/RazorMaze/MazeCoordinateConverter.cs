@@ -38,7 +38,6 @@ namespace Games.RazorMaze
 
         private V2Int m_MazeSize;
         private float m_Scale;
-        public Vector2 m_Min;
         private Vector2 m_Center;
         private bool m_OffsetsInitialized;
         private bool m_MazeSizeSet;
