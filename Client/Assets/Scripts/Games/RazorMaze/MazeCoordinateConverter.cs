@@ -1,4 +1,5 @@
-﻿using DI.Extensions;
+﻿using System;
+using DI.Extensions;
 using Entities;
 using UnityEngine;
 using Utils;
@@ -19,14 +20,15 @@ namespace Games.RazorMaze
         Vector2 ToLocalCharacterPosition(Vector2 _Point);
     }
     
+    [Serializable]
     public class MazeCoordinateConverter : IMazeCoordinateConverter
     {
         #region constants
 
         public const float DefaultLeftOffset   = 1f;
         public const float DefaultRightOffset  = 1f;
-        public const float DefaultTopOffset    = 10f;
-        public const float DefaultBottomOffset = 10f;
+        public const float DefaultTopOffset    = 5f;
+        public const float DefaultBottomOffset = 5f;
 
         #endregion
         
@@ -36,7 +38,7 @@ namespace Games.RazorMaze
 
         private V2Int m_MazeSize;
         private float m_Scale;
-        private Vector2 m_Min;
+        public Vector2 m_Min;
         private Vector2 m_Center;
         private bool m_OffsetsInitialized;
         private bool m_MazeSizeSet;
@@ -90,11 +92,12 @@ namespace Games.RazorMaze
 
         public Vector4 GetScreenOffsets()
         {
+            var screenBounds = GameUtils.GetVisibleBounds();
             return new Vector4(
-                DefaultLeftOffset,
-                DefaultRightOffset, 
-                DefaultBottomOffset,
-                DefaultTopOffset);
+                screenBounds.min.x + m_LeftOffset,
+                 screenBounds.max.x - m_RightOffset,
+                screenBounds.min.y + m_BottomOffset,
+                screenBounds.max.y - m_TopOffset);
         }
         
         public Bounds GetMazeBounds()
@@ -126,21 +129,14 @@ namespace Games.RazorMaze
         {
             return ToGlobalMazePosition(_Point)
                 .PlusX(m_Scale * 0.5f)
-                .PlusY(m_Scale * 0.5f)
-                .MinusY(GetMazeCenter().y);
+                .MinusY(GetMazeCenter().y)
+                .PlusY(m_Scale * 0.5f);
         }
 
         #endregion
 
         #region nonpublic menhods
 
-        private void SetScale()
-        {
-            var bounds = GameUtils.GetVisibleBounds();
-            float realBoundsSize = bounds.size.x - m_LeftOffset - m_RightOffset;
-            m_Scale = realBoundsSize / m_MazeSize.Y;
-        }
-        
         private void SetCenterPoint()
         {
             var bounds = GameUtils.GetVisibleBounds();
@@ -148,6 +144,18 @@ namespace Games.RazorMaze
             float centerY = ((bounds.min.y + m_BottomOffset) + (bounds.max.y - m_TopOffset)) * 0.5f;
             m_Center = new Vector2(centerX, centerY);
         }
+        
+        private void SetScale()
+        {
+            var bounds = GameUtils.GetVisibleBounds();
+            float sizeX = bounds.size.x - m_LeftOffset - m_RightOffset;
+            float sizeY = bounds.size.y - m_BottomOffset - m_TopOffset;
+            if ((float) m_MazeSize.X / m_MazeSize.Y > sizeX / sizeY)
+                m_Scale = sizeX / m_MazeSize.X;
+            else
+                m_Scale = sizeY / m_MazeSize.Y;
+        }
+        
 
         private void SetMinimumPoint()
         {
@@ -155,7 +163,7 @@ namespace Games.RazorMaze
             float minY = m_Center.y - m_Scale * m_MazeSize.Y * 0.5f;
             m_Min = new Vector2(minX, minY);
         }
-
+        
         private bool CheckForErrors()
         {
             if (!Initialized())

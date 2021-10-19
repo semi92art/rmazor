@@ -180,22 +180,18 @@ public class EditorHelper : EditorWindow
                 alignment = TextAnchor.MiddleCenter,
                 normal = {textColor = GUI.contentColor}
             };
+            
             GUILayout.Label("Scenes", headerStyle);
-
-            foreach (var sceneName in new []
-            {
-                SceneNames.Preload, 
-                SceneNames.Main,
-                SceneNames.Level,
-                SceneNames.Prototyping
-            })
+            var sceneGuids = AssetDatabase.FindAssets (
+                "l:Scene t:Scene", new[] {"Assets\\Scenes" });
+            foreach (var scenePath in sceneGuids.Select(AssetDatabase.GUIDToAssetPath))
             {
                 EditorUtilsEx.GuiButtonAction(
-                    sceneName,
+                    scenePath.Replace("Assets/Scenes/",
+                        string.Empty).Replace(".unity", string.Empty),
                     LoadScene, 
-                    $"Assets/Scenes/{sceneName}.unity",
+                    scenePath,
                     GUILayout.Height(30f));
-                
             }
         });
         

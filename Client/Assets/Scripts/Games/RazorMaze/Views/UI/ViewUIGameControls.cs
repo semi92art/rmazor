@@ -19,7 +19,7 @@ namespace Games.RazorMaze.Views.UI
 {
     public interface IViewUIGameControls : IInit, IOnLevelStageChanged
     {
-        
+        IViewUIPrompts Prompts { get; }
     }
     
     public class ViewUIGameControls : IViewUIGameControls
@@ -45,6 +45,7 @@ namespace Games.RazorMaze.Views.UI
         
         #region inject
         
+        public IViewUIPrompts Prompts { get; }
         private IModelGame Model { get; }
         private IContainersGetter ContainersGetter { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
@@ -55,6 +56,7 @@ namespace Games.RazorMaze.Views.UI
         private ILocalizationManager LocalizationManager { get; }
 
         public ViewUIGameControls(
+            IViewUIPrompts _Prompts,
             IModelGame _Model,
             IContainersGetter _ContainersGetter,
             IMazeCoordinateConverter _CoordinateConverter,
@@ -64,6 +66,7 @@ namespace Games.RazorMaze.Views.UI
             ILevelsLoader _LevelsLoader,
             ILocalizationManager _LocalizationManager)
         {
+            Prompts = _Prompts;
             Model = _Model;
             ContainersGetter = _ContainersGetter;
             CoordinateConverter = _CoordinateConverter;
@@ -86,6 +89,8 @@ namespace Games.RazorMaze.Views.UI
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
+            Prompts.OnLevelStageChanged(_Args);
+            
             System.Func<bool> mazeContainsGravityItems = () => Model.GetAllProceedInfos()
                 .Any(_Info => _Info.Type == EMazeItemType.GravityBlock
                               || _Info.Type == EMazeItemType.GravityTrap);
@@ -307,7 +312,5 @@ namespace Games.RazorMaze.Views.UI
         }
 
         #endregion
-
-
     }
 }

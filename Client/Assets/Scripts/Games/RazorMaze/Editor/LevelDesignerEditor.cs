@@ -4,6 +4,7 @@ using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.Debug;
 using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.MazeItems;
 using UnityEditor;
@@ -152,7 +153,7 @@ namespace Games.RazorMaze.Editor
             {
                 EditorUtilsEx.ClearConsole();
                 ClearLevel();
-                var size = new V2Int(LevelDesigner.MazeWidth, LevelDesigner.Sizes[m_Des.sizeIdx]);
+                var size = new V2Int(LevelDesigner.MazeWidth, LevelDesigner.Heights[m_Des.sizeIdx]);
                 var parms = new MazeGenerationParams(
                     size,
                     m_Des.aParam,
@@ -168,7 +169,7 @@ namespace Games.RazorMaze.Editor
             {
                 EditorUtilsEx.ClearConsole();
                 ClearLevel();
-                var size = new V2Int(LevelDesigner.MazeWidth, LevelDesigner.Sizes[m_Des.sizeIdx]);
+                var size = new V2Int(LevelDesigner.MazeWidth, LevelDesigner.Heights[m_Des.sizeIdx]);
                 var info = LevelGenerator.CreateDefaultLevelInfo(size, true);
                 LoadLevel(info);
             });
@@ -177,7 +178,7 @@ namespace Games.RazorMaze.Editor
         private void AddEmptyLevel()
         {
             var idx = LevelsList.SelectedIndex;
-            var size = new V2Int(LevelDesigner.MazeWidth, LevelDesigner.Sizes[m_Des.sizeIdx]);
+            var size = new V2Int(LevelDesigner.MazeWidth, LevelDesigner.Heights[m_Des.sizeIdx]);
             var info = LevelGenerator.CreateDefaultLevelInfo(size, true);
             if (idx < LevelsList.Count - 1 && idx != -1)
                 LevelsList.Insert(idx + 1, info);
@@ -209,7 +210,7 @@ namespace Games.RazorMaze.Editor
             {
                 GUILayout.Label("Size:", GUILayout.Width(35));
                 m_Des.sizeIdx = EditorGUILayout.Popup(m_Des.sizeIdx, 
-                    LevelDesigner.Sizes.Select(_S => $"{LevelDesigner.MazeWidth}x{_S}").ToArray(),
+                    LevelDesigner.Heights.Select(_S => $"{LevelDesigner.MazeWidth}x{_S}").ToArray(),
                     GUILayout.Width(100));
                 GUILayout.Label("Fullness:", GUILayout.Width(50));
                 m_Des.aParam = EditorGUILayout.Slider(m_Des.aParam, 0, 1, GUILayout.Width(150));
@@ -302,6 +303,8 @@ namespace Games.RazorMaze.Editor
                     .Cast<ViewMazeItemProt>()
                     .ToList();
                 m_Des.size = _Info.Size;
+                if (ScreenViewDebug.Instance.IsNotNull())
+                    ScreenViewDebug.Instance.MazeSize = _Info.Size;
             });
         }
         
@@ -321,10 +324,10 @@ namespace Games.RazorMaze.Editor
             converter.Init(
                 MazeCoordinateConverter.DefaultLeftOffset, 
                 MazeCoordinateConverter.DefaultRightOffset,
-                MazeCoordinateConverter.DefaultBottomOffset, 
-                MazeCoordinateConverter.DefaultTopOffset);
+                3f, 
+                3f);
             converter.MazeSize = _Size;
-            var bounds = new Bounds(converter.GetMazeCenter(), GameUtils.GetVisibleBounds().size * 0.7f);
+            var bounds = new Bounds(converter.GetMazeCenter(), converter.GetMazeBounds().size);
             EditorUtilsEx.FocusSceneCamera(bounds);
         }
         
