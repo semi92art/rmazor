@@ -77,19 +77,13 @@ namespace Games.RazorMaze.Models.ItemProceeders
             if (infos.Any(_Info => _Info.Type == EMazeItemType.GravityTrap))
             {
                 var infosMovedDict = infos.ToDictionary(_Info => _Info, _Info => false);
-            
-                for (int i = 0; i < 10; i++)
-                {
-                    MoveMazeItemsGravityCore(dropDirection, _CharacterPoint, infosMovedDict, false, false);
-                    MoveMazeItemsGravityCore(dropDirection, _CharacterPoint, infosMovedDict, true, false);
-                }
-                MoveMazeItemsGravityCore(dropDirection, _CharacterPoint, infosMovedDict, false, true);
-                MoveMazeItemsGravityCore(dropDirection, _CharacterPoint, infosMovedDict, true, true);
+                const int triesCount = 10;
+                for (int i = 0; i < triesCount; i++)
+                    MoveMazeItemsGravityCore(dropDirection, _CharacterPoint, infosMovedDict, false);
+                MoveMazeItemsGravityCore(dropDirection, _CharacterPoint, infosMovedDict, true);
             }
             else
             {
-                foreach (var info in infos)
-                    TryMoveBlock(info, dropDirection, _CharacterPoint, false);
                 foreach (var info in infos)
                     TryMoveBlock(info, dropDirection, _CharacterPoint, true);
             }
@@ -99,10 +93,16 @@ namespace Games.RazorMaze.Models.ItemProceeders
             V2Int _DropDirection,
             V2Int _CharacterPoint,
             Dictionary<IMazeItemProceedInfo, bool> _InfosMoved, 
-            bool _Reverse,
             bool _Forced)
         {
-            var copyOfDict = _Reverse ? _InfosMoved.Reverse().ToList() : _InfosMoved.ToList();
+            var copyOfDict = _InfosMoved.ToList();
+            foreach (var kvp in copyOfDict
+                .Where(_Kvp => !_Kvp.Value))
+            {
+                var info = kvp.Key;
+                _InfosMoved[info] = TryMoveBlock(info, _DropDirection, _CharacterPoint, _Forced);
+            }
+            copyOfDict = _InfosMoved.Reverse().ToList();
             foreach (var kvp in copyOfDict
                 .Where(_Kvp => !_Kvp.Value))
             {
@@ -134,24 +134,27 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 .ToList();
             var pos = _Info.CurrentPosition;
             bool doMove = false;
-            V2Int? altPos = null;
+            V2Int? posNearCharacter = null;
             bool isOnGravityBlockItem;
             while (IsValidPositionForMove(pos + _DropDirection, gravityProceedInfos, out isOnGravityBlockItem))
             {
                 pos += _DropDirection;
+                // если новая позиция блока совпадает с позицией персонажа, записываем ее в отдельную переменную
                 if (_CharacterPoint == pos)
-                    altPos = pos - _DropDirection;
-                var pos1 = pos;
-                if (_Info.Path.All(_Pos => pos1 != _Pos))
+                    posNearCharacter = pos - _DropDirection;
+                // если новая позиция блока не находится на узле пути, проверяем следующую позицию
+                if (_Info.Path.All(_Pos => pos != _Pos))
                     continue;
-                int fromPosIdx = _Info.Path.IndexOf(_Info.CurrentPosition);
-                if (fromPosIdx == -1)
+                // если текущая позиция блока не находится на узле пути, а новая - находится, то движение разрешено  
+                int currentPathIndex = _Info.Path.IndexOf(_Info.CurrentPosition);
+                if (currentPathIndex == -1)
                 {
                     doMove = true;
                     break;
                 }
-                int toPosIds = _Info.Path.IndexOf(pos);
-                if (Math.Abs(toPosIds - fromPosIdx) > 1)
+                // если текущая позиция блока находится на узле пути, и новая тоде находится на узле пути,
+                // но они не являются близжайшими, проверяем следующую позицию
+                if (Math.Abs(_Info.Path.IndexOf(pos) - _Info.Path.IndexOf(_Info.CurrentPosition)) > 1)
                     continue;
                 doMove = true;
                 break;
@@ -163,13 +166,12 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 _Info.ProceedingStage = StageIdle;                       
                 return false;
             }
-            var from = _Info.CurrentPosition;
-            var to = altPos ?? pos;
-            if (from == to)
+            var to = posNearCharacter ?? pos;
+            if (_Info.CurrentPosition == to)
                 return false;
             _Info.ProceedingStage = StageDrop;
             _Info.NextPosition = to;
-            ProceedCoroutine(MoveMazeItemGravityCoroutineCore(_Info, from, to));
+            ProceedCoroutine(MoveMazeItemGravityCoroutineCore(_Info, to));
             return true;
         }
 
@@ -181,35 +183,31 @@ namespace Games.RazorMaze.Models.ItemProceeders
             var gravityProceedInfos = ProceedInfos
                 .SelectMany(_Infos => _Infos.Value)
                 .ToList();
-            var pos = _Info.CurrentPosition;
+            var to = _Info.CurrentPosition;
             bool isOnGravityBlockItem;
-            while (IsValidPositionForMove(pos + _DropDirection, gravityProceedInfos, out isOnGravityBlockItem))
-                pos += _DropDirection;
-            if (isOnGravityBlockItem && !_Forced)
-                return false;
-            var from = _Info.CurrentPosition;
-            var to = pos;
-            if (from == to)
+            while (IsValidPositionForMove(to + _DropDirection, gravityProceedInfos, out isOnGravityBlockItem))
+                to += _DropDirection;
+            if (isOnGravityBlockItem && !_Forced || _Info.CurrentPosition == to)
                 return false;
             _Info.ProceedingStage = StageDrop;
             _Info.NextPosition = to;
-            ProceedCoroutine(MoveMazeItemGravityCoroutineCore(_Info, from, to));
+            ProceedCoroutine(MoveMazeItemGravityCoroutineCore(_Info, to));
             return true;
         }
 
         private IEnumerator MoveMazeItemGravityCoroutineCore(
             IMazeItemProceedInfo _Info,
-            V2Int _From,
             V2Int _To)
         {
+            var from = _Info.CurrentPosition;
             float speed = _Info.Type == EMazeItemType.GravityBlock
                 ? Settings.GravityBlockSpeed
                 : Settings.GravityTrapSpeed;
             var busyPositions = _Info.BusyPositions;
             InvokeMoveStarted(new MazeItemMoveEventArgs(
-                _Info, _From, _To, speed, 0, busyPositions));
-            var direction = (_To - _From).Normalized;
-            float distance = V2Int.Distance(_From, _To);
+                _Info, from, _To, speed, 0, busyPositions));
+            var direction = (_To - from).Normalized;
+            float distance = V2Int.Distance(from, _To);
             yield return Coroutines.Lerp(
                 0f,
                 1f,
@@ -218,11 +216,11 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 {
                     var addict = direction * (_Progress + 0.1f) * distance;
                     busyPositions.Clear();
-                    busyPositions.Add(_From + V2Int.Floor(addict));
+                    busyPositions.Add(from + V2Int.Floor(addict));
                     if (busyPositions[0] != _To)
-                        busyPositions.Add(_From + V2Int.Ceil(addict));
+                        busyPositions.Add(from + V2Int.Ceil(addict));
                     InvokeMoveContinued(new MazeItemMoveEventArgs(
-                        _Info, _From, _To, speed, _Progress, busyPositions));
+                        _Info, from, _To, speed, _Progress, busyPositions));
                 },
                 GameTicker,
                 (_Stopped, _Progress) =>
@@ -230,7 +228,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     var to = !_Stopped ? _To : _Info.BusyPositions[0];  
                     _Info.CurrentPosition = to;
                     InvokeMoveFinished(new MazeItemMoveEventArgs(
-                        _Info, _From, to, speed, _Progress, busyPositions, _Stopped));
+                        _Info, from, to, speed, _Progress, busyPositions, _Stopped));
                     _Info.ProceedingStage = StageIdle;
                     busyPositions.Clear();
                     busyPositions.Add(to);
