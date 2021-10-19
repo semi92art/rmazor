@@ -10,6 +10,7 @@ using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
+using Games.RazorMaze.Views.MazeItems.Props;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
@@ -98,6 +99,13 @@ namespace Games.RazorMaze.Views.MazeItems
                 m_InnerDisc.enabled = false;
                 base.ActivatedInSpawnPool = value;
             }
+        }
+
+        public override void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            base.OnLevelStageChanged(_Args);
+            if (_Args.Stage == ELevelStage.ReadyToStartOrContinue || _Args.Stage == ELevelStage.Loaded)
+                m_Position = Props.Position.ToVector2();
         }
 
         public void UpdateTick()
@@ -209,11 +217,11 @@ namespace Games.RazorMaze.Views.MazeItems
         
         private void CheckForCharacterDeath()
         {
+            if (!Model.Character.Alive)
+                return;
             var ch = Model.Character;
             var cPos = ch.IsMoving ? ch.MovingInfo.PrecisePosition : ch.Position.ToVector2();
-            if (Vector2.Distance(cPos, m_Position) > 1f)
-                return;
-            if (!Model.Character.Alive)
+            if (Vector2.Distance(cPos, m_Position) > 0.9f)
                 return;
             Model.LevelStaging.KillCharacter();
         }

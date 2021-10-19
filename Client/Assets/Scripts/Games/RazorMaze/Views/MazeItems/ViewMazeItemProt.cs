@@ -100,7 +100,6 @@ namespace Games.RazorMaze.Views.MazeItems
         public void SetSpringboardDirection(V2Int _Direction)
         {
             props.Directions[0] = _Direction;
-            // SetShapeAndHint(EMazeItemType.Springboard, false);
         }
         
         #endregion

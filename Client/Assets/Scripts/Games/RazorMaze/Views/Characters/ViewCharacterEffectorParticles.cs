@@ -106,6 +106,7 @@ namespace Games.RazorMaze.Views.Characters
                 .ToList();
             m_DeathShapes.ForEach(_Shape =>
             {
+                _Shape.SortingOrder = DrawingUtils.GetCharacterSortingOrder() + 2;
                 _Shape.Color = DrawingUtils.ColorLines;
                 _Shape.enabled = false;
             });

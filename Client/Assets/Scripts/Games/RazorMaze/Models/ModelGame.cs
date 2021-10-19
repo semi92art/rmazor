@@ -4,6 +4,7 @@ using Games.RazorMaze.Models.InputSchedulers;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views;
+using Mono_Installers;
 using UnityEngine.Events;
 
 namespace Games.RazorMaze.Models
@@ -119,7 +120,11 @@ namespace Games.RazorMaze.Models
 
         #region event methods
         
-        private void AllPathsProceededEvent() => LevelStaging.FinishLevel();
+        private void AllPathsProceededEvent()
+        {
+            if (LevelMonoInstaller.Release)
+                LevelStaging.FinishLevel();
+        }
 
         private void MazeOnRotationFinishedInternal(MazeRotationEventArgs _Args)
         {

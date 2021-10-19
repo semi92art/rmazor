@@ -217,6 +217,9 @@ namespace Games.RazorMaze.Views.Characters
             m_Eye1Shape = prefab.GetCompItem<Rectangle>("eye_1");
             m_Eye2Shape = prefab.GetCompItem<Rectangle>("eye_2");
             m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = false;
+            m_HeadShape.SortingOrder = DrawingUtils.GetCharacterSortingOrder();
+            m_Eye1Shape.SortingOrder = DrawingUtils.GetCharacterSortingOrder() + 1;
+            m_Eye2Shape.SortingOrder = DrawingUtils.GetCharacterSortingOrder() + 1;
             m_Initialized = true;
         }
 

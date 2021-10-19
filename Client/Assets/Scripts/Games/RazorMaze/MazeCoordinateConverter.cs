@@ -60,10 +60,7 @@ namespace Games.RazorMaze
                 m_MazeSize = value;
                 m_MazeSizeSet = true;
                 if (!CheckForErrors())
-                {
                     SetScale();
-                    SetMinimumPoint();
-                }
             }
         }
 
@@ -115,7 +112,7 @@ namespace Games.RazorMaze
         {
             if (CheckForErrors())
                 return default;
-            return _Point * m_Scale + m_Min;
+            return (_Point - m_MazeSize.ToVector2() * 0.5f) * m_Scale;
         }
 
         public Vector2 ToLocalMazeItemPosition(Vector2 _Point)
@@ -155,15 +152,7 @@ namespace Games.RazorMaze
             else
                 m_Scale = sizeY / m_MazeSize.Y;
         }
-        
 
-        private void SetMinimumPoint()
-        {
-            float minX = m_Center.x - m_Scale * m_MazeSize.X * 0.5f;
-            float minY = m_Center.y - m_Scale * m_MazeSize.Y * 0.5f;
-            m_Min = new Vector2(minX, minY);
-        }
-        
         private bool CheckForErrors()
         {
             if (!Initialized())
