@@ -1,4 +1,5 @@
 ﻿using Games.RazorMaze.Models;
+using Games.RazorMaze.Views.ContainerGetters;
 using Ticker;
 using UnityEngine;
 
@@ -8,8 +9,14 @@ namespace Games.RazorMaze.Views.InputConfigurators
     {
         #region inject
 
-        public ViewInputConfiguratorInEditor(IUITicker _UITicker) => _UITicker.Register(this);
-        
+        public ViewInputConfiguratorInEditor(
+            IUITicker _UITicker,
+            IContainersGetter _ContainersGetter) 
+            : base(_ContainersGetter)
+        {
+            _UITicker.Register(this);
+        }
+
         #endregion
 
         #region api

@@ -38,3 +38,15 @@ MonoBehaviour:
     - item: {fileID: 3177347172963282559, guid: 8aa6e0dc802208f4cb8d359297e298f4,
         type: 3}
       name: level_check_mark
+    - item: {fileID: 1425640064618946733, guid: 7f6d32e7723fc0149a86c90fd0d5be7b,
+        type: 3}
+      name: lean_shape_circle
+    - item: {fileID: 5905266820976307603, guid: 73bcba6a8d9f7764db126985e784de59,
+        type: 3}
+      name: lean_shape_detector_clockwise_circle
+    - item: {fileID: 5161345734266977120, guid: 9c234299993417748a342c73adb86855,
+        type: 3}
+      name: lean_shape_detector_counter_clockwise_circle
+    - item: {fileID: 8084936785278095536, guid: b1ab196056bb902469744d64131211b1,
+        type: 3}
+      name: lean_drag_trail

@@ -8,5 +8,6 @@
         public const string Background = "Background";
         public const string GameUI = "Game UI";
         public const string AudioSources = "Audio Sources";
+        public const string TouchInput = "Touch Input";
     }
 }
