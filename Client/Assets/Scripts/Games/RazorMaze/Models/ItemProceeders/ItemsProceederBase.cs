@@ -112,7 +112,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
                         IsProceeding = false,
                         PauseTimer = 0,
                         BusyPositions = new List<V2Int> {_Item.Position},
-                        ProceedingStage = 0
+                        ProceedingStage = 0,
+                        CurrentPosition = _Item.Position,
+                        NextPosition = _Item.Position
                     };
                     res.SetItem(_Item);
                     return res;

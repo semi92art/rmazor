@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Models.ProceedInfos;
 using Ticker;
@@ -21,6 +22,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         public const int StageDrop = 1;
         
         #endregion
+
 
         #region inject
         
@@ -70,88 +72,129 @@ namespace Games.RazorMaze.Models.ItemProceeders
         private void MoveMazeItemsGravity(MazeOrientation _Orientation, V2Int _CharacterPoint)
         {
             var dropDirection = RazorMazeUtils.GetDropDirection(_Orientation);
-            foreach (var info in GetProceedInfos(Types).Where(_Info => _Info.IsProceeding))
+            var infos = GetProceedInfos(Types).Where(_Info => _Info.IsProceeding).ToList();
+
+            if (infos.Any(_Info => _Info.Type == EMazeItemType.GravityTrap))
             {
-                IEnumerator coroutine = null;
-                if (info.Type == EMazeItemType.GravityBlock)
-                    coroutine = MoveGravityBlockCoroutine(info, dropDirection, _CharacterPoint);
-                else if (info.Type == EMazeItemType.GravityTrap)
-                    coroutine = MoveGravityTrapCoroutine(info, dropDirection);
-                ProceedCoroutine(coroutine);
+                var infosMovedDict = infos.ToDictionary(_Info => _Info, _Info => false);
+            
+                for (int i = 0; i < 10; i++)
+                {
+                    MoveMazeItemsGravityCore(dropDirection, _CharacterPoint, infosMovedDict, false, false);
+                    MoveMazeItemsGravityCore(dropDirection, _CharacterPoint, infosMovedDict, true, false);
+                }
+                MoveMazeItemsGravityCore(dropDirection, _CharacterPoint, infosMovedDict, false, true);
+                MoveMazeItemsGravityCore(dropDirection, _CharacterPoint, infosMovedDict, true, true);
+            }
+            else
+            {
+                foreach (var info in infos)
+                    TryMoveBlock(info, dropDirection, _CharacterPoint, false);
+                foreach (var info in infos)
+                    TryMoveBlock(info, dropDirection, _CharacterPoint, true);
             }
         }
 
-        private IEnumerator MoveGravityBlockCoroutine(
-            IMazeItemProceedInfo _Info,
+        private void MoveMazeItemsGravityCore(
             V2Int _DropDirection,
-            V2Int _CharacterPoint)
+            V2Int _CharacterPoint,
+            Dictionary<IMazeItemProceedInfo, bool> _InfosMoved, 
+            bool _Reverse,
+            bool _Forced)
         {
-            var gravityProceedInfos = ProceedInfos
-                .SelectMany(_Infos => _Infos.Value)
-                .ToList();
-            yield return Coroutines.WaitWhile(
-                () => _Info.ProceedingStage == StageDrop,
-                () =>
-                {
-                    var pos = _Info.CurrentPosition;
-                    bool doMove = false;
-                    V2Int? altPos = null;
-                    while (IsValidPositionForMove(pos + _DropDirection, gravityProceedInfos))
-                    {
-                        pos += _DropDirection;
-                        if (_CharacterPoint == pos)
-                            altPos = pos - _DropDirection;
-                        var pos1 = pos;
-                        if (_Info.Path.All(_Pos => pos1 != _Pos))
-                            continue;
-                        int fromPosIdx = _Info.Path.IndexOf(_Info.CurrentPosition);
-                        if (fromPosIdx == -1)
-                        {
-                            doMove = true;
-                            break;
-                        }
-                        int toPosIds = _Info.Path.IndexOf(pos);
-                        if (Math.Abs(toPosIds - fromPosIdx) > 1)
-                            continue;
-                        doMove = true;
-                        break;
-                    }
-                    if (!doMove || pos == _Info.CurrentPosition)
-                    {
-                        _Info.ProceedingStage = StageIdle;                       
-                        return;
-                    }
-                    var from = _Info.CurrentPosition;
-                    var to = altPos ?? pos;
-
-                    if (from == to)
-                        return;
-                    _Info.ProceedingStage = StageDrop;
-                    Coroutines.Run(MoveMazeItemGravityCoroutineCore(_Info, from, to));
-                });
+            var copyOfDict = _Reverse ? _InfosMoved.Reverse().ToList() : _InfosMoved.ToList();
+            foreach (var kvp in copyOfDict
+                .Where(_Kvp => !_Kvp.Value))
+            {
+                var info = kvp.Key;
+                _InfosMoved[info] = TryMoveBlock(info, _DropDirection, _CharacterPoint, _Forced);
+            }
         }
 
-        private IEnumerator MoveGravityTrapCoroutine(
+        private bool TryMoveBlock(IMazeItemProceedInfo _Info,
+            V2Int _DropDirection,
+            V2Int _CharacterPoint,
+            bool _Forced)
+        {
+            if (_Info.Type == EMazeItemType.GravityBlock)
+                return MoveGravityBlock(_Info, _DropDirection, _CharacterPoint, _Forced);
+            if (_Info.Type == EMazeItemType.GravityTrap)
+                return MoveGravityTrap(_Info, _DropDirection, _Forced);
+            return false;
+        }
+
+        private bool MoveGravityBlock(
             IMazeItemProceedInfo _Info,
-            V2Int _DropDirection)
+            V2Int _DropDirection,
+            V2Int _CharacterPoint,
+            bool _Forced)
         {
             var gravityProceedInfos = ProceedInfos
                 .SelectMany(_Infos => _Infos.Value)
                 .ToList();
-            yield return Coroutines.WaitWhile(
-                () => _Info.ProceedingStage == StageDrop,
-                () =>
+            var pos = _Info.CurrentPosition;
+            bool doMove = false;
+            V2Int? altPos = null;
+            bool isOnGravityBlockItem;
+            while (IsValidPositionForMove(pos + _DropDirection, gravityProceedInfos, out isOnGravityBlockItem))
+            {
+                pos += _DropDirection;
+                if (_CharacterPoint == pos)
+                    altPos = pos - _DropDirection;
+                var pos1 = pos;
+                if (_Info.Path.All(_Pos => pos1 != _Pos))
+                    continue;
+                int fromPosIdx = _Info.Path.IndexOf(_Info.CurrentPosition);
+                if (fromPosIdx == -1)
                 {
-                    var pos = _Info.CurrentPosition;
-                    while (IsValidPositionForMove(pos + _DropDirection, gravityProceedInfos))
-                        pos += _DropDirection;
-                    var from = _Info.CurrentPosition;
-                    var to = pos;
-                    if (from == to)
-                        return;
-                    _Info.ProceedingStage = StageDrop;
-                    Coroutines.Run(MoveMazeItemGravityCoroutineCore(_Info, from, to));
-                });
+                    doMove = true;
+                    break;
+                }
+                int toPosIds = _Info.Path.IndexOf(pos);
+                if (Math.Abs(toPosIds - fromPosIdx) > 1)
+                    continue;
+                doMove = true;
+                break;
+            }
+            if (isOnGravityBlockItem && !_Forced)
+                return false;
+            if (!doMove || pos == _Info.CurrentPosition)
+            {
+                _Info.ProceedingStage = StageIdle;                       
+                return false;
+            }
+            var from = _Info.CurrentPosition;
+            var to = altPos ?? pos;
+            if (from == to)
+                return false;
+            _Info.ProceedingStage = StageDrop;
+            _Info.NextPosition = to;
+            ProceedCoroutine(MoveMazeItemGravityCoroutineCore(_Info, from, to));
+            return true;
+        }
+
+        private bool MoveGravityTrap(
+            IMazeItemProceedInfo _Info,
+            V2Int _DropDirection,
+            bool _Forced)
+        {
+            var gravityProceedInfos = ProceedInfos
+                .SelectMany(_Infos => _Infos.Value)
+                .ToList();
+            var pos = _Info.CurrentPosition;
+            bool isOnGravityBlockItem;
+            while (IsValidPositionForMove(pos + _DropDirection, gravityProceedInfos, out isOnGravityBlockItem))
+                pos += _DropDirection;
+            if (isOnGravityBlockItem && !_Forced)
+                return false;
+            var from = _Info.CurrentPosition;
+            var to = pos;
+            if (from == to)
+                return false;
+            _Info.ProceedingStage = StageDrop;
+            _Info.NextPosition = to;
+            ProceedCoroutine(MoveMazeItemGravityCoroutineCore(_Info, from, to));
+            return true;
         }
 
         private IEnumerator MoveMazeItemGravityCoroutineCore(
@@ -196,13 +239,14 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         private bool IsValidPositionForMove(
             V2Int _Position,
-            IEnumerable<IMazeItemProceedInfo> _Infos)
+            IEnumerable<IMazeItemProceedInfo> _Infos,
+            out bool _IsOnGravityBlockItem)
         {
             bool isOnNode = PathItemsProceeder.PathProceeds.Keys.Any(_Pos => _Pos == _Position);
             var staticBlockItems = GetStaticBlockItems(GetAllProceedInfos());
             bool isOnStaticBlockItem = staticBlockItems.Any(_N => _N.CurrentPosition == _Position);
-            bool isOnMovingBlockItem = _Infos.Any(_Inf => _Inf.CurrentPosition == _Position);
-            return isOnNode && !isOnStaticBlockItem && !isOnMovingBlockItem;
+            _IsOnGravityBlockItem = _Infos.Any(_Inf => _Inf.NextPosition == _Position);
+            return isOnNode && !isOnStaticBlockItem && !_IsOnGravityBlockItem;
         }
         
         private static IEnumerable<IMazeItemProceedInfo> GetStaticBlockItems(IEnumerable<IMazeItemProceedInfo> _Items)
