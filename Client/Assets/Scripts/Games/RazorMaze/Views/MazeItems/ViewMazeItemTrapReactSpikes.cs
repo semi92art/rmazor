@@ -146,10 +146,24 @@ namespace Games.RazorMaze.Views.MazeItems
             var scale = CoordinateConverter.Scale;
             var dir = Props.Directions.First().ToVector2();
             var trapTr = m_Trap.transform;
+            trapTr.localRotation = Quaternion.Euler(0f, 0f, GetTrapAngle(Props.Directions.First()));
             trapTr.SetLocalPosXY(dir * scale * StartPos);
             trapTr.localScale = Vector3.one * scale * 0.95f;
             m_Line.Thickness = ViewSettings.LineWidth * scale;
             m_Mask.transform.localScale = Vector3.one * scale * 0.8f;
+        }
+
+        private float GetTrapAngle(V2Int _Direction)
+        {
+            if (_Direction == V2Int.left)
+                return 90f;
+            if (_Direction == V2Int.up)
+                return 0f;
+            if (_Direction == V2Int.right)
+                return 270f;
+            if (_Direction == V2Int.down)
+                return 180f;
+            return 0f;
         }
 
         private IEnumerator HandlePreReact()
@@ -172,7 +186,7 @@ namespace Games.RazorMaze.Views.MazeItems
             yield return Coroutines.Lerp(
                 MiddlePos,
                 FinalPos,
-                0.05f,
+                0.02f,
                 _Progress => SetReactProgress(dir, scale, _Progress),
                 GameTicker
             );
