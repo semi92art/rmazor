@@ -87,7 +87,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazeItemSpringboard>()      .To<ViewMazeItemSpringboard>()       .AsSingle();
             Container.Bind<IViewMazeItemPortal>()           .To<ViewMazeItemPortal>()            .AsSingle();
             Container.Bind<IViewMazeItemGravityTrap>()      .To<ViewMazeItemGravityTrap>()       .AsSingle();
-            Container.Bind<IViewMazeItemTrapReact>()        .To<ViewMazeItemTrapReact>()         .AsSingle();
+            Container.Bind<IViewMazeItemTrapReact>()        .To<ViewMazeItemTrapReactSpikes>()   .AsSingle();
             Container.Bind<IViewMazeItemTrapIncreasing>()   .To<ViewMazeItemTrapIncreasing>()    .AsSingle();
             
             Container.Bind<IViewMazePathItemsGroup>()       .To<ViewMazePathItemsGroup>()        .AsSingle();

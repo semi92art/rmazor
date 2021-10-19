@@ -20,8 +20,8 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         void OnTrapReact(MazeItemTrapReactEventArgs _Args);
     }
-    
-    public class ViewMazeItemTrapReact : ViewMazeItemBase, IViewMazeItemTrapReact, IUpdateTick
+
+    public class ViewMazeItemTrapReactSpikes : ViewMazeItemBase, IViewMazeItemTrapReact, IUpdateTick
     {
         #region constants
 
@@ -40,7 +40,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region shapes
 
-        protected override string ObjectName => "Trap React Block";
+        protected override string ObjectName => "Trap React Spikes Block";
         protected override object[] DefaultColorShapes => new object[] {m_Line, m_Trap};
         private Line m_Line;
         private SpriteRenderer m_Trap;
@@ -52,7 +52,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private ModelSettings ModelSettings { get; }
 
-        public ViewMazeItemTrapReact(
+        public ViewMazeItemTrapReactSpikes(
             ViewSettings _ViewSettings,
             ModelSettings _ModelSettings,
             IModelGame _Model,
@@ -77,7 +77,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region api
         
-        public override object Clone() => new ViewMazeItemTrapReact(
+        public override object Clone() => new ViewMazeItemTrapReactSpikes(
             ViewSettings,
             ModelSettings,
             Model, 
@@ -87,14 +87,10 @@ namespace Games.RazorMaze.Views.MazeItems
             Transitioner,
             Managers);
         
-        
         public void UpdateTick()
         {
             if (!Initialized || !ActivatedInSpawnPool)
                 return;
-            if (ProceedingStage == EProceedingStage.Inactive)
-                return;
-            DoRotation();
             if (ProceedingStage != EProceedingStage.ActiveAndWorking)
                 return;
             CheckForCharacterDeath();
@@ -128,12 +124,13 @@ namespace Games.RazorMaze.Views.MazeItems
             line.Color = DrawingUtils.ColorLines;
             line.EndCaps = LineEndCap.Round;
             var trap = Object.AddComponentOnNewChild<SpriteRenderer>("Trap Sprite", out _);
-            trap.sprite = PrefabUtilsEx.GetObject<Sprite>("views", "trap_react");
+            trap.sprite = PrefabUtilsEx.GetObject<Sprite>("views", "trap_react_spikes");
             trap.sortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
             trap.color = DrawingUtils.ColorLines;
             trap.maskInteraction = SpriteMaskInteraction.VisibleOutsideMask;
             var maskGo = PrefabUtilsEx.InitPrefab(
                 Object.transform, "views", "turret_bullet_mask");
+            maskGo.name = "Trap React Mask";
             var mask = maskGo.GetCompItem<SpriteMask>("mask");
             maskGo.SetParent(Object);
             maskGo.transform.SetLocalPosXY(Vector2.zero);
@@ -153,12 +150,6 @@ namespace Games.RazorMaze.Views.MazeItems
             trapTr.localScale = Vector3.one * scale * 0.95f;
             m_Line.Thickness = ViewSettings.LineWidth * scale;
             m_Mask.transform.localScale = Vector3.one * scale * 0.8f;
-        }
-
-        private void DoRotation()
-        {
-            float rotSpeed = ViewSettings.MovingTrapRotationSpeed * Time.deltaTime; 
-            m_Trap.transform.Rotate(Vector3.forward * rotSpeed);
         }
 
         private IEnumerator HandlePreReact()
@@ -194,7 +185,7 @@ namespace Games.RazorMaze.Views.MazeItems
             yield return Coroutines.Lerp(
                 FinalPos,
                 StartPos,
-                ModelSettings.TrapAfterReactTime,
+                0.05f,
                 _Progress => SetReactProgress(dir, scale, _Progress),
                 GameTicker
             );

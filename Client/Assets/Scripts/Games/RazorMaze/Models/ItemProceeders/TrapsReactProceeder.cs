@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using Games.RazorMaze.Models.ProceedInfos;
 using Ticker;
+using UnityEngine;
 using Utils;
 
 namespace Games.RazorMaze.Models.ItemProceeders
@@ -57,20 +58,21 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
-            ProceedTraps();
+            ProceedTraps(_Args);
         }
 
         #endregion
         
         #region nonpublic methods
 
-        private void ProceedTraps()
+        private void ProceedTraps(CharacterMovingEventArgs _Args)
         {
-            foreach (var info in GetProceedInfos(Types).Where(_Info => _Info.IsProceeding && _Info.ReadyToSwitchStage))
+            foreach (var info in GetProceedInfos(Types)
+                .Where(_Info => _Info.IsProceeding && _Info.ReadyToSwitchStage))
             {
-                if (info.CurrentPosition + info.Direction != Character.Position)
-                    continue;
-                ProceedCoroutine(ProceedTrap(info));
+                var trapReactFinalPoint = (info.CurrentPosition + info.Direction).ToVector2();
+                if (Vector2.Distance(trapReactFinalPoint, _Args.PrecisePosition) < 0.9f)
+                    ProceedCoroutine(ProceedTrap(info));
             }
         }
 
