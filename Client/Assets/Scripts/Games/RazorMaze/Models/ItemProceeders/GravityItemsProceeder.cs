@@ -256,7 +256,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 || _Item.Type == EMazeItemType.Turret
                 || _Item.Type == EMazeItemType.TrapReact
                 || _Item.Type == EMazeItemType.TrapIncreasing
-                || _Item.Type == EMazeItemType.ShredingerBlock);
+                || _Item.Type == EMazeItemType.ShredingerBlock
+                || _Item.Type == EMazeItemType.Portal);
         }
 
         #endregion
