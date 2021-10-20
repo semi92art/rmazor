@@ -336,7 +336,7 @@ namespace Games.RazorMaze.Views.MazeItems
             yield return Coroutines.DoWhile(
                 () =>
                 {
-                    if (point == Model.Character.Position)
+                    if (point == Model.Character.Position && Model.LevelStaging.LevelStage != ELevelStage.Finished)
                     {
                         Model.LevelStaging.KillCharacter();
                         return false;

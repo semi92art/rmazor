@@ -13,13 +13,11 @@ namespace Games.RazorMaze.Views.InputConfigurators
 {
     public class ViewInputConfigurator : IViewInputConfigurator
     {
-
         #region nonpublic members
 
         private LeanTouch m_LeanTouch;
         private LeanMultiSwipe m_LeanMultiSwipe;
         private LeanFingerTap m_LeanFingerTap;
-        private bool m_Locked;
 
         #endregion
 
@@ -40,19 +38,11 @@ namespace Games.RazorMaze.Views.InputConfigurators
         #region api
 
         public event UnityAction<int, object[]> Command;
-        public event UnityAction<int, object[]> ForcedCommand;
+        public event UnityAction<int, object[]> InternalCommand;
         public event UnityAction Initialized;
-        
-        public bool Locked
-        {
-            get => m_Locked;
-            set
-            {
-                m_Locked = value;
-                m_LeanTouch.enabled = !value;
-            }
-        }
-        
+        public bool Locked { get; set; }
+        public bool RotationLocked { get; set; }
+
         public virtual void Init()
         {
             InitLeanTouch();
@@ -61,10 +51,14 @@ namespace Games.RazorMaze.Views.InputConfigurators
             Initialized?.Invoke();
         }
         
-        public void RaiseCommand(int _Key, object[] _Args)
+        public void RaiseCommand(int _Key, object[] _Args, bool _Forced = false)
         {
-            ForcedCommand?.Invoke(_Key, _Args);
-            if (!Locked)
+            if (RotationLocked &&
+                (_Key == InputCommands.RotateClockwise 
+                 || _Key == InputCommands.RotateCounterClockwise))
+                return;
+            InternalCommand?.Invoke(_Key, _Args);
+            if (!Locked || _Forced)
                 Command?.Invoke(_Key, _Args);
         }
 
@@ -112,9 +106,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
             lft.OnFinger.AddListener(_Finger =>
             {
                 if (Model.LevelStaging.LevelStage == ELevelStage.Finished)
-                {
-                    Model.LevelStaging.ReadyToUnloadLevel();
-                }
+                    RaiseCommand(InputCommands.ReadyToUnloadLevel, null, true);
             });
         }
 
@@ -128,7 +120,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
                 key = distance.x < 0 ? InputCommands.MoveLeft : InputCommands.MoveRight;
             else
                 key = distance.y < 0 ? InputCommands.MoveDown : InputCommands.MoveUp;
-            Command?.Invoke(key, null);
+            RaiseCommand(key, null);
         }
 
         private void OnSwipeForRotate(List<LeanFinger> _Fingers)

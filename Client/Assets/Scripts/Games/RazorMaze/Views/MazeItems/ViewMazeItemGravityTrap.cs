@@ -219,6 +219,8 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             if (!Model.Character.Alive)
                 return;
+            if (Model.LevelStaging.LevelStage == ELevelStage.Finished)
+                return;
             var ch = Model.Character;
             var cPos = ch.IsMoving ? ch.MovingInfo.PrecisePosition : ch.Position.ToVector2();
             if (Vector2.Distance(cPos, m_Position) > 0.9f)

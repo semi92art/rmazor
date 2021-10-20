@@ -46,6 +46,7 @@ namespace Games.RazorMaze.Views.UI
         
         private bool m_HowToRotateClockwisePromptHidden;
         private bool m_HowToRotateCounterClockwisePromptHidden;
+        private bool promptHowToRotateShown;
         private readonly Dictionary<string, PromptArgs> m_Prompts = new Dictionary<string, PromptArgs>();
 
 
@@ -75,7 +76,7 @@ namespace Games.RazorMaze.Views.UI
             LocalizationManager = _LocalizationManager;
             InputConfigurator = _InputConfigurator;
             
-            InputConfigurator.ForcedCommand += InputConfiguratorOnCommand;
+            InputConfigurator.InternalCommand += InputConfiguratorOnCommand;
         }
 
         #endregion
@@ -87,11 +88,12 @@ namespace Games.RazorMaze.Views.UI
             switch (_Args.Stage)
             {
                 case ELevelStage.ReadyToStartOrContinue:
-                    bool promptHowToRotateShown = SaveUtils.GetValue<bool>(SaveKey.PromptHowToRotateShown);
+                    // promptHowToRotateShown = SaveUtils.GetValue<bool>(SaveKey.PromptHowToRotateShown);
                     if (!promptHowToRotateShown && MazeContainsGravityItems())
                     {
                         InputConfigurator.Locked = true;
                         ShowPromptHowToRotateClockwise();
+                        promptHowToRotateShown = true;
                         // SaveUtils.PutValue(SaveKey.PromptHowToRotateShown, true);
                     }
                     else
@@ -122,18 +124,30 @@ namespace Games.RazorMaze.Views.UI
         
         private void InputConfiguratorOnCommand(int _Key, object[] _Args)
         {
+            if (!MazeContainsGravityItems())
+                return;
             if (_Key == InputCommands.RotateClockwise)
             {
-                HidePrompt(KeyPromptHowToRotateClockwise);
+                if (m_HowToRotateClockwisePromptHidden)
+                    return;
                 m_HowToRotateClockwisePromptHidden = true;
+                InputConfigurator.Locked = false;
+                InputConfigurator.RaiseCommand(InputCommands.RotateClockwise, null);
+                InputConfigurator.Locked = true;
+                HidePrompt(KeyPromptHowToRotateClockwise);
                 ShowPromptHowToRotateCounterClockwise();
             }
             else if (_Key == InputCommands.RotateCounterClockwise)
             {
                 if (m_HowToRotateClockwisePromptHidden)
                 {
-                    HidePrompt(KeyPromptHowToRotateCounter);
+                    if (m_HowToRotateCounterClockwisePromptHidden)
+                        return;
                     m_HowToRotateCounterClockwisePromptHidden = true;
+                    InputConfigurator.Locked = false;
+                    InputConfigurator.RaiseCommand(InputCommands.RotateCounterClockwise, null);
+                    InputConfigurator.Locked = true;
+                    HidePrompt(KeyPromptHowToRotateCounter);
                     ShowPromptSwipeToStart();
                     InputConfigurator.Locked = false;
                 }
@@ -195,20 +209,30 @@ namespace Games.RazorMaze.Views.UI
         private IEnumerator ShowPromptCoroutine(string _Key, TextMeshPro _Text)
         {
             const float loopTime = 1f;
-            if (m_Prompts[_Key].NeedToHide)
+            if (!m_Prompts[_Key].NeedToHide)
             {
-                m_Prompts[_Key].Prompt.DestroySafe();
-                m_Prompts.Remove(_Key);
+                yield return Coroutines.Lerp(
+                    0f,
+                    1f,
+                    loopTime * 2f,
+                    _Progress => _Text.color = DrawingUtils.ColorLines.SetA(_Progress),
+                    GameTicker,
+                    (_, __) => Coroutines.Run(ShowPromptCoroutine(_Key, _Text)),
+                    () => m_Prompts[_Key].NeedToHide,
+                    _Progress => _Progress < 0.5f ? 2f * _Progress : 2f * (1f - _Progress));
                 yield break;
             }
             yield return Coroutines.Lerp(
+                _Text.color.a,
                 0f,
-                1f,
-                loopTime * 2f,
+                loopTime * _Text.color.a,
                 _Progress => _Text.color = DrawingUtils.ColorLines.SetA(_Progress),
-                GameTicker,
-                (_, __) => Coroutines.Run(ShowPromptCoroutine(_Key, _Text)),
-                _ProgressFormula: _Progress => _Progress < 0.5f ? 2f * _Progress : 2f * (1f - _Progress));
+                GameTicker);
+            if (m_Prompts.ContainsKey(_Key))
+            {
+                m_Prompts[_Key].Prompt.DestroySafe();
+                m_Prompts.Remove(_Key);
+            }
         }
 
         #endregion

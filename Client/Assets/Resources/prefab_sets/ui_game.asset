@@ -52,10 +52,10 @@ MonoBehaviour:
       name: tap_to_next
     - item: {fileID: 3177347172963282559, guid: 4c34bef045cbcdf43a39ce248ca4e7ad,
         type: 3}
-      name: how_to_rotate_clockwise
+      name: swipe_to_rotate_clockwise
     - item: {fileID: 3177347172963282559, guid: 4c34bef045cbcdf43a39ce248ca4e7ad,
         type: 3}
-      name: how_to_rotate_counter
+      name: swipe_to_rotate_counter
     - item: {fileID: 3177347172963282559, guid: 5d12e93f79129d5458876db6ed6956b6,
         type: 3}
       name: congratulations_panel

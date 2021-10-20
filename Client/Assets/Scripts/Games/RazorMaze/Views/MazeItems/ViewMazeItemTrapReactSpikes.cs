@@ -227,6 +227,8 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             if (!Model.Character.Alive)
                 return;
+            if (Model.LevelStaging.LevelStage == ELevelStage.Finished)
+                return;
             if (m_Progress < 0.3f)
                 return;
             var dir = Props.Directions.First();

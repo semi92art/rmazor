@@ -71,7 +71,7 @@ namespace Games.RazorMaze.Views.Characters
         {
             if (_Args.Stage == ELevelStage.CharacterKilled)
                 Coroutines.Run(DisappearCoroutine(true));
-            else
+            else if (_Args.Stage != ELevelStage.Finished)
                 m_DeathShapes.ForEach(_Shape => _Shape.enabled = false);
         }
         

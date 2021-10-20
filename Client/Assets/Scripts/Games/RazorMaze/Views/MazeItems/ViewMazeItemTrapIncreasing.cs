@@ -230,6 +230,8 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             if (!Model.Character.Alive)
                 return;
+            if (Model.LevelStaging.LevelStage == ELevelStage.Finished)
+                return;
             const float distance = 0.5f;
             var character = Model.Character;
             var cPos = character.IsMoving ? 

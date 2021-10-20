@@ -20,6 +20,7 @@
         public const int LoadRandomLevel                = 16;
         public const int ShopMenu                       = 17;
         public const int SettingsMenu                   = 18;
-        public const int TapToNext                      = 19;
+        public const int LoadRandomLevelWithRotation    = 19;
+        public const int ReadyToUnloadLevel             = 20;
     }
 }

@@ -112,6 +112,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
             V2Int _CharacterPoint,
             Dictionary<IMazeItemProceedInfo, bool> _GravityItemsMovedDict)
         {
+            if (!_GravityItemsMovedDict.ContainsKey(_Info))
+                return false;
             if (_GravityItemsMovedDict[_Info])
                 return true;
             GravityBlockValidPositionDefinitionCycle(
@@ -125,8 +127,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             // пытаемся его определить и если получается, двигаем текущий блок
             if (gravityBlockItemInfo != null)
             {
-                if (_GravityItemsMovedDict[gravityBlockItemInfo] 
-                    || TryMoveBlock(gravityBlockItemInfo, _DropDirection, _CharacterPoint, _GravityItemsMovedDict))
+                if (TryMoveBlock(gravityBlockItemInfo, _DropDirection, _CharacterPoint, _GravityItemsMovedDict))
                 {
                     GravityBlockValidPositionDefinitionCycle(
                         _Info,
@@ -152,6 +153,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
             V2Int _CharacterPoint,
             Dictionary<IMazeItemProceedInfo, bool> _GravityItemsMovedDict)
         {
+            if (!_GravityItemsMovedDict.ContainsKey(_Info))
+                return false;
             if (_GravityItemsMovedDict[_Info])
                 return true;
             var to = _Info.CurrentPosition;

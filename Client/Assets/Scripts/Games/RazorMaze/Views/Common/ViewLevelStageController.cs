@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Entities;
+using Exceptions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Characters;
+using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItemGroups;
 using Games.RazorMaze.Views.MazeItems;
 using Mono_Installers;
@@ -37,15 +40,18 @@ namespace Games.RazorMaze.Views.Common
         private IGameTicker GameTicker { get; }
         private IModelGame Model { get; }
         private IManagersGetter Managers { get; }
+        private IViewInputConfigurator InputConfigurator { get; }
 
         public ViewLevelStageController(
             IGameTicker _GameTicker,
             IModelGame _Model,
-            IManagersGetter _Managers)
+            IManagersGetter _Managers,
+            IViewInputConfigurator _InputConfigurator)
         {
             GameTicker = _GameTicker;
             Model = _Model;
             Managers = _Managers;
+            InputConfigurator = _InputConfigurator;
         }
 
         #endregion
@@ -90,32 +96,59 @@ namespace Games.RazorMaze.Views.Common
             mazeItems.AddRange(pathItemsGroup.PathItems);
             var character = m_Proceeders.
                 First(_P => _P is IViewCharacter) as IViewCharacter;
-            
-            if (_Args.Stage == ELevelStage.Loaded)
+
+            switch (_Args.Stage)
             {
-                character.Appear(true);
-                foreach (var mazeItem in mazeItems)
-                    mazeItem.Appear(true);
-                Coroutines.Run(Coroutines.WaitWhile(() =>
-                    {
-                        return character.AppearingState != EAppearingState.Appeared
-                               || mazeItems.Any(_Item => _Item.AppearingState != EAppearingState.Appeared);
-                    },
-                    () =>
-                    {
-                        if (!LevelMonoInstaller.Release) 
-                            Model.LevelStaging.ReadyToStartOrContinueLevel(); 
-                    }));
+                case ELevelStage.Loaded:
+                case ELevelStage.Paused:
+                case ELevelStage.Finished:
+                case ELevelStage.ReadyToUnloadLevel:
+                case ELevelStage.Unloaded:
+                case ELevelStage.CharacterKilled:
+                    InputConfigurator.Locked = true;
+                    break;
+                case ELevelStage.ReadyToStartOrContinue:
+                case ELevelStage.StartedOrContinued:
+                    InputConfigurator.Locked = false;
+                    break;
+                default:
+                    throw new SwitchCaseNotImplementedException(_Args.Stage);
             }
-            else if (_Args.Stage == ELevelStage.ReadyToUnloadLevel)
+
+            switch (_Args.Stage)
             {
-                foreach (var mazeItem in mazeItems)
-                    mazeItem.Appear(false);
-                Coroutines.Run(Coroutines.WaitWhile(() =>
-                    {
-                        return mazeItems.Any(_Item => _Item.AppearingState != EAppearingState.Dissapeared);
-                    },
-                    () => Model.LevelStaging.ReadyToUnloadLevel()));
+                case ELevelStage.Loaded:
+                    character.Appear(true);
+                    foreach (var mazeItem in mazeItems)
+                        mazeItem.Appear(true);
+                    Coroutines.Run(Coroutines.WaitWhile(() =>
+                        {
+                            return character.AppearingState != EAppearingState.Appeared
+                                   || mazeItems.Any(_Item => _Item.AppearingState != EAppearingState.Appeared);
+                        },
+                        () =>
+                        {
+                            // if (!LevelMonoInstaller.Release) 
+                            Model.LevelStaging.ReadyToStartOrContinueLevel(); 
+                        }));
+                    break;
+                case ELevelStage.ReadyToUnloadLevel:
+                    foreach (var mazeItem in mazeItems)
+                        mazeItem.Appear(false);
+                    Coroutines.Run(Coroutines.WaitWhile(() =>
+                        {
+                            return mazeItems.Any(_Item => _Item.AppearingState != EAppearingState.Dissapeared);
+                        },
+                        () =>
+                        {
+#if !UNITY_EDITOR
+                        Model.LevelStaging.UnloadLevel();
+#endif
+                        }));
+                    break;
+                case ELevelStage.Unloaded:
+                    InputConfigurator.RaiseCommand(InputCommands.LoadNextLevel, null);
+                    break;
             }
         }
 
