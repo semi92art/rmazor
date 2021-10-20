@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CheckMark_Idle
+  m_Name: Congrats_Idle
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -33,9 +33,9 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Enabled
-    path: CheckMark Line 1
+    path: Completed Text
     classID: 114
-    script: {fileID: 11500000, guid: 5ad38a8f0c6def84899724d5320b316a, type: 3}
+    script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
   - curve:
       serializedVersion: 2
       m_Curve:
@@ -52,7 +52,26 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Enabled
-    path: CheckMark Line 2
+    path: Congrats Text
+    classID: 114
+    script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: Infinity
+        outSlope: Infinity
+        tangentMode: 103
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_Enabled
+    path: Line
     classID: 114
     script: {fileID: 11500000, guid: 5ad38a8f0c6def84899724d5320b316a, type: 3}
   m_PPtrCurves: []
@@ -64,14 +83,21 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 2259302439
+      path: 1239282179
       attribute: 3305885265
-      script: {fileID: 11500000, guid: 5ad38a8f0c6def84899724d5320b316a, type: 3}
+      script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
       typeID: 114
       customType: 24
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 530803101
+      path: 1221972585
+      attribute: 3305885265
+      script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
+      typeID: 114
+      customType: 24
+      isPPtrCurve: 0
+    - serializedVersion: 2
+      path: 1898322888
       attribute: 3305885265
       script: {fileID: 11500000, guid: 5ad38a8f0c6def84899724d5320b316a, type: 3}
       typeID: 114
@@ -115,9 +141,9 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Enabled
-    path: CheckMark Line 1
+    path: Completed Text
     classID: 114
-    script: {fileID: 11500000, guid: 5ad38a8f0c6def84899724d5320b316a, type: 3}
+    script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
   - curve:
       serializedVersion: 2
       m_Curve:
@@ -134,7 +160,26 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Enabled
-    path: CheckMark Line 2
+    path: Congrats Text
+    classID: 114
+    script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: Infinity
+        outSlope: Infinity
+        tangentMode: 103
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_Enabled
+    path: Line
     classID: 114
     script: {fileID: 11500000, guid: 5ad38a8f0c6def84899724d5320b316a, type: 3}
   m_EulerEditorCurves: []

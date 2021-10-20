@@ -79,6 +79,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 case ELevelStage.Finished:
                 case ELevelStage.CharacterKilled:
                     FinishProceed(true); break;
+                case ELevelStage.ReadyToUnloadLevel: break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Args.Stage);
             }

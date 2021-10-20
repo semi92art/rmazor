@@ -126,6 +126,13 @@ namespace Games.RazorMaze.Views.Characters
             }
         }
 
+        public override void OnAllPathProceed(V2Int _LastPath)
+        {
+            m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = false;
+            Tail.HideTail();
+            Effector.OnAllPathProceed(_LastPath);
+        }
+
         public override void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
         {
             m_Animator.SetTrigger(AnimKeyStartMove);

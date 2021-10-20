@@ -109,6 +109,7 @@ namespace Games.RazorMaze.Views.MazeItems
                     ProceedingStage = EProceedingStage.ActiveAndWorking;
                     break;
                 case ELevelStage.Paused:
+                case ELevelStage.ReadyToUnloadLevel:
                 case ELevelStage.Unloaded:
                     ProceedingStage = EProceedingStage.Inactive;
                     break;

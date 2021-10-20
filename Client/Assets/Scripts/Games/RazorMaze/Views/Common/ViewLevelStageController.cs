@@ -14,6 +14,7 @@ namespace Games.RazorMaze.Views.Common
     public interface IViewLevelStageController : IOnLevelStageChanged
     {
         void RegisterProceeders(IEnumerable<IOnLevelStageChanged> _Proceeders);
+        void OnAllPathProceed(V2Int _LastPath);
     }
 
     public class ViewLevelStageController : IViewLevelStageController
@@ -49,13 +50,18 @@ namespace Games.RazorMaze.Views.Common
 
         #endregion
 
-
         #region api
 
         public void RegisterProceeders(IEnumerable<IOnLevelStageChanged> _Proceeders)
         {
             m_Proceeders.Clear();
             m_Proceeders.AddRange(_Proceeders);
+        }
+
+        public void OnAllPathProceed(V2Int _LastPath)
+        {
+            if (LevelMonoInstaller.Release)
+                Model.LevelStaging.FinishLevel();
         }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
@@ -101,17 +107,15 @@ namespace Games.RazorMaze.Views.Common
                             Model.LevelStaging.ReadyToStartOrContinueLevel(); 
                     }));
             }
-            else if (_Args.Stage == ELevelStage.Finished)
+            else if (_Args.Stage == ELevelStage.ReadyToUnloadLevel)
             {
-                character.Appear(false);
                 foreach (var mazeItem in mazeItems)
                     mazeItem.Appear(false);
                 Coroutines.Run(Coroutines.WaitWhile(() =>
                     {
-                        return character.AppearingState != EAppearingState.Dissapeared
-                                || mazeItems.Any(_Item => _Item.AppearingState != EAppearingState.Dissapeared);
+                        return mazeItems.Any(_Item => _Item.AppearingState != EAppearingState.Dissapeared);
                     },
-                    () => Model.LevelStaging.UnloadLevel()));
+                    () => Model.LevelStaging.ReadyToUnloadLevel()));
             }
         }
 

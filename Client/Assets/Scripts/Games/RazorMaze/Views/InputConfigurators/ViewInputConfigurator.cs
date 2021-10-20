@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Constants;
 using DI.Extensions;
 using GameHelpers;
@@ -7,7 +8,6 @@ using Games.RazorMaze.Views.ContainerGetters;
 using Lean.Touch;
 using UnityEngine;
 using UnityEngine.Events;
-using Utils;
 
 namespace Games.RazorMaze.Views.InputConfigurators
 {
@@ -17,18 +17,20 @@ namespace Games.RazorMaze.Views.InputConfigurators
         #region nonpublic members
 
         private LeanTouch m_LeanTouch;
-        private LeanFingerSwipe m_LeanFingerSwipe;
-        private LeanDragTrail m_LeanDragTrail;
+        private LeanMultiSwipe m_LeanMultiSwipe;
+        private LeanFingerTap m_LeanFingerTap;
         private bool m_Locked;
 
         #endregion
 
         #region inject
-        
-        protected IContainersGetter ContainersGetter { get; }
 
-        protected ViewInputConfigurator(IContainersGetter _ContainersGetter)
+        private IModelGame Model { get; }
+        private IContainersGetter ContainersGetter { get; }
+
+        protected ViewInputConfigurator(IModelGame _Model, IContainersGetter _ContainersGetter)
         {
+            Model = _Model;
             ContainersGetter = _ContainersGetter;
         }
 
@@ -38,6 +40,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
         #region api
 
         public event UnityAction<int, object[]> Command;
+        public event UnityAction<int, object[]> ForcedCommand;
         public event UnityAction Initialized;
         
         public bool Locked
@@ -53,24 +56,21 @@ namespace Games.RazorMaze.Views.InputConfigurators
         public virtual void Init()
         {
             InitLeanTouch();
-            InitLeanTouchForMove();
-            InitLeanTouchForRotate();
+            InitLeanTouchForMoveAndRotate();
+            InitLeanTouchForTapToNext();
             Initialized?.Invoke();
         }
         
         public void RaiseCommand(int _Key, object[] _Args)
         {
-            Command?.Invoke(_Key, _Args);
+            ForcedCommand?.Invoke(_Key, _Args);
+            if (!Locked)
+                Command?.Invoke(_Key, _Args);
         }
 
         #endregion
 
         #region nonpublic methods
-
-        protected bool IsCommandEventNull()
-        {
-            return Command == null;
-        }
         
         private void InitLeanTouch()
         {
@@ -94,44 +94,59 @@ namespace Games.RazorMaze.Views.InputConfigurators
             m_LeanTouch = lt;
         }
 
-        private void InitLeanTouchForMove()
+        private void InitLeanTouchForMoveAndRotate()
         {
             var goLeanFingerSwipe = new GameObject("Lean Finger Touch");
             goLeanFingerSwipe.SetParent(GetContainer());
-            var lfs = goLeanFingerSwipe.AddComponent<LeanFingerSwipe>();
-            m_LeanFingerSwipe = lfs;
-            lfs.OnDelta.AddListener(OnSwipeForMove);
+            var lms = goLeanFingerSwipe.AddComponent<LeanMultiSwipe>();
+            lms.OnFingers.AddListener(OnSwipeForMove);
+            lms.OnFingers.AddListener(OnSwipeForRotate);
+            m_LeanMultiSwipe = lms;
         }
 
-        private void InitLeanTouchForRotate()
+        private void InitLeanTouchForTapToNext()
         {
-            m_LeanDragTrail = InitPrefab<LeanDragTrail>("lean_drag_trail");
-            var lsc = InitPrefab<LeanShape>("lean_shape_circle");
-            var lscDetClockwise = InitPrefab<LeanShapeDetector>("lean_shape_detector_clockwise_circle");
-            var lscDetCounter = InitPrefab<LeanShapeDetector>("lean_shape_detector_counter_clockwise_circle");
-            lscDetClockwise.Shape = lsc;
-            lscDetCounter.Shape = lsc;
-            lscDetClockwise.OnDetected.AddListener(_Finger => Command?.Invoke(InputCommands.RotateClockwise, null));
-            lscDetCounter.OnDetected.AddListener(_Finger => Command?.Invoke(InputCommands.RotateCounterClockwise, null));
+            var goLeanFingerTap = new GameObject("Lean Finger Tap");
+            goLeanFingerTap.SetParent(GetContainer());
+            var lft = goLeanFingerTap.AddComponent<LeanFingerTap>();
+            lft.OnFinger.AddListener(_Finger =>
+            {
+                if (Model.LevelStaging.LevelStage == ELevelStage.Finished)
+                {
+                    Model.LevelStaging.ReadyToUnloadLevel();
+                }
+            });
         }
 
-        private void OnSwipeForMove(Vector2 _Distance)
+        private void OnSwipeForMove(List<LeanFinger> _Fingers)
         {
+            if (_Fingers.Count > 1)
+                return;
+            var distance = _Fingers[0].ScreenDelta;
             int key;
-            if (Mathf.Abs(_Distance.x) > Mathf.Abs(_Distance.y))
-                key = _Distance.x < 0 ? InputCommands.MoveLeft : InputCommands.MoveRight;
+            if (Mathf.Abs(distance.x) > Mathf.Abs(distance.y))
+                key = distance.x < 0 ? InputCommands.MoveLeft : InputCommands.MoveRight;
             else
-                key = _Distance.y < 0 ? InputCommands.MoveDown : InputCommands.MoveUp;
+                key = distance.y < 0 ? InputCommands.MoveDown : InputCommands.MoveUp;
             Command?.Invoke(key, null);
         }
 
-        private T InitPrefab<T>(string _Name) where T : Component
+        private void OnSwipeForRotate(List<LeanFinger> _Fingers)
         {
-            return PrefabUtilsEx
-                .InitPrefab(GetContainer(), "ui_game", _Name)
-                .GetComponent<T>();
+            if (_Fingers.Count < 2)
+                return;
+            float delta1 = _Fingers[_Fingers.Count - 2].ScaledDelta.x;
+            float delta2 = _Fingers[_Fingers.Count - 1].ScaledDelta.x;
+            if (Math.Abs(Mathf.Sign(delta1) - Mathf.Sign(delta2)) > float.Epsilon)
+                return;
+            float tolerance = 0.2f;
+            if (delta1 < -tolerance && delta2 < -tolerance)
+                RaiseCommand(InputCommands.RotateClockwise, null);
+            else if (delta1 > tolerance && delta2 > tolerance)
+                RaiseCommand(InputCommands.RotateCounterClockwise, null);
+                
         }
-        
+
         private Transform GetContainer()
         {
             return ContainersGetter.GetContainer(ContainerNames.TouchInput);

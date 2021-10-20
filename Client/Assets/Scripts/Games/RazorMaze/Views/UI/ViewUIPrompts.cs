@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
+using Entities;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.Utils;
 using Ticker;
 using TMPro;
@@ -24,7 +26,8 @@ namespace Games.RazorMaze.Views.UI
 
         private class PromptArgs
         {
-            public TextMeshPro Prompt { get; set; }
+            public GameObject Prompt { get; set; }
+            public TextMeshPro PromptText { get; set; }
             public bool NeedToHide { get; set; }
         }
 
@@ -32,15 +35,17 @@ namespace Games.RazorMaze.Views.UI
 
         #region constants
 
-        private const string KeyPromptHowToMove = "swipe_to_start";
-        private const string KeyPromptHowToRotate = "touch_to_rotate";
+        private const string KeyPromptHowToRotateClockwise = "swipe_to_rotate_clockwise";
+        private const string KeyPromptHowToRotateCounter = "swipe_to_rotate_counter";
+        private const string KeyPromptSwipeToStart = "swipe_to_start";
+        private const string KeyPromptTapToNext = "tap_to_next";
 
         #endregion
 
         #region nonpublic members
-
-        private bool m_HowToMovePromptShown, m_HowToMovePromptHidden;
-        private bool m_HowToRotatePromptShown, m_HowToRotatePromptHidden;
+        
+        private bool m_HowToRotateClockwisePromptHidden;
+        private bool m_HowToRotateCounterClockwisePromptHidden;
         private readonly Dictionary<string, PromptArgs> m_Prompts = new Dictionary<string, PromptArgs>();
 
 
@@ -53,19 +58,24 @@ namespace Games.RazorMaze.Views.UI
         private IContainersGetter ContainersGetter { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
         private ILocalizationManager LocalizationManager { get; }
+        private IViewInputConfigurator InputConfigurator { get; }
 
         public ViewUIPrompts(
             IModelGame _Model,
             IGameTicker _GameTicker,
             IContainersGetter _ContainersGetter,
             IMazeCoordinateConverter _CoordinateConverter,
-            ILocalizationManager _LocalizationManager)
+            ILocalizationManager _LocalizationManager,
+            IViewInputConfigurator _InputConfigurator)
         {
             Model = _Model;
             GameTicker = _GameTicker;
             ContainersGetter = _ContainersGetter;
             CoordinateConverter = _CoordinateConverter;
             LocalizationManager = _LocalizationManager;
+            InputConfigurator = _InputConfigurator;
+            
+            InputConfigurator.ForcedCommand += InputConfiguratorOnCommand;
         }
 
         #endregion
@@ -74,37 +84,28 @@ namespace Games.RazorMaze.Views.UI
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            System.Func<bool> mazeContainsGravityItems = () => Model.GetAllProceedInfos()
-                .Any(_Info => _Info.Type == EMazeItemType.GravityBlock
-                              || _Info.Type == EMazeItemType.GravityTrap);
-            if (_Args.Stage == ELevelStage.ReadyToStartOrContinue)
+            switch (_Args.Stage)
             {
-                if (!m_HowToMovePromptShown)
-                {
-                    ShowPromptHowToMove();
-                    m_HowToMovePromptShown = true;
-                }
-
-                if (!m_HowToRotatePromptShown && mazeContainsGravityItems())
-                {
-                    //ShowPromptHowToRotate();
-                    m_HowToRotatePromptShown = true;
-                }
-                
-            }
-            else if (_Args.Stage == ELevelStage.StartedOrContinued)
-            {
-                if (!m_HowToMovePromptHidden)
-                {
-                    HidePrompt(KeyPromptHowToMove); 
-                    m_HowToMovePromptHidden = true;
-                }
-
-                if (!m_HowToRotatePromptHidden && mazeContainsGravityItems())
-                {
-                    //HidePrompt(KeyPromptHowToRotate);
-                    m_HowToRotatePromptHidden = true;
-                }
+                case ELevelStage.ReadyToStartOrContinue:
+                    bool promptHowToRotateShown = SaveUtils.GetValue<bool>(SaveKey.PromptHowToRotateShown);
+                    if (!promptHowToRotateShown && MazeContainsGravityItems())
+                    {
+                        InputConfigurator.Locked = true;
+                        ShowPromptHowToRotateClockwise();
+                        // SaveUtils.PutValue(SaveKey.PromptHowToRotateShown, true);
+                    }
+                    else
+                        ShowPromptSwipeToStart();
+                    break;
+                case ELevelStage.StartedOrContinued:
+                    HidePrompt(KeyPromptSwipeToStart);
+                    break;
+                case ELevelStage.Finished:
+                    ShopPromptTapToNext();
+                    break;
+                case ELevelStage.ReadyToUnloadLevel:
+                    HidePrompt(KeyPromptTapToNext);
+                    break;
             }
         }
 
@@ -112,47 +113,77 @@ namespace Games.RazorMaze.Views.UI
 
         #region nonpublic methods
 
-        private void ShowPromptHowToMove()
+        private bool MazeContainsGravityItems()
         {
-            var go = PrefabUtilsEx.InitPrefab(
-                null, "ui_game", "prompt_how_to_move");
-            go.transform.position = CoordinateConverter.GetMazeCenter();
-            var text = go.GetCompItem<TextMeshPro>("label");
-            text.text = LocalizationManager.GetTranslation(KeyPromptHowToMove);
+            return Model.GetAllProceedInfos()
+                .Any(_Info => _Info.Type == EMazeItemType.GravityBlock
+                              || _Info.Type == EMazeItemType.GravityTrap);
+        }
+        
+        private void InputConfiguratorOnCommand(int _Key, object[] _Args)
+        {
+            if (_Key == InputCommands.RotateClockwise)
+            {
+                HidePrompt(KeyPromptHowToRotateClockwise);
+                m_HowToRotateClockwisePromptHidden = true;
+                ShowPromptHowToRotateCounterClockwise();
+            }
+            else if (_Key == InputCommands.RotateCounterClockwise)
+            {
+                if (m_HowToRotateClockwisePromptHidden)
+                {
+                    HidePrompt(KeyPromptHowToRotateCounter);
+                    m_HowToRotateCounterClockwisePromptHidden = true;
+                    ShowPromptSwipeToStart();
+                    InputConfigurator.Locked = false;
+                }
+            }
+        }
+
+        private void ShowPromptHowToRotateClockwise()
+        {
+            var mazeBounds = CoordinateConverter.GetMazeBounds();
+            ShowPrompt(KeyPromptHowToRotateClockwise, new Vector3(mazeBounds.center.x, 
+                CoordinateConverter.GetScreenOffsets().z));
+        }
+        
+        private void ShowPromptHowToRotateCounterClockwise()
+        {
+            var mazeBounds = CoordinateConverter.GetMazeBounds();
+            ShowPrompt(KeyPromptHowToRotateCounter, new Vector3(mazeBounds.center.x, 
+                CoordinateConverter.GetScreenOffsets().z));
+        }
+
+        private void ShowPromptSwipeToStart()
+        {
+            var mazeBounds = CoordinateConverter.GetMazeBounds();
+            ShowPrompt(KeyPromptSwipeToStart, new Vector3(mazeBounds.center.x, 
+                CoordinateConverter.GetScreenOffsets().z + 5));
+        }
+
+        private void ShopPromptTapToNext()
+        {
+            var mazeBounds = CoordinateConverter.GetMazeBounds();
+            ShowPrompt(KeyPromptTapToNext, new Vector3(mazeBounds.center.x, 
+                CoordinateConverter.GetScreenOffsets().w - 2f));
+        }
+
+        private void ShowPrompt(string _Key, Vector3 _Position)
+        {
+            var promptGo = PrefabUtilsEx.InitPrefab(
+                null, "ui_game", _Key);
+            promptGo.transform.position = CoordinateConverter.GetMazeCenter();
+            var text = promptGo.GetCompItem<TextMeshPro>("label");
+            text.text = LocalizationManager.GetTranslation(_Key);
             text.color = DrawingUtils.ColorLines.SetA(0f);
 
             var mazeBounds = CoordinateConverter.GetMazeBounds();
             text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, mazeBounds.size.x);
-            text.transform.position = new Vector3(
-                mazeBounds.center.x, 
-                mazeBounds.min.y - CoordinateConverter.GetScreenOffsets().z * 0.1f);
-
-            ShowPrompt(KeyPromptHowToMove, text);
-        }
-
-        private void ShowPromptHowToRotate()
-        {
-            var go = PrefabUtilsEx.InitPrefab(
-                null, "ui_game", "prompt_how_to_rotate");
-            go.transform.position = CoordinateConverter.GetMazeCenter();
-            var text = go.GetCompItem<TextMeshPro>("label");
-            text.text = LocalizationManager.GetTranslation(KeyPromptHowToRotate);
-            text.color = DrawingUtils.ColorLines.SetA(0f);
-
-            var mazeBounds = CoordinateConverter.GetMazeBounds();
-            text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, mazeBounds.size.x * 0.5f);
-            text.transform.position = new Vector3(
-                mazeBounds.center.x, 
-                mazeBounds.min.y - CoordinateConverter.GetScreenOffsets().z * 0.9f);
+            text.transform.position = _Position;
             
-            ShowPrompt(KeyPromptHowToRotate, text);
-        }
-                
-        private void ShowPrompt(string _Key, TextMeshPro _Text)
-        {
             if (!m_Prompts.ContainsKey(_Key))
-                m_Prompts.Add(_Key, new PromptArgs { Prompt = _Text });
-            Coroutines.Run(ShowPromptCoroutine(_Key, _Text));
+                m_Prompts.Add(_Key, new PromptArgs { Prompt = promptGo, PromptText = text });
+            Coroutines.Run(ShowPromptCoroutine(_Key, text));
         }
 
         private void HidePrompt(string _Key)
@@ -166,7 +197,7 @@ namespace Games.RazorMaze.Views.UI
             const float loopTime = 1f;
             if (m_Prompts[_Key].NeedToHide)
             {
-                m_Prompts[_Key].Prompt.gameObject.DestroySafe();
+                m_Prompts[_Key].Prompt.DestroySafe();
                 m_Prompts.Remove(_Key);
                 yield break;
             }

@@ -91,7 +91,6 @@ namespace Games.RazorMaze.Models
             Character.CharacterMoveFinished            += CharacterOnFinishMove;
             PortalsProceeder.PortalEvent               += Character.OnPortal;
             SpringboardProceeder.SpringboardEvent      += Character.OnSpringboard;
-            PathItemsProceeder.AllPathsProceededEvent  += AllPathsProceededEvent;
 
             var getProceedInfosItems = GetInterfaceOfProceeders<IGetAllProceedInfos>(GetProceeders());
             foreach (var item in getProceedInfosItems)
@@ -120,12 +119,6 @@ namespace Games.RazorMaze.Models
 
         #region event methods
         
-        private void AllPathsProceededEvent()
-        {
-            if (LevelMonoInstaller.Release)
-                LevelStaging.FinishLevel();
-        }
-
         private void MazeOnRotationFinishedInternal(MazeRotationEventArgs _Args)
         {
             InputScheduler.UnlockRotation(true);

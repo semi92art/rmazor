@@ -56,6 +56,8 @@ namespace Games.RazorMaze.Controllers
             
             Model.Init();
 
+            Model.PathItemsProceeder.AllPathsProceededEvent           += View.Character.OnAllPathProceed;
+            Model.PathItemsProceeder.AllPathsProceededEvent           += View.LevelStageController.OnAllPathProceed;
             Model.PathItemsProceeder.PathProceedEvent                 += View.PathItemsGroup.OnPathProceed;
             Model.MazeRotation.RotationStarted                        += View.MazeRotation.OnRotationStarted;
             Model.GravityItemsProceeder.MazeItemMoveStarted           += View.MovingItemsGroup.OnMazeItemMoveStarted;
@@ -84,7 +86,7 @@ namespace Games.RazorMaze.Controllers
                 () => !modelInitialized || !viewInitialized,
                 () => Initialized?.Invoke()));
         }
-        
+
         #endregion
 
         #region engine methods

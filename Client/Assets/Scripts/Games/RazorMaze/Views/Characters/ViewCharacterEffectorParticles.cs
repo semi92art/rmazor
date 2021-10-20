@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Constants;
 using DI.Extensions;
+using Entities;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
@@ -69,7 +70,7 @@ namespace Games.RazorMaze.Views.Characters
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             if (_Args.Stage == ELevelStage.CharacterKilled)
-                Coroutines.Run(DeathCoroutine());
+                Coroutines.Run(DisappearCoroutine(true));
             else
                 m_DeathShapes.ForEach(_Shape => _Shape.enabled = false);
         }
@@ -83,7 +84,12 @@ namespace Games.RazorMaze.Views.Characters
         {
             m_MoveDirection = null;
         }
-        
+
+        public void OnAllPathProceed(V2Int _LastPos)
+        {
+            Coroutines.Run(DisappearCoroutine(false));
+        }
+
         #endregion
         
         #region nonpublic methods
@@ -121,7 +127,7 @@ namespace Games.RazorMaze.Views.Characters
             m_DeathShapesContainer.transform.localScale = localScale;
         }
         
-        private IEnumerator DeathCoroutine()
+        private IEnumerator DisappearCoroutine(bool _Death)
         {
             Activated = true;
             int deathShapesCount = m_DeathShapes.Count;

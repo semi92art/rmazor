@@ -11,8 +11,9 @@ namespace Games.RazorMaze.Views.InputConfigurators
 
         public ViewInputConfiguratorInEditor(
             IUITicker _UITicker,
+            IModelGame _Model,
             IContainersGetter _ContainersGetter) 
-            : base(_ContainersGetter)
+            : base(_Model, _ContainersGetter)
         {
             _UITicker.Register(this);
         }
@@ -23,7 +24,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
         
         public void UpdateTick()
         {
-            if (Locked || IsCommandEventNull()) 
+            if (Locked) 
                 return;
             int? commandKey = null;
             ProceedMovement(ref commandKey);

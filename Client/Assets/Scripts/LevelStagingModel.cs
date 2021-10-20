@@ -9,8 +9,9 @@ public enum ELevelStage
     StartedOrContinued,
     Paused,
     Finished,
-    CharacterKilled,
-    Unloaded
+    ReadyToUnloadLevel,
+    Unloaded,
+    CharacterKilled
 }
 
 public class LevelStageArgs : EventArgs
@@ -35,6 +36,7 @@ public interface IModelLevelStaging
     void PauseLevel();
     void FinishLevel();
     void KillCharacter();
+    void ReadyToUnloadLevel();
     void UnloadLevel();
 }
 
@@ -91,6 +93,11 @@ public class ModelLevelStaging : IModelLevelStaging, IInit
     public void KillCharacter()
     {
         InvokeLevelStageChanged(ELevelStage.CharacterKilled);
+    }
+
+    public void ReadyToUnloadLevel()
+    {
+        InvokeLevelStageChanged(ELevelStage.ReadyToUnloadLevel);
     }
 
     public void UnloadLevel()

@@ -11,6 +11,9 @@
 <e text = "Utils.ResLoader:GetPrefabSet" />
 <e text = "GameHelpers.PrefabUtilsEx:GetPrefabBase" />
 <e text = "GameHelpers.PrefabUtilsEx:InitPrefab" />
+<e text = "GameHelpers.PrefabUtilsEx.GetPrefabBase" />
+<e text = "GameHelpers.PrefabUtilsEx.InitPrefab" />
+<e text = "Games.RazorMaze.Views.UI.ViewUIPrompts.ShowPrompt" />
 </Entries>
 </SettingsList>
 </root>

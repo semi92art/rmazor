@@ -28,15 +28,19 @@ namespace Games.RazorMaze.Views.UI
 
         private static int AnimKeyCheckMarkPass => AnimKeys.Anim;
         private static int AnimKeyChekMarkSet => AnimKeys.Anim2;
-        private static int AnimKeyCkeckMarkIdle => AnimKeys.Stop;
+        private static int AnimKeyCheckMarkIdle => AnimKeys.Stop;
+        private static int AnimKeyCongratsAnim => AnimKeys.Anim;
+        private static int AnimKeyCongratsIdle => AnimKeys.Stop;
 
         private ButtonOnRaycast m_RotateClockwiseButton;
         private ButtonOnRaycast m_RotateCounterClockwiseButton;
         private ButtonOnRaycast m_ShopButton;
         private ButtonOnRaycast m_SettingsButton;
         private TextMeshPro m_LevelText;
-        private readonly List<ShapeRenderer> m_TopShapeRenderers = new List<ShapeRenderer>();
-        private readonly List<SpriteRenderer> m_TopSpriteRenderers = new List<SpriteRenderer>();
+        private TextMeshPro m_CompletedText;
+        private TextMeshPro m_CongratsText;
+        private Animator m_CongratsAnim;
+        private readonly List<object> m_Renderers = new List<object>();
         private readonly List<Animator> m_CheckMarks = new List<Animator>();
         private bool m_ButtonsInitialized;
 
@@ -97,13 +101,12 @@ namespace Games.RazorMaze.Views.UI
                     m_ButtonsInitialized = true;
                 }
                 SetLevelCheckMarks(_Args.LevelIndex, false);
-                ShowTopButtons(true, false);
+                ShowControls(true, false);
             }
             else if (_Args.Stage == ELevelStage.Finished)
-            {
                 SetLevelCheckMarks(_Args.LevelIndex, true);
-                ShowTopButtons(false, false);
-            }
+            else if (_Args.Stage == ELevelStage.ReadyToUnloadLevel)
+                ShowControls(false, false);
         }
 
         #endregion
@@ -114,6 +117,7 @@ namespace Games.RazorMaze.Views.UI
         {
             InitTopButtons();
             InitLevelPanel();
+            InitCongratulationsPanel();
         }
         
         private void InitTopButtons()
@@ -125,7 +129,7 @@ namespace Games.RazorMaze.Views.UI
                 cont, "ui_game", "shop_button");
             var goSettingsButton = PrefabUtilsEx.InitPrefab(
                 cont, "ui_game", "settings_button");
-            m_TopSpriteRenderers.AddRange( new []
+            m_Renderers.AddRange( new object[]
             {
                 goShopButton.GetCompItem<SpriteRenderer>("button"),
                 goSettingsButton.GetCompItem<SpriteRenderer>("button")
@@ -160,7 +164,7 @@ namespace Games.RazorMaze.Views.UI
             m_LevelText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, mazeBounds.size.x);
             m_LevelText.transform.position = new Vector3(
                 mazeBounds.center.x, 
-                bounds.max.y - CoordinateConverter.GetScreenOffsets().z * 0.2f);
+                bounds.max.y - 2f);
             m_LevelText.fontSize = 25f;
             var goLevelCheckMark = PrefabUtilsEx.GetPrefab(
                 "ui_game", "level_check_mark");
@@ -168,18 +172,36 @@ namespace Games.RazorMaze.Views.UI
             {
                 var go = Object.Instantiate(goLevelCheckMark, cont);
                 m_CheckMarks.Add(go.GetCompItem<Animator>("animator"));
-                m_TopShapeRenderers.Add(go.GetCompItem<Rectangle>("body"));
-                m_TopShapeRenderers.Add(go.GetCompItem<Line>("checkmark_1"));
-                m_TopShapeRenderers.Add(go.GetCompItem<Line>("checkmark_2"));
+                m_Renderers.AddRange(new object[]
+                {
+                    go.GetCompItem<Rectangle>("body"),
+                    go.GetCompItem<Line>("checkmark_1"),
+                    go.GetCompItem<Line>("checkmark_2")
+                });
                 float xCoeff1 = 5f * ((i + 0.5f) / RazorMazeUtils.LevelsInGroup - 0.5f);
                 go.transform.SetLocalPosXY(
                     mazeBounds.center.x + xCoeff1 * scale,
-                    bounds.max.y - CoordinateConverter.GetScreenOffsets().z * 0.6f);
+                    bounds.max.y - 6f);
             }
+            m_Renderers.Add(m_LevelText);
             goLevelCheckMark.DestroySafe();
         }
 
-        private void ShowTopButtons(bool _Show, bool _Instantly)
+        private void InitCongratulationsPanel()
+        {
+            var cont = GetGameUIContainer();
+            var goCongrads = PrefabUtilsEx.InitPrefab(
+                cont, "ui_game", "congratulations_panel");
+            m_CompletedText = goCongrads.GetCompItem<TextMeshPro>("text_completed");
+            m_CongratsText = goCongrads.GetCompItem<TextMeshPro>("text_congrats");
+            m_CongratsAnim = goCongrads.GetCompItem<Animator>("animator");
+            m_Renderers.Add(m_CompletedText);
+            m_Renderers.Add(m_CongratsText);
+            
+            m_CongratsAnim.SetTrigger(AnimKeyCongratsIdle);
+        }
+
+        private void ShowControls(bool _Show, bool _Instantly)
         {
             if (_Instantly && !_Show || _Show)
             {
@@ -193,9 +215,7 @@ namespace Games.RazorMaze.Views.UI
             AppearTransitioner.DoAppearTransitionSimple(_Show, GameTicker, 
                 new Dictionary<object[], System.Func<Color>>
                 {
-                    {m_TopSpriteRenderers.Cast<object>().ToArray(), () => DrawingUtils.ColorLines},
-                    {m_TopShapeRenderers.Cast<object>().ToArray(), () => DrawingUtils.ColorLines},
-                    {new object[] { m_LevelText }, () => DrawingUtils.ColorLines}
+                    {m_Renderers.ToArray(), () => DrawingUtils.ColorLines},
                 }, _Type: EAppearTransitionType.WithoutDelay);
         }
         
@@ -231,9 +251,9 @@ namespace Games.RazorMaze.Views.UI
             int levelIndexInGroup = _Level % RazorMazeUtils.LevelsInGroup;
             for (int i = 0; i < levelIndexInGroup; i++)
                 m_CheckMarks[i].SetTrigger(AnimKeyChekMarkSet);
-            m_CheckMarks[levelIndexInGroup].SetTrigger(_Passed ? AnimKeyCheckMarkPass : AnimKeyCkeckMarkIdle);
+            m_CheckMarks[levelIndexInGroup].SetTrigger(_Passed ? AnimKeyCheckMarkPass : AnimKeyCheckMarkIdle);
             for (int i = levelIndexInGroup; i < m_CheckMarks.Count; i++)
-                m_CheckMarks[i].SetTrigger(AnimKeyCkeckMarkIdle);
+                m_CheckMarks[i].SetTrigger(AnimKeyCheckMarkIdle);
         }
 
         #endregion
