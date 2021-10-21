@@ -42,3 +42,7 @@ swipe_to_rotate_counter = swipe left with two fingers to rotate the maze clockwi
 level = level
 tap_to_next = tap to next
 swipe_to_rotate_clockwise = swipe right with two fingers to rotate the maze 90 degrees counterclockwise
+not_bad = not bad
+good_job = good job!
+awesome = awesome!!!
+completed = completed

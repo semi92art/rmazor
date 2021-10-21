@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Constants;
 using DI.Extensions;
 using GameHelpers;
@@ -18,6 +19,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
         private LeanTouch m_LeanTouch;
         private LeanMultiSwipe m_LeanMultiSwipe;
         private LeanFingerTap m_LeanFingerTap;
+        private readonly List<int> m_LockedCommands = new List<int>();
 
         #endregion
 
@@ -40,9 +42,41 @@ namespace Games.RazorMaze.Views.InputConfigurators
         public event UnityAction<int, object[]> Command;
         public event UnityAction<int, object[]> InternalCommand;
         public event UnityAction Initialized;
-        public bool Locked { get; set; }
-        public bool RotationLocked { get; set; }
+        
+        public void LockCommand(int _Key)
+        {
+            if (!m_LockedCommands.Contains(_Key))
+                m_LockedCommands.Add(_Key);
+        }
 
+        public void UnlockCommand(int _Key)
+        {
+            if (m_LockedCommands.Contains(_Key))
+                m_LockedCommands.Remove(_Key);
+        }
+
+        public void LockCommands(IEnumerable<int> _Keys)
+        {
+            foreach (var key in _Keys)
+                LockCommand(key);
+        }
+
+        public void UnlockCommands(IEnumerable<int> _Keys)
+        {
+            foreach (var key in _Keys)
+                UnlockCommand(key);
+        }
+
+        public void LockAllCommands()
+        {
+            LockCommands(Enumerable.Range(1, 50));
+        }
+
+        public void UnlockAllCommands()
+        {
+            UnlockCommands(Enumerable.Range(1, 50));
+        }
+        
         public virtual void Init()
         {
             InitLeanTouch();
@@ -53,12 +87,8 @@ namespace Games.RazorMaze.Views.InputConfigurators
         
         public void RaiseCommand(int _Key, object[] _Args, bool _Forced = false)
         {
-            if (RotationLocked &&
-                (_Key == InputCommands.RotateClockwise 
-                 || _Key == InputCommands.RotateCounterClockwise))
-                return;
             InternalCommand?.Invoke(_Key, _Args);
-            if (!Locked || _Forced)
+            if (!m_LockedCommands.Contains(_Key) || _Forced)
                 Command?.Invoke(_Key, _Args);
         }
 

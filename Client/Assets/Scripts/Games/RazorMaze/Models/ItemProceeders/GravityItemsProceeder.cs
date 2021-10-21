@@ -194,7 +194,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             int currentPathIndex = _Info.Path.IndexOf(_Info.CurrentPosition);
             V2Int? altPos = null;
             var infos = GetAllProceedInfos().ToList();
-            while (IsValidPositionForMove(pos + _DropDirection, GetAllProceedInfos(), _CheckNextPos, out _GravityBlockItemInfo))
+            while (IsValidPositionForMove(pos + _DropDirection, infos, _CheckNextPos, out _GravityBlockItemInfo))
             {
                 pos += _DropDirection;
                 // если новая позиция блока совпадает с позицией персонажа, записываем ее в отдельную переменную
@@ -235,9 +235,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     doMove = true;
             }
             
-            _To = doMove ? pos : _Info.CurrentPosition;
             if (altPos.HasValue)
-                _To = altPos.Value;
+                pos = altPos.Value;
+            _To = doMove ? pos : _Info.CurrentPosition;
         }
 
         private IEnumerator MoveMazeItemGravityCoroutine(

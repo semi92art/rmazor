@@ -9,7 +9,6 @@ using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItems;
 using Shapes;
 using UnityEngine;
-using Utils;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
@@ -36,16 +35,13 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         #region inject
         
         private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IViewInputConfigurator InputConfigurator { get; }
 
         public ViewMazeMovingItemsGroup(
             IMazeCoordinateConverter _CoordinateConverter,
-            IViewMazeCommon _Common,
-            IViewInputConfigurator _InputConfigurator)
+            IViewMazeCommon _Common)
             : base(_Common)
         {
             CoordinateConverter = _CoordinateConverter;
-            InputConfigurator = _InputConfigurator;
         }
         
         #endregion
@@ -61,9 +57,6 @@ namespace Games.RazorMaze.Views.MazeItemGroups
 
         public void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
         {
-            var type = _Args.Info.Type;
-            if (type == EMazeItemType.GravityBlock || type == EMazeItemType.GravityTrap)
-                InputConfigurator.Locked = true;
             if (m_ItemsMoving.ContainsKey(_Args.Info))
                 m_ItemsMoving.Remove(_Args.Info);
             m_ItemsMoving.Add(_Args.Info, new ViewMovingItemInfo
@@ -84,9 +77,6 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         public void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
         {
-            var type = _Args.Info.Type;
-            if (type == EMazeItemType.GravityBlock || type == EMazeItemType.GravityTrap)
-                InputConfigurator.Locked = false;
             if (!m_ItemsMoving.ContainsKey(_Args.Info))
                 return;
             (Common.GetItem(_Args.Info) as IViewMazeItemMovingBlock)?.OnMoveFinished(_Args);

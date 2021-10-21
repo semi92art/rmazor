@@ -11,7 +11,6 @@ using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
 using UnityEngine;
-using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
@@ -123,6 +122,7 @@ namespace Games.RazorMaze.Views.MazeItems
             line.SetPoints(points);
             line.Closed = false;
             line.SortingOrder = DrawingUtils.GetPathLineSortingOrder();
+            line.Joins = PolylineJoins.Round;
             m_PathLines.Add(line);
             
             foreach (var point in points)

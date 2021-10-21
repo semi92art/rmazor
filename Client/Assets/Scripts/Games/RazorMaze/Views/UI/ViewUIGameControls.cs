@@ -2,8 +2,10 @@
 using System.Linq;
 using Constants;
 using DI.Extensions;
+using Exceptions;
 using GameHelpers;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.InputConfigurators;
@@ -19,7 +21,9 @@ namespace Games.RazorMaze.Views.UI
 {
     public interface IViewUIGameControls : IInit, IOnLevelStageChanged
     {
-        IViewUIPrompts Prompts { get; }
+        void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args);
+        void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args);
+
     }
     
     public class ViewUIGameControls : IViewUIGameControls
@@ -47,8 +51,9 @@ namespace Games.RazorMaze.Views.UI
         #endregion
         
         #region inject
-        
-        public IViewUIPrompts Prompts { get; }
+
+        private ViewSettings ViewSettings { get; }
+        private IViewUIPrompts Prompts { get; }
         private IModelGame Model { get; }
         private IContainersGetter ContainersGetter { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
@@ -59,6 +64,7 @@ namespace Games.RazorMaze.Views.UI
         private ILocalizationManager LocalizationManager { get; }
 
         public ViewUIGameControls(
+            ViewSettings _ViewSettings,
             IViewUIPrompts _Prompts,
             IModelGame _Model,
             IContainersGetter _ContainersGetter,
@@ -69,6 +75,7 @@ namespace Games.RazorMaze.Views.UI
             ILevelsLoader _LevelsLoader,
             ILocalizationManager _LocalizationManager)
         {
+            ViewSettings = _ViewSettings;
             Prompts = _Prompts;
             Model = _Model;
             ContainersGetter = _ContainersGetter;
@@ -90,23 +97,95 @@ namespace Games.RazorMaze.Views.UI
             Initialized?.Invoke();
         }
         
+        public void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
+        {
+            if (Prompts.InTutorial)
+                return;
+            var type = _Args.Info.Type;
+            if (type == EMazeItemType.GravityBlock || type == EMazeItemType.GravityTrap)
+            {
+                InputConfigurator.LockCommands(new []
+                {
+                    InputCommands.MoveLeft,
+                    InputCommands.MoveRight,
+                    InputCommands.MoveDown,
+                    InputCommands.MoveUp,
+                    InputCommands.RotateClockwise,
+                    InputCommands.RotateCounterClockwise
+                });
+            }
+        }
+
+        public void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
+        {
+            if (Prompts.InTutorial)
+                return;
+            var type = _Args.Info.Type;
+            if (type == EMazeItemType.GravityBlock || type == EMazeItemType.GravityTrap)
+            {
+                InputConfigurator.UnlockCommands(new []
+                {
+                    InputCommands.MoveLeft,
+                    InputCommands.MoveRight,
+                    InputCommands.MoveDown,
+                    InputCommands.MoveUp,
+                    InputCommands.RotateClockwise,
+                    InputCommands.RotateCounterClockwise
+                });
+            }
+        }
+        
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            Prompts.OnLevelStageChanged(_Args);
-            if (_Args.Stage == ELevelStage.Loaded)
+            switch (_Args.Stage)
             {
-                if (!m_ButtonsInitialized)
-                {
-                    InitGameUI();
-                    m_ButtonsInitialized = true;
-                }
-                SetLevelCheckMarks(_Args.LevelIndex, false);
-                ShowControls(true, false);
+                case ELevelStage.Loaded:
+                case ELevelStage.Paused:
+                case ELevelStage.Finished:
+                case ELevelStage.ReadyToUnloadLevel:
+                case ELevelStage.Unloaded:
+                case ELevelStage.CharacterKilled:
+                    InputConfigurator.LockAllCommands();
+                    break;
+                case ELevelStage.ReadyToStartOrContinue:
+                case ELevelStage.StartedOrContinued:
+                    InputConfigurator.UnlockAllCommands();
+                    break;
+                default:
+                    throw new SwitchCaseNotImplementedException(_Args.Stage);
             }
-            else if (_Args.Stage == ELevelStage.Finished)
-                SetLevelCheckMarks(_Args.LevelIndex, true);
-            else if (_Args.Stage == ELevelStage.ReadyToUnloadLevel)
-                ShowControls(false, false);
+            switch (_Args.Stage)
+            {
+                case ELevelStage.Loaded:
+                    if (!m_ButtonsInitialized)
+                    {
+                        InitGameUI();
+                        m_ButtonsInitialized = true;
+                    }
+                    SetLevelCheckMarks(_Args.LevelIndex, false);
+                    ShowControls(true, false);
+                    break;
+                case ELevelStage.ReadyToStartOrContinue:
+                case ELevelStage.StartedOrContinued:
+                    bool enableRotation = Model.GetAllProceedInfos().Any(_Info =>
+                        _Info.Type == EMazeItemType.GravityBlock || _Info.Type == EMazeItemType.GravityTrap);
+                    if (!enableRotation)
+                    {
+                        InputConfigurator.LockCommand(InputCommands.RotateClockwise);
+                        InputConfigurator.LockCommand(InputCommands.RotateCounterClockwise);
+                    }
+                    break;
+                case ELevelStage.Finished:
+                    SetCongratsString();
+                    m_CongratsAnim.SetTrigger(AnimKeyCongratsAnim);
+                    SetLevelCheckMarks(_Args.LevelIndex, true);
+                    break;
+                case ELevelStage.ReadyToUnloadLevel:
+                    m_CongratsAnim.SetTrigger(AnimKeyCongratsIdle);
+                    ShowControls(false, false);
+                    break;
+            }
+            Prompts.OnLevelStageChanged(_Args);
         }
 
         #endregion
@@ -124,6 +203,9 @@ namespace Games.RazorMaze.Views.UI
         {
             const float topOffset = 1f;
             const float horOffset = 1f;
+            float scale = CoordinateConverter.Scale * 0.5f;
+            var bounds = GameUtils.GetVisibleBounds();
+            
             var cont = GetGameUIContainer();
             var goShopButton = PrefabUtilsEx.InitPrefab(
                 cont, "ui_game", "shop_button");
@@ -134,8 +216,6 @@ namespace Games.RazorMaze.Views.UI
                 goShopButton.GetCompItem<SpriteRenderer>("button"),
                 goSettingsButton.GetCompItem<SpriteRenderer>("button")
             });
-            float scale = CoordinateConverter.Scale * 0.5f;
-            var bounds = GameUtils.GetVisibleBounds();
             goShopButton.transform.localScale = scale * Vector3.one;
             goShopButton.transform.SetPosXY(
                 new Vector2(bounds.min.x, bounds.max.y)
@@ -154,18 +234,20 @@ namespace Games.RazorMaze.Views.UI
 
         private void InitLevelPanel()
         {
+            float scale = CoordinateConverter.Scale * 0.5f;
+            var bounds = GameUtils.GetVisibleBounds();
+            var mazeBounds = CoordinateConverter.GetMazeBounds();
+            
             var cont = GetGameUIContainer();
             var goLevelText = PrefabUtilsEx.InitPrefab(
                 cont, "ui_game", "level_text");
             m_LevelText = goLevelText.GetCompItem<TextMeshPro>("text");
-            float scale = CoordinateConverter.Scale * 0.5f;
-            var bounds = GameUtils.GetVisibleBounds();
-            var mazeBounds = CoordinateConverter.GetMazeBounds();
-            m_LevelText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, mazeBounds.size.x);
+            m_LevelText.rectTransform.SetSizeWithCurrentAnchors(
+                RectTransform.Axis.Horizontal, mazeBounds.size.x);
             m_LevelText.transform.position = new Vector3(
                 mazeBounds.center.x, 
-                bounds.max.y - 2f);
-            m_LevelText.fontSize = 25f;
+                bounds.max.y);
+            m_LevelText.fontSize = 20f;
             var goLevelCheckMark = PrefabUtilsEx.GetPrefab(
                 "ui_game", "level_check_mark");
             for (int i = 0; i < RazorMazeUtils.LevelsInGroup; i++)
@@ -181,7 +263,7 @@ namespace Games.RazorMaze.Views.UI
                 float xCoeff1 = 5f * ((i + 0.5f) / RazorMazeUtils.LevelsInGroup - 0.5f);
                 go.transform.SetLocalPosXY(
                     mazeBounds.center.x + xCoeff1 * scale,
-                    bounds.max.y - 6f);
+                    bounds.max.y - 4f);
             }
             m_Renderers.Add(m_LevelText);
             goLevelCheckMark.DestroySafe();
@@ -189,16 +271,23 @@ namespace Games.RazorMaze.Views.UI
 
         private void InitCongratulationsPanel()
         {
+            float scale = CoordinateConverter.Scale * 0.5f;
+            var bounds = GameUtils.GetVisibleBounds();
+            
             var cont = GetGameUIContainer();
             var goCongrads = PrefabUtilsEx.InitPrefab(
                 cont, "ui_game", "congratulations_panel");
+            goCongrads.transform.localScale = scale * Vector3.one;
+            goCongrads.transform.SetPosXY(new Vector2(bounds.center.x, bounds.max.y - 10f));
             m_CompletedText = goCongrads.GetCompItem<TextMeshPro>("text_completed");
             m_CongratsText = goCongrads.GetCompItem<TextMeshPro>("text_congrats");
             m_CongratsAnim = goCongrads.GetCompItem<Animator>("animator");
-            m_Renderers.Add(m_CompletedText);
-            m_Renderers.Add(m_CongratsText);
-            
-            m_CongratsAnim.SetTrigger(AnimKeyCongratsIdle);
+            m_Renderers.AddRange(new object[]
+            {
+                m_CompletedText,
+                m_CongratsText,
+                goCongrads.GetCompItem<Line>("line")
+            });
         }
 
         private void ShowControls(bool _Show, bool _Instantly)
@@ -217,16 +306,6 @@ namespace Games.RazorMaze.Views.UI
                 {
                     {m_Renderers.ToArray(), () => DrawingUtils.ColorLines},
                 }, _Type: EAppearTransitionType.WithoutDelay);
-        }
-        
-        private void CommandRotateClockwise()
-        {
-            InputConfigurator.RaiseCommand(InputCommands.RotateClockwise, null);
-        }
-        
-        private void CommandRotateCounterClockwise()
-        {
-            InputConfigurator.RaiseCommand(InputCommands.RotateCounterClockwise, null);
         }
 
         private void CommandShop()
@@ -254,6 +333,23 @@ namespace Games.RazorMaze.Views.UI
             m_CheckMarks[levelIndexInGroup].SetTrigger(_Passed ? AnimKeyCheckMarkPass : AnimKeyCheckMarkIdle);
             for (int i = levelIndexInGroup; i < m_CheckMarks.Count; i++)
                 m_CheckMarks[i].SetTrigger(AnimKeyCheckMarkIdle);
+        }
+
+        private void SetCongratsString()
+        {
+            m_CompletedText.text = LocalizationManager.GetTranslation("completed");
+            float levelTime = Model.LevelStaging.LevelTime;
+            int diesCount = Model.LevelStaging.DiesCount;
+            int pathesCount = Model.PathItemsProceeder.PathProceeds.Count;
+            float coeff = (float) pathesCount / (diesCount + 1);
+            string key;
+            if (levelTime < coeff * ViewSettings.FinishTimeExcellent)
+                key = "awesome";
+            else if (levelTime < coeff * ViewSettings.FinishTimeGood)
+                key = "good_job";
+            else
+                key = "not_bad";
+            m_CongratsText.text = LocalizationManager.GetTranslation(key).ToUpperInvariant();
         }
 
         #endregion

@@ -90,7 +90,6 @@ namespace Games.RazorMaze.Views.Rotation
                     out _,
                     out _);
                 m_Rb.SetRotation(endAngle);
-                
             }
             else
                 Coroutines.Run(RotationCoroutine(_Args));
@@ -98,18 +97,36 @@ namespace Games.RazorMaze.Views.Rotation
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
+            bool enableRotation = false;
             bool? appear = null;
             switch (_Args.Stage)
             {
                 case ELevelStage.Loaded:
                     m_Disc.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
                     m_Disc.Radius = CalculateRotationDiscRadius();
-                    bool enableRotation = Model.GetAllProceedInfos().Any(_Info =>
+                    enableRotation = Model.GetAllProceedInfos().Any(_Info =>
                         _Info.Type == EMazeItemType.GravityBlock || _Info.Type == EMazeItemType.GravityTrap);
-                    InputConfigurator.RotationLocked = !enableRotation;
+
                     m_Disc.enabled = enableRotation;
                     if (enableRotation)
                         appear = true;
+                    break;
+                case ELevelStage.ReadyToStartOrContinue:
+                    if (_Args.PreviousStage != ELevelStage.Loaded)
+                        return;
+                    enableRotation = Model.GetAllProceedInfos().Any(_Info =>
+                        _Info.Type == EMazeItemType.GravityBlock || _Info.Type == EMazeItemType.GravityTrap);
+                    if (enableRotation)
+                    {
+                        
+                        InputConfigurator.UnlockCommand(InputCommands.RotateClockwise);
+                        InputConfigurator.UnlockCommand(InputCommands.RotateCounterClockwise);
+                    }
+                    else
+                    {
+                        InputConfigurator.LockCommand(InputCommands.RotateClockwise);
+                        InputConfigurator.LockCommand(InputCommands.RotateCounterClockwise);
+                    }
                     break;
                 case ELevelStage.ReadyToUnloadLevel:
                     appear = false;

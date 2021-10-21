@@ -5,7 +5,10 @@ using UnityEngine.UI;
 
 namespace Games.RazorMaze.Views.UI
 {
-    public interface IViewUI : IInit, IOnLevelStageChanged { }
+    public interface IViewUI : IInit, IOnLevelStageChanged
+    {
+        IViewUIGameControls UIGameControls { get; }
+    }
     
     public abstract class ViewUIBase : IViewUI
     {
@@ -13,6 +16,17 @@ namespace Games.RazorMaze.Views.UI
         
         protected Canvas m_Canvas;
         
+        #endregion
+
+        #region constructor
+
+        public IViewUIGameControls UIGameControls { get; }
+
+        protected ViewUIBase(IViewUIGameControls _UIGameControls)
+        {
+            UIGameControls = _UIGameControls;
+        }
+
         #endregion
         
         #region api
@@ -54,5 +68,6 @@ namespace Games.RazorMaze.Views.UI
         }
 
         #endregion
+
     }
 }

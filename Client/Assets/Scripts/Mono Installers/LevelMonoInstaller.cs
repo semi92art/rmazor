@@ -68,6 +68,8 @@ namespace Mono_Installers
             Container.Bind<IViewMazeCommon>()               .To<ViewMazeCommon>()                .AsSingle();
             Container.Bind<IViewUI>()                       .To<ViewUI>()                        .AsSingle().When(_ => Release);
             Container.Bind<IViewUI>()                       .To<ViewUIProt>()                    .AsSingle().When(_ => !Release);
+            Container.Bind<IViewUIGameControls>()           .To<ViewUIGameControls>()            .AsSingle().When(_ => Release);
+            Container.Bind<IViewUIGameControls>()           .To<ViewUIGameControlsProt>()        .AsSingle().When(_ => !Release);
             Container.Bind<IViewMazeRotation>()             .To<ViewMazeRotation>()              .AsSingle();
             Container.Bind<IViewMazeBackground>()           .To<ViewMazeBackground>()            .AsSingle();
             Container.Bind<IViewAppearTransitioner>()       .To<ViewAppearTransitioner>()        .AsSingle();
@@ -114,8 +116,7 @@ namespace Mono_Installers
             Container.Bind<IDailyBonusDialogPanel>()        .To<DailyBonusPanel>()               .AsSingle().When(_ => Release);
             Container.Bind<ISettingDialogPanel>()           .To<SettingsPanel>()                 .AsSingle().When(_ => Release);
             Container.Bind<IViewUIPrompts>()                .To<ViewUIPrompts>()                 .AsSingle().When(_ => Release);
-            Container.Bind<IViewUIGameControls>()           .To<ViewUIGameControls>()            .AsSingle().When(_ => Release);
-            
+
 #if UNITY_EDITOR
             Container.Bind<IViewInputConfigurator>()        .To<ViewInputConfiguratorInEditor>() .AsSingle();
 #else

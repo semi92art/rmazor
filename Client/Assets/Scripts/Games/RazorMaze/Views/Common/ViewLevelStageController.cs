@@ -40,17 +40,20 @@ namespace Games.RazorMaze.Views.Common
         private IGameTicker GameTicker { get; }
         private IModelGame Model { get; }
         private IManagersGetter Managers { get; }
+        private IViewCharacter Character { get; }
         private IViewInputConfigurator InputConfigurator { get; }
 
         public ViewLevelStageController(
             IGameTicker _GameTicker,
             IModelGame _Model,
             IManagersGetter _Managers,
+            IViewCharacter _Character,
             IViewInputConfigurator _InputConfigurator)
         {
             GameTicker = _GameTicker;
             Model = _Model;
             Managers = _Managers;
+            Character = _Character;
             InputConfigurator = _InputConfigurator;
         }
 
@@ -94,43 +97,18 @@ namespace Games.RazorMaze.Views.Common
             var pathItemsGroup = m_Proceeders
                 .First(_P => _P is IViewMazePathItemsGroup) as IViewMazePathItemsGroup;
             mazeItems.AddRange(pathItemsGroup.PathItems);
-            var character = m_Proceeders.
-                First(_P => _P is IViewCharacter) as IViewCharacter;
-
             switch (_Args.Stage)
             {
                 case ELevelStage.Loaded:
-                case ELevelStage.Paused:
-                case ELevelStage.Finished:
-                case ELevelStage.ReadyToUnloadLevel:
-                case ELevelStage.Unloaded:
-                case ELevelStage.CharacterKilled:
-                    InputConfigurator.Locked = true;
-                    break;
-                case ELevelStage.ReadyToStartOrContinue:
-                case ELevelStage.StartedOrContinued:
-                    InputConfigurator.Locked = false;
-                    break;
-                default:
-                    throw new SwitchCaseNotImplementedException(_Args.Stage);
-            }
-
-            switch (_Args.Stage)
-            {
-                case ELevelStage.Loaded:
-                    character.Appear(true);
+                    Character.Appear(true);
                     foreach (var mazeItem in mazeItems)
                         mazeItem.Appear(true);
                     Coroutines.Run(Coroutines.WaitWhile(() =>
                         {
-                            return character.AppearingState != EAppearingState.Appeared
+                            return Character.AppearingState != EAppearingState.Appeared
                                    || mazeItems.Any(_Item => _Item.AppearingState != EAppearingState.Appeared);
                         },
-                        () =>
-                        {
-                            // if (!LevelMonoInstaller.Release) 
-                            Model.LevelStaging.ReadyToStartOrContinueLevel(); 
-                        }));
+                        () => Model.LevelStaging.ReadyToStartOrContinueLevel()));
                     break;
                 case ELevelStage.ReadyToUnloadLevel:
                     foreach (var mazeItem in mazeItems)
@@ -141,13 +119,13 @@ namespace Games.RazorMaze.Views.Common
                         },
                         () =>
                         {
-#if !UNITY_EDITOR
                         Model.LevelStaging.UnloadLevel();
-#endif
                         }));
                     break;
                 case ELevelStage.Unloaded:
+#if !UNITY_EDITOR
                     InputConfigurator.RaiseCommand(InputCommands.LoadNextLevel, null);
+#endif
                     break;
             }
         }

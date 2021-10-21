@@ -42,3 +42,7 @@ swipe_to_rotate_counter =
 level = 
 tap_to_next = 
 swipe_to_rotate_clockwise = 
+not_bad = 
+good_job = 
+awesome = 
+completed = 

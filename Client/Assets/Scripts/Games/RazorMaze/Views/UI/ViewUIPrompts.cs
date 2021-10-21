@@ -17,7 +17,7 @@ namespace Games.RazorMaze.Views.UI
 {
     public interface IViewUIPrompts : IOnLevelStageChanged
     {
-        
+        bool InTutorial { get; }
     }
 
     public class ViewUIPrompts : IViewUIPrompts
@@ -46,7 +46,7 @@ namespace Games.RazorMaze.Views.UI
         
         private bool m_HowToRotateClockwisePromptHidden;
         private bool m_HowToRotateCounterClockwisePromptHidden;
-        private bool promptHowToRotateShown;
+        private bool m_PromptHowToRotateShown;
         private readonly Dictionary<string, PromptArgs> m_Prompts = new Dictionary<string, PromptArgs>();
 
 
@@ -75,26 +75,27 @@ namespace Games.RazorMaze.Views.UI
             CoordinateConverter = _CoordinateConverter;
             LocalizationManager = _LocalizationManager;
             InputConfigurator = _InputConfigurator;
-            
-            InputConfigurator.InternalCommand += InputConfiguratorOnCommand;
+            InputConfigurator.Command += InputConfiguratorOnCommand;
         }
 
         #endregion
 
         #region api
 
+        public bool InTutorial { get; private set; }
+        
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             switch (_Args.Stage)
             {
+                case ELevelStage.Loaded:
+                    m_PromptHowToRotateShown = SaveUtils.GetValue<bool>(SaveKey.PromptHowToRotateShown);
+                    break;
                 case ELevelStage.ReadyToStartOrContinue:
-                    // promptHowToRotateShown = SaveUtils.GetValue<bool>(SaveKey.PromptHowToRotateShown);
-                    if (!promptHowToRotateShown && MazeContainsGravityItems())
+                    if (!m_PromptHowToRotateShown && MazeContainsGravityItems())
                     {
-                        InputConfigurator.Locked = true;
+                        InTutorial = true;
                         ShowPromptHowToRotateClockwise();
-                        promptHowToRotateShown = true;
-                        // SaveUtils.PutValue(SaveKey.PromptHowToRotateShown, true);
                     }
                     else
                         ShowPromptSwipeToStart();
@@ -124,16 +125,13 @@ namespace Games.RazorMaze.Views.UI
         
         private void InputConfiguratorOnCommand(int _Key, object[] _Args)
         {
-            if (!MazeContainsGravityItems())
+            if (m_PromptHowToRotateShown || !MazeContainsGravityItems())
                 return;
             if (_Key == InputCommands.RotateClockwise)
             {
                 if (m_HowToRotateClockwisePromptHidden)
                     return;
                 m_HowToRotateClockwisePromptHidden = true;
-                InputConfigurator.Locked = false;
-                InputConfigurator.RaiseCommand(InputCommands.RotateClockwise, null);
-                InputConfigurator.Locked = true;
                 HidePrompt(KeyPromptHowToRotateClockwise);
                 ShowPromptHowToRotateCounterClockwise();
             }
@@ -144,18 +142,20 @@ namespace Games.RazorMaze.Views.UI
                     if (m_HowToRotateCounterClockwisePromptHidden)
                         return;
                     m_HowToRotateCounterClockwisePromptHidden = true;
-                    InputConfigurator.Locked = false;
-                    InputConfigurator.RaiseCommand(InputCommands.RotateCounterClockwise, null);
-                    InputConfigurator.Locked = true;
                     HidePrompt(KeyPromptHowToRotateCounter);
                     ShowPromptSwipeToStart();
-                    InputConfigurator.Locked = false;
+                    InputConfigurator.UnlockAllCommands();
+                    InTutorial = false;
+                    m_PromptHowToRotateShown = true;
+                    SaveUtils.PutValue(SaveKey.PromptHowToRotateShown, true);
                 }
             }
         }
 
         private void ShowPromptHowToRotateClockwise()
         {
+            InputConfigurator.LockAllCommands();
+            InputConfigurator.UnlockCommand(InputCommands.RotateClockwise);
             var mazeBounds = CoordinateConverter.GetMazeBounds();
             ShowPrompt(KeyPromptHowToRotateClockwise, new Vector3(mazeBounds.center.x, 
                 CoordinateConverter.GetScreenOffsets().z));
@@ -163,6 +163,8 @@ namespace Games.RazorMaze.Views.UI
         
         private void ShowPromptHowToRotateCounterClockwise()
         {
+            InputConfigurator.LockAllCommands();
+            InputConfigurator.UnlockCommand(InputCommands.RotateCounterClockwise);
             var mazeBounds = CoordinateConverter.GetMazeBounds();
             ShowPrompt(KeyPromptHowToRotateCounter, new Vector3(mazeBounds.center.x, 
                 CoordinateConverter.GetScreenOffsets().z));
@@ -172,28 +174,28 @@ namespace Games.RazorMaze.Views.UI
         {
             var mazeBounds = CoordinateConverter.GetMazeBounds();
             ShowPrompt(KeyPromptSwipeToStart, new Vector3(mazeBounds.center.x, 
-                CoordinateConverter.GetScreenOffsets().z + 5));
+                CoordinateConverter.GetScreenOffsets().z + 5f));
         }
 
         private void ShopPromptTapToNext()
         {
             var mazeBounds = CoordinateConverter.GetMazeBounds();
             ShowPrompt(KeyPromptTapToNext, new Vector3(mazeBounds.center.x, 
-                CoordinateConverter.GetScreenOffsets().w - 2f));
+                CoordinateConverter.GetScreenOffsets().z  + 5f));
         }
 
         private void ShowPrompt(string _Key, Vector3 _Position)
         {
             var promptGo = PrefabUtilsEx.InitPrefab(
                 null, "ui_game", _Key);
-            promptGo.transform.position = CoordinateConverter.GetMazeCenter();
+            promptGo.SetParent(ContainersGetter.GetContainer(ContainerNames.GameUI));
+            promptGo.transform.position = _Position;
             var text = promptGo.GetCompItem<TextMeshPro>("label");
             text.text = LocalizationManager.GetTranslation(_Key);
             text.color = DrawingUtils.ColorLines.SetA(0f);
 
             var mazeBounds = CoordinateConverter.GetMazeBounds();
             text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, mazeBounds.size.x);
-            text.transform.position = _Position;
             
             if (!m_Prompts.ContainsKey(_Key))
                 m_Prompts.Add(_Key, new PromptArgs { Prompt = promptGo, PromptText = text });
@@ -222,17 +224,10 @@ namespace Games.RazorMaze.Views.UI
                     _Progress => _Progress < 0.5f ? 2f * _Progress : 2f * (1f - _Progress));
                 yield break;
             }
-            yield return Coroutines.Lerp(
-                _Text.color.a,
-                0f,
-                loopTime * _Text.color.a,
-                _Progress => _Text.color = DrawingUtils.ColorLines.SetA(_Progress),
-                GameTicker);
-            if (m_Prompts.ContainsKey(_Key))
-            {
-                m_Prompts[_Key].Prompt.DestroySafe();
-                m_Prompts.Remove(_Key);
-            }
+            if (!m_Prompts.ContainsKey(_Key)) 
+                yield break;
+            m_Prompts[_Key].Prompt.DestroySafe();
+            m_Prompts.Remove(_Key);
         }
 
         #endregion

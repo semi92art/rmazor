@@ -1,4 +1,5 @@
-﻿using UnityEngine.Events;
+﻿using System.Collections.Generic;
+using UnityEngine.Events;
 
 namespace Games.RazorMaze.Views.InputConfigurators
 {
@@ -6,8 +7,12 @@ namespace Games.RazorMaze.Views.InputConfigurators
     {
         event UnityAction<int, object[]> Command; 
         event UnityAction<int, object[]> InternalCommand; 
-        bool Locked { get; set; }
-        bool RotationLocked { get; set; }
+        void LockCommand(int _Key);
+        void UnlockCommand(int _Key);
+        void LockCommands(IEnumerable<int> _Keys);
+        void UnlockCommands(IEnumerable<int> _Keys);
+        void LockAllCommands();
+        void UnlockAllCommands();
         void RaiseCommand(int _Key, object[] _Args, bool _Forced = false);
     }
 }

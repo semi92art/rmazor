@@ -205,6 +205,8 @@ MonoBehaviour:
       name: text_completed
     - item: {fileID: 8679543354856943342}
       name: text_congrats
+    - item: {fileID: 3085075229076657336}
+      name: line
 --- !u!95 &125738938070649802
 Animator:
   serializedVersion: 3
@@ -464,8 +466,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.5}
-  m_SizeDelta: {x: 31.63623, y: 2.3138428}
+  m_AnchoredPosition: {x: 0, y: 0.24}
+  m_SizeDelta: {x: 23.190063, y: 2.3138428}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!23 &3964296660731961451
 MeshRenderer:
@@ -577,7 +579,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_textAlignment: 514
+  m_textAlignment: 1026
   m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -689,7 +691,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 31.63623, y: 2.3138428}
+  m_SizeDelta: {x: 23.190063, y: 2.3138428}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!23 &8601237776967455476
 MeshRenderer:
@@ -765,7 +767,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: AWESOME
+  m_text: AWESOME!!!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e05d4a14b3eb9414ba9296440455b47c, type: 2}
   m_sharedMaterial: {fileID: -5247664401080191738, guid: e05d4a14b3eb9414ba9296440455b47c,
@@ -801,7 +803,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_textAlignment: 514
+  m_textAlignment: 258
   m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -835,7 +837,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 652408430489386390}
-    characterCount: 7
+    characterCount: 10
     spriteCount: 0
     spaceCount: 0
     wordCount: 1
