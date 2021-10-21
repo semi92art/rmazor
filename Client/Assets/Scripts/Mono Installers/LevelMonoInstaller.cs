@@ -59,7 +59,8 @@ namespace Mono_Installers
             #region view
             
             Container.Bind<ViewSettings>()                  .FromScriptableObject(viewSettings)  .AsSingle();
-            
+
+            Container.Bind<IMazeShaker>()                   .To<MazeShaker>()                    .AsSingle();
             Container.Bind<IMazeCoordinateConverter>()      .To<MazeCoordinateConverter>()       .AsSingle();
             Container.Bind<IContainersGetter>()             .To<ContainersGetter>()              .AsSingle();
             Container.Bind<IMazeItemsCreator>()             .To<MazeItemsCreator>()              .AsSingle();

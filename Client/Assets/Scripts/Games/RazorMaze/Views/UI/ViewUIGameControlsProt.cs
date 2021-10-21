@@ -1,15 +1,12 @@
-﻿using Games.RazorMaze.Models.ItemProceeders;
-using UnityEngine.Events;
+﻿using Games.RazorMaze.Views.InputConfigurators;
 
 namespace Games.RazorMaze.Views.UI
 {
-    public class ViewUIGameControlsProt : IViewUIGameControls
+    public class ViewUIGameControlsProt : ViewUIGameControlsBase
     {
-        public IViewUIPrompts Prompts { get; }
-        public event UnityAction Initialized;
-        public void Init() { Initialized?.Invoke();}
-        public void OnLevelStageChanged(LevelStageArgs _Args) { }
-        public void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args) { }
-        public void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args) { }
+        public ViewUIGameControlsProt(IViewInputConfigurator _InputConfigurator) 
+            : base(_InputConfigurator) { }
+
+        public override void OnLevelStageChanged(LevelStageArgs _Args) { }
     }
 }

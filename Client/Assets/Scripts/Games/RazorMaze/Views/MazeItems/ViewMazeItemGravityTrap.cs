@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
 using Entities;
@@ -10,13 +9,9 @@ using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
-using Games.RazorMaze.Views.MazeItems.Props;
-using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
 using UnityEngine;
-using UnityEngine.Events;
-using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
@@ -59,6 +54,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region inject
         
+        private IMazeShaker MazeShaker { get; }
         
         public ViewMazeItemGravityTrap(
             ViewSettings _ViewSettings,
@@ -67,7 +63,8 @@ namespace Games.RazorMaze.Views.MazeItems
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
-            IManagersGetter _Managers)
+            IManagersGetter _Managers,
+            IMazeShaker _MazeShaker)
             : base(
                 _ViewSettings,
                 _Model,
@@ -76,7 +73,9 @@ namespace Games.RazorMaze.Views.MazeItems
                 _GameTicker,
                 _Transitioner,
                 _Managers)
-        { }
+        {
+            MazeShaker = _MazeShaker;
+        }
         
         #endregion
         
@@ -89,7 +88,8 @@ namespace Games.RazorMaze.Views.MazeItems
             ContainersGetter,
             GameTicker,
             Transitioner,
-            Managers);
+            Managers,
+            MazeShaker);
 
         public override bool ActivatedInSpawnPool
         {
@@ -131,6 +131,8 @@ namespace Games.RazorMaze.Views.MazeItems
             Managers.Notify(_SM => _SM.PlayClip(
                 SoundClipNameTrapMoving, true, 
                 _Tags: $"{_Args.Info.GetHashCode()}"));
+            if (!MazeShaker.ShakeMaze)
+                MazeShaker.ShakeMaze = true;
         }
 
         public override void OnMoving(MazeItemMoveEventArgs _Args)
@@ -148,6 +150,8 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Rotate = false;
             Managers.Notify(_SM => _SM.StopClip(
                 SoundClipNameTrapMoving, _Tags: $"{_Args.Info.GetHashCode()}"));
+            if (MazeShaker.ShakeMaze)
+                MazeShaker.ShakeMaze = false;
         }
         
         public void OnBackgroundColorChanged(Color _Color)

@@ -26,7 +26,7 @@ namespace Games.RazorMaze.Views.UI
 
     }
     
-    public class ViewUIGameControls : IViewUIGameControls
+    public class ViewUIGameControls : ViewUIGameControlsBase
     {
         #region nonpublic members
 
@@ -57,7 +57,6 @@ namespace Games.RazorMaze.Views.UI
         private IModelGame Model { get; }
         private IContainersGetter ContainersGetter { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IViewInputConfigurator InputConfigurator { get; }
         private IViewAppearTransitioner AppearTransitioner { get; }
         private IGameTicker GameTicker { get; }
         private ILevelsLoader LevelsLoader { get; }
@@ -73,14 +72,14 @@ namespace Games.RazorMaze.Views.UI
             IViewAppearTransitioner _AppearTransitioner,
             IGameTicker _GameTicker,
             ILevelsLoader _LevelsLoader,
-            ILocalizationManager _LocalizationManager)
+            ILocalizationManager _LocalizationManager) 
+            : base(_InputConfigurator)
         {
             ViewSettings = _ViewSettings;
             Prompts = _Prompts;
             Model = _Model;
             ContainersGetter = _ContainersGetter;
             CoordinateConverter = _CoordinateConverter;
-            InputConfigurator = _InputConfigurator;
             AppearTransitioner = _AppearTransitioner;
             GameTicker = _GameTicker;
             LevelsLoader = _LevelsLoader;
@@ -91,51 +90,22 @@ namespace Games.RazorMaze.Views.UI
         
         #region api
 
-        public event UnityAction Initialized;
-        public void Init()
-        {
-            Initialized?.Invoke();
-        }
-        
-        public void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
+
+        public override void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
         {
             if (Prompts.InTutorial)
                 return;
-            var type = _Args.Info.Type;
-            if (type == EMazeItemType.GravityBlock || type == EMazeItemType.GravityTrap)
-            {
-                InputConfigurator.LockCommands(new []
-                {
-                    InputCommands.MoveLeft,
-                    InputCommands.MoveRight,
-                    InputCommands.MoveDown,
-                    InputCommands.MoveUp,
-                    InputCommands.RotateClockwise,
-                    InputCommands.RotateCounterClockwise
-                });
-            }
+            base.OnMazeItemMoveStarted(_Args);
         }
 
-        public void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
+        public override void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
         {
             if (Prompts.InTutorial)
                 return;
-            var type = _Args.Info.Type;
-            if (type == EMazeItemType.GravityBlock || type == EMazeItemType.GravityTrap)
-            {
-                InputConfigurator.UnlockCommands(new []
-                {
-                    InputCommands.MoveLeft,
-                    InputCommands.MoveRight,
-                    InputCommands.MoveDown,
-                    InputCommands.MoveUp,
-                    InputCommands.RotateClockwise,
-                    InputCommands.RotateCounterClockwise
-                });
-            }
+            base.OnMazeItemMoveFinished(_Args);
         }
         
-        public void OnLevelStageChanged(LevelStageArgs _Args)
+        public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             switch (_Args.Stage)
             {
