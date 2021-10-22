@@ -72,7 +72,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             {
                 var trapReactFinalPoint = (info.CurrentPosition + info.Direction).ToVector2();
                 if (Vector2.Distance(trapReactFinalPoint, _Args.PrecisePosition) < 0.9f)
-                    ProceedCoroutine(ProceedTrap(info));
+                    ProceedCoroutine(info, ProceedTrap(info));
             }
         }
 

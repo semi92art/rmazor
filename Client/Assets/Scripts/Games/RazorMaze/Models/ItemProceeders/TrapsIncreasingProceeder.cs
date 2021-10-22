@@ -72,7 +72,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 if (info.ReadyToSwitchStage)
                 {
                     info.ReadyToSwitchStage = false;
-                    ProceedCoroutine(ProceedTrap(info));
+                    ProceedCoroutine(info, ProceedTrap(info));
                 }
             }
         }

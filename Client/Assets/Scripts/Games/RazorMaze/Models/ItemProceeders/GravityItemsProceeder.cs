@@ -58,7 +58,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         {
             MoveMazeItemsGravity(Data.Orientation, Character.Position);
         }
-        
+
         public void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
         {
             MoveMazeItemsGravity(Data.Orientation, _Args.To);
@@ -150,7 +150,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     return false;
             }
             _Info.ProceedingStage = StageDrop;
-            ProceedCoroutine(MoveMazeItemGravityCoroutine(_Info, to));
+            ProceedCoroutine(_Info, MoveMazeItemGravityCoroutine(_Info, to));
             _Info.NextPosition = to;
             _GravityItemsMovedDict[_Info] = true;
             return true;
@@ -194,7 +194,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     return false;
             }
             _Info.ProceedingStage = StageDrop;
-            ProceedCoroutine(MoveMazeItemGravityCoroutine(_Info, to));
+            ProceedCoroutine(_Info, MoveMazeItemGravityCoroutine(_Info, to));
             _Info.NextPosition = to;
             _GravityItemsMovedDict[_Info] = true;
             return true;
@@ -228,8 +228,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     return false;
             }
             _Info.ProceedingStage = StageDrop;
+            ProceedCoroutine(_Info, MoveMazeItemGravityCoroutine(_Info, to));
             _Info.NextPosition = to;
-            ProceedCoroutine(MoveMazeItemGravityCoroutine(_Info, to));
             _GravityItemsMovedDict[_Info] = true;
             return true;
         }
@@ -347,8 +347,10 @@ namespace Games.RazorMaze.Models.ItemProceeders
             var staticBlockItems = GetStaticBlockItems(GetAllProceedInfos());
             bool isOnStaticBlockItem = staticBlockItems.Any(_N => _N.CurrentPosition == _Position);
             _GravityBlockItemInfo = _Infos.FirstOrDefault(_Inf => 
-                _Position == (_CheckNextPos ? _Inf.NextPosition : _Inf.CurrentPosition));
-            return isOnNode && !isOnStaticBlockItem && _GravityBlockItemInfo == null;
+                RazorMazeUtils.GravityItemTypes().Contains(_Inf.Type) 
+                && _Position == (_CheckNextPos ? _Inf.NextPosition : _Inf.CurrentPosition));
+            bool result = isOnNode && !isOnStaticBlockItem && _GravityBlockItemInfo == null;
+            return result;
         }
         
         private static IEnumerable<IMazeItemProceedInfo> GetStaticBlockItems(IEnumerable<IMazeItemProceedInfo> _Items)

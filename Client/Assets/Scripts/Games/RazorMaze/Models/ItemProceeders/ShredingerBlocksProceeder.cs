@@ -68,7 +68,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     && info.ProceedingStage == StageIdle)
                 {
                     SwitchStage(info, StageClosed);
-                    ProceedCoroutine(ProceedBlock(info, StageIdle));
+                    ProceedCoroutine(info, ProceedBlock(info, StageIdle));
                 }
             }
         }

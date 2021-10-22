@@ -89,7 +89,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             foreach (var info in infos.Where(_Info => _Info.IsProceeding && _Info.ReadyToSwitchStage))
             {
                 info.ReadyToSwitchStage = false;
-                ProceedCoroutine(ProceedTurretCoroutine(info));
+                ProceedCoroutine(info, ProceedTurretCoroutine(info));
             }
         }
 
