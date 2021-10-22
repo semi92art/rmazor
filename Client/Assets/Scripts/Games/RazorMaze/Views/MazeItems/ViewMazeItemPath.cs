@@ -10,7 +10,6 @@ using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
-using Games.RazorMaze.Views.MazeItems.Props;
 using Games.RazorMaze.Views.Utils;
 using ModestTree;
 using Shapes;

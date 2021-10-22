@@ -48,7 +48,8 @@ namespace Games.RazorMaze.Models
                     || _Item.Type == EMazeItemType.GravityBlock
                     || _Item.Type == EMazeItemType.GravityTrap
                     || _Item.Type == EMazeItemType.ShredingerBlock
-                    || _Item.Type == EMazeItemType.TrapMoving)
+                    || _Item.Type == EMazeItemType.TrapMoving
+                    || _Item.Type == EMazeItemType.GravityBlockFree)
                 .Select(_Item => _Item.Position)
                 .ToList();
             foreach (var pos in additionalPathPositions

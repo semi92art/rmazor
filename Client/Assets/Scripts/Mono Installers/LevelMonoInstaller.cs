@@ -92,6 +92,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazeItemGravityTrap>()      .To<ViewMazeItemGravityTrap>()       .AsSingle();
             Container.Bind<IViewMazeItemTrapReact>()        .To<ViewMazeItemTrapReactSpikes>()   .AsSingle();
             Container.Bind<IViewMazeItemTrapIncreasing>()   .To<ViewMazeItemTrapIncreasing>()    .AsSingle();
+            Container.Bind<IViewMazeItemGravityBlockFree>() .To<ViewMazeItemGravityBlockFree>()  .AsSingle();
             
             Container.Bind<IViewMazePathItemsGroup>()       .To<ViewMazePathItemsGroup>()        .AsSingle();
             Container.Bind<IViewMazeMovingItemsGroup>()     .To<ViewMazeMovingItemsGroup>()      .AsSingle();
@@ -101,6 +102,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazePortalsGroup>()         .To<ViewMazePortalsGroup>()          .AsSingle();
             Container.Bind<IViewMazeTrapsReactItemsGroup>() .To<ViewMazeTrapsReactItemGroup>()   .AsSingle();
             Container.Bind<IViewMazeTrapsIncItemsGroup>()   .To<ViewMazeTrapsIncItemsGroup>()    .AsSingle();
+            Container.Bind<IViewMazeGravityItemsGroup>()    .To<ViewMazeGravityItemsGroup>()     .AsSingle();
 
             Container.Bind<IDialogPanels>()                 .To<DialogPanels>()                  .AsSingle().When(_ => Release);
             Container.Bind<IGameMenuDialogPanel>()          .To<GameMenuPanel>()                 .AsSingle().When(_ => Release);

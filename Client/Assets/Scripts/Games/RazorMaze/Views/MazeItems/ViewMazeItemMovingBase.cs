@@ -101,6 +101,11 @@ namespace Games.RazorMaze.Views.MazeItems
         
         protected virtual void InitWallBlockMovingPaths()
         {
+            InitWallBlockMovingPathsCore();
+        }
+
+        protected void InitWallBlockMovingPathsCore()
+        {
             foreach (var pathLine in m_PathLines)
                 pathLine.gameObject.DestroySafe();
             foreach (var joint in m_PathJoints)

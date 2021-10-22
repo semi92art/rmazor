@@ -1,4 +1,5 @@
-﻿using Games.RazorMaze.Models;
+﻿using System.Linq;
+using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.InputConfigurators;
 using UnityEngine.Events;
@@ -25,7 +26,7 @@ namespace Games.RazorMaze.Views.UI
         public virtual void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
         {
             var type = _Args.Info.Type;
-            if (type == EMazeItemType.GravityBlock || type == EMazeItemType.GravityTrap)
+            if (RazorMazeUtils.GravityItemTypes().Contains(type))
             {
                 InputConfigurator.LockCommands(new []
                 {
@@ -42,7 +43,7 @@ namespace Games.RazorMaze.Views.UI
         public virtual void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
         {
             var type = _Args.Info.Type;
-            if (type == EMazeItemType.GravityBlock || type == EMazeItemType.GravityTrap)
+            if (RazorMazeUtils.GravityItemTypes().Contains(type))
             {
                 InputConfigurator.UnlockCommands(new []
                 {

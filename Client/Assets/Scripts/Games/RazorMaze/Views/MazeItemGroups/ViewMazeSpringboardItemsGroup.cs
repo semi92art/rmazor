@@ -5,6 +5,11 @@ using Games.RazorMaze.Views.MazeItems;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
+    public interface IViewMazeSpringboardItemsGroup : IViewMazeItemGroup
+    {
+        void OnSpringboardEvent(SpringboardEventArgs _Args);
+    }
+    
     public sealed class ViewMazeSpringboardItemsGroup : ViewMazeItemsGroupBase, IViewMazeSpringboardItemsGroup
     {
         public ViewMazeSpringboardItemsGroup(IViewMazeCommon _Common) : base(_Common) { }

@@ -16,7 +16,6 @@ namespace Games.RazorMaze.Views
 {
     public class ViewGame : IViewGame
     {
-
         #region inject
         
         public IContainersGetter ContainersGetter { get; }
@@ -35,7 +34,8 @@ namespace Games.RazorMaze.Views
         public IViewMazePortalsGroup PortalsGroup { get; }
         public IViewMazeShredingerBlocksGroup ShredingerBlocksGroup { get; }
         public IViewMazeSpringboardItemsGroup SpringboardItemsGroup { get; }
-        
+        public IViewMazeGravityItemsGroup GravityItemsGroup { get; }
+
         private IGameTicker GameTicker { get; }
         private IManagersGetter Managers { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
@@ -57,6 +57,7 @@ namespace Games.RazorMaze.Views
             IViewMazePortalsGroup _PortalsGroup,
             IViewMazeShredingerBlocksGroup _ShredingerBlocksGroup,
             IViewMazeSpringboardItemsGroup _SpringboardItemsGroup,
+            IViewMazeGravityItemsGroup _GravityItemsGroup,
             IGameTicker _GameTicker,
             IManagersGetter _Managers, 
             IMazeCoordinateConverter _CoordinateConverter)
@@ -76,6 +77,7 @@ namespace Games.RazorMaze.Views
             PortalsGroup = _PortalsGroup;
             ShredingerBlocksGroup = _ShredingerBlocksGroup;
             SpringboardItemsGroup = _SpringboardItemsGroup;
+            GravityItemsGroup = _GravityItemsGroup;
             GameTicker = _GameTicker;
             Managers = _Managers;
             CoordinateConverter = _CoordinateConverter;
@@ -100,8 +102,8 @@ namespace Games.RazorMaze.Views
             foreach (var proceeder in iBackColChangedProceeders)
                 Background.BackgroundColorChanged += proceeder.OnBackgroundColorChanged;
 
-            var mazeItemGroups = GetInterfaceOfProceeders<IOnLevelStageChanged>(proceeders);
-            LevelStageController.RegisterProceeders(mazeItemGroups);
+            var onLevelStageChangeds = GetInterfaceOfProceeders<IOnLevelStageChanged>(proceeders);
+            LevelStageController.RegisterProceeders(onLevelStageChangeds);
 
             GetInterfaceOfProceeders<IInit>(GetProceeders())
                 .ToList()
@@ -156,7 +158,8 @@ namespace Games.RazorMaze.Views
                     TurretsGroup,
                     PortalsGroup,
                     ShredingerBlocksGroup,
-                    SpringboardItemsGroup    
+                    SpringboardItemsGroup,
+                    GravityItemsGroup
                 }.Where(_Proceeder => _Proceeder != null)
                 .ToList();
             return result;

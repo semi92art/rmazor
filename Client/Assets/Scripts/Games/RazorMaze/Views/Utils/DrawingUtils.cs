@@ -44,7 +44,7 @@ namespace Games.RazorMaze.Views.Utils
                 case EMazeItemType.Portal:
                 case EMazeItemType.TrapIncreasing:
                 case EMazeItemType.TrapMoving:
-                case EMazeItemType.Attenuator:
+                case EMazeItemType.GravityBlockFree:
                 case EMazeItemType.ShredingerBlock:
                 case EMazeItemType.Springboard:
                     return PathItemOrder + 5;

@@ -5,13 +5,19 @@ using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.Common;
-using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItems;
 using Shapes;
 using UnityEngine;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
+    public interface IViewMazeMovingItemsGroup : IViewMazeItemGroup
+    {
+        void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args);
+        void OnMazeItemMoveContinued(MazeItemMoveEventArgs _Args);
+        void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args);
+    }
+    
     public class ViewMazeMovingItemsGroup : ViewMazeItemsGroupBase, IViewMazeMovingItemsGroup, IOnBackgroundColorChanged
     {
         #region types
@@ -48,12 +54,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         #region api
 
-        public override EMazeItemType[] Types => new[]
-        {
-            EMazeItemType.GravityBlock, 
-            EMazeItemType.GravityTrap,
-            EMazeItemType.TrapMoving
-        };
+        public override EMazeItemType[] Types => new[] {EMazeItemType.TrapMoving};
 
         public void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
         {

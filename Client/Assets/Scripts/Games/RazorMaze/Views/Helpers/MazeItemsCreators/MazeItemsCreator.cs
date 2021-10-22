@@ -17,18 +17,19 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
         
         [Inject]
         public MazeItemsCreator(
-            IContainersGetter _ContainersGetter,
-            IMazeCoordinateConverter _CoordinateConverter, 
-            IViewMazeItemPath _ItemPath,
-            IViewMazeItemGravityBlock _GravityBlock,
-            IViewMazeItemMovingTrap _MovingTrap,
-            IViewMazeItemShredingerBlock _ShredingerBlock,
-            IViewMazeItemTurret _Turret,
-            IViewMazeItemSpringboard _Springboard,
-            IViewMazeItemPortal _Portal,
-            IViewMazeItemGravityTrap _GravityTrap,
-            IViewMazeItemTrapReact _TrapReact,
-            IViewMazeItemTrapIncreasing _TrapIncreasing) : base(
+            IContainersGetter             _ContainersGetter,
+            IMazeCoordinateConverter      _CoordinateConverter, 
+            IViewMazeItemPath             _ItemPath,
+            IViewMazeItemGravityBlock     _GravityBlock,
+            IViewMazeItemMovingTrap       _MovingTrap,
+            IViewMazeItemShredingerBlock  _ShredingerBlock,
+            IViewMazeItemTurret           _Turret,
+            IViewMazeItemSpringboard      _Springboard,
+            IViewMazeItemPortal           _Portal,
+            IViewMazeItemGravityTrap      _GravityTrap,
+            IViewMazeItemTrapReact        _TrapReact,
+            IViewMazeItemTrapIncreasing   _TrapIncreasing,
+            IViewMazeItemGravityBlockFree _GravityBlockFree) : base(
             _ContainersGetter, 
             _CoordinateConverter, 
             _ItemPath,
@@ -40,7 +41,8 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
             _Portal,
             _GravityTrap,
             _TrapReact,
-            _TrapIncreasing) { }
+            _TrapIncreasing,
+            _GravityBlockFree) { }
         
         #endregion
         

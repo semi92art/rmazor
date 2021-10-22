@@ -42,8 +42,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
         #endregion
         
         #region api
-        
-        public override EMazeItemType[] Types => new[] {EMazeItemType.GravityBlock, EMazeItemType.GravityTrap};
+
+        public override EMazeItemType[] Types => RazorMazeUtils.GravityItemTypes();
 
         public Func<IEnumerable<IMazeItemProceedInfo>> GetAllProceedInfos { private get; set; }
 
@@ -101,9 +101,16 @@ namespace Games.RazorMaze.Models.ItemProceeders
             V2Int _CharacterPoint,
             Dictionary<IMazeItemProceedInfo, bool> _InfosMoved)
         {
-            return _Info.Type == EMazeItemType.GravityBlock ? 
-                MoveGravityBlock(_Info, _DropDirection, _CharacterPoint, _InfosMoved) :
-                MoveGravityTrap(_Info, _DropDirection, _CharacterPoint, _InfosMoved);
+            switch (_Info.Type)
+            {
+                case EMazeItemType.GravityBlock:
+                    return MoveGravityBlock(_Info, _DropDirection, _CharacterPoint, _InfosMoved);
+                case EMazeItemType.GravityBlockFree:
+                    return MoveGravityBlockFree(_Info, _DropDirection, _CharacterPoint, _InfosMoved);
+                case EMazeItemType.GravityTrap:
+                    return MoveGravityTrap(_Info, _DropDirection, _CharacterPoint, _InfosMoved);
+            }
+            return false;
         }
 
         private bool MoveGravityBlock(
@@ -120,6 +127,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 _Info,
                 _DropDirection,
                 _CharacterPoint,
+                true,
                 false,
                 out var to,
                 out var gravityBlockItemInfo);
@@ -133,6 +141,51 @@ namespace Games.RazorMaze.Models.ItemProceeders
                         _Info,
                         _DropDirection,
                         _CharacterPoint,
+                        true,
+                        true,
+                        out to,
+                        out gravityBlockItemInfo);
+                }
+                else
+                    return false;
+            }
+            _Info.ProceedingStage = StageDrop;
+            ProceedCoroutine(MoveMazeItemGravityCoroutine(_Info, to));
+            _Info.NextPosition = to;
+            _GravityItemsMovedDict[_Info] = true;
+            return true;
+        }
+
+        // FIXME копипаста из MoveGravityTrap
+        private bool MoveGravityBlockFree(
+            IMazeItemProceedInfo _Info,
+            V2Int _DropDirection,
+            V2Int _CharacterPoint,
+            Dictionary<IMazeItemProceedInfo, bool> _GravityItemsMovedDict)
+        {
+            if (!_GravityItemsMovedDict.ContainsKey(_Info))
+                return false;
+            if (_GravityItemsMovedDict[_Info])
+                return true;
+            GravityBlockValidPositionDefinitionCycle(
+                _Info,
+                _DropDirection,
+                _CharacterPoint,
+                false,
+                false,
+                out var to,
+                out var gravityBlockItemInfo);
+            // если для гравитационного блок/ловушка, на который наткнулась ловушка еще определено конечное положение,
+            // пытаемся его определить и если получается, двигаем текущий блок
+            if (gravityBlockItemInfo != null)
+            {
+                if (TryMoveBlock(gravityBlockItemInfo, _DropDirection, _CharacterPoint, _GravityItemsMovedDict))
+                {
+                    GravityBlockValidPositionDefinitionCycle(
+                        _Info,
+                        _DropDirection,
+                        _CharacterPoint,
+                        false,
                         true,
                         out to,
                         out gravityBlockItemInfo);
@@ -184,14 +237,16 @@ namespace Games.RazorMaze.Models.ItemProceeders
         private void GravityBlockValidPositionDefinitionCycle(
             IMazeItemProceedInfo _Info,
             V2Int _DropDirection,
-            V2Int _CharacterPoint,
+            V2Int? _CharacterPoint,
+            bool _CheckMazeItemPath,
             bool _CheckNextPos,
             out V2Int _To,
             out IMazeItemProceedInfo _GravityBlockItemInfo)
         {
             bool doMove = false;
             var pos = _Info.CurrentPosition;
-            int currentPathIndex = _Info.Path.IndexOf(_Info.CurrentPosition);
+            var path = _Info.Path;
+            int currPathIdx = path.IndexOf(_Info.CurrentPosition);
             V2Int? altPos = null;
             var infos = GetAllProceedInfos().ToList();
             while (IsValidPositionForMove(pos + _DropDirection, infos, _CheckNextPos, out _GravityBlockItemInfo))
@@ -201,39 +256,36 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 if (pos == _CharacterPoint)
                 {
                     altPos = pos - _DropDirection;
-                    Dbg.Log($"Alt pos: {altPos}");
                     break;
                 }
+                if (!_CheckMazeItemPath)
+                    continue;
                 // если новая позиция блока не находится на узле пути, проверяем следующую позицию
                 if (_Info.Path.All(_Pos1 => pos != _Pos1))
                     continue;
                 // если текущая позиция блока не находится на узле пути, а новая - находится, то движение разрешено  
                 
-                if (currentPathIndex == -1)
+                if (currPathIdx == -1)
                 {
                     doMove = true;
                     break;
                 }
                 // если текущая позиция блока находится на узле пути, и новая тоде находится на узле пути,
                 // но они не являются близжайшими, проверяем следующую позицию
-                if (Math.Abs(_Info.Path.IndexOf(pos) - _Info.Path.IndexOf(_Info.CurrentPosition)) > 1)
+                if (Math.Abs(path.IndexOf(pos) - path.IndexOf(_Info.CurrentPosition)) > 1)
                     continue;
                 doMove = true;
                 break;
             }
-
-            // если текущая позиция находится на участке пути, разрешаем движение
-            if (currentPathIndex != -1)
+            // если текущая позиция находится на одном из близжайших участков пути, разрешаем движение
+            if (currPathIdx != -1 && _CheckMazeItemPath)
             {
-                int prevPathIndex = currentPathIndex - 1;
-                if (prevPathIndex >= 0 &&
-                    RazorMazeUtils.PathContainsItem(_Info.Path[prevPathIndex], _Info.Path[currentPathIndex], pos))
-                    doMove = true;
-                int nextPathIndex = currentPathIndex + 1;
-                if (nextPathIndex < _Info.Path.Count &&
-                    RazorMazeUtils.PathContainsItem(_Info.Path[currentPathIndex], _Info.Path[nextPathIndex], pos))
+                if (currPathIdx - 1 >= 0 && PathContainsItem(path[currPathIdx - 1], path[currPathIdx], pos)
+                || currPathIdx + 1 < path.Count && PathContainsItem(path[currPathIdx], path[currPathIdx + 1], pos))
                     doMove = true;
             }
+            else
+                doMove = true;
             
             if (altPos.HasValue)
                 pos = altPos.Value;
@@ -250,7 +302,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 _Info.ProceedingStage = StageIdle;
                 yield break;
             }
-            float speed = _Info.Type == EMazeItemType.GravityBlock
+            float speed = _Info.Type == EMazeItemType.GravityBlock || _Info.Type == EMazeItemType.GravityBlockFree
                 ? Settings.GravityBlockSpeed
                 : Settings.GravityTrapSpeed;
             var busyPositions = _Info.BusyPositions;

@@ -6,6 +6,13 @@ using UnityEngine.Events;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
+    public interface IViewMazeTurretsGroup :
+        IInit,
+        IViewMazeItemGroup
+    {
+        void OnTurretShoot(TurretShotEventArgs _Args);
+    }
+    
     public abstract class ViewMazeTurretsGroupBase : ViewMazeItemsGroupBase, IViewMazeTurretsGroup
     {
         #region inject

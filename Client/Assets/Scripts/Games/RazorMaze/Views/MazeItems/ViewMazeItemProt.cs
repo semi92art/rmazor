@@ -154,7 +154,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 case EMazeItemType.GravityBlock:            objectName = "block-gravity"; break;
                 case EMazeItemType.GravityTrap:             objectName = "trap-gravity"; break;
                 case EMazeItemType.TrapIncreasing:          objectName = "trap-increase"; break;
-                case EMazeItemType.Attenuator:              objectName = "turret-rotate"; break;
+                case EMazeItemType.GravityBlockFree:        objectName = "gravity-block-free"; break;
                 case EMazeItemType.TrapReact:               objectName = "trap-react"; break;
                 default: throw new SwitchCaseNotImplementedException(_Type);
             }
@@ -181,6 +181,7 @@ namespace Games.RazorMaze.Views.MazeItems
             {
                 case EMazeItemType.Block:                   
                 case EMazeItemType.GravityBlock:
+                case EMazeItemType.GravityBlockFree:
                     return DrawingUtils.ColorBlock;
                 case EMazeItemType.ShredingerBlock:
                     return DrawingUtils.ColorShredinger;
@@ -192,7 +193,6 @@ namespace Games.RazorMaze.Views.MazeItems
                 case EMazeItemType.GravityTrap:
                     return new Color(1f, 0.29f, 0.29f);
                 case EMazeItemType.Turret: 
-                case EMazeItemType.Attenuator:
                     return DrawingUtils.ColorTurret;
                 case EMazeItemType.Springboard:
                     return DrawingUtils.ColorSpringboard;
@@ -219,7 +219,8 @@ namespace Games.RazorMaze.Views.MazeItems
             {
                 case EMazeItemType.Block:
                 case EMazeItemType.ShredingerBlock:
-                case EMazeItemType.Attenuator:
+                case EMazeItemType.GravityBlockFree:
+                case EMazeItemType.GravityTrap:
                     //do nothing
                     break;
                 case EMazeItemType.TrapIncreasing:
@@ -227,7 +228,6 @@ namespace Games.RazorMaze.Views.MazeItems
                     break;
                 case EMazeItemType.TrapMoving:
                 case EMazeItemType.GravityBlock:
-                case EMazeItemType.GravityTrap:
                     DrawGizmosPath();
                     break;
                 case EMazeItemType.TrapReact:

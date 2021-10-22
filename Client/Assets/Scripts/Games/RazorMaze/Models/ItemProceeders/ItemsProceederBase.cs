@@ -185,6 +185,12 @@ namespace Games.RazorMaze.Models.ItemProceeders
             Coroutines.Run(_Coroutine);
         }
         
+        protected static bool PathContainsItem(V2Int _From, V2Int _To, V2Int _Point)
+        {
+            var fullPath = RazorMazeUtils.GetFullPath(_From, _To);
+            return fullPath.Contains(_Point);
+        }
+        
         #endregion
     }
 }

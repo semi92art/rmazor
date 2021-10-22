@@ -6,6 +6,13 @@ using Games.RazorMaze.Views.MazeItems;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
+    public interface IViewMazeShredingerBlocksGroup : 
+        IViewMazeItemGroup,
+        ICharacterMoveFinished
+    {
+        void OnShredingerBlockEvent(ShredingerBlockArgs _Args);
+    }
+    
     public class ViewMazeShredingerBlocksGroup : ViewMazeItemsGroupBase, IViewMazeShredingerBlocksGroup
     {
         public ViewMazeShredingerBlocksGroup(IViewMazeCommon _Common) : base(_Common) { }

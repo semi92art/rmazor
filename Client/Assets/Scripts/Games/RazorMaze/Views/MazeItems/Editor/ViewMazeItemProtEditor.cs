@@ -106,7 +106,6 @@ namespace Games.RazorMaze.Prot.Editor
             {
                 case EMazeItemType.TrapMoving:
                 case EMazeItemType.GravityBlock:
-                case EMazeItemType.GravityTrap:
                     DrawControlsMovingBlock(props);
                     break;
                 case EMazeItemType.Turret:
@@ -120,7 +119,9 @@ namespace Games.RazorMaze.Prot.Editor
                 case EMazeItemType.Block:
                 case EMazeItemType.ShredingerBlock:
                 case EMazeItemType.TrapIncreasing:
-                case EMazeItemType.Attenuator:
+                case EMazeItemType.GravityTrap:
+                case EMazeItemType.GravityBlockFree:
+                case EMazeItemType.MovingBlockFree:
                     // do nothing
                     break;
                 default: throw new SwitchCaseNotImplementedException(props.Type);

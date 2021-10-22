@@ -220,7 +220,7 @@ namespace Games.RazorMaze.Views.UI
                     _Progress => _Text.color = DrawingUtils.ColorLines.SetA(_Progress),
                     GameTicker,
                     (_, __) => Coroutines.Run(ShowPromptCoroutine(_Key, _Text)),
-                    () => m_Prompts[_Key].NeedToHide,
+                    () => m_Prompts.ContainsKey(_Key) && m_Prompts[_Key].NeedToHide,
                     _Progress => _Progress < 0.5f ? 2f * _Progress : 2f * (1f - _Progress));
                 yield break;
             }

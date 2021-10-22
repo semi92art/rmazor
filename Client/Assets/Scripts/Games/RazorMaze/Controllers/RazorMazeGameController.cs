@@ -61,10 +61,10 @@ namespace Games.RazorMaze.Controllers
             Model.PathItemsProceeder.PathProceedEvent                 += View.PathItemsGroup.OnPathProceed;
             Model.MazeRotation.RotationStarted                        += View.MazeRotation.OnRotationStarted;
             
-            Model.GravityItemsProceeder.MazeItemMoveStarted           += View.MovingItemsGroup.OnMazeItemMoveStarted;
+            Model.GravityItemsProceeder.MazeItemMoveStarted           += View.GravityItemsGroup.OnMazeItemMoveStarted;
             Model.GravityItemsProceeder.MazeItemMoveStarted           += View.UI.UIGameControls.OnMazeItemMoveStarted;
-            Model.GravityItemsProceeder.MazeItemMoveContinued         += View.MovingItemsGroup.OnMazeItemMoveContinued;
-            Model.GravityItemsProceeder.MazeItemMoveFinished          += View.MovingItemsGroup.OnMazeItemMoveFinished;
+            Model.GravityItemsProceeder.MazeItemMoveContinued         += View.GravityItemsGroup.OnMazeItemMoveContinued;
+            Model.GravityItemsProceeder.MazeItemMoveFinished          += View.GravityItemsGroup.OnMazeItemMoveFinished;
             Model.GravityItemsProceeder.MazeItemMoveFinished          += View.UI.UIGameControls.OnMazeItemMoveFinished;
             
             Model.TrapsMovingProceeder.MazeItemMoveStarted            += View.MovingItemsGroup.OnMazeItemMoveStarted;

@@ -181,7 +181,7 @@ namespace Games.RazorMaze.Models
                 return false;
             
             bool isBuzyMazeItem = GetAllProceedInfos()
-                .Where(_Info => _Info.Type == EMazeItemType.GravityBlock)
+                .Where(_Info => _Info.Type == EMazeItemType.GravityBlock || _Info.Type == EMazeItemType.GravityBlockFree)
                 .Any(_Info => _Info.BusyPositions.Contains(_NextPosition));
 
             if (isBuzyMazeItem)

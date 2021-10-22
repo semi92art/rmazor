@@ -23,6 +23,7 @@ namespace Games.RazorMaze.Views.Rotation
 
         private Rigidbody2D m_Rb;
         private Disc m_Disc;
+        private bool m_EnableRotation;
 
         #endregion
         
@@ -97,32 +98,25 @@ namespace Games.RazorMaze.Views.Rotation
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            bool enableRotation = false;
             bool? appear = null;
             switch (_Args.Stage)
             {
                 case ELevelStage.Loaded:
                     m_Disc.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
                     m_Disc.Radius = CalculateRotationDiscRadius();
-                    enableRotation = Model.GetAllProceedInfos().Any(_Info =>
-                        _Info.Type == EMazeItemType.GravityBlock || _Info.Type == EMazeItemType.GravityTrap);
+                        m_EnableRotation = Model.GetAllProceedInfos().Any(_Info =>
+                        _Info.Type == EMazeItemType.GravityBlock
+                        || _Info.Type == EMazeItemType.GravityTrap
+                        || _Info.Type == EMazeItemType.GravityBlockFree);
 
-                    m_Disc.enabled = enableRotation;
-                    if (enableRotation)
+                    m_Disc.enabled = m_EnableRotation;
+                    if (m_EnableRotation)
                         appear = true;
                     break;
                 case ELevelStage.ReadyToStartOrContinue:
                     if (_Args.PreviousStage != ELevelStage.Loaded)
                         return;
-                    enableRotation = Model.GetAllProceedInfos().Any(_Info =>
-                        _Info.Type == EMazeItemType.GravityBlock || _Info.Type == EMazeItemType.GravityTrap);
-                    if (enableRotation)
-                    {
-                        
-                        InputConfigurator.UnlockCommand(InputCommands.RotateClockwise);
-                        InputConfigurator.UnlockCommand(InputCommands.RotateCounterClockwise);
-                    }
-                    else
+                    if (!m_EnableRotation)
                     {
                         InputConfigurator.LockCommand(InputCommands.RotateClockwise);
                         InputConfigurator.LockCommand(InputCommands.RotateCounterClockwise);

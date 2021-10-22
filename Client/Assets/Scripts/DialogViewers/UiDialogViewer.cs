@@ -1,150 +1,209 @@
-﻿using Constants;
+﻿using System.Collections.Generic;
+using System.Linq;
 using DI.Extensions;
 using Entities;
-using GameHelpers;
 using Ticker;
 using UI;
-using UI.Factories;
 using UI.Panels;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using Utils;
 
 namespace DialogViewers
 {
-    public class UiDialogViewer : DialogViewerBase
+    public interface IDialogViewer : IDialogViewerBase
     {
+        void Show(IDialogPanel _ItemTo, bool _HidePrevious = true);
+        void CloseAll();
+    }
+    
+    public abstract class DialogViewerBase : IDialogViewer, IAction, IUpdateTick
+    {
+        #region types
+        
+        protected class GraphicAlphas
+        {
+            public Dictionary<Graphic, float> Alphas { get; }
+
+            public GraphicAlphas(RectTransform _Item)
+            {
+                Alphas = _Item.GetComponentsInChildrenEx<Graphic>()
+                    .Distinct()
+                    .ToDictionary(_El => _El, _El => _El.color.a);
+            }
+        }
+        
+        protected class VisibleInCategories
+        {
+            public EUiCategory Categories { get; }
+            public bool IsVisible { get; set; }
+
+            public VisibleInCategories(
+                EUiCategory _Categories,
+                bool _IsVisible)
+            {
+                Categories = _Categories;
+                IsVisible = _IsVisible;
+            }
+        }
+
+        #endregion
+
         #region nonpublic members
 
-        private static int AkEnableGoBackButton => AnimKeys.Anim;
-        private static int AkEnableCloseButton => AnimKeys.Anim2;
-        private static int AkDisableGoBackButton => AnimKeys.Stop;
-        private static int AkDisableCloseButton => AnimKeys.Stop2;
-        private static int AkDisableBothButtons => AnimKeys.Stop3;
-        private static int AkState => AnimKeys.State;
+        protected Image m_Background;
+        protected RectTransform m_DialogContainer;
+        protected readonly Stack<IDialogPanel> PanelStack = new Stack<IDialogPanel>();
         
-        private const int AkStateBothButtonsDisabled = 0;
-        private const int AkStateGoBackButtonEnabled = 1;
-        private const int AkStateBothButtonsEnabled = 2;
-        
-        private Button m_GoBackButton;
-        private Button m_CloseButton;
-        private Animator m_ButtonsAnim;
+        protected readonly Dictionary<int, GraphicAlphas> GraphicsAlphas = 
+            new Dictionary<int, GraphicAlphas>();
 
+        protected virtual float TransitionTime => 0.2f;
+        
         #endregion
 
         #region inject
 
-        public UiDialogViewer(IManagersGetter _Managers, IUITicker _Ticker) 
-            : base(_Managers, _Ticker) { }
+        protected IManagersGetter Managers { get; }
+        protected IUITicker Ticker { get; }
+        
+        protected DialogViewerBase(IManagersGetter _Managers, IUITicker _Ticker)
+        {
+            Managers = _Managers;
+            Ticker = _Ticker;
+            _Ticker.Register(this);
+        }
         
         #endregion
 
         #region api
+        
+        public RectTransform Container => m_DialogContainer;
+        public UnityAction Action { get; set; }
 
-        public override void Init(RectTransform _Parent)
+        public abstract void Init(RectTransform _Parent);
+        public abstract void Show(IDialogPanel _ItemTo, bool _HidePrevious = true);
+        
+        public void CloseAll()
         {
-            var go = PrefabUtilsEx.InitUiPrefab(
-                UiFactory.UiRectTransform(
-                    _Parent,
-                    RtrLites.FullFill),
-                "dialog_viewers",
-                "dialog_viewer");
-            
-            m_Background = go.GetCompItem<Image>("background");
-            m_DialogContainer = go.GetCompItem<RectTransform>("dialog_container");
-            m_GoBackButton = go.GetCompItem<Button>("go_back_button");
-            m_CloseButton = go.GetCompItem<Button>("close_button");
-            m_ButtonsAnim = go.GetCompItem<Animator>("buttons_animator");
-
-            var borderColor = ColorUtils.GetColorFromCurrentPalette(CommonPaletteColors.UiBorderDefault);
-            var backgroundColor = ColorUtils.GetColorFromCurrentPalette(CommonPaletteColors.UiDialogBackground);
-            m_GoBackButton.GetCompItem<Image>("border").color = borderColor;
-            m_CloseButton.GetCompItem<Image>("border").color = borderColor;
-            m_GoBackButton.GetCompItem<Image>("background").color = backgroundColor;
-            m_CloseButton.GetCompItem<Image>("background").color = backgroundColor;
-            m_GoBackButton.GetCompItem<Image>("icon").color = borderColor;
-            m_CloseButton.GetCompItem<Image>("icon").color = borderColor;
-            
-            m_GoBackButton.SetOnClick(() =>
-            {
-                Managers.Notify(_SM => _SM.PlayClip(AudioClipNames.UIButtonClick));
-                Back();
-            });
-            m_CloseButton.SetOnClick(() =>
-            {
-                Managers.Notify(_SM => _SM.PlayClip(AudioClipNames.UIButtonClick));
-                CloseAll();
-            });
-            base.Init(_Parent);
-        }
-
-        public override void Show(IDialogPanel _ItemTo, bool _HidePrevious = true)
-        {
-            var to = new Panel(_ItemTo);
-            ShowCore(to, _HidePrevious, false);
-        }
-
-        public override void AddNotDialogItem(RectTransform _Item, EUiCategory _Categories)
-        {
-            if (NotDialogs.ContainsKey(_Item))
+            if (!PanelStack.Any())
                 return;
-            NotDialogs.Add(_Item, new VisibleInCategories(_Categories, _Item.gameObject.activeSelf));
-            GraphicsAlphas.Add(_Item.GetInstanceID(), new GraphicAlphas(_Item));
+            var lastPanel = PanelStack.Pop();
+            var panelsToDestroy = new List<IDialogPanel>();
+            while (PanelStack.Count > 0)
+                panelsToDestroy.Add(PanelStack.Pop());
+            
+            foreach (var pan in panelsToDestroy
+                .Where(_Panel => _Panel != null))
+            {
+                Object.Destroy(pan.Panel.gameObject);
+            }
+            
+            PanelStack.Push(lastPanel);
+            ShowCore(null, true, true);
         }
         
-        public override void UpdateTick()
+        public virtual void UpdateTick()
         {
-            if (!NotificationViewer.IsShowing && Input.GetKeyDown(KeyCode.Escape))
-                Back();
+            if (Input.GetKeyDown(KeyCode.Escape))
+                CloseAll();
         }
-
+        
         #endregion
 
         #region nonpublic methods
-        
-        protected override void FinishShowing(
-            Panel _ItemFrom,
-            Panel _ItemTo,
+
+        protected void ShowCore(
+            IDialogPanel _ItemTo,
+            bool _HidePrevious,
+            bool _GoBack)
+        {
+            var itemFrom = !PanelStack.Any() ? null : PanelStack.Peek();
+            if (itemFrom == null && _ItemTo == null)
+                return;
+
+            var fromPanel = itemFrom?.Panel;
+            var toPanel = _ItemTo?.Panel;
+            EUiCategory menuCat = _ItemTo?.Category ?? EUiCategory.MainMenu;
+            
+            if (itemFrom != null && fromPanel != null && _HidePrevious)
+            {
+                int instId = fromPanel.GetInstanceID();
+                if (!GraphicsAlphas.ContainsKey(instId))
+                    GraphicsAlphas.Add(instId, new GraphicAlphas(fromPanel));
+                Coroutines.Run(Coroutines.DoTransparentTransition(
+                    fromPanel, GraphicsAlphas[instId].Alphas, TransitionTime,
+                    Ticker,
+                    true,
+                    () =>
+                    {
+                        if (!_GoBack)
+                            return;
+                        Object.Destroy(fromPanel.gameObject);
+                        var monobeh = itemFrom as MonoBehaviour;
+                        if (monobeh != null)
+                            Object.Destroy(monobeh.gameObject);
+                    }));
+            }
+
+            if (toPanel != null)
+            {
+                int instId = toPanel.GetInstanceID();
+                if (!GraphicsAlphas.ContainsKey(instId))
+                    GraphicsAlphas.Add(instId, new GraphicAlphas(toPanel));
+                Coroutines.Run(Coroutines.DoTransparentTransition(
+                    toPanel, GraphicsAlphas[instId].Alphas, TransitionTime,
+                    Ticker,
+                    false, 
+                    () => m_Background.enabled = true));
+                _ItemTo.OnDialogEnable();
+            }
+
+            FinishShowing(itemFrom, _ItemTo, _GoBack, toPanel);
+        }
+
+        protected virtual void FinishShowing(
+            IDialogPanel _ItemFrom,
+            IDialogPanel _ItemTo,
             bool _GoBack,
             RectTransform _PanelTo)
         {
-            base.FinishShowing(_ItemFrom, _ItemTo, _GoBack, _PanelTo);
-            SetBackAndCloseButtonsState(_GoBack, _PanelTo == null);
-        }
-
-        private void SetBackAndCloseButtonsState(bool _GoBack, bool _CloseAll)
-        {
-            if (m_GoBackButton == null || m_CloseButton == null)
-                return;
-            int state = m_ButtonsAnim.GetInteger(AkState);
-            switch (state)
+            m_Background.enabled = m_Background.raycastTarget = !(_PanelTo == null && _GoBack);
+            ClearGraphicsAlphas();
+        
+            if (_PanelTo == null)
+                ClearPanelStack();
+            else
             {
-                case AkStateBothButtonsDisabled:
-                    if (!_CloseAll)
-                    {
-                        m_ButtonsAnim.SetTrigger(AkEnableGoBackButton);
-                        m_ButtonsAnim.SetInteger(AkState, AkStateGoBackButtonEnabled);    
-                    }
-                    break;
-                case AkStateGoBackButtonEnabled:
-                    m_ButtonsAnim.SetTrigger(_GoBack ? AkDisableGoBackButton : AkEnableCloseButton);
-                    m_ButtonsAnim.SetInteger(AkState, _GoBack ?
-                        AkStateBothButtonsDisabled : AkStateBothButtonsEnabled);
-                    break;
-                case AkStateBothButtonsEnabled:
-                    int? trigger = null;
-                    if (_CloseAll) trigger = AkDisableBothButtons;
-                    else if (_GoBack && PanelStack.GetItem(1) == null) trigger = AkDisableCloseButton;
-                    int? newState;
-                    if (_CloseAll) newState = AkStateBothButtonsDisabled;
-                    else if (_GoBack && PanelStack.GetItem(1) == null) newState = AkStateGoBackButtonEnabled;
-                    else newState = AkStateBothButtonsEnabled;
-
-                    if (trigger.HasValue)
-                        m_ButtonsAnim.SetTrigger(trigger.Value);
-                    m_ButtonsAnim.SetInteger(AkState, newState.Value);
-                    break;
+                if (!PanelStack.Any())
+                    PanelStack.Push(_ItemFrom);
+                if (PanelStack.Any() && _GoBack)
+                    PanelStack.Pop();
+                if (!_GoBack)
+                    PanelStack.Push(_ItemTo);
+            }
+        }
+        
+        protected void ClearGraphicsAlphas()
+        {
+            foreach (var item in GraphicsAlphas.ToArray())
+            {
+                if (item.Value.Alphas.All(_A => _A.Key.IsNull()))
+                    GraphicsAlphas.Remove(item.Key);
+            }
+        }
+        
+        protected void ClearPanelStack()
+        {
+            var list = new List<IDialogPanel>();
+            while(PanelStack.Any())
+                list.Add(PanelStack.Pop());
+            foreach (var monobeh in from item in list
+                where item != null
+                select item as MonoBehaviour)
+            {
+                Object.Destroy(monobeh);
             }
         }
 
