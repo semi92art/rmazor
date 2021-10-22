@@ -158,7 +158,7 @@ namespace Games.RazorMaze.Views.UI
             InputConfigurator.UnlockCommand(InputCommands.RotateClockwise);
             var mazeBounds = CoordinateConverter.GetMazeBounds();
             ShowPrompt(KeyPromptHowToRotateClockwise, new Vector3(mazeBounds.center.x, 
-                CoordinateConverter.GetScreenOffsets().z));
+                GraphicUtils.VisibleBounds.min.y));
         }
         
         private void ShowPromptHowToRotateCounterClockwise()
@@ -167,21 +167,21 @@ namespace Games.RazorMaze.Views.UI
             InputConfigurator.UnlockCommand(InputCommands.RotateCounterClockwise);
             var mazeBounds = CoordinateConverter.GetMazeBounds();
             ShowPrompt(KeyPromptHowToRotateCounter, new Vector3(mazeBounds.center.x, 
-                CoordinateConverter.GetScreenOffsets().z));
+                GraphicUtils.VisibleBounds.min.y + 1f));
         }
 
         private void ShowPromptSwipeToStart()
         {
-            var mazeBounds = CoordinateConverter.GetMazeBounds();
-            ShowPrompt(KeyPromptSwipeToStart, new Vector3(mazeBounds.center.x, 
-                CoordinateConverter.GetScreenOffsets().z + 5f));
+            ShowPrompt(KeyPromptSwipeToStart, new Vector3(
+                CoordinateConverter.GetMazeBounds().center.x,
+                (GraphicUtils.VisibleBounds.min.y + CoordinateConverter.GetMazeBounds().min.y) * 0.5f));
         }
 
         private void ShopPromptTapToNext()
         {
-            var mazeBounds = CoordinateConverter.GetMazeBounds();
-            ShowPrompt(KeyPromptTapToNext, new Vector3(mazeBounds.center.x, 
-                CoordinateConverter.GetScreenOffsets().z  + 5f));
+            ShowPrompt(KeyPromptTapToNext, new Vector3(
+                CoordinateConverter.GetMazeBounds().center.x,
+                (GraphicUtils.VisibleBounds.min.y + CoordinateConverter.GetMazeBounds().min.y) * 0.5f));
         }
 
         private void ShowPrompt(string _Key, Vector3 _Position)
@@ -191,6 +191,7 @@ namespace Games.RazorMaze.Views.UI
             promptGo.SetParent(ContainersGetter.GetContainer(ContainerNames.GameUI));
             promptGo.transform.position = _Position;
             var text = promptGo.GetCompItem<TextMeshPro>("label");
+            text.fontSize = 18f;
             text.text = LocalizationManager.GetTranslation(_Key);
             text.color = DrawingUtils.ColorLines.SetA(0f);
 

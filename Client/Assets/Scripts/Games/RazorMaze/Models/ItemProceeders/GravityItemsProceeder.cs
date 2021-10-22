@@ -11,6 +11,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
 {
     public interface IGravityItemsProceeder : IMovingItemsProceeder, ICharacterMoveStarted
     {
+        void OnShredingerBlockEvent(ShredingerBlockArgs _Args);
         void OnMazeOrientationChanged();
     }
     
@@ -52,6 +53,11 @@ namespace Games.RazorMaze.Models.ItemProceeders
             base.OnLevelStageChanged(_Args);
             if (_Args.Stage == ELevelStage.ReadyToStartOrContinue && Data.Orientation == MazeOrientation.North)
                 MoveMazeItemsGravity(Data.Orientation, Character.Position);
+        }
+
+        public void OnShredingerBlockEvent(ShredingerBlockArgs _Args)
+        {
+            MoveMazeItemsGravity(Data.Orientation, Character.Position);
         }
 
         public void OnMazeOrientationChanged()
@@ -345,7 +351,15 @@ namespace Games.RazorMaze.Models.ItemProceeders
         {
             bool isOnNode = PathItemsProceeder.PathProceeds.Keys.Any(_Pos => _Pos == _Position);
             var staticBlockItems = GetStaticBlockItems(GetAllProceedInfos());
-            bool isOnStaticBlockItem = staticBlockItems.Any(_N => _N.CurrentPosition == _Position);
+            bool isOnStaticBlockItem = staticBlockItems.Any(_N =>
+            {
+                if (_N.CurrentPosition != _Position)
+                    return false;
+                if (_N.Type == EMazeItemType.ShredingerBlock
+                    && _N.ProceedingStage == ShredingerBlocksProceeder.StageClosed)
+                    return true;
+                return _N.Type != EMazeItemType.ShredingerBlock;
+            });
             _GravityBlockItemInfo = _Infos.FirstOrDefault(_Inf => 
                 RazorMazeUtils.GravityItemTypes().Contains(_Inf.Type) 
                 && _Position == (_CheckNextPos ? _Inf.NextPosition : _Inf.CurrentPosition));

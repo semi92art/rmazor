@@ -231,11 +231,10 @@ namespace Games.RazorMaze.Views.UI
                 float xCoeff1 = 8f * ((i + 0.5f) / RazorMazeUtils.LevelsInGroup - 0.5f);
                 go.transform.SetLocalPosXY(
                     mazeBounds.center.x + xCoeff1,
-                    bounds.max.y 
+                    yPos 
                     - m_LevelText.rectTransform.rect.height 
-                    - markHeight * 0.5f 
-                    - 1f);
-                if (i == 0)
+                    - markHeight * 0.5f);
+                if (i == RazorMazeUtils.LevelsInGroup - 1)
                     yPos += -m_LevelText.rectTransform.rect.height - markHeight - 2f;
             }
             m_Renderers.Add(m_LevelText);

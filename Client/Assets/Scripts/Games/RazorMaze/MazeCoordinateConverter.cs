@@ -27,8 +27,8 @@ namespace Games.RazorMaze
 
         public const float DefaultLeftOffset   = 1f;
         public const float DefaultRightOffset  = 1f;
-        public const float DefaultTopOffset    = 5f;
-        public const float DefaultBottomOffset = 5f;
+        public const float DefaultTopOffset    = 10f;
+        public const float DefaultBottomOffset = 8f;
 
         #endregion
         
