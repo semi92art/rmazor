@@ -88,7 +88,7 @@ namespace Games.RazorMaze
 
         public Vector4 GetScreenOffsets()
         {
-            var screenBounds = GameUtils.GetVisibleBounds();
+            var screenBounds = GraphicUtils.VisibleBounds;
             return new Vector4(
                 screenBounds.min.x + m_LeftOffset,
                  screenBounds.max.x - m_RightOffset,
@@ -135,7 +135,7 @@ namespace Games.RazorMaze
 
         private void SetCenterPoint()
         {
-            var bounds = GameUtils.GetVisibleBounds();
+            var bounds = GraphicUtils.VisibleBounds;
             float centerX = ((bounds.min.x + m_LeftOffset) + (bounds.max.x - m_RightOffset)) * 0.5f;
             float centerY = ((bounds.min.y + m_BottomOffset) + (bounds.max.y - m_TopOffset)) * 0.5f;
             m_Center = new Vector2(centerX, centerY);
@@ -143,7 +143,7 @@ namespace Games.RazorMaze
         
         private void SetScale()
         {
-            var bounds = GameUtils.GetVisibleBounds();
+            var bounds = GraphicUtils.VisibleBounds;
             float sizeX = bounds.size.x - m_LeftOffset - m_RightOffset;
             float sizeY = bounds.size.y - m_BottomOffset - m_TopOffset;
             if ((float) m_MazeSize.X / m_MazeSize.Y > sizeX / sizeY)

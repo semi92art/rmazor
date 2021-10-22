@@ -100,7 +100,7 @@ namespace UI.Panels
                 dbProps.Click = () =>
                 {
                     Managers.Notify(_SM => _SM.PlayClip(AudioClipNames.UIButtonClick));
-                    DialogViewer.Back();
+                    DialogViewer.CloseAll();
                 };
                 
                 dbi.Init(dbProps, Action);

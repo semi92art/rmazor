@@ -14,7 +14,6 @@ using Shapes;
 using Ticker;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 using Utils;
 
 namespace Games.RazorMaze.Views.UI
@@ -165,16 +164,16 @@ namespace Games.RazorMaze.Views.UI
         private void InitGameUI()
         {
             InitTopButtons();
-            InitLevelPanel();
-            InitCongratulationsPanel();
+            InitLevelAndCongratsPanel();
         }
         
         private void InitTopButtons()
         {
             const float topOffset = 1f;
             const float horOffset = 1f;
-            float scale = CoordinateConverter.Scale * 0.5f;
-            var bounds = GameUtils.GetVisibleBounds();
+            float scale = GraphicUtils.AspectRatio * 3f;
+            Dbg.Log(scale);
+            var bounds = GraphicUtils.VisibleBounds;
             
             var cont = GetGameUIContainer();
             var goShopButton = PrefabUtilsEx.InitPrefab(
@@ -202,12 +201,11 @@ namespace Games.RazorMaze.Views.UI
             goSettingsButton.SetActive(false);
         }
 
-        private void InitLevelPanel()
+        private void InitLevelAndCongratsPanel()
         {
-            float scale = CoordinateConverter.Scale * 0.5f;
-            var bounds = GameUtils.GetVisibleBounds();
+            var bounds = GraphicUtils.VisibleBounds;
             var mazeBounds = CoordinateConverter.GetMazeBounds();
-            
+            float yPos = bounds.max.y;
             var cont = GetGameUIContainer();
             var goLevelText = PrefabUtilsEx.InitPrefab(
                 cont, "ui_game", "level_text");
@@ -216,10 +214,10 @@ namespace Games.RazorMaze.Views.UI
                 RectTransform.Axis.Horizontal, mazeBounds.size.x);
             m_LevelText.transform.position = new Vector3(
                 mazeBounds.center.x, 
-                bounds.max.y);
-            m_LevelText.fontSize = 20f;
+                yPos);
             var goLevelCheckMark = PrefabUtilsEx.GetPrefab(
                 "ui_game", "level_check_mark");
+            float markHeight = goLevelCheckMark.GetCompItem<Rectangle>("body").Height;
             for (int i = 0; i < RazorMazeUtils.LevelsInGroup; i++)
             {
                 var go = Object.Instantiate(goLevelCheckMark, cont);
@@ -230,25 +228,22 @@ namespace Games.RazorMaze.Views.UI
                     go.GetCompItem<Line>("checkmark_1"),
                     go.GetCompItem<Line>("checkmark_2")
                 });
-                float xCoeff1 = 5f * ((i + 0.5f) / RazorMazeUtils.LevelsInGroup - 0.5f);
+                float xCoeff1 = 8f * ((i + 0.5f) / RazorMazeUtils.LevelsInGroup - 0.5f);
                 go.transform.SetLocalPosXY(
-                    mazeBounds.center.x + xCoeff1 * scale,
-                    bounds.max.y - 4f);
+                    mazeBounds.center.x + xCoeff1,
+                    bounds.max.y 
+                    - m_LevelText.rectTransform.rect.height 
+                    - markHeight * 0.5f 
+                    - 1f);
+                if (i == 0)
+                    yPos += -m_LevelText.rectTransform.rect.height - markHeight - 2f;
             }
             m_Renderers.Add(m_LevelText);
             goLevelCheckMark.DestroySafe();
-        }
-
-        private void InitCongratulationsPanel()
-        {
-            float scale = CoordinateConverter.Scale * 0.5f;
-            var bounds = GameUtils.GetVisibleBounds();
             
-            var cont = GetGameUIContainer();
             var goCongrads = PrefabUtilsEx.InitPrefab(
                 cont, "ui_game", "congratulations_panel");
-            goCongrads.transform.localScale = scale * Vector3.one;
-            goCongrads.transform.SetPosXY(new Vector2(bounds.center.x, bounds.max.y - 10f));
+            goCongrads.transform.SetPosXY(new Vector2(bounds.center.x, yPos));
             m_CompletedText = goCongrads.GetCompItem<TextMeshPro>("text_completed");
             m_CongratsText = goCongrads.GetCompItem<TextMeshPro>("text_congrats");
             m_CongratsAnim = goCongrads.GetCompItem<Animator>("animator");

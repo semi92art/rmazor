@@ -39,7 +39,7 @@ namespace Games.RazorMaze.Views.Debug
             Gizmos.color = Color.green;
             Gizmos.DrawWireCube(mazeBounds.center, mazeBounds.size);
             var offsets = converter.GetScreenOffsets();
-            var scrBds = GameUtils.GetVisibleBounds();
+            var scrBds = GraphicUtils.VisibleBounds;
             Gizmos.color = Color.red;
             Gizmos.DrawLine(new Vector3(offsets.x, scrBds.min.y), new Vector3(offsets.x, scrBds.max.y));
             Gizmos.DrawLine(new Vector3(offsets.y, scrBds.min.y), new Vector3(offsets.y, scrBds.max.y));

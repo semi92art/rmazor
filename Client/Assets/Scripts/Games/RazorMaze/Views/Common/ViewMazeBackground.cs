@@ -81,7 +81,7 @@ namespace Games.RazorMaze.Views.Common
         
         public void Init()
         {
-            m_ScreenBounds = GameUtils.GetVisibleBounds();
+            m_ScreenBounds = GraphicUtils.VisibleBounds;
             InitSources();
             InitShapes();
             Initialized?.Invoke();
