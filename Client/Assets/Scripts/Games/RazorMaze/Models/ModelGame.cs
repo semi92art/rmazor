@@ -4,6 +4,7 @@ using Games.RazorMaze.Models.InputSchedulers;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views;
+using Mono_Installers;
 using UnityEngine.Events;
 
 namespace Games.RazorMaze.Models
@@ -82,15 +83,15 @@ namespace Games.RazorMaze.Models
 
         public void Init()
         {
-            LevelStaging.LevelStageChanged             += OnLevelStageChanged;
-            LevelStaging.LevelStageChanged             += MazeRotation.OnLevelStageChanged;
-            MazeRotation.RotationFinishedInternal      += MazeOnRotationFinishedInternal;
-            Character.CharacterMoveStarted             += CharacterOnMoveStarted;
-            Character.CharacterMoveContinued           += CharacterOnMoveContinued;
-            Character.CharacterMoveFinished            += CharacterOnFinishMove;
-            PortalsProceeder.PortalEvent               += Character.OnPortal;
-            SpringboardProceeder.SpringboardEvent      += Character.OnSpringboard;
-            PathItemsProceeder.AllPathsProceededEvent  += AllPathsProceededEvent;
+            LevelStaging.LevelStageChanged                 += OnLevelStageChanged;
+            LevelStaging.LevelStageChanged                 += MazeRotation.OnLevelStageChanged;
+            MazeRotation.RotationFinishedInternal          += MazeOnRotationFinishedInternal;
+            Character.CharacterMoveStarted                 += CharacterOnMoveStarted;
+            Character.CharacterMoveContinued               += CharacterOnMoveContinued;
+            Character.CharacterMoveFinished                += CharacterOnFinishMove;
+            PortalsProceeder.PortalEvent                   += Character.OnPortal;
+            SpringboardProceeder.SpringboardEvent          += Character.OnSpringboard;
+            ShredingerBlocksProceeder.ShredingerBlockEvent += GravityItemsProceeder.OnShredingerBlockEvent;
 
             var getProceedInfosItems = GetInterfaceOfProceeders<IGetAllProceedInfos>(GetProceeders());
             foreach (var item in getProceedInfosItems)
@@ -119,8 +120,6 @@ namespace Games.RazorMaze.Models
 
         #region event methods
         
-        private void AllPathsProceededEvent() => LevelStaging.FinishLevel();
-
         private void MazeOnRotationFinishedInternal(MazeRotationEventArgs _Args)
         {
             InputScheduler.UnlockRotation(true);

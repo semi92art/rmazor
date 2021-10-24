@@ -6,6 +6,5 @@ namespace DialogViewers
     {
         void Init(RectTransform _Parent);
         RectTransform Container { get; }
-        void Back();
     }
 }

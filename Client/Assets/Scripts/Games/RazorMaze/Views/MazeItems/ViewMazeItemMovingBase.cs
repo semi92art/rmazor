@@ -11,7 +11,6 @@ using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
 using UnityEngine;
-using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
@@ -42,7 +41,7 @@ namespace Games.RazorMaze.Views.MazeItems
         protected ViewMazeItemMovingBase(
             ViewSettings _ViewSettings,
             IModelGame _Model,
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
@@ -102,6 +101,11 @@ namespace Games.RazorMaze.Views.MazeItems
         
         protected virtual void InitWallBlockMovingPaths()
         {
+            InitWallBlockMovingPathsCore();
+        }
+
+        protected void InitWallBlockMovingPathsCore()
+        {
             foreach (var pathLine in m_PathLines)
                 pathLine.gameObject.DestroySafe();
             foreach (var joint in m_PathJoints)
@@ -114,7 +118,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 .Select(_P => CoordinateConverter.ToLocalMazeItemPosition(_P))
                 .ToList();
 
-            var go = new GameObject("Line");
+            var go = new GameObject(ObjectName + " Line");
             go.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems));
             go.transform.SetLocalPosXY(Vector2.zero);
             var line = go.AddComponent<Polyline>();
@@ -123,11 +127,12 @@ namespace Games.RazorMaze.Views.MazeItems
             line.SetPoints(points);
             line.Closed = false;
             line.SortingOrder = DrawingUtils.GetPathLineSortingOrder();
+            line.Joins = PolylineJoins.Round;
             m_PathLines.Add(line);
             
             foreach (var point in points)
             {
-                var go1 = new GameObject("Joint");
+                var go1 = new GameObject(ObjectName +  " Joint");
                 go1.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems));
                 var joint = go1.AddComponent<Disc>();
                 go1.transform.SetLocalPosXY(point);

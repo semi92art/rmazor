@@ -40,6 +40,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         #region shapes
 
+        protected override string ObjectName => "Springboard Block";
         protected override object[] DefaultColorShapes => new object[] {m_Springboard, m_Pillar};
         private Line m_Springboard;
         private Line m_Pillar;
@@ -51,7 +52,7 @@ namespace Games.RazorMaze.Views.MazeItems
         public ViewMazeItemSpringboard(
             ViewSettings _ViewSettings,
             IModelGame _Model,
-            ICoordinateConverter _CoordinateConverter, 
+            IMazeCoordinateConverter _CoordinateConverter, 
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
@@ -90,21 +91,18 @@ namespace Games.RazorMaze.Views.MazeItems
         
         protected override void InitShape()
         {
-            var go = Object;
-            m_Pillar = ContainersGetter.GetContainer(ContainerNames.MazeItems).gameObject
-                .GetOrAddComponentOnNewChild<Line>("Springboard Item", ref go);
-            go.DestroyChildrenSafe();
-            m_Springboard = go.AddComponentOnNewChild<Line>("Springboard", out _, Vector2.zero);
+            m_Pillar = Object.AddComponentOnNewChild<Line>("Springboard Item", out _);
+            m_Springboard = Object.AddComponentOnNewChild<Line>("Springboard", out _);
             m_Pillar.EndCaps = m_Springboard.EndCaps = LineEndCap.Round;
             m_Pillar.Color = m_Springboard.Color = DrawingUtils.ColorLines;
         }
 
         protected override void UpdateShape()
         {
-            m_Pillar.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             m_Pillar.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
             m_Springboard.Thickness = m_Pillar.Thickness * 2f;
-            (m_Pillar.Start, m_Pillar.End, m_Springboard.Start, m_Springboard.End) = GetSpringboardAndPillarEdges();
+            (m_Pillar.Start, m_Pillar.End, m_Springboard.Start, m_Springboard.End) =
+                GetSpringboardAndPillarEdges();
             m_Edge1Start = m_Springboard.Start;
             m_Edge2Start = m_Springboard.End;
         }

@@ -15,6 +15,16 @@ namespace Games.RazorMaze
 
         public const float Epsilon = 1e-5f;
         public const int LevelsInGroup = 3;
+
+        public static EMazeItemType[] GravityItemTypes()
+        {
+            return new[]
+            {
+                EMazeItemType.GravityBlock,
+                EMazeItemType.GravityBlockFree,
+                EMazeItemType.GravityTrap
+            };
+        }
         
         public static V2Int GetDropDirection(MazeOrientation _Orientation)
         {
@@ -148,12 +158,6 @@ namespace Games.RazorMaze
             if (result == null)
                 throw new ArgumentException($"Cannot build direct path from {_From} to {_To}");
             return result.ToList();
-        }
-
-        public static bool PathContainsItem(V2Int _From, V2Int _To, V2Int _Point)
-        {
-            var fullPath = GetFullPath(_From, _To);
-            return fullPath.Contains(_Point);
         }
 
         /// <summary>

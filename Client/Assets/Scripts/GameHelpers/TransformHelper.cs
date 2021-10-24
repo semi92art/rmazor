@@ -77,31 +77,31 @@ namespace GameHelpers
 
         private void SetCenter()
         {
-            Bounds bounds = GameUtils.GetVisibleBounds();
+            Bounds bounds = GraphicUtils.VisibleBounds;
             m_Transform.SetPosXY(bounds.center.x, bounds.center.y);
         }
 
         private void SetTopLeft()
         {
-            Bounds bounds = GameUtils.GetVisibleBounds();
+            Bounds bounds = GraphicUtils.VisibleBounds;
             m_Transform.SetPosXY(bounds.min.x, bounds.max.y);
         }
 
         private void SetTopRight()
         {
-            Bounds bounds = GameUtils.GetVisibleBounds();
+            Bounds bounds = GraphicUtils.VisibleBounds;
             m_Transform.SetPosXY(bounds.max.x, bounds.max.y);
         }
 
         private void SetBottomLeft()
         {
-            Bounds bounds = GameUtils.GetVisibleBounds();
+            Bounds bounds = GraphicUtils.VisibleBounds;
             m_Transform.SetPosXY(bounds.min.x, bounds.min.y);
         }
 
         private void SetBottomRight()
         {
-            Bounds bounds = GameUtils.GetVisibleBounds();
+            Bounds bounds = GraphicUtils.VisibleBounds;
             m_Transform.SetPosXY(bounds.max.x, bounds.min.y);
         }
     }

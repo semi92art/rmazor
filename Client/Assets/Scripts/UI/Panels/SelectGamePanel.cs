@@ -65,7 +65,7 @@ namespace UI.Panels
                 {
                     GameClientUtils.GameId = cgiProps.GameId;
                     OnSelectGame.Invoke(cgiProps.GameId);
-                    DialogViewer.Back();
+                    DialogViewer.CloseAll();
                 };
                 cgi.Init(cgiProps, Managers);
             }

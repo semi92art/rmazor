@@ -14,6 +14,8 @@ namespace Games.RazorMaze
         [SerializeField] private int   pathItemsCount;
         [SerializeField] private bool  startPathItemFilledOnStart;
         [SerializeField] private float mazeRotationSpeed;
+        [SerializeField] private float finishTimeExcellent;
+        [SerializeField] private float finishTimeGood;
 
         public float LineWidth                  => lineWidth * 0.01f;
         public float CornerRadius               => cornerRadius * 0.01f;
@@ -24,5 +26,7 @@ namespace Games.RazorMaze
         public int   PathItemsCount             => pathItemsCount;
         public bool  StartPathItemFilledOnStart => startPathItemFilledOnStart;
         public float MazeRotationSpeed          => mazeRotationSpeed;
+        public float FinishTimeExcellent        => finishTimeExcellent * 0.1f;
+        public float FinishTimeGood             => finishTimeGood * 0.1f;
     }
 }

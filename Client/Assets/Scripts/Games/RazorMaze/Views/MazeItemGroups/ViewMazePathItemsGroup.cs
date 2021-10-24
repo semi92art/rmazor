@@ -2,6 +2,7 @@
 using System.Linq;
 using Entities;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.MazeItems;
 using SpawnPools;
@@ -9,6 +10,16 @@ using UnityEngine.Events;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
+    public interface IViewMazePathItemsGroup :
+        IInit,
+        IOnLevelStageChanged,
+        ICharacterMoveStarted, 
+        ICharacterMoveFinished
+    {
+        List<IViewMazeItemPath> PathItems { get; }
+        void OnPathProceed(V2Int _PathItem);
+    }
+    
     public class ViewMazePathItemsGroup : IViewMazePathItemsGroup
     {
         #region nonpublic members

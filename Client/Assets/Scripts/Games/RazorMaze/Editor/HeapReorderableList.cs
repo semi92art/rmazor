@@ -44,7 +44,7 @@ namespace Games.RazorMaze.Editor
             var levels = m_LevelsSaver.LoadHeapLevels(_GameId, _HeapIndex).Levels;
             var filters = Enum.GetValues(typeof(EMazeItemType))
                 .Cast<EMazeItemType>()
-                .Except(new[] {EMazeItemType.Block, EMazeItemType.Attenuator})
+                .Except(new[] {EMazeItemType.Block, EMazeItemType.MovingBlockFree})
                 .ToList();
             foreach (var filter in filters)
                 m_Filters.Add(filter, true);
@@ -224,7 +224,7 @@ namespace Games.RazorMaze.Editor
             new Color(0.7f, 0f, 1f),
             new Color(1f, 0f, 0.64f),
             new Color(0.94f, 1f, 0.96f),
-            Color.black
+            Color.black,
         };
 
         #endregion

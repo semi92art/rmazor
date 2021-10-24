@@ -11,6 +11,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
 {
     public interface IGravityItemsProceeder : IMovingItemsProceeder, ICharacterMoveStarted
     {
+        void OnShredingerBlockEvent(ShredingerBlockArgs _Args);
         void OnMazeOrientationChanged();
     }
     
@@ -21,6 +22,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         public const int StageDrop = 1;
         
         #endregion
+
 
         #region inject
         
@@ -41,23 +43,28 @@ namespace Games.RazorMaze.Models.ItemProceeders
         #endregion
         
         #region api
-        
-        public override EMazeItemType[] Types => new[] {EMazeItemType.GravityBlock, EMazeItemType.GravityTrap};
+
+        public override EMazeItemType[] Types => RazorMazeUtils.GravityItemTypes();
 
         public Func<IEnumerable<IMazeItemProceedInfo>> GetAllProceedInfos { private get; set; }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
-            if (_Args.Stage == ELevelStage.StartedOrContinued)
+            if (_Args.Stage == ELevelStage.ReadyToStartOrContinue && Data.Orientation == MazeOrientation.North)
                 MoveMazeItemsGravity(Data.Orientation, Character.Position);
+        }
+
+        public void OnShredingerBlockEvent(ShredingerBlockArgs _Args)
+        {
+            MoveMazeItemsGravity(Data.Orientation, Character.Position);
         }
 
         public void OnMazeOrientationChanged()
         {
             MoveMazeItemsGravity(Data.Orientation, Character.Position);
         }
-        
+
         public void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
         {
             MoveMazeItemsGravity(Data.Orientation, _Args.To);
@@ -70,103 +77,245 @@ namespace Games.RazorMaze.Models.ItemProceeders
         private void MoveMazeItemsGravity(MazeOrientation _Orientation, V2Int _CharacterPoint)
         {
             var dropDirection = RazorMazeUtils.GetDropDirection(_Orientation);
-            foreach (var info in GetProceedInfos(Types).Where(_Info => _Info.IsProceeding))
+            var infos = GetProceedInfos(Types).Where(_Info => _Info.IsProceeding).ToList();
+            var infosMovedDict = infos.ToDictionary(_Info => _Info, _Info => false);
+            TryMoveMazeItemsGravityCore(dropDirection, _CharacterPoint, infosMovedDict);
+        }
+
+        private void TryMoveMazeItemsGravityCore(
+            V2Int _DropDirection,
+            V2Int _CharacterPoint,
+            Dictionary<IMazeItemProceedInfo, bool> _InfosMoved)
+        {
+            var copyOfDict = _InfosMoved.ToList();
+
+            foreach (var kvp in copyOfDict
+                .Where(_Kvp => !_Kvp.Value))
             {
-                IEnumerator coroutine = null;
-                if (info.Type == EMazeItemType.GravityBlock)
-                    coroutine = MoveGravityBlockCoroutine(info, dropDirection, _CharacterPoint);
-                else if (info.Type == EMazeItemType.GravityTrap)
-                    coroutine = MoveGravityTrapCoroutine(info, dropDirection);
-                ProceedCoroutine(coroutine);
+                var info = kvp.Key;
+                TryMoveBlock(info, _DropDirection, _CharacterPoint, _InfosMoved);
+            }
+            
+            foreach (var info in copyOfDict.Select(_Kvp => _Kvp.Key))
+            {
+                info.NextPosition = -V2Int.right;
             }
         }
 
-        private IEnumerator MoveGravityBlockCoroutine(
+        private bool TryMoveBlock(IMazeItemProceedInfo _Info,
+            V2Int _DropDirection,
+            V2Int _CharacterPoint,
+            Dictionary<IMazeItemProceedInfo, bool> _InfosMoved)
+        {
+            switch (_Info.Type)
+            {
+                case EMazeItemType.GravityBlock:
+                    return MoveGravityBlock(_Info, _DropDirection, _CharacterPoint, _InfosMoved);
+                case EMazeItemType.GravityBlockFree:
+                    return MoveGravityBlockFree(_Info, _DropDirection, _CharacterPoint, _InfosMoved);
+                case EMazeItemType.GravityTrap:
+                    return MoveGravityTrap(_Info, _DropDirection, _CharacterPoint, _InfosMoved);
+            }
+            return false;
+        }
+
+        private bool MoveGravityBlock(
             IMazeItemProceedInfo _Info,
             V2Int _DropDirection,
-            V2Int _CharacterPoint)
+            V2Int _CharacterPoint,
+            Dictionary<IMazeItemProceedInfo, bool> _GravityItemsMovedDict)
         {
-            var gravityProceedInfos = ProceedInfos
-                .SelectMany(_Infos => _Infos.Value)
-                .ToList();
-            yield return Coroutines.WaitWhile(
-                () => _Info.ProceedingStage == StageDrop,
-                () =>
+            if (!_GravityItemsMovedDict.ContainsKey(_Info))
+                return false;
+            if (_GravityItemsMovedDict[_Info])
+                return true;
+            GravityBlockValidPositionDefinitionCycle(
+                _Info,
+                _DropDirection,
+                _CharacterPoint,
+                true,
+                false,
+                out var to,
+                out var gravityBlockItemInfo);
+            // если для гравитационного блок/ловушка, на который наткнулась ловушка еще определено конечное положение,
+            // пытаемся его определить и если получается, двигаем текущий блок
+            if (gravityBlockItemInfo != null)
+            {
+                if (TryMoveBlock(gravityBlockItemInfo, _DropDirection, _CharacterPoint, _GravityItemsMovedDict))
                 {
-                    var pos = _Info.CurrentPosition;
-                    bool doMove = false;
-                    V2Int? altPos = null;
-                    while (IsValidPositionForMove(pos + _DropDirection, gravityProceedInfos))
-                    {
-                        pos += _DropDirection;
-                        if (_CharacterPoint == pos)
-                            altPos = pos - _DropDirection;
-                        var pos1 = pos;
-                        if (_Info.Path.All(_Pos => pos1 != _Pos))
-                            continue;
-                        int fromPosIdx = _Info.Path.IndexOf(_Info.CurrentPosition);
-                        if (fromPosIdx == -1)
-                        {
-                            doMove = true;
-                            break;
-                        }
-                        int toPosIds = _Info.Path.IndexOf(pos);
-                        if (Math.Abs(toPosIds - fromPosIdx) > 1)
-                            continue;
-                        doMove = true;
-                        break;
-                    }
-                    if (!doMove || pos == _Info.CurrentPosition)
-                    {
-                        _Info.ProceedingStage = StageIdle;                       
-                        return;
-                    }
-                    var from = _Info.CurrentPosition;
-                    var to = altPos ?? pos;
-
-                    if (from == to)
-                        return;
-                    _Info.ProceedingStage = StageDrop;
-                    Coroutines.Run(MoveMazeItemGravityCoroutineCore(_Info, from, to));
-                });
+                    GravityBlockValidPositionDefinitionCycle(
+                        _Info,
+                        _DropDirection,
+                        _CharacterPoint,
+                        true,
+                        true,
+                        out to,
+                        out gravityBlockItemInfo);
+                }
+                else
+                    return false;
+            }
+            _Info.ProceedingStage = StageDrop;
+            ProceedCoroutine(_Info, MoveMazeItemGravityCoroutine(_Info, to));
+            _Info.NextPosition = to;
+            _GravityItemsMovedDict[_Info] = true;
+            return true;
         }
 
-        private IEnumerator MoveGravityTrapCoroutine(
+        // FIXME копипаста из MoveGravityTrap
+        private bool MoveGravityBlockFree(
             IMazeItemProceedInfo _Info,
-            V2Int _DropDirection)
+            V2Int _DropDirection,
+            V2Int _CharacterPoint,
+            Dictionary<IMazeItemProceedInfo, bool> _GravityItemsMovedDict)
         {
-            var gravityProceedInfos = ProceedInfos
-                .SelectMany(_Infos => _Infos.Value)
-                .ToList();
-            yield return Coroutines.WaitWhile(
-                () => _Info.ProceedingStage == StageDrop,
-                () =>
+            if (!_GravityItemsMovedDict.ContainsKey(_Info))
+                return false;
+            if (_GravityItemsMovedDict[_Info])
+                return true;
+            GravityBlockValidPositionDefinitionCycle(
+                _Info,
+                _DropDirection,
+                _CharacterPoint,
+                false,
+                false,
+                out var to,
+                out var gravityBlockItemInfo);
+            // если для гравитационного блок/ловушка, на который наткнулась ловушка еще определено конечное положение,
+            // пытаемся его определить и если получается, двигаем текущий блок
+            if (gravityBlockItemInfo != null)
+            {
+                if (TryMoveBlock(gravityBlockItemInfo, _DropDirection, _CharacterPoint, _GravityItemsMovedDict))
                 {
-                    var pos = _Info.CurrentPosition;
-                    while (IsValidPositionForMove(pos + _DropDirection, gravityProceedInfos))
-                        pos += _DropDirection;
-                    var from = _Info.CurrentPosition;
-                    var to = pos;
-                    if (from == to)
-                        return;
-                    _Info.ProceedingStage = StageDrop;
-                    Coroutines.Run(MoveMazeItemGravityCoroutineCore(_Info, from, to));
-                });
+                    GravityBlockValidPositionDefinitionCycle(
+                        _Info,
+                        _DropDirection,
+                        _CharacterPoint,
+                        false,
+                        true,
+                        out to,
+                        out gravityBlockItemInfo);
+                }
+                else
+                    return false;
+            }
+            _Info.ProceedingStage = StageDrop;
+            ProceedCoroutine(_Info, MoveMazeItemGravityCoroutine(_Info, to));
+            _Info.NextPosition = to;
+            _GravityItemsMovedDict[_Info] = true;
+            return true;
+        }
+        
+        private bool MoveGravityTrap(
+            IMazeItemProceedInfo _Info,
+            V2Int _DropDirection,
+            V2Int _CharacterPoint,
+            Dictionary<IMazeItemProceedInfo, bool> _GravityItemsMovedDict)
+        {
+            if (!_GravityItemsMovedDict.ContainsKey(_Info))
+                return false;
+            if (_GravityItemsMovedDict[_Info])
+                return true;
+            var to = _Info.CurrentPosition;
+            IMazeItemProceedInfo gravityBlockItemInfo;
+            var infos = GetAllProceedInfos().ToList();
+            while (IsValidPositionForMove(to + _DropDirection, infos, false, out gravityBlockItemInfo))
+                to += _DropDirection;
+            // если для гравитационного блок/ловушка, на который наткнулась ловушка еще определено конечное положение,
+            // пытаемся его определить и если получается, двигаем текущий блок
+            if (gravityBlockItemInfo != null)
+            {
+                if (TryMoveBlock(gravityBlockItemInfo, _DropDirection, _CharacterPoint, _GravityItemsMovedDict))
+                {
+                    while (IsValidPositionForMove(to + _DropDirection, infos, true, out gravityBlockItemInfo))
+                        to += _DropDirection;
+                }
+                else
+                    return false;
+            }
+            _Info.ProceedingStage = StageDrop;
+            ProceedCoroutine(_Info, MoveMazeItemGravityCoroutine(_Info, to));
+            _Info.NextPosition = to;
+            _GravityItemsMovedDict[_Info] = true;
+            return true;
+        }
+        
+        private void GravityBlockValidPositionDefinitionCycle(
+            IMazeItemProceedInfo _Info,
+            V2Int _DropDirection,
+            V2Int? _CharacterPoint,
+            bool _CheckMazeItemPath,
+            bool _CheckNextPos,
+            out V2Int _To,
+            out IMazeItemProceedInfo _GravityBlockItemInfo)
+        {
+            bool doMove = false;
+            var pos = _Info.CurrentPosition;
+            var path = _Info.Path;
+            int currPathIdx = path.IndexOf(_Info.CurrentPosition);
+            V2Int? altPos = null;
+            var infos = GetAllProceedInfos().ToList();
+            while (IsValidPositionForMove(pos + _DropDirection, infos, _CheckNextPos, out _GravityBlockItemInfo))
+            {
+                pos += _DropDirection;
+                // если новая позиция блока совпадает с позицией персонажа, записываем ее в отдельную переменную
+                if (pos == _CharacterPoint)
+                {
+                    altPos = pos - _DropDirection;
+                    break;
+                }
+                if (!_CheckMazeItemPath)
+                    continue;
+                // если новая позиция блока не находится на узле пути, проверяем следующую позицию
+                if (_Info.Path.All(_Pos1 => pos != _Pos1))
+                    continue;
+                // если текущая позиция блока не находится на узле пути, а новая - находится, то движение разрешено  
+                
+                if (currPathIdx == -1)
+                {
+                    doMove = true;
+                    break;
+                }
+                // если текущая позиция блока находится на узле пути, и новая тоде находится на узле пути,
+                // но они не являются близжайшими, проверяем следующую позицию
+                if (Math.Abs(path.IndexOf(pos) - path.IndexOf(_Info.CurrentPosition)) > 1)
+                    continue;
+                doMove = true;
+                break;
+            }
+            // если текущая позиция находится на одном из близжайших участков пути, разрешаем движение
+            if (currPathIdx != -1 && _CheckMazeItemPath)
+            {
+                if (currPathIdx - 1 >= 0 && PathContainsItem(path[currPathIdx - 1], path[currPathIdx], pos)
+                || currPathIdx + 1 < path.Count && PathContainsItem(path[currPathIdx], path[currPathIdx + 1], pos))
+                    doMove = true;
+            }
+            else
+                doMove = true;
+            
+            if (altPos.HasValue)
+                pos = altPos.Value;
+            _To = doMove ? pos : _Info.CurrentPosition;
         }
 
-        private IEnumerator MoveMazeItemGravityCoroutineCore(
+        private IEnumerator MoveMazeItemGravityCoroutine(
             IMazeItemProceedInfo _Info,
-            V2Int _From,
             V2Int _To)
         {
-            float speed = _Info.Type == EMazeItemType.GravityBlock
+            var from = _Info.CurrentPosition;
+            if (from == _To)
+            {
+                _Info.ProceedingStage = StageIdle;
+                yield break;
+            }
+            float speed = _Info.Type == EMazeItemType.GravityBlock || _Info.Type == EMazeItemType.GravityBlockFree
                 ? Settings.GravityBlockSpeed
                 : Settings.GravityTrapSpeed;
             var busyPositions = _Info.BusyPositions;
             InvokeMoveStarted(new MazeItemMoveEventArgs(
-                _Info, _From, _To, speed, 0, busyPositions));
-            var direction = (_To - _From).Normalized;
-            float distance = V2Int.Distance(_From, _To);
+                _Info, from, _To, speed, 0, busyPositions));
+            var direction = (_To - from).Normalized;
+            float distance = V2Int.Distance(from, _To);
             yield return Coroutines.Lerp(
                 0f,
                 1f,
@@ -175,11 +324,11 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 {
                     var addict = direction * (_Progress + 0.1f) * distance;
                     busyPositions.Clear();
-                    busyPositions.Add(_From + V2Int.Floor(addict));
+                    busyPositions.Add(from + V2Int.Floor(addict));
                     if (busyPositions[0] != _To)
-                        busyPositions.Add(_From + V2Int.Ceil(addict));
+                        busyPositions.Add(from + V2Int.Ceil(addict));
                     InvokeMoveContinued(new MazeItemMoveEventArgs(
-                        _Info, _From, _To, speed, _Progress, busyPositions));
+                        _Info, from, _To, speed, _Progress, busyPositions));
                 },
                 GameTicker,
                 (_Stopped, _Progress) =>
@@ -187,7 +336,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     var to = !_Stopped ? _To : _Info.BusyPositions[0];  
                     _Info.CurrentPosition = to;
                     InvokeMoveFinished(new MazeItemMoveEventArgs(
-                        _Info, _From, to, speed, _Progress, busyPositions, _Stopped));
+                        _Info, from, to, speed, _Progress, busyPositions, _Stopped));
                     _Info.ProceedingStage = StageIdle;
                     busyPositions.Clear();
                     busyPositions.Add(to);
@@ -196,13 +345,26 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         private bool IsValidPositionForMove(
             V2Int _Position,
-            IEnumerable<IMazeItemProceedInfo> _Infos)
+            IEnumerable<IMazeItemProceedInfo> _Infos,
+            bool _CheckNextPos,
+            out IMazeItemProceedInfo _GravityBlockItemInfo)
         {
             bool isOnNode = PathItemsProceeder.PathProceeds.Keys.Any(_Pos => _Pos == _Position);
             var staticBlockItems = GetStaticBlockItems(GetAllProceedInfos());
-            bool isOnStaticBlockItem = staticBlockItems.Any(_N => _N.CurrentPosition == _Position);
-            bool isOnMovingBlockItem = _Infos.Any(_Inf => _Inf.CurrentPosition == _Position);
-            return isOnNode && !isOnStaticBlockItem && !isOnMovingBlockItem;
+            bool isOnStaticBlockItem = staticBlockItems.Any(_N =>
+            {
+                if (_N.CurrentPosition != _Position)
+                    return false;
+                if (_N.Type == EMazeItemType.ShredingerBlock
+                    && _N.ProceedingStage == ShredingerBlocksProceeder.StageClosed)
+                    return true;
+                return _N.Type != EMazeItemType.ShredingerBlock;
+            });
+            _GravityBlockItemInfo = _Infos.FirstOrDefault(_Inf => 
+                RazorMazeUtils.GravityItemTypes().Contains(_Inf.Type) 
+                && _Position == (_CheckNextPos ? _Inf.NextPosition : _Inf.CurrentPosition));
+            bool result = isOnNode && !isOnStaticBlockItem && _GravityBlockItemInfo == null;
+            return result;
         }
         
         private static IEnumerable<IMazeItemProceedInfo> GetStaticBlockItems(IEnumerable<IMazeItemProceedInfo> _Items)
@@ -212,7 +374,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 || _Item.Type == EMazeItemType.Turret
                 || _Item.Type == EMazeItemType.TrapReact
                 || _Item.Type == EMazeItemType.TrapIncreasing
-                || _Item.Type == EMazeItemType.ShredingerBlock);
+                || _Item.Type == EMazeItemType.ShredingerBlock
+                || _Item.Type == EMazeItemType.Portal);
         }
 
         #endregion

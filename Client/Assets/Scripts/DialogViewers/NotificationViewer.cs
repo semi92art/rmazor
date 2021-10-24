@@ -15,6 +15,7 @@ namespace DialogViewers
 {
     public interface INotificationViewer : IDialogViewerBase
     {
+        void Back();
         void Show(IDialogPanel _Item);
     }
     

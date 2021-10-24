@@ -10,7 +10,6 @@ using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
-using Games.RazorMaze.Views.MazeItems.Props;
 using Games.RazorMaze.Views.Utils;
 using ModestTree;
 using Shapes;
@@ -34,6 +33,8 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
         
         #region shapes
+
+        protected override string ObjectName => "Path Block";
 
         protected override object[] DefaultColorShapes => new object[]
         {
@@ -61,7 +62,7 @@ namespace Games.RazorMaze.Views.MazeItems
         public ViewMazeItemPath(
             ViewSettings _ViewSettings,
             IModelGame _Model,
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
@@ -107,16 +108,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 Collect(value);
             }
         }
-        
-        public override void Init(ViewMazeItemProps _Props)
-        {
-            Props = _Props;
-            if (!Initialized)
-                InitShape();
-            UpdateShape();
-            Initialized = true;
-        }
-        
+
         public void UpdateTick()
         {
             if (!Initialized || !ActivatedInSpawnPool)
@@ -190,25 +182,19 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected override void InitShape()
         {
-            var go = Object;
-            var sh = ContainersGetter.GetContainer(ContainerNames.MazeItems).gameObject
-                .GetOrAddComponentOnNewChild<Rectangle>("Path Item", ref go);
-            go.DestroyChildrenSafe();
-            sh.Width = sh.Height = CoordinateConverter.Scale * 0.4f;
+            var sh = Object.AddComponentOnNewChild<Rectangle>("Path Item", out _);
             sh.Type = Rectangle.RectangleType.RoundedHollow;
             sh.CornerRadiusMode = Rectangle.RectangleCornerRadiusMode.Uniform;
-            float cr = ViewSettings.CornerRadius * CoordinateConverter.Scale * 2f;
-            sh.CornerRadius = cr;
             sh.Color = DrawingUtils.ColorLines;
             sh.SortingOrder = DrawingUtils.GetPathSortingOrder();
-            Object = go;
+            sh.enabled = false;
             m_Shape = sh;
-            m_Shape.enabled = false;
         }
 
         protected override void UpdateShape()
         {
-            m_Shape.transform.localPosition = CoordinateConverter.ToLocalMazeItemPosition(Props.Position);
+            m_Shape.Width = m_Shape.Height = CoordinateConverter.Scale * 0.4f;
+            m_Shape.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale * 2f;
             SetBordersAndCorners();
             EnableInitializedShapes(false);
         }
@@ -224,15 +210,15 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private void ClearBordersAndCorners()
         {
-            if (m_LeftBorderInited) m_LeftBorder.enabled = false;
-            if (m_RightBorderInited)       m_RightBorder.enabled = false;
-            if (m_BottomBorderInited)      m_BottomBorder.enabled = false;
-            if (m_TopBorderInited)         m_TopBorder.enabled = false;
+            if (m_LeftBorderInited)        m_LeftBorder       .enabled = false;
+            if (m_RightBorderInited)       m_RightBorder      .enabled = false;
+            if (m_BottomBorderInited)      m_BottomBorder     .enabled = false;
+            if (m_TopBorderInited)         m_TopBorder        .enabled = false;
             
-            if (m_BottomLeftCornerInited)  m_BottomLeftCorner.enabled = false;
+            if (m_BottomLeftCornerInited)  m_BottomLeftCorner .enabled = false;
             if (m_BottomRightCornerInited) m_BottomRightCorner.enabled = false;
-            if (m_TopLeftCornerInited)     m_TopLeftCorner.enabled = false;
-            if (m_TopRightCornerInited)    m_TopRightCorner.enabled = false;
+            if (m_TopLeftCornerInited)     m_TopLeftCorner    .enabled = false;
+            if (m_TopRightCornerInited)    m_TopRightCorner   .enabled = false;
             
             m_LeftBorderInited = m_RightBorderInited = m_BottomBorderInited = m_TopBorderInited = false;
             m_BottomLeftCornerInited = m_BottomRightCornerInited = m_TopLeftCornerInited = m_TopRightCornerInited = false;
@@ -306,22 +292,23 @@ namespace Games.RazorMaze.Views.MazeItems
             result = TurretExist(pos + _Dir1) 
                     && PathExist(pos + _Dir2) 
                     && !PathExist(pos + _Dir1 + _Dir2)
-                    && !BlockExist(pos + _Dir1 + _Dir2);
+                    && !TurretExist(pos + _Dir1 + _Dir2);
             if (result)
                 return true;
             result = TurretExist(pos + _Dir2) 
                     && PathExist(pos + _Dir1) 
                     && !PathExist(pos + _Dir1 + _Dir2)
-                    && !BlockExist(pos + _Dir1 + _Dir2);
+                    && !TurretExist(pos + _Dir1 + _Dir2);
             return result;
         }
 
         private void AdjustBorders()
         {
-            AdjustBorder(Props.Position, V2Int.left, V2Int.down, V2Int.up, m_LeftBorderInited, ref m_LeftBorder);
-            AdjustBorder(Props.Position, V2Int.right, V2Int.down, V2Int.up, m_RightBorderInited, ref m_RightBorder);
-            AdjustBorder(Props.Position, V2Int.down, V2Int.left, V2Int.right, m_BottomBorderInited, ref m_BottomBorder);
-            AdjustBorder(Props.Position, V2Int.up, V2Int.left, V2Int.right, m_TopBorderInited, ref m_TopBorder);
+            var pos = Props.Position;
+            AdjustBorder(pos, V2Int.left, V2Int.down, V2Int.up, m_LeftBorderInited, ref m_LeftBorder);
+            AdjustBorder(pos, V2Int.right, V2Int.down, V2Int.up, m_RightBorderInited, ref m_RightBorder);
+            AdjustBorder(pos, V2Int.down, V2Int.left, V2Int.right, m_BottomBorderInited, ref m_BottomBorder);
+            AdjustBorder(pos, V2Int.up, V2Int.left, V2Int.right, m_TopBorderInited, ref m_TopBorder);
         }
 
         private void AdjustBorder(
@@ -368,29 +355,23 @@ namespace Games.RazorMaze.Views.MazeItems
         
         private void InitBorder(EMazeMoveDirection _Side)
         {
-            Line border = null;
+            Line border;
             switch (_Side)
             {
                 case EMazeMoveDirection.Up:
                     border = m_TopBorder; break;
                 case EMazeMoveDirection.Right:border = m_RightBorder; break;
                 case EMazeMoveDirection.Down: border = m_BottomBorder; break;
-                case EMazeMoveDirection.Left:border = m_LeftBorder; break;
+                case EMazeMoveDirection.Left: border = m_LeftBorder; break;
                 default: throw new SwitchCaseNotImplementedException(_Side);
             }
-
             if (border.IsNull())
-            {
-                var go = new GameObject("Border");
-                go.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems));
-                go.transform.SetLocalPosXY(Vector2.zero);
-                border = go.AddComponent<Line>();
-            }
-            
+                border = Object.AddComponentOnNewChild<Line>("Border", out _);
             border.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
             border.EndCaps = LineEndCap.None;
             border.Color = DrawingUtils.ColorLines.SetA(0.5f);
             (border.Start, border.End, border.Dashed) = GetBorderPointsAndDashed(_Side, false, false);
+            border.transform.position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
             border.DashSize = 1f;
             border.enabled = false;
             switch (_Side)
@@ -418,13 +399,9 @@ namespace Games.RazorMaze.Views.MazeItems
             else if (_Right && _Up && m_TopRightCorner.IsNotNull())
                 corner = m_TopRightCorner;
             if (corner.IsNull())
-            {
-                var go = new GameObject("Corner");
-                go.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems));
-                go.transform.SetLocalPosXY(Vector2.zero);
-                corner = go.AddComponent<Disc>();
-            }
-            corner.transform.SetLocalPosXY(GetCornerCenter(_Right, _Up, _Inner));
+                corner = Object.AddComponentOnNewChild<Disc>("Corner", out _);
+            corner.transform.position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
+            corner.transform.PlusLocalPosXY(GetCornerCenter(_Right, _Up, _Inner));
             corner.Type = DiscType.Arc;
             corner.ArcEndCaps = ArcEndCap.Round;
             corner.Radius = ViewSettings.CornerRadius * CoordinateConverter.Scale;

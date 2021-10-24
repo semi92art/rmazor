@@ -11,14 +11,14 @@ namespace Games.RazorMaze.Views.Characters
     {
         #region constructor
 
-        protected ICoordinateConverter CoordinateConverter { get; }
+        protected IMazeCoordinateConverter CoordinateConverter { get; }
         protected IModelGame Model { get; }
 
         protected IContainersGetter ContainersGetter { get; }
         protected IViewMazeCommon ViewMazeCommon { get; }
 
         protected ViewCharacterBase(
-            ICoordinateConverter _CoordinateConverter, 
+            IMazeCoordinateConverter _CoordinateConverter, 
             IModelGame _Model,
             IContainersGetter _ContainersGetter,
             IViewMazeCommon _ViewMazeCommon)
@@ -36,6 +36,7 @@ namespace Games.RazorMaze.Views.Characters
         public EAppearingState AppearingState { get; protected set; }
         public virtual bool Activated { get; set; }
         public abstract void OnRotationAfterFinished(MazeRotationEventArgs _Args);
+        public abstract void OnAllPathProceed(V2Int _LastPath);
         public abstract void OnCharacterMoveStarted(CharacterMovingEventArgs _Args);
         public abstract void OnCharacterMoveContinued(CharacterMovingEventArgs _Args);
         public abstract void OnCharacterMoveFinished(CharacterMovingEventArgs _Args);

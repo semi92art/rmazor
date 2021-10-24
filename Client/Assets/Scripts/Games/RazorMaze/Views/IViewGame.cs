@@ -24,7 +24,6 @@ namespace Games.RazorMaze.Views
         IViewMazeCommon                    Common { get; }
         IViewMazeBackground                Background { get; }
         IViewMazeRotation                  MazeRotation { get; }
-        
         IViewMazePathItemsGroup            PathItemsGroup { get; }
         IViewMazeMovingItemsGroup          MovingItemsGroup { get; }
         IViewMazeTrapsReactItemsGroup      TrapsReactItemsGroup { get; }
@@ -33,6 +32,7 @@ namespace Games.RazorMaze.Views
         IViewMazePortalsGroup              PortalsGroup { get; }
         IViewMazeShredingerBlocksGroup     ShredingerBlocksGroup { get; }
         IViewMazeSpringboardItemsGroup     SpringboardItemsGroup { get; }
+        IViewMazeGravityItemsGroup         GravityItemsGroup { get; }
         
     }
 }

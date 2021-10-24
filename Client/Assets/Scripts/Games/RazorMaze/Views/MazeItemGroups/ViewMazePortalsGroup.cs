@@ -6,6 +6,11 @@ using Games.RazorMaze.Views.MazeItems;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
+    public interface IViewMazePortalsGroup : IViewMazeItemGroup
+    {
+        void OnPortalEvent(PortalEventArgs _Args);
+    }
+    
     public class ViewMazePortalsGroup : ViewMazeItemsGroupBase, IViewMazePortalsGroup
     {
         #region inject

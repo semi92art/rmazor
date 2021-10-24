@@ -13,10 +13,9 @@ MonoBehaviour:
   m_Name: model_settings
   m_EditorClassIdentifier: 
   characterSpeed: 80
-  mazeRotateSpeed: 5
   movingItemsSpeed: 6
-  gravityBlockSpeed: 10
-  gravityTrapSpeed: 10
+  gravityBlockSpeed: 15
+  gravityTrapSpeed: 15
   movingItemsPause: 1
   trapPreReactTime: 0.5
   trapReactTime: 0.5

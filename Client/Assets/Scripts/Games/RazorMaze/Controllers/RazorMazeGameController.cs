@@ -56,14 +56,23 @@ namespace Games.RazorMaze.Controllers
             
             Model.Init();
 
+            Model.PathItemsProceeder.AllPathsProceededEvent           += View.Character.OnAllPathProceed;
+            Model.PathItemsProceeder.AllPathsProceededEvent           += View.LevelStageController.OnAllPathProceed;
             Model.PathItemsProceeder.PathProceedEvent                 += View.PathItemsGroup.OnPathProceed;
             Model.MazeRotation.RotationStarted                        += View.MazeRotation.OnRotationStarted;
-            Model.GravityItemsProceeder.MazeItemMoveStarted           += View.MovingItemsGroup.OnMazeItemMoveStarted;
-            Model.GravityItemsProceeder.MazeItemMoveContinued         += View.MovingItemsGroup.OnMazeItemMoveContinued;
-            Model.GravityItemsProceeder.MazeItemMoveFinished          += View.MovingItemsGroup.OnMazeItemMoveFinished;
+            
+            Model.GravityItemsProceeder.MazeItemMoveStarted           += View.GravityItemsGroup.OnMazeItemMoveStarted;
+            Model.GravityItemsProceeder.MazeItemMoveStarted           += View.UI.UIGameControls.OnMazeItemMoveStarted;
+            Model.GravityItemsProceeder.MazeItemMoveContinued         += View.GravityItemsGroup.OnMazeItemMoveContinued;
+            Model.GravityItemsProceeder.MazeItemMoveFinished          += View.GravityItemsGroup.OnMazeItemMoveFinished;
+            Model.GravityItemsProceeder.MazeItemMoveFinished          += View.UI.UIGameControls.OnMazeItemMoveFinished;
+            
             Model.TrapsMovingProceeder.MazeItemMoveStarted            += View.MovingItemsGroup.OnMazeItemMoveStarted;
+            Model.TrapsMovingProceeder.MazeItemMoveStarted            += View.UI.UIGameControls.OnMazeItemMoveStarted;
             Model.TrapsMovingProceeder.MazeItemMoveContinued          += View.MovingItemsGroup.OnMazeItemMoveContinued;
             Model.TrapsMovingProceeder.MazeItemMoveFinished           += View.MovingItemsGroup.OnMazeItemMoveFinished;
+            Model.TrapsMovingProceeder.MazeItemMoveFinished           += View.UI.UIGameControls.OnMazeItemMoveFinished;
+            
             Model.TrapsReactProceeder.TrapReactStageChanged           += View.TrapsReactItemsGroup.OnMazeTrapReactStageChanged;
             Model.TrapsIncreasingProceeder.TrapIncreasingStageChanged += View.TrapsIncItemsGroup.OnMazeTrapIncreasingStageChanged;
             Model.TurretsProceeder.TurretShoot                        += View.TurretsGroup.OnTurretShoot;
@@ -84,21 +93,30 @@ namespace Games.RazorMaze.Controllers
                 () => !modelInitialized || !viewInitialized,
                 () => Initialized?.Invoke()));
         }
-        
+
         #endregion
 
         #region engine methods
 
         protected virtual void OnDestroy()
         {
+            Model.PathItemsProceeder.AllPathsProceededEvent           -= View.Character.OnAllPathProceed;
+            Model.PathItemsProceeder.AllPathsProceededEvent           -= View.LevelStageController.OnAllPathProceed;
             Model.PathItemsProceeder.PathProceedEvent                 -= View.PathItemsGroup.OnPathProceed;
             Model.MazeRotation.RotationStarted                        -= View.MazeRotation.OnRotationStarted;
+            
             Model.GravityItemsProceeder.MazeItemMoveStarted           -= View.MovingItemsGroup.OnMazeItemMoveStarted;
+            Model.GravityItemsProceeder.MazeItemMoveStarted           -= View.UI.UIGameControls.OnMazeItemMoveStarted;
             Model.GravityItemsProceeder.MazeItemMoveContinued         -= View.MovingItemsGroup.OnMazeItemMoveContinued;
             Model.GravityItemsProceeder.MazeItemMoveFinished          -= View.MovingItemsGroup.OnMazeItemMoveFinished;
+            Model.GravityItemsProceeder.MazeItemMoveFinished          -= View.UI.UIGameControls.OnMazeItemMoveFinished;
+            
             Model.TrapsMovingProceeder.MazeItemMoveStarted            -= View.MovingItemsGroup.OnMazeItemMoveStarted;
+            Model.TrapsMovingProceeder.MazeItemMoveStarted            -= View.UI.UIGameControls.OnMazeItemMoveStarted;
             Model.TrapsMovingProceeder.MazeItemMoveContinued          -= View.MovingItemsGroup.OnMazeItemMoveContinued;
             Model.TrapsMovingProceeder.MazeItemMoveFinished           -= View.MovingItemsGroup.OnMazeItemMoveFinished;
+            Model.TrapsMovingProceeder.MazeItemMoveFinished           -= View.UI.UIGameControls.OnMazeItemMoveFinished;
+            
             Model.TrapsReactProceeder.TrapReactStageChanged           -= View.TrapsReactItemsGroup.OnMazeTrapReactStageChanged;
             Model.TrapsIncreasingProceeder.TrapIncreasingStageChanged -= View.TrapsIncItemsGroup.OnMazeTrapIncreasingStageChanged;
             Model.TurretsProceeder.TurretShoot                        -= View.TurretsGroup.OnTurretShoot;

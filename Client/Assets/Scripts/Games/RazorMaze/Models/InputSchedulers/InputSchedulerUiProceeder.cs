@@ -4,6 +4,7 @@ using System.Linq;
 using GameHelpers;
 using Games.RazorMaze.Views;
 using Ticker;
+using UnityEngine;
 
 namespace Games.RazorMaze.Models.InputSchedulers
 {
@@ -57,12 +58,15 @@ namespace Games.RazorMaze.Models.InputSchedulers
                 case InputCommands.LoadCurrentLevel:
                 case InputCommands.LoadNextLevel:
                 case InputCommands.LoadFirstLevelFromCurrentGroup:
+                case InputCommands.LoadRandomLevel:
+                case InputCommands.LoadRandomLevelWithRotation:
                 case InputCommands.ReadyToContinueLevel:
                 case InputCommands.ContinueLevel:
                 case InputCommands.FinishLevel:
                 case InputCommands.PauseLevel:
                 case InputCommands.UnloadLevel:
                 case InputCommands.KillCharacter:
+                case InputCommands.ReadyToUnloadLevel:
                     m_UiCommands.Enqueue(new Tuple<int, object[]>(_Command, _Args));
                     break;
             }
@@ -105,6 +109,28 @@ namespace Games.RazorMaze.Models.InputSchedulers
                     info = LevelsLoader.LoadLevel(1, levelIndex); 
                     LevelStaging.LoadLevel(info, levelIndex);
                     break;
+                case InputCommands.LoadRandomLevel:
+                    levelIndex = Mathf.RoundToInt(
+                        UnityEngine.Random.value *
+                        LevelsLoader.GetLevelsCount(1));
+                    info = LevelsLoader.LoadLevel(1, levelIndex); 
+                    LevelStaging.LoadLevel(info, levelIndex);
+                    break;
+                case InputCommands.LoadRandomLevelWithRotation:
+                    levelIndex = Mathf.RoundToInt(
+                        UnityEngine.Random.value *
+                        LevelsLoader.GetLevelsCount(1));
+                    info = LevelsLoader.LoadLevel(1, levelIndex);
+                    while (info.MazeItems.All(_Item =>
+                        _Item.Type != EMazeItemType.GravityBlock && _Item.Type != EMazeItemType.GravityTrap))
+                    {
+                        levelIndex = Mathf.RoundToInt(
+                            UnityEngine.Random.value *
+                            LevelsLoader.GetLevelsCount(1));
+                        info = LevelsLoader.LoadLevel(1, levelIndex);
+                    }
+                    LevelStaging.LoadLevel(info, levelIndex);
+                    break;
                 case InputCommands.ReadyToContinueLevel:
                     LevelStaging.ReadyToStartOrContinueLevel();
                     break;
@@ -122,6 +148,9 @@ namespace Games.RazorMaze.Models.InputSchedulers
                     break;
                 case InputCommands.KillCharacter:
                     LevelStaging.KillCharacter();
+                    break;
+                case InputCommands.ReadyToUnloadLevel:
+                    LevelStaging.ReadyToUnloadLevel();
                     break;
             }
         }

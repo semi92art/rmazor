@@ -1,4 +1,5 @@
 ﻿using Games.RazorMaze.Models;
+using Games.RazorMaze.Views.ContainerGetters;
 using Ticker;
 using UnityEngine;
 
@@ -8,23 +9,28 @@ namespace Games.RazorMaze.Views.InputConfigurators
     {
         #region inject
 
-        public ViewInputConfiguratorInEditor(IUITicker _UITicker) => _UITicker.Register(this);
-        
+        public ViewInputConfiguratorInEditor(
+            IUITicker _UITicker,
+            IModelGame _Model,
+            IContainersGetter _ContainersGetter) 
+            : base(_Model, _ContainersGetter)
+        {
+            _UITicker.Register(this);
+        }
+
         #endregion
 
         #region api
         
         public void UpdateTick()
         {
-            if (Locked || IsCommandEventNull()) 
-                return;
+            bool forced = false;
             int? commandKey = null;
             ProceedMovement(ref commandKey);
             ProceedRotation(ref commandKey);
-            ProceedLevelStatement(ref commandKey);
-                
+            ProceedLevelStatement(ref commandKey, ref forced);
             if (commandKey.HasValue)
-                RaiseCommand(commandKey.Value, null);
+                RaiseCommand(commandKey.Value, null, forced);
         }
 
         #endregion
@@ -51,30 +57,35 @@ namespace Games.RazorMaze.Views.InputConfigurators
                 _CommandKey = InputCommands.RotateCounterClockwise;
         }
 
-        private static void ProceedLevelStatement(ref int? _CommandKey)
+        private static void ProceedLevelStatement(ref int? _CommandKey, ref bool _Forced)
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                if (Input.GetKey(KeyCode.LeftShift))
+                if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftAlt) && Input.GetKey(KeyCode.X))
+                    _CommandKey = InputCommands.LoadRandomLevelWithRotation;
+                else if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftAlt))
+                    _CommandKey = InputCommands.LoadRandomLevel;
+                else if (Input.GetKey(KeyCode.LeftShift))
                     _CommandKey = InputCommands.LoadNextLevel;
                 else if (Input.GetKey(KeyCode.LeftAlt))
                     _CommandKey = InputCommands.LoadFirstLevelFromCurrentGroup;
                 else
                     _CommandKey = InputCommands.LoadCurrentLevel;
+                _Forced = true;
             }
             else if (Input.GetKeyDown(KeyCode.Alpha2))
-                _CommandKey = InputCommands.ReadyToContinueLevel;
+                (_CommandKey, _Forced) = (InputCommands.ReadyToContinueLevel, true);
             else if (Input.GetKeyDown(KeyCode.Alpha3))
-                _CommandKey = InputCommands.ContinueLevel;
+                (_CommandKey, _Forced) = (InputCommands.ContinueLevel, true);
             else if (Input.GetKeyDown(KeyCode.Alpha4))
-                _CommandKey = InputCommands.FinishLevel;
+                (_CommandKey, _Forced) = (InputCommands.FinishLevel, true);
             else if (Input.GetKeyDown(KeyCode.Alpha5))
-                _CommandKey = InputCommands.UnloadLevel;
+                (_CommandKey, _Forced) = (InputCommands.UnloadLevel, true);
                 
             else if (Input.GetKeyDown(KeyCode.Alpha6))
-                _CommandKey = InputCommands.PauseLevel;
+                (_CommandKey, _Forced) = (InputCommands.PauseLevel, true);
             else if (Input.GetKeyDown(KeyCode.Alpha7))
-                _CommandKey = InputCommands.KillCharacter;
+                (_CommandKey, _Forced) = (InputCommands.KillCharacter, true);
         }
 
         #endregion

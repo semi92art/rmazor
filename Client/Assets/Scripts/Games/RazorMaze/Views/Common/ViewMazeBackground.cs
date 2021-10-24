@@ -50,12 +50,12 @@ namespace Games.RazorMaze.Views.Common
         
         #region inject
 
-        private ICoordinateConverter CoordinateConverter { get; }
+        private IMazeCoordinateConverter CoordinateConverter { get; }
         private IContainersGetter ContainersGetter { get; }
         private IGameTicker GameTicker { get; }
 
         public ViewMazeBackground(
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker)
         {
@@ -81,7 +81,7 @@ namespace Games.RazorMaze.Views.Common
         
         public void Init()
         {
-            m_ScreenBounds = GameUtils.GetVisibleBounds();
+            m_ScreenBounds = GraphicUtils.VisibleBounds;
             InitSources();
             InitShapes();
             Initialized?.Invoke();

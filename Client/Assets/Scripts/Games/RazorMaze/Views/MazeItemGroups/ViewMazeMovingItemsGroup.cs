@@ -5,14 +5,19 @@ using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.Common;
-using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItems;
 using Shapes;
 using UnityEngine;
-using Utils;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
+    public interface IViewMazeMovingItemsGroup : IViewMazeItemGroup
+    {
+        void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args);
+        void OnMazeItemMoveContinued(MazeItemMoveEventArgs _Args);
+        void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args);
+    }
+    
     public class ViewMazeMovingItemsGroup : ViewMazeItemsGroupBase, IViewMazeMovingItemsGroup, IOnBackgroundColorChanged
     {
         #region types
@@ -35,35 +40,24 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         #region inject
         
-        private ICoordinateConverter CoordinateConverter { get; }
-        private IViewInputConfigurator InputConfigurator { get; }
+        private IMazeCoordinateConverter CoordinateConverter { get; }
 
         public ViewMazeMovingItemsGroup(
-            ICoordinateConverter _CoordinateConverter,
-            IViewMazeCommon _Common,
-            IViewInputConfigurator _InputConfigurator)
+            IMazeCoordinateConverter _CoordinateConverter,
+            IViewMazeCommon _Common)
             : base(_Common)
         {
             CoordinateConverter = _CoordinateConverter;
-            InputConfigurator = _InputConfigurator;
         }
         
         #endregion
         
         #region api
 
-        public override EMazeItemType[] Types => new[]
-        {
-            EMazeItemType.GravityBlock, 
-            EMazeItemType.GravityTrap,
-            EMazeItemType.TrapMoving
-        };
+        public override EMazeItemType[] Types => new[] {EMazeItemType.TrapMoving};
 
         public void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
         {
-            var type = _Args.Info.Type;
-            if (type == EMazeItemType.GravityBlock || type == EMazeItemType.GravityTrap)
-                InputConfigurator.Locked = true;
             if (m_ItemsMoving.ContainsKey(_Args.Info))
                 m_ItemsMoving.Remove(_Args.Info);
             m_ItemsMoving.Add(_Args.Info, new ViewMovingItemInfo
@@ -84,9 +78,6 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         public void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
         {
-            var type = _Args.Info.Type;
-            if (type == EMazeItemType.GravityBlock || type == EMazeItemType.GravityTrap)
-                InputConfigurator.Locked = false;
             if (!m_ItemsMoving.ContainsKey(_Args.Info))
                 return;
             (Common.GetItem(_Args.Info) as IViewMazeItemMovingBlock)?.OnMoveFinished(_Args);

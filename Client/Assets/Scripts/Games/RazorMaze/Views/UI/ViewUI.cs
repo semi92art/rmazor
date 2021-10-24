@@ -5,6 +5,8 @@ using DialogViewers;
 using Entities;
 using Exceptions;
 using GameHelpers;
+using Games.RazorMaze.Models;
+using Games.RazorMaze.Views.InputConfigurators;
 using Managers;
 using Ticker;
 using Utils;
@@ -38,8 +40,7 @@ namespace Games.RazorMaze.Views.UI
         private IDialogPanels DialogPanels { get; }
         private ITransitionRenderer TransitionRenderer { get; }
         private ILoadingController LoadingController { get; }
-        private IViewUIPrompts ViewUIPrompts { get; }
-        private IViewUIGameControls ViewUIGameControls { get; }
+        private IViewInputConfigurator InputConfigurator { get; }
 
         public ViewUI(
             IManagersGetter _Managers,
@@ -49,8 +50,9 @@ namespace Games.RazorMaze.Views.UI
             IDialogPanels _DialogPanels,
             ITransitionRenderer _TransitionRenderer,
             ILoadingController _LoadingController,
-            IViewUIPrompts _ViewUIPrompts,
-            IViewUIGameControls _ViewUIGameControls)
+            IViewUIGameControls _ViewUIGameControls,
+            IViewInputConfigurator _InputConfigurator)
+            : base(_ViewUIGameControls)
         {
             Managers = _Managers;
             UITicker = _UITicker;
@@ -59,9 +61,7 @@ namespace Games.RazorMaze.Views.UI
             DialogPanels = _DialogPanels;
             TransitionRenderer = _TransitionRenderer;
             LoadingController = _LoadingController;
-            ViewUIPrompts = _ViewUIPrompts;
-            ViewUIGameControls = _ViewUIGameControls;
-
+            InputConfigurator = _InputConfigurator;
             _UITicker.Register(this);
         }
 
@@ -71,20 +71,36 @@ namespace Games.RazorMaze.Views.UI
 
         public override void Init()
         {
+            InputConfigurator.Command += OnCommand;
+            
             DataFieldsMigrator.InitDefaultDataFieldValues();
             CreateCanvas();
             var parent = m_Canvas.RTransform();
             DialogViewer.Init(parent);
             NotificationViewer.Init(parent);
             TransitionRenderer.Init(parent);
-            ViewUIGameControls.Init();
+            UIGameControls.Init();
             RaiseInitializedEvent();
+        }
+
+        private void OnCommand(int _Key, object[] _Args)
+        {
+            switch (_Key)
+            {
+                case InputCommands.SettingsMenu:
+                    DialogPanels.SettingDialogPanel.Init();
+                    DialogViewer.Show(DialogPanels.SettingDialogPanel);
+                    break;
+                case InputCommands.ShopMenu:
+                    DialogPanels.ShopDialogPanel.Init();
+                    DialogViewer.Show(DialogPanels.ShopDialogPanel);
+                    break;
+            }
         }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            ViewUIPrompts.OnLevelStageChanged(_Args);
-            ViewUIGameControls.OnLevelStageChanged(_Args);
+            UIGameControls.OnLevelStageChanged(_Args);
         }
  
 
@@ -92,16 +108,16 @@ namespace Games.RazorMaze.Views.UI
 
         #region nonpublic methods
         
-        private void OnStart()
-        {
-            if (!m_OnStart)
-            {
-                ShowMenu(false);
-                return;
-            }
-            CreateLoadingPanel();
-            m_OnStart = false;
-        }
+        // private void OnStart()
+        // {
+        //     if (!m_OnStart)
+        //     {
+        //         ShowMenu(false);
+        //         return;
+        //     }
+        //     CreateLoadingPanel();
+        //     m_OnStart = false;
+        // }
 
         private void ShowMenu(bool _OnStart)
         {

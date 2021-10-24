@@ -28,6 +28,7 @@ namespace Entities
         public static SaveKey DesignerMazeInfo => new SaveKey("designer_maze_info", typeof(MazeInfo));
         public static SaveKey DesignerSelectedLevel => new SaveKey("designer_selected_level", typeof(int));
         public static SaveKey DesignerHeapIndex => new SaveKey("designer_heap_index", typeof(int));
+        public static SaveKey PromptHowToRotateShown => new SaveKey("prompt_how_to_rotate_shown", typeof(bool));
 
         #endregion
     

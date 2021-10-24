@@ -5,14 +5,6 @@ namespace Utils
 {
     public static class GameUtils
     {
-        public static Bounds GetVisibleBounds()
-        {
-            float vertExtent = Camera.main.orthographicSize * 2f;
-            float horzExtent = vertExtent * GraphicUtils.AspectRatio;
-            Vector3 size = new Vector3(horzExtent, vertExtent, 0);
-            return new Bounds(Camera.main.transform.position.SetZ(0), size);
-        }
-
         public static void DrawGizmosRect(
             Vector3 _TopLeft,
             Vector3 _TopRight,
@@ -31,7 +23,7 @@ namespace Utils
 
         public static void FillByCameraRect(SpriteRenderer _Item)
         {
-            var cameraBounds = GetVisibleBounds();
+            var cameraBounds = GraphicUtils.VisibleBounds;
             var rendererBounds = _Item.bounds;
             var transform = _Item.transform;
             transform.localScale = new Vector3(

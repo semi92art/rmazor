@@ -12,7 +12,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
     {
         Dictionary<V2Int, bool> PathProceeds { get; }
         event PathProceedHandler PathProceedEvent;
-        event UnityAction AllPathsProceededEvent;
+        event PathProceedHandler AllPathsProceededEvent;
     }
     
     public class PathItemsProceeder : IPathItemsProceeder, IOnLevelStageChanged
@@ -32,7 +32,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         public Dictionary<V2Int, bool> PathProceeds { get; private set; }
         public event PathProceedHandler PathProceedEvent;
-        public event UnityAction AllPathsProceededEvent;
+        public event PathProceedHandler AllPathsProceededEvent;
 
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
@@ -58,7 +58,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             PathProceedEvent?.Invoke(_PathItem); 
             
             if (PathProceeds.Values.All(_Proceeded => _Proceeded))
-                AllPathsProceededEvent?.Invoke();
+                AllPathsProceededEvent?.Invoke(_PathItem);
         }
 
         private void CollectPathProceeds()

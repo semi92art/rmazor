@@ -6,6 +6,13 @@ using UnityEngine.Events;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
+    public interface IViewMazeTrapsReactItemsGroup : 
+        IInit,
+        IViewMazeItemGroup
+    {
+        void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args);
+    }
+    
     public class ViewMazeTrapsReactItemGroup : ViewMazeItemsGroupBase, IViewMazeTrapsReactItemsGroup
     {
         #region inject
@@ -26,8 +33,5 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         }
         
         #endregion
-
-
-        
     }
 }

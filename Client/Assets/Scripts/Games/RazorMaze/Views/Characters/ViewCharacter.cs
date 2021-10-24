@@ -62,10 +62,11 @@ namespace Games.RazorMaze.Views.Characters
         private IGameTicker GameTicker { get; }
         private IViewAppearTransitioner Transitioner { get; }
         private IManagersGetter Managers { get; }
+        private IMazeShaker MazeShaker { get; }
         private ViewSettings ViewSettings { get; }
 
         public ViewCharacter(
-            ICoordinateConverter _CoordinateConverter, 
+            IMazeCoordinateConverter _CoordinateConverter, 
             IModelGame _Model,
             IContainersGetter _ContainersGetter,
             IViewMazeCommon _ViewMazeCommon,
@@ -74,6 +75,7 @@ namespace Games.RazorMaze.Views.Characters
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
             IManagersGetter _Managers,
+            IMazeShaker _MazeShaker,
             ViewSettings _ViewSettings) 
             : base(
                 _CoordinateConverter, 
@@ -87,6 +89,7 @@ namespace Games.RazorMaze.Views.Characters
             Transitioner = _Transitioner;
             ViewSettings = _ViewSettings;
             Managers = _Managers;
+            MazeShaker = _MazeShaker;
         }
         
         #endregion
@@ -102,6 +105,7 @@ namespace Games.RazorMaze.Views.Characters
                 {
                     if (!m_Initialized)
                     {
+                        MazeShaker.Init();
                         InitPrefab();
                         m_Initialized = true;
                     }
@@ -126,6 +130,13 @@ namespace Games.RazorMaze.Views.Characters
             }
         }
 
+        public override void OnAllPathProceed(V2Int _LastPath)
+        {
+            m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = false;
+            Tail.HideTail();
+            Effector.OnAllPathProceed(_LastPath);
+        }
+
         public override void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
         {
             m_Animator.SetTrigger(AnimKeyStartMove);
@@ -147,7 +158,7 @@ namespace Games.RazorMaze.Views.Characters
         {
             m_Animator.SetTrigger(AnimKeyBump);
             Tail.HideTail(_Args);
-            Coroutines.Run(HitMaze(_Args));
+            Coroutines.Run(MazeShaker.HitMazeCoroutine(_Args));
             Managers.Notify(_SM => _SM.PlayClip(SoundClipNameCharacterMoveEnd));
             Effector.OnCharacterMoveFinished(_Args);
         }
@@ -171,7 +182,7 @@ namespace Games.RazorMaze.Views.Characters
                     m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = false;
                     Tail.HideTail();
                     Managers.Notify(_SM => _SM.PlayClip(SoundClipNameCharacterDeath));
-                    Coroutines.Run(ShakeMaze());
+                    Coroutines.Run(MazeShaker.ShakeMazeCoroutine());
                     break;
             }
             Effector.OnLevelStageChanged(_Args);
@@ -217,6 +228,9 @@ namespace Games.RazorMaze.Views.Characters
             m_Eye1Shape = prefab.GetCompItem<Rectangle>("eye_1");
             m_Eye2Shape = prefab.GetCompItem<Rectangle>("eye_2");
             m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = false;
+            m_HeadShape.SortingOrder = DrawingUtils.GetCharacterSortingOrder();
+            m_Eye1Shape.SortingOrder = DrawingUtils.GetCharacterSortingOrder() + 1;
+            m_Eye2Shape.SortingOrder = DrawingUtils.GetCharacterSortingOrder() + 1;
             m_Initialized = true;
         }
 
@@ -282,54 +296,6 @@ namespace Games.RazorMaze.Views.Characters
             m_Head.transform.localScale = scaleCoeff * new Vector3(horScale, vertScale, 1f);
         }
         
-        private IEnumerator ShakeMaze()
-        {
-            var mazeCont = ContainersGetter.GetContainer(ContainerNames.Maze);
-            var defPos = mazeCont.position;
-            const float duration = 0.5f;
-            yield return Coroutines.Lerp(
-                1f,
-                0f,
-                duration,
-                _Progress =>
-                {
-                    float amplitude = 0.25f * _Progress;
-                    Vector2 res;
-                    res.x = defPos.x + amplitude * Mathf.Sin(GameTicker.Time * 200f);
-                    res.y = defPos.y + amplitude * Mathf.Cos(GameTicker.Time * 100f);
-                    mazeCont.position = res;
-                },
-                GameTicker,
-                (_Finished, _Progress) =>
-                {
-                    mazeCont.position = defPos;
-                });
-        }
-        
-        private IEnumerator HitMaze(CharacterMovingEventArgs _Args)
-        {
-            var mazeCont = ContainersGetter.GetContainer(ContainerNames.Maze);
-            const float amplitude = 0.5f;
-            var dir = RazorMazeUtils.GetDirectionVector(_Args.Direction, MazeOrientation.North);
-            Vector2 defPos = mazeCont.position;
-            const float duration = 0.1f;
-            yield return Coroutines.Lerp(
-                0f,
-                1f,
-                duration,
-                _Progress =>
-                {
-                    float distance = _Progress < 0.5f ? _Progress * amplitude : (1f - _Progress) * amplitude;
-                    var res = defPos + distance * dir.ToVector2();
-                    mazeCont.position = res;
-                },
-                GameTicker,
-                (_Finished, _Progress) =>
-                {
-                    mazeCont.position = defPos;
-                });
-        }
-
         private void SetDefaultCharacterState()
         {
             Coroutines.Run(Coroutines.WaitWhile(

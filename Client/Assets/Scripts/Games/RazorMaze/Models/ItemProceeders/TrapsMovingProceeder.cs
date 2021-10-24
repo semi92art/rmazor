@@ -97,7 +97,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 default: throw new SwitchCaseNotImplementedException(_Info.MoveByPathDirection);
             }
             var coroutine = MoveTrapMovingCoroutine(_Info, from, to, _OnFinish);
-            ProceedCoroutine(coroutine);
+            ProceedCoroutine(_Info, coroutine);
         }
         
         private IEnumerator MoveTrapMovingCoroutine(

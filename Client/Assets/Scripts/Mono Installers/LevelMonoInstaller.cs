@@ -59,8 +59,9 @@ namespace Mono_Installers
             #region view
             
             Container.Bind<ViewSettings>()                  .FromScriptableObject(viewSettings)  .AsSingle();
-            
-            Container.Bind<ICoordinateConverter>()      .To<CoordinateConverter>()       .AsSingle();
+
+            Container.Bind<IMazeShaker>()                   .To<MazeShaker>()                    .AsSingle();
+            Container.Bind<IMazeCoordinateConverter>()      .To<MazeCoordinateConverter>()       .AsSingle();
             Container.Bind<IContainersGetter>()             .To<ContainersGetter>()              .AsSingle();
             Container.Bind<IMazeItemsCreator>()             .To<MazeItemsCreator>()              .AsSingle();
             
@@ -68,6 +69,8 @@ namespace Mono_Installers
             Container.Bind<IViewMazeCommon>()               .To<ViewMazeCommon>()                .AsSingle();
             Container.Bind<IViewUI>()                       .To<ViewUI>()                        .AsSingle().When(_ => Release);
             Container.Bind<IViewUI>()                       .To<ViewUIProt>()                    .AsSingle().When(_ => !Release);
+            Container.Bind<IViewUIGameControls>()           .To<ViewUIGameControls>()            .AsSingle().When(_ => Release);
+            Container.Bind<IViewUIGameControls>()           .To<ViewUIGameControlsProt>()        .AsSingle().When(_ => !Release);
             Container.Bind<IViewMazeRotation>()             .To<ViewMazeRotation>()              .AsSingle();
             Container.Bind<IViewMazeBackground>()           .To<ViewMazeBackground>()            .AsSingle();
             Container.Bind<IViewAppearTransitioner>()       .To<ViewAppearTransitioner>()        .AsSingle();
@@ -87,8 +90,9 @@ namespace Mono_Installers
             Container.Bind<IViewMazeItemSpringboard>()      .To<ViewMazeItemSpringboard>()       .AsSingle();
             Container.Bind<IViewMazeItemPortal>()           .To<ViewMazeItemPortal>()            .AsSingle();
             Container.Bind<IViewMazeItemGravityTrap>()      .To<ViewMazeItemGravityTrap>()       .AsSingle();
-            Container.Bind<IViewMazeItemTrapReact>()        .To<ViewMazeItemTrapReact>()         .AsSingle();
+            Container.Bind<IViewMazeItemTrapReact>()        .To<ViewMazeItemTrapReactSpikes>()   .AsSingle();
             Container.Bind<IViewMazeItemTrapIncreasing>()   .To<ViewMazeItemTrapIncreasing>()    .AsSingle();
+            Container.Bind<IViewMazeItemGravityBlockFree>() .To<ViewMazeItemGravityBlockFree>()  .AsSingle();
             
             Container.Bind<IViewMazePathItemsGroup>()       .To<ViewMazePathItemsGroup>()        .AsSingle();
             Container.Bind<IViewMazeMovingItemsGroup>()     .To<ViewMazeMovingItemsGroup>()      .AsSingle();
@@ -98,6 +102,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazePortalsGroup>()         .To<ViewMazePortalsGroup>()          .AsSingle();
             Container.Bind<IViewMazeTrapsReactItemsGroup>() .To<ViewMazeTrapsReactItemGroup>()   .AsSingle();
             Container.Bind<IViewMazeTrapsIncItemsGroup>()   .To<ViewMazeTrapsIncItemsGroup>()    .AsSingle();
+            Container.Bind<IViewMazeGravityItemsGroup>()    .To<ViewMazeGravityItemsGroup>()     .AsSingle();
 
             Container.Bind<IDialogPanels>()                 .To<DialogPanels>()                  .AsSingle().When(_ => Release);
             Container.Bind<IGameMenuDialogPanel>()          .To<GameMenuPanel>()                 .AsSingle().When(_ => Release);
@@ -114,8 +119,7 @@ namespace Mono_Installers
             Container.Bind<IDailyBonusDialogPanel>()        .To<DailyBonusPanel>()               .AsSingle().When(_ => Release);
             Container.Bind<ISettingDialogPanel>()           .To<SettingsPanel>()                 .AsSingle().When(_ => Release);
             Container.Bind<IViewUIPrompts>()                .To<ViewUIPrompts>()                 .AsSingle().When(_ => Release);
-            Container.Bind<IViewUIGameControls>()           .To<ViewUIGameControls>()            .AsSingle().When(_ => Release);
-            
+
 #if UNITY_EDITOR
             Container.Bind<IViewInputConfigurator>()        .To<ViewInputConfiguratorInEditor>() .AsSingle();
 #else

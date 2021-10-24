@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if UNITY_EDITOR
+using System.Collections.Generic;
 using System.Linq;
 using Constants;
 using DI.Extensions;
@@ -9,16 +10,12 @@ using Games.RazorMaze.Views.MazeItems;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;
-#if UNITY_EDITOR
 using Mono_Installers;
 using UnityEditor;
-#endif
 
 namespace Games.RazorMaze
 {
-#if UNITY_EDITOR
     [InitializeOnLoad]
-#endif
     public class LevelDesigner : MonoBehaviour
     {
         private static LevelDesigner _instance;
@@ -34,8 +31,8 @@ namespace Games.RazorMaze
         }
 
         public const int MazeWidth = 12;
+        public static int[] Heights = {12, 15, 16}; 
         
-        public static List<int> Sizes => Enumerable.Range(MazeWidth, 1).ToList();
         [HideInInspector] public string pathLengths;
         [HideInInspector] public int sizeIdx;
         [HideInInspector] public float aParam;
@@ -50,8 +47,6 @@ namespace Games.RazorMaze
             get => SaveUtils.GetValue<MazeInfo>(SaveKey.DesignerMazeInfo);
             set => SaveUtils.PutValue(SaveKey.DesignerMazeInfo, value);
         }
-        
-#if UNITY_EDITOR
         
         static LevelDesigner()
         {
@@ -85,8 +80,6 @@ namespace Games.RazorMaze
             SceneManager.LoadScene(SceneNames.Level);
         }
         
-#endif
-        
         public MazeInfo GetLevelInfoFromScene()
         {
             mazeObject = GameObject.Find("Maze Items");
@@ -111,7 +104,7 @@ namespace Games.RazorMaze
                 .Select(_Item => _Item.Props).ToList();
 
             return new MazeInfo{
-                Size =  new V2Int(MazeWidth, Sizes[sizeIdx]),
+                Size =  new V2Int(MazeWidth, Heights[sizeIdx]),
                 Path = path,
                 MazeItems = mazeProtItems
                     .SelectMany(_Item =>
@@ -133,3 +126,5 @@ namespace Games.RazorMaze
         }
     }
 }
+
+#endif

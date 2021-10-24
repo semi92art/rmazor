@@ -6,6 +6,13 @@ using UnityEngine.Events;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
+    public interface IViewMazeTrapsIncItemsGroup :
+        IInit,
+        IViewMazeItemGroup
+    {
+        void OnMazeTrapIncreasingStageChanged(MazeItemTrapIncreasingEventArgs _Args);
+    }
+    
     public class ViewMazeTrapsIncItemsGroup : ViewMazeItemsGroupBase, IViewMazeTrapsIncItemsGroup
     {
         #region inject

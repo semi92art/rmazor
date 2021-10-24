@@ -31,7 +31,6 @@ namespace Games.RazorMaze.Views.MazeItems
 
         #endregion
         
-        
         #region nonpublic members
 
         private static int AnimKeyOpen => AnimKeys.Anim;
@@ -46,6 +45,8 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
 
         #region shapes
+
+        protected override string ObjectName => "Trap Increasing Block";
 
         protected override object[] DefaultColorShapes => new object[]{m_Center}
             .Concat(m_Blades)
@@ -62,7 +63,7 @@ namespace Games.RazorMaze.Views.MazeItems
         public ViewMazeItemTrapIncreasing(
             ViewSettings _ViewSettings,
             IModelGame _Model,
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
@@ -130,26 +131,19 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected override void InitShape()
         {
-            Object = new GameObject("Trap Increasing");
-            Object.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems));
             var prefab = PrefabUtilsEx.InitPrefab(
                 Object.transform, "views", "trap_increasing");
             prefab.transform.SetLocalPosXY(Vector2.zero);
-            prefab.transform.localScale = Vector3.one * CoordinateConverter.Scale;
             m_Animator = prefab.GetCompItem<Animator>("animator");
             m_Center = prefab.GetCompItem<Disc>("center");
             m_Triggerer = prefab.GetCompItem<AnimationTriggerer>("triggerer");
             m_Triggerer.Trigger1 += () => m_ReadyToKill = true;
             m_Triggerer.Trigger2 += () => m_ReadyToKill = false;
-            
-            m_BladeContainers.Clear();
-            m_Blades.Clear();
             for (int i = 1; i <= 4; i++)
             {
                 m_BladeContainers.Add(prefab.GetCompItem<Line>($"blade_container_{i}"));
                 m_Blades.Add(prefab.GetCompItem<SpriteRenderer>($"blade_{i}"));
             }
-
             foreach (var bladeContainer in m_BladeContainers)
             {
                 bladeContainer.Thickness = 0.07f;
@@ -163,7 +157,7 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override void UpdateShape()
         {
             Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
-
+            Object.transform.localScale = Vector3.one * CoordinateConverter.Scale;
             m_DeathZone = new List<V2Int>
             {
                 Props.Position + V2Int.down,
@@ -235,6 +229,8 @@ namespace Games.RazorMaze.Views.MazeItems
         private void CheckForCharacterDeath()
         {
             if (!Model.Character.Alive)
+                return;
+            if (Model.LevelStaging.LevelStage == ELevelStage.Finished)
                 return;
             const float distance = 0.5f;
             var character = Model.Character;

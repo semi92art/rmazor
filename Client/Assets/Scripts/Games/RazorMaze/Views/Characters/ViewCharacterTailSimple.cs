@@ -24,13 +24,13 @@ namespace Games.RazorMaze.Views.Characters
         
         #region inject
 
-        private ICoordinateConverter CoordinateConverter { get; }
+        private IMazeCoordinateConverter CoordinateConverter { get; }
         private IContainersGetter ContainersGetter { get; }
         private ModelSettings ModelSettings { get; }
         private IGameTicker GameTicker { get; }
 
         public ViewCharacterTailSimple(
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             ModelSettings _ModelSettings,
             IGameTicker _GameTicker)
@@ -45,7 +45,6 @@ namespace Games.RazorMaze.Views.Characters
         
         #region api
         
-
         public bool Activated
         {
             get => m_Activated;

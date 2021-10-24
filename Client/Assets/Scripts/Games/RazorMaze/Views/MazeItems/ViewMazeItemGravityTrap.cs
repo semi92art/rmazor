@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
 using Entities;
@@ -10,12 +9,9 @@ using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
-using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
 using UnityEngine;
-using UnityEngine.Events;
-using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
@@ -43,13 +39,12 @@ namespace Games.RazorMaze.Views.MazeItems
         private Vector2 m_Position;
         private Transform m_MaceTr;
         private Color m_BackColor;
-        
-        
 
         #endregion
         
         #region shapes
 
+        protected override string ObjectName => "Gravity Trap Block";
         protected override object[] DefaultColorShapes => new object[] {m_OuterDisc}.Concat(m_Cones).ToArray();
         private Disc m_OuterDisc;
         private Disc m_InnerDisc;
@@ -59,15 +54,17 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region inject
         
+        private IMazeShaker MazeShaker { get; }
         
         public ViewMazeItemGravityTrap(
             ViewSettings _ViewSettings,
             IModelGame _Model,
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
-            IManagersGetter _Managers)
+            IManagersGetter _Managers,
+            IMazeShaker _MazeShaker)
             : base(
                 _ViewSettings,
                 _Model,
@@ -76,7 +73,9 @@ namespace Games.RazorMaze.Views.MazeItems
                 _GameTicker,
                 _Transitioner,
                 _Managers)
-        { }
+        {
+            MazeShaker = _MazeShaker;
+        }
         
         #endregion
         
@@ -89,7 +88,8 @@ namespace Games.RazorMaze.Views.MazeItems
             ContainersGetter,
             GameTicker,
             Transitioner,
-            Managers);
+            Managers,
+            MazeShaker);
 
         public override bool ActivatedInSpawnPool
         {
@@ -99,6 +99,13 @@ namespace Games.RazorMaze.Views.MazeItems
                 m_InnerDisc.enabled = false;
                 base.ActivatedInSpawnPool = value;
             }
+        }
+
+        public override void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            base.OnLevelStageChanged(_Args);
+            if (_Args.Stage == ELevelStage.ReadyToStartOrContinue || _Args.Stage == ELevelStage.Loaded)
+                m_Position = Props.Position.ToVector2();
         }
 
         public void UpdateTick()
@@ -124,6 +131,8 @@ namespace Games.RazorMaze.Views.MazeItems
             Managers.Notify(_SM => _SM.PlayClip(
                 SoundClipNameTrapMoving, true, 
                 _Tags: $"{_Args.Info.GetHashCode()}"));
+            if (!MazeShaker.ShakeMaze)
+                MazeShaker.ShakeMaze = true;
         }
 
         public override void OnMoving(MazeItemMoveEventArgs _Args)
@@ -141,6 +150,8 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Rotate = false;
             Managers.Notify(_SM => _SM.StopClip(
                 SoundClipNameTrapMoving, _Tags: $"{_Args.Info.GetHashCode()}"));
+            if (MazeShaker.ShakeMaze)
+                MazeShaker.ShakeMaze = false;
         }
         
         public void OnBackgroundColorChanged(Color _Color)
@@ -155,24 +166,19 @@ namespace Games.RazorMaze.Views.MazeItems
         
         protected override void InitShape()
         {
-            Object = new GameObject("Gravity Trap");
-            Object.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems).gameObject);
-
             var go = PrefabUtilsEx.InitPrefab(
                 Object.transform, "views", "gravity_trap");
             m_MaceTr = go.GetCompItem<Transform>("container");
-
             m_OuterDisc = go.GetCompItem<Disc>("outer disc");
             m_InnerDisc = go.GetCompItem<Disc>("inner disc");
             m_Cones = go.GetContentItem("cones").GetComponentsInChildren<Cone>().ToList();
-            
             go.transform.SetLocalPosXY(Vector2.zero);
-            go.transform.localScale = Vector3.one * CoordinateConverter.Scale * ShapeScale;
         }
 
         protected override void UpdateShape()
         {
             Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+            Object.transform.localScale = Vector3.one * CoordinateConverter.Scale * ShapeScale;
             base.UpdateShape();
         }
 
@@ -215,11 +221,18 @@ namespace Games.RazorMaze.Views.MazeItems
         
         private void CheckForCharacterDeath()
         {
+            if (!Model.Character.Alive)
+                return;
+            if (Model.LevelStaging.LevelStage == ELevelStage.Finished)
+                return;
             var ch = Model.Character;
             var cPos = ch.IsMoving ? ch.MovingInfo.PrecisePosition : ch.Position.ToVector2();
-            if (Vector2.Distance(cPos, m_Position) < 1f)
-                Model.LevelStaging.KillCharacter();
+            if (Vector2.Distance(cPos, m_Position) > 0.9f)
+                return;
+            Model.LevelStaging.KillCharacter();
         }
+
+        protected override void InitWallBlockMovingPaths() { }
 
         protected override void OnAppearStart(bool _Appear)
         {

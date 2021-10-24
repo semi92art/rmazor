@@ -15,8 +15,9 @@ namespace Games.RazorMaze.Models
         TrapMoving,
         GravityTrap,
         Turret,
-        Attenuator,
-        Springboard
+        GravityBlockFree,
+        Springboard,
+        MovingBlockFree
     }
 
     public enum EMazeItemMoveByPathDirection

@@ -19,7 +19,7 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
         [Inject]
         public MazeItemsCreatorProt(
             IContainersGetter _ContainersGetter,
-            ICoordinateConverter _CoordinateConverter, 
+            IMazeCoordinateConverter _CoordinateConverter, 
             IViewMazeItemPath _ItemPath,
             IViewMazeItemGravityBlock _GravityBlock,
             IViewMazeItemMovingTrap _MovingTrap,
@@ -49,7 +49,7 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
         
         protected MazeItemsCreatorProt(
             IContainersGetter _ContainersGetter,
-            ICoordinateConverter _CoordinateConverter) : base(_ContainersGetter, _CoordinateConverter)
+            IMazeCoordinateConverter _CoordinateConverter) : base(_ContainersGetter, _CoordinateConverter)
         { }
         
         #endregion
