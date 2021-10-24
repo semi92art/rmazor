@@ -80,6 +80,7 @@ namespace Games.RazorMaze.Views.Characters
             m_Tail.A = CoordinateConverter.ToLocalCharacterPosition(a);
             m_Tail.B = CoordinateConverter.ToLocalCharacterPosition(b);
             m_Tail.C = CoordinateConverter.ToLocalCharacterPosition(c);
+            m_Tail.Roundness = 0.4f;
             m_Tail.gameObject.transform.SetPosXY(CoordinateConverter.GetCenter());
         }
 
