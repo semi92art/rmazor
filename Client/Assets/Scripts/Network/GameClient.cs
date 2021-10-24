@@ -6,6 +6,7 @@ using GameHelpers;
 using Network.Packets;
 using Newtonsoft.Json;
 using Ticker;
+using UnityEngine.Events;
 using UnityEngine.Networking;
 using Utils;
 
@@ -48,7 +49,7 @@ namespace Network
         
         #region api
 
-        public event NoArgsHandler Initialized;
+        public event UnityAction Initialized;
         public readonly List<GameDataField> ExecutingGameFields = new List<GameDataField>();
         
         public void Init()
@@ -141,7 +142,7 @@ namespace Network
                 Coroutines.Run(Coroutines.Action(() => SendRequestToDatabase(testPacket, 2f)));
             }, 5f,
             float.MaxValue,
-            UITicker.Instance, // FIXME костыль
+            CommonTicker.Instance,
             () => false));
         }
 
@@ -161,7 +162,7 @@ namespace Network
             },
             5f,
             float.MaxValue,
-            UITicker.Instance, // FIXME костыль
+            CommonTicker.Instance,
             () => false));
         }
 

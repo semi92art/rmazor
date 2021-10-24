@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Ticker
 {
@@ -19,8 +20,8 @@ namespace Ticker
 
         #region api
 
-        public event NoArgsHandler Paused;
-        public event NoArgsHandler UnPaused;
+        public event UnityAction Paused;
+        public event UnityAction UnPaused;
         public float Time { get; private set; }
 
         public bool Pause

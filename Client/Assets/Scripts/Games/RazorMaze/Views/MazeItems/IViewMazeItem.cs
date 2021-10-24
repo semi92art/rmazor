@@ -1,15 +1,15 @@
 ﻿using System;
 using Games.RazorMaze.Models.ProceedInfos;
+using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.MazeItems.Props;
 using SpawnPools;
 using UnityEngine;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
-    public interface IViewMazeItem : ICloneable, ISpawnPoolItem, IOnLevelStageChanged
+    public interface IViewMazeItem : ICloneable, ISpawnPoolItem, IOnLevelStageChanged, IAppear
     {
         GameObject Object { get; }
-        EAppearingState AppearingState { get; set; }
         EProceedingStage ProceedingStage { get; set; }
         ViewMazeItemProps Props { get; set; }
         void Init(ViewMazeItemProps _Props);

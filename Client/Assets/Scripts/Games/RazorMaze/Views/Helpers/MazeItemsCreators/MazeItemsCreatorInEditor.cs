@@ -10,7 +10,7 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
     {
         public MazeItemsCreatorInEditor(
             IContainersGetter _ContainersGetter,
-            ICoordinateConverter _CoordinateConverter) 
+            IMazeCoordinateConverter _CoordinateConverter) 
             : base(_ContainersGetter, _CoordinateConverter)
         { }
 

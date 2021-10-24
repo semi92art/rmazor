@@ -14,6 +14,17 @@ namespace Games.RazorMaze
         #region api
 
         public const float Epsilon = 1e-5f;
+        public const int LevelsInGroup = 3;
+
+        public static EMazeItemType[] GravityItemTypes()
+        {
+            return new[]
+            {
+                EMazeItemType.GravityBlock,
+                EMazeItemType.GravityBlockFree,
+                EMazeItemType.GravityTrap
+            };
+        }
         
         public static V2Int GetDropDirection(MazeOrientation _Orientation)
         {
@@ -149,12 +160,6 @@ namespace Games.RazorMaze
             return result.ToList();
         }
 
-        public static bool PathContainsItem(V2Int _From, V2Int _To, V2Int _Point)
-        {
-            var fullPath = GetFullPath(_From, _To);
-            return fullPath.Contains(_Point);
-        }
-
         /// <summary>
         /// returns -1 if _A less than _B, 0 if _A equals _B, 1 if _A greater than _B
         /// </summary>
@@ -177,42 +182,6 @@ namespace Games.RazorMaze
             return distA < distB ? -1 : 1;
         }
         
-        public static void CallInits<T>(
-            List<object> _InitObjects, 
-            UnityAction<bool[]> _OnFinish) 
-            where T : class
-        {
-            var type = typeof(T);
-            var initObjects = GetInterfaceOfProceeders<T>(_InitObjects).ToList();
-            int count = initObjects.Count;
-            var inited = new bool[count];
-            for (int i = 0; i < count; i++)
-            {
-                var i1 = i;
-                if (type == typeof(IPreInit) && initObjects[i] is IPreInit preInitObj)
-                {
-                    preInitObj.PreInitialized += () => inited[i1] = true;
-                    preInitObj.PreInit();
-                }
-                else if (type == typeof(IInit) && initObjects[i] is IInit initObj)
-                {
-                    initObj.Initialized += () => inited[i1] = true;
-                    initObj.Init(); 
-                }
-                else if (type == typeof(IPostInit) && initObjects[i] is IPostInit postInitObj)
-                {
-                    postInitObj.PostInitialized += () => inited[i1] = true;
-                    postInitObj.PostInit();
-                }
-            }
-            _OnFinish?.Invoke(inited);
-        }
-        
-        public static List<T> GetInterfaceOfProceeders<T>(IEnumerable<object> _Proceeders) where T : class
-        {
-            return _Proceeders.Where(_Proceeder => _Proceeder is T).Cast<T>().ToList();
-        }
-
         #endregion
     }
 }

@@ -4,7 +4,7 @@ namespace SpawnPools
 {
     public class SpawnPool<T> : SpawnPoolBase<T> where T : class, ISpawnPoolItem
     {
-        public override int CountActivated => Collection.Count(_Item => _Item.Activated);
+        public override int CountActivated => Collection.Count(_Item => _Item.ActivatedInSpawnPool);
         
         public override void Clear()
         {
@@ -30,13 +30,13 @@ namespace SpawnPools
 
         protected override void Activate(T _Item, bool _Active)
         {
-            _Item.Activated = _Active;
+            _Item.ActivatedInSpawnPool = _Active;
         }
 
         protected override T GetFirstOrLastActiveOrInactive(bool _First, bool _Active)
         {
             var collection = _First ? Collection : Collection.ToArray().Reverse();
-            return collection.FirstOrDefault(_Item => _Active ? _Item.Activated : _Item.Activated == false);
+            return collection.FirstOrDefault(_Item => _Active ? _Item.ActivatedInSpawnPool : _Item.ActivatedInSpawnPool == false);
         }
     }
 }

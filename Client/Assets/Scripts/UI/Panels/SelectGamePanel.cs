@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Constants;
 using DI.Extensions;
 using DialogViewers;
@@ -8,43 +7,41 @@ using GameHelpers;
 using Ticker;
 using UI.Entities;
 using UI.Factories;
-using UI.Managers;
 using UI.PanelItems;
 using UnityEngine;
+using UnityEngine.Events;
 using Utils;
-using Object = UnityEngine.Object;
 
 namespace UI.Panels
 {
-    public class SelectGamePanel : DialogPanelBase, IMenuUiCategory
+    public interface ISelectGameDialogPanel : IDialogPanel
     {
-        #region private members
-        
-        private readonly IMenuDialogViewer m_DialogViewer;
-        private readonly Action<int> m_SelectGame;
-
-        #endregion
-
-        #region api
-
-        public MenuUiCategory Category => MenuUiCategory.SelectGame;
+        UnityAction<int> OnSelectGame { get; set; }
+    }
+    
+    public class SelectGamePanel : DialogPanelBase, ISelectGameDialogPanel
+    {
+        #region inject
 
         public SelectGamePanel(
-            IMenuDialogViewer _DialogViewer, 
-            Action<int> _SelectGame,
+            IDialogViewer _DialogViewer,
             IManagersGetter _Managers,
-            IUITicker _UITicker) : base(_Managers, _UITicker)
-        {
-            m_DialogViewer = _DialogViewer;
-            m_SelectGame = _SelectGame;
-        }
+            IUITicker _UITicker) 
+            : base(_Managers, _UITicker, _DialogViewer) { }
+
+        #endregion
+        
+        #region api
+
+        public UnityAction<int> OnSelectGame { get; set; }
+        public override EUiCategory Category => EUiCategory.SelectGame;
 
         public override void Init()
         {
             base.Init();
             GameObject selectGamePanel = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_DialogViewer.Container,
+                    DialogViewer.Container,
                     RtrLites.FullFill),
                 CommonPrefabSetNames.MainMenuDialogPanels,
                 "select_game_panel");
@@ -67,8 +64,8 @@ namespace UI.Panels
                 cgiProps.Click = () =>
                 {
                     GameClientUtils.GameId = cgiProps.GameId;
-                    m_SelectGame.Invoke(cgiProps.GameId);
-                    m_DialogViewer.Back();
+                    OnSelectGame.Invoke(cgiProps.GameId);
+                    DialogViewer.CloseAll();
                 };
                 cgi.Init(cgiProps, Managers);
             }

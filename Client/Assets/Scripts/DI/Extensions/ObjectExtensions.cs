@@ -115,22 +115,6 @@ namespace DI.Extensions
         }
 
         public static bool IsNotNull<T>(this T _Item) where T : Component => !IsNull(_Item);
-
-        public static T GetOrAddComponentOnNewChild<T>(
-            this GameObject _Parent,
-            string _Name, 
-            ref GameObject _Child,
-            Vector2? _LocalPosition = null) where T : Component
-        {
-            var go = _Child;
-            if (go == null) 
-                go = new GameObject(_Name);
-            go.SetParent(_Parent);
-            if (_LocalPosition.HasValue)
-                go.transform.SetLocalPosXY(_LocalPosition.Value);
-            _Child = go;
-            return go.GetOrAddComponent<T>();
-        }
         
         public static T AddComponentOnNewChild<T>(
             this GameObject _Parent,
@@ -140,8 +124,7 @@ namespace DI.Extensions
         {
             var go = new GameObject(_Name);
             go.SetParent(_Parent);
-            if (_LocalPosition.HasValue)
-                go.transform.SetLocalPosXY(_LocalPosition.Value);
+            go.transform.SetLocalPosXY(_LocalPosition ?? Vector2.zero);
             _Child = go;
             return go.GetOrAddComponent<T>();
         }

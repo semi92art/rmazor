@@ -20,6 +20,7 @@ namespace Games.RazorMaze.Models.ProceedInfos
         List<V2Int> BusyPositions { get; set; }
         bool IsMoving { get; set; }
         V2Int CurrentPosition { get; set; }
+        V2Int NextPosition { get; set; }
         
         void SetItem(MazeItem _Item);
     }
@@ -43,7 +44,8 @@ namespace Games.RazorMaze.Models.ProceedInfos
         public List<V2Int> BusyPositions { get; set; }
         public bool IsMoving { get; set; }
         public V2Int CurrentPosition { get; set; }
-        
+        public V2Int NextPosition { get; set; }
+
         public void SetItem(MazeItem _Item)
         {
             m_Item = _Item;

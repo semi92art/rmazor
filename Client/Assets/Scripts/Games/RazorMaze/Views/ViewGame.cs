@@ -11,22 +11,17 @@ using Games.RazorMaze.Views.MazeItemGroups;
 using Games.RazorMaze.Views.Rotation;
 using Games.RazorMaze.Views.UI;
 using Ticker;
-using Utils;
-
+using UnityEngine.Events;
 namespace Games.RazorMaze.Views
 {
     public class ViewGame : IViewGame
     {
-        #region constants
-
-        private const string SoundClipNameLevelStart = "level_start";
-        private const string SoundClipNameLevelComplete = "level_complete";
-        
-        #endregion
+        #region inject
         
         public IContainersGetter ContainersGetter { get; }
         public IViewUI UI { get; }
-        public IInputConfigurator InputConfigurator { get; }
+        public IViewLevelStageController LevelStageController { get; }
+        public IViewInputConfigurator InputConfigurator { get; }
         public IViewCharacter Character { get; }
         public IViewMazeCommon Common { get; }
         public IViewMazeBackground Background { get; }
@@ -39,14 +34,17 @@ namespace Games.RazorMaze.Views
         public IViewMazePortalsGroup PortalsGroup { get; }
         public IViewMazeShredingerBlocksGroup ShredingerBlocksGroup { get; }
         public IViewMazeSpringboardItemsGroup SpringboardItemsGroup { get; }
-        
+        public IViewMazeGravityItemsGroup GravityItemsGroup { get; }
+
         private IGameTicker GameTicker { get; }
-        public IManagersGetter Managers { get; }
+        private IManagersGetter Managers { get; }
+        private IMazeCoordinateConverter CoordinateConverter { get; }
 
         public ViewGame(
             IContainersGetter _ContainersGetter,
             IViewUI _UI,
-            IInputConfigurator _InputConfigurator,
+            IViewLevelStageController _LevelStageController,
+            IViewInputConfigurator _InputConfigurator,
             IViewCharacter _Character,
             IViewMazeCommon _Common,
             IViewMazeBackground _Background,
@@ -59,8 +57,10 @@ namespace Games.RazorMaze.Views
             IViewMazePortalsGroup _PortalsGroup,
             IViewMazeShredingerBlocksGroup _ShredingerBlocksGroup,
             IViewMazeSpringboardItemsGroup _SpringboardItemsGroup,
+            IViewMazeGravityItemsGroup _GravityItemsGroup,
             IGameTicker _GameTicker,
-            IManagersGetter _Managers)
+            IManagersGetter _Managers, 
+            IMazeCoordinateConverter _CoordinateConverter)
         {
             ContainersGetter = _ContainersGetter;
             UI = _UI;
@@ -77,113 +77,99 @@ namespace Games.RazorMaze.Views
             PortalsGroup = _PortalsGroup;
             ShredingerBlocksGroup = _ShredingerBlocksGroup;
             SpringboardItemsGroup = _SpringboardItemsGroup;
+            GravityItemsGroup = _GravityItemsGroup;
             GameTicker = _GameTicker;
             Managers = _Managers;
+            CoordinateConverter = _CoordinateConverter;
+            LevelStageController = _LevelStageController;
         }
         
-        public event NoArgsHandler PreInitialized;
-        public event NoArgsHandler Initialized;
-        public event NoArgsHandler PostInitialized;
-        
-        public void PreInit()
-        {
-            var iBackColChangedProceeders = 
-                RazorMazeUtils.GetInterfaceOfProceeders<IOnBackgroundColorChanged>(GetProceeders());
-            foreach (var proceeder in iBackColChangedProceeders)
-                Background.BackgroundColorChanged += proceeder.OnBackgroundColorChanged;
-            
-            RazorMazeUtils.CallInits<IPreInit>(GetProceeders(),
-                _PreInitedArray =>
-                {
-                    Coroutines.Run(Coroutines.WaitWhile(
-                        () => _PreInitedArray.Any(_PreInited => !_PreInited), 
-                        () => PreInitialized?.Invoke()));
-                });
-        }
+        #endregion
 
+        #region api
+        
+        public event UnityAction Initialized;
+        
         public void Init()
         {
-            RazorMazeUtils.CallInits<IInit>(GetProceeders(),
-                _InitedArray =>
-                {
-                    Coroutines.Run(Coroutines.WaitWhile(
-                        () => _InitedArray.Any(_Inited => !_Inited), 
-                        () => Initialized?.Invoke()));
-                });
+            CoordinateConverter.Init(
+                MazeCoordinateConverter.DefaultLeftOffset, 
+                MazeCoordinateConverter.DefaultRightOffset,
+                MazeCoordinateConverter.DefaultBottomOffset, 
+                MazeCoordinateConverter.DefaultTopOffset);
+            var proceeders = GetProceeders();
+            var iBackColChangedProceeders = GetInterfaceOfProceeders<IOnBackgroundColorChanged>(proceeders);
+            foreach (var proceeder in iBackColChangedProceeders)
+                Background.BackgroundColorChanged += proceeder.OnBackgroundColorChanged;
+
+            var onLevelStageChangeds = GetInterfaceOfProceeders<IOnLevelStageChanged>(proceeders);
+            LevelStageController.RegisterProceeders(onLevelStageChangeds);
+
+            GetInterfaceOfProceeders<IInit>(GetProceeders())
+                .ToList()
+                .ForEach(_InitObj => _InitObj.Init());
+            Initialized?.Invoke();
         }
         
-        public void PostInit()
-        {
-            RazorMazeUtils.CallInits<IPostInit>(GetProceeders(),
-                _PostInitedArray =>
-                {
-                    Coroutines.Run(Coroutines.WaitWhile(
-                        () => _PostInitedArray.Any(_PostInited => !_PostInited), 
-                        () => PostInitialized?.Invoke()));
-                });
-        }
-
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            var proceeders =
-                RazorMazeUtils.GetInterfaceOfProceeders<IOnLevelStageChanged>(GetProceeders());
-            foreach (var proceeder in proceeders)
-                proceeder.OnLevelStageChanged(_Args);
-            GameTicker.Pause = _Args.Stage == ELevelStage.Paused;
-
-            if (_Args.Stage == ELevelStage.Loaded)
-                Managers.Notify(_SM => _SM.PlayClip(SoundClipNameLevelStart));
-            else if (_Args.Stage == ELevelStage.Finished)
-                Managers.Notify(_SM => _SM.PlayClip(SoundClipNameLevelComplete));
+            LevelStageController.OnLevelStageChanged(_Args);
         }
         
         public void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
         {
-            var proceeders = 
-                RazorMazeUtils.GetInterfaceOfProceeders<ICharacterMoveStarted>(GetProceeders());
+            var proceeders = GetInterfaceOfProceeders<ICharacterMoveStarted>(GetProceeders());
             foreach (var proceeder in proceeders)
                 proceeder.OnCharacterMoveStarted(_Args);
         }
 
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
-            var proceeders =
-                RazorMazeUtils.GetInterfaceOfProceeders<ICharacterMoveContinued>(GetProceeders());
+            var proceeders = GetInterfaceOfProceeders<ICharacterMoveContinued>(GetProceeders());
             foreach (var proceeder in proceeders)
                 proceeder.OnCharacterMoveContinued(_Args);
         }
         
         public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
         {
-            var proceeders =
-                RazorMazeUtils.GetInterfaceOfProceeders<ICharacterMoveFinished>(GetProceeders());
+            var proceeders = GetInterfaceOfProceeders<ICharacterMoveFinished>(GetProceeders());
             foreach (var proceeder in proceeders)
                 proceeder.OnCharacterMoveFinished(_Args);
         }
+
+        #endregion
         
-        
+        #region nonpublic methods
         
         private List<object> GetProceeders()
         {
             var result = new List<object>
-            {
-                UI,                         
-                Common,
-                InputConfigurator,
-                Character,
-                Background,
-                MazeRotation,
-                PathItemsGroup,
-                MovingItemsGroup,
-                TrapsReactItemsGroup,
-                TrapsIncItemsGroup,
-                TurretsGroup,
-                PortalsGroup,
-                ShredingerBlocksGroup,
-                SpringboardItemsGroup    
-            }.Where(_Proceeder => _Proceeder != null)
+                {
+                    Common,
+                    UI,                         
+                    InputConfigurator,
+                    Character,
+                    MazeRotation,
+                    Background,
+                    PathItemsGroup,
+                    MovingItemsGroup,
+                    TrapsReactItemsGroup,
+                    TrapsIncItemsGroup,
+                    TurretsGroup,
+                    PortalsGroup,
+                    ShredingerBlocksGroup,
+                    SpringboardItemsGroup,
+                    GravityItemsGroup
+                }.Where(_Proceeder => _Proceeder != null)
                 .ToList();
             return result;
         }
+
+        private static List<T> GetInterfaceOfProceeders<T>(IEnumerable<object> _Proceeders) where T : class
+        {
+            return _Proceeders.Where(_Proceeder => _Proceeder is T).Cast<T>().ToList();
+        }
+        
+        #endregion
     }
 }

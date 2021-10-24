@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Constants;
 using DI.Extensions;
-using Exceptions;
+using Entities;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
@@ -19,77 +19,77 @@ namespace Games.RazorMaze.Views.Characters
     {
         #region nonpublic members
 
+        private bool m_Initialized;
         private bool m_Activated;
         private GameObject m_DeathShapesContainer;
         private List<ShapeRenderer> m_DeathShapes;
+        private EMazeMoveDirection? m_MoveDirection;
         
         #endregion
         
         #region inject
         
-        private ICoordinateConverter CoordinateConverter { get; }
+        private IMazeCoordinateConverter CoordinateConverter { get; }
         private IContainersGetter ContainersGetter { get; }
-        public IGameTicker GameTicker { get; }
-        public IModelCharacter ModelCharacter { get; }
+        private IGameTicker GameTicker { get; }
+        private IModelGame Model { get; }
 
         public ViewCharacterEffectorParticles(
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
-            IModelCharacter _ModelCharacter)
+            IModelGame _Model)
         {
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
             GameTicker = _GameTicker;
-            ModelCharacter = _ModelCharacter;
+            Model = _Model;
         }
         
         #endregion
 
         #region api
         
-        public event NoArgsHandler Initialized;
 
         public bool Activated
         {
             get => m_Activated;
             set
             {
+                if (value)
+                {
+                    if (!m_Initialized)
+                        InitPrefab();
+                    UpdatePrefab();    
+                }
                 m_Activated = value;
                 m_DeathShapes.ForEach(_Shape => _Shape.enabled = value);
             }
         }
-        public void Init()
-        {
-            InitPrefab();
-            Initialized?.Invoke();
-        }
 
-        public void OnRevivalOrDeath(bool _Alive)
-        {
-            if (_Alive)
-                m_DeathShapes.ForEach(_Shape => _Shape.enabled = false);
-            else Coroutines.Run(DeathCoroutine());
-        }
-        
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            switch (_Args.Stage)
-            {
-                case ELevelStage.Loaded:
-                    Activated = true;
-                    break;
-                case ELevelStage.Paused:
-                    break;
-                case ELevelStage.StartedOrContinued:
-                    break;
-                case ELevelStage.Finished:
-                    break;
-                default:
-                    throw new SwitchCaseNotImplementedException(_Args.Stage);
-            }
+            if (_Args.Stage == ELevelStage.CharacterKilled)
+                Coroutines.Run(DisappearCoroutine(true, Model.Character.Position));
+            else if (_Args.Stage != ELevelStage.Finished)
+                m_DeathShapes.ForEach(_Shape => _Shape.enabled = false);
         }
         
+        public void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
+        {
+            m_MoveDirection = _Args.Direction;
+        }
+
+        public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
+        {
+            m_MoveDirection = null;
+        }
+
+        public void OnAllPathProceed(V2Int _LastPos)
+        {
+            Coroutines.Run(DisappearCoroutine(false, _LastPos));
+        }
+
         #endregion
         
         #region nonpublic methods
@@ -97,12 +97,10 @@ namespace Games.RazorMaze.Views.Characters
         private void InitPrefab()
         {
             var prefab = PrefabUtilsEx.InitPrefab(
-                ContainersGetter.MazeContainer.transform,
+                ContainersGetter.GetContainer(ContainerNames.Maze).transform,
                 CommonPrefabSetNames.Views,
                 "character_death");
             m_DeathShapesContainer = prefab.GetContentItem("death items");
-            var localScale = Vector3.one * CoordinateConverter.GetScale() * 0.98f;
-            m_DeathShapesContainer.transform.localScale = localScale;
             var deathShapeTypes = new[]
             {
                 typeof(Disc), typeof(Rectangle), typeof(Line), 
@@ -112,27 +110,61 @@ namespace Games.RazorMaze.Views.Characters
                 .SelectMany(_T => m_DeathShapesContainer.GetComponentsInChildren(_T))
                 .Cast<ShapeRenderer>()
                 .ToList();
-            m_DeathShapes.ForEach(_Shape => _Shape.enabled = false);
+            m_DeathShapes.ForEach(_Shape =>
+            {
+                _Shape.SortingOrder = DrawingUtils.GetCharacterSortingOrder() + 2;
+                _Shape.Color = DrawingUtils.ColorLines;
+                _Shape.enabled = false;
+            });
             m_DeathShapes.Shuffle();
+            
+            m_Initialized = true;
+        }
+
+        private void UpdatePrefab()
+        {
+            var localScale = Vector3.one * CoordinateConverter.Scale * 0.98f;
+            m_DeathShapesContainer.transform.localScale = localScale;
         }
         
-        private IEnumerator DeathCoroutine()
+        private IEnumerator DisappearCoroutine(bool _Death, V2Int _LastPos = default)
         {
+            var center = m_MoveDirection.HasValue && _Death ? 
+                ContainersGetter.GetContainer(ContainerNames.Character).localPosition : 
+                (Vector3)CoordinateConverter.ToLocalCharacterPosition(_LastPos);
+            m_DeathShapesContainer.transform.localPosition = center;
             Activated = true;
             int deathShapesCount = m_DeathShapes.Count;
             var startAngles = Enumerable
                 .Range(0, deathShapesCount)
-                .Select(_Num => _Num * Mathf.PI * 2f / deathShapesCount)
-                .ToList();
+                .Select(_Num => _Num * Mathf.PI * 2f / deathShapesCount);
             var startDirections = startAngles
                 .Select(_Ang => new Vector2(Mathf.Cos(_Ang), Mathf.Sin(_Ang)))
                 .ToList();
             var startPositions = startDirections
-                .Select(_Dir => ContainersGetter.CharacterContainer.position + (Vector3) _Dir * Random.value)
+                .Select(_Dir => (Vector3) _Dir * Random.value)
                 .ToList();
             var endPositions = startPositions.ToList();
-            for (int i = 0; i < deathShapesCount; i++)
-                endPositions[i] += (Vector3) startDirections[i] * Random.value * 5f;
+            if (m_MoveDirection.HasValue && _Death)
+            {
+                float sqrt2 = Mathf.Sqrt(2f);
+                var moveDir = RazorMazeUtils.GetDirectionVector(m_MoveDirection.Value, MazeOrientation.North).ToVector2();
+                for (int i = 0; i < deathShapesCount; i++)
+                {
+                    float dist = Vector2.Distance(moveDir, startDirections[i]);
+                    float coeff;
+                    if (dist < sqrt2)
+                        coeff = (sqrt2 - dist) * (sqrt2 - dist) * 5f + Random.value * 5f;
+                    else coeff = Random.value * 5f;
+                    endPositions[i] += ((Vector3) startDirections[i] + (Vector3)moveDir) * coeff;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < deathShapesCount; i++)
+                    endPositions[i] += (Vector3) startDirections[i] * Random.value * 5f;
+            }
+
             yield return Coroutines.Lerp(
                 0f,
                 1f,
@@ -142,7 +174,7 @@ namespace Games.RazorMaze.Views.Characters
                     for (int i = 0; i < deathShapesCount; i++)
                     {
                         var shape = m_DeathShapes[i];
-                        shape.transform.position =
+                        shape.transform.localPosition =
                             Vector3.Lerp(startPositions[i], endPositions[i], _Progress);
                         shape.Color = DrawingUtils.ColorLines.SetA(1f - _Progress);
                     }

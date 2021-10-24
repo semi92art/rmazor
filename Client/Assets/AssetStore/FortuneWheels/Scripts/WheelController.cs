@@ -92,7 +92,7 @@ namespace MkeyFW
         private TweenSeq m_LightTs;
         private AudioSource m_AudioSource;
         private float m_RotDirF;
-        private IMenuDialogViewer m_MenuDialogViewer;
+        private IDialogViewer m_UiDialogViewer;
         private UnityAction<BankItemType, long> m_SpinFinishAction;
 		#endregion
  
@@ -141,9 +141,9 @@ namespace MkeyFW
         
         #region api
 
-        public void Init(IMenuDialogViewer _MenuDialogViewer, UnityAction<BankItemType, long> _SpinFinishAction)
+        public void Init(IDialogViewer _UiDialogViewer, UnityAction<BankItemType, long> _SpinFinishAction)
         {
-            m_MenuDialogViewer = _MenuDialogViewer;
+            m_UiDialogViewer = _UiDialogViewer;
             m_SpinFinishAction = _SpinFinishAction;
         }
         

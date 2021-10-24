@@ -33,7 +33,8 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region shapes
 
-        protected override object[] Shapes => new object[] {m_Saw};
+        protected override string ObjectName => "Moving Trap Block";
+        protected override object[] DefaultColorShapes => new object[] {m_Saw};
 
         private SpriteRenderer m_Saw;
 
@@ -44,7 +45,7 @@ namespace Games.RazorMaze.Views.MazeItems
         public ViewMazeItemMovingTrap(
             ViewSettings _ViewSettings,
             IModelGame _Model,
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
@@ -95,42 +96,38 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public override void OnMoveFinished(MazeItemMoveEventArgs _Args)
         {
+            if (ProceedingStage != EProceedingStage.ActiveAndWorking)
+                return;
             SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(_Args.To));
         }
 
         public void UpdateTick()
         {
-            if (!Initialized || !Activated)
+            if (!Initialized || !ActivatedInSpawnPool)
                 return;
             DoRotation();
         }
-        
+
         #endregion
 
         #region nonpublic methods
 
-        protected override void SetShape()
+        protected override void InitShape()
         {
-            var go = Object;
-            var saw = ContainersGetter.MazeItemsContainer.gameObject
-                .GetOrAddComponentOnNewChild<SpriteRenderer>(
-                    "Moving Trap", 
-                    ref go,
-                    CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
-            go.DestroyChildrenSafe();
+            var saw = Object.AddComponentOnNewChild<SpriteRenderer>("Moving Trap", out _);
             saw.sprite = PrefabUtilsEx.GetObject<Sprite>("views", "moving_trap");
             saw.color = DrawingUtils.ColorTrap;
             saw.sortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
             saw.enabled = false;
-            var coll = go.AddComponent<CircleCollider2D>();
+            var coll = Object.AddComponent<CircleCollider2D>();
             coll.radius = 0.5f;
-
-            go.transform.localScale = Vector3.one * CoordinateConverter.GetScale();
-            
-            Object = go;
             m_Saw = saw;
+        }
 
-            base.SetShape();
+        protected override void UpdateShape()
+        {
+            Object.transform.localScale = Vector3.one * CoordinateConverter.Scale;
+            base.UpdateShape();
         }
 
         private void DoRotation()
@@ -138,7 +135,7 @@ namespace Games.RazorMaze.Views.MazeItems
             if (!m_Rotating)
                 return;
             float rotSpeed = ViewSettings.MovingTrapRotationSpeed * Time.deltaTime; 
-            Object.transform.Rotate(Vector3.forward * rotSpeed);
+            m_Saw.transform.Rotate(Vector3.forward * rotSpeed);
         }
 
         private void StartRotation()
@@ -153,25 +150,6 @@ namespace Games.RazorMaze.Views.MazeItems
             Managers.Notify(_SM => _SM.StopClip(
                 SoundClipNameMoveTrap, _Tags: $"{GetHashCode()}"));
             m_Rotating = false;
-        }
-
-        protected override void Appear(bool _Appear)
-        {
-            base.Appear(_Appear);
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !Initialized,
-                () =>
-                {
-                    var sets = new Dictionary<object[], Func<Color>>
-                    {
-                        {new object[] {m_Saw}, () => DrawingUtils.ColorLines}
-                    };
-                    Transitioner.DoAppearTransitionSimple(
-                        _Appear,
-                        GameTicker,
-                        sets,
-                        Props.Position);
-                }));
         }
 
         #endregion

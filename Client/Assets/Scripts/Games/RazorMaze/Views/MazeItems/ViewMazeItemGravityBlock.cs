@@ -1,7 +1,6 @@
 ﻿using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Models;
-using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Utils;
@@ -11,16 +10,14 @@ using UnityEngine;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
-
-    
     public interface IViewMazeItemGravityBlock : IViewMazeItemMovingBlock { }
     
-    public class ViewMazeItemGravityBlock : ViewMazeItemMovingBase, IViewMazeItemGravityBlock
+    public class ViewMazeItemGravityBlock : ViewMazeItemGravityBlockFree, IViewMazeItemGravityBlock
     {
         #region shapes
 
-        protected override object[] Shapes => new object[] {m_Shape, m_Joint};
-        private Rectangle m_Shape;
+        protected override string ObjectName => "Gravity Block";
+        protected override object[] DefaultColorShapes => new object[] {m_Shape, m_Joint};
         private Disc m_Joint;
         
         #endregion
@@ -30,7 +27,7 @@ namespace Games.RazorMaze.Views.MazeItems
         public ViewMazeItemGravityBlock(
             ViewSettings _ViewSettings,
             IModelGame _Model,
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
@@ -57,51 +54,31 @@ namespace Games.RazorMaze.Views.MazeItems
             Transitioner,
             Managers);
         
-        public override void OnMoving(MazeItemMoveEventArgs _Args)
-        {
-            if (ProceedingStage != EProceedingStage.ActiveAndWorking)
-                return;
-            var pos = Vector2.Lerp(_Args.From.ToVector2(), _Args.To.ToVector2(), _Args.Progress);
-            SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(pos));
-        }
-
-        public override void OnMoveFinished(MazeItemMoveEventArgs _Args)
-        {
-            base.OnMoveFinished(_Args);
-            if (ProceedingStage != EProceedingStage.ActiveAndWorking)
-                return;
-            SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(_Args.To));
-            Managers.Notify();
-        }
 
         #endregion
         
         #region nonpublic methods
 
-        protected override void SetShape()
+        protected override void InitShape()
         {
-            var go = Object;
-            var sh = ContainersGetter.MazeItemsContainer.gameObject
-                .GetOrAddComponentOnNewChild<Rectangle>("Gravity Block", ref go, 
-                    CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
-            go.DestroyChildrenSafe();
-            sh.Width = sh.Height = CoordinateConverter.GetScale() * 0.9f;
-            sh.Type = Rectangle.RectangleType.RoundedHollow;
-            sh.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
-            sh.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.GetScale();
-            sh.Color = DrawingUtils.ColorLines;
-            sh.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
-            var joint = go.AddComponentOnNewChild<Disc>("Joint", out _);
+            base.InitShape();
+            var joint = Object.AddComponentOnNewChild<Disc>("Joint", out _);
             joint.transform.SetLocalPosXY(Vector2.zero);
             joint.Color = DrawingUtils.ColorLines;
-            joint.Radius = ViewSettings.LineWidth * CoordinateConverter.GetScale() * 2f;
+            joint.Radius = ViewSettings.LineWidth * CoordinateConverter.Scale * 2f;
             joint.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
-
-            Object = go;
-            m_Shape = sh;
             m_Joint = joint;
-            
-            base.SetShape();
+        }
+
+        protected override void UpdateShape()
+        {
+            base.UpdateShape();
+            m_Joint.Radius = ViewSettings.LineWidth * CoordinateConverter.Scale * 2f;
+        }
+
+        protected override void InitWallBlockMovingPaths()
+        {
+            InitWallBlockMovingPathsCore();
         }
 
         #endregion

@@ -40,7 +40,8 @@ namespace Games.RazorMaze.Views.MazeItems
 
         #region shapes
 
-        protected override object[] Shapes => new object[] {m_Springboard, m_Pillar};
+        protected override string ObjectName => "Springboard Block";
+        protected override object[] DefaultColorShapes => new object[] {m_Springboard, m_Pillar};
         private Line m_Springboard;
         private Line m_Pillar;
         
@@ -51,7 +52,7 @@ namespace Games.RazorMaze.Views.MazeItems
         public ViewMazeItemSpringboard(
             ViewSettings _ViewSettings,
             IModelGame _Model,
-            ICoordinateConverter _CoordinateConverter, 
+            IMazeCoordinateConverter _CoordinateConverter, 
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
@@ -88,26 +89,22 @@ namespace Games.RazorMaze.Views.MazeItems
 
         #region nonpublic methods
         
-        protected override void SetShape()
+        protected override void InitShape()
         {
-            var go = Object;
-            var pillar = ContainersGetter.MazeItemsContainer.gameObject
-                .GetOrAddComponentOnNewChild<Line>("Springboard Item", ref go,
-                    CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
-            go.DestroyChildrenSafe();
-            var sprbrd = go.AddComponentOnNewChild<Line>("Springboard", out _, Vector2.zero);
-            
-            pillar.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
-            sprbrd.Thickness = pillar.Thickness * 2f;
-            
-            pillar.EndCaps = sprbrd.EndCaps = LineEndCap.Round;
-            pillar.Color = sprbrd.Color = DrawingUtils.ColorLines;
-            (pillar.Start, pillar.End, sprbrd.Start, sprbrd.End) = GetSpringboardAndPillarEdges();
-            m_Edge1Start = sprbrd.Start;
-            m_Edge2Start = sprbrd.End;
+            m_Pillar = Object.AddComponentOnNewChild<Line>("Springboard Item", out _);
+            m_Springboard = Object.AddComponentOnNewChild<Line>("Springboard", out _);
+            m_Pillar.EndCaps = m_Springboard.EndCaps = LineEndCap.Round;
+            m_Pillar.Color = m_Springboard.Color = DrawingUtils.ColorLines;
+        }
 
-            m_Pillar = pillar;
-            m_Springboard = sprbrd;
+        protected override void UpdateShape()
+        {
+            m_Pillar.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
+            m_Springboard.Thickness = m_Pillar.Thickness * 2f;
+            (m_Pillar.Start, m_Pillar.End, m_Springboard.Start, m_Springboard.End) =
+                GetSpringboardAndPillarEdges();
+            m_Edge1Start = m_Springboard.Start;
+            m_Edge2Start = m_Springboard.End;
         }
 
         private IEnumerator JumpCoroutine()
@@ -140,10 +137,10 @@ namespace Games.RazorMaze.Views.MazeItems
             var D = A1 + V * SpringboardHeight;
             var B = D - Vorth * SpringboardWidth * 0.5f;
             var C = D + Vorth * SpringboardWidth * 0.5f;
-            A1 *= CoordinateConverter.GetScale();
-            B *= CoordinateConverter.GetScale();
-            C *= CoordinateConverter.GetScale();
-            D *= CoordinateConverter.GetScale();
+            A1 *= CoordinateConverter.Scale;
+            B *= CoordinateConverter.Scale;
+            C *= CoordinateConverter.Scale;
+            D *= CoordinateConverter.Scale;
             return new Tuple<Vector2, Vector2, Vector2, Vector2>(A1, D, B, C);
         }
 

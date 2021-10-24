@@ -1,18 +1,10 @@
-﻿using UI.Panels;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace DialogViewers
 {
     public interface IDialogViewerBase
     {
+        void Init(RectTransform _Parent);
         RectTransform Container { get; }
-        void Back();
-    }
-    
-    public interface IDialogViewer : IDialogViewerBase
-    {
-        void Show(IDialogPanel _ItemTo, bool _HidePrevious = true);
-        void RemoveNotDialogItem(RectTransform _Item);
-        void CloseAll();
     }
 }

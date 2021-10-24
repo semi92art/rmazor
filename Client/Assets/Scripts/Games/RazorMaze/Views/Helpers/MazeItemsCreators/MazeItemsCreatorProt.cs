@@ -19,7 +19,7 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
         [Inject]
         public MazeItemsCreatorProt(
             IContainersGetter _ContainersGetter,
-            ICoordinateConverter _CoordinateConverter, 
+            IMazeCoordinateConverter _CoordinateConverter, 
             IViewMazeItemPath _ItemPath,
             IViewMazeItemGravityBlock _GravityBlock,
             IViewMazeItemMovingTrap _MovingTrap,
@@ -49,7 +49,7 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
         
         protected MazeItemsCreatorProt(
             IContainersGetter _ContainersGetter,
-            ICoordinateConverter _CoordinateConverter) : base(_ContainersGetter, _CoordinateConverter)
+            IMazeCoordinateConverter _CoordinateConverter) : base(_ContainersGetter, _CoordinateConverter)
         { }
         
         #endregion
@@ -61,7 +61,7 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
             throw new NotImplementedException("This method is only for release");
         }
 
-        public override void InitBlockItems(MazeInfo _Info, Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> _BlockPools)
+        public override void InitAndActivateBlockItems(MazeInfo _Info, Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> _BlockPools)
         {
             throw new NotImplementedException("This method is only for release");
         }
@@ -106,7 +106,7 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
             ViewMazeItemProps _Props) 
         {
             var tr = new GameObject("Path Item").transform;
-            tr.SetParent(ContainersGetter.MazeItemsContainer);
+            tr.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems));
             var item = tr.gameObject.AddComponent<ViewMazeItemProt>();
             item.MazeSize = _MazeSize; 
             item.Init(_Props);
@@ -129,7 +129,7 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
             ViewMazeItemProps _Props)
         {
             var tr = new GameObject("Maze Item").transform;
-            tr.SetParent(ContainersGetter.MazeItemsContainer);
+            tr.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems));
             var item = tr.gameObject.AddComponent<ViewMazeItemProt>();
 
             item.MazeSize = _MazeSize;

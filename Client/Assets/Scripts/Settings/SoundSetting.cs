@@ -31,7 +31,6 @@ namespace Settings
         {
             bool volumeOn = (bool) _Parameter;
             Managers.Notify(_SM => _SM.EnableSound(volumeOn));
-            Dbg.Log(volumeOn.ToString());
         }
     }
 }

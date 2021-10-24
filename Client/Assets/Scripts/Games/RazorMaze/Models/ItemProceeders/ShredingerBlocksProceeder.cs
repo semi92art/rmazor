@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Games.RazorMaze.Models.ProceedInfos;
 using Ticker;
@@ -21,7 +22,11 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
     public delegate void ShredingerBlockHandler(ShredingerBlockArgs _Args);
 
-    public interface IShredingerBlocksProceeder : IItemsProceeder, ICharacterMoveContinued, ICharacterMoveFinished
+    public interface IShredingerBlocksProceeder :
+        IItemsProceeder, 
+        ICharacterMoveContinued, 
+        ICharacterMoveFinished,
+        IGetAllProceedInfos
     {
         event ShredingerBlockHandler ShredingerBlockEvent;
     }
@@ -41,8 +46,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
             ModelSettings _Settings,
             IModelData _Data,
             IModelCharacter _Character,
+            IModelLevelStaging _LevelStaging,
             IGameTicker _GameTicker) 
-            : base(_Settings, _Data, _Character, _GameTicker) { }
+            : base(_Settings, _Data, _Character, _LevelStaging, _GameTicker) { }
         
         #endregion
         
@@ -50,6 +56,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         public override EMazeItemType[] Types => new[] {EMazeItemType.ShredingerBlock};
         public event ShredingerBlockHandler ShredingerBlockEvent;
+        public Func<IEnumerable<IMazeItemProceedInfo>> GetAllProceedInfos { get; set; }
 
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
@@ -67,7 +74,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     && info.ProceedingStage == StageIdle)
                 {
                     SwitchStage(info, StageClosed);
-                    ProceedCoroutine(ProceedBlock(info, StageIdle));
+                    ProceedCoroutine(info, ProceedBlock(info, StageIdle));
                 }
             }
         }
@@ -79,7 +86,20 @@ namespace Games.RazorMaze.Models.ItemProceeders
         private IEnumerator ProceedBlock(IMazeItemProceedInfo _Info, int _Stage)
         {
             yield return Coroutines.Delay(
-                () => SwitchStage(_Info, _Stage),
+                () =>
+                {
+                    var gravityItems = GetAllProceedInfos()
+                        .Where(_Inf => RazorMazeUtils.GravityItemTypes().Contains(_Inf.Type))
+                        .ToList();
+                    if (gravityItems.Any())
+                    {
+                        Coroutines.Run(Coroutines.WaitWhile(
+                            () => gravityItems.Any(_Inf => _Inf.ProceedingStage != StageIdle),
+                            () => SwitchStage(_Info, _Stage)));
+                    }
+                    else 
+                        SwitchStage(_Info, _Stage);
+                },
                 Settings.ShredingerBlockProceedTime);
         }
 

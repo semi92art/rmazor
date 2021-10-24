@@ -9,6 +9,7 @@ using Shapes;
 using SpawnPools;
 using Ticker;
 using UnityEngine;
+using UnityEngine.Events;
 using Utils;
 using Object = UnityEngine.Object;
 using Random = System.Random;
@@ -49,12 +50,12 @@ namespace Games.RazorMaze.Views.Common
         
         #region inject
 
-        private ICoordinateConverter CoordinateConverter { get; }
+        private IMazeCoordinateConverter CoordinateConverter { get; }
         private IContainersGetter ContainersGetter { get; }
         private IGameTicker GameTicker { get; }
 
         public ViewMazeBackground(
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker)
         {
@@ -69,24 +70,24 @@ namespace Games.RazorMaze.Views.Common
         
         #region api
         
-        public event NoArgsHandler Initialized;
+        public event UnityAction Initialized;
 
         public Color BackgroundColor
         {
             get => Camera.main.backgroundColor;
             private set => Camera.main.backgroundColor = value;
         }
-        public event ColorHandler BackgroundColorChanged;
+        public event UnityAction<Color> BackgroundColorChanged;
         
         public void Init()
         {
-            m_ScreenBounds = GameUtils.GetVisibleBounds();
+            m_ScreenBounds = GraphicUtils.VisibleBounds;
             InitSources();
             InitShapes();
             Initialized?.Invoke();
             m_Initialized = true;
         }
-        
+
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             if (_Args.Stage == ELevelStage.Loaded)
@@ -111,31 +112,32 @@ namespace Games.RazorMaze.Views.Common
 
         private void InitSources()
         {
+            var backgroundCont = ContainersGetter.GetContainer(ContainerNames.Background);
             int sortingOrder = DrawingUtils.GetBackgroundItemSortingOrder();
 
             var source1Go = new GameObject("Background Source 1");
-            source1Go.SetParent(ContainersGetter.BackgroundContainer);
+            source1Go.SetParent(backgroundCont);
             var source1 = source1Go.AddComponent<Disc>();
             source1.Color = m_Color;
-            source1.Radius = CoordinateConverter.GetScale() * 0.3f;
+            source1.Radius = 0.25f;
             source1.SortingOrder = sortingOrder;
             source1.enabled = false;
             m_Sources.Add(source1);
             
             var source2Go = new GameObject("Background Source 2");
-            source2Go.SetParent(ContainersGetter.BackgroundContainer);
+            source2Go.SetParent(backgroundCont);
             var source2 = source2Go.AddComponent<Disc>();
             source2.Color = m_Color;
-            source2.Radius = CoordinateConverter.GetScale() * 0.2f;
+            source2.Radius = 0.5f;
             source2.SortingOrder = sortingOrder;
             source2.enabled = false;
             m_Sources.Add(source2);
             
             var source3Go = new GameObject("Background Source 3");
-            source3Go.SetParent(ContainersGetter.BackgroundContainer);
+            source3Go.SetParent(backgroundCont);
             var source3 = source3Go.AddComponent<Disc>();
             source3.Color = m_Color;
-            source3.Radius = CoordinateConverter.GetScale() * 0.1f;
+            source3.Radius = 1f;
             source3.SortingOrder = sortingOrder;
             source3.enabled = false;
             m_Sources.Add(source3);
@@ -148,7 +150,7 @@ namespace Games.RazorMaze.Views.Common
                 int randIdx = Mathf.FloorToInt(UnityEngine.Random.value * m_Sources.Count);
                 var source = m_Sources[randIdx];
                 var newGo = Object.Instantiate(source.gameObject);
-                newGo.SetParent(ContainersGetter.BackgroundContainer);
+                newGo.SetParent(ContainersGetter.GetContainer(ContainerNames.Background));
                 var pos = RandomPositionOnScreen();
                 newGo.transform.SetPosXY(pos);
                 Component newSourceRaw = null;
@@ -292,42 +294,6 @@ namespace Games.RazorMaze.Views.Common
             BackgroundColor = _Color;
             BackgroundColorChanged?.Invoke(_Color);
         }
-
-        // TODO взято из RandomPositionGenerator, 05ab3159, может пригодиться
-        // private Vector2 Next(float _Indent)
-        // {
-        //     bool generated = false;
-        //     Vector2 result = default;
-        //     for (int i = 0; i < 10000; i++)
-        //     {
-        //         bool intersects = false;
-        //         Vector2 pos = RandomPositionInMarginRect(_Indent);
-        //         foreach (var pool in m_Pools)
-        //         {
-        //             foreach (var point in pool)
-        //             {
-        //                 if (!point.Activated)
-        //                     continue;
-        //                 var dscPos = point.transform.position;
-        //                 if (!GeometryUtils.CirclesIntersect(
-        //                     pos, _Indent, dscPos, point.Radius))
-        //                     continue;
-        //                 intersects = true;
-        //                 break;
-        //             }
-        //         }
-        //         if (intersects) 
-        //             continue;
-        //
-        //         generated = true;
-        //         result = pos;
-        //         break;
-        //     }
-        //
-        //     if (!generated)
-        //         Debug.LogWarning("Disc was not generated because of not enough space");
-        //     return result;
-        // }
 
         #endregion
     }

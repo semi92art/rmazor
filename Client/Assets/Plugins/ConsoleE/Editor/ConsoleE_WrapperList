@@ -6,6 +6,14 @@
 <e text = "Utils.Dbg:Log" />
 <e text = "Utils.CommonUtils.SetGoActive[T]" />
 <e text = "Shapes.ShapeRenderer.get_Mesh" />
+<e text = "PrefabContent.GetItemComponent[T]" />
+<e text = "DI.Extensions.ObjectExtensions.GetCompItem[T]" />
+<e text = "Utils.ResLoader:GetPrefabSet" />
+<e text = "GameHelpers.PrefabUtilsEx:GetPrefabBase" />
+<e text = "GameHelpers.PrefabUtilsEx:InitPrefab" />
+<e text = "GameHelpers.PrefabUtilsEx.GetPrefabBase" />
+<e text = "GameHelpers.PrefabUtilsEx.InitPrefab" />
+<e text = "Games.RazorMaze.Views.UI.ViewUIPrompts.ShowPrompt" />
 </Entries>
 </SettingsList>
 </root>

@@ -20,7 +20,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
     {
         #region nonpublic members
         
-        private readonly Queue<IEnumerator> m_Coroutines = new Queue<IEnumerator>();
+        protected readonly Dictionary<IMazeItemProceedInfo, Queue<IEnumerator>> m_CoroutinesDict =
+            new Dictionary<IMazeItemProceedInfo, Queue<IEnumerator>>();
+        // private readonly Queue<IEnumerator> m_Coroutines = new Queue<IEnumerator>();
         protected IMazeItemProceedInfo KillerProceedInfo { get; set; }
         
         #endregion
@@ -36,17 +38,20 @@ namespace Games.RazorMaze.Models.ItemProceeders
         protected ModelSettings Settings { get; }
         protected IModelData Data { get; }
         protected IModelCharacter Character { get; }
+        protected IModelLevelStaging LevelStaging { get; }
         protected IGameTicker GameTicker { get; }
         
         protected ItemsProceederBase(
             ModelSettings _Settings, 
             IModelData _Data,
             IModelCharacter _Character,
+            IModelLevelStaging _LevelStaging,
             IGameTicker _GameTicker)
         {
             Settings = _Settings;
             Data = _Data;
             Character = _Character;
+            LevelStaging = _LevelStaging;
             GameTicker = _GameTicker;
             GameTicker.Register(this);
         }
@@ -74,7 +79,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     PauseProceed(); break;
                 case ELevelStage.Unloaded:
                 case ELevelStage.Finished:
+                case ELevelStage.CharacterKilled:
                     FinishProceed(true); break;
+                case ELevelStage.ReadyToUnloadLevel: break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Args.Stage);
             }
@@ -82,9 +89,13 @@ namespace Games.RazorMaze.Models.ItemProceeders
             if (_Args.Stage == ELevelStage.Loaded 
                 ||_Args.Stage == ELevelStage.ReadyToStartOrContinue)
             {
-                foreach (var coroutine in m_Coroutines)
-                    Coroutines.Stop(coroutine);
-                m_Coroutines.Clear();
+                foreach (var coroutinesQueue in m_CoroutinesDict
+                    .Select(_Kvp => _Kvp.Value))
+                {
+                    foreach (var coroutine in coroutinesQueue)
+                        Coroutines.Stop(coroutine);
+                    coroutinesQueue.Clear();
+                }
             }
         }
         
@@ -108,13 +119,16 @@ namespace Games.RazorMaze.Models.ItemProceeders
                         IsProceeding = false,
                         PauseTimer = 0,
                         BusyPositions = new List<V2Int> {_Item.Position},
-                        ProceedingStage = 0
+                        ProceedingStage = 0,
+                        CurrentPosition = _Item.Position,
+                        NextPosition = _Item.Position
                     };
                     res.SetItem(_Item);
                     return res;
                 });
             foreach (var newInfo in newInfos)
             {
+                m_CoroutinesDict.Add(newInfo, new Queue<IEnumerator>());
                 var list = ProceedInfos[newInfo.Type];
                 if (!list.Contains(newInfo))
                     list.Add(newInfo);
@@ -172,10 +186,16 @@ namespace Games.RazorMaze.Models.ItemProceeders
             }
         }
 
-        protected void ProceedCoroutine(IEnumerator _Coroutine)
+        protected virtual void ProceedCoroutine(IMazeItemProceedInfo _ProceedInfo, IEnumerator _Coroutine)
         {
-            m_Coroutines.Enqueue(_Coroutine);
+            m_CoroutinesDict[_ProceedInfo].Enqueue(_Coroutine);
             Coroutines.Run(_Coroutine);
+        }
+        
+        protected static bool PathContainsItem(V2Int _From, V2Int _To, V2Int _Point)
+        {
+            var fullPath = RazorMazeUtils.GetFullPath(_From, _To);
+            return fullPath.Contains(_Point);
         }
         
         #endregion

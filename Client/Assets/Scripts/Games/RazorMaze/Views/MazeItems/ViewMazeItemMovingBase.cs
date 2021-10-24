@@ -11,7 +11,6 @@ using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
 using UnityEngine;
-using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
@@ -42,7 +41,7 @@ namespace Games.RazorMaze.Views.MazeItems
         protected ViewMazeItemMovingBase(
             ViewSettings _ViewSettings,
             IModelGame _Model,
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
@@ -59,6 +58,19 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
 
         #region api
+
+        public override bool ActivatedInSpawnPool
+        {
+            get => base.ActivatedInSpawnPool;
+            set
+            {
+                foreach (var pathLine in m_PathLines)
+                    pathLine.enabled = false;
+                foreach (var pathJoint in m_PathJoints)
+                    pathJoint.enabled = false;
+                base.ActivatedInSpawnPool = value;
+            }
+        }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
@@ -82,8 +94,23 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region nonpublic methods
 
+        protected override void UpdateShape()
+        {
+            InitWallBlockMovingPaths();
+        }
+        
         protected virtual void InitWallBlockMovingPaths()
         {
+            InitWallBlockMovingPathsCore();
+        }
+
+        protected void InitWallBlockMovingPathsCore()
+        {
+            foreach (var pathLine in m_PathLines)
+                pathLine.gameObject.DestroySafe();
+            foreach (var joint in m_PathJoints)
+                joint.gameObject.DestroySafe();
+            
             m_PathLines.Clear();
             m_PathJoints.Clear();
             
@@ -91,25 +118,26 @@ namespace Games.RazorMaze.Views.MazeItems
                 .Select(_P => CoordinateConverter.ToLocalMazeItemPosition(_P))
                 .ToList();
 
-            var go = new GameObject("Line");
-            go.SetParent(ContainersGetter.MazeItemsContainer);
+            var go = new GameObject(ObjectName + " Line");
+            go.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems));
             go.transform.SetLocalPosXY(Vector2.zero);
             var line = go.AddComponent<Polyline>();
-            line.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
+            line.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
             line.Color = DrawingUtils.ColorLines.SetA(0.5f);
             line.SetPoints(points);
             line.Closed = false;
             line.SortingOrder = DrawingUtils.GetPathLineSortingOrder();
+            line.Joins = PolylineJoins.Round;
             m_PathLines.Add(line);
             
             foreach (var point in points)
             {
-                var go1 = new GameObject("Joint");
-                go1.SetParent(ContainersGetter.MazeItemsContainer);
+                var go1 = new GameObject(ObjectName +  " Joint");
+                go1.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems));
                 var joint = go1.AddComponent<Disc>();
                 go1.transform.SetLocalPosXY(point);
                 joint.Color = DrawingUtils.ColorLines;
-                joint.Radius = ViewSettings.LineWidth * CoordinateConverter.GetScale() * 2f;
+                joint.Radius = ViewSettings.LineWidth * CoordinateConverter.Scale * 2f;
                 joint.Type = DiscType.Disc;
                 joint.SortingOrder = DrawingUtils.GetPathLineJointSortingOrder();
                 m_PathJoints.Add(joint);
@@ -121,33 +149,16 @@ namespace Games.RazorMaze.Views.MazeItems
                 joint.enabled = false;
         }
 
-        protected override void SetShape()
+        protected override Dictionary<object[], Func<Color>> GetAppearSets(bool _Appear)
         {
-            InitWallBlockMovingPaths();
+            var sets = base.GetAppearSets(_Appear);
+            if (m_PathLines.Any())
+                sets.Add(m_PathLines.Cast<object>().ToArray(), () => DrawingUtils.ColorLines.SetA(0.5f));
+            if (m_PathJoints.Any())
+                sets.Add(m_PathJoints.Cast<object>().ToArray(), () => DrawingUtils.ColorLines);
+            return sets;
         }
 
-        protected override void Appear(bool _Appear)
-        {
-            base.Appear(_Appear);
-            
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !Initialized,
-                () =>
-                {
-                    var sets = new Dictionary<object[], Func<Color>>();
-                    if (m_PathLines.Any())
-                        sets.Add(m_PathLines.Cast<object>().ToArray(), () => DrawingUtils.ColorLines.SetA(0.5f));
-                    if (m_PathJoints.Any())
-                        sets.Add(m_PathJoints.Cast<object>().ToArray(), () => DrawingUtils.ColorLines);
-                    
-                    Transitioner.DoAppearTransitionSimple(
-                        _Appear,
-                        GameTicker,
-                        sets,
-                        Props.Path.First());
-                }));
-        }
-        
         #endregion
     }
 }

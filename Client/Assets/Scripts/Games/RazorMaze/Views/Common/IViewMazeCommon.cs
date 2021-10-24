@@ -4,7 +4,7 @@ using Games.RazorMaze.Views.MazeItems;
 
 namespace Games.RazorMaze.Views.Common
 {
-    public interface IViewMazeCommon : IInit
+    public interface IViewMazeCommon : IInit, IOnLevelStageChanged
     {
         List<IViewMazeItem> MazeItems { get; }
         IViewMazeItem GetItem(IMazeItemProceedInfo _Item);

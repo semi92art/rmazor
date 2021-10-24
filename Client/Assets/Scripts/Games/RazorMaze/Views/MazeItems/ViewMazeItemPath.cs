@@ -7,10 +7,11 @@ using Entities;
 using Exceptions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
+using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
-using Games.RazorMaze.Views.MazeItems.Props;
 using Games.RazorMaze.Views.Utils;
+using ModestTree;
 using Shapes;
 using Ticker;
 using UnityEngine;
@@ -33,7 +34,9 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region shapes
 
-        protected override object[] Shapes => new object[]
+        protected override string ObjectName => "Path Block";
+
+        protected override object[] DefaultColorShapes => new object[]
         {
             m_Shape,
             m_LeftBorder, m_RightBorder, m_BottomBorder, m_TopBorder,
@@ -42,6 +45,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private Rectangle m_Shape;
         private Line m_LeftBorder, m_RightBorder, m_BottomBorder, m_TopBorder;
         private Disc m_BottomLeftCorner, m_BottomRightCorner, m_TopLeftCorner, m_TopRightCorner;
+        private Color m_BottomLeftCornerCol, m_BottomRightCornerCol, m_TopLeftCornerCol, m_TopRightCornerCol;
         
         #endregion
         
@@ -58,7 +62,7 @@ namespace Games.RazorMaze.Views.MazeItems
         public ViewMazeItemPath(
             ViewSettings _ViewSettings,
             IModelGame _Model,
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
@@ -85,12 +89,12 @@ namespace Games.RazorMaze.Views.MazeItems
             Transitioner,
             Managers);
 
-        public override bool Activated
+        public override bool ActivatedInSpawnPool
         {
-            get => m_Activated;
+            get => base.ActivatedInSpawnPool;
             set
             {
-                m_Activated = value;
+                m_ActivatedInSpawnPool = value;
                 EnableInitializedShapes(value);
             }
         }
@@ -104,43 +108,10 @@ namespace Games.RazorMaze.Views.MazeItems
                 Collect(value);
             }
         }
-        
-        public override void Init(ViewMazeItemProps _Props)
-        {
-            Props = _Props;
-            SetShape();
-            // GameTicker.Register(this);
 
-            Coroutines.Run(Coroutines.WaitWhile(
-                () =>
-                {
-                    bool res = true;
-                    if (m_LeftBorderInited)
-                        res &= !m_LeftBorder.IsNull();
-                    if (m_RightBorderInited)
-                        res &= !m_RightBorder.IsNull();
-                    if (m_BottomBorderInited)
-                        res &= !m_BottomBorder.IsNull();
-                    if (m_TopBorderInited)
-                        res &= !m_TopBorder.IsNull();
-        
-                    if (m_BottomLeftCornerInited)
-                        res &= !m_BottomLeftCorner.IsNull();
-                    if (m_BottomRightCornerInited)
-                        res &= !m_BottomRightCorner.IsNull();
-                    if (m_TopLeftCornerInited)
-                        res &= !m_TopLeftCorner.IsNull();
-                    if (m_TopRightCornerInited)
-                        res &= !m_TopRightCorner.IsNull();
-
-                    return !res;
-                },
-                () => Initialized = true));
-        }
-        
         public void UpdateTick()
         {
-            if (!Initialized || !Activated)
+            if (!Initialized || !ActivatedInSpawnPool)
                 return;
             
             float dOffset = Time.deltaTime * 3f;
@@ -165,11 +136,40 @@ namespace Games.RazorMaze.Views.MazeItems
                 return;
             Coroutines.Run(OnFinishMoveCoroutine(_Args.Direction));
         }
-        
+
         #endregion
         
         #region nonpublic methods
 
+        private IEnumerator OnFinishMoveCoroutine(EMazeMoveDirection _Direction)
+        {
+            const float delta = 0.5f;
+            const float duration = 0.1f;
+            var dir = RazorMazeUtils.GetDirectionVector(_Direction, Model.Data.Orientation).ToVector2();
+            Line border = null;
+            if (dir == Vector2.up)
+                border = m_TopBorder;
+            else if (dir == Vector2.down)
+                border = m_BottomBorder;
+            else if (dir == Vector2.right)
+                border = m_RightBorder;
+            else if (dir == Vector2.left)
+                border = m_LeftBorder;
+            
+            if (border.IsNull())
+                yield break;
+            
+            var startPos = border.transform.localPosition;
+            yield return Coroutines.Lerp(
+                0f,
+                delta,
+                duration,
+                _Progress => border.transform.localPosition = startPos + (Vector3) dir * _Progress,
+                GameTicker,
+                (_, __) => border.transform.localPosition = startPos,
+                _ProgressFormula: _P => _P < 0.5f * delta ? _P : delta - _P);
+        }
+        
         private void Collect(bool _Collect)
         {
             if (_Collect)
@@ -180,32 +180,48 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Shape.Color = _Collect ? DrawingUtils.ColorLines.SetA(0f) : DrawingUtils.ColorLines;
         }
 
-        protected override void SetShape()
+        protected override void InitShape()
         {
-            var go = Object;
-            var sh = ContainersGetter.MazeItemsContainer.gameObject
-                .GetOrAddComponentOnNewChild<Rectangle>("Path Item", ref go, 
-                    CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
-            go.DestroyChildrenSafe();
-            sh.Width = sh.Height = CoordinateConverter.GetScale() * 0.4f;
+            var sh = Object.AddComponentOnNewChild<Rectangle>("Path Item", out _);
             sh.Type = Rectangle.RectangleType.RoundedHollow;
             sh.CornerRadiusMode = Rectangle.RectangleCornerRadiusMode.Uniform;
-            float cr = ViewSettings.CornerRadius * CoordinateConverter.GetScale() * 2f;
-            sh.CornerRadius = cr;
             sh.Color = DrawingUtils.ColorLines;
             sh.SortingOrder = DrawingUtils.GetPathSortingOrder();
-            Object = go;
+            sh.enabled = false;
             m_Shape = sh;
+        }
+
+        protected override void UpdateShape()
+        {
+            m_Shape.Width = m_Shape.Height = CoordinateConverter.Scale * 0.4f;
+            m_Shape.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale * 2f;
             SetBordersAndCorners();
             EnableInitializedShapes(false);
         }
 
         private void SetBordersAndCorners()
         {
+            ClearBordersAndCorners();
             InitBorders();
             InitInnerCorners();
             InitOuterCorners();
             AdjustBorders();
+        }
+
+        private void ClearBordersAndCorners()
+        {
+            if (m_LeftBorderInited)        m_LeftBorder       .enabled = false;
+            if (m_RightBorderInited)       m_RightBorder      .enabled = false;
+            if (m_BottomBorderInited)      m_BottomBorder     .enabled = false;
+            if (m_TopBorderInited)         m_TopBorder        .enabled = false;
+            
+            if (m_BottomLeftCornerInited)  m_BottomLeftCorner .enabled = false;
+            if (m_BottomRightCornerInited) m_BottomRightCorner.enabled = false;
+            if (m_TopLeftCornerInited)     m_TopLeftCorner    .enabled = false;
+            if (m_TopRightCornerInited)    m_TopRightCorner   .enabled = false;
+            
+            m_LeftBorderInited = m_RightBorderInited = m_BottomBorderInited = m_TopBorderInited = false;
+            m_BottomLeftCornerInited = m_BottomRightCornerInited = m_TopLeftCornerInited = m_TopRightCornerInited = false;
         }
 
         private void InitBorders()
@@ -276,22 +292,23 @@ namespace Games.RazorMaze.Views.MazeItems
             result = TurretExist(pos + _Dir1) 
                     && PathExist(pos + _Dir2) 
                     && !PathExist(pos + _Dir1 + _Dir2)
-                    && !BlockExist(pos + _Dir1 + _Dir2);
+                    && !TurretExist(pos + _Dir1 + _Dir2);
             if (result)
                 return true;
             result = TurretExist(pos + _Dir2) 
                     && PathExist(pos + _Dir1) 
                     && !PathExist(pos + _Dir1 + _Dir2)
-                    && !BlockExist(pos + _Dir1 + _Dir2);
+                    && !TurretExist(pos + _Dir1 + _Dir2);
             return result;
         }
 
         private void AdjustBorders()
         {
-            AdjustBorder(Props.Position, V2Int.left, V2Int.down, V2Int.up, m_LeftBorderInited, ref m_LeftBorder);
-            AdjustBorder(Props.Position, V2Int.right, V2Int.down, V2Int.up, m_RightBorderInited, ref m_RightBorder);
-            AdjustBorder(Props.Position, V2Int.down, V2Int.left, V2Int.right, m_BottomBorderInited, ref m_BottomBorder);
-            AdjustBorder(Props.Position, V2Int.up, V2Int.left, V2Int.right, m_TopBorderInited, ref m_TopBorder);
+            var pos = Props.Position;
+            AdjustBorder(pos, V2Int.left, V2Int.down, V2Int.up, m_LeftBorderInited, ref m_LeftBorder);
+            AdjustBorder(pos, V2Int.right, V2Int.down, V2Int.up, m_RightBorderInited, ref m_RightBorder);
+            AdjustBorder(pos, V2Int.down, V2Int.left, V2Int.right, m_BottomBorderInited, ref m_BottomBorder);
+            AdjustBorder(pos, V2Int.up, V2Int.left, V2Int.right, m_TopBorderInited, ref m_TopBorder);
         }
 
         private void AdjustBorder(
@@ -338,15 +355,25 @@ namespace Games.RazorMaze.Views.MazeItems
         
         private void InitBorder(EMazeMoveDirection _Side)
         {
-            var go = new GameObject("Border");
-            go.SetParent(ContainersGetter.MazeItemsContainer);
-            go.transform.SetLocalPosXY(Vector2.zero);
-            var border = go.AddComponent<Line>();
-            border.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
+            Line border;
+            switch (_Side)
+            {
+                case EMazeMoveDirection.Up:
+                    border = m_TopBorder; break;
+                case EMazeMoveDirection.Right:border = m_RightBorder; break;
+                case EMazeMoveDirection.Down: border = m_BottomBorder; break;
+                case EMazeMoveDirection.Left: border = m_LeftBorder; break;
+                default: throw new SwitchCaseNotImplementedException(_Side);
+            }
+            if (border.IsNull())
+                border = Object.AddComponentOnNewChild<Line>("Border", out _);
+            border.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
             border.EndCaps = LineEndCap.None;
             border.Color = DrawingUtils.ColorLines.SetA(0.5f);
             (border.Start, border.End, border.Dashed) = GetBorderPointsAndDashed(_Side, false, false);
+            border.transform.position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
             border.DashSize = 1f;
+            border.enabled = false;
             switch (_Side)
             {
                 case EMazeMoveDirection.Up: m_TopBorder = border; m_TopBorderInited = true; break;
@@ -372,25 +399,23 @@ namespace Games.RazorMaze.Views.MazeItems
             else if (_Right && _Up && m_TopRightCorner.IsNotNull())
                 corner = m_TopRightCorner;
             if (corner.IsNull())
-            {
-                var go = new GameObject("Corner");
-                go.SetParent(ContainersGetter.MazeItemsContainer);
-                go.transform.SetLocalPosXY(Vector2.zero);
-                corner = go.AddComponent<Disc>();
-            }
-            corner.transform.SetLocalPosXY(GetCornerCenter(_Right, _Up, _Inner));
+                corner = Object.AddComponentOnNewChild<Disc>("Corner", out _);
+            corner.transform.position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
+            corner.transform.PlusLocalPosXY(GetCornerCenter(_Right, _Up, _Inner));
             corner.Type = DiscType.Arc;
             corner.ArcEndCaps = ArcEndCap.Round;
-            corner.Radius = ViewSettings.CornerRadius * CoordinateConverter.GetScale();
-            corner.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale() * 1.5f;
+            corner.Radius = ViewSettings.CornerRadius * CoordinateConverter.Scale;
+            corner.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale * 1.5f;
             var angles = GetCornerAngles(_Right, _Up, _Inner);
             corner.AngRadiansStart = Mathf.Deg2Rad * angles.x;
             corner.AngRadiansEnd = Mathf.Deg2Rad * angles.y;
-            corner.Color = DrawingUtils.ColorLines;
+            corner.Color = GetCornerColor(_Right, _Up, _Inner);
+            corner.enabled = false;
             
             if (!_Right && !_Up)
             {
                 m_BottomLeftCorner = corner;
+                m_BottomLeftCornerCol = m_BottomLeftCorner.Color;
                 m_BottomLeftCornerInited = true;
                 if (!_Inner) return;
                 if (m_BottomBorder.IsNotNull())
@@ -401,6 +426,7 @@ namespace Games.RazorMaze.Views.MazeItems
             else if (_Right && !_Up)
             {
                 m_BottomRightCorner = corner;
+                m_BottomRightCornerCol = corner.Color;
                 m_BottomRightCornerInited = true;
                 if (!_Inner) return;
                 if (m_BottomBorder.IsNotNull())
@@ -411,6 +437,7 @@ namespace Games.RazorMaze.Views.MazeItems
             else if (!_Right && _Up)
             {
                 m_TopLeftCorner = corner;
+                m_TopLeftCornerCol = corner.Color;
                 m_TopLeftCornerInited = true;
                 if (!_Inner) return;
                 if (m_LeftBorder.IsNotNull())
@@ -421,6 +448,7 @@ namespace Games.RazorMaze.Views.MazeItems
             else if (_Right && _Up)
             {
                 m_TopRightCorner = corner;
+                m_TopRightCornerCol = corner.Color;
                 m_TopRightCornerInited = true;
                 if (!_Inner) return;
                 if (m_TopBorder.IsNotNull())
@@ -497,7 +525,7 @@ namespace Games.RazorMaze.Views.MazeItems
             return CoordinateConverter.ToLocalMazeItemPosition(center);
         }
 
-        private Vector2 GetCornerAngles(bool _Right, bool _Up, bool _Inner)
+        private static Vector2 GetCornerAngles(bool _Right, bool _Up, bool _Inner)
         {
             if (_Right)
             {
@@ -510,114 +538,124 @@ namespace Games.RazorMaze.Views.MazeItems
             return _Inner ? new Vector2(180, 270) : new Vector2(0, 90);
         }
 
+        private Color GetCornerColor(bool _Right, bool _Up, bool _Inner)
+        {
+            var defCol = DrawingUtils.ColorLines;
+            var col1 = defCol.SetA(0.5f);
+            if (_Inner)
+                return DrawingUtils.ColorLines;
+            if (!_Right && !_Up)
+                return TrapIncreasingExist(Props.Position + V2Int.down + V2Int.left) ? col1 : defCol;
+            if (_Right && !_Up)
+                return TrapIncreasingExist(Props.Position + V2Int.down + V2Int.right) ? col1 : defCol;
+            if (!_Right && _Up)
+                return TrapIncreasingExist(Props.Position + V2Int.up + V2Int.left) ? col1 : defCol;
+            if (_Right && _Up)
+                return TrapIncreasingExist(Props.Position + V2Int.up + V2Int.right) ? col1 : defCol;
+            return defCol;
+        }
+
         private bool PathExist(V2Int _Position) => Model.PathItemsProceeder.PathProceeds.Keys.Contains(_Position);
+        private bool BlockExist(V2Int _Position) => GetItemsInfo(_Position).Any();
 
-        private bool BlockExist(V2Int _Position) => Model.GetAllProceedInfos().Any(_Item =>
-            _Item.CurrentPosition == _Position && _Item.Type != EMazeItemType.Block);
-
-        private bool TurretExist(V2Int _Position) => Model.GetAllProceedInfos().Any(_Item => 
-            _Item.CurrentPosition == _Position && _Item.Type == EMazeItemType.Turret);
-
-        private V2Int TurretDirection(V2Int _Position) =>
-            Model.GetAllProceedInfos()
-                .First(_Item => _Item.CurrentPosition == _Position 
-                                && _Item.Type == EMazeItemType.Turret)
-                .Direction;
-        
-        private bool SpringboardExist(V2Int _Position) => Model.GetAllProceedInfos()
-            .Any(_Item => _Item.CurrentPosition == _Position
-                          && _Item.Type == EMazeItemType.Springboard);
-        
-        private V2Int SpringboardDirection(V2Int _Position) =>
-            Model.GetAllProceedInfos()
-                .First(_Item => _Item.CurrentPosition == _Position
-                                && _Item.Type == EMazeItemType.Springboard)
-                .Direction;
-
-        private Vector3 Average(Vector3 _A, Vector3 _B) => (_A + _B) * 0.5f;
-        
-        private IEnumerator OnFinishMoveCoroutine(EMazeMoveDirection _Direction)
+        private bool TurretExist(V2Int _Position)
         {
-            const float delta = 0.5f;
-            const float duration = 0.1f;
-            var dir = RazorMazeUtils.GetDirectionVector(_Direction, Model.Data.Orientation).ToVector2();
-            Line border = null;
-            if (dir == Vector2.up)
-                border = m_TopBorder;
-            else if (dir == Vector2.down)
-                border = m_BottomBorder;
-            else if (dir == Vector2.right)
-                border = m_RightBorder;
-            else if (dir == Vector2.left)
-                border = m_LeftBorder;
-            
-            if (border.IsNull())
-                yield break;
-            
-            var startPos = border.transform.localPosition;
-            yield return Coroutines.Lerp(
-                0f,
-                delta,
-                duration * 0.5f,
-                _Progress => border.transform.localPosition = startPos + (Vector3) dir * _Progress,
-                GameTicker,
-                (_, __) =>
-                {
-                    Coroutines.Run(Coroutines.Lerp(
-                        delta,
-                        0f,
-                        duration * 0.5f,
-                        _Progress => border.transform.localPosition = startPos + (Vector3) dir * _Progress,
-                        GameTicker,
-                        (___, ____) => border.transform.localPosition = startPos));
-                });
+            return GetItemInfo(_Position, EMazeItemType.Turret) != null;
         }
 
-        protected override void Appear(bool _Appear)
+        private V2Int TurretDirection(V2Int _Position)
         {
+            return GetItemInfo(_Position, EMazeItemType.Turret).Direction;
+        }
+
+        private bool SpringboardExist(V2Int _Position)
+        {
+            return GetItemInfo(_Position, EMazeItemType.Springboard) != null;
+        }
+
+        private V2Int SpringboardDirection(V2Int _Position)
+        {
+            return GetItemInfo(_Position, EMazeItemType.Springboard).Direction;
+        }
+
+        private bool TrapIncreasingExist(V2Int _Position)
+        {
+            return GetItemInfo(_Position, EMazeItemType.TrapIncreasing) != null;
+        }
+
+        private IEnumerable<IMazeItemProceedInfo> GetItemsInfo(V2Int _Position, EMazeItemType[] _Types = null)
+        {
+            if (_Types == null)
+                _Types = Enum.GetValues(typeof(EMazeItemType)).Cast<EMazeItemType>().Except(EMazeItemType.Block).ToArray();
+            return _Types.Select(_T => GetItemInfo(_Position, _T));
+        }
+
+        private IMazeItemProceedInfo GetItemInfo(V2Int _Position, EMazeItemType _Type)
+        {
+            return Model.GetAllProceedInfos()
+                .FirstOrDefault(_Item => _Item.CurrentPosition == _Position
+                                && _Item.Type == _Type); 
+        }
+
+        private static Vector3 Average(Vector3 _A, Vector3 _B) => (_A + _B) * 0.5f;
+
+        protected override void OnAppearStart(bool _Appear)
+        {
+            base.OnAppearStart(_Appear);
             if (_Appear)
+            {
+                EnableInitializedShapes(true);
                 Collected = false;
-            AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !Initialized,
-                () =>
-                {
-                    ShapeRenderer shape = null;
-                    if (_Appear && !Props.IsStartNode || !_Appear && !Collected)
-                        shape = m_Shape;
-                    else
-                        m_Shape.enabled = false;
-                    Transitioner.DoAppearTransitionSimple(
-                        _Appear,
-                        GameTicker,
-                        new Dictionary<object[], Func<Color>>
-                        {
-                            {
-                                new object[]
-                                {
-                                    m_BottomLeftCorner,
-                                    m_BottomRightCorner,
-                                    m_TopLeftCorner,
-                                    m_TopRightCorner
-                                },
-                                () => DrawingUtils.ColorLines
-                            },
-                            {
-                                new object[] {m_LeftBorder, m_RightBorder, m_BottomBorder, m_TopBorder},
-                                () => DrawingUtils.ColorLines.SetA(0.5f)
-                            },
-                            {new object[] {shape}, () => DrawingUtils.ColorLines}
-                        },
-                        Props.Position,
-                        () =>
-                        {
-                            if (!_Appear)
-                                DeactivateShapes();
-                            AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared;
-                        });
-                }));
+            }
         }
-        
+
+        protected override Dictionary<object[], Func<Color>> GetAppearSets(bool _Appear)
+        {
+            var cornersDictRaw = new Dictionary<Color, List<object>>();
+            cornersDictRaw.Add(DrawingUtils.ColorLines, new List<object>());
+            cornersDictRaw.Add(DrawingUtils.ColorLines.SetA(0.5f), new List<object>());
+
+            if (m_BottomLeftCornerInited)
+                cornersDictRaw[m_BottomLeftCornerCol].Add(m_BottomLeftCorner);
+            if (m_BottomRightCornerInited)
+                cornersDictRaw[m_BottomRightCornerCol].Add(m_BottomRightCorner);
+            if (m_TopLeftCornerInited)
+                cornersDictRaw[m_TopLeftCornerCol].Add(m_TopLeftCorner);
+            if (m_TopRightCornerInited)
+                cornersDictRaw[m_TopRightCornerCol].Add(m_TopRightCorner);
+
+            var borders = new List<object>();
+            if (m_BottomBorderInited)
+                borders.Add(m_BottomBorder);
+            if (m_TopBorderInited)
+                borders.Add(m_TopBorder);
+            if (m_LeftBorderInited)
+                borders.Add(m_LeftBorder);
+            if (m_RightBorderInited)
+                borders.Add(m_RightBorder);
+
+            var bordersDict = new Dictionary<object[], Func<Color>>
+            {
+                {
+                    borders.ToArray(),
+                    () => DrawingUtils.ColorLines.SetA(0.5f)
+                }
+            };
+            var cornersDict = cornersDictRaw.
+                ToDictionary(_Kvp => _Kvp.Value.ToArray(),
+                    _Kvp => new Func<Color>(() => _Kvp.Key));
+            var res = new[] {bordersDict, cornersDict}
+                .SelectMany(_Dict => _Dict)
+                .ToDictionary(_Kvp => _Kvp.Key, _Kvp => _Kvp.Value);
+
+            if (_Appear && !Props.IsStartNode || !_Appear && !Collected)
+                res.Add(new object[] {m_Shape}, () => DrawingUtils.ColorLines);
+            else
+                m_Shape.enabled = false;
+
+            return res;
+        }
+
         #endregion
     }
 }

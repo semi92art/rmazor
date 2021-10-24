@@ -24,6 +24,14 @@ namespace UI
         [SerializeField] protected List<TextMeshProUGUI> texts;
         private const float TransitionTime = 0.2f;
         private int m_TransitionCount;
+        protected ITicker m_Ticker;
+        protected bool m_Initialized;
+
+        public void Init(IUITicker _Ticker)
+        {
+            m_Ticker = _Ticker;
+            m_Initialized = true;
+        }
 
         protected virtual void OnEnable()
         {
@@ -40,7 +48,7 @@ namespace UI
         
         protected void MakeTransition(Color _Background)
         {
-            if (background.IsNull())
+            if (background.IsNull() || !m_Initialized)
                 return;
             m_TransitionCount++;
             Color from = background.color;
@@ -55,8 +63,7 @@ namespace UI
                     if (transCount != m_TransitionCount) return;
                     background.color = _Color;
                 },
-                new UITicker())); //FIXME
-                // UiTimeProvider.Instance));
+                m_Ticker));
         }
     }
 }

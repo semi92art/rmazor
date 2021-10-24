@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Constants;
 using Lean.Localization;
+using Ticker;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -92,12 +93,13 @@ namespace UI
         {
             if (!DoLoading)
                 return;
+            if (!m_Initialized)
+                return;
         
             m_Indicator.Rotate(Vector3.back, Time.deltaTime * speed);
             m_Indicator2.Rotate(Vector3.forward, Time.deltaTime * speed);
 
-            int time = default; // FIXME
-            // int time = Mathf.FloorToInt(UiTimeProvider.Instance.Time * 5f);
+            int time = Mathf.FloorToInt(m_Ticker.Time * 5f);
             if (time % 2 == 0 && time != m_TimePrev)
             {
                 CommonUtils.IncWithOverflow(ref m_PointsState, 4);

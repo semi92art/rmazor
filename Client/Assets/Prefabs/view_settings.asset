@@ -21,3 +21,5 @@ MonoBehaviour:
   pathItemsCount: 300
   startPathItemFilledOnStart: 0
   mazeRotationSpeed: 5
+  finishTimeExcellent: 3
+  finishTimeGood: 5

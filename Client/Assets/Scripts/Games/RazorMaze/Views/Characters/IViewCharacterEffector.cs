@@ -1,6 +1,15 @@
-﻿using SpawnPools;
+﻿using Entities;
+using Games.RazorMaze.Models.ItemProceeders;
+using SpawnPools;
 
 namespace Games.RazorMaze.Views.Characters
 {
-    public interface IViewCharacterEffector : IInit, IActivated, IOnRevivalOrDeath, IOnLevelStageChanged { }
+    public interface IViewCharacterEffector :
+        IActivated,
+        IOnLevelStageChanged,
+        ICharacterMoveStarted,
+        ICharacterMoveFinished
+    {
+        void OnAllPathProceed(V2Int _LastPos);
+    }
 }

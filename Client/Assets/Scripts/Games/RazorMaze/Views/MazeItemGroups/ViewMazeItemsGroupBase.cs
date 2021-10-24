@@ -7,31 +7,44 @@ using Utils;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
-    public abstract class ViewMazeItemsGroupBase : IOnLevelStageChanged, IMazeItemTypes
+    public abstract class ViewMazeItemsGroupBase : IViewMazeItemGroup
     {
-        public abstract EMazeItemType[] Types { get; }
+        #region nonpublic members
+
         protected IViewMazeCommon Common { get; }
-        private bool m_CommonInitialized;
+
+        #endregion
+
+        #region constructor
 
         protected ViewMazeItemsGroupBase(IViewMazeCommon _Common)
         {
             Common = _Common;
-            Common.Initialized += () => m_CommonInitialized = true;
+        }
+
+        #endregion
+        
+
+        #region api
+        
+        public abstract EMazeItemType[] Types { get; }
+        
+        public IEnumerable<IViewMazeItem> GetItems()
+        {
+            return Common.MazeItems.Where(_Item => Types.Contains(_Item.Props.Type)).ToList();
         }
         
+        public IEnumerable<IViewMazeItem> GetActiveItems()
+        {
+            return GetItems().Where(_Item => _Item.ActivatedInSpawnPool);
+        }
         
         public virtual void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !m_CommonInitialized,
-                () =>
-                {
-                    foreach (var item in GetItems())
-                        item.OnLevelStageChanged(_Args);
-                }));
+            foreach (var item in GetItems())
+                item.OnLevelStageChanged(_Args);
         }
 
-        protected IEnumerable<IViewMazeItem> GetItems() => 
-            Common.MazeItems.Where(_Item => Types.Contains(_Item.Props.Type)).ToList();
+        #endregion
     }
 }

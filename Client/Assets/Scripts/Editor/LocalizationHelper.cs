@@ -186,7 +186,8 @@ public class LocalizationHelper : EditorWindow
                 sb.Append(line);
             File.WriteAllText($@"Assets\Resources\texts\{m_Assets[key].name}.txt", sb.ToString());
         }
-        
+
+        AssetDatabase.SaveAssets();
         Dbg.Log("Localization changes saved successfully");
     }
 

@@ -19,6 +19,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;
 using Utils.Editor;
+using Object = UnityEngine.Object;
 
 public class EditorHelper : EditorWindow
 {
@@ -29,7 +30,6 @@ public class EditorHelper : EditorWindow
     private string m_TestUrlCheck;
     private int m_GameId = -1;
     private int m_GameIdCheck;
-    private int m_Level = -1;
     private int m_Quality = -1;
     private int m_QualityCheck;
     private int m_TabPage;
@@ -104,73 +104,95 @@ public class EditorHelper : EditorWindow
             if (GUI.enabled)
                 GUILayout.Space(10);
             
-            GUILayout.BeginHorizontal();
-            EditorUtilsEx.GuiButtonAction("Enable Daily Bonus", EnableDailyBonus);
-            GUILayout.Label("Day:");
-            m_DailyBonusIndex = EditorGUILayout.Popup(
-                m_DailyBonusIndex, new[] { "1", "2", "3", "4", "5", "6", "7" });
-            GUILayout.EndHorizontal();
+            EditorUtilsEx.HorizontalZone(() =>
+            {
+                EditorUtilsEx.GuiButtonAction("Enable Daily Bonus", EnableDailyBonus);
+                GUILayout.Label("Day:");
+                m_DailyBonusIndex = EditorGUILayout.Popup(
+                    m_DailyBonusIndex, new[] { "1", "2", "3", "4", "5", "6", "7" });
+            });
             
             if (Application.isPlaying)
             {
-                GUILayout.BeginHorizontal();
-                var money = m_Money.CloneAlt();
-                foreach (var kvp in m_Money)
+                EditorUtilsEx.HorizontalZone(() =>
                 {
-                    GUILayout.Label($"{kvp.Key}:");
-                    money[kvp.Key] = EditorGUILayout.LongField(money[kvp.Key]);
-                }
-                m_Money = money;
-                GUILayout.EndHorizontal();
-                
-                GUILayout.BeginHorizontal();
-                EditorUtilsEx.GuiButtonAction("Get From Bank", GetMoneyFromBank);
-                EditorUtilsEx.GuiButtonAction("Set Money", SetMoney);
-                GUILayout.EndHorizontal();
+                    var money = m_Money.CloneAlt();
+                    foreach (var kvp in m_Money)
+                    {
+                        GUILayout.Label($"{kvp.Key}:");
+                        money[kvp.Key] = EditorGUILayout.LongField(money[kvp.Key]);
+                    }
+
+                    m_Money = money;
+                });
+
+                EditorUtilsEx.HorizontalZone(() =>
+                {
+                    EditorUtilsEx.GuiButtonAction("Get From Bank", GetMoneyFromBank);
+                    EditorUtilsEx.GuiButtonAction("Set Money", SetMoney);
+                });
             }
             
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Set Game Id:"))
-                SaveUtils.PutValue(SaveKey.GameId, m_GameId);
-            m_GameId = EditorGUILayout.IntField(m_GameId);
-            GUILayout.EndHorizontal();
-
+            EditorUtilsEx.HorizontalZone(() =>
+            {
+                if (GUILayout.Button("Set Game Id:"))
+                    SaveUtils.PutValue(SaveKey.GameId, m_GameId);
+                m_GameId = EditorGUILayout.IntField(m_GameId);
+            });
+            
             EditorUtilsEx.HorizontalLine(Color.gray);
             GUI.enabled = true;
-
-            GUILayout.BeginHorizontal();
-            EditorUtilsEx.GuiButtonAction(CreateTestUsers, m_TestUsersCount);
-            GUILayout.Label("count:", GUILayout.Width(40));
-            m_TestUsersCount = EditorGUILayout.IntField(m_TestUsersCount);
-            GUILayout.EndHorizontal();
+            
+            EditorUtilsEx.HorizontalZone(() =>
+            {
+                EditorUtilsEx.GuiButtonAction(CreateTestUsers, m_TestUsersCount);
+                GUILayout.Label("count:", GUILayout.Width(40));
+                m_TestUsersCount = EditorGUILayout.IntField(m_TestUsersCount);
+            });
             
             EditorUtilsEx.GuiButtonAction("Delete test users", DeleteTestUsers);
 
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Debug Server Url:");
-            m_DebugServerUrl = EditorGUILayout.TextField(m_DebugServerUrl);
-            if (!string.IsNullOrEmpty(m_DebugServerUrl) && m_DebugServerUrl.Last().InRange('/','\\'))
-                m_DebugServerUrl = m_DebugServerUrl.Remove(m_DebugServerUrl.Length - 1);
-            GUILayout.EndHorizontal();
-
+            EditorUtilsEx.HorizontalZone(() =>
+            {
+                GUILayout.Label("Debug Server Url:");
+                m_DebugServerUrl = EditorGUILayout.TextField(m_DebugServerUrl);
+                if (!string.IsNullOrEmpty(m_DebugServerUrl) && m_DebugServerUrl.Last().InRange('/','\\'))
+                    m_DebugServerUrl = m_DebugServerUrl.Remove(m_DebugServerUrl.Length - 1);
+            });
+            
             EditorUtilsEx.GuiButtonAction("Set default api url", SetDefaultApiUrl);
             EditorUtilsEx.GuiButtonAction("Delete all settings", DeleteAllSettings);
             EditorUtilsEx.GuiButtonAction("Get ready to commit", GetReadyToCommit);
             
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Quality:");
-            m_Quality = EditorGUILayout.Popup(
-                m_Quality, new[] { "Normal", "Good" });
-            GUILayout.EndHorizontal();
+            EditorUtilsEx.HorizontalZone(() =>
+            {
+                GUILayout.Label("Quality:");
+                m_Quality = EditorGUILayout.Popup(
+                    m_Quality, new[] { "Normal", "Good" });
+            });
             
             EditorUtilsEx.HorizontalLine(Color.gray);
-
-            GUILayout.BeginHorizontal();
-            EditorUtilsEx.GuiButtonAction(SceneNames.Preload, LoadScene, $"Assets/Scenes/{SceneNames.Preload}.unity");
-            EditorUtilsEx.GuiButtonAction(SceneNames.Main, LoadScene, $"Assets/Scenes/{SceneNames.Main}.unity");
-            EditorUtilsEx.GuiButtonAction(SceneNames.Level, LoadScene, $"Assets/Scenes/{SceneNames.Level}.unity");
-            EditorUtilsEx.GuiButtonAction(SceneNames.Prototyping,  LoadScene, $"Assets/Scenes/{SceneNames.Prototyping}.unity");
-            GUILayout.EndHorizontal();
+            
+            var headerStyle = new GUIStyle
+            {
+                fontSize = 15,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleCenter,
+                normal = {textColor = GUI.contentColor}
+            };
+            
+            GUILayout.Label("Scenes", headerStyle);
+            var sceneGuids = AssetDatabase.FindAssets (
+                "l:Scene t:Scene", new[] {"Assets\\Scenes" });
+            foreach (var scenePath in sceneGuids.Select(AssetDatabase.GUIDToAssetPath))
+            {
+                EditorUtilsEx.GuiButtonAction(
+                    scenePath.Replace("Assets/Scenes/",
+                        string.Empty).Replace(".unity", string.Empty),
+                    LoadScene, 
+                    scenePath,
+                    GUILayout.Height(30f));
+            }
         });
         
         UpdateTestUrl();
@@ -203,76 +225,61 @@ public class EditorHelper : EditorWindow
     {
         var settings = PrefabUtilsEx.GetObject<ModelSettings>(
             "model_settings", "model_settings");
-        var serObj = new SerializedObject(settings);
-
         var type = typeof(ModelSettings);
-        var fieldInfos = type.GetFields().ToList();
-
-        EditorUtilsEx.ScrollViewZone(ref m_ModelSettingsScrollPos, () =>
-        {
-            foreach (var fieldInfo in fieldInfos)
-            {
-                var prop = serObj.FindProperty(fieldInfo.Name);
-                EditorGUILayout.PropertyField(prop);
-                float val = Convert.ToSingle(fieldInfo.GetValue(settings));
-                if (Math.Abs(val - prop.floatValue) > float.Epsilon)
-                {
-                    fieldInfo.SetValue(settings, prop.floatValue);
-                    EditorUtility.SetDirty(settings);
-                    AssetDatabase.SaveAssets();
-                    AssetDatabase.Refresh();
-                }
-            }
-        });
+        var fieldInfos = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
+        SettingsTabPageCore(settings, fieldInfos);
     }
     
     private void ViewSettingsTabPage()
     {
         var settings = PrefabUtilsEx.GetObject<ViewSettings>(
             "model_settings", "view_settings");
-        var serObj = new SerializedObject(settings);
-
         var type = typeof(ViewSettings);
         var fieldInfos = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
+        SettingsTabPageCore(settings, fieldInfos);
+    }
 
+    private void SettingsTabPageCore(Object _Settings, IEnumerable<FieldInfo> _FieldInfos)
+    {
+        var serObj = new SerializedObject(_Settings);
         EditorUtilsEx.ScrollViewZone(ref m_ViewSettingsScrollPos, () =>
         {
-            foreach (var fieldInfo in fieldInfos)
+            foreach (var fieldInfo in _FieldInfos)
             {
                 var prop = serObj.FindProperty(fieldInfo.Name);
                 EditorGUILayout.PropertyField(prop);
                 bool refresh = false;
                 if (fieldInfo.FieldType == typeof(float))
                 {
-                    float val = Convert.ToSingle(fieldInfo.GetValue(settings));
+                    float val = Convert.ToSingle(fieldInfo.GetValue(_Settings));
                     if (Math.Abs(val - prop.floatValue) > float.Epsilon)
                     {
-                        fieldInfo.SetValue(settings, prop.floatValue);
+                        fieldInfo.SetValue(_Settings, prop.floatValue);
                         refresh = true;
                     }
                 }
                 else if (fieldInfo.FieldType == typeof(int))
                 {
-                    int val = Convert.ToInt32(fieldInfo.GetValue(settings));
+                    int val = Convert.ToInt32(fieldInfo.GetValue(_Settings));
                     if (val != prop.intValue)
                     {
-                        fieldInfo.SetValue(settings, prop.intValue);
+                        fieldInfo.SetValue(_Settings, prop.intValue);
                         refresh = true;
                     }
                 }
                 else if (fieldInfo.FieldType == typeof(bool))
                 {
-                    bool val = Convert.ToBoolean(fieldInfo.GetValue(settings));
+                    bool val = Convert.ToBoolean(fieldInfo.GetValue(_Settings));
                     if (val != prop.boolValue)
                     {
-                        fieldInfo.SetValue(settings, prop.boolValue);
+                        fieldInfo.SetValue(_Settings, prop.boolValue);
                         refresh = true;
                     }
                 }
 
                 if (refresh)
                 {
-                    EditorUtility.SetDirty(settings);
+                    EditorUtility.SetDirty(_Settings);
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();
                 }

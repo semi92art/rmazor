@@ -8,7 +8,6 @@ using GameHelpers;
 using Ticker;
 using UI.Entities;
 using UI.Factories;
-using UI.Managers;
 using UI.PanelItems;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,35 +15,44 @@ using Object = UnityEngine.Object;
 
 namespace UI.Panels
 {
-    public class SettingsSelectorPanel : DialogPanelBase, IMenuUiCategory
+    public interface ISettingSelectorDialogPanel : IDialogPanel
+    {
+        void PreInit(string _DefaultValue, List<string> _Items, Action<string> _OnSelect);
+    }
+    
+    public class SettingsSelectorPanel : DialogPanelBase, ISettingSelectorDialogPanel
     {
         #region private members
-        
-        private readonly IMenuDialogViewer m_DialogViewer;
-        private readonly List<string> m_Items;
-        private readonly Action<string> m_Select;
-        private readonly string m_DefaultValue;
+
+        private List<string> m_Items;
+        private Action<string> m_OnSelect;
+        private string m_DefaultValue;
         private RectTransform m_Content;
         private ToggleGroup m_ToggleGroup;
         
         #endregion
 
-        #region api
-
-        public MenuUiCategory Category => MenuUiCategory.Settings;
+        #region inject
 
         public SettingsSelectorPanel(
-            IMenuDialogViewer _DialogViewer,
-            string _Value,
-            List<string> _Items,
-            Action<string> _Select,
+            IDialogViewer _DialogViewer,
             IManagersGetter _Managers,
-            IUITicker _UITicker) : base(_Managers, _UITicker)
+            IUITicker _UITicker) 
+            : base(_Managers, _UITicker, _DialogViewer) { }
+
+
+        #endregion
+
+        #region api
+
+        public override EUiCategory Category => EUiCategory.Settings;
+
+
+        public void PreInit(string _DefaultValue, List<string> _Items, Action<string> _OnSelect)
         {
-            m_DialogViewer = _DialogViewer;
-            m_DefaultValue = _Value;
+            m_DefaultValue = _DefaultValue;
             m_Items = _Items;
-            m_Select = _Select;
+            m_OnSelect = _OnSelect;
         }
         
         public override void Init()
@@ -52,7 +60,7 @@ namespace UI.Panels
             base.Init();
             var sp = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_DialogViewer.Container,
+                    DialogViewer.Container,
                     RtrLites.FullFill),
                 CommonPrefabSetNames.MainMenuDialogPanels, "settings_selector_panel");
 
@@ -61,7 +69,7 @@ namespace UI.Panels
             InitItems();
             Panel = sp.RTransform();
         }
-
+        
         #endregion
 
         #region nonpublic methods
@@ -87,7 +95,7 @@ namespace UI.Panels
             {
                 var sspiClone = sspi.Clone();
                 SettingSelectorItem si = sspiClone.GetComponent<SettingSelectorItem>();
-                si.Init(item, m_Select, item == m_DefaultValue, Managers);
+                si.Init(item, m_OnSelect, item == m_DefaultValue, Managers);
                 selectorItems.Add(si);
             }
 

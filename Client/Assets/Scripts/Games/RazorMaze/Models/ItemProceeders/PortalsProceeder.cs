@@ -42,8 +42,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
             ModelSettings _Settings,
             IModelData _Data, 
             IModelCharacter _Character,
+            IModelLevelStaging _LevelStaging,
             IGameTicker _GameTicker) 
-            : base(_Settings, _Data, _Character, _GameTicker) { }
+            : base(_Settings, _Data, _Character, _LevelStaging, _GameTicker) { }
         
         #endregion
         
@@ -55,7 +56,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
             var possiblePortals = (from info in GetProceedInfos(Types)
-                    where RazorMazeUtils.PathContainsItem(_Args.From, _Args.To, info.CurrentPosition) 
+                    where PathContainsItem(_Args.From, _Args.To, info.CurrentPosition) 
                           && RazorMazeUtils.CompareItemsOnPath(
                         _Args.From, _Args.To, _Args.Position, info.CurrentPosition) >= 0
                     select info)

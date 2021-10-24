@@ -16,9 +16,9 @@ namespace Games.RazorMaze.Views.ContainerGetters
         
         #region inject
 
-        private ICoordinateConverter CoordinateConverter { get; }
+        private IMazeCoordinateConverter CoordinateConverter { get; }
 
-        public ContainersGetter(ICoordinateConverter _CoordinateConverter)
+        public ContainersGetter(IMazeCoordinateConverter _CoordinateConverter)
         {
             CoordinateConverter = _CoordinateConverter;
         }
@@ -27,18 +27,9 @@ namespace Games.RazorMaze.Views.ContainerGetters
 
         #region api
 
-        public Transform MazeContainer => GetContainer("Maze");
-        public Transform MazeItemsContainer => GetContainer("Maze Items", true);
-        public Transform CharacterContainer => GetContainer("Character", true);
-        public Transform BackgroundContainer => GetContainer("Background");
-        public Transform AudioSourcesContainer => GetContainer("AudioSources");
-
-        #endregion
-
-        #region nonpublic methods
-
-        private Transform GetContainer(string _Name, bool _InMazeContainer = false)
+        public Transform GetContainer(string _Name)
         {
+            bool inMaze = _Name == ContainerNames.MazeItems || _Name == ContainerNames.Character;
             if (!m_Initialized.ContainsKey(_Name))
             {
                 m_Initialized.Add(_Name, false);
@@ -47,13 +38,12 @@ namespace Games.RazorMaze.Views.ContainerGetters
             if (m_Initialized[_Name])
                 return m_Containers[_Name];
             m_Containers[_Name] = CommonUtils.FindOrCreateGameObject(_Name, out _).transform;
-            m_Containers[_Name].SetParent(_InMazeContainer ? MazeContainer : null);
-            m_Containers[_Name].SetPosXY(CoordinateConverter.GetCenter());
+            m_Containers[_Name].SetParent(inMaze ? GetContainer(ContainerNames.Maze) : null);
+            m_Containers[_Name].SetPosXY(CoordinateConverter.GetMazeCenter());
             m_Initialized[_Name] = true;
             return m_Containers[_Name];
         }
-        
-        #endregion
 
+        #endregion
     }
 }

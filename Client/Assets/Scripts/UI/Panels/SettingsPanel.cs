@@ -9,20 +9,23 @@ using Ticker;
 using TMPro;
 using UI.Entities;
 using UI.Factories;
-using UI.Managers;
 using UI.PanelItems;
 using UnityEngine;
 
 namespace UI.Panels
 {
-    public class SettingsPanel : DialogPanelBase, IMenuUiCategory
+    public interface ISettingDialogPanel : IDialogPanel
+    {
+        
+    }
+    
+    public class SettingsPanel : DialogPanelBase, ISettingDialogPanel
     {
         #region private members
         
         private static List<GameObject> _settingGoList;
         private static List<ISetting> _settingList;
         
-        private readonly IMenuDialogViewer m_DialogViewer;
         private RectTransform m_Content;
         
         private RectTransformLite SettingItemRectLite => new RectTransformLite
@@ -34,24 +37,32 @@ namespace UI.Panels
         };
         
         #endregion
+
+        #region inject
+        
+        private ISettingSelectorDialogPanel SelectorPanel { get; }
+
+        public SettingsPanel(
+            ISettingSelectorDialogPanel _SelectorPanel,
+            IDialogViewer _DialogViewer,
+            IManagersGetter _Managers,
+            IUITicker _UITicker) 
+            : base(_Managers, _UITicker, _DialogViewer)
+        {
+            SelectorPanel = _SelectorPanel;
+        }
+
+        #endregion
         
         #region api
         
-        public MenuUiCategory Category => MenuUiCategory.Settings;
-
-        public SettingsPanel(
-            IMenuDialogViewer _DialogViewer,
-            IManagersGetter _Managers,
-            IUITicker _UITicker) : base(_Managers, _UITicker)
-        {
-            m_DialogViewer = _DialogViewer;
-        }
+        public override EUiCategory Category => EUiCategory.Settings;
         
         public override void Init()
         {
             base.Init();
             var sp = PrefabUtilsEx.InitUiPrefab(
-                UiFactory.UiRectTransform(m_DialogViewer.Container, RtrLites.FullFill),
+                UiFactory.UiRectTransform(DialogViewer.Container, RtrLites.FullFill),
                 CommonPrefabSetNames.MainMenuDialogPanels, "settings_panel");
             _settingGoList = new List<GameObject>();
             _settingList = new List<ISetting>();
@@ -69,9 +80,9 @@ namespace UI.Panels
             var soundSetting = new SoundSetting(Managers);
             _settingList.Add(soundSetting);
             _settingList.Add(new LanguageSetting());
-            #if DEBUG
+#if DEBUG
             _settingList.Add(new DebugSetting());
-            #endif
+#endif
             foreach (var setting  in _settingList)
             {
                 InitSettingItem(setting);
@@ -95,7 +106,7 @@ namespace UI.Panels
                 case SettingType.InPanelSelector:
                     var itemSelector = CreateInPanelSelectorSetting();
                     itemSelector.Init(
-                        m_DialogViewer,
+                        DialogViewer,
                         () => (string)_Setting.Get(),
                         _Setting.Name,
                         () => _Setting.Values,
@@ -103,7 +114,7 @@ namespace UI.Panels
                         {
                             itemSelector.setting.text = _Value;
                             _Setting.Put(_Value);
-                        }, Managers, (IUITicker)Ticker);
+                        }, Managers, SelectorPanel);
                     break;
                 case SettingType.Slider:
                     var itemSlider = CreateSliderSetting();

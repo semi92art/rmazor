@@ -39,6 +39,8 @@ namespace DI.Extensions
         public static void SetLocalPosXY  (this Transform _T, float _X, float _Y) =>_T.localPosition = _T.localPosition.SetX(_X).SetY(_Y);
         public static void SetLocalPosXY  (this Transform _T, Vector2 _XY) => _T.localPosition = _T.localPosition.SetXY(_XY);
         public static void PlusLocalPosXY (this Transform _T, float _X, float _Y) => _T.localPosition = _T.localPosition.PlusX(_X).PlusY(_Y);
+        public static void PlusLocalPosXY (this Transform _T, Vector2 _XY) => _T.localPosition = _T.localPosition.PlusX(_XY.x).PlusY(_XY.y);
+        public static void MinusLocalPosXY(this Transform _T, float _X, float _Y) => _T.localPosition = _T.localPosition.MinusX(_X).MinusY(_Y);
         public static void MinusLocalPosXY(this Transform _T, Vector2 _XY) => _T.localPosition = _T.localPosition.MinusX(_XY.x).MinusY(_XY.y);
 
         public static void LookAt2D(this Transform _T, Vector2 _To) => _T.eulerAngles = DirectionEulerAngles(_T.transform.position, _To);

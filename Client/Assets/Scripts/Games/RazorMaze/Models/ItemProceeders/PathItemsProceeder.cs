@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Entities;
+using Games.RazorMaze.Views;
+using UnityEngine.Events;
 
 namespace Games.RazorMaze.Models.ItemProceeders
 {
@@ -8,13 +10,12 @@ namespace Games.RazorMaze.Models.ItemProceeders
     
     public interface IPathItemsProceeder : ICharacterMoveContinued
     {
-        void OnMazeInfoSet(MazeInfo _Info);
         Dictionary<V2Int, bool> PathProceeds { get; }
         event PathProceedHandler PathProceedEvent;
-        event NoArgsHandler AllPathsProceededEvent;
+        event PathProceedHandler AllPathsProceededEvent;
     }
     
-    public class PathItemsProceeder : IPathItemsProceeder
+    public class PathItemsProceeder : IPathItemsProceeder, IOnLevelStageChanged
     {
         #region inject
         
@@ -28,21 +29,21 @@ namespace Games.RazorMaze.Models.ItemProceeders
         #endregion
         
         #region api
-
-        public void OnMazeInfoSet(MazeInfo _Info)
-        {
-            PathProceeds = _Info.Path.ToDictionary(_P => _P, _P => false);
-            PathProceeds[_Info.Path[0]] = true;
-        }
-
+        
         public Dictionary<V2Int, bool> PathProceeds { get; private set; }
         public event PathProceedHandler PathProceedEvent;
-        public event NoArgsHandler AllPathsProceededEvent;
+        public event PathProceedHandler AllPathsProceededEvent;
 
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
             foreach (var pathItem in RazorMazeUtils.GetFullPath(_Args.From, _Args.Position))
                 ProceedPathItem(pathItem);
+        }
+        
+        public void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            if (_Args.Stage == ELevelStage.Loaded)
+                CollectPathProceeds();
         }
         
         #endregion
@@ -57,7 +58,13 @@ namespace Games.RazorMaze.Models.ItemProceeders
             PathProceedEvent?.Invoke(_PathItem); 
             
             if (PathProceeds.Values.All(_Proceeded => _Proceeded))
-                AllPathsProceededEvent?.Invoke();
+                AllPathsProceededEvent?.Invoke(_PathItem);
+        }
+
+        private void CollectPathProceeds()
+        {
+            PathProceeds = Data.Info.Path.ToDictionary(_P => _P, _P => false);
+            PathProceeds[Data.Info.Path[0]] = true;
         }
         
         #endregion

@@ -1,13 +1,21 @@
 ﻿using Entities;
+using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
 using SpawnPools;
 
 namespace Games.RazorMaze.Views.Characters
 {
-    public interface IViewCharacter : IInit, IActivated, IOnRevivalOrDeath, IOnLevelStageChanged,
-        ICharacterMoveStarted, ICharacterMoveContinued, ICharacterMoveFinished, IOnBackgroundColorChanged
+    public interface IViewCharacter :
+        IActivated,
+        IOnLevelStageChanged,
+        ICharacterMoveStarted,
+        ICharacterMoveContinued,
+        ICharacterMoveFinished,
+        IOnBackgroundColorChanged,
+        IAppear
     {
-        void OnPositionSet(V2Int _Position);
+        void OnRotationAfterFinished(MazeRotationEventArgs _Args);
+        void OnAllPathProceed(V2Int _LastPath);
     }
 }

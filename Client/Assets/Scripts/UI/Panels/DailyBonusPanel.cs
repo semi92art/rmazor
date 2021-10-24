@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Constants;
-
 using DI.Extensions;
 using DialogViewers;
 using Entities;
@@ -9,7 +8,6 @@ using GameHelpers;
 using Ticker;
 using UI.Entities;
 using UI.Factories;
-using UI.Managers;
 using UI.PanelItems;
 using UnityEngine;
 using Utils;
@@ -17,9 +15,14 @@ using Object = UnityEngine.Object;
 
 namespace UI.Panels
 {
-    public class DailyBonusPanel : DialogPanelBase, IMenuUiCategory
+    public interface IDailyBonusDialogPanel : IDialogPanel
     {
-        #region private members
+        IAction Action { get; set; }
+    }
+    
+    public class DailyBonusPanel : DialogPanelBase, IDailyBonusDialogPanel
+    {
+        #region nonpublic members
         
         private readonly List<DailyBonusProps> m_DailyBonusPropsList = new List<DailyBonusProps>
         {
@@ -33,32 +36,31 @@ namespace UI.Panels
         };
 
         private RectTransform m_Panel;
-        private readonly IMenuDialogViewer m_DialogViewer;
-        private readonly IActionExecutor m_ActionExecutor;
         private RectTransform m_Content;
         
+        #endregion
+
+        #region inject
+
+        public DailyBonusPanel(
+            IDialogViewer _DialogViewer,
+            IManagersGetter _Managers,
+            IUITicker _UITicker)
+            : base(_Managers, _UITicker, _DialogViewer) { }
+
         #endregion
         
         #region api
 
-        public MenuUiCategory Category => MenuUiCategory.DailyBonus;
-
-        public DailyBonusPanel(
-            IMenuDialogViewer _DialogViewer, 
-            IActionExecutor _ActionExecutor,
-            IManagersGetter _Managers,
-            IUITicker _UITicker) : base(_Managers, _UITicker)
-        {
-            m_DialogViewer = _DialogViewer;
-            m_ActionExecutor = _ActionExecutor;
-        }
-
+        public IAction Action { get; set; }
+        public override EUiCategory Category => EUiCategory.DailyBonus;
+        
         public override void Init()
         {
             base.Init();
             var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_DialogViewer.Container,
+                    DialogViewer.Container,
                     RtrLites.FullFill),
                 CommonPrefabSetNames.MainMenuDialogPanels,
                 "daily_bonus_panel");
@@ -98,10 +100,10 @@ namespace UI.Panels
                 dbProps.Click = () =>
                 {
                     Managers.Notify(_SM => _SM.PlayClip(AudioClipNames.UIButtonClick));
-                    m_DialogViewer.Back();
+                    DialogViewer.CloseAll();
                 };
                 
-                dbi.Init(dbProps, m_ActionExecutor);
+                dbi.Init(dbProps, Action);
             }
             Object.Destroy(dbItem);
         }

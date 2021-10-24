@@ -1,17 +1,8 @@
-﻿public interface IInit
+﻿using UnityEngine.Events;
+
+public interface IInit
 {
-    event NoArgsHandler Initialized;
+    event UnityAction Initialized;
     void Init();
 }
 
-public interface IPreInit
-{
-    event NoArgsHandler PreInitialized;
-    void PreInit();
-}
-
-public interface IPostInit
-{
-    event NoArgsHandler PostInitialized;
-    void PostInit();
-}

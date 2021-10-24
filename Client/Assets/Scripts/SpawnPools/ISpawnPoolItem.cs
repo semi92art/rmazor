@@ -4,6 +4,9 @@
     {
         bool Activated { get; set; }
     }
-    
-    public interface ISpawnPoolItem : IActivated { }
+
+    public interface ISpawnPoolItem
+    {
+        bool ActivatedInSpawnPool { get; set; }
+    }
 }

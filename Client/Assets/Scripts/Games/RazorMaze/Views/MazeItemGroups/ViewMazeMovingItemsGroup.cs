@@ -8,10 +8,16 @@ using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.MazeItems;
 using Shapes;
 using UnityEngine;
-using Utils;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
+    public interface IViewMazeMovingItemsGroup : IViewMazeItemGroup
+    {
+        void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args);
+        void OnMazeItemMoveContinued(MazeItemMoveEventArgs _Args);
+        void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args);
+    }
+    
     public class ViewMazeMovingItemsGroup : ViewMazeItemsGroupBase, IViewMazeMovingItemsGroup, IOnBackgroundColorChanged
     {
         #region types
@@ -29,34 +35,26 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         private readonly Dictionary<IMazeItemProceedInfo, ViewMovingItemInfo> m_ItemsMoving =
             new Dictionary<IMazeItemProceedInfo, ViewMovingItemInfo>();
-
-        private bool m_CommonInitialized;
         
         #endregion
         
         #region inject
         
-        private ICoordinateConverter CoordinateConverter { get; }
-        
+        private IMazeCoordinateConverter CoordinateConverter { get; }
+
         public ViewMazeMovingItemsGroup(
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             IViewMazeCommon _Common)
             : base(_Common)
         {
             CoordinateConverter = _CoordinateConverter;
-            _Common.Initialized += () => m_CommonInitialized = true;
         }
         
         #endregion
         
         #region api
 
-        public override EMazeItemType[] Types => new[]
-        {
-            EMazeItemType.GravityBlock, 
-            EMazeItemType.GravityTrap,
-            EMazeItemType.TrapMoving
-        };
+        public override EMazeItemType[] Types => new[] {EMazeItemType.TrapMoving};
 
         public void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
         {
@@ -82,23 +80,17 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         {
             if (!m_ItemsMoving.ContainsKey(_Args.Info))
                 return;
-            
             (Common.GetItem(_Args.Info) as IViewMazeItemMovingBlock)?.OnMoveFinished(_Args);
             m_ItemsMoving.Remove(_Args.Info);
         }
         
         public void OnBackgroundColorChanged(Color _Color)
         {
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !m_CommonInitialized,
-                () =>
-                {
-                    var items = GetItems()
-                        .Select(_Item => _Item as IOnBackgroundColorChanged)
-                        .Where(_Item => _Item != null);
-                    foreach (var item in items)
-                        item.OnBackgroundColorChanged(_Color);
-                }));
+            var items = GetItems()
+                .Select(_Item => _Item as IOnBackgroundColorChanged)
+                .Where(_Item => _Item != null);
+            foreach (var item in items)
+                item.OnBackgroundColorChanged(_Color);
         }
         
         #endregion

@@ -1,5 +1,8 @@
 ﻿using System;
 using Games.RazorMaze.Models;
+using Ticker;
+using UnityEngine;
+using UnityEngine.Events;
 
 public enum ELevelStage
 {
@@ -8,95 +11,139 @@ public enum ELevelStage
     StartedOrContinued,
     Paused,
     Finished,
-    Unloaded
+    ReadyToUnloadLevel,
+    Unloaded,
+    CharacterKilled
 }
 
 public class LevelStageArgs : EventArgs
 {
     public int LevelIndex { get; }
     public ELevelStage Stage { get; }
+    public ELevelStage PreviousStage { get; }
 
-    public LevelStageArgs(int _LevelIndex, ELevelStage _LevelStage) =>
-        (LevelIndex, Stage) = (_LevelIndex, _LevelStage);
+    public LevelStageArgs(int _LevelIndex, ELevelStage _LevelStage, ELevelStage _PreviousStage) =>
+        (LevelIndex, Stage, PreviousStage) = (_LevelIndex, _LevelStage, _PreviousStage);
 }
 public delegate void LevelStageHandler(LevelStageArgs _Args);
 
 
-public interface ILevelStagingModel
+public interface IModelLevelStaging
 {
+    float LevelTime { get; }
+    int DiesCount { get; }
     ELevelStage LevelStage { get; }
     event LevelStageHandler LevelStageChanged;
     void LoadLevel(MazeInfo _Info, int _LevelIndex);
-    void PauseLevel();
-    void ReadyToContinueLevel();
+    void ReadyToStartOrContinueLevel();
     void StartOrContinueLevel();
+    void PauseLevel();
     void FinishLevel();
+    void KillCharacter();
+    void ReadyToUnloadLevel();
     void UnloadLevel();
 }
 
-public class LevelStagingModel : ILevelStagingModel
+public class ModelLevelStaging : IModelLevelStaging, IInit, IUpdateTick
 {
+    #region nonpublic members
+
+    private bool m_DoUpdateLevelTime;
+
+    #endregion
+    
     #region inject
     
     private IModelData Data { get; }
+    private IGameTicker GameTicker { get; }
 
-    public LevelStagingModel(IModelData _Data)
+    public ModelLevelStaging(IModelData _Data, IGameTicker _GameTicker)
     {
         Data = _Data;
+        GameTicker = _GameTicker;
+        _GameTicker.Register(this);
     }
     
     #endregion
     
     #region api
 
-    public ELevelStage LevelStage { get; private set; }
+    public float LevelTime { get; private set; }
+    public int DiesCount { get; private set; }
+    public ELevelStage LevelStage { get; private set; } = ELevelStage.Unloaded;
     public event LevelStageHandler LevelStageChanged;
+    public event UnityAction Initialized;
+    
+    public void Init()
+    {
+        Initialized?.Invoke();
+    }
+    
+    public void UpdateTick()
+    {
+        if (m_DoUpdateLevelTime)
+            LevelTime += Time.deltaTime;
+    }
     
     public virtual void LoadLevel(MazeInfo _Info, int _LevelIndex)
     {
         (Data.Info, Data.LevelIndex) = (_Info, _LevelIndex);
-        LevelStage = ELevelStage.Loaded;
-        InvokeLevelStageChanged();
+        InvokeLevelStageChanged(ELevelStage.Loaded);
     }
 
-    public void PauseLevel()
+    public void ReadyToStartOrContinueLevel()
     {
-        LevelStage = ELevelStage.Paused;
-        InvokeLevelStageChanged();
-    }
-
-    public void ReadyToContinueLevel()
-    {
-        LevelStage = ELevelStage.ReadyToStartOrContinue;
-        InvokeLevelStageChanged();
+        InvokeLevelStageChanged(ELevelStage.ReadyToStartOrContinue);
     }
 
     public void StartOrContinueLevel()
     {
-        LevelStage = ELevelStage.StartedOrContinued;
-        InvokeLevelStageChanged();
+        InvokeLevelStageChanged(ELevelStage.StartedOrContinued);
+    }
+
+    public void PauseLevel()
+    {
+        InvokeLevelStageChanged(ELevelStage.Paused);
     }
 
     public void FinishLevel()
     {
-        LevelStage = ELevelStage.Finished;
-        InvokeLevelStageChanged();
+        InvokeLevelStageChanged(ELevelStage.Finished);
+    }
+
+    public void KillCharacter()
+    {
+        InvokeLevelStageChanged(ELevelStage.CharacterKilled);
+    }
+
+    public void ReadyToUnloadLevel()
+    {
+        InvokeLevelStageChanged(ELevelStage.ReadyToUnloadLevel);
     }
 
     public void UnloadLevel()
     {
-        LevelStage = ELevelStage.Unloaded;
-        InvokeLevelStageChanged();
+        InvokeLevelStageChanged(ELevelStage.Unloaded);
     }
 
     #endregion
 
     #region nonpublic methods
 
-    private void InvokeLevelStageChanged()
+    private void InvokeLevelStageChanged(ELevelStage _Stage)
     {
-        LevelStageChanged?.Invoke(new LevelStageArgs(Data.LevelIndex, LevelStage));
+        var prevStage = LevelStage;
+        m_DoUpdateLevelTime = _Stage == ELevelStage.StartedOrContinued;
+        if (_Stage == ELevelStage.ReadyToStartOrContinue && prevStage != ELevelStage.Paused)
+            LevelTime = 0f;
+        if (_Stage == ELevelStage.CharacterKilled)
+            DiesCount++;
+        else if (_Stage == ELevelStage.Loaded)
+            DiesCount = 0;
+            
+        LevelStage = _Stage;
+        LevelStageChanged?.Invoke(new LevelStageArgs(Data.LevelIndex, LevelStage, prevStage));
     }
-
+    
     #endregion
 }

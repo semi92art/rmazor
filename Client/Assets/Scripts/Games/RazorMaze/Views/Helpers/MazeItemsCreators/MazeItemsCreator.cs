@@ -17,18 +17,19 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
         
         [Inject]
         public MazeItemsCreator(
-            IContainersGetter _ContainersGetter,
-            ICoordinateConverter _CoordinateConverter, 
-            IViewMazeItemPath _ItemPath,
-            IViewMazeItemGravityBlock _GravityBlock,
-            IViewMazeItemMovingTrap _MovingTrap,
-            IViewMazeItemShredingerBlock _ShredingerBlock,
-            IViewMazeItemTurret _Turret,
-            IViewMazeItemSpringboard _Springboard,
-            IViewMazeItemPortal _Portal,
-            IViewMazeItemGravityTrap _GravityTrap,
-            IViewMazeItemTrapReact _TrapReact,
-            IViewMazeItemTrapIncreasing _TrapIncreasing) : base(
+            IContainersGetter             _ContainersGetter,
+            IMazeCoordinateConverter      _CoordinateConverter, 
+            IViewMazeItemPath             _ItemPath,
+            IViewMazeItemGravityBlock     _GravityBlock,
+            IViewMazeItemMovingTrap       _MovingTrap,
+            IViewMazeItemShredingerBlock  _ShredingerBlock,
+            IViewMazeItemTurret           _Turret,
+            IViewMazeItemSpringboard      _Springboard,
+            IViewMazeItemPortal           _Portal,
+            IViewMazeItemGravityTrap      _GravityTrap,
+            IViewMazeItemTrapReact        _TrapReact,
+            IViewMazeItemTrapIncreasing   _TrapIncreasing,
+            IViewMazeItemGravityBlockFree _GravityBlockFree) : base(
             _ContainersGetter, 
             _CoordinateConverter, 
             _ItemPath,
@@ -40,7 +41,8 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
             _Portal,
             _GravityTrap,
             _TrapReact,
-            _TrapIncreasing) { }
+            _TrapIncreasing,
+            _GravityBlockFree) { }
         
         #endregion
         
@@ -48,7 +50,6 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
 
         public override void InitPathItems(MazeInfo _Info, SpawnPool<IViewMazeItemPath> _PathPool)
         {
-            CoordinateConverter.Init(_Info.Size);
             foreach (var pathItemPos in _Info.Path)
             {
                 var props = new ViewMazeItemProps
@@ -63,9 +64,8 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
             }
         }
 
-        public override void InitBlockItems(MazeInfo _Info, Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> _BlockPools)
+        public override void InitAndActivateBlockItems(MazeInfo _Info, Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> _BlockPools)
         {
-            CoordinateConverter.Init(_Info.Size);
             foreach (var mazeItem in _Info.MazeItems.Where(_Item => _Item.Type != EMazeItemType.Block))
             {
                 var props = new ViewMazeItemProps

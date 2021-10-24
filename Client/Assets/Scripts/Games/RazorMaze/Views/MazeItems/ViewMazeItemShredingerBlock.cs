@@ -33,7 +33,7 @@ namespace Games.RazorMaze.Views.MazeItems
         #region nonpublic members
 
         private float m_LineOffset;
-        private bool m_BlockClosed;
+        private bool m_IsBlockClosed;
         private bool m_IsCloseCoroutineRunning;
         private bool m_IsOpenCoroutineRunning;
         
@@ -41,12 +41,14 @@ namespace Games.RazorMaze.Views.MazeItems
 
         #region shapes
 
-        protected override object[] Shapes =>
-            new object[] {m_Block}
+        protected override string ObjectName => "Shredinger Block";
+
+        protected override object[] DefaultColorShapes =>
+            new object[] {m_ClosedBlock}
                 .Concat(m_OpenedLines)
                 .Concat(m_OpenedCorners)
                 .ToArray();
-        private Rectangle m_Block;
+        private Rectangle m_ClosedBlock;
         private readonly List<Line> m_OpenedLines = new List<Line>();
         private readonly List<Disc> m_OpenedCorners = new List<Disc>();
 
@@ -57,7 +59,7 @@ namespace Games.RazorMaze.Views.MazeItems
         public ViewMazeItemShredingerBlock(
             ViewSettings _ViewSettings,
             IModelGame _Model,
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
@@ -86,11 +88,11 @@ namespace Games.RazorMaze.Views.MazeItems
         
         public bool BlockClosed
         {
-            get => m_BlockClosed;
+            get => m_IsBlockClosed;
             set
             {
-                m_BlockClosed = value;
-                if (!Activated || AppearingState != EAppearingState.Appeared)
+                m_IsBlockClosed = value;
+                if (!ActivatedInSpawnPool)
                     return;
                 if (value)
                     CloseBlock();
@@ -102,12 +104,12 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             base.OnLevelStageChanged(_Args);
             if (_Args.Stage == ELevelStage.Loaded)
-                BlockClosed = false;
+                m_IsBlockClosed = false;
         }
 
         public void UpdateTick()
         {
-            if (!Initialized || !Activated)
+            if (!Initialized || !ActivatedInSpawnPool)
                 return;
             if (ProceedingStage == EProceedingStage.Inactive)
                 return;
@@ -118,13 +120,13 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             const float delta = 0.5f;
             const float duration = 0.1f;
-            var startPos = m_Block.transform.localPosition;
+            var startPos = m_ClosedBlock.transform.localPosition;
             var dir = RazorMazeUtils.GetDirectionVector(_Args.Direction, Model.Data.Orientation).ToVector2();
             Coroutines.Run(Coroutines.Lerp(
                 0f,
                 delta,
                 duration * 0.5f,
-                _Progress => m_Block.transform.localPosition = startPos + (Vector3) dir * _Progress,
+                _Progress => m_ClosedBlock.transform.localPosition = startPos + (Vector3) dir * _Progress,
                 GameTicker,
                 (_Finished, _) =>
                 {
@@ -132,44 +134,41 @@ namespace Games.RazorMaze.Views.MazeItems
                         delta,
                         0f,
                         duration * 0.5f,
-                        _Progress => m_Block.transform.localPosition = startPos + (Vector3) dir * _Progress,
+                        _Progress => m_ClosedBlock.transform.localPosition = startPos + (Vector3) dir * _Progress,
                         GameTicker));
                 }));
+        }
+        
+        public override bool ActivatedInSpawnPool
+        {
+            get => m_ActivatedInSpawnPool;
+            set
+            {
+                m_ActivatedInSpawnPool = value;
+                ActivateShapes(false);
+            }
         }
         
         #endregion
         
         #region nonpublic methods
 
-        protected override void SetShape()
+        protected override void InitShape()
         {
-            var go = Object;
-            var sh = ContainersGetter.MazeItemsContainer.gameObject
-                .GetOrAddComponentOnNewChild<Rectangle>(
-                    "Shredinger Block",
-                    ref go,
-                    CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
-
-            go.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
-            go.DestroyChildrenSafe();
-            Object = go;
+            var closedBlock = Object.AddComponentOnNewChild<Rectangle>("Shredinger Block", out _);
+            closedBlock.Type = Rectangle.RectangleType.RoundedHollow;
+            closedBlock.Color = DrawingUtils.ColorLines;
+            closedBlock.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
+            m_ClosedBlock = closedBlock;
             
-            sh.Width = sh.Height = CoordinateConverter.GetScale() * 0.9f;
-            sh.Type = Rectangle.RectangleType.RoundedHollow;
-            sh.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.GetScale();
-            sh.Color = DrawingUtils.ColorLines;
-            sh.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
-            sh.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
-            m_Block = sh;
-            
-            var lLeft    = go.AddComponentOnNewChild<Line>("Left Line",     out _, Vector2.zero);
-            var lRight   = go.AddComponentOnNewChild<Line>("Right Line",    out _, Vector2.zero);
-            var lBottom1 = go.AddComponentOnNewChild<Line>("Bottom Line 1", out _, Vector2.zero);
-            var lBottom2 = go.AddComponentOnNewChild<Line>("Bottom Line 2", out _, Vector2.zero);
-            var lTop1    = go.AddComponentOnNewChild<Line>("Top Line 1",    out _, Vector2.zero);
-            var lTop2    = go.AddComponentOnNewChild<Line>("Top Line 2",    out _, Vector2.zero);
-            var lCenter1 = go.AddComponentOnNewChild<Line>("Center Line 1", out _, Vector2.zero);
-            var lCenter2 = go.AddComponentOnNewChild<Line>("Center Line 2", out _, Vector2.zero);
+            var lLeft    = Object.AddComponentOnNewChild<Line>("Left Line",     out _);
+            var lRight   = Object.AddComponentOnNewChild<Line>("Right Line",    out _);
+            var lBottom1 = Object.AddComponentOnNewChild<Line>("Bottom Line 1", out _);
+            var lBottom2 = Object.AddComponentOnNewChild<Line>("Bottom Line 2", out _);
+            var lTop1    = Object.AddComponentOnNewChild<Line>("Top Line 1",    out _);
+            var lTop2    = Object.AddComponentOnNewChild<Line>("Top Line 2",    out _);
+            var lCenter1 = Object.AddComponentOnNewChild<Line>("Center Line 1", out _);
+            var lCenter2 = Object.AddComponentOnNewChild<Line>("Center Line 2", out _);
 
             var lp = GetLineStartEndPositions();
             (lBottom1.Start, lBottom1.End) = (lp[0], lp[1]);
@@ -191,20 +190,19 @@ namespace Games.RazorMaze.Views.MazeItems
                 line.DashType = DashType.Rounded;
                 line.Color = DrawingUtils.ColorLines;
                 line.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
-                line.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
             }
 
             List<Vector2> cPoss, cAngs;
             (cPoss, cAngs) = GetCornerCenterPositionsAndAngles();
 
-            var cBL  = go.AddComponentOnNewChild<Disc>("Bottom Left Corner",     out _, Vector2.zero);
-            var cTL  = go.AddComponentOnNewChild<Disc>("Top Left Corner",        out _, Vector2.zero);
-            var cBR  = go.AddComponentOnNewChild<Disc>("Bottom Right Corner",    out _, Vector2.zero);
-            var cTR  = go.AddComponentOnNewChild<Disc>("Top Right Corner",       out _, Vector2.zero);
-            var cBC1 = go.AddComponentOnNewChild<Disc>("Bottom Center Corner 1", out _, Vector2.zero);
-            var cBC2 = go.AddComponentOnNewChild<Disc>("Bottom Center Corner 2", out _, Vector2.zero);
-            var cTC1 = go.AddComponentOnNewChild<Disc>("Top Center Corner 1",    out _, Vector2.zero);
-            var cTC2 = go.AddComponentOnNewChild<Disc>("Top Center Corner 2",    out _, Vector2.zero);
+            var cBL  = Object.AddComponentOnNewChild<Disc>("Bottom Left Corner",     out _);
+            var cTL  = Object.AddComponentOnNewChild<Disc>("Top Left Corner",        out _);
+            var cBR  = Object.AddComponentOnNewChild<Disc>("Bottom Right Corner",    out _);
+            var cTR  = Object.AddComponentOnNewChild<Disc>("Top Right Corner",       out _);
+            var cBC1 = Object.AddComponentOnNewChild<Disc>("Bottom Center Corner 1", out _);
+            var cBC2 = Object.AddComponentOnNewChild<Disc>("Bottom Center Corner 2", out _);
+            var cTC1 = Object.AddComponentOnNewChild<Disc>("Top Center Corner 1",    out _);
+            var cTC2 = Object.AddComponentOnNewChild<Disc>("Top Center Corner 2",    out _);
 
             (cBL.transform.localPosition, cBL.AngRadiansStart, cBL.AngRadiansEnd)    = (cPoss[0], cAngs[0].x, cAngs[0].y);
             (cTL.transform.localPosition, cTL.AngRadiansStart, cTL.AngRadiansEnd)    = (cPoss[1], cAngs[1].x, cAngs[1].y);
@@ -222,11 +220,26 @@ namespace Games.RazorMaze.Views.MazeItems
 
             foreach (var corner in m_OpenedCorners)
             {
-                corner.Radius = GetCornerRadius();
                 corner.Type = DiscType.Arc;
                 corner.Color = DrawingUtils.ColorLines;
                 corner.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
-                corner.Thickness = ViewSettings.LineWidth * CoordinateConverter.GetScale();
+            }
+        }
+
+        protected override void UpdateShape()
+        {
+            Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+            m_ClosedBlock.Width = m_ClosedBlock.Height = CoordinateConverter.Scale * 0.9f;
+            m_ClosedBlock.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale;
+            m_ClosedBlock.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
+            foreach (var corner in m_OpenedCorners)
+            {
+                corner.Radius = GetCornerRadius();
+                corner.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
+            }
+            foreach (var line in m_OpenedLines)
+            {
+                line.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
             }
         }
 
@@ -272,7 +285,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 .Concat(m_OpenedCorners)
                 .ToList();
             if (_Close)
-                m_Block.enabled = true;
+                m_ClosedBlock.enabled = true;
             else
                 shapesOpen.ForEach(_Shape => _Shape.enabled = true);
             
@@ -287,7 +300,7 @@ namespace Games.RazorMaze.Views.MazeItems
                     var partsOpenColor = DrawingUtils.ColorLines.SetA(_Close ? cDissapear : cAppear);
                     var partsClosedColor = DrawingUtils.ColorLines.SetA(_Close ? cAppear : cDissapear);
                     shapesOpen.ForEach(_Shape => _Shape.Color = partsOpenColor);
-                    m_Block.Color = partsClosedColor;
+                    m_ClosedBlock.Color = partsClosedColor;
                 },
                 GameTicker,
                 (_Breaked, _Progress) =>
@@ -295,13 +308,38 @@ namespace Games.RazorMaze.Views.MazeItems
                     if (_Close)
                         shapesOpen.ForEach(_Shape => _Shape.enabled = false);
                     else
-                        m_Block.enabled = false;
+                        m_ClosedBlock.enabled = false;
                     
                     if (_Close)
                         m_IsCloseCoroutineRunning = false;
                     else 
                         m_IsOpenCoroutineRunning = false;
                 });
+        }
+
+        protected override void OnAppearStart(bool _Appear)
+        {
+            AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
+            // base.OnAppearStart(_Appear);
+            m_ClosedBlock.enabled = BlockClosed;
+            // if (_Appear)
+            // {
+            //     foreach (var corner in m_OpenedCorners)
+            //         corner.Color = DrawingUtils.ColorLines.SetA(0);
+            //     foreach (var line in m_OpenedLines)
+            //         line.Color = DrawingUtils.ColorLines.SetA(0);
+            // }
+        }
+
+        protected override Dictionary<object[], Func<Color>> GetAppearSets(bool _Appear)
+        {
+            var shapes = !_Appear && BlockClosed ?
+                new object[] {m_ClosedBlock} :
+                m_OpenedLines.Cast<object>().Concat(m_OpenedCorners).ToArray();
+            return new Dictionary<object[], Func<Color>>
+            {
+                {shapes, () => DrawingUtils.ColorLines}
+            };
         }
 
         private List<Vector2> GetLineStartEndPositions()
@@ -369,7 +407,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private List<Vector2> GetCornerPositions()
         {
             const float c = 0.43f;
-            float s = CoordinateConverter.GetScale();
+            float s = CoordinateConverter.Scale;
             var bottomLeft  = (Vector2.down + Vector2.left)  * (c * s);
             var bottomRight = (Vector2.down + Vector2.right) * (c * s);
             var topLeft     = (Vector2.up   + Vector2.left)  * (c * s);
@@ -381,7 +419,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             const float c1 = 0.43f;
             const float c2 = 0.1f;
-            float s = CoordinateConverter.GetScale();
+            float s = CoordinateConverter.Scale;
             var bottomLeft  = (Vector2.down + Vector2.left  * c2) * (c1 * s);
             var bottomRight = (Vector2.down + Vector2.right * c2) * (c1 * s);
             var topLeft     = (Vector2.up   + Vector2.left  * c2) * (c1 * s);
@@ -389,43 +427,7 @@ namespace Games.RazorMaze.Views.MazeItems
             return new List<Vector2> {bottomLeft, topLeft, topRight, bottomRight};
         }
 
-        private float GetCornerRadius() => ViewSettings.CornerRadius * CoordinateConverter.GetScale() * 0.5f;
-        
-        protected override void Appear(bool _Appear)
-        {
-            AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !Initialized,
-                () =>
-                {
-                    object[] shapes;
-                    if (_Appear)
-                    {
-                        m_Block.enabled = false;
-                        shapes = m_OpenedLines.Cast<object>().Concat(m_OpenedCorners).ToArray();
-                    }
-                    else
-                    {
-                        shapes = BlockClosed
-                            ? new object[] {m_Block}
-                            : m_OpenedLines.Cast<object>().Concat(m_OpenedCorners).ToArray();
-                    }
-                    Transitioner.DoAppearTransitionSimple(
-                        _Appear,
-                        GameTicker,
-                        new Dictionary<object[], Func<Color>>
-                        {
-                            {shapes, () => DrawingUtils.ColorLines}
-                        },
-                        Props.Position,
-                        () =>
-                        {
-                            if (!_Appear)
-                                DeactivateShapes();
-                            AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared;
-                        });
-                }));
-        }
+        private float GetCornerRadius() => ViewSettings.CornerRadius * CoordinateConverter.Scale * 0.5f;
 
         #endregion
     }

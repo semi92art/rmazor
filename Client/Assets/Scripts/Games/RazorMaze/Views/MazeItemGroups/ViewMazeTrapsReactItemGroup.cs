@@ -2,9 +2,17 @@
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.MazeItems;
+using UnityEngine.Events;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
+    public interface IViewMazeTrapsReactItemsGroup : 
+        IInit,
+        IViewMazeItemGroup
+    {
+        void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args);
+    }
+    
     public class ViewMazeTrapsReactItemGroup : ViewMazeItemsGroupBase, IViewMazeTrapsReactItemsGroup
     {
         #region inject
@@ -16,7 +24,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         #region api
 
         public override EMazeItemType[] Types => new[] {EMazeItemType.TrapReact};
-        public event NoArgsHandler Initialized;
+        public event UnityAction Initialized;
         public void Init() => Initialized?.Invoke();
 
         public void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args)
@@ -25,8 +33,5 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         }
         
         #endregion
-
-
-        
     }
 }

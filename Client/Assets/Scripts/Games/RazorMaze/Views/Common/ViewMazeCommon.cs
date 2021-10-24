@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DI.Extensions;
+using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.ContainerGetters;
@@ -8,6 +10,7 @@ using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.MazeItems;
 using SpawnPools;
 using Ticker;
+using UnityEngine;
 
 namespace Games.RazorMaze.Views.Common
 {
@@ -20,7 +23,8 @@ namespace Games.RazorMaze.Views.Common
         #endregion
         
         #region inject
-        
+
+        private IManagersGetter Managers { get; }
         private ViewSettings ViewSettings { get; }
         
         public ViewMazeCommon(
@@ -28,10 +32,12 @@ namespace Games.RazorMaze.Views.Common
             IMazeItemsCreator _MazeItemsCreator, 
             IModelData _ModelData,
             IContainersGetter _ContainersGetter, 
-            ICoordinateConverter _CoordinateConverter,
+            IMazeCoordinateConverter _CoordinateConverter,
+            IManagersGetter _Managers,
             ViewSettings _ViewSettings) 
             : base(_GameTicker, _MazeItemsCreator, _ModelData, _ContainersGetter, _CoordinateConverter)
         {
+            Managers = _Managers;
             ViewSettings = _ViewSettings;
         }
         
@@ -53,7 +59,8 @@ namespace Games.RazorMaze.Views.Common
 
         public override void Init()
         {
-            InitPools(ModelData.Info);
+            if (m_BlockPools == null)
+                InitBlockPools();
             base.Init();
         }
 
@@ -61,20 +68,26 @@ namespace Games.RazorMaze.Views.Common
         {
             return m_BlockPools[_Info.Type].SingleOrDefault(_Itm => _Itm.Equal(_Info));
         }
-        
+
+        public override void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            if (_Args.Stage == ELevelStage.Loaded)
+            {
+                CoordinateConverter.MazeSize = ModelData.Info.Size;
+                var mazeItemsCont = ContainersGetter.GetContainer(ContainerNames.MazeItems);
+                mazeItemsCont.SetLocalPosXY(Vector2.zero);
+                mazeItemsCont.PlusLocalPosY(CoordinateConverter.Scale * 0.5f);
+                
+                DeactivateAllBlocks();
+                MazeItemsCreator.InitAndActivateBlockItems(ModelData.Info, m_BlockPools);
+            }
+        }
+
         #endregion
         
         #region nonpublic methods
         
-        private void InitPools(MazeInfo _Info)
-        {
-            if (m_BlockPools == null)
-                InitBlockPoolsOnStart();
-            DeactivateAllBlocks();
-            MazeItemsCreator.InitBlockItems(_Info, m_BlockPools);
-        }
-        
-        private void InitBlockPoolsOnStart()
+        private void InitBlockPools()
         {
             m_BlockPools = new Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>>();
             var itemTypes = Enum

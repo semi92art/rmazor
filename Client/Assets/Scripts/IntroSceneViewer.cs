@@ -1,8 +1,10 @@
-﻿using Constants;
+﻿using System.Linq;
+using Constants;
 using DI.Extensions;
 using GameHelpers;
 using Games.RazorMaze.Controllers;
 using Managers;
+using Mono_Installers;
 using Ticker;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -39,27 +41,27 @@ public class IntroSceneViewer : MonoBehaviour
         // TODO здесь показывать интруху
         
         Ticker.ClearRegisteredObjects();
+        LevelMonoInstaller.Release = true;
         SceneManager.LoadScene(SceneNames.Level);
     }
-    
+
     private void InitGameController()
     {
         var controller = RazorMazeGameController.CreateInstance();
-        controller.PreInitialized += () =>
+        controller.Initialized += () =>
         {
             var levelScoreEntity = ScoreManager.Instance.GetMainScore();
             Coroutines.Run(Coroutines.WaitWhile(
                 () => !levelScoreEntity.Loaded,
                 () =>
                 {
-                    // int level = levelScoreEntity.Scores.First().Value;
-                    // FIXME заглушка для загрузки какого-то уровня
-                    var info = LevelsLoader.LoadLevel(GameClientUtils.GameId, 1, false);
-                    controller.Model.LevelStaging.LoadLevel(info, 1);
-                    controller.Init();
+                    int level = levelScoreEntity.Scores.First().Value;
+                    Dbg.Log($"Current level from cache: {level}");
+                    // FIXME заглушка для загрузки уровня
+                    var info = LevelsLoader.LoadLevel(1, 0);
+                    controller.Model.LevelStaging.LoadLevel(info, 0);
                 }));
         };
-        controller.Initialized += () => controller.PostInit();
-        controller.PreInit();
+        controller.Init();
     }
 }

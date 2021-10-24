@@ -27,7 +27,7 @@ namespace UI.PanelItems
     
         public void Init(
             DailyBonusProps _Props,
-            IActionExecutor _ActionExecutor)
+            IAction _Action)
         {
             icon.sprite = _Props.Icon;
             day.text = $"{LeanLocalization.GetTranslationText("Day")} {_Props.Day}";
@@ -56,7 +56,7 @@ namespace UI.PanelItems
         
             button.onClick.AddListener(() =>
             {
-                _ActionExecutor.Action = _Props.Click;
+                _Action.Action = _Props.Click;
             });
         }
     }

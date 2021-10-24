@@ -1,17 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using GameHelpers;
-using Games.RazorMaze.Models;
-using Games.RazorMaze.Models.ItemProceeders;
+﻿using Games.RazorMaze.Models;
 using Games.RazorMaze.Views;
-using Ticker;
 using UnityEngine;
+using UnityEngine.Events;
 using Utils;
 using Zenject;
 
 namespace Games.RazorMaze.Controllers
 {
-    public interface IGameController : IInit, IPreInit, IPostInit
+    public interface IGameController : IInit
     {
         IModelGame Model { get; }
         IViewGame View { get; }
@@ -35,181 +31,105 @@ namespace Games.RazorMaze.Controllers
         
         public IModelGame Model { get; private set; }
         public IViewGame  View { get; private set; }
-        private ILevelsLoader LevelsLoader { get; set; }
-        private IGameTicker GameTicker { get; set; }
-        private IUITicker UITicker { get; set; }
 
-        [Inject] public void Inject(
+        [Inject]
+        public void Inject(
             IModelGame _Model,
-            IViewGame _View, 
-            ILevelsLoader _LevelsLoader,
-            IGameTicker _GameTicker,
-            IUITicker _UITicker) =>
-            (Model, View, LevelsLoader, GameTicker, UITicker) =
-            (_Model, _View, _LevelsLoader, _GameTicker, _UITicker);
-        
+            IViewGame _View)
+        {
+            Model = _Model;
+            View = _View;
+        }
+
         #endregion
         
         #region api
 
-        public event NoArgsHandler PreInitialized;
-        public event NoArgsHandler Initialized;
-        public event NoArgsHandler PostInitialized;
-        
-        public void PreInit()
-        {
-            GameTicker.Reset();
-
-            var rotation                                        = Model.MazeRotation;
-            var pathItemsProceeder                              = Model.PathItemsProceeder;
-            var trapsMovingProceeder                            = Model.TrapsMovingProceeder;
-            var gravityItemsProceeder                           = Model.GravityItemsProceeder;
-            var trapsReactProceeder                             = Model.TrapsReactProceeder;
-            var trapsIncreasingProceeder                        = Model.TrapsIncreasingProceeder;
-            var portalsProceeder                                = Model.PortalsProceeder;
-            var turretsProceeder                                = Model.TurretsProceeder;
-            var shredingerProceeder                             = Model.ShredingerBlocksProceeder;
-            var springboardProceeder                            = Model.SpringboardProceeder;
-            var character                                       = Model.Character;
-            var levelStaging                                    = Model.LevelStaging;
-            
-            pathItemsProceeder.PathProceedEvent                 += View.PathItemsGroup.OnPathProceed;
-            
-            rotation.RotationStarted                            += View.MazeRotation.StartRotation;
-            View.MazeRotation.RotationFinished                  += Model.MazeRotation.OnRotationFinished;
-            
-            trapsMovingProceeder.MazeItemMoveStarted            += OnMazeItemMoveStarted;
-            trapsMovingProceeder.MazeItemMoveContinued          += View.MovingItemsGroup.OnMazeItemMoveContinued;
-            trapsMovingProceeder.MazeItemMoveFinished           += OnMazeItemMoveFinished;
-
-            gravityItemsProceeder.MazeItemMoveStarted           += OnMazeItemMoveStarted;
-            gravityItemsProceeder.MazeItemMoveContinued         += View.MovingItemsGroup.OnMazeItemMoveContinued;
-            gravityItemsProceeder.MazeItemMoveFinished          += OnMazeItemMoveFinished;
-            
-            trapsReactProceeder.TrapReactStageChanged           += View.TrapsReactItemsGroup.OnMazeTrapReactStageChanged;
-            trapsIncreasingProceeder.TrapIncreasingStageChanged += View.TrapsIncItemsGroup.OnMazeTrapIncreasingStageChanged;
-            turretsProceeder.TurretShoot                        += View.TurretsGroup.OnTurretShoot;
-            portalsProceeder.PortalEvent                        += View.PortalsGroup.OnPortalEvent;
-            shredingerProceeder.ShredingerBlockEvent            += View.ShredingerBlocksGroup.OnShredingerBlockEvent;
-            springboardProceeder.SpringboardEvent               += View.SpringboardItemsGroup.OnSpringboardEvent;
-
-            character.AliveOrDeath                              += View.Character.OnRevivalOrDeath;
-            character.CharacterMoveStarted                      += View.OnCharacterMoveStarted;
-            character.CharacterMoveContinued                    += View.OnCharacterMoveContinued;
-            character.CharacterMoveFinished                     += View.OnCharacterMoveFinished;
-            character.PositionSet                               += View.Character.OnPositionSet;
-            
-            levelStaging.LevelStageChanged                      += View.OnLevelStageChanged;
-            View.InputConfigurator.Command                      += Model.InputScheduler.AddCommand;
-            
-            RazorMazeUtils.CallInits<IPreInit>(GetProceeders(),
-                _PreInitedArray =>
-                {
-                    Coroutines.Run(Coroutines.WaitWhile(
-                        () => _PreInitedArray.Any(_PreInited => !_PreInited), 
-                        () => PreInitialized?.Invoke()));
-                });
-        }
+        public event UnityAction Initialized;
         
         public void Init()
         {
-            RazorMazeUtils.CallInits<IInit>(GetProceeders(),
-                _InitedArray =>
-                {
-                    Coroutines.Run(Coroutines.WaitWhile(
-                        () => _InitedArray.Any(_Inited => !_Inited), 
-                        () => Initialized?.Invoke()));
-                });
-        }
-        
-        public void PostInit()
-        {
-            Model.Data.ProceedingControls = true;
-            RazorMazeUtils.CallInits<IPostInit>(GetProceeders(),
-                _PostInitedArray =>
-                {
-                    Coroutines.Run(Coroutines.WaitWhile(
-                        () => _PostInitedArray.Any(_PostInited => !_PostInited), 
-                        () => PostInitialized?.Invoke()));
-                });
+            bool modelInitialized = false;
+            bool viewInitialized = false;
+            Model.Initialized += () => modelInitialized = true;
+            View.Initialized += () => viewInitialized = true;
+            
+            Model.Init();
+
+            Model.PathItemsProceeder.AllPathsProceededEvent           += View.Character.OnAllPathProceed;
+            Model.PathItemsProceeder.AllPathsProceededEvent           += View.LevelStageController.OnAllPathProceed;
+            Model.PathItemsProceeder.PathProceedEvent                 += View.PathItemsGroup.OnPathProceed;
+            Model.MazeRotation.RotationStarted                        += View.MazeRotation.OnRotationStarted;
+            
+            Model.GravityItemsProceeder.MazeItemMoveStarted           += View.GravityItemsGroup.OnMazeItemMoveStarted;
+            Model.GravityItemsProceeder.MazeItemMoveStarted           += View.UI.UIGameControls.OnMazeItemMoveStarted;
+            Model.GravityItemsProceeder.MazeItemMoveContinued         += View.GravityItemsGroup.OnMazeItemMoveContinued;
+            Model.GravityItemsProceeder.MazeItemMoveFinished          += View.GravityItemsGroup.OnMazeItemMoveFinished;
+            Model.GravityItemsProceeder.MazeItemMoveFinished          += View.UI.UIGameControls.OnMazeItemMoveFinished;
+            
+            Model.TrapsMovingProceeder.MazeItemMoveStarted            += View.MovingItemsGroup.OnMazeItemMoveStarted;
+            Model.TrapsMovingProceeder.MazeItemMoveStarted            += View.UI.UIGameControls.OnMazeItemMoveStarted;
+            Model.TrapsMovingProceeder.MazeItemMoveContinued          += View.MovingItemsGroup.OnMazeItemMoveContinued;
+            Model.TrapsMovingProceeder.MazeItemMoveFinished           += View.MovingItemsGroup.OnMazeItemMoveFinished;
+            Model.TrapsMovingProceeder.MazeItemMoveFinished           += View.UI.UIGameControls.OnMazeItemMoveFinished;
+            
+            Model.TrapsReactProceeder.TrapReactStageChanged           += View.TrapsReactItemsGroup.OnMazeTrapReactStageChanged;
+            Model.TrapsIncreasingProceeder.TrapIncreasingStageChanged += View.TrapsIncItemsGroup.OnMazeTrapIncreasingStageChanged;
+            Model.TurretsProceeder.TurretShoot                        += View.TurretsGroup.OnTurretShoot;
+            Model.PortalsProceeder.PortalEvent                        += View.PortalsGroup.OnPortalEvent;
+            Model.ShredingerBlocksProceeder.ShredingerBlockEvent      += View.ShredingerBlocksGroup.OnShredingerBlockEvent;
+            Model.SpringboardProceeder.SpringboardEvent               += View.SpringboardItemsGroup.OnSpringboardEvent;
+            Model.Character.CharacterMoveStarted                      += View.OnCharacterMoveStarted;
+            Model.Character.CharacterMoveContinued                    += View.OnCharacterMoveContinued;
+            Model.Character.CharacterMoveFinished                     += View.OnCharacterMoveFinished;
+            Model.LevelStaging.LevelStageChanged                      += View.OnLevelStageChanged;
+            
+            View.InputConfigurator.Command                            += Model.InputScheduler.AddCommand;
+            View.MazeRotation.RotationFinished                        += Model.MazeRotation.OnRotationFinished;
+            
+            View.Init();
+            
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !modelInitialized || !viewInitialized,
+                () => Initialized?.Invoke()));
         }
 
         #endregion
 
-        #region event methods
-        
-        private void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
-        {
-            View.MovingItemsGroup.OnMazeItemMoveStarted(_Args);
-            if (_Args.Info.Type == EMazeItemType.GravityBlock)
-                View.InputConfigurator.Locked = true;
-        }
-
-        private void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
-        {
-            View.MovingItemsGroup.OnMazeItemMoveFinished(_Args);
-            if (_Args.Info.Type == EMazeItemType.GravityBlock)
-                View.InputConfigurator.Locked = false;
-        }
-
-        #endregion
-        
         #region engine methods
 
         protected virtual void OnDestroy()
         {
-            var rotation                                        = Model.MazeRotation;
-            var pathItemsProceeder                              = Model.PathItemsProceeder;
-            var movingItemsProceeder                            = Model.TrapsMovingProceeder;
-            var gravityItemsProceeder                           = Model.GravityItemsProceeder;
-            var trapsReactProceeder                             = Model.TrapsReactProceeder;
-            var trapsIncreasingProceeder                        = Model.TrapsIncreasingProceeder;
-            var portalsProceeder                                = Model.PortalsProceeder;
-            var turretsProceeder                                = Model.TurretsProceeder;
-            var shredingerProceeder                             = Model.ShredingerBlocksProceeder;
-            var springboardProceeder                            = Model.SpringboardProceeder;
-            var character                                       = Model.Character;
-            var levelStaging                                    = Model.LevelStaging;
+            Model.PathItemsProceeder.AllPathsProceededEvent           -= View.Character.OnAllPathProceed;
+            Model.PathItemsProceeder.AllPathsProceededEvent           -= View.LevelStageController.OnAllPathProceed;
+            Model.PathItemsProceeder.PathProceedEvent                 -= View.PathItemsGroup.OnPathProceed;
+            Model.MazeRotation.RotationStarted                        -= View.MazeRotation.OnRotationStarted;
             
-            pathItemsProceeder.PathProceedEvent                 -= View.PathItemsGroup.OnPathProceed;
+            Model.GravityItemsProceeder.MazeItemMoveStarted           -= View.MovingItemsGroup.OnMazeItemMoveStarted;
+            Model.GravityItemsProceeder.MazeItemMoveStarted           -= View.UI.UIGameControls.OnMazeItemMoveStarted;
+            Model.GravityItemsProceeder.MazeItemMoveContinued         -= View.MovingItemsGroup.OnMazeItemMoveContinued;
+            Model.GravityItemsProceeder.MazeItemMoveFinished          -= View.MovingItemsGroup.OnMazeItemMoveFinished;
+            Model.GravityItemsProceeder.MazeItemMoveFinished          -= View.UI.UIGameControls.OnMazeItemMoveFinished;
             
-            rotation.RotationStarted                            -= View.MazeRotation.StartRotation;
-            rotation.RotationFinishedInternal                           -= Model.MazeRotation.OnRotationFinished;
+            Model.TrapsMovingProceeder.MazeItemMoveStarted            -= View.MovingItemsGroup.OnMazeItemMoveStarted;
+            Model.TrapsMovingProceeder.MazeItemMoveStarted            -= View.UI.UIGameControls.OnMazeItemMoveStarted;
+            Model.TrapsMovingProceeder.MazeItemMoveContinued          -= View.MovingItemsGroup.OnMazeItemMoveContinued;
+            Model.TrapsMovingProceeder.MazeItemMoveFinished           -= View.MovingItemsGroup.OnMazeItemMoveFinished;
+            Model.TrapsMovingProceeder.MazeItemMoveFinished           -= View.UI.UIGameControls.OnMazeItemMoveFinished;
             
-            movingItemsProceeder.MazeItemMoveStarted            -= OnMazeItemMoveStarted;
-            movingItemsProceeder.MazeItemMoveContinued          -= View.MovingItemsGroup.OnMazeItemMoveContinued;
-            movingItemsProceeder.MazeItemMoveFinished           -= OnMazeItemMoveFinished;
-
-            gravityItemsProceeder.MazeItemMoveStarted           -= OnMazeItemMoveStarted;
-            gravityItemsProceeder.MazeItemMoveContinued         -= View.MovingItemsGroup.OnMazeItemMoveContinued;
-            gravityItemsProceeder.MazeItemMoveFinished          -= OnMazeItemMoveFinished;
+            Model.TrapsReactProceeder.TrapReactStageChanged           -= View.TrapsReactItemsGroup.OnMazeTrapReactStageChanged;
+            Model.TrapsIncreasingProceeder.TrapIncreasingStageChanged -= View.TrapsIncItemsGroup.OnMazeTrapIncreasingStageChanged;
+            Model.TurretsProceeder.TurretShoot                        -= View.TurretsGroup.OnTurretShoot;
+            Model.PortalsProceeder.PortalEvent                        -= View.PortalsGroup.OnPortalEvent;
+            Model.ShredingerBlocksProceeder.ShredingerBlockEvent      -= View.ShredingerBlocksGroup.OnShredingerBlockEvent;
+            Model.SpringboardProceeder.SpringboardEvent               -= View.SpringboardItemsGroup.OnSpringboardEvent;
+            Model.Character.CharacterMoveStarted                      -= View.OnCharacterMoveStarted;
+            Model.Character.CharacterMoveContinued                    -= View.OnCharacterMoveContinued;
+            Model.Character.CharacterMoveFinished                     -= View.OnCharacterMoveFinished;
+            Model.LevelStaging.LevelStageChanged                      -= View.OnLevelStageChanged;
             
-            trapsReactProceeder.TrapReactStageChanged           -= View.TrapsReactItemsGroup.OnMazeTrapReactStageChanged;
-            trapsIncreasingProceeder.TrapIncreasingStageChanged -= View.TrapsIncItemsGroup.OnMazeTrapIncreasingStageChanged;
-            turretsProceeder.TurretShoot                        -= View.TurretsGroup.OnTurretShoot;
-            portalsProceeder.PortalEvent                        -= View.PortalsGroup.OnPortalEvent;
-            shredingerProceeder.ShredingerBlockEvent            -= View.ShredingerBlocksGroup.OnShredingerBlockEvent;
-            springboardProceeder.SpringboardEvent               -= View.SpringboardItemsGroup.OnSpringboardEvent;
-
-            character.AliveOrDeath                              -= View.Character.OnRevivalOrDeath;
-            character.CharacterMoveStarted                      -= View.OnCharacterMoveStarted;
-            character.CharacterMoveContinued                    -= View.OnCharacterMoveContinued;
-            character.CharacterMoveFinished                     -= View.OnCharacterMoveFinished;
-            character.PositionSet                               -= View.Character.OnPositionSet;
-            
-            levelStaging.LevelStageChanged                      -= View.OnLevelStageChanged;
-            View.InputConfigurator.Command                      -= Model.InputScheduler.AddCommand;
-        }
-        
-        private List<object> GetProceeders()
-        {
-            var result = new List<object>
-            {
-                Model,
-                View
-            }.Where(_Proceeder => _Proceeder != null)
-                .ToList();
-            return result;
+            View.InputConfigurator.Command                            -= Model.InputScheduler.AddCommand;
+            View.MazeRotation.RotationFinished                        -= Model.MazeRotation.OnRotationFinished;
         }
 
         #endregion
