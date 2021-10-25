@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using DI.Extensions;
 using Managers;
 using UI.Entities;
@@ -44,12 +43,6 @@ namespace GameHelpers
             AssetDatabase.SaveAssets();
         }
 #endif
-
-        public static List<Prefab> GetAllPrefabs(string _PrefabSetName)
-        {
-            PrefabSetObject set = ResLoader.GetPrefabSet(_PrefabSetName);
-            return set.prefabs.ToList();
-        }
         
         public static GameObject InitUiPrefab(
             RectTransform _RectTransform,
@@ -78,18 +71,14 @@ namespace GameHelpers
 
         public static T GetObject<T>(
             string _PrefabSetName,
-            string _ObjectName,
-            bool _FromBundles = true) where T : Object
+            string _ObjectName) where T : Object
         {
-            PrefabSetObject set = ResLoader.GetPrefabSet(_PrefabSetName);
-            T content = set.prefabs.FirstOrDefault(_P => _P.name == _ObjectName)?.item as T;
-
-            if (content == null && _FromBundles)
-                content = AssetBundleManager.GetAsset<T>(_ObjectName, _PrefabSetName);
-            
+            var set = ResLoader.GetPrefabSet(_PrefabSetName);
+            T content = set.bundles ? AssetBundleManager.GetAsset<T>(_ObjectName, _PrefabSetName) :
+                set.prefabs.FirstOrDefault(_P => _P.name == _ObjectName)?.item as T;
             if (content == null)
-                Dbg.LogError($"Content of set {_PrefabSetName} with name {_ObjectName} was not set");
-            
+                Dbg.LogError($"Content of set \"{_PrefabSetName}]\" " +
+                             $"with name \"[{_ObjectName}\" was not set, bundles: {set.bundles}");
             return content;
         }
         

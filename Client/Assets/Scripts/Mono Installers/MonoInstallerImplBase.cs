@@ -21,9 +21,10 @@ namespace Mono_Installers
             Container.Bind<ISoundManager>()       .To<SoundManager>()           .AsSingle();
             Container.Bind<IAdsManager>()         .To<AdsManager>()             .AsSingle();
             Container.Bind<IAnalyticsManager>()   .To<AnalyticsManager>()       .AsSingle();
-            Container.Bind<IPurchasesManager>()   .To<PurchasesManager>()       .AsSingle();
+            Container.Bind<IShopManager>()        .To<ShopManager>()            .AsSingle();
             Container.Bind<ILocalizationManager>().To<LeanLocalizationManager>().AsSingle();
             Container.Bind<IDebugManager>()       .To<DebugManager>()           .AsSingle();
+            Container.Bind<IScoreManager>()       .To<ScoreManager>()           .AsSingle();
         }
     }
 }

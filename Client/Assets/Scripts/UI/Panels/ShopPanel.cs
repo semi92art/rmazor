@@ -29,16 +29,15 @@ namespace UI.Panels
         #region inject
         
         public ShopPanel(
-            IDialogViewer _DialogViewer,
             IManagersGetter _Managers,
-            IUITicker _UITicker) 
+            IUITicker _UITicker,
+            IDialogViewer _DialogViewer)
             : base(_Managers, _UITicker, _DialogViewer) { }
         
         #endregion
 
         #region api
 
-        
         public override EUiCategory Category => EUiCategory.Shop;
         
         public void PreInit(RectTransform _Container)
@@ -53,7 +52,7 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     m_Container,
                     RtrLites.FullFill),
-                CommonPrefabSetNames.MainMenuDialogPanels,
+                CommonPrefabSetNames.DialogPanels,
                 "shop_panel");
             RectTransform content = go.GetCompItem<RectTransform>("content");
 
@@ -73,7 +72,7 @@ namespace UI.Panels
                     default:
                         throw new SwitchCaseNotImplementedException(shopItemProps.Type);
                 }
-                item.Init(shopItemProps, Managers);
+                item.Init(Managers, Ticker, shopItemProps);
             }
 
             content.anchoredPosition = content.anchoredPosition.SetY(0);

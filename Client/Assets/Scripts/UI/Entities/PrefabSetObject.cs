@@ -19,7 +19,8 @@ namespace UI.Entities
     public class PrefabSetObject : ScriptableObject
     {
         #region public fields
-        
+
+        public bool bundles;
         [Header("Prefabs"), Reorderable(paginate = true, pageSize = 20)]
         public PrefabsList prefabs;
 

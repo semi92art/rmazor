@@ -6,9 +6,10 @@
         public const string UiButtonPressed              = "UI Button Pressed";
         public const string UiButtonDisabled             = "UI Button Disabled";
 
-        public const string UDialogItemNormal            = "UI Dialog Item Normal";
+        public const string UiDialogItemNormal            = "UI Dialog Item Normal";
         public const string UiDialogItemPressed          = "UI Dialog Item Pressed";
         public const string UiDialogItemDisabled         = "UI Dialog Item Disabled";
+        public const string UiDialogItemSelected         = "UI Dialog Item Selected";
 
         public const string UiToggleNormal               = "UI Toggle Normal";
         public const string UiTogglePressed              = "UI Toggle Pressed";

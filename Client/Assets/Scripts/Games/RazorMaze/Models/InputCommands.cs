@@ -12,15 +12,16 @@
         public const int LoadFirstLevelFromCurrentGroup = 8;
         public const int LoadNextLevel                  = 9;
         public const int UnloadLevel                    = 10;
-        public const int ReadyToContinueLevel           = 11;
-        public const int ContinueLevel                  = 12;
+        public const int ReadyToStartLevel              = 11;
+        public const int StartOrContinueLevel           = 12;
         public const int PauseLevel                     = 13;
-        public const int FinishLevel                    = 14;
-        public const int KillCharacter                  = 15;
-        public const int LoadRandomLevel                = 16;
-        public const int ShopMenu                       = 17;
-        public const int SettingsMenu                   = 18;
-        public const int LoadRandomLevelWithRotation    = 19;
-        public const int ReadyToUnloadLevel             = 20;
+        public const int UnPauseLevel                   = 14;
+        public const int FinishLevel                    = 15;
+        public const int KillCharacter                  = 16;
+        public const int LoadRandomLevel                = 17;
+        public const int ShopMenu                       = 18;
+        public const int SettingsMenu                   = 19;
+        public const int LoadRandomLevelWithRotation    = 20;
+        public const int ReadyToUnloadLevel             = 21;
     }
 }

@@ -74,9 +74,9 @@ namespace Games.RazorMaze.Views.InputConfigurators
                 _Forced = true;
             }
             else if (Input.GetKeyDown(KeyCode.Alpha2))
-                (_CommandKey, _Forced) = (InputCommands.ReadyToContinueLevel, true);
+                (_CommandKey, _Forced) = (InputCommands.ReadyToStartLevel, true);
             else if (Input.GetKeyDown(KeyCode.Alpha3))
-                (_CommandKey, _Forced) = (InputCommands.ContinueLevel, true);
+                (_CommandKey, _Forced) = (InputCommands.StartOrContinueLevel, true);
             else if (Input.GetKeyDown(KeyCode.Alpha4))
                 (_CommandKey, _Forced) = (InputCommands.FinishLevel, true);
             else if (Input.GetKeyDown(KeyCode.Alpha5))

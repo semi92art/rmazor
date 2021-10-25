@@ -171,7 +171,7 @@ namespace Games.RazorMaze.Views.Characters
                     SetDefaultCharacterState();
                     Activated = true;
                     break;
-                case ELevelStage.ReadyToStartOrContinue:
+                case ELevelStage.ReadyToStart:
                     if (m_OrientationCache == MazeOrientation.North)
                         SetDefaultCharacterState();
                     else

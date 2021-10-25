@@ -1,4 +1,5 @@
 ﻿using Constants;
+using DI.Extensions;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils;
@@ -11,7 +12,8 @@ namespace UI
 
         protected override void OnEnable()
         {
-            checkMark.color = ColorUtils.GetColorFromCurrentPalette(CommonPaletteColors.UiToggleCheckMark);
+            if (checkMark.IsNotNull())
+                checkMark.color = ColorUtils.GetColorFromCurrentPalette(CommonPaletteColors.UiToggleCheckMark);
             base.OnEnable();
         }
 
@@ -22,6 +24,12 @@ namespace UI
         }
 
         public void SetPressed()
+        {
+            MakeTransition(ColorUtils.GetColorFromCurrentPalette(
+                CommonPaletteColors.UiTogglePressed));
+        }
+
+        public void SetSelected()
         {
             MakeTransition(ColorUtils.GetColorFromCurrentPalette(
                 CommonPaletteColors.UiTogglePressed));

@@ -17,7 +17,9 @@ using Games.RazorMaze.Views.MazeItems;
 using Games.RazorMaze.Views.MazeItems.Additional;
 using Games.RazorMaze.Views.Rotation;
 using Games.RazorMaze.Views.UI;
+using Settings;
 using UI.Panels;
+using UnityEngine;
 
 namespace Mono_Installers
 {
@@ -26,6 +28,7 @@ namespace Mono_Installers
         public static bool Release;
         public ModelSettings modelSettings;
         public ViewSettings viewSettings;
+        public GameObject cameraProvider;
 
         public override void InstallBindings()
         {
@@ -112,7 +115,7 @@ namespace Mono_Installers
             Container.Bind<IShopDialogPanel>()              .To<ShopPanel>()                     .AsSingle().When(_ => Release);
             Container.Bind<IWheelOfFortuneDialogPanel>()    .To<WheelOfFortunePanel>()           .AsSingle().When(_ => Release);
             Container.Bind<IWheelOfFortuneRewardPanel>()    .To<WheelOfFortuneRewardPanel>()     .AsSingle().When(_ => Release);
-            Container.Bind<IDialogViewer>()                 .To<UiDialogViewer>()                .AsSingle().When(_ => Release);
+            Container.Bind<IDialogViewer>()                 .To<FullScreenDialogViewer>()                .AsSingle().When(_ => Release);
             Container.Bind<INotificationViewer>()           .To<NotificationViewer>()            .AsSingle().When(_ => Release);
             Container.Bind<ITransitionRenderer>()           .To<CircleTransitionRenderer>()      .AsSingle().When(_ => Release);
             Container.Bind<ILoadingController>()            .To<LoadingController>()             .AsSingle().When(_ => Release);
@@ -126,6 +129,24 @@ namespace Mono_Installers
             Container.Bind<IViewInputConfigurator>()        .To<ViewInputConfigurator>()         .AsSingle();
 #endif
             
+            #endregion
+            
+            #region settings
+
+            Container.Bind<ISoundSetting>().To<SoundSetting>().AsSingle();
+            Container.Bind<IMusicSetting>().To<MusicSetting>().AsSingle();
+            Container.Bind<INotificationSetting>().To<NotificationsSetting>().AsSingle();
+            Container.Bind<IVibrationSetting>().To<VibrationSetting>().AsSingle();
+            Container.Bind<ILanguageSetting>().To<LanguageSetting>().AsSingle();
+            Container.Bind<IDebugSetting>().To<DebugSetting>().AsSingle();
+            Container.Bind<ISettingsGetter>().To<SettingsGetter>().AsSingle();
+
+            #endregion
+
+            #region other
+
+            Container.Bind<ICameraProvider>().FromComponentInNewPrefab(cameraProvider).AsSingle();
+
             #endregion
         }
     }

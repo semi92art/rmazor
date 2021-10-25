@@ -14,7 +14,7 @@ using Utils;
 
 namespace UI.PanelItems
 {
-    public class DailyBonusItem : MonoBehaviour
+    public class DailyBonusItem : SimpleUiDialogItemView
     {
         [SerializeField] private Button button;
         [SerializeField] private Animator iconAnimator;

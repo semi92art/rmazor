@@ -25,6 +25,12 @@ namespace UI
                 CommonPaletteColors.UiButtonPressed));
         }
 
+        public void SetSelected()
+        {
+            MakeTransition(ColorUtils.GetColorFromCurrentPalette(
+                CommonPaletteColors.UiButtonPressed));
+        }
+
         public void SetDisabled()
         {
             MakeTransition(ColorUtils.GetColorFromCurrentPalette(

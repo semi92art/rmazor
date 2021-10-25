@@ -1,22 +1,33 @@
 ﻿using System.Collections.Generic;
+using Entities;
 
 namespace Settings
 {
-    public interface ISetting
+    public interface ISetting<T>
     {
-        string Name { get; }
-        SettingType Type { get; }
-        List<string> Values { get; }
+        SaveKey Key { get; }
+        string TitleKey { get; }
+        ESettingLocation Location { get; }
+        ESettingType Type { get; }
+        List<T> Values { get; }
         object Min { get; }
         object Max { get; }
-        void Put(object _Parameter);
-        object Get();
+        string SpriteOffKey { get; }
+        string SpriteOnKey { get; }
+        T Get();
+        void Put(T _VolumeOn);
     }
 
-    public enum SettingType
+    public enum ESettingType
     {
         OnOff,
         InPanelSelector,
         Slider
+    }
+
+    public enum ESettingLocation
+    {
+        Main,
+        MiniButtons
     }
 }

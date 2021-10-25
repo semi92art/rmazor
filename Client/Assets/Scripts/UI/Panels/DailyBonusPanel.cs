@@ -62,7 +62,7 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     DialogViewer.Container,
                     RtrLites.FullFill),
-                CommonPrefabSetNames.MainMenuDialogPanels,
+                CommonPrefabSetNames.DialogPanels,
                 "daily_bonus_panel");
             m_Content = go.GetCompItem<RectTransform>("content");
             CreateItems();

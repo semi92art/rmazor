@@ -7,16 +7,32 @@ using Utils;
 
 namespace Managers
 {
-    public class ScoreManager : MonoBehaviour
+    public enum ScoreType { Main }
+
+    public delegate void ScoresEventHandler(ScoresEventArgs _Args);
+
+    public class ScoresEventArgs
     {
-        #region singleton
+        public ScoresEntity ScoresEntity { get; }
 
-        private static ScoreManager _instance;
+        public ScoresEventArgs(ScoresEntity _ScoresEntity)
+        {
+            ScoresEntity = _ScoresEntity;
+        }
+    }
 
-        public static ScoreManager Instance = CommonUtils.MonoBehSingleton(ref _instance, "Score Manager");
-
-        #endregion
-
+    public interface IScoreManager
+    {
+        event ScoresEventHandler OnScoresChanged;
+        ScoresEntity GetMainScore();
+        void SetMainScore(int _Value);
+        ScoresEntity GetScores(bool _ForcedFromServer = false);
+        void SetScore(ScoreType _ScoreType, int _Value);
+        void ShowLeaderboard();
+    }
+    
+    public class ScoreManager : IScoreManager
+    {
         #region api
 
         public event ScoresEventHandler OnScoresChanged;
@@ -41,7 +57,7 @@ namespace Managers
             SetMainScoreIos(_Value);
 #endif
         }
-        
+
         public ScoresEntity GetScores(bool _ForcedFromServer = false)
         {
             var result = new ScoresEntity();
@@ -62,10 +78,11 @@ namespace Managers
                             _F.FieldId == DataFieldIds.MainScore)
                         .SetValue(_Value).Save();
                 }
+
                 OnScoresChanged?.Invoke(new ScoresEventArgs(GetScores()));
             });
         }
-        
+
         public void ShowLeaderboard()
         {
 #if UNITY_EDITOR
@@ -76,9 +93,9 @@ namespace Managers
             ShowLeaderboardIos();
 #endif
         }
-        
+
         #endregion
-        
+
         #region nonpublic methods
 
         private static ScoresEntity GetMainScoreCached()
@@ -94,7 +111,7 @@ namespace Managers
             });
             return scores;
         }
-        
+
         private static void SetMainScoreCache(int _Value)
         {
             var gdff = new GameDataFieldFilter(GameClientUtils.AccountId, GameClientUtils.GameId,
@@ -143,7 +160,7 @@ namespace Managers
         }
 
 #elif UNITY_IPHONE && !UNITY_EDITOR
-        
+
         private ScoresEntity GetMainScoreIos()
         {
             if (!Social.localUser.authenticated)
@@ -195,30 +212,9 @@ namespace Managers
         {
             Social.ShowLeaderboardUI();
         }
-        
+
 #endif
-        
+
         #endregion
     }
-    
-    #region types
-
-    public enum ScoreType
-    {
-        Main
-    }
-
-    public delegate void ScoresEventHandler(ScoresEventArgs _Args);
-
-    public class ScoresEventArgs
-    {
-        public ScoresEntity ScoresEntity { get; }
-
-        public ScoresEventArgs(ScoresEntity _ScoresEntity)
-        {
-            ScoresEntity = _ScoresEntity;
-        }
-    }
-    
-    #endregion
 }

@@ -73,7 +73,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 case ELevelStage.StartedOrContinued:
                     ContinueProceed();
                     break;
-                case ELevelStage.ReadyToStartOrContinue:
+                case ELevelStage.ReadyToStart:
                     StartProceed(true); break;
                 case ELevelStage.Paused:
                     PauseProceed(); break;
@@ -87,7 +87,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             }
             
             if (_Args.Stage == ELevelStage.Loaded 
-                ||_Args.Stage == ELevelStage.ReadyToStartOrContinue)
+                ||_Args.Stage == ELevelStage.ReadyToStart)
             {
                 foreach (var coroutinesQueue in m_CoroutinesDict
                     .Select(_Kvp => _Kvp.Value))

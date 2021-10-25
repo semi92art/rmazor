@@ -1,19 +1,38 @@
-﻿using Entities;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using DI.Extensions;
 using Lean.Localization;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using Utils;
+using Object = UnityEngine.Object;
 
 public interface ILocalizationManager : IInit
 {
     string GetTranslation(string _Key);
+    void SetLanguage(Language _Language);
+    Language GetCurrentLanguage();
+    void AddTextObject(Component _TextObject, string _LocalizationKey, Func<string, string> _TextFormula = null);
 }
 
 public class LeanLocalizationManager : ILocalizationManager
 {
+    #region types
+
+    private class TextObjectArgs
+    {
+        public Component TextObject { get; set; }
+        public Func<string, string> Formula { get; set; }
+    }
+
+    #endregion
+    
     #region nonpublic members
 
-    private GameObject m_localizationObject;
+    private static LeanLocalization m_Localization;
+    private readonly Dictionary<string, List<TextObjectArgs>> m_TextObjectsDict =
+        new Dictionary<string, List<TextObjectArgs>>(); 
 
     #endregion
 
@@ -23,61 +42,98 @@ public class LeanLocalizationManager : ILocalizationManager
 
     public void Init()
     {
-        if (m_localizationObject != null)
+        if (m_Localization != null)
             return;
-        m_localizationObject = new GameObject("Localization");
-        Object.DontDestroyOnLoad(m_localizationObject);
-        var localization = m_localizationObject.AddComponent<LeanLocalization>();
+        var go = new GameObject("Localization");
+        Object.DontDestroyOnLoad(go);
+        m_Localization = go.AddComponent<LeanLocalization>();
+        var culturesDict = new Dictionary<Language, string[]>
+        {
+            {Language.English,  new[] {"en", "en-GB"}},
+            {Language.German,   new[] {"ger", "ger-GER"}},
+            {Language.Spanish,  new[] {"sp", "sp-SP"}},
+            {Language.Portugal, new[] {"por", "por-POR"}},
+            {Language.Russian,  new[] {"ru", "ru-RUS"}}
+        };
+        foreach (var kvp in culturesDict)
+            m_Localization.AddLanguage(kvp.Key.ToString(), kvp.Value);
+        foreach (var kvp in culturesDict)
+        {
+            var goCsv = new GameObject(kvp.Key + "CSV");
+            goCsv.SetParent(m_Localization.transform);
+            var leanCsv = goCsv.AddComponent<LeanLanguageCSV>();
+            leanCsv.Source = Resources.Load<TextAsset>($"Texts/{kvp.Key}");
+            leanCsv.Language = kvp.Key.ToString();    
+        }
 
-        string[] cultres = {"en", "en-GB"};
-        localization.AddLanguage("English", cultres);
-        cultres = new [] {"ru", "ru-RUS"};
-        localization.AddLanguage("Russian", cultres);
-        cultres = new [] {"ger", "ger-GER"};
-        localization.AddLanguage("German", cultres);
-        cultres = new [] {"sp", "sp-SP"};
-        localization.AddLanguage("Spanish", cultres);
-        cultres = new []{"por", "por-POR"};
-        localization.AddLanguage("Portugal", cultres);
-        
-        //Create readers from localization files
-        GameObject englishCsv = new GameObject("englishCSV");
-        englishCsv.transform.SetParent(m_localizationObject.transform);
-        LeanLanguageCSV engCsv = englishCsv.AddComponent<LeanLanguageCSV>();
-        engCsv.Source = Resources.Load<TextAsset>("Texts/English");
-        engCsv.Language = "English";
-        
-        GameObject russianCsv = new GameObject("russianCSV");
-        russianCsv.transform.SetParent(m_localizationObject.transform);
-        LeanLanguageCSV rusCsv = russianCsv.AddComponent<LeanLanguageCSV>();
-        rusCsv.Source = Resources.Load<TextAsset>("Texts/Russian");
-        rusCsv.Language = "Russian";
-        
-        GameObject germanCsv = new GameObject("germanCSV");
-        germanCsv.transform.SetParent(m_localizationObject.transform);
-        LeanLanguageCSV gerCsv = germanCsv.AddComponent<LeanLanguageCSV>();
-        gerCsv.Source = Resources.Load<TextAsset>("Texts/German");
-        gerCsv.Language = "German";
-        
-        GameObject spanishCsv = new GameObject("spanishCSV");
-        spanishCsv.transform.SetParent(m_localizationObject.transform);
-        LeanLanguageCSV spCsv = spanishCsv.AddComponent<LeanLanguageCSV>();
-        spCsv.Source = Resources.Load<TextAsset>("Texts/Spanish");
-        spCsv.Language = "Spanish";
-        
-        GameObject portugalCsv = new GameObject("portugalCSV");
-        portugalCsv.transform.SetParent(m_localizationObject.transform);
-        LeanLanguageCSV portCsv = portugalCsv.AddComponent<LeanLanguageCSV>();
-        portCsv.Source = Resources.Load<TextAsset>("Texts/Portugal");
-        portCsv.Language = "Portugal";
-        
-        localization.SetCurrentLanguage(SaveUtils.GetValue<Language>(SaveKey.SettingLanguage).ToString());
+        m_Localization.DefaultLanguage = "English";
         Initialized?.Invoke();
     }
 
     public string GetTranslation(string _Key)
     {
         return LeanLocalization.GetTranslationText(_Key);
+    }
+
+    public void SetLanguage(Language _Language)
+    {
+        m_Localization.SetCurrentLanguage(_Language.ToString());
+        foreach (var kvp in m_TextObjectsDict)
+        {
+            var destroyed = kvp.Value.ToArray()
+                .Where(_Args => _Args == null || _Args.TextObject.IsNull());
+            kvp.Value.RemoveRange(destroyed);
+        }
+        foreach (var kvp in m_TextObjectsDict)
+        {
+            foreach (var args in kvp.Value)
+                UpdateText(kvp.Key, args);
+        }
+    }
+
+    public Language GetCurrentLanguage()
+    {
+        Enum.TryParse(LeanLocalization.CurrentLanguage, out Language lang);
+        return lang;
+    }
+
+    public void AddTextObject(Component _TextObject, string _LocalizationKey, Func<string, string> _TextFormula = null)
+    {
+        if (_TextObject.IsNull())
+            return;
+        foreach (var kvp in m_TextObjectsDict)
+        {
+            var destroyed = kvp.Value.Where(_Args => _Args == null || _Args.TextObject.IsNull());
+            kvp.Value.RemoveRange(destroyed);
+        }
+        if (!m_TextObjectsDict.ContainsKey(_LocalizationKey))
+            m_TextObjectsDict.Add(_LocalizationKey, new List<TextObjectArgs>());
+        var args = m_TextObjectsDict[_LocalizationKey].FirstOrDefault(_Args => _Args.TextObject == _TextObject);
+        if (args != null)
+        {
+            args.Formula = _TextFormula;
+            UpdateText(_LocalizationKey, args);
+        }
+        else
+        {
+            var newArgs = new TextObjectArgs {TextObject = _TextObject, Formula = _TextFormula};
+            m_TextObjectsDict[_LocalizationKey].Add(newArgs);
+            UpdateText(_LocalizationKey, newArgs);
+        }
+    }
+
+    #endregion
+
+    #region nonpublic methods
+
+    private void UpdateText(string _LocalizationKey, TextObjectArgs _Args)
+    {
+        if (_Args.TextObject is TMP_Text tmpText)
+        {
+            var translation = GetTranslation(_LocalizationKey);
+            var formula = _Args.Formula ?? (_Text => _Text);
+            tmpText.text = formula(translation);
+        }
     }
 
     #endregion

@@ -104,7 +104,7 @@ namespace Games.RazorMaze.Views.MazeItems
                     ProceedingStage = EProceedingStage.Active;
                     break;
                 case ELevelStage.CharacterKilled:
-                case ELevelStage.ReadyToStartOrContinue:
+                case ELevelStage.ReadyToStart:
                 case ELevelStage.StartedOrContinued:
                     ProceedingStage = EProceedingStage.ActiveAndWorking;
                     break;

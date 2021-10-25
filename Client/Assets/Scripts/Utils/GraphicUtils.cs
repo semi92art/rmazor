@@ -13,7 +13,7 @@ namespace Utils
         public static bool IsGoodQuality()
         {
 #if UNITY_EDITOR
-            return SaveUtils.GetValue<bool>(SaveKeyDebug.GoodQuality);
+            return SaveUtils.GetValue<bool>(SaveKey.GoodQuality);
 #elif UNITY_ANDROID
             return CommonUtils.GetAndroidSdkLevel() >= 27; // Android 8.1 (API level 27)
 #elif UNITY_IPHONE
@@ -32,6 +32,18 @@ namespace Utils
             return IsGoodQuality() ? 120 : 60;
         }
 
+        public static Vector2 ScreenSize
+        {
+            get
+            {
+#if UNITY_EDITOR
+                return GetMainGameViewSize();
+#else
+                return new Vector2(Screen.width, Screen.height);
+#endif
+            }
+        }
+
         public static float AspectRatio
         {
             get
@@ -46,16 +58,16 @@ namespace Utils
                 return aspectRatio;   
             }
         }
-        
-        public static Bounds VisibleBounds
+
+        public static Bounds GetVisibleBounds(Camera _Camera = null)
         {
-            get
-            {
-                float vertExtent = Camera.main.orthographicSize * 2f;
-                float horzExtent = vertExtent * AspectRatio;
-                Vector3 size = new Vector3(horzExtent, vertExtent, 0);
-                return new Bounds(Camera.main.transform.position.SetZ(0), size);
-            }
+            var cam = _Camera ?? Camera.main;
+            if (cam.IsNull())
+                return default;
+            float vertExtent = cam.orthographicSize * 2f;
+            float horzExtent = vertExtent * AspectRatio;
+            var size = new Vector3(horzExtent, vertExtent, 0);
+            return new Bounds(cam.transform.position.SetZ(0), size);
         }
         
 #if UNITY_EDITOR

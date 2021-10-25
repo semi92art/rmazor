@@ -73,7 +73,7 @@ namespace Utils
     
         private static XElement FromResources(string _Path)
         {
-            TextAsset textAsset = Resources.Load<TextAsset>(_Path);
+            var textAsset = Resources.Load<TextAsset>(_Path);
             using (var ms = new MemoryStream(textAsset.bytes))
                 return XDocument.Load(ms).Element("data");
         }

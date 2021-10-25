@@ -9,6 +9,7 @@ using Games.RazorMaze.Views.ContainerGetters;
 using Lean.Touch;
 using UnityEngine;
 using UnityEngine.Events;
+using Utils;
 
 namespace Games.RazorMaze.Views.InputConfigurators
 {
@@ -93,6 +94,14 @@ namespace Games.RazorMaze.Views.InputConfigurators
         }
 
         #endregion
+        
+        public void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            if (_Args.Stage == ELevelStage.Paused)
+                m_LeanFingerTap.OnFinger.RemoveListener(MoveNext);
+            else if (_Args.PreviousStage == ELevelStage.Paused)
+                m_LeanFingerTap.OnFinger.AddListener(MoveNext);
+        }
 
         #region nonpublic methods
         
@@ -133,11 +142,8 @@ namespace Games.RazorMaze.Views.InputConfigurators
             var goLeanFingerTap = new GameObject("Lean Finger Tap");
             goLeanFingerTap.SetParent(GetContainer());
             var lft = goLeanFingerTap.AddComponent<LeanFingerTap>();
-            lft.OnFinger.AddListener(_Finger =>
-            {
-                if (Model.LevelStaging.LevelStage == ELevelStage.Finished)
-                    RaiseCommand(InputCommands.ReadyToUnloadLevel, null, true);
-            });
+            lft.OnFinger.AddListener(MoveNext);
+            m_LeanFingerTap = lft;
         }
 
         private void OnSwipeForMove(List<LeanFinger> _Fingers)
@@ -172,6 +178,13 @@ namespace Games.RazorMaze.Views.InputConfigurators
         private Transform GetContainer()
         {
             return ContainersGetter.GetContainer(ContainerNames.TouchInput);
+        }
+
+        private void MoveNext(LeanFinger _Finger)
+        {
+            if (_Finger.LastScreenPosition.y / GraphicUtils.ScreenSize.y < 0.8f)
+                if (Model.LevelStaging.LevelStage == ELevelStage.Finished)
+                    RaiseCommand(InputCommands.ReadyToUnloadLevel, null, true);
         }
 
         #endregion

@@ -1,44 +1,37 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Entities;
-using Lean.Localization;
-using UI.Panels;
-using Utils;
+using UnityEngine.Events;
 
 namespace Settings
 {
-    public class LanguageSetting : ISetting
+    public interface ILanguageSetting : ISetting<Language> { }
+    
+    public class LanguageSetting : SettingBase<Language>, ILanguageSetting
     {
-        public string Name => LeanLocalization.GetTranslationText("Language");
-        public SettingType Type => SettingType.InPanelSelector;
+        private ILocalizationManager LocalizationManager { get; }
 
-        public List<string> Values => m_LangNames.Values.OrderBy(_Item => _Item).ToList();
-        public object Min => null;
-        public object Max => null;
-
-        private Dictionary<Language, string> m_LangNames = new Dictionary<Language, string>
+        public LanguageSetting(ILocalizationManager _LocalizationManager)
         {
-            {Language.English, "English"},
-            {Language.Portugal, "Portugués"},
-            {Language.Spanish, "Español"},
-            {Language.Russian, "Русский"},
-            {Language.German, "Deutsch"}
-        };
-
-        public object Get()
-        {
-            return m_LangNames[SaveUtils.GetValue<Language>(SaveKey.SettingLanguage)];
+            LocalizationManager = _LocalizationManager;
         }
-        
-        public void Put(object _Parameter)
+
+        public override SaveKey Key => null;
+        public override string TitleKey => "Language";
+        public override ESettingLocation Location => ESettingLocation.Main;
+        public override ESettingType Type => ESettingType.InPanelSelector;
+        public override List<Language> Values => Enum.GetValues(typeof(Language)).Cast<Language>().ToList();
+        public UnityAction UpdateText { get; set; }
+
+        public override Language Get()
         {
-            string langName = (string) _Parameter;
-            Language lang = m_LangNames
-                .ToList()
-                .FirstOrDefault(_Kvp => _Kvp.Value == langName).Key;
-            SaveUtils.PutValue(SaveKey.SettingLanguage, lang);
-            LeanLocalization.CurrentLanguage = lang.ToString();
-            SettingsPanel.UpdateSetting();
+            return LocalizationManager.GetCurrentLanguage();
+        }
+
+        public override void Put(Language _Language)
+        {
+            LocalizationManager.SetLanguage(_Language);
         }
     }
 }

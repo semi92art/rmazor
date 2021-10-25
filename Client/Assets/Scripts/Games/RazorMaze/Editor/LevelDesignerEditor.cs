@@ -290,7 +290,7 @@ namespace Games.RazorMaze.Editor
             {
                 var container = CommonUtils.FindOrCreateGameObject("Maze", out _).transform;
                 container.gameObject.DestroyChildrenSafe();
-                var converter = new MazeCoordinateConverter();
+                var converter = new MazeCoordinateConverter(null);
                 converter.Init(
                     MazeCoordinateConverter.DefaultLeftOffset, 
                     MazeCoordinateConverter.DefaultRightOffset,
@@ -320,7 +320,7 @@ namespace Games.RazorMaze.Editor
 
         public static void FocusCamera(V2Int _Size)
         {
-            var converter = new MazeCoordinateConverter();
+            var converter = new MazeCoordinateConverter(null);
             converter.Init(
                 MazeCoordinateConverter.DefaultLeftOffset, 
                 MazeCoordinateConverter.DefaultRightOffset,

@@ -175,6 +175,7 @@ GameObject:
   - component: {fileID: 612629963}
   - component: {fileID: 612629962}
   - component: {fileID: 612629961}
+  - component: {fileID: 612629964}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -247,6 +248,29 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &612629964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 612629960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ee01e66702087b4798e633ca34c7956, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxUpdateRate: Infinity
+  preview: 0
+  blurAlgorithmSelection: 0
+  blurConfig: {fileID: 11400000, guid: 53dadda8d56021340864a4799a30f3da, type: 2}
+  downsample: 0
+  blurRegion:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
 --- !u!1 &703413957
 GameObject:
   m_ObjectHideFlags: 0
@@ -279,9 +303,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   modelSettings: {fileID: 11400000, guid: 243986dd30cfcce4abbf025e950c2262, type: 2}
   viewSettings: {fileID: 11400000, guid: 95742306892dcc5439babdbcfba0b157, type: 2}
-  gameTimeProvider: {fileID: 9100328448401563851, guid: 44cfd4482da744f448fd1b514b26fec8,
-    type: 3}
-  uiTimeProvider: {fileID: 4180051165958734565, guid: 57e13af002914214492c9f33c3097f0f,
+  cameraProvider: {fileID: 5545151479159213484, guid: 03ed9e87e94ffab48bd88ba242001363,
     type: 3}
 --- !u!114 &703413959
 MonoBehaviour:

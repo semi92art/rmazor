@@ -14,11 +14,9 @@ public class ButtonOnRaycast : MonoBehaviour
     {
         if (Input.touchCount == 0 && !Input.GetMouseButtonDown(0))
         {
-            LeanFinger f;
             m_State = 0;
             return;
         }
-        
         m_Ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (!Physics.Raycast(m_Ray, out var hit)) 
             return;

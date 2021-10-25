@@ -21,7 +21,7 @@ namespace GameHelpers.Editor
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            var bounds = GraphicUtils.VisibleBounds;
+            var bounds = GraphicUtils.GetVisibleBounds();
             GUILayout.Label("Camera View Rect:");
             GUILayout.Label($"Width: {bounds.size.x:f2}\tHeight: {bounds.size.y:f2}");
             GUILayout.Label($"Width/2: {bounds.size.x * 0.5f:f2}\tHeight/2: {bounds.size.y * 0.5f:f2}");

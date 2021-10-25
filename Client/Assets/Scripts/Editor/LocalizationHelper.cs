@@ -44,8 +44,9 @@ public class LocalizationHelper : EditorWindow
 
     private void OnGUI()
     {
-        m_ScrollPos = EditorGUILayout.BeginScrollView(m_ScrollPos, false, false);
-        var boldStyle = new GUIStyle(EditorStyles.label)
+        EditorUtilsEx.ScrollViewZone(ref m_ScrollPos, () =>
+        {
+            var boldStyle = new GUIStyle(EditorStyles.label)
         {
             fontStyle = FontStyle.Bold,
             fontSize = 13
@@ -57,19 +58,21 @@ public class LocalizationHelper : EditorWindow
             .Concat(languages.Select(_Lang => _Lang.ToString()))
             .ToList();
         
-        GUILayout.BeginHorizontal();
-        GUI.enabled = false;
-        for (int i = 0; i < firstRow.Count; i++)
+        EditorUtilsEx.HorizontalZone(() =>
         {
-            var item = firstRow[i];
-            if (i == 0)
-                EditorGUILayout.TextField(item, boldStyle, GUILayout.Width(150));
-            else
-                EditorGUILayout.TextField(item, boldStyle);
-        }
+            GUI.enabled = false;
+            for (int i = 0; i < firstRow.Count; i++)
+            {
+                var item = firstRow[i];
+                if (i == 0)
+                    EditorGUILayout.TextField(item, boldStyle, GUILayout.Width(150));
+                else
+                    EditorGUILayout.TextField(item, boldStyle);
+            }
 
-        GUILayout.TextField(string.Empty, boldStyle, GUILayout.Width(50));
-        GUILayout.EndHorizontal();
+            GUILayout.TextField(string.Empty, boldStyle, GUILayout.Width(50));
+        });
+
         GUI.enabled = true;
         
         EditorUtilsEx.HorizontalLine(Color.gray);
@@ -77,46 +80,49 @@ public class LocalizationHelper : EditorWindow
         //values rows
         foreach (var kvp in m_LocalizedDict.ToArray())
         {
-            GUILayout.BeginHorizontal();
-            GUI.enabled = false;
-            GUILayout.TextField(kvp.Key, GUILayout.Width(150));
-            GUI.enabled = true;
-            foreach (var lang in languages)
+            EditorUtilsEx.HorizontalZone(() =>
             {
-                m_LocalizedDict[kvp.Key].Values[lang] =
-                    EditorGUILayout.TextField(m_LocalizedDict[kvp.Key].Values[lang]);
-            }
-            
-            if (GUILayout.Button("-", GUILayout.Width(50)))
-                DeleteKey(kvp.Key);
-            
-            GUILayout.EndHorizontal();
+                GUI.enabled = false;
+                GUILayout.TextField(kvp.Key, GUILayout.Width(150));
+                GUI.enabled = true;
+                foreach (var lang in languages)
+                {
+                    string value = m_LocalizedDict[kvp.Key].Values[lang];
+                    EditorUtilsEx.GUIColorZone(value == "[Empty]" ? new Color(0.51f, 0.13f, 0.12f) : GUI.color, () =>
+                    {
+                        m_LocalizedDict[kvp.Key].Values[lang] = EditorGUILayout.TextField(value);    
+                    });
+                }
+                if (GUILayout.Button("-", GUILayout.Width(50)))
+                    DeleteKey(kvp.Key);
+            });
         }
-        
         EditorUtilsEx.HorizontalLine(Color.gray);
-        
         GUILayout.Space(10);
-        GUILayout.BeginHorizontal();
-        if (GUILayout.Button("Save", GUILayout.Height(40)))
-            Save();
-        if (GUILayout.Button("Discard", GUILayout.Height(40)))
-            Discard();
-        GUILayout.EndHorizontal();
+        EditorUtilsEx.HorizontalZone(() =>
+        {
+            if (GUILayout.Button("Save", GUILayout.Height(40)))
+                Save();
+            if (GUILayout.Button("Discard", GUILayout.Height(40)))
+                Discard();
+        });
+            
         GUILayout.Space(10);
-        GUILayout.BeginHorizontal();
-        if (!string.IsNullOrEmpty(m_ErrorText))
-            GUI.enabled = false;
-        if (GUILayout.Button("Add key", GUILayout.Width(100)))
-            AddKey(m_NewKey);
-        GUI.enabled = true;
-        m_NewKey = EditorGUILayout.TextField(m_NewKey, GUILayout.Width(200));
-        var defaultContentColor = GUI.contentColor;
-        GUI.contentColor = Color.red;
-        GUILayout.Label(m_ErrorText, EditorStyles.boldLabel);
-        GUI.contentColor = defaultContentColor;
-        GUILayout.EndHorizontal();
-        EditorGUILayout.EndScrollView();
+        EditorUtilsEx.HorizontalZone(() =>
+        {
+            if (!string.IsNullOrEmpty(m_ErrorText))
+                GUI.enabled = false;
+            if (GUILayout.Button("Add key", GUILayout.Width(100)))
+                AddKey(m_NewKey);
+            GUI.enabled = true;
+            m_NewKey = EditorGUILayout.TextField(m_NewKey, GUILayout.Width(200));
+            var defaultContentColor = GUI.contentColor;
+            GUI.contentColor = Color.red;
+            GUILayout.Label(m_ErrorText, EditorStyles.boldLabel);
+            GUI.contentColor = defaultContentColor;
+        });
         CheckForErrors();
+        });
     }
 
     private void CheckForErrors()
@@ -155,10 +161,9 @@ public class LocalizationHelper : EditorWindow
             Dbg.LogError("Key is empty!");
             return;
         }
-
         m_LocalizedDict.Add(_Key, new KeyValues());
         foreach (var lang in GetLanguages())
-            m_LocalizedDict[_Key].Values.Add(lang, string.Empty);
+            m_LocalizedDict[_Key].Values.Add(lang, "[Empty]");
     }
 
     private void DeleteKey(string _Key)
@@ -169,11 +174,9 @@ public class LocalizationHelper : EditorWindow
     private void Save()
     {
         var languages = GetLanguages();
-        var langKeysDict = new Dictionary<Language, List<string>>();
+        var langKeysDict = languages
+            .ToDictionary(_Lang => _Lang, _Lang => new List<string>());
 
-        foreach (var lang in languages)
-            langKeysDict.Add(lang, new List<string>());
-        
         foreach (var kvp in m_LocalizedDict.ToArray())
         foreach (var langKey in langKeysDict.Keys.ToArray())
                 langKeysDict[langKey].Add($"{kvp.Key} = {kvp.Value.Values[langKey]}\r\n");

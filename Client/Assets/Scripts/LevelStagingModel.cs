@@ -7,7 +7,7 @@ using UnityEngine.Events;
 public enum ELevelStage
 {
     Loaded,
-    ReadyToStartOrContinue,
+    ReadyToStart,
     StartedOrContinued,
     Paused,
     Finished,
@@ -21,9 +21,19 @@ public class LevelStageArgs : EventArgs
     public int LevelIndex { get; }
     public ELevelStage Stage { get; }
     public ELevelStage PreviousStage { get; }
+    public ELevelStage PrePreviousStage { get; }
 
-    public LevelStageArgs(int _LevelIndex, ELevelStage _LevelStage, ELevelStage _PreviousStage) =>
-        (LevelIndex, Stage, PreviousStage) = (_LevelIndex, _LevelStage, _PreviousStage);
+    public LevelStageArgs(
+        int _LevelIndex,
+        ELevelStage _LevelStage,
+        ELevelStage _PreviousStage,
+        ELevelStage _PrePreviousStage)
+    {
+        LevelIndex = _LevelIndex;
+        Stage = _LevelStage;
+        PreviousStage = _PreviousStage;
+        PrePreviousStage = _PrePreviousStage;
+    }
 }
 public delegate void LevelStageHandler(LevelStageArgs _Args);
 
@@ -33,11 +43,14 @@ public interface IModelLevelStaging
     float LevelTime { get; }
     int DiesCount { get; }
     ELevelStage LevelStage { get; }
+    ELevelStage PrevLevelStage { get; }
+    ELevelStage PrevPrevLevelStage { get; }
     event LevelStageHandler LevelStageChanged;
     void LoadLevel(MazeInfo _Info, int _LevelIndex);
-    void ReadyToStartOrContinueLevel();
+    void ReadyToStartLevel();
     void StartOrContinueLevel();
     void PauseLevel();
+    void UnPauseLevel();
     void FinishLevel();
     void KillCharacter();
     void ReadyToUnloadLevel();
@@ -71,6 +84,8 @@ public class ModelLevelStaging : IModelLevelStaging, IInit, IUpdateTick
     public float LevelTime { get; private set; }
     public int DiesCount { get; private set; }
     public ELevelStage LevelStage { get; private set; } = ELevelStage.Unloaded;
+    public ELevelStage PrevLevelStage { get; private set; } = ELevelStage.Unloaded;
+    public ELevelStage PrevPrevLevelStage { get; private set; } = ELevelStage.Unloaded;
     public event LevelStageHandler LevelStageChanged;
     public event UnityAction Initialized;
     
@@ -91,9 +106,9 @@ public class ModelLevelStaging : IModelLevelStaging, IInit, IUpdateTick
         InvokeLevelStageChanged(ELevelStage.Loaded);
     }
 
-    public void ReadyToStartOrContinueLevel()
+    public void ReadyToStartLevel()
     {
-        InvokeLevelStageChanged(ELevelStage.ReadyToStartOrContinue);
+        InvokeLevelStageChanged(ELevelStage.ReadyToStart);
     }
 
     public void StartOrContinueLevel()
@@ -104,6 +119,11 @@ public class ModelLevelStaging : IModelLevelStaging, IInit, IUpdateTick
     public void PauseLevel()
     {
         InvokeLevelStageChanged(ELevelStage.Paused);
+    }
+
+    public void UnPauseLevel()
+    {
+        InvokeLevelStageChanged(PrevLevelStage);
     }
 
     public void FinishLevel()
@@ -132,17 +152,18 @@ public class ModelLevelStaging : IModelLevelStaging, IInit, IUpdateTick
 
     private void InvokeLevelStageChanged(ELevelStage _Stage)
     {
-        var prevStage = LevelStage;
+        PrevPrevLevelStage = PrevLevelStage;
+        PrevLevelStage = LevelStage;
         m_DoUpdateLevelTime = _Stage == ELevelStage.StartedOrContinued;
-        if (_Stage == ELevelStage.ReadyToStartOrContinue && prevStage != ELevelStage.Paused)
+        if (_Stage == ELevelStage.ReadyToStart && PrevLevelStage != ELevelStage.Paused)
             LevelTime = 0f;
         if (_Stage == ELevelStage.CharacterKilled)
             DiesCount++;
         else if (_Stage == ELevelStage.Loaded)
             DiesCount = 0;
-            
         LevelStage = _Stage;
-        LevelStageChanged?.Invoke(new LevelStageArgs(Data.LevelIndex, LevelStage, prevStage));
+        LevelStageChanged?.Invoke(new LevelStageArgs(
+            Data.LevelIndex, LevelStage, PrevLevelStage, PrevPrevLevelStage));
     }
     
     #endregion

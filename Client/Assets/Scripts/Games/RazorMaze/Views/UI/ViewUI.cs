@@ -90,10 +90,12 @@ namespace Games.RazorMaze.Views.UI
                 case InputCommands.SettingsMenu:
                     DialogPanels.SettingDialogPanel.Init();
                     DialogViewer.Show(DialogPanels.SettingDialogPanel);
+                    InputConfigurator.RaiseCommand(InputCommands.PauseLevel, null, true);
                     break;
                 case InputCommands.ShopMenu:
                     DialogPanels.ShopDialogPanel.Init();
                     DialogViewer.Show(DialogPanels.ShopDialogPanel);
+                    InputConfigurator.RaiseCommand(InputCommands.PauseLevel, null, true);
                     break;
             }
         }

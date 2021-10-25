@@ -102,6 +102,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
+            m_Animator.speed = _Args.Stage == ELevelStage.Paused ? 0f : 1f;
             base.OnLevelStageChanged(_Args);
             if (_Args.Stage == ELevelStage.Finished && m_TrapOpened.HasValue && m_TrapOpened.Value)
                 CloseTrap();
@@ -120,8 +121,6 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             if (!m_ReadyToKill)
                 return;
-
-
             CheckForCharacterDeath();
         }
 

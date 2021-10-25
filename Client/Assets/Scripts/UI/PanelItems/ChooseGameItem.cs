@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using Constants;
-
+﻿using Constants;
 using DI.Extensions;
 using Entities;
 using GameHelpers;
@@ -11,16 +9,17 @@ using UnityEngine.UI;
 
 namespace UI.PanelItems
 {
-    public class ChooseGameItem : MenuItemBase
+    public class ChooseGameItem : SimpleUiDialogItemView
     {
         public Button button;
         public Image icon;
 
         public void Init(
-            ChooseGameItemProps _Props,
-            IManagersGetter _Managers)
+            IManagersGetter _Managers,
+            IUITicker _UITicker,
+            ChooseGameItemProps _Props)
         {
-            base.Init(_Managers);
+            InitCore(_Managers, _UITicker);
             icon.sprite = GetLogo(_Props.GameId);
             button.SetOnClick(() =>
             {
