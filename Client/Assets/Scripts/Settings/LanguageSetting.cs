@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Entities;
-using UnityEngine.Events;
 
 namespace Settings
 {
@@ -22,7 +21,6 @@ namespace Settings
         public override ESettingLocation Location => ESettingLocation.Main;
         public override ESettingType Type => ESettingType.InPanelSelector;
         public override List<Language> Values => Enum.GetValues(typeof(Language)).Cast<Language>().ToList();
-        public UnityAction UpdateText { get; set; }
 
         public override Language Get()
         {

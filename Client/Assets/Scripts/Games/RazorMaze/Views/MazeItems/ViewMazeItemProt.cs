@@ -300,9 +300,10 @@ namespace Games.RazorMaze.Views.MazeItems
                 Gizmos.DrawLine(pos, ToWorldPosition(props.Position + dir));
             }
         }
-
+        
         private void DrawGizmosPortal()
         {
+#if UNITY_EDITOR
             if (props.Pair == default)
                 return;
             var pairItem = LevelDesigner.Instance.maze
@@ -317,6 +318,7 @@ namespace Games.RazorMaze.Views.MazeItems
             Gizmos.DrawSphere(pos, 0.5f);
             Gizmos.DrawSphere(pairPos, 0.5f);
             Gizmos.DrawLine(pos, pairPos);
+#endif
         }
 
         private void DrawGizmosSpringboard()

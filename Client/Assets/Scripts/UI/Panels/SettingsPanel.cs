@@ -9,7 +9,6 @@ using GameHelpers;
 using LeTai.Asset.TranslucentImage;
 using Settings;
 using Ticker;
-using TMPro;
 using UI.Entities;
 using UI.Factories;
 using UI.PanelItems.Setting_Panel_Items;
@@ -22,14 +21,18 @@ namespace UI.Panels
     
     public class SettingsPanel : DialogPanelBase, ISettingDialogPanel
     {
+        #region constants
+
+        private const string PrefabSetName = "setting_items";
+
+        #endregion
+        
         #region private members
 
-        private readonly Dictionary<TextMeshProUGUI, string> m_settingTitles
-            = new Dictionary<TextMeshProUGUI, string>();
         private RectTransform m_MiniButtonsContent;
         private RectTransform m_SettingsContent;
         
-        private RectTransformLite m_SettingItemRectLite = new RectTransformLite
+        private readonly RectTransformLite m_SettingItemRectLite = new RectTransformLite
         {
             Anchor = UiAnchor.Create(0, 1, 0, 1),
             AnchoredPosition = new Vector2(213f, -54.6f),
@@ -37,7 +40,7 @@ namespace UI.Panels
             SizeDelta = new Vector2(406f, 87f)
         };
 
-        private RectTransformLite m_MiniButtonRectLite = new RectTransformLite
+        private readonly RectTransformLite m_MiniButtonRectLite = new RectTransformLite
         {
             Anchor = UiAnchor.Create(0, 1, 0, 1),
             AnchoredPosition = new Vector2(0f, 0f),
@@ -51,7 +54,6 @@ namespace UI.Panels
         
         private ISettingSelectorDialogPanel SelectorPanel { get; }
         private ISettingsGetter SettingsGetter { get; }
-        private ICameraProvider CameraProvider { get; }
 
         public SettingsPanel(
             ISettingSelectorDialogPanel _SelectorPanel,
@@ -60,11 +62,10 @@ namespace UI.Panels
             IUITicker _UITicker,
             ISettingsGetter _SettingsGetter,
             ICameraProvider _CameraProvider) 
-            : base(_Managers, _UITicker, _DialogViewer)
+            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider)
         {
             SelectorPanel = _SelectorPanel;
             SettingsGetter = _SettingsGetter;
-            CameraProvider = _CameraProvider;
         }
 
         #endregion
@@ -218,7 +219,7 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     m_MiniButtonsContent,
                     m_MiniButtonRectLite),
-                GetPrefabSetName(), "mini_button_item");
+                PrefabSetName, "mini_button_item");
             return obj.GetComponent<SettingItemMiniButton>();
         }
 
@@ -228,7 +229,7 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     m_SettingsContent,
                     m_SettingItemRectLite),
-                GetPrefabSetName(), "on_off_item");
+                PrefabSetName, "on_off_item");
             return obj.GetComponent<SettingItemOnOff>();
         }
 
@@ -238,7 +239,7 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     m_SettingsContent,
                     m_SettingItemRectLite),
-                GetPrefabSetName(), "in_panel_selector_item");
+                PrefabSetName, "in_panel_selector_item");
             return obj.GetComponent<SettingItemInPanelSelector>();
         }
         
@@ -248,7 +249,7 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     m_SettingsContent,
                     m_SettingItemRectLite),
-                GetPrefabSetName(), "slider_item");
+                PrefabSetName, "slider_item");
             return obj.GetComponent<SettingItemSlider>();
         }
 
@@ -258,18 +259,13 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     m_SettingsContent,
                     m_SettingItemRectLite),
-                GetPrefabSetName(), "action_item");
+                PrefabSetName, "action_item");
             return obj.GetComponent<SettingItemAction>();
         }
 
         private Sprite GetSettingsIconFromPrefabs(string _Key)
         {
-            return PrefabUtilsEx.GetObject<Sprite>(GetPrefabSetName(), _Key);
-        }
-
-        private string GetPrefabSetName()
-        {
-            return "setting_items";
+            return PrefabUtilsEx.GetObject<Sprite>(PrefabSetName, _Key);
         }
 
         private T ConvertValue<T>(object _Value)

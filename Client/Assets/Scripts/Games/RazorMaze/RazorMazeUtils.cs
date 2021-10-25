@@ -5,7 +5,6 @@ using Entities;
 using Exceptions;
 using Games.RazorMaze.Models;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Games.RazorMaze
 {

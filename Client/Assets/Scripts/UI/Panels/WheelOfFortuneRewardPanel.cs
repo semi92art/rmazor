@@ -42,8 +42,9 @@ namespace UI.Panels
             IDialogViewer _DialogViewer,
             INotificationViewer _NotificationViewer,
             IManagersGetter _Managers,
-            IUITicker _UITicker) 
-            : base(_Managers, _UITicker, _DialogViewer)
+            IUITicker _UITicker,
+            ICameraProvider _CameraProvider) 
+            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider)
         {
             NotificationViewer = _NotificationViewer;
         }

@@ -3,26 +3,39 @@ using Constants;
 using DI.Extensions;
 using DialogViewers;
 using Entities;
-using Exceptions;
 using GameHelpers;
-using Managers;
+using LeTai.Asset.TranslucentImage;
 using Ticker;
+using UI.Entities;
 using UI.Factories;
-using UI.PanelItems;
+using UI.PanelItems.Shop_Items;
 using UnityEngine;
+using UnityEngine.Events;
+using Utils;
 
 namespace UI.Panels
 {
-    public interface IShopDialogPanel : IDialogPanel
-    {
-        void PreInit(RectTransform _Container);
-    }
+    public interface IShopDialogPanel : IDialogPanel { }
     
     public class ShopPanel : DialogPanelBase, IShopDialogPanel
     {
-        #region nonpublic members
+        #region constants
+
+        private const string PrefabSetName = "shop_items";
+
+        #endregion
         
-        private RectTransform m_Container;
+        #region nonpublic members
+
+        private RectTransform m_Content;
+        
+        private readonly RectTransformLite m_ShopMainItemRectLite = new RectTransformLite
+        {
+            Anchor = UiAnchor.Create(0, 0, 0, 0),
+            AnchoredPosition = Vector2.zero,
+            Pivot = Vector2.one * 0.5f,
+            SizeDelta = new Vector2(300f, 110)
+        };
 
         #endregion
 
@@ -31,8 +44,10 @@ namespace UI.Panels
         public ShopPanel(
             IManagersGetter _Managers,
             IUITicker _UITicker,
-            IDialogViewer _DialogViewer)
-            : base(_Managers, _UITicker, _DialogViewer) { }
+            IDialogViewer _DialogViewer,
+            ICameraProvider _CameraProvider)
+            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider)
+        { }
         
         #endregion
 
@@ -40,73 +55,79 @@ namespace UI.Panels
 
         public override EUiCategory Category => EUiCategory.Shop;
         
-        public void PreInit(RectTransform _Container)
-        {
-            m_Container = _Container;
-        }
-
         public override void Init()
         {
             base.Init();
-            GameObject go = PrefabUtilsEx.InitUiPrefab(
+            var sp = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    m_Container,
+                    DialogViewer.Container,
                     RtrLites.FullFill),
                 CommonPrefabSetNames.DialogPanels,
                 "shop_panel");
-            RectTransform content = go.GetCompItem<RectTransform>("content");
-
-            foreach (var shopItemProps in GetShopItemPropsList())
+            m_Content = sp.GetCompItem<RectTransform>("content");
+            var translBack = sp.GetCompItem<TranslucentImage>("translucent_background");
+            translBack.source = CameraProvider.MainCamera.GetComponent<TranslucentImageSource>();
+            Panel = sp.RTransform();
+            m_Content.gameObject.DestroyChildrenSafe();
+            InitItems();
+            Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
             {
-                IShopItem item;
-                switch (shopItemProps.Type)
-                {
-                    case ShopItemType.NoAds:
-                        if (!AdsManager.Instance.ShowAds)
-                            continue;
-                        item = ShopItemDefault.Create(content); 
-                        break;
-                    case ShopItemType.Money:
-                        item = ShopItemMoney.Create(content);
-                        break;
-                    default:
-                        throw new SwitchCaseNotImplementedException(shopItemProps.Type);
-                }
-                item.Init(Managers, Ticker, shopItemProps);
-            }
-
-            content.anchoredPosition = content.anchoredPosition.SetY(0);
-            Panel = go.RTransform();
+                m_Content.anchoredPosition = m_Content.anchoredPosition.SetY(m_Content.rect.height * 0.5f);
+            }));
         }
 
         #endregion
 
-        #region nonpublic methdos
+        #region nonpublic methods
 
-        private List<ShopItemProps> GetShopItemPropsList()
+        private void InitItems()
         {
-            return new List<ShopItemProps>
+            var dict = new Dictionary<string, UnityAction>
             {
-                new ShopItemProps(ShopItemType.NoAds, "No Ads", 9.99f,_Description: "No advertising forever"),
-                new ShopItemProps(ShopItemType.Money, "Rockie money set", 9.99f,
-                    new Dictionary<BankItemType, long>
-                    {
-                        {BankItemType.FirstCurrency, 100000L},
-                        {BankItemType.SecondCurrency, 1000L}
-                    }, _Size: ShopItemSize.Small),
-                new ShopItemProps(ShopItemType.Money, "Advanced money set", 19.99f,
-                    new Dictionary<BankItemType, long>
-                    {
-                        {BankItemType.FirstCurrency, 5000000L},
-                        {BankItemType.SecondCurrency, 5000L}
-                    }, _Size: ShopItemSize.Medium),
-                new ShopItemProps(ShopItemType.Money,"Pro money set", 39.99f,
-                    new Dictionary<BankItemType, long>
-                    {
-                        {BankItemType.FirstCurrency, 20000000L},
-                        {BankItemType.SecondCurrency, 20000L}
-                    }, _Size: ShopItemSize.Big)
+                {"shop_money_icon", OpenShopMoneyPanel},
+                {"shop_heads_icon", OpenShopHeadsPanel},
+                {"shop_tails_icon", OpenShopTailsPanel},
+                {"shop_backgrounds_icon", OpenShopBackgroundsPanel}
             };
+            foreach (var kvp in dict)
+            {
+                var item = CreateShopMainItem();
+                item.Init(
+                    Managers,
+                    Ticker,
+                    kvp.Value,
+                    PrefabUtilsEx.GetObject<Sprite>(PrefabSetName, kvp.Key));
+            }
+        }
+
+        private ShopMainItem CreateShopMainItem()
+        {
+            var obj = PrefabUtilsEx.InitUiPrefab(
+                UiFactory.UiRectTransform(
+                    m_Content,
+                    m_ShopMainItemRectLite),
+                PrefabSetName, "shop_main_item");
+            return obj.GetComponent<ShopMainItem>();
+        }
+
+        private void OpenShopMoneyPanel()
+        {
+            
+        }
+
+        private void OpenShopHeadsPanel()
+        {
+            
+        }
+
+        private void OpenShopTailsPanel()
+        {
+            
+        }
+
+        private void OpenShopBackgroundsPanel()
+        {
+            
         }
 
         #endregion

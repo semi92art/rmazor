@@ -35,17 +35,13 @@ namespace UI.Panels
 
         #region inject
         
-        private ICameraProvider CameraProvider { get; }
-
         public SettingsSelectorPanel(
             IDialogViewer _DialogViewer,
             IManagersGetter _Managers,
             IUITicker _UITicker,
             ICameraProvider _CameraProvider) 
-            : base(_Managers, _UITicker, _DialogViewer)
-        {
-            CameraProvider = _CameraProvider;
-        }
+            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider)
+        { }
 
 
         #endregion

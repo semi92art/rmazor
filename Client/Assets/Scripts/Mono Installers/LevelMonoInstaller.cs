@@ -108,14 +108,12 @@ namespace Mono_Installers
             Container.Bind<IViewMazeGravityItemsGroup>()    .To<ViewMazeGravityItemsGroup>()     .AsSingle();
 
             Container.Bind<IDialogPanels>()                 .To<DialogPanels>()                  .AsSingle().When(_ => Release);
-            Container.Bind<IGameMenuDialogPanel>()          .To<GameMenuPanel>()                 .AsSingle().When(_ => Release);
             Container.Bind<ILoadingDialogPanel>()           .To<LoadingPanel>()                  .AsSingle().When(_ => Release);
-            Container.Bind<ISelectGameDialogPanel>()        .To<SelectGamePanel>()               .AsSingle().When(_ => Release);
             Container.Bind<ISettingSelectorDialogPanel>()   .To<SettingsSelectorPanel>()         .AsSingle().When(_ => Release);
             Container.Bind<IShopDialogPanel>()              .To<ShopPanel>()                     .AsSingle().When(_ => Release);
             Container.Bind<IWheelOfFortuneDialogPanel>()    .To<WheelOfFortunePanel>()           .AsSingle().When(_ => Release);
             Container.Bind<IWheelOfFortuneRewardPanel>()    .To<WheelOfFortuneRewardPanel>()     .AsSingle().When(_ => Release);
-            Container.Bind<IDialogViewer>()                 .To<FullScreenDialogViewer>()                .AsSingle().When(_ => Release);
+            Container.Bind<IDialogViewer>()                 .To<FullScreenDialogViewer>()        .AsSingle().When(_ => Release);
             Container.Bind<INotificationViewer>()           .To<NotificationViewer>()            .AsSingle().When(_ => Release);
             Container.Bind<ITransitionRenderer>()           .To<CircleTransitionRenderer>()      .AsSingle().When(_ => Release);
             Container.Bind<ILoadingController>()            .To<LoadingController>()             .AsSingle().When(_ => Release);
@@ -133,13 +131,13 @@ namespace Mono_Installers
             
             #region settings
 
-            Container.Bind<ISoundSetting>().To<SoundSetting>().AsSingle();
-            Container.Bind<IMusicSetting>().To<MusicSetting>().AsSingle();
+            Container.Bind<ISoundSetting>()       .To<SoundSetting>()        .AsSingle();
+            Container.Bind<IMusicSetting>()       .To<MusicSetting>()        .AsSingle();
             Container.Bind<INotificationSetting>().To<NotificationsSetting>().AsSingle();
-            Container.Bind<IVibrationSetting>().To<VibrationSetting>().AsSingle();
-            Container.Bind<ILanguageSetting>().To<LanguageSetting>().AsSingle();
-            Container.Bind<IDebugSetting>().To<DebugSetting>().AsSingle();
-            Container.Bind<ISettingsGetter>().To<SettingsGetter>().AsSingle();
+            Container.Bind<IVibrationSetting>()   .To<VibrationSetting>()    .AsSingle();
+            Container.Bind<ILanguageSetting>()    .To<LanguageSetting>()     .AsSingle();
+            Container.Bind<IDebugSetting>()       .To<DebugSetting>()        .AsSingle();
+            Container.Bind<ISettingsGetter>()     .To<SettingsGetter>()      .AsSingle();
 
             #endregion
 

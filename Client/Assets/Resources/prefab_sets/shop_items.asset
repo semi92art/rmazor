@@ -12,11 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1600272214c7aa418cb76f5cc38aecb, type: 3}
   m_Name: shop_items
   m_EditorClassIdentifier: 
+  bundles: 0
   prefabs:
     array:
-    - item: {fileID: 3257581172924190555, guid: 0ab6e2f1f2a072345aa87febf02b47cd,
+    - item: {fileID: 2929232023256113801, guid: 3eee9ff9fba9c8c45acbd8ff6dbc06be,
         type: 3}
-      name: shop_item_default
-    - item: {fileID: 3257581172924190555, guid: 80ab8932eae3e0f42802fe7259ced515,
-        type: 3}
-      name: shop_item_money
+      name: shop_main_item
+    - item: {fileID: 21300000, guid: 9fa8879d3d6bba7458e7cad590adc6cf, type: 3}
+      name: shop_money_icon
+    - item: {fileID: 21300000, guid: 9fa8879d3d6bba7458e7cad590adc6cf, type: 3}
+      name: shop_heads_icon
+    - item: {fileID: 21300000, guid: 9fa8879d3d6bba7458e7cad590adc6cf, type: 3}
+      name: shop_tails_icon
+    - item: {fileID: 21300000, guid: 9fa8879d3d6bba7458e7cad590adc6cf, type: 3}
+      name: shop_backgrounds_icon

@@ -52,21 +52,26 @@ public class IntroSceneViewer : MonoBehaviour
 
     private void InitGameController()
     {
-        var controller = RazorMazeGameController.CreateInstance();
-        controller.Initialized += () =>
-        {
-            var levelScoreEntity = ScoreManager.GetMainScore();
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !levelScoreEntity.Loaded,
-                () =>
+        Coroutines.Run(Coroutines.WaitWhile(
+            () => !AssetBundleManager.BundlesLoaded,
+            () =>
+            {
+                var controller = RazorMazeGameController.CreateInstance();
+                controller.Initialized += () =>
                 {
-                    int level = levelScoreEntity.Scores.First().Value;
-                    Dbg.Log($"Current level from cache: {level}");
-                    // FIXME заглушка для загрузки уровня
-                    var info = LevelsLoader.LoadLevel(1, 0);
-                    controller.Model.LevelStaging.LoadLevel(info, 0);
-                }));
-        };
-        controller.Init();
+                    var levelScoreEntity = ScoreManager.GetMainScore();
+                    Coroutines.Run(Coroutines.WaitWhile(
+                        () => !levelScoreEntity.Loaded,
+                        () =>
+                        {
+                            int level = levelScoreEntity.Scores.First().Value;
+                            Dbg.Log($"Current level from cache: {level}");
+                            // FIXME заглушка для загрузки уровня
+                            var info = LevelsLoader.LoadLevel(1, 0);
+                            controller.Model.LevelStaging.LoadLevel(info, 0);
+                        }));
+                };
+                controller.Init();
+            }));
     }
 }
