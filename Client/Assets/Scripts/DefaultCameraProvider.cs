@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using GameHelpers;
+using LeTai.Asset.TranslucentImage;
+using UnityEngine;
 
 public interface ICameraProvider
 {
@@ -12,5 +14,6 @@ public class DefaultCameraProvider : MonoBehaviour, ICameraProvider
     private void Awake()
     {
         MainCamera = Camera.main;
+        PrefabUtilsEx.GetObject<ScalableBlurConfig>("views", "level_blur_config").Strength = 10f;
     }
 }
