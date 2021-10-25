@@ -290,9 +290,9 @@ public class EditorHelper : EditorWindow
     private void UpdateTestUrl(bool _Forced = false)
     {
         if (string.IsNullOrEmpty(m_DebugServerUrl))
-            m_DebugServerUrl = SaveUtils.GetValue<string>(SaveKeyDebug.ServerUrl);
+            m_DebugServerUrl = SaveUtils.GetValue<string>(SaveKey.ServerUrl);
         if (m_DebugServerUrl != m_TestUrlCheck || _Forced)
-            SaveUtils.PutValue(SaveKeyDebug.ServerUrl, m_DebugServerUrl);
+            SaveUtils.PutValue(SaveKey.ServerUrl, m_DebugServerUrl);
         m_TestUrlCheck = m_DebugServerUrl;
     }
 
@@ -308,9 +308,9 @@ public class EditorHelper : EditorWindow
     private void UpdateQuality()
     {
         if (m_Quality == -1)
-            m_Quality = SaveUtils.GetValue<bool>(SaveKeyDebug.GoodQuality) ? 1 : 0;
+            m_Quality = SaveUtils.GetValue<bool>(SaveKey.GoodQuality) ? 1 : 0;
         if (m_Quality != m_QualityCheck)
-            SaveUtils.PutValue(SaveKeyDebug.GoodQuality, m_Quality != 0);
+            SaveUtils.PutValue(SaveKey.GoodQuality, m_Quality != 0);
         m_QualityCheck = m_Quality;
     }
 

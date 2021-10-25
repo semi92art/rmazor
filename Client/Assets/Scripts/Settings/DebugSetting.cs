@@ -1,37 +1,29 @@
-﻿using System.Collections.Generic;
-using Entities;
-using Utils;
+﻿using Entities;
 
 namespace Settings
 {
-    public class DebugSetting : ISetting
+    public interface IDebugSetting: ISetting<bool> { }
+    
+    public class DebugSetting : SettingBase<bool>, IDebugSetting
     {
-        public string Name => "Debug";
-        public SettingType Type => SettingType.OnOff;
-        public List<string> Values => null;
-        public object Min => null;
-        public object Max => null;
+        private IDebugManager DebugManager { get; }
 
-        public object Get()
+        public DebugSetting(IDebugManager _DebugManager)
         {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            return SaveUtils.GetValue<bool>(SaveKeyDebug.DebugUtilsOn);
-#else
-            return null;
-#endif
+            DebugManager = _DebugManager;
         }
-
-        public void Put(object _Parameter)
+        
+        public override SaveKey Key => SaveKey.DebugUtilsOn;
+        public override string TitleKey => "Debug";
+        public override ESettingLocation Location => ESettingLocation.Main;
+        public override ESettingType Type => ESettingType.OnOff;
+        
+        public override void Put(bool _DebugOn)
         {
+            base.Put(_DebugOn);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            bool debugOn = (bool) _Parameter;
-            SaveUtils.PutValue(SaveKeyDebug.DebugUtilsOn, debugOn);
-            DebugConsole.DebugConsoleView.Instance.SetGoActive(debugOn);
-#if !UNITY_EDITOR && DEVELOPMENT_BUILD
-            UI.Managers.UiManager.Instance.DebugReporter.SetActive(debugOn);
-#endif 
+            DebugManager.EnableDebug(_DebugOn);
 #endif
-
         }
     }
 }

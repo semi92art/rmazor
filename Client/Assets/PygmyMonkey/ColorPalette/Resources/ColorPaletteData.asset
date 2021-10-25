@@ -47,18 +47,22 @@ MonoBehaviour:
       color: {r: 0.5294118, g: 0.5294118, b: 0.5294118, a: 1}
     colorList: []
   - name: Game 1
-    showDetails: 0
+    showDetails: 1
     colorInfoList:
     - name: UI Button Normal
-      color: {r: 0.49056602, g: 0.48310983, b: 0.42346027, a: 1}
+      color: {r: 1, g: 1, b: 1, a: 0.29803923}
     - name: UI Button Pressed
-      color: {r: 0.3882353, g: 0.38039216, b: 0.32941177, a: 1}
+      color: {r: 1, g: 1, b: 1, a: 0.5019608}
+    - name: UI Button Selected
+      color: {r: 1, g: 1, b: 1, a: 0.5019608}
     - name: UI Button Disabled
       color: {r: 0.5377358, g: 0.5377358, b: 0.5377358, a: 1}
     - name: UI Dialog Item Normal
-      color: {r: 0.6509434, g: 0.62974244, b: 0.56189924, a: 1}
+      color: {r: 1, g: 1, b: 1, a: 0.29803923}
     - name: UI Dialog Item Pressed
-      color: {r: 0.5471698, g: 0.52301174, b: 0.4465112, a: 1}
+      color: {r: 1, g: 1, b: 1, a: 0.5019608}
+    - name: UI Dialog Item Selected
+      color: {r: 1, g: 1, b: 1, a: 0.5019608}
     - name: UI Dialog Item Disabled
       color: {r: 0.5377358, g: 0.5377358, b: 0.5377358, a: 1}
     - name: UI Toggle Normal
@@ -68,7 +72,7 @@ MonoBehaviour:
     - name: UI Toggle Disabled
       color: {r: 0.5372549, g: 0.5372549, b: 0.5372549, a: 1}
     - name: UI Toggle Check Mark
-      color: {r: 0.6509804, g: 0.6313726, b: 0.56078434, a: 1}
+      color: {r: 1, g: 1, b: 1, a: 1}
     - name: UI Main Background
       color: {r: 0.5410229, g: 0.52812386, b: 0.8679245, a: 1}
     - name: UI Dialog Background

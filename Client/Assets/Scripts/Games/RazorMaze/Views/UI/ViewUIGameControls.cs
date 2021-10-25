@@ -60,6 +60,7 @@ namespace Games.RazorMaze.Views.UI
         private IGameTicker GameTicker { get; }
         private ILevelsLoader LevelsLoader { get; }
         private ILocalizationManager LocalizationManager { get; }
+        private ICameraProvider CameraProvider { get; }
 
         public ViewUIGameControls(
             ViewSettings _ViewSettings,
@@ -71,7 +72,8 @@ namespace Games.RazorMaze.Views.UI
             IViewAppearTransitioner _AppearTransitioner,
             IGameTicker _GameTicker,
             ILevelsLoader _LevelsLoader,
-            ILocalizationManager _LocalizationManager) 
+            ILocalizationManager _LocalizationManager,
+            ICameraProvider _CameraProvider) 
             : base(_InputConfigurator)
         {
             ViewSettings = _ViewSettings;
@@ -83,6 +85,7 @@ namespace Games.RazorMaze.Views.UI
             GameTicker = _GameTicker;
             LevelsLoader = _LevelsLoader;
             LocalizationManager = _LocalizationManager;
+            CameraProvider = _CameraProvider;
         }
 
         #endregion
@@ -116,7 +119,7 @@ namespace Games.RazorMaze.Views.UI
                 case ELevelStage.CharacterKilled:
                     InputConfigurator.LockAllCommands();
                     break;
-                case ELevelStage.ReadyToStartOrContinue:
+                case ELevelStage.ReadyToStart:
                 case ELevelStage.StartedOrContinued:
                     InputConfigurator.UnlockAllCommands();
                     break;
@@ -134,7 +137,7 @@ namespace Games.RazorMaze.Views.UI
                     SetLevelCheckMarks(_Args.LevelIndex, false);
                     ShowControls(true, false);
                     break;
-                case ELevelStage.ReadyToStartOrContinue:
+                case ELevelStage.ReadyToStart:
                 case ELevelStage.StartedOrContinued:
                     bool enableRotation = Model.GetAllProceedInfos().Any(_Info =>
                         _Info.Type == EMazeItemType.GravityBlock || _Info.Type == EMazeItemType.GravityTrap);
@@ -145,9 +148,12 @@ namespace Games.RazorMaze.Views.UI
                     }
                     break;
                 case ELevelStage.Finished:
-                    SetCongratsString();
-                    m_CongratsAnim.SetTrigger(AnimKeyCongratsAnim);
-                    SetLevelCheckMarks(_Args.LevelIndex, true);
+                    if (_Args.PreviousStage != ELevelStage.Paused)
+                    {
+                        SetCongratsString();
+                        m_CongratsAnim.SetTrigger(AnimKeyCongratsAnim);
+                        SetLevelCheckMarks(_Args.LevelIndex, true);    
+                    }
                     break;
                 case ELevelStage.ReadyToUnloadLevel:
                     m_CongratsAnim.SetTrigger(AnimKeyCongratsIdle);
@@ -172,8 +178,7 @@ namespace Games.RazorMaze.Views.UI
             const float topOffset = 1f;
             const float horOffset = 1f;
             float scale = GraphicUtils.AspectRatio * 3f;
-            Dbg.Log(scale);
-            var bounds = GraphicUtils.VisibleBounds;
+            var bounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
             
             var cont = GetGameUIContainer();
             var goShopButton = PrefabUtilsEx.InitPrefab(
@@ -203,7 +208,7 @@ namespace Games.RazorMaze.Views.UI
 
         private void InitLevelAndCongratsPanel()
         {
-            var bounds = GraphicUtils.VisibleBounds;
+            var bounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
             var mazeBounds = CoordinateConverter.GetMazeBounds();
             float yPos = bounds.max.y;
             var cont = GetGameUIContainer();
@@ -256,13 +261,23 @@ namespace Games.RazorMaze.Views.UI
 
         private void ShowControls(bool _Show, bool _Instantly)
         {
+            if (_Show)
+            {
+                LocalizationManager.AddTextObject(
+                    m_LevelText,
+                    "level", 
+                    _Text => _Text + " " + (Model.Data.LevelIndex + 1));
+            }
+            
             if (_Instantly && !_Show || _Show)
             {
                 m_ShopButton.SetGoActive(_Show);
                 m_SettingsButton.SetGoActive(_Show);
-                m_ShopButton.enabled = _Show;
-                m_SettingsButton.enabled = _Show;
             }
+            
+            m_ShopButton.enabled = _Show;
+            m_SettingsButton.enabled = _Show;
+            
             if (_Instantly)
                 return;
             AppearTransitioner.DoAppearTransitionSimple(_Show, GameTicker, 
@@ -274,12 +289,12 @@ namespace Games.RazorMaze.Views.UI
 
         private void CommandShop()
         {
-            InputConfigurator.RaiseCommand(InputCommands.ShopMenu, null);
+            InputConfigurator.RaiseCommand(InputCommands.ShopMenu, null, true);
         }
 
         private void CommandSettings()
         {
-            InputConfigurator.RaiseCommand(InputCommands.SettingsMenu, null);
+            InputConfigurator.RaiseCommand(InputCommands.SettingsMenu, null, true);
         }
 
         private Transform GetGameUIContainer()
@@ -289,8 +304,6 @@ namespace Games.RazorMaze.Views.UI
 
         private void SetLevelCheckMarks(int _Level, bool _Passed)
         {
-            if (!_Passed)
-                m_LevelText.text = LocalizationManager.GetTranslation("level") + " " + (_Level + 1);
             int levelIndexInGroup = _Level % RazorMazeUtils.LevelsInGroup;
             for (int i = 0; i < levelIndexInGroup; i++)
                 m_CheckMarks[i].SetTrigger(AnimKeyChekMarkSet);
@@ -301,19 +314,22 @@ namespace Games.RazorMaze.Views.UI
 
         private void SetCongratsString()
         {
-            m_CompletedText.text = LocalizationManager.GetTranslation("completed");
+            LocalizationManager.AddTextObject(m_CompletedText, "completed");
             float levelTime = Model.LevelStaging.LevelTime;
             int diesCount = Model.LevelStaging.DiesCount;
             int pathesCount = Model.PathItemsProceeder.PathProceeds.Count;
             float coeff = (float) pathesCount / (diesCount + 1);
-            string key;
+            string congradsKey;
             if (levelTime < coeff * ViewSettings.FinishTimeExcellent)
-                key = "awesome";
+                congradsKey = "awesome";
             else if (levelTime < coeff * ViewSettings.FinishTimeGood)
-                key = "good_job";
+                congradsKey = "good_job";
             else
-                key = "not_bad";
-            m_CongratsText.text = LocalizationManager.GetTranslation(key).ToUpperInvariant();
+                congradsKey = "not_bad";
+            LocalizationManager.AddTextObject(
+                m_CongratsText, 
+                congradsKey, 
+                _Text => _Text.ToUpperInvariant());
         }
 
         #endregion

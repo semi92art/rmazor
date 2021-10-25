@@ -1,36 +1,30 @@
-﻿using System.Collections.Generic;
-using Constants;
-
-using Entities;
+﻿using Entities;
 using Lean.Localization;
-using Ticker;
-using Utils;
 
 namespace Settings
 {
-    public class SoundSetting : ISetting
+    public interface ISoundSetting : ISetting<bool> { }
+    
+    public class SoundSetting : SettingBase<bool>, ISoundSetting
     {
         private IManagersGetter Managers { get; }
-        public string Name => LeanLocalization.GetTranslationText("Sound");
-        public SettingType Type => SettingType.OnOff;
-        public List<string> Values => null;
-        public object Min => null;
-        public object Max => null;
-
+        
         public SoundSetting(IManagersGetter _Managers)
         {
             Managers = _Managers;
         }
-        
-        public object Get()
+
+        public override SaveKey Key => SaveKey.SettingSoundOn;
+        public override string TitleKey => "Sound";
+        public override ESettingLocation Location => ESettingLocation.MiniButtons;
+        public override ESettingType Type => ESettingType.OnOff;
+        public override string SpriteOnKey => "setting_sound_on";
+        public override string SpriteOffKey => "setting_sound_off";
+
+        public override void Put(bool _VolumeOn)
         {
-            return SaveUtils.GetValue<bool>(SaveKey.SettingSoundOn);
-        }
-        
-        public void Put(object _Parameter)
-        {
-            bool volumeOn = (bool) _Parameter;
-            Managers.Notify(_SM => _SM.EnableSound(volumeOn));
+            Managers.Notify(_SM => _SM.EnableSound(_VolumeOn, "sound"));
+            base.Put(_VolumeOn);
         }
     }
 }

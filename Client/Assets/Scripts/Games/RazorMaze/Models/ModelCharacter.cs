@@ -99,7 +99,7 @@ namespace Games.RazorMaze.Models
                 return;
             if (!Alive)
                 return;
-            if (LevelStaging.LevelStage == ELevelStage.ReadyToStartOrContinue)
+            if (LevelStaging.LevelStage == ELevelStage.ReadyToStart)
                 LevelStaging.StartOrContinueLevel();
             
             var from = Position;
@@ -116,7 +116,7 @@ namespace Games.RazorMaze.Models
             {
                 Position = PathItemsProceeder.PathProceeds.Keys.First();
             }
-            else if (_Args.Stage == ELevelStage.ReadyToStartOrContinue)
+            else if (_Args.Stage == ELevelStage.ReadyToStart)
                 Revive(false);
             else if (_Args.Stage == ELevelStage.CharacterKilled)
                 Die();
@@ -230,7 +230,7 @@ namespace Games.RazorMaze.Models
                 return;
             Position = PathItemsProceeder.PathProceeds.First().Key;
             if (_WithNotify)
-                LevelStaging.ReadyToStartOrContinueLevel();
+                LevelStaging.ReadyToStartLevel();
             Alive = true;
         }
         

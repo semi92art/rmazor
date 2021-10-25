@@ -24,6 +24,7 @@ namespace Games.RazorMaze.Views.Rotation
         private Rigidbody2D m_Rb;
         private Disc m_Disc;
         private bool m_EnableRotation;
+        private bool m_Initialized;
 
         #endregion
         
@@ -79,6 +80,7 @@ namespace Games.RazorMaze.Views.Rotation
             m_Disc.Type = DiscType.Ring;
             m_Disc.DashType = DashType.Rounded;
             m_Disc.DashSize = 50f;
+            m_Initialized = true;
         }
 
         public override void OnRotationStarted(MazeRotationEventArgs _Args)
@@ -113,7 +115,7 @@ namespace Games.RazorMaze.Views.Rotation
                     if (m_EnableRotation)
                         appear = true;
                     break;
-                case ELevelStage.ReadyToStartOrContinue:
+                case ELevelStage.ReadyToStart:
                     if (_Args.PreviousStage != ELevelStage.Loaded)
                         return;
                     if (!m_EnableRotation)
@@ -141,6 +143,8 @@ namespace Games.RazorMaze.Views.Rotation
         
         public void UpdateTick()
         {
+            if (!m_Initialized)
+                return;
             m_Disc.DashOffset += Time.deltaTime * -0.5f;
         }
 

@@ -108,7 +108,7 @@ namespace Games.RazorMaze.Views.Common
                             return Character.AppearingState != EAppearingState.Appeared
                                    || mazeItems.Any(_Item => _Item.AppearingState != EAppearingState.Appeared);
                         },
-                        () => Model.LevelStaging.ReadyToStartOrContinueLevel()));
+                        () => Model.LevelStaging.ReadyToStartLevel()));
                     break;
                 case ELevelStage.ReadyToUnloadLevel:
                     foreach (var mazeItem in mazeItems)

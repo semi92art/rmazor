@@ -53,16 +53,19 @@ namespace Games.RazorMaze.Views.Common
         private IMazeCoordinateConverter CoordinateConverter { get; }
         private IContainersGetter ContainersGetter { get; }
         private IGameTicker GameTicker { get; }
+        private ICameraProvider CameraProvider { get; }
 
         public ViewMazeBackground(
             IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IGameTicker _GameTicker)
+            IGameTicker _GameTicker,
+            ICameraProvider _CameraProvider)
         {
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
             GameTicker = _GameTicker;
-            
+            CameraProvider = _CameraProvider;
+
             GameTicker.Register(this);
         }
         
@@ -81,7 +84,7 @@ namespace Games.RazorMaze.Views.Common
         
         public void Init()
         {
-            m_ScreenBounds = GraphicUtils.VisibleBounds;
+            m_ScreenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
             InitSources();
             InitShapes();
             Initialized?.Invoke();

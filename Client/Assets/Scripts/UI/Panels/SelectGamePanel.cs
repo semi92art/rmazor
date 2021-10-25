@@ -43,7 +43,7 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     DialogViewer.Container,
                     RtrLites.FullFill),
-                CommonPrefabSetNames.MainMenuDialogPanels,
+                CommonPrefabSetNames.DialogPanels,
                 "select_game_panel");
             RectTransform content = selectGamePanel.GetCompItem<RectTransform>("content");
             
@@ -67,7 +67,7 @@ namespace UI.Panels
                     OnSelectGame.Invoke(cgiProps.GameId);
                     DialogViewer.CloseAll();
                 };
-                cgi.Init(cgiProps, Managers);
+                cgi.Init(Managers, Ticker, cgiProps);
             }
             
             Object.Destroy(cgiObj);

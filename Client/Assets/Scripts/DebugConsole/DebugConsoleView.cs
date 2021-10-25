@@ -1,5 +1,6 @@
 ﻿#if UNITY_EDITOR || DEVELOPMENT_BUILD
 
+using System;
 using System.Collections.Generic;
 using DI.Extensions;
 using GameHelpers;
@@ -39,8 +40,8 @@ namespace DebugConsole
                 true,
                 GraphicRaycaster.BlockingObjects.None);
             
-            if (GameSettings.PlayMode)
-                DontDestroyOnLoad(canvas);
+            // if (GameSettings.PlayMode)
+            //     DontDestroyOnLoad(canvas);
 
             return PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(canvas.RTransform(), RtrLites.FullFill),

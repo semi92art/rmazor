@@ -19,7 +19,7 @@ namespace Games.RazorMaze.Views.Debug
         {
             set
             {
-                converter = new MazeCoordinateConverter();
+                converter = new MazeCoordinateConverter(null);
                 converter.Init(
                     MazeCoordinateConverter.DefaultLeftOffset, 
                     MazeCoordinateConverter.DefaultRightOffset,
@@ -39,7 +39,7 @@ namespace Games.RazorMaze.Views.Debug
             Gizmos.color = Color.green;
             Gizmos.DrawWireCube(mazeBounds.center, mazeBounds.size);
             var offsets = converter.GetScreenOffsets();
-            var scrBds = GraphicUtils.VisibleBounds;
+            var scrBds = GraphicUtils.GetVisibleBounds();
             Gizmos.color = Color.red;
             Gizmos.DrawLine(new Vector3(offsets.x, scrBds.min.y), new Vector3(offsets.x, scrBds.max.y));
             Gizmos.DrawLine(new Vector3(offsets.y, scrBds.min.y), new Vector3(offsets.y, scrBds.max.y));

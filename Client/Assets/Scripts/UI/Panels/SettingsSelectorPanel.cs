@@ -5,10 +5,11 @@ using DI.Extensions;
 using DialogViewers;
 using Entities;
 using GameHelpers;
+using LeTai.Asset.TranslucentImage;
 using Ticker;
 using UI.Entities;
 using UI.Factories;
-using UI.PanelItems;
+using UI.PanelItems.Setting_Panel_Items;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -33,12 +34,18 @@ namespace UI.Panels
         #endregion
 
         #region inject
+        
+        private ICameraProvider CameraProvider { get; }
 
         public SettingsSelectorPanel(
             IDialogViewer _DialogViewer,
             IManagersGetter _Managers,
-            IUITicker _UITicker) 
-            : base(_Managers, _UITicker, _DialogViewer) { }
+            IUITicker _UITicker,
+            ICameraProvider _CameraProvider) 
+            : base(_Managers, _UITicker, _DialogViewer)
+        {
+            CameraProvider = _CameraProvider;
+        }
 
 
         #endregion
@@ -62,8 +69,9 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     DialogViewer.Container,
                     RtrLites.FullFill),
-                CommonPrefabSetNames.MainMenuDialogPanels, "settings_selector_panel");
-
+                CommonPrefabSetNames.DialogPanels, "settings_selector_panel");
+            var translBack = sp.GetCompItem<TranslucentImage>("translucent_background");
+            translBack.source = CameraProvider.MainCamera.GetComponent<TranslucentImageSource>();
             m_ToggleGroup = sp.AddComponent<ToggleGroup>();
             m_Content = sp.GetCompItem<RectTransform>("content");
             InitItems();
@@ -84,7 +92,7 @@ namespace UI.Panels
                 SizeDelta = new Vector2(406, 100)
             };
             
-            GameObject sspi = PrefabUtilsEx.InitUiPrefab(
+            var sspi = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_Content,
                     sspiRect),
@@ -95,7 +103,7 @@ namespace UI.Panels
             {
                 var sspiClone = sspi.Clone();
                 SettingSelectorItem si = sspiClone.GetComponent<SettingSelectorItem>();
-                si.Init(item, m_OnSelect, item == m_DefaultValue, Managers);
+                si.Init(Managers, Ticker, item, m_OnSelect, item == m_DefaultValue);
                 selectorItems.Add(si);
             }
 

@@ -15,12 +15,17 @@ public class IntroSceneViewer : MonoBehaviour
 {
     private IGameTicker Ticker { get; set; }
     private ILevelsLoader LevelsLoader { get; set; }
-    
-    [Inject]
-    public void Inject(IGameTicker _Ticker, ILevelsLoader _LevelsLoader)
+    private IScoreManager ScoreManager { get; set; }
+
+[Inject]
+    public void Inject(
+        IGameTicker _Ticker, 
+        ILevelsLoader _LevelsLoader, 
+        IScoreManager _ScoreManager)
     {
         Ticker = _Ticker;
         LevelsLoader = _LevelsLoader;
+        ScoreManager = _ScoreManager;
     }
 
     private void Start()
@@ -50,7 +55,7 @@ public class IntroSceneViewer : MonoBehaviour
         var controller = RazorMazeGameController.CreateInstance();
         controller.Initialized += () =>
         {
-            var levelScoreEntity = ScoreManager.Instance.GetMainScore();
+            var levelScoreEntity = ScoreManager.GetMainScore();
             Coroutines.Run(Coroutines.WaitWhile(
                 () => !levelScoreEntity.Loaded,
                 () =>

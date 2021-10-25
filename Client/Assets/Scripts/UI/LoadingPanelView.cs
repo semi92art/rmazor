@@ -46,6 +46,10 @@ namespace UI
                 m_DoLoading = value;
             }
         }
+        public void Init(IUITicker _Ticker)
+        {
+            InitCore(_Ticker);
+        }
 
         public void SetProgress(float _Percents, string _Text)
         {

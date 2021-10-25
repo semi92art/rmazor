@@ -76,7 +76,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             base.OnLevelStageChanged(_Args);
 
-            if (_Args.Stage == ELevelStage.Loaded || _Args.Stage == ELevelStage.ReadyToStartOrContinue)
+            if (_Args.Stage == ELevelStage.Loaded || _Args.Stage == ELevelStage.ReadyToStart)
             {
                 Object.transform.localPosition = CoordinateConverter.ToLocalMazeItemPosition(Props.Position);
             }

@@ -70,7 +70,7 @@ namespace GameHelpers
 
         private Vector2 RandomPositionInMarginRect()
         {
-            var bounds = GraphicUtils.VisibleBounds;
+            var bounds = GraphicUtils.GetVisibleBounds();
             float x = CommonUtils.RandomGen.NextFloatAlt() * (bounds.max.x - horMargin);
             float y = bottomMargin * 0.5f - topMargin * 0.5f + CommonUtils.RandomGen.NextFloatAlt() *
                       (bounds.max.y - topMargin * 0.5f - bottomMargin * 0.5f);
@@ -79,7 +79,7 @@ namespace GameHelpers
     
         private void OnDrawGizmos()
         {
-            var bounds = GraphicUtils.VisibleBounds;
+            var bounds = GraphicUtils.GetVisibleBounds();
             var topLeft = new Vector3(
                 bounds.min.x + horMargin,
                 bounds.max.y - topMargin);
@@ -112,7 +112,7 @@ namespace GameHelpers
             }
 
             coll = go.GetComponent<EdgeCollider2D>();
-            var bounds = GraphicUtils.VisibleBounds;
+            var bounds = GraphicUtils.GetVisibleBounds();
             var a = new Vector2(bounds.min.x, bounds.max.y);
             var b = bounds.min.XY();
             var c = new Vector2(bounds.max.x, bounds.min.y);

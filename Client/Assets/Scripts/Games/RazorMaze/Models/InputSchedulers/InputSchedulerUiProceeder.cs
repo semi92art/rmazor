@@ -60,10 +60,11 @@ namespace Games.RazorMaze.Models.InputSchedulers
                 case InputCommands.LoadFirstLevelFromCurrentGroup:
                 case InputCommands.LoadRandomLevel:
                 case InputCommands.LoadRandomLevelWithRotation:
-                case InputCommands.ReadyToContinueLevel:
-                case InputCommands.ContinueLevel:
+                case InputCommands.ReadyToStartLevel:
+                case InputCommands.StartOrContinueLevel:
                 case InputCommands.FinishLevel:
                 case InputCommands.PauseLevel:
+                case InputCommands.UnPauseLevel:
                 case InputCommands.UnloadLevel:
                 case InputCommands.KillCharacter:
                 case InputCommands.ReadyToUnloadLevel:
@@ -131,10 +132,10 @@ namespace Games.RazorMaze.Models.InputSchedulers
                     }
                     LevelStaging.LoadLevel(info, levelIndex);
                     break;
-                case InputCommands.ReadyToContinueLevel:
-                    LevelStaging.ReadyToStartOrContinueLevel();
+                case InputCommands.ReadyToStartLevel:
+                    LevelStaging.ReadyToStartLevel();
                     break;
-                case InputCommands.ContinueLevel:
+                case InputCommands.StartOrContinueLevel:
                     LevelStaging.StartOrContinueLevel();
                     break;
                 case InputCommands.FinishLevel:
@@ -142,6 +143,9 @@ namespace Games.RazorMaze.Models.InputSchedulers
                     break;
                 case InputCommands.PauseLevel:
                     LevelStaging.PauseLevel();
+                    break;
+                case InputCommands.UnPauseLevel:
+                    LevelStaging.UnPauseLevel();
                     break;
                 case InputCommands.UnloadLevel:
                     LevelStaging.UnloadLevel();

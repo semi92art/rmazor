@@ -48,7 +48,7 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     DialogViewer.Container,
                     RtrLites.FullFill),
-                CommonPrefabSetNames.MainMenuDialogPanels, "loading_panel");
+                CommonPrefabSetNames.DialogPanels, "loading_panel");
             m_View = prefab.GetComponent<LoadingPanelView>();
             m_View.Init(Ticker);
             Panel = prefab.RTransform();

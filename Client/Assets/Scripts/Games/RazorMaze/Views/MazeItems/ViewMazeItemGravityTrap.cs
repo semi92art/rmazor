@@ -104,7 +104,7 @@ namespace Games.RazorMaze.Views.MazeItems
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
-            if (_Args.Stage == ELevelStage.ReadyToStartOrContinue || _Args.Stage == ELevelStage.Loaded)
+            if (_Args.Stage == ELevelStage.ReadyToStart || _Args.Stage == ELevelStage.Loaded)
                 m_Position = Props.Position.ToVector2();
         }
 

@@ -1,4 +1,4 @@
-﻿﻿public enum Language
+﻿public enum Language
 {
     Russian,
     English,

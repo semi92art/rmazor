@@ -5,29 +5,23 @@ using DI.Extensions;
 using Ticker;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.UI.ProceduralImage;
 using Utils;
 
 namespace UI
 {
-    public interface INormalPressedDisabled
-    {
-        void SetNormal();
-        void SetPressed();
-        void SetDisabled();
-    }
-    
     public abstract class SimpleUiItemBase : MonoBehaviour
     {
-        [SerializeField] protected ProceduralImage background;
-        [SerializeField] protected ProceduralImage border;
+        [SerializeField] protected Image background;
+        [SerializeField] protected Image border;
         [SerializeField] protected List<TextMeshProUGUI> texts;
         private const float TransitionTime = 0.2f;
         private int m_TransitionCount;
         protected ITicker m_Ticker;
         protected bool m_Initialized;
 
-        public void Init(IUITicker _Ticker)
+        protected void InitCore(IUITicker _Ticker)
         {
             m_Ticker = _Ticker;
             m_Initialized = true;

@@ -5,12 +5,19 @@ using Utils;
 public interface IDebugManager : IInit
 {
     void EnableDebug(bool _Enable);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+    DebugConsole.IDebugConsoleController Console { get; }
+#endif
 }
 
 public class DebugManager : IDebugManager
 {
     #region nonpublic members
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+    public DebugConsole.IDebugConsoleController Console => DebugConsole.DebugConsoleView.Instance.Controller;
+#endif
+    
 #if DEVELOPMENT_BUILD
     private static GameObject _debugReporter;
 #endif
@@ -24,12 +31,16 @@ public class DebugManager : IDebugManager
     {
         InitDebugConsole();
         InitDebugReporter();
+        bool doEnable = SaveUtils.GetValue<bool>(SaveKey.DebugUtilsOn);
+        EnableDebug(doEnable);
         Initialized?.Invoke();
     }
 
     public void EnableDebug(bool _Enable)
     {
-        DebugConsole.DebugConsoleView.Instance.SetGoActive(_Enable);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        DebugConsole.DebugConsoleView.Instance.enabled = false;
+#endif
 #if DEVELOPMENT_BUILD
         _debugReporter.SetActive(_Enable);
 #endif
@@ -41,11 +52,8 @@ public class DebugManager : IDebugManager
 
     private static void InitDebugConsole()
     {
-        bool debugOn = SaveUtils.GetValue<bool>(SaveKeyDebug.DebugUtilsOn);
-        // SaveUtils.PutValue(SaveKeyDebug.DebugUtilsOn, debugOn); // FIXME
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         DebugConsole.DebugConsoleView.Instance.Init();
-        DebugConsole.DebugConsoleView.Instance.SetGoActive(debugOn);
 #endif
     }
     

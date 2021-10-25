@@ -46,17 +46,20 @@ namespace UI.Panels
 
         private IWheelOfFortuneRewardPanel RewardPanel { get; }
         private INotificationViewer NotificationViewer { get; }
-        
+        private ICameraProvider CameraProvider { get; }
+
         public WheelOfFortunePanel(
             IWheelOfFortuneRewardPanel _RewardPanel,
             IDialogViewer _DialogViewer,
             INotificationViewer _NotificationViewer,
             IManagersGetter _Managers,
-            IUITicker _UITicker)
+            IUITicker _UITicker,
+            ICameraProvider _CameraProvider)
             : base(_Managers, _UITicker, _DialogViewer)
         {
             RewardPanel = _RewardPanel;
             NotificationViewer = _NotificationViewer;
+            CameraProvider = _CameraProvider;
         }
 
         #endregion
@@ -80,7 +83,7 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     DialogViewer.Container,
                     RtrLites.FullFill),
-                CommonPrefabSetNames.MainMenuDialogPanels, "wof_panel");
+                CommonPrefabSetNames.DialogPanels, "wof_panel");
 
             m_SpinButton = wofPan.GetCompItem<Button>("spin_button");
             m_Title = m_SpinButton.GetCompItem<TextMeshProUGUI>("title");
@@ -103,7 +106,7 @@ namespace UI.Panels
             m_WheelController = m_Wheel.GetCompItem<WheelController>("wheel_controller");
             SpriteRenderer background = m_Wheel.GetCompItem<SpriteRenderer>("background");
             background.color = ColorUtils.GetColorFromCurrentPalette(CommonPaletteColors.UiMainBackground);
-            var cameraBounds = GraphicUtils.VisibleBounds;
+            var cameraBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
             Transform tr = background.transform;
             Vector3 lScale = tr.localScale;
             Bounds bounds = background.bounds;

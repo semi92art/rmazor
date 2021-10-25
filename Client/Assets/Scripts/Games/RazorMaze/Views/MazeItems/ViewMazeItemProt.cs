@@ -35,7 +35,7 @@ namespace Games.RazorMaze.Views.MazeItems
             {
                 if (m_Converter == null || !m_Converter.Initialized())
                 {
-                    m_Converter = new MazeCoordinateConverter();
+                    m_Converter = new MazeCoordinateConverter(null);
                     m_Converter.Init(
                         MazeCoordinateConverter.DefaultLeftOffset, 
                         MazeCoordinateConverter.DefaultRightOffset,

@@ -70,7 +70,7 @@ namespace UI.Panels
                 UiFactory.UiRectTransform(
                     NotificationViewer.Container,
                     RtrLites.FullFill),
-                CommonPrefabSetNames.MainMenuDialogPanels, "wof_reward_panel");
+                CommonPrefabSetNames.DialogPanels, "wof_reward_panel");
             Panel = go.RTransform();
             go.SetActive(false);
             

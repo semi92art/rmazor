@@ -60,6 +60,7 @@ namespace Games.RazorMaze.Views.UI
         private IMazeCoordinateConverter CoordinateConverter { get; }
         private ILocalizationManager LocalizationManager { get; }
         private IViewInputConfigurator InputConfigurator { get; }
+        private ICameraProvider CameraProvider { get; }
 
         public ViewUIPrompts(
             IModelGame _Model,
@@ -67,7 +68,8 @@ namespace Games.RazorMaze.Views.UI
             IContainersGetter _ContainersGetter,
             IMazeCoordinateConverter _CoordinateConverter,
             ILocalizationManager _LocalizationManager,
-            IViewInputConfigurator _InputConfigurator)
+            IViewInputConfigurator _InputConfigurator,
+            ICameraProvider _CameraProvider)
         {
             Model = _Model;
             GameTicker = _GameTicker;
@@ -75,6 +77,7 @@ namespace Games.RazorMaze.Views.UI
             CoordinateConverter = _CoordinateConverter;
             LocalizationManager = _LocalizationManager;
             InputConfigurator = _InputConfigurator;
+            CameraProvider = _CameraProvider;
             InputConfigurator.Command += InputConfiguratorOnCommand;
         }
 
@@ -91,23 +94,31 @@ namespace Games.RazorMaze.Views.UI
                 case ELevelStage.Loaded:
                     m_PromptHowToRotateShown = SaveUtils.GetValue<bool>(SaveKey.PromptHowToRotateShown);
                     break;
-                case ELevelStage.ReadyToStartOrContinue:
-                    if (!m_PromptHowToRotateShown && MazeContainsGravityItems())
+                case ELevelStage.ReadyToStart:
+                    if (_Args.PreviousStage != ELevelStage.Paused)
                     {
-                        InTutorial = true;
-                        ShowPromptHowToRotateClockwise();
+                        if (!m_PromptHowToRotateShown && MazeContainsGravityItems())
+                        {
+                            InTutorial = true;
+                            ShowPromptHowToRotateClockwise();
+                        }
+                        else
+                            ShowPromptSwipeToStart();
                     }
-                    else
-                        ShowPromptSwipeToStart();
                     break;
                 case ELevelStage.StartedOrContinued:
-                    HidePrompt(KeyPromptSwipeToStart);
+                    if (_Args.PreviousStage != ELevelStage.Paused)
+                        HidePrompt(KeyPromptSwipeToStart);
                     break;
                 case ELevelStage.Finished:
-                    ShopPromptTapToNext();
+                    if (_Args.PreviousStage != ELevelStage.Paused)
+                        ShopPromptTapToNext();
                     break;
                 case ELevelStage.ReadyToUnloadLevel:
-                    HidePrompt(KeyPromptTapToNext);
+                    if (_Args.PreviousStage != ELevelStage.Paused 
+                        || _Args.PreviousStage == ELevelStage.Paused 
+                        && _Args.PrePreviousStage == ELevelStage.ReadyToUnloadLevel)
+                        HidePrompt(KeyPromptTapToNext);
                     break;
             }
         }
@@ -158,7 +169,7 @@ namespace Games.RazorMaze.Views.UI
             InputConfigurator.UnlockCommand(InputCommands.RotateClockwise);
             var mazeBounds = CoordinateConverter.GetMazeBounds();
             ShowPrompt(KeyPromptHowToRotateClockwise, new Vector3(mazeBounds.center.x, 
-                GraphicUtils.VisibleBounds.min.y));
+                GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y));
         }
         
         private void ShowPromptHowToRotateCounterClockwise()
@@ -167,32 +178,36 @@ namespace Games.RazorMaze.Views.UI
             InputConfigurator.UnlockCommand(InputCommands.RotateCounterClockwise);
             var mazeBounds = CoordinateConverter.GetMazeBounds();
             ShowPrompt(KeyPromptHowToRotateCounter, new Vector3(mazeBounds.center.x, 
-                GraphicUtils.VisibleBounds.min.y + 1f));
+                GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y + 1f));
         }
 
         private void ShowPromptSwipeToStart()
         {
             ShowPrompt(KeyPromptSwipeToStart, new Vector3(
                 CoordinateConverter.GetMazeBounds().center.x,
-                (GraphicUtils.VisibleBounds.min.y + CoordinateConverter.GetMazeBounds().min.y) * 0.5f));
+                (GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y 
+                 + CoordinateConverter.GetMazeBounds().min.y) * 0.5f));
         }
 
         private void ShopPromptTapToNext()
         {
             ShowPrompt(KeyPromptTapToNext, new Vector3(
                 CoordinateConverter.GetMazeBounds().center.x,
-                (GraphicUtils.VisibleBounds.min.y + CoordinateConverter.GetMazeBounds().min.y) * 0.5f));
+                (GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y 
+                 + CoordinateConverter.GetMazeBounds().min.y) * 0.5f));
         }
 
         private void ShowPrompt(string _Key, Vector3 _Position)
         {
+            if (m_Prompts.ContainsKey(_Key))
+                return;
             var promptGo = PrefabUtilsEx.InitPrefab(
                 null, "ui_game", _Key);
             promptGo.SetParent(ContainersGetter.GetContainer(ContainerNames.GameUI));
             promptGo.transform.position = _Position;
             var text = promptGo.GetCompItem<TextMeshPro>("label");
             text.fontSize = 18f;
-            text.text = LocalizationManager.GetTranslation(_Key);
+            LocalizationManager.AddTextObject(text, _Key);
             text.color = DrawingUtils.ColorLines.SetA(0f);
 
             var mazeBounds = CoordinateConverter.GetMazeBounds();
@@ -212,6 +227,8 @@ namespace Games.RazorMaze.Views.UI
         private IEnumerator ShowPromptCoroutine(string _Key, TextMeshPro _Text)
         {
             const float loopTime = 1f;
+            if (!m_Prompts.ContainsKey(_Key)) 
+                yield break;
             if (!m_Prompts[_Key].NeedToHide)
             {
                 yield return Coroutines.Lerp(

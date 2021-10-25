@@ -21,7 +21,9 @@ namespace Entities
         public static SaveKey DailyBonusLastDate => new SaveKey("daily_bonus_last_date", typeof(DateTime));
         public static SaveKey DailyBonusLastItemClickedDay => new SaveKey("daily_bonus_last_item_clicked_date", typeof(int));
         public static SaveKey SettingSoundOn => new SaveKey("sound_on", typeof(bool));
-        public static SaveKey SettingLanguage => new SaveKey("language", typeof(Language));
+        public static SaveKey SettingMusicOn => new SaveKey("music_on", typeof(bool));
+        public static SaveKey SettingVibrationOn => new SaveKey("vibration_on", typeof(bool));
+        public static SaveKey SettingNotificationsOn => new SaveKey("notifications_on", typeof(bool));
         public static SaveKey WheelOfFortuneLastDate => new SaveKey("wheel_of_fortune_last_date", typeof(DateTime));
         public static SaveKey GameDataFieldValue(int _AccountId, int _GameId, ushort _FieldId) =>
             new SaveKey($"df_value_cache_{_AccountId}_{_GameId}_{_FieldId}", typeof(GameDataField));
@@ -29,6 +31,9 @@ namespace Entities
         public static SaveKey DesignerSelectedLevel => new SaveKey("designer_selected_level", typeof(int));
         public static SaveKey DesignerHeapIndex => new SaveKey("designer_heap_index", typeof(int));
         public static SaveKey PromptHowToRotateShown => new SaveKey("prompt_how_to_rotate_shown", typeof(bool));
+        public static SaveKey ServerUrl => new SaveKey("debug_server_url", typeof(string));
+        public static SaveKey DebugUtilsOn => new SaveKey("debug", typeof(bool));
+        public static SaveKey GoodQuality => new SaveKey("good_quality", typeof(bool));
 
         #endregion
     
@@ -41,21 +46,4 @@ namespace Entities
             Type = _Type;
         }
     }
-    
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-    
-    public class SaveKeyDebug : SaveKey
-    {
-        #region factory
-        
-        public static SaveKeyDebug ServerUrl => new SaveKeyDebug("debug_server_url", typeof(string));
-        public static SaveKeyDebug DebugUtilsOn => new SaveKeyDebug("debug", typeof(bool));
-        public static SaveKeyDebug GoodQuality => new SaveKeyDebug("good_quality", typeof(bool));
-        
-        #endregion
-        
-        private SaveKeyDebug(string _Key, Type _Type) : base(_Key, _Type) { }
-    }
-    
-#endif
 }

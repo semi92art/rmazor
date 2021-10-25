@@ -51,7 +51,7 @@
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             bool unlockMoveAndRot = _Args.Stage == ELevelStage.StartedOrContinued 
-                                  || _Args.Stage == ELevelStage.ReadyToStartOrContinue;
+                                  || _Args.Stage == ELevelStage.ReadyToStart;
             UnlockMovement(unlockMoveAndRot);
             UnlockRotation(unlockMoveAndRot);
             InputSchedulerGameProceeder.OnLevelStageChanged(_Args);
