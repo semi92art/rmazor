@@ -8,10 +8,8 @@
 <e text = "Shapes.ShapeRenderer.get_Mesh" />
 <e text = "PrefabContent.GetItemComponent[T]" />
 <e text = "DI.Extensions.ObjectExtensions.GetCompItem[T]" />
-<e text = "Managers.AssetBundleManager.GetAsset[T]" />
-<e text = "GameHelpers.PrefabUtilsEx.GetObject[T]" />
-<e text = "Utils.SaveUtils:GetValue" />
-<e text = "Settings.SettingBase`1:Get" />
+<e text = "GameHelpers.PrefabUtilsEx.GetPrefabBase" />
+<e text = "GameHelpers.PrefabUtilsEx.InitUiPrefab" />
 </Entries>
 </SettingsList>
 </root>

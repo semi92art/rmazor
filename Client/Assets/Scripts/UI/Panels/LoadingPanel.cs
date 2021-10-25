@@ -32,8 +32,9 @@ namespace UI.Panels
         public LoadingPanel(
             IDialogViewer _DialogViewer,
             IManagersGetter _Managers,
-            IUITicker _UITicker) 
-            : base(_Managers, _UITicker, _DialogViewer) { }
+            IUITicker _UITicker,
+            ICameraProvider _CameraProvider) 
+            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider) { }
 
         #endregion
         

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1600272214c7aa418cb76f5cc38aecb, type: 3}
   m_Name: sounds
   m_EditorClassIdentifier: 
+  bundles: 1
   prefabs:
     array:
     - item: {fileID: 8300000, guid: 80b66569f09c74c4bb633455893624a6, type: 3}

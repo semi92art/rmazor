@@ -27,7 +27,6 @@ namespace UI.PanelItems.Setting_Panel_Items
         {
             InitCore(_Managers, _UITicker);
             setting.text = _Value?.Invoke();
-            title.text = "Setting";
             button.SetOnClick(() =>
             {
                 SoundOnClick();

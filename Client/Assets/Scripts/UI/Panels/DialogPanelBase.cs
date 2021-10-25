@@ -12,15 +12,18 @@ namespace UI.Panels
         protected IManagersGetter Managers { get; }
         protected IUITicker Ticker { get; }
         protected IDialogViewer DialogViewer { get; }
+        protected ICameraProvider CameraProvider { get; }
 
         protected DialogPanelBase(
             IManagersGetter _Managers, 
             IUITicker _Ticker, 
-            IDialogViewer _DialogViewer)
+            IDialogViewer _DialogViewer,
+            ICameraProvider _CameraProvider)
         {
             Managers = _Managers;
             Ticker = _Ticker;
             DialogViewer = _DialogViewer;
+            CameraProvider = _CameraProvider;
         }
 
         #endregion

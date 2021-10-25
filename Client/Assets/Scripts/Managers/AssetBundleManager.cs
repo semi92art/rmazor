@@ -54,7 +54,6 @@ namespace Managers
 
         #region api
 
-        public static event UnityAction Initialized; // only for calling IEnumerator Start()
         public static bool BundlesLoaded { get; private set; }
         public static List<string> Errors { get; } = new List<string>();
 
@@ -76,7 +75,7 @@ namespace Managers
             foreach (var bundleName in m_BundleNames)
                 yield return LoadBundle(bundleName);
             BundlesLoaded = true;
-            Initialized?.Invoke();
+            Dbg.Log("Bundles initialized!");
         }
         
         private static IEnumerator LoadBundle(string _BundleName)

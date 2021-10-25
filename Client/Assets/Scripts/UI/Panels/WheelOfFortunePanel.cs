@@ -46,7 +46,6 @@ namespace UI.Panels
 
         private IWheelOfFortuneRewardPanel RewardPanel { get; }
         private INotificationViewer NotificationViewer { get; }
-        private ICameraProvider CameraProvider { get; }
 
         public WheelOfFortunePanel(
             IWheelOfFortuneRewardPanel _RewardPanel,
@@ -55,11 +54,10 @@ namespace UI.Panels
             IManagersGetter _Managers,
             IUITicker _UITicker,
             ICameraProvider _CameraProvider)
-            : base(_Managers, _UITicker, _DialogViewer)
+            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider)
         {
             RewardPanel = _RewardPanel;
             NotificationViewer = _NotificationViewer;
-            CameraProvider = _CameraProvider;
         }
 
         #endregion
