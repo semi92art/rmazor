@@ -15,7 +15,7 @@ namespace Games.RazorMaze.Views.MazeItems
     
     public class ViewMazeItemGravityBlockFree : ViewMazeItemMovingBase, IViewMazeItemGravityBlockFree 
     {
-         #region shapes
+        #region shapes
 
         protected override string ObjectName => "Gravity Block Free";
         protected override object[] DefaultColorShapes => new object[] {m_Shape};

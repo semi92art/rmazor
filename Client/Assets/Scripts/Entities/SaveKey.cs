@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Games.RazorMaze.Models;
 
 namespace Entities
@@ -7,7 +8,7 @@ namespace Entities
     {
         #region factory
         
-        public static SaveKey ShowAds => new SaveKey("show_ads", typeof(bool?));
+        public static SaveKey DisableAds => new SaveKey("disable_ads", typeof(bool));
         public static SaveKey AuthorizedAtLeastOnce => new SaveKey("authorized_at_least_once", typeof(bool));
         public static SaveKey NotFirstLaunch => new SaveKey("not_first_launch", typeof(bool));
         public static SaveKey AccountId => new SaveKey("account_id", typeof(int?));
@@ -15,7 +16,6 @@ namespace Entities
         public static SaveKey Login => new SaveKey("login", typeof(string));
         public static SaveKey PasswordHash => new SaveKey("password_hash", typeof(string));
         public static SaveKey GameId => new SaveKey("game_id", typeof(int));
-        public static SaveKey GameMode => new SaveKey("game_mode", typeof(int));
         public static SaveKey LastDatabaseConnectionSucceeded => new SaveKey("last_connection_succeeded", typeof(bool));
         public static SaveKey LastInternetConnectionSucceeded => new SaveKey("last_internet_succeeded", typeof(bool));
         public static SaveKey DailyBonusLastDate => new SaveKey("daily_bonus_last_date", typeof(DateTime));
@@ -34,6 +34,7 @@ namespace Entities
         public static SaveKey ServerUrl => new SaveKey("debug_server_url", typeof(string));
         public static SaveKey DebugUtilsOn => new SaveKey("debug", typeof(bool));
         public static SaveKey GoodQuality => new SaveKey("good_quality", typeof(bool));
+        public static SaveKey BoughtPurchaseIds => new SaveKey("bought_purchase_ids", typeof(List<int>));
 
         #endregion
     

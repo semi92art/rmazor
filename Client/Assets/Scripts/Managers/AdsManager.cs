@@ -1,5 +1,6 @@
 ﻿using Entities;
 using GoogleMobileAds.Api;
+using Ticker;
 using UnityEngine.Events;
 using Utils;
 
@@ -8,10 +9,12 @@ namespace Managers
     public interface IAdsManager : IInit
     {
         bool ShowAds { get; set; }
+        bool RewardedAdReady { get; }
+        event UnityAction RewardedAdLoaded;
         void ShowRewardedAd(UnityAction _OnPaid);
     }
     
-    public class AdsManager : IAdsManager 
+    public class AdsManager : IAdsManager, IUpdateTick
     {
         #region singleton
     
@@ -26,6 +29,8 @@ namespace Managers
         private AdRequest m_AdRequest;
         private UnityAction m_OnPaid;
         private bool m_ShowAds;
+        private bool m_Initialized;
+        private bool m_RewardedAdLoadedCheck;
 
         #endregion
 
@@ -35,12 +40,8 @@ namespace Managers
         {
             get
             {
-                var fromCache = SaveUtils.GetValue<bool?>(SaveKey.ShowAds);
-                if (fromCache.HasValue)
-                    return fromCache.Value;
-                
 #if UNITY_EDITOR
-                return true;
+                return !SaveUtils.GetValue<bool>(SaveKey.DisableAds);
 #elif UNITY_ANDROID
                 return GetShowAdsAndroid();
 #elif UNITY_IPHONE
@@ -53,7 +54,9 @@ namespace Managers
             }
         }
 
+        public bool RewardedAdReady => m_RewardedAd.IsLoaded();
         public event UnityAction Initialized;
+        public event UnityAction RewardedAdLoaded;
         
         public void Init()
         {
@@ -69,8 +72,10 @@ namespace Managers
             m_RewardedAd.OnAdClosed += (_, _Args) => m_RewardedAd.LoadAd(m_AdRequest);
             
             Initialized?.Invoke();
+            m_Initialized = true;
         }
-        
+
+
         public void ShowRewardedAd(UnityAction _OnPaid)
         {
             m_OnPaid = _OnPaid;
@@ -78,6 +83,16 @@ namespace Managers
                 m_RewardedAd.Show();
             else
                 m_RewardedAd.LoadAd(m_AdRequest);
+        }
+
+
+        public void UpdateTick()
+        {
+            if (!m_Initialized)
+                return;
+            if (!m_RewardedAdLoadedCheck && m_RewardedAd.IsLoaded())
+                RewardedAdLoaded?.Invoke();
+            m_RewardedAdLoadedCheck = m_RewardedAd.IsLoaded();
         }
 
         #endregion
@@ -97,6 +112,5 @@ namespace Managers
         }
         
         #endregion
-        
     }
 }

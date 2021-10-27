@@ -19,7 +19,7 @@ namespace GameHelpers
             int accId = GameClientUtils.DefaultAccountId;
             new GameDataField(10, accId, 1, DataFieldIds.FirstCurrency).Save(true);
             new GameDataField(10, accId, 1, DataFieldIds.SecondCurrency).Save(true);
-            new GameDataField(0, accId, 1, DataFieldIds.MainScore).Save(true);
+            new GameDataField(0, accId, 1, DataFieldIds.CurrentLevel).Save(true);
 
             var levelsInfo = new LevelsCommonInfo {Infos = new List<LevelCommonInfo>()};
             foreach (var idx in Enumerable.Range(1, 1000))
@@ -42,7 +42,7 @@ namespace GameHelpers
             {
                 DataFieldIds.FirstCurrency,
                 DataFieldIds.SecondCurrency,
-                DataFieldIds.MainScore,
+                DataFieldIds.CurrentLevel,
                 DataFieldIds.LevelsInfo
             };
             var gdff = new GameDataFieldFilter(GameClientUtils.PreviousAccountId, 1, gameFieldIds);
@@ -65,7 +65,7 @@ namespace GameHelpers
             {
                 DataFieldIds.FirstCurrency,
                 DataFieldIds.SecondCurrency,
-                DataFieldIds.MainScore,
+                DataFieldIds.CurrentLevel,
                 DataFieldIds.LevelsInfo
             };
             var gdff = new GameDataFieldFilter(GameClientUtils.AccountId, 1, gameFieldIds);

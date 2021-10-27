@@ -13,23 +13,18 @@ using Utils;
 
 namespace Games.RazorMaze.Views.UI
 {
+    public class BoolArgs
+    {
+        public bool Value { get; set; }
+    }
+    
     public class ViewUI : ViewUIBase
     {
-        #region types
-
-        private class BoolArgs
-        {
-            public bool Value { get; set; }
-        }
-
-        #endregion
-
         #region nonpublic members
 
         private bool m_OnStart = true;
 
         #endregion
-        
         
         #region inject
 
@@ -168,7 +163,7 @@ namespace Games.RazorMaze.Views.UI
             }
         }
 
-        private List<LoadingStage> GetLoadingStages(BoolArgs _AuthenticationFinishedArgs)
+        private static List<LoadingStage> GetLoadingStages(BoolArgs _AuthenticationFinishedArgs)
         {
             return new List<LoadingStage>
             {

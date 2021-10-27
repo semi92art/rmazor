@@ -436,6 +436,8 @@ MonoBehaviour:
       name: content
     - item: {fileID: 231411891980519077}
       name: translucent_background
+    - item: {fileID: 8219298684319459333}
+      name: panel
 --- !u!1001 &3572066124064699520
 PrefabInstance:
   m_ObjectHideFlags: 0

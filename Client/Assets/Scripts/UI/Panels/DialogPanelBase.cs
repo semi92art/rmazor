@@ -1,5 +1,7 @@
-﻿using DialogViewers;
+﻿using DI.Extensions;
+using DialogViewers;
 using Entities;
+using LeTai.Asset.TranslucentImage;
 using Ticker;
 using UnityEngine;
 
@@ -37,6 +39,13 @@ namespace UI.Panels
         {
             Ticker.Register(this);
         }
+
+        protected void SetTranslucentBackgroundSource(GameObject _Object)
+        {
+            var translBack = _Object.GetCompItem<TranslucentImage>("translucent_background");
+            translBack.source = CameraProvider.MainCamera.GetComponent<TranslucentImageSource>();
+        }
+        
         public virtual void OnDialogEnable() { }
         public virtual void OnDialogShow() { }
         public virtual void OnDialogHide() { }

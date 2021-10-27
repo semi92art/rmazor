@@ -6,26 +6,29 @@ using Entities;
 using Ticker;
 using TMPro;
 using UI.Panels;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI.PanelItems.Setting_Panel_Items
 {
     public class SettingItemInPanelSelector : SimpleUiDialogItemView
     {
-        public TextMeshProUGUI title;
-        public Button button;
+        [SerializeField] private TextMeshProUGUI title;
+        [SerializeField] private Button button;
         public TextMeshProUGUI setting;
 
         public void Init(
             IManagersGetter _Managers,
             IUITicker _UITicker,
             IDialogViewer _UiDialogViewer,
+            string _TitleKey,
             Func<string> _Value,
             Action<string> _OnSelect,
             Func<List<string>> _ListOfItems = null,
             ISettingSelectorDialogPanel _SelectorPanel = null)
         {
             InitCore(_Managers, _UITicker);
+            _Managers.LocalizationManager.AddTextObject(title, _TitleKey);
             setting.text = _Value?.Invoke();
             button.SetOnClick(() =>
             {

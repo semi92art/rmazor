@@ -6,14 +6,12 @@ using DI.Extensions;
 using DialogViewers;
 using Entities;
 using GameHelpers;
-using LeTai.Asset.TranslucentImage;
 using Settings;
 using Ticker;
 using UI.Entities;
 using UI.Factories;
 using UI.PanelItems.Setting_Panel_Items;
 using UnityEngine;
-using Utils;
 
 namespace UI.Panels
 {
@@ -82,9 +80,7 @@ namespace UI.Panels
                 CommonPrefabSetNames.DialogPanels, "settings_panel");
             m_MiniButtonsContent = sp.GetCompItem<RectTransform>("mini_buttons_content");
             m_SettingsContent = sp.GetCompItem<RectTransform>("settings_content");
-            var translBack = sp.GetCompItem<TranslucentImage>("translucent_background");
-            translBack.source = CameraProvider.MainCamera.GetComponent<TranslucentImageSource>();
-            
+            SetTranslucentBackgroundSource(sp);
             m_MiniButtonsContent.gameObject.DestroyChildrenSafe();
             m_SettingsContent.gameObject.DestroyChildrenSafe();
             InitSettingItems();
@@ -128,7 +124,6 @@ namespace UI.Panels
                     {
                         case ESettingType.OnOff:
                             var itemOnOff = CreateOnOffSetting();
-                            Managers.LocalizationManager.AddTextObject(itemOnOff.title, _Setting.TitleKey);
                             itemOnOff.Init(
                                 Managers,
                                 Ticker,
@@ -138,11 +133,11 @@ namespace UI.Panels
                             break;
                         case ESettingType.InPanelSelector:
                             var itemSelector = CreateInPanelSelectorSetting();
-                            Managers.LocalizationManager.AddTextObject(itemSelector.title, _Setting.TitleKey);
                             itemSelector.Init(
                                 Managers,
                                 Ticker,
                                 DialogViewer,
+                                _Setting.TitleKey,
                                 () =>
                                 {
                                     if (typeof(T) == typeof(Language))
@@ -154,7 +149,6 @@ namespace UI.Panels
                                         itemSelector.setting.text = _Value;
                                         if (typeof(T) == typeof(Language))
                                         {
-                                            Dbg.Log("Selected language: " + _Value);
                                             var lang = LanguageTitles.FirstOrDefault(_Kvp => _Kvp.Value == _Value).Key;
                                             T val = ConvertValue<T>(lang);
                                             _Setting.Put(val);
@@ -175,17 +169,6 @@ namespace UI.Panels
                                 },
                                 SelectorPanel);
                             break;
-                        case ESettingType.Slider:
-                            var itemSlider = CreateSliderSetting();
-                            Managers.LocalizationManager.AddTextObject(itemSlider.title, _Setting.TitleKey);
-                            bool wholeNumbers = _Setting.Get() is int;
-                            itemSlider.Init(
-                                _Setting.TitleKey, 
-                                (float)_Setting.Min,
-                                (float)_Setting.Max, 
-                                Convert.ToSingle(_Setting.Get()),
-                                wholeNumbers);
-                            break;
                     }
                     break;
             }
@@ -197,7 +180,6 @@ namespace UI.Panels
             item.Init(
                 Managers,
                 Ticker,
-                Managers.LocalizationManager.GetTranslation("rate_game"),
                 () => Managers.ShopManager.GoToRatePage());
             Managers.LocalizationManager.AddTextObject(item.title, "rate_game");
         }
@@ -208,7 +190,6 @@ namespace UI.Panels
             item.Init(
                 Managers,
                 Ticker,
-                Managers.LocalizationManager.GetTranslation("show_leaderboards"),
                 () => Managers.ShopManager.GoToRatePage());
             Managers.LocalizationManager.AddTextObject(item.title, "show_leaderboards");
         }
@@ -241,16 +222,6 @@ namespace UI.Panels
                     m_SettingItemRectLite),
                 PrefabSetName, "in_panel_selector_item");
             return obj.GetComponent<SettingItemInPanelSelector>();
-        }
-        
-        private SettingItemSlider CreateSliderSetting()
-        {
-            var obj = PrefabUtilsEx.InitUiPrefab(
-                UiFactory.UiRectTransform(
-                    m_SettingsContent,
-                    m_SettingItemRectLite),
-                PrefabSetName, "slider_item");
-            return obj.GetComponent<SettingItemSlider>();
         }
 
         private SettingItemAction CreateActionSetting()

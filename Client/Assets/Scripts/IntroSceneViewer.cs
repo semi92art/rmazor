@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Constants;
+﻿using Constants;
 using DI.Extensions;
 using GameHelpers;
 using Games.RazorMaze.Controllers;
@@ -17,7 +16,7 @@ public class IntroSceneViewer : MonoBehaviour
     private ILevelsLoader LevelsLoader { get; set; }
     private IScoreManager ScoreManager { get; set; }
 
-[Inject]
+    [Inject]
     public void Inject(
         IGameTicker _Ticker, 
         ILevelsLoader _LevelsLoader, 
@@ -59,15 +58,19 @@ public class IntroSceneViewer : MonoBehaviour
                 var controller = RazorMazeGameController.CreateInstance();
                 controller.Initialized += () =>
                 {
-                    var levelScoreEntity = ScoreManager.GetMainScore();
+                    var levelEntity = ScoreManager.GetScore(DataFieldIds.CurrentLevel);
                     Coroutines.Run(Coroutines.WaitWhile(
-                        () => !levelScoreEntity.Loaded,
+                        () => !levelEntity.Loaded,
                         () =>
                         {
-                            int level = levelScoreEntity.Scores.First().Value;
-                            Dbg.Log($"Current level from cache: {level}");
-                            // FIXME заглушка для загрузки уровня
-                            var info = LevelsLoader.LoadLevel(1, 0);
+                            var score = levelEntity.GetFirstScore();
+                            if (!score.HasValue)
+                            {
+                                Dbg.LogError("Level score does not exist!");
+                                return;
+                            }
+                            int level = score.Value;
+                            var info = LevelsLoader.LoadLevel(1, level);
                             controller.Model.LevelStaging.LoadLevel(info, 0);
                         }));
                 };

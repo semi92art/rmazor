@@ -66,8 +66,7 @@ namespace UI.Panels
                     DialogViewer.Container,
                     RtrLites.FullFill),
                 CommonPrefabSetNames.DialogPanels, "settings_selector_panel");
-            var translBack = sp.GetCompItem<TranslucentImage>("translucent_background");
-            translBack.source = CameraProvider.MainCamera.GetComponent<TranslucentImageSource>();
+            SetTranslucentBackgroundSource(sp);
             m_ToggleGroup = sp.AddComponent<ToggleGroup>();
             m_Content = sp.GetCompItem<RectTransform>("content");
             InitItems();

@@ -1,4 +1,5 @@
 ﻿using UI.Panels;
+using UI.Panels.ShopPanels;
 
 namespace Games.RazorMaze.Views.UI
 {
@@ -9,6 +10,7 @@ namespace Games.RazorMaze.Views.UI
         ISettingDialogPanel         SettingDialogPanel { get; }
         ISettingSelectorDialogPanel SettingSelectorDialogPanel { get; }
         IShopDialogPanel            ShopDialogPanel { get; }
+        IShopMoneyDialogPanel       ShopMoneyDialogPanel { get; }
         IWheelOfFortuneDialogPanel  WheelOfFortuneDialogPanel { get; }
         IWheelOfFortuneRewardPanel  WheelOfFortuneRewardPanel { get; }
     }
@@ -20,6 +22,7 @@ namespace Games.RazorMaze.Views.UI
         public ISettingDialogPanel         SettingDialogPanel { get; }
         public ISettingSelectorDialogPanel SettingSelectorDialogPanel { get; }
         public IShopDialogPanel            ShopDialogPanel { get; }
+        public IShopMoneyDialogPanel       ShopMoneyDialogPanel { get; }
         public IWheelOfFortuneDialogPanel  WheelOfFortuneDialogPanel { get; }
         public IWheelOfFortuneRewardPanel  WheelOfFortuneRewardPanel { get; }
         
@@ -29,6 +32,7 @@ namespace Games.RazorMaze.Views.UI
             ISettingDialogPanel _SettingDialogPanel,
             ISettingSelectorDialogPanel _SettingSelectorDialogPanel, 
             IShopDialogPanel _ShopDialogPanel,
+            IShopMoneyDialogPanel _ShopMoneyDialogPanel,
             IWheelOfFortuneDialogPanel _WheelOfFortuneDialogPanel,
             IWheelOfFortuneRewardPanel _WheelOfFortuneRewardPanel)
         {
@@ -37,6 +41,7 @@ namespace Games.RazorMaze.Views.UI
             SettingDialogPanel = _SettingDialogPanel;
             SettingSelectorDialogPanel = _SettingSelectorDialogPanel;
             ShopDialogPanel = _ShopDialogPanel;
+            ShopMoneyDialogPanel = _ShopMoneyDialogPanel;
             WheelOfFortuneDialogPanel = _WheelOfFortuneDialogPanel;
             WheelOfFortuneRewardPanel = _WheelOfFortuneRewardPanel;
         }

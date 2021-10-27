@@ -7,7 +7,7 @@ namespace Entities
     public delegate void SoundManagerHandler(ISoundManager Manager);
     public delegate void AdsManagerHandler(IAdsManager Manager);
     public delegate void AnalyticsManagerHandler(IAnalyticsManager Manager);
-    public delegate void PurchasesManagerHandler(IShopManager Manager);
+    public delegate void ShopManagerHandler(IShopManager Manager);
     public delegate void LocalizationManagerHandler(ILocalizationManager Manager);
     public delegate void ScoreManagerHandler(IScoreManager Manager);
     
@@ -27,7 +27,7 @@ namespace Entities
             SoundManagerHandler _OnSoundManager = null,
             AnalyticsManagerHandler _OnAnalyticsManager = null,
             AdsManagerHandler _OnAdsManager = null,
-            PurchasesManagerHandler _OnPurchasesManager = null,
+            ShopManagerHandler _OnShopManager = null,
             LocalizationManagerHandler _LocalizationManager = null,
             ScoreManagerHandler _ScoreManager = null);
     }
@@ -72,14 +72,14 @@ namespace Entities
             SoundManagerHandler           _OnSoundManager = null,
             AnalyticsManagerHandler       _OnAnalyticsManager = null,
             AdsManagerHandler             _OnAdsManager = null,
-            PurchasesManagerHandler       _OnPurchasesManager = null,
+            ShopManagerHandler       _OnShopManager = null,
             LocalizationManagerHandler    _LocalizationManager = null,
             ScoreManagerHandler           _ScoreManager = null)
         {
             _OnSoundManager         ?.Invoke(SoundManager);
             _OnAnalyticsManager     ?.Invoke(AnalyticsManager);
             _OnAdsManager           ?.Invoke(AdsManager);
-            _OnPurchasesManager     ?.Invoke(ShopManager);
+            _OnShopManager     ?.Invoke(ShopManager);
             _LocalizationManager    ?.Invoke(LocalizationManager);
             _ScoreManager           ?.Invoke(ScoreManager);
         }

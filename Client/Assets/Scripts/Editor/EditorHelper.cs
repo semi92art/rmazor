@@ -396,7 +396,7 @@ public class EditorHelper : EditorWindow
         BuildSettingsUtils.AddDefaultScenesToBuild();
     }
 
-    private static void LoadScene(string _Name)
+    public static void LoadScene(string _Name)
     {
         if (Application.isPlaying)
             SceneManager.LoadScene(_Name);
@@ -426,7 +426,7 @@ public class EditorHelper : EditorWindow
             {"Game id", SaveUtils.GetValue<int>(SaveKey.GameId).ToString()},
             {"First curr.", GetGameFieldCached(DataFieldIds.FirstCurrency)},
             {"Second curr.", GetGameFieldCached(DataFieldIds.SecondCurrency)},
-            {"Main score", GetGameFieldCached(DataFieldIds.MainScore)}
+            {"Main score", GetGameFieldCached(DataFieldIds.CurrentLevel)}
         };
 
     private static string GetGameFieldCached(ushort _FieldId)

@@ -19,6 +19,7 @@ using Games.RazorMaze.Views.Rotation;
 using Games.RazorMaze.Views.UI;
 using Settings;
 using UI.Panels;
+using UI.Panels.ShopPanels;
 using UnityEngine;
 
 namespace Mono_Installers
@@ -111,6 +112,9 @@ namespace Mono_Installers
             Container.Bind<ILoadingDialogPanel>()           .To<LoadingPanel>()                  .AsSingle().When(_ => Release);
             Container.Bind<ISettingSelectorDialogPanel>()   .To<SettingsSelectorPanel>()         .AsSingle().When(_ => Release);
             Container.Bind<IShopDialogPanel>()              .To<ShopPanel>()                     .AsSingle().When(_ => Release);
+            Container.Bind<IShopMoneyDialogPanel>()         .To<ShopMoneyPanel>()                .AsSingle().When(_ => Release);
+            Container.Bind<IShopHeadsDialogPanel>()         .To<ShopHeadsPanel>()                .AsSingle().When(_ => Release);
+            Container.Bind<IShopTailsDialogPanel>()         .To<ShopTailsPanel>()                .AsSingle().When(_ => Release);
             Container.Bind<IWheelOfFortuneDialogPanel>()    .To<WheelOfFortunePanel>()           .AsSingle().When(_ => Release);
             Container.Bind<IWheelOfFortuneRewardPanel>()    .To<WheelOfFortuneRewardPanel>()     .AsSingle().When(_ => Release);
             Container.Bind<IDialogViewer>()                 .To<FullScreenDialogViewer>()        .AsSingle().When(_ => Release);

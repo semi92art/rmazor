@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using DI.Extensions;
 using Managers;
+using ScriptableObjects;
 using UI.Entities;
 using UI.Factories;
 using UnityEngine;
@@ -29,7 +30,7 @@ namespace GameHelpers
             var prefab = perfabsList.FirstOrDefault(_P => _P.name == _PrefabName);
             if (prefab == null)
             {
-                perfabsList.Add(new Prefab
+                perfabsList.Add(new PrefabSetScriptableObject.Prefab
                 {
                     item = _Prefab,
                     name =  _PrefabName
@@ -77,8 +78,8 @@ namespace GameHelpers
             T content = set.bundles ? AssetBundleManager.GetAsset<T>(_ObjectName, _PrefabSetName) :
                 set.prefabs.FirstOrDefault(_P => _P.name == _ObjectName)?.item as T;
             if (content == null)
-                Dbg.LogError($"Content of set \"{_PrefabSetName}]\" " +
-                             $"with name \"[{_ObjectName}\" was not set, bundles: {set.bundles}");
+                Dbg.LogError($"Content of set \"{_PrefabSetName}\" " +
+                             $"with name \"{_ObjectName}\" was not set, bundles: {set.bundles}");
             return content;
         }
         
@@ -87,8 +88,8 @@ namespace GameHelpers
             string _PrefabName,
             bool _Instantiate = true)
         {
-            PrefabSetObject set = ResLoader.GetPrefabSet(_PrefabSetName);
-            GameObject prefab = set.prefabs.FirstOrDefault(p => p.name == _PrefabName).item as GameObject;
+            PrefabSetScriptableObject setScriptable = ResLoader.GetPrefabSet(_PrefabSetName);
+            GameObject prefab = setScriptable.prefabs.FirstOrDefault(p => p.name == _PrefabName).item as GameObject;
             
             if (prefab == null)
             {

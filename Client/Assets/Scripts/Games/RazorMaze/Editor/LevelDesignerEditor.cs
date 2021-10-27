@@ -8,6 +8,7 @@ using Games.RazorMaze.Views.Debug;
 using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.MazeItems;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;
@@ -81,7 +82,15 @@ namespace Games.RazorMaze.Editor
         {
             if (SceneManager.GetActiveScene().name != SceneNames.Prototyping)
             {
-                GUILayout.Label($"Level designer available only on scene {SceneNames.Prototyping}.unity");   
+                GUILayout.Label($"Level designer available only on scene {SceneNames.Prototyping}.unity");
+                EditorUtilsEx.GuiButtonAction("Load scene", () =>
+                {
+                    string sceneName = AssetDatabase
+                        .FindAssets("l:Scene t:Scene", new[] {"Assets\\Scenes"})
+                        .Select(AssetDatabase.GUIDToAssetPath)
+                        .FirstOrDefault(_SceneName => _SceneName.Contains(SceneNames.Prototyping));
+                    EditorHelper.LoadScene(sceneName);
+                });
                 return;
             }
             

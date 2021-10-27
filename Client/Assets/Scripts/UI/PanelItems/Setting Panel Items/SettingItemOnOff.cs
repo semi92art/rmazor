@@ -18,12 +18,12 @@ namespace UI.PanelItems.Setting_Panel_Items
             IManagersGetter _Managers,
             IUITicker _UITicker,
             bool _IsOn, 
-            string _Name,
+            string _TitleKey,
             UnityAction<bool> _Action)
         {
             InitCore(_Managers, _UITicker);
-            name = $"{_Name} Setting";
-            title.text = _Name;
+            name = "Setting";
+            _Managers.LocalizationManager.AddTextObject(title, _TitleKey);
             ToggleGroup tg = gameObject.AddComponent<ToggleGroup>();
             offToggle.group = tg;
             onToggle.group = tg;

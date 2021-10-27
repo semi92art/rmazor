@@ -15,12 +15,10 @@ namespace UI.PanelItems.Setting_Panel_Items
         public void Init(
             IManagersGetter _Managers,
             IUITicker _UITicker,
-            string _Title,
             UnityAction _Select)
         {
             InitCore(_Managers, _UITicker);
-            title.text = _Title;
-            name = $"{_Title} Setting";
+            name = "Setting";
             button.onClick.AddListener(SoundOnClick);
             button.onClick.AddListener(_Select);
         }
