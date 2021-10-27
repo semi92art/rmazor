@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeTai.TranslucentImage.Demo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Malee.ReorderableList", "Malee.ReorderableList.csproj", "{2CBD528B-358B-403C-375F-9ED705A1B155}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-firstpass", "Assembly-CSharp-firstpass.csproj", "{079D398E-4AFC-CD7E-7881-F923D075EBD1}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject-PoolMonitor-Editor", "Zenject-PoolMonitor-Editor.csproj", "{8AB4B263-B378-A08D-B943-C308151A6EF3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject-UnitTests-Editor", "Zenject-UnitTests-Editor.csproj", "{C63E1E6E-8CE1-4F55-5DA4-49773C4445A0}"
@@ -44,6 +46,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject-TestFramework", "Zenject-TestFramework.csproj", "{564002D1-8410-89EA-F063-B34A3ADCECED}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleMobileAds.Editor", "GoogleMobileAds.Editor.csproj", "{3D45007E-E207-85CF-0FE7-60952118F595}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor-firstpass", "Assembly-CSharp-Editor-firstpass.csproj", "{2292066C-03A4-5733-4636-43653C20A180}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -99,6 +103,10 @@ Global
 		{2CBD528B-358B-403C-375F-9ED705A1B155}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CBD528B-358B-403C-375F-9ED705A1B155}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2CBD528B-358B-403C-375F-9ED705A1B155}.Release|Any CPU.Build.0 = Release|Any CPU
+		{079D398E-4AFC-CD7E-7881-F923D075EBD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{079D398E-4AFC-CD7E-7881-F923D075EBD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{079D398E-4AFC-CD7E-7881-F923D075EBD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{079D398E-4AFC-CD7E-7881-F923D075EBD1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8AB4B263-B378-A08D-B943-C308151A6EF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8AB4B263-B378-A08D-B943-C308151A6EF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AB4B263-B378-A08D-B943-C308151A6EF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -139,6 +147,10 @@ Global
 		{3D45007E-E207-85CF-0FE7-60952118F595}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3D45007E-E207-85CF-0FE7-60952118F595}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D45007E-E207-85CF-0FE7-60952118F595}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2292066C-03A4-5733-4636-43653C20A180}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2292066C-03A4-5733-4636-43653C20A180}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2292066C-03A4-5733-4636-43653C20A180}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2292066C-03A4-5733-4636-43653C20A180}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
