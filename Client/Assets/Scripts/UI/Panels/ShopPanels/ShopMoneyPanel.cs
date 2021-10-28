@@ -54,7 +54,6 @@ namespace UI.Panels.ShopPanels
 
         #region nonpublic methods
 
-
         protected override void InitItems()
         {
             var set = PrefabUtilsEx.GetObject<ShopMoneyItemsScriptableObject>(

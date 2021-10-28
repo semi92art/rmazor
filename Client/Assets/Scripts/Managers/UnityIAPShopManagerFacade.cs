@@ -26,7 +26,7 @@ namespace Managers
     {
         void RestorePurchases();
         void Purchase(int _Key, UnityAction _OnPurchase);
-        void GoToRatePage();
+        void RateGame();
         ShopItemArgs GetItemInfo(int _Key);
     }
     
@@ -77,9 +77,15 @@ namespace Managers
             BuyProductID(id);
         }
 
-        public void GoToRatePage()
+        public void RateGame()
         {
-            throw new System.NotImplementedException();
+#if UNITY_EDITOR
+            Dbg.Log("Rating game available only on device.");
+#elif UNITY_ANDROID
+            Application.OpenURL ("market://details?id=" + Application.productName);
+#elif UNITY_IOS || UNITY_IPHONE
+            Application.OpenURL("itms-apps://itunes.apple.com/us/developer/best-free-games-3d/id959029626"); // TODO
+#endif
         }
 
         public ShopItemArgs GetItemInfo(int _Key)

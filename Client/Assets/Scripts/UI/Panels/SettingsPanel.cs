@@ -181,7 +181,7 @@ namespace UI.Panels
             item.Init(
                 Managers,
                 Ticker,
-                () => Managers.ShopManager.GoToRatePage());
+                () => Managers.ShopManager.RateGame());
             Managers.LocalizationManager.AddTextObject(item.title, "rate_game");
         }
 
