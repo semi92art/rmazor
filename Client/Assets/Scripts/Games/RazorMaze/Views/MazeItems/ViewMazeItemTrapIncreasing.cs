@@ -47,11 +47,6 @@ namespace Games.RazorMaze.Views.MazeItems
         #region shapes
 
         protected override string ObjectName => "Trap Increasing Block";
-
-        protected override object[] DefaultColorShapes => new object[]{m_Center}
-            .Concat(m_Blades)
-            .Concat(m_BladeContainers)
-            .ToArray();
         private readonly List<Line> m_BladeContainers = new List<Line>();
         private readonly List<SpriteRenderer> m_Blades = new List<SpriteRenderer>();
         private Disc m_Center;
@@ -80,6 +75,11 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
         
         #region api
+        
+        public override object[] Shapes => new object[]{m_Center}
+            .Concat(m_Blades)
+            .Concat(m_BladeContainers)
+            .ToArray();
         
         public override object Clone() => new ViewMazeItemTrapIncreasing(
             ViewSettings,

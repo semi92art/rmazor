@@ -14,6 +14,8 @@ namespace Games.RazorMaze
 
         public const float Epsilon = 1e-5f;
         public const int LevelsInGroup = 3;
+        
+        public static bool LoadNextLevelAutomatically = true;
 
         public static EMazeItemType[] GravityItemTypes()
         {

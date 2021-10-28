@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Constants;
@@ -165,6 +164,8 @@ namespace Games.RazorMaze.Views.Characters
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
+            if (m_Animator.IsNotNull())
+                m_Animator.speed = _Args.Stage == ELevelStage.Paused ? 0f : 1f;
             switch (_Args.Stage)
             {
                 case ELevelStage.Loaded:
@@ -200,9 +201,8 @@ namespace Games.RazorMaze.Views.Characters
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
             if (_Appear)
                 m_Animator.SetTrigger(AnimKeyStartJumping);
-            Transitioner.DoAppearTransitionSimple(
+            Transitioner.DoAppearTransition(
                 _Appear,
-                GameTicker,
                 new Dictionary<object[], Func<Color>>
                 {
                     {new object[] {m_HeadShape}, () => DrawingUtils.ColorCharacter},

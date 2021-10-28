@@ -1,9 +1,9 @@
 ﻿#if UNITY_EDITOR || DEVELOPMENT_BUILD
 
-using System;
 using System.Collections.Generic;
 using DI.Extensions;
 using GameHelpers;
+using Games.RazorMaze.Views.InputConfigurators;
 using UI;
 using UI.Factories;
 using UnityEngine;
@@ -40,8 +40,7 @@ namespace DebugConsole
                 true,
                 GraphicRaycaster.BlockingObjects.None);
             
-            // if (GameSettings.PlayMode)
-            //     DontDestroyOnLoad(canvas);
+            DontDestroyOnLoad(canvas);
 
             return PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(canvas.RTransform(), RtrLites.FullFill),
@@ -108,8 +107,6 @@ namespace DebugConsole
 
         private void Update()
         {
-#if UNITY_EDITOR
-
             if (Input.GetKeyUp(KeyCode.Return))
                 RunCommand();
 
@@ -134,8 +131,6 @@ namespace DebugConsole
                 if ((m_SwipeLastPosition.x - m_SwipeFirstPosition.x > m_SwipeDragDistance) && m_IsVisible)
                     ToggleVisibility();
             }
-
-#endif
 
             if (Input.touches.Length > 0)
             {
@@ -214,9 +209,9 @@ namespace DebugConsole
 
         #region public methods
 
-        public void Init()
+        public void Init(IViewInputConfigurator _InputConfigurator)
         {
-            
+            m_Controller.Init(_InputConfigurator);
         }
 
         #endregion

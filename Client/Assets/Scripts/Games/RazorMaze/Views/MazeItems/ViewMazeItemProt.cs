@@ -362,6 +362,7 @@ namespace Games.RazorMaze.Views.MazeItems
         #region unused api
         
         public EAppearingState AppearingState { get; set; }
+        public object[] Shapes { get; }
         public EProceedingStage ProceedingStage { get; set; }
         public bool ActivatedInSpawnPool { get; set; }
         public GameObject Object => gameObject;

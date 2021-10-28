@@ -19,7 +19,7 @@ namespace Mono_Installers
             Container.Bind<IManagersGetter>()     .To<ManagersGetter>()         .AsSingle();
 
             Container.Bind<ISoundManager>()       .To<SoundManager>()           .AsSingle();
-            Container.Bind<IDebugManager>()       .To<DebugManager>()           .AsSingle();
+            
         }
     }
 }

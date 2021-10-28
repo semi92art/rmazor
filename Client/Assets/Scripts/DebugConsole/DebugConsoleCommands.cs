@@ -3,6 +3,8 @@ using System;
 using System.Linq;
 using Constants;
 using Entities;
+using Games.RazorMaze;
+using Games.RazorMaze.Models;
 using Lean.Localization;
 using Managers;
 using UnityEngine;
@@ -28,6 +30,8 @@ namespace DebugConsole
             Controller.RegisterCommand("target_fps", SetTargetFps, "Set target frame rate");
             Controller.RegisterCommand("wof_spin_enable", EnableSpinButton, "Enable wheel of fortune spin.");
             Controller.RegisterCommand("enable_ads", EnableAds, "Enable or disable advertising (true/false)");
+            Controller.RegisterCommand("finish_level", FinishLevel, "Finish current level");
+            Controller.RegisterCommand("load_level", LoadLevel, "Load level by index");
         }
 
         private static void Reload(string[] _Args)
@@ -153,6 +157,26 @@ namespace DebugConsole
                 return;
             }
             AdsManager.Instance.ShowAds = _Args[0] == "true";
+        }
+
+        private static void FinishLevel(string[] _Args)
+        {
+            RazorMazeUtils.LoadNextLevelAutomatically = false;
+            Controller.InputConfigurator.RaiseCommand(InputCommands.FinishLevel, null, true);
+        }
+
+        private static void LoadLevel(string[] _Args)
+        {
+            if (_Args == null || !_Args.Any() || _Args.Length > 1 || !int.TryParse(_Args[0], out int levelIndex))
+            {
+                Controller.AppendLogLine("Wrong. Need level index!");
+                return;
+            }
+
+            Controller.InputConfigurator.RaiseCommand(
+                InputCommands.LoadLevelByIndex, 
+                new object [] { levelIndex },
+                true);
         }
     }
 }

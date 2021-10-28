@@ -37,8 +37,7 @@ namespace Utils
             if (go == null || go.transform.parent != null)
                 go = new GameObject(_Name);
             _Instance = go.GetOrAddComponent<T>();
-            if (GameSettings.PlayMode)
-                Object.DontDestroyOnLoad(go);
+            Object.DontDestroyOnLoad(go);
             return _Instance;
         }
 

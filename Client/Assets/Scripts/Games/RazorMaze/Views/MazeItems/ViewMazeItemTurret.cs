@@ -51,15 +51,6 @@ namespace Games.RazorMaze.Views.MazeItems
         #region shapes
 
         protected override string ObjectName => "Turret Block";
-
-        protected override object[] DefaultColorShapes => new object[]
-        {
-            m_Body,
-            m_BulletHolderBorder,
-            m_BulletRenderer,
-            m_BulletFakeRenderer
-        };
-
         private Disc m_Body;
         private Disc m_BulletHolderBorder;
         private SpriteRenderer m_BulletRenderer;
@@ -100,6 +91,14 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
         
         #region api
+        
+        public override object[] Shapes => new object[]
+        {
+            m_Body,
+            m_BulletHolderBorder,
+            m_BulletRenderer,
+            m_BulletFakeRenderer
+        };
         
         public override object Clone() => new ViewMazeItemTurret(
             ViewSettings,

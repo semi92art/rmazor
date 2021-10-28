@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Entities;
-using Exceptions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Characters;
+using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItemGroups;
 using Games.RazorMaze.Views.MazeItems;
@@ -42,19 +41,25 @@ namespace Games.RazorMaze.Views.Common
         private IManagersGetter Managers { get; }
         private IViewCharacter Character { get; }
         private IViewInputConfigurator InputConfigurator { get; }
+        private IContainersGetter ContainersGetter { get; }
+        private IMazeShaker MazeShaker { get; }
 
         public ViewLevelStageController(
             IGameTicker _GameTicker,
             IModelGame _Model,
             IManagersGetter _Managers,
             IViewCharacter _Character,
-            IViewInputConfigurator _InputConfigurator)
+            IViewInputConfigurator _InputConfigurator,
+            IContainersGetter _ContainersGetter,
+            IMazeShaker _MazeShaker)
         {
             GameTicker = _GameTicker;
             Model = _Model;
             Managers = _Managers;
             Character = _Character;
             InputConfigurator = _InputConfigurator;
+            ContainersGetter = _ContainersGetter;
+            MazeShaker = _MazeShaker;
         }
 
         #endregion
@@ -123,9 +128,18 @@ namespace Games.RazorMaze.Views.Common
                         }));
                     break;
                 case ELevelStage.Unloaded:
-#if !UNITY_EDITOR
-                    InputConfigurator.RaiseCommand(InputCommands.LoadNextLevel, null);
-#endif
+// #if !UNITY_EDITOR
+                    if (RazorMazeUtils.LoadNextLevelAutomatically)
+                        InputConfigurator.RaiseCommand(InputCommands.LoadNextLevel, null, true);
+// #endif
+                    break;
+                case ELevelStage.CharacterKilled:
+                    foreach (var mazeItem in mazeItems)
+                    {
+                        MazeShaker.OnCharacterDeathAnimation(
+                            ContainersGetter.GetContainer(ContainerNames.Character).transform.position,
+                            mazeItem);
+                    }
                     break;
             }
         }

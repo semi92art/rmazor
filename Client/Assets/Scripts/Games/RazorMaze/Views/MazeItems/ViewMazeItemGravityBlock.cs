@@ -17,7 +17,6 @@ namespace Games.RazorMaze.Views.MazeItems
         #region shapes
 
         protected override string ObjectName => "Gravity Block";
-        protected override object[] DefaultColorShapes => new object[] {m_Shape, m_Joint};
         private Disc m_Joint;
         
         #endregion
@@ -44,6 +43,8 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
         
         #region api
+        
+        public override object[] Shapes => new object[] {m_Shape, m_Joint};
         
         public override object Clone() => new ViewMazeItemGravityBlock(
             ViewSettings,

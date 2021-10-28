@@ -45,7 +45,6 @@ namespace Games.RazorMaze.Views.MazeItems
         #region shapes
 
         protected override string ObjectName => "Gravity Trap Block";
-        protected override object[] DefaultColorShapes => new object[] {m_OuterDisc}.Concat(m_Cones).ToArray();
         private Disc m_OuterDisc;
         private Disc m_InnerDisc;
         private List<Cone> m_Cones;
@@ -80,6 +79,8 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
         
         #region api
+        
+        public override object[] Shapes => new object[] {m_OuterDisc}.Concat(m_Cones).ToArray();
         
         public override object Clone() => new ViewMazeItemGravityTrap(
             ViewSettings,

@@ -35,13 +35,6 @@ namespace Games.RazorMaze.Views.MazeItems
         #region shapes
 
         protected override string ObjectName => "Path Block";
-
-        protected override object[] DefaultColorShapes => new object[]
-        {
-            m_Shape,
-            m_LeftBorder, m_RightBorder, m_BottomBorder, m_TopBorder,
-            m_BottomLeftCorner, m_BottomRightCorner, m_TopLeftCorner, m_TopRightCorner
-        };
         private Rectangle m_Shape;
         private Line m_LeftBorder, m_RightBorder, m_BottomBorder, m_TopBorder;
         private Disc m_BottomLeftCorner, m_BottomRightCorner, m_TopLeftCorner, m_TopRightCorner;
@@ -80,6 +73,13 @@ namespace Games.RazorMaze.Views.MazeItems
 
         #region api
 
+        public override object[] Shapes => new object[]
+        {
+            m_Shape,
+            m_LeftBorder, m_RightBorder, m_BottomBorder, m_TopBorder,
+            m_BottomLeftCorner, m_BottomRightCorner, m_TopLeftCorner, m_TopRightCorner
+        };
+        
         public override object Clone() => new ViewMazeItemPath(
             ViewSettings,
             Model,

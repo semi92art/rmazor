@@ -44,7 +44,6 @@ namespace Games.RazorMaze.Views.MazeItems
         #region shapes
 
         protected override string ObjectName => "Portal Block";
-        protected override object[] DefaultColorShapes => new object[] {m_Center}.Concat(m_Orbits).ToArray();
         private Disc m_Center;
         private readonly List<Disc> m_Orbits = new List<Disc>();
         private readonly BehavioursSpawnPool<Disc> m_GravityItems = new BehavioursSpawnPool<Disc>();
@@ -82,6 +81,8 @@ namespace Games.RazorMaze.Views.MazeItems
             GameTicker,
             Transitioner,
             Managers);
+        
+        public override object[] Shapes => new object[] {m_Center}.Concat(m_Orbits).ToArray();
 
         public override bool ActivatedInSpawnPool
         {

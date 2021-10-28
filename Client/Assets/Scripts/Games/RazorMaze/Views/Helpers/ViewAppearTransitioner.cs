@@ -5,6 +5,7 @@ using DI.Extensions;
 using Entities;
 using Exceptions;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Views.MazeItems;
 using Shapes;
 using Ticker;
 using TMPro;
@@ -24,9 +25,8 @@ namespace Games.RazorMaze.Views.Helpers
     
     public interface IViewAppearTransitioner
     {
-        void DoAppearTransitionSimple(
+        void DoAppearTransition(
             bool _Appear,
-            IGameTicker _GameTicker,
             Dictionary<object[], Func<Color>> _Sets,
             V2Int? _ItemPosition = null,
             UnityAction _OnFinish = null,
@@ -38,19 +38,25 @@ namespace Games.RazorMaze.Views.Helpers
         #region inject
         
         private IModelGame Model { get; }
+        private IMazeCoordinateConverter CoordinateConverter { get; }
+        public IGameTicker GameTicker { get; }
 
-        public ViewAppearTransitioner(IModelGame _Model)
+        public ViewAppearTransitioner(
+            IModelGame _Model, 
+            IMazeCoordinateConverter _CoordinateConverter, 
+            IGameTicker _GameTicker)
         {
             Model = _Model;
+            CoordinateConverter = _CoordinateConverter;
+            GameTicker = _GameTicker;
         }
 
         #endregion
 
         #region api
         
-        public void DoAppearTransitionSimple(
+        public void DoAppearTransition(
             bool _Appear,
-            IGameTicker _GameTicker,
             Dictionary<object[], Func<Color>> _Sets,
             V2Int? _ItemPosition = null,
             UnityAction _OnFinish = null,
@@ -107,7 +113,7 @@ namespace Games.RazorMaze.Views.Helpers
                                         textMeshPro.color = col;
                                 }
                             },
-                            _GameTicker,
+                            GameTicker,
                             (_Finished, _Progress) =>
                             {
                                 foreach (var shape in shapes)
@@ -136,7 +142,6 @@ namespace Games.RazorMaze.Views.Helpers
                     delay));
             }
         }
-
 
         #endregion
         

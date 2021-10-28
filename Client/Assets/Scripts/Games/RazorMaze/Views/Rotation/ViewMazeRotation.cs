@@ -131,9 +131,8 @@ namespace Games.RazorMaze.Views.Rotation
 
             if (!appear.HasValue)
                 return;
-            Transitioner.DoAppearTransitionSimple(
+            Transitioner.DoAppearTransition(
                 appear.Value,
-                GameTicker,
                 new Dictionary<object[], Func<Color>>
                 {
                     {new object[] { m_Disc }, () => DrawingUtils.ColorLines.SetA(0.5f)}

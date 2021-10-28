@@ -41,7 +41,6 @@ namespace Games.RazorMaze.Views.MazeItems
         #region shapes
 
         protected override string ObjectName => "Trap React Spikes Block";
-        protected override object[] DefaultColorShapes => new object[] {m_Line, m_Trap};
         private Line m_Line;
         private SpriteRenderer m_Trap;
         private SpriteMask m_Mask;
@@ -76,6 +75,8 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
         
         #region api
+        
+        public override object[] Shapes => new object[] {m_Line, m_Trap};
         
         public override object Clone() => new ViewMazeItemTrapReactSpikes(
             ViewSettings,

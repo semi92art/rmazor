@@ -42,12 +42,6 @@ namespace Games.RazorMaze.Views.MazeItems
         #region shapes
 
         protected override string ObjectName => "Shredinger Block";
-
-        protected override object[] DefaultColorShapes =>
-            new object[] {m_ClosedBlock}
-                .Concat(m_OpenedLines)
-                .Concat(m_OpenedCorners)
-                .ToArray();
         private Rectangle m_ClosedBlock;
         private readonly List<Line> m_OpenedLines = new List<Line>();
         private readonly List<Disc> m_OpenedCorners = new List<Disc>();
@@ -76,6 +70,12 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
         
         #region api
+        
+        public override object[] Shapes =>
+            new object[] {m_ClosedBlock}
+                .Concat(m_OpenedLines)
+                .Concat(m_OpenedCorners)
+                .ToArray();
         
         public override object Clone() => new ViewMazeItemShredingerBlock(
             ViewSettings, 

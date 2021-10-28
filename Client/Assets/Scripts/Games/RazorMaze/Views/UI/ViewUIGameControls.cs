@@ -280,11 +280,13 @@ namespace Games.RazorMaze.Views.UI
             
             if (_Instantly)
                 return;
-            AppearTransitioner.DoAppearTransitionSimple(_Show, GameTicker, 
+            AppearTransitioner.DoAppearTransition(
+                _Show, 
                 new Dictionary<object[], System.Func<Color>>
                 {
                     {m_Renderers.ToArray(), () => DrawingUtils.ColorLines},
-                }, _Type: EAppearTransitionType.WithoutDelay);
+                },
+                _Type: EAppearTransitionType.WithoutDelay);
         }
 
         private void CommandShop()

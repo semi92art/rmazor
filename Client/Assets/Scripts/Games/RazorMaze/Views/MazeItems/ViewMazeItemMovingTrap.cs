@@ -34,7 +34,6 @@ namespace Games.RazorMaze.Views.MazeItems
         #region shapes
 
         protected override string ObjectName => "Moving Trap Block";
-        protected override object[] DefaultColorShapes => new object[] {m_Saw};
 
         private SpriteRenderer m_Saw;
 
@@ -62,6 +61,8 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
         
         #region api
+        
+        public override object[] Shapes => new object[] {m_Saw};
         
         public override object Clone() => new ViewMazeItemMovingTrap(
             ViewSettings,

@@ -39,6 +39,7 @@ namespace Games.RazorMaze.Views
         private IGameTicker GameTicker { get; }
         private IManagersGetter Managers { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
+        private IDebugManager DebugManager { get; }
 
         public ViewGame(
             IContainersGetter _ContainersGetter,
@@ -60,7 +61,8 @@ namespace Games.RazorMaze.Views
             IViewMazeGravityItemsGroup _GravityItemsGroup,
             IGameTicker _GameTicker,
             IManagersGetter _Managers, 
-            IMazeCoordinateConverter _CoordinateConverter)
+            IMazeCoordinateConverter _CoordinateConverter,
+            IDebugManager _DebugManager)
         {
             ContainersGetter = _ContainersGetter;
             UI = _UI;
@@ -81,6 +83,7 @@ namespace Games.RazorMaze.Views
             GameTicker = _GameTicker;
             Managers = _Managers;
             CoordinateConverter = _CoordinateConverter;
+            DebugManager = _DebugManager;
             LevelStageController = _LevelStageController;
         }
         
@@ -92,6 +95,7 @@ namespace Games.RazorMaze.Views
         
         public void Init()
         {
+            DebugManager.Init();
             CoordinateConverter.Init(
                 MazeCoordinateConverter.DefaultLeftOffset, 
                 MazeCoordinateConverter.DefaultRightOffset,

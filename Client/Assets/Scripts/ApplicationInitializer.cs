@@ -22,21 +22,18 @@ public class ApplicationInitializer : MonoBehaviour
     private IAdsManager AdsManager { get; set; }
     private IAnalyticsManager AnalyticsManager { get; set; }
     private ILocalizationManager LocalizationManager { get; set; }
-    private IDebugManager DebugManager { get; set; }
 
     [Inject] 
     public void Inject(
         IGameTicker _GameTicker,
         IAdsManager _AdsManager,
         IAnalyticsManager _AnalyticsManager,
-        ILocalizationManager _LocalizationManager,
-        IDebugManager _DebugManager)
+        ILocalizationManager _LocalizationManager)
     {
         GameTicker = _GameTicker;
         AdsManager = _AdsManager;
         AnalyticsManager = _AnalyticsManager;
         LocalizationManager = _LocalizationManager;
-        DebugManager = _DebugManager;
     }
 
 
@@ -72,7 +69,6 @@ public class ApplicationInitializer : MonoBehaviour
         AdsManager.Init();
         AnalyticsManager.Init();
         LocalizationManager.Init();
-        DebugManager.Init();
     }
 
 

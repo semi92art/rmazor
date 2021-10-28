@@ -41,7 +41,6 @@ namespace Games.RazorMaze.Views.MazeItems
         #region shapes
 
         protected override string ObjectName => "Springboard Block";
-        protected override object[] DefaultColorShapes => new object[] {m_Springboard, m_Pillar};
         private Line m_Springboard;
         private Line m_Pillar;
         
@@ -69,6 +68,8 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
 
         #region api
+        
+        public override object[] Shapes => new object[] {m_Springboard, m_Pillar};
         
         public override object Clone() => new ViewMazeItemSpringboard(
             ViewSettings, 

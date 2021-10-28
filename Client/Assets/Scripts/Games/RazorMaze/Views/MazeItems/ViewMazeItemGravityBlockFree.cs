@@ -18,7 +18,6 @@ namespace Games.RazorMaze.Views.MazeItems
         #region shapes
 
         protected override string ObjectName => "Gravity Block Free";
-        protected override object[] DefaultColorShapes => new object[] {m_Shape};
         protected Rectangle m_Shape;
         
         #endregion
@@ -46,6 +45,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region api
         
+        public override object[] Shapes => new object[] {m_Shape};
         public override object Clone() => new ViewMazeItemGravityBlockFree(
             ViewSettings,
             Model,

@@ -36,7 +36,6 @@ namespace Games.RazorMaze.Views.MazeItems
         #region nonpublic members
         
         protected abstract string ObjectName { get; }
-        protected abstract object[] DefaultColorShapes { get; }
         protected bool Initialized { get; set; }
         protected bool m_ActivatedInSpawnPool;
 
@@ -77,6 +76,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region api
         
+        public abstract object[] Shapes { get; }
         public ViewMazeItemProps Props { get; set; }
         public abstract object Clone();
         
@@ -154,9 +154,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 () =>
                 {
                     OnAppearStart(_Appear);
-                    Transitioner.DoAppearTransitionSimple(
+                    Transitioner.DoAppearTransition(
                         _Appear,
-                        GameTicker,
                         GetAppearSets(_Appear),
                         Props.Position,
                         () => OnAppearFinish(_Appear));
@@ -181,7 +180,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             return new Dictionary<object[], Func<Color>>
             {
-                {DefaultColorShapes, () => DrawingUtils.ColorLines}
+                {Shapes, () => DrawingUtils.ColorLines}
             };
         }
 
@@ -194,7 +193,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected void ActivateShapes(bool _Activate)
         {
-            foreach (var shape in DefaultColorShapes)
+            foreach (var shape in Shapes)
             {
                 if (shape is ShapeRenderer shapeRenderer && !shapeRenderer.IsNull())
                     shapeRenderer.enabled = _Activate;

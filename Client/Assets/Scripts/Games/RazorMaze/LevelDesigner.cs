@@ -74,6 +74,7 @@ namespace Games.RazorMaze
                 {
                     int selectedLevel = SaveUtils.GetValue<int>(SaveKey.DesignerSelectedLevel);
                     controller.Model.LevelStaging.LoadLevel(MazeInfo, selectedLevel);
+                    RazorMazeUtils.LoadNextLevelAutomatically = false;
                 };
                 controller.Init();
             };

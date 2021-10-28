@@ -148,7 +148,7 @@ namespace Mono_Installers
             #region other
 
             Container.Bind<ICameraProvider>().FromComponentInNewPrefab(cameraProvider).AsSingle();
-
+            Container.Bind<IDebugManager>()       .To<DebugManager>()           .AsSingle();
             #endregion
         }
     }

@@ -68,6 +68,7 @@ namespace Games.RazorMaze.Models.InputSchedulers
                 case InputCommands.UnloadLevel:
                 case InputCommands.KillCharacter:
                 case InputCommands.ReadyToUnloadLevel:
+                case InputCommands.LoadLevelByIndex:
                     m_UiCommands.Enqueue(new Tuple<int, object[]>(_Command, _Args));
                     break;
             }
@@ -86,8 +87,8 @@ namespace Games.RazorMaze.Models.InputSchedulers
         {
             if (!m_UiCommands.Any())
                 return;
-            var cmd = m_UiCommands.Dequeue();
-            UiCommand?.Invoke(cmd.Item1);
+            var (key, args) = m_UiCommands.Dequeue();
+            UiCommand?.Invoke(key, args);
         }
         
         private void OnUiCommand(int _Command, object[] _Args)
@@ -101,6 +102,11 @@ namespace Games.RazorMaze.Models.InputSchedulers
                     break;
                 case InputCommands.LoadNextLevel:
                     levelIndex = Data.LevelIndex + 1;
+                    info = LevelsLoader.LoadLevel(1, levelIndex);
+                    LevelStaging.LoadLevel(info, levelIndex);
+                    break;
+                case InputCommands.LoadLevelByIndex:
+                    levelIndex = Convert.ToInt32(_Args[0]);
                     info = LevelsLoader.LoadLevel(1, levelIndex);
                     LevelStaging.LoadLevel(info, levelIndex);
                     break;

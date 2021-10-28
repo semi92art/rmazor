@@ -33,7 +33,6 @@ namespace Games.RazorMaze.Views.UI
         private IDialogViewer DialogViewer { get; }
         private INotificationViewer NotificationViewer { get; }
         private IDialogPanels DialogPanels { get; }
-        private ITransitionRenderer TransitionRenderer { get; }
         private ILoadingController LoadingController { get; }
         private IViewInputConfigurator InputConfigurator { get; }
 
@@ -54,7 +53,6 @@ namespace Games.RazorMaze.Views.UI
             DialogViewer = _DialogViewer;
             NotificationViewer = _NotificationViewer;
             DialogPanels = _DialogPanels;
-            TransitionRenderer = _TransitionRenderer;
             LoadingController = _LoadingController;
             InputConfigurator = _InputConfigurator;
             _UITicker.Register(this);
@@ -73,7 +71,6 @@ namespace Games.RazorMaze.Views.UI
             var parent = m_Canvas.RTransform();
             DialogViewer.Init(parent);
             NotificationViewer.Init(parent);
-            TransitionRenderer.Init(parent);
             UIGameControls.Init();
             RaiseInitializedEvent();
         }
@@ -124,11 +121,11 @@ namespace Games.RazorMaze.Views.UI
                 return;
             }
             
-            TransitionRenderer.TransitionAction = (_, _Args) =>
-            {
-                // TODO
-            };
-            TransitionRenderer.StartTransition();
+            // TransitionRenderer.TransitionAction = (_, _Args) =>
+            // {
+            //     // TODO
+            // };
+            // TransitionRenderer.StartTransition();
         }
         
         private void CreateLoadingPanel()
