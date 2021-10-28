@@ -10,13 +10,13 @@ namespace UI.PanelItems.Shop_Items
             IManagersGetter _Managers,
             IUITicker _UITicker,
             UnityAction _Click,
-            ShopItemArgs _Args)
+            ViewShopItemInfo _Info)
         {
             void FinishAction()
             {
-                price.text = $"{_Args.Price}";
+                price.text = $"{_Info.Price}";
             }
-            InitCore(_Managers, _UITicker, _Click, _Args, FinishAction);
+            InitCore(_Managers, _UITicker, _Click, _Info, FinishAction);
         }
     }
 }

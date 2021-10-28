@@ -8,7 +8,7 @@ using Utils;
 
 namespace UI.PanelItems.Shop_Items
 {
-    public class ShopItemArgs
+    public class ViewShopItemInfo
     {
         public bool   BuyForWatchingAd { get; set; }
         public int    UnlockingLevel { get; set; }
@@ -32,27 +32,27 @@ namespace UI.PanelItems.Shop_Items
             IManagersGetter _Managers,
             IUITicker _UITicker,
             UnityAction _Click,
-            ShopItemArgs _Args) { }
+            ViewShopItemInfo _Info) { }
 
         protected void InitCore(
             IManagersGetter _Managers,
             IUITicker _UITicker,
             UnityAction _Click,
-            ShopItemArgs _Args,
+            ViewShopItemInfo _Info,
             UnityAction _LoadingFinishAction)
         {
             name = "Shop Item";
             InitCore(_Managers, _UITicker);
             buyButton.onClick.AddListener(SoundOnClick);
             buyButton.onClick.AddListener(_Click);
-            itemIcon.sprite = _Args.Icon;
-            IndicateLoading(true, _Args.BuyForWatchingAd);
+            itemIcon.sprite = _Info.Icon;
+            IndicateLoading(true, _Info.BuyForWatchingAd);
             Coroutines.Run(Coroutines.WaitWhile(
-                () => !_Args.Ready,
+                () => !_Info.Ready,
                 () =>
                 {
-                    IndicateLoading(false, _Args.BuyForWatchingAd);
-                    buyButton.SetGoActive(!_Args.BuyForWatchingAd);
+                    IndicateLoading(false, _Info.BuyForWatchingAd);
+                    buyButton.SetGoActive(!_Info.BuyForWatchingAd);
                     _LoadingFinishAction?.Invoke();
                 }));
         }

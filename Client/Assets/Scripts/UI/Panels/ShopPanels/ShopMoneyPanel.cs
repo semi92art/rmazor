@@ -3,6 +3,7 @@ using DI.Extensions;
 using DialogViewers;
 using Entities;
 using GameHelpers;
+using Managers;
 using ScriptableObjects;
 using Ticker;
 using UI.Entities;
@@ -62,7 +63,7 @@ namespace UI.Panels.ShopPanels
             {
                 var info = itemInSet.watchingAds ? null : Managers.ShopManager.GetItemInfo(itemInSet.purchaseKey);
                 var item = CreateItem();
-                var args = new ShopItemArgs
+                var args = new ViewShopItemInfo
                 {
                     BuyForWatchingAd = itemInSet.watchingAds,
                     Reward = itemInSet.reward,
@@ -79,10 +80,15 @@ namespace UI.Panels.ShopPanels
                     },
                     args);
                 Coroutines.Run(Coroutines.WaitWhile(
-                    () => !info?.Ready() ?? !Managers.AdsManager.RewardedAdReady,
                     () =>
                     {
                         if (info != null)
+                            return info.Result() == EShopProductResult.Pending;
+                        return !Managers.AdsManager.RewardedAdReady;
+                    },
+                    () =>
+                    {
+                        if (info?.Result() == EShopProductResult.Success)
                         {
                             args.Currency = info.Currency;
                             args.Price = info.Price;

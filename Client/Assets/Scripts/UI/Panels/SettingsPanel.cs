@@ -100,6 +100,7 @@ namespace UI.Panels
             InitSettingItem(SettingsGetter.VibrationSetting);
             InitRateUsButton();
             InitLeaderboardsButton();
+            InitRestorePurchasesButton();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             InitSettingItem(SettingsGetter.DebugSetting);
 #endif
@@ -190,8 +191,18 @@ namespace UI.Panels
             item.Init(
                 Managers,
                 Ticker,
-                () => Managers.ShopManager.GoToRatePage());
+                () => Managers.ScoreManager.ShowLeaderboard());
             Managers.LocalizationManager.AddTextObject(item.title, "show_leaderboards");
+        }
+
+        private void InitRestorePurchasesButton()
+        {
+            var item = CreateActionSetting();
+            item.Init(
+                Managers,
+                Ticker,
+                () => Managers.ShopManager.RestorePurchases());
+            Managers.LocalizationManager.AddTextObject(item.title, "restore_purchases");
         }
 
         private SettingItemMiniButton CreateMiniButtonSetting()

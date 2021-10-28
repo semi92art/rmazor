@@ -81,7 +81,7 @@ namespace UI.Panels.ShopPanels
             foreach (var itemInSet in set)
             {
                 var item = CreateItem();
-                var args = new ShopItemArgs
+                var args = new ViewShopItemInfo
                 {
                     BuyForWatchingAd = itemInSet.watchingAds,
                     Icon = itemInSet.icon,

@@ -56,3 +56,4 @@ heads = Головы
 tails = Хвосты
 backgrounds = Фон
 no_ads = Отключить обязательную рекламу
+restore_purchases = Отменить покупки

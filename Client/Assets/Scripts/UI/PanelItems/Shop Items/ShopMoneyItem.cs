@@ -11,22 +11,22 @@ namespace UI.PanelItems.Shop_Items
             IManagersGetter _Managers,
             IUITicker _UITicker,
             UnityAction _Click,
-            ShopItemArgs _Args)
+            ViewShopItemInfo _Info)
         {
             void FinishAction()
             {
-                price.text = $"{_Args.Price} {_Args.Currency}";
+                price.text = $"{_Info.Price} {_Info.Currency}";
             }
-            InitCore(_Managers, _UITicker, _Click, _Args, FinishAction);
-            itemIcon.sprite = _Args.Icon;
-            title.text = _Args.Reward.ToString();
+            InitCore(_Managers, _UITicker, _Click, _Info, FinishAction);
+            itemIcon.sprite = _Info.Icon;
+            title.text = _Info.Reward.ToString();
             Coroutines.Run(Coroutines.WaitWhile(
-                () => !_Args.Ready,
+                () => !_Info.Ready,
                 () =>
                 {
-                    IndicateLoading(false, _Args.BuyForWatchingAd);
-                    buyButton.SetGoActive(!_Args.BuyForWatchingAd);
-                    price.text = $"{_Args.Price} {_Args.Currency}";
+                    IndicateLoading(false, _Info.BuyForWatchingAd);
+                    buyButton.SetGoActive(!_Info.BuyForWatchingAd);
+                    price.text = $"{_Info.Price} {_Info.Currency}";
                 }));
         }
     }

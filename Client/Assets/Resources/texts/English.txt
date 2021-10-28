@@ -56,3 +56,4 @@ heads = Heads
 tails = Tails
 backgrounds = Background
 no_ads = Disable mandatory ads
+restore_purchases = Restore purchases
