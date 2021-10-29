@@ -5,9 +5,9 @@
 #pragma target 3.0
 
 UNITY_INSTANCING_BUFFER_START(Props)
-UNITY_DEFINE_INSTANCED_PROP(float4, _Color)
-UNITY_DEFINE_INSTANCED_PROP(float3, _Size)
-UNITY_DEFINE_INSTANCED_PROP(int, _SizeSpace)
+PROP_DEF(float4, _Color)
+PROP_DEF(float3, _Size)
+PROP_DEF(int, _SizeSpace)
 UNITY_INSTANCING_BUFFER_END(Props)
 
 struct VertexInput {
@@ -28,9 +28,9 @@ VertexOutput vert(VertexInput v) {
 	UNITY_TRANSFER_INSTANCE_ID(v, o);
 	UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 	
-    //float radiusTarget = 1;//UNITY_ACCESS_INSTANCED_PROP(Props, _Size);
-    float3 size = UNITY_ACCESS_INSTANCED_PROP(Props, _Size);
-    int radiusSpace = UNITY_ACCESS_INSTANCED_PROP(Props, _SizeSpace);
+    //float radiusTarget = 1;//PROP(_Size);
+    float3 size = PROP(_Size);
+    int radiusSpace = PROP(_SizeSpace);
     
 	LineWidthData widthData = GetScreenSpaceWidthDataSimple( OBJ_ORIGIN, CAM_RIGHT, 1, radiusSpace );
     half radius = widthData.thicknessMeters * 0.5;
@@ -43,6 +43,6 @@ VertexOutput vert(VertexInput v) {
 
 FRAG_OUTPUT_V4 frag( VertexOutput i ) : SV_Target {
 	UNITY_SETUP_INSTANCE_ID(i);
-	half4 color = UNITY_ACCESS_INSTANCED_PROP(Props, _Color);
+	half4 color = PROP(_Color);
 	return ShapesOutput( color, saturate( i.pxCoverage ) ); 
 }

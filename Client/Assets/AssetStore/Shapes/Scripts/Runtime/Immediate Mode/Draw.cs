@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using TMPro;
 #if SHAPES_URP
 using UnityEngine.Rendering.Universal;
-
 #elif SHAPES_HDRP
 using UnityEngine.Rendering.HighDefinition;
 #else
@@ -18,6 +18,7 @@ namespace Shapes {
 	/// <summary>The primary class in Shapes for all functionality to draw in immediate mode</summary>
 	public static partial class Draw {
 
+		const MethodImplOptions INLINE = MethodImplOptions.AggressiveInlining;
 
 		/// <summary><para>Creates a DrawCommand for drawing in immediate mode.</para>
 		/// <para>Example usage:</para>
@@ -32,41 +33,40 @@ namespace Shapes {
 		public static DrawCommand Command( Camera cam, CameraEvent cameraEvent = CameraEvent.BeforeImageEffects ) => ObjectPool<DrawCommand>.Alloc().Initialize( cam, cameraEvent );
 		#endif
 
-		static MpbLine mpbLine = new MpbLine();
+		static MpbLine2D mpbLine = new MpbLine2D();
 
 		[OvldGenCallTarget] static void Line_Internal( [OvldDefault( nameof(LineEndCaps) )] LineEndCap endCaps,
-													   [OvldDefault( nameof(LineThicknessSpace) )] ThicknessSpace thicknessSpace,
+													   [OvldDefault( nameof(ThicknessSpace) )] ThicknessSpace thicknessSpace,
 													   Vector3 start,
 													   Vector3 end,
 													   [OvldDefault( nameof(Color) )] Color colorStart,
 													   [OvldDefault( nameof(Color) )] Color colorEnd,
-													   [OvldDefault( nameof(LineThickness) )] float thickness,
-													   [OvldDefault( nameof(LineDashStyle) )] DashStyle dashStyle = null ) {
+													   [OvldDefault( nameof(Thickness) )] float thickness ) {
 			using( new IMDrawer(
 				metaMpb: mpbLine,
 				sourceMat: ShapesMaterialUtils.GetLineMat( Draw.LineGeometry, endCaps )[Draw.BlendMode],
 				sourceMesh: ShapesMeshUtils.GetLineMesh( Draw.LineGeometry, endCaps, DetailLevel ) ) ) {
-				MetaMpb.ApplyDashSettings( mpbLine, dashStyle, thickness );
+				MetaMpb.ApplyDashSettings( mpbLine, thickness );
 				mpbLine.color.Add( colorStart.ColorSpaceAdjusted() );
 				mpbLine.colorEnd.Add( colorEnd.ColorSpaceAdjusted() );
 				mpbLine.pointStart.Add( start );
 				mpbLine.pointEnd.Add( end );
 				mpbLine.thickness.Add( thickness );
-				mpbLine.alignment.Add( (float)Draw.LineGeometry );
+				mpbLine.alignment.Add( (float)Draw.LineGeometry ); // this is redundant for 3D lines, but, that's okay, fixing that makes things messier
 				mpbLine.thicknessSpace.Add( (float)thicknessSpace );
 				mpbLine.scaleMode.Add( (float)ScaleMode );
 			}
 		}
 
-		static MpbPolyline mpbPolyline = new MpbPolyline(); // they can use the same mpb structure
-		static MpbPolyline mpbPolylineJoins = new MpbPolyline();
+		static MpbPolyline2D mpbPolyline = new MpbPolyline2D(); // they can use the same mpb structure
+		static MpbPolyline2D mpbPolylineJoins = new MpbPolyline2D();
 
 		[OvldGenCallTarget] static void Polyline_Internal( PolylinePath path,
 														   [OvldDefault( "false" )] bool closed,
 														   [OvldDefault( nameof(PolylineGeometry) )] PolylineGeometry geometry,
 														   [OvldDefault( nameof(PolylineJoins) )] PolylineJoins joins,
-														   [OvldDefault( nameof(LineThickness) )] float thickness,
-														   [OvldDefault( nameof(LineThicknessSpace) )] ThicknessSpace thicknessSpace,
+														   [OvldDefault( nameof(Thickness) )] float thickness,
+														   [OvldDefault( nameof(ThicknessSpace) )] ThicknessSpace thicknessSpace,
 														   [OvldDefault( nameof(Color) )] Color color ) {
 			if( path.EnsureMeshIsReadyToRender( closed, joins, out Mesh mesh ) == false )
 				return; // no points defined in the mesh
@@ -80,7 +80,7 @@ namespace Shapes {
 					return;
 			}
 
-			void ApplyToMpb( MpbPolyline mpb ) {
+			void ApplyToMpb( MpbPolyline2D mpb ) {
 				mpb.thickness.Add( thickness );
 				mpb.thicknessSpace.Add( (int)thicknessSpace );
 				mpb.color.Add( color.ColorSpaceAdjusted() );
@@ -89,7 +89,7 @@ namespace Shapes {
 			}
 
 			if( DrawCommand.IsAddingDrawCommandsToBuffer ) // mark as used by this command to prevent destroy in dispose
-				path.lastCommandUsedIn = DrawCommand.CurrentWritingCommandBuffer;
+				path.RegisterToCommandBuffer( DrawCommand.CurrentWritingCommandBuffer );
 
 			using( new IMDrawer( mpbPolyline, ShapesMaterialUtils.GetPolylineMat( joins )[Draw.BlendMode], mesh, 0 ) )
 				ApplyToMpb( mpbPolyline );
@@ -104,8 +104,7 @@ namespace Shapes {
 
 		[OvldGenCallTarget] static void Polygon_Internal( PolygonPath path,
 														  [OvldDefault( nameof(PolygonTriangulation) )] PolygonTriangulation triangulation,
-														  [OvldDefault( nameof(Color) )] Color color,
-														  [OvldDefault( nameof(PolygonShapeFill) )] ShapeFill fill ) {
+														  [OvldDefault( nameof(Color) )] Color color ) {
 			if( path.EnsureMeshIsReadyToRender( triangulation, out Mesh mesh ) == false )
 				return; // no points defined in the mesh
 
@@ -122,127 +121,115 @@ namespace Shapes {
 			}
 
 			if( DrawCommand.IsAddingDrawCommandsToBuffer ) // mark as used by this command to prevent destroy in dispose
-				path.lastCommandUsedIn = DrawCommand.CurrentWritingCommandBuffer;
+				path.RegisterToCommandBuffer( DrawCommand.CurrentWritingCommandBuffer );
 
 			using( new IMDrawer( mpbPolygon, ShapesMaterialUtils.matPolygon[Draw.BlendMode], mesh ) ) {
-				MetaMpb.ApplyColorOrFill( mpbPolygon, fill, color );
+				MetaMpb.ApplyColorOrFill( mpbPolygon, color );
 			}
 		}
 
-		[OvldGenCallTarget] static void Disc_Internal( [OvldDefault( nameof(DiscRadius) )] float radius,
-													   [OvldDefault( nameof(Color) )] Color colorInnerStart,
-													   [OvldDefault( nameof(Color) )] Color colorOuterStart,
-													   [OvldDefault( nameof(Color) )] Color colorInnerEnd,
-													   [OvldDefault( nameof(Color) )] Color colorOuterEnd ) {
-			DiscCore( false, false, radius, 0f, colorInnerStart, colorOuterStart, colorInnerEnd, colorOuterEnd );
+		[OvldGenCallTarget] [MethodImpl( INLINE )]
+		static void Disc_Internal( [OvldDefault( nameof(Radius) )] float radius,
+								   [OvldDefault( nameof(Color) )] DiscColors colors ) {
+			DiscCore( false, false, radius, 0f, colors );
 		}
 
-		[OvldGenCallTarget] static void Ring_Internal( [OvldDefault( nameof(DiscRadius) )] float radius,
-													   [OvldDefault( nameof(RingThickness) )] float thickness,
-													   [OvldDefault( nameof(Color) )] Color colorInnerStart,
-													   [OvldDefault( nameof(Color) )] Color colorOuterStart,
-													   [OvldDefault( nameof(Color) )] Color colorInnerEnd,
-													   [OvldDefault( nameof(Color) )] Color colorOuterEnd,
-													   [OvldDefault( nameof(RingDashStyle) )] DashStyle dashStyle = null ) {
-			DiscCore( true, false, radius, thickness, colorInnerStart, colorOuterStart, colorInnerEnd, colorOuterEnd, dashStyle );
+		[OvldGenCallTarget] [MethodImpl( INLINE )]
+		static void Ring_Internal( [OvldDefault( nameof(Radius) )] float radius,
+								   [OvldDefault( nameof(Thickness) )] float thickness,
+								   [OvldDefault( nameof(Color) )] DiscColors colors ) {
+			DiscCore( true, false, radius, thickness, colors );
 		}
 
-		[OvldGenCallTarget] static void Pie_Internal( [OvldDefault( nameof(DiscRadius) )] float radius,
-													  [OvldDefault( nameof(Color) )] Color colorInnerStart,
-													  [OvldDefault( nameof(Color) )] Color colorOuterStart,
-													  [OvldDefault( nameof(Color) )] Color colorInnerEnd,
-													  [OvldDefault( nameof(Color) )] Color colorOuterEnd,
-													  float angleRadStart,
-													  float angleRadEnd ) {
-			DiscCore( false, true, radius, 0f, colorInnerStart, colorOuterStart, colorInnerEnd, colorOuterEnd, null, angleRadStart, angleRadEnd );
+		[OvldGenCallTarget] [MethodImpl( INLINE )]
+		static void Pie_Internal( [OvldDefault( nameof(Radius) )] float radius,
+								  [OvldDefault( nameof(Color) )] DiscColors colors,
+								  float angleRadStart,
+								  float angleRadEnd ) {
+			DiscCore( false, true, radius, 0f, colors, angleRadStart, angleRadEnd );
 		}
 
-		[OvldGenCallTarget] static void Arc_Internal( [OvldDefault( nameof(DiscRadius) )] float radius,
-													  [OvldDefault( nameof(RingThickness) )] float thickness,
-													  [OvldDefault( nameof(Color) )] Color colorInnerStart,
-													  [OvldDefault( nameof(Color) )] Color colorOuterStart,
-													  [OvldDefault( nameof(Color) )] Color colorInnerEnd,
-													  [OvldDefault( nameof(Color) )] Color colorOuterEnd,
-													  float angleRadStart,
-													  float angleRadEnd,
-													  [OvldDefault( nameof(ArcEndCap) + "." + nameof(ArcEndCap.None) )] ArcEndCap endCaps,
-													  [OvldDefault( nameof(RingDashStyle) )] DashStyle dashStyle = null ) {
-			DiscCore( true, true, radius, thickness, colorInnerStart, colorOuterStart, colorInnerEnd, colorOuterEnd, dashStyle, angleRadStart, angleRadEnd, endCaps );
+		[OvldGenCallTarget] [MethodImpl( INLINE )]
+		static void Arc_Internal( [OvldDefault( nameof(Radius) )] float radius,
+								  [OvldDefault( nameof(Thickness) )] float thickness,
+								  [OvldDefault( nameof(Color) )] DiscColors colors,
+								  float angleRadStart,
+								  float angleRadEnd,
+								  [OvldDefault( nameof(ArcEndCap) + "." + nameof(ArcEndCap.None) )] ArcEndCap endCaps ) {
+			DiscCore( true, true, radius, thickness, colors, angleRadStart, angleRadEnd, endCaps );
 		}
 
 		static readonly MpbDisc mpbDisc = new MpbDisc();
 
-		static void DiscCore( bool hollow, bool sector, float radius, float thickness, Color colorInnerStart, Color colorOuterStart, Color colorInnerEnd, Color colorOuterEnd, DashStyle dashStyle = null, float angleRadStart = 0f, float angleRadEnd = 0f, ArcEndCap arcEndCaps = ArcEndCap.None ) {
+		static void DiscCore( bool hollow, bool sector, float radius, float thickness, DiscColors colors, float angleRadStart = 0f, float angleRadEnd = 0f, ArcEndCap arcEndCaps = ArcEndCap.None ) {
 			if( sector && Mathf.Abs( angleRadEnd - angleRadStart ) < 0.0001f )
 				return;
 
 			using( new IMDrawer( mpbDisc, ShapesMaterialUtils.GetDiscMaterial( hollow, sector )[Draw.BlendMode], ShapesMeshUtils.QuadMesh[0] ) ) {
-				MetaMpb.ApplyDashSettings( mpbDisc, dashStyle, thickness );
+				MetaMpb.ApplyDashSettings( mpbDisc, thickness );
 				mpbDisc.radius.Add( radius );
-				mpbDisc.radiusSpace.Add( (int)Draw.DiscRadiusSpace );
+				mpbDisc.radiusSpace.Add( (int)Draw.RadiusSpace );
 				mpbDisc.alignment.Add( (int)Draw.DiscGeometry );
-				mpbDisc.thicknessSpace.Add( (int)Draw.RingThicknessSpace );
+				mpbDisc.thicknessSpace.Add( (int)Draw.ThicknessSpace );
 				mpbDisc.thickness.Add( thickness );
 				mpbDisc.scaleMode.Add( (int)ScaleMode );
-				mpbDisc.angStart.Add( angleRadStart );
-				mpbDisc.angEnd.Add( angleRadEnd );
+				mpbDisc.angleStart.Add( angleRadStart );
+				mpbDisc.angleEnd.Add( angleRadEnd );
 				mpbDisc.roundCaps.Add( (int)arcEndCaps );
-				mpbDisc.color.Add( colorInnerStart.ColorSpaceAdjusted() );
-				mpbDisc.colorOuterStart.Add( colorOuterStart.ColorSpaceAdjusted() );
-				mpbDisc.colorInnerEnd.Add( colorInnerEnd.ColorSpaceAdjusted() );
-				mpbDisc.colorOuterEnd.Add( colorOuterEnd.ColorSpaceAdjusted() );
+				mpbDisc.color.Add( colors.innerStart.ColorSpaceAdjusted() );
+				mpbDisc.colorOuterStart.Add( colors.outerStart.ColorSpaceAdjusted() );
+				mpbDisc.colorInnerEnd.Add( colors.innerEnd.ColorSpaceAdjusted() );
+				mpbDisc.colorOuterEnd.Add( colors.outerEnd.ColorSpaceAdjusted() );
 			}
 		}
 
 		static readonly MpbRegularPolygon mpbRegularPolygon = new MpbRegularPolygon();
 
 		[OvldGenCallTarget] static void RegularPolygon_Internal( [OvldDefault( nameof(RegularPolygonSideCount) )] int sideCount,
-																 [OvldDefault( nameof(RegularPolygonRadius) )] float radius,
-																 [OvldDefault( nameof(RegularPolygonThickness) )] float thickness,
+																 [OvldDefault( nameof(Radius) )] float radius,
+																 [OvldDefault( nameof(Thickness) )] float thickness,
 																 [OvldDefault( nameof(Color) )] Color color,
 																 bool hollow,
 																 [OvldDefault( "0f" )] float roundness,
-																 [OvldDefault( "0f" )] float angle,
-																 [OvldDefault( nameof(PolygonShapeFill) )] ShapeFill fill ) {
+																 [OvldDefault( "0f" )] float angle ) {
 			using( new IMDrawer( mpbRegularPolygon, ShapesMaterialUtils.matRegularPolygon[Draw.BlendMode], ShapesMeshUtils.QuadMesh[0] ) ) {
-				MetaMpb.ApplyColorOrFill( mpbRegularPolygon, fill, color );
+				MetaMpb.ApplyColorOrFill( mpbRegularPolygon, color );
+				MetaMpb.ApplyDashSettings( mpbRegularPolygon, thickness );
 				mpbRegularPolygon.radius.Add( radius );
-				mpbRegularPolygon.radiusSpace.Add( (int)Draw.RegularPolygonRadiusSpace );
-				mpbRegularPolygon.geometry.Add( (int)Draw.RegularPolygonGeometry );
+				mpbRegularPolygon.radiusSpace.Add( (int)Draw.RadiusSpace );
+				mpbRegularPolygon.alignment.Add( (int)Draw.RegularPolygonGeometry );
 				mpbRegularPolygon.sides.Add( Mathf.Max( 3, sideCount ) );
 				mpbRegularPolygon.angle.Add( angle );
 				mpbRegularPolygon.roundness.Add( roundness );
 				mpbRegularPolygon.hollow.Add( hollow.AsInt() );
-				mpbRegularPolygon.thicknessSpace.Add( (int)Draw.RegularPolygonThicknessSpace );
+				mpbRegularPolygon.thicknessSpace.Add( (int)Draw.ThicknessSpace );
 				mpbRegularPolygon.thickness.Add( thickness );
 				mpbRegularPolygon.scaleMode.Add( (int)ScaleMode );
 			}
 		}
 
-		static readonly MpbRectangle mpbRectangle = new MpbRectangle();
+		static readonly MpbRect mpbRect = new MpbRect();
 
 		[OvldGenCallTarget] static void Rectangle_Internal( [OvldDefault( nameof(BlendMode) )] ShapesBlendMode blendMode,
 															[OvldDefault( "false" )] bool hollow,
 															Rect rect,
 															[OvldDefault( nameof(Color) )] Color color,
-															[OvldDefault( nameof(RectangleThickness) )] float thickness,
-															[OvldDefault( "default" )] Vector4 cornerRadii,
-															[OvldDefault( nameof(PolygonShapeFill) )] ShapeFill fill ) {
+															[OvldDefault( nameof(Thickness) )] float thickness,
+															[OvldDefault( "default" )] Vector4 cornerRadii ) {
 			bool rounded = ShapesMath.MaxComp( cornerRadii ) >= 0.0001f;
 
 			// positive vibes only
 			if( rect.width < 0 ) rect.x -= rect.width *= -1;
 			if( rect.height < 0 ) rect.y -= rect.height *= -1;
 
-			if( hollow && thickness * 2 >= Mathf.Min( rect.width, rect.height ) ) hollow = false;
-
-			using( new IMDrawer( mpbRectangle, ShapesMaterialUtils.GetRectMaterial( hollow, rounded )[blendMode], ShapesMeshUtils.QuadMesh[0] ) ) {
-				MetaMpb.ApplyColorOrFill( mpbRectangle, fill, color );
-				mpbRectangle.rect.Add( rect.ToVector4() );
-				mpbRectangle.cornerRadii.Add( cornerRadii );
-				mpbRectangle.thickness.Add( thickness );
-				mpbRectangle.thicknessSpace.Add( (int)Draw.RegularPolygonThicknessSpace );
-				mpbRectangle.scaleMode.Add( (int)ScaleMode );
+			using( new IMDrawer( mpbRect, ShapesMaterialUtils.GetRectMaterial( hollow, rounded )[blendMode], ShapesMeshUtils.QuadMesh[0] ) ) {
+				MetaMpb.ApplyColorOrFill( mpbRect, color );
+				MetaMpb.ApplyDashSettings( mpbRect, thickness );
+				mpbRect.rect.Add( rect.ToVector4() );
+				mpbRect.cornerRadii.Add( cornerRadii );
+				mpbRect.thickness.Add( thickness );
+				mpbRect.thicknessSpace.Add( (int)Draw.ThicknessSpace );
+				mpbRect.scaleMode.Add( (int)ScaleMode );
 			}
 		}
 
@@ -252,12 +239,13 @@ namespace Shapes {
 														   Vector3 b,
 														   Vector3 c,
 														   bool hollow,
-														   [OvldDefault( nameof(TriangleThickness) )] float thickness,
+														   [OvldDefault( nameof(Thickness) )] float thickness,
 														   [OvldDefault( "0f" )] float roundness,
 														   [OvldDefault( nameof(Color) )] Color colorA,
 														   [OvldDefault( nameof(Color) )] Color colorB,
 														   [OvldDefault( nameof(Color) )] Color colorC ) {
 			using( new IMDrawer( mpbTriangle, ShapesMaterialUtils.matTriangle[Draw.BlendMode], ShapesMeshUtils.TriangleMesh[0] ) ) {
+				MetaMpb.ApplyDashSettings( mpbTriangle, thickness );
 				mpbTriangle.a.Add( a );
 				mpbTriangle.b.Add( b );
 				mpbTriangle.c.Add( c );
@@ -266,7 +254,7 @@ namespace Shapes {
 				mpbTriangle.colorC.Add( colorC.ColorSpaceAdjusted() );
 				mpbTriangle.roundness.Add( roundness );
 				mpbTriangle.hollow.Add( hollow.AsInt() );
-				mpbTriangle.thicknessSpace.Add( (int)Draw.RegularPolygonThicknessSpace );
+				mpbTriangle.thicknessSpace.Add( (int)Draw.ThicknessSpace );
 				mpbTriangle.thickness.Add( thickness );
 				mpbTriangle.scaleMode.Add( (int)ScaleMode );
 			}
@@ -297,12 +285,12 @@ namespace Shapes {
 
 		static readonly MpbSphere metaMpbSphere = new MpbSphere();
 
-		[OvldGenCallTarget] static void Sphere_Internal( [OvldDefault( nameof(SphereRadius) )] float radius,
+		[OvldGenCallTarget] static void Sphere_Internal( [OvldDefault( nameof(Radius) )] float radius,
 														 [OvldDefault( nameof(Color) )] Color color ) {
 			using( new IMDrawer( metaMpbSphere, ShapesMaterialUtils.matSphere[Draw.BlendMode], ShapesMeshUtils.SphereMesh[(int)DetailLevel] ) ) {
 				metaMpbSphere.color.Add( color.ColorSpaceAdjusted() );
 				metaMpbSphere.radius.Add( radius );
-				metaMpbSphere.radiusSpace.Add( (float)Draw.SphereRadiusSpace );
+				metaMpbSphere.radiusSpace.Add( (float)Draw.RadiusSpace );
 			}
 		}
 
@@ -317,7 +305,7 @@ namespace Shapes {
 				mpbCone.color.Add( color.ColorSpaceAdjusted() );
 				mpbCone.radius.Add( radius );
 				mpbCone.length.Add( length );
-				mpbCone.sizeSpace.Add( (float)Draw.ConeSizeSpace );
+				mpbCone.sizeSpace.Add( (float)Draw.SizeSpace );
 			}
 		}
 
@@ -328,7 +316,7 @@ namespace Shapes {
 			using( new IMDrawer( mpbCuboid, ShapesMaterialUtils.matCuboid[Draw.BlendMode], ShapesMeshUtils.CuboidMesh[0] ) ) {
 				mpbCuboid.color.Add( color.ColorSpaceAdjusted() );
 				mpbCuboid.size.Add( size );
-				mpbCuboid.sizeSpace.Add( (float)Draw.CuboidSizeSpace );
+				mpbCuboid.sizeSpace.Add( (float)Draw.SizeSpace );
 			}
 		}
 
@@ -340,10 +328,10 @@ namespace Shapes {
 			if( thickness < 0.0001f )
 				return;
 			if( radius < 0.00001f ) {
-				ThicknessSpace cached = Draw.SphereRadiusSpace;
-				Draw.SphereRadiusSpace = Draw.TorusThicknessSpace;
+				ThicknessSpace cached = Draw.RadiusSpace;
+				Draw.RadiusSpace = Draw.ThicknessSpace;
 				Sphere( thickness / 2, color );
-				Draw.SphereRadiusSpace = cached;
+				Draw.RadiusSpace = cached;
 				return;
 			}
 
@@ -351,8 +339,8 @@ namespace Shapes {
 				mpbTorus.color.Add( color.ColorSpaceAdjusted() );
 				mpbTorus.radius.Add( radius );
 				mpbTorus.thickness.Add( thickness );
-				mpbTorus.spaceRadius.Add( (int)Draw.TorusRadiusSpace );
-				mpbTorus.spaceThickness.Add( (int)Draw.TorusThicknessSpace );
+				mpbTorus.radiusSpace.Add( (int)Draw.RadiusSpace );
+				mpbTorus.thicknessSpace.Add( (int)Draw.ThicknessSpace );
 				mpbTorus.scaleMode.Add( (int)Draw.ScaleMode );
 			}
 		}
@@ -365,24 +353,71 @@ namespace Shapes {
 													   [OvldDefault( nameof(TextAlign) )] TextAlign align,
 													   [OvldDefault( nameof(Color) )] Color color ) {
 			TextMeshPro tmp = ShapesTextDrawer.Instance.tmp;
-			// Statics
+
+			// styling
 			tmp.font = font;
 			tmp.color = color;
 			tmp.fontSize = fontSize;
+			tmp.fontStyle = FontStyle;
+			tmp.characterSpacing = TextCharacterSpacing;
+			tmp.wordSpacing = TextWordSpacing;
+			tmp.lineSpacing = TextLineSpacing;
+			tmp.paragraphSpacing = TextParagraphSpacing;
+			tmp.margin = TextMargins;
 
-			// Per-instance
+			// content
 			tmp.text = content;
+
+			// positioning
 			tmp.alignment = align.GetTMPAlignment();
 			tmp.rectTransform.pivot = align.GetPivot();
 			tmp.transform.position = Matrix.GetColumn( 3 );
 			tmp.rectTransform.rotation = Matrix.rotation;
 			tmp.ForceMeshUpdate();
 
-			using( new IMDrawer( mpbText, font.material, tmp.mesh, cachedTMP: true ) ) {
+			using( new IMDrawer( mpbText, font.material, tmp.mesh, drawType: IMDrawer.DrawType.Text, allowInstancing: false ) ) {
 				// will draw on dispose
 			}
 		}
 
+		static MpbTexture mpbTexture = new MpbTexture();
+
+		[OvldGenCallTarget] static void Texture_Internal( Texture texture, Rect rect, Rect uvs, [OvldDefault( nameof(Color) )] Color color ) {
+			Material mat = ShapesMaterialUtils.matTexture[BlendMode];
+
+			using( new IMDrawer( mpbTexture, mat, ShapesMeshUtils.QuadMesh[0], allowInstancing: false ) ) {
+				mpbTexture.textures.Add( texture );
+				mpbTexture.color.Add( color.ColorSpaceAdjusted() );
+				mpbTexture.rect.Add( rect.ToVector4() );
+				mpbTexture.uvs.Add( uvs.ToVector4() );
+			}
+		}
+
+		[MethodImpl( INLINE )] static void Texture_Placement_Internal(
+			Texture texture,
+			(Rect rect, Rect uvs) placement,
+			Color color ) {
+			Texture_Internal( texture, placement.rect, placement.uvs, color );
+		}
+
+		[MethodImpl( INLINE )] [OvldGenCallTarget] static void Texture_RectFill_Internal(
+			Texture texture,
+			Rect rect,
+			[OvldDefault( nameof(TextureFillMode) + "." + nameof(TextureFillMode.ScaleToFit) )]
+			TextureFillMode fillMode,
+			[OvldDefault( nameof(Color) )] Color color ) {
+			Texture_Placement_Internal( texture, TexturePlacement.Fit( texture, rect, fillMode ), color );
+		}
+
+		[MethodImpl( INLINE )] [OvldGenCallTarget] static void Texture_PosSize_Internal(
+			Texture texture,
+			Vector2 center,
+			float size,
+			[OvldDefault( nameof(TextureSizeMode) + "." + nameof(TextureSizeMode.LongestSide) )]
+			TextureSizeMode sizeMode,
+			[OvldDefault( nameof(Color) )] Color color ) {
+			Texture_Placement_Internal( texture, TexturePlacement.Size( texture, center, size, sizeMode ), color );
+		}
 
 	}
 

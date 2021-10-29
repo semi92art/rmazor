@@ -5,15 +5,11 @@
 #pragma target 3.0
 
 UNITY_INSTANCING_BUFFER_START(Props)
-UNITY_DEFINE_INSTANCED_PROP(int, _ScaleMode)
-UNITY_DEFINE_INSTANCED_PROP(half4, _Color)
-UNITY_DEFINE_INSTANCED_PROP(float4, _PointStart)
-UNITY_DEFINE_INSTANCED_PROP(float4, _PointEnd)
-UNITY_DEFINE_INSTANCED_PROP(half, _Thickness)
-UNITY_DEFINE_INSTANCED_PROP(int, _ThicknessSpace)
-UNITY_DEFINE_INSTANCED_PROP(half, _DashSize)
-UNITY_DEFINE_INSTANCED_PROP(half, _DashOffset)
-UNITY_DEFINE_INSTANCED_PROP(int, _Alignment)
+PROP_DEF(int, _ScaleMode)
+PROP_DEF(half4, _Color)
+PROP_DEF(half, _Thickness)
+PROP_DEF(int, _ThicknessSpace)
+PROP_DEF(int, _Alignment)
 UNITY_INSTANCING_BUFFER_END(Props)
 
 #define ALIGNMENT_FLAT 0
@@ -62,7 +58,7 @@ VertexOutput vert (VertexInput v) {
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
     
     // alignment
-    int alignment = UNITY_ACCESS_INSTANCED_PROP(Props, _Alignment);
+    int alignment = PROP(_Alignment);
 
     // points
     float3 ptWorld = 0;
@@ -110,15 +106,15 @@ VertexOutput vert (VertexInput v) {
         }
     }
     
-    int scaleMode = UNITY_ACCESS_INSTANCED_PROP(Props, _ScaleMode);
+    int scaleMode = PROP(_ScaleMode);
     half uniformScale = GetUniformScale();
 	half scaleThickness = scaleMode == SCALE_MODE_UNIFORM ? 1 : 1.0/uniformScale;
     
     // thickness stuff
-    half thickness = UNITY_ACCESS_INSTANCED_PROP(Props, _Thickness) * v.uv0.w * scaleThickness; // global thickness * per-point thickness * transform scaling
+    half thickness = PROP(_Thickness) * v.uv0.w * scaleThickness; // global thickness * per-point thickness * transform scaling
     
     // radius calc
-    int thicknessSpace = UNITY_ACCESS_INSTANCED_PROP(Props, _ThicknessSpace);
+    int thicknessSpace = PROP(_ThicknessSpace);
 	LineWidthData widthData = GetScreenSpaceWidthData( ptWorld, CAM_RIGHT, thickness, thicknessSpace );
 	o.IP_pxCoverage = widthData.thicknessPixelsTarget / scaleThickness; // hack: this is a lil weird honestly - I think we're mixing local vs world somehere before this
 	half vertexRadius = widthData.thicknessMeters * 0.5;
@@ -186,7 +182,7 @@ VertexOutput vert (VertexInput v) {
         o.origin = pt;
     #endif
 
-    o.color = v.color * UNITY_ACCESS_INSTANCED_PROP(Props, _Color);
+    o.color = v.color * PROP(_Color);
 
     // todo: this causes *bad things* with anti-aliasing
     // it's complicated - this doesn't work due to how barycentric interpolation skews coordinates.

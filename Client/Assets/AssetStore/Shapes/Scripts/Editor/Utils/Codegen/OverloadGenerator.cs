@@ -119,7 +119,7 @@ namespace Shapes {
 
 			if( string.IsNullOrEmpty( overloadParamsStr ) == false )
 				overloadParamsStr = $" {overloadParamsStr} "; // formatting, make empty ones not have spaces inside
-			string functionHeader = $"\t\t{inlineDocs}\n\t\tpublic static void {overloadName}({overloadParamsStr})";
+			string functionHeader = $"{inlineDocs}\n[MethodImpl( INLINE )] public static void {overloadName}({overloadParamsStr})";
 			string drawFuncCall = CodegenDrawOverloads.DEBUG_WRITE_EMPTY_BODIES ? "_ = 0" : $"{targetCall.name}( {callParams} )";
 
 			if( mtxFlags == Param.MtxFlags.None ) {
@@ -132,11 +132,11 @@ namespace Shapes {
 					   $"{fBodyIndent}{GetTransformation( mtxFlags )};\n" +
 					   $"{fBodyIndent}{drawFuncCall};\n" +
 					   $"{fBodyIndent}Draw.PopMatrix();\n" +
-					   $"\t\t}}";
+					   $"}}";
 			}
 		}
 
-		const string fBodyIndent = "\t\t\t";
+		const string fBodyIndent = "\t";
 
 		static string GetTransformation( Param.MtxFlags flags ) {
 			switch( flags ) {

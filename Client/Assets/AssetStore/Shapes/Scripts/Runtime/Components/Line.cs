@@ -7,7 +7,7 @@ namespace Shapes {
 	/// <summary>A Line segment shape component</summary>
 	[ExecuteAlways]
 	[AddComponentMenu( "Shapes/Line" )]
-	public class Line : ShapeRenderer {
+	public partial class Line : ShapeRenderer, IDashable {
 
 		/// <summary>The color modes for line shapes</summary>
 		public enum LineColorMode {
@@ -99,75 +99,6 @@ namespace Shapes {
 				UpdateMaterial();
 			}
 		}
-		[SerializeField] bool matchDashSpacingToSize = true;
-		/// <summary>Get or set whether or not dash spacing should be auto-set to the dash size</summary>
-		public bool MatchDashSpacingToSize {
-			get => matchDashSpacingToSize;
-			set {
-				matchDashSpacingToSize = value;
-				SetAllDashValues( now: true );
-			}
-		}
-		[SerializeField] bool dashed = false;
-		/// <summary>Get or set whether or not this line should be dashed</summary>
-		public bool Dashed {
-			get => dashed;
-			set {
-				dashed = value;
-				SetAllDashValues( now: true );
-			}
-		}
-		[SerializeField] DashStyle dashStyle = DashStyle.DefaultDashStyleLine;
-		/// <summary>Size of dashes in the specified dash space. When using DashSpace.FixedCount, this is the number of dashes</summary>
-		public float DashSize {
-			get => dashStyle.size;
-			set {
-				dashStyle.size = value;
-				float netDashSize = dashStyle.GetNetAbsoluteSize( dashed, thickness );
-				if( matchDashSpacingToSize )
-					SetFloat( ShapesMaterialUtils.propDashSpacing, GetNetDashSpacing() );
-				SetFloatNow( ShapesMaterialUtils.propDashSize, netDashSize );
-			}
-		}
-		/// <summary>Size of spacing between each dash, in the specified dash space. When using DashSpace.FixedCount, this is the dash:space ratio</summary>
-		public float DashSpacing {
-			get => dashStyle.spacing;
-			set {
-				dashStyle.spacing = value;
-				SetFloatNow( ShapesMaterialUtils.propDashSpacing, GetNetDashSpacing() );
-			}
-		}
-		/// <summary>Offset for dashes. An offset of 1 is the size of a whole dash+space period</summary>
-		public float DashOffset {
-			get => dashStyle.offset;
-			set => SetFloatNow( ShapesMaterialUtils.propDashOffset, dashStyle.offset = value );
-		}
-		/// <summary>The space in which dash lengths are defined</summary>
-		public DashSpace DashSpace {
-			get => dashStyle.space;
-			set {
-				SetInt( ShapesMaterialUtils.propDashSpace, (int)( dashStyle.space = value ) );
-				SetFloatNow( ShapesMaterialUtils.propDashSize, dashStyle.GetNetAbsoluteSize( dashed, thickness ) );
-			}
-		}
-		/// <summary>What snapping type to use for dashes</summary>
-		public DashSnapping DashSnap {
-			get => dashStyle.snap;
-			set => SetIntNow( ShapesMaterialUtils.propDashSnap, (int)( dashStyle.snap = value ) );
-		}
-		/// <summary>What dash type to use for dashed lines</summary>
-		public DashType DashType {
-			get => dashStyle.type;
-			set => SetIntNow( ShapesMaterialUtils.propDashType, (int)( dashStyle.type = value ) );
-		}
-		/// <summary>A -1 to 1 modifier that allows you to tweak or mirror certain dash types in dashed lines</summary>
-		public float DashShapeModifier {
-			get => dashStyle.shapeModifier;
-			set => SetFloatNow( ShapesMaterialUtils.propDashShapeModifier, dashStyle.shapeModifier = value );
-		}
-
-		void SetAllDashValues( bool now ) => SetAllDashValues( dashStyle, Dashed, matchDashSpacingToSize, thickness, Geometry != LineGeometry.Volumetric3D, now );
-		float GetNetDashSpacing() => GetNetDashSpacing( dashStyle, dashed, matchDashSpacingToSize, thickness );
 
 		private protected override void SetAllMaterialProperties() {
 			SetVector3( ShapesMaterialUtils.propPointStart, start );

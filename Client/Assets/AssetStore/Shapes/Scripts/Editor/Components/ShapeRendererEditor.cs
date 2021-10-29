@@ -30,6 +30,7 @@ namespace Shapes {
 		SerializedProperty propBlendMode = null;
 		SerializedProperty propScaleMode = null;
 		SerializedProperty propDetailLevel = null;
+		SerializedProperty propRenderQueue = null;
 
 		// MeshRenderer
 		SerializedObject soRnd;
@@ -55,6 +56,13 @@ namespace Shapes {
 			"Scale Mode",
 			"[Uniform] mode means thickness will also scale with the transform, regardless of thickness space settings\n\n" +
 			"[Coordinate] mode means thickness values will remain the same even when scaling"
+		);
+
+		static GUIContent renderQueueGuiContent = new GUIContent(
+			"Render Queue",
+			"The render queue of this object. Default is -1, which means it will use the queue from the shader.\n\n" +
+			"[Opaque] = 2450 (AlphaTest)\n" +
+			"[All Other Blend Modes] = 3000 (Transparent)"
 		);
 
 		static GUIContent zTestGuiContent = new GUIContent(
@@ -129,6 +137,7 @@ namespace Shapes {
 				using( new EditorGUI.IndentLevelScope( 1 ) ) {
 					if( showDepth = EditorGUILayout.Foldout( showDepth, "Sorting & Depth" ) ) {
 						using( ShapesUI.TempLabelWidth( 140 ) ) {
+							EditorGUILayout.PropertyField( propRenderQueue, renderQueueGuiContent );
 							ShapesUI.RenderSortingLayerField( propSortingLayer );
 							EditorGUILayout.PropertyField( propSortingOrder );
 							EditorGUILayout.PropertyField( propZTest, zTestGuiContent );
@@ -183,6 +192,7 @@ namespace Shapes {
 							propStencilRefID.intValue = ShapeRenderer.DEFAULT_STENCIL_REF_ID;
 							propStencilReadMask.intValue = ShapeRenderer.DEFAULT_STENCIL_MASK;
 							propStencilWriteMask.intValue = ShapeRenderer.DEFAULT_STENCIL_MASK;
+							propRenderQueue.intValue = ShapeRenderer.DEFAULT_RENDER_QUEUE_AUTO;
 						}
 					}
 				}

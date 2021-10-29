@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 // Shapes © Freya Holmér - https://twitter.com/FreyaHolmer/
 // Website & Documentation - https://acegikmo.com/shapes/
@@ -8,7 +9,7 @@ namespace Shapes {
 	/// <summary>A Triangle shape component</summary>
 	[ExecuteAlways]
 	[AddComponentMenu( "Shapes/Triangle" )]
-	public class Triangle : ShapeRenderer {
+	public partial class Triangle : ShapeRenderer, IDashable {
 
 		/// <summary>Color modes for the triangle shape</summary>
 		public enum TriangleColorMode {
@@ -117,15 +118,19 @@ namespace Shapes {
 			get => c;
 			set => SetVector3Now( ShapesMaterialUtils.propC, c = value );
 		}
-
-		[SerializeField] bool hollow = false;
-		/// <summary>Whether or not this Regular Polygon should be hollow</summary>
+		[FormerlySerializedAs( "hollow" )] [SerializeField] bool border = false;
+		/// <summary>Whether this is a triangle border instead of a filled triangle</summary>
+		public bool Border {
+			get => border;
+			set => SetIntNow( ShapesMaterialUtils.propBorder, ( border = value ).AsInt() );
+		}
+		[Obsolete( "Please use Triangle.Border instead", true )]
 		public bool Hollow {
-			get => hollow;
-			set => SetIntNow( ShapesMaterialUtils.propHollow, ( hollow = value ).AsInt() );
+			get => Border;
+			set => Border = value;
 		}
 		[SerializeField] float thickness = 0.5f;
-		/// <summary>The thickness of the regular polygon border (if hollow)</summary>
+		/// <summary>The thickness of the border (if border triangle)</summary>
 		public float Thickness {
 			get => thickness;
 			set => SetFloatNow( ShapesMaterialUtils.propThickness, thickness = Mathf.Max( 0f, value ) );
@@ -181,12 +186,15 @@ namespace Shapes {
 				SetColor( ShapesMaterialUtils.propColorB, colorB );
 				SetColor( ShapesMaterialUtils.propColorC, colorC );
 			}
+
 			SetFloat( ShapesMaterialUtils.propRoundness, roundness );
 			SetFloat( ShapesMaterialUtils.propThickness, thickness );
 			SetFloat( ShapesMaterialUtils.propThicknessSpace, (int)thicknessSpace );
-			SetFloat( ShapesMaterialUtils.propHollow, hollow.AsInt() );
+			SetFloat( ShapesMaterialUtils.propBorder, border.AsInt() );
+			SetAllDashValues( now: false );
 		}
-		
+
+
 		#if UNITY_EDITOR
 		private protected override void ShapeClampRanges() {
 			thickness = Mathf.Max( 0f, thickness ); // disallow negative inner radius

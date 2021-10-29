@@ -44,7 +44,7 @@ namespace Shapes {
 
 
 		// this runs per object selected
-		public bool DoSceneHandles( bool useFill, Object component, ShapeFill fill, Transform tf ) {
+		public bool DoSceneHandles( bool useFill, Object component, GradientFill fill, Transform tf ) {
 			CheckForCancelEditAction();
 
 			if( useFill == false )

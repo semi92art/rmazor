@@ -21,10 +21,17 @@ namespace Shapes {
 		MetaMpb metaMpb;
 		ShapeDrawState drawState;
 		Matrix4x4 mtx;
+		bool allowInstancing;
 
-		public IMDrawer( MetaMpb metaMpb, Material sourceMat, Mesh sourceMesh, int submesh = 0, bool cachedTMP = false ) {
+		public enum DrawType {
+			Shape,
+			Text
+		}
+
+		public IMDrawer( MetaMpb metaMpb, Material sourceMat, Mesh sourceMesh, int submesh = 0, DrawType drawType = DrawType.Shape, bool allowInstancing = true ) {
 			this.mtx = Draw.Matrix;
 			this.metaMpb = metaMpb;
+			this.allowInstancing = allowInstancing && ShapesConfig.Instance.useImmediateModeInstancing;
 
 			#if UNITY_EDITOR
 			if( sourceMat == null )
@@ -34,16 +41,28 @@ namespace Shapes {
 				Draw.style.renderState.shader = sourceMat.shader;
 				Draw.style.renderState.keywords = GetMaterialKeywords( sourceMat );
 
-				if( cachedTMP ) {
-					// instantiate the mesh and then delete it after this DrawCommand has been executed
-					drawState.mesh = Object.Instantiate( sourceMesh );
+				bool cacheMaterial = drawType == DrawType.Text;
+				bool cacheMesh = drawType == DrawType.Text;
+
+				if( cacheMaterial ) {
+					// instantiate and then delete it after this DrawCommand has been executed
 					drawState.mat = Object.Instantiate( sourceMat );
-					ApplyGlobalPropertiesTMP( drawState.mat ); // a lil gross but sfine
-					List<Object> cache = DrawCommand.CurrentWritingCommandBuffer.cachedAssets;
-					cache.Add( drawState.mesh );
-					cache.Add( drawState.mat );
+					if( drawType == DrawType.Text )
+						ApplyGlobalPropertiesTMP( drawState.mat ); // a lil gross but sfine
+					else
+						ApplyGlobalProperties( drawState.mat );
+					DrawCommand.CurrentWritingCommandBuffer.cachedAssets.Add( drawState.mat );
 				} else {
 					drawState.mat = IMMaterialPool.GetMaterial( ref Draw.style.renderState );
+				}
+
+				// Debug.Log( drawState.mat.mainTexture );
+
+				if( cacheMesh ) {
+					// instantiate the mesh and then delete it after this DrawCommand has been executed
+					drawState.mesh = Object.Instantiate( sourceMesh );
+					DrawCommand.CurrentWritingCommandBuffer.cachedAssets.Add( drawState.mesh );
+				} else {
 					drawState.mesh = sourceMesh;
 				}
 
@@ -69,20 +88,20 @@ namespace Shapes {
 				drawState.submesh = submesh;
 				if( metaMpb.PreAppendCheck( drawState, mtx ) == false )
 					Debug.LogError( "Somehow PreAppendCheck failed for this draw" );
-				ApplyGlobalProperties(); // this will set render state of the material. todo: will this modify the assets? this seems bad
+				ApplyGlobalProperties( drawState.mat ); // this will set render state of the material. todo: will this modify the assets? this seems bad
 			}
 		}
 
-		void ApplyGlobalProperties() {
+		static void ApplyGlobalProperties( Material m ) {
 			if( DrawCommand.IsAddingDrawCommandsToBuffer == false ) { // mpbs can't carry render state
-				drawState.mat.SetFloat( ShapesMaterialUtils.propZTest, (float)Draw.ZTest );
-				drawState.mat.SetFloat( ShapesMaterialUtils.propZOffsetFactor, Draw.ZOffsetFactor );
-				drawState.mat.SetFloat( ShapesMaterialUtils.propZOffsetUnits, Draw.ZOffsetUnits );
-				drawState.mat.SetFloat( ShapesMaterialUtils.propStencilComp, (float)Draw.StencilComp );
-				drawState.mat.SetFloat( ShapesMaterialUtils.propStencilOpPass, (float)Draw.StencilOpPass );
-				drawState.mat.SetFloat( ShapesMaterialUtils.propStencilID, Draw.StencilRefID );
-				drawState.mat.SetFloat( ShapesMaterialUtils.propStencilReadMask, Draw.StencilReadMask );
-				drawState.mat.SetFloat( ShapesMaterialUtils.propStencilWriteMask, Draw.StencilWriteMask );
+				m.SetFloat( ShapesMaterialUtils.propZTest, (float)Draw.ZTest );
+				m.SetFloat( ShapesMaterialUtils.propZOffsetFactor, Draw.ZOffsetFactor );
+				m.SetFloat( ShapesMaterialUtils.propZOffsetUnits, Draw.ZOffsetUnits );
+				m.SetFloat( ShapesMaterialUtils.propStencilComp, (float)Draw.StencilComp );
+				m.SetFloat( ShapesMaterialUtils.propStencilOpPass, (float)Draw.StencilOpPass );
+				m.SetFloat( ShapesMaterialUtils.propStencilID, Draw.StencilRefID );
+				m.SetFloat( ShapesMaterialUtils.propStencilReadMask, Draw.StencilReadMask );
+				m.SetFloat( ShapesMaterialUtils.propStencilWriteMask, Draw.StencilWriteMask );
 			}
 		}
 
@@ -104,7 +123,7 @@ namespace Shapes {
 				metaMpb.ApplyDirectlyToMaterial();
 				drawState.mat.SetPass( 0 );
 				Graphics.DrawMeshNow( drawState.mesh, mtx, drawState.submesh );
-			} else if( ShapesConfig.Instance.useImmediateModeInstancing == false ) {
+			} else if( allowInstancing == false ) {
 				// finalize the draw if we're not using instancing
 				DrawCommand.CurrentWritingCommandBuffer.drawCalls.Add( metaMpb.ExtractDrawCall() );
 			}

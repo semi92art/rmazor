@@ -5,27 +5,26 @@
 #pragma target 3.0
 
 UNITY_INSTANCING_BUFFER_START(Props)
-UNITY_DEFINE_INSTANCED_PROP(int, _ScaleMode)
-UNITY_DEFINE_INSTANCED_PROP(int, _Alignment)
-UNITY_DEFINE_INSTANCED_PROP(half4, _Color)
-UNITY_DEFINE_INSTANCED_PROP(half4, _ColorOuterStart)
-UNITY_DEFINE_INSTANCED_PROP(half4, _ColorInnerEnd)
-UNITY_DEFINE_INSTANCED_PROP(half4, _ColorOuterEnd)
-UNITY_DEFINE_INSTANCED_PROP(half, _Radius)
-UNITY_DEFINE_INSTANCED_PROP(int, _RadiusSpace)
-UNITY_DEFINE_INSTANCED_PROP(half, _Thickness)
-UNITY_DEFINE_INSTANCED_PROP(int, _ThicknessSpace)
-UNITY_DEFINE_INSTANCED_PROP(half, _AngleStart)
-UNITY_DEFINE_INSTANCED_PROP(half, _AngleEnd)
-UNITY_DEFINE_INSTANCED_PROP(int, _RoundCaps)
-UNITY_DEFINE_INSTANCED_PROP(int, _DashType)
-UNITY_DEFINE_INSTANCED_PROP(half, _DashSize)
-UNITY_DEFINE_INSTANCED_PROP(half, _DashShapeModifier)
-UNITY_DEFINE_INSTANCED_PROP(half, _DashOffset)
-UNITY_DEFINE_INSTANCED_PROP(half, _DashSpacing)
-UNITY_DEFINE_INSTANCED_PROP(int, _DashSpace)
-UNITY_DEFINE_INSTANCED_PROP(int, _DashSnap)
+PROP_DEF(int, _ScaleMode)
+PROP_DEF(int, _Alignment)
+PROP_DEF(half4, _Color)
+PROP_DEF(half4, _ColorOuterStart)
+PROP_DEF(half4, _ColorInnerEnd)
+PROP_DEF(half4, _ColorOuterEnd)
+PROP_DEF(half, _Radius)
+PROP_DEF(int, _RadiusSpace)
+PROP_DEF(half, _Thickness)
+PROP_DEF(int, _ThicknessSpace)
+PROP_DEF(half, _AngleStart)
+PROP_DEF(half, _AngleEnd)
+PROP_DEF(int, _RoundCaps)
+#ifdef INNER_RADIUS
+SHAPES_DASH_PROPERTIES
+#endif
 UNITY_INSTANCING_BUFFER_END(Props)
+#ifdef INNER_RADIUS
+#include "../DashUtils.cginc"
+#endif
 
 #define ALIGNMENT_FLAT 0
 #define ALIGNMENT_BILLBOARD 1
@@ -56,9 +55,9 @@ struct VertexOutput {
 
 // I hate C
 inline void ApplyRadialMask( inout half mask, VertexOutput i, out half tRadial );
-inline void ApplyAngularMask( inout half mask, VertexOutput i,out half tAngularFull, out half tAngular, out half2 coord, out half ang, out half angStart, out half angEnd, out bool useRoundCaps, out half sectorSize );
+inline void ApplyAngularMask( inout half mask, VertexOutput i, out float tAngularFull, out float tAngular, out half2 coord, out float ang, out half angStart, out half angEnd, out bool useRoundCaps, out half sectorSize );
 inline void ApplyEndCaps( inout half mask, VertexOutput i, half2 coord, half ang, half angStart, half angEnd, bool useRoundCaps );
-inline void ApplyDashes( inout half mask, VertexOutput i, half t, half tRadial, half sectorSize );
+inline void ApplyDashes( inout half mask, VertexOutput i, float t, half tRadial, half sectorSize );
 inline half4 GetColor( half tRadial, half tAngular );
 inline half4 GetBounds( bool centerAlign, half alignOffset, half angDelta, half innerFrac, half outerFrac );
 
@@ -69,8 +68,8 @@ VertexOutput vert (VertexInput v) {
 	UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
 	half uniformScale = GetUniformScale();
-	half radius = UNITY_ACCESS_INSTANCED_PROP(Props, _Radius) * uniformScale;
-	int radiusSpace = UNITY_ACCESS_INSTANCED_PROP(Props, _RadiusSpace);
+	half radius = PROP(_Radius) * uniformScale;
+	int radiusSpace = PROP(_RadiusSpace);
     LineWidthData widthDataRadius = GetScreenSpaceWidthDataSimple( OBJ_ORIGIN, CAM_RIGHT, radius*2, radiusSpace );
     o.IP_pxCoverage = widthDataRadius.thicknessPixelsTarget;
 
@@ -83,10 +82,10 @@ VertexOutput vert (VertexInput v) {
 	
 	#ifdef INNER_RADIUS
         o.IP_pxPerMeter = widthDataRadius.pxPerMeter;
-	    int scaleMode = UNITY_ACCESS_INSTANCED_PROP(Props, _ScaleMode);
+	    int scaleMode = PROP(_ScaleMode);
         half scaleThickness = scaleMode == SCALE_MODE_UNIFORM ? uniformScale : 1;
-	    half thickness = UNITY_ACCESS_INSTANCED_PROP(Props, _Thickness) * scaleThickness;
-	    int thicknessSpace = UNITY_ACCESS_INSTANCED_PROP(Props, _ThicknessSpace);
+	    half thickness = PROP(_Thickness) * scaleThickness;
+	    int thicknessSpace = PROP(_ThicknessSpace);
 	    LineWidthData widthDataThickness = GetScreenSpaceWidthDataSimple( OBJ_ORIGIN, CAM_RIGHT, thickness, thicknessSpace );
 	    half thicknessRadius = widthDataThickness.thicknessMeters / 2;
 	    o.IP_thicknessMeters = widthDataThickness.thicknessMeters;
@@ -106,8 +105,8 @@ VertexOutput vert (VertexInput v) {
 
 	// change the bounding box based on angles to save fill rate performance
 	#ifdef SECTOR
-		half angStartRaw = UNITY_ACCESS_INSTANCED_PROP(Props, _AngleStart);
-		half angEndRaw = UNITY_ACCESS_INSTANCED_PROP(Props, _AngleEnd);
+		half angStartRaw = PROP(_AngleStart);
+		half angEndRaw = PROP(_AngleEnd);
 		half angStart = min(angStartRaw,angEndRaw);
 		half angEnd = max(angStartRaw,angEndRaw);
 	
@@ -134,7 +133,7 @@ VertexOutput vert (VertexInput v) {
 	v.uv0 /= outerRadiusFraction; // padding correction
 	
 
-	if( UNITY_ACCESS_INSTANCED_PROP(Props, _Alignment) == ALIGNMENT_BILLBOARD ) {
+	if( PROP(_Alignment) == ALIGNMENT_BILLBOARD ) {
 		half3 frw = WorldToLocalVec( -DirectionToNearPlanePos( OBJ_ORIGIN ) );
 		half3 camRightLocal = WorldToLocalVec( CAM_RIGHT );
 		half3 up = normalize( cross( frw, camRightLocal ) );
@@ -151,9 +150,11 @@ VertexOutput vert (VertexInput v) {
 FRAG_OUTPUT_V4 frag( VertexOutput i ) : SV_Target {
 	UNITY_SETUP_INSTANCE_ID(i); 
 
-    half tRadial, tAngular; // interpolators for radial & angular gradient
-    half tAngularFull; // angular gradient 0 to 1, used for dashes
-	half ang, angStart, angEnd;
+    half tRadial;
+	float tAngular; // interpolators for radial & angular gradient
+    float tAngularFull; // angular gradient 0 to 1, used for dashes
+	float ang;
+	half angStart, angEnd;
 	bool useRoundCaps;
 	half2 coord; // coordinates used for end caps, if applicable
 	half sectorSize; // used to snap dash coords
@@ -161,8 +162,8 @@ FRAG_OUTPUT_V4 frag( VertexOutput i ) : SV_Target {
 	half mask = 1;
 	ApplyRadialMask( /*inout*/ mask, i, /*out*/ tRadial );
 	ApplyAngularMask( /*inout*/ mask, i,/*out*/ tAngularFull, /*out*/ tAngular, /*out*/ coord, /*out*/ ang, /*out*/ angStart, /*out*/ angEnd, /*out*/ useRoundCaps, /*out*/ sectorSize );
-	ApplyEndCaps(/*inout*/ mask, i, coord, ang, angStart, angEnd, useRoundCaps);
 	#ifdef INNER_RADIUS
+		ApplyEndCaps(/*inout*/ mask, i, coord, ang, angStart, angEnd, useRoundCaps);
 	    ApplyDashes( /*inout*/ mask, i, tAngularFull, tRadial, sectorSize );
 	#endif
 	mask *= saturate(i.IP_pxCoverage); // pixel fade
@@ -181,7 +182,7 @@ inline half4 GetBounds( bool centerAlign, half alignOffset, half angDelta, half 
 	half2 tipMin = min(0,dir);
 	half tipMaxY = dir.y;
 	#ifdef INNER_RADIUS
-		bool roundCaps = UNITY_ACCESS_INSTANCED_PROP( Props, _RoundCaps );
+		bool roundCaps = PROP( _RoundCaps );
 		if(roundCaps){
 			half uvRingRadius = (1-innerFrac)*0.5-laaPadding;
 			half2 dirSclCnt = dir*(1-uvRingRadius);
@@ -217,44 +218,18 @@ inline half ArcLengthToAngle( half radius, half arcLength ){
     return arcLength / radius;
 }
 
-inline void ApplyDashes( inout half mask, VertexOutput i, half t, half tRadial, half sectorSize ){
-
-    #ifdef INNER_RADIUS
-    
-    half dashInputSize = UNITY_ACCESS_INSTANCED_PROP(Props, _DashSize);
-    if( dashInputSize <= VERY_SMOL )
-        return;
-    
-    half dashInputSpacing = UNITY_ACCESS_INSTANCED_PROP(Props, _DashSpacing);
-    half radiusMeters = i.IP_centerRadiusMeters;
-    int scaleMode = UNITY_ACCESS_INSTANCED_PROP(Props, _ScaleMode);
-    int dashSpace = UNITY_ACCESS_INSTANCED_PROP(Props, _DashSpace);
-    
-    bool rescaleDashSpace = dashSpace != DASH_SPACE_FIXED_COUNT && scaleMode == SCALE_MODE_COORDINATE;
-    half scaleDashes = rescaleDashSpace ? 1/i.IP_uniformScale : 1;
-    half dashSize = dashInputSize * scaleDashes;
-	half scaleSpacing = rescaleDashSpace ? (dashInputSpacing + dashInputSize - dashSize) / dashInputSpacing  : 1;
-    half offset = UNITY_ACCESS_INSTANCED_PROP(Props, _DashOffset); // todo: scale?
-    int thicknessSpace = UNITY_ACCESS_INSTANCED_PROP(Props, _ThicknessSpace);
-    int snap = UNITY_ACCESS_INSTANCED_PROP(Props, _DashSnap);
-    
-    // radius * TAU = arc len
-    #ifdef SECTOR
-        half angularSpan = sectorSize;
-    #else
-        half angularSpan = TAU;
-    #endif
-    half distanceAroundRingTotal = radiusMeters * angularSpan;
-    half distanceAroundRing = t * radiusMeters * TAU; // arc length in meters right now
-    half dashSpacing = dashInputSpacing * scaleSpacing;
-    LineDashData dashData = GetDashCoordinates( dashSize, dashSpacing, distanceAroundRing, distanceAroundRingTotal, i.IP_thicknessMeters, thicknessSpace, i.IP_pxPerMeter, offset, dashSpace, snap );
-    
-    int dashType = UNITY_ACCESS_INSTANCED_PROP(Props, _DashType);
-	half dashModifier = UNITY_ACCESS_INSTANCED_PROP(Props, _DashShapeModifier);
-    ApplyDashMask( /*inout*/ mask, dashData, tRadial*2-1, dashType, dashModifier );
-    
-    #endif
+#ifdef INNER_RADIUS
+inline void ApplyDashes( inout half mask, VertexOutput i, float t, half tRadial, half angularSpan ){
+	if( IsDashed() ) {
+		half radiusMeters = i.IP_centerRadiusMeters;
+		float dist = t * radiusMeters * TAU; // arc length in meters right now
+		float distTotal = radiusMeters * angularSpan;
+		DashConfig dash = GetDashConfig( i.IP_uniformScale );
+		DashCoordinates dashCoords = GetDashCoordinates( dash, dist, distTotal, i.IP_thicknessMeters, i.IP_pxPerMeter );
+		ApplyDashMask( /*inout*/ mask, dashCoords, tRadial*2-1, dash.type, dash.modifier );
+	}
 }
+#endif
 
 inline void ApplyRadialMask( inout half mask, VertexOutput i, out half tRadial ){
     half len = length( i.IP_uv0 );
@@ -267,11 +242,11 @@ inline void ApplyRadialMask( inout half mask, VertexOutput i, out half tRadial )
 	#endif
 }
 
-inline void ApplyAngularMask( inout half mask, VertexOutput i, out half tAngularFull, out half tAngular, out half2 coord, out half ang, out half angStart, out half angEnd, out bool useRoundCaps, out half sectorSize ){
+inline void ApplyAngularMask( inout half mask, VertexOutput i, out float tAngularFull, out float tAngular, out half2 coord, out float ang, out half angStart, out half angEnd, out bool useRoundCaps, out half sectorSize ){
 
     #ifdef SECTOR
-        angStart = UNITY_ACCESS_INSTANCED_PROP(Props, _AngleStart);
-		angEnd = UNITY_ACCESS_INSTANCED_PROP(Props, _AngleEnd);
+        angStart = PROP(_AngleStart);
+		angEnd = PROP(_AngleEnd);
 	
 	    // Rotate so that the -pi/pi seam is opposite of the visible segment
 		// 0 is the center of the segment post-rotate
@@ -296,7 +271,7 @@ inline void ApplyAngularMask( inout half mask, VertexOutput i, out half tAngular
 	
 	#ifdef SECTOR
 	
-	    useRoundCaps = UNITY_ACCESS_INSTANCED_PROP(Props, _RoundCaps);
+	    useRoundCaps = PROP( _RoundCaps );
 	        
 	    float segmentMask;
 		#if LOCAL_ANTI_ALIASING_QUALITY == 0
@@ -355,10 +330,10 @@ inline void ApplyEndCaps( inout half mask, VertexOutput i, half2 coord, half ang
 }
 
 inline half4 GetColor( half tRadial, half tAngular ){
-    half4 colInnerStart = UNITY_ACCESS_INSTANCED_PROP(Props, _Color);
-    half4 colOuterStart = UNITY_ACCESS_INSTANCED_PROP(Props, _ColorOuterStart);
-    half4 colInnerEnd = UNITY_ACCESS_INSTANCED_PROP(Props, _ColorInnerEnd);
-    half4 colOuterEnd = UNITY_ACCESS_INSTANCED_PROP(Props, _ColorOuterEnd);
+    half4 colInnerStart = PROP(_Color);
+    half4 colOuterStart = PROP(_ColorOuterStart);
+    half4 colInnerEnd = PROP(_ColorInnerEnd);
+    half4 colOuterEnd = PROP(_ColorOuterEnd);
 	half4 colorStart = lerp( colInnerStart, colOuterStart, tRadial );
 	half4 colorEnd = lerp( colInnerEnd, colOuterEnd, tRadial );
 	return lerp( colorStart, colorEnd, tAngular );

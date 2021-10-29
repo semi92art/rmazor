@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -17,16 +18,21 @@ namespace Shapes {
 		SerializedProperty propColorB = null;
 		SerializedProperty propColorC = null;
 		SerializedProperty propRoundness = null;
-		SerializedProperty propHollow = null;
+		SerializedProperty propBorder = null;
 		SerializedProperty propThickness = null;
 		SerializedProperty propThicknessSpace = null;
+		SerializedProperty propDashStyle = null;
+		SerializedProperty propDashed = null;
+		SerializedProperty propMatchDashSpacingToSize = null;
 
+		DashStyleEditor dashEditor;
 		ScenePointEditor scenePointEditor;
 
 		List<Color> colors = new List<Color> { default, default, default };
 
 		public override void OnEnable() {
 			base.OnEnable();
+			dashEditor = DashStyleEditor.GetDashEditor( propDashStyle, propMatchDashSpacingToSize, propDashed );
 			scenePointEditor = new ScenePointEditor( this ) { hasAddRemoveMode = false, hasEditColorMode = true };
 			scenePointEditor.onValuesChanged += OnChangeColor;
 		}
@@ -60,8 +66,9 @@ namespace Shapes {
 
 			EditorGUILayout.PropertyField( propColorMode );
 			EditorGUILayout.PropertyField( propRoundness );
-			EditorGUILayout.PropertyField( propHollow );
-			using( new EditorGUI.DisabledScope( propHollow.boolValue == false || propHollow.hasMultipleDifferentValues ) )
+			EditorGUILayout.PropertyField( propBorder );
+			bool hasBordersInSelection = targets.Any( x => ( x as Triangle ).Border );
+			using( new EditorGUI.DisabledScope( hasBordersInSelection == false ) )
 				ShapesUI.FloatInSpaceField( propThickness, propThicknessSpace );
 			if( propColorMode.enumValueIndex == (int)Triangle.TriangleColorMode.Single ) {
 				ShapesUI.PosColorField( "A", propA, base.propColor );
@@ -74,6 +81,10 @@ namespace Shapes {
 			}
 
 			scenePointEditor.GUIEditButton( "Edit Points in Scene" );
+			
+			using( new ShapesUI.GroupScope() )
+				using( new EditorGUI.DisabledScope( hasBordersInSelection == false ) )
+					dashEditor.DrawProperties();
 
 			base.EndProperties();
 		}

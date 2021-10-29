@@ -1,6 +1,8 @@
 ﻿// Shapes © Freya Holmér - https://twitter.com/FreyaHolmer/
 // Website & Documentation - https://acegikmo.com/shapes/
 
+using System.Runtime.CompilerServices;
+
 namespace Shapes {
 
 	public static partial class Draw {
@@ -18,10 +20,10 @@ namespace Shapes {
 		public static StateStack Scope => new StateStack( Draw.style, Draw.matrix );
 
 		/// <summary>Pushes the current draw state onto the stack. Calling <see cref="Draw.Pop()"/> will restore the saved state state</summary>
-		public static void Push() => StateStack.Push( Draw.style, Draw.matrix );
+		[MethodImpl( INLINE )]public static void Push() => StateStack.Push( Draw.style, Draw.matrix );
 
 		/// <summary>Restores the draw state to the previously pushed state from the stack</summary>
-		public static void Pop() => StateStack.Pop();
+		[MethodImpl( INLINE )]public static void Pop() => StateStack.Pop();
 
 	}
 

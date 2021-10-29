@@ -111,6 +111,10 @@ public class ShapesConfigWindow : EditorWindow {
 				CodegenShaders.GenerateShadersAndMaterials();
 			if( ShapesUI.CenteredButton( new GUIContent( "Regenerate Draw Overloads", "Regenerates all Draw.X overload functions to DrawOverloads.cs" ) ) )
 				CodegenDrawOverloads.GenerateDrawOverloadsScript();
+			if( ShapesUI.CenteredButton( new GUIContent( "Regenerate Component Interfaces", "Regenerates all Shape component interfaces" ) ) )
+				CodegenInterfaces.Generate();
+			if( ShapesUI.CenteredButton( new GUIContent( "Regenerate IM meta MPBs", "Regenerates all meta-material property blocks for each shape, based on their shader parameters in the core.cginc files" ) ) )
+				CodegenMpbs.Generate();
 		}
 	}
 

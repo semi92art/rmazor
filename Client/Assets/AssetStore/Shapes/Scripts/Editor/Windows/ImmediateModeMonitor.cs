@@ -47,7 +47,7 @@ public class ImmediateModeMonitor : EditorWindow {
 
 				using( new EditorGUI.IndentLevelScope() ) {
 					foreach( DrawCommand cmd in kvp.Value ) {
-						EditorGUILayout.LabelField( cmd.name );
+						EditorGUILayout.LabelField( "Shapes Cmd " + cmd.id );
 					}
 				}
 			}

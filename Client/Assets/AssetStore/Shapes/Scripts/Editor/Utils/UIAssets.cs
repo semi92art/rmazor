@@ -79,8 +79,8 @@ namespace Shapes {
 					rectTypeButtonContents = new GUIContent[] {
 						new GUIContent( Instance.rectIconHardSolid, "Solid Hard" ),
 						new GUIContent( Instance.rectIconRoundedSolid, "Solid Rounded" ),
-						new GUIContent( Instance.rectIconHardHollow, "Hollow Hard" ),
-						new GUIContent( Instance.rectIconRoundedHollow, "Hollow Rounded" )
+						new GUIContent( Instance.rectIconHardHollow, "Border Hard" ),
+						new GUIContent( Instance.rectIconRoundedHollow, "Border Rounded" )
 					};
 				}
 

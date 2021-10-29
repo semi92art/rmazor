@@ -33,7 +33,7 @@ namespace Shapes {
 
 		public override void OnEnable() {
 			base.OnEnable();
-			dashEditor = DashStyleEditor.GetRingDashEditor( propDashStyle, propMatchDashSpacingToSize, propDashed );
+			dashEditor = DashStyleEditor.GetDashEditor( propDashStyle, propMatchDashSpacingToSize, propDashed );
 			discEditor = new SceneDiscEditor( this );
 		}
 

@@ -23,8 +23,8 @@ namespace Shapes {
 
 	public static class CodegenShaders {
 
-		static class StaticInit {
-			public static string[] shaderNames = ShapesIO.LoadAllAssets<TextAsset>( ShapesIO.CoreShaderFolder ).Select( x => x.name.Substring( 0, x.name.Length - " Core".Length ) ).ToArray();
+		internal static class StaticInit {
+			public static string[] shaderNames = ShapesIO.LoadCoreShaders().Select( x => x.name.Substring( 0, x.name.Length - " Core".Length ) ).ToArray();
 		}
 
 		class PathContent {

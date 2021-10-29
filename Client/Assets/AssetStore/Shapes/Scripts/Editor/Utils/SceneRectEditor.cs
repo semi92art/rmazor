@@ -109,7 +109,7 @@ namespace Shapes {
 					float maxRadius = Mathf.Min( rect.Width, rect.Height ) / 2f;
 
 					for( int i = 0; i < 4; i++ ) {
-						float prevRadius = rect.CornerRadiusMode == Rectangle.RectangleCornerRadiusMode.Uniform ? rect.CornerRadius : rect.CornerRadiii[i];
+						float prevRadius = rect.CornerRadiusMode == Rectangle.RectangleCornerRadiusMode.Uniform ? rect.CornerRadius : rect.CornerRadii[i];
 						float radiusGizmoSpace = RectToGizmoVec( prevRadius * Vector2.one ).x;
 						Vector3 cornerGizmoSpace = gizCorners[i];
 
@@ -139,9 +139,9 @@ namespace Shapes {
 								if( rect.CornerRadiusMode == Rectangle.RectangleCornerRadiusMode.Uniform ) {
 									rect.CornerRadius = Mathf.Min( newRadius, maxRadius );
 								} else {
-									Vector4 radii = rect.CornerRadiii;
+									Vector4 radii = rect.CornerRadii;
 									radii[i] = Mathf.Min( newRadius, maxRadius );
-									rect.CornerRadiii = radii;
+									rect.CornerRadii = radii;
 								}
 
 								return true;

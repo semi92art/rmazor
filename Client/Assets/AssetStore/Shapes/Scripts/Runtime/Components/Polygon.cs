@@ -10,7 +10,7 @@ namespace Shapes {
 	/// <summary>A Polygon shape component</summary>
 	[ExecuteAlways]
 	[AddComponentMenu( "Shapes/Polygon" )]
-	public class Polygon : ShapeRendererFillable {
+	public partial class Polygon : ShapeRenderer, IFillable {
 
 		#if UNITY_EDITOR
 		/// <summary>"Please use points instead of PolyPoints - this one is deprecated"</summary>

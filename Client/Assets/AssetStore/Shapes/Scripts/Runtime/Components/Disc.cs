@@ -7,7 +7,7 @@ namespace Shapes {
 	/// <summary>A Disc/Ring/Pie/Arc shape component</summary>
 	[ExecuteAlways]
 	[AddComponentMenu( "Shapes/Disc" )]
-	public class Disc : ShapeRenderer {
+	public partial class Disc : ShapeRenderer, IDashable {
 
 		/// <summary>Various color modes for disc shapes</summary>
 		public enum DiscColorMode {
@@ -181,72 +181,6 @@ namespace Shapes {
 			get => arcEndCaps;
 			set => SetIntNow( ShapesMaterialUtils.propRoundCaps, (int)( arcEndCaps = value ) );
 		}
-		[SerializeField] bool matchDashSpacingToSize = true;
-		/// <summary>Get or set whether or not dash spacing should be auto-set to the dash size</summary>
-		public bool MatchDashSpacingToSize {
-			get => matchDashSpacingToSize;
-			set {
-				matchDashSpacingToSize = value;
-				SetAllDashValues( now: true );
-			}
-		}
-		[SerializeField] bool dashed = false;
-		/// <summary>Get or set whether or not this shape should be dashed (rings &amp; arcs only)</summary>
-		public bool Dashed {
-			get => dashed;
-			set {
-				dashed = value;
-				SetAllDashValues( now: true );
-			}
-		}
-		[SerializeField] DashStyle dashStyle = DashStyle.DefaultDashStyleRing;
-		/// <summary>Size of dashes in the specified dash space. When using DashSpace.FixedCount, this is the number of dashes</summary>
-		public float DashSize {
-			get => dashStyle.size;
-			set {
-				dashStyle.size = value;
-				float netDashSize = dashStyle.GetNetAbsoluteSize( dashed, thickness );
-				if( matchDashSpacingToSize )
-					SetFloat( ShapesMaterialUtils.propDashSpacing, GetNetDashSpacing() );
-				SetFloatNow( ShapesMaterialUtils.propDashSize, netDashSize );
-			}
-		}
-		/// <summary>Size of spacing between each dash for dashed rings &amp; arcs, in the specified dash space. When using DashSpace.FixedCount, this is the dash:space ratio</summary>
-		public float DashSpacing {
-			get => matchDashSpacingToSize ? dashStyle.size : dashStyle.spacing;
-			set {
-				dashStyle.spacing = value;
-				SetFloatNow( ShapesMaterialUtils.propDashSpacing, GetNetDashSpacing() );
-			}
-		}
-		/// <summary>Offset for dashed rings &amp; arcs. An offset of 1 is the size of a whole dash+space period</summary>
-		public float DashOffset {
-			get => dashStyle.offset;
-			set => SetFloatNow( ShapesMaterialUtils.propDashOffset, dashStyle.offset = value );
-		}
-		/// <summary>The space in which dashes are defined, in dashed rings &amp; arcs</summary>
-		public DashSpace DashSpace {
-			get => dashStyle.space;
-			set {
-				SetInt( ShapesMaterialUtils.propDashSpace, (int)( dashStyle.space = value ) );
-				SetFloatNow( ShapesMaterialUtils.propDashSize, dashStyle.GetNetAbsoluteSize( dashed, thickness ) );
-			}
-		}
-		/// <summary>What snapping type to use for dashed rings &amp; arcs</summary>
-		public DashSnapping DashSnap {
-			get => dashStyle.snap;
-			set => SetIntNow( ShapesMaterialUtils.propDashSnap, (int)( dashStyle.snap = value ) );
-		}
-		/// <summary>What dash type to use for dashed rings &amp; arcs</summary>
-		public DashType DashType {
-			get => dashStyle.type;
-			set => SetIntNow( ShapesMaterialUtils.propDashType, (int)( dashStyle.type = value ) );
-		}
-		/// <summary>A -1 to 1 modifier that allows you to tweak or mirror certain dash types in dashed rings &amp; arcs</summary>
-		public float DashShapeModifier {
-			get => dashStyle.shapeModifier;
-			set => SetFloatNow( ShapesMaterialUtils.propDashShapeModifier, dashStyle.shapeModifier = value );
-		}
 
 		private protected override void SetAllMaterialProperties() {
 			SetInt( ShapesMaterialUtils.propAlignment, (int)geometry );
@@ -283,8 +217,6 @@ namespace Shapes {
 			SetAllDashValues( now: false );
 		}
 
-		void SetAllDashValues( bool now ) => SetAllDashValues( dashStyle, Dashed, matchDashSpacingToSize, thickness, setType: true, now );
-		float GetNetDashSpacing() => GetNetDashSpacing( dashStyle, dashed, matchDashSpacingToSize, thickness );
 		internal override bool HasDetailLevels => false;
 
 		#if UNITY_EDITOR

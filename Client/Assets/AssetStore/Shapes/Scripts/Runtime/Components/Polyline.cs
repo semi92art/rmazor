@@ -19,9 +19,7 @@ namespace Shapes {
 		public List<PolylinePoint> PolyPoints => points;
 		#endif
 
-		/// <summary>
-		/// <remarks>IMPORTANT: if you modify this list, you need to set meshOutOfDate to true, otherwise your changes won't apply</remarks> 
-		/// </summary>
+		/// <summary>IMPORTANT: if you modify this list, you need to set meshOutOfDate to true, otherwise your changes won't apply</summary>
 		[FormerlySerializedAs( "polyPoints" )] [SerializeField] public List<PolylinePoint> points = new List<PolylinePoint>() {
 			new PolylinePoint( new Vector3( 0, 1, 0 ), Color.white ),
 			new PolylinePoint( new Vector3( 0.86602540378f, -.5f, 0 ), Color.white ),

@@ -18,7 +18,7 @@ namespace Shapes {
 			}
 		}
 
-		internal StyleStack( DrawStyle mtx ) => styles.Push( mtx );
+		internal StyleStack( DrawStyle style ) => styles.Push( style );
 		public void Dispose() => Pop();
 
 	}

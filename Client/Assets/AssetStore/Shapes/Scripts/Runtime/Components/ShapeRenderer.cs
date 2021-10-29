@@ -80,7 +80,25 @@ namespace Shapes {
 		#region instancing breaking pass tags
 
 		// if and only if all are set to their default values
-		bool IsInstanced => UsingDefaultZTests && UsingDefaultStencil;
+		bool IsInstanced => UsingDefaultZTests && UsingDefaultStencil && UsingDefaultRenderQueue;
+
+		// render queue offset
+		bool UsingDefaultRenderQueue => renderQueue == DEFAULT_RENDER_QUEUE_AUTO;
+		public int RenderQueue {
+			get => renderQueue;
+			set {
+				renderQueue = value;
+				if( IsUsingUniqueMaterials ) {
+					UpdateMaterial();
+					foreach( Material instancedMaterial in instancedMaterials )
+						instancedMaterial.renderQueue = renderQueue;
+				}
+			}
+		}
+		[SerializeField] int renderQueue = DEFAULT_RENDER_QUEUE_AUTO;
+		
+		/// <summary>The default render queue, which is auto-set based on blend mode</summary>
+		public const int DEFAULT_RENDER_QUEUE_AUTO = -1;
 
 		// Z testing properties
 		/// <summary>The default Z test (depth test) value of LessEqual</summary>
@@ -497,6 +515,7 @@ namespace Shapes {
 					instancedMaterial.SetInt( ShapesMaterialUtils.propStencilID, stencilRefID );
 					instancedMaterial.SetInt( ShapesMaterialUtils.propStencilReadMask, stencilReadMask );
 					instancedMaterial.SetInt( ShapesMaterialUtils.propStencilWriteMask, stencilWriteMask );
+					instancedMaterial.renderQueue = renderQueue;
 				}
 
 			SetColor( ShapesMaterialUtils.propColor, color );

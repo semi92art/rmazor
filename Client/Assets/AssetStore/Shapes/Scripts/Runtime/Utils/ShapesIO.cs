@@ -39,6 +39,7 @@ namespace Shapes {
 
 		public static void OpenConfigCsharp() => OpenAssetAtPath( ConfigCsharpPath );
 		public static void OpenConfigShaders() => OpenAssetAtPath( ConfigShadersPath );
+		public static TextAsset[] LoadCoreShaders() => LoadAllAssets<TextAsset>( CoreShaderFolder ).ToArray();
 
 		static void OpenAssetAtPath( string path ) => AssetDatabase.OpenAsset( AssetDatabase.LoadAssetAtPath<Object>( path ) );
 		internal static bool IsUsingVcWithCheckoutEnabled => Provider.enabled && Provider.hasCheckoutSupport;

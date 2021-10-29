@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 // Shapes © Freya Holmér - https://twitter.com/FreyaHolmer/
@@ -11,24 +12,30 @@ namespace Shapes {
 
 		/// <summary>The current immediate-mode drawing matrix. Setting this to transform.localToWorldMatrix will make following draw calls be relative to that object</summary>
 		public static Matrix4x4 Matrix {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => matrix;
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set => matrix = value;
 		}
 
 		/// <summary>Resets the matrix to Matrix4x4.identity</summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ResetMatrix() => matrix = Matrix4x4.identity;
 
 		/// <summary>using( MatrixScope ){ /*code*/ } lets you modify the matrix within that scope, automatically restoring the previous state once you leave the scope</summary>
 		public static MatrixStack MatrixScope => new MatrixStack( Draw.Matrix );
 
 		/// <summary>Pushes the current drawing matrix onto the matrix stack. Calling <see cref="Draw.PopMatrix()"/> will restore this state</summary>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static void PushMatrix() => MatrixStack.Push( Draw.Matrix );
 
 		/// <summary>Restores the drawing matrix to the previously pushed matrix from the stack</summary>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static void PopMatrix() => MatrixStack.Pop();
 
 		/// <summary>Multiplies the drawing matrix by the input matrix. Equivalent to <see cref="Draw.Matrix"/> *= matrix;</summary>
 		/// <param name="matrix">The right hand side matrix to multiply by</param>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static void ApplyMatrix( Matrix4x4 matrix ) => Matrix *= matrix;
 
 
@@ -51,7 +58,7 @@ namespace Shapes {
 				matrix.m13 = value.y;
 			}
 		}
-		
+
 		[Obsolete( "Please use Draw.Position instead (I done messed up, did a typo, I'm sorry~)", true )]
 		public static Vector3 Postition {
 			get => Position;
@@ -63,7 +70,7 @@ namespace Shapes {
 			get => Position2D;
 			set => Position2D = value;
 		}
-		
+
 		/// <summary>Attempts to get or directly set the rotation of the drawing matrix in world space. 
 		/// Note that, while rare, non-orthogonal matrices cannot be represented with a quaternion rotation, so the getter might not behave as you expect it to.
 		/// Setting this rotation frequently may be expensive as it will also have to calculate scale in order to retain its per-axis local scale</summary>
@@ -113,15 +120,19 @@ namespace Shapes {
 		#region Translate
 
 		/// <summary>Translates (moves) the current drawing matrix by this amount along each of its axes</summary>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static void Translate( float x, float y ) => MtxTranslateXY( ref matrix, x, y );
 
 		/// <summary>Translates (moves) the current drawing matrix by this amount along each of its axes</summary>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static void Translate( float x, float y, float z ) => MtxTranslateXYZ( ref matrix, x, y, z );
 
 		/// <summary>Translates (moves) the current drawing matrix by this amount along each of its axes</summary>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static void Translate( Vector2 displacement ) => Translate( displacement.x, displacement.y );
 
 		/// <summary>Translates (moves) the current drawing matrix by this amount along each of its axes</summary>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static void Translate( Vector3 displacement ) => Translate( displacement.x, displacement.y, displacement.z );
 
 		#endregion
@@ -130,15 +141,19 @@ namespace Shapes {
 
 		/// <summary>Rotates the drawing matrix by this angle around its Z axis</summary>
 		/// <param name="angle">Angle to rotate by, in radians</param>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static void Rotate( float angle ) => MtxRotateZ( ref matrix, angle );
 
 		/// <summary>Rotates the drawing matrix by these angles around each axis, in radians</summary>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static void Rotate( float x, float y, float z ) => Rotate( Quaternion.Euler( x * Mathf.Rad2Deg, y * Mathf.Rad2Deg, z * Mathf.Rad2Deg ) );
 
 		/// <summary>Rotates the drawing matrix by this angle (in radians) around the given axis</summary>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static void Rotate( float angle, Vector3 axis ) => Rotate( Quaternion.AngleAxis( angle * Mathf.Rad2Deg, axis ) );
 
 		/// <summary>Rotates the drawing matrix by this quaternion</summary>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static void Rotate( Quaternion rotation ) => matrix *= Matrix4x4.Rotate( rotation );
 
 		#endregion
@@ -146,18 +161,23 @@ namespace Shapes {
 		#region Scale
 
 		/// <summary>Scales the drawing matrix uniformly on each axis by this amount</summary>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static void Scale( float uniformScale ) => MtxScaleXYZ( ref matrix, uniformScale, uniformScale, uniformScale );
 
 		/// <summary>Scales the drawing matrix by this amount per axis</summary>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static void Scale( float x, float y ) => MtxScaleXY( ref matrix, x, y );
 
 		/// <summary>Scales the drawing matrix by this amount per axis</summary>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static void Scale( float x, float y, float z ) => MtxScaleXYZ( ref matrix, x, y, z );
 
 		/// <summary>Scales the drawing matrix by this amount per axis</summary>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static void Scale( Vector2 scale ) => Scale( scale.x, scale.y );
 
 		/// <summary>Scales the drawing matrix by this amount per axis</summary>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static void Scale( Vector3 scale ) => Scale( scale.x, scale.y, scale.z );
 
 		#endregion
@@ -165,12 +185,15 @@ namespace Shapes {
 		#region SetMatrix
 
 		/// <summary>Sets the drawing matrix. Equivalent to directly assigning to Draw.Matrix</summary>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static void SetMatrix( Matrix4x4 matrix ) => Draw.Matrix = matrix;
 
 		/// <summary>Sets the drawing matrix to this position, rotation and scale</summary>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static void SetMatrix( Vector3 position, Quaternion rotation, Vector3 scale ) => Draw.Matrix = Matrix4x4.TRS( position, rotation, scale );
 
 		/// <summary>Sets the drawing matrix to match this transform, effectively making you draw in the local space of this object</summary>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static void SetMatrix( Transform transform ) => Draw.Matrix = transform.localToWorldMatrix;
 
 		#endregion
@@ -186,6 +209,7 @@ namespace Shapes {
 		// m20	m21	m22 m23
 		// m30	m31	m32 m33
 
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		static void MtxSetRotationKeepScale( ref Matrix4x4 m, Quaternion rotation ) {
 			Matrix4x4 rotMtx = Matrix4x4.Rotate( rotation );
 			float scaleX = ( (Vector3)m.GetColumn( 0 ) ).magnitude;
@@ -202,6 +226,7 @@ namespace Shapes {
 			m.m22 = rotMtx.m22 * scaleZ;
 		}
 
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		static void MtxRotateZLhs( ref Matrix4x4 rhs, float a ) {
 			double x = Math.Cos( a );
 			double y = Math.Sin( a );
@@ -219,18 +244,21 @@ namespace Shapes {
 			rhs.m13 = (float)( y * rhs03 + x * rhs.m13 );
 		}
 
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		static void MtxTranslateXYZ( ref Matrix4x4 lhs, double x, double y, double z ) {
 			lhs.m03 = (float)( lhs.m00 * x + lhs.m01 * y + lhs.m02 * z + lhs.m03 );
 			lhs.m13 = (float)( lhs.m10 * x + lhs.m11 * y + lhs.m12 * z + lhs.m13 );
 			lhs.m23 = (float)( lhs.m20 * x + lhs.m21 * y + lhs.m22 * z + lhs.m23 );
 		}
 
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		static void MtxTranslateXY( ref Matrix4x4 lhs, double x, double y ) {
 			lhs.m03 = (float)( lhs.m00 * x + lhs.m01 * y + lhs.m03 );
 			lhs.m13 = (float)( lhs.m10 * x + lhs.m11 * y + lhs.m13 );
 			lhs.m23 = (float)( lhs.m20 * x + lhs.m21 * y + lhs.m23 );
 		}
 
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		static void MtxRotateZ( ref Matrix4x4 lhs, float a ) {
 			double x = Math.Cos( a );
 			double y = Math.Sin( a );
@@ -251,6 +279,7 @@ namespace Shapes {
 		}
 
 
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		static void MtxScaleXYZ( ref Matrix4x4 m, double x, double y, double z ) {
 			m.m00 = (float)( m.m00 * x );
 			m.m10 = (float)( m.m10 * x );
@@ -263,6 +292,7 @@ namespace Shapes {
 			m.m22 = (float)( m.m22 * z );
 		}
 
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		static void MtxScaleXY( ref Matrix4x4 m, double x, double y ) {
 			m.m00 = (float)( m.m00 * x );
 			m.m10 = (float)( m.m10 * x );
@@ -272,6 +302,7 @@ namespace Shapes {
 			m.m21 = (float)( m.m21 * y );
 		}
 
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		static void MtxResetToXYZ( out Matrix4x4 m, float x, float y, float z ) {
 			m = Matrix4x4.identity;
 			m.m03 = x;
@@ -279,22 +310,26 @@ namespace Shapes {
 			m.m23 = z;
 		}
 
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		static void MtxResetToXY( out Matrix4x4 m, float x, float y ) {
 			m = Matrix4x4.identity;
 			m.m03 = x;
 			m.m13 = y;
 		}
 
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		static void MtxResetToPosXYatAngle( out Matrix4x4 lhs, float x, float y, float a ) {
 			MtxResetToXY( out lhs, x, y );
 			MtxResetScaleSetAngleZ( ref lhs, a );
 		}
 
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		static void MtxResetToPosXYatDirection( out Matrix4x4 lhs, float x, float y, Vector2 dir ) {
 			MtxResetToXY( out lhs, x, y );
 			MtxResetScaleSetDirX( ref lhs, dir );
 		}
 
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		static void MtxResetScaleSetAngleZ( ref Matrix4x4 lhs, float a ) {
 			float x = Mathf.Cos( a );
 			float y = Mathf.Sin( a );
@@ -309,6 +344,7 @@ namespace Shapes {
 			lhs.m22 = 1;
 		}
 
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		static void MtxResetScaleSetDirX( ref Matrix4x4 lhs, Vector2 dir ) {
 			dir.Normalize();
 			lhs.m00 = dir.x;
@@ -335,6 +371,7 @@ namespace Shapes {
 
 		/*
 		/// <summary>Sets the drawing matrix to this world space position (without rotation, using a scale of 1)</summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetPosition( float x, float y ) => MtxResetToXY( out matrix, x, y );
 
 		/// <summary>Sets the drawing matrix to this world space position (without rotation, using a scale of 1)</summary>

@@ -32,7 +32,7 @@ namespace Shapes {
 
 
 		[MenuItem( MENU_ROOT + "⚙ Settings", false, MENU_ITEM_SORT_CONFIG )]
-		public static void OpenCsharpSettings() => CenterWindow( EditorWindow.GetWindow<ShapesConfigWindow>( "Shapes Settings" ), 400, ShapesIO.IsUsingVcWithCheckoutEnabled ? 600 : 500 );
+		public static void OpenCsharpSettings() => CenterWindow( EditorWindow.GetWindow<ShapesConfigWindow>( "Shapes Settings" ), 400, ShapesIO.IsUsingVcWithCheckoutEnabled ? 700 : 600 );
 
 		[MenuItem( MENU_ROOT + "⏱ Immediate Mode Monitor", false, MENU_ITEM_SORT_CONFIG + 1 )]
 		public static void OpenImmediateModeDebugger() => CenterWindow( EditorWindow.GetWindow<ImmediateModeMonitor>( "IM Monitor" ), 400, 640 );

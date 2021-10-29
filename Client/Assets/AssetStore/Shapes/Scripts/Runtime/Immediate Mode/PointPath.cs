@@ -11,17 +11,15 @@ namespace Shapes {
 		protected List<T> path = new List<T>();
 		public int Count => path.Count;
 		public T LastPoint => path[path.Count - 1];
-		
-		protected bool hasSetFirstPoint;
 
 		protected void OnSetFirstDataPoint() {
-			hasSetFirstPoint = true;
-			EnsureMeshExists();
+			hasData = true;
+			meshDirty = true;
 		}
 		
 		public void ClearAllPoints() {
 			path.Clear();
-			hasSetFirstPoint = false;
+			hasData = false;
 		}
 		
 		public T this[ int i ] {
@@ -38,9 +36,10 @@ namespace Shapes {
 		}
 		
 		public void AddPoint( T p ) {
-			if( hasSetFirstPoint == false )
+			if( hasData == false )
 				OnSetFirstDataPoint();
 			path.Add( p );
+			hasData = true;
 			meshDirty = true;
 		}
 		
@@ -53,13 +52,15 @@ namespace Shapes {
 			int addedPtCount = pathCount - prevCount;
 
 			if( addedPtCount > 0 ) {
-				if( hasSetFirstPoint == false )
+				if( hasData == false )
 					OnSetFirstDataPoint();
+				hasData = true;
+				meshDirty = true;
 			}
 		}
 		
 		protected bool CheckCanAddContinuePoint( [CallerMemberName] string callerName = null ) {
-			if( hasSetFirstPoint == false ) {
+			if( hasData == false ) {
 				Debug.LogWarning( $"{callerName} requires adding a point before calling it, to determine starting point" );
 				return true;
 			}

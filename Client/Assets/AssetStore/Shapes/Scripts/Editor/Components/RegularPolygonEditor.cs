@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 using UnityEditor;
 
 // Shapes © Freya Holmér - https://twitter.com/FreyaHolmer/
@@ -11,7 +12,7 @@ namespace Shapes {
 
 		SerializedProperty propGeometry = null;
 		SerializedProperty propSides = null;
-		SerializedProperty propHollow = null;
+		SerializedProperty propBorder = null;
 		SerializedProperty propAngle = null;
 		SerializedProperty propRoundness = null;
 		SerializedProperty propAngUnitInput = null;
@@ -21,12 +22,17 @@ namespace Shapes {
 		SerializedProperty propThicknessSpace = null;
 		SerializedProperty propFill = null;
 		SerializedProperty propUseFill = null;
+		SerializedProperty propDashStyle = null;
+		SerializedProperty propDashed = null;
+		SerializedProperty propMatchDashSpacingToSize = null;
 
+		DashStyleEditor dashEditor;
 		SceneFillEditor fillEditor;
 		SceneDiscEditor discEditor; // todo: polygonal version
 
 		public override void OnEnable() {
 			base.OnEnable();
+			dashEditor = DashStyleEditor.GetDashEditor( propDashStyle, propMatchDashSpacingToSize, propDashed );
 			fillEditor = new SceneFillEditor( this, propFill, propUseFill );
 			discEditor = new SceneDiscEditor( this );
 		}
@@ -63,8 +69,9 @@ namespace Shapes {
 
 			ShapesUI.FloatInSpaceField( propRadius, propRadiusSpace );
 
-			EditorGUILayout.PropertyField( propHollow );
-			using( new EditorGUI.DisabledScope( propHollow.boolValue == false || propHollow.hasMultipleDifferentValues ) )
+			EditorGUILayout.PropertyField( propBorder );
+			bool hasBordersInSelection = targets.Any( x => ( x as RegularPolygon ).Border );
+			using( new EditorGUI.DisabledScope( hasBordersInSelection == false ) )
 				ShapesUI.FloatInSpaceField( propThickness, propThicknessSpace );
 			ShapesUI.AngleProperty( propAngle, "Angle", propAngUnitInput, angLabelLayout );
 			ShapesUI.DrawAngleSwitchButtons( propAngUnitInput );
@@ -72,6 +79,11 @@ namespace Shapes {
 			bool canEditInSceneView = propRadiusSpace.hasMultipleDifferentValues || propRadiusSpace.enumValueIndex == (int)ThicknessSpace.Meters;
 			using( new EditorGUI.DisabledScope( canEditInSceneView == false ) )
 				discEditor.GUIEditButton();
+			
+			
+			using( new ShapesUI.GroupScope() )
+				using( new EditorGUI.DisabledScope( hasBordersInSelection == false ) )
+					dashEditor.DrawProperties();
 
 			fillEditor.DrawProperties( this );
 

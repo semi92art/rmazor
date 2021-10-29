@@ -63,6 +63,8 @@ namespace Shapes {
 					AppendLine( "_StencilID (\"Stencil ID\", int) = 0" );
 					AppendLine( "_StencilReadMask (\"Stencil Read Mask\", int) = 255" );
 					AppendLine( "_StencilWriteMask (\"Stencil Write Mask\", int) = 255" );
+					if( name == "Texture" )
+						AppendLine( "_MainTex (\"Texture\", 2D) = \"white\" {}" );
 				}
 
 				using( Scope( "SubShader" ) ) {

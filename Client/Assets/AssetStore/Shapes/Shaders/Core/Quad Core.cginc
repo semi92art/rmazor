@@ -5,14 +5,14 @@
 #pragma target 3.0
 
 UNITY_INSTANCING_BUFFER_START(Props)
-UNITY_DEFINE_INSTANCED_PROP( half4, _Color)
-UNITY_DEFINE_INSTANCED_PROP( half4, _ColorB)
-UNITY_DEFINE_INSTANCED_PROP( half4, _ColorC)
-UNITY_DEFINE_INSTANCED_PROP( half4, _ColorD)
-UNITY_DEFINE_INSTANCED_PROP( float3, _A)
-UNITY_DEFINE_INSTANCED_PROP( float3, _B)
-UNITY_DEFINE_INSTANCED_PROP( float3, _C)
-UNITY_DEFINE_INSTANCED_PROP( float3, _D)
+PROP_DEF( half4, _Color)
+PROP_DEF( half4, _ColorB)
+PROP_DEF( half4, _ColorC)
+PROP_DEF( half4, _ColorD)
+PROP_DEF( float3, _A)
+PROP_DEF( float3, _B)
+PROP_DEF( float3, _C)
+PROP_DEF( float3, _D)
 UNITY_INSTANCING_BUFFER_END(Props)
 
 struct VertexInput {
@@ -48,18 +48,18 @@ VertexOutput vert (VertexInput v) {
     UNITY_TRANSFER_INSTANCE_ID(v, o);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
     
-    float3 A = UNITY_ACCESS_INSTANCED_PROP(Props, _A);
-    float3 B = UNITY_ACCESS_INSTANCED_PROP(Props, _B);
-    float3 C = UNITY_ACCESS_INSTANCED_PROP(Props, _C);
-    float3 D = UNITY_ACCESS_INSTANCED_PROP(Props, _D);
+    float3 A = PROP(_A);
+    float3 B = PROP(_B);
+    float3 C = PROP(_C);
+    float3 D = PROP(_D);
     v.vertex.xyz = A * v.color.r + B * v.color.g + C * v.color.b + D * v.color.a;
     
     #if QUAD_INTERPOLATION_QUALITY == 0
         // per-vertex version, which doesn't do a real bilinear version
-        half4 colorA = UNITY_ACCESS_INSTANCED_PROP(Props, _Color);
-        half4 colorB = UNITY_ACCESS_INSTANCED_PROP(Props, _ColorB);
-        half4 colorC = UNITY_ACCESS_INSTANCED_PROP(Props, _ColorC);
-        half4 colorD = UNITY_ACCESS_INSTANCED_PROP(Props, _ColorD);
+        half4 colorA = PROP(_Color);
+        half4 colorB = PROP(_ColorB);
+        half4 colorC = PROP(_ColorC);
+        half4 colorD = PROP(_ColorD);
         o.color = colorA * v.color.r + colorB * v.color.g + colorC * v.color.b + colorD * v.color.a;
     #elif QUAD_INTERPOLATION_QUALITY == 1
         o.uv = v.uv * 0.5 + 0.5;
@@ -96,18 +96,18 @@ FRAG_OUTPUT_V4 frag( VertexOutput i ) : SV_Target {
         #if QUAD_INTERPOLATION_QUALITY == 1
             half2 uv = i.uv;
         #elif QUAD_INTERPOLATION_QUALITY == 2
-            float3 A = UNITY_ACCESS_INSTANCED_PROP(Props, _A);
-            float3 B = UNITY_ACCESS_INSTANCED_PROP(Props, _B);
-            float3 C = UNITY_ACCESS_INSTANCED_PROP(Props, _C);
-            float3 D = UNITY_ACCESS_INSTANCED_PROP(Props, _D);
+            float3 A = PROP(_A);
+            float3 B = PROP(_B);
+            float3 C = PROP(_C);
+            float3 D = PROP(_D);
             half2 uv = InvBilinear( i.localPos.xy, A.xy, B.xy, C.xy, D.xy );
         #elif QUAD_INTERPOLATION_QUALITY == 3
             half2 uv = InvBilinear( i.localPos.xy, i.posAB.xy, i.posAB.zw, i.posCD.xy, i.posCD.zw );
         #endif
-        half4 colorA = UNITY_ACCESS_INSTANCED_PROP(Props, _Color);
-        half4 colorB = UNITY_ACCESS_INSTANCED_PROP(Props, _ColorB);
-        half4 colorC = UNITY_ACCESS_INSTANCED_PROP(Props, _ColorC);
-        half4 colorD = UNITY_ACCESS_INSTANCED_PROP(Props, _ColorD);
+        half4 colorA = PROP(_Color);
+        half4 colorB = PROP(_ColorB);
+        half4 colorC = PROP(_ColorC);
+        half4 colorD = PROP(_ColorD);
         half4 left = lerp(colorA, colorB, uv.y );
         half4 right = lerp(colorD, colorC, uv.y );
         half4 color = lerp( left, right, uv.x );

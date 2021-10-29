@@ -52,8 +52,8 @@ namespace Shapes {
 		GUIStyle labelCentered;
 		GUIStyle LabelCentered => labelCentered ?? ( labelCentered = new GUIStyle( GUI.skin.label ) { alignment = TextAnchor.MiddleCenter, active = { textColor = Color.white }, normal = { textColor = Color.white } } );
 
-		string newVersionAvailable = null;
-		UnityWebRequest req;
+		[NonSerialized] string newVersionAvailable = null;
+		[NonSerialized] UnityWebRequest req;
 
 		bool WebRequestHasErrors {
 			get {
@@ -84,13 +84,13 @@ namespace Shapes {
 		void OnDisable() => EditorApplication.update -= Update;
 
 		void Update() {
-			if( req != null ) {
-				if( req.isDone ) {
+			if( req != null && req.isDone ) {
+				if( WebRequestHasErrors == false ) {
 					OnReceiveLatestVersion( req.downloadHandler.text );
 					req.Dispose();
 					req = null;
 				} else if( WebRequestHasErrors ) {
-					Debug.Log( req.error );
+					Debug.LogWarning( $"Shapes failed to check for updates. Reason: {req.error}" );
 					req.Dispose();
 					req = null;
 				}
@@ -190,26 +190,19 @@ namespace Shapes {
 			mouseDootT = Mathf.Lerp( mouseDootT, mouseOver ? 1f : 0f, 0.05f );
 
 
-			// save state
-			Matrix4x4 prevMtx = Draw.Matrix;
-			ShapesBlendMode prevBlendMode = Draw.BlendMode;
-			ThicknessSpace prevDiscRadiusSpace = Draw.DiscRadiusSpace;
-			ThicknessSpace prevLineThicknessSpace = Draw.LineThicknessSpace;
-			LineGeometry prevLineGeometry = Draw.LineGeometry;
-			ThicknessSpace prevRingThicknessSpace = Draw.RingThicknessSpace;
-			LineEndCap prevLineEndCaps = Draw.LineEndCaps;
+			Draw.Push(); // save state
+			Draw.ResetAllDrawStates();
 
 			// draw setup
 			Draw.Matrix = Matrix4x4.TRS( new Vector3( center.x, center.y, 1f ), Quaternion.identity, Vector3.one );
 			Draw.BlendMode = ShapesBlendMode.Transparent;
-			Draw.DiscRadiusSpace = ThicknessSpace.Meters;
-			Draw.LineThicknessSpace = ThicknessSpace.Meters;
+			Draw.RadiusSpace = ThicknessSpace.Meters;
+			Draw.ThicknessSpace = ThicknessSpace.Meters;
 			Draw.LineGeometry = LineGeometry.Flat2D;
-			Draw.RingThicknessSpace = ThicknessSpace.Meters;
 			Draw.LineEndCaps = LineEndCap.Round;
 
 			// Drawing
-			Draw.RingGradientRadial( Vector3.zero, fitRadius, fitRadius * 0.1f, Color.black, new Color( 0, 0, 0, 0 ) );
+			Draw.Ring( Vector3.zero, fitRadius, fitRadius * 0.1f, DiscColors.Radial( Color.black, new Color( 0, 0, 0, 0 ) ) );
 			Draw.Disc( Vector3.zero, fitRadius, Color.black );
 
 			// edge noodles
@@ -255,21 +248,13 @@ namespace Shapes {
 				Color innerColor = colMain;
 				innerColor.a = 0.25f;
 				Color outerColor = Color.clear;
-				Draw.DiscGradientRadial( doot.pos, fitRadius * 0.18f, innerColor, outerColor );
+				Draw.Disc( doot.pos, fitRadius * 0.18f, DiscColors.Radial( innerColor, outerColor ) );
 			}
 
 			Draw.BlendMode = ShapesBlendMode.Multiplicative;
-			Draw.DiscGradientRadial( Vector3.zero, fitRadius * 0.5f, Color.black, Color.clear );
+			Draw.Disc( Vector3.zero, fitRadius * 0.5f, DiscColors.Radial( Color.black, Color.clear ) );
 
-
-			// restore state
-			Draw.Matrix = prevMtx;
-			Draw.BlendMode = prevBlendMode;
-			Draw.DiscRadiusSpace = prevDiscRadiusSpace;
-			Draw.LineThicknessSpace = prevLineThicknessSpace;
-			Draw.LineGeometry = prevLineGeometry;
-			Draw.RingThicknessSpace = prevRingThicknessSpace;
-			Draw.LineEndCaps = prevLineEndCaps;
+			Draw.Pop(); // restore state
 		}
 
 

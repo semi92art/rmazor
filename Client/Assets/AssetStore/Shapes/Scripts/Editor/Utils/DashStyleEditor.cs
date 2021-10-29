@@ -31,7 +31,7 @@ namespace Shapes {
 			return editor;
 		}
 
-		public static DashStyleEditor GetRingDashEditor( SerializedProperty propDashSettings, SerializedProperty dashSizeLinked, SerializedProperty propDashed ) {
+		public static DashStyleEditor GetDashEditor( SerializedProperty propDashSettings, SerializedProperty dashSizeLinked, SerializedProperty propDashed ) {
 			DashStyleEditor editor = new DashStyleEditor {
 				isLine = false,
 				propDashed = propDashed,

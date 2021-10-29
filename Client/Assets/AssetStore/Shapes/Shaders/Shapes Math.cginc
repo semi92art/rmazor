@@ -1,16 +1,22 @@
 ﻿// Shapes © Freya Holmér - https://twitter.com/FreyaHolmer/
 // Website & Documentation - https://acegikmo.com/shapes/
 
+#define SHAPES_INCLUDED_MATH
+
+// iOS metal and vulkan seems to convert half to float,
+// so overloads error out as redefinitions of the float functions
+#define SUPPORTS_LOWP_OVERLOADS (defined(SHADER_API_METAL) == false && defined(SHADER_API_VULKAN) == false)
+
 // constants
 #define TAU 6.28318530718
-#define VERY_SMOL 0.000001
+#define VERY_SMOL 0.00006103515625 // smallest positive normal number for half precision floats
 
 #define CAM_POS        _WorldSpaceCameraPos
 #define CAM_RIGHT      UNITY_MATRIX_I_V._m00_m10_m20
 #define CAM_UP         UNITY_MATRIX_I_V._m01_m11_m21
 #define CAM_FORWARD    UNITY_MATRIX_I_V._m02_m12_m22
 #define OBJ_ORIGIN     UNITY_MATRIX_M._m03_m13_m23
- 
+
 #define THICKN_SPACE_METERS 0
 #define THICKN_SPACE_PIXELS 1
 #define THICKN_SPACE_NOOTS 2
@@ -18,24 +24,11 @@
 #define SCALE_MODE_UNIFORM 0
 #define SCALE_MODE_COORDINATE 1
 
-#define DASH_TYPE_BASIC 0
-#define DASH_TYPE_ANGLED 1
-#define DASH_TYPE_ROUND 2
-
-#define DASH_SPACE_FIXED_COUNT -2
-#define DASH_SPACE_RELATIVE -1
-#define DASH_SPACE_METERS 0
-
-#define DASH_SNAP_OFF 0
-#define DASH_SNAP_TILING 1
-#define DASH_SNAP_ENDTOEND 2
-
-#define FILL_TYPE_NONE -1
-#define FILL_TYPE_LINEAR 0
-#define FILL_TYPE_RADIAL 1
-
-#define FILL_SPACE_LOCAL 0
-#define FILL_SPACE_WORLD 1
+#if LOCAL_ANTI_ALIASING_QUALITY == 0
+    #define AA_PADDING_PX 0
+#else
+    #define AA_PADDING_PX 2
+#endif
 
 // remap functions
 inline float InverseLerp( float a, float b, float v ) {     return (v - a) / (b - a); }
@@ -50,8 +43,12 @@ half Remap( half iMin, half iMax, half oMin, half oMax, half v ) {
     return lerp( oMin, oMax, t );
 }
 
+inline bool IsBetween( half v, half min, half max ) {
+    return v > min && v < max;
+}
+
 // iOS metal seem to convert half to float, so these overloads error out as redefinitions of the above functions
-#ifndef SHADER_API_METAL 
+#if SUPPORTS_LOWP_OVERLOADS 
 inline half InverseLerp( half a, half b, half v ) {         return (v - a) / (b - a); }
 inline half2 InverseLerp( half2 a, half2 b, half2 v ) {     return (v - a) / (b - a); }
 half2 Remap( half2 iMin, half2 iMax, half2 oMin, half2 oMax, half2 v ) {
@@ -283,11 +280,11 @@ inline float SdfBox( float2 coord, float2 size ) {
 // Copyright © 2018 Inigo Quilez
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // (modified to align with a vertex on the right, have constants as inputs and using some of my helper functions)
-half SdfNgon( half tauOverN, half apothem, half halfSideLength, half angOffset, half2 p ) {
+half SdfNgon( half tauOverN, half apothem, half halfSideLength, half2 p ) {
     half halfAng = tauOverN/2;
-    half pAng = DirToAng(p)-halfAng-angOffset;
+    half pAng = DirToAng(p)-halfAng;
     half bn = tauOverN*floor( (pAng+halfAng)/tauOverN );
-    half2 cs = AngToDir(bn+halfAng+angOffset);
+    half2 cs = AngToDir(bn+halfAng);
     p = mul(p, half2x2(cs.x,-cs.y,cs.y,cs.x));
     return length(p-half2(apothem,clamp(p.y,-halfSideLength,halfSideLength)))*sign(p.x-apothem);
 }
@@ -317,7 +314,7 @@ half SdfTriangle( half2 p, half2 p0, half2 p1, half2 p2 ) {
 }
 
 inline half SdfLine( half2 coord, half2 a, half2 b ) {
-    return Determinant( a-coord, b-a );
+    return Determinant( coord-a, b-a );
 }
 
 // smoothing and tweening
@@ -433,6 +430,9 @@ inline half2 GetObjectScaleXY(){
 inline half GetUniformScale( half3 s ){
     return ( s.x + s.y + s.z ) / 3;
 }
+inline half GetUniformScale( half2 s ){
+    return ( s.x + s.y ) / 2;
+}
 inline half GetUniformScale(){
     return GetUniformScale(GetObjectScale());
 }
@@ -491,7 +491,6 @@ inline half MetersToOtherSpace( half meters, half pxPerMeter, int thicknessSpace
 }
 
 
-
 struct LineWidthData{
     half thicknessPixelsTarget; // 1 when thicker than 1 px, px thickness when smaller
     half thicknessMeters; // vertex position thickness. includes LAA padding
@@ -499,18 +498,6 @@ struct LineWidthData{
     half pxPerMeter; // might be useful idk
 };
 
-
-struct LineDashData{
-    half coord;
-    half spacePerPeriod;
-    half thicknessPerPeriod;
-};
-
-#if LOCAL_ANTI_ALIASING_QUALITY == 0
-	#define AA_PADDING_PX 0
-#else
-	#define AA_PADDING_PX 2
-#endif
 
 inline void GetPaddingData( half thicknessPixelsTarget, out half aaPaddingScale, out half pxWidthVert ){
     // for vertex width, we need to clamp at 1px wide to prevent wandering ants and we don't want ants now do we
@@ -540,89 +527,4 @@ inline LineWidthData GetScreenSpaceWidthDataSimple( float3 vertOrigin, half3 nor
 	data.thicknessMeters = pxWidthVert / data.pxPerMeter; // clamps at 1px wide, then converts to meters
     return data;
 }
-
-// this works in normalized space, repeating integers for every period
-inline void ApplyDashMask( inout half shape_mask, LineDashData dashData, half coordAcross, int type, half dashModifier ){
-    
-    half spacePerPeriod = dashData.spacePerPeriod;
-
-	if( spacePerPeriod >= 1.0-VERY_SMOL ){
-		shape_mask = 0; // pretty much just space, make invisible
-		// the flipside of this (only dashes, no space) 
-		// is actually not gapless for rounded dashes by design,
-		// so we can't just return solid/no masking naively
-    } else {
-        half thicknessPerPeriod = dashData.thicknessPerPeriod;
-        half2 coord = half2( coordAcross, dashData.coord );
-        
-        if( type == DASH_TYPE_ANGLED )
-            coord.y += 0.5*coord.x*thicknessPerPeriod*dashModifier; // 45° angle skewing        
-		half dashSdf = abs(frac(coord.y) * 2 - 1); // triangle wave
-		dashSdf = InverseLerp( spacePerPeriod, 1, dashSdf ); // convert to SDF matching dash ratio
-		
-		half dashMask;
-		if( type == DASH_TYPE_ROUND ){
-            half dashPerPeriod = 1.0-spacePerPeriod;
-            half dashPerThickness = dashPerPeriod/thicknessPerPeriod;
-		    half lenCoord = 1.0 - dashSdf*dashPerThickness;
-		    half2 roundnoot = half2(saturate(lenCoord), coord.x);
-            half sdfRound = length(half2(lenCoord, coord.x))-1;
-            half maskRounds = 1.0-saturate( sdfRound / fwidth(sdfRound) + 0.5 ); // 0.5 offset to center on pixel bounds
-            half maskFill = saturate( (dashSdf - 1/dashPerThickness) / fwidth(dashSdf) + 0.5 ); // 0.5 offset to center on pixel bounds
-            dashMask = max(maskFill, maskRounds);
-		} else {
-            dashMask = saturate( dashSdf / fwidth(dashSdf) + 0.5 ); // 0.5 offset to center on pixel bounds		
-		}
-		
-		shape_mask = min(shape_mask, dashMask);
-	}
-}
-
-inline half DashSnap( half periodCount, half spacePerPeriod, int snapMode ){
-	switch( snapMode ){
-		case DASH_SNAP_OFF:
-			return periodCount;
-		case DASH_SNAP_TILING:
-			return max( 1, round( periodCount ) );
-		case DASH_SNAP_ENDTOEND:
-			return max( 1, round( periodCount + spacePerPeriod ) ) - spacePerPeriod;
-		default:
-			return 0;
-	}
-}
-
-inline LineDashData GetDashCoordinates( half size, half spacing, half dist, half distTotal, half thickness, int thicknessSpace, half pxPerMeter, half offset, int dashSpace, int snap ){
-
-    LineDashData dashData;
-    
-    // dist and dist total are both in meters, so we need to convert them to match if we're using relative coords
-    if( dashSpace == DASH_SPACE_RELATIVE ) {
-        dist = MetersToOtherSpace( dist, pxPerMeter, thicknessSpace );
-        distTotal = MetersToOtherSpace( distTotal, pxPerMeter, thicknessSpace );
-        thickness = MetersToOtherSpace( thickness, pxPerMeter, thicknessSpace );
-    }
-    
-    // first, convert to dash count, to leave non-normalized space land asap because we hate it
-    bool fixedCount = dashSpace == DASH_SPACE_FIXED_COUNT;
-    half periodCount, spacePerPeriod;
-    if( fixedCount ){
-        spacePerPeriod = spacing;
-        periodCount = DashSnap( size, spacePerPeriod, snap );
-    } else {
-        half rawPeriod = (size + spacing);
-	    spacePerPeriod = spacing / rawPeriod;
-	    periodCount = DashSnap( distTotal / rawPeriod, spacePerPeriod, snap );
-    }
-    
-    dashData.spacePerPeriod = spacePerPeriod;
-    dashData.thicknessPerPeriod = (thickness*periodCount) / (distTotal);
-    
-    half t = dist / distTotal; // normalized longitudinal coord
-    half dashPerPeriod = 1-spacePerPeriod;
-    dashData.coord = t * periodCount - offset - dashPerPeriod/2;
-    
-    return dashData;
-}
-
-
 

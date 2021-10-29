@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 // Shapes © Freya Holmér - https://twitter.com/FreyaHolmer/
 // Website & Documentation - https://acegikmo.com/shapes/
@@ -7,13 +9,18 @@ namespace Shapes {
 	/// <summary>A Regular Polygon shape component</summary>
 	[ExecuteAlways]
 	[AddComponentMenu( "Shapes/RegularPolygon" )]
-	public class RegularPolygon : ShapeRendererFillable {
+	public partial class RegularPolygon : ShapeRenderer, IDashable, IFillable {
 
-		[SerializeField] bool hollow = false;
-		/// <summary>Whether or not this Regular Polygon should be hollow</summary>
+		[FormerlySerializedAs( "hollow" )] [SerializeField] bool border = false;
+		/// <summary>Whether or not this should be a Regular Polygon border instead of filled</summary>
+		public bool Border {
+			get => border;
+			set => SetIntNow( ShapesMaterialUtils.propBorder, ( border = value ).AsInt() );
+		}
+		[Obsolete( "Please use RegularPolygon.Border instead", true )]
 		public bool Hollow {
-			get => hollow;
-			set => SetIntNow( ShapesMaterialUtils.propHollow, ( hollow = value ).AsInt() );
+			get => Border;
+			set => Border = value;
 		}
 		[SerializeField] int sides = 3;
 		/// <summary>Number of sides</summary>
@@ -59,7 +66,7 @@ namespace Shapes {
 			set => SetIntNow( ShapesMaterialUtils.propRadiusSpace, (int)( radiusSpace = value ) );
 		}
 		[SerializeField] float thickness = 0.5f;
-		/// <summary>The thickness of the regular polygon border (if hollow)</summary>
+		/// <summary>The thickness of the regular polygon border (if it is a border)</summary>
 		public float Thickness {
 			get => thickness;
 			set => SetFloatNow( ShapesMaterialUtils.propThickness, thickness = Mathf.Max( 0f, value ) );
@@ -73,7 +80,7 @@ namespace Shapes {
 
 		private protected override void SetAllMaterialProperties() {
 			SetFillProperties();
-			SetIntNow( ShapesMaterialUtils.propHollow, hollow.AsInt() );
+			SetIntNow( ShapesMaterialUtils.propBorder, border.AsInt() );
 			SetInt( ShapesMaterialUtils.propAlignment, (int)geometry );
 			SetFloat( ShapesMaterialUtils.propRadius, radius );
 			SetInt( ShapesMaterialUtils.propRadiusSpace, (int)radiusSpace );
@@ -82,6 +89,7 @@ namespace Shapes {
 			SetFloat( ShapesMaterialUtils.propAng, angle );
 			SetFloat( ShapesMaterialUtils.propSides, sides );
 			SetFloat( ShapesMaterialUtils.propRoundness, roundness );
+			SetAllDashValues( now: false );
 		}
 
 		#if UNITY_EDITOR
@@ -101,7 +109,7 @@ namespace Shapes {
 				return new Bounds( Vector3.zero, Vector3.one );
 			// presume 0 world space padding when pixels or noots are used
 			float padding = thicknessSpace == ThicknessSpace.Meters ? thickness * .5f : 0f;
-			float apothem = hollow ? radius + padding : radius;
+			float apothem = border ? radius + padding : radius;
 			float size = apothem * 2;
 			return new Bounds( Vector3.zero, new Vector3( size, size, 0f ) );
 		}

@@ -173,8 +173,22 @@ MonoBehaviour:
   a: {x: 0, y: 1, z: 0}
   b: {x: -0.8660254, y: -0.5, z: 0}
   c: {x: 0.8660254, y: -0.5, z: 0}
+  border: 0
+  thickness: 0.5
+  thicknessSpace: 0
+  roundness: 0
   colorB: {r: 1, g: 1, b: 1, a: 1}
   colorC: {r: 1, g: 1, b: 1, a: 1}
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!33 &13679342
 MeshFilter:
   m_ObjectHideFlags: 2
@@ -292,8 +306,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &15146052
 MeshFilter:
@@ -442,6 +456,16 @@ MonoBehaviour:
   stencilRefID: 0
   stencilReadMask: 255
   stencilWriteMask: 255
+  fill:
+    type: 0
+    space: 0
+    colorStart: {r: 0, g: 0, b: 0, a: 0}
+    colorEnd: {r: 0, g: 0, b: 0, a: 0}
+    linearStart: {x: 0, y: 0, z: 0}
+    linearEnd: {x: 0, y: 0, z: 0}
+    radialOrigin: {x: 0, y: 0, z: 0}
+    radialRadius: 0
+  useFill: 0
   pivot: 1
   width: 3
   height: 9
@@ -449,6 +473,17 @@ MonoBehaviour:
   cornerRadiusMode: 0
   cornerRadii: {x: 0.25, y: 0.25, z: 0.25, w: 0.25}
   thickness: 0.1
+  thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!1 &25501427
 GameObject:
   m_ObjectHideFlags: 0
@@ -665,8 +700,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &28486339
 GameObject:
@@ -791,8 +826,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &33184883
 GameObject:
@@ -849,7 +884,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 1388361128}
+  - {fileID: 680761811}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -922,8 +957,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &35178120
 GameObject:
@@ -975,7 +1010,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 290435031}
+  - {fileID: 1011607466}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1048,8 +1083,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &41535685
 GameObject:
@@ -1174,8 +1209,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &43003585
 GameObject:
@@ -1400,7 +1435,7 @@ MonoBehaviour:
     radialOrigin: {x: 0, y: 0, z: 0}
     radialRadius: 1
   useFill: 0
-  hollow: 1
+  border: 1
   sides: 3
   roundness: 0.27
   angle: 1.5707964
@@ -1410,6 +1445,16 @@ MonoBehaviour:
   radiusSpace: 0
   thickness: 3
   thicknessSpace: 1
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!1 &60564545
 GameObject:
   m_ObjectHideFlags: 0
@@ -1488,8 +1533,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!33 &60564548
 MeshFilter:
@@ -1722,8 +1767,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!33 &67771493
 MeshFilter:
@@ -1770,6 +1815,36 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!21 &68314276
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Disc Transparent (instance)
+  m_Shader: {fileID: 4800000, guid: 0736a017ee88a8741b09e7382339ab99, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 1
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Floats:
+    - _StencilComp: 3
+    - _StencilID: 0
+    - _StencilOp: 0
+    - _StencilOpPass: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    - _ZOffsetFactor: 0
+    - _ZOffsetUnits: 0
+    - _ZTest: 4
+    m_Colors: []
 --- !u!1 &68650461
 GameObject:
   m_ObjectHideFlags: 0
@@ -1893,8 +1968,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &72103725
 GameObject:
@@ -2097,8 +2172,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &78435750
 MeshFilter:
@@ -2372,8 +2447,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &117182604
 GameObject:
@@ -2538,6 +2613,16 @@ MonoBehaviour:
   stencilRefID: 0
   stencilReadMask: 255
   stencilWriteMask: 255
+  fill:
+    type: 0
+    space: 0
+    colorStart: {r: 0, g: 0, b: 0, a: 0}
+    colorEnd: {r: 0, g: 0, b: 0, a: 0}
+    linearStart: {x: 0, y: 0, z: 0}
+    linearEnd: {x: 0, y: 0, z: 0}
+    radialOrigin: {x: 0, y: 0, z: 0}
+    radialRadius: 0
+  useFill: 0
   pivot: 0
   width: 6.61
   height: 1.8
@@ -2545,6 +2630,17 @@ MonoBehaviour:
   cornerRadiusMode: 1
   cornerRadii: {x: 0.25, y: 0.25, z: 0.25, w: 1.17}
   thickness: 0.1
+  thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!33 &124588996
 MeshFilter:
   m_ObjectHideFlags: 2
@@ -3001,8 +3097,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &132807122
 GameObject:
@@ -3540,8 +3636,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &146117677
 GameObject:
@@ -3666,8 +3762,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &156480038
 GameObject:
@@ -3792,8 +3888,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &164445179
 GameObject:
@@ -4009,8 +4105,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &167102148
 GameObject:
@@ -4175,8 +4271,8 @@ MonoBehaviour:
     space: -1
     snap: 2
     size: 4
-    offset: 0
     spacing: 1
+    offset: 0
     shapeModifier: 1
 --- !u!33 &182944330
 MeshFilter:
@@ -4492,8 +4588,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &226206356
 MeshFilter:
@@ -4730,8 +4826,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &235525471
 MeshFilter:
@@ -4986,7 +5082,7 @@ MonoBehaviour:
     radialOrigin: {x: 0, y: 0, z: 0}
     radialRadius: 1
   useFill: 0
-  hollow: 1
+  border: 1
   sides: 6
   roundness: 0.27
   angle: 1.5707964
@@ -4996,6 +5092,16 @@ MonoBehaviour:
   radiusSpace: 0
   thickness: 0.15
   thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!1 &252845575
 GameObject:
   m_ObjectHideFlags: 0
@@ -5399,36 +5505,6 @@ MonoBehaviour:
   - {x: -1.3, y: 0.3}
   - {x: -0.3, y: 0.3}
   triangulation: 1
---- !u!21 &290435031
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Disc Transparent (instance)
-  m_Shader: {fileID: 4800000, guid: 0736a017ee88a8741b09e7382339ab99, type: 3}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 1
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs: []
-    m_Floats:
-    - _StencilComp: 3
-    - _StencilID: 1
-    - _StencilOp: 0
-    - _StencilOpPass: 0
-    - _StencilReadMask: 255
-    - _StencilWriteMask: 255
-    - _ZOffsetFactor: 0
-    - _ZOffsetUnits: 0
-    - _ZTest: 4
-    m_Colors: []
 --- !u!1 &296108867
 GameObject:
   m_ObjectHideFlags: 0
@@ -5622,8 +5698,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!33 &299224726
 MeshFilter:
@@ -5820,6 +5896,16 @@ MonoBehaviour:
   stencilRefID: 0
   stencilReadMask: 255
   stencilWriteMask: 255
+  fill:
+    type: 0
+    space: 0
+    colorStart: {r: 0, g: 0, b: 0, a: 0}
+    colorEnd: {r: 0, g: 0, b: 0, a: 0}
+    linearStart: {x: 0, y: 0, z: 0}
+    linearEnd: {x: 0, y: 0, z: 0}
+    radialOrigin: {x: 0, y: 0, z: 0}
+    radialRadius: 0
+  useFill: 0
   pivot: 1
   width: 2
   height: 2
@@ -5827,6 +5913,17 @@ MonoBehaviour:
   cornerRadiusMode: 0
   cornerRadii: {x: 0.5, y: 0.5, z: 0.5, w: 0.5}
   thickness: 0.2
+  thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!33 &310749198
 MeshFilter:
   m_ObjectHideFlags: 2
@@ -5944,8 +6041,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &313140909
 MeshFilter:
@@ -6247,6 +6344,7 @@ RectTransform:
   - {fileID: 13679340}
   - {fileID: 862538679}
   - {fileID: 1323020726}
+  - {fileID: 1098441301}
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6438,7 +6536,7 @@ MonoBehaviour:
     radialOrigin: {x: 0, y: 0, z: 0}
     radialRadius: 1
   useFill: 1
-  hollow: 0
+  border: 0
   sides: 6
   roundness: 0.27
   angle: 1.5707964
@@ -6448,6 +6546,16 @@ MonoBehaviour:
   radiusSpace: 0
   thickness: 0.15
   thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!1 &349964230
 GameObject:
   m_ObjectHideFlags: 0
@@ -6934,8 +7042,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &367413456
 MeshFilter:
@@ -7145,6 +7253,16 @@ MonoBehaviour:
   stencilRefID: 0
   stencilReadMask: 255
   stencilWriteMask: 255
+  fill:
+    type: 0
+    space: 0
+    colorStart: {r: 0, g: 0, b: 0, a: 0}
+    colorEnd: {r: 0, g: 0, b: 0, a: 0}
+    linearStart: {x: 0, y: 0, z: 0}
+    linearEnd: {x: 0, y: 0, z: 0}
+    radialOrigin: {x: 0, y: 0, z: 0}
+    radialRadius: 0
+  useFill: 0
   pivot: 1
   width: 1.05
   height: 2.95
@@ -7152,6 +7270,17 @@ MonoBehaviour:
   cornerRadiusMode: 0
   cornerRadii: {x: 0.25, y: 0.25, z: 0.25, w: 0.25}
   thickness: 0.3
+  thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!33 &392168825
 MeshFilter:
   m_ObjectHideFlags: 2
@@ -7313,8 +7442,22 @@ MonoBehaviour:
   a: {x: 0, y: 1, z: 0}
   b: {x: -0.8660254, y: -0.5, z: 0}
   c: {x: 0.8660254, y: -0.5, z: 0}
+  border: 0
+  thickness: 0.5
+  thicknessSpace: 0
+  roundness: 0
   colorB: {r: 1, g: 1, b: 1, a: 1}
   colorC: {r: 1, g: 1, b: 1, a: 1}
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!33 &394523280
 MeshFilter:
   m_ObjectHideFlags: 2
@@ -7601,8 +7744,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &404267754
 GameObject:
@@ -7786,8 +7929,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!33 &417711979
 MeshFilter:
@@ -7957,8 +8100,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &451114391
 GameObject:
@@ -8386,8 +8529,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &475866533
 GameObject:
@@ -8467,8 +8610,8 @@ MonoBehaviour:
     space: -2
     snap: 2
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!33 &475866536
 MeshFilter:
@@ -8729,8 +8872,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &489208756
 GameObject:
@@ -9087,8 +9230,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &512108388
 GameObject:
@@ -9348,8 +9491,22 @@ MonoBehaviour:
   a: {x: 0, y: 1, z: 0}
   b: {x: -0.8660254, y: -0.5, z: 0}
   c: {x: 0.8660254, y: -0.5, z: 0}
+  border: 0
+  thickness: 0.5
+  thicknessSpace: 0
+  roundness: 0
   colorB: {r: 1, g: 1, b: 1, a: 1}
   colorC: {r: 1, g: 1, b: 1, a: 1}
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!33 &520814169
 MeshFilter:
   m_ObjectHideFlags: 2
@@ -9452,6 +9609,16 @@ MonoBehaviour:
   stencilRefID: 0
   stencilReadMask: 255
   stencilWriteMask: 255
+  fill:
+    type: 0
+    space: 0
+    colorStart: {r: 0, g: 0, b: 0, a: 0}
+    colorEnd: {r: 0, g: 0, b: 0, a: 0}
+    linearStart: {x: 0, y: 0, z: 0}
+    linearEnd: {x: 0, y: 0, z: 0}
+    radialOrigin: {x: 0, y: 0, z: 0}
+    radialRadius: 0
+  useFill: 0
   pivot: 1
   width: 2
   height: 4
@@ -9459,6 +9626,17 @@ MonoBehaviour:
   cornerRadiusMode: 1
   cornerRadii: {x: 0.25, y: 0.25, z: 0.25, w: 0.25}
   thickness: 0.3
+  thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!33 &531931893
 MeshFilter:
   m_ObjectHideFlags: 2
@@ -9627,8 +9805,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &540782007
 GameObject:
@@ -9702,8 +9880,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &540782010
 MeshFilter:
@@ -9822,8 +10000,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &548677194
 MeshFilter:
@@ -10325,8 +10503,8 @@ MonoBehaviour:
     space: -1
     snap: 1
     size: 1
-    offset: 0
     spacing: 1
+    offset: 0
     shapeModifier: 1
 --- !u!33 &553914476
 MeshFilter:
@@ -10423,7 +10601,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 1649068232}
+  - {fileID: 1693537900}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -10496,8 +10674,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &572548884
 GameObject:
@@ -10571,8 +10749,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 0.39
-    offset: 0
     spacing: 0.1
+    offset: 0
     shapeModifier: 1
 --- !u!33 &572548887
 MeshFilter:
@@ -10676,6 +10854,16 @@ MonoBehaviour:
   stencilRefID: 0
   stencilReadMask: 255
   stencilWriteMask: 255
+  fill:
+    type: 0
+    space: 0
+    colorStart: {r: 0, g: 0, b: 0, a: 0}
+    colorEnd: {r: 0, g: 0, b: 0, a: 0}
+    linearStart: {x: 0, y: 0, z: 0}
+    linearEnd: {x: 0, y: 0, z: 0}
+    radialOrigin: {x: 0, y: 0, z: 0}
+    radialRadius: 0
+  useFill: 0
   pivot: 1
   width: 2
   height: 2
@@ -10683,6 +10871,17 @@ MonoBehaviour:
   cornerRadiusMode: 0
   cornerRadii: {x: 0.25, y: 0.25, z: 0.25, w: 0.25}
   thickness: 0.2
+  thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!33 &574837767
 MeshFilter:
   m_ObjectHideFlags: 2
@@ -10897,8 +11096,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!33 &585502256
 MeshFilter:
@@ -11017,8 +11216,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &587140165
 MeshFilter:
@@ -11188,8 +11387,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &592079414
 GameObject:
@@ -11308,7 +11507,7 @@ MonoBehaviour:
     radialOrigin: {x: 0, y: 0, z: 0}
     radialRadius: 1
   useFill: 0
-  hollow: 1
+  border: 1
   sides: 6
   roundness: 0.27
   angle: 1.5707964
@@ -11318,6 +11517,16 @@ MonoBehaviour:
   radiusSpace: 0
   thickness: 0.15
   thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!1 &594462139
 GameObject:
   m_ObjectHideFlags: 0
@@ -11435,7 +11644,7 @@ MonoBehaviour:
     radialOrigin: {x: 0, y: 0, z: 0}
     radialRadius: 1
   useFill: 0
-  hollow: 1
+  border: 1
   sides: 6
   roundness: 0.27
   angle: 1.5707964
@@ -11445,6 +11654,16 @@ MonoBehaviour:
   radiusSpace: 0
   thickness: 3
   thicknessSpace: 1
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!1 &600852019
 GameObject:
   m_ObjectHideFlags: 0
@@ -11718,8 +11937,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!33 &622808979
 MeshFilter:
@@ -11992,6 +12211,66 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!21 &660014609
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Disc Transparent (instance)
+  m_Shader: {fileID: 4800000, guid: 0736a017ee88a8741b09e7382339ab99, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 1
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Floats:
+    - _StencilComp: 3
+    - _StencilID: 0
+    - _StencilOp: 0
+    - _StencilOpPass: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    - _ZOffsetFactor: 0
+    - _ZOffsetUnits: 0
+    - _ZTest: 4
+    m_Colors: []
+--- !u!21 &680761811
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Disc Transparent (instance)
+  m_Shader: {fileID: 4800000, guid: 0736a017ee88a8741b09e7382339ab99, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 1
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Floats:
+    - _StencilComp: 8
+    - _StencilID: 1
+    - _StencilOp: 0
+    - _StencilOpPass: 2
+    - _StencilReadMask: 0
+    - _StencilWriteMask: 255
+    - _ZOffsetFactor: 0
+    - _ZOffsetUnits: 0
+    - _ZTest: 4
+    m_Colors: []
 --- !u!1 &689848998
 GameObject:
   m_ObjectHideFlags: 0
@@ -12170,8 +12449,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &706352934
 MeshFilter:
@@ -12290,8 +12569,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 0.39
-    offset: 0
     spacing: 0.09
+    offset: 0
     shapeModifier: 1
 --- !u!33 &715276533
 MeshFilter:
@@ -12593,6 +12872,16 @@ MonoBehaviour:
   stencilRefID: 0
   stencilReadMask: 255
   stencilWriteMask: 255
+  fill:
+    type: 0
+    space: 0
+    colorStart: {r: 0, g: 0, b: 0, a: 0}
+    colorEnd: {r: 0, g: 0, b: 0, a: 0}
+    linearStart: {x: 0, y: 0, z: 0}
+    linearEnd: {x: 0, y: 0, z: 0}
+    radialOrigin: {x: 0, y: 0, z: 0}
+    radialRadius: 0
+  useFill: 0
   pivot: 1
   width: 2
   height: 2
@@ -12600,6 +12889,17 @@ MonoBehaviour:
   cornerRadiusMode: 0
   cornerRadii: {x: 0.25, y: 0.25, z: 0.25, w: 0.25}
   thickness: 0.1
+  thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!33 &750583573
 MeshFilter:
   m_ObjectHideFlags: 2
@@ -12776,7 +13076,7 @@ MonoBehaviour:
     radialOrigin: {x: 0, y: 0, z: 0}
     radialRadius: 1
   useFill: 0
-  hollow: 0
+  border: 0
   sides: 6
   roundness: 0.27
   angle: 1.5707964
@@ -12786,6 +13086,16 @@ MonoBehaviour:
   radiusSpace: 0
   thickness: 0.5
   thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!1 &755636474
 GameObject:
   m_ObjectHideFlags: 0
@@ -12829,6 +13139,16 @@ MonoBehaviour:
   stencilRefID: 0
   stencilReadMask: 255
   stencilWriteMask: 255
+  fill:
+    type: 0
+    space: 0
+    colorStart: {r: 0, g: 0, b: 0, a: 0}
+    colorEnd: {r: 0, g: 0, b: 0, a: 0}
+    linearStart: {x: 0, y: 0, z: 0}
+    linearEnd: {x: 0, y: 0, z: 0}
+    radialOrigin: {x: 0, y: 0, z: 0}
+    radialRadius: 0
+  useFill: 0
   pivot: 1
   width: 40.54
   height: 36.16
@@ -12836,6 +13156,17 @@ MonoBehaviour:
   cornerRadiusMode: 0
   cornerRadii: {x: 0.25, y: 0.25, z: 0.25, w: 0.25}
   thickness: 0.1
+  thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!33 &755636476
 MeshFilter:
   m_ObjectHideFlags: 2
@@ -12973,8 +13304,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!33 &760540615
 MeshFilter:
@@ -13144,39 +13475,9 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
---- !u!21 &768836996
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Disc Transparent (instance)
-  m_Shader: {fileID: 4800000, guid: 0736a017ee88a8741b09e7382339ab99, type: 3}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 1
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs: []
-    m_Floats:
-    - _StencilComp: 3
-    - _StencilID: 0
-    - _StencilOp: 0
-    - _StencilOpPass: 0
-    - _StencilReadMask: 255
-    - _StencilWriteMask: 255
-    - _ZOffsetFactor: 0
-    - _ZOffsetUnits: 0
-    - _ZTest: 4
-    m_Colors: []
 --- !u!1 &772765733
 GameObject:
   m_ObjectHideFlags: 0
@@ -13300,8 +13601,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &778370353
 GameObject:
@@ -13426,8 +13727,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &785733349
 GameObject:
@@ -13552,8 +13853,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &794704019
 GameObject:
@@ -13678,8 +13979,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &810580030
 GameObject:
@@ -13804,8 +14105,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &816341408
 GameObject:
@@ -14030,7 +14331,7 @@ MonoBehaviour:
     radialOrigin: {x: 0, y: 0, z: 0}
     radialRadius: 1
   useFill: 0
-  hollow: 1
+  border: 1
   sides: 6
   roundness: 0.27
   angle: 1.5707964
@@ -14040,6 +14341,16 @@ MonoBehaviour:
   radiusSpace: 0
   thickness: 0.15
   thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!1 &834987900
 GameObject:
   m_ObjectHideFlags: 0
@@ -14494,8 +14805,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &857057541
 GameObject:
@@ -14620,8 +14931,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &862538678
 GameObject:
@@ -14684,8 +14995,22 @@ MonoBehaviour:
   a: {x: 0, y: 1, z: 0}
   b: {x: -0.8660254, y: -0.5, z: 0}
   c: {x: 0.8660254, y: -0.5, z: 0}
+  border: 0
+  thickness: 0.5
+  thicknessSpace: 0
+  roundness: 0
   colorB: {r: 1, g: 1, b: 1, a: 1}
   colorC: {r: 1, g: 1, b: 1, a: 1}
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!33 &862538681
 MeshFilter:
   m_ObjectHideFlags: 2
@@ -15220,8 +15545,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &888961005
 MeshFilter:
@@ -15340,8 +15665,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &895327886
 MeshFilter:
@@ -15505,7 +15830,7 @@ MonoBehaviour:
     radialOrigin: {x: 0, y: 0, z: 0}
     radialRadius: 1
   useFill: 1
-  hollow: 0
+  border: 0
   sides: 6
   roundness: 0.27
   angle: 1.5707964
@@ -15515,6 +15840,16 @@ MonoBehaviour:
   radiusSpace: 0
   thickness: 0.15
   thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!1 &923303422
 GameObject:
   m_ObjectHideFlags: 0
@@ -15587,8 +15922,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &923303425
 MeshFilter:
@@ -15864,8 +16199,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &949545697
 GameObject:
@@ -15935,6 +16270,7 @@ RectTransform:
   - {fileID: 1767333138}
   - {fileID: 1846303254}
   - {fileID: 124588994}
+  - {fileID: 2031957255}
   m_Father: {fileID: 0}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -15993,7 +16329,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 1442501769}
+  - {fileID: 1236953352}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -16066,8 +16402,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &958521314
 GameObject:
@@ -16192,8 +16528,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &972917656
 GameObject:
@@ -16267,8 +16603,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &972917659
 MeshFilter:
@@ -16569,8 +16905,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1005736699
 MeshFilter:
@@ -16617,6 +16953,36 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!21 &1011607466
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Disc Transparent (instance)
+  m_Shader: {fileID: 4800000, guid: 0736a017ee88a8741b09e7382339ab99, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 1
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Floats:
+    - _StencilComp: 3
+    - _StencilID: 1
+    - _StencilOp: 0
+    - _StencilOpPass: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    - _ZOffsetFactor: 0
+    - _ZOffsetUnits: 0
+    - _ZTest: 4
+    m_Colors: []
 --- !u!1 &1016711067
 GameObject:
   m_ObjectHideFlags: 0
@@ -16740,8 +17106,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &1025415212
 GameObject:
@@ -16815,8 +17181,8 @@ MonoBehaviour:
     space: -2
     snap: 2
     size: 4
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1025415215
 MeshFilter:
@@ -16986,8 +17352,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &1036630278
 GameObject:
@@ -17187,8 +17553,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1037154593
 MeshFilter:
@@ -17679,6 +18045,128 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!1 &1098441300
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1098441301}
+  - component: {fileID: 1098441304}
+  - component: {fileID: 1098441303}
+  - component: {fileID: 1098441302}
+  m_Layer: 0
+  m_Name: Triangle (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1098441301
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1098441300}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.00070143, y: -5.4798, z: 0}
+  m_LocalScale: {x: 2.06115, y: 2.06115, z: 2.06115}
+  m_Children: []
+  m_Father: {fileID: 334510589}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1098441302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1098441300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a1a57c335497964c8472942019dfdb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blendMode: 1
+  scaleMode: 0
+  color: {r: 1, g: 1, b: 1, a: 1}
+  detailLevel: 2
+  zTest: 4
+  zOffsetFactor: 0
+  zOffsetUnits: 0
+  stencilComp: 8
+  stencilOpPass: 0
+  stencilRefID: 0
+  stencilReadMask: 255
+  stencilWriteMask: 255
+  colorMode: 0
+  a: {x: 0, y: 1, z: 0}
+  b: {x: -0.8660254, y: -0.5, z: 0}
+  c: {x: 0.8660254, y: -0.5, z: 0}
+  border: 1
+  thickness: 1
+  thicknessSpace: 1
+  roundness: 0.236
+  colorB: {r: 1, g: 1, b: 1, a: 1}
+  colorC: {r: 1, g: 1, b: 1, a: 1}
+  matchDashSpacingToSize: 1
+  dashed: 1
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 2
+    size: 4
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
+--- !u!33 &1098441303
+MeshFilter:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1098441300}
+  m_Mesh: {fileID: 43069453304752982, guid: a3d1f56cebf202c448b6fb479f61a9dc, type: 2}
+--- !u!23 &1098441304
+MeshRenderer:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1098441300}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 7fa44248079235a47bd861b2601b7808, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
 --- !u!1 &1103697365
 GameObject:
   m_ObjectHideFlags: 0
@@ -17924,8 +18412,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1116641464
 MeshFilter:
@@ -18089,7 +18577,7 @@ MonoBehaviour:
     radialOrigin: {x: 0, y: 0, z: 0}
     radialRadius: 1
   useFill: 0
-  hollow: 1
+  border: 1
   sides: 5
   roundness: 0.27
   angle: 1.5707964
@@ -18099,6 +18587,16 @@ MonoBehaviour:
   radiusSpace: 0
   thickness: 3
   thicknessSpace: 1
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!1 &1137034964
 GameObject:
   m_ObjectHideFlags: 0
@@ -18404,8 +18902,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &1179553863
 GameObject:
@@ -18570,8 +19068,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1190316559
 MeshFilter:
@@ -18690,8 +19188,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1190943711
 MeshFilter:
@@ -18810,8 +19308,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1193768514
 MeshFilter:
@@ -18936,8 +19434,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1199718790
 MeshFilter:
@@ -19107,8 +19605,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &1215477942
 GameObject:
@@ -19182,8 +19680,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1215477945
 MeshFilter:
@@ -19230,6 +19728,36 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!21 &1236953352
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Disc Transparent (instance)
+  m_Shader: {fileID: 4800000, guid: 0736a017ee88a8741b09e7382339ab99, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 1
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Floats:
+    - _StencilComp: 3
+    - _StencilID: 1
+    - _StencilOp: 0
+    - _StencilOpPass: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    - _ZOffsetFactor: 0
+    - _ZOffsetUnits: 0
+    - _ZTest: 4
+    m_Colors: []
 --- !u!1 &1246760380
 GameObject:
   m_ObjectHideFlags: 0
@@ -19347,7 +19875,7 @@ MonoBehaviour:
     radialOrigin: {x: 0, y: 0, z: 0}
     radialRadius: 1
   useFill: 0
-  hollow: 0
+  border: 0
   sides: 5
   roundness: 0.27
   angle: 1.5707964
@@ -19357,6 +19885,16 @@ MonoBehaviour:
   radiusSpace: 0
   thickness: 0.5
   thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!1 &1251772522
 GameObject:
   m_ObjectHideFlags: 0
@@ -19526,8 +20064,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1253295773
 MeshFilter:
@@ -20009,8 +20547,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &1294656182
 GameObject:
@@ -20187,6 +20725,7 @@ RectTransform:
   - {fileID: 1918261281}
   - {fileID: 2118316996}
   - {fileID: 917356890}
+  - {fileID: 1960377915}
   m_Father: {fileID: 0}
   m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -20273,8 +20812,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1304619470
 MeshFilter:
@@ -20393,8 +20932,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1305387855
 MeshFilter:
@@ -20655,8 +21194,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &1308768942
 GameObject:
@@ -20781,8 +21320,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &1309450992
 GameObject:
@@ -20907,8 +21446,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &1323020725
 GameObject:
@@ -20971,8 +21510,22 @@ MonoBehaviour:
   a: {x: 0, y: 0.49, z: 0}
   b: {x: -0.54, y: -0.5, z: 0}
   c: {x: 1.68, y: -0.5, z: 0}
+  border: 0
+  thickness: 0.5
+  thicknessSpace: 0
+  roundness: 0
   colorB: {r: 0.91372555, g: 0.058823533, b: 0.2784314, a: 1}
   colorC: {r: 0.003921569, g: 0.098039225, b: 0.72156864, a: 1}
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!33 &1323020728
 MeshFilter:
   m_ObjectHideFlags: 2
@@ -21258,8 +21811,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &1356064278
 GameObject:
@@ -21301,7 +21854,7 @@ TextMesh:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1356064278}
-  m_Text: hollow
+  m_Text: border
   m_OffsetZ: 0
   m_CharacterSize: 0.15
   m_LineSpacing: 1
@@ -21521,8 +22074,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1359515765
 MeshFilter:
@@ -21732,6 +22285,16 @@ MonoBehaviour:
   stencilRefID: 0
   stencilReadMask: 255
   stencilWriteMask: 255
+  fill:
+    type: 0
+    space: 0
+    colorStart: {r: 0, g: 0, b: 0, a: 0}
+    colorEnd: {r: 0, g: 0, b: 0, a: 0}
+    linearStart: {x: 0, y: 0, z: 0}
+    linearEnd: {x: 0, y: 0, z: 0}
+    radialOrigin: {x: 0, y: 0, z: 0}
+    radialRadius: 0
+  useFill: 0
   pivot: 1
   width: 2
   height: 2
@@ -21739,6 +22302,17 @@ MonoBehaviour:
   cornerRadiusMode: 0
   cornerRadii: {x: 0.5, y: 0.5, z: 0.5, w: 0.5}
   thickness: 0.2
+  thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!33 &1385978921
 MeshFilter:
   m_ObjectHideFlags: 2
@@ -21907,8 +22481,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &1387261490
 GameObject:
@@ -22059,8 +22633,8 @@ MonoBehaviour:
     space: -2
     snap: 2
     size: 4
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1387672917
 MeshFilter:
@@ -22107,36 +22681,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!21 &1388361128
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Disc Transparent (instance)
-  m_Shader: {fileID: 4800000, guid: 0736a017ee88a8741b09e7382339ab99, type: 3}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 1
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs: []
-    m_Floats:
-    - _StencilComp: 8
-    - _StencilID: 1
-    - _StencilOp: 0
-    - _StencilOpPass: 2
-    - _StencilReadMask: 0
-    - _StencilWriteMask: 255
-    - _ZOffsetFactor: 0
-    - _ZOffsetUnits: 0
-    - _ZTest: 4
-    m_Colors: []
 --- !u!1 &1388367914
 GameObject:
   m_ObjectHideFlags: 0
@@ -22397,8 +22941,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1392061140
 MeshFilter:
@@ -22445,36 +22989,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!21 &1404979903
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Disc Transparent (instance)
-  m_Shader: {fileID: 4800000, guid: 0736a017ee88a8741b09e7382339ab99, type: 3}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 1
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs: []
-    m_Floats:
-    - _StencilComp: 3
-    - _StencilID: 0
-    - _StencilOp: 0
-    - _StencilOpPass: 0
-    - _StencilReadMask: 255
-    - _StencilWriteMask: 255
-    - _ZOffsetFactor: 0
-    - _ZOffsetUnits: 0
-    - _ZTest: 4
-    m_Colors: []
 --- !u!1 &1428455134
 GameObject:
   m_ObjectHideFlags: 0
@@ -22581,36 +23095,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!21 &1442501769
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Disc Transparent (instance)
-  m_Shader: {fileID: 4800000, guid: 0736a017ee88a8741b09e7382339ab99, type: 3}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 1
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs: []
-    m_Floats:
-    - _StencilComp: 3
-    - _StencilID: 1
-    - _StencilOp: 0
-    - _StencilOpPass: 0
-    - _StencilReadMask: 255
-    - _StencilWriteMask: 255
-    - _ZOffsetFactor: 0
-    - _ZOffsetUnits: 0
-    - _ZTest: 4
-    m_Colors: []
 --- !u!1 &1449918422
 GameObject:
   m_ObjectHideFlags: 0
@@ -22878,8 +23362,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1481450799
 MeshFilter:
@@ -23102,8 +23586,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1503708507
 MeshFilter:
@@ -23342,8 +23826,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1509906996
 MeshFilter:
@@ -23462,8 +23946,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1528482676
 MeshFilter:
@@ -23633,8 +24117,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &1537598889
 GameObject:
@@ -23686,7 +24170,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 768836996}
+  - {fileID: 68314276}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -23759,8 +24243,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &1546720953
 GameObject:
@@ -23834,8 +24318,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1546720956
 MeshFilter:
@@ -24187,8 +24671,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &1573213941
 GameObject:
@@ -24262,8 +24746,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1573213944
 MeshFilter:
@@ -24564,8 +25048,8 @@ MonoBehaviour:
     space: -1
     snap: 2
     size: 1
-    offset: 0
     spacing: 1
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1648341284
 MeshFilter:
@@ -24612,36 +25096,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!21 &1649068232
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Disc Transparent (instance)
-  m_Shader: {fileID: 4800000, guid: 0736a017ee88a8741b09e7382339ab99, type: 3}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 1
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs: []
-    m_Floats:
-    - _StencilComp: 3
-    - _StencilID: 1
-    - _StencilOp: 0
-    - _StencilOpPass: 0
-    - _StencilReadMask: 255
-    - _StencilWriteMask: 255
-    - _ZOffsetFactor: 0
-    - _ZOffsetUnits: 0
-    - _ZTest: 4
-    m_Colors: []
 --- !u!1 &1654062714
 GameObject:
   m_ObjectHideFlags: 0
@@ -24714,8 +25168,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1654062717
 MeshFilter:
@@ -24885,8 +25339,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &1665754102
 GameObject:
@@ -25188,6 +25642,36 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!21 &1693537900
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Disc Transparent (instance)
+  m_Shader: {fileID: 4800000, guid: 0736a017ee88a8741b09e7382339ab99, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 1
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Floats:
+    - _StencilComp: 3
+    - _StencilID: 1
+    - _StencilOp: 0
+    - _StencilOpPass: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    - _ZOffsetFactor: 0
+    - _ZOffsetUnits: 0
+    - _ZTest: 4
+    m_Colors: []
 --- !u!1 &1699350062
 GameObject:
   m_ObjectHideFlags: 0
@@ -25402,8 +25886,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &1702937251
 GameObject:
@@ -25477,8 +25961,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1702937254
 MeshFilter:
@@ -25648,8 +26132,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &1719201322
 GameObject:
@@ -25729,8 +26213,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1719201325
 MeshFilter:
@@ -25827,7 +26311,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 1404979903}
+  - {fileID: 660014609}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -25900,8 +26384,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &1734459217
 GameObject:
@@ -26223,8 +26707,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &1760784078
 GameObject:
@@ -26304,8 +26788,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1760784081
 MeshFilter:
@@ -26409,6 +26893,16 @@ MonoBehaviour:
   stencilRefID: 0
   stencilReadMask: 255
   stencilWriteMask: 255
+  fill:
+    type: 0
+    space: 0
+    colorStart: {r: 0, g: 0, b: 0, a: 0}
+    colorEnd: {r: 0, g: 0, b: 0, a: 0}
+    linearStart: {x: 0, y: 0, z: 0}
+    linearEnd: {x: 0, y: 0, z: 0}
+    radialOrigin: {x: 0, y: 0, z: 0}
+    radialRadius: 0
+  useFill: 0
   pivot: 1
   width: 10.03
   height: 2
@@ -26416,6 +26910,17 @@ MonoBehaviour:
   cornerRadiusMode: 1
   cornerRadii: {x: 0.25, y: 0.25, z: 0.25, w: 1.17}
   thickness: 0.2
+  thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!33 &1767333140
 MeshFilter:
   m_ObjectHideFlags: 2
@@ -26637,8 +27142,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1778968053
 MeshFilter:
@@ -27142,8 +27647,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1814216070
 MeshFilter:
@@ -27262,8 +27767,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1824138559
 MeshFilter:
@@ -27367,6 +27872,16 @@ MonoBehaviour:
   stencilRefID: 0
   stencilReadMask: 255
   stencilWriteMask: 255
+  fill:
+    type: 0
+    space: 0
+    colorStart: {r: 0, g: 0, b: 0, a: 0}
+    colorEnd: {r: 0, g: 0, b: 0, a: 0}
+    linearStart: {x: 0, y: 0, z: 0}
+    linearEnd: {x: 0, y: 0, z: 0}
+    radialOrigin: {x: 0, y: 0, z: 0}
+    radialRadius: 0
+  useFill: 0
   pivot: 0
   width: 4.97
   height: 1.8
@@ -27374,6 +27889,17 @@ MonoBehaviour:
   cornerRadiusMode: 1
   cornerRadii: {x: 0.25, y: 0.25, z: 0.25, w: 1.17}
   thickness: 0.1
+  thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!33 &1846303256
 MeshFilter:
   m_ObjectHideFlags: 2
@@ -27688,8 +28214,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1865170298
 MeshFilter:
@@ -27950,8 +28476,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &1869391131
 GameObject:
@@ -28055,6 +28581,16 @@ MonoBehaviour:
   stencilRefID: 0
   stencilReadMask: 255
   stencilWriteMask: 255
+  fill:
+    type: 0
+    space: 0
+    colorStart: {r: 0, g: 0, b: 0, a: 0}
+    colorEnd: {r: 0, g: 0, b: 0, a: 0}
+    linearStart: {x: 0, y: 0, z: 0}
+    linearEnd: {x: 0, y: 0, z: 0}
+    radialOrigin: {x: 0, y: 0, z: 0}
+    radialRadius: 0
+  useFill: 0
   pivot: 1
   width: 3
   height: 9
@@ -28062,6 +28598,17 @@ MonoBehaviour:
   cornerRadiusMode: 0
   cornerRadii: {x: 0.25, y: 0.25, z: 0.25, w: 0.25}
   thickness: 0.1
+  thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!1 &1891118280
 GameObject:
   m_ObjectHideFlags: 0
@@ -28134,8 +28681,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &1891118283
 MeshFilter:
@@ -28299,7 +28846,7 @@ MonoBehaviour:
     radialOrigin: {x: 0, y: 0, z: 0}
     radialRadius: 1
   useFill: 0
-  hollow: 1
+  border: 1
   sides: 6
   roundness: 0.27
   angle: 1.5707964
@@ -28309,6 +28856,16 @@ MonoBehaviour:
   radiusSpace: 0
   thickness: 0.15
   thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!1 &1904097166
 GameObject:
   m_ObjectHideFlags: 0
@@ -28517,7 +29074,7 @@ MonoBehaviour:
     radialOrigin: {x: 0, y: 0, z: 0}
     radialRadius: 1
   useFill: 1
-  hollow: 0
+  border: 0
   sides: 6
   roundness: 0.27
   angle: 1.5707964
@@ -28527,6 +29084,16 @@ MonoBehaviour:
   radiusSpace: 0
   thickness: 0.15
   thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!1 &1922181246
 GameObject:
   m_ObjectHideFlags: 0
@@ -28860,8 +29427,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &1938501874
 GameObject:
@@ -29097,8 +29664,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &1952282022
 GameObject:
@@ -29297,6 +29864,143 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!1 &1960377914
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1960377915}
+  - component: {fileID: 1960377918}
+  - component: {fileID: 1960377917}
+  - component: {fileID: 1960377916}
+  m_Layer: 0
+  m_Name: RegularPolygon (6)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1960377915
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1960377914}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.2001133, y: 1.2001133, z: 1.2001133}
+  m_Children: []
+  m_Father: {fileID: 1296003198}
+  m_RootOrder: 15
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 2.5, y: -5}
+  m_SizeDelta: {x: 1, y: 1}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!23 &1960377916
+MeshRenderer:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1960377914}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: fe78e08f23b8ea44bafd0f2564309ce5, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!33 &1960377917
+MeshFilter:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1960377914}
+  m_Mesh: {fileID: 43100795730674332, guid: a3d1f56cebf202c448b6fb479f61a9dc, type: 2}
+--- !u!114 &1960377918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1960377914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56df0c96eec286545998945068c17e17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blendMode: 1
+  scaleMode: 0
+  color: {r: 1, g: 1, b: 1, a: 1}
+  detailLevel: 2
+  zTest: 4
+  zOffsetFactor: 0
+  zOffsetUnits: 0
+  stencilComp: 8
+  stencilOpPass: 0
+  stencilRefID: 0
+  stencilReadMask: 255
+  stencilWriteMask: 255
+  fill:
+    type: 0
+    space: 0
+    colorStart: {r: 0, g: 0, b: 0, a: 1}
+    colorEnd: {r: 1, g: 1, b: 1, a: 1}
+    linearStart: {x: 0, y: 0, z: 0}
+    linearEnd: {x: 0, y: 1, z: 0}
+    radialOrigin: {x: 0, y: 0, z: 0}
+    radialRadius: 1
+  useFill: 0
+  border: 1
+  sides: 6
+  roundness: 0.113
+  angle: 1.5707964
+  radius: 1.07
+  angUnitInput: 1
+  geometry: 0
+  radiusSpace: 0
+  thickness: 1
+  thicknessSpace: 1
+  matchDashSpacingToSize: 1
+  dashed: 1
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 2
+    size: 3
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!1 &1978880361
 GameObject:
   m_ObjectHideFlags: 0
@@ -29551,8 +30255,8 @@ MonoBehaviour:
     space: -1
     snap: 2
     size: 4
-    offset: 0
     spacing: 1
+    offset: 0
     shapeModifier: 1
 --- !u!33 &2017650679
 MeshFilter:
@@ -29722,8 +30426,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &2022172832
 GameObject:
@@ -29907,6 +30611,136 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!1 &2031957254
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2031957255}
+  - component: {fileID: 2031957258}
+  - component: {fileID: 2031957257}
+  - component: {fileID: 2031957256}
+  m_Layer: 0
+  m_Name: Rectangle (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2031957255
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2031957254}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.27000046, y: -5.25, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 949545702}
+  m_RootOrder: 14
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2031957256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2031957254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08f210828086c1a4398856e1ba65627c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blendMode: 1
+  scaleMode: 0
+  color: {r: 1, g: 1, b: 1, a: 1}
+  detailLevel: 2
+  zTest: 4
+  zOffsetFactor: 0
+  zOffsetUnits: 0
+  stencilComp: 8
+  stencilOpPass: 0
+  stencilRefID: 0
+  stencilReadMask: 255
+  stencilWriteMask: 255
+  fill:
+    type: 0
+    space: 0
+    colorStart: {r: 0, g: 0, b: 0, a: 0}
+    colorEnd: {r: 0, g: 0, b: 0, a: 0}
+    linearStart: {x: 0, y: 0, z: 0}
+    linearEnd: {x: 0, y: 0, z: 0}
+    radialOrigin: {x: 0, y: 0, z: 0}
+    radialRadius: 0
+  useFill: 0
+  pivot: 1
+  width: 2.3
+  height: 2.3
+  type: 3
+  cornerRadiusMode: 0
+  cornerRadii: {x: 0.55, y: 0.55, z: 0.55, w: 0.55}
+  thickness: 0.08
+  thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 1
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 2
+    size: 3
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
+--- !u!33 &2031957257
+MeshFilter:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2031957254}
+  m_Mesh: {fileID: 43100795730674332, guid: a3d1f56cebf202c448b6fb479f61a9dc, type: 2}
+--- !u!23 &2031957258
+MeshRenderer:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2031957254}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 525db45b2ebe18842a5def43de83a261, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
 --- !u!1 &2076220597
 GameObject:
   m_ObjectHideFlags: 0
@@ -29985,8 +30819,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!33 &2076220600
 MeshFilter:
@@ -30111,8 +30945,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!33 &2078611856
 MeshFilter:
@@ -30282,8 +31116,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &2083376538
 GameObject:
@@ -30499,8 +31333,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &2100010088
 GameObject:
@@ -30574,8 +31408,8 @@ MonoBehaviour:
     space: -2
     snap: 2
     size: 4
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!33 &2100010091
 MeshFilter:
@@ -30875,7 +31709,7 @@ MonoBehaviour:
     radialOrigin: {x: 0, y: 0, z: 0}
     radialRadius: 1
   useFill: 1
-  hollow: 0
+  border: 0
   sides: 6
   roundness: 0.27
   angle: 1.5707964
@@ -30885,6 +31719,16 @@ MonoBehaviour:
   radiusSpace: 0
   thickness: 0.15
   thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!1 &2121319349
 GameObject:
   m_ObjectHideFlags: 0
@@ -31008,8 +31852,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!1 &2127685371
 GameObject:
@@ -31219,7 +32063,7 @@ MonoBehaviour:
     radialOrigin: {x: 0, y: 0, z: 0}
     radialRadius: 1
   useFill: 0
-  hollow: 0
+  border: 0
   sides: 3
   roundness: 0.27
   angle: 1.5707964
@@ -31229,6 +32073,16 @@ MonoBehaviour:
   radiusSpace: 0
   thickness: 0.5
   thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
 --- !u!1 &2146481481
 GameObject:
   m_ObjectHideFlags: 0

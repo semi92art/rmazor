@@ -20,19 +20,54 @@ namespace Shapes {
 		public Vector2 lookAngLabelOffset;
 		[Range( 0, 0.05f )] public float triangleNootSize = 0.1f;
 
-		public void DrawCompass( Vector3 worldDir ) {
-			Vector2 compArcOrigin = position + Vector2.down * bendRadius;
+		string[] directionLabels = { "S", "W", "N", "E" };
 
+		public void DrawCompass( Vector3 worldDir ) {
+			// prepare all variables
+			Vector2 compArcOrigin = position + Vector2.down * bendRadius;
 			float angUiMin = ShapesMath.TAU * 0.25f - ( width / 2 ) / bendRadius;
 			float angUiMax = ShapesMath.TAU * 0.25f + ( width / 2 ) / bendRadius;
 			Vector2 dirWorld = new Vector2( worldDir.x, worldDir.z ).normalized;
 			float lookAng = ShapesMath.DirToAng( dirWorld );
 			float angWorldMin = lookAng + fieldOfView / 2;
 			float angWorldMax = lookAng - fieldOfView / 2;
+			Vector2 labelPos = compArcOrigin + Vector2.up * ( bendRadius ) + lookAngLabelOffset * 0.1f;
+			string lookLabel = Mathf.RoundToInt( -lookAng * Mathf.Rad2Deg + 180f ) + "°";
 
+			// prepare draw state
+			Draw.LineEndCaps = LineEndCap.Square;
+			Draw.Thickness = lineThickness;
+
+			// draw the horizontal line/arc of the compass
 			Draw.Arc( compArcOrigin, bendRadius, lineThickness, angUiMin, angUiMax, ArcEndCap.Round );
 
-			void CompassArcNoot( float worldAng, float size, string label = null ) {
+			// draw the look angle label
+			Draw.FontSize = fontSizeLookLabel;
+			Draw.Text( labelPos, 0f, lookLabel, TextAlign.Center );
+
+			// triangle arrow
+			Vector2 trianglePos = compArcOrigin + Vector2.up * ( bendRadius + 0.01f );
+			Draw.RegularPolygon( trianglePos, 3, triangleNootSize, -ShapesMath.TAU / 4 );
+
+			// draw ticks
+			int tickCount = ( ticksPerQuarterTurn - 1 ) * 4;
+			for( int i = 0; i < tickCount; i++ ) {
+				float t = i / ( (float)tickCount );
+				float ang = ShapesMath.TAU * t;
+				bool cardinal = i % ( tickCount / 4 ) == 0;
+
+				string label = null;
+				if( cardinal ) {
+					int angInt = Mathf.RoundToInt( ( 1f - t ) * 4 );
+					label = directionLabels[angInt % 4];
+				}
+
+				float tCompass = ShapesMath.InverseLerpAngleRad( angWorldMax, angWorldMin, ang );
+				if( tCompass < 1f && tCompass > 0f )
+					DrawTick( ang, cardinal ? 0.8f : 0.5f, label );
+			}
+
+			void DrawTick( float worldAng, float size, string label = null ) {
 				float tCompass = ShapesMath.InverseLerpAngleRad( angWorldMax, angWorldMin, worldAng );
 				float uiAng = Mathf.Lerp( angUiMin, angUiMax, tCompass );
 				Vector2 uiDir = ShapesMath.AngToDir( uiAng );
@@ -44,51 +79,6 @@ namespace Shapes {
 					Draw.FontSize = fontSizeTickLabel;
 					Draw.Text( b - uiDir * tickLabelOffset, uiAng - ShapesMath.TAU / 4f, label, TextAlign.Center, new Color( 1, 1, 1, fade ) );
 				}
-			}
-
-			Draw.LineEndCaps = LineEndCap.Square;
-			Draw.LineThickness = lineThickness;
-
-
-			Vector2 trianglePos = compArcOrigin + Vector2.up * ( bendRadius + 0.01f );
-			Vector2 labelPos = compArcOrigin + Vector2.up * ( bendRadius ) + lookAngLabelOffset * 0.1f;
-			string lookLabel = Mathf.RoundToInt( -lookAng * Mathf.Rad2Deg + 180f ) + "°";
-			Draw.FontSize = fontSizeLookLabel;
-			Draw.Text( labelPos, 0f, lookLabel, TextAlign.Center );
-			Vector2 triA = trianglePos + ShapesMath.AngToDir( -ShapesMath.TAU / 4 ) * triangleNootSize;
-			Vector2 triB = trianglePos + ShapesMath.AngToDir( -ShapesMath.TAU / 4 + ShapesMath.TAU / 3 ) * triangleNootSize;
-			Vector2 triC = trianglePos + ShapesMath.AngToDir( -ShapesMath.TAU / 4 + 2 * ShapesMath.TAU / 3 ) * triangleNootSize;
-			Draw.Triangle( triA, triB, triC );
-
-			int tickCount = ( ticksPerQuarterTurn - 1 ) * 4;
-			for( int i = 0; i < tickCount; i++ ) {
-				float t = i / ( (float)tickCount );
-				float ang = ShapesMath.TAU * t;
-				bool cardinal = i % ( tickCount / 4 ) == 0;
-
-				string label = null;
-				if( cardinal ) {
-					int angInt = Mathf.RoundToInt( ( 1f - t ) * 4 );
-					switch( angInt ) {
-						case 0:
-						case 4:
-							label = "S";
-							break;
-						case 1:
-							label = "W";
-							break;
-						case 2:
-							label = "N";
-							break;
-						case 3:
-							label = "E";
-							break;
-					}
-				}
-
-				float tCompass = ShapesMath.InverseLerpAngleRad( angWorldMax, angWorldMin, ang );
-				if( tCompass < 1f && tCompass > 0f )
-					CompassArcNoot( ang, cardinal ? 0.8f : 0.5f, label );
 			}
 		}
 

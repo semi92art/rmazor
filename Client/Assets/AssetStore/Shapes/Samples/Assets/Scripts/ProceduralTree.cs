@@ -27,9 +27,9 @@ namespace Shapes {
 				// Set up draw state
 				Draw.ResetAllDrawStates(); // ensure everything is set to their defaults
 				Draw.BlendMode = ShapesBlendMode.Additive;
-				Draw.LineThickness = lineThickness;
+				Draw.Thickness = lineThickness;
 				Draw.LineGeometry = use3D ? LineGeometry.Volumetric3D : LineGeometry.Flat2D;
-				Draw.LineThicknessSpace = ThicknessSpace.Meters;
+				Draw.ThicknessSpace = ThicknessSpace.Meters;
 				Draw.Color = lineColor;
 
 				Random.InitState( seed ); // initialize random state, so we get the same values every frame

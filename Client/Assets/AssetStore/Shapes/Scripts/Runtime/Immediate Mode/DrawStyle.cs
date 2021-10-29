@@ -25,51 +25,40 @@ namespace Shapes {
 			blendMode = ShapesBlendMode.Transparent,
 			scaleMode = ScaleMode.Uniform,
 			detailLevel = DetailLevel.Medium,
-			lineThickness = DEFAULT_THICKNESS,
-			lineThicknessSpace = DEFAULT_THICKNESS_SPACE,
-			lineDashStyle = DashStyle.DefaultDashStyleLine,
+
+			// styling states
+			useDashes = false,
+			dashStyle = DashStyle.defaultDashStyle,
+			useGradients = false,
+			gradientFill = GradientFill.defaultFill,
+
+			// shared states
+			thickness = DEFAULT_THICKNESS,
+			thicknessSpace = DEFAULT_THICKNESS_SPACE,
+			radiusSpace = DEFAULT_THICKNESS_SPACE,
+			sizeSpace = DEFAULT_THICKNESS_SPACE,
+			radius = 1f,
+
+			// line
 			lineEndCaps = LineEndCap.Round,
 			lineGeometry = LineGeometry.Billboard,
+
+			// polygon
 			polygonTriangulation = PolygonTriangulation.EarClipping,
-			polygonShapeFill = new ShapeFill(),
+
+			// polyline
 			polylineGeometry = PolylineGeometry.Billboard,
 			polylineJoins = PolylineJoins.Round,
 
 			// disc
 			discGeometry = DiscGeometry.Flat2D,
-			discRadius = 1f,
-			ringThickness = DEFAULT_THICKNESS,
-			ringThicknessSpace = DEFAULT_THICKNESS_SPACE,
-			discRadiusSpace = DEFAULT_THICKNESS_SPACE,
-			ringDashStyle = DashStyle.DefaultDashStyleRing,
 
 			// regular polygon
-			regularPolygonRadius = 1f,
 			regularPolygonSideCount = 6,
 			regularPolygonGeometry = RegularPolygonGeometry.Flat2D,
-			regularPolygonThickness = DEFAULT_THICKNESS,
-			regularPolygonThicknessSpace = DEFAULT_THICKNESS_SPACE,
-			regularPolygonRadiusSpace = DEFAULT_THICKNESS_SPACE,
-			regularPolygonShapeFill = new ShapeFill(),
-			
-			// rectangles
-			rectangleThickness = DEFAULT_THICKNESS,
-			rectangleThicknessSpace = DEFAULT_THICKNESS_SPACE,
-			rectangleShapeFill = new ShapeFill(),
 
-			// hollow triangles
-			triangleThickness = DEFAULT_THICKNESS,
-			triangleThicknessSpace = DEFAULT_THICKNESS_SPACE,
-
-			sphereRadius = 1f,
-			sphereRadiusSpace = DEFAULT_THICKNESS_SPACE,
-			cuboidSizeSpace = DEFAULT_THICKNESS_SPACE,
-			torusThicknessSpace = DEFAULT_THICKNESS_SPACE,
-			torusRadiusSpace = DEFAULT_THICKNESS_SPACE,
-			coneSizeSpace = DEFAULT_THICKNESS_SPACE,
-			font = ShapesAssets.Instance.defaultFont,
-			fontSize = 1f,
-			textAlign = TextAlign.Center
+			// text
+			textStyle = TextStyle.defaultTextStyle
 		};
 
 		// globally shared render state styles
@@ -79,9 +68,18 @@ namespace Shapes {
 		public ScaleMode scaleMode;
 		public DetailLevel detailLevel;
 
-		// shared line & polyline states
-		public float lineThickness;
-		public ThicknessSpace lineThicknessSpace;
+		// styling states
+		public bool useDashes;
+		public DashStyle dashStyle;
+		public bool useGradients;
+		public GradientFill gradientFill;
+
+		// shared states
+		public float radius;
+		public float thickness;
+		public ThicknessSpace thicknessSpace;
+		public ThicknessSpace radiusSpace;
+		public ThicknessSpace sizeSpace;
 
 		// line states
 		public LineEndCap lineEndCaps;
@@ -89,53 +87,20 @@ namespace Shapes {
 
 		// polygon states
 		public PolygonTriangulation polygonTriangulation;
-		public ShapeFill polygonShapeFill;
-
-		// line dashes
-		public DashStyle lineDashStyle;
-		public DashStyle ringDashStyle;
 
 		// polyline states
 		public PolylineGeometry polylineGeometry;
 		public PolylineJoins polylineJoins;
 
 		// disc & ring states
-		public float discRadius;
 		public DiscGeometry discGeometry;
-		public float ringThickness;
-		public ThicknessSpace ringThicknessSpace;
-		public ThicknessSpace discRadiusSpace;
 
 		// regular polygon states
-		public float regularPolygonRadius;
 		public int regularPolygonSideCount;
 		public RegularPolygonGeometry regularPolygonGeometry;
-		public float regularPolygonThickness;
-		public ThicknessSpace regularPolygonThicknessSpace;
-		public ThicknessSpace regularPolygonRadiusSpace;
-		public ShapeFill regularPolygonShapeFill;
-		
-		// Rectangle states
-		public float rectangleThickness;
-		public ThicknessSpace rectangleThicknessSpace;
-		public ShapeFill rectangleShapeFill;
-
-		// Triangle states
-		public float triangleThickness;
-		public ThicknessSpace triangleThicknessSpace;
-
-		// 3D shape states
-		public float sphereRadius;
-		public ThicknessSpace sphereRadiusSpace;
-		public ThicknessSpace cuboidSizeSpace;
-		public ThicknessSpace torusThicknessSpace;
-		public ThicknessSpace torusRadiusSpace;
-		public ThicknessSpace coneSizeSpace;
 
 		// text states
-		public TMP_FontAsset font;
-		public float fontSize;
-		public TextAlign textAlign;
+		public TextStyle textStyle;
 	}
 
 }

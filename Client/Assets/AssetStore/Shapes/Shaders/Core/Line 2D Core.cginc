@@ -5,22 +5,18 @@
 #pragma target 3.0
 
 UNITY_INSTANCING_BUFFER_START(Props)
-UNITY_DEFINE_INSTANCED_PROP(int, _ScaleMode)
-UNITY_DEFINE_INSTANCED_PROP(half4, _Color)
-UNITY_DEFINE_INSTANCED_PROP(half4, _ColorEnd)
-UNITY_DEFINE_INSTANCED_PROP(float3, _PointStart)
-UNITY_DEFINE_INSTANCED_PROP(float3, _PointEnd)
-UNITY_DEFINE_INSTANCED_PROP(half, _Thickness)
-UNITY_DEFINE_INSTANCED_PROP(int, _ThicknessSpace)
-UNITY_DEFINE_INSTANCED_PROP(int, _DashType)
-UNITY_DEFINE_INSTANCED_PROP(half, _DashSize)
-UNITY_DEFINE_INSTANCED_PROP(half, _DashShapeModifier)
-UNITY_DEFINE_INSTANCED_PROP(half, _DashOffset)
-UNITY_DEFINE_INSTANCED_PROP(half, _DashSpacing)
-UNITY_DEFINE_INSTANCED_PROP(int, _DashSpace)
-UNITY_DEFINE_INSTANCED_PROP(int, _DashSnap)
-UNITY_DEFINE_INSTANCED_PROP(int, _Alignment)
+PROP_DEF(int, _ScaleMode)
+PROP_DEF(half4, _Color)
+PROP_DEF(half4, _ColorEnd)
+PROP_DEF(float3, _PointStart)
+PROP_DEF(float3, _PointEnd)
+PROP_DEF(half, _Thickness)
+PROP_DEF(int, _ThicknessSpace)
+PROP_DEF(int, _Alignment)
+SHAPES_DASH_PROPERTIES
 UNITY_INSTANCING_BUFFER_END(Props)
+
+#include "../DashUtils.cginc"
 
 #define ALIGNMENT_FLAT 0
 #define ALIGNMENT_BILLBOARD 1
@@ -51,9 +47,9 @@ VertexOutput vert(VertexInput v) {
 	UNITY_TRANSFER_INSTANCE_ID(v, o);
 	UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-    half3 aLocal = UNITY_ACCESS_INSTANCED_PROP(Props, _PointStart);
-    half3 bLocal = UNITY_ACCESS_INSTANCED_PROP(Props, _PointEnd);
-    int alignment = UNITY_ACCESS_INSTANCED_PROP(Props, _Alignment);
+    half3 aLocal = PROP(_PointStart);
+    half3 bLocal = PROP(_PointEnd);
+    int alignment = PROP(_Alignment);
     aLocal.z *= saturate(alignment); // flatten Z if _Alignment == ALIGNMENT_FLAT
     bLocal.z *= saturate(alignment);
 	float3 a = LocalToWorldPos( aLocal );
@@ -82,16 +78,14 @@ VertexOutput vert(VertexInput v) {
 	    }
     }
     
-    int scaleMode = UNITY_ACCESS_INSTANCED_PROP(Props, _ScaleMode);
+    int scaleMode = PROP(_ScaleMode);
     half uniformScale = GetUniformScale();
 	half scaleThickness = scaleMode == SCALE_MODE_UNIFORM ? uniformScale : 1;
-	half scaleDashes = scaleMode == SCALE_MODE_UNIFORM ? uniformScale : 1;
-	half scaleSpacing = uniformScale;
 	
 	
 	
-	half thickness = UNITY_ACCESS_INSTANCED_PROP(Props, _Thickness) * scaleThickness;
-	int thicknessSpace = UNITY_ACCESS_INSTANCED_PROP(Props, _ThicknessSpace);
+	half thickness = PROP(_Thickness) * scaleThickness;
+	int thicknessSpace = PROP(_ThicknessSpace);
 	LineWidthData widthData = GetScreenSpaceWidthData( vertOrigin, normal, thickness, thicknessSpace );
 	
 	o.IP_uv0 = v.vertex;
@@ -124,23 +118,14 @@ VertexOutput vert(VertexInput v) {
     o.IP_capLengthRatio = (2*radiusVisuals)/endToEndLength;
     
 	// dashes
-	half dashSizeInput = UNITY_ACCESS_INSTANCED_PROP(Props, _DashSize);
-	if( dashSizeInput > 0 ){
-        float dashOffset = UNITY_ACCESS_INSTANCED_PROP(Props, _DashOffset);
-        int dashSpace = UNITY_ACCESS_INSTANCED_PROP(Props, _DashSpace);
-        
-        // o.dashData.lineThickness = dashSpace == DASH_SPACE_RELATIVE ? MetersToOtherSpace( widthData.thicknessMeters, widthData.pxPerMeter, thicknessSpace ) : widthData.thicknessMeters;
-        
-        int snap = UNITY_ACCESS_INSTANCED_PROP(Props, _DashSnap);
-        half projDist = dot( tangent, vertPos - a ); // distance along line
-        half dashSize = UNITY_ACCESS_INSTANCED_PROP(Props, _DashSize) * scaleDashes;
-        half dashSpacing = UNITY_ACCESS_INSTANCED_PROP(Props, _DashSpacing) * scaleSpacing;
-		LineDashData dashData = GetDashCoordinates( dashSize, dashSpacing, projDist, lineLengthVisual, 2*radiusVisuals, thicknessSpace, widthData.pxPerMeter, dashOffset, dashSpace, snap ); 
-		o.IP_dash_coord = dashData.coord;
-		o.IP_dash_spacePerPeriod = dashData.spacePerPeriod;
-		o.IP_dash_thicknessPerPeriod = dashData.thicknessPerPeriod; 
+	if( IsDashed() ) {
+		float projDist = dot( tangent, vertPos - a ); // distance along line
+		DashConfig dash = GetDashConfig(uniformScale);
+		DashCoordinates dashCoords = GetDashCoordinates( dash, projDist, lineLengthVisual, 2*radiusVisuals, widthData.pxPerMeter );
+		o.IP_dash_coord = dashCoords.coord;
+		o.IP_dash_spacePerPeriod = dashCoords.spacePerPeriod;
+		o.IP_dash_thicknessPerPeriod = dashCoords.thicknessPerPeriod;
 	}
-	
 	
 	// color
 	#if defined(CAP_ROUND) || defined(CAP_SQUARE)
@@ -159,8 +144,8 @@ FRAG_OUTPUT_V4 frag( VertexOutput i ) : SV_Target {
  
 	UNITY_SETUP_INSTANCE_ID(i);
 	
-	float4 colorStart = UNITY_ACCESS_INSTANCED_PROP(Props, _Color);
-    float4 colorEnd = UNITY_ACCESS_INSTANCED_PROP(Props, _ColorEnd);
+	float4 colorStart = PROP(_Color);
+    float4 colorEnd = PROP(_ColorEnd);
 	float4 shape_color = lerp(colorStart, colorEnd, saturate( i.IP_tColor ) );
 
 	half shape_mask = 1;
@@ -186,13 +171,13 @@ FRAG_OUTPUT_V4 frag( VertexOutput i ) : SV_Target {
 	    #endif
 	#endif
 
-    int dashType = UNITY_ACCESS_INSTANCED_PROP(Props, _DashType);
-	half dashModifier = UNITY_ACCESS_INSTANCED_PROP(Props, _DashShapeModifier);
-	LineDashData dashData;
-	dashData.coord = i.IP_dash_coord;
-	dashData.spacePerPeriod = i.IP_dash_spacePerPeriod;
-	dashData.thicknessPerPeriod = i.IP_dash_thicknessPerPeriod;
-	ApplyDashMask( /*inout*/ shape_mask, dashData, i.IP_uv0.x, dashType, dashModifier );
+    int dashType = PROP(_DashType);
+	half dashModifier = PROP(_DashShapeModifier);
+	DashCoordinates dashCoords;
+	dashCoords.coord = i.IP_dash_coord;
+	dashCoords.spacePerPeriod = i.IP_dash_spacePerPeriod;
+	dashCoords.thicknessPerPeriod = i.IP_dash_thicknessPerPeriod;
+	ApplyDashMask( /*inout*/ shape_mask, dashCoords, i.IP_uv0.x, dashType, dashModifier );
     
 	shape_mask *= saturate( i.IP_pxCoverage );
 	return ShapesOutput( shape_color, shape_mask );

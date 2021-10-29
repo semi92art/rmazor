@@ -94,7 +94,7 @@ namespace Shapes {
 
 			// glow
 			Draw.BlendMode = ShapesBlendMode.Additive;
-			Draw.DiscGradientRadial( movingLeftPos, barThickness * 2, chargeColor, Color.clear );
+			Draw.Disc( movingLeftPos, barThickness * 2, DiscColors.Radial( chargeColor, Color.clear ) );
 			Draw.BlendMode = ShapesBlendMode.Transparent;
 		}
 	}

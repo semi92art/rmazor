@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 // Shapes © Freya Holmér - https://twitter.com/FreyaHolmer/
@@ -7,7 +8,7 @@ namespace Shapes {
 
 	internal static class ShapesMaterialUtils {
 
-		// properties
+		// properties. CodegenMpbs expect all of these to match "*public static readonly int prop"
 		public static readonly int propZTest = Shader.PropertyToID( "_ZTest" ); // used for all shapes
 		public static readonly int propZTestTMP = Shader.PropertyToID( "unity_GUIZTestMode" ); // TMP only
 		public static readonly int propZOffsetFactor = Shader.PropertyToID( "_ZOffsetFactor" ); // used for all shapes
@@ -38,7 +39,7 @@ namespace Shapes {
 		public static readonly int propRadius = Shader.PropertyToID( "_Radius" ); // disc, cone, sphere
 		public static readonly int propCornerRadii = Shader.PropertyToID( "_CornerRadii" ); // rect
 		public static readonly int propLength = Shader.PropertyToID( "_Length" ); // cone
-		public static readonly int propHollow = Shader.PropertyToID( "_Hollow" ); // regular polygon
+		public static readonly int propBorder = Shader.PropertyToID( "_Hollow" ); // regular polygon
 		public static readonly int propSides = Shader.PropertyToID( "_Sides" ); // regular polygon
 		public static readonly int propAng = Shader.PropertyToID( "_Angle" ); // regular polygon
 		public static readonly int propRoundness = Shader.PropertyToID( "_Roundness" ); // regular polygon
@@ -63,6 +64,9 @@ namespace Shapes {
 		public static readonly int propFillStart = Shader.PropertyToID( "_FillStart" ); // polygon (so far), .w is radius if we're radial
 		public static readonly int propFillEnd = Shader.PropertyToID( "_FillEnd" ); // polygon (so far), endpoint of linear gradient
 		public static readonly int propFillSpace = Shader.PropertyToID( "_FillSpace" ); // polygon (so far). local vs world
+		
+		public static readonly int propMainTex = Shader.PropertyToID( "_MainTex" ); // texture
+		public static readonly int propUvs = Shader.PropertyToID( "_Uvs" ); // texture
 
 		// materials
 		static readonly ShapesMaterials matDisc = new ShapesMaterials( "Disc" );
@@ -81,6 +85,7 @@ namespace Shapes {
 		public static readonly ShapesMaterials matTorus = new ShapesMaterials( "Torus" );
 		public static readonly ShapesMaterials matPolygon = new ShapesMaterials( "Polygon" );
 		public static readonly ShapesMaterials matRegularPolygon = new ShapesMaterials( "Regular Polygon" );
+		public static readonly ShapesMaterials matTexture = new ShapesMaterials( "Texture" );
 
 		static readonly ShapesMaterials[ /*cap*/] matsLine = {
 			new ShapesMaterials( "Line 2D" ),
@@ -109,6 +114,7 @@ namespace Shapes {
 		};
 
 		// helper functions
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ShapesMaterials GetDiscMaterial( bool hollow, bool sector ) {
 			if( hollow )
 				return sector ? matRingSector : matRing;
@@ -148,8 +154,8 @@ namespace Shapes {
 			switch( type ) {
 				case Rectangle.RectangleType.HardSolid:     return matRectSimple;
 				case Rectangle.RectangleType.RoundedSolid:  return matRectRounded;
-				case Rectangle.RectangleType.HardHollow:    return matRectBorder;
-				case Rectangle.RectangleType.RoundedHollow: return matRectBorderRounded;
+				case Rectangle.RectangleType.HardBorder:    return matRectBorder;
+				case Rectangle.RectangleType.RoundedBorder: return matRectBorderRounded;
 				default:                                    return null;
 			}
 		}

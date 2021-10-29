@@ -5,12 +5,12 @@
 #pragma target 3.0
 
 UNITY_INSTANCING_BUFFER_START(Props)
-UNITY_DEFINE_INSTANCED_PROP(int, _ScaleMode)
-UNITY_DEFINE_INSTANCED_PROP(half4, _Color)
-UNITY_DEFINE_INSTANCED_PROP(half, _Radius)
-UNITY_DEFINE_INSTANCED_PROP(half, _RadiusSpace)
-UNITY_DEFINE_INSTANCED_PROP(half, _Thickness)
-UNITY_DEFINE_INSTANCED_PROP(half, _ThicknessSpace)
+PROP_DEF(int, _ScaleMode)
+PROP_DEF(half4, _Color)
+PROP_DEF(half, _Radius)
+PROP_DEF(half, _RadiusSpace)
+PROP_DEF(half, _Thickness)
+PROP_DEF(half, _ThicknessSpace)
 UNITY_INSTANCING_BUFFER_END(Props)
 
 struct VertexInput {
@@ -31,14 +31,14 @@ VertexOutput vert(VertexInput v) {
 	UNITY_TRANSFER_INSTANCE_ID(v, o);
 	UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 	
-	int scaleMode = UNITY_ACCESS_INSTANCED_PROP(Props, _ScaleMode);
+	int scaleMode = PROP(_ScaleMode);
     half uniformScale = GetUniformScale();
     half scaleThickness = scaleMode == SCALE_MODE_UNIFORM ? uniformScale : 1;
     
-    half radiusMajorTarget = UNITY_ACCESS_INSTANCED_PROP(Props, _Radius) * uniformScale;
-    int radiusMajorSpace = UNITY_ACCESS_INSTANCED_PROP(Props, _RadiusSpace);
-    int thicknessSpace = UNITY_ACCESS_INSTANCED_PROP(Props, _ThicknessSpace);
-    half thicknessTarget = UNITY_ACCESS_INSTANCED_PROP(Props, _Thickness) * scaleThickness;
+    half radiusMajorTarget = PROP(_Radius) * uniformScale;
+    int radiusMajorSpace = PROP(_RadiusSpace);
+    int thicknessSpace = PROP(_ThicknessSpace);
+    half thicknessTarget = PROP(_Thickness) * scaleThickness;
     
     
     // calc radius
@@ -60,6 +60,6 @@ VertexOutput vert(VertexInput v) {
 
 FRAG_OUTPUT_V4 frag( VertexOutput i ) : SV_Target {
 	UNITY_SETUP_INSTANCE_ID(i);
-	half4 color = UNITY_ACCESS_INSTANCED_PROP(Props, _Color);
+	half4 color = PROP(_Color);
 	return ShapesOutput( color, saturate(i.pxCoverage) );
 }

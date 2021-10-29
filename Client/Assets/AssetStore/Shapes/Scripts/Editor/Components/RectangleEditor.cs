@@ -20,12 +20,17 @@ namespace Shapes {
 		SerializedProperty propThicknessSpace = null;
 		SerializedProperty propFill = null;
 		SerializedProperty propUseFill = null;
+		SerializedProperty propDashStyle = null;
+		SerializedProperty propDashed = null;
+		SerializedProperty propMatchDashSpacingToSize = null;
 
+		DashStyleEditor dashEditor;
 		SceneFillEditor fillEditor;
 		SceneRectEditor rectEditor;
 
 		public override void OnEnable() {
 			base.OnEnable();
+			dashEditor = DashStyleEditor.GetDashEditor( propDashStyle, propMatchDashSpacingToSize, propDashed );
 			rectEditor = new SceneRectEditor( this );
 			fillEditor = new SceneFillEditor( this, propFill, propUseFill );
 		}
@@ -57,8 +62,8 @@ namespace Shapes {
 				}
 			}
 
-			bool isHollow = ( (Rectangle)target ).IsHollow;
-			using( new EditorGUI.DisabledScope( !multiEditing && isHollow == false ) )
+			bool isBorder = ( (Rectangle)target ).IsBorder;
+			using( new EditorGUI.DisabledScope( !multiEditing && isBorder == false ) )
 				ShapesUI.FloatInSpaceField( propThickness, propThicknessSpace );
 
 			bool hasRadius = ( (Rectangle)target ).IsRounded;
@@ -69,6 +74,11 @@ namespace Shapes {
 			}
 
 			rectEditor.GUIEditButton();
+			
+			bool hasDashablesInSelection = targets.Any( x => ( x as Rectangle ).IsBorder );
+			using( new ShapesUI.GroupScope() )
+				using( new EditorGUI.DisabledScope( hasDashablesInSelection == false ) )
+					dashEditor.DrawProperties();
 
 			fillEditor.DrawProperties( this );
 

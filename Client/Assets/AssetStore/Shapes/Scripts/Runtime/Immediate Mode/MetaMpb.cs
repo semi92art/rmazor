@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 // Shapes © Freya Holmér - https://twitter.com/FreyaHolmer/
@@ -19,25 +20,46 @@ namespace Shapes {
 		// all shapes have a color property (except TMP text), the rest are defined in the derived classes
 		internal List<Vector4> color = InitList<Vector4>();
 
-		internal static void ApplyColorOrFill<T>( T fillable, ShapeFill fill, Color baseColor ) where T : MetaMpb, IFillable {
-			bool useFill = fill != null;
-			fillable.color.Add( ( useFill ? fill.colorStart : baseColor ).ColorSpaceAdjusted() );
-			fillable.fillType.Add( fill.GetShaderFillModeInt() );
-			fillable.fillSpace.Add( useFill ? (float)fill.space : default );
-			fillable.fillStart.Add( useFill ? fill.GetShaderStartVector() : default );
-			fillable.fillColorEnd.Add( useFill ? fill.colorEnd.ColorSpaceAdjusted() : default );
-			fillable.fillEnd.Add( useFill ? fill.linearEnd : default );
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
+		internal static void ApplyColorOrFill<T>( T fillable, Color baseColor ) where T : MetaMpb, IFillableMpb {
+			if( Draw.style.useGradients ) {
+				GradientFill fill = Draw.style.gradientFill;
+				fillable.color.Add( fill.colorStart.ColorSpaceAdjusted() );
+				fillable.fillType.Add( (int)fill.type );
+				fillable.fillSpace.Add( (float)fill.space );
+				fillable.fillStart.Add( fill.GetShaderStartVector() );
+				fillable.fillColorEnd.Add( fill.colorEnd.ColorSpaceAdjusted() );
+				fillable.fillEnd.Add( fill.linearEnd );
+			} else {
+				fillable.color.Add( baseColor.ColorSpaceAdjusted() );
+				fillable.fillType.Add( GradientFill.FILL_NONE );
+				fillable.fillSpace.Add( default );
+				fillable.fillStart.Add( default );
+				fillable.fillColorEnd.Add( default );
+				fillable.fillEnd.Add( default );
+			}
 		}
 
-		internal static void ApplyDashSettings<T>( T dashable, DashStyle style, float thickness ) where T : MetaMpb, IDashable {
-			bool dashed = style?.size > 0f;
-			dashable.dashSize.Add( dashed ? style.GetNetAbsoluteSize( true, thickness ) : 0 );
-			dashable.dashType.Add( dashed ? (float)style.type : default );
-			dashable.dashShapeModifier.Add( dashed ? style.shapeModifier : 0 );
-			dashable.dashSpace.Add( dashed ? (float)style.space : 0 );
-			dashable.dashSnap.Add( dashed ? (int)style.snap : 0 );
-			dashable.dashOffset.Add( dashed ? style.offset : 0 );
-			dashable.dashSpacing.Add( dashed ? style.GetNetAbsoluteSpacing( true, thickness ) : 0 );
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
+		internal static void ApplyDashSettings<T>( T dashable, float thickness ) where T : MetaMpb, IDashableMpb {
+			if( Draw.UseDashes && Draw.DashStyle.size > 0f ) {
+				DashStyle style = Draw.DashStyle;
+				dashable.dashSize.Add( style.GetNetAbsoluteSize( true, thickness ) );
+				dashable.dashType.Add( (float)style.type );
+				dashable.dashShapeModifier.Add( style.shapeModifier );
+				dashable.dashSpace.Add( (float)style.space );
+				dashable.dashSnap.Add( (int)style.snap );
+				dashable.dashOffset.Add( style.offset );
+				dashable.dashSpacing.Add( style.GetNetAbsoluteSpacing( true, thickness ) );
+			} else {
+				dashable.dashSize.Add( 0 );
+				dashable.dashType.Add( default );
+				dashable.dashShapeModifier.Add( 0 );
+				dashable.dashSpace.Add( 0 );
+				dashable.dashSnap.Add( 0 );
+				dashable.dashOffset.Add( 0 );
+				dashable.dashSpacing.Add( 0 );
+			}
 		}
 
 		internal static List<T> InitList<T>() => new List<T>( UnityInfo.INSTANCES_MAX );
@@ -66,6 +88,19 @@ namespace Shapes {
 			}
 
 			listFloat.Clear();
+		}
+		
+		protected void Transfer( int propertyID, List<Texture> listTex ) {
+			if( directMaterialApply ) {
+				drawState.mat.SetTexture( propertyID, listTex[0] ); // direct draw
+			} else {
+				if( HasMultipleInstances )
+					Debug.LogError( "no GPU instancing support for textures" );
+				else
+					sdc.mpb.SetTexture( propertyID, listTex[0] ); // single draw command
+			}
+
+			listTex.Clear();
 		}
 
 		public bool PreAppendCheck( ShapeDrawState additionDrawState, Matrix4x4 mtx ) {
@@ -112,7 +147,7 @@ namespace Shapes {
 				Transfer( ShapesMaterialUtils.propColor, color );
 
 
-			if( this is IFillable fillable ) {
+			if( this is IFillableMpb fillable ) {
 				Transfer( ShapesMaterialUtils.propFillType, fillable.fillType );
 				Transfer( ShapesMaterialUtils.propFillSpace, fillable.fillSpace );
 				Transfer( ShapesMaterialUtils.propFillStart, fillable.fillStart );
@@ -120,7 +155,7 @@ namespace Shapes {
 				Transfer( ShapesMaterialUtils.propFillEnd, fillable.fillEnd );
 			}
 
-			if( this is IDashable dashable ) {
+			if( this is IDashableMpb dashable ) {
 				Transfer( ShapesMaterialUtils.propDashSize, dashable.dashSize );
 				Transfer( ShapesMaterialUtils.propDashType, dashable.dashType );
 				Transfer( ShapesMaterialUtils.propDashShapeModifier, dashable.dashShapeModifier );

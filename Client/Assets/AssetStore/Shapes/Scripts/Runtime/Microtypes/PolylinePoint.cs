@@ -16,6 +16,10 @@ namespace Shapes {
 		/// <summary>The thickness multiplier for this point</summary>
 		public float thickness;
 
+		public static PolylinePoint operator +( PolylinePoint a, PolylinePoint b ) => new PolylinePoint( a.point + b.point, a.color + b.color, a.thickness + b.thickness );
+		public static PolylinePoint operator *( PolylinePoint a, float b ) => new PolylinePoint( a.point * b, a.color * b, a.thickness * b );
+		public static PolylinePoint operator *( float b, PolylinePoint a ) => a * b;
+
 		public static PolylinePoint Lerp( PolylinePoint a, PolylinePoint b, float t ) =>
 			new PolylinePoint {
 				point = Vector3.LerpUnclamped( a.point, b.point, t ),

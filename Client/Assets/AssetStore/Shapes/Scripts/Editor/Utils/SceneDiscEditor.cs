@@ -66,7 +66,7 @@ namespace Shapes {
 			get {
 				switch( currentSceneShape ) {
 					case Disc d:            return d.HasThickness;
-					case RegularPolygon rp: return rp.Hollow;
+					case RegularPolygon rp: return rp.Border;
 					default:                return default;
 				}
 			}
