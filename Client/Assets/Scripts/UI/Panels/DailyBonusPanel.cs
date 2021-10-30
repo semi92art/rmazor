@@ -5,6 +5,7 @@ using DI.Extensions;
 using DialogViewers;
 using Entities;
 using GameHelpers;
+using Games.RazorMaze.Views.Common;
 using Ticker;
 using UI.Entities;
 using UI.Factories;
@@ -46,8 +47,9 @@ namespace UI.Panels
             IDialogViewer _DialogViewer,
             IManagersGetter _Managers,
             IUITicker _UITicker,
-            ICameraProvider _CameraProvider)
-            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider) { }
+            ICameraProvider _CameraProvider,
+            IColorProvider _ColorProvider)
+            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider, _ColorProvider) { }
 
         #endregion
         

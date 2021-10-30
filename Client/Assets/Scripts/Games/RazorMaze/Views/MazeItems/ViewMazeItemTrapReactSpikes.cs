@@ -6,6 +6,7 @@ using Entities;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
+using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Utils;
@@ -59,7 +60,8 @@ namespace Games.RazorMaze.Views.MazeItems
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
-            IManagersGetter _Managers)
+            IManagersGetter _Managers,
+            IColorProvider _ColorProvider)
             : base(
                 _ViewSettings,
                 _Model,
@@ -67,7 +69,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 _ContainersGetter,
                 _GameTicker,
                 _Transitioner,
-                _Managers)
+                _Managers,
+                _ColorProvider)
         {
             ModelSettings = _ModelSettings;
         }
@@ -86,7 +89,8 @@ namespace Games.RazorMaze.Views.MazeItems
             ContainersGetter,
             GameTicker,
             Transitioner,
-            Managers);
+            Managers,
+            ColorProvider);
         
         public void UpdateTick()
         {
@@ -122,12 +126,12 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override void InitShape()
         {
             var line = Object.gameObject.AddComponentOnNewChild<Line>("Trap React Item", out _);
-            line.Color = DrawingUtils.ColorLines;
+            line.Color = ColorProvider.GetColor(ColorIds.MazeItem);
             line.EndCaps = LineEndCap.Round;
             var trap = Object.AddComponentOnNewChild<SpriteRenderer>("Trap Sprite", out _);
             trap.sprite = PrefabUtilsEx.GetObject<Sprite>("views", "trap_react_spikes");
-            trap.sortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
-            trap.color = DrawingUtils.ColorLines;
+            trap.sortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
+            trap.color = ColorProvider.GetColor(ColorIds.MazeItem);
             trap.maskInteraction = SpriteMaskInteraction.VisibleOutsideMask;
             var maskGo = PrefabUtilsEx.InitPrefab(
                 Object.transform, "views", "turret_bullet_mask");
@@ -137,7 +141,7 @@ namespace Games.RazorMaze.Views.MazeItems
             maskGo.transform.SetLocalPosXY(Vector2.zero);
             mask.enabled = true;
             mask.isCustomRangeActive = true;
-            mask.frontSortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
+            mask.frontSortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
             (m_Trap, m_Line, m_Mask) = (trap, line, mask);
         }
 

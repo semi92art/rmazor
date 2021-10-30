@@ -6,12 +6,14 @@ using DI.Extensions;
 using Entities;
 using GameHelpers;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
 using UnityEngine;
 using Utils;
+using SortingOrders = Games.RazorMaze.Views.Utils.SortingOrders;
 
 namespace Games.RazorMaze.Views.Characters
 {
@@ -30,20 +32,23 @@ namespace Games.RazorMaze.Views.Characters
         #region inject
         
         private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IContainersGetter ContainersGetter { get; }
-        private IGameTicker GameTicker { get; }
-        private IModelGame Model { get; }
+        private IContainersGetter        ContainersGetter    { get; }
+        private IGameTicker              GameTicker          { get; }
+        private IModelGame               Model               { get; }
+        private IColorProvider           ColorProvider       { get; }
 
         public ViewCharacterEffectorParticles(
             IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
-            IModelGame _Model)
+            IModelGame _Model,
+            IColorProvider _ColorProvider)
         {
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
             GameTicker = _GameTicker;
             Model = _Model;
+            ColorProvider = _ColorProvider;
         }
         
         #endregion
@@ -112,8 +117,8 @@ namespace Games.RazorMaze.Views.Characters
                 .ToList();
             m_DeathShapes.ForEach(_Shape =>
             {
-                _Shape.SortingOrder = DrawingUtils.GetCharacterSortingOrder() + 2;
-                _Shape.Color = DrawingUtils.ColorLines;
+                _Shape.SortingOrder = SortingOrders.Character + 2;
+                _Shape.Color = ColorProvider.GetColor(ColorIds.Character);
                 _Shape.enabled = false;
             });
             m_DeathShapes.Shuffle();
@@ -165,6 +170,7 @@ namespace Games.RazorMaze.Views.Characters
                     endPositions[i] += (Vector3) startDirections[i] * Random.value * 5f;
             }
 
+            var col = ColorProvider.GetColor(ColorIds.Character);
             yield return Coroutines.Lerp(
                 0f,
                 1f,
@@ -176,7 +182,7 @@ namespace Games.RazorMaze.Views.Characters
                         var shape = m_DeathShapes[i];
                         shape.transform.localPosition =
                             Vector3.Lerp(startPositions[i], endPositions[i], _Progress);
-                        shape.Color = DrawingUtils.ColorLines.SetA(1f - _Progress);
+                        shape.Color = col.SetA(1f - _Progress);
                     }
                 },
                 GameTicker,

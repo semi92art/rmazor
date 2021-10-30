@@ -5,6 +5,7 @@ using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
+using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Utils;
@@ -45,7 +46,8 @@ namespace Games.RazorMaze.Views.MazeItems
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
-            IManagersGetter _Managers) 
+            IManagersGetter _Managers,
+            IColorProvider _ColorProvider) 
             : base(
                 _ViewSettings, 
                 _Model,
@@ -53,7 +55,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 _ContainersGetter,
                 _GameTicker,
                 _Transitioner,
-                _Managers) { }
+                _Managers,
+                _ColorProvider) { }
 
         #endregion
 
@@ -123,10 +126,10 @@ namespace Games.RazorMaze.Views.MazeItems
             go.transform.SetLocalPosXY(Vector2.zero);
             var line = go.AddComponent<Polyline>();
             line.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
-            line.Color = DrawingUtils.ColorLines.SetA(0.5f);
+            line.Color = ColorProvider.GetColor(ColorIds.MazeItemPathLine);
             line.SetPoints(points);
             line.Closed = false;
-            line.SortingOrder = DrawingUtils.GetPathLineSortingOrder();
+            line.SortingOrder = SortingOrders.PathLine;
             line.Joins = PolylineJoins.Round;
             m_PathLines.Add(line);
             
@@ -136,10 +139,10 @@ namespace Games.RazorMaze.Views.MazeItems
                 go1.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems));
                 var joint = go1.AddComponent<Disc>();
                 go1.transform.SetLocalPosXY(point);
-                joint.Color = DrawingUtils.ColorLines;
+                joint.Color = ColorProvider.GetColor(ColorIds.MazeItemPathJoint);
                 joint.Radius = ViewSettings.LineWidth * CoordinateConverter.Scale * 2f;
                 joint.Type = DiscType.Disc;
-                joint.SortingOrder = DrawingUtils.GetPathLineJointSortingOrder();
+                joint.SortingOrder = SortingOrders.PathLineJoint;
                 m_PathJoints.Add(joint);
             }
                 
@@ -153,9 +156,9 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             var sets = base.GetAppearSets(_Appear);
             if (m_PathLines.Any())
-                sets.Add(m_PathLines.Cast<object>().ToArray(), () => DrawingUtils.ColorLines.SetA(0.5f));
+                sets.Add(m_PathLines.Cast<object>().ToArray(), () => ColorProvider.GetColor(ColorIds.MazeItemPathLine));
             if (m_PathJoints.Any())
-                sets.Add(m_PathJoints.Cast<object>().ToArray(), () => DrawingUtils.ColorLines);
+                sets.Add(m_PathJoints.Cast<object>().ToArray(), () => ColorProvider.GetColor(ColorIds.MazeItemPathJoint));
             return sets;
         }
 

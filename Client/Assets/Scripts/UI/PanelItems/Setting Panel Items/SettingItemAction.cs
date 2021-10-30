@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Games.RazorMaze.Views.Common;
 using Ticker;
 using TMPro;
 using UnityEngine;
@@ -15,9 +16,10 @@ namespace UI.PanelItems.Setting_Panel_Items
         public void Init(
             IManagersGetter _Managers,
             IUITicker _UITicker,
+            IColorProvider _ColorProvider,
             UnityAction _Select)
         {
-            InitCore(_Managers, _UITicker);
+            InitCore(_Managers, _UITicker, _ColorProvider);
             name = "Setting";
             button.onClick.AddListener(SoundOnClick);
             button.onClick.AddListener(_Select);

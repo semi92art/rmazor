@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Games.RazorMaze.Views.Common;
 using Ticker;
 using UnityEngine.Events;
 using Utils;
@@ -10,6 +11,7 @@ namespace UI.PanelItems.Shop_Items
         public override void Init(
             IManagersGetter _Managers,
             IUITicker _UITicker,
+            IColorProvider _ColorProvider,
             UnityAction _Click,
             ViewShopItemInfo _Info)
         {
@@ -17,7 +19,7 @@ namespace UI.PanelItems.Shop_Items
             {
                 price.text = $"{_Info.Price} {_Info.Currency}";
             }
-            InitCore(_Managers, _UITicker, _Click, _Info, FinishAction);
+            InitCore(_Managers, _UITicker, _ColorProvider, _Click, _Info, FinishAction);
             itemIcon.sprite = _Info.Icon;
             title.text = _Info.Reward.ToString();
             Coroutines.Run(Coroutines.WaitWhile(

@@ -21,8 +21,7 @@ namespace Settings
     public enum ESettingType
     {
         OnOff,
-        InPanelSelector,
-        Slider
+        InPanelSelector
     }
 
     public enum ESettingLocation

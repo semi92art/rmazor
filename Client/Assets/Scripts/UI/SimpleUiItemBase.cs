@@ -2,6 +2,7 @@
 using System.Linq;
 using Constants;
 using DI.Extensions;
+using Games.RazorMaze.Views.Common;
 using Ticker;
 using TMPro;
 using UnityEngine;
@@ -13,26 +14,28 @@ namespace UI
 {
     public abstract class SimpleUiItemBase : MonoBehaviour
     {
-        [SerializeField] protected Image background;
-        [SerializeField] protected Image border;
+        [SerializeField] protected Image                 background;
+        [SerializeField] protected Image                 border;
         [SerializeField] protected List<TextMeshProUGUI> texts;
-        private const float TransitionTime = 0.2f;
-        private int m_TransitionCount;
-        protected ITicker m_Ticker;
-        protected bool m_Initialized;
+        private const              float                 TransitionTime = 0.2f;
+        private                    int                   m_TransitionCount;
+        private                    ITicker               m_Ticker;
+        protected                  IColorProvider        m_ColorProvider;
+        private                    bool                  m_Initialized;
 
-        protected void InitCore(IUITicker _Ticker)
+        protected void InitCore(IUITicker _Ticker, IColorProvider _ColorProvider)
         {
             m_Ticker = _Ticker;
+            m_ColorProvider = _ColorProvider;
             m_Initialized = true;
         }
 
         protected virtual void OnEnable()
         {
             if (!border.IsNull())
-                border.color = ColorUtils.GetColorFromCurrentPalette(CommonPaletteColors.UiBorderDefault);
+                border.color = m_ColorProvider.GetColor(ColorIds.UiBorderDefault);
             foreach (var text in texts.Where(_Text => !_Text.IsNull()))
-                text.color = ColorUtils.GetColorFromCurrentPalette(CommonPaletteColors.UiTextDefault);
+                text.color = m_ColorProvider.GetColor(ColorIds.UiTextDefault);
         }
 
         private void OnDestroy()

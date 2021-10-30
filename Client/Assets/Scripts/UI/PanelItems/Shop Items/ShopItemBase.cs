@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Games.RazorMaze.Views.Common;
 using Ticker;
 using TMPro;
 using UnityEngine;
@@ -31,18 +32,20 @@ namespace UI.PanelItems.Shop_Items
         public virtual void Init(
             IManagersGetter _Managers,
             IUITicker _UITicker,
+            IColorProvider _ColorProvider,
             UnityAction _Click,
             ViewShopItemInfo _Info) { }
 
         protected void InitCore(
             IManagersGetter _Managers,
             IUITicker _UITicker,
+            IColorProvider _ColorProvider,
             UnityAction _Click,
             ViewShopItemInfo _Info,
             UnityAction _LoadingFinishAction)
         {
             name = "Shop Item";
-            InitCore(_Managers, _UITicker);
+            InitCore(_Managers, _UITicker, _ColorProvider);
             buyButton.onClick.AddListener(SoundOnClick);
             buyButton.onClick.AddListener(_Click);
             itemIcon.sprite = _Info.Icon;

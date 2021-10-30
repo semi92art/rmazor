@@ -6,6 +6,7 @@ using Exceptions;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
+using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.InputConfigurators;
@@ -15,6 +16,7 @@ using Ticker;
 using TMPro;
 using UnityEngine;
 using Utils;
+using SortingOrders = Games.RazorMaze.Views.Utils.SortingOrders;
 
 namespace Games.RazorMaze.Views.UI
 {
@@ -34,6 +36,9 @@ namespace Games.RazorMaze.Views.UI
         private static int AnimKeyCheckMarkIdle => AnimKeys.Stop;
         private static int AnimKeyCongratsAnim => AnimKeys.Anim;
         private static int AnimKeyCongratsIdle => AnimKeys.Stop;
+        private static int AnimKeyStartLogoAppear => AnimKeys.Anim;
+        private static int AnimKeyStartLogoDisappear => AnimKeys.Stop;
+        private static int AnimKeyStartLogoHide => AnimKeys.Stop2;
 
         private ButtonOnRaycast m_RotateClockwiseButton;
         private ButtonOnRaycast m_RotateCounterClockwiseButton;
@@ -46,21 +51,24 @@ namespace Games.RazorMaze.Views.UI
         private readonly List<object> m_Renderers = new List<object>();
         private readonly List<Animator> m_CheckMarks = new List<Animator>();
         private bool m_ButtonsInitialized;
+        private Dictionary<string, Animator> m_StartLogoCharAnims;
+        private bool m_OnStart = true;
 
         #endregion
         
         #region inject
 
-        private ViewSettings ViewSettings { get; }
-        private IViewUIPrompts Prompts { get; }
-        private IModelGame Model { get; }
-        private IContainersGetter ContainersGetter { get; }
+        private ViewSettings             ViewSettings        { get; }
+        private IViewUIPrompts           Prompts             { get; }
+        private IModelGame               Model               { get; }
+        private IContainersGetter        ContainersGetter    { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IViewAppearTransitioner AppearTransitioner { get; }
-        private IGameTicker GameTicker { get; }
-        private ILevelsLoader LevelsLoader { get; }
-        private ILocalizationManager LocalizationManager { get; }
-        private ICameraProvider CameraProvider { get; }
+        private IViewAppearTransitioner  AppearTransitioner  { get; }
+        private IGameTicker              GameTicker          { get; }
+        private ILevelsLoader            LevelsLoader        { get; }
+        private ILocalizationManager     LocalizationManager { get; }
+        private ICameraProvider          CameraProvider      { get; }
+        private IColorProvider           ColorProvider       { get; }
 
         public ViewUIGameControls(
             ViewSettings _ViewSettings,
@@ -73,7 +81,8 @@ namespace Games.RazorMaze.Views.UI
             IGameTicker _GameTicker,
             ILevelsLoader _LevelsLoader,
             ILocalizationManager _LocalizationManager,
-            ICameraProvider _CameraProvider) 
+            ICameraProvider _CameraProvider,
+            IColorProvider _ColorProvider) 
             : base(_InputConfigurator)
         {
             ViewSettings = _ViewSettings;
@@ -86,13 +95,13 @@ namespace Games.RazorMaze.Views.UI
             LevelsLoader = _LevelsLoader;
             LocalizationManager = _LocalizationManager;
             CameraProvider = _CameraProvider;
+            ColorProvider = _ColorProvider;
         }
 
         #endregion
         
         #region api
-
-
+        
         public override void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
         {
             if (Prompts.InTutorial)
@@ -109,6 +118,16 @@ namespace Games.RazorMaze.Views.UI
         
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
+            if (_Args.Stage == ELevelStage.ReadyToStart && _Args.PreviousStage != ELevelStage.Paused && m_OnStart)
+            {
+                ShowStartLogo();
+            }
+            else if (_Args.Stage == ELevelStage.StartedOrContinued && m_OnStart)
+            {
+                HideStartLogo();
+                m_OnStart = false;
+            }
+            
             switch (_Args.Stage)
             {
                 case ELevelStage.Loaded:
@@ -171,6 +190,7 @@ namespace Games.RazorMaze.Views.UI
         {
             InitTopButtons();
             InitLevelAndCongratsPanel();
+            InitStartLogo();
         }
         
         private void InitTopButtons()
@@ -259,6 +279,43 @@ namespace Games.RazorMaze.Views.UI
             });
         }
 
+        private void InitStartLogo()
+        {
+            var go = PrefabUtilsEx.InitPrefab(
+                GetGameUIContainer(),
+                "ui_game",
+                "start_logo");
+            var bounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
+            var mazeBounds = CoordinateConverter.GetMazeBounds();
+            go.transform.SetLocalPosXY(
+                mazeBounds.center.x,
+                bounds.max.y - 15f);
+            go.transform.localScale = Vector3.one * 5f;
+            m_StartLogoCharAnims = new Dictionary<string, Animator>
+            {
+                {"R1", go.GetCompItem<Animator>("R1")},
+                {"M", go.GetCompItem<Animator>("M")},
+                {"A", go.GetCompItem<Animator>("A")},
+                {"Z", go.GetCompItem<Animator>("Z")},
+                {"O", go.GetCompItem<Animator>("O")},
+                {"R2", go.GetCompItem<Animator>("R2")}
+            };
+            foreach (var anim in m_StartLogoCharAnims.Values)
+                anim.SetTrigger(AnimKeyStartLogoHide);
+        }
+
+        private void ShowStartLogo()
+        {
+            foreach (var anim in m_StartLogoCharAnims.Values)
+                anim.SetTrigger(AnimKeyStartLogoAppear);
+        }
+
+        private void HideStartLogo()
+        {
+            foreach (var anim in m_StartLogoCharAnims.Values)
+                anim.SetTrigger(AnimKeyStartLogoDisappear);
+        }
+
         private void ShowControls(bool _Show, bool _Instantly)
         {
             if (_Show)
@@ -284,7 +341,7 @@ namespace Games.RazorMaze.Views.UI
                 _Show, 
                 new Dictionary<object[], System.Func<Color>>
                 {
-                    {m_Renderers.ToArray(), () => DrawingUtils.ColorLines},
+                    {m_Renderers.ToArray(), () => ColorProvider.GetColor(ColorIds.UI)}
                 },
                 _Type: EAppearTransitionType.WithoutDelay);
         }

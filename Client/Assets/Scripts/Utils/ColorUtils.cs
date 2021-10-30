@@ -19,13 +19,6 @@ namespace Utils
             return new Color(_R / 255.0f, _G / 255.0f, _B / 255.0f, 1);
         }
 
-        public static Color GetColorFromPalette(string _PaletteName, string _ColorName)
-        {
-            var cpd = ColorPaletteData.Singleton;
-            int paletteIdx = cpd.getPaletteIndexFromName(_PaletteName);
-            return cpd.colorPaletteList[paletteIdx].getColorFromName(_ColorName).color;
-        }
-
         public static Color GetColorFromCurrentPalette(string _ColorName)
         {
             return GetCurrentPalette().getColorFromName(_ColorName).color;

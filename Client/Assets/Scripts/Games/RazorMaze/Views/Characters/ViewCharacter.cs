@@ -16,6 +16,7 @@ using Shapes;
 using Ticker;
 using UnityEngine;
 using Utils;
+using SortingOrders = Games.RazorMaze.Views.Utils.SortingOrders;
 
 namespace Games.RazorMaze.Views.Characters
 {
@@ -56,13 +57,14 @@ namespace Games.RazorMaze.Views.Characters
         
         #region inject
         
-        private IViewCharacterTail Tail { get; }
-        private IViewCharacterEffector Effector { get; }
-        private IGameTicker GameTicker { get; }
-        private IViewAppearTransitioner Transitioner { get; }
-        private IManagersGetter Managers { get; }
-        private IMazeShaker MazeShaker { get; }
-        private ViewSettings ViewSettings { get; }
+        private IViewCharacterTail      Tail          { get; }
+        private IViewCharacterEffector  Effector      { get; }
+        private IGameTicker             GameTicker    { get; }
+        private IViewAppearTransitioner Transitioner  { get; }
+        private IManagersGetter         Managers      { get; }
+        private IMazeShaker             MazeShaker    { get; }
+        private IColorProvider          ColorProvider { get; }
+        private ViewSettings            ViewSettings  { get; }
 
         public ViewCharacter(
             IMazeCoordinateConverter _CoordinateConverter, 
@@ -75,6 +77,7 @@ namespace Games.RazorMaze.Views.Characters
             IViewAppearTransitioner _Transitioner,
             IManagersGetter _Managers,
             IMazeShaker _MazeShaker,
+            IColorProvider _ColorProvider,
             ViewSettings _ViewSettings) 
             : base(
                 _CoordinateConverter, 
@@ -89,6 +92,7 @@ namespace Games.RazorMaze.Views.Characters
             ViewSettings = _ViewSettings;
             Managers = _Managers;
             MazeShaker = _MazeShaker;
+            ColorProvider = _ColorProvider;
         }
         
         #endregion
@@ -205,7 +209,7 @@ namespace Games.RazorMaze.Views.Characters
                 _Appear,
                 new Dictionary<object[], Func<Color>>
                 {
-                    {new object[] {m_HeadShape}, () => DrawingUtils.ColorCharacter},
+                    {new object[] {m_HeadShape}, () => ColorProvider.GetColor(ColorIds.Character)},
                     {new object[] {m_Eye1Shape, m_Eye2Shape}, () => m_BackColor}
                 },
                 Model.Character.Position,
@@ -228,9 +232,9 @@ namespace Games.RazorMaze.Views.Characters
             m_Eye1Shape = prefab.GetCompItem<Rectangle>("eye_1");
             m_Eye2Shape = prefab.GetCompItem<Rectangle>("eye_2");
             m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = false;
-            m_HeadShape.SortingOrder = DrawingUtils.GetCharacterSortingOrder();
-            m_Eye1Shape.SortingOrder = DrawingUtils.GetCharacterSortingOrder() + 1;
-            m_Eye2Shape.SortingOrder = DrawingUtils.GetCharacterSortingOrder() + 1;
+            m_HeadShape.SortingOrder = SortingOrders.Character;
+            m_Eye1Shape.SortingOrder = SortingOrders.Character + 1;
+            m_Eye2Shape.SortingOrder = SortingOrders.Character + 1;
             m_Initialized = true;
         }
 

@@ -305,6 +305,8 @@ MonoBehaviour:
   viewSettings: {fileID: 11400000, guid: 95742306892dcc5439babdbcfba0b157, type: 2}
   cameraProvider: {fileID: 5545151479159213484, guid: 03ed9e87e94ffab48bd88ba242001363,
     type: 3}
+  colorProvider: {fileID: 5801256520906685625, guid: c93dbf76a6376f148b36a1c337a4924c,
+    type: 3}
 --- !u!114 &703413959
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -7,6 +7,7 @@ using Entities;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
+using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Shapes;
@@ -62,7 +63,8 @@ namespace Games.RazorMaze.Views.MazeItems
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
-            IManagersGetter _Managers)
+            IManagersGetter _Managers,
+            IColorProvider _ColorProvider)
             : base(
                 _ViewSettings,
                 _Model,
@@ -70,7 +72,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 _ContainersGetter,
                 _GameTicker,
                 _Transitioner,
-                _Managers) { }
+                _Managers,
+                _ColorProvider) { }
 
         #endregion
         
@@ -88,7 +91,8 @@ namespace Games.RazorMaze.Views.MazeItems
             ContainersGetter,
             GameTicker,
             Transitioner,
-            Managers);
+            Managers,
+            ColorProvider);
 
         public override bool ActivatedInSpawnPool
         {

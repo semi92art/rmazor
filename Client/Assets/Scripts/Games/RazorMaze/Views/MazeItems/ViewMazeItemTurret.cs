@@ -74,7 +74,8 @@ namespace Games.RazorMaze.Views.MazeItems
             IViewTurretBulletTail _BulletTail,
             IViewMazeBackground _Background,
             IViewAppearTransitioner _Transitioner,
-            IManagersGetter _Managers)
+            IManagersGetter _Managers,
+            IColorProvider _ColorProvider)
             : base(
                 _ViewSettings, 
                 _Model, 
@@ -82,7 +83,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 _ContainersGetter,
                 _GameTicker,
                 _Transitioner,
-                _Managers)
+                _Managers,
+                _ColorProvider)
         {
             BulletTail = _BulletTail;
             Background = _Background;
@@ -109,7 +111,8 @@ namespace Games.RazorMaze.Views.MazeItems
             BulletTail,
             Background,
             Transitioner,
-            Managers);
+            Managers,
+            ColorProvider);
 
         public override bool ActivatedInSpawnPool
         {
@@ -166,13 +169,13 @@ namespace Games.RazorMaze.Views.MazeItems
             var body = Object.gameObject.AddComponentOnNewChild<Disc>("Turret", out _);
             body.Type = DiscType.Arc;
             body.ArcEndCaps = ArcEndCap.Round;
-            body.Color = DrawingUtils.ColorLines;
+            body.Color = ColorProvider.GetColor(ColorIds.MazeItem);
             var bhb = Object.gameObject.AddComponentOnNewChild<Disc>("Border", out _);
             bhb.Dashed = true;
             bhb.DashType = DashType.Rounded;
-            bhb.Color = DrawingUtils.ColorLines;
+            bhb.Color = ColorProvider.GetColor(ColorIds.MazeItem);
             bhb.Type = DiscType.Ring;
-            bhb.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type) + 2;
+            bhb.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type) + 2;
             bhb.DashSize = 2f;
             var bulletParent = ContainersGetter.GetContainer(ContainerNames.MazeItems);
             var bulletGo = PrefabUtilsEx.InitPrefab(
@@ -417,10 +420,10 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override Dictionary<object[], Func<Color>> GetAppearSets(bool _Appear)
         {
             var bulletRenderers = new object[] {m_BulletRenderer, m_BulletFakeRenderer};
-            var bulletRenderersCol = _Appear ? DrawingUtils.ColorLines : m_BulletFakeRenderer.color;
+            var bulletRenderersCol = _Appear ? ColorProvider.GetColor(ColorIds.MazeItem) : m_BulletFakeRenderer.color;
             return new Dictionary<object[], Func<Color>>
             {
-                {new object[] {m_BulletHolderBorder, m_Body}, () => DrawingUtils.ColorLines},
+                {new object[] {m_BulletHolderBorder, m_Body}, () => ColorProvider.GetColor(ColorIds.MazeItem)},
                 {bulletRenderers, () => bulletRenderersCol}
             };
         }

@@ -6,6 +6,7 @@ using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
+using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Utils;
@@ -57,7 +58,8 @@ namespace Games.RazorMaze.Views.MazeItems
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
-            IManagersGetter _Managers)
+            IManagersGetter _Managers,
+            IColorProvider _ColorProvider)
             : base(
                 _ViewSettings, 
                 _Model,
@@ -65,7 +67,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 _ContainersGetter, 
                 _GameTicker,
                 _Transitioner,
-                _Managers) { }
+                _Managers,
+                _ColorProvider) { }
         
         #endregion
         
@@ -84,7 +87,8 @@ namespace Games.RazorMaze.Views.MazeItems
             ContainersGetter,
             GameTicker,
             Transitioner,
-            Managers);
+            Managers,
+            ColorProvider);
         
         public bool BlockClosed
         {
@@ -156,9 +160,9 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override void InitShape()
         {
             var closedBlock = Object.AddComponentOnNewChild<Rectangle>("Shredinger Block", out _);
-            closedBlock.Type = Rectangle.RectangleType.RoundedHollow;
-            closedBlock.Color = DrawingUtils.ColorLines;
-            closedBlock.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
+            closedBlock.Type = Rectangle.RectangleType.RoundedBorder;
+            closedBlock.Color = ColorProvider.GetColor(ColorIds.MazeItem);
+            closedBlock.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
             m_ClosedBlock = closedBlock;
             
             var lLeft    = Object.AddComponentOnNewChild<Line>("Left Line",     out _);
@@ -188,8 +192,8 @@ namespace Games.RazorMaze.Views.MazeItems
             {
                 line.Dashed = true;
                 line.DashType = DashType.Rounded;
-                line.Color = DrawingUtils.ColorLines;
-                line.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
+                line.Color = ColorProvider.GetColor(ColorIds.MazeItem);
+                line.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
             }
 
             List<Vector2> cPoss, cAngs;
@@ -221,8 +225,8 @@ namespace Games.RazorMaze.Views.MazeItems
             foreach (var corner in m_OpenedCorners)
             {
                 corner.Type = DiscType.Arc;
-                corner.Color = DrawingUtils.ColorLines;
-                corner.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
+                corner.Color = ColorProvider.GetColor(ColorIds.MazeItem);
+                corner.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
             }
         }
 
@@ -297,8 +301,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 {
                     float cAppear = 1f - (_Progress - 1f) * (_Progress - 1f);
                     float cDissapear = 1f - _Progress * _Progress;
-                    var partsOpenColor = DrawingUtils.ColorLines.SetA(_Close ? cDissapear : cAppear);
-                    var partsClosedColor = DrawingUtils.ColorLines.SetA(_Close ? cAppear : cDissapear);
+                    var partsOpenColor = ColorProvider.GetColor(ColorIds.MazeItem).SetA(_Close ? cDissapear : cAppear);
+                    var partsClosedColor = ColorProvider.GetColor(ColorIds.MazeItem).SetA(_Close ? cAppear : cDissapear);
                     shapesOpen.ForEach(_Shape => _Shape.Color = partsOpenColor);
                     m_ClosedBlock.Color = partsClosedColor;
                 },
@@ -338,7 +342,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 m_OpenedLines.Cast<object>().Concat(m_OpenedCorners).ToArray();
             return new Dictionary<object[], Func<Color>>
             {
-                {shapes, () => DrawingUtils.ColorLines}
+                {shapes, () => ColorProvider.GetColor(ColorIds.MazeItem)}
             };
         }
 

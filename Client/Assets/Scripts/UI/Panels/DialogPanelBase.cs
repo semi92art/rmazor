@@ -1,6 +1,7 @@
 ﻿using DI.Extensions;
 using DialogViewers;
 using Entities;
+using Games.RazorMaze.Views.Common;
 using LeTai.Asset.TranslucentImage;
 using Ticker;
 using UnityEngine;
@@ -11,21 +12,24 @@ namespace UI.Panels
     {
         #region inject
 
-        protected IManagersGetter Managers { get; }
-        protected IUITicker Ticker { get; }
-        protected IDialogViewer DialogViewer { get; }
+        protected IManagersGetter Managers       { get; }
+        protected IUITicker       Ticker         { get; }
+        protected IDialogViewer   DialogViewer   { get; }
         protected ICameraProvider CameraProvider { get; }
+        protected IColorProvider  ColorProvider  { get; }
 
         protected DialogPanelBase(
             IManagersGetter _Managers, 
             IUITicker _Ticker, 
             IDialogViewer _DialogViewer,
-            ICameraProvider _CameraProvider)
+            ICameraProvider _CameraProvider,
+            IColorProvider _ColorProvider)
         {
             Managers = _Managers;
             Ticker = _Ticker;
             DialogViewer = _DialogViewer;
             CameraProvider = _CameraProvider;
+            ColorProvider = _ColorProvider;
         }
 
         #endregion

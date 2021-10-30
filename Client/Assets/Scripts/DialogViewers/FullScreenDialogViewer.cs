@@ -5,6 +5,7 @@ using DI.Extensions;
 using Entities;
 using GameHelpers;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.InputConfigurators;
 using Ticker;
 using UI;
@@ -67,18 +68,21 @@ namespace DialogViewers
 
         #region inject
 
-        private IManagersGetter Managers { get; }
-        private IUITicker Ticker { get; }
+        private IManagersGetter        Managers          { get; }
+        private IUITicker              Ticker            { get; }
         private IViewInputConfigurator InputConfigurator { get; }
+        private IColorProvider         ColorProvider     { get; }
 
         public FullScreenDialogViewer(
             IManagersGetter _Managers,
             IUITicker _Ticker,
-            IViewInputConfigurator _InputConfigurator)
+            IViewInputConfigurator _InputConfigurator,
+            IColorProvider _ColorProvider)
         {
             Managers = _Managers;
             Ticker = _Ticker;
             InputConfigurator = _InputConfigurator;
+            ColorProvider = _ColorProvider;
             _Ticker.Register(this);
         }
         
@@ -103,13 +107,13 @@ namespace DialogViewers
             m_CloseButton = go.GetCompItem<Button>("close_button");
             m_CloseButtonAnim = go.GetCompItem<Animator>("buttons_animator");
 
-            var borderColor = ColorUtils.GetColorFromCurrentPalette(CommonPaletteColors.UiBorderDefault);
+            var borderColor = ColorProvider.GetColor(ColorIds.UiBorderDefault);
             m_CloseButton.GetCompItem<Image>("border").color = borderColor;
             m_CloseButton.GetCompItem<Image>("icon").color = borderColor;
             
             m_CloseButton.SetOnClick(() =>
             {
-                Managers.Notify(_SM => _SM.PlayClip(AudioClipNames.UIButtonClick));
+                Managers.SoundManager.PlayClip(AudioClipNames.UIButtonClick);
                 CloseAll();
             });
         }
@@ -176,6 +180,7 @@ namespace DialogViewers
                         if (!_GoBack)
                             return;
                         Object.Destroy(fromPanel.gameObject);
+                        // ReSharper disable once SuspiciousTypeConversion.Global
                         var monobeh = itemFrom as MonoBehaviour;
                         if (monobeh != null)
                             Object.Destroy(monobeh.gameObject);
@@ -238,6 +243,7 @@ namespace DialogViewers
                 list.Add(PanelStack.Pop());
             foreach (var monobeh in from item in list
                 where item != null
+                // ReSharper disable once SuspiciousTypeConversion.Global
                 select item as MonoBehaviour)
             {
                 Object.Destroy(monobeh);

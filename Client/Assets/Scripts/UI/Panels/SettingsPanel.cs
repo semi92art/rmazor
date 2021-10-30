@@ -5,7 +5,9 @@ using Constants;
 using DI.Extensions;
 using DialogViewers;
 using Entities;
+using Exceptions;
 using GameHelpers;
+using Games.RazorMaze.Views.Common;
 using Settings;
 using Ticker;
 using UI.Entities;
@@ -59,8 +61,9 @@ namespace UI.Panels
             IManagersGetter _Managers,
             IUITicker _UITicker,
             ISettingsGetter _SettingsGetter,
-            ICameraProvider _CameraProvider) 
-            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider)
+            ICameraProvider _CameraProvider,
+            IColorProvider _ColorProvider) 
+            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider, _ColorProvider)
         {
             SelectorPanel = _SelectorPanel;
             SettingsGetter = _SettingsGetter;
@@ -111,68 +114,85 @@ namespace UI.Panels
             switch (_Setting.Location)
             {
                 case ESettingLocation.MiniButtons:
-                    var itemMiniButton = CreateMiniButtonSetting();
-                    itemMiniButton.Init(
-                        Managers,
-                        Ticker,
-                        Convert.ToBoolean(_Setting.Get()),
-                        _IsOn => _Setting.Put(ConvertValue<T>(_IsOn)),
-                        GetSettingsIconFromPrefabs(_Setting.SpriteOnKey),
-                        GetSettingsIconFromPrefabs(_Setting.SpriteOffKey));
-                    break;
+                    InitMiniButtonItem(_Setting); break;
                 case ESettingLocation.Main:
                     switch (_Setting.Type)
                     {
                         case ESettingType.OnOff:
-                            var itemOnOff = CreateOnOffSetting();
-                            itemOnOff.Init(
-                                Managers,
-                                Ticker,
-                                Convert.ToBoolean(_Setting.Get()),
-                                _Setting.TitleKey, 
-                                _IsOn => _Setting.Put(ConvertValue<T>(_IsOn)));
-                            break;
+                            InitOnOffItem(_Setting); break;
                         case ESettingType.InPanelSelector:
-                            var itemSelector = CreateInPanelSelectorSetting();
-                            itemSelector.Init(
-                                Managers,
-                                Ticker,
-                                DialogViewer,
-                                _Setting.TitleKey,
-                                () =>
-                                {
-                                    if (typeof(T) == typeof(Language))
-                                        return GetLanguageTitle(ConvertValue<Language>(_Setting.Get()));
-                                    return Convert.ToString(_Setting.Get());
-                                },
-                                _Value =>
-                                    {
-                                        itemSelector.setting.text = _Value;
-                                        if (typeof(T) == typeof(Language))
-                                        {
-                                            var lang = LanguageTitles.FirstOrDefault(_Kvp => _Kvp.Value == _Value).Key;
-                                            T val = ConvertValue<T>(lang);
-                                            _Setting.Put(val);
-                                            Managers.LocalizationManager.SetLanguage(
-                                                Managers.LocalizationManager.GetCurrentLanguage());
-                                        }
-                                        else
-                                            _Setting.Put(ConvertValue<T>(_Value));
-                                    },
-                                () =>
-                                {
-                                    if (typeof(T) == typeof(Language))
-                                    {
-                                        return _Setting.Values
-                                            .Select(_Val => GetLanguageTitle(ConvertValue<Language>(_Val))).ToList();
-                                    }
-                                    return _Setting.Values.Cast<string>().ToList();
-                                },
-                                SelectorPanel);
-                            break;
+                            InitInPanelSelectorItem(_Setting); break;
+                        default: throw new SwitchCaseNotImplementedException(_Setting.Type);
                     }
                     break;
+                default: throw new SwitchCaseNotImplementedException(_Setting.Location);
             }
+        }
+
+        private void InitMiniButtonItem<T>(ISetting<T> _Setting)
+        {
+            var itemMiniButton = CreateMiniButtonSetting();
+            itemMiniButton.Init(
+                Managers,
+                Ticker,
+                ColorProvider,
+                Convert.ToBoolean(_Setting.Get()),
+                _IsOn => _Setting.Put(ConvertValue<T>(_IsOn)),
+                GetSettingsIconFromPrefabs(_Setting.SpriteOnKey),
+                GetSettingsIconFromPrefabs(_Setting.SpriteOffKey));
+        }
+
+        private void InitOnOffItem<T>(ISetting<T> _Setting)
+        {
+            var itemOnOff = CreateOnOffSetting();
+            itemOnOff.Init(
+                Managers,
+                Ticker,
+                ColorProvider,
+                Convert.ToBoolean(_Setting.Get()),
+                _Setting.TitleKey, 
+                _IsOn => _Setting.Put(ConvertValue<T>(_IsOn)));
+        }
+
+        private void InitInPanelSelectorItem<T>(ISetting<T> _Setting)
+        {
+            var itemSelector = CreateInPanelSelectorSetting();
+            itemSelector.Init(
+                Managers,
+                Ticker,
+                DialogViewer,
+                ColorProvider,
+                _Setting.TitleKey,
+                () =>
+                {
+                    if (typeof(T) == typeof(Language))
+                        return GetLanguageTitle(ConvertValue<Language>(_Setting.Get()));
+                    return Convert.ToString(_Setting.Get());
+                },
+                _Value =>
+                    {
+                        itemSelector.setting.text = _Value;
+                        if (typeof(T) == typeof(Language))
+                        {
+                            var lang = LanguageTitles.FirstOrDefault(_Kvp => _Kvp.Value == _Value).Key;
+                            T val = ConvertValue<T>(lang);
+                            _Setting.Put(val);
+                            Managers.LocalizationManager.SetLanguage(
+                                Managers.LocalizationManager.GetCurrentLanguage());
+                        }
+                        else
+                            _Setting.Put(ConvertValue<T>(_Value));
+                    },
+                () =>
+                {
+                    if (typeof(T) == typeof(Language))
+                    {
+                        return _Setting.Values
+                            .Select(_Val => GetLanguageTitle(ConvertValue<Language>(_Val))).ToList();
+                    }
+                    return _Setting.Values.Cast<string>().ToList();
+                },
+                SelectorPanel);
         }
 
         private void InitRateUsButton()
@@ -181,6 +201,7 @@ namespace UI.Panels
             item.Init(
                 Managers,
                 Ticker,
+                ColorProvider,
                 () => Managers.ShopManager.RateGame());
             Managers.LocalizationManager.AddTextObject(item.title, "rate_game");
         }
@@ -191,6 +212,7 @@ namespace UI.Panels
             item.Init(
                 Managers,
                 Ticker,
+                ColorProvider,
                 () => Managers.ScoreManager.ShowLeaderboard());
             Managers.LocalizationManager.AddTextObject(item.title, "show_leaderboards");
         }
@@ -201,6 +223,7 @@ namespace UI.Panels
             item.Init(
                 Managers,
                 Ticker,
+                ColorProvider,
                 () => Managers.ShopManager.RestorePurchases());
             Managers.LocalizationManager.AddTextObject(item.title, "restore_purchases");
         }

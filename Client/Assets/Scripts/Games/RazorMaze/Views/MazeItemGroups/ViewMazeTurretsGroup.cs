@@ -42,7 +42,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
             base.OnLevelStageChanged(_Args);
             foreach (var item in GetItems().Cast<IViewMazeItemTurret>())
             {
-                int sortingOrder = DrawingUtils.GetBlockSortingOrder(EMazeItemType.Turret) + m_BulletCounter++;
+                int sortingOrder = SortingOrders.GetBlockSortingOrder(EMazeItemType.Turret) + m_BulletCounter++;
                 item.SetBulletSortingOrder(sortingOrder);
             }
         }
@@ -65,7 +65,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
 
         private int GetBulletSortingOrder()
         {
-            return DrawingUtils.GetBlockSortingOrder(EMazeItemType.Turret) + m_BulletCounter++;
+            return SortingOrders.GetBlockSortingOrder(EMazeItemType.Turret) + m_BulletCounter++;
         }
         
         #endregion

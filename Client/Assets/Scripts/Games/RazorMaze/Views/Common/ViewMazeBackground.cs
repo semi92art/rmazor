@@ -31,8 +31,7 @@ namespace Games.RazorMaze.Views.Common
         private bool m_LoadedFirstTime;
         private Transform m_Container;
         private readonly Random m_Random = new Random(); 
-        private readonly Color m_Color = DrawingUtils.ColorLines.SetA(0.05f);
-        private readonly List<ShapeRenderer> m_Sources = new List<ShapeRenderer>();
+        private Color m_BackItemsColor;
         private readonly BehavioursSpawnPool<ShapeRenderer> m_Pool = new BehavioursSpawnPool<ShapeRenderer>();
         private readonly List<Vector2> m_Speeds = new List<Vector2>(PoolSize);
         private Bounds m_ScreenBounds;
@@ -51,20 +50,23 @@ namespace Games.RazorMaze.Views.Common
         #region inject
 
         private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IContainersGetter ContainersGetter { get; }
-        private IGameTicker GameTicker { get; }
-        private ICameraProvider CameraProvider { get; }
+        private IContainersGetter        ContainersGetter    { get; }
+        private IGameTicker              GameTicker          { get; }
+        private ICameraProvider          CameraProvider      { get; }
+        private IColorProvider           ColorProvider       { get; }
 
         public ViewMazeBackground(
             IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
-            ICameraProvider _CameraProvider)
+            ICameraProvider _CameraProvider,
+            IColorProvider _ColorProvider)
         {
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
             GameTicker = _GameTicker;
             CameraProvider = _CameraProvider;
+            ColorProvider = _ColorProvider;
 
             GameTicker.Register(this);
         }
@@ -77,18 +79,37 @@ namespace Games.RazorMaze.Views.Common
 
         public Color BackgroundColor
         {
-            get => Camera.main.backgroundColor;
-            private set => Camera.main.backgroundColor = value;
+            get => CameraProvider.MainCamera.backgroundColor;
+            private set
+            {
+                CameraProvider.MainCamera.backgroundColor = value;
+                BackgroundColorChanged?.Invoke(value);
+            }
         }
+
         public event UnityAction<Color> BackgroundColorChanged;
         
         public void Init()
         {
+            ColorProvider.ColorChanged += ColorProviderOnColorChanged;
             m_ScreenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
+            m_BackItemsColor = ColorProvider.GetColor(ColorIds.BackgroundItems);
             InitSources();
             InitShapes();
             Initialized?.Invoke();
             m_Initialized = true;
+        }
+
+        private void ColorProviderOnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId == ColorIds.BackgroundItems)
+            {
+                m_BackItemsColor = _Color;
+                foreach (var rend in m_Pool)
+                    rend.Color = _Color;
+            }
+            else if (_ColorId == ColorIds.Background)
+                BackgroundColor = _Color;
         }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
@@ -113,45 +134,31 @@ namespace Games.RazorMaze.Views.Common
 
         #region nonpublic methods
 
-        private void InitSources()
+        private List<Disc> InitSources()
         {
-            var backgroundCont = ContainersGetter.GetContainer(ContainerNames.Background);
-            int sortingOrder = DrawingUtils.GetBackgroundItemSortingOrder();
+            var res = new List<Disc>();
+            for (int i = 0; i < 3; i++)
+            {
+                var sourceGo = new GameObject("Background Item");
+                sourceGo.SetParent(ContainersGetter.GetContainer(ContainerNames.Background));
+                var source = sourceGo.AddComponent<Disc>();
+                source.Color = m_BackItemsColor;
+                source.Radius = 0.25f * i;
+                source.SortingOrder = SortingOrders.BackgroundItem;
+                source.enabled = false;
+                res.Add(source);
+            }
 
-            var source1Go = new GameObject("Background Source 1");
-            source1Go.SetParent(backgroundCont);
-            var source1 = source1Go.AddComponent<Disc>();
-            source1.Color = m_Color;
-            source1.Radius = 0.25f;
-            source1.SortingOrder = sortingOrder;
-            source1.enabled = false;
-            m_Sources.Add(source1);
-            
-            var source2Go = new GameObject("Background Source 2");
-            source2Go.SetParent(backgroundCont);
-            var source2 = source2Go.AddComponent<Disc>();
-            source2.Color = m_Color;
-            source2.Radius = 0.5f;
-            source2.SortingOrder = sortingOrder;
-            source2.enabled = false;
-            m_Sources.Add(source2);
-            
-            var source3Go = new GameObject("Background Source 3");
-            source3Go.SetParent(backgroundCont);
-            var source3 = source3Go.AddComponent<Disc>();
-            source3.Color = m_Color;
-            source3.Radius = 1f;
-            source3.SortingOrder = sortingOrder;
-            source3.enabled = false;
-            m_Sources.Add(source3);
+            return res;
         }
 
         private void InitShapes()
         {
+            var sources = InitSources();
             for (int i = 0; i < PoolSize; i++)
             {
-                int randIdx = Mathf.FloorToInt(UnityEngine.Random.value * m_Sources.Count);
-                var source = m_Sources[randIdx];
+                int randIdx = Mathf.FloorToInt(UnityEngine.Random.value * sources.Count);
+                var source = sources[randIdx];
                 var newGo = Object.Instantiate(source.gameObject);
                 newGo.SetParent(ContainersGetter.GetContainer(ContainerNames.Background));
                 var pos = RandomPositionOnScreen();
@@ -245,8 +252,8 @@ namespace Games.RazorMaze.Views.Common
         
         private IEnumerator LoadCoroutine(bool _Load)
         {
-            var startColor = _Load ? m_Color.SetA(0f) : m_Color;
-            var endColor = !_Load ?  m_Color.SetA(0f) : m_Color;
+            var startColor = _Load ? m_BackItemsColor.SetA(0f) : m_BackItemsColor;
+            var endColor = !_Load ?  m_BackItemsColor.SetA(0f) : m_BackItemsColor;
             
             yield return Coroutines.Lerp(
                 startColor,
@@ -268,9 +275,9 @@ namespace Games.RazorMaze.Views.Common
         private IEnumerator LoadLevelCoroutine(int _Level)
         {
             const float duration = 2f;
-            int colorIdx = (_Level / 3) % 10;
+            int colorIdx = (_Level / RazorMazeUtils.LevelsInGroup) % 10;
             float hStart = MathUtils.ClampInverse(
-                _Level % 3 == 0 ? colorIdx - 1 : colorIdx, 0, 10) / 10f;
+                _Level % RazorMazeUtils.LevelsInGroup == 0 ? colorIdx - 1 : colorIdx, 0, 10) / 10f;
             float hEnd = colorIdx / 10f;
 
             float s = 52f / 100f;
@@ -280,7 +287,7 @@ namespace Games.RazorMaze.Views.Common
             
             if ((_Level + 1) % 3 == 0)
             {
-                SetBackgroundColor(endColor);
+                BackgroundColor = endColor;
                 yield break;
             }
             
@@ -288,14 +295,8 @@ namespace Games.RazorMaze.Views.Common
                 startColor,
                 endColor,
                 duration,
-                SetBackgroundColor,
+                _Color => BackgroundColor = _Color,
                 GameTicker);
-        }
-
-        private void SetBackgroundColor(Color _Color)
-        {
-            BackgroundColor = _Color;
-            BackgroundColorChanged?.Invoke(_Color);
         }
 
         #endregion

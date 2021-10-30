@@ -2,6 +2,7 @@
 using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
@@ -24,21 +25,24 @@ namespace Games.RazorMaze.Views.Characters
         
         #region inject
 
+        private ModelSettings            ModelSettings       { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IContainersGetter ContainersGetter { get; }
-        private ModelSettings ModelSettings { get; }
-        private IGameTicker GameTicker { get; }
+        private IContainersGetter        ContainersGetter    { get; }
+        private IGameTicker              GameTicker          { get; }
+        private IColorProvider           ColorProvider       { get; }
 
         public ViewCharacterTailSimple(
+            ModelSettings _ModelSettings,
             IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            ModelSettings _ModelSettings,
-            IGameTicker _GameTicker)
+            IGameTicker _GameTicker,
+            IColorProvider _ColorProvider)
         {
+            ModelSettings = _ModelSettings;
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
-            ModelSettings = _ModelSettings;
             GameTicker = _GameTicker;
+            ColorProvider = _ColorProvider;
         }
         
         #endregion
@@ -95,7 +99,7 @@ namespace Games.RazorMaze.Views.Characters
             var go = new GameObject("Character Tail");
             go.SetParent(ContainersGetter.GetContainer(ContainerNames.Character));
             m_Tail = go.AddComponent<Triangle>();
-            m_Tail.Color = DrawingUtils.ColorCharacterTail;
+            m_Tail.Color = ColorProvider.GetColor(ColorIds.CharacterTail);
             m_Tail.enabled = false;
         }
 

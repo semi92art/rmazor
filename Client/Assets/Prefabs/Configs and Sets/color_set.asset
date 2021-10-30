@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f30d60f3598f45498545678c775ac8db, type: 3}
+  m_Name: color_set
+  m_EditorClassIdentifier: 
+  set:
+    array:
+    - name: Character
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - name: Character Tail
+      color: {r: 1, g: 1, b: 1, a: 0.5019608}
+    - name: UI Dialog Item Normal
+      color: {r: 1, g: 1, b: 1, a: 0.29803923}
+    - name: UI Dialog Item Pressed
+      color: {r: 1, g: 1, b: 1, a: 0.5019608}
+    - name: UI Dialog Item Selected
+      color: {r: 1, g: 1, b: 1, a: 0.5019608}
+    - name: UI Dialog Item Disabled
+      color: {r: 0.5372549, g: 0.5372549, b: 0.5372549, a: 1}
+    - name: UI Dialog Background
+      color: {r: 0.69803923, g: 0.6784314, b: 0.6156863, a: 1}
+    - name: UI Border Default
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - name: UI Text Default
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - name: Border
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - name: Corner
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - name: Background
+      color: {r: 0.6415094, g: 0.12406549, b: 0.12406549, a: 1}
+    - name: Background Items
+      color: {r: 1, g: 1, b: 1, a: 0.5019608}
+    - name: Maze Item
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - name: Maze Item Path Line
+      color: {r: 1, g: 1, b: 1, a: 0.5019608}
+    - name: Maze Item Path Joint
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - name: Path
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - name: UI
+      color: {r: 1, g: 1, b: 1, a: 1}

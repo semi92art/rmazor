@@ -5,6 +5,7 @@ using Entities;
 using Exceptions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ProceedInfos;
+using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.MazeItems.Props;
@@ -43,13 +44,14 @@ namespace Games.RazorMaze.Views.MazeItems
 
         #region inject
 
-        protected ViewSettings ViewSettings { get; }
-        protected IModelGame Model { get; }
+        protected ViewSettings             ViewSettings        { get; }
+        protected IModelGame               Model               { get; }
         protected IMazeCoordinateConverter CoordinateConverter { get; }
-        protected IContainersGetter ContainersGetter { get; }
-        protected IGameTicker GameTicker { get; }
-        protected IViewAppearTransitioner Transitioner { get; }
-        protected IManagersGetter Managers { get; }
+        protected IContainersGetter        ContainersGetter    { get; }
+        protected IGameTicker              GameTicker          { get; }
+        protected IViewAppearTransitioner  Transitioner        { get; }
+        protected IManagersGetter          Managers            { get; }
+        protected IColorProvider           ColorProvider       { get; }
 
 
         protected ViewMazeItemBase (
@@ -59,7 +61,8 @@ namespace Games.RazorMaze.Views.MazeItems
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
-            IManagersGetter _Managers)
+            IManagersGetter _Managers,
+            IColorProvider _ColorProvider)
         {
             ViewSettings = _ViewSettings;
             Model = _Model;
@@ -68,6 +71,7 @@ namespace Games.RazorMaze.Views.MazeItems
             GameTicker = _GameTicker;
             Transitioner = _Transitioner;
             Managers = _Managers;
+            ColorProvider = _ColorProvider;
 
             GameTicker.Register(this);
         }
@@ -180,7 +184,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             return new Dictionary<object[], Func<Color>>
             {
-                {Shapes, () => DrawingUtils.ColorLines}
+                {Shapes, () => ColorProvider.GetColor(ColorIds.MazeItem)}
             };
         }
 

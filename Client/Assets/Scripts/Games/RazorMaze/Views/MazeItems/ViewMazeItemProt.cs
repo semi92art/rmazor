@@ -166,36 +166,34 @@ namespace Games.RazorMaze.Views.MazeItems
         }
 
         private int GetShapeSortingOrder(EMazeItemType _Type, bool _IsPath) => 
-            _IsPath ? DrawingUtils.GetPathSortingOrder() : DrawingUtils.GetBlockSortingOrder(_Type);
+            _IsPath ? SortingOrders.Path : SortingOrders.GetBlockSortingOrder(_Type);
 
 
         private static Color GetShapeColor(EMazeItemType _Type, bool _Inner, bool _IsNode)
         {
             if (_IsNode)
                 return Color.white;
-
             if (_Inner)
-                return DrawingUtils.ColorHint;
-
+                return Color.black;
             switch (_Type)
             {
                 case EMazeItemType.Block:                   
                 case EMazeItemType.GravityBlock:
                 case EMazeItemType.GravityBlockFree:
-                    return DrawingUtils.ColorBlock;
+                    return new Color(0.5f, 0.5f, 0.5f);
                 case EMazeItemType.ShredingerBlock:
-                    return DrawingUtils.ColorShredinger;
+                    return new Color(0.49f, 0.79f, 1f);
                 case EMazeItemType.Portal:
-                    return DrawingUtils.ColorPortal;
+                    return new Color(0.13f, 1f, 0.07f);
                 case EMazeItemType.TrapReact:               
                 case EMazeItemType.TrapIncreasing:
                 case EMazeItemType.TrapMoving: 
                 case EMazeItemType.GravityTrap:
                     return new Color(1f, 0.29f, 0.29f);
                 case EMazeItemType.Turret: 
-                    return DrawingUtils.ColorTurret;
+                    return new Color(0.99f, 0.14f, 0.7f);
                 case EMazeItemType.Springboard:
-                    return DrawingUtils.ColorSpringboard;
+                    return new Color(0.41f, 1f, 0.79f);
                 default: throw new SwitchCaseNotImplementedException(_Type);
             }
         }

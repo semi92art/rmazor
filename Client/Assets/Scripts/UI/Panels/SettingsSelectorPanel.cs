@@ -5,6 +5,7 @@ using DI.Extensions;
 using DialogViewers;
 using Entities;
 using GameHelpers;
+using Games.RazorMaze.Views.Common;
 using LeTai.Asset.TranslucentImage;
 using Ticker;
 using UI.Entities;
@@ -39,8 +40,9 @@ namespace UI.Panels
             IDialogViewer _DialogViewer,
             IManagersGetter _Managers,
             IUITicker _UITicker,
-            ICameraProvider _CameraProvider) 
-            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider)
+            ICameraProvider _CameraProvider,
+            IColorProvider _ColorProvider) 
+            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider, _ColorProvider)
         { }
 
 
@@ -98,7 +100,7 @@ namespace UI.Panels
             {
                 var sspiClone = sspi.Clone();
                 SettingSelectorItem si = sspiClone.GetComponent<SettingSelectorItem>();
-                si.Init(Managers, Ticker, item, m_OnSelect, item == m_DefaultValue);
+                si.Init(Managers, Ticker, ColorProvider, item, m_OnSelect, item == m_DefaultValue);
                 selectorItems.Add(si);
             }
 

@@ -5,9 +5,9 @@ using DI.Extensions;
 using Entities;
 using GameHelpers;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.InputConfigurators;
-using Games.RazorMaze.Views.Utils;
 using Ticker;
 using TMPro;
 using UnityEngine;
@@ -54,13 +54,14 @@ namespace Games.RazorMaze.Views.UI
 
         #region inject
 
-        private IModelGame Model { get; }
-        private IGameTicker GameTicker { get; }
-        private IContainersGetter ContainersGetter { get; }
+        private IModelGame               Model               { get; }
+        private IGameTicker              GameTicker          { get; }
+        private IContainersGetter        ContainersGetter    { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
-        private ILocalizationManager LocalizationManager { get; }
-        private IViewInputConfigurator InputConfigurator { get; }
-        private ICameraProvider CameraProvider { get; }
+        private ILocalizationManager     LocalizationManager { get; }
+        private IViewInputConfigurator   InputConfigurator   { get; }
+        private ICameraProvider          CameraProvider      { get; }
+        private IColorProvider           ColorProvider       { get; }
 
         public ViewUIPrompts(
             IModelGame _Model,
@@ -69,7 +70,8 @@ namespace Games.RazorMaze.Views.UI
             IMazeCoordinateConverter _CoordinateConverter,
             ILocalizationManager _LocalizationManager,
             IViewInputConfigurator _InputConfigurator,
-            ICameraProvider _CameraProvider)
+            ICameraProvider _CameraProvider,
+            IColorProvider _ColorProvider)
         {
             Model = _Model;
             GameTicker = _GameTicker;
@@ -78,6 +80,7 @@ namespace Games.RazorMaze.Views.UI
             LocalizationManager = _LocalizationManager;
             InputConfigurator = _InputConfigurator;
             CameraProvider = _CameraProvider;
+            ColorProvider = _ColorProvider;
             InputConfigurator.Command += InputConfiguratorOnCommand;
         }
 
@@ -208,7 +211,7 @@ namespace Games.RazorMaze.Views.UI
             var text = promptGo.GetCompItem<TextMeshPro>("label");
             text.fontSize = 18f;
             LocalizationManager.AddTextObject(text, _Key);
-            text.color = DrawingUtils.ColorLines.SetA(0f);
+            text.color = ColorProvider.GetColor(ColorIds.UI).SetA(0f);
 
             var mazeBounds = CoordinateConverter.GetMazeBounds();
             text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, mazeBounds.size.x);
@@ -235,7 +238,7 @@ namespace Games.RazorMaze.Views.UI
                     0f,
                     1f,
                     loopTime * 2f,
-                    _Progress => _Text.color = DrawingUtils.ColorLines.SetA(_Progress),
+                    _Progress => _Text.color = ColorProvider.GetColor(ColorIds.UI).SetA(_Progress),
                     GameTicker,
                     (_, __) => Coroutines.Run(ShowPromptCoroutine(_Key, _Text)),
                     () => m_Prompts.ContainsKey(_Key) && m_Prompts[_Key].NeedToHide,

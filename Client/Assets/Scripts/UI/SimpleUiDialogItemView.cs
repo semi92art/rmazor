@@ -1,6 +1,7 @@
 ﻿using Constants;
 using DI.Extensions;
 using Entities;
+using Games.RazorMaze.Views.Common;
 using Ticker;
 using Utils;
 
@@ -18,7 +19,8 @@ namespace UI
     {
         #region nonpublic members
 
-        protected IManagersGetter Managers { get; private set; }
+        protected IManagersGetter Managers      { get; private set; }
+        private   IColorProvider  ColorProvider { get; set; }
 
         #endregion
 
@@ -26,49 +28,43 @@ namespace UI
 
         public void SetNormal()
         {
-            MakeTransition(ColorUtils.GetColorFromCurrentPalette(
-                CommonPaletteColors.UiDialogItemNormal));
+            MakeTransition(ColorProvider.GetColor(ColorIds.UiDialogItemNormal));
         }
 
         public void SetPressed()
         {
-            MakeTransition(ColorUtils.GetColorFromCurrentPalette(
-                CommonPaletteColors.UiDialogItemPressed));
+            MakeTransition(ColorProvider.GetColor(ColorIds.UiDialogItemPressed));
         }
 
         public void SetSelected()
         {
-            MakeTransition(ColorUtils.GetColorFromCurrentPalette(
-                CommonPaletteColors.UiDialogItemSelected));
+            MakeTransition(ColorProvider.GetColor(ColorIds.UiDialogItemSelected));
         }
 
         public void SetDisabled()
         {
-            MakeTransition(ColorUtils.GetColorFromCurrentPalette(
-                CommonPaletteColors.UiDialogItemDisabled));
+            MakeTransition(ColorProvider.GetColor(ColorIds.UiDialogItemDisabled));
         }
 
         #endregion
 
         #region nonpublic methods
-
-        protected override void OnEnable()
-        {
-            if (!background.IsNull())
-                background.color = ColorUtils.GetColorFromCurrentPalette(CommonPaletteColors.UiDialogItemNormal);
-            base.OnEnable();
-        }
         
-        protected void InitCore(IManagersGetter _Managers, IUITicker _UITicker)
+        protected void InitCore(
+            IManagersGetter _Managers,
+            IUITicker _UITicker,
+            IColorProvider _ColorProvider)
         {
             Managers = _Managers;
-            InitCore(_UITicker);
+            InitCore(_UITicker, _ColorProvider);
+
+            if (!background.IsNull())
+                background.color = ColorProvider.GetColor(ColorIds.UiDialogItemNormal);
         }
         
         protected void SoundOnClick()
         {
-            Managers.Notify(_SM => 
-                _SM.PlayClip(AudioClipNames.UIButtonClick));
+            Managers.SoundManager.PlayClip(AudioClipNames.UIButtonClick);
         }
 
         #endregion

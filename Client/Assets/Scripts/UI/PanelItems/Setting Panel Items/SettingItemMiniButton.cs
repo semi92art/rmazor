@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Games.RazorMaze.Views.Common;
 using Ticker;
 using UnityEngine;
 using UnityEngine.Events;
@@ -14,12 +15,13 @@ namespace UI.PanelItems.Setting_Panel_Items
         public void Init(
             IManagersGetter _Managers,
             IUITicker _UITicker,
+            IColorProvider _ColorProvider,
             bool _IsOn, 
             UnityAction<bool> _Action,
             Sprite _SpriteOn,
             Sprite _SpriteOff)
         {
-            InitCore(_Managers, _UITicker);
+            InitCore(_Managers, _UITicker, _ColorProvider);
             icon.sprite = _IsOn ? _SpriteOn : _SpriteOff;
             toggle.isOn = _IsOn;
             toggle.onValueChanged.AddListener(_Action);

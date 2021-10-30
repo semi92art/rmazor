@@ -1,5 +1,6 @@
 ﻿using Constants;
 using DI.Extensions;
+using Games.RazorMaze.Views.Common;
 using Utils;
 
 namespace UI
@@ -9,7 +10,7 @@ namespace UI
         protected override void OnEnable()
         {
             if (!background.IsNull())
-                background.color = ColorUtils.GetColorFromCurrentPalette(CommonPaletteColors.UiDialogBackground);
+                background.color = m_ColorProvider.GetColor(ColorIds.UiDialogBackground);
             base.OnEnable();
         }
     }

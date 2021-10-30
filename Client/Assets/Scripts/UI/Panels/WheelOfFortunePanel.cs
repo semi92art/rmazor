@@ -4,6 +4,7 @@ using DI.Extensions;
 using DialogViewers;
 using Entities;
 using GameHelpers;
+using Games.RazorMaze.Views.Common;
 using Lean.Localization;
 using Managers;
 using MkeyFW;
@@ -53,8 +54,9 @@ namespace UI.Panels
             INotificationViewer _NotificationViewer,
             IManagersGetter _Managers,
             IUITicker _UITicker,
-            ICameraProvider _CameraProvider)
-            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider)
+            ICameraProvider _CameraProvider,
+            IColorProvider _ColorProvider)
+            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider, _ColorProvider)
         {
             RewardPanel = _RewardPanel;
             NotificationViewer = _NotificationViewer;
@@ -103,7 +105,7 @@ namespace UI.Panels
                 "wheel_main");
             m_WheelController = m_Wheel.GetCompItem<WheelController>("wheel_controller");
             SpriteRenderer background = m_Wheel.GetCompItem<SpriteRenderer>("background");
-            background.color = ColorUtils.GetColorFromCurrentPalette(CommonPaletteColors.UiMainBackground);
+            // background.color = ColorUtils.GetColorFromCurrentPalette(CommonPaletteColors.UiMainBackground);
             var cameraBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
             Transform tr = background.transform;
             Vector3 lScale = tr.localScale;

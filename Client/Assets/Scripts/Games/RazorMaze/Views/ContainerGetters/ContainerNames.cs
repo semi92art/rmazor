@@ -2,12 +2,12 @@
 {
     public class ContainerNames
     {
-        public const string Maze = "Maze";
-        public const string MazeItems = "Maze Items";
-        public const string Character = "Character";
-        public const string Background = "Background";
-        public const string GameUI = "Game UI";
-        public const string AudioSources = "Audio Sources";
-        public const string TouchInput = "Touch Input";
+        public const string Maze         = nameof(Maze);
+        public const string MazeItems    = nameof(MazeItems);
+        public const string Character    = nameof(Character);
+        public const string Background   = nameof(Background);
+        public const string GameUI       = nameof(GameUI);
+        public const string AudioSources = nameof(AudioSources);
+        public const string TouchInput   = nameof(TouchInput);
     }
 }

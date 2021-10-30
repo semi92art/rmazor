@@ -63,7 +63,8 @@ namespace Games.RazorMaze.Views.MazeItems
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
             IManagersGetter _Managers,
-            IMazeShaker _MazeShaker)
+            IMazeShaker _MazeShaker,
+            IColorProvider _ColorProvider)
             : base(
                 _ViewSettings,
                 _Model,
@@ -71,14 +72,15 @@ namespace Games.RazorMaze.Views.MazeItems
                 _ContainersGetter,
                 _GameTicker,
                 _Transitioner,
-                _Managers)
+                _Managers,
+                _ColorProvider)
         {
             MazeShaker = _MazeShaker;
         }
         
         #endregion
         
-        #region api
+        #region apico
         
         public override object[] Shapes => new object[] {m_OuterDisc}.Concat(m_Cones).ToArray();
         
@@ -90,7 +92,8 @@ namespace Games.RazorMaze.Views.MazeItems
             GameTicker,
             Transitioner,
             Managers,
-            MazeShaker);
+            MazeShaker,
+            ColorProvider);
 
         public override bool ActivatedInSpawnPool
         {

@@ -4,6 +4,7 @@ using DialogViewers;
 using Entities;
 using Exceptions;
 using GameHelpers;
+using Games.RazorMaze.Views.Common;
 using Managers;
 using Ticker;
 using TMPro;
@@ -43,8 +44,9 @@ namespace UI.Panels
             INotificationViewer _NotificationViewer,
             IManagersGetter _Managers,
             IUITicker _UITicker,
-            ICameraProvider _CameraProvider) 
-            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider)
+            ICameraProvider _CameraProvider,
+            IColorProvider _ColorProvider) 
+            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider, _ColorProvider)
         {
             NotificationViewer = _NotificationViewer;
         }

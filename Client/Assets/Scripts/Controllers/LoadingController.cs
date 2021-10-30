@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UI.Panels;
 using UnityEngine.Events;
 using Utils;
 
@@ -49,17 +48,6 @@ namespace Controllers
 
         #endregion
 
-        #region inject
-        
-        private ILoadingDialogPanel LoadingDialogPanel { get; }
-
-        public LoadingController(ILoadingDialogPanel _LoadingDialogPanel)
-        {
-            LoadingDialogPanel = _LoadingDialogPanel;
-        }
-
-        #endregion
-
         #region api
 
         public void Init(UnityAction<LoadingResult> _OnFinish, List<LoadingStage> _Stages)
@@ -76,7 +64,6 @@ namespace Controllers
             if (stage.StageAction == null)
                 return;
             m_CurrentMessages.Add(stage.Description);
-            LoadingDialogPanel.SetProgress(m_Percents, CurrentMessages);
             stage.StageAction.Invoke();
             bool finished = false;
             bool failed = false;
@@ -86,7 +73,6 @@ namespace Controllers
                     m_FinishedStagesCount++;
                     m_Percents += GetPercents(stage);
                     m_CurrentMessages.Remove(stage.Description);
-                    LoadingDialogPanel.SetProgress(m_Percents, CurrentMessages);
                     finished = true;
                     if (m_FinishedStagesCount == m_Stages.Count)
                         FinishLoading();
@@ -108,13 +94,11 @@ namespace Controllers
         
         public void BreakLoading(string _Error)
         {
-            LoadingDialogPanel.Break(_Error);
             m_OnFinish?.Invoke(LoadingResult.Fail);
         }
         
         public void FinishLoading()
         {
-            LoadingDialogPanel.Break(null);
             m_OnFinish?.Invoke(LoadingResult.Success);
         }
         

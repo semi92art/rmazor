@@ -45,3 +45,5 @@ MonoBehaviour:
       name: trap_react_spikes
     - item: {fileID: 11400000, guid: 53dadda8d56021340864a4799a30f3da, type: 2}
       name: level_blur_config
+    - item: {fileID: 11400000, guid: fcaebc104eabc2c4a9876fa77caea83d, type: 2}
+      name: color_set

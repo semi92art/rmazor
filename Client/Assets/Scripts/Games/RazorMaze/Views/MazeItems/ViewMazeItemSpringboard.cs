@@ -5,6 +5,7 @@ using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
+using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Utils;
@@ -55,7 +56,8 @@ namespace Games.RazorMaze.Views.MazeItems
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
-            IManagersGetter _Managers) 
+            IManagersGetter _Managers,
+            IColorProvider _ColorProvider) 
             : base(
                 _ViewSettings,
                 _Model, 
@@ -63,7 +65,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 _ContainersGetter,
                 _GameTicker,
                 _Transitioner,
-                _Managers) { }
+                _Managers,
+                _ColorProvider) { }
         
         #endregion
 
@@ -78,7 +81,8 @@ namespace Games.RazorMaze.Views.MazeItems
             ContainersGetter,
             GameTicker,
             Transitioner,
-            Managers);
+            Managers,
+            ColorProvider);
 
         public void MakeJump(SpringboardEventArgs _Args)
         {
@@ -95,7 +99,7 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Pillar = Object.AddComponentOnNewChild<Line>("Springboard Item", out _);
             m_Springboard = Object.AddComponentOnNewChild<Line>("Springboard", out _);
             m_Pillar.EndCaps = m_Springboard.EndCaps = LineEndCap.Round;
-            m_Pillar.Color = m_Springboard.Color = DrawingUtils.ColorLines;
+            m_Pillar.Color = m_Springboard.Color = ColorProvider.GetColor(ColorIds.MazeItem);
         }
 
         protected override void UpdateShape()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DI.Extensions;
 using DialogViewers;
 using Entities;
+using Games.RazorMaze.Views.Common;
 using Ticker;
 using TMPro;
 using UI.Panels;
@@ -21,13 +22,14 @@ namespace UI.PanelItems.Setting_Panel_Items
             IManagersGetter _Managers,
             IUITicker _UITicker,
             IDialogViewer _UiDialogViewer,
+            IColorProvider _ColorProvider,
             string _TitleKey,
             Func<string> _Value,
             Action<string> _OnSelect,
             Func<List<string>> _ListOfItems = null,
             ISettingSelectorDialogPanel _SelectorPanel = null)
         {
-            InitCore(_Managers, _UITicker);
+            InitCore(_Managers, _UITicker, _ColorProvider);
             _Managers.LocalizationManager.AddTextObject(title, _TitleKey);
             setting.text = _Value?.Invoke();
             button.SetOnClick(() =>

@@ -8,6 +8,7 @@ using Exceptions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Models.ProceedInfos;
+using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Utils;
@@ -59,7 +60,8 @@ namespace Games.RazorMaze.Views.MazeItems
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
-            IManagersGetter _Managers)
+            IManagersGetter _Managers,
+            IColorProvider _ColorProvider)
             : base(
                 _ViewSettings,
                 _Model,
@@ -67,7 +69,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 _ContainersGetter,
                 _GameTicker,
                 _Transitioner,
-                _Managers) { }
+                _Managers,
+                _ColorProvider) { }
         
         #endregion
 
@@ -87,7 +90,8 @@ namespace Games.RazorMaze.Views.MazeItems
             ContainersGetter,
             GameTicker,
             Transitioner,
-            Managers);
+            Managers,
+            ColorProvider);
 
         public override bool ActivatedInSpawnPool
         {
@@ -128,13 +132,13 @@ namespace Games.RazorMaze.Views.MazeItems
         
         public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
         {
-            if (_Args.Position != Props.Position)
-                return;
-            var springboardInfos = 
-                Model.SpringboardProceeder.ProceedInfos[EMazeItemType.Springboard];
-            if (springboardInfos.Any(_Info => _Info.CurrentPosition == Props.Position))
-                return;
-            Coroutines.Run(OnFinishMoveCoroutine(_Args.Direction));
+            // if (_Args.Position != Props.Position)
+            //     return;
+            // var springboardInfos = 
+            //     Model.SpringboardProceeder.ProceedInfos[EMazeItemType.Springboard];
+            // if (springboardInfos.Any(_Info => _Info.CurrentPosition == Props.Position))
+            //     return;
+            // Coroutines.Run(OnFinishMoveCoroutine(_Args.Direction));
         }
 
         #endregion
@@ -177,16 +181,18 @@ namespace Games.RazorMaze.Views.MazeItems
                 Managers.Notify(_SM => _SM.PlayClip(
                     SoundClipNameCollectPoint, _Tags: Props.Position.ToString()));
             }
-            m_Shape.Color = _Collect ? DrawingUtils.ColorLines.SetA(0f) : DrawingUtils.ColorLines;
+
+            var col = ColorProvider.GetColor(ColorIds.Path);
+            m_Shape.Color = _Collect ? col.SetA(0f) : col;
         }
 
         protected override void InitShape()
         {
             var sh = Object.AddComponentOnNewChild<Rectangle>("Path Item", out _);
-            sh.Type = Rectangle.RectangleType.RoundedHollow;
+            sh.Type = Rectangle.RectangleType.RoundedBorder;
             sh.CornerRadiusMode = Rectangle.RectangleCornerRadiusMode.Uniform;
-            sh.Color = DrawingUtils.ColorLines;
-            sh.SortingOrder = DrawingUtils.GetPathSortingOrder();
+            sh.Color = ColorProvider.GetColor(ColorIds.Path);
+            sh.SortingOrder = SortingOrders.Path;
             sh.enabled = false;
             m_Shape = sh;
         }
@@ -369,7 +375,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 border = Object.AddComponentOnNewChild<Line>("Border", out _);
             border.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
             border.EndCaps = LineEndCap.None;
-            border.Color = DrawingUtils.ColorLines.SetA(0.5f);
+            border.Color = ColorProvider.GetColor(ColorIds.Border);
             (border.Start, border.End, border.Dashed) = GetBorderPointsAndDashed(_Side, false, false);
             border.transform.position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
             border.DashSize = 1f;
@@ -540,10 +546,10 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private Color GetCornerColor(bool _Right, bool _Up, bool _Inner)
         {
-            var defCol = DrawingUtils.ColorLines;
+            var defCol = ColorProvider.GetColor(ColorIds.Corner);
             var col1 = defCol.SetA(0.5f);
             if (_Inner)
-                return DrawingUtils.ColorLines;
+                return defCol;
             if (!_Right && !_Up)
                 return TrapIncreasingExist(Props.Position + V2Int.down + V2Int.left) ? col1 : defCol;
             if (_Right && !_Up)
@@ -612,8 +618,9 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override Dictionary<object[], Func<Color>> GetAppearSets(bool _Appear)
         {
             var cornersDictRaw = new Dictionary<Color, List<object>>();
-            cornersDictRaw.Add(DrawingUtils.ColorLines, new List<object>());
-            cornersDictRaw.Add(DrawingUtils.ColorLines.SetA(0.5f), new List<object>());
+            var defCornerCol = ColorProvider.GetColor(ColorIds.Corner);
+            cornersDictRaw.Add(defCornerCol, new List<object>());
+            cornersDictRaw.Add(defCornerCol.SetA(0.5f), new List<object>());
 
             if (m_BottomLeftCornerInited)
                 cornersDictRaw[m_BottomLeftCornerCol].Add(m_BottomLeftCorner);
@@ -638,7 +645,7 @@ namespace Games.RazorMaze.Views.MazeItems
             {
                 {
                     borders.ToArray(),
-                    () => DrawingUtils.ColorLines.SetA(0.5f)
+                    () => ColorProvider.GetColor(ColorIds.Border)
                 }
             };
             var cornersDict = cornersDictRaw.
@@ -649,7 +656,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 .ToDictionary(_Kvp => _Kvp.Key, _Kvp => _Kvp.Value);
 
             if (_Appear && !Props.IsStartNode || !_Appear && !Collected)
-                res.Add(new object[] {m_Shape}, () => DrawingUtils.ColorLines);
+                res.Add(new object[] {m_Shape}, () => ColorProvider.GetColor(ColorIds.Path));
             else
                 m_Shape.enabled = false;
 

@@ -5,6 +5,7 @@ using System.Linq;
 using DI.Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Characters;
+using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.InputConfigurators;
@@ -30,14 +31,15 @@ namespace Games.RazorMaze.Views.Rotation
         
         #region inject
         
-        private ViewSettings ViewSettings { get; }
+        private ViewSettings             ViewSettings        { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IContainersGetter ContainersGetter { get; }
-        private IGameTicker GameTicker { get; }
-        private IModelGame Model { get; }
-        private IViewCharacter Character { get; }
-        private IViewAppearTransitioner Transitioner { get; }
-        private IViewInputConfigurator InputConfigurator { get; }
+        private IContainersGetter        ContainersGetter    { get; }
+        private IGameTicker              GameTicker          { get; }
+        private IModelGame               Model               { get; }
+        private IViewCharacter           Character           { get; }
+        private IViewAppearTransitioner  Transitioner        { get; }
+        private IViewInputConfigurator   InputConfigurator   { get; }
+        private IColorProvider           ColorProvider       { get; }
 
         public ViewMazeRotation(
             ViewSettings _ViewSettings,
@@ -47,7 +49,8 @@ namespace Games.RazorMaze.Views.Rotation
             IModelGame _Model,
             IViewCharacter _Character,
             IViewAppearTransitioner _Transitioner,
-            IViewInputConfigurator _InputConfigurator)
+            IViewInputConfigurator _InputConfigurator,
+            IColorProvider _ColorProvider)
         {
             ViewSettings = _ViewSettings;
             CoordinateConverter = _CoordinateConverter;
@@ -57,6 +60,7 @@ namespace Games.RazorMaze.Views.Rotation
             Character = _Character;
             Transitioner = _Transitioner;
             InputConfigurator = _InputConfigurator;
+            ColorProvider = _ColorProvider;
             _GameTicker.Register(this);
         }
         
@@ -135,7 +139,7 @@ namespace Games.RazorMaze.Views.Rotation
                 appear.Value,
                 new Dictionary<object[], Func<Color>>
                 {
-                    {new object[] { m_Disc }, () => DrawingUtils.ColorLines.SetA(0.5f)}
+                    {new object[] { m_Disc }, () => ColorProvider.GetColor(ColorIds.Border)}
                 },
                 _Type: EAppearTransitionType.WithoutDelay);
         }

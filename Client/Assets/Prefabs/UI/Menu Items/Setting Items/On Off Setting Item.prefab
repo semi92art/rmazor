@@ -399,7 +399,6 @@ GameObject:
   - component: {fileID: 3802417775225170517}
   - component: {fileID: 8008235699256900239}
   - component: {fileID: 480538642813509444}
-  - component: {fileID: 8955013934705015558}
   m_Layer: 0
   m_Name: Toggle On
   m_TagString: Untagged
@@ -494,23 +493,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &8955013934705015558
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5103792167435694522}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 733ec7e21c764c7f8d30a713828e4071, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  background: {fileID: 0}
-  border: {fileID: 0}
-  texts:
-  - {fileID: 7460365816791981222}
-  checkMark: {fileID: 7811190594584420499}
 --- !u!1 &5482504599080099721
 GameObject:
   m_ObjectHideFlags: 0
@@ -522,7 +504,6 @@ GameObject:
   - component: {fileID: 8213314475323208087}
   - component: {fileID: 3487560620160462197}
   - component: {fileID: 2751244327116122647}
-  - component: {fileID: 9215760229720956840}
   m_Layer: 0
   m_Name: Toggle Off
   m_TagString: Untagged
@@ -617,23 +598,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &9215760229720956840
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5482504599080099721}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 733ec7e21c764c7f8d30a713828e4071, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  background: {fileID: 0}
-  border: {fileID: 0}
-  texts:
-  - {fileID: 4475502054587405331}
-  checkMark: {fileID: 8396091745469934057}
 --- !u!1 &5698187469437885641
 GameObject:
   m_ObjectHideFlags: 0

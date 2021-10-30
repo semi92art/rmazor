@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edbe76a02fa3404f9e04b54b4caf98f8, type: 3}
   m_Name: view_settings
   m_EditorClassIdentifier: 
-  lineWidth: 5
-  cornerRadius: 20
+  lineWidth: 7
+  cornerRadius: 30
   movingTrapRotationSpeed: 800
   shredingerLineOffsetSpeed: 200
   turretBulletRotationSpeed: 100

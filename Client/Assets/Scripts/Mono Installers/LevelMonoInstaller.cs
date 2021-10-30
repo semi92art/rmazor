@@ -27,9 +27,11 @@ namespace Mono_Installers
     public class LevelMonoInstaller : MonoInstallerImplBase
     {
         public static bool Release;
+        
         public ModelSettings modelSettings;
-        public ViewSettings viewSettings;
-        public GameObject cameraProvider;
+        public ViewSettings  viewSettings;
+        public GameObject    cameraProvider;
+        public GameObject    colorProvider;
 
         public override void InstallBindings()
         {
@@ -109,7 +111,6 @@ namespace Mono_Installers
             Container.Bind<IViewMazeGravityItemsGroup>()    .To<ViewMazeGravityItemsGroup>()     .AsSingle();
 
             Container.Bind<IDialogPanels>()                 .To<DialogPanels>()                  .AsSingle().When(_ => Release);
-            Container.Bind<ILoadingDialogPanel>()           .To<LoadingPanel>()                  .AsSingle().When(_ => Release);
             Container.Bind<ISettingSelectorDialogPanel>()   .To<SettingsSelectorPanel>()         .AsSingle().When(_ => Release);
             Container.Bind<IShopDialogPanel>()              .To<ShopPanel>()                     .AsSingle().When(_ => Release);
             Container.Bind<IShopMoneyDialogPanel>()         .To<ShopMoneyPanel>()                .AsSingle().When(_ => Release);
@@ -119,11 +120,11 @@ namespace Mono_Installers
             Container.Bind<IWheelOfFortuneRewardPanel>()    .To<WheelOfFortuneRewardPanel>()     .AsSingle().When(_ => Release);
             Container.Bind<IDialogViewer>()                 .To<FullScreenDialogViewer>()        .AsSingle().When(_ => Release);
             Container.Bind<INotificationViewer>()           .To<NotificationViewer>()            .AsSingle().When(_ => Release);
-            Container.Bind<ITransitionRenderer>()           .To<CircleTransitionRenderer>()      .AsSingle().When(_ => Release);
             Container.Bind<ILoadingController>()            .To<LoadingController>()             .AsSingle().When(_ => Release);
             Container.Bind<IDailyBonusDialogPanel>()        .To<DailyBonusPanel>()               .AsSingle().When(_ => Release);
             Container.Bind<ISettingDialogPanel>()           .To<SettingsPanel>()                 .AsSingle().When(_ => Release);
             Container.Bind<IViewUIPrompts>()                .To<ViewUIPrompts>()                 .AsSingle().When(_ => Release);
+            Container.Bind<ICharacterDiedDialogPanel>()     .To<CharacterDiedDialogPanel>()      .AsSingle().When(_ => Release);
 
 #if UNITY_EDITOR
             Container.Bind<IViewInputConfigurator>()        .To<ViewInputConfiguratorInEditor>() .AsSingle();
@@ -147,8 +148,10 @@ namespace Mono_Installers
 
             #region other
 
-            Container.Bind<ICameraProvider>().FromComponentInNewPrefab(cameraProvider).AsSingle();
-            Container.Bind<IDebugManager>()       .To<DebugManager>()           .AsSingle();
+            Container.Bind<ICameraProvider>()   .FromComponentInNewPrefab(cameraProvider)       .AsSingle();
+            Container.Bind<IColorProvider>()    .FromComponentInNewPrefab(colorProvider)        .AsSingle();
+            Container.Bind<IDebugManager>()     .To<DebugManager>()                             .AsSingle();
+            
             #endregion
         }
     }

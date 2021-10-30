@@ -2,6 +2,7 @@
 using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
+using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Utils;
@@ -31,7 +32,8 @@ namespace Games.RazorMaze.Views.MazeItems
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
-            IManagersGetter _Managers)
+            IManagersGetter _Managers,
+            IColorProvider _ColorProvider)
             : base(
                 _ViewSettings,
                 _Model,
@@ -39,7 +41,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 _ContainersGetter,
                 _GameTicker,
                 _Transitioner,
-                _Managers) { }
+                _Managers,
+                _ColorProvider) { }
         
         #endregion
         
@@ -53,7 +56,8 @@ namespace Games.RazorMaze.Views.MazeItems
             ContainersGetter, 
             GameTicker,
             Transitioner,
-            Managers);
+            Managers,
+            ColorProvider);
         
         public override void OnMoving(MazeItemMoveEventArgs _Args)
         {
@@ -79,9 +83,9 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override void InitShape()
         {
             var sh = Object.AddComponentOnNewChild<Rectangle>("Block", out _);
-            sh.Type = Rectangle.RectangleType.RoundedHollow;
-            sh.Color = DrawingUtils.ColorLines;
-            sh.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
+            sh.Type = Rectangle.RectangleType.RoundedBorder;
+            sh.Color = ColorProvider.GetColor(ColorIds.MazeItem);
+            sh.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
             m_Shape = sh;
         }
 

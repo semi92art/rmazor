@@ -1,5 +1,6 @@
 ﻿using DI.Extensions;
 using Entities;
+using Games.RazorMaze.Views.Common;
 using Ticker;
 using UI.Entities;
 using UnityEngine;
@@ -15,10 +16,11 @@ namespace UI.PanelItems.Shop_Items
         public override void Init(
             IManagersGetter _Managers,
             IUITicker _UITicker,
+            IColorProvider _ColorProvider,
             UnityAction _Click,
             ViewShopItemInfo _Info)
         {
-            InitCore(_Managers, _UITicker);
+            InitCore(_Managers, _UITicker, _ColorProvider);
             name = "Shop Item";
             button.onClick.AddListener(SoundOnClick);
             button.onClick.AddListener(_Click);

@@ -237,7 +237,7 @@ MonoBehaviour:
   m_material: {fileID: 0}
   m_sharedMaterial: {fileID: 0}
   m_isDefaultMaterial: 0
-  m_padding: 8.5625
+  m_padding: 1.25
   m_canvasRenderer: {fileID: 5446188813815526565}
   m_TextComponent: {fileID: 6798124745847727379}
   m_materialReferenceIndex: 1
@@ -255,7 +255,6 @@ GameObject:
   - component: {fileID: 3727697406823986905}
   - component: {fileID: 4840189570237220070}
   - component: {fileID: 257062053424642444}
-  - component: {fileID: 8529820272079265715}
   m_Layer: 0
   m_Name: Daily Bonus Item
   m_TagString: Untagged
@@ -398,30 +397,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f261dc4c44c24982ae5a0e02515ea3e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  background: {fileID: 0}
+  border: {fileID: 0}
+  texts: []
   button: {fileID: 3727697406823986905}
   iconAnimator: {fileID: 9206147837628612956}
   icon: {fileID: 4844464113106762851}
   price: {fileID: 7420250815255838760}
   day: {fileID: 6798124745847727379}
   tomorrow: {fileID: 5968470201745884803}
---- !u!114 &8529820272079265715
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4353535992515256928}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a51db108d614017ad1f50be2f2ce143, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  background: {fileID: 7852434557159120107}
-  border: {fileID: 1101038061738527699}
-  texts:
-  - {fileID: 6798124745847727379}
-  - {fileID: 7420250815255838760}
-  - {fileID: 5968470201745884803}
 --- !u!1 &7192626548796338337
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Constants;
 using Entities;
+using Games.RazorMaze.Views.Common;
 using Ticker;
 using TMPro;
 using UnityEngine;
@@ -29,11 +30,12 @@ namespace UI.PanelItems.Setting_Panel_Items
         public void Init(
             IManagersGetter _Managers,
             IUITicker _UITicker,
+            IColorProvider _ColorProvider,
             string _Text,
             Action<string> _Select,
             bool _IsOn)
         {
-            InitCore(_Managers, _UITicker);
+            InitCore(_Managers, _UITicker, _ColorProvider);
             title.text = _Text;
             name = $"{_Text} Setting";
             m_OnSelect = _Select;

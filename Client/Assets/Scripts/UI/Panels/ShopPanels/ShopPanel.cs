@@ -4,6 +4,7 @@ using DI.Extensions;
 using DialogViewers;
 using Entities;
 using GameHelpers;
+using Games.RazorMaze.Views.Common;
 using Ticker;
 using UI.Entities;
 using UI.PanelItems.Shop_Items;
@@ -44,10 +45,11 @@ namespace UI.Panels.ShopPanels
             IUITicker _UITicker,
             IDialogViewer _DialogViewer,
             ICameraProvider _CameraProvider,
+            IColorProvider _ColorProvider,
             IShopMoneyDialogPanel _ShopMoneyPanel,
             IShopHeadsDialogPanel _ShopHeadsPanel,
             IShopTailsDialogPanel _ShopTailsPanel)
-            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider)
+            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider, _ColorProvider)
         {
             ShopMoneyPanel = _ShopMoneyPanel;
             ShopHeadsPanel = _ShopHeadsPanel;
@@ -85,6 +87,7 @@ namespace UI.Panels.ShopPanels
                 item.Init(
                     Managers,
                     Ticker,
+                    ColorProvider,
                     kvp.Value.Item2,
                     args);
             }

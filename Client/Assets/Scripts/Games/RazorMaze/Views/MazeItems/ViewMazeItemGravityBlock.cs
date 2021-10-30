@@ -1,6 +1,7 @@
 ﻿using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Utils;
@@ -30,7 +31,8 @@ namespace Games.RazorMaze.Views.MazeItems
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
-            IManagersGetter _Managers)
+            IManagersGetter _Managers,
+            IColorProvider _ColorProvider)
             : base(
                 _ViewSettings,
                 _Model,
@@ -38,7 +40,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 _ContainersGetter,
                 _GameTicker,
                 _Transitioner,
-                _Managers) { }
+                _Managers,
+                _ColorProvider) { }
         
         #endregion
         
@@ -53,7 +56,8 @@ namespace Games.RazorMaze.Views.MazeItems
             ContainersGetter, 
             GameTicker,
             Transitioner,
-            Managers);
+            Managers,
+            ColorProvider);
         
 
         #endregion
@@ -65,9 +69,9 @@ namespace Games.RazorMaze.Views.MazeItems
             base.InitShape();
             var joint = Object.AddComponentOnNewChild<Disc>("Joint", out _);
             joint.transform.SetLocalPosXY(Vector2.zero);
-            joint.Color = DrawingUtils.ColorLines;
+            joint.Color = ColorProvider.GetColor(ColorIds.MazeItem);
             joint.Radius = ViewSettings.LineWidth * CoordinateConverter.Scale * 2f;
-            joint.SortingOrder = DrawingUtils.GetBlockSortingOrder(Props.Type);
+            joint.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
             m_Joint = joint;
         }
 

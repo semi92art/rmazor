@@ -18,28 +18,29 @@ namespace Games.RazorMaze.Views
     {
         #region inject
         
-        public IContainersGetter ContainersGetter { get; }
-        public IViewUI UI { get; }
-        public IViewLevelStageController LevelStageController { get; }
-        public IViewInputConfigurator InputConfigurator { get; }
-        public IViewCharacter Character { get; }
-        public IViewMazeCommon Common { get; }
-        public IViewMazeBackground Background { get; }
-        public IViewMazeRotation MazeRotation { get; }
-        public IViewMazePathItemsGroup PathItemsGroup { get; }
-        public IViewMazeMovingItemsGroup MovingItemsGroup { get; }
-        public IViewMazeTrapsReactItemsGroup TrapsReactItemsGroup { get; }
-        public IViewMazeTrapsIncItemsGroup TrapsIncItemsGroup { get; }
-        public IViewMazeTurretsGroup TurretsGroup { get; }
-        public IViewMazePortalsGroup PortalsGroup { get; }
+        public IContainersGetter              ContainersGetter      { get; }
+        public IViewUI                        UI                    { get; }
+        public IViewLevelStageController      LevelStageController  { get; }
+        public IViewInputConfigurator         InputConfigurator     { get; }
+        public IViewCharacter                 Character             { get; }
+        public IViewMazeCommon                Common                { get; }
+        public IViewMazeBackground            Background            { get; }
+        public IViewMazeRotation              MazeRotation          { get; }
+        public IViewMazePathItemsGroup        PathItemsGroup        { get; }
+        public IViewMazeMovingItemsGroup      MovingItemsGroup      { get; }
+        public IViewMazeTrapsReactItemsGroup  TrapsReactItemsGroup  { get; }
+        public IViewMazeTrapsIncItemsGroup    TrapsIncItemsGroup    { get; }
+        public IViewMazeTurretsGroup          TurretsGroup          { get; }
+        public IViewMazePortalsGroup          PortalsGroup          { get; }
         public IViewMazeShredingerBlocksGroup ShredingerBlocksGroup { get; }
         public IViewMazeSpringboardItemsGroup SpringboardItemsGroup { get; }
-        public IViewMazeGravityItemsGroup GravityItemsGroup { get; }
+        public IViewMazeGravityItemsGroup     GravityItemsGroup     { get; }
 
-        private IGameTicker GameTicker { get; }
-        private IManagersGetter Managers { get; }
+        private IGameTicker              GameTicker          { get; }
+        private IManagersGetter          Managers            { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IDebugManager DebugManager { get; }
+        private IDebugManager            DebugManager        { get; }
+        private IColorProvider           ColorProvider       { get; }
 
         public ViewGame(
             IContainersGetter _ContainersGetter,
@@ -62,7 +63,8 @@ namespace Games.RazorMaze.Views
             IGameTicker _GameTicker,
             IManagersGetter _Managers, 
             IMazeCoordinateConverter _CoordinateConverter,
-            IDebugManager _DebugManager)
+            IDebugManager _DebugManager,
+            IColorProvider _ColorProvider)
         {
             ContainersGetter = _ContainersGetter;
             UI = _UI;
@@ -84,6 +86,7 @@ namespace Games.RazorMaze.Views
             Managers = _Managers;
             CoordinateConverter = _CoordinateConverter;
             DebugManager = _DebugManager;
+            ColorProvider = _ColorProvider;
             LevelStageController = _LevelStageController;
         }
         
@@ -95,6 +98,7 @@ namespace Games.RazorMaze.Views
         
         public void Init()
         {
+            ColorProvider.Init();
             DebugManager.Init();
             CoordinateConverter.Init(
                 MazeCoordinateConverter.DefaultLeftOffset, 

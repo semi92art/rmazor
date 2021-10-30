@@ -1,6 +1,7 @@
 ﻿using DI.Extensions;
 using DialogViewers;
 using Entities;
+using Games.RazorMaze.Views.Common;
 using Ticker;
 using UI.Entities;
 using UI.PanelItems.Shop_Items;
@@ -40,8 +41,9 @@ namespace UI.Panels.ShopPanels
             IManagersGetter _Managers, 
             IUITicker _Ticker, 
             IDialogViewer _DialogViewer, 
-            ICameraProvider _CameraProvider)
-            : base(_Managers, _Ticker, _DialogViewer, _CameraProvider)
+            ICameraProvider _CameraProvider,
+            IColorProvider _ColorProvider)
+            : base(_Managers, _Ticker, _DialogViewer, _CameraProvider, _ColorProvider)
         { }
         
         #endregion
