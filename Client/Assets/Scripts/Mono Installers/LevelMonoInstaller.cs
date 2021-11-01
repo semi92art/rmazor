@@ -118,8 +118,8 @@ namespace Mono_Installers
             Container.Bind<IShopTailsDialogPanel>()         .To<ShopTailsPanel>()                .AsSingle().When(_ => Release);
             Container.Bind<IWheelOfFortuneDialogPanel>()    .To<WheelOfFortunePanel>()           .AsSingle().When(_ => Release);
             Container.Bind<IWheelOfFortuneRewardPanel>()    .To<WheelOfFortuneRewardPanel>()     .AsSingle().When(_ => Release);
-            Container.Bind<IDialogViewer>()                 .To<FullScreenDialogViewer>()        .AsSingle().When(_ => Release);
-            Container.Bind<INotificationViewer>()           .To<NotificationViewer>()            .AsSingle().When(_ => Release);
+            Container.Bind<IBigDialogViewer>()                 .To<BigDialogViewer>()        .AsSingle().When(_ => Release);
+            Container.Bind<IProposalDialogViewer>()           .To<ProposalDialogViewer>()            .AsSingle().When(_ => Release);
             Container.Bind<ILoadingController>()            .To<LoadingController>()             .AsSingle().When(_ => Release);
             Container.Bind<IDailyBonusDialogPanel>()        .To<DailyBonusPanel>()               .AsSingle().When(_ => Release);
             Container.Bind<ISettingDialogPanel>()           .To<SettingsPanel>()                 .AsSingle().When(_ => Release);

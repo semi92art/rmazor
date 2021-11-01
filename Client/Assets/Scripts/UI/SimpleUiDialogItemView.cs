@@ -20,7 +20,6 @@ namespace UI
         #region nonpublic members
 
         protected IManagersGetter Managers      { get; private set; }
-        private   IColorProvider  ColorProvider { get; set; }
 
         #endregion
 
@@ -28,22 +27,22 @@ namespace UI
 
         public void SetNormal()
         {
-            MakeTransition(ColorProvider.GetColor(ColorIds.UiDialogItemNormal));
+            MakeTransition(m_ColorProvider.GetColor(ColorIds.UiDialogItemNormal));
         }
 
         public void SetPressed()
         {
-            MakeTransition(ColorProvider.GetColor(ColorIds.UiDialogItemPressed));
+            MakeTransition(m_ColorProvider.GetColor(ColorIds.UiDialogItemPressed));
         }
 
         public void SetSelected()
         {
-            MakeTransition(ColorProvider.GetColor(ColorIds.UiDialogItemSelected));
+            MakeTransition(m_ColorProvider.GetColor(ColorIds.UiDialogItemSelected));
         }
 
         public void SetDisabled()
         {
-            MakeTransition(ColorProvider.GetColor(ColorIds.UiDialogItemDisabled));
+            MakeTransition(m_ColorProvider.GetColor(ColorIds.UiDialogItemDisabled));
         }
 
         #endregion
@@ -59,7 +58,7 @@ namespace UI
             InitCore(_UITicker, _ColorProvider);
 
             if (!background.IsNull())
-                background.color = ColorProvider.GetColor(ColorIds.UiDialogItemNormal);
+                background.color = _ColorProvider.GetColor(ColorIds.UiDialogItemNormal);
         }
         
         protected void SoundOnClick()

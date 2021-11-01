@@ -77,21 +77,15 @@ namespace Games.RazorMaze.Views.Common
         
         public event UnityAction Initialized;
 
-        public Color BackgroundColor
+        private Color BackgroundColor
         {
-            get => CameraProvider.MainCamera.backgroundColor;
-            private set
-            {
-                CameraProvider.MainCamera.backgroundColor = value;
-                BackgroundColorChanged?.Invoke(value);
-            }
+            set => CameraProvider.MainCamera.backgroundColor = value;
         }
-
-        public event UnityAction<Color> BackgroundColorChanged;
+        
         
         public void Init()
         {
-            ColorProvider.ColorChanged += ColorProviderOnColorChanged;
+            ColorProvider.ColorChanged += OnColorChanged;
             m_ScreenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
             m_BackItemsColor = ColorProvider.GetColor(ColorIds.BackgroundItems);
             InitSources();
@@ -100,7 +94,7 @@ namespace Games.RazorMaze.Views.Common
             m_Initialized = true;
         }
 
-        private void ColorProviderOnColorChanged(int _ColorId, Color _Color)
+        private void OnColorChanged(int _ColorId, Color _Color)
         {
             if (_ColorId == ColorIds.BackgroundItems)
             {
@@ -274,6 +268,8 @@ namespace Games.RazorMaze.Views.Common
 
         private IEnumerator LoadLevelCoroutine(int _Level)
         {
+            BackgroundColor = ColorProvider.GetColor(ColorIds.Background);
+            yield break;
             const float duration = 2f;
             int colorIdx = (_Level / RazorMazeUtils.LevelsInGroup) % 10;
             float hStart = MathUtils.ClampInverse(

@@ -81,13 +81,13 @@ public class ModelLevelStaging : IModelLevelStaging, IInit, IUpdateTick
     
     #region api
 
-    public float LevelTime { get; private set; }
-    public int DiesCount { get; private set; }
-    public ELevelStage LevelStage { get; private set; } = ELevelStage.Unloaded;
-    public ELevelStage PrevLevelStage { get; private set; } = ELevelStage.Unloaded;
-    public ELevelStage PrevPrevLevelStage { get; private set; } = ELevelStage.Unloaded;
+    public float                   LevelTime          { get; private set; }
+    public int                     DiesCount          { get; private set; }
+    public ELevelStage             LevelStage         { get; private set; } = ELevelStage.Unloaded;
+    public ELevelStage             PrevLevelStage     { get; private set; } = ELevelStage.Unloaded;
+    public ELevelStage             PrevPrevLevelStage { get; private set; } = ELevelStage.Unloaded;
     public event LevelStageHandler LevelStageChanged;
-    public event UnityAction Initialized;
+    public event UnityAction       Initialized;
     
     public void Init()
     {
@@ -163,7 +163,10 @@ public class ModelLevelStaging : IModelLevelStaging, IInit, IUpdateTick
             DiesCount = 0;
         LevelStage = _Stage;
         LevelStageChanged?.Invoke(new LevelStageArgs(
-            Data.LevelIndex, LevelStage, PrevLevelStage, PrevPrevLevelStage));
+            Data.LevelIndex,
+            LevelStage,
+            PrevLevelStage,
+            PrevPrevLevelStage));
     }
     
     #endregion

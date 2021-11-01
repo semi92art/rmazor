@@ -42,7 +42,7 @@ namespace UI.Panels.ShopPanels
         protected ShopPanelBase(
             IManagersGetter _Managers,
             IUITicker _Ticker, 
-            IDialogViewer _DialogViewer, 
+            IBigDialogViewer _DialogViewer, 
             ICameraProvider _CameraProvider,
             IColorProvider _ColorProvider) 
             : base(_Managers, _Ticker, _DialogViewer, _CameraProvider, _ColorProvider)
@@ -116,7 +116,7 @@ namespace UI.Panels.ShopPanels
                     }),
                 PrefabSetName, "money_panel");
             m_MoneyText = obj.GetCompItem<TextMeshProUGUI>("money");
-            var moneyEntity = Managers.ScoreManager.GetScore(DataFieldIds.FirstCurrency);
+            var moneyEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money);
             Coroutines.Run(Coroutines.WaitWhile(
                 () => !moneyEntity.Loaded,
                 () => m_MoneyText.text = moneyEntity.GetFirstScore().ToString()));

@@ -94,7 +94,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region api
         
-        public override object[] Shapes => new object[]
+        public override Component[] Shapes => new Component[]
         {
             m_Body,
             m_BulletHolderBorder,
@@ -169,13 +169,14 @@ namespace Games.RazorMaze.Views.MazeItems
             var body = Object.gameObject.AddComponentOnNewChild<Disc>("Turret", out _);
             body.Type = DiscType.Arc;
             body.ArcEndCaps = ArcEndCap.Round;
-            body.Color = ColorProvider.GetColor(ColorIds.MazeItem);
+            body.Color = ColorProvider.GetColor(ColorIds.Main);
+            body.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
             var bhb = Object.gameObject.AddComponentOnNewChild<Disc>("Border", out _);
             bhb.Dashed = true;
             bhb.DashType = DashType.Rounded;
             bhb.Color = ColorProvider.GetColor(ColorIds.MazeItem);
             bhb.Type = DiscType.Ring;
-            bhb.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type) + 2;
+            bhb.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type) + 1;
             bhb.DashSize = 2f;
             var bulletParent = ContainersGetter.GetContainer(ContainerNames.MazeItems);
             var bulletGo = PrefabUtilsEx.InitPrefab(
@@ -186,12 +187,14 @@ namespace Games.RazorMaze.Views.MazeItems
             
             m_BulletFakeContainer = bulletFakeGo.transform;
             m_BulletFakeRenderer = bulletFakeGo.GetCompItem<SpriteRenderer>("bullet");
+            m_BulletFakeRenderer.color = ColorProvider.GetColor(ColorIds.MazeItem);
             
             m_BulletTr = bulletGo.transform;
             m_BulletFakeTr = bulletFakeGo.transform;
             
             m_Bullet = bulletGo.GetContentItem("bullet").transform;
             m_BulletRenderer = m_Bullet.GetComponent<SpriteRenderer>();
+            m_BulletRenderer.color = ColorProvider.GetColor(ColorIds.MazeItem);
 
             var bmGo = PrefabUtilsEx.InitPrefab(
                 bulletParent, "views", "turret_bullet_mask");
@@ -220,6 +223,20 @@ namespace Games.RazorMaze.Views.MazeItems
             m_BulletMask2.transform.localScale = maskScale;
             m_BulletHolderBorder.Radius = scale * BulletContainerRadius * 0.9f;
             m_BulletHolderBorder.Thickness = ViewSettings.LineWidth * scale * 0.5f;
+        }
+
+        protected override void OnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId == ColorIds.MazeItem)
+            {
+                m_BulletHolderBorder.Color = _Color;
+                m_BulletRenderer.color = _Color;
+                m_BulletFakeRenderer.color = _Color;
+            }
+            else if (_ColorId == ColorIds.Main)
+            {
+                m_Body.Color = _Color;
+            }
         }
 
         private IEnumerator HandleTurretPreShootCoroutine()
@@ -338,7 +355,10 @@ namespace Games.RazorMaze.Views.MazeItems
             yield return Coroutines.DoWhile(
                 () =>
                 {
-                    if (point == Model.Character.Position && Model.LevelStaging.LevelStage != ELevelStage.Finished)
+                    if (point == Model.Character.Position
+                        && Model.Character.Alive
+                        && !Model.PathItemsProceeder.AllPathsProceeded
+                        && Model.LevelStaging.LevelStage != ELevelStage.Finished)
                     {
                         Model.LevelStaging.KillCharacter();
                         return false;
@@ -417,13 +437,14 @@ namespace Games.RazorMaze.Views.MazeItems
             base.OnAppearFinish(_Appear);
         }
 
-        protected override Dictionary<object[], Func<Color>> GetAppearSets(bool _Appear)
+        protected override Dictionary<Component[], Func<Color>> GetAppearSets(bool _Appear)
         {
-            var bulletRenderers = new object[] {m_BulletRenderer, m_BulletFakeRenderer};
+            var bulletRenderers = new Component[] {m_BulletRenderer, m_BulletFakeRenderer};
             var bulletRenderersCol = _Appear ? ColorProvider.GetColor(ColorIds.MazeItem) : m_BulletFakeRenderer.color;
-            return new Dictionary<object[], Func<Color>>
+            return new Dictionary<Component[], Func<Color>>
             {
-                {new object[] {m_BulletHolderBorder, m_Body}, () => ColorProvider.GetColor(ColorIds.MazeItem)},
+                {new Component[] {m_BulletHolderBorder}, () => ColorProvider.GetColor(ColorIds.MazeItem)},
+                {new Component[] {m_Body}, () => ColorProvider.GetColor(ColorIds.Main)},
                 {bulletRenderers, () => bulletRenderersCol}
             };
         }

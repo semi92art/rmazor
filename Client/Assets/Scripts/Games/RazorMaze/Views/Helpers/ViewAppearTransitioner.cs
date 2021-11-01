@@ -27,7 +27,7 @@ namespace Games.RazorMaze.Views.Helpers
     {
         void DoAppearTransition(
             bool _Appear,
-            Dictionary<object[], Func<Color>> _Sets,
+            Dictionary<Component[], Func<Color>> _Sets,
             V2Int? _ItemPosition = null,
             UnityAction _OnFinish = null,
             EAppearTransitionType _Type = EAppearTransitionType.Circled);
@@ -37,9 +37,9 @@ namespace Games.RazorMaze.Views.Helpers
     {
         #region inject
         
-        private IModelGame Model { get; }
+        private IModelGame               Model               { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
-        public IGameTicker GameTicker { get; }
+        private IGameTicker              GameTicker          { get; }
 
         public ViewAppearTransitioner(
             IModelGame _Model, 
@@ -57,7 +57,7 @@ namespace Games.RazorMaze.Views.Helpers
         
         public void DoAppearTransition(
             bool _Appear,
-            Dictionary<object[], Func<Color>> _Sets,
+            Dictionary<Component[], Func<Color>> _Sets,
             V2Int? _ItemPosition = null,
             UnityAction _OnFinish = null,
             EAppearTransitionType _Type = EAppearTransitionType.Circled)
@@ -67,31 +67,24 @@ namespace Games.RazorMaze.Views.Helpers
             
             foreach (var set in _Sets)
             {
-                Func<Color> toAlpha0 = () => set.Value().SetA(0f); 
-                
-                var startCol = _Appear ? toAlpha0 : set.Value;
-                var endCol = !_Appear ? toAlpha0 : set.Value;
+                Color ToAlpha0() => set.Value().SetA(0f);
+
+                var startCol = _Appear ? ToAlpha0 : set.Value;
+                var endCol = !_Appear ? ToAlpha0 : set.Value;
                 var shapes = set.Key.Where(_Shape => _Shape != null).ToList();
                 
                 foreach (var shape in shapes)
                 {
-                    if (shape is ShapeRenderer shapeRenderer)
-                        shapeRenderer.Color = startCol();
-                    else if (shape is SpriteRenderer spriteRenderer)
-                        spriteRenderer.color = startCol();
-                    else if (shape is TextMeshPro textMeshPro)
-                        textMeshPro.color = startCol();
+                    if (shape is ShapeRenderer shapeRenderer)        shapeRenderer.Color  = startCol();
+                    else if (shape is SpriteRenderer spriteRenderer) spriteRenderer.color = startCol();
+                    else if (shape is TextMeshPro textMeshPro)       textMeshPro.color    = startCol();
                 }
                 
                 if (_Appear)
                     foreach (var shape in shapes)
                     {
-                        if (shape is ShapeRenderer shapeRenderer)
-                            shapeRenderer.enabled = true;
-                        else if (shape is SpriteRenderer spriteRenderer)
-                            spriteRenderer.enabled = true;
-                        else if (shape is TextMeshPro textMeshPro)
-                            textMeshPro.enabled = true;
+                        if (shape is Behaviour beh) beh.enabled = true;
+                        else if (shape is Renderer rend) rend.enabled = true;
                     }
 
                 Coroutines.Run(Coroutines.Delay(() =>
@@ -105,12 +98,9 @@ namespace Games.RazorMaze.Views.Helpers
                                 var col = Color.Lerp(startCol(), endCol(), _Progress);
                                 foreach (var shape in shapes)
                                 {
-                                    if (shape is ShapeRenderer shapeRenderer)
-                                        shapeRenderer.Color = col;
-                                    else if (shape is SpriteRenderer spriteRenderer)
-                                        spriteRenderer.color = col;
-                                    else if (shape is TextMeshPro textMeshPro)
-                                        textMeshPro.color = col;
+                                    if (shape is ShapeRenderer shapeRenderer)        shapeRenderer.Color  = col;
+                                    else if (shape is SpriteRenderer spriteRenderer) spriteRenderer.color = col;
+                                    else if (shape is TextMeshPro textMeshPro)       textMeshPro.color    = col;
                                 }
                             },
                             GameTicker,
@@ -129,12 +119,8 @@ namespace Games.RazorMaze.Views.Helpers
                                 if (!_Appear)
                                     foreach (var shape in shapes)
                                     {
-                                        if (shape is ShapeRenderer shapeRenderer)
-                                            shapeRenderer.enabled = false;
-                                        else if (shape is SpriteRenderer spriteRenderer)
-                                            spriteRenderer.enabled = false;
-                                        else if (shape is TextMeshPro textMeshPro)
-                                            textMeshPro.enabled = false;
+                                        if (shape is Behaviour beh)      beh.enabled  = false;
+                                        else if (shape is Renderer rend) rend.enabled = false;
                                     }
                                 _OnFinish?.Invoke();
                             }));

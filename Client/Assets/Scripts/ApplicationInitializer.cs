@@ -1,5 +1,6 @@
 ﻿using Constants;
 using DI.Extensions;
+using GameHelpers;
 using Managers;
 using Network;
 using Ticker;
@@ -44,8 +45,8 @@ public class ApplicationInitializer : MonoBehaviour
     private void Start()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
+        DataFieldsMigrator.InitDefaultDataFieldValues();
         InitGameManagers();
-        
         GameTicker.ClearRegisteredObjects();
         SceneManager.LoadScene(SceneNames.Main);
     }

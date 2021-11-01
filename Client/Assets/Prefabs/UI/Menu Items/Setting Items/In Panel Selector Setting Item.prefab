@@ -170,6 +170,7 @@ GameObject:
   - component: {fileID: 6717575555309920491}
   - component: {fileID: 7908894390656080150}
   - component: {fileID: 6337472127812384470}
+  - component: {fileID: 8620128342184755791}
   m_Layer: 0
   m_Name: Button
   m_TagString: Untagged
@@ -297,6 +298,21 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &8620128342184755791
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 120316823554380704}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e37f272a56c749c5b89c375dd8827479, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  background: {fileID: 7784179980691445468}
+  border: {fileID: 0}
+  texts: []
 --- !u!1 &5339000367243722824
 GameObject:
   m_ObjectHideFlags: 0
@@ -608,6 +624,7 @@ MonoBehaviour:
   title: {fileID: 4995945050869460951}
   button: {fileID: 7908894390656080150}
   setting: {fileID: 60203498577472808}
+  buttonView: {fileID: 8620128342184755791}
 --- !u!1 &9171965657098356210
 GameObject:
   m_ObjectHideFlags: 0

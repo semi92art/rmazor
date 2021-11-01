@@ -99,11 +99,17 @@ namespace GameHelpers
 
         private List<GameDataField> GetCachedFields()
         {
-            return FieldIds
+            var fields = FieldIds
                 .Select(_FieldId =>
                     SaveUtils.GetValue<GameDataField>(
                         SaveKey.GameDataFieldValue(AccountId, m_GameId, _FieldId)))
                 .ToList();
+            foreach (var field in fields)
+            {
+                field.AccountId = AccountId;
+                field.GameId = m_GameId;
+            }
+            return fields;
         }
 
         private List<GameDataField> GetFromDtos(IEnumerable<GameFieldDto> _Dtos)

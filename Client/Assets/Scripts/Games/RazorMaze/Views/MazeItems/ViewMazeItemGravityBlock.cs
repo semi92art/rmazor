@@ -47,7 +47,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region api
         
-        public override object[] Shapes => new object[] {m_Shape, m_Joint};
+        public override Component[] Shapes => new Component[] {m_Shape, m_Joint};
         
         public override object Clone() => new ViewMazeItemGravityBlock(
             ViewSettings,
@@ -69,7 +69,7 @@ namespace Games.RazorMaze.Views.MazeItems
             base.InitShape();
             var joint = Object.AddComponentOnNewChild<Disc>("Joint", out _);
             joint.transform.SetLocalPosXY(Vector2.zero);
-            joint.Color = ColorProvider.GetColor(ColorIds.MazeItem);
+            joint.Color = ColorProvider.GetColor(ColorIds.Main);
             joint.Radius = ViewSettings.LineWidth * CoordinateConverter.Scale * 2f;
             joint.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
             m_Joint = joint;
@@ -84,6 +84,13 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override void InitWallBlockMovingPaths()
         {
             InitWallBlockMovingPathsCore();
+        }
+
+        protected override void OnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId == ColorIds.Main)
+                m_Joint.Color = _Color;
+            base.OnColorChanged(_ColorId, _Color);
         }
 
         #endregion

@@ -43,7 +43,7 @@ namespace UI.Panels.ShopPanels
         public ShopPanel(
             IManagersGetter _Managers,
             IUITicker _UITicker,
-            IDialogViewer _DialogViewer,
+            IBigDialogViewer _DialogViewer,
             ICameraProvider _CameraProvider,
             IColorProvider _ColorProvider,
             IShopMoneyDialogPanel _ShopMoneyPanel,

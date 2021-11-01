@@ -33,16 +33,15 @@ namespace Games.RazorMaze.Views.Characters
         
         #region api
         
-        public EAppearingState AppearingState { get; protected set; }
-        public virtual bool Activated { get; set; }
-        public abstract void OnRotationAfterFinished(MazeRotationEventArgs _Args);
-        public abstract void OnAllPathProceed(V2Int _LastPath);
-        public abstract void OnCharacterMoveStarted(CharacterMovingEventArgs _Args);
-        public abstract void OnCharacterMoveContinued(CharacterMovingEventArgs _Args);
-        public abstract void OnCharacterMoveFinished(CharacterMovingEventArgs _Args);
-        public abstract void OnLevelStageChanged(LevelStageArgs _Args);
-        public abstract void OnBackgroundColorChanged(Color _Color);
-        public abstract void Appear(bool _Appear);
+        public          EAppearingState AppearingState { get; protected set; }
+        public virtual  bool            Activated      { get; set; }
+        public abstract void            OnRotationAfterFinished(MazeRotationEventArgs     _Args);
+        public abstract void            OnAllPathProceed(V2Int                            _LastPath);
+        public abstract void            OnCharacterMoveStarted(CharacterMovingEventArgs   _Args);
+        public abstract void            OnCharacterMoveContinued(CharacterMovingEventArgs _Args);
+        public abstract void            OnCharacterMoveFinished(CharacterMovingEventArgs  _Args);
+        public abstract void            OnLevelStageChanged(LevelStageArgs                _Args);
+        public abstract void            Appear(bool                                       _Appear);
 
         #endregion
         

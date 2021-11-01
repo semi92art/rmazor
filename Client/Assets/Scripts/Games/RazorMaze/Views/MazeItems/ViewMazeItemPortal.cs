@@ -8,7 +8,6 @@ using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
-using Games.RazorMaze.Views.Utils;
 using Shapes;
 using SpawnPools;
 using Ticker;
@@ -86,7 +85,7 @@ namespace Games.RazorMaze.Views.MazeItems
             Managers,
             ColorProvider);
         
-        public override object[] Shapes => new object[] {m_Center}.Concat(m_Orbits).ToArray();
+        public override Component[] Shapes => new Component[] {m_Center}.Concat(m_Orbits).ToArray();
 
         public override bool ActivatedInSpawnPool
         {
@@ -142,7 +141,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             var center = Object.AddComponentOnNewChild<Disc>("Portal Item", out _);
             center.Type = DiscType.Disc;
-            center.Color = ColorProvider.GetColor(ColorIds.MazeItem);
+            center.Color = ColorProvider.GetColor(ColorIds.Main);
             m_Center = center;
 
             var scale = CoordinateConverter.Scale;
@@ -151,7 +150,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 var orbit = Object.AddComponentOnNewChild<Disc>($"Orbit {i + 1}", out _, Vector2.zero);
                 orbit.Thickness = ViewSettings.LineWidth * scale * 0.5f;
                 orbit.Type = DiscType.Arc;
-                orbit.Color = ColorProvider.GetColor(ColorIds.MazeItem);
+                orbit.Color = ColorProvider.GetColor(ColorIds.Main);
                 m_Orbits.Add(orbit);
             }
 
@@ -201,14 +200,26 @@ namespace Games.RazorMaze.Views.MazeItems
             Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             m_Center.Radius = CoordinateConverter.Scale * 0.2f;
         }
-        
+
+        protected override void OnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId == ColorIds.Main)
+            {
+                m_Center.Color = _Color;
+                foreach (var item in m_Orbits)
+                    item.Color = _Color;
+                foreach (var item in m_GravityItems)
+                    item.Color = new Color(_Color.r, _Color.g, _Color.b, item.Color.a);
+            }
+        }
+
         private void InitGravitySpawnPool()
         {
             for (int i = 0; i < GravityItemsCount; i++)
             {
                 var gItem = Object.AddComponentOnNewChild<Disc>("Gravity Item", out _, Vector2.zero);
                 gItem.Radius = 0.025f * CoordinateConverter.Scale;
-                gItem.Color = ColorProvider.GetColor(ColorIds.MazeItem);
+                gItem.Color = ColorProvider.GetColor(ColorIds.Main);
                 gItem.Type = DiscType.Disc;
                 m_GravityItems.Add(gItem);
                 m_GravityItems.Deactivate(gItem);
@@ -249,12 +260,12 @@ namespace Games.RazorMaze.Views.MazeItems
             m_GravitySpawnTimer = 0f;
         }
 
-        protected override Dictionary<object[], Func<Color>> GetAppearSets(bool _Appear)
+        protected override Dictionary<Component[], Func<Color>> GetAppearSets(bool _Appear)
         {
-            return new Dictionary<object[], Func<Color>>
+            return new Dictionary<Component[], Func<Color>>
             {
                 {new[] {m_Center}, () => ColorProvider.GetColor(ColorIds.MazeItem)},
-                {m_Orbits.Cast<object>().ToArray(), () => ColorProvider.GetColor(ColorIds.MazeItem)}
+                {m_Orbits.Cast<Component>().ToArray(), () => ColorProvider.GetColor(ColorIds.MazeItem)}
             };
         }
 

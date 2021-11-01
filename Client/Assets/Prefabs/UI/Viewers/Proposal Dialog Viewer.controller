@@ -38,13 +38,13 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: -3054328370574322585}
-    m_Position: {x: 250, y: -10, z: 0}
+    m_Position: {x: 240, y: -150, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -5284890570769038403}
-    m_Position: {x: 250, y: -80, z: 0}
+    m_Position: {x: 240, y: 120, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -9158971397831750240}
-    m_Position: {x: 250, y: 60, z: 0}
+    m_Position: {x: 240, y: -60, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions:
   - {fileID: 8054553786683059074}
@@ -52,9 +52,9 @@ AnimatorStateMachine:
   m_EntryTransitions: []
   m_StateMachineTransitions: {}
   m_StateMachineBehaviours: []
-  m_AnyStatePosition: {x: 60, y: 0, z: 0}
-  m_EntryPosition: {x: 490, y: 0, z: 0}
-  m_ExitPosition: {x: 800, y: 120, z: 0}
+  m_AnyStatePosition: {x: 260, y: 40, z: 0}
+  m_EntryPosition: {x: 260, y: -220, z: 0}
+  m_ExitPosition: {x: 280, y: -270, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
   m_DefaultState: {fileID: -3054328370574322585}
 --- !u!1102 &-5284890570769038403
@@ -115,7 +115,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Main Menu Notification Viewer
+  m_Name: Proposal Dialog Viewer
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: anim
@@ -123,13 +123,13 @@ AnimatorController:
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: stop
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer

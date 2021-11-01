@@ -74,8 +74,8 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region api
         
-        public override object[] Shapes =>
-            new object[] {m_ClosedBlock}
+        public override Component[] Shapes =>
+            new Component[] {m_ClosedBlock}
                 .Concat(m_OpenedLines)
                 .Concat(m_OpenedCorners)
                 .ToArray();
@@ -161,7 +161,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             var closedBlock = Object.AddComponentOnNewChild<Rectangle>("Shredinger Block", out _);
             closedBlock.Type = Rectangle.RectangleType.RoundedBorder;
-            closedBlock.Color = ColorProvider.GetColor(ColorIds.MazeItem);
+            closedBlock.Color = ColorProvider.GetColor(ColorIds.Main);
             closedBlock.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
             m_ClosedBlock = closedBlock;
             
@@ -192,7 +192,7 @@ namespace Games.RazorMaze.Views.MazeItems
             {
                 line.Dashed = true;
                 line.DashType = DashType.Rounded;
-                line.Color = ColorProvider.GetColor(ColorIds.MazeItem);
+                line.Color = ColorProvider.GetColor(ColorIds.Main);
                 line.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
             }
 
@@ -225,7 +225,7 @@ namespace Games.RazorMaze.Views.MazeItems
             foreach (var corner in m_OpenedCorners)
             {
                 corner.Type = DiscType.Arc;
-                corner.Color = ColorProvider.GetColor(ColorIds.MazeItem);
+                corner.Color = ColorProvider.GetColor(ColorIds.Main);
                 corner.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
             }
         }
@@ -244,6 +244,18 @@ namespace Games.RazorMaze.Views.MazeItems
             foreach (var line in m_OpenedLines)
             {
                 line.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
+            }
+        }
+
+        protected override void OnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId == ColorIds.Main)
+            {
+                m_ClosedBlock.Color = _Color;
+                foreach (var item in m_OpenedCorners)
+                    item.Color = _Color;
+                foreach (var item in m_OpenedLines)
+                    item.Color = _Color;
             }
         }
 
@@ -335,12 +347,12 @@ namespace Games.RazorMaze.Views.MazeItems
             // }
         }
 
-        protected override Dictionary<object[], Func<Color>> GetAppearSets(bool _Appear)
+        protected override Dictionary<Component[], Func<Color>> GetAppearSets(bool _Appear)
         {
             var shapes = !_Appear && BlockClosed ?
-                new object[] {m_ClosedBlock} :
-                m_OpenedLines.Cast<object>().Concat(m_OpenedCorners).ToArray();
-            return new Dictionary<object[], Func<Color>>
+                new Component[] {m_ClosedBlock} :
+                m_OpenedLines.Cast<Component>().Concat(m_OpenedCorners).ToArray();
+            return new Dictionary<Component[], Func<Color>>
             {
                 {shapes, () => ColorProvider.GetColor(ColorIds.MazeItem)}
             };

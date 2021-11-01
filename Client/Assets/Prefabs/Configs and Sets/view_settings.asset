@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: view_settings
   m_EditorClassIdentifier: 
   lineWidth: 7
+  cornerWidth: 15
   cornerRadius: 30
   movingTrapRotationSpeed: 800
   shredingerLineOffsetSpeed: 200
@@ -23,3 +24,4 @@ MonoBehaviour:
   mazeRotationSpeed: 5
   finishTimeExcellent: 3
   finishTimeGood: 5
+  proposalDialogAnimSpeed: 2

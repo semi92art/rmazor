@@ -40,18 +40,18 @@ namespace Games.RazorMaze.Views.Characters
         #region nonpublic members
 
         private static int AnimKeyStartJumping => AnimKeys.Anim3;
-        private static int AnimKeyStartMove => AnimKeys.Anim;
-        private static int AnimKeyBump => AnimKeys.Anim2;
+        private static int AnimKeyStartMove    => AnimKeys.Anim;
+        private static int AnimKeyBump         => AnimKeys.Anim2;
         
-        private GameObject m_Head;
-        private Animator m_Animator;
+        private GameObject         m_Head;
+        private Animator           m_Animator;
         private EMazeMoveDirection m_PrevVertDir = EMazeMoveDirection.Up;
-        private EMazeMoveDirection m_PrevHorDir = EMazeMoveDirection.Right;
-        private bool m_Activated;
-        private bool m_Initialized;
-        private Color m_BackColor;
-        private bool m_NeedToInvokeOnReadyToContinue;
-        private MazeOrientation m_OrientationCache = MazeOrientation.North;
+        private EMazeMoveDirection m_PrevHorDir  = EMazeMoveDirection.Right;
+        private bool               m_Activated;
+        private bool               m_Initialized;
+        private bool               m_NeedToInvokeOnReadyToContinue;
+        private MazeOrientation    m_OrientationCache = MazeOrientation.North;
+        private bool               m_ShowCharacterHeadAndTail;
 
         #endregion
         
@@ -108,6 +108,7 @@ namespace Games.RazorMaze.Views.Characters
                 {
                     if (!m_Initialized)
                     {
+                        ColorProvider.ColorChanged += OnColorChanged;
                         MazeShaker.Init();
                         InitPrefab();
                         m_Initialized = true;
@@ -122,6 +123,14 @@ namespace Games.RazorMaze.Views.Characters
                 if (value)
                     m_Animator.SetTrigger(AnimKeyStartJumping);
             }
+        }
+
+        private void OnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId == ColorIds.Character)
+                m_HeadShape.Color = _Color;
+            else if (_ColorId == ColorIds.Background)
+                m_Eye1Shape.Color = m_Eye2Shape.Color = _Color;
         }
 
         public override void OnRotationAfterFinished(MazeRotationEventArgs _Args)
@@ -150,6 +159,8 @@ namespace Games.RazorMaze.Views.Characters
 
         public override void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
+            if (!m_ShowCharacterHeadAndTail)
+                return;
             var prevPos = CoordinateConverter.ToLocalCharacterPosition(_Args.From);
             var nextPos = CoordinateConverter.ToLocalCharacterPosition(_Args.To);
             var pos = Vector2.Lerp(prevPos, nextPos, _Args.Progress);
@@ -160,7 +171,8 @@ namespace Games.RazorMaze.Views.Characters
         public override void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
         {
             m_Animator.SetTrigger(AnimKeyBump);
-            Tail.HideTail(_Args);
+            if (m_ShowCharacterHeadAndTail)
+                Tail.HideTail(_Args);
             Coroutines.Run(MazeShaker.HitMazeCoroutine(_Args));
             Managers.Notify(_SM => _SM.PlayClip(SoundClipNameCharacterMoveEnd));
             Effector.OnCharacterMoveFinished(_Args);
@@ -168,6 +180,7 @@ namespace Games.RazorMaze.Views.Characters
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
+            m_ShowCharacterHeadAndTail = _Args.Stage == ELevelStage.StartedOrContinued;
             if (m_Animator.IsNotNull())
                 m_Animator.speed = _Args.Stage == ELevelStage.Paused ? 0f : 1f;
             switch (_Args.Stage)
@@ -193,12 +206,6 @@ namespace Games.RazorMaze.Views.Characters
             Effector.OnLevelStageChanged(_Args);
         }
 
-        public override void OnBackgroundColorChanged(Color _Color)
-        {
-            m_BackColor = _Color;
-            m_Eye1Shape.Color = m_Eye2Shape.Color = _Color;
-        }
-        
         public override void Appear(bool _Appear)
         {
             Tail.HideTail();
@@ -207,10 +214,10 @@ namespace Games.RazorMaze.Views.Characters
                 m_Animator.SetTrigger(AnimKeyStartJumping);
             Transitioner.DoAppearTransition(
                 _Appear,
-                new Dictionary<object[], Func<Color>>
+                new Dictionary<Component[], Func<Color>>
                 {
-                    {new object[] {m_HeadShape}, () => ColorProvider.GetColor(ColorIds.Character)},
-                    {new object[] {m_Eye1Shape, m_Eye2Shape}, () => m_BackColor}
+                    {new Component[] {m_HeadShape}, () => ColorProvider.GetColor(ColorIds.Character)},
+                    {new Component[] {m_Eye1Shape, m_Eye2Shape}, () => ColorProvider.GetColor(ColorIds.Background)}
                 },
                 Model.Character.Position,
                 () => AppearingState = _Appear ?
@@ -232,6 +239,7 @@ namespace Games.RazorMaze.Views.Characters
             m_Eye1Shape = prefab.GetCompItem<Rectangle>("eye_1");
             m_Eye2Shape = prefab.GetCompItem<Rectangle>("eye_2");
             m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = false;
+            m_HeadShape.Color = ColorProvider.GetColor(ColorIds.Character);
             m_HeadShape.SortingOrder = SortingOrders.Character;
             m_Eye1Shape.SortingOrder = SortingOrders.Character + 1;
             m_Eye2Shape.SortingOrder = SortingOrders.Character + 1;

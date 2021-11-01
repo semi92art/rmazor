@@ -58,31 +58,6 @@ namespace Managers
 #endif
         }
 
-        // public ScoresEntity GetScores(bool _ForcedFromServer = false)
-        // {
-        //     var result = new ScoresEntity();
-        //     result.Loaded = true;
-        //     return result;
-        // }
-
-        // public void SetScore(ScoreType _ScoreType, int _Value)
-        // {
-        //     var gff = new GameDataFieldFilter(GameClientUtils.AccountId,
-        //         GameClientUtils.GameId,
-        //         DataFieldIds.MainScore);
-        //     gff.Filter(_Fields =>
-        //     {
-        //         if (_ScoreType == ScoreType.Coins)
-        //         {
-        //             _Fields.First(_F =>
-        //                     _F.FieldId == DataFieldIds.MainScore)
-        //                 .SetValue(_Value).Save();
-        //         }
-        //
-        //         OnScoresChanged?.Invoke(new ScoresEventArgs(GetScores()));
-        //     });
-        // }
-
         public void ShowLeaderboard()
         {
 #if UNITY_EDITOR

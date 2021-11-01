@@ -57,3 +57,6 @@ tails = Хвосты
 backgrounds = Фон
 no_ads = Отключить обязательную рекламу
 restore_purchases = Отменить покупки
+you_have = У вас есть
+continue = Продолжить
+not_enough_money = Недостаточно денег

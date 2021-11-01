@@ -18,13 +18,13 @@ using Utils;
 
 namespace DialogViewers
 {
-    public interface IDialogViewer : IDialogViewerBase
+    public interface IBigDialogViewer : IDialogViewerBase
     {
         void Show(IDialogPanel _ItemTo, bool _HidePrevious = true);
         void CloseAll();
     }
     
-    public class FullScreenDialogViewer : IDialogViewer, IAction, IUpdateTick
+    public class BigDialogViewer : IBigDialogViewer, IAction, IUpdateTick
     {
         #region types
         
@@ -73,7 +73,7 @@ namespace DialogViewers
         private IViewInputConfigurator InputConfigurator { get; }
         private IColorProvider         ColorProvider     { get; }
 
-        public FullScreenDialogViewer(
+        public BigDialogViewer(
             IManagersGetter _Managers,
             IUITicker _Ticker,
             IViewInputConfigurator _InputConfigurator,
@@ -146,7 +146,7 @@ namespace DialogViewers
         
         public virtual void UpdateTick()
         {
-            if (!NotificationViewer.IsShowing && Input.GetKeyDown(KeyCode.Escape))
+            if (!ProposalDialogViewer.IsShowing && Input.GetKeyDown(KeyCode.Escape))
                 CloseAll();
         }
         

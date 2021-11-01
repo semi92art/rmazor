@@ -20,8 +20,7 @@ namespace Games.RazorMaze.Views.MazeItems
     public class ViewMazeItemGravityTrap : 
         ViewMazeItemMovingBase, 
         IViewMazeItemGravityTrap,
-        IUpdateTick,
-        IOnBackgroundColorChanged
+        IUpdateTick
     {
         #region constants
 
@@ -38,7 +37,6 @@ namespace Games.RazorMaze.Views.MazeItems
         private Vector3 m_Angles;
         private Vector2 m_Position;
         private Transform m_MaceTr;
-        private Color m_BackColor;
 
         #endregion
         
@@ -82,7 +80,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region apico
         
-        public override object[] Shapes => new object[] {m_OuterDisc}.Concat(m_Cones).ToArray();
+        public override Component[] Shapes => new Component[] {m_OuterDisc}.Concat(m_Cones).ToArray();
         
         public override object Clone() => new ViewMazeItemGravityTrap(
             ViewSettings,
@@ -157,12 +155,6 @@ namespace Games.RazorMaze.Views.MazeItems
             if (MazeShaker.ShakeMaze)
                 MazeShaker.ShakeMaze = false;
         }
-        
-        public void OnBackgroundColorChanged(Color _Color)
-        {
-            m_BackColor = _Color;
-            m_InnerDisc.Color = _Color;
-        }
 
         #endregion
         
@@ -227,6 +219,8 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             if (!Model.Character.Alive)
                 return;
+            if (Model.PathItemsProceeder.AllPathsProceeded)
+                return;
             if (Model.LevelStaging.LevelStage == ELevelStage.Finished)
                 return;
             var ch = Model.Character;
@@ -250,6 +244,18 @@ namespace Games.RazorMaze.Views.MazeItems
             if (!_Appear)
                 m_InnerDisc.enabled = false;
             base.OnAppearFinish(_Appear);
+        }
+
+        protected override void OnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId == ColorIds.MazeItem)
+            {
+                m_OuterDisc.Color = _Color;
+                foreach (var cone in m_Cones)
+                    cone.Color = _Color;
+            }
+            else if (_ColorId == ColorIds.Background)
+                m_InnerDisc.Color = _Color;
         }
 
         #endregion

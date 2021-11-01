@@ -31,28 +31,29 @@ namespace Games.RazorMaze.Views.UI
     {
         #region nonpublic members
 
-        private static int AnimKeyCheckMarkPass => AnimKeys.Anim;
-        private static int AnimKeyChekMarkSet => AnimKeys.Anim2;
-        private static int AnimKeyCheckMarkIdle => AnimKeys.Stop;
-        private static int AnimKeyCongratsAnim => AnimKeys.Anim;
-        private static int AnimKeyCongratsIdle => AnimKeys.Stop;
-        private static int AnimKeyStartLogoAppear => AnimKeys.Anim;
+        private static int AnimKeyCheckMarkPass      => AnimKeys.Anim;
+        private static int AnimKeyChekMarkSet        => AnimKeys.Anim2;
+        private static int AnimKeyCheckMarkIdle      => AnimKeys.Stop;
+        private static int AnimKeyCongratsAnim       => AnimKeys.Anim;
+        private static int AnimKeyCongratsIdle       => AnimKeys.Stop;
+        private static int AnimKeyStartLogoAppear    => AnimKeys.Anim;
         private static int AnimKeyStartLogoDisappear => AnimKeys.Stop;
-        private static int AnimKeyStartLogoHide => AnimKeys.Stop2;
+        private static int AnimKeyStartLogoHide      => AnimKeys.Stop2;
 
-        private ButtonOnRaycast m_RotateClockwiseButton;
-        private ButtonOnRaycast m_RotateCounterClockwiseButton;
-        private ButtonOnRaycast m_ShopButton;
-        private ButtonOnRaycast m_SettingsButton;
-        private TextMeshPro m_LevelText;
-        private TextMeshPro m_CompletedText;
-        private TextMeshPro m_CongratsText;
-        private Animator m_CongratsAnim;
-        private readonly List<object> m_Renderers = new List<object>();
-        private readonly List<Animator> m_CheckMarks = new List<Animator>();
-        private bool m_ButtonsInitialized;
-        private Dictionary<string, Animator> m_StartLogoCharAnims;
-        private bool m_OnStart = true;
+        private          ButtonOnRaycast              m_RotateClockwiseButton;
+        private          ButtonOnRaycast              m_RotateCounterClockwiseButton;
+        private          ButtonOnRaycast              m_ShopButton;
+        private          ButtonOnRaycast              m_SettingsButton;
+        private          TextMeshPro                  m_LevelText;
+        private          TextMeshPro                  m_CompletedText;
+        private          TextMeshPro                  m_CongratsText;
+        private          Line                         m_CongratsLine;
+        private          Animator                     m_CongratsAnim;
+        private readonly List<Component>              m_Renderers  = new List<Component>();
+        private readonly List<Animator>               m_CheckMarks = new List<Animator>();
+        private          bool                         m_GameUiInitialized;
+        private          Dictionary<string, Animator> m_StartLogoCharAnims;
+        private          bool                         m_OnStart = true;
 
         #endregion
         
@@ -148,11 +149,13 @@ namespace Games.RazorMaze.Views.UI
             switch (_Args.Stage)
             {
                 case ELevelStage.Loaded:
-                    if (!m_ButtonsInitialized)
+                    if (!m_GameUiInitialized)
                     {
                         InitGameUI();
-                        m_ButtonsInitialized = true;
+                        m_GameUiInitialized = true;
                     }
+                    ConsiderCongratsPanelWhileAppearing(false);
+                    ShowCongratsPanel(false);
                     SetLevelCheckMarks(_Args.LevelIndex, false);
                     ShowControls(true, false);
                     break;
@@ -169,8 +172,9 @@ namespace Games.RazorMaze.Views.UI
                 case ELevelStage.Finished:
                     if (_Args.PreviousStage != ELevelStage.Paused)
                     {
+                        ConsiderCongratsPanelWhileAppearing(true);
                         SetCongratsString();
-                        m_CongratsAnim.SetTrigger(AnimKeyCongratsAnim);
+                        ShowCongratsPanel(true);
                         SetLevelCheckMarks(_Args.LevelIndex, true);    
                     }
                     break;
@@ -205,7 +209,7 @@ namespace Games.RazorMaze.Views.UI
                 cont, "ui_game", "shop_button");
             var goSettingsButton = PrefabUtilsEx.InitPrefab(
                 cont, "ui_game", "settings_button");
-            m_Renderers.AddRange( new object[]
+            m_Renderers.AddRange( new Component[]
             {
                 goShopButton.GetCompItem<SpriteRenderer>("button"),
                 goSettingsButton.GetCompItem<SpriteRenderer>("button")
@@ -247,7 +251,7 @@ namespace Games.RazorMaze.Views.UI
             {
                 var go = Object.Instantiate(goLevelCheckMark, cont);
                 m_CheckMarks.Add(go.GetCompItem<Animator>("animator"));
-                m_Renderers.AddRange(new object[]
+                m_Renderers.AddRange(new Component[]
                 {
                     go.GetCompItem<Rectangle>("body"),
                     go.GetCompItem<Line>("checkmark_1"),
@@ -270,13 +274,8 @@ namespace Games.RazorMaze.Views.UI
             goCongrads.transform.SetPosXY(new Vector2(bounds.center.x, yPos));
             m_CompletedText = goCongrads.GetCompItem<TextMeshPro>("text_completed");
             m_CongratsText = goCongrads.GetCompItem<TextMeshPro>("text_congrats");
+            m_CongratsLine = goCongrads.GetCompItem<Line>("line");
             m_CongratsAnim = goCongrads.GetCompItem<Animator>("animator");
-            m_Renderers.AddRange(new object[]
-            {
-                m_CompletedText,
-                m_CongratsText,
-                goCongrads.GetCompItem<Line>("line")
-            });
         }
 
         private void InitStartLogo()
@@ -302,16 +301,35 @@ namespace Games.RazorMaze.Views.UI
             };
             foreach (var anim in m_StartLogoCharAnims.Values)
                 anim.SetTrigger(AnimKeyStartLogoHide);
+            var eye1 = go.GetCompItem<Rectangle>("eye_1");
+            var eye2 = go.GetCompItem<Rectangle>("eye_2");
+            eye1.Color = eye2.Color = ColorProvider.GetColor(ColorIds.Background);
         }
 
         private void ShowStartLogo()
         {
             foreach (var anim in m_StartLogoCharAnims.Values)
-                anim.SetTrigger(AnimKeyStartLogoAppear);
+                anim.speed = 1.5f;
+            ShowStartLogoItem("R1", 0f);
+            ShowStartLogoItem("M", 0.1f);
+            ShowStartLogoItem("A", 0.2f);
+            ShowStartLogoItem("Z", 0.3f);
+            ShowStartLogoItem("O", 0.5f);
+            ShowStartLogoItem("R2", 0.4f);
+        }
+
+        private void ShowStartLogoItem(string _Key, float _Delay)
+        {
+            float time = GameTicker.Time;
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => time + _Delay > GameTicker.Time,
+                () => m_StartLogoCharAnims[_Key].SetTrigger(AnimKeyStartLogoAppear)));
         }
 
         private void HideStartLogo()
         {
+            foreach (var anim in m_StartLogoCharAnims.Values)
+                anim.speed = 3f;
             foreach (var anim in m_StartLogoCharAnims.Values)
                 anim.SetTrigger(AnimKeyStartLogoDisappear);
         }
@@ -339,7 +357,7 @@ namespace Games.RazorMaze.Views.UI
                 return;
             AppearTransitioner.DoAppearTransition(
                 _Show, 
-                new Dictionary<object[], System.Func<Color>>
+                new Dictionary<Component[], System.Func<Color>>
                 {
                     {m_Renderers.ToArray(), () => ColorProvider.GetColor(ColorIds.UI)}
                 },
@@ -389,6 +407,36 @@ namespace Games.RazorMaze.Views.UI
                 m_CongratsText, 
                 congradsKey, 
                 _Text => _Text.ToUpperInvariant());
+        }
+
+        private void ConsiderCongratsPanelWhileAppearing(bool _Consider)
+        {
+            var congratRenderers = new Behaviour[]
+            {
+                m_CompletedText,
+                m_CongratsText,
+                m_CongratsLine
+            };
+
+            if (_Consider)
+            {
+                if (!m_Renderers.Contains(congratRenderers.First()))
+                    m_Renderers.AddRange(congratRenderers);
+            }
+            else
+            {
+                foreach (var rend in congratRenderers)
+                    m_Renderers.Remove(rend);
+            }
+        }
+        
+        private void ShowCongratsPanel(bool _Show)
+        {
+            var col = ColorProvider.GetColor(ColorIds.UI);
+            if (!_Show)
+                col = col.SetA(0f);
+            m_CompletedText.color = m_CongratsText.color = m_CongratsLine.Color = col;
+            m_CongratsAnim.SetTrigger(_Show ? AnimKeyCongratsAnim : AnimKeyCongratsIdle);
         }
 
         #endregion

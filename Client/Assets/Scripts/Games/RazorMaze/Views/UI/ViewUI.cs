@@ -17,16 +17,16 @@ namespace Games.RazorMaze.Views.UI
     {
         #region inject
 
-        private IDialogViewer          DialogViewer       { get; }
-        private INotificationViewer    NotificationViewer { get; }
+        private IBigDialogViewer          DialogViewer       { get; }
+        private IProposalDialogViewer    ProposalDialogViewer { get; }
         private IDialogPanels          DialogPanels       { get; }
         private ILoadingController     LoadingController  { get; }
         private IViewInputConfigurator InputConfigurator  { get; }
 
         public ViewUI(
             IUITicker _UITicker,
-            IDialogViewer _DialogViewer,
-            INotificationViewer _NotificationViewer,
+            IBigDialogViewer _DialogViewer,
+            IProposalDialogViewer _ProposalDialogViewer,
             IDialogPanels _DialogPanels,
             ILoadingController _LoadingController,
             IViewUIGameControls _ViewUIGameControls,
@@ -34,7 +34,7 @@ namespace Games.RazorMaze.Views.UI
             : base(_ViewUIGameControls)
         {
             DialogViewer = _DialogViewer;
-            NotificationViewer = _NotificationViewer;
+            ProposalDialogViewer = _ProposalDialogViewer;
             DialogPanels = _DialogPanels;
             LoadingController = _LoadingController;
             InputConfigurator = _InputConfigurator;
@@ -48,11 +48,10 @@ namespace Games.RazorMaze.Views.UI
         public override void Init()
         {
             InputConfigurator.Command += OnCommand;
-            DataFieldsMigrator.InitDefaultDataFieldValues();
             CreateCanvas();
             var parent = m_Canvas.RTransform();
             DialogViewer.Init(parent);
-            NotificationViewer.Init(parent);
+            ProposalDialogViewer.Init(parent);
             UIGameControls.Init();
             RaiseInitializedEvent();
         }

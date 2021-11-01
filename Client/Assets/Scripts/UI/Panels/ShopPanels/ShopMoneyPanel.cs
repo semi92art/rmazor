@@ -40,7 +40,7 @@ namespace UI.Panels.ShopPanels
         public ShopMoneyPanel(
             IManagersGetter _Managers,
             IUITicker _UITicker,
-            IDialogViewer _DialogViewer,
+            IBigDialogViewer _DialogViewer,
             ICameraProvider _CameraProvider,
             IColorProvider _ColorProvider)
             : base(_Managers, _UITicker, _DialogViewer, _CameraProvider, _ColorProvider)
@@ -102,13 +102,13 @@ namespace UI.Panels.ShopPanels
 
         private void OnPaid(int _Reward)
         {
-            var score = Managers.ScoreManager.GetScore(DataFieldIds.FirstCurrency);
+            var score = Managers.ScoreManager.GetScore(DataFieldIds.Money);
             Coroutines.Run(Coroutines.WaitWhile(
                 () => score.Loaded,
                 () =>
                 {
                     Managers.ScoreManager
-                        .SetScore(DataFieldIds.FirstCurrency, score.GetFirstScore().Value + _Reward);
+                        .SetScore(DataFieldIds.Money, score.GetFirstScore().Value + _Reward);
                 }));
         }
 

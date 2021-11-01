@@ -54,6 +54,7 @@ MonoBehaviour:
   scaleMode: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   detailLevel: 2
+  renderQueue: -1
   zTest: 4
   zOffsetFactor: 0
   zOffsetUnits: 0
@@ -77,8 +78,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &6545614306479084760
 MeshFilter:
@@ -613,13 +614,13 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 1978972171228883595}
-    characterCount: 9
+    characterCount: 0
     spriteCount: 0
     spaceCount: 0
-    wordCount: 1
+    wordCount: 0
     linkCount: 0
-    lineCount: 1
-    pageCount: 1
+    lineCount: 0
+    pageCount: 0
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
@@ -837,13 +838,13 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 652408430489386390}
-    characterCount: 10
+    characterCount: 0
     spriteCount: 0
     spaceCount: 0
-    wordCount: 1
+    wordCount: 0
     linkCount: 0
-    lineCount: 1
-    pageCount: 1
+    lineCount: 0
+    pageCount: 0
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0

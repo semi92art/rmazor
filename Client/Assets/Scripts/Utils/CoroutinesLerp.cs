@@ -92,7 +92,7 @@ namespace Utils
             UnityAction<long> _OnProgress,
             ITicker _Ticker,
             UnityAction<bool, long> _OnFinish = null,
-            Func<bool> _OnBreak = null,
+            Func<bool> _BreakPredicate = null,
             Func<long, long> _ProgressFormula = null)
         {
             if (_OnProgress == null)
@@ -103,7 +103,7 @@ namespace Utils
             bool breaked = false;
             while (_Ticker.Time < currTime + _Time)
             {
-                if (_OnBreak != null && _OnBreak())
+                if (_BreakPredicate != null && _BreakPredicate())
                 {
                     breaked = true;
                     break;
@@ -120,7 +120,7 @@ namespace Utils
                 _OnProgress(progress);
                 yield return new WaitForEndOfFrame();
             }
-            if (_OnBreak != null && _OnBreak())
+            if (_BreakPredicate != null && _BreakPredicate())
                 breaked = true;
             if (!breaked)
                 _OnProgress(_To);
@@ -134,7 +134,7 @@ namespace Utils
             UnityAction<float> _OnProgress,
             ITicker _Ticker,
             UnityAction<bool, float> _OnFinish = null,
-            Func<bool> _OnBreak = null,
+            Func<bool> _BreakPredicate = null,
             Func<float, float> _ProgressFormula = null)
         {
             if (_OnProgress == null)
@@ -146,7 +146,7 @@ namespace Utils
             
             while (_Ticker.Time < currTime + _Time)
             {
-                if (_OnBreak != null && _OnBreak())
+                if (_BreakPredicate != null && _BreakPredicate())
                 {
                     breaked = true;
                     break;
@@ -163,7 +163,7 @@ namespace Utils
                 _OnProgress(progress);
                 yield return new WaitForEndOfFrame();
             }
-            if (_OnBreak != null && _OnBreak())
+            if (_BreakPredicate != null && _BreakPredicate())
                 breaked = true;
             if (!breaked)
                 _OnProgress(_To);
@@ -177,7 +177,7 @@ namespace Utils
             UnityAction<int> _OnProgress,
             ITicker _Ticker,
             UnityAction<bool, int> _OnFinish = null,
-            Func<bool> _OnBreak = null,
+            Func<bool> _BreakPredicate = null,
             Func<int, int> _ProgressFormula = null)
         {
             if (_OnProgress == null)
@@ -187,7 +187,7 @@ namespace Utils
             bool breaked = false;
             while (_Ticker.Time < currTime + _Time)
             {
-                if (_OnBreak != null && _OnBreak())
+                if (_BreakPredicate != null && _BreakPredicate())
                 {
                     breaked = true;
                     break;
@@ -204,7 +204,7 @@ namespace Utils
                 _OnProgress(progress);
                 yield return new WaitForEndOfFrame();
             }
-            if (_OnBreak != null && _OnBreak())
+            if (_BreakPredicate != null && _BreakPredicate())
                 breaked = true;
             if (!breaked)
                 _OnProgress(_To);
@@ -218,7 +218,7 @@ namespace Utils
             UnityAction<Color> _OnProgress,
             ITicker _Ticker,
             UnityAction<bool, Color> _OnFinish = null,
-            Func<bool> _OnBreak = null,
+            Func<bool> _BreakPredicate = null,
             Func<Color, Color> _ProgressFormula = null)
         {
             if (_OnProgress == null)
@@ -228,7 +228,7 @@ namespace Utils
             bool breaked = false;
             while (_Ticker.Time < currTime + _Time)
             {
-                if (_OnBreak != null && _OnBreak())
+                if (_BreakPredicate != null && _BreakPredicate())
                 {
                     breaked = true;
                     break;
@@ -249,7 +249,7 @@ namespace Utils
                 _OnProgress(progress);
                 yield return new WaitForEndOfFrame();
             }
-            if (_OnBreak != null && _OnBreak())
+            if (_BreakPredicate != null && _BreakPredicate())
                 breaked = true;
             if (!breaked)
                 _OnProgress(_To);
@@ -263,7 +263,7 @@ namespace Utils
             UnityAction<Vector2> _OnProgress,
             ITicker _Ticker,
             UnityAction<bool, Vector2> _OnFinish = null,
-            Func<bool> _OnBreak = null,
+            Func<bool> _BreakPredicate = null,
             Func<Vector2, Vector2> _ProgressFormula = null)
         {
             if (_OnProgress == null)
@@ -273,7 +273,7 @@ namespace Utils
             Vector2 progress = _From;
             while (_Ticker.Time < currTime + _Time)
             {
-                if (_OnBreak != null && _OnBreak())
+                if (_BreakPredicate != null && _BreakPredicate())
                 {
                     breaked = true;
                     break;
@@ -285,7 +285,7 @@ namespace Utils
                 _OnProgress(progress);
                 yield return new WaitForEndOfFrame();
             }
-            if (_OnBreak != null && _OnBreak())
+            if (_BreakPredicate != null && _BreakPredicate())
                 breaked = true;
             if (!breaked)
                 _OnProgress(_To);
@@ -299,7 +299,7 @@ namespace Utils
             UnityAction<Vector3> _OnProgress,
             ITicker _Ticker,
             UnityAction<bool, Vector3> _OnFinish = null,
-            Func<bool> _OnBreak = null,
+            Func<bool> _BreakPredicate = null,
             Func<Vector3, Vector3> _ProgressFormula = null)
         {
             if (_OnProgress == null)
@@ -309,7 +309,7 @@ namespace Utils
             float currTime = _Ticker.Time;
             while (_Ticker.Time < currTime + _Time)
             {
-                if (_OnBreak != null && _OnBreak())
+                if (_BreakPredicate != null && _BreakPredicate())
                 {
                     breaked = true;
                     break;
@@ -321,7 +321,7 @@ namespace Utils
                 _OnProgress(progress);
                 yield return new WaitForEndOfFrame();
             }
-            if (_OnBreak != null && _OnBreak())
+            if (_BreakPredicate != null && _BreakPredicate())
                 breaked = true;
             if (!breaked)
                 _OnProgress(_To);

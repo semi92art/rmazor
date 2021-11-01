@@ -44,7 +44,7 @@ namespace UI.Panels
         #region inject
 
         public DailyBonusPanel(
-            IDialogViewer _DialogViewer,
+            IBigDialogViewer _DialogViewer,
             IManagersGetter _Managers,
             IUITicker _UITicker,
             ICameraProvider _CameraProvider,
@@ -121,7 +121,7 @@ namespace UI.Panels
         
         private int GetCurrentDailyBonusDay()
         {
-            int lastItemClickedDay = SaveUtils.GetValue<int>(SaveKey.DailyBonusLastItemClickedDay);
+            int lastItemClickedDay = SaveUtils.GetValue<int>(SaveKey.DailyBonusLastClickedDay);
             return lastItemClickedDay + 1;
         }
         

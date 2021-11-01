@@ -5,14 +5,12 @@ namespace Games.RazorMaze.Views.Common
     public static class ColorIds
     {
         public static readonly int Border;
-        public static readonly int Corner;
+        public static readonly int Main;
         public static readonly int Background; //!!!
         public static readonly int BackgroundItems;
         public static readonly int Character;
         public static readonly int CharacterTail;
         public static readonly int MazeItem;
-        public static readonly int MazeItemPathLine;
-        public static readonly int MazeItemPathJoint;
         public static readonly int Path;
         public static readonly int UI;
         public static readonly int UiDialogItemNormal;
@@ -26,14 +24,12 @@ namespace Games.RazorMaze.Views.Common
         static ColorIds()
         {
             Border               = GetHash(nameof(Border));
-            Corner               = GetHash(nameof(Corner));
+            Main                 = GetHash(nameof(Main));
             Background           = GetHash(nameof(Background));
             BackgroundItems      = GetHash(nameof(BackgroundItems)     .WithSpaces());
             Character            = GetHash(nameof(Character));
             CharacterTail        = GetHash(nameof(CharacterTail)       .WithSpaces());
             MazeItem             = GetHash(nameof(MazeItem)            .WithSpaces());
-            MazeItemPathLine     = GetHash(nameof(MazeItemPathLine)    .WithSpaces());
-            MazeItemPathJoint    = GetHash(nameof(MazeItemPathJoint)   .WithSpaces());
             Path                 = GetHash(nameof(Path));
             UI                   = GetHash(nameof(UI));
             UiDialogItemNormal   = GetHash(nameof(UiDialogItemNormal)  .WithSpaces());

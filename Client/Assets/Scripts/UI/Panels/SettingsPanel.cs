@@ -57,7 +57,7 @@ namespace UI.Panels
 
         public SettingsPanel(
             ISettingSelectorDialogPanel _SelectorPanel,
-            IDialogViewer _DialogViewer,
+            IBigDialogViewer _DialogViewer,
             IManagersGetter _Managers,
             IUITicker _UITicker,
             ISettingsGetter _SettingsGetter,

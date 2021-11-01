@@ -137,9 +137,9 @@ namespace Games.RazorMaze.Views.Rotation
                 return;
             Transitioner.DoAppearTransition(
                 appear.Value,
-                new Dictionary<object[], Func<Color>>
+                new Dictionary<Component[], Func<Color>>
                 {
-                    {new object[] { m_Disc }, () => ColorProvider.GetColor(ColorIds.Border)}
+                    {new Component[] { m_Disc }, () => ColorProvider.GetColor(ColorIds.Border)}
                 },
                 _Type: EAppearTransitionType.WithoutDelay);
         }

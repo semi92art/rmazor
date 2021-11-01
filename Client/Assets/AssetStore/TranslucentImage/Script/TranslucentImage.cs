@@ -55,6 +55,8 @@ public partial class TranslucentImage : Image, IMeshModifier
         oldFlatten    = flatten;
 
         source = source ? source : FindObjectOfType<TranslucentImageSource>();
+        if (material == null || source == null)
+            return;
         material.SetTexture(_blurTexPropId, source.BlurredScreen);
 
 #if UNITY_5_6_OR_NEWER
@@ -72,8 +74,12 @@ public partial class TranslucentImage : Image, IMeshModifier
     {
         if (!source)
         {
-            Debug.LogError(
-                "TranslucentImageSource is missing. Add TranslucentImageSource component to your main camera, then assign it camera to the Source field of the Translucent Image(s)");
+            if (Application.isPlaying)
+            {
+                Debug.LogError(
+                    "TranslucentImageSource is missing. Add TranslucentImageSource component to" +
+                    " your main camera, then assign it camera to the Source field of the Translucent Image(s)");
+            }
             return;
         }
 

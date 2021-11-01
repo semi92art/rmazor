@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using DialogViewers;
 using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Characters;
@@ -7,13 +8,15 @@ using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItemGroups;
 using Games.RazorMaze.Views.MazeItems;
+using Games.RazorMaze.Views.UI;
 using Mono_Installers;
 using Ticker;
+using UnityEngine.Events;
 using Utils;
 
 namespace Games.RazorMaze.Views.Common
 {
-    public interface IViewLevelStageController : IOnLevelStageChanged
+    public interface IViewLevelStageController : IOnLevelStageChanged, IInit
     {
         void RegisterProceeders(IEnumerable<IOnLevelStageChanged> _Proceeders);
         void OnAllPathProceed(V2Int _LastPath);
@@ -32,17 +35,21 @@ namespace Games.RazorMaze.Views.Common
 
         private readonly List<IOnLevelStageChanged> m_Proceeders = new List<IOnLevelStageChanged>();
 
+        private bool m_NextLevelMustBeFirstInGroup;
+
         #endregion
 
         #region inject
 
-        private IGameTicker GameTicker { get; }
-        private IModelGame Model { get; }
-        private IManagersGetter Managers { get; }
-        private IViewCharacter Character { get; }
-        private IViewInputConfigurator InputConfigurator { get; }
-        private IContainersGetter ContainersGetter { get; }
-        private IMazeShaker MazeShaker { get; }
+        private IGameTicker            GameTicker           { get; }
+        private IModelGame             Model                { get; }
+        private IManagersGetter        Managers             { get; }
+        private IViewCharacter         Character            { get; }
+        private IViewInputConfigurator InputConfigurator    { get; }
+        private IContainersGetter      ContainersGetter     { get; }
+        private IMazeShaker            MazeShaker           { get; }
+        private IDialogPanels          DialogPanels         { get; }
+        private IProposalDialogViewer  ProposalDialogViewer { get; }
 
         public ViewLevelStageController(
             IGameTicker _GameTicker,
@@ -51,7 +58,9 @@ namespace Games.RazorMaze.Views.Common
             IViewCharacter _Character,
             IViewInputConfigurator _InputConfigurator,
             IContainersGetter _ContainersGetter,
-            IMazeShaker _MazeShaker)
+            IMazeShaker _MazeShaker,
+            IDialogPanels _DialogPanels,
+            IProposalDialogViewer _ProposalDialogViewer)
         {
             GameTicker = _GameTicker;
             Model = _Model;
@@ -60,11 +69,21 @@ namespace Games.RazorMaze.Views.Common
             InputConfigurator = _InputConfigurator;
             ContainersGetter = _ContainersGetter;
             MazeShaker = _MazeShaker;
+            DialogPanels = _DialogPanels;
+            ProposalDialogViewer = _ProposalDialogViewer;
         }
 
         #endregion
 
         #region api
+        
+        public event UnityAction Initialized;
+        
+        public void Init()
+        {
+            InputConfigurator.Command += OnCommand;
+            Initialized?.Invoke();
+        }
 
         public void RegisterProceeders(IEnumerable<IOnLevelStageChanged> _Proceeders)
         {
@@ -91,6 +110,16 @@ namespace Games.RazorMaze.Views.Common
 
         #region nonpublic methods
 
+        private void OnCommand(int _Key, object[] _Args)
+        {
+            if (_Key != InputCommands.ReadyToUnloadLevel)
+                return;
+            if (_Args == null || !_Args.Any())
+                return;
+            if(_Args[0].ToString() == CommonInputCommandArgs.LoadFirstLevelFromGroupArg)
+                m_NextLevelMustBeFirstInGroup = true;
+        }
+        
         private void ProceedMazeItemGroups(LevelStageArgs _Args)
         {
             var mazeItems = new List<IViewMazeItem>();
@@ -99,12 +128,16 @@ namespace Games.RazorMaze.Views.Common
                 .Where(_P => _P != null);
             foreach (var group in mazeItemGroups)
                 mazeItems.AddRange(group.GetActiveItems());
-            var pathItemsGroup = m_Proceeders
-                .First(_P => _P is IViewMazePathItemsGroup) as IViewMazePathItemsGroup;
-            mazeItems.AddRange(pathItemsGroup.PathItems);
+            if (m_Proceeders
+                    .FirstOrDefault(_P => _P is IViewMazePathItemsGroup)
+                is IViewMazePathItemsGroup pathItemsGroup)
+            {
+                mazeItems.AddRange(pathItemsGroup.PathItems);
+            }
             switch (_Args.Stage)
             {
                 case ELevelStage.Loaded:
+                    m_NextLevelMustBeFirstInGroup = false;
                     Character.Appear(true);
                     foreach (var mazeItem in mazeItems)
                         mazeItem.Appear(true);
@@ -114,6 +147,9 @@ namespace Games.RazorMaze.Views.Common
                                    || mazeItems.Any(_Item => _Item.AppearingState != EAppearingState.Appeared);
                         },
                         () => Model.LevelStaging.ReadyToStartLevel()));
+                    break;
+                case ELevelStage.Finished:
+                    SaveUtils.PutValue(SaveKey.CurrentLevelIndex, _Args.LevelIndex + 1);
                     break;
                 case ELevelStage.ReadyToUnloadLevel:
                     foreach (var mazeItem in mazeItems)
@@ -128,18 +164,21 @@ namespace Games.RazorMaze.Views.Common
                         }));
                     break;
                 case ELevelStage.Unloaded:
-// #if !UNITY_EDITOR
-                    if (RazorMazeUtils.LoadNextLevelAutomatically)
+                    if (m_NextLevelMustBeFirstInGroup)
+                        InputConfigurator.RaiseCommand(InputCommands.LoadFirstLevelFromCurrentGroup, null, true);
+                    else if (RazorMazeUtils.LoadNextLevelAutomatically)
                         InputConfigurator.RaiseCommand(InputCommands.LoadNextLevel, null, true);
-// #endif
                     break;
                 case ELevelStage.CharacterKilled:
-                    foreach (var mazeItem in mazeItems)
-                    {
-                        MazeShaker.OnCharacterDeathAnimation(
-                            ContainersGetter.GetContainer(ContainerNames.Character).transform.position,
-                            mazeItem);
-                    }
+                    MazeShaker.OnCharacterDeathAnimation(
+                        ContainersGetter.GetContainer(ContainerNames.Character).transform.position,
+                        mazeItems,
+                        () =>
+                        {
+                            var panel = DialogPanels.CharacterDiedDialogPanel;
+                            panel.Init();
+                            ProposalDialogViewer.Show(panel);
+                        });
                     break;
             }
         }

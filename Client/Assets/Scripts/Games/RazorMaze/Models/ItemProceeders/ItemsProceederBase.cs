@@ -22,7 +22,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         protected readonly Dictionary<IMazeItemProceedInfo, Queue<IEnumerator>> m_CoroutinesDict =
             new Dictionary<IMazeItemProceedInfo, Queue<IEnumerator>>();
-        // private readonly Queue<IEnumerator> m_Coroutines = new Queue<IEnumerator>();
         protected IMazeItemProceedInfo KillerProceedInfo { get; set; }
         
         #endregion
@@ -35,11 +34,11 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region inject
         
-        protected ModelSettings Settings { get; }
-        protected IModelData Data { get; }
-        protected IModelCharacter Character { get; }
+        protected ModelSettings      Settings     { get; }
+        protected IModelData         Data         { get; }
+        protected IModelCharacter    Character    { get; }
         protected IModelLevelStaging LevelStaging { get; }
-        protected IGameTicker GameTicker { get; }
+        protected IGameTicker        GameTicker   { get; }
         
         protected ItemsProceederBase(
             ModelSettings _Settings, 
@@ -80,7 +79,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 case ELevelStage.Unloaded:
                 case ELevelStage.Finished:
                 case ELevelStage.CharacterKilled:
-                    FinishProceed(true); break;
                 case ELevelStage.ReadyToUnloadLevel: break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Args.Stage);

@@ -35,7 +35,7 @@ public class ColorPaletteHelper : EditorWindow
                 "set", m_ColorSetScrObj, typeof(ColorSetScriptableObject), false);
         });
         
-        DisplayColors();
+        DisplayColors(Application.isPlaying && SceneManager.GetActiveScene().name.Contains(SceneNames.Level));
 
         if ((m_ColorProvider == null || m_ColorSetScrObj == null)
             && Application.isPlaying
@@ -43,13 +43,17 @@ public class ColorPaletteHelper : EditorWindow
         {
             m_ColorProvider = FindObjectOfType<DefaultColorProvider>();
         }
+        
+        EditorUtilsEx.GuiButtonAction("Save",
+            () =>
+            {
+                m_ColorSetScrObj.set = m_ColorSet;
+                AssetDatabase.SaveAssets();
+            });
     }
 
-    private void DisplayColors()
+    private void DisplayColors(bool _OnScene)
     {
-        if (m_ColorSet == null)
-            return;
-        
         foreach (var item in m_ColorSet)
         {
             EditorUtilsEx.HorizontalZone(() =>
@@ -61,5 +65,8 @@ public class ColorPaletteHelper : EditorWindow
                 item.color = newColor;
             });
         }
+        
+        if (m_ColorSet == null)
+            return;
     }
 }

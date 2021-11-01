@@ -14,14 +14,14 @@ namespace UI.Panels
 
         protected IManagersGetter Managers       { get; }
         protected IUITicker       Ticker         { get; }
-        protected IDialogViewer   DialogViewer   { get; }
+        protected IBigDialogViewer   DialogViewer   { get; }
         protected ICameraProvider CameraProvider { get; }
         protected IColorProvider  ColorProvider  { get; }
 
         protected DialogPanelBase(
             IManagersGetter _Managers, 
             IUITicker _Ticker, 
-            IDialogViewer _DialogViewer,
+            IBigDialogViewer _DialogViewer,
             ICameraProvider _CameraProvider,
             IColorProvider _ColorProvider)
         {

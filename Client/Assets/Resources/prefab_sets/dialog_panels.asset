@@ -36,3 +36,6 @@ MonoBehaviour:
     - item: {fileID: 8219298684319459333, guid: da4f8ca4c665e314482b12c01ade75c4,
         type: 3}
       name: shop_tails_panel
+    - item: {fileID: 8219298684319459333, guid: aada0e6c1e3f9b246bc089aa5d754518,
+        type: 3}
+      name: character_died_panel

@@ -28,10 +28,7 @@ namespace UI
             m_Ticker = _Ticker;
             m_ColorProvider = _ColorProvider;
             m_Initialized = true;
-        }
-
-        protected virtual void OnEnable()
-        {
+            
             if (!border.IsNull())
                 border.color = m_ColorProvider.GetColor(ColorIds.UiBorderDefault);
             foreach (var text in texts.Where(_Text => !_Text.IsNull()))

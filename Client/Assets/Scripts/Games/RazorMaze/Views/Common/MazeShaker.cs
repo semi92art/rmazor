@@ -1,4 +1,7 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using DI.Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeItems;
@@ -17,8 +20,9 @@ namespace Games.RazorMaze.Views.Common
         IEnumerator HitMazeCoroutine(CharacterMovingEventArgs _Args);
         IEnumerator ShakeMazeCoroutine();
         void OnCharacterDeathAnimation(
-            Vector2 _DeathPosition,
-            IViewMazeItem _MazeItem);
+            Vector2             _DeathPosition,
+            List<IViewMazeItem> _MazeItems,
+            UnityAction         _OnFinish);
     }
     
     public class MazeShaker : IMazeShaker, IUpdateTick
@@ -134,19 +138,28 @@ namespace Games.RazorMaze.Views.Common
         }
         
          public void OnCharacterDeathAnimation(
-            Vector2 _DeathPosition,
-            IViewMazeItem _MazeItem)
+            Vector2             _DeathPosition,
+            List<IViewMazeItem> _MazeItems,
+            UnityAction         _OnFinish)
         {
             const float scaleCoeff = 0.2f;
             const float maxDistance = 10f;
             const float transitionTime = 0.5f;
-
-            float dist = Vector2.Distance(_DeathPosition, _MazeItem.Object.transform.position);
-            if (dist > maxDistance * CoordinateConverter.Scale)
-                return;
-            
-            foreach (var shape in _MazeItem.Shapes)
+            var shapes = _MazeItems
+                .SelectMany(_Item => _Item.Shapes.Where(_Shape => _Shape.IsNotNull()))
+                .ToList();
+            var finished = shapes
+                .ToDictionary(_Shape => _Shape, _Shape => false);
+            foreach (var shape in shapes)
             {
+                float dist = Vector2.Distance(_DeathPosition, shape.transform.position);
+                if (dist > maxDistance * CoordinateConverter.Scale)
+                {
+                    finished[shape] = true;
+                    continue;
+                }
+
+                var startLocalScale = shape.transform.localScale;
                 Coroutines.Run(Coroutines.Delay(
                     () =>
                     {
@@ -156,27 +169,21 @@ namespace Games.RazorMaze.Views.Common
                             transitionTime,
                             _Progress =>
                             {
-                                var scale = Vector3.one * (1f + _Progress * scaleCoeff);
-                                if (shape is ShapeRenderer shapeRenderer)
-                                    shapeRenderer.transform.localScale = scale;
-                                else if (shape is SpriteRenderer spriteRenderer)
-                                    spriteRenderer.transform.localScale = scale;
-                                else if (shape is TextMeshPro textMeshPro)
-                                    textMeshPro.transform.localScale = scale;
+                                var scale = startLocalScale * (1f + _Progress * scaleCoeff);
+                                shape.transform.localScale = scale;
                             },
                             GameTicker,
                             (_, __) =>
                             {
-                                if (shape is ShapeRenderer shapeRenderer)
-                                    shapeRenderer.transform.localScale = Vector3.one;
-                                else if (shape is SpriteRenderer spriteRenderer)
-                                    spriteRenderer.transform.localScale = Vector3.one;
-                                else if (shape is TextMeshPro textMeshPro)
-                                    textMeshPro.transform.localScale = Vector3.one;
+                                shape.transform.localScale = startLocalScale;
+                                finished[shape] = true;
                             },
                             _ProgressFormula: _P => _P < 0.5f ? 2f * _P : 2f * (1f - _P)));
                     }, Mathf.Max(0f, (dist - 1) * 0.005f)));
             }
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => finished.Values.Any(_F => !_F),
+                () => _OnFinish?.Invoke()));
         }
 
         #endregion

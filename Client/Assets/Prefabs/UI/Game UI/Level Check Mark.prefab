@@ -49,6 +49,7 @@ MonoBehaviour:
   scaleMode: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   detailLevel: 2
+  renderQueue: -1
   zTest: 4
   zOffsetFactor: 0
   zOffsetUnits: 0
@@ -72,8 +73,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &8089879301345886964
 MeshFilter:
@@ -171,6 +172,7 @@ MonoBehaviour:
   scaleMode: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   detailLevel: 2
+  renderQueue: -1
   zTest: 4
   zOffsetFactor: 0
   zOffsetUnits: 0
@@ -179,6 +181,24 @@ MonoBehaviour:
   stencilRefID: 0
   stencilReadMask: 255
   stencilWriteMask: 255
+  pivot: 1
+  width: 2
+  height: 2
+  type: 3
+  cornerRadiusMode: 0
+  cornerRadii: {x: 0.5, y: 0.5, z: 0.5, w: 0.5}
+  thickness: 0.2
+  thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
   fill:
     type: 0
     space: 0
@@ -189,14 +209,6 @@ MonoBehaviour:
     radialOrigin: {x: 0, y: 0, z: 0}
     radialRadius: 1
   useFill: 0
-  pivot: 1
-  width: 2
-  height: 2
-  type: 3
-  cornerRadiusMode: 0
-  cornerRadii: {x: 0.25, y: 0.25, z: 0.25, w: 0.25}
-  thickness: 0.2
-  thicknessSpace: 0
 --- !u!33 &8644141664352014460
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -293,6 +305,7 @@ MonoBehaviour:
   scaleMode: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   detailLevel: 2
+  renderQueue: -1
   zTest: 4
   zOffsetFactor: 0
   zOffsetUnits: 0
@@ -316,8 +329,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &4199112068098377162
 MeshFilter:

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using DI.Extensions;
 using Entities;
 using GameHelpers;
@@ -11,7 +10,6 @@ using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Utils;
 using Ticker;
 using UnityEngine;
-using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
@@ -65,7 +63,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region api
         
-        public override object[] Shapes => new object[] {m_Saw};
+        public override Component[] Shapes => new Component[] {m_Saw};
         
         public override object Clone() => new ViewMazeItemMovingTrap(
             ViewSettings,
@@ -155,6 +153,13 @@ namespace Games.RazorMaze.Views.MazeItems
             Managers.Notify(_SM => _SM.StopClip(
                 SoundClipNameMoveTrap, _Tags: $"{GetHashCode()}"));
             m_Rotating = false;
+        }
+
+        protected override void OnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId == ColorIds.MazeItem)
+                m_Saw.color = _Color;
+            base.OnColorChanged(_ColorId, _Color);
         }
 
         #endregion

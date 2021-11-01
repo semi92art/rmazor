@@ -46,12 +46,12 @@ namespace UI.Panels
         #region inject
 
         private IWheelOfFortuneRewardPanel RewardPanel { get; }
-        private INotificationViewer NotificationViewer { get; }
+        private IProposalDialogViewer ProposalDialogViewer { get; }
 
         public WheelOfFortunePanel(
             IWheelOfFortuneRewardPanel _RewardPanel,
-            IDialogViewer _DialogViewer,
-            INotificationViewer _NotificationViewer,
+            IBigDialogViewer _DialogViewer,
+            IProposalDialogViewer _ProposalDialogViewer,
             IManagersGetter _Managers,
             IUITicker _UITicker,
             ICameraProvider _CameraProvider,
@@ -59,7 +59,7 @@ namespace UI.Panels
             : base(_Managers, _UITicker, _DialogViewer, _CameraProvider, _ColorProvider)
         {
             RewardPanel = _RewardPanel;
-            NotificationViewer = _NotificationViewer;
+            ProposalDialogViewer = _ProposalDialogViewer;
         }
 
         #endregion
@@ -140,16 +140,15 @@ namespace UI.Panels
             }
         }
 
-        private void SpinFinishAction(BankItemType _BankItemType, long _Reward)
+        private void SpinFinishAction(long _Reward)
         {
             m_SpinButton.interactable = true;
             m_IsLocked = CheckIfWofSpinToday();
             RewardPanel.PreInit(
-                _BankItemType,
                 _Reward, 
-                () => BankManager.Instance.PlusBankItems(_BankItemType, _Reward));
+                () => { });
             RewardPanel.Init();
-            NotificationViewer.Show(RewardPanel);
+            ProposalDialogViewer.Show(RewardPanel);
         }
 
         private void WatchAdFinishAction()

@@ -18,7 +18,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args);
     }
     
-    public class ViewMazeMovingItemsGroup : ViewMazeItemsGroupBase, IViewMazeMovingItemsGroup, IOnBackgroundColorChanged
+    public class ViewMazeMovingItemsGroup : ViewMazeItemsGroupBase, IViewMazeMovingItemsGroup
     {
         #region types
         
@@ -83,16 +83,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
             (Common.GetItem(_Args.Info) as IViewMazeItemMovingBlock)?.OnMoveFinished(_Args);
             m_ItemsMoving.Remove(_Args.Info);
         }
-        
-        public void OnBackgroundColorChanged(Color _Color)
-        {
-            var items = GetItems()
-                .Select(_Item => _Item as IOnBackgroundColorChanged)
-                .Where(_Item => _Item != null);
-            foreach (var item in items)
-                item.OnBackgroundColorChanged(_Color);
-        }
-        
+
         #endregion
     }
 }

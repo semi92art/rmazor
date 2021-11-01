@@ -24,13 +24,19 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         #region inject
         
+        private IPathItemsProceeder PathItemsProceeder { get; }
+        
         public TrapsMovingProceeder(
             ModelSettings _Settings, 
             IModelData _Data,
             IModelCharacter _Character,
             IModelLevelStaging _LevelStaging,
+            IPathItemsProceeder _PathItemsProceeder,
             IGameTicker _GameTicker)
-            : base(_Settings, _Data, _Character, _LevelStaging, _GameTicker) { }
+            : base(_Settings, _Data, _Character, _LevelStaging, _GameTicker)
+        {
+            PathItemsProceeder = _PathItemsProceeder;
+        }
         
         #endregion
         
@@ -136,7 +142,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         private void CheckForCharacterDeath(IMazeItemProceedInfo _Info, Vector2 _ItemPrecisePosition)
         {
-            if (!Character.Alive)
+            if (!Character.Alive || PathItemsProceeder.AllPathsProceeded)
                 return;
             var cPos = Character.IsMoving ?
                 Character.MovingInfo.PrecisePosition : Character.Position.ToVector2();

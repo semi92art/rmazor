@@ -6,6 +6,7 @@ namespace Games.RazorMaze
     public class ViewSettings : ScriptableObject
     {
         [SerializeField] private float lineWidth;
+        [SerializeField] private float cornerWidth;
         [SerializeField] private float cornerRadius;
         [SerializeField] private float movingTrapRotationSpeed;
         [SerializeField] private float shredingerLineOffsetSpeed;
@@ -16,8 +17,10 @@ namespace Games.RazorMaze
         [SerializeField] private float mazeRotationSpeed;
         [SerializeField] private float finishTimeExcellent;
         [SerializeField] private float finishTimeGood;
+        [SerializeField] private float proposalDialogAnimSpeed;
 
         public float LineWidth                  => lineWidth * 0.01f;
+        public float CornerWidth                => cornerWidth * 0.01f;
         public float CornerRadius               => cornerRadius * 0.01f;
         public float MovingTrapRotationSpeed    => -movingTrapRotationSpeed;
         public float ShredingerLineOffsetSpeed  => shredingerLineOffsetSpeed * 0.01f;
@@ -28,5 +31,6 @@ namespace Games.RazorMaze
         public float MazeRotationSpeed          => mazeRotationSpeed;
         public float FinishTimeExcellent        => finishTimeExcellent * 0.1f;
         public float FinishTimeGood             => finishTimeGood * 0.1f;
+        public float ProposalDialogAnimSpeed    => proposalDialogAnimSpeed;
     }
 }

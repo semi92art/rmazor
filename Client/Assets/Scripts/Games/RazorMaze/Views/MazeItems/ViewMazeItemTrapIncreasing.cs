@@ -79,7 +79,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region api
         
-        public override object[] Shapes => new object[]{m_Center}
+        public override Component[] Shapes => new Component[]{m_Center}
             .Concat(m_Blades)
             .Concat(m_BladeContainers)
             .ToArray();
@@ -175,6 +175,18 @@ namespace Games.RazorMaze.Views.MazeItems
                 .ToList();
         }
 
+        protected override void OnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId == ColorIds.MazeItem)
+            {
+                m_Center.Color = _Color;
+                foreach (var item in m_Blades)
+                    item.color = _Color;
+                foreach (var item in m_BladeContainers)
+                    item.Color = _Color;
+            }
+        }
+
         private void OpenTrap()
         {
             if (AppearingState != EAppearingState.Appeared)
@@ -232,6 +244,8 @@ namespace Games.RazorMaze.Views.MazeItems
         private void CheckForCharacterDeath()
         {
             if (!Model.Character.Alive)
+                return;
+            if (Model.PathItemsProceeder.AllPathsProceeded)
                 return;
             if (Model.LevelStaging.LevelStage == ELevelStage.Finished)
                 return;

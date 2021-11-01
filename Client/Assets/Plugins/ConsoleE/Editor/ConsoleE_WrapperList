@@ -6,10 +6,10 @@
 <e text = "Utils.Dbg:Log" />
 <e text = "Utils.CommonUtils.SetGoActive[T]" />
 <e text = "Shapes.ShapeRenderer.get_Mesh" />
-<e text = "PrefabContent.GetItemComponent[T]" />
-<e text = "DI.Extensions.ObjectExtensions.GetCompItem[T]" />
 <e text = "GameHelpers.PrefabUtilsEx.GetPrefabBase" />
 <e text = "GameHelpers.PrefabUtilsEx.InitUiPrefab" />
+<e text = "PrefabContent.GetItemComponent[T]" />
+<e text = "DI.Extensions.ObjectExtensions.GetCompItem[T]" />
 </Entries>
 </SettingsList>
 </root>

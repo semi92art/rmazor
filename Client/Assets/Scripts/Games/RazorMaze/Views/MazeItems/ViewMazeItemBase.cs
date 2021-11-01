@@ -80,9 +80,9 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region api
         
-        public abstract object[] Shapes { get; }
-        public ViewMazeItemProps Props { get; set; }
-        public abstract object Clone();
+        public abstract Component[]       Shapes { get; }
+        public          ViewMazeItemProps Props  { get; set; }
+        public abstract object            Clone();
         
         public virtual bool ActivatedInSpawnPool
         {
@@ -127,6 +127,7 @@ namespace Games.RazorMaze.Views.MazeItems
             Props = _Props;
             if (!Initialized)
             {
+                ColorProvider.ColorChanged += OnColorChanged;
                 Object = new GameObject(ObjectName);
                 InitShape();
             }
@@ -172,6 +173,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         protected abstract void InitShape();
         protected abstract void UpdateShape();
+        protected abstract void OnColorChanged(int _ColorId, Color _Color);
 
         protected virtual void OnAppearStart(bool _Appear)
         {
@@ -180,9 +182,9 @@ namespace Games.RazorMaze.Views.MazeItems
                 ActivateShapes(true);
         }
 
-        protected virtual Dictionary<object[], Func<Color>> GetAppearSets(bool _Appear)
+        protected virtual Dictionary<Component[], Func<Color>> GetAppearSets(bool _Appear)
         {
-            return new Dictionary<object[], Func<Color>>
+            return new Dictionary<Component[], Func<Color>>
             {
                 {Shapes, () => ColorProvider.GetColor(ColorIds.MazeItem)}
             };

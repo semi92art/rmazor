@@ -359,11 +359,12 @@ namespace Games.RazorMaze.Views.MazeItems
 
         #region unused api
         
-        public EAppearingState AppearingState { get; set; }
-        public object[] Shapes { get; }
-        public EProceedingStage ProceedingStage { get; set; }
-        public bool ActivatedInSpawnPool { get; set; }
-        public GameObject Object => gameObject;
+        public EAppearingState  AppearingState       { get; set; }
+        public Component[]      Shapes               => null;
+        public EProceedingStage ProceedingStage      { get; set; }
+        public bool             ActivatedInSpawnPool { get; set; }
+        public GameObject       Object               => gameObject;
+        
         public void Appear(bool _Appear) { }
         public object Clone() => null;
         public void OnLevelStageChanged(LevelStageArgs _Args) { }

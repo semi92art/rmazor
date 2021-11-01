@@ -106,9 +106,6 @@ namespace Games.RazorMaze.Views
                 MazeCoordinateConverter.DefaultBottomOffset, 
                 MazeCoordinateConverter.DefaultTopOffset);
             var proceeders = GetProceeders();
-            var iBackColChangedProceeders = GetInterfaceOfProceeders<IOnBackgroundColorChanged>(proceeders);
-            foreach (var proceeder in iBackColChangedProceeders)
-                Background.BackgroundColorChanged += proceeder.OnBackgroundColorChanged;
 
             var onLevelStageChangeds = GetInterfaceOfProceeders<IOnLevelStageChanged>(proceeders);
             LevelStageController.RegisterProceeders(onLevelStageChangeds);
@@ -116,6 +113,7 @@ namespace Games.RazorMaze.Views
             GetInterfaceOfProceeders<IInit>(GetProceeders())
                 .ToList()
                 .ForEach(_InitObj => _InitObj.Init());
+            LevelStageController.Init();
             Initialized?.Invoke();
         }
         
@@ -167,7 +165,7 @@ namespace Games.RazorMaze.Views
                     PortalsGroup,
                     ShredingerBlocksGroup,
                     SpringboardItemsGroup,
-                    GravityItemsGroup
+                    GravityItemsGroup,
                 }.Where(_Proceeder => _Proceeder != null)
                 .ToList();
             return result;

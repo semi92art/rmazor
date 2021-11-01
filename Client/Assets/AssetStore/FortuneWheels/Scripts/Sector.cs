@@ -23,49 +23,21 @@ namespace MkeyFW
         #region nonpublic members
         
         private const float DestroyTime = 3f;
-        private BankItemType m_BankItemType;
         
         #endregion
 
         #region api
         
-        public long Coins { get; private set; }
-        public BankItemType BankItemType => m_BankItemType;
-        public bool BigWin 
-        {
-            get
-            {
-                switch (m_BankItemType)
-                {
-                    case BankItemType.FirstCurrency:
-                        return Coins >= 1000000;
-                    case BankItemType.SecondCurrency:
-                        return Coins >= 100;
-                    default:
-                        throw new SwitchCaseNotImplementedException(m_BankItemType);
-                }
-            }
-        }
+        public long         Coins        { get; private set; }
+        public bool         BigWin       => true;
 
         public void Init(SectorMoney _SectorMoney)
         {
-            m_BankItemType = _SectorMoney.type;
             Coins = _SectorMoney.count;
             string prefabSetName;
             string iconName;
-            switch (m_BankItemType)
-            {
-                case BankItemType.FirstCurrency:
-                    prefabSetName = "coins";
-                    iconName = "gold_coin_0";
-                    break;
-                case BankItemType.SecondCurrency:
-                    prefabSetName = "coins";
-                    iconName = "diamond_coin_0";
-                    break;
-                default:
-                    throw new SwitchCaseNotImplementedException(m_BankItemType);
-            }
+            prefabSetName = "coins";
+            iconName = "gold_coin_0";
 
             icon.sprite = PrefabUtilsEx.GetObject<Sprite>(prefabSetName, iconName);
         }

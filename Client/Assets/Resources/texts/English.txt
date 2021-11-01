@@ -57,3 +57,6 @@ tails = Tails
 backgrounds = Background
 no_ads = Disable mandatory ads
 restore_purchases = Restore purchases
+you_have = You have
+continue = Continue
+not_enough_money = Not enough money

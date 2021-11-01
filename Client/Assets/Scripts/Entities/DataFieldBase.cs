@@ -5,12 +5,12 @@ namespace Entities
 {
     public abstract class DataFieldBase
     {
-        [JsonProperty] protected object Value { get; set; }
-        [JsonProperty] public ushort FieldId { get; set; }
-        [JsonProperty] public DateTime LastUpdateTime => LastUpdate;
-        [JsonIgnore] public virtual bool IsSaving { get; protected set; }
-        [JsonIgnore] public readonly int AccountId;
-        [JsonIgnore] protected DateTime LastUpdate;
+        [JsonProperty] protected      object   Value          { get; set; }
+        [JsonProperty] public         ushort   FieldId        { get; set; }
+        [JsonProperty] public         DateTime LastUpdateTime => LastUpdate;
+        [JsonIgnore]   public virtual bool     IsSaving       { get; protected set; }
+        [JsonIgnore]   public         int      AccountId      { get; set; }
+        [JsonIgnore]   protected      DateTime LastUpdate;
 
         public object             GetValue()    => Value;
         public bool               ToBool()      => Convert.ToBoolean(Value);

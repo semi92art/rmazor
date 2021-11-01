@@ -1,5 +1,6 @@
 ﻿using Constants;
 using DI.Extensions;
+using Entities;
 using GameHelpers;
 using Games.RazorMaze.Controllers;
 using Managers;
@@ -58,21 +59,9 @@ public class IntroSceneViewer : MonoBehaviour
                 var controller = RazorMazeGameController.CreateInstance();
                 controller.Initialized += () =>
                 {
-                    var levelEntity = ScoreManager.GetScore(DataFieldIds.CurrentLevel);
-                    Coroutines.Run(Coroutines.WaitWhile(
-                        () => !levelEntity.Loaded,
-                        () =>
-                        {
-                            var score = levelEntity.GetFirstScore();
-                            if (!score.HasValue)
-                            {
-                                Dbg.LogError("Level score does not exist!");
-                                return;
-                            }
-                            int level = score.Value;
-                            var info = LevelsLoader.LoadLevel(1, level);
-                            controller.Model.LevelStaging.LoadLevel(info, 0);
-                        }));
+                    int levelIndex = SaveUtils.GetValue<int>(SaveKey.CurrentLevelIndex);
+                    var info = LevelsLoader.LoadLevel(1, levelIndex);
+                    controller.Model.LevelStaging.LoadLevel(info, levelIndex);
                 };
                 controller.Init();
             }));

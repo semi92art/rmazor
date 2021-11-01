@@ -37,7 +37,7 @@ namespace UI.Panels
         #region inject
         
         public SettingsSelectorPanel(
-            IDialogViewer _DialogViewer,
+            IBigDialogViewer _DialogViewer,
             IManagersGetter _Managers,
             IUITicker _UITicker,
             ICameraProvider _CameraProvider,

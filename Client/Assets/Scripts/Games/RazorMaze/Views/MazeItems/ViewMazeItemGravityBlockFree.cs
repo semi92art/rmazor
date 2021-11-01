@@ -48,7 +48,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region api
         
-        public override object[] Shapes => new object[] {m_Shape};
+        public override Component[] Shapes => new Component[] {m_Shape};
         public override object Clone() => new ViewMazeItemGravityBlockFree(
             ViewSettings,
             Model,
@@ -84,7 +84,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             var sh = Object.AddComponentOnNewChild<Rectangle>("Block", out _);
             sh.Type = Rectangle.RectangleType.RoundedBorder;
-            sh.Color = ColorProvider.GetColor(ColorIds.MazeItem);
+            sh.Color = ColorProvider.GetColor(ColorIds.Main);
             sh.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
             m_Shape = sh;
         }
@@ -98,7 +98,13 @@ namespace Games.RazorMaze.Views.MazeItems
         }
 
         protected override void InitWallBlockMovingPaths() { }
-        
+
+        protected override void OnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId == ColorIds.Main)
+                m_Shape.Color = _Color;
+        }
+
         #endregion
 
     }

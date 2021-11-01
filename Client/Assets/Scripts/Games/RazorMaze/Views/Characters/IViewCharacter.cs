@@ -12,7 +12,6 @@ namespace Games.RazorMaze.Views.Characters
         ICharacterMoveStarted,
         ICharacterMoveContinued,
         ICharacterMoveFinished,
-        IOnBackgroundColorChanged,
         IAppear
     {
         void OnRotationAfterFinished(MazeRotationEventArgs _Args);

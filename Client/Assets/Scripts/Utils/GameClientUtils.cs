@@ -89,8 +89,8 @@ namespace Utils
         
         public static bool InternetConnection
         {
-            get => SaveUtils.GetValue<bool>(SaveKey.LastInternetConnectionSucceeded);
-            set => SaveUtils.PutValue(SaveKey.LastInternetConnectionSucceeded, value);
+            get => SaveUtils.GetValue<bool>(SaveKey.LastIntConnectionSuccess);
+            set => SaveUtils.PutValue(SaveKey.LastIntConnectionSuccess, value);
         }
     }
 }

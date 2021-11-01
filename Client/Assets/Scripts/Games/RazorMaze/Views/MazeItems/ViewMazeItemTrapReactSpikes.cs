@@ -79,7 +79,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region api
         
-        public override object[] Shapes => new object[] {m_Line, m_Trap};
+        public override Component[] Shapes => new Component[] {m_Line, m_Trap};
         
         public override object Clone() => new ViewMazeItemTrapReactSpikes(
             ViewSettings,
@@ -158,6 +158,15 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Mask.transform.localScale = Vector3.one * scale * 0.8f;
         }
 
+        protected override void OnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId == ColorIds.MazeItem)
+            {
+                m_Line.Color = _Color;
+                m_Trap.color = _Color;
+            }
+        }
+
         private float GetTrapAngle(V2Int _Direction)
         {
             if (_Direction == V2Int.left)
@@ -231,6 +240,8 @@ namespace Games.RazorMaze.Views.MazeItems
         private void CheckForCharacterDeath()
         {
             if (!Model.Character.Alive)
+                return;
+            if (Model.PathItemsProceeder.AllPathsProceeded)
                 return;
             if (Model.LevelStaging.LevelStage == ELevelStage.Finished)
                 return;

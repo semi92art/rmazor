@@ -58,12 +58,19 @@ namespace Games.RazorMaze.Views.Characters
                 {
                     if (!m_Initialized)
                     {
+                        ColorProvider.ColorChanged += OnColorChanged;
                         InitShape();
                         m_Initialized = true;
                     }
                 }
                 m_Activated = value;
             }
+        }
+
+        private void OnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId == ColorIds.CharacterTail)
+                m_Tail.Color = _Color;
         }
 
         public void ShowTail(CharacterMovingEventArgs _Args)

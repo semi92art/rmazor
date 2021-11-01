@@ -23,16 +23,15 @@ using Object = UnityEngine.Object;
 
 public class EditorHelper : EditorWindow
 {
-    private int m_DailyBonusIndex;
-    private Dictionary<BankItemType, long> m_Money = new Dictionary<BankItemType, long>();
-    private int m_TestUsersCount = 3;
-    private string m_DebugServerUrl;
-    private string m_TestUrlCheck;
-    private int m_GameId = -1;
-    private int m_GameIdCheck;
-    private int m_Quality = -1;
-    private int m_QualityCheck;
-    private int m_TabPage;
+    private int     m_DailyBonusIndex;
+    private int     m_TestUsersCount = 3;
+    private string  m_DebugServerUrl;
+    private string  m_TestUrlCheck;
+    private int     m_GameId = -1;
+    private int     m_GameIdCheck;
+    private int     m_Quality = -1;
+    private int     m_QualityCheck;
+    private int     m_TabPage;
     private Vector2 m_CommonScrollPos;
     private Vector2 m_CachedDataScrollPos;
     private Vector2 m_ModelSettingsScrollPos;
@@ -111,28 +110,7 @@ public class EditorHelper : EditorWindow
                 m_DailyBonusIndex = EditorGUILayout.Popup(
                     m_DailyBonusIndex, new[] { "1", "2", "3", "4", "5", "6", "7" });
             });
-            
-            if (Application.isPlaying)
-            {
-                EditorUtilsEx.HorizontalZone(() =>
-                {
-                    var money = m_Money.CloneAlt();
-                    foreach (var kvp in m_Money)
-                    {
-                        GUILayout.Label($"{kvp.Key}:");
-                        money[kvp.Key] = EditorGUILayout.LongField(money[kvp.Key]);
-                    }
 
-                    m_Money = money;
-                });
-
-                EditorUtilsEx.HorizontalZone(() =>
-                {
-                    EditorUtilsEx.GuiButtonAction("Get From Bank", GetMoneyFromBank);
-                    EditorUtilsEx.GuiButtonAction("Set Money", SetMoney);
-                });
-            }
-            
             EditorUtilsEx.HorizontalZone(() =>
             {
                 if (GUILayout.Button("Set Game Id:"))
@@ -317,20 +295,7 @@ public class EditorHelper : EditorWindow
     private void EnableDailyBonus()
     {
         SaveUtils.PutValue(SaveKey.DailyBonusLastDate, DateTime.Now.Date.AddDays(-1));
-        SaveUtils.PutValue(SaveKey.DailyBonusLastItemClickedDay, m_DailyBonusIndex);
-    }
-
-    private void GetMoneyFromBank()
-    {
-        var bank = new BankManager().GetBank();
-        Coroutines.Run(Coroutines.WaitWhile(
-            () => !bank.Loaded,
-            () =>  m_Money = bank.BankItems));
-    }
-    
-    private void SetMoney()
-    {
-        new BankManager().SetBank(m_Money);
+        SaveUtils.PutValue(SaveKey.DailyBonusLastClickedDay, m_DailyBonusIndex);
     }
 
     private void CreateTestUsers(int _Count)
@@ -351,10 +316,8 @@ public class EditorHelper : EditorWindow
             packet.OnSuccess(() =>
                 {
                     int accId = packet.Response.Id;
-                    new GameDataField(10, accId, 
-                        GameClientUtils.GameId, DataFieldIds.FirstCurrency).Save();
-                    new GameDataField(10, accId,
-                        GameClientUtils.GameId, DataFieldIds.SecondCurrency).Save();
+                    new GameDataField(100, accId, 
+                        GameClientUtils.GameId, DataFieldIds.Money).Save();
                     Dbg.Log("All test users were created successfully");
                 })
                 .OnFail(() =>
@@ -419,14 +382,12 @@ public class EditorHelper : EditorWindow
     private static Dictionary<string, string> GetAllSaveKeyValues() =>
         new Dictionary<string, string>
         {
-            {"Last connection succeeded", SaveUtils.GetValue<bool>(SaveKey.LastDatabaseConnectionSucceeded).ToString()},
+            {"Last connection succeeded", SaveUtils.GetValue<bool>(SaveKey.LastDbConnectionSuccess).ToString()},
             {"Login", SaveUtils.GetValue<string>(SaveKey.Login) ?? "not exist"},
             {"Password hash", SaveUtils.GetValue<string>(SaveKey.PasswordHash) ?? "not exist"},
             {"Account id", GameClientUtils.AccountId.ToString()},
             {"Game id", SaveUtils.GetValue<int>(SaveKey.GameId).ToString()},
-            {"First curr.", GetGameFieldCached(DataFieldIds.FirstCurrency)},
-            {"Second curr.", GetGameFieldCached(DataFieldIds.SecondCurrency)},
-            {"Main score", GetGameFieldCached(DataFieldIds.CurrentLevel)}
+            {"First curr.", GetGameFieldCached(DataFieldIds.Money)},
         };
 
     private static string GetGameFieldCached(ushort _FieldId)

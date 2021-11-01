@@ -72,7 +72,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         #region api
         
-        public override object[] Shapes => new object[] {m_Springboard, m_Pillar};
+        public override Component[] Shapes => new Component[] {m_Springboard, m_Pillar};
         
         public override object Clone() => new ViewMazeItemSpringboard(
             ViewSettings, 
@@ -99,7 +99,7 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Pillar = Object.AddComponentOnNewChild<Line>("Springboard Item", out _);
             m_Springboard = Object.AddComponentOnNewChild<Line>("Springboard", out _);
             m_Pillar.EndCaps = m_Springboard.EndCaps = LineEndCap.Round;
-            m_Pillar.Color = m_Springboard.Color = ColorProvider.GetColor(ColorIds.MazeItem);
+            m_Pillar.Color = m_Springboard.Color = ColorProvider.GetColor(ColorIds.Main);
         }
 
         protected override void UpdateShape()
@@ -110,6 +110,15 @@ namespace Games.RazorMaze.Views.MazeItems
                 GetSpringboardAndPillarEdges();
             m_Edge1Start = m_Springboard.Start;
             m_Edge2Start = m_Springboard.End;
+        }
+
+        protected override void OnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId == ColorIds.Main)
+            {
+                m_Pillar.Color = _Color;
+                m_Springboard.Color = _Color;
+            }
         }
 
         private IEnumerator JumpCoroutine()

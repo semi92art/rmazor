@@ -41,8 +41,8 @@ namespace Network
 
         private bool DatabaseConnection
         {
-            get => SaveUtils.GetValue<bool>(SaveKey.LastDatabaseConnectionSucceeded);
-            set => SaveUtils.PutValue(SaveKey.LastDatabaseConnectionSucceeded, value);
+            get => SaveUtils.GetValue<bool>(SaveKey.LastDbConnectionSuccess);
+            set => SaveUtils.PutValue(SaveKey.LastDbConnectionSuccess, value);
         }
         
         #endregion

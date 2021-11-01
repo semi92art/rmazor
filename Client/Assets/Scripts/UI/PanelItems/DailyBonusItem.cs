@@ -40,16 +40,16 @@ namespace UI.PanelItems
         
             button.onClick.AddListener(() =>
             {
-                var money = new Dictionary<BankItemType, long>();
-                if (_Props.Gold > 0)
-                    money.Add(BankItemType.FirstCurrency, _Props.Gold);
-                if (_Props.Diamonds > 0)
-                    money.Add(BankItemType.SecondCurrency, _Props.Diamonds);
-                BankManager.Instance.SetIncome(money, icon.RTransform());
-                BankManager.Instance.PlusBankItems(money);
+                // var money = new Dictionary<BankItemType, long>();
+                // if (_Props.Gold > 0)
+                //     money.Add(BankItemType.FirstCurrency, _Props.Gold);
+                // if (_Props.Diamonds > 0)
+                //     money.Add(BankItemType.SecondCurrency, _Props.Diamonds);
+                // BankManager.Instance.SetIncome(money, icon.RTransform());
+                // BankManager.Instance.PlusBankItems(money);
             
                 SaveUtils.PutValue(SaveKey.DailyBonusLastDate, DateTime.Today);
-                SaveUtils.PutValue(SaveKey.DailyBonusLastItemClickedDay, _Props.Day);
+                SaveUtils.PutValue(SaveKey.DailyBonusLastClickedDay, _Props.Day);
                 iconAnimator.SetTrigger(AnimKeys.Stop);
             });
         

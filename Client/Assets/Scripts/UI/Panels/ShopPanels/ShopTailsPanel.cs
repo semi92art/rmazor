@@ -39,7 +39,7 @@ namespace UI.Panels.ShopPanels
         public ShopTailsPanel(
             IManagersGetter _Managers, 
             IUITicker _Ticker,
-            IDialogViewer _DialogViewer,
+            IBigDialogViewer _DialogViewer,
             ICameraProvider _CameraProvider,
             IColorProvider _ColorProvider)
             : base(_Managers, _Ticker, _DialogViewer, _CameraProvider, _ColorProvider)

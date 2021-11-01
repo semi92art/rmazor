@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7185217501166128810}
   - component: {fileID: 7849783104562655895}
-  - component: {fileID: 2059422384673266841}
+  - component: {fileID: 7171034249632428335}
   m_Layer: 0
-  m_Name: Shadow
+  m_Name: Translucent Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,7 +45,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2016543221250813248}
   m_CullTransparentMesh: 0
---- !u!114 &2059422384673266841
+--- !u!114 &7171034249632428335
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -54,11 +54,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2016543221250813248}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Script: {fileID: 11500000, guid: 196bb08d6c2d3c9499c04e1281fd4ad3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.39607844}
+  m_Material: {fileID: 2100000, guid: 96c5704d0681e35408630c488fc0c234, type: 2}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -74,6 +74,11 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  source: {fileID: 0}
+  vibrancy: 0.92
+  brightness: -0.05
+  flatten: 0.405
+  spriteBlending: 0
 --- !u!1 &4806769396530410129
 GameObject:
   m_ObjectHideFlags: 0
@@ -124,7 +129,7 @@ GameObject:
   - component: {fileID: 1847119535015023476}
   - component: {fileID: 2897111226668219294}
   m_Layer: 0
-  m_Name: Notification Viewer
+  m_Name: Proposal Dialog Viewer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -220,6 +225,8 @@ MonoBehaviour:
       name: dialog_container
     - item: {fileID: 6009559761229068857}
       name: animator
+    - item: {fileID: 2016543221250813248}
+      name: background
 --- !u!95 &2897111226668219294
 Animator:
   serializedVersion: 3

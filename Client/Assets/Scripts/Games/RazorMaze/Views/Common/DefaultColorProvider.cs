@@ -9,9 +9,10 @@ namespace Games.RazorMaze.Views.Common
 {
     public interface IColorProvider : IInit
     {
-        Color                         GetColor(int _Id);
-        void                          SetColor(int _Id, Color _Color);
-        event UnityAction<int, Color> ColorChanged;
+        Color                           GetColor(int _Id);
+        void                            SetColor(int _Id, Color _Color);
+        event UnityAction<int, Color>   ColorChanged;
+        IReadOnlyDictionary<int, Color> Colors { get; }
     }
     
     public class DefaultColorProvider : MonoBehaviour, IColorProvider
@@ -25,8 +26,9 @@ namespace Games.RazorMaze.Views.Common
 
         #region api
         
-        public event UnityAction<int, Color> ColorChanged;
-        public event UnityAction             Initialized;
+        public event UnityAction<int, Color>   ColorChanged;
+        public IReadOnlyDictionary<int, Color> Colors => m_ColorsDict;
+        public event UnityAction               Initialized;
         
         public void Init()
         {

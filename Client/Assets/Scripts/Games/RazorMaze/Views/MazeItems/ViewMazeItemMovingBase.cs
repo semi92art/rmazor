@@ -126,7 +126,7 @@ namespace Games.RazorMaze.Views.MazeItems
             go.transform.SetLocalPosXY(Vector2.zero);
             var line = go.AddComponent<Polyline>();
             line.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
-            line.Color = ColorProvider.GetColor(ColorIds.MazeItemPathLine);
+            line.Color = ColorProvider.GetColor(ColorIds.Border);
             line.SetPoints(points);
             line.Closed = false;
             line.SortingOrder = SortingOrders.PathLine;
@@ -139,10 +139,10 @@ namespace Games.RazorMaze.Views.MazeItems
                 go1.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems));
                 var joint = go1.AddComponent<Disc>();
                 go1.transform.SetLocalPosXY(point);
-                joint.Color = ColorProvider.GetColor(ColorIds.MazeItemPathJoint);
+                joint.Color = ColorProvider.GetColor(ColorIds.Main);
                 joint.Radius = ViewSettings.LineWidth * CoordinateConverter.Scale * 2f;
                 joint.Type = DiscType.Disc;
-                joint.SortingOrder = SortingOrders.PathLineJoint;
+                joint.SortingOrder = SortingOrders.PathJoint;
                 m_PathJoints.Add(joint);
             }
                 
@@ -152,14 +152,28 @@ namespace Games.RazorMaze.Views.MazeItems
                 joint.enabled = false;
         }
 
-        protected override Dictionary<object[], Func<Color>> GetAppearSets(bool _Appear)
+        protected override Dictionary<Component[], Func<Color>> GetAppearSets(bool _Appear)
         {
             var sets = base.GetAppearSets(_Appear);
             if (m_PathLines.Any())
-                sets.Add(m_PathLines.Cast<object>().ToArray(), () => ColorProvider.GetColor(ColorIds.MazeItemPathLine));
+                sets.Add(m_PathLines.Cast<Component>().ToArray(), () => ColorProvider.GetColor(ColorIds.Border));
             if (m_PathJoints.Any())
-                sets.Add(m_PathJoints.Cast<object>().ToArray(), () => ColorProvider.GetColor(ColorIds.MazeItemPathJoint));
+                sets.Add(m_PathJoints.Cast<Component>().ToArray(), () => ColorProvider.GetColor(ColorIds.Main));
             return sets;
+        }
+
+        protected override void OnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId == ColorIds.Main)
+            {
+                foreach (var joint in m_PathJoints)
+                    joint.Color = _Color;
+            }
+            else if (_ColorId == ColorIds.Border)
+            {
+                foreach (var line in m_PathLines)
+                    line.Color = _Color;
+            }
         }
 
         #endregion

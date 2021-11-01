@@ -3,42 +3,48 @@ using System.Linq;
 using Constants;
 using DI.Extensions;
 using GameHelpers;
+using Games.RazorMaze;
+using LeTai.Asset.TranslucentImage;
 using Ticker;
 using UI;
 using UI.Factories;
 using UI.Panels;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using Utils;
 
 namespace DialogViewers
 {
-    public interface INotificationViewer : IDialogViewerBase
+    public interface IProposalDialogViewer : IDialogViewerBase
     {
-        void Back();
+        void Back(UnityAction _OnFinish = null);
         void Show(IDialogPanel _Item);
     }
     
-    public class NotificationViewer : INotificationViewer, IUpdateTick
+    public class ProposalDialogViewer : IProposalDialogViewer, IUpdateTick
     {
         #region nonpublic members
         
-        private RectTransform m_DialogContainer;
-        private Animator m_Animator;
-
         private static int AkShow => AnimKeys.Anim;
         private static int AkHide => AnimKeys.Stop;
-        private IDialogPanel m_Panel;
-        private Dictionary<Graphic, float> m_Alphas;
 
+        private RectTransform              m_DialogContainer;
+        private Animator                   m_Animator;
+        private TranslucentImage           m_Background;
+        private IDialogPanel               m_Panel;
+        private Dictionary<Graphic, float> m_Alphas;
+        
         #endregion
 
         #region inject
-        
-        private IUITicker Ticker { get; }
 
-        public NotificationViewer(IUITicker _Ticker)
+        private ViewSettings ViewSettings { get; }
+        private IUITicker    Ticker       { get; }
+
+        public ProposalDialogViewer(ViewSettings _ViewSettings, IUITicker _Ticker)
         {
+            ViewSettings = _ViewSettings;
             Ticker = _Ticker;
             _Ticker.Register(this);
         }
@@ -63,6 +69,9 @@ namespace DialogViewers
             {
                 m_DialogContainer = go.GetCompItem<RectTransform>("dialog_container");
                 m_Animator = go.GetCompItem<Animator>("animator");
+                m_Background = go.GetCompItem<TranslucentImage>("background");
+                m_Animator.speed = ViewSettings.ProposalDialogAnimSpeed;
+                m_Animator.SetTrigger(AkHide);
             }));
         }
 
@@ -82,7 +91,7 @@ namespace DialogViewers
             m_Animator.SetTrigger(AkShow);
             IsShowing = true;
         }
-        public void Back()
+        public void Back(UnityAction _OnFinish = null)
         {
             m_Animator.SetTrigger(AkHide);
             
@@ -97,16 +106,14 @@ namespace DialogViewers
                     m_Panel.OnDialogHide();
                     Object.Destroy(m_Panel.Panel.gameObject);
                     m_Panel = null;
+                    _OnFinish?.Invoke();
                 }));
             IsShowing = false;
         }
         
         public void UpdateTick()
         {
-            if (!IsShowing)
-                return;
-            if (Input.GetKeyDown(KeyCode.Escape))
-                Back();
+
         }
         
         #endregion

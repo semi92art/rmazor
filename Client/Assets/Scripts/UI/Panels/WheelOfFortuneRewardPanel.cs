@@ -17,7 +17,7 @@ namespace UI.Panels
 {
     public interface IWheelOfFortuneRewardPanel : IDialogPanel
     {
-        void PreInit(BankItemType BankItemType, long _Reward, UnityAction _OnClose);
+        void PreInit(long _Reward, UnityAction _OnClose);
     }
     
     public class WheelOfFortuneRewardPanel : DialogPanelBase, IWheelOfFortuneRewardPanel
@@ -25,7 +25,6 @@ namespace UI.Panels
         #region nonpublic members
         
         private static int AkShow => AnimKeys.Anim;
-        private BankItemType m_BankItemType;
         private long m_Reward;
         private UnityAction m_OnClose;
         private Animator m_Animator;
@@ -37,18 +36,18 @@ namespace UI.Panels
 
         #region inject
 
-        private INotificationViewer NotificationViewer { get; }
+        private IProposalDialogViewer ProposalDialogViewer { get; }
         
         public WheelOfFortuneRewardPanel(
-            IDialogViewer _DialogViewer,
-            INotificationViewer _NotificationViewer,
+            IBigDialogViewer _DialogViewer,
+            IProposalDialogViewer _ProposalDialogViewer,
             IManagersGetter _Managers,
             IUITicker _UITicker,
             ICameraProvider _CameraProvider,
             IColorProvider _ColorProvider) 
             : base(_Managers, _UITicker, _DialogViewer, _CameraProvider, _ColorProvider)
         {
-            NotificationViewer = _NotificationViewer;
+            ProposalDialogViewer = _ProposalDialogViewer;
         }
         
         #endregion
@@ -59,9 +58,8 @@ namespace UI.Panels
 
         public override EUiCategory Category => EUiCategory.WheelOfFortune;
         
-        public void PreInit(BankItemType _BankItemType, long _Reward, UnityAction _OnClose)
+        public void PreInit(long _Reward, UnityAction _OnClose)
         {
-            m_BankItemType = _BankItemType;
             m_Reward = _Reward;
             m_OnClose = _OnClose;
         }
@@ -71,7 +69,7 @@ namespace UI.Panels
             base.Init();
             var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
-                    NotificationViewer.Container,
+                    ProposalDialogViewer.Container,
                     RtrLites.FullFill),
                 CommonPrefabSetNames.DialogPanels, "wof_reward_panel");
             Panel = go.RTransform();
@@ -82,24 +80,12 @@ namespace UI.Panels
             m_Animator = go.GetCompItem<Animator>("animator");
             m_GetButton = go.GetCompItem<Button>("get_button");
             
-            m_GetButton.SetOnClick(() => NotificationViewer.Back());
+            m_GetButton.SetOnClick(() => ProposalDialogViewer.Back());
             
             string iconName;
             string prefabSet;
-            switch (m_BankItemType)
-            {
-                case BankItemType.FirstCurrency:
-                    iconName = "gold_coin_0";
-                    prefabSet = "coins";
-                    break;
-                case BankItemType.SecondCurrency:
-                    iconName = "diamond_coin_0";
-                    prefabSet = "coins";
-                    break;
-                default:
-                    throw new SwitchCaseNotImplementedException(m_BankItemType);
-            }
-
+            iconName = "gold_coin_0";
+            prefabSet = "coins";
             Sprite iconSprite = PrefabUtilsEx.GetObject<Sprite>(prefabSet, iconName);
             m_RewardIcon.sprite = iconSprite;
             m_RewardCount.text = m_Reward.ToNumeric();
