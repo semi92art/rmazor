@@ -1,48 +1,30 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine.Analytics;
 using UnityEngine.Events;
 
 namespace Managers
 {
     public interface IAnalyticsManager : IInit
     {
-        void OnAnalytic(string _AnalyticCode);
+        void SendAnalytic(string _AnalyticId, IDictionary<string, object> _EventData = null);
     }
     
     public class AnalyticsManager : IAnalyticsManager
     {
-        #region singleton
-        
-        private static AnalyticsManager _instance;
-        public static AnalyticsManager Instance => _instance ?? (_instance = new AnalyticsManager());
-    
-        #endregion
-    
-        #region nonpublic members
-    
-        private static GameObject _analyticsObject;
-        
-        #endregion
-
         #region api
         
         public event UnityAction Initialized;
 
         public void Init()
         { 
-            // TODO
-           // AnalyticsEventTracker analyticsEventTracker = _analyticsObject.AddComponent<AnalyticsEventTracker>();
-           // analyticsEventTracker.m_Trigger.lifecycleEvent.
-           //  
-           //  Dbg.Log("Analytics enabled");
-           Initialized?.Invoke();
+            Initialized?.Invoke();
         }
 
-        public void OnAnalytic(string _AnalyticCode)
+        public void SendAnalytic(string _AnalyticId, IDictionary<string, object> _EventData = null)
         {
-            // TODO
+            Analytics.CustomEvent(_AnalyticId, _EventData);
         }
-
-
+        
         #endregion
     }
 }

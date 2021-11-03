@@ -10,13 +10,12 @@ using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.InputConfigurators;
-using Games.RazorMaze.Views.Utils;
+using Managers;
 using Shapes;
 using Ticker;
 using TMPro;
 using UnityEngine;
 using Utils;
-using SortingOrders = Games.RazorMaze.Views.Utils.SortingOrders;
 
 namespace Games.RazorMaze.Views.UI
 {
@@ -68,6 +67,7 @@ namespace Games.RazorMaze.Views.UI
         private IGameTicker              GameTicker          { get; }
         private ILevelsLoader            LevelsLoader        { get; }
         private ILocalizationManager     LocalizationManager { get; }
+        private IAnalyticsManager        AnalyticsManager    { get; }
         private ICameraProvider          CameraProvider      { get; }
         private IColorProvider           ColorProvider       { get; }
 
@@ -82,6 +82,7 @@ namespace Games.RazorMaze.Views.UI
             IGameTicker _GameTicker,
             ILevelsLoader _LevelsLoader,
             ILocalizationManager _LocalizationManager,
+            IAnalyticsManager _AnalyticsManager,
             ICameraProvider _CameraProvider,
             IColorProvider _ColorProvider) 
             : base(_Input)
@@ -95,6 +96,7 @@ namespace Games.RazorMaze.Views.UI
             GameTicker = _GameTicker;
             LevelsLoader = _LevelsLoader;
             LocalizationManager = _LocalizationManager;
+            AnalyticsManager = _AnalyticsManager;
             CameraProvider = _CameraProvider;
             ColorProvider = _ColorProvider;
         }
@@ -373,11 +375,13 @@ namespace Games.RazorMaze.Views.UI
 
         private void CommandShop()
         {
+            AnalyticsManager.SendAnalytic(AnalyticIds.ShopButtonPressed);
             Input.RaiseCommand(InputCommands.ShopMenu, null);
         }
 
         private void CommandSettings()
         {
+            AnalyticsManager.SendAnalytic(AnalyticIds.SettingsButtonPressed);
             Input.RaiseCommand(InputCommands.SettingsMenu, null);
         }
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Constants;
 using DialogViewers;
 using Entities;
 using Games.RazorMaze.Models;
@@ -148,7 +149,15 @@ namespace Games.RazorMaze.Views.Common
                         },
                         () => Model.LevelStaging.ReadyToStartLevel()));
                     break;
+                case ELevelStage.ReadyToStart:
+                    break;
                 case ELevelStage.Finished:
+                    Managers.AnalyticsManager.SendAnalytic(AnalyticIds.LevelFinished, 
+                        new Dictionary<string, object>
+                        {
+                            {"level_index", _Args.LevelIndex},
+                            {"level_time", Model.LevelStaging.LevelTime}
+                        });
                     SaveUtils.PutValue(SaveKey.CurrentLevelIndex, _Args.LevelIndex + 1);
                     break;
                 case ELevelStage.ReadyToUnloadLevel:

@@ -126,16 +126,17 @@ namespace UI.Panels
 
         private void StartSpinOrWatchAd()
         {
+            Managers.SoundManager.PlayClip(AudioClipNames.UIButtonClick);
             if (!m_IsLocked)
             {
-                UIUtils.OnButtonClick(Managers, NotifyMessageSpinButtonClick);
+                Managers.AnalyticsManager.SendAnalytic(NotifyMessageSpinButtonClick);
                 Coroutines.Run(Coroutines.Action(() => m_WheelController.StartSpin()));
                 SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, DateTime.Now.Date);
                 m_SpinButton.interactable = false;
             }
             else
             {
-                UIUtils.OnButtonClick(Managers, NotifyMessageWatchAdButtonClick);
+                Managers.AnalyticsManager.SendAnalytic(NotifyMessageWatchAdButtonClick);
                 Managers.Notify(_OnAdsManager: _AM => _AM.ShowRewardedAd(WatchAdFinishAction));
             }
         }
