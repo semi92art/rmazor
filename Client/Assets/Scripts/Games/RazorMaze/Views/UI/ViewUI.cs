@@ -1,43 +1,39 @@
 ﻿using Controllers;
 using DI.Extensions;
 using DialogViewers;
-using GameHelpers;
+using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.InputConfigurators;
 using Ticker;
+using Utils;
 
 namespace Games.RazorMaze.Views.UI
 {
-    public class BoolArgs
-    {
-        public bool Value { get; set; }
-    }
-    
     public class ViewUI : ViewUIBase
     {
         #region inject
 
-        private IBigDialogViewer          DialogViewer       { get; }
-        private IProposalDialogViewer    ProposalDialogViewer { get; }
-        private IDialogPanels          DialogPanels       { get; }
-        private ILoadingController     LoadingController  { get; }
-        private IViewInputConfigurator InputConfigurator  { get; }
+        private IBigDialogViewer       BigDialogViewer      { get; }
+        private IProposalDialogViewer  ProposalDialogViewer { get; }
+        private IDialogPanels          DialogPanels         { get; }
+        private ILoadingController     LoadingController    { get; }
+        private IViewInput Input    { get; }
 
         public ViewUI(
             IUITicker _UITicker,
-            IBigDialogViewer _DialogViewer,
+            IBigDialogViewer _BigDialogViewer,
             IProposalDialogViewer _ProposalDialogViewer,
             IDialogPanels _DialogPanels,
             ILoadingController _LoadingController,
             IViewUIGameControls _ViewUIGameControls,
-            IViewInputConfigurator _InputConfigurator)
+            IViewInput _Input)
             : base(_ViewUIGameControls)
         {
-            DialogViewer = _DialogViewer;
+            BigDialogViewer = _BigDialogViewer;
             ProposalDialogViewer = _ProposalDialogViewer;
             DialogPanels = _DialogPanels;
             LoadingController = _LoadingController;
-            InputConfigurator = _InputConfigurator;
+            Input = _Input;
             _UITicker.Register(this);
         }
 
@@ -47,10 +43,10 @@ namespace Games.RazorMaze.Views.UI
 
         public override void Init()
         {
-            InputConfigurator.Command += OnCommand;
+            Input.Command += OnCommand;
             CreateCanvas();
             var parent = m_Canvas.RTransform();
-            DialogViewer.Init(parent);
+            BigDialogViewer.Init(parent);
             ProposalDialogViewer.Init(parent);
             UIGameControls.Init();
             RaiseInitializedEvent();
@@ -62,13 +58,13 @@ namespace Games.RazorMaze.Views.UI
             {
                 case InputCommands.SettingsMenu:
                     DialogPanels.SettingDialogPanel.Init();
-                    DialogViewer.Show(DialogPanels.SettingDialogPanel);
-                    InputConfigurator.RaiseCommand(InputCommands.PauseLevel, null, true);
+                    BigDialogViewer.Show(DialogPanels.SettingDialogPanel);
+                    Input.RaiseCommand(InputCommands.PauseLevel, null, true);
                     break;
                 case InputCommands.ShopMenu:
                     DialogPanels.ShopDialogPanel.Init();
-                    DialogViewer.Show(DialogPanels.ShopDialogPanel);
-                    InputConfigurator.RaiseCommand(InputCommands.PauseLevel, null, true);
+                    BigDialogViewer.Show(DialogPanels.ShopDialogPanel);
+                    Input.RaiseCommand(InputCommands.PauseLevel, null, true);
                     break;
             }
         }
@@ -76,8 +72,30 @@ namespace Games.RazorMaze.Views.UI
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             UIGameControls.OnLevelStageChanged(_Args);
+            ShowRateGamePanel(_Args);
         }
         
+        #endregion
+
+        #region nonpublic methdos
+
+        private void ShowRateGamePanel(LevelStageArgs _Args)
+        {
+            if (_Args.Stage != ELevelStage.Finished) 
+                return;
+            if (!GameClientUtils.InternetConnection)
+                return;
+            bool mustShowRateGamePanel = _Args.LevelIndex % 10 == 0 && _Args.LevelIndex != 0;
+            if (!mustShowRateGamePanel)
+                return;
+            bool gameWasRatedAlready = SaveUtils.GetValue<bool>(SaveKey.GameWasRated);
+            if (gameWasRatedAlready)
+                return;
+            var panel = DialogPanels.RateGameDialogPanel;
+            panel.Init();
+            ProposalDialogViewer.Show(panel);
+        }
+
         #endregion
     }
 }

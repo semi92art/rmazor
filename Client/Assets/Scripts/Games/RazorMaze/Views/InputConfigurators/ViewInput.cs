@@ -13,7 +13,7 @@ using Utils;
 
 namespace Games.RazorMaze.Views.InputConfigurators
 {
-    public class ViewInputConfigurator : IViewInputConfigurator
+    public class ViewInput : IViewInput
     {
         #region nonpublic members
 
@@ -29,14 +29,13 @@ namespace Games.RazorMaze.Views.InputConfigurators
         private IModelGame Model { get; }
         private IContainersGetter ContainersGetter { get; }
 
-        protected ViewInputConfigurator(IModelGame _Model, IContainersGetter _ContainersGetter)
+        protected ViewInput(IModelGame _Model, IContainersGetter _ContainersGetter)
         {
             Model = _Model;
             ContainersGetter = _ContainersGetter;
         }
 
         #endregion
-        
 
         #region api
 
@@ -182,9 +181,11 @@ namespace Games.RazorMaze.Views.InputConfigurators
 
         private void MoveNext(LeanFinger _Finger)
         {
-            if (_Finger.LastScreenPosition.y / GraphicUtils.ScreenSize.y < 0.8f)
-                if (Model.LevelStaging.LevelStage == ELevelStage.Finished)
-                    RaiseCommand(InputCommands.ReadyToUnloadLevel, null, true);
+            if (!(_Finger.LastScreenPosition.y / GraphicUtils.ScreenSize.y < 0.8f)) 
+                return;
+            if (Model.LevelStaging.LevelStage != ELevelStage.Finished) 
+                return;
+            RaiseCommand(InputCommands.ReadyToUnloadLevel, null);
         }
 
         #endregion

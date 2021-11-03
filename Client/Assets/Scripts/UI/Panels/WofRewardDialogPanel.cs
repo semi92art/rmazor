@@ -15,12 +15,12 @@ using UnityEngine.UI;
 
 namespace UI.Panels
 {
-    public interface IWheelOfFortuneRewardPanel : IDialogPanel
+    public interface IWofRewardPanel : IDialogPanel
     {
         void PreInit(long _Reward, UnityAction _OnClose);
     }
     
-    public class WheelOfFortuneRewardPanel : DialogPanelBase, IWheelOfFortuneRewardPanel
+    public class WofRewardDialogPanel : DialogPanelBase, IWofRewardPanel
     {
         #region nonpublic members
         
@@ -38,7 +38,7 @@ namespace UI.Panels
 
         private IProposalDialogViewer ProposalDialogViewer { get; }
         
-        public WheelOfFortuneRewardPanel(
+        public WofRewardDialogPanel(
             IBigDialogViewer _DialogViewer,
             IProposalDialogViewer _ProposalDialogViewer,
             IManagersGetter _Managers,

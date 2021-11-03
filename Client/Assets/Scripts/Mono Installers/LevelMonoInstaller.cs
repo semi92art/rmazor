@@ -36,8 +36,7 @@ namespace Mono_Installers
         public override void InstallBindings()
         {
             base.InstallBindings();
-            
-            Container.Bind<IGameController>()               .To<RazorMazeGameController>()       .AsSingle();
+            Container.Bind<IGameController>()               .To<GameController>()       .AsSingle();
             
             #region model
             
@@ -65,7 +64,6 @@ namespace Mono_Installers
             #region view
             
             Container.Bind<ViewSettings>()                  .FromScriptableObject(viewSettings)  .AsSingle();
-
             Container.Bind<IMazeShaker>()                   .To<MazeShaker>()                    .AsSingle();
             Container.Bind<IMazeCoordinateConverter>()      .To<MazeCoordinateConverter>()       .AsSingle();
             Container.Bind<IContainersGetter>()             .To<ContainersGetter>()              .AsSingle();
@@ -77,6 +75,7 @@ namespace Mono_Installers
             Container.Bind<IViewUI>()                       .To<ViewUIProt>()                    .AsSingle().When(_ => !Release);
             Container.Bind<IViewUIGameControls>()           .To<ViewUIGameControls>()            .AsSingle().When(_ => Release);
             Container.Bind<IViewUIGameControls>()           .To<ViewUIGameControlsProt>()        .AsSingle().When(_ => !Release);
+            Container.Bind<IViewUIPrompts>()                .To<ViewUIPrompts>()                 .AsSingle().When(_ => Release);
             Container.Bind<IViewMazeRotation>()             .To<ViewMazeRotation>()              .AsSingle();
             Container.Bind<IViewMazeBackground>()           .To<ViewMazeBackground>()            .AsSingle();
             Container.Bind<IViewAppearTransitioner>()       .To<ViewAppearTransitioner>()        .AsSingle();
@@ -110,26 +109,26 @@ namespace Mono_Installers
             Container.Bind<IViewMazeTrapsIncItemsGroup>()   .To<ViewMazeTrapsIncItemsGroup>()    .AsSingle();
             Container.Bind<IViewMazeGravityItemsGroup>()    .To<ViewMazeGravityItemsGroup>()     .AsSingle();
 
+            Container.Bind<IBigDialogViewer>()              .To<BigDialogViewer>()               .AsSingle().When(_ => Release);
+            Container.Bind<IProposalDialogViewer>()         .To<ProposalDialogViewer>()          .AsSingle().When(_ => Release);
             Container.Bind<IDialogPanels>()                 .To<DialogPanels>()                  .AsSingle().When(_ => Release);
             Container.Bind<ISettingSelectorDialogPanel>()   .To<SettingsSelectorPanel>()         .AsSingle().When(_ => Release);
             Container.Bind<IShopDialogPanel>()              .To<ShopPanel>()                     .AsSingle().When(_ => Release);
             Container.Bind<IShopMoneyDialogPanel>()         .To<ShopMoneyPanel>()                .AsSingle().When(_ => Release);
             Container.Bind<IShopHeadsDialogPanel>()         .To<ShopHeadsPanel>()                .AsSingle().When(_ => Release);
             Container.Bind<IShopTailsDialogPanel>()         .To<ShopTailsPanel>()                .AsSingle().When(_ => Release);
-            Container.Bind<IWheelOfFortuneDialogPanel>()    .To<WheelOfFortunePanel>()           .AsSingle().When(_ => Release);
-            Container.Bind<IWheelOfFortuneRewardPanel>()    .To<WheelOfFortuneRewardPanel>()     .AsSingle().When(_ => Release);
-            Container.Bind<IBigDialogViewer>()                 .To<BigDialogViewer>()        .AsSingle().When(_ => Release);
-            Container.Bind<IProposalDialogViewer>()           .To<ProposalDialogViewer>()            .AsSingle().When(_ => Release);
-            Container.Bind<ILoadingController>()            .To<LoadingController>()             .AsSingle().When(_ => Release);
-            Container.Bind<IDailyBonusDialogPanel>()        .To<DailyBonusPanel>()               .AsSingle().When(_ => Release);
-            Container.Bind<ISettingDialogPanel>()           .To<SettingsPanel>()                 .AsSingle().When(_ => Release);
-            Container.Bind<IViewUIPrompts>()                .To<ViewUIPrompts>()                 .AsSingle().When(_ => Release);
+            Container.Bind<IWofDialogPanel>()               .To<WofDialogPanel>()                .AsSingle().When(_ => Release);
+            Container.Bind<IWofRewardPanel>()               .To<WofRewardDialogPanel>()          .AsSingle().When(_ => Release);
+            Container.Bind<IDailyBonusDialogPanel>()        .To<DailyBonusDialogPanel>()         .AsSingle().When(_ => Release);
+            Container.Bind<ISettingDialogPanel>()           .To<SettingsDialogPanel>()           .AsSingle().When(_ => Release);
             Container.Bind<ICharacterDiedDialogPanel>()     .To<CharacterDiedDialogPanel>()      .AsSingle().When(_ => Release);
+            Container.Bind<IRateGameDialogPanel>()          .To<RateGameDialogPanel>()           .AsSingle().When(_ => Release);
+            
 
 #if UNITY_EDITOR
-            Container.Bind<IViewInputConfigurator>()        .To<ViewInputConfiguratorInEditor>() .AsSingle();
+            Container.Bind<IViewInput>().To<ViewInputInEditor>().AsSingle();
 #else
-            Container.Bind<IViewInputConfigurator>()        .To<ViewInputConfigurator>()         .AsSingle();
+            Container.Bind<IViewInput>().To<ViewInput>()        .AsSingle();
 #endif
             
             #endregion
@@ -148,9 +147,10 @@ namespace Mono_Installers
 
             #region other
 
-            Container.Bind<ICameraProvider>()   .FromComponentInNewPrefab(cameraProvider)       .AsSingle();
-            Container.Bind<IColorProvider>()    .FromComponentInNewPrefab(colorProvider)        .AsSingle();
-            Container.Bind<IDebugManager>()     .To<DebugManager>()                             .AsSingle();
+            Container.Bind<ICameraProvider>()   .FromComponentInNewPrefab(cameraProvider).AsSingle();
+            Container.Bind<IColorProvider>()    .FromComponentInNewPrefab(colorProvider) .AsSingle();
+            Container.Bind<IDebugManager>()     .To<DebugManager>()                      .AsSingle();
+            Container.Bind<ILoadingController>().To<LoadingController>()                 .AsSingle().When(_ => Release);
             
             #endregion
         }

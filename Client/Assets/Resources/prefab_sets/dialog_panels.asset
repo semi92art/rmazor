@@ -39,3 +39,6 @@ MonoBehaviour:
     - item: {fileID: 8219298684319459333, guid: aada0e6c1e3f9b246bc089aa5d754518,
         type: 3}
       name: character_died_panel
+    - item: {fileID: 8219298684319459333, guid: dc03f95562103b9488bece8533f26b73,
+        type: 3}
+      name: rate_game_panel

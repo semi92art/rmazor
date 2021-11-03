@@ -56,7 +56,7 @@ public class IntroSceneViewer : MonoBehaviour
             () => !AssetBundleManager.BundlesLoaded,
             () =>
             {
-                var controller = RazorMazeGameController.CreateInstance();
+                var controller = GameController.CreateInstance();
                 controller.Initialized += () =>
                 {
                     int levelIndex = SaveUtils.GetValue<int>(SaveKey.CurrentLevelIndex);

@@ -19,7 +19,7 @@ namespace UI.Panels
 {
     public interface ISettingDialogPanel : IDialogPanel { }
     
-    public class SettingsPanel : DialogPanelBase, ISettingDialogPanel
+    public class SettingsDialogPanel : DialogPanelBase, ISettingDialogPanel
     {
         #region constants
 
@@ -55,7 +55,7 @@ namespace UI.Panels
         private ISettingSelectorDialogPanel SelectorPanel { get; }
         private ISettingsGetter SettingsGetter { get; }
 
-        public SettingsPanel(
+        public SettingsDialogPanel(
             ISettingSelectorDialogPanel _SelectorPanel,
             IBigDialogViewer _DialogViewer,
             IManagersGetter _Managers,

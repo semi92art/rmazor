@@ -13,15 +13,15 @@ namespace Games.RazorMaze.Controllers
         IViewGame View { get; }
     }
     
-    public class RazorMazeGameController : MonoBehaviour, IGameController
+    public class GameController : MonoBehaviour, IGameController
     {
         #region factory
         
         public static IGameController CreateInstance()
         {
             var go = CommonUtils.FindOrCreateGameObject("Game Manager", out bool _WasFound);
-            var instance = _WasFound ? go.GetComponent<RazorMazeGameController>() 
-                : go.AddComponent<RazorMazeGameController>();
+            var instance = _WasFound ? go.GetComponent<GameController>() 
+                : go.AddComponent<GameController>();
             return instance;
         }
 
@@ -84,7 +84,7 @@ namespace Games.RazorMaze.Controllers
             Model.Character.CharacterMoveFinished                     += View.OnCharacterMoveFinished;
             Model.LevelStaging.LevelStageChanged                      += View.OnLevelStageChanged;
             
-            View.InputConfigurator.Command                            += Model.InputScheduler.AddCommand;
+            View.Input.Command                                        += Model.InputScheduler.AddCommand;
             View.MazeRotation.RotationFinished                        += Model.MazeRotation.OnRotationFinished;
             
             View.Init();
@@ -128,7 +128,7 @@ namespace Games.RazorMaze.Controllers
             Model.Character.CharacterMoveFinished                     -= View.OnCharacterMoveFinished;
             Model.LevelStaging.LevelStageChanged                      -= View.OnLevelStageChanged;
             
-            View.InputConfigurator.Command                            -= Model.InputScheduler.AddCommand;
+            View.Input.Command                                        -= Model.InputScheduler.AddCommand;
             View.MazeRotation.RotationFinished                        -= Model.MazeRotation.OnRotationFinished;
         }
 

@@ -21,7 +21,7 @@ namespace UI.Panels
         IAction Action { get; set; }
     }
     
-    public class DailyBonusPanel : DialogPanelBase, IDailyBonusDialogPanel
+    public class DailyBonusDialogPanel : DialogPanelBase, IDailyBonusDialogPanel
     {
         #region nonpublic members
         
@@ -43,7 +43,7 @@ namespace UI.Panels
 
         #region inject
 
-        public DailyBonusPanel(
+        public DailyBonusDialogPanel(
             IBigDialogViewer _DialogViewer,
             IManagersGetter _Managers,
             IUITicker _UITicker,

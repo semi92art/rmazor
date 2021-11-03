@@ -70,18 +70,18 @@ namespace DialogViewers
 
         private IManagersGetter        Managers          { get; }
         private IUITicker              Ticker            { get; }
-        private IViewInputConfigurator InputConfigurator { get; }
+        private IViewInput Input { get; }
         private IColorProvider         ColorProvider     { get; }
 
         public BigDialogViewer(
             IManagersGetter _Managers,
             IUITicker _Ticker,
-            IViewInputConfigurator _InputConfigurator,
+            IViewInput _Input,
             IColorProvider _ColorProvider)
         {
             Managers = _Managers;
             Ticker = _Ticker;
-            InputConfigurator = _InputConfigurator;
+            Input = _Input;
             ColorProvider = _ColorProvider;
             _Ticker.Register(this);
         }
@@ -141,12 +141,12 @@ namespace DialogViewers
             
             PanelStack.Push(lastPanel);
             ShowCore(null, true, true);
-            InputConfigurator.RaiseCommand(InputCommands.UnPauseLevel, null, true);
+            Input.RaiseCommand(InputCommands.UnPauseLevel, null, true);
         }
         
         public virtual void UpdateTick()
         {
-            if (!ProposalDialogViewer.IsShowing && Input.GetKeyDown(KeyCode.Escape))
+            if (!ProposalDialogViewer.IsShowing && UnityEngine.Input.GetKeyDown(KeyCode.Escape))
                 CloseAll();
         }
         

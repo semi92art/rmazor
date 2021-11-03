@@ -45,7 +45,7 @@ namespace Games.RazorMaze.Views.Common
         private IModelGame             Model                { get; }
         private IManagersGetter        Managers             { get; }
         private IViewCharacter         Character            { get; }
-        private IViewInputConfigurator InputConfigurator    { get; }
+        private IViewInput Input    { get; }
         private IContainersGetter      ContainersGetter     { get; }
         private IMazeShaker            MazeShaker           { get; }
         private IDialogPanels          DialogPanels         { get; }
@@ -56,7 +56,7 @@ namespace Games.RazorMaze.Views.Common
             IModelGame _Model,
             IManagersGetter _Managers,
             IViewCharacter _Character,
-            IViewInputConfigurator _InputConfigurator,
+            IViewInput _Input,
             IContainersGetter _ContainersGetter,
             IMazeShaker _MazeShaker,
             IDialogPanels _DialogPanels,
@@ -66,7 +66,7 @@ namespace Games.RazorMaze.Views.Common
             Model = _Model;
             Managers = _Managers;
             Character = _Character;
-            InputConfigurator = _InputConfigurator;
+            Input = _Input;
             ContainersGetter = _ContainersGetter;
             MazeShaker = _MazeShaker;
             DialogPanels = _DialogPanels;
@@ -81,7 +81,7 @@ namespace Games.RazorMaze.Views.Common
         
         public void Init()
         {
-            InputConfigurator.Command += OnCommand;
+            Input.Command += OnCommand;
             Initialized?.Invoke();
         }
 
@@ -165,9 +165,9 @@ namespace Games.RazorMaze.Views.Common
                     break;
                 case ELevelStage.Unloaded:
                     if (m_NextLevelMustBeFirstInGroup)
-                        InputConfigurator.RaiseCommand(InputCommands.LoadFirstLevelFromCurrentGroup, null, true);
+                        Input.RaiseCommand(InputCommands.LoadFirstLevelFromCurrentGroup, null, true);
                     else if (RazorMazeUtils.LoadNextLevelAutomatically)
-                        InputConfigurator.RaiseCommand(InputCommands.LoadNextLevel, null, true);
+                        Input.RaiseCommand(InputCommands.LoadNextLevel, null, true);
                     break;
                 case ELevelStage.CharacterKilled:
                     MazeShaker.OnCharacterDeathAnimation(

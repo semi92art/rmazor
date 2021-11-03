@@ -209,9 +209,9 @@ namespace DebugConsole
 
         #region public methods
 
-        public void Init(IViewInputConfigurator _InputConfigurator)
+        public void Init(IViewInput _Input)
         {
-            m_Controller.Init(_InputConfigurator);
+            m_Controller.Init(_Input);
         }
 
         #endregion

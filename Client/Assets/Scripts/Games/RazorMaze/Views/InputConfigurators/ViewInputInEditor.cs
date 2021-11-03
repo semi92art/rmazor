@@ -5,11 +5,11 @@ using UnityEngine;
 
 namespace Games.RazorMaze.Views.InputConfigurators
 {
-    public class ViewInputConfiguratorInEditor : ViewInputConfigurator, IUpdateTick
+    public class ViewInputInEditor : ViewInput, IUpdateTick
     {
         #region inject
 
-        public ViewInputConfiguratorInEditor(
+        public ViewInputInEditor(
             IUITicker _UITicker,
             IModelGame _Model,
             IContainersGetter _ContainersGetter) 

@@ -77,14 +77,14 @@ namespace Games.RazorMaze.Views.UI
             IModelGame _Model,
             IContainersGetter _ContainersGetter,
             IMazeCoordinateConverter _CoordinateConverter,
-            IViewInputConfigurator _InputConfigurator,
+            IViewInput _Input,
             IViewAppearTransitioner _AppearTransitioner,
             IGameTicker _GameTicker,
             ILevelsLoader _LevelsLoader,
             ILocalizationManager _LocalizationManager,
             ICameraProvider _CameraProvider,
             IColorProvider _ColorProvider) 
-            : base(_InputConfigurator)
+            : base(_Input)
         {
             ViewSettings = _ViewSettings;
             Prompts = _Prompts;
@@ -133,15 +133,22 @@ namespace Games.RazorMaze.Views.UI
             {
                 case ELevelStage.Loaded:
                 case ELevelStage.Paused:
-                case ELevelStage.Finished:
                 case ELevelStage.ReadyToUnloadLevel:
                 case ELevelStage.Unloaded:
                 case ELevelStage.CharacterKilled:
-                    InputConfigurator.LockAllCommands();
+                    Input.LockAllCommands();
+                    Input.UnlockCommand(InputCommands.ShopMenu);
+                    Input.UnlockCommand(InputCommands.SettingsMenu);
+                    break;
+                case ELevelStage.Finished:
+                    Input.LockAllCommands();
+                    Input.UnlockCommand(InputCommands.ShopMenu);
+                    Input.UnlockCommand(InputCommands.SettingsMenu);
+                    Input.UnlockCommand(InputCommands.ReadyToUnloadLevel);
                     break;
                 case ELevelStage.ReadyToStart:
                 case ELevelStage.StartedOrContinued:
-                    InputConfigurator.UnlockAllCommands();
+                    Input.UnlockAllCommands();
                     break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Args.Stage);
@@ -165,8 +172,8 @@ namespace Games.RazorMaze.Views.UI
                         _Info.Type == EMazeItemType.GravityBlock || _Info.Type == EMazeItemType.GravityTrap);
                     if (!enableRotation)
                     {
-                        InputConfigurator.LockCommand(InputCommands.RotateClockwise);
-                        InputConfigurator.LockCommand(InputCommands.RotateCounterClockwise);
+                        Input.LockCommand(InputCommands.RotateClockwise);
+                        Input.LockCommand(InputCommands.RotateCounterClockwise);
                     }
                     break;
                 case ELevelStage.Finished:
@@ -366,12 +373,12 @@ namespace Games.RazorMaze.Views.UI
 
         private void CommandShop()
         {
-            InputConfigurator.RaiseCommand(InputCommands.ShopMenu, null, true);
+            Input.RaiseCommand(InputCommands.ShopMenu, null);
         }
 
         private void CommandSettings()
         {
-            InputConfigurator.RaiseCommand(InputCommands.SettingsMenu, null, true);
+            Input.RaiseCommand(InputCommands.SettingsMenu, null);
         }
 
         private Transform GetGameUIContainer()

@@ -2,6 +2,7 @@
 using System.Linq;
 using Malee.List;
 using UnityEngine;
+using Utils;
 
 [DisallowMultipleComponent]
 public class PrefabContent : MonoBehaviour
@@ -28,5 +29,14 @@ public class PrefabContent : MonoBehaviour
     public T GetItemComponent<T>(string _Name) where T : Component
     {
         return GetItem(_Name).GetComponent<T>();
+    }
+
+    private void Start()
+    {
+        var missingItems = content.Where(_Item => _Item.item == null).ToArray();
+        if (!missingItems.Any())
+            return;
+        foreach (var missingItem in missingItems)
+            Dbg.LogWarning($"Missing item {missingItem.name} from prefab {name}");
     }
 }

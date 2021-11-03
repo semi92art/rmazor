@@ -6,10 +6,11 @@ namespace UI
     public enum EUiCategory
     {
         Loading = 1,
-        DailyBonus = 8,
-        WheelOfFortune = 16,
-        Shop = 32,
-        Settings = 64,
-        CharacterDied = 128
+        DailyBonus = 2,
+        WheelOfFortune = 4,
+        Shop = 8,
+        Settings = 16,
+        CharacterDied = 64,
+        RateGame = 128
     }
 }

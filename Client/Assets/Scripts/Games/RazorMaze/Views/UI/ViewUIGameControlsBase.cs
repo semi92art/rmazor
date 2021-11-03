@@ -8,11 +8,11 @@ namespace Games.RazorMaze.Views.UI
 {
     public abstract class ViewUIGameControlsBase : IViewUIGameControls
     {
-        protected IViewInputConfigurator InputConfigurator { get; }
+        protected IViewInput Input { get; }
 
-        protected ViewUIGameControlsBase(IViewInputConfigurator _InputConfigurator)
+        protected ViewUIGameControlsBase(IViewInput _Input)
         {
-            InputConfigurator = _InputConfigurator;
+            Input = _Input;
         }
 
         public event UnityAction Initialized;
@@ -28,7 +28,7 @@ namespace Games.RazorMaze.Views.UI
             var type = _Args.Info.Type;
             if (RazorMazeUtils.GravityItemTypes().Contains(type))
             {
-                InputConfigurator.LockCommands(new []
+                Input.LockCommands(new []
                 {
                     InputCommands.MoveLeft,
                     InputCommands.MoveRight,
@@ -45,7 +45,7 @@ namespace Games.RazorMaze.Views.UI
             var type = _Args.Info.Type;
             if (RazorMazeUtils.GravityItemTypes().Contains(type))
             {
-                InputConfigurator.UnlockCommands(new []
+                Input.UnlockCommands(new []
                 {
                     InputCommands.MoveLeft,
                     InputCommands.MoveRight,

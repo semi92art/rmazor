@@ -16,23 +16,23 @@ namespace Games.RazorMaze.Views
         ICharacterMoveContinued,
         ICharacterMoveFinished
     {
-        IContainersGetter                  ContainersGetter { get; }
-        IViewUI                            UI { get; }
-        IViewLevelStageController          LevelStageController { get; }
-        IViewInputConfigurator                 InputConfigurator { get; }
-        IViewCharacter                     Character { get; }
-        IViewMazeCommon                    Common { get; }
-        IViewMazeBackground                Background { get; }
-        IViewMazeRotation                  MazeRotation { get; }
-        IViewMazePathItemsGroup            PathItemsGroup { get; }
-        IViewMazeMovingItemsGroup          MovingItemsGroup { get; }
-        IViewMazeTrapsReactItemsGroup      TrapsReactItemsGroup { get; }
-        IViewMazeTrapsIncItemsGroup        TrapsIncItemsGroup { get; }
-        IViewMazeTurretsGroup              TurretsGroup { get; }
-        IViewMazePortalsGroup              PortalsGroup { get; }
-        IViewMazeShredingerBlocksGroup     ShredingerBlocksGroup { get; }
-        IViewMazeSpringboardItemsGroup     SpringboardItemsGroup { get; }
-        IViewMazeGravityItemsGroup         GravityItemsGroup { get; }
+        IContainersGetter              ContainersGetter      { get; }
+        IViewUI                        UI                    { get; }
+        IViewLevelStageController      LevelStageController  { get; }
+        IViewInput                     Input                 { get; }
+        IViewCharacter                 Character             { get; }
+        IViewMazeCommon                Common                { get; }
+        IViewMazeBackground            Background            { get; }
+        IViewMazeRotation              MazeRotation          { get; }
+        IViewMazePathItemsGroup        PathItemsGroup        { get; }
+        IViewMazeMovingItemsGroup      MovingItemsGroup      { get; }
+        IViewMazeTrapsReactItemsGroup  TrapsReactItemsGroup  { get; }
+        IViewMazeTrapsIncItemsGroup    TrapsIncItemsGroup    { get; }
+        IViewMazeTurretsGroup          TurretsGroup          { get; }
+        IViewMazePortalsGroup          PortalsGroup          { get; }
+        IViewMazeShredingerBlocksGroup ShredingerBlocksGroup { get; }
+        IViewMazeSpringboardItemsGroup SpringboardItemsGroup { get; }
+        IViewMazeGravityItemsGroup     GravityItemsGroup     { get; }
         
     }
 }

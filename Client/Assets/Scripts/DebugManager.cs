@@ -27,11 +27,11 @@ public class DebugManager : IDebugManager
 
     #region inject
 
-    private IViewInputConfigurator InputConfigurator { get; }
+    private IViewInput Input { get; }
     
-    public DebugManager(IViewInputConfigurator _InputConfigurator)
+    public DebugManager(IViewInput _Input)
     {
-        InputConfigurator = _InputConfigurator;
+        Input = _Input;
     }
 
     #endregion
@@ -65,7 +65,7 @@ public class DebugManager : IDebugManager
     private void InitDebugConsole()
     {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        DebugConsole.DebugConsoleView.Instance.Init(InputConfigurator);
+        DebugConsole.DebugConsoleView.Instance.Init(Input);
 #endif
     }
     

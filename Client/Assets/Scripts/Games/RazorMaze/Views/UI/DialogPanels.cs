@@ -10,9 +10,10 @@ namespace Games.RazorMaze.Views.UI
         ISettingSelectorDialogPanel SettingSelectorDialogPanel { get; }
         IShopDialogPanel            ShopDialogPanel            { get; }
         IShopMoneyDialogPanel       ShopMoneyDialogPanel       { get; }
-        IWheelOfFortuneDialogPanel  WheelOfFortuneDialogPanel  { get; }
-        IWheelOfFortuneRewardPanel  WheelOfFortuneRewardPanel  { get; }
+        IWofDialogPanel             WofDialogPanel             { get; }
+        IWofRewardPanel             WofRewardPanel             { get; }
         ICharacterDiedDialogPanel   CharacterDiedDialogPanel   { get; }
+        IRateGameDialogPanel        RateGameDialogPanel        { get; }
     }
 
     public class DialogPanels : IDialogPanels
@@ -22,9 +23,10 @@ namespace Games.RazorMaze.Views.UI
         public ISettingSelectorDialogPanel SettingSelectorDialogPanel { get; }
         public IShopDialogPanel            ShopDialogPanel            { get; }
         public IShopMoneyDialogPanel       ShopMoneyDialogPanel       { get; }
-        public IWheelOfFortuneDialogPanel  WheelOfFortuneDialogPanel  { get; }
-        public IWheelOfFortuneRewardPanel  WheelOfFortuneRewardPanel  { get; }
+        public IWofDialogPanel             WofDialogPanel             { get; }
+        public IWofRewardPanel             WofRewardPanel             { get; }
         public ICharacterDiedDialogPanel   CharacterDiedDialogPanel   { get; }
+        public IRateGameDialogPanel        RateGameDialogPanel        { get; }
 
         public DialogPanels(
             IDailyBonusDialogPanel      _DailyBonusDialogPanel,
@@ -32,18 +34,20 @@ namespace Games.RazorMaze.Views.UI
             ISettingSelectorDialogPanel _SettingSelectorDialogPanel, 
             IShopDialogPanel            _ShopDialogPanel,
             IShopMoneyDialogPanel       _ShopMoneyDialogPanel,
-            IWheelOfFortuneDialogPanel  _WheelOfFortuneDialogPanel,
-            IWheelOfFortuneRewardPanel  _WheelOfFortuneRewardPanel, 
-            ICharacterDiedDialogPanel   _CharacterDiedDialogPanel)
+            IWofDialogPanel             _WofDialogPanel,
+            IWofRewardPanel             _WofRewardPanel, 
+            ICharacterDiedDialogPanel   _CharacterDiedDialogPanel, 
+            IRateGameDialogPanel        _RateGameDialogPanel)
         {
-            DailyBonusDialogPanel = _DailyBonusDialogPanel;
-            SettingDialogPanel = _SettingDialogPanel;
-            SettingSelectorDialogPanel = _SettingSelectorDialogPanel;
-            ShopDialogPanel = _ShopDialogPanel;
-            ShopMoneyDialogPanel = _ShopMoneyDialogPanel;
-            WheelOfFortuneDialogPanel = _WheelOfFortuneDialogPanel;
-            WheelOfFortuneRewardPanel = _WheelOfFortuneRewardPanel;
-            CharacterDiedDialogPanel = _CharacterDiedDialogPanel;
+            DailyBonusDialogPanel       = _DailyBonusDialogPanel;
+            SettingDialogPanel          = _SettingDialogPanel;
+            SettingSelectorDialogPanel  = _SettingSelectorDialogPanel;
+            ShopDialogPanel             = _ShopDialogPanel;
+            ShopMoneyDialogPanel        = _ShopMoneyDialogPanel;
+            WofDialogPanel              = _WofDialogPanel;
+            WofRewardPanel              = _WofRewardPanel;
+            CharacterDiedDialogPanel    = _CharacterDiedDialogPanel;
+            RateGameDialogPanel         = _RateGameDialogPanel;
         }
     }
 }

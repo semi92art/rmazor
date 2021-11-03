@@ -3,7 +3,7 @@ using UnityEngine.Events;
 
 namespace Games.RazorMaze.Views.InputConfigurators
 {
-    public interface IViewInputConfigurator : IInit, IOnLevelStageChanged
+    public interface IViewInput : IInit, IOnLevelStageChanged
     {
         event UnityAction<int, object[]> Command; 
         event UnityAction<int, object[]> InternalCommand; 

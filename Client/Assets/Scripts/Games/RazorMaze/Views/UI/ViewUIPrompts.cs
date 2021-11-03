@@ -36,9 +36,9 @@ namespace Games.RazorMaze.Views.UI
         #region constants
 
         private const string KeyPromptHowToRotateClockwise = "swipe_to_rotate_clockwise";
-        private const string KeyPromptHowToRotateCounter = "swipe_to_rotate_counter";
-        private const string KeyPromptSwipeToStart = "swipe_to_start";
-        private const string KeyPromptTapToNext = "tap_to_next";
+        private const string KeyPromptHowToRotateCounter   = "swipe_to_rotate_counter";
+        private const string KeyPromptSwipeToStart         = "swipe_to_start";
+        private const string KeyPromptTapToNext            = "tap_to_next";
 
         #endregion
 
@@ -47,8 +47,8 @@ namespace Games.RazorMaze.Views.UI
         private bool m_HowToRotateClockwisePromptHidden;
         private bool m_HowToRotateCounterClockwisePromptHidden;
         private bool m_PromptHowToRotateShown;
-        private readonly Dictionary<string, PromptArgs> m_Prompts = new Dictionary<string, PromptArgs>();
 
+        private readonly Dictionary<string, PromptArgs> m_Prompts = new Dictionary<string, PromptArgs>();
 
         #endregion
 
@@ -59,7 +59,7 @@ namespace Games.RazorMaze.Views.UI
         private IContainersGetter        ContainersGetter    { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
         private ILocalizationManager     LocalizationManager { get; }
-        private IViewInputConfigurator   InputConfigurator   { get; }
+        private IViewInput   Input   { get; }
         private ICameraProvider          CameraProvider      { get; }
         private IColorProvider           ColorProvider       { get; }
 
@@ -69,7 +69,7 @@ namespace Games.RazorMaze.Views.UI
             IContainersGetter _ContainersGetter,
             IMazeCoordinateConverter _CoordinateConverter,
             ILocalizationManager _LocalizationManager,
-            IViewInputConfigurator _InputConfigurator,
+            IViewInput _Input,
             ICameraProvider _CameraProvider,
             IColorProvider _ColorProvider)
         {
@@ -78,10 +78,10 @@ namespace Games.RazorMaze.Views.UI
             ContainersGetter = _ContainersGetter;
             CoordinateConverter = _CoordinateConverter;
             LocalizationManager = _LocalizationManager;
-            InputConfigurator = _InputConfigurator;
+            Input = _Input;
             CameraProvider = _CameraProvider;
             ColorProvider = _ColorProvider;
-            InputConfigurator.Command += InputConfiguratorOnCommand;
+            Input.Command += InputConfiguratorOnCommand;
         }
 
         #endregion
@@ -158,7 +158,7 @@ namespace Games.RazorMaze.Views.UI
                     m_HowToRotateCounterClockwisePromptHidden = true;
                     HidePrompt(KeyPromptHowToRotateCounter);
                     ShowPromptSwipeToStart();
-                    InputConfigurator.UnlockAllCommands();
+                    Input.UnlockAllCommands();
                     InTutorial = false;
                     m_PromptHowToRotateShown = true;
                     SaveUtils.PutValue(SaveKey.PromptHowToRotateShown, true);
@@ -168,8 +168,8 @@ namespace Games.RazorMaze.Views.UI
 
         private void ShowPromptHowToRotateClockwise()
         {
-            InputConfigurator.LockAllCommands();
-            InputConfigurator.UnlockCommand(InputCommands.RotateClockwise);
+            Input.LockAllCommands();
+            Input.UnlockCommand(InputCommands.RotateClockwise);
             var mazeBounds = CoordinateConverter.GetMazeBounds();
             ShowPrompt(KeyPromptHowToRotateClockwise, new Vector3(mazeBounds.center.x, 
                 GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y));
@@ -177,8 +177,8 @@ namespace Games.RazorMaze.Views.UI
         
         private void ShowPromptHowToRotateCounterClockwise()
         {
-            InputConfigurator.LockAllCommands();
-            InputConfigurator.UnlockCommand(InputCommands.RotateCounterClockwise);
+            Input.LockAllCommands();
+            Input.UnlockCommand(InputCommands.RotateCounterClockwise);
             var mazeBounds = CoordinateConverter.GetMazeBounds();
             ShowPrompt(KeyPromptHowToRotateCounter, new Vector3(mazeBounds.center.x, 
                 GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y + 1f));

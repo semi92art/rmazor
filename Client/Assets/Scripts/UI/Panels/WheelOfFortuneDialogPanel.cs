@@ -18,11 +18,11 @@ using Utils;
 
 namespace UI.Panels
 {
-    public interface IWheelOfFortuneDialogPanel : IDialogPanel
+    public interface IWofDialogPanel : IDialogPanel
     {
     }
     
-    public class WheelOfFortunePanel : DialogPanelBase, IWheelOfFortuneDialogPanel
+    public class WofDialogPanel : DialogPanelBase, IWofDialogPanel
     {
         #region notify messages
 
@@ -45,11 +45,11 @@ namespace UI.Panels
 
         #region inject
 
-        private IWheelOfFortuneRewardPanel RewardPanel { get; }
+        private IWofRewardPanel RewardPanel { get; }
         private IProposalDialogViewer ProposalDialogViewer { get; }
 
-        public WheelOfFortunePanel(
-            IWheelOfFortuneRewardPanel _RewardPanel,
+        public WofDialogPanel(
+            IWofRewardPanel _RewardPanel,
             IBigDialogViewer _DialogViewer,
             IProposalDialogViewer _ProposalDialogViewer,
             IManagersGetter _Managers,

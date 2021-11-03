@@ -32,8 +32,6 @@ namespace UI.Panels
         
         #region nonpublic members
         
-        private static int AkShow => AnimKeys.Anim;
-        
         private Animator           m_Animator;
         private AnimationTriggerer m_Triggerer;
         private Image              m_MoneyIcon1;
@@ -60,7 +58,7 @@ namespace UI.Panels
 
         private ViewSettings           ViewSettings         { get; }
         private IProposalDialogViewer  ProposalDialogViewer { get; }
-        private IViewInputConfigurator InputConfigurator    { get; }
+        private IViewInput Input    { get; }
 
         public CharacterDiedDialogPanel(
             ViewSettings _ViewSettings,
@@ -70,12 +68,12 @@ namespace UI.Panels
             IUITicker _UITicker,
             ICameraProvider _CameraProvider,
             IColorProvider _ColorProvider,
-            IViewInputConfigurator _InputConfigurator) 
+            IViewInput _Input) 
             : base(_Managers, _UITicker, _DialogViewer, _CameraProvider, _ColorProvider)
         {
             ViewSettings = _ViewSettings;
             ProposalDialogViewer = _ProposalDialogViewer;
-            InputConfigurator = _InputConfigurator;
+            Input = _Input;
         }
         
         #endregion
@@ -129,8 +127,13 @@ namespace UI.Panels
 
         public override void OnDialogShow()
         {
+            Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
+            {
+                Input.LockCommand(InputCommands.ShopMenu);
+                Input.LockCommand(InputCommands.SettingsMenu);    
+            }));
             m_Animator.speed = ViewSettings.ProposalDialogAnimSpeed;
-            m_Animator.SetTrigger(AkShow);
+            m_Animator.SetTrigger(AnimKeys.Anim);
             IndicateAdsLoading(true);
             Coroutines.Run(Coroutines.WaitWhile(
                 () => !Managers.AdsManager.RewardedAdReady,
@@ -149,6 +152,12 @@ namespace UI.Panels
                     m_TextMoneyCount.text = moneyCount.Value.ToString();
                     IndicateMoneyCountLoading(false, moneyCount.Value >= PayToContinueMoneyCount);
                 }));
+        }
+
+        public override void OnDialogHide()
+        {
+            Input.UnlockCommand(InputCommands.ShopMenu);
+            Input.UnlockCommand(InputCommands.SettingsMenu);
         }
 
         #endregion
@@ -211,14 +220,14 @@ namespace UI.Panels
                 {
                     void RaiseContinueCommand()
                     {
-                        InputConfigurator.RaiseCommand(
+                        Input.RaiseCommand(
                             InputCommands.ReadyToStartLevel,
                             null, 
                             true);
                     }
                     void RaiseLoadFirstLevelInGroupCommand()
                     {
-                        InputConfigurator.RaiseCommand(
+                        Input.RaiseCommand(
                             InputCommands.ReadyToUnloadLevel,
                             new object[] { CommonInputCommandArgs.LoadFirstLevelFromGroupArg }, 
                             true);

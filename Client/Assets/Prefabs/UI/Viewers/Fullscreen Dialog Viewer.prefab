@@ -51,7 +51,7 @@ GameObject:
   - component: {fileID: 1847119535015023476}
   - component: {fileID: 2897111226668219294}
   m_Layer: 0
-  m_Name: Dialog Viewer
+  m_Name: Fullscreen Dialog Viewer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -142,8 +142,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   content:
     array:
-    - item: {fileID: 0}
-      name: go_back_button
     - item: {fileID: 3315263948265166954}
       name: close_button
     - item: {fileID: 6009559761229068857}

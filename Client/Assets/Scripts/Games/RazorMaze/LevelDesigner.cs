@@ -69,7 +69,7 @@ namespace Games.RazorMaze
              
             SceneManager.sceneLoaded += (_Scene, _Mode) =>
             {
-                var controller = RazorMazeGameController.CreateInstance();
+                var controller = GameController.CreateInstance();
                 controller.Initialized += () =>
                 {
                     int selectedLevel = SaveUtils.GetValue<int>(SaveKey.DesignerSelectedLevel);

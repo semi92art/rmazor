@@ -34,6 +34,7 @@ namespace Entities
         public static SaveKey SettingVibrationOn       => new SaveKey("vibration_on", typeof(bool));
         public static SaveKey DailyBonusLastClickedDay => new SaveKey("daily_bonus_last_day", typeof(int));
         public static SaveKey DisableAds               => new SaveKey("disable_ads", typeof(bool));
+        public static SaveKey GameWasRated             => new SaveKey("game_was_rated", typeof(bool));
         
         public static SaveKey GameDataFieldValue(int _AccountId, int _GameId, ushort _FieldId) =>
             new SaveKey($"df_value_cache_{_AccountId}_{_GameId}_{_FieldId}", typeof(GameDataField));

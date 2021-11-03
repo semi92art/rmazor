@@ -38,7 +38,7 @@ namespace Games.RazorMaze.Views.Rotation
         private IModelGame               Model               { get; }
         private IViewCharacter           Character           { get; }
         private IViewAppearTransitioner  Transitioner        { get; }
-        private IViewInputConfigurator   InputConfigurator   { get; }
+        private IViewInput   Input   { get; }
         private IColorProvider           ColorProvider       { get; }
 
         public ViewMazeRotation(
@@ -49,7 +49,7 @@ namespace Games.RazorMaze.Views.Rotation
             IModelGame _Model,
             IViewCharacter _Character,
             IViewAppearTransitioner _Transitioner,
-            IViewInputConfigurator _InputConfigurator,
+            IViewInput _Input,
             IColorProvider _ColorProvider)
         {
             ViewSettings = _ViewSettings;
@@ -59,7 +59,7 @@ namespace Games.RazorMaze.Views.Rotation
             Model = _Model;
             Character = _Character;
             Transitioner = _Transitioner;
-            InputConfigurator = _InputConfigurator;
+            Input = _Input;
             ColorProvider = _ColorProvider;
             _GameTicker.Register(this);
         }
@@ -124,8 +124,8 @@ namespace Games.RazorMaze.Views.Rotation
                         return;
                     if (!m_EnableRotation)
                     {
-                        InputConfigurator.LockCommand(InputCommands.RotateClockwise);
-                        InputConfigurator.LockCommand(InputCommands.RotateCounterClockwise);
+                        Input.LockCommand(InputCommands.RotateClockwise);
+                        Input.LockCommand(InputCommands.RotateCounterClockwise);
                     }
                     break;
                 case ELevelStage.ReadyToUnloadLevel:

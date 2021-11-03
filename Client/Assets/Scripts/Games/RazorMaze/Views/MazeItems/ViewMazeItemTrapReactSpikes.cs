@@ -80,7 +80,17 @@ namespace Games.RazorMaze.Views.MazeItems
         #region api
         
         public override Component[] Shapes => new Component[] {m_Line, m_Trap};
-        
+
+        public override bool ActivatedInSpawnPool
+        {
+            get => base.ActivatedInSpawnPool;
+            set
+            {
+                base.ActivatedInSpawnPool = value;
+                m_Mask.enabled = value;
+            }
+        }
+
         public override object Clone() => new ViewMazeItemTrapReactSpikes(
             ViewSettings,
             ModelSettings,

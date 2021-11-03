@@ -162,7 +162,7 @@ namespace DebugConsole
         private static void FinishLevel(string[] _Args)
         {
             RazorMazeUtils.LoadNextLevelAutomatically = false;
-            Controller.InputConfigurator.RaiseCommand(InputCommands.FinishLevel, null, true);
+            Controller.Input.RaiseCommand(InputCommands.FinishLevel, null, true);
         }
 
         private static void LoadLevel(string[] _Args)
@@ -173,7 +173,7 @@ namespace DebugConsole
                 return;
             }
 
-            Controller.InputConfigurator.RaiseCommand(
+            Controller.Input.RaiseCommand(
                 InputCommands.LoadLevelByIndex, 
                 new object [] { levelIndex },
                 true);

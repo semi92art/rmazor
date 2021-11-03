@@ -21,7 +21,7 @@ namespace Games.RazorMaze.Views
         public IContainersGetter              ContainersGetter      { get; }
         public IViewUI                        UI                    { get; }
         public IViewLevelStageController      LevelStageController  { get; }
-        public IViewInputConfigurator         InputConfigurator     { get; }
+        public IViewInput                     Input                 { get; }
         public IViewCharacter                 Character             { get; }
         public IViewMazeCommon                Common                { get; }
         public IViewMazeBackground            Background            { get; }
@@ -46,7 +46,7 @@ namespace Games.RazorMaze.Views
             IContainersGetter _ContainersGetter,
             IViewUI _UI,
             IViewLevelStageController _LevelStageController,
-            IViewInputConfigurator _InputConfigurator,
+            IViewInput _Input,
             IViewCharacter _Character,
             IViewMazeCommon _Common,
             IViewMazeBackground _Background,
@@ -68,7 +68,7 @@ namespace Games.RazorMaze.Views
         {
             ContainersGetter = _ContainersGetter;
             UI = _UI;
-            InputConfigurator = _InputConfigurator;
+            Input = _Input;
             Character = _Character;
             Common = _Common;
             Background = _Background;
@@ -153,7 +153,7 @@ namespace Games.RazorMaze.Views
                 {
                     Common,
                     UI,                         
-                    InputConfigurator,
+                    Input,
                     Character,
                     MazeRotation,
                     Background,
