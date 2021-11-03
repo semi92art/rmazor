@@ -100,11 +100,7 @@ namespace Games.RazorMaze.Views
         {
             ColorProvider.Init();
             DebugManager.Init();
-            CoordinateConverter.Init(
-                MazeCoordinateConverter.DefaultLeftOffset, 
-                MazeCoordinateConverter.DefaultRightOffset,
-                MazeCoordinateConverter.DefaultBottomOffset, 
-                MazeCoordinateConverter.DefaultTopOffset);
+            CoordinateConverter.Init();
             var proceeders = GetProceeders();
 
             var onLevelStageChangeds = GetInterfaceOfProceeders<IOnLevelStageChanged>(proceeders);

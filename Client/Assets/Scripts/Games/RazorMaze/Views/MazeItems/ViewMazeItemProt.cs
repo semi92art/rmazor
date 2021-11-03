@@ -35,12 +35,10 @@ namespace Games.RazorMaze.Views.MazeItems
             {
                 if (m_Converter == null || !m_Converter.Initialized())
                 {
-                    m_Converter = new MazeCoordinateConverter(null);
-                    m_Converter.Init(
-                        MazeCoordinateConverter.DefaultLeftOffset, 
-                        MazeCoordinateConverter.DefaultRightOffset,
-                        MazeCoordinateConverter.DefaultBottomOffset, 
-                        MazeCoordinateConverter.DefaultTopOffset);
+                    var settings = PrefabUtilsEx.GetObject<ViewSettings>(
+                        "model_settings", "view_settings");
+                    m_Converter = new MazeCoordinateConverter(settings, null);
+                    m_Converter.Init();
                     m_Converter.MazeSize = mazeSize;
                 }
                 return m_Converter;

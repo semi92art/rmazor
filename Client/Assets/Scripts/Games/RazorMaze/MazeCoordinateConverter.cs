@@ -11,7 +11,7 @@ namespace Games.RazorMaze
         bool Initialized();
         V2Int MazeSize { get; set; }
         float Scale { get; }
-        void Init(float _LeftOffset, float _RightOffset, float _BottomOffset, float _TopOffset);
+        void Init();
         Vector2 GetMazeCenter();
         Bounds GetMazeBounds();
         Vector4 GetScreenOffsets();
@@ -23,15 +23,6 @@ namespace Games.RazorMaze
     [Serializable]
     public class MazeCoordinateConverter : IMazeCoordinateConverter
     {
-        #region constants
-
-        public const float DefaultLeftOffset   = 1f;
-        public const float DefaultRightOffset  = 1f;
-        public const float DefaultTopOffset    = 10f;
-        public const float DefaultBottomOffset = 8f;
-
-        #endregion
-        
         #region nonpublic members
 
         private float m_LeftOffset, m_RightOffset, m_BottomOffset, m_TopOffset;
@@ -46,10 +37,12 @@ namespace Games.RazorMaze
 
         #region inject
 
+        private ViewSettings    ViewSettings   { get; }
         private ICameraProvider CameraProvider { get; }
 
-        public MazeCoordinateConverter(ICameraProvider _CameraProvider)
+        public MazeCoordinateConverter(ViewSettings _ViewSettings, ICameraProvider _CameraProvider)
         {
+            ViewSettings = _ViewSettings;
             CameraProvider = _CameraProvider;
         }
 
@@ -84,10 +77,10 @@ namespace Games.RazorMaze
             }
         }
         
-        public void Init(float _LeftOffset, float _RightOffset, float _BottomOffset, float _TopOffset)
+        public void Init()
         {
-            (m_LeftOffset, m_RightOffset) = (_LeftOffset, _RightOffset);
-            (m_BottomOffset, m_TopOffset) = (_BottomOffset, _TopOffset);
+            (m_LeftOffset, m_RightOffset) = (ViewSettings.ScreenOffsets.x, ViewSettings.ScreenOffsets.y);
+            (m_BottomOffset, m_TopOffset) = (ViewSettings.ScreenOffsets.z, ViewSettings.ScreenOffsets.w);
             SetCenterPoint();
             m_OffsetsInitialized = true;
         }

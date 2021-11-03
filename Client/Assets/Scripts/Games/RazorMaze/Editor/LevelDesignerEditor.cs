@@ -2,6 +2,7 @@
 using Constants;
 using DI.Extensions;
 using Entities;
+using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Debug;
@@ -299,12 +300,10 @@ namespace Games.RazorMaze.Editor
             {
                 var container = CommonUtils.FindOrCreateGameObject("Maze", out _).transform;
                 container.gameObject.DestroyChildrenSafe();
-                var converter = new MazeCoordinateConverter(null);
-                converter.Init(
-                    MazeCoordinateConverter.DefaultLeftOffset, 
-                    MazeCoordinateConverter.DefaultRightOffset,
-                    MazeCoordinateConverter.DefaultBottomOffset, 
-                    MazeCoordinateConverter.DefaultTopOffset);
+                var settings = PrefabUtilsEx.GetObject<ViewSettings>(
+                    "model_settings", "view_settings");
+                var converter = new MazeCoordinateConverter(settings, null);
+                converter.Init();
                 converter.MazeSize = _Info.Size;
                 var contGetter = new ContainersGetter(converter);
                 var mazeItemsCreator = new MazeItemsCreatorInEditor(contGetter, converter);
@@ -329,12 +328,10 @@ namespace Games.RazorMaze.Editor
 
         public static void FocusCamera(V2Int _Size)
         {
-            var converter = new MazeCoordinateConverter(null);
-            converter.Init(
-                MazeCoordinateConverter.DefaultLeftOffset, 
-                MazeCoordinateConverter.DefaultRightOffset,
-                3f, 
-                3f);
+            var settings = PrefabUtilsEx.GetObject<ViewSettings>(
+                "model_settings", "view_settings");
+            var converter = new MazeCoordinateConverter(settings, null);
+            converter.Init();
             converter.MazeSize = _Size;
             var bounds = new Bounds(converter.GetMazeCenter(), converter.GetMazeBounds().size);
             EditorUtilsEx.FocusSceneCamera(bounds);

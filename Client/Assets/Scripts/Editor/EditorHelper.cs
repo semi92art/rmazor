@@ -205,7 +205,7 @@ public class EditorHelper : EditorWindow
             "model_settings", "model_settings");
         var type = typeof(ModelSettings);
         var fieldInfos = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
-        SettingsTabPageCore(settings, fieldInfos);
+        SettingsTabPageCore(settings, fieldInfos.ToList());
     }
     
     private void ViewSettingsTabPage()
@@ -214,10 +214,10 @@ public class EditorHelper : EditorWindow
             "model_settings", "view_settings");
         var type = typeof(ViewSettings);
         var fieldInfos = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
-        SettingsTabPageCore(settings, fieldInfos);
+        SettingsTabPageCore(settings, fieldInfos.ToList());
     }
 
-    private void SettingsTabPageCore(Object _Settings, IEnumerable<FieldInfo> _FieldInfos)
+    private void SettingsTabPageCore(Object _Settings, List<FieldInfo> _FieldInfos)
     {
         var serObj = new SerializedObject(_Settings);
         EditorUtilsEx.ScrollViewZone(ref m_ViewSettingsScrollPos, () =>
@@ -226,42 +226,13 @@ public class EditorHelper : EditorWindow
             {
                 var prop = serObj.FindProperty(fieldInfo.Name);
                 EditorGUILayout.PropertyField(prop);
-                bool refresh = false;
-                if (fieldInfo.FieldType == typeof(float))
-                {
-                    float val = Convert.ToSingle(fieldInfo.GetValue(_Settings));
-                    if (Math.Abs(val - prop.floatValue) > float.Epsilon)
-                    {
-                        fieldInfo.SetValue(_Settings, prop.floatValue);
-                        refresh = true;
-                    }
-                }
-                else if (fieldInfo.FieldType == typeof(int))
-                {
-                    int val = Convert.ToInt32(fieldInfo.GetValue(_Settings));
-                    if (val != prop.intValue)
-                    {
-                        fieldInfo.SetValue(_Settings, prop.intValue);
-                        refresh = true;
-                    }
-                }
-                else if (fieldInfo.FieldType == typeof(bool))
-                {
-                    bool val = Convert.ToBoolean(fieldInfo.GetValue(_Settings));
-                    if (val != prop.boolValue)
-                    {
-                        fieldInfo.SetValue(_Settings, prop.boolValue);
-                        refresh = true;
-                    }
-                }
-
-                if (refresh)
-                {
-                    EditorUtility.SetDirty(_Settings);
-                    AssetDatabase.SaveAssets();
-                    AssetDatabase.Refresh();
-                }
             }
+            if (!serObj.hasModifiedProperties)
+                return;
+            serObj.ApplyModifiedProperties();
+            EditorUtility.SetDirty(_Settings);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         });
     }
 

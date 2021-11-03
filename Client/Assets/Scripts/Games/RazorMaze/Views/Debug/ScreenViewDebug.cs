@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR
 using DI.Extensions;
 using Entities;
+using GameHelpers;
 using UnityEngine;
 using Utils;
 
@@ -19,12 +20,10 @@ namespace Games.RazorMaze.Views.Debug
         {
             set
             {
-                converter = new MazeCoordinateConverter(null);
-                converter.Init(
-                    MazeCoordinateConverter.DefaultLeftOffset, 
-                    MazeCoordinateConverter.DefaultRightOffset,
-                    MazeCoordinateConverter.DefaultBottomOffset, 
-                    MazeCoordinateConverter.DefaultTopOffset);
+                var settings = PrefabUtilsEx.GetObject<ViewSettings>(
+                    "model_settings", "view_settings");
+                converter = new MazeCoordinateConverter(settings, null);
+                converter.Init();
                 converter.MazeSize = value;
             }
         }
