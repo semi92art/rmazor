@@ -3,6 +3,7 @@ using System.Linq;
 using Constants;
 using DialogViewers;
 using Entities;
+using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Characters;
 using Games.RazorMaze.Views.ContainerGetters;
@@ -12,6 +13,7 @@ using Games.RazorMaze.Views.MazeItems;
 using Games.RazorMaze.Views.UI;
 using Mono_Installers;
 using Ticker;
+using UnityEngine;
 using UnityEngine.Events;
 using Utils;
 
@@ -42,15 +44,16 @@ namespace Games.RazorMaze.Views.Common
 
         #region inject
 
-        private IGameTicker            GameTicker           { get; }
-        private IModelGame             Model                { get; }
-        private IManagersGetter        Managers             { get; }
-        private IViewCharacter         Character            { get; }
-        private IViewInput Input    { get; }
-        private IContainersGetter      ContainersGetter     { get; }
-        private IMazeShaker            MazeShaker           { get; }
-        private IDialogPanels          DialogPanels         { get; }
-        private IProposalDialogViewer  ProposalDialogViewer { get; }
+        private IGameTicker           GameTicker           { get; }
+        private IModelGame            Model                { get; }
+        private IManagersGetter       Managers             { get; }
+        private IViewCharacter        Character            { get; }
+        private IViewInput            Input                { get; }
+        private IContainersGetter     ContainersGetter     { get; }
+        private IMazeShaker           MazeShaker           { get; }
+        private IDialogPanels         DialogPanels         { get; }
+        private IProposalDialogViewer ProposalDialogViewer { get; }
+        private ILevelsLoader         LevelsLoader         { get; }
 
         public ViewLevelStageController(
             IGameTicker _GameTicker,
@@ -61,7 +64,8 @@ namespace Games.RazorMaze.Views.Common
             IContainersGetter _ContainersGetter,
             IMazeShaker _MazeShaker,
             IDialogPanels _DialogPanels,
-            IProposalDialogViewer _ProposalDialogViewer)
+            IProposalDialogViewer _ProposalDialogViewer,
+            ILevelsLoader _LevelsLoader)
         {
             GameTicker = _GameTicker;
             Model = _Model;
@@ -72,6 +76,7 @@ namespace Games.RazorMaze.Views.Common
             MazeShaker = _MazeShaker;
             DialogPanels = _DialogPanels;
             ProposalDialogViewer = _ProposalDialogViewer;
+            LevelsLoader = _LevelsLoader;
         }
 
         #endregion
@@ -138,6 +143,7 @@ namespace Games.RazorMaze.Views.Common
             switch (_Args.Stage)
             {
                 case ELevelStage.Loaded:
+                    SaveUtils.PutValue(SaveKey.CurrentLevelIndex, _Args.LevelIndex);
                     m_NextLevelMustBeFirstInGroup = false;
                     Character.Appear(true);
                     foreach (var mazeItem in mazeItems)
@@ -156,9 +162,16 @@ namespace Games.RazorMaze.Views.Common
                         new Dictionary<string, object>
                         {
                             {"level_index", _Args.LevelIndex},
-                            {"level_time", Model.LevelStaging.LevelTime}
+                            {"level_time", Model.LevelStaging.LevelTime},
+                            {"dies_count", Model.LevelStaging.DiesCount}
                         });
-                    SaveUtils.PutValue(SaveKey.CurrentLevelIndex, _Args.LevelIndex + 1);
+                    bool allLevelsPassed = SaveUtils.GetValue<bool>(SaveKey.AllLevelsPassed);
+                    if (!allLevelsPassed)
+                    {
+                        SaveUtils.PutValue(SaveKey.CurrentLevelIndex, _Args.LevelIndex + 1);
+                        if (_Args.LevelIndex + 1 >= LevelsLoader.GetLevelsCount(GameClientUtils.GameId))
+                            SaveUtils.PutValue(SaveKey.AllLevelsPassed, true);
+                    }
                     break;
                 case ELevelStage.ReadyToUnloadLevel:
                     foreach (var mazeItem in mazeItems)
@@ -173,7 +186,9 @@ namespace Games.RazorMaze.Views.Common
                         }));
                     break;
                 case ELevelStage.Unloaded:
-                    if (m_NextLevelMustBeFirstInGroup)
+                    if (SaveUtils.GetValue<bool>(SaveKey.AllLevelsPassed ) && (_Args.LevelIndex - 2) % 3 == 0)
+                        Input.RaiseCommand(InputCommands.LoadFirstLevelFromRandomGroup, null, true);
+                    else if (m_NextLevelMustBeFirstInGroup)
                         Input.RaiseCommand(InputCommands.LoadFirstLevelFromCurrentGroup, null, true);
                     else if (RazorMazeUtils.LoadNextLevelAutomatically)
                         Input.RaiseCommand(InputCommands.LoadNextLevel, null, true);

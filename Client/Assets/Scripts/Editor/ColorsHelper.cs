@@ -7,16 +7,16 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils.Editor;
 
-public class ColorPaletteHelper : EditorWindow
+public class ColorsHelper : EditorWindow
 {
     private IColorProvider                        m_ColorProvider;
     private ColorSetScriptableObject              m_ColorSetScrObj;
     private ColorSetScriptableObject.ColorItemSet m_ColorSet;
     
-    [MenuItem("Tools/Color Palette Helper", false, 2)]
+    [MenuItem("Tools/Colors Helper", false, 2)]
     public static void ShowWindow()
     {
-        var window = GetWindow<ColorPaletteHelper>("Color Palette Helper");
+        var window = GetWindow<ColorsHelper>("Color Palette Helper");
         window.minSize = new Vector2(300, 200);
     }
     
@@ -35,7 +35,7 @@ public class ColorPaletteHelper : EditorWindow
                 "set", m_ColorSetScrObj, typeof(ColorSetScriptableObject), false);
         });
         
-        DisplayColors(Application.isPlaying && SceneManager.GetActiveScene().name.Contains(SceneNames.Level));
+        DisplayColors();
 
         if ((m_ColorProvider == null || m_ColorSetScrObj == null)
             && Application.isPlaying
@@ -52,13 +52,17 @@ public class ColorPaletteHelper : EditorWindow
             });
     }
 
-    private void DisplayColors(bool _OnScene)
+    private void DisplayColors()
     {
         foreach (var item in m_ColorSet)
         {
             EditorUtilsEx.HorizontalZone(() =>
             {
-                EditorUtilsEx.GUIEnabledZone(false, () => EditorGUILayout.TextField(item.name));
+                EditorUtilsEx.GUIEnabledZone(false, () =>
+                {
+                    EditorGUILayout.TextField(ColorIds.GetHash(item.name).ToString(), GUILayout.Width(80));
+                    EditorGUILayout.TextField(item.name, GUILayout.Width(200));
+                });
                 var newColor = EditorGUILayout.ColorField(item.color);
                 if (newColor != item.color)
                     m_ColorProvider?.SetColor(ColorIds.GetHash(item.name), item.color);

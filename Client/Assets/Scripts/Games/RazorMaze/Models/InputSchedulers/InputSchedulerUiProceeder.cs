@@ -5,6 +5,8 @@ using GameHelpers;
 using Games.RazorMaze.Views;
 using Ticker;
 using UnityEngine;
+using Utils;
+using Random = UnityEngine.Random;
 
 namespace Games.RazorMaze.Models.InputSchedulers
 {
@@ -58,6 +60,7 @@ namespace Games.RazorMaze.Models.InputSchedulers
                 case InputCommands.LoadCurrentLevel:
                 case InputCommands.LoadNextLevel:
                 case InputCommands.LoadFirstLevelFromCurrentGroup:
+                case InputCommands.LoadFirstLevelFromRandomGroup:
                 case InputCommands.LoadRandomLevel:
                 case InputCommands.LoadRandomLevelWithRotation:
                 case InputCommands.ReadyToStartLevel:
@@ -95,6 +98,7 @@ namespace Games.RazorMaze.Models.InputSchedulers
         {
             MazeInfo info;
             int levelIndex;
+            int gameId = GameClientUtils.GameId;
             switch (_Command)
             {
                 case InputCommands.LoadCurrentLevel:
@@ -102,39 +106,46 @@ namespace Games.RazorMaze.Models.InputSchedulers
                     break;
                 case InputCommands.LoadNextLevel:
                     levelIndex = Data.LevelIndex + 1;
-                    info = LevelsLoader.LoadLevel(1, levelIndex);
+                    info = LevelsLoader.LoadLevel(gameId, levelIndex);
                     LevelStaging.LoadLevel(info, levelIndex);
                     break;
                 case InputCommands.LoadLevelByIndex:
                     levelIndex = Convert.ToInt32(_Args[0]);
-                    info = LevelsLoader.LoadLevel(1, levelIndex);
+                    info = LevelsLoader.LoadLevel(gameId, levelIndex);
                     LevelStaging.LoadLevel(info, levelIndex);
                     break;
                 case InputCommands.LoadFirstLevelFromCurrentGroup:
                     int group = Data.LevelIndex / RazorMazeUtils.LevelsInGroup;
                     levelIndex = group * RazorMazeUtils.LevelsInGroup;
-                    info = LevelsLoader.LoadLevel(1, levelIndex); 
+                    info = LevelsLoader.LoadLevel(gameId, levelIndex); 
+                    LevelStaging.LoadLevel(info, levelIndex);
+                    break;
+                case InputCommands.LoadFirstLevelFromRandomGroup:
+                    int randLevelIdx = Mathf.RoundToInt(Random.value * LevelsLoader.GetLevelsCount(gameId));
+                    int randGroup = randLevelIdx / RazorMazeUtils.LevelsInGroup;
+                    levelIndex = randGroup * RazorMazeUtils.LevelsInGroup;
+                    info = LevelsLoader.LoadLevel(gameId, levelIndex);
                     LevelStaging.LoadLevel(info, levelIndex);
                     break;
                 case InputCommands.LoadRandomLevel:
                     levelIndex = Mathf.RoundToInt(
-                        UnityEngine.Random.value *
-                        LevelsLoader.GetLevelsCount(1));
-                    info = LevelsLoader.LoadLevel(1, levelIndex); 
+                        Random.value *
+                        LevelsLoader.GetLevelsCount(gameId));
+                    info = LevelsLoader.LoadLevel(gameId, levelIndex); 
                     LevelStaging.LoadLevel(info, levelIndex);
                     break;
                 case InputCommands.LoadRandomLevelWithRotation:
                     levelIndex = Mathf.RoundToInt(
                         UnityEngine.Random.value *
-                        LevelsLoader.GetLevelsCount(1));
-                    info = LevelsLoader.LoadLevel(1, levelIndex);
+                        LevelsLoader.GetLevelsCount(gameId));
+                    info = LevelsLoader.LoadLevel(gameId, levelIndex);
                     while (info.MazeItems.All(_Item =>
                         _Item.Type != EMazeItemType.GravityBlock && _Item.Type != EMazeItemType.GravityTrap))
                     {
                         levelIndex = Mathf.RoundToInt(
                             UnityEngine.Random.value *
-                            LevelsLoader.GetLevelsCount(1));
-                        info = LevelsLoader.LoadLevel(1, levelIndex);
+                            LevelsLoader.GetLevelsCount(gameId));
+                        info = LevelsLoader.LoadLevel(gameId, levelIndex);
                     }
                     LevelStaging.LoadLevel(info, levelIndex);
                     break;

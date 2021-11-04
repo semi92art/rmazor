@@ -38,7 +38,7 @@ MonoBehaviour:
       color: {r: 1, g: 1, b: 1, a: 1}
     - name: Ui Dialog Item Normal
       color: {r: 1, g: 1, b: 1, a: 0.29803923}
-    - name: UI Dialog Item Pressed
+    - name: Ui Dialog Item Pressed
       color: {r: 1, g: 1, b: 1, a: 0.5019608}
     - name: Ui Dialog Item Selected
       color: {r: 1, g: 1, b: 1, a: 0.5019608}

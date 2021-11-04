@@ -15,8 +15,6 @@ namespace GameHelpers
     
     public class LevelsLoader : ILevelsLoader
     {
-        private const int GroupsInAsset = 50;
-
         private int m_GameId;
         private string[] m_CachedSerializedLevels;
         
@@ -57,7 +55,7 @@ namespace GameHelpers
         protected static string LevelsAssetName(int _HeapIndex)
         {
             string heapName = _HeapIndex <= 0 ? null : $"levels_{_HeapIndex}";
-            return heapName ?? $"levels_{(Mathf.FloorToInt(_HeapIndex / (float)GroupsInAsset) + 1).ToString()}";
+            return heapName ?? $"levels_{_HeapIndex}";
         }
     }
 }

@@ -28,6 +28,7 @@ namespace Entities
         public static SaveKey GoodQuality              => new SaveKey("good_quality", typeof(bool));
         public static SaveKey BoughtPurchaseIds        => new SaveKey("bought_purchase_ids", typeof(List<int>));
         public static SaveKey CurrentLevelIndex        => new SaveKey("current_level_index", typeof(int));
+        public static SaveKey AllLevelsPassed          => new SaveKey("all_levels_passed", typeof(bool));
         public static SaveKey DailyBonusLastDate       => new SaveKey("daily_bonus_last_date", typeof(DateTime));
         public static SaveKey SettingSoundOn           => new SaveKey("sound_on", typeof(bool));
         public static SaveKey SettingMusicOn           => new SaveKey("music_on", typeof(bool));

@@ -10,6 +10,7 @@
 <e text = "GameHelpers.PrefabUtilsEx.GetPrefab" />
 <e text = "DI.Extensions.ObjectExtensions.GetCompItem[T]" />
 <e text = "PrefabContent.GetItemComponent[T]" />
+<e text = "GameHelpers.LevelsLoader.LoadLevel" />
 </Entries>
 </SettingsList>
 </root>
