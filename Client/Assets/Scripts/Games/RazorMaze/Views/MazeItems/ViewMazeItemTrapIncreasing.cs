@@ -177,7 +177,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == ColorIds.MazeItem)
+            if (_ColorId == ColorIds.MazeItem1)
             {
                 m_Center.Color = _Color;
                 foreach (var item in m_Blades)

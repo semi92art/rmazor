@@ -49,6 +49,7 @@ MonoBehaviour:
   scaleMode: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   detailLevel: 2
+  renderQueue: -1
   zTest: 4
   zOffsetFactor: 0
   zOffsetUnits: 0
@@ -72,8 +73,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &6294517372705142854
 MeshFilter:
@@ -150,7 +151,7 @@ Transform:
   m_GameObject: {fileID: 1320534108422307803}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 1}
   m_Children:
   - {fileID: 6180438593076815296}
   - {fileID: 8605328255548132482}
@@ -173,6 +174,7 @@ MonoBehaviour:
   scaleMode: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   detailLevel: 2
+  renderQueue: -1
   zTest: 4
   zOffsetFactor: 0
   zOffsetUnits: 0
@@ -202,8 +204,8 @@ MonoBehaviour:
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
+    offset: 0
     shapeModifier: 1
 --- !u!33 &8663005972539634570
 MeshFilter:
@@ -301,6 +303,7 @@ MonoBehaviour:
   scaleMode: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   detailLevel: 2
+  renderQueue: -1
   zTest: 4
   zOffsetFactor: 0
   zOffsetUnits: 0
@@ -324,8 +327,8 @@ MonoBehaviour:
     space: -1
     snap: 0
     size: 4
-    offset: 0
     spacing: 4
+    offset: 0
     shapeModifier: 1
 --- !u!33 &5892977265616628485
 MeshFilter:
@@ -427,6 +430,7 @@ MonoBehaviour:
   scaleMode: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   detailLevel: 2
+  renderQueue: -1
   zTest: 4
   zOffsetFactor: 0
   zOffsetUnits: 0
@@ -446,19 +450,19 @@ MonoBehaviour:
   angRadiansEnd: 2.3561945
   radius: 4.59
   radiusSpace: 0
-  thickness: 0.2
+  thickness: 1
   thicknessSpace: 0
   arcEndCaps: 0
   matchDashSpacingToSize: 1
-  dashed: 0
+  dashed: 1
   dashStyle:
-    type: 0
+    type: 1
     space: -2
     snap: 1
     size: 16
-    offset: 0
     spacing: 0.5
-    shapeModifier: 1
+    offset: 0
+    shapeModifier: 0.99
 --- !u!33 &2078326770128397072
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -528,6 +532,8 @@ MonoBehaviour:
       name: arrow_part_1
     - item: {fileID: 183266589692449961}
       name: arrow_part_2
+    - item: {fileID: 5943621020961091322}
+      name: outer_disc
 --- !u!114 &1943395277398426443
 MonoBehaviour:
   m_ObjectHideFlags: 0

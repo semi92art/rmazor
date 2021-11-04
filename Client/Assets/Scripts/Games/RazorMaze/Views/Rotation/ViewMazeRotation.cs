@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Linq;
-using DI.Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Characters;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.InputConfigurators;
-using Games.RazorMaze.Views.Utils;
-using Shapes;
 using Ticker;
 using UnityEngine;
 using UnityEngine.Events;
@@ -18,50 +13,38 @@ using Utils;
 
 namespace Games.RazorMaze.Views.Rotation
 {
-    public class ViewMazeRotation : ViewMazeRotationBase, IUpdateTick
+    public class ViewMazeRotation : ViewMazeRotationBase
     {
         #region nonpublic members
 
         private Rigidbody2D m_Rb;
-        private Disc m_Disc;
         private bool m_EnableRotation;
-        private bool m_Initialized;
 
         #endregion
         
         #region inject
         
-        private ViewSettings             ViewSettings        { get; }
-        private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IContainersGetter        ContainersGetter    { get; }
-        private IGameTicker              GameTicker          { get; }
-        private IModelGame               Model               { get; }
-        private IViewCharacter           Character           { get; }
-        private IViewAppearTransitioner  Transitioner        { get; }
-        private IViewInput   Input   { get; }
-        private IColorProvider           ColorProvider       { get; }
+        private ViewSettings      ViewSettings     { get; }
+        private IContainersGetter ContainersGetter { get; }
+        private IGameTicker       GameTicker       { get; }
+        private IModelGame        Model            { get; }
+        private IViewCharacter    Character        { get; }
+        private IViewInput        Input            { get; }
 
         public ViewMazeRotation(
             ViewSettings _ViewSettings,
-            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter, 
             IGameTicker _GameTicker,
             IModelGame _Model,
             IViewCharacter _Character,
-            IViewAppearTransitioner _Transitioner,
-            IViewInput _Input,
-            IColorProvider _ColorProvider)
+            IViewInput _Input)
         {
             ViewSettings = _ViewSettings;
-            CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
             GameTicker = _GameTicker;
             Model = _Model;
             Character = _Character;
-            Transitioner = _Transitioner;
             Input = _Input;
-            ColorProvider = _ColorProvider;
-            _GameTicker.Register(this);
         }
         
         #endregion
@@ -74,17 +57,9 @@ namespace Games.RazorMaze.Views.Rotation
         public override void Init()
         {
             var cont = ContainersGetter.GetContainer(ContainerNames.Maze);
-            
             m_Rb = cont.gameObject.AddComponent<Rigidbody2D>();
             m_Rb.gravityScale = 0;
             m_Rb.constraints = RigidbodyConstraints2D.FreezePosition;
-            
-            m_Disc = cont.gameObject.AddComponentOnNewChild<Disc>("Rotation Disc", out _);
-            m_Disc.Dashed = true;
-            m_Disc.Type = DiscType.Ring;
-            m_Disc.DashType = DashType.Rounded;
-            m_Disc.DashSize = 50f;
-            m_Initialized = true;
         }
 
         public override void OnRotationStarted(MazeRotationEventArgs _Args)
@@ -104,20 +79,13 @@ namespace Games.RazorMaze.Views.Rotation
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            bool? appear = null;
             switch (_Args.Stage)
             {
                 case ELevelStage.Loaded:
-                    m_Disc.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
-                    m_Disc.Radius = CalculateRotationDiscRadius();
-                        m_EnableRotation = Model.GetAllProceedInfos().Any(_Info =>
-                        _Info.Type == EMazeItemType.GravityBlock
-                        || _Info.Type == EMazeItemType.GravityTrap
-                        || _Info.Type == EMazeItemType.GravityBlockFree);
-
-                    m_Disc.enabled = m_EnableRotation;
-                    if (m_EnableRotation)
-                        appear = true;
+                    m_EnableRotation = Model.GetAllProceedInfos().Any(_Info =>
+                    _Info.Type == EMazeItemType.GravityBlock
+                    || _Info.Type == EMazeItemType.GravityTrap
+                    || _Info.Type == EMazeItemType.GravityBlockFree);
                     break;
                 case ELevelStage.ReadyToStart:
                     if (_Args.PreviousStage != ELevelStage.Loaded)
@@ -129,41 +97,14 @@ namespace Games.RazorMaze.Views.Rotation
                     }
                     break;
                 case ELevelStage.ReadyToUnloadLevel:
-                    appear = false;
                     break;
             }
-
-            if (!appear.HasValue)
-                return;
-            Transitioner.DoAppearTransition(
-                appear.Value,
-                new Dictionary<Component[], Func<Color>>
-                {
-                    {new Component[] { m_Disc }, () => ColorProvider.GetColor(ColorIds.Border)}
-                },
-                _Type: EAppearTransitionType.WithoutDelay);
-        }
-        
-        public void UpdateTick()
-        {
-            if (!m_Initialized)
-                return;
-            m_Disc.DashOffset += Time.deltaTime * -0.5f;
         }
 
         #endregion
 
         #region nonpublic methods
 
-        private float CalculateRotationDiscRadius()
-        {
-            var infos = Model.GetAllProceedInfos();
-            var pathPoints = Model.PathItemsProceeder.PathProceeds.Keys.ToList();
-            var points = infos.Select(_Info => _Info.CurrentPosition).Concat(pathPoints);
-            var maxDistance = points.Max(_P => (_P - Model.Data.Info.Size).ToVector2().magnitude);
-            return CoordinateConverter.Scale * maxDistance * 0.5f;
-        }
-        
         private IEnumerator RotationCoroutine(MazeRotationEventArgs _Args)
         {
             GetRotationParams(_Args,

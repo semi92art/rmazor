@@ -13,8 +13,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
     public interface IViewMazePathItemsGroup :
         IInit,
         IOnLevelStageChanged,
-        ICharacterMoveStarted, 
-        ICharacterMoveFinished
+        ICharacterMoveStarted
     {
         List<IViewMazeItemPath> PathItems { get; }
         void OnPathProceed(V2Int _PathItem);
@@ -86,12 +85,6 @@ namespace Games.RazorMaze.Views.MazeItemGroups
             if (!m_FirstMoveDone && ViewSettings.StartPathItemFilledOnStart)
                 UnfillStartPathItem();
             m_FirstMoveDone = true;
-        }
-        
-        public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
-        {
-            foreach (var pathItem in PathItems)
-                pathItem.OnCharacterMoveFinished(_Args);
         }
 
         #endregion

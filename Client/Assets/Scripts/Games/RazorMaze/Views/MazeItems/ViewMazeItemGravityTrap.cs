@@ -248,7 +248,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == ColorIds.MazeItem)
+            if (_ColorId == ColorIds.MazeItem1)
             {
                 m_OuterDisc.Color = _Color;
                 foreach (var cone in m_Cones)

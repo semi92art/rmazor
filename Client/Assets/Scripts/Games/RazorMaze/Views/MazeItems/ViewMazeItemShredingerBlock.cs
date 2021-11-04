@@ -26,7 +26,7 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         #region constants
 
-        private const string SoundClipNameOpenBlock = "shredinger_open";
+        private const string SoundClipNameOpenBlock  = "shredinger_open";
         private const string SoundClipNameCloseBlock = "shredinger_close";
         
         #endregion
@@ -34,18 +34,18 @@ namespace Games.RazorMaze.Views.MazeItems
         #region nonpublic members
 
         private float m_LineOffset;
-        private bool m_IsBlockClosed;
-        private bool m_IsCloseCoroutineRunning;
-        private bool m_IsOpenCoroutineRunning;
+        private bool  m_IsBlockClosed;
+        private bool  m_IsCloseCoroutineRunning;
+        private bool  m_IsOpenCoroutineRunning;
         
         #endregion
 
         #region shapes
 
-        protected override string ObjectName => "Shredinger Block";
-        private Rectangle m_ClosedBlock;
-        private readonly List<Line> m_OpenedLines = new List<Line>();
-        private readonly List<Disc> m_OpenedCorners = new List<Disc>();
+        protected override string     ObjectName => "Shredinger Block";
+        private readonly   List<Line> m_OpenedLines   = new List<Line>();
+        private readonly   List<Disc> m_OpenedCorners = new List<Disc>();
+        private            Rectangle  m_ClosedBlock;
 
         #endregion
         
@@ -227,6 +227,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 corner.Type = DiscType.Arc;
                 corner.Color = ColorProvider.GetColor(ColorIds.Main);
                 corner.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
+                corner.ArcEndCaps = ArcEndCap.Round;
             }
         }
 
@@ -313,8 +314,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 {
                     float cAppear = 1f - (_Progress - 1f) * (_Progress - 1f);
                     float cDissapear = 1f - _Progress * _Progress;
-                    var partsOpenColor = ColorProvider.GetColor(ColorIds.MazeItem).SetA(_Close ? cDissapear : cAppear);
-                    var partsClosedColor = ColorProvider.GetColor(ColorIds.MazeItem).SetA(_Close ? cAppear : cDissapear);
+                    var partsOpenColor = ColorProvider.GetColor(ColorIds.Main).SetA(_Close ? cDissapear : cAppear);
+                    var partsClosedColor = ColorProvider.GetColor(ColorIds.Main).SetA(_Close ? cAppear : cDissapear);
                     shapesOpen.ForEach(_Shape => _Shape.Color = partsOpenColor);
                     m_ClosedBlock.Color = partsClosedColor;
                 },
@@ -336,15 +337,7 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override void OnAppearStart(bool _Appear)
         {
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
-            // base.OnAppearStart(_Appear);
             m_ClosedBlock.enabled = BlockClosed;
-            // if (_Appear)
-            // {
-            //     foreach (var corner in m_OpenedCorners)
-            //         corner.Color = DrawingUtils.ColorLines.SetA(0);
-            //     foreach (var line in m_OpenedLines)
-            //         line.Color = DrawingUtils.ColorLines.SetA(0);
-            // }
         }
 
         protected override Dictionary<Component[], Func<Color>> GetAppearSets(bool _Appear)
@@ -354,7 +347,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 m_OpenedLines.Cast<Component>().Concat(m_OpenedCorners).ToArray();
             return new Dictionary<Component[], Func<Color>>
             {
-                {shapes, () => ColorProvider.GetColor(ColorIds.MazeItem)}
+                {shapes, () => ColorProvider.GetColor(ColorIds.Main)}
             };
         }
 

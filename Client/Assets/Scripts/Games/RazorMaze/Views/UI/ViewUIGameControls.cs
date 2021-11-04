@@ -26,7 +26,7 @@ namespace Games.RazorMaze.Views.UI
 
     }
     
-    public class ViewUIGameControls : ViewUIGameControlsBase
+    public class ViewUIGameControls : ViewUIGameControlsBase, IUpdateTick
     {
         #region nonpublic members
 
@@ -52,7 +52,10 @@ namespace Games.RazorMaze.Views.UI
         private readonly List<Animator>               m_CheckMarks = new List<Animator>();
         private          bool                         m_GameUiInitialized;
         private          Dictionary<string, Animator> m_StartLogoCharAnims;
-        private          bool                         m_OnStart = true;
+        private          bool                         m_OnStart              = true;
+        private readonly List<Component>              m_RotatingButtonShapes = new List<Component>();
+        private          Disc                         m_RotateClockwiseButtonOuterDisc;
+        private          Disc                         m_RotateCounterClockwiseButtonOuterDisc;
 
         #endregion
         
@@ -121,48 +124,19 @@ namespace Games.RazorMaze.Views.UI
         
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage == ELevelStage.ReadyToStart && _Args.PreviousStage != ELevelStage.Paused && m_OnStart)
+            if (!m_GameUiInitialized)
             {
-                ShowStartLogo();
+                InitGameUI();
+                m_GameUiInitialized = true;
             }
-            else if (_Args.Stage == ELevelStage.StartedOrContinued && m_OnStart)
-            {
-                HideStartLogo();
-                m_OnStart = false;
-            }
+            
+            ShowRotatingButtons(_Args);
+            ShowStartLogo(_Args);
+            LockCommands(_Args);
             
             switch (_Args.Stage)
             {
                 case ELevelStage.Loaded:
-                case ELevelStage.Paused:
-                case ELevelStage.ReadyToUnloadLevel:
-                case ELevelStage.Unloaded:
-                case ELevelStage.CharacterKilled:
-                    Input.LockAllCommands();
-                    Input.UnlockCommand(InputCommands.ShopMenu);
-                    Input.UnlockCommand(InputCommands.SettingsMenu);
-                    break;
-                case ELevelStage.Finished:
-                    Input.LockAllCommands();
-                    Input.UnlockCommand(InputCommands.ShopMenu);
-                    Input.UnlockCommand(InputCommands.SettingsMenu);
-                    Input.UnlockCommand(InputCommands.ReadyToUnloadLevel);
-                    break;
-                case ELevelStage.ReadyToStart:
-                case ELevelStage.StartedOrContinued:
-                    Input.UnlockAllCommands();
-                    break;
-                default:
-                    throw new SwitchCaseNotImplementedException(_Args.Stage);
-            }
-            switch (_Args.Stage)
-            {
-                case ELevelStage.Loaded:
-                    if (!m_GameUiInitialized)
-                    {
-                        InitGameUI();
-                        m_GameUiInitialized = true;
-                    }
                     ConsiderCongratsPanelWhileAppearing(false);
                     ShowCongratsPanel(false);
                     SetLevelCheckMarks(_Args.LevelIndex, false);
@@ -170,8 +144,8 @@ namespace Games.RazorMaze.Views.UI
                     break;
                 case ELevelStage.ReadyToStart:
                 case ELevelStage.StartedOrContinued:
-                    bool enableRotation = Model.GetAllProceedInfos().Any(_Info =>
-                        _Info.Type == EMazeItemType.GravityBlock || _Info.Type == EMazeItemType.GravityTrap);
+                    bool enableRotation = Model.GetAllProceedInfos().Any(
+                        _Info => RazorMazeUtils.GravityItemTypes().Contains(_Info.Type));
                     if (!enableRotation)
                     {
                         Input.LockCommand(InputCommands.RotateClockwise);
@@ -194,6 +168,14 @@ namespace Games.RazorMaze.Views.UI
             }
             Prompts.OnLevelStageChanged(_Args);
         }
+        
+        public void UpdateTick()
+        {
+            if (!m_GameUiInitialized)
+                return;
+            m_RotateClockwiseButtonOuterDisc.DashOffset -= Time.deltaTime * 0.25f;
+            m_RotateCounterClockwiseButtonOuterDisc.DashOffset += Time.deltaTime * 0.25f;
+        }
 
         #endregion
 
@@ -204,6 +186,8 @@ namespace Games.RazorMaze.Views.UI
             InitTopButtons();
             InitLevelAndCongratsPanel();
             InitStartLogo();
+            InitRotateButtons();
+            GameTicker.Register(this);
         }
         
         private void InitTopButtons()
@@ -314,6 +298,65 @@ namespace Games.RazorMaze.Views.UI
             var eye2 = go.GetCompItem<Rectangle>("eye_2");
             eye1.Color = eye2.Color = ColorProvider.GetColor(ColorIds.Background);
         }
+        
+        private void InitRotateButtons()
+        {
+            const float bottomOffset = 1f;
+            const float horOffset = 1f;
+            var cont = GetGameUIContainer();
+            var goRCb = PrefabUtilsEx.InitPrefab(
+                cont, "ui_game", "rotate_clockwise_button");
+            var goRCCb = PrefabUtilsEx.InitPrefab(
+                cont, "ui_game", "rotate_counter_clockwise_button");
+            float scale = CoordinateConverter.Scale * 0.2f;
+            var bounds = GraphicUtils.GetVisibleBounds();
+            var rcbDisc = goRCb.GetCompItem<Disc>("button");
+            goRCb.transform.localScale = scale * Vector3.one;
+            goRCb.transform.SetPosXY(
+                new Vector2(bounds.max.x, bounds.min.y) 
+                + scale * rcbDisc.Radius * (Vector2.left + Vector2.up)
+                + Vector2.left * horOffset + Vector2.up * bottomOffset);
+            goRCCb.transform.localScale = scale * Vector3.one;
+            goRCCb.transform.SetPosXY(
+                (Vector2)bounds.min
+                + scale * rcbDisc.Radius * (Vector2.right + Vector2.up)
+                + Vector2.right * horOffset + Vector2.up * bottomOffset);
+            m_RotateClockwiseButton = goRCb.GetCompItem<ButtonOnRaycast>("button");
+            m_RotateCounterClockwiseButton = goRCCb.GetCompItem<ButtonOnRaycast>("button");
+            m_RotateClockwiseButton.OnClickEvent.AddListener(CommandRotateClockwise);
+            m_RotateCounterClockwiseButton.OnClickEvent.AddListener(CommandRotateCounterClockwise);
+            m_RotatingButtonShapes.AddRange(new ShapeRenderer[]
+            {
+                goRCb.GetCompItem<Disc>("outer_disc"), 
+                goRCb.GetCompItem<Disc>("line"),
+                goRCb.GetCompItem<Line>("arrow_part_1"), 
+                goRCb.GetCompItem<Line>("arrow_part_2"), 
+                goRCCb.GetCompItem<Disc>("outer_disc"), 
+                goRCCb.GetCompItem<Disc>("line"),
+                goRCCb.GetCompItem<Line>("arrow_part_1"), 
+                goRCCb.GetCompItem<Line>("arrow_part_2")
+            });
+
+            m_RotateClockwiseButtonOuterDisc = goRCb.GetCompItem<Disc>("outer_disc");
+            m_RotateCounterClockwiseButtonOuterDisc = goRCCb.GetCompItem<Disc>("outer_disc");
+            
+            goRCb.SetActive(false);
+            goRCCb.SetActive(false);
+        }
+
+        private void ShowStartLogo(LevelStageArgs _Args)
+        {
+            switch (_Args.Stage)
+            {
+                case ELevelStage.ReadyToStart when _Args.PreviousStage != ELevelStage.Paused && m_OnStart:
+                    ShowStartLogo();
+                    break;
+                case ELevelStage.StartedOrContinued when m_OnStart:
+                    HideStartLogo();
+                    m_OnStart = false;
+                    break;
+            }
+        }
 
         private void ShowStartLogo()
         {
@@ -371,6 +414,84 @@ namespace Games.RazorMaze.Views.UI
                     {m_Renderers.ToArray(), () => ColorProvider.GetColor(ColorIds.UI)}
                 },
                 _Type: EAppearTransitionType.WithoutDelay);
+        }
+
+        private void LockCommands(LevelStageArgs _Args)
+        {
+            switch (_Args.Stage)
+            {
+                case ELevelStage.Loaded:
+                case ELevelStage.Paused:
+                case ELevelStage.ReadyToUnloadLevel:
+                case ELevelStage.Unloaded:
+                case ELevelStage.CharacterKilled:
+                    Input.LockAllCommands();
+                    Input.UnlockCommand(InputCommands.ShopMenu);
+                    Input.UnlockCommand(InputCommands.SettingsMenu);
+                    break;
+                case ELevelStage.Finished:
+                    Input.LockAllCommands();
+                    Input.UnlockCommand(InputCommands.ShopMenu);
+                    Input.UnlockCommand(InputCommands.SettingsMenu);
+                    Input.UnlockCommand(InputCommands.ReadyToUnloadLevel);
+                    break;
+                case ELevelStage.ReadyToStart:
+                case ELevelStage.StartedOrContinued:
+                    Input.UnlockAllCommands();
+                    break;
+                default:
+                    throw new SwitchCaseNotImplementedException(_Args.Stage);
+            }
+        }
+
+        private void ShowRotatingButtons(LevelStageArgs _Args)
+        {
+            bool MazeContainsGravityItems()
+            {
+                return Model.GetAllProceedInfos()
+                    .Any(_Info => RazorMazeUtils.GravityItemTypes().Contains(_Info.Type));
+            }
+
+            switch (_Args.Stage)
+            {
+                case ELevelStage.Loaded when MazeContainsGravityItems():
+                    ShowRotatingButtons(true, false);
+                    break;
+                case ELevelStage.Loaded:
+                    ShowRotatingButtons(false, true);
+                    break;
+                case ELevelStage.ReadyToStart:
+                    ShowRotatingButtons(MazeContainsGravityItems(), true);
+                    break;
+            }
+        }
+        
+        private void ShowRotatingButtons(bool _Show, bool _Instantly)
+        {
+            if (_Instantly && !_Show || _Show)
+            {
+                m_RotateClockwiseButton.SetGoActive(_Show);
+                m_RotateCounterClockwiseButton.SetGoActive(_Show);
+                m_RotateClockwiseButton.enabled = _Show;
+                m_RotateCounterClockwiseButton.enabled = _Show;
+            }
+            if (_Instantly)
+                return;
+            AppearTransitioner.DoAppearTransition(_Show, 
+                new Dictionary<Component[], System.Func<Color>>
+                {
+                    {m_RotatingButtonShapes.Cast<Component>().ToArray(), () => ColorProvider.GetColor(ColorIds.Main)}
+                }, _Type: EAppearTransitionType.WithoutDelay);
+        }
+        
+        private void CommandRotateClockwise()
+        {
+            Input.RaiseCommand(InputCommands.RotateClockwise, null);
+        }
+        
+        private void CommandRotateCounterClockwise()
+        {
+            Input.RaiseCommand(InputCommands.RotateCounterClockwise, null);
         }
 
         private void CommandShop()

@@ -47,3 +47,5 @@ MonoBehaviour:
       name: level_blur_config
     - item: {fileID: 11400000, guid: fcaebc104eabc2c4a9876fa77caea83d, type: 2}
       name: color_set
+    - item: {fileID: 731759395191873786, guid: ec7fb1fdd38ccb8439dbb51307afb7fc, type: 3}
+      name: background_item_congrats_1

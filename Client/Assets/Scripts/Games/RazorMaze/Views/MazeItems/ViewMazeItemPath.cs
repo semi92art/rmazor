@@ -5,20 +5,18 @@ using DI.Extensions;
 using Entities;
 using Exceptions;
 using Games.RazorMaze.Models;
-using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Utils;
-using ModestTree;
 using Shapes;
 using Ticker;
 using UnityEngine;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
-    public interface IViewMazeItemPath : IViewMazeItem, ICharacterMoveFinished
+    public interface IViewMazeItemPath : IViewMazeItem
     {
         bool Collected { get; set; }
     }
@@ -131,9 +129,6 @@ namespace Games.RazorMaze.Views.MazeItems
             if (m_TopBorderInited && m_TopBorder.Dashed)
                 m_TopBorder.DashOffset -= dOffset;
         }
-        
-        public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
-        { }
 
         #endregion
         
@@ -166,7 +161,6 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Shape.Width = m_Shape.Height = CoordinateConverter.Scale * 0.4f;
             m_Shape.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale * 2f;
             SetBordersAndCorners();
-            EnableInitializedShapes(false);
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
@@ -214,6 +208,7 @@ namespace Games.RazorMaze.Views.MazeItems
             InitInnerCorners();
             InitOuterCorners();
             AdjustBorders();
+            EnableInitializedShapes(false);
         }
 
         private void ClearBordersAndCorners()
@@ -348,7 +343,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private void EnableInitializedShapes(bool _Enable)
         {
-            if (m_Shape.IsNull())         m_Shape.enabled              = _Enable;
+            if (m_Shape.IsNotNull())       m_Shape.enabled             = _Enable;
             
             if (m_LeftBorderInited)        m_LeftBorder.enabled        = _Enable;
             if (m_RightBorderInited)       m_RightBorder.enabled       = _Enable;
@@ -565,7 +560,6 @@ namespace Games.RazorMaze.Views.MazeItems
         }
 
         private bool PathExist(V2Int _Position) => Model.PathItemsProceeder.PathProceeds.Keys.Contains(_Position);
-        private bool BlockExist(V2Int _Position) => GetItemsInfo(_Position).Any();
 
         private bool TurretExist(V2Int _Position)
         {
@@ -592,13 +586,6 @@ namespace Games.RazorMaze.Views.MazeItems
             return GetItemInfo(_Position, EMazeItemType.TrapIncreasing) != null;
         }
 
-        private IEnumerable<IMazeItemProceedInfo> GetItemsInfo(V2Int _Position, EMazeItemType[] _Types = null)
-        {
-            if (_Types == null)
-                _Types = Enum.GetValues(typeof(EMazeItemType)).Cast<EMazeItemType>().Except(EMazeItemType.Block).ToArray();
-            return _Types.Select(_T => GetItemInfo(_Position, _T));
-        }
-
         private IMazeItemProceedInfo GetItemInfo(V2Int _Position, EMazeItemType _Type)
         {
             return Model.GetAllProceedInfos()
@@ -610,12 +597,10 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected override void OnAppearStart(bool _Appear)
         {
-            base.OnAppearStart(_Appear);
-            if (_Appear)
-            {
-                EnableInitializedShapes(true);
-                Collected = false;
-            }
+            if (!_Appear) 
+                return;
+            EnableInitializedShapes(true);
+            Collected = false;
         }
 
         protected override Dictionary<Component[], Func<Color>> GetAppearSets(bool _Appear)

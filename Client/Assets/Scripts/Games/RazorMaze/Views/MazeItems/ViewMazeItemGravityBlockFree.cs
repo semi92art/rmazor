@@ -1,4 +1,7 @@
-﻿using DI.Extensions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
@@ -103,6 +106,15 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             if (_ColorId == ColorIds.Main)
                 m_Shape.Color = _Color;
+        }
+        
+        protected override Dictionary<Component[], Func<Color>> GetAppearSets(bool _Appear)
+        {
+            return base.GetAppearSets(_Appear).Concat(new Dictionary<Component[], Func<Color>>
+            {
+                {Shapes, () => ColorProvider.GetColor(ColorIds.Main)}
+            }).ToDictionary(_Kvp => _Kvp.Key,
+                _Kvp => _Kvp.Value);
         }
 
         #endregion

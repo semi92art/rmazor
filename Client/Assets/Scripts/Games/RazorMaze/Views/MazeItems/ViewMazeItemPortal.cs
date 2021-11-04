@@ -141,7 +141,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             var center = Object.AddComponentOnNewChild<Disc>("Portal Item", out _);
             center.Type = DiscType.Disc;
-            center.Color = ColorProvider.GetColor(ColorIds.Main);
+            center.Color = ColorProvider.GetColor(ColorIds.MazeItem2);
             m_Center = center;
 
             var scale = CoordinateConverter.Scale;
@@ -150,7 +150,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 var orbit = Object.AddComponentOnNewChild<Disc>($"Orbit {i + 1}", out _, Vector2.zero);
                 orbit.Thickness = ViewSettings.LineWidth * scale * 0.5f;
                 orbit.Type = DiscType.Arc;
-                orbit.Color = ColorProvider.GetColor(ColorIds.Main);
+                orbit.Color = ColorProvider.GetColor(ColorIds.MazeItem2);
                 m_Orbits.Add(orbit);
             }
 
@@ -203,7 +203,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == ColorIds.Main)
+            if (_ColorId == ColorIds.MazeItem2)
             {
                 m_Center.Color = _Color;
                 foreach (var item in m_Orbits)
@@ -219,7 +219,7 @@ namespace Games.RazorMaze.Views.MazeItems
             {
                 var gItem = Object.AddComponentOnNewChild<Disc>("Gravity Item", out _, Vector2.zero);
                 gItem.Radius = 0.025f * CoordinateConverter.Scale;
-                gItem.Color = ColorProvider.GetColor(ColorIds.Main);
+                gItem.Color = ColorProvider.GetColor(ColorIds.MazeItem2);
                 gItem.Type = DiscType.Disc;
                 m_GravityItems.Add(gItem);
                 m_GravityItems.Deactivate(gItem);
@@ -264,8 +264,8 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             return new Dictionary<Component[], Func<Color>>
             {
-                {new[] {m_Center}, () => ColorProvider.GetColor(ColorIds.MazeItem)},
-                {m_Orbits.Cast<Component>().ToArray(), () => ColorProvider.GetColor(ColorIds.MazeItem)}
+                {new[] {m_Center}, () => ColorProvider.GetColor(ColorIds.MazeItem2)},
+                {m_Orbits.Cast<Component>().ToArray(), () => ColorProvider.GetColor(ColorIds.MazeItem2)}
             };
         }
 

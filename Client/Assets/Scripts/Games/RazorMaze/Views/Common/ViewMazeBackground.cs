@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Constants;
 using DI.Extensions;
 using Exceptions;
+using GameHelpers;
 using Games.RazorMaze.Views.ContainerGetters;
-using Games.RazorMaze.Views.Utils;
+using Games.RazorMaze.Views.Helpers;
 using Shapes;
 using SpawnPools;
 using Ticker;
@@ -13,30 +16,31 @@ using UnityEngine.Events;
 using Utils;
 using Object = UnityEngine.Object;
 using Random = System.Random;
+using SortingOrders = Games.RazorMaze.Views.Utils.SortingOrders;
 
 namespace Games.RazorMaze.Views.Common
 {
+    public interface IViewMazeBackground : IInit, IOnLevelStageChanged
+    { }
+    
     public class ViewMazeBackground : IViewMazeBackground, IUpdateTick
     {
         #region constants
 
-        private const float LoadTime = 1f;
-        private const int PoolSize = 100;
+        private const int   PoolSize          = 100;
+        private const float CongratsAnimSpeed = 1f;
         
         #endregion
         
         #region nonpublic members
 
-        private bool m_Initialized;
-        private bool m_LoadedFirstTime;
-        private Transform m_Container;
-        private readonly Random m_Random = new Random(); 
-        private Color m_BackItemsColor;
-        private readonly BehavioursSpawnPool<ShapeRenderer> m_Pool = new BehavioursSpawnPool<ShapeRenderer>();
-        private readonly List<Vector2> m_Speeds = new List<Vector2>(PoolSize);
-        private Bounds m_ScreenBounds;
+        private readonly BehavioursSpawnPool<ShapeRenderer>    m_BackIdleItemsPool     = new BehavioursSpawnPool<ShapeRenderer>();
+        private readonly BehavioursSpawnPool<Animator>         m_BackCongratsItemsPool = new BehavioursSpawnPool<Animator>();
+        private readonly Dictionary<Animator, ShapeRenderer[]> m_BackCongratsItemsDict = new Dictionary<Animator, ShapeRenderer[]>();
 
-        private readonly Type[] m_PossibleSourceTypes = 
+        private readonly List<Vector2> m_BackIdleItemSpeeds = new List<Vector2>(PoolSize);
+        private readonly Random        m_Random             = new Random();
+        private readonly Type[] m_PossibleSourceTypes =
         {
             typeof(Disc),
             typeof(Line),
@@ -44,6 +48,20 @@ namespace Games.RazorMaze.Views.Common
             typeof(Polygon),
             typeof(RegularPolygon)
         };
+        private Color BackgroundColor
+        {
+            set => CameraProvider.MainCamera.backgroundColor = value;
+        }
+        
+        private bool      m_Initialized;
+        private bool      m_LoadedFirstTime;
+        private Transform m_Container;
+        private Color     m_BackItemsColor;
+        private Bounds    m_ScreenBounds;
+        private float     m_LastCongratsItemAnimTime;
+        private float     m_NextRandomCongratsItemAnimInterval;
+        private bool      m_DoAnimateCongrats;
+
         
         #endregion
         
@@ -54,19 +72,22 @@ namespace Games.RazorMaze.Views.Common
         private IGameTicker              GameTicker          { get; }
         private ICameraProvider          CameraProvider      { get; }
         private IColorProvider           ColorProvider       { get; }
+        private IViewAppearTransitioner  Transitioner        { get; }
 
         public ViewMazeBackground(
             IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
             ICameraProvider _CameraProvider,
-            IColorProvider _ColorProvider)
+            IColorProvider _ColorProvider,
+            IViewAppearTransitioner _Transitioner)
         {
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
             GameTicker = _GameTicker;
             CameraProvider = _CameraProvider;
             ColorProvider = _ColorProvider;
+            Transitioner = _Transitioner;
 
             GameTicker.Register(this);
         }
@@ -77,29 +98,26 @@ namespace Games.RazorMaze.Views.Common
         
         public event UnityAction Initialized;
 
-        private Color BackgroundColor
-        {
-            set => CameraProvider.MainCamera.backgroundColor = value;
-        }
-        
-        
         public void Init()
         {
             ColorProvider.ColorChanged += OnColorChanged;
             m_ScreenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
-            m_BackItemsColor = ColorProvider.GetColor(ColorIds.BackgroundItems);
-            InitSources();
-            InitShapes();
+            m_BackItemsColor = ColorProvider.GetColor(ColorIds.BackgroundIdleItems);
+            InitBackgroundIdleItems();
+            InitBackgroundCongratsItems();
             Initialized?.Invoke();
             m_Initialized = true;
         }
 
         private void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == ColorIds.BackgroundItems)
+            if (_ColorId == ColorIds.BackgroundIdleItems)
             {
                 m_BackItemsColor = _Color;
-                foreach (var rend in m_Pool)
+                foreach (var rend in m_BackIdleItemsPool)
+                    rend.Color = _Color;
+                foreach (var rend in m_BackCongratsItemsDict
+                    .SelectMany(_Kvp => _Kvp.Value))
                     rend.Color = _Color;
             }
             else if (_ColorId == ColorIds.Background)
@@ -108,12 +126,23 @@ namespace Games.RazorMaze.Views.Common
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
+            m_DoAnimateCongrats = false;
             if (_Args.Stage == ELevelStage.Loaded)
             {
-                Coroutines.Run(LoadLevelCoroutine(_Args.LevelIndex));
-                if (!m_LoadedFirstTime)
-                    Coroutines.Run(LoadCoroutine(true));
+                SetForegroundColors(_Args.LevelIndex);
+                AppearBackgroundIdleItems(true);
             }
+            else if (_Args.Stage == ELevelStage.Finished)
+            {
+                m_DoAnimateCongrats = true;
+                AppearBackgroundIdleItems(false);
+            }
+            else if (_Args.Stage == ELevelStage.Unloaded)
+            {
+                foreach (var item in m_BackCongratsItemsPool)
+                    m_BackCongratsItemsPool.Deactivate(item);
+            }
+            
             m_LoadedFirstTime = true;
         }
         
@@ -121,16 +150,29 @@ namespace Games.RazorMaze.Views.Common
         {
             if (!m_Initialized)
                 return;
-            ProceedBackground();
+            ProceedBackgroundIdleItems();
+            if (!m_DoAnimateCongrats)
+                return;
+            ProceedBackgroundCongratsItems();
         }
-        
+
         #endregion
 
         #region nonpublic methods
-
-        private List<Disc> InitSources()
+        
+        private void AppearBackgroundIdleItems(bool _Appear)
         {
-            var res = new List<Disc>();
+            Transitioner.DoAppearTransition(_Appear,
+                new Dictionary<Component[], Func<Color>>
+                {
+                    {m_BackIdleItemsPool.Cast<Component>().ToArray(), () => m_BackItemsColor}
+                },
+                _Type: EAppearTransitionType.WithoutDelay);
+        }
+        
+        private void InitBackgroundIdleItems()
+        {
+            var sources = new List<Disc>();
             for (int i = 0; i < 3; i++)
             {
                 var sourceGo = new GameObject("Background Item");
@@ -140,15 +182,8 @@ namespace Games.RazorMaze.Views.Common
                 source.Radius = 0.25f * i;
                 source.SortingOrder = SortingOrders.BackgroundItem;
                 source.enabled = false;
-                res.Add(source);
+                sources.Add(source);
             }
-
-            return res;
-        }
-
-        private void InitShapes()
-        {
-            var sources = InitSources();
             for (int i = 0; i < PoolSize; i++)
             {
                 int randIdx = Mathf.FloorToInt(UnityEngine.Random.value * sources.Count);
@@ -170,22 +205,88 @@ namespace Games.RazorMaze.Views.Common
                 if (newSource == null)
                     return;
                 newSource.enabled = true;
-                m_Pool.Add(newSource);
-                m_Speeds.Add(RandomSpeed());
+                m_BackIdleItemsPool.Add(newSource);
+                m_BackIdleItemSpeeds.Add(RandomSpeed());
             }
         }
+
+        private void InitBackgroundCongratsItems()
+        {
+            var sourceGos = new List<GameObject>();
+            for (int i = 0; i < 1; i++)
+            {
+                var sourceGo = PrefabUtilsEx.GetPrefab(
+                    "views", $"background_item_congrats_{i + 1}");
+                sourceGos.Add(sourceGo);
+            }
+            for (int i = 0; i < PoolSize; i++)
+            {
+                int randIdx = Mathf.FloorToInt(UnityEngine.Random.value * sourceGos.Count);
+                var sourceGo = sourceGos[randIdx];
+                var newGo = Object.Instantiate(sourceGo);
+                newGo.SetParent(ContainersGetter.GetContainer(ContainerNames.Background));
+                var sourceAnim = newGo.GetCompItem<Animator>("animator");
+                sourceAnim.speed = CongratsAnimSpeed;
+                var triggerer = newGo.GetCompItem<AnimationTriggerer>("triggerer");
+                var content = newGo.GetCompItem<Transform>("content");
+                var shapes = m_PossibleSourceTypes
+                    .SelectMany(_T => content.GetComponentsInChildren(_T))
+                    .Cast<ShapeRenderer>()
+                    .ToArray();
+                triggerer.Trigger1 = () =>
+                {
+                    foreach (var shape in shapes)
+                        shape.Color = ColorProvider.GetColor(ColorIds.BackgroundCongratsItems);
+                };
+                triggerer.Trigger2 = () =>
+                {
+                    var startColA = ColorProvider.GetColor(ColorIds.BackgroundCongratsItems).a;
+                    Coroutines.Run(Coroutines.Lerp(
+                        1f,
+                        0f,
+                        1f / (2f * CongratsAnimSpeed),
+                        _Progress =>
+                        {
+                            foreach (var shape in shapes)
+                                shape.Color = shape.Color.SetA(_Progress * startColA);
+                        },
+                        GameTicker));
+                };
+                triggerer.Trigger3 = () => m_BackCongratsItemsPool.Deactivate(sourceAnim);
+                m_BackCongratsItemsPool.Add(sourceAnim);
+                m_BackCongratsItemsDict.Add(sourceAnim, shapes);
+            }
+
+            foreach (var item in m_BackCongratsItemsPool)
+                m_BackCongratsItemsPool.Deactivate(item);
+        }
         
-        private void ProceedBackground()
+        private void ProceedBackgroundIdleItems()
         {
             int k = 0;
-            foreach (var shape in m_Pool)
+            foreach (var shape in m_BackIdleItemsPool)
             {
-                var speed = m_Speeds[k++] * Time.deltaTime;
+                var speed = m_BackIdleItemSpeeds[k++] * Time.deltaTime;
                 shape.transform.PlusPosXY(speed.x, speed.y);
                 if (IsInsideOfScreenBounds(shape.transform.position.XY(), new Vector2(1f, 1f)))
                     continue;
                 shape.transform.SetPosXY(RandomPositionOnScreen(false, new Vector2(1f, 1f)));
             }
+        }
+
+        private void ProceedBackgroundCongratsItems()
+        {
+            if (!(GameTicker.Time > m_NextRandomCongratsItemAnimInterval + m_LastCongratsItemAnimTime)) 
+                return;
+            m_LastCongratsItemAnimTime = GameTicker.Time;
+            m_NextRandomCongratsItemAnimInterval = 0.1f + UnityEngine.Random.value * 0.3f;
+            var item = m_BackCongratsItemsPool.FirstInactive;
+            if (item.IsNull())
+                return;
+            item.transform.position = RandomPositionOnScreen();
+            item.transform.localScale = Vector3.one * (0.5f + 3f * UnityEngine.Random.value);
+            m_BackCongratsItemsPool.Activate(item);
+            item.SetTrigger(AnimKeys.Anim);
         }
         
         private Vector2 RandomPositionOnScreen(bool _Inside = true, Vector2? _Padding = null)
@@ -244,55 +345,16 @@ namespace Games.RazorMaze.Views.Common
         private Vector2 RandomSpeed() =>
             new Vector2(m_Random.NextFloatAlt(), m_Random.NextFloatAlt());
         
-        private IEnumerator LoadCoroutine(bool _Load)
-        {
-            var startColor = _Load ? m_BackItemsColor.SetA(0f) : m_BackItemsColor;
-            var endColor = !_Load ?  m_BackItemsColor.SetA(0f) : m_BackItemsColor;
-            
-            yield return Coroutines.Lerp(
-                startColor,
-                endColor,
-                LoadTime,
-                _Color =>
-                {
-                    foreach (var shape in m_Pool)
-                        shape.Color = _Color;
-                },
-                GameTicker,
-                (_Finished, _Progress) =>
-                {
-                    foreach (var shape in m_Pool)
-                        shape.Color = endColor;
-                });
-        }
-
-        private IEnumerator LoadLevelCoroutine(int _Level)
+        private void SetForegroundColors(int _Level)
         {
             BackgroundColor = ColorProvider.GetColor(ColorIds.Background);
-            yield break;
-            const float duration = 2f;
             int colorIdx = (_Level / RazorMazeUtils.LevelsInGroup) % 10;
-            float hStart = MathUtils.ClampInverse(
-                _Level % RazorMazeUtils.LevelsInGroup == 0 ? colorIdx - 1 : colorIdx, 0, 10) / 10f;
             float hEnd = colorIdx / 10f;
-
             float s = 52f / 100f;
             float v = 42f / 100f;
-            var startColor = Color.HSVToRGB(hStart, s, v);
-            var endColor = Color.HSVToRGB(hEnd, s, v);
-            
-            if ((_Level + 1) % 3 == 0)
-            {
-                BackgroundColor = endColor;
-                yield break;
-            }
-            
-            yield return Coroutines.Lerp(
-                startColor,
-                endColor,
-                duration,
-                _Color => BackgroundColor = _Color,
-                GameTicker);
+            var newMainColor = Color.HSVToRGB(hEnd, s, v);
+            ColorProvider.SetColor(ColorIds.Main, newMainColor);
+            ColorProvider.SetColor(ColorIds.Border, newMainColor.SetA(0.5f));
         }
 
         #endregion

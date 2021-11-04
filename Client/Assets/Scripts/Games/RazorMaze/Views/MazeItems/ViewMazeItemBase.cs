@@ -9,7 +9,6 @@ using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.MazeItems.Props;
-using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
 using UnityEngine;
@@ -72,8 +71,6 @@ namespace Games.RazorMaze.Views.MazeItems
             Transitioner = _Transitioner;
             Managers = _Managers;
             ColorProvider = _ColorProvider;
-
-            GameTicker.Register(this);
         }
 
         #endregion
@@ -124,6 +121,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         public virtual void Init(ViewMazeItemProps _Props)
         {
+            GameTicker.Register(this);
             Props = _Props;
             if (!Initialized)
             {
@@ -186,7 +184,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             return new Dictionary<Component[], Func<Color>>
             {
-                {Shapes, () => ColorProvider.GetColor(ColorIds.MazeItem)}
+                {Shapes, () => ColorProvider.GetColor(ColorIds.MazeItem1)}
             };
         }
 

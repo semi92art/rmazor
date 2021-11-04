@@ -11,12 +11,16 @@ namespace DI.Extensions
         {
             if (string.IsNullOrWhiteSpace(_Name))
                 return "";
-            StringBuilder newText = new StringBuilder(_Name.Length * 2);
+            var newText = new StringBuilder(_Name.Length * 2);
             newText.Append(_Name[0]);
             for (int i = 1; i < _Name.Length; i++)
             {
-                if (char.IsUpper(_Name[i]) && _Name[i - 1] != ' ')
+                if ((char.IsUpper(_Name[i])
+                     || char.IsDigit(_Name[i]))
+                    && _Name[i - 1] != ' ')
+                {
                     newText.Append(' ');
+                }
                 newText.Append(_Name[i]);
             }
             return newText.ToString();

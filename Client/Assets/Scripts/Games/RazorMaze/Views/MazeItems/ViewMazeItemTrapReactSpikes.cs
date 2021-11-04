@@ -136,12 +136,12 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override void InitShape()
         {
             var line = Object.gameObject.AddComponentOnNewChild<Line>("Trap React Item", out _);
-            line.Color = ColorProvider.GetColor(ColorIds.MazeItem);
+            line.Color = ColorProvider.GetColor(ColorIds.MazeItem1);
             line.EndCaps = LineEndCap.Round;
             var trap = Object.AddComponentOnNewChild<SpriteRenderer>("Trap Sprite", out _);
             trap.sprite = PrefabUtilsEx.GetObject<Sprite>("views", "trap_react_spikes");
             trap.sortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
-            trap.color = ColorProvider.GetColor(ColorIds.MazeItem);
+            trap.color = ColorProvider.GetColor(ColorIds.MazeItem1);
             trap.maskInteraction = SpriteMaskInteraction.VisibleOutsideMask;
             var maskGo = PrefabUtilsEx.InitPrefab(
                 Object.transform, "views", "turret_bullet_mask");
@@ -170,7 +170,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == ColorIds.MazeItem)
+            if (_ColorId == ColorIds.MazeItem1)
             {
                 m_Line.Color = _Color;
                 m_Trap.color = _Color;

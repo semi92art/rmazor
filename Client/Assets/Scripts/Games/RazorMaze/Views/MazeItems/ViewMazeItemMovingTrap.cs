@@ -157,7 +157,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == ColorIds.MazeItem)
+            if (_ColorId == ColorIds.MazeItem1)
                 m_Saw.color = _Color;
             base.OnColorChanged(_ColorId, _Color);
         }

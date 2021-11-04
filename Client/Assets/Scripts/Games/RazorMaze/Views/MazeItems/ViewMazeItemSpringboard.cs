@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
 using Entities;
@@ -8,7 +9,6 @@ using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
-using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
 using UnityEngine;
@@ -165,6 +165,14 @@ namespace Games.RazorMaze.Views.MazeItems
             var edge2 = m_Edge2Start + V * _C;
             var pillarEdge = (edge1 + edge2) * 0.5f;
             return new Tuple<Vector2, Vector2, Vector2>(edge1, edge2, pillarEdge);
+        }
+        
+        protected override Dictionary<Component[], Func<Color>> GetAppearSets(bool _Appear)
+        {
+            return new Dictionary<Component[], Func<Color>>
+            {
+                {Shapes, () => ColorProvider.GetColor(ColorIds.Main)}
+            };
         }
         
         #endregion

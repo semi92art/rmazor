@@ -174,7 +174,7 @@ namespace Games.RazorMaze.Views.MazeItems
             var bhb = Object.gameObject.AddComponentOnNewChild<Disc>("Border", out _);
             bhb.Dashed = true;
             bhb.DashType = DashType.Rounded;
-            bhb.Color = ColorProvider.GetColor(ColorIds.MazeItem);
+            bhb.Color = ColorProvider.GetColor(ColorIds.MazeItem1);
             bhb.Type = DiscType.Ring;
             bhb.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type) + 1;
             bhb.DashSize = 2f;
@@ -187,14 +187,14 @@ namespace Games.RazorMaze.Views.MazeItems
             
             m_BulletFakeContainer = bulletFakeGo.transform;
             m_BulletFakeRenderer = bulletFakeGo.GetCompItem<SpriteRenderer>("bullet");
-            m_BulletFakeRenderer.color = ColorProvider.GetColor(ColorIds.MazeItem);
+            m_BulletFakeRenderer.color = ColorProvider.GetColor(ColorIds.MazeItem1);
             
             m_BulletTr = bulletGo.transform;
             m_BulletFakeTr = bulletFakeGo.transform;
             
             m_Bullet = bulletGo.GetContentItem("bullet").transform;
             m_BulletRenderer = m_Bullet.GetComponent<SpriteRenderer>();
-            m_BulletRenderer.color = ColorProvider.GetColor(ColorIds.MazeItem);
+            m_BulletRenderer.color = ColorProvider.GetColor(ColorIds.MazeItem1);
 
             var bmGo = PrefabUtilsEx.InitPrefab(
                 bulletParent, "views", "turret_bullet_mask");
@@ -227,7 +227,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == ColorIds.MazeItem)
+            if (_ColorId == ColorIds.MazeItem1)
             {
                 m_BulletHolderBorder.Color = _Color;
                 m_BulletRenderer.color = _Color;
@@ -352,13 +352,15 @@ namespace Games.RazorMaze.Views.MazeItems
             bool movedToTheEnd = false;
             m_BulletRotating = true;
             m_RotatingSpeed = ViewSettings.TurretBulletRotationSpeed;
+            var fullPath = RazorMazeUtils.GetFullPath(_Args.From, _Args.To);
             yield return Coroutines.DoWhile(
                 () =>
                 {
                     if (point == Model.Character.Position
                         && Model.Character.Alive
                         && !Model.PathItemsProceeder.AllPathsProceeded
-                        && Model.LevelStaging.LevelStage != ELevelStage.Finished)
+                        && Model.LevelStaging.LevelStage != ELevelStage.Finished
+                        && fullPath.Contains(point))
                     {
                         Model.LevelStaging.KillCharacter();
                         return false;
@@ -440,10 +442,10 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override Dictionary<Component[], Func<Color>> GetAppearSets(bool _Appear)
         {
             var bulletRenderers = new Component[] {m_BulletRenderer, m_BulletFakeRenderer};
-            var bulletRenderersCol = _Appear ? ColorProvider.GetColor(ColorIds.MazeItem) : m_BulletFakeRenderer.color;
+            var bulletRenderersCol = _Appear ? ColorProvider.GetColor(ColorIds.MazeItem1) : m_BulletFakeRenderer.color;
             return new Dictionary<Component[], Func<Color>>
             {
-                {new Component[] {m_BulletHolderBorder}, () => ColorProvider.GetColor(ColorIds.MazeItem)},
+                {new Component[] {m_BulletHolderBorder}, () => ColorProvider.GetColor(ColorIds.MazeItem1)},
                 {new Component[] {m_Body}, () => ColorProvider.GetColor(ColorIds.Main)},
                 {bulletRenderers, () => bulletRenderersCol}
             };
