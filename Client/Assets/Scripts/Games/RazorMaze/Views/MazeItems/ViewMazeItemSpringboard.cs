@@ -167,9 +167,9 @@ namespace Games.RazorMaze.Views.MazeItems
             return new Tuple<Vector2, Vector2, Vector2>(edge1, edge2, pillarEdge);
         }
         
-        protected override Dictionary<Component[], Func<Color>> GetAppearSets(bool _Appear)
+        protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
-            return new Dictionary<Component[], Func<Color>>
+            return new Dictionary<IEnumerable<Component>, Func<Color>>
             {
                 {Shapes, () => ColorProvider.GetColor(ColorIds.Main)}
             };

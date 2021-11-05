@@ -439,14 +439,14 @@ namespace Games.RazorMaze.Views.MazeItems
             base.OnAppearFinish(_Appear);
         }
 
-        protected override Dictionary<Component[], Func<Color>> GetAppearSets(bool _Appear)
+        protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
             var bulletRenderers = new Component[] {m_BulletRenderer, m_BulletFakeRenderer};
             var bulletRenderersCol = _Appear ? ColorProvider.GetColor(ColorIds.MazeItem1) : m_BulletFakeRenderer.color;
-            return new Dictionary<Component[], Func<Color>>
+            return new Dictionary<IEnumerable<Component>, Func<Color>>
             {
-                {new Component[] {m_BulletHolderBorder}, () => ColorProvider.GetColor(ColorIds.MazeItem1)},
-                {new Component[] {m_Body}, () => ColorProvider.GetColor(ColorIds.Main)},
+                {new [] {m_BulletHolderBorder}, () => ColorProvider.GetColor(ColorIds.MazeItem1)},
+                {new [] {m_Body}, () => ColorProvider.GetColor(ColorIds.Main)},
                 {bulletRenderers, () => bulletRenderersCol}
             };
         }

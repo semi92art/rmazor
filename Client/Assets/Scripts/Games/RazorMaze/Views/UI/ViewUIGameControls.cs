@@ -410,9 +410,9 @@ namespace Games.RazorMaze.Views.UI
                 return;
             AppearTransitioner.DoAppearTransition(
                 _Show, 
-                new Dictionary<Component[], System.Func<Color>>
+                new Dictionary<IEnumerable<Component>, System.Func<Color>>
                 {
-                    {m_Renderers.ToArray(), () => ColorProvider.GetColor(ColorIds.UI)}
+                    {m_Renderers, () => ColorProvider.GetColor(ColorIds.UI)}
                 },
                 _Type: EAppearTransitionType.WithoutDelay);
         }
@@ -479,9 +479,9 @@ namespace Games.RazorMaze.Views.UI
             if (_Instantly)
                 return;
             AppearTransitioner.DoAppearTransition(_Show, 
-                new Dictionary<Component[], System.Func<Color>>
+                new Dictionary<IEnumerable<Component>, System.Func<Color>>
                 {
-                    {m_RotatingButtonShapes.Cast<Component>().ToArray(), () => ColorProvider.GetColor(ColorIds.Main)}
+                    {m_RotatingButtonShapes, () => ColorProvider.GetColor(ColorIds.Main)}
                 }, _Type: EAppearTransitionType.WithoutDelay);
         }
         

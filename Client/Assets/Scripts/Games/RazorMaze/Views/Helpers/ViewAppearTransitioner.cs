@@ -27,7 +27,7 @@ namespace Games.RazorMaze.Views.Helpers
     {
         void DoAppearTransition(
             bool _Appear,
-            Dictionary<Component[], Func<Color>> _Sets,
+            Dictionary<IEnumerable<Component>, Func<Color>> _Sets,
             V2Int? _ItemPosition = null,
             UnityAction _OnFinish = null,
             EAppearTransitionType _Type = EAppearTransitionType.Circled);
@@ -57,7 +57,7 @@ namespace Games.RazorMaze.Views.Helpers
         
         public void DoAppearTransition(
             bool _Appear,
-            Dictionary<Component[], Func<Color>> _Sets,
+            Dictionary<IEnumerable<Component>, Func<Color>> _Sets,
             V2Int? _ItemPosition = null,
             UnityAction _OnFinish = null,
             EAppearTransitionType _Type = EAppearTransitionType.Circled)

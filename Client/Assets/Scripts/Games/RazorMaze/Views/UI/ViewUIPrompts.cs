@@ -235,7 +235,7 @@ namespace Games.RazorMaze.Views.UI
         private IEnumerator ShowPromptCoroutine()
         {
             const float loopTime = 1f;
-            if (m_CurrentPromptInfo.NeedToHide)
+            if (m_CurrentPromptInfo != null && m_CurrentPromptInfo.NeedToHide)
             {
                 m_CurrentPromptInfo.PromptGo.DestroySafe();
                 m_CurrentPromptInfo = null;
@@ -252,7 +252,7 @@ namespace Games.RazorMaze.Views.UI
                 },
                 GameTicker,
                 (_, __) => Coroutines.Run(ShowPromptCoroutine()),
-                () => m_CurrentPromptInfo.NeedToHide,
+                () => m_CurrentPromptInfo == null || m_CurrentPromptInfo.NeedToHide,
                 _Progress => _Progress < 0.5f ? 2f * _Progress : 2f * (1f - _Progress));
         }
 

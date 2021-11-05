@@ -214,7 +214,7 @@ namespace Games.RazorMaze.Views.Characters
                 m_Animator.SetTrigger(AnimKeyStartJumping);
             Transitioner.DoAppearTransition(
                 _Appear,
-                new Dictionary<Component[], Func<Color>>
+                new Dictionary<IEnumerable<Component>, Func<Color>>
                 {
                     {new Component[] {m_HeadShape}, () => ColorProvider.GetColor(ColorIds.Character)},
                     {new Component[] {m_Eye1Shape, m_Eye2Shape}, () => ColorProvider.GetColor(ColorIds.Background)}

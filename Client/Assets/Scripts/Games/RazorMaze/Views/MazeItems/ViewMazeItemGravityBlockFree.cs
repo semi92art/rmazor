@@ -108,9 +108,9 @@ namespace Games.RazorMaze.Views.MazeItems
                 m_Shape.Color = _Color;
         }
         
-        protected override Dictionary<Component[], Func<Color>> GetAppearSets(bool _Appear)
+        protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
-            return base.GetAppearSets(_Appear).Concat(new Dictionary<Component[], Func<Color>>
+            return base.GetAppearSets(_Appear).Concat(new Dictionary<IEnumerable<Component>, Func<Color>>
             {
                 {Shapes, () => ColorProvider.GetColor(ColorIds.Main)}
             }).ToDictionary(_Kvp => _Kvp.Key,
@@ -118,6 +118,5 @@ namespace Games.RazorMaze.Views.MazeItems
         }
 
         #endregion
-
     }
 }

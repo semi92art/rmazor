@@ -191,6 +191,7 @@ namespace Games.RazorMaze.Views.MazeItems
             foreach (var line in m_OpenedLines)
             {
                 line.Dashed = true;
+                line.DashSize = 2f;
                 line.DashType = DashType.Rounded;
                 line.Color = ColorProvider.GetColor(ColorIds.Main);
                 line.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
@@ -340,12 +341,12 @@ namespace Games.RazorMaze.Views.MazeItems
             m_ClosedBlock.enabled = BlockClosed;
         }
 
-        protected override Dictionary<Component[], Func<Color>> GetAppearSets(bool _Appear)
+        protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
             var shapes = !_Appear && BlockClosed ?
                 new Component[] {m_ClosedBlock} :
-                m_OpenedLines.Cast<Component>().Concat(m_OpenedCorners).ToArray();
-            return new Dictionary<Component[], Func<Color>>
+                m_OpenedLines.Cast<Component>().Concat(m_OpenedCorners);
+            return new Dictionary<IEnumerable<Component>, Func<Color>>
             {
                 {shapes, () => ColorProvider.GetColor(ColorIds.Main)}
             };

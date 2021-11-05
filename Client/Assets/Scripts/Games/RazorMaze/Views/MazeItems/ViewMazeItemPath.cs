@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
@@ -603,28 +604,20 @@ namespace Games.RazorMaze.Views.MazeItems
             Collected = false;
         }
 
-        protected override Dictionary<Component[], Func<Color>> GetAppearSets(bool _Appear)
+        protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
-            var cornersDictRaw = new Dictionary<Color, List<Component>>();
-            var defCornerCol = ColorProvider.GetColor(ColorIds.Main);
-            var altCornerCol = ColorProvider.GetColor(ColorIds.Border);
-            cornersDictRaw.Add(defCornerCol, new List<Component>());
-            if (altCornerCol != defCornerCol)
-                cornersDictRaw.Add(altCornerCol, new List<Component>());
-
-            if (m_BottomLeftCornerInited)
-                cornersDictRaw[m_BottomLeftCornerIsOuterAndNearTrapIncreasing ? altCornerCol : defCornerCol]
-                    .Add(m_BottomLeftCorner);
-            if (m_BottomRightCornerInited)
-                cornersDictRaw[m_BottomRightCornerIsOuterAndNearTrapIncreasing ? altCornerCol : defCornerCol]
-                    .Add(m_BottomRightCorner);
-            if (m_TopLeftCornerInited)
-                cornersDictRaw[m_TopLeftCornerIsOuterAndNearTrapIncreasing ? altCornerCol : defCornerCol]
-                    .Add(m_TopLeftCorner);
-            if (m_TopRightCornerInited)
-                cornersDictRaw[m_TopRightCornerIsOuterAndNearTrapIncreasing ? altCornerCol : defCornerCol]
-                    .Add(m_TopRightCorner);
-            
+            var borderSets = GetBorderAppearSets();
+            var cornerSets = GetCornerAppearSets();
+            var result = borderSets.ConcatWithDictionary(cornerSets);
+            if (_Appear && !Props.IsStartNode || !_Appear && !Collected)
+                result.Add(new Component[] {m_Shape}, () => ColorProvider.GetColor(ColorIds.Path));
+            else
+                m_Shape.enabled = false;
+            return result;
+        }
+        
+        private Dictionary<IEnumerable<Component>, Func<Color>> GetBorderAppearSets()
+        {
             var borders = new List<Component>();
             if (m_BottomBorderInited)
                 borders.Add(m_BottomBorder);
@@ -634,27 +627,38 @@ namespace Games.RazorMaze.Views.MazeItems
                 borders.Add(m_LeftBorder);
             if (m_RightBorderInited)
                 borders.Add(m_RightBorder);
-
-            var bordersDict = new Dictionary<Component[], Func<Color>>
+            var sets = new Dictionary<IEnumerable<Component>, Func<Color>>
             {
-                {
-                    borders.ToArray(),
-                    () => ColorProvider.GetColor(ColorIds.Border)
-                }
+                {borders, () => ColorProvider.GetColor(ColorIds.Border)}
             };
-            var cornersDict = cornersDictRaw.
-                ToDictionary(_Kvp => _Kvp.Value.ToArray(),
+            return sets;
+        }
+        
+        private Dictionary<IEnumerable<Component>, Func<Color>> GetCornerAppearSets()
+        {
+            var setsRaw = new Dictionary<Color, List<Component>>();
+            var defCornerCol = ColorProvider.GetColor(ColorIds.Main);
+            var altCornerCol = ColorProvider.GetColor(ColorIds.Border);
+            setsRaw.Add(defCornerCol, new List<Component>());
+            if (altCornerCol != defCornerCol)
+                setsRaw.Add(altCornerCol, new List<Component>());
+            if (m_BottomLeftCornerInited)
+                setsRaw[m_BottomLeftCornerIsOuterAndNearTrapIncreasing ? altCornerCol : defCornerCol]
+                    .Add(m_BottomLeftCorner);
+            if (m_BottomRightCornerInited)
+                setsRaw[m_BottomRightCornerIsOuterAndNearTrapIncreasing ? altCornerCol : defCornerCol]
+                    .Add(m_BottomRightCorner);
+            if (m_TopLeftCornerInited)
+                setsRaw[m_TopLeftCornerIsOuterAndNearTrapIncreasing ? altCornerCol : defCornerCol]
+                    .Add(m_TopLeftCorner);
+            if (m_TopRightCornerInited)
+                setsRaw[m_TopRightCornerIsOuterAndNearTrapIncreasing ? altCornerCol : defCornerCol]
+                    .Add(m_TopRightCorner);
+            var sets = setsRaw.
+                ToDictionary(
+                    _Kvp => (IEnumerable<Component>)_Kvp.Value,
                     _Kvp => new Func<Color>(() => _Kvp.Key));
-            var res = new[] {bordersDict, cornersDict}
-                .SelectMany(_Dict => _Dict)
-                .ToDictionary(_Kvp => _Kvp.Key, _Kvp => _Kvp.Value);
-
-            if (_Appear && !Props.IsStartNode || !_Appear && !Collected)
-                res.Add(new Component[] {m_Shape}, () => ColorProvider.GetColor(ColorIds.Path));
-            else
-                m_Shape.enabled = false;
-
-            return res;
+            return sets;
         }
 
         #endregion

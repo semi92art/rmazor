@@ -260,12 +260,12 @@ namespace Games.RazorMaze.Views.MazeItems
             m_GravitySpawnTimer = 0f;
         }
 
-        protected override Dictionary<Component[], Func<Color>> GetAppearSets(bool _Appear)
+        protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
-            return new Dictionary<Component[], Func<Color>>
+            return new Dictionary<IEnumerable<Component>, Func<Color>>
             {
                 {new[] {m_Center}, () => ColorProvider.GetColor(ColorIds.MazeItem2)},
-                {m_Orbits.Cast<Component>().ToArray(), () => ColorProvider.GetColor(ColorIds.MazeItem2)}
+                {m_Orbits, () => ColorProvider.GetColor(ColorIds.MazeItem2)}
             };
         }
 

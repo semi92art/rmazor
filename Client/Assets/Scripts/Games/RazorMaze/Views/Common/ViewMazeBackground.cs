@@ -163,9 +163,9 @@ namespace Games.RazorMaze.Views.Common
         private void AppearBackgroundIdleItems(bool _Appear)
         {
             Transitioner.DoAppearTransition(_Appear,
-                new Dictionary<Component[], Func<Color>>
+                new Dictionary<IEnumerable<Component>, Func<Color>>
                 {
-                    {m_BackIdleItemsPool.Cast<Component>().ToArray(), () => m_BackItemsColor}
+                    {m_BackIdleItemsPool, () => m_BackItemsColor}
                 },
                 _Type: EAppearTransitionType.WithoutDelay);
         }

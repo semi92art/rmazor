@@ -121,10 +121,10 @@ namespace Games.RazorMaze.Views.MazeItems
         
         public virtual void Init(ViewMazeItemProps _Props)
         {
-            GameTicker.Register(this);
             Props = _Props;
             if (!Initialized)
             {
+                GameTicker.Register(this);
                 ColorProvider.ColorChanged += OnColorChanged;
                 Object = new GameObject(ObjectName);
                 InitShape();
@@ -180,9 +180,9 @@ namespace Games.RazorMaze.Views.MazeItems
                 ActivateShapes(true);
         }
 
-        protected virtual Dictionary<Component[], Func<Color>> GetAppearSets(bool _Appear)
+        protected virtual Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
-            return new Dictionary<Component[], Func<Color>>
+            return new Dictionary<IEnumerable<Component>, Func<Color>>
             {
                 {Shapes, () => ColorProvider.GetColor(ColorIds.MazeItem1)}
             };

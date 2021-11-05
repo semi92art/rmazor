@@ -31,8 +31,9 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
         
         #region shapes
-        
-        protected readonly List<Polyline> m_PathLines = new List<Polyline>();
+
+        protected          Polyline   m_PathPolyLine;
+        protected readonly List<Line> m_PathLines = new List<Line>();
         protected readonly List<Disc> m_PathJoints = new List<Disc>();
 
         #endregion
@@ -67,8 +68,7 @@ namespace Games.RazorMaze.Views.MazeItems
             get => base.ActivatedInSpawnPool;
             set
             {
-                foreach (var pathLine in m_PathLines)
-                    pathLine.enabled = false;
+                m_PathPolyLine.enabled = false;
                 foreach (var pathJoint in m_PathJoints)
                     pathJoint.enabled = false;
                 base.ActivatedInSpawnPool = value;
@@ -109,72 +109,120 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected void InitWallBlockMovingPathsCore()
         {
-            foreach (var pathLine in m_PathLines)
-                pathLine.gameObject.DestroySafe();
+            if (m_PathPolyLine.IsNotNull())
+                m_PathPolyLine.gameObject.DestroySafe();
+            foreach (var line in m_PathLines)
+                line.gameObject.DestroySafe();
+            m_PathLines.Clear();
             foreach (var joint in m_PathJoints)
                 joint.gameObject.DestroySafe();
-            
-            m_PathLines.Clear();
             m_PathJoints.Clear();
-            
             var points = Props.Path
                 .Select(_P => CoordinateConverter.ToLocalMazeItemPosition(_P))
                 .ToList();
-
-            var go = new GameObject(ObjectName + " Line");
-            go.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems));
-            go.transform.SetLocalPosXY(Vector2.zero);
-            var line = go.AddComponent<Polyline>();
-            line.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
-            line.Color = ColorProvider.GetColor(ColorIds.Border);
-            line.SetPoints(points);
-            line.Closed = false;
-            line.SortingOrder = SortingOrders.PathLine;
-            line.Joins = PolylineJoins.Round;
-            m_PathLines.Add(line);
-            
-            foreach (var point in points)
+            var containier = ContainersGetter.GetContainer(ContainerNames.MazeItems);
+            m_PathPolyLine = CreatePolyline(points, containier);
+            for (int i = 0; i < points.Count; i++)
             {
-                var go1 = new GameObject(ObjectName +  " Joint");
-                go1.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems));
-                var joint = go1.AddComponent<Disc>();
-                go1.transform.SetLocalPosXY(point);
-                joint.Color = ColorProvider.GetColor(ColorIds.Main);
-                joint.Radius = ViewSettings.LineWidth * CoordinateConverter.Scale * 2f;
-                joint.Type = DiscType.Disc;
-                joint.SortingOrder = SortingOrders.PathJoint;
-                m_PathJoints.Add(joint);
+                m_PathJoints.Add( CreateJoint(points[i], containier));
+                if (i == points.Count - 1)
+                    continue;
+                m_PathLines.Add(CreateLine(points[i], points[i + 1], containier));
             }
-                
+            m_PathPolyLine.enabled = false;
             foreach (var pathLine in m_PathLines)
                 pathLine.enabled = false;
             foreach (var joint in m_PathJoints)
                 joint.enabled = false;
         }
 
-        protected override Dictionary<Component[], Func<Color>> GetAppearSets(bool _Appear)
+        private Polyline CreatePolyline(IReadOnlyCollection<Vector2> _Points, Transform _Container)
+        {
+            var polyLineGo = new GameObject(ObjectName + " PolyLine");
+            polyLineGo.SetParent(_Container);
+            polyLineGo.transform.SetLocalPosXY(Vector2.zero);
+            var polyLine = polyLineGo.AddComponent<Polyline>();
+            polyLine.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
+            polyLine.Color = GetPolyLineColor();
+            polyLine.SetPoints(_Points);
+            polyLine.Closed = false;
+            polyLine.SortingOrder = SortingOrders.PathLine;
+            polyLine.Joins = PolylineJoins.Round;
+            return polyLine;
+        }
+
+        private Disc CreateJoint(Vector2 _Point, Transform _Container)
+        {
+            var jointGo = new GameObject(ObjectName +  " Joint");
+            jointGo.SetParent(_Container);
+            jointGo.transform.SetLocalPosXY(_Point);
+            var joint = jointGo.AddComponent<Disc>();
+            joint.Color = GetJointColor();
+            joint.Radius = ViewSettings.LineWidth * CoordinateConverter.Scale * 2f;
+            joint.Type = DiscType.Disc;
+            joint.SortingOrder = SortingOrders.PathJoint;
+            return joint;
+        }
+
+        private Line CreateLine(Vector2 _Start, Vector2 _End, Transform _Container)
+        {
+            var lineGo = new GameObject(ObjectName + " Line");
+            lineGo.SetParent(_Container);
+            lineGo.transform.SetLocalPosXY(Vector2.zero);
+            var line = lineGo.AddComponent<Line>();
+            (line.Start, line.End) = (_Start, _End);
+            line.Color = GetLineColor();
+            line.Dashed = true;
+            line.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
+            line.DashSize = 2f;
+            line.DashType = DashType.Rounded;
+            return line;
+        }
+
+        protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
             var sets = base.GetAppearSets(_Appear);
+            if (m_PathPolyLine.IsNotNull())
+                sets.Add(new Component[] { m_PathPolyLine}, GetPolyLineColor);
             if (m_PathLines.Any())
-                sets.Add(m_PathLines.Cast<Component>().ToArray(), () => ColorProvider.GetColor(ColorIds.Border));
+                sets.Add(m_PathLines, GetLineColor);
             if (m_PathJoints.Any())
-                sets.Add(m_PathJoints.Cast<Component>().ToArray(), () => ColorProvider.GetColor(ColorIds.Main));
+                sets.Add(m_PathJoints, GetJointColor);
             return sets;
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == ColorIds.Main)
-            {
-                foreach (var joint in m_PathJoints)
-                    joint.Color = _Color;
-            }
-            else if (_ColorId == ColorIds.Border)
-            {
-                foreach (var line in m_PathLines)
-                    line.Color = _Color;
-            }
+            if (_ColorId != ColorIds.Main) 
+                return;
+            m_PathPolyLine.Color = GetPolyLineColor();
+            foreach (var line in m_PathLines)
+                line.Color = GetLineColor();
+            foreach (var joint in m_PathJoints)
+                joint.Color = GetJointColor();
         }
+
+        private Color GetPolyLineColor()
+        {
+            return GetMainColor().SetA(0.2f);
+        }
+        
+        private Color GetLineColor()
+        {
+            return GetMainColor().SetA(0.7f);
+        }
+
+        private Color GetJointColor()
+        {
+            return GetMainColor();
+        }
+
+        private Color GetMainColor()
+        {
+            return ColorProvider.GetColor(ColorIds.Main);
+        }
+
+        
 
         #endregion
     }

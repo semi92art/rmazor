@@ -56,5 +56,16 @@ namespace DI.Extensions
                 list[n] = value;  
             }  
         }
+
+        public static Dictionary<T1, T2> ConcatWithDictionary<T1, T2>(
+            this Dictionary<T1, T2> _Dictionary1, 
+            Dictionary<T1, T2> _Dictionary2)
+        {
+            return new[] {_Dictionary1, _Dictionary2}
+                .SelectMany(_Dict => _Dict)
+                .ToDictionary(
+                    _Kvp => _Kvp.Key,
+                    _Kvp => _Kvp.Value);
+        }
     }
 }
