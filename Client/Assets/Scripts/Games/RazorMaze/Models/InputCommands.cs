@@ -24,6 +24,6 @@
         public const int LoadRandomLevelWithRotation           = 20;
         public const int ReadyToUnloadLevel                    = 21;
         public const int LoadLevelByIndex                      = 22;
-        public const int LoadFirstLevelFromRandomGroup          = 23;
+        public const int LoadFirstLevelFromRandomGroup         = 23;
     }
 }

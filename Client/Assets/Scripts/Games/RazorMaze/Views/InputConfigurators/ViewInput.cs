@@ -80,7 +80,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
         public virtual void Init()
         {
             InitLeanTouch();
-            InitLeanTouchForMoveAndRotate();
+            InitLeanTouchForMove();
             InitLeanTouchForTapToNext();
             Initialized?.Invoke();
         }
@@ -126,13 +126,12 @@ namespace Games.RazorMaze.Views.InputConfigurators
             m_LeanTouch = lt;
         }
 
-        private void InitLeanTouchForMoveAndRotate()
+        private void InitLeanTouchForMove()
         {
             var goLeanFingerSwipe = new GameObject("Lean Finger Touch");
             goLeanFingerSwipe.SetParent(GetContainer());
             var lms = goLeanFingerSwipe.AddComponent<LeanMultiSwipe>();
             lms.OnFingers.AddListener(OnSwipeForMove);
-            lms.OnFingers.AddListener(OnSwipeForRotate);
             m_LeanMultiSwipe = lms;
         }
 
@@ -156,22 +155,6 @@ namespace Games.RazorMaze.Views.InputConfigurators
             else
                 key = distance.y < 0 ? InputCommands.MoveDown : InputCommands.MoveUp;
             RaiseCommand(key, null);
-        }
-
-        private void OnSwipeForRotate(List<LeanFinger> _Fingers)
-        {
-            if (_Fingers.Count < 2)
-                return;
-            float delta1 = _Fingers[_Fingers.Count - 2].ScaledDelta.x;
-            float delta2 = _Fingers[_Fingers.Count - 1].ScaledDelta.x;
-            if (Math.Abs(Mathf.Sign(delta1) - Mathf.Sign(delta2)) > float.Epsilon)
-                return;
-            float tolerance = 0.2f;
-            if (delta1 < -tolerance && delta2 < -tolerance)
-                RaiseCommand(InputCommands.RotateClockwise, null);
-            else if (delta1 > tolerance && delta2 > tolerance)
-                RaiseCommand(InputCommands.RotateCounterClockwise, null);
-                
         }
 
         private Transform GetContainer()

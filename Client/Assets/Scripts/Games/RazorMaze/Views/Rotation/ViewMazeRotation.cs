@@ -2,9 +2,7 @@
 using System.Linq;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Characters;
-using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
-using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.InputConfigurators;
 using Ticker;
 using UnityEngine;

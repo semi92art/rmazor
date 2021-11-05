@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Constants;
 using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
@@ -7,6 +8,7 @@ using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.MazeItems;
 using SpawnPools;
 using UnityEngine.Events;
+using Utils;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
@@ -24,27 +26,30 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         #region nonpublic members
         
         private SpawnPool<IViewMazeItemPath> m_PathsPool;
-        private bool m_FirstMoveDone;
-        private bool m_Initialized;
+        private bool                         m_FirstMoveDone;
+        private bool                         m_Initialized;
+        private int                          m_MoneyItemsCollectedCount;
         
         #endregion
 
         #region inject
         
-        private ViewSettings ViewSettings { get; }
-        private IModelData ModelData { get; }
+        private ViewSettings      ViewSettings     { get; }
+        private IModelData        ModelData        { get; }
         private IMazeItemsCreator MazeItemsCreator { get; }
+        private IManagersGetter   Managers         { get; }
 
         public ViewMazePathItemsGroup(ViewSettings _ViewSettings,
             IModelData _ModelData,
-            IMazeItemsCreator _MazeItemsCreator)
+            IMazeItemsCreator _MazeItemsCreator,
+            IManagersGetter _Managers)
         {
             ViewSettings = _ViewSettings;
             ModelData = _ModelData;
             MazeItemsCreator = _MazeItemsCreator;
+            Managers = _Managers;
         }
         
-
         #endregion
         
         #region api
@@ -71,10 +76,30 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         {
             if (_Args.Stage == ELevelStage.Loaded)
             {
+                m_MoneyItemsCollectedCount = 0;
                 DeactivateAllPaths();
                 MazeItemsCreator.InitPathItems(ModelData.Info, m_PathsPool);
                 if (!ViewSettings.StartPathItemFilledOnStart)
                     UnfillStartPathItem();
+            }
+            else if (_Args.Stage == ELevelStage.Finished)
+            {
+                if (m_MoneyItemsCollectedCount > 0)
+                {
+                    var moneyEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money);
+                    Coroutines.Run(Coroutines.WaitWhile(
+                        () => !moneyEntity.Loaded,
+                        () =>
+                        {
+                            var currentMoneyCount = moneyEntity.GetFirstScore();
+                            if (currentMoneyCount.HasValue)
+                            {
+                                Managers.ScoreManager.SetScore(
+                                    DataFieldIds.Money, 
+                                    currentMoneyCount.Value + m_MoneyItemsCollectedCount);
+                            }
+                        }));
+                }
             }
             foreach (var item in PathItems)
                 item.OnLevelStageChanged(_Args);
@@ -98,6 +123,8 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                 .Range(0, ViewSettings.PathItemsCount)
                 .Select(_ => MazeItemsCreator.CloneDefaultPath())
                 .ToList();
+            foreach (var item in pathItems)
+                item.MoneyItemCollected = OnMoneyItemCollected;
             m_PathsPool.AddRange(pathItems);
         }
         
@@ -111,6 +138,11 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         private void UnfillStartPathItem()
         {
             PathItems.Single(_Item => _Item.Props.IsStartNode).Collected = true;
+        }
+
+        private void OnMoneyItemCollected()
+        {
+            m_MoneyItemsCollectedCount++;
         }
         
         #endregion

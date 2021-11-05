@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
 using Entities;
 using Exceptions;
+using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.Common;
@@ -14,12 +14,14 @@ using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
     public interface IViewMazeItemPath : IViewMazeItem
     {
-        bool Collected { get; set; }
+        bool        Collected            { get; set; }
+        UnityAction MoneyItemCollected { get; set; } 
     }
     
     public class ViewMazeItemPath : ViewMazeItemBase, IViewMazeItemPath, IUpdateTick
@@ -32,10 +34,11 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region shapes
 
-        
-        private Rectangle m_Shape;
-        private Line      m_LeftBorder,          m_RightBorder,          m_BottomBorder,     m_TopBorder;
-        private Disc      m_BottomLeftCorner,    m_BottomRightCorner,    m_TopLeftCorner,    m_TopRightCorner;
+        private GameObject     m_MoneyItem;
+        private SpriteRenderer m_MoneyItemRenderer;
+        private Rectangle      m_Shape;
+        private Line           m_LeftBorder,       m_RightBorder,       m_BottomBorder,  m_TopBorder;
+        private Disc           m_BottomLeftCorner, m_BottomRightCorner, m_TopLeftCorner, m_TopRightCorner;
         
         #endregion
         
@@ -43,7 +46,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected override string ObjectName => "Path Block";
         private bool m_Collect;
-        private bool m_LeftBorderInited,       m_RightBorderInited,       m_BottomBorderInited,  m_TopBorderInited;
+        private bool m_LeftBorderInited, m_RightBorderInited, m_BottomBorderInited, m_TopBorderInited;
         private bool m_BottomLeftCornerInited, m_BottomRightCornerInited, m_TopLeftCornerInited, m_TopRightCornerInited;
         private bool m_BottomLeftCornerIsOuterAndNearTrapIncreasing;
         private bool m_BottomRightCornerIsOuterAndNearTrapIncreasing;
@@ -81,7 +84,8 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             m_Shape,
             m_LeftBorder, m_RightBorder, m_BottomBorder, m_TopBorder,
-            m_BottomLeftCorner, m_BottomRightCorner, m_TopLeftCorner, m_TopRightCorner
+            m_BottomLeftCorner, m_BottomRightCorner, m_TopLeftCorner, m_TopRightCorner,
+            m_MoneyItemRenderer
         };
         
         public override object Clone() => new ViewMazeItemPath(
@@ -103,7 +107,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 EnableInitializedShapes(value);
             }
         }
-
+        
         public bool Collected
         {
             get => m_Collect;
@@ -113,6 +117,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 Collect(value);
             }
         }
+
+        public UnityAction MoneyItemCollected { get; set; }
 
         public void UpdateTick()
         {
@@ -137,10 +143,12 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private void Collect(bool _Collect)
         {
-            if (_Collect)
+            if (_Collect && Props.IsMoneyItem)
             {
+                MoneyItemCollected?.Invoke();
                 Managers.Notify(_SM => _SM.PlayClip(
                     SoundClipNameCollectPoint, _Tags: Props.Position.ToString()));
+                m_MoneyItemRenderer.enabled = false;
             }
             var col = ColorProvider.GetColor(ColorIds.Path);
             m_Shape.Color = _Collect ? col.SetA(0f) : col;
@@ -159,6 +167,23 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected override void UpdateShape()
         {
+            if (Props.IsMoneyItem)
+            {
+                m_MoneyItem = PrefabUtilsEx.InitPrefab(Object.transform, "views", "money_item");
+                m_MoneyItemRenderer = m_MoneyItem.GetCompItem<SpriteRenderer>("renderer");
+                m_MoneyItemRenderer.color = ColorProvider.GetColor(ColorIds.Path);
+                m_MoneyItem.transform.SetLocalPosXY(Vector2.zero);
+                m_MoneyItem.transform.localScale = Vector3.one * CoordinateConverter.Scale;
+                m_Shape.enabled = false;
+            }
+            else
+            {
+                if (m_MoneyItem != null)
+                {
+                    m_MoneyItem.DestroySafe();
+                    m_MoneyItemRenderer = null;
+                }
+            }
             m_Shape.Width = m_Shape.Height = CoordinateConverter.Scale * 0.4f;
             m_Shape.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale * 2f;
             SetBordersAndCorners();
@@ -198,7 +223,10 @@ namespace Games.RazorMaze.Views.MazeItems
             }
             else if (_ColorId == ColorIds.Path && !Collected)
             {
-                m_Shape.Color = _Color;
+                if (Props.IsMoneyItem)
+                    m_MoneyItemRenderer.color = _Color;
+                else
+                    m_Shape.Color = _Color;
             }
         }
 
@@ -344,7 +372,8 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private void EnableInitializedShapes(bool _Enable)
         {
-            if (m_Shape.IsNotNull())       m_Shape.enabled             = _Enable;
+            if (m_Shape.IsNotNull() && !Props.IsMoneyItem)   
+                m_Shape.enabled = _Enable;
             
             if (m_LeftBorderInited)        m_LeftBorder.enabled        = _Enable;
             if (m_RightBorderInited)       m_RightBorder.enabled       = _Enable;
@@ -610,9 +639,16 @@ namespace Games.RazorMaze.Views.MazeItems
             var cornerSets = GetCornerAppearSets();
             var result = borderSets.ConcatWithDictionary(cornerSets);
             if (_Appear && !Props.IsStartNode || !_Appear && !Collected)
-                result.Add(new Component[] {m_Shape}, () => ColorProvider.GetColor(ColorIds.Path));
+            {
+                var comp = Props.IsMoneyItem ? (Component)m_MoneyItemRenderer : m_Shape;
+                result.Add(new [] {comp}, () => ColorProvider.GetColor(ColorIds.Path));
+            }
             else
+            {
+                if (Props.IsMoneyItem)
+                    m_MoneyItemRenderer.enabled = false;
                 m_Shape.enabled = false;
+            }
             return result;
         }
         

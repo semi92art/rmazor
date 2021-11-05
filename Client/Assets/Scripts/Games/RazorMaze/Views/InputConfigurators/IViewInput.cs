@@ -7,6 +7,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
     {
         event UnityAction<int, object[]> Command; 
         event UnityAction<int, object[]> InternalCommand; 
+        
         void LockCommand(int _Key);
         void UnlockCommand(int _Key);
         void LockCommands(IEnumerable<int> _Keys);

@@ -50,14 +50,30 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
 
         public override void InitPathItems(MazeInfo _Info, SpawnPool<IViewMazeItemPath> _PathPool)
         {
-            foreach (var pathItemPos in _Info.Path)
+            var moneyItemIndices = new List<int>();
+            int pathCount = _Info.Path.Count;
+            if (pathCount > 10)
+                moneyItemIndices.Add(5);
+            if (pathCount > 20)
+                moneyItemIndices.Add(20);
+            if (pathCount > 30)
+                moneyItemIndices.Add(15);
+            if (pathCount > 40)
+                moneyItemIndices.Add(40);
+            if (pathCount > 50)
+                moneyItemIndices.Add(25);
+
+            for (int i = 0; i < pathCount; i++)
             {
+                var pathItemPos = _Info.Path[i];
                 var props = new ViewMazeItemProps
                 {
                     IsNode = true,
                     IsStartNode = pathItemPos == _Info.Path.First(),
                     Position = pathItemPos
                 };
+                if (moneyItemIndices.Contains(i) && _Info.MazeItems.All(_Item => _Item.Position != pathItemPos))
+                    props.IsMoneyItem = true;
                 var pathItemInPool = _PathPool.FirstInactive;
                 pathItemInPool.Init(props);
                 _PathPool.Activate(pathItemInPool);

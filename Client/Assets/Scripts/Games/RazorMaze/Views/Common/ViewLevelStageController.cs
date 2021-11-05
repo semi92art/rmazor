@@ -182,7 +182,7 @@ namespace Games.RazorMaze.Views.Common
                         },
                         () =>
                         {
-                        Model.LevelStaging.UnloadLevel();
+                            Model.LevelStaging.UnloadLevel();
                         }));
                     break;
                 case ELevelStage.Unloaded:

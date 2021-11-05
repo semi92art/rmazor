@@ -24,7 +24,6 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         {
             var item = Common.GetItem<IViewMazeItemShredingerBlock>(_Args.Info);
             item.BlockClosed = _Args.Stage == ShredingerBlocksProceeder.StageClosed;
-            Dbg.Log(item.BlockClosed);
         }
 
         public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)

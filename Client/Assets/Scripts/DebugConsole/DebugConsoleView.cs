@@ -21,7 +21,6 @@ namespace DebugConsole
 
         #endregion
         
-        
         #region factory
 
         private static DebugConsoleView Create()
@@ -48,8 +47,7 @@ namespace DebugConsole
         }
 
         #endregion
-    
-    
+        
         #region serialized fields
 
         public GameObject viewContainer; //Container for console view, should be a child of this GameObject
@@ -86,6 +84,8 @@ namespace DebugConsole
         private Vector2 m_SecondPressPos;
         private Vector2 m_CurrentSwipe;
         public enum Swipe { None, Up, Down, Left, Right }
+
+        private IViewInput m_Input;
 
         #endregion
 
@@ -211,6 +211,7 @@ namespace DebugConsole
 
         public void Init(IViewInput _Input)
         {
+            m_Input = _Input;
             m_Controller.Init(_Input);
         }
 
@@ -353,6 +354,9 @@ namespace DebugConsole
 
         private void SetVisibility(bool _Visible)
         {
+            if (_Visible)
+                m_Input.LockAllCommands();
+            else m_Input.UnlockAllCommands();
             m_IsVisible = _Visible;
             viewContainer.SetActive(_Visible);
             if (inputField.text == "`")

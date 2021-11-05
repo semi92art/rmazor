@@ -17,7 +17,7 @@ public class ColorsHelper : EditorWindow
     public static void ShowWindow()
     {
         var window = GetWindow<ColorsHelper>("Color Palette Helper");
-        window.minSize = new Vector2(300, 200);
+        window.minSize = new Vector2(500, 200);
     }
     
     private void OnGUI()
@@ -61,7 +61,7 @@ public class ColorsHelper : EditorWindow
                 EditorUtilsEx.GUIEnabledZone(false, () =>
                 {
                     EditorGUILayout.TextField(ColorIds.GetHash(item.name).ToString(), GUILayout.Width(80));
-                    EditorGUILayout.TextField(item.name, GUILayout.Width(200));
+                    EditorGUILayout.TextField(item.name, GUILayout.Width(170));
                 });
                 var newColor = EditorGUILayout.ColorField(item.color);
                 if (newColor != item.color)
@@ -69,8 +69,5 @@ public class ColorsHelper : EditorWindow
                 item.color = newColor;
             });
         }
-        
-        if (m_ColorSet == null)
-            return;
     }
 }

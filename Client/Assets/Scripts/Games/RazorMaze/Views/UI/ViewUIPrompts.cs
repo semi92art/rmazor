@@ -237,7 +237,8 @@ namespace Games.RazorMaze.Views.UI
 
         private void HidePrompt()
         {
-            m_CurrentPromptInfo.NeedToHide = true;
+            if (m_CurrentPromptInfo != null)
+                m_CurrentPromptInfo.NeedToHide = true;
         }
 
         private IEnumerator ShowPromptCoroutine()

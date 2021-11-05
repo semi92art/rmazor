@@ -349,12 +349,13 @@ namespace Games.RazorMaze.Views.Common
         {
             BackgroundColor = ColorProvider.GetColor(ColorIds.Background);
             int colorIdx = (_Level / RazorMazeUtils.LevelsInGroup) % 10;
-            float hEnd = colorIdx / 10f;
+            float h = colorIdx / 10f;
             float s = 52f / 100f;
             float v = 42f / 100f;
-            var newMainColor = Color.HSVToRGB(hEnd, s, v);
+            var newMainColor = Color.HSVToRGB(h, s, v);
             ColorProvider.SetColor(ColorIds.Main, newMainColor);
             ColorProvider.SetColor(ColorIds.Border, newMainColor.SetA(0.5f));
+            ColorProvider.SetColor(ColorIds.Background, Color.HSVToRGB(h, s, 10f / 100f));
         }
 
         #endregion
