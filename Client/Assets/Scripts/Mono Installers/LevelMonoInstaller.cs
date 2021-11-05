@@ -36,7 +36,7 @@ namespace Mono_Installers
         public override void InstallBindings()
         {
             base.InstallBindings();
-            Container.Bind<IGameController>()               .To<GameController>()       .AsSingle();
+            Container.Bind<IGameController>()               .To<GameController>()                .AsSingle();
             
             #region model
             
@@ -75,7 +75,7 @@ namespace Mono_Installers
             Container.Bind<IViewUI>()                       .To<ViewUIProt>()                    .AsSingle().When(_ => !Release);
             Container.Bind<IViewUIGameControls>()           .To<ViewUIGameControls>()            .AsSingle().When(_ => Release);
             Container.Bind<IViewUIGameControls>()           .To<ViewUIGameControlsProt>()        .AsSingle().When(_ => !Release);
-            Container.Bind<IViewUIPrompts>()                .To<ViewUIPrompts>()                 .AsSingle().When(_ => Release);
+            Container.Bind<IViewUIPrompt>()                 .To<ViewUIPrompt>()                  .AsSingle().When(_ => Release);
             Container.Bind<IViewMazeRotation>()             .To<ViewMazeRotation>()              .AsSingle();
             Container.Bind<IViewMazeBackground>()           .To<ViewMazeBackground>()            .AsSingle();
             Container.Bind<IViewAppearTransitioner>()       .To<ViewAppearTransitioner>()        .AsSingle();

@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
 using Entities;
@@ -11,24 +10,26 @@ using Games.RazorMaze.Views.InputConfigurators;
 using Ticker;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using Utils;
 
 namespace Games.RazorMaze.Views.UI
 {
-    public interface IViewUIPrompts : IOnLevelStageChanged
+    public interface IViewUIPrompt : IOnLevelStageChanged, IInit
     {
         bool InTutorial { get; }
     }
 
-    public class ViewUIPrompts : IViewUIPrompts
+    public class ViewUIPrompt : IViewUIPrompt
     {
         #region types
 
-        private class PromptArgs
+        private class PromptInfo
         {
-            public GameObject Prompt { get; set; }
+            public string      Key        { get; set; }
+            public GameObject  PromptGo   { get; set; }
             public TextMeshPro PromptText { get; set; }
-            public bool NeedToHide { get; set; }
+            public bool        NeedToHide { get; set; }
         }
 
         #endregion
@@ -44,11 +45,11 @@ namespace Games.RazorMaze.Views.UI
 
         #region nonpublic members
         
-        private bool m_HowToRotateClockwisePromptHidden;
-        private bool m_HowToRotateCounterClockwisePromptHidden;
-        private bool m_PromptHowToRotateShown;
+        private bool       m_HowToRotateClockwisePromptHidden;
+        private bool       m_HowToRotateCounterClockwisePromptHidden;
+        private bool       m_PromptHowToRotateShown;
+        private PromptInfo m_CurrentPromptInfo;
 
-        private readonly Dictionary<string, PromptArgs> m_Prompts = new Dictionary<string, PromptArgs>();
 
         #endregion
 
@@ -59,11 +60,11 @@ namespace Games.RazorMaze.Views.UI
         private IContainersGetter        ContainersGetter    { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
         private ILocalizationManager     LocalizationManager { get; }
-        private IViewInput   Input   { get; }
+        private IViewInput               Input               { get; }
         private ICameraProvider          CameraProvider      { get; }
         private IColorProvider           ColorProvider       { get; }
 
-        public ViewUIPrompts(
+        public ViewUIPrompt(
             IModelGame _Model,
             IGameTicker _GameTicker,
             IContainersGetter _ContainersGetter,
@@ -81,14 +82,20 @@ namespace Games.RazorMaze.Views.UI
             Input = _Input;
             CameraProvider = _CameraProvider;
             ColorProvider = _ColorProvider;
-            Input.Command += InputConfiguratorOnCommand;
         }
 
         #endregion
 
         #region api
 
-        public bool InTutorial { get; private set; }
+        public bool              InTutorial { get; private set; }
+        public event UnityAction Initialized;
+        
+        public void Init()
+        {
+            Input.Command += InputConfiguratorOnCommand;
+            Initialized?.Invoke();
+        }
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
@@ -111,7 +118,7 @@ namespace Games.RazorMaze.Views.UI
                     break;
                 case ELevelStage.StartedOrContinued:
                     if (_Args.PreviousStage != ELevelStage.Paused)
-                        HidePrompt(KeyPromptSwipeToStart);
+                        HidePrompt();
                     break;
                 case ELevelStage.Finished:
                     if (_Args.PreviousStage != ELevelStage.Paused)
@@ -121,7 +128,7 @@ namespace Games.RazorMaze.Views.UI
                     if (_Args.PreviousStage != ELevelStage.Paused 
                         || _Args.PreviousStage == ELevelStage.Paused 
                         && _Args.PrePreviousStage == ELevelStage.ReadyToUnloadLevel)
-                        HidePrompt(KeyPromptTapToNext);
+                        HidePrompt();
                     break;
             }
         }
@@ -146,7 +153,7 @@ namespace Games.RazorMaze.Views.UI
                 if (m_HowToRotateClockwisePromptHidden)
                     return;
                 m_HowToRotateClockwisePromptHidden = true;
-                HidePrompt(KeyPromptHowToRotateClockwise);
+                HidePrompt();
                 ShowPromptHowToRotateCounterClockwise();
             }
             else if (_Key == InputCommands.RotateCounterClockwise)
@@ -156,7 +163,7 @@ namespace Games.RazorMaze.Views.UI
                     if (m_HowToRotateCounterClockwisePromptHidden)
                         return;
                     m_HowToRotateCounterClockwisePromptHidden = true;
-                    HidePrompt(KeyPromptHowToRotateCounter);
+                    HidePrompt();
                     ShowPromptSwipeToStart();
                     Input.UnlockAllCommands();
                     InTutorial = false;
@@ -202,7 +209,7 @@ namespace Games.RazorMaze.Views.UI
 
         private void ShowPrompt(string _Key, Vector3 _Position)
         {
-            if (m_Prompts.ContainsKey(_Key))
+            if (m_CurrentPromptInfo?.Key == _Key)
                 return;
             var promptGo = PrefabUtilsEx.InitPrefab(
                 null, "ui_game", _Key);
@@ -212,43 +219,41 @@ namespace Games.RazorMaze.Views.UI
             text.fontSize = 18f;
             LocalizationManager.AddTextObject(text, _Key);
             text.color = ColorProvider.GetColor(ColorIds.UI).SetA(0f);
-
             var mazeBounds = CoordinateConverter.GetMazeBounds();
             text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, mazeBounds.size.x);
-            
-            if (!m_Prompts.ContainsKey(_Key))
-                m_Prompts.Add(_Key, new PromptArgs { Prompt = promptGo, PromptText = text });
-            Coroutines.Run(ShowPromptCoroutine(_Key, text));
+            if (m_CurrentPromptInfo != null && m_CurrentPromptInfo.PromptGo != null)
+                m_CurrentPromptInfo.PromptGo.DestroySafe();
+            m_CurrentPromptInfo = new PromptInfo {Key = _Key, PromptGo = promptGo, PromptText = text};
+            Coroutines.Run(ShowPromptCoroutine());
         }
 
-        private void HidePrompt(string _Key)
+        private void HidePrompt()
         {
-            if (m_Prompts.ContainsKey(_Key))
-                m_Prompts[_Key].NeedToHide = true;
+            m_CurrentPromptInfo.NeedToHide = true;
         }
 
-        private IEnumerator ShowPromptCoroutine(string _Key, TextMeshPro _Text)
+        private IEnumerator ShowPromptCoroutine()
         {
             const float loopTime = 1f;
-            if (!m_Prompts.ContainsKey(_Key)) 
-                yield break;
-            if (!m_Prompts[_Key].NeedToHide)
+            if (m_CurrentPromptInfo.NeedToHide)
             {
-                yield return Coroutines.Lerp(
-                    0f,
-                    1f,
-                    loopTime * 2f,
-                    _Progress => _Text.color = ColorProvider.GetColor(ColorIds.UI).SetA(_Progress),
-                    GameTicker,
-                    (_, __) => Coroutines.Run(ShowPromptCoroutine(_Key, _Text)),
-                    () => m_Prompts.ContainsKey(_Key) && m_Prompts[_Key].NeedToHide,
-                    _Progress => _Progress < 0.5f ? 2f * _Progress : 2f * (1f - _Progress));
+                m_CurrentPromptInfo.PromptGo.DestroySafe();
+                m_CurrentPromptInfo = null;
                 yield break;
             }
-            if (!m_Prompts.ContainsKey(_Key)) 
-                yield break;
-            m_Prompts[_Key].Prompt.DestroySafe();
-            m_Prompts.Remove(_Key);
+            yield return Coroutines.Lerp(
+                0f,
+                1f,
+                loopTime * 2f,
+                _Progress =>
+                {
+                    m_CurrentPromptInfo.PromptText.color = 
+                        ColorProvider.GetColor(ColorIds.UI).SetA(_Progress);
+                },
+                GameTicker,
+                (_, __) => Coroutines.Run(ShowPromptCoroutine()),
+                () => m_CurrentPromptInfo.NeedToHide,
+                _Progress => _Progress < 0.5f ? 2f * _Progress : 2f * (1f - _Progress));
         }
 
         #endregion

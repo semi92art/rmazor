@@ -62,7 +62,7 @@ namespace Games.RazorMaze.Views.UI
         #region inject
 
         private ViewSettings             ViewSettings        { get; }
-        private IViewUIPrompts           Prompts             { get; }
+        private IViewUIPrompt            Prompt              { get; }
         private IModelGame               Model               { get; }
         private IContainersGetter        ContainersGetter    { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
@@ -76,7 +76,7 @@ namespace Games.RazorMaze.Views.UI
 
         public ViewUIGameControls(
             ViewSettings _ViewSettings,
-            IViewUIPrompts _Prompts,
+            IViewUIPrompt _Prompt,
             IModelGame _Model,
             IContainersGetter _ContainersGetter,
             IMazeCoordinateConverter _CoordinateConverter,
@@ -91,7 +91,7 @@ namespace Games.RazorMaze.Views.UI
             : base(_Input)
         {
             ViewSettings = _ViewSettings;
-            Prompts = _Prompts;
+            Prompt = _Prompt;
             Model = _Model;
             ContainersGetter = _ContainersGetter;
             CoordinateConverter = _CoordinateConverter;
@@ -110,14 +110,14 @@ namespace Games.RazorMaze.Views.UI
         
         public override void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
         {
-            if (Prompts.InTutorial)
+            if (Prompt.InTutorial)
                 return;
             base.OnMazeItemMoveStarted(_Args);
         }
 
         public override void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
         {
-            if (Prompts.InTutorial)
+            if (Prompt.InTutorial)
                 return;
             base.OnMazeItemMoveFinished(_Args);
         }
@@ -126,6 +126,7 @@ namespace Games.RazorMaze.Views.UI
         {
             if (!m_GameUiInitialized)
             {
+                Prompt.Init();
                 InitGameUI();
                 m_GameUiInitialized = true;
             }
@@ -166,7 +167,7 @@ namespace Games.RazorMaze.Views.UI
                     ShowControls(false, false);
                     break;
             }
-            Prompts.OnLevelStageChanged(_Args);
+            Prompt.OnLevelStageChanged(_Args);
         }
         
         public void UpdateTick()
