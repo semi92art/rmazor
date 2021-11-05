@@ -8,11 +8,8 @@ using Entities;
 using Exceptions;
 using GameHelpers;
 using Games.RazorMaze;
-using Managers;
 using Network;
 using Network.Packets;
-using PygmyMonkey.ColorPalette;
-using PygmyMonkey.ColorPalette.Utils;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -60,13 +57,6 @@ public class EditorHelper : EditorWindow
         mInfoShow?.Invoke(null, null);
     }
 #endif
-    
-    [MenuItem("Tools/Color Palette", false, 5)]
-    private static void ShowColorPaletteWindow()
-    {
-        EditorWindow window = PMEditorWindow.createWindow<ColorPaletteWindow>("Color Palette");
-        window.minSize = new Vector2(280, 500);
-    }
 
     private void OnEnable()
     {

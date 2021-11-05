@@ -1,5 +1,4 @@
-﻿using PygmyMonkey.ColorPalette;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Utils
 {
@@ -18,27 +17,10 @@ namespace Utils
         {
             return new Color(_R / 255.0f, _G / 255.0f, _B / 255.0f, 1);
         }
-
-        public static Color GetColorFromCurrentPalette(string _ColorName)
-        {
-            return GetCurrentPalette().getColorFromName(_ColorName).color;
-        }
         
         public static Color MixColors(Color _A, Color _B)
         {
             return (_A * _A.a + _B * _B.a * (1f - _A.a)) / (_A.a + _A.b * (1f - _A.a));
-        }
-        
-        #endregion
-        
-        #region nonpublic methods
-
-        private static ColorPalette GetCurrentPalette()
-        {
-            string paletteName = $"Game {GameClientUtils.GameId}";
-            var cpd = ColorPaletteData.Singleton;
-            int paletteIdx = cpd.getPaletteIndexFromName(paletteName);
-            return cpd.colorPaletteList[paletteIdx];
         }
         
         #endregion
