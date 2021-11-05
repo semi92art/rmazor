@@ -20,7 +20,7 @@ namespace Games.RazorMaze.Views.UI
         bool InTutorial { get; }
     }
 
-    public class ViewUIPrompt : IViewUIPrompt
+    public class ViewUIPrompt : IViewUIPrompt, IUpdateTick
     {
         #region types
 
@@ -49,6 +49,7 @@ namespace Games.RazorMaze.Views.UI
         private bool       m_HowToRotateCounterClockwisePromptHidden;
         private bool       m_PromptHowToRotateShown;
         private PromptInfo m_CurrentPromptInfo;
+        private bool       m_RunShowPromptCoroutine;
 
 
         #endregion
@@ -93,6 +94,7 @@ namespace Games.RazorMaze.Views.UI
         
         public void Init()
         {
+            GameTicker.Register(this);
             Input.Command += InputConfiguratorOnCommand;
             Initialized?.Invoke();
         }
@@ -131,6 +133,12 @@ namespace Games.RazorMaze.Views.UI
                         HidePrompt();
                     break;
             }
+        }
+        
+        public void UpdateTick()
+        {
+            if (m_RunShowPromptCoroutine)
+                Coroutines.Run(ShowPromptCoroutine());
         }
 
         #endregion
@@ -224,7 +232,7 @@ namespace Games.RazorMaze.Views.UI
             if (m_CurrentPromptInfo != null && m_CurrentPromptInfo.PromptGo != null)
                 m_CurrentPromptInfo.PromptGo.DestroySafe();
             m_CurrentPromptInfo = new PromptInfo {Key = _Key, PromptGo = promptGo, PromptText = text};
-            Coroutines.Run(ShowPromptCoroutine());
+            m_RunShowPromptCoroutine = true;
         }
 
         private void HidePrompt()
@@ -234,6 +242,7 @@ namespace Games.RazorMaze.Views.UI
 
         private IEnumerator ShowPromptCoroutine()
         {
+            m_RunShowPromptCoroutine = false;
             const float loopTime = 1f;
             if (m_CurrentPromptInfo != null && m_CurrentPromptInfo.NeedToHide)
             {
@@ -251,7 +260,7 @@ namespace Games.RazorMaze.Views.UI
                         ColorProvider.GetColor(ColorIds.UI).SetA(_Progress);
                 },
                 GameTicker,
-                (_, __) => Coroutines.Run(ShowPromptCoroutine()),
+                (_, __) => m_RunShowPromptCoroutine = true,
                 () => m_CurrentPromptInfo == null || m_CurrentPromptInfo.NeedToHide,
                 _Progress => _Progress < 0.5f ? 2f * _Progress : 2f * (1f - _Progress));
         }

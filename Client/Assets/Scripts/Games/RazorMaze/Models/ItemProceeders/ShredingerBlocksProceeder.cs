@@ -30,8 +30,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
     {
         event ShredingerBlockHandler ShredingerBlockEvent;
     }
-    
-    
+
     public class ShredingerBlocksProceeder : ItemsProceederBase, IShredingerBlocksProceeder
     {
         #region constants

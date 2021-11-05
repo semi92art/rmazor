@@ -66,7 +66,7 @@ namespace Games.RazorMaze.Views.Common
 
         public override IViewMazeItem GetItem(IMazeItemProceedInfo _Info)
         {
-            return m_BlockPools[_Info.Type].SingleOrDefault(_Itm => _Itm.Equal(_Info));
+            return m_BlockPools[_Info.Type].FirstOrDefault(_Itm => _Itm.Equal(_Info));
         }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)

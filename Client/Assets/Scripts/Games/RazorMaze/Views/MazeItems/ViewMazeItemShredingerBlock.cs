@@ -37,6 +37,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private bool  m_IsBlockClosed;
         private bool  m_IsCloseCoroutineRunning;
         private bool  m_IsOpenCoroutineRunning;
+        private bool  m_IsCloseOrOpenImmediately;
         
         #endregion
 
@@ -109,6 +110,8 @@ namespace Games.RazorMaze.Views.MazeItems
             base.OnLevelStageChanged(_Args);
             if (_Args.Stage == ELevelStage.Loaded)
                 m_IsBlockClosed = false;
+            if (_Args.Stage == ELevelStage.ReadyToStart)
+                Coroutines.Run(CloseBlockCoroutine(false, true));
         }
 
         public void UpdateTick()
@@ -271,17 +274,34 @@ namespace Games.RazorMaze.Views.MazeItems
         private void CloseBlock()
         {
             Managers.Notify(_SM => _SM.PlayClip(SoundClipNameCloseBlock));
-            Coroutines.Run(CloseBlock(true));
+            Coroutines.Run(CloseBlockCoroutine(true));
         }
 
         private void OpenBlock()
         {
             Managers.Notify(_SM => _SM.PlayClip(SoundClipNameOpenBlock));
-            Coroutines.Run(CloseBlock(false));
+            Coroutines.Run(CloseBlockCoroutine(false));
         }
 
-        private IEnumerator CloseBlock(bool _Close)
+        private IEnumerator CloseBlockCoroutine(bool _Close, bool _Immediately = false)
         {
+            m_IsCloseOrOpenImmediately = _Immediately;
+            if (_Immediately)
+            {
+                if (!ActivatedInSpawnPool)
+                    yield break;
+                var shapesOpen1 = m_OpenedLines
+                    .Cast<ShapeRenderer>()
+                    .Concat(m_OpenedCorners)
+                    .ToList();
+                m_ClosedBlock.enabled = _Close;
+                shapesOpen1.ForEach(_Shape => _Shape.enabled = !_Close);
+                m_IsBlockClosed = _Close;
+                shapesOpen1.ForEach(_Shape => _Shape.Color = ColorProvider.GetColor(ColorIds.Main));
+                m_ClosedBlock.Color = ColorProvider.GetColor(ColorIds.Main);
+                yield break;
+            }
+            
             if (_Close)
                 m_IsCloseCoroutineRunning = true;
             else 
@@ -296,6 +316,12 @@ namespace Games.RazorMaze.Views.MazeItems
             {
                 while (m_IsCloseCoroutineRunning)
                     yield return null;
+            }
+
+            if (m_IsCloseOrOpenImmediately)
+            {
+                m_IsCloseOrOpenImmediately = false;
+                yield break;
             }
             
             var shapesOpen = m_OpenedLines
@@ -324,15 +350,17 @@ namespace Games.RazorMaze.Views.MazeItems
                 (_Breaked, _Progress) =>
                 {
                     if (_Close)
-                        shapesOpen.ForEach(_Shape => _Shape.enabled = false);
-                    else
-                        m_ClosedBlock.enabled = false;
-                    
-                    if (_Close)
                         m_IsCloseCoroutineRunning = false;
                     else 
                         m_IsOpenCoroutineRunning = false;
-                });
+                    if (_Breaked)
+                        return;
+                    if (_Close)
+                        shapesOpen.ForEach(_Shape => _Shape.enabled = false);
+                    else
+                        m_ClosedBlock.enabled = false;
+                },
+                () => m_IsCloseOrOpenImmediately);
         }
 
         protected override void OnAppearStart(bool _Appear)

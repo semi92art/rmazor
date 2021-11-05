@@ -295,6 +295,10 @@ namespace Games.RazorMaze.Views.UI
             };
             foreach (var anim in m_StartLogoCharAnims.Values)
                 anim.SetTrigger(AnimKeyStartLogoHide);
+            var trigerrer1 = go.GetCompItem<AnimationTriggerer>("trigerrer_1");
+            var trigerrer2 = go.GetCompItem<AnimationTriggerer>("trigerrer_2");
+            trigerrer1.Trigger1 += () =>  Input.LockAllCommands();
+            trigerrer2.Trigger1 += () => Input.UnlockAllCommands();
             var eye1 = go.GetCompItem<Rectangle>("eye_1");
             var eye2 = go.GetCompItem<Rectangle>("eye_2");
             eye1.Color = eye2.Color = ColorProvider.GetColor(ColorIds.Background);

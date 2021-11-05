@@ -68,32 +68,33 @@ namespace Games.RazorMaze.Models.ItemProceeders
             switch (_Args.Stage)
             {
                 case ELevelStage.Loaded:
-                    CollectItems(Data.Info); break;
+                    CollectItems(Data.Info);
+                    break;
                 case ELevelStage.StartedOrContinued:
                     ContinueProceed();
                     break;
                 case ELevelStage.ReadyToStart:
-                    StartProceed(true); break;
+                    StartProceed(true);
+                    break;
                 case ELevelStage.Paused:
-                    PauseProceed(); break;
+                    PauseProceed();
+                    break;
                 case ELevelStage.Unloaded:
                 case ELevelStage.Finished:
                 case ELevelStage.CharacterKilled:
-                case ELevelStage.ReadyToUnloadLevel: break;
+                case ELevelStage.ReadyToUnloadLevel: 
+                    break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Args.Stage);
             }
-            
-            if (_Args.Stage == ELevelStage.Loaded 
-                ||_Args.Stage == ELevelStage.ReadyToStart)
+            if (_Args.Stage != ELevelStage.Loaded && _Args.Stage != ELevelStage.ReadyToStart) 
+                return;
+            foreach (var coroutinesQueue in m_CoroutinesDict
+                .Select(_Kvp => _Kvp.Value))
             {
-                foreach (var coroutinesQueue in m_CoroutinesDict
-                    .Select(_Kvp => _Kvp.Value))
-                {
-                    foreach (var coroutine in coroutinesQueue)
-                        Coroutines.Stop(coroutine);
-                    coroutinesQueue.Clear();
-                }
+                foreach (var coroutine in coroutinesQueue)
+                    Coroutines.Stop(coroutine);
+                coroutinesQueue.Clear();
             }
         }
         
