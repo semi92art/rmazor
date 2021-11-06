@@ -49,6 +49,6 @@ MonoBehaviour:
       name: color_set
     - item: {fileID: 731759395191873786, guid: ec7fb1fdd38ccb8439dbb51307afb7fc, type: 3}
       name: background_item_congrats_1
-    - item: {fileID: 3312965024029319640, guid: 55a9969e8ba48da449cb28699d996a79,
+    - item: {fileID: 3312965024029319640, guid: 6154fe5553fd2454ea28ca1c67699e20,
         type: 3}
       name: money_item

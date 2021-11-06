@@ -68,7 +68,8 @@ namespace Games.RazorMaze.Views.MazeItems
             get => base.ActivatedInSpawnPool;
             set
             {
-                m_PathPolyLine.enabled = false;
+                if (m_PathPolyLine.IsNotNull())
+                    m_PathPolyLine.enabled = false;
                 foreach (var pathJoint in m_PathJoints)
                     pathJoint.enabled = false;
                 base.ActivatedInSpawnPool = value;

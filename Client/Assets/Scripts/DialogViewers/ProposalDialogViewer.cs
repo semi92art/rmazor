@@ -118,4 +118,23 @@ namespace DialogViewers
         
         #endregion
     }
+
+    public class ProposalDialogViewerFake : IProposalDialogViewer
+    {
+        public void          Init(RectTransform _Parent)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public RectTransform Container { get; }
+        public void          Back(UnityAction _OnFinish = null)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void          Show(IDialogPanel _Item)
+        {
+            throw new System.NotImplementedException();
+        }
+    }
 }

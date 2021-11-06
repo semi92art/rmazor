@@ -279,7 +279,7 @@ namespace Games.RazorMaze.Views.Common
             if (!(GameTicker.Time > m_NextRandomCongratsItemAnimInterval + m_LastCongratsItemAnimTime)) 
                 return;
             m_LastCongratsItemAnimTime = GameTicker.Time;
-            m_NextRandomCongratsItemAnimInterval = 0.1f + UnityEngine.Random.value * 0.3f;
+            m_NextRandomCongratsItemAnimInterval = 0.05f + UnityEngine.Random.value * 0.15f;
             var item = m_BackCongratsItemsPool.FirstInactive;
             if (item.IsNull())
                 return;

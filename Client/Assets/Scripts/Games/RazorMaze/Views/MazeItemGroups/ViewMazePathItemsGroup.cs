@@ -76,16 +76,16 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         {
             if (_Args.Stage == ELevelStage.Loaded)
             {
-                m_MoneyItemsCollectedCount = 0;
                 DeactivateAllPaths();
                 MazeItemsCreator.InitPathItems(ModelData.Info, m_PathsPool);
                 if (!ViewSettings.StartPathItemFilledOnStart)
                     UnfillStartPathItem();
             }
-            else if (_Args.Stage == ELevelStage.Finished)
+            else if (_Args.Stage == ELevelStage.Finished && _Args.PreviousStage != ELevelStage.Paused)
             {
                 if (m_MoneyItemsCollectedCount > 0)
                 {
+                    int moneyItemsCount = m_MoneyItemsCollectedCount;
                     var moneyEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money);
                     Coroutines.Run(Coroutines.WaitWhile(
                         () => !moneyEntity.Loaded,
@@ -96,11 +96,13 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                             {
                                 Managers.ScoreManager.SetScore(
                                     DataFieldIds.Money, 
-                                    currentMoneyCount.Value + m_MoneyItemsCollectedCount);
+                                    currentMoneyCount.Value + moneyItemsCount);
                             }
                         }));
                 }
             }
+            else if (_Args.Stage == ELevelStage.ReadyToUnloadLevel)
+                m_MoneyItemsCollectedCount = 0;
             foreach (var item in PathItems)
                 item.OnLevelStageChanged(_Args);
         }

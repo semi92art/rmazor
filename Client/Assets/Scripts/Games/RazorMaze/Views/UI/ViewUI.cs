@@ -83,8 +83,9 @@ namespace Games.RazorMaze.Views.UI
         {
             if (_Args.Stage != ELevelStage.Finished) 
                 return;
-            if (!GameClientUtils.InternetConnection)
-                return;
+            // FIXME
+            // if (!GameClientUtils.InternetConnection)
+            //     return;
             bool mustShowRateGamePanel = _Args.LevelIndex % 10 == 0 && _Args.LevelIndex != 0;
             if (!mustShowRateGamePanel)
                 return;

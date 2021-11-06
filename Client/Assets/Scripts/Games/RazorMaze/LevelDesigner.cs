@@ -6,7 +6,9 @@ using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Controllers;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeItems;
+using Managers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;
@@ -69,21 +71,27 @@ namespace Games.RazorMaze
              
             SceneManager.sceneLoaded += (_Scene, _Mode) =>
             {
-                var controller = GameController.CreateInstance();
-                controller.Initialized += () =>
-                {
-                    int selectedLevel = SaveUtils.GetValue<int>(SaveKey.DesignerSelectedLevel);
-                    controller.Model.LevelStaging.LoadLevel(MazeInfo, selectedLevel);
-                    RazorMazeUtils.LoadNextLevelAutomatically = false;
-                };
-                controller.Init();
+                Coroutines.Run(Coroutines.WaitWhile(
+                    () => !AssetBundleManager.BundlesLoaded,
+                    () =>
+                    {
+                        var controller = GameController.CreateInstance();
+                        controller.Initialized += () =>
+                        {
+                            int selectedLevel = SaveUtils.GetValue<int>(SaveKey.DesignerSelectedLevel);
+                            controller.Model.LevelStaging.LoadLevel(MazeInfo, selectedLevel);
+                            RazorMazeUtils.LoadNextLevelAutomatically = false;
+                        };
+                        controller.Init();
+                    }));
+
             };
             SceneManager.LoadScene(SceneNames.Level);
         }
         
         public MazeInfo GetLevelInfoFromScene()
         {
-            mazeObject = GameObject.Find("Maze Items");
+            mazeObject = GameObject.Find(ContainerNames.MazeItems);
             maze = new List<ViewMazeItemProt>();
             foreach (Transform mazeObj in mazeObject.transform)
             {

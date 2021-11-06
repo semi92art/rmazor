@@ -111,7 +111,9 @@ namespace Mono_Installers
 
             Container.Bind<IBigDialogViewer>()              .To<BigDialogViewer>()               .AsSingle().When(_ => Release);
             Container.Bind<IProposalDialogViewer>()         .To<ProposalDialogViewer>()          .AsSingle().When(_ => Release);
+            Container.Bind<IProposalDialogViewer>()         .To<ProposalDialogViewerFake>()      .AsSingle().When(_ => !Release);
             Container.Bind<IDialogPanels>()                 .To<DialogPanels>()                  .AsSingle().When(_ => Release);
+            Container.Bind<IDialogPanels>()                 .To<DialogPanelsFake>()              .AsSingle().When(_ => !Release);
             Container.Bind<ISettingSelectorDialogPanel>()   .To<SettingsSelectorPanel>()         .AsSingle().When(_ => Release);
             Container.Bind<IShopDialogPanel>()              .To<ShopPanel>()                     .AsSingle().When(_ => Release);
             Container.Bind<IShopMoneyDialogPanel>()         .To<ShopMoneyPanel>()                .AsSingle().When(_ => Release);

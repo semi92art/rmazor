@@ -50,4 +50,17 @@ namespace Games.RazorMaze.Views.UI
             RateGameDialogPanel         = _RateGameDialogPanel;
         }
     }
+
+    public class DialogPanelsFake : IDialogPanels
+    {
+        public IDailyBonusDialogPanel      DailyBonusDialogPanel      { get; }
+        public ISettingDialogPanel         SettingDialogPanel         { get; }
+        public ISettingSelectorDialogPanel SettingSelectorDialogPanel { get; }
+        public IShopDialogPanel            ShopDialogPanel            { get; }
+        public IShopMoneyDialogPanel       ShopMoneyDialogPanel       { get; }
+        public IWofDialogPanel             WofDialogPanel             { get; }
+        public IWofRewardPanel             WofRewardPanel             { get; }
+        public ICharacterDiedDialogPanel   CharacterDiedDialogPanel   { get; }
+        public IRateGameDialogPanel        RateGameDialogPanel        { get; }
+    }
 }

@@ -199,6 +199,8 @@ namespace Games.RazorMaze.Views.Common
                         mazeItems,
                         () =>
                         {
+                            if (!LevelMonoInstaller.Release)
+                                return;
                             var panel = DialogPanels.CharacterDiedDialogPanel;
                             panel.Init();
                             ProposalDialogViewer.Show(panel);
