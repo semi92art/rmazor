@@ -22,6 +22,7 @@ namespace Games.RazorMaze.Editor
         #region static members
         
         public static HeapReorderableList LevelsList;
+        private static LevelDesigner m_Des => LevelDesigner.Instance;
         private static int _gameId = 1;
 
         private static int HeapIndex
@@ -35,12 +36,11 @@ namespace Games.RazorMaze.Editor
         
         #region nonpublic members
 
-        private LevelDesigner m_Des;
-        private Vector2 m_HeapScroll;
-        private int m_LevelIndex;
-        private int m_LoadedLevelHeapIndex = -1;
-        private int m_LoadedLevelIndex = -1;
-        private int m_TabPage;
+        private Vector2  m_HeapScroll;
+        private int      m_LevelIndex;
+        private int      m_LoadedLevelHeapIndex = -1;
+        private int      m_LoadedLevelIndex     = -1;
+        private int      m_TabPage;
         private GUIStyle headerStyle;
 
         #endregion
@@ -54,13 +54,6 @@ namespace Games.RazorMaze.Editor
             window.minSize = new Vector2(300, 200);
         }
 
-        private void OnEnable()
-        {
-            if (SceneManager.GetActiveScene().name != SceneNames.Prototyping)
-                return;
-            m_Des = LevelDesigner.Instance;
-        }
-
         private void OnBecameVisible()
         {
             headerStyle = new GUIStyle
@@ -71,36 +64,28 @@ namespace Games.RazorMaze.Editor
                 normal = {textColor = GUI.contentColor}
             };
         }
-        
-        private void OnFocus()
-        {
-            if (SceneManager.GetActiveScene().name != SceneNames.Prototyping)
-                return;
-            m_Des = LevelDesigner.Instance;
-        }
-        
+
         public void OnGUI()
         {
-            if (SceneManager.GetActiveScene().name != SceneNames.Prototyping)
+            if (SceneManager.GetActiveScene().name == SceneNames.Prototyping)
             {
-                GUILayout.Label($"Level designer available only on scene {SceneNames.Prototyping}.unity");
-                EditorUtilsEx.GuiButtonAction("Load scene", () =>
+                m_TabPage = GUILayout.Toolbar (m_TabPage, new [] {"Levels", "Fix Utils"});
+                switch (m_TabPage)
                 {
-                    string sceneName = AssetDatabase
-                        .FindAssets("l:Scene t:Scene", new[] {"Assets\\Scenes"})
-                        .Select(AssetDatabase.GUIDToAssetPath)
-                        .FirstOrDefault(_SceneName => _SceneName.Contains(SceneNames.Prototyping));
-                    EditorHelper.LoadScene(sceneName);
-                });
+                    case 0: ShowLevelsTabPage(); break;
+                    case 1: ShowFixUtilsTabPage(); break;
+                }
                 return;
             }
-            
-            m_TabPage = GUILayout.Toolbar (m_TabPage, new [] {"Levels", "Fix Utils"});
-            switch (m_TabPage)
+            GUILayout.Label($"Level designer available only on scene {SceneNames.Prototyping}.unity");
+            EditorUtilsEx.GuiButtonAction("Load scene", () =>
             {
-                case 0: ShowLevelsTabPage(); break;
-                case 1: ShowFixUtilsTabPage(); break;
-            }
+                string sceneName = AssetDatabase
+                    .FindAssets("l:Scene t:Scene", new[] {"Assets\\Scenes"})
+                    .Select(AssetDatabase.GUIDToAssetPath)
+                    .FirstOrDefault(_SceneName => _SceneName.Contains(SceneNames.Prototyping));
+                EditorHelper.LoadScene(sceneName);
+            });
         }
         
         #endregion
@@ -215,6 +200,9 @@ namespace Games.RazorMaze.Editor
 
         private void ShowMazeGeneratorZone()
         {
+            if (m_Des.IsNull())
+                return;
+            
             GUILayout.Label("Maze Generator", headerStyle);
             EditorUtilsEx.HorizontalZone(() =>
             {

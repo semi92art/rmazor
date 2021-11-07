@@ -217,7 +217,10 @@ namespace Games.RazorMaze.Views.Common
         private void ProceedSounds(LevelStageArgs _Args)
         {
             if (_Args.Stage == ELevelStage.Loaded)
+            {
+                Dbg.Log("SoundClipNameLevelStart");
                 Managers.Notify(_SM => _SM.PlayClip(SoundClipNameLevelStart));
+            }
             else if (_Args.Stage == ELevelStage.Finished)
                 Managers.Notify(_SM => _SM.PlayClip(SoundClipNameLevelComplete));
         }

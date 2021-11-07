@@ -19,6 +19,12 @@ namespace Games.RazorMaze.Views.MazeItems
     
     public class ViewMazeItemGravityBlockFree : ViewMazeItemMovingBase, IViewMazeItemGravityBlockFree 
     {
+        #region constants
+
+        protected const string SoundClipBlockSlidingDown = "block_sliding_down";
+
+        #endregion
+        
         #region shapes
 
         protected override string ObjectName => "Gravity Block Free";
@@ -61,7 +67,12 @@ namespace Games.RazorMaze.Views.MazeItems
             Transitioner,
             Managers,
             ColorProvider);
-        
+
+        public override void OnMoveStarted(MazeItemMoveEventArgs _Args)
+        {
+            Managers.SoundManager.PlayClip(SoundClipBlockSlidingDown, true, 0.3f);
+        }
+
         public override void OnMoving(MazeItemMoveEventArgs _Args)
         {
             if (ProceedingStage != EProceedingStage.ActiveAndWorking)
@@ -76,7 +87,7 @@ namespace Games.RazorMaze.Views.MazeItems
             if (ProceedingStage != EProceedingStage.ActiveAndWorking)
                 return;
             SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(_Args.To));
-            Managers.Notify();
+            Managers.SoundManager.StopClip(SoundClipBlockSlidingDown);
         }
 
         #endregion

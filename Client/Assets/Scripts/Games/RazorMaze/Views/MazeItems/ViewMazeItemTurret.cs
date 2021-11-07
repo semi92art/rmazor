@@ -343,10 +343,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private IEnumerator DoShoot(TurretShotEventArgs _Args)
         {
-            Managers.Notify(_SM => _SM.PlayClip(
-                SoundClipNameBulletFly,
-                true));
-            
+            Managers.SoundManager.PlayClip(SoundClipNameBulletFly);
             var fromPos = _Args.From.ToVector2();
             V2Int point = default;
             bool movedToTheEnd = false;
@@ -380,8 +377,8 @@ namespace Games.RazorMaze.Views.MazeItems
                     m_BulletRotating = false;
                     m_Bullet.SetGoActive(false);
                     BulletTail.HideTail(_Args);
-                    Managers.Notify(_SM => _SM.StopClip(
-                        SoundClipNameBulletFly));
+                    // Managers.Notify(_SM => _SM.StopClip(
+                    //     SoundClipNameBulletFly));
                 });
         }
 

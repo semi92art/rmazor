@@ -165,10 +165,11 @@ namespace Controllers
 
         private AudioClipInfo GetInfo(string _ClipName, string[] _Tags, bool _FullMatch = false)
         {
-            return m_ClipInfos.FirstOrDefault(_Info =>
-                _Info.ClipName == _ClipName
-                && _FullMatch ? _Info.Tags.All(_Tags.Contains)
-                    : _Tags.All(_Info.Tags.Contains));
+            if (_FullMatch)
+                return m_ClipInfos.FirstOrDefault(
+                    _Info => _Info.ClipName == _ClipName && _Info.Tags.All(_Tags.Contains));
+            return m_ClipInfos.FirstOrDefault(
+                _Info => _Info.ClipName == _ClipName && _Info.Tags.Any(_Tags.Contains));
         }
         
         private void PauseClipCore(string _ClipName, string[] _Tags, bool _Pause)

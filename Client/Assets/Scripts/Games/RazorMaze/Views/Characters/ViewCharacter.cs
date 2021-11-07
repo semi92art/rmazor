@@ -11,11 +11,11 @@ using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.MazeItems;
-using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
 using UnityEngine;
 using Utils;
+using Random = UnityEngine.Random;
 using SortingOrders = Games.RazorMaze.Views.Utils.SortingOrders;
 
 namespace Games.RazorMaze.Views.Characters
@@ -24,7 +24,7 @@ namespace Games.RazorMaze.Views.Characters
     {
         #region constants
 
-        private const string SoundClipNameCharacterMoveEnd = "character_move_end";
+        private const string SoundClipNameCharacterMoveEnd = "character_end_move";
         private const string SoundClipNameCharacterDeath = "character_death";
         private const float RelativeLocalScale = 0.98f;
         
@@ -174,7 +174,8 @@ namespace Games.RazorMaze.Views.Characters
             if (m_ShowCharacterHeadAndTail)
                 Tail.HideTail(_Args);
             Coroutines.Run(MazeShaker.HitMazeCoroutine(_Args));
-            Managers.Notify(_SM => _SM.PlayClip(SoundClipNameCharacterMoveEnd));
+            int randClipId = 1 + Mathf.FloorToInt(5f * Random.value);
+            Managers.Notify(_SM => _SM.PlayClip($"{SoundClipNameCharacterMoveEnd}_{randClipId}"));
             Effector.OnCharacterMoveFinished(_Args);
         }
 
@@ -199,7 +200,7 @@ namespace Games.RazorMaze.Views.Characters
                     m_OrientationCache = Model.Data.Orientation;
                     m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = false;
                     Tail.HideTail();
-                    Managers.Notify(_SM => _SM.PlayClip(SoundClipNameCharacterDeath));
+                    Managers.SoundManager.PlayClip(SoundClipNameCharacterDeath, _Volume: 2f);
                     Coroutines.Run(MazeShaker.ShakeMazeCoroutine());
                     break;
             }

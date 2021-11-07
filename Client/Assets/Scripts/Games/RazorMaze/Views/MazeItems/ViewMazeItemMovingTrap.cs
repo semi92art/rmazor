@@ -10,6 +10,7 @@ using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Utils;
 using Ticker;
 using UnityEngine;
+using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
@@ -19,7 +20,8 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         #region constants
 
-        private const string SoundClipNameMoveTrap = "saw_working";
+        private const string SoundClipNameSawWorking   = "saw_working";
+        private const string SoundClipNameSawStartMove = "saw_start_move";
         
         #endregion
         
@@ -88,6 +90,17 @@ namespace Games.RazorMaze.Views.MazeItems
             }
         }
 
+        public override void OnMoveStarted(MazeItemMoveEventArgs _Args)
+        {
+            float dist = Vector2.Distance(_Args.From.ToVector2(), _Args.To.ToVector2());
+            // Managers.SoundManager.PlayClip(SoundClipNameSawStartMove, _Volume: 0.1f);
+            Managers.SoundManager.PlayClip(SoundClipNameSawWorking, _Volume: 0.1f, _Tags: $"{GetHashCode()}");
+            Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
+            {
+                Managers.SoundManager.StopClip(SoundClipNameSawWorking, dist / _Args.Speed, _Tags: $"{GetHashCode()}");
+            }));
+        }
+
         public override void OnMoving(MazeItemMoveEventArgs _Args)
         {
             if (ProceedingStage != EProceedingStage.ActiveAndWorking)
@@ -143,15 +156,14 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private void StartRotation()
         {
-            Managers.Notify(_SM => _SM.PlayClip(
-                SoundClipNameMoveTrap, true, _Tags: $"{GetHashCode()}"));
+            // Managers.SoundManager.PlayClip( SoundClipNameSawWorking, true, 0.02f, _Tags: $"{GetHashCode()}");
+
             m_Rotating = true;
         }
 
         private void StopRotation()
         {
-            Managers.Notify(_SM => _SM.StopClip(
-                SoundClipNameMoveTrap, _Tags: $"{GetHashCode()}"));
+            // Managers.SoundManager.StopClip( SoundClipNameSawWorking, _Tags: $"{GetHashCode()}");
             m_Rotating = false;
         }
 

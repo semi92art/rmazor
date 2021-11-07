@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Constants;
@@ -27,7 +28,7 @@ namespace Games.RazorMaze.Views.MazeItems
         #region constants
 
         private const string SoundClipNameTrapIncreasingOpen = "sword_open";
-        private const string SoundClipNameTrapIncreasingRotate = "sword_rotating";
+        private const string SoundClipNameTrapIncreasingRotate = "sword_spinning";
         private const string SoundClipNameTrapIncreasingClose = "sword_close";
 
         #endregion
@@ -37,11 +38,12 @@ namespace Games.RazorMaze.Views.MazeItems
         private static int AnimKeyOpen => AnimKeys.Anim;
         private static int AnimKeyClose => AnimKeys.Stop;
         
-        private Animator m_Animator;
-        private bool? m_TrapOpened;
-        private bool m_ReadyToKill;
+        private Animator           m_Animator;
+        private bool?              m_TrapOpened;
+        private bool               m_ReadyToKill;
         private AnimationTriggerer m_Triggerer;
-        private List<Vector2> m_DeathZone;
+        private List<Vector2>      m_DeathZone;
+        private bool               m_DoPlaySwordSpinningSound = true;
 
         #endregion
 
@@ -142,6 +144,14 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Triggerer = prefab.GetCompItem<AnimationTriggerer>("triggerer");
             m_Triggerer.Trigger1 += () => m_ReadyToKill = true;
             m_Triggerer.Trigger2 += () => m_ReadyToKill = false;
+            m_Triggerer.Trigger4 += () =>
+            {
+                if (m_DoPlaySwordSpinningSound)
+                {
+                    Managers.SoundManager.PlayClip(SoundClipNameTrapIncreasingRotate, true);
+                    m_DoPlaySwordSpinningSound = false;
+                }
+            };
             for (int i = 1; i <= 4; i++)
             {
                 m_BladeContainers.Add(prefab.GetCompItem<Line>($"blade_container_{i}"));
@@ -150,7 +160,7 @@ namespace Games.RazorMaze.Views.MazeItems
             foreach (var bladeContainer in m_BladeContainers)
             {
                 bladeContainer.Thickness = 0.07f;
-                bladeContainer.EndCaps = LineEndCap.None;
+                bladeContainer.EndCaps = LineEndCap.Round;
                 bladeContainer.enabled = false;
             }
             foreach (var blade in m_Blades)
@@ -197,8 +207,8 @@ namespace Games.RazorMaze.Views.MazeItems
             if (stage == ELevelStage.Finished || stage == ELevelStage.Unloaded)
                 return;
             m_TrapOpened = true;
-            Coroutines.Run(OpenTrapCoroutine(true));
-            Managers.Notify(_SM => _SM.PlayClip(SoundClipNameTrapIncreasingOpen));
+            OpenTrapCoroutine(true);
+            Managers.SoundManager.PlayClip(SoundClipNameTrapIncreasingOpen);
         }
 
         private void CloseTrap()
@@ -208,15 +218,15 @@ namespace Games.RazorMaze.Views.MazeItems
             if (m_TrapOpened.HasValue && !m_TrapOpened.Value)
                 return;
             m_TrapOpened = false;
-            Coroutines.Run(OpenTrapCoroutine(false));
-            Managers.Notify(_SM => _SM.StopClip(SoundClipNameTrapIncreasingRotate));
-            Managers.Notify(_SM => _SM.PlayClip(SoundClipNameTrapIncreasingClose));
+            OpenTrapCoroutine(false);
+            m_DoPlaySwordSpinningSound = true;
+            Managers.SoundManager.StopClip(SoundClipNameTrapIncreasingRotate);
+            Managers.SoundManager.PlayClip(SoundClipNameTrapIncreasingClose);
         }
 
-        private IEnumerator OpenTrapCoroutine(bool _Open)
+        private void OpenTrapCoroutine(bool _Open)
         {
             m_Animator.SetTrigger(_Open ? AnimKeyOpen : AnimKeyClose);
-            yield return null;
         }
 
         protected override void OnAppearStart(bool _Appear)
@@ -257,6 +267,17 @@ namespace Games.RazorMaze.Views.MazeItems
                 Vector2.Distance(_P, cPos) + RazorMazeUtils.Epsilon > distance)) 
                 return;
             Model.LevelStaging.KillCharacter();
+        }
+
+        protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
+        {
+            var col = ColorProvider.GetColor(ColorIds.MazeItem1);
+            return new Dictionary<IEnumerable<Component>, Func<Color>>
+            {
+                {new Component[] { m_Center }, () => col}, 
+                {m_Blades, () => col}, 
+                {m_BladeContainers, () => col.SetA(0.5f)}
+            };
         }
 
         #endregion

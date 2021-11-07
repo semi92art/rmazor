@@ -85,8 +85,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 Object.transform.localPosition = CoordinateConverter.ToLocalMazeItemPosition(Props.Position);
             }
         }
-        
-        public virtual void OnMoveStarted(MazeItemMoveEventArgs _Args) { }
+
+        public abstract void OnMoveStarted(MazeItemMoveEventArgs _Args);
         public abstract void OnMoving(MazeItemMoveEventArgs _Args);
 
         public virtual void OnMoveFinished(MazeItemMoveEventArgs _Args)
