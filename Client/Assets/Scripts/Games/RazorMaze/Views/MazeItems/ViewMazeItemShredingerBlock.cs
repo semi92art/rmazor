@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Controllers;
 using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Models;
@@ -24,15 +25,13 @@ namespace Games.RazorMaze.Views.MazeItems
     
     public class ViewMazeItemShredingerBlock : ViewMazeItemBase, IViewMazeItemShredingerBlock, IUpdateTick
     {
-        #region constants
-
-        private const string SoundClipNameOpenBlock  = "shredinger_open";
-        private const string SoundClipNameCloseBlock = "shredinger_close";
-        
-        #endregion
-        
         #region nonpublic members
 
+        private static AudioClipArgs AudioClipArgsOpenBlock => 
+            new AudioClipArgs("shredinger_open", EAudioClipType.Sound);
+        private static AudioClipArgs AudioClipArgsCloseBlock =>
+            new AudioClipArgs("shredinger_close", EAudioClipType.Sound);
+        
         private float m_LineOffset;
         private bool  m_IsBlockClosed;
         private bool  m_IsCloseCoroutineRunning;
@@ -273,13 +272,13 @@ namespace Games.RazorMaze.Views.MazeItems
         
         private void CloseBlock()
         {
-            Managers.Notify(_SM => _SM.PlayClip(SoundClipNameCloseBlock));
+            Managers.AudioManager.PlayClip(AudioClipArgsCloseBlock);
             Coroutines.Run(CloseBlockCoroutine(true));
         }
 
         private void OpenBlock()
         {
-            Managers.Notify(_SM => _SM.PlayClip(SoundClipNameOpenBlock));
+            Managers.AudioManager.PlayClip(AudioClipArgsOpenBlock);
             Coroutines.Run(CloseBlockCoroutine(false));
         }
 

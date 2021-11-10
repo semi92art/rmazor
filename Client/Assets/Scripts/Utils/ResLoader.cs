@@ -5,7 +5,6 @@ using System.Linq;
 using System.Xml.Linq;
 using DI.Extensions;
 using ScriptableObjects;
-using UI.Entities;
 using UnityEditor;
 using UnityEngine;
 
@@ -13,7 +12,14 @@ namespace Utils
 {
     public static class ResLoader
     {
-        #region nonpublic members
+        #region constants
+
+        public const string PrefabSetsLocalPath = "prefab_sets";
+        public const string PrefabSetsPath      = "Assets/Resources/" + PrefabSetsLocalPath;
+        
+        #endregion
+        
+        #region nonpublic
 
         private static readonly XElement Ads;
 
@@ -39,7 +45,7 @@ namespace Utils
 
         public static PrefabSetScriptableObject GetPrefabSet(string _PrefabSetName)
         {
-            var set = Resources.Load<PrefabSetScriptableObject>($"prefab_sets/{_PrefabSetName}");
+            var set = Resources.Load<PrefabSetScriptableObject>($"{PrefabSetsLocalPath}/{_PrefabSetName}");
             if (set == null)
                 Dbg.LogError($"Prefab set with name {_PrefabSetName} does not exist");
             return set;
@@ -47,7 +53,7 @@ namespace Utils
 
         public static bool PrefabSetExist(string _PrefabSetName)
         {
-            var set = Resources.Load<PrefabSetScriptableObject>($"prefab_sets/{_PrefabSetName}");
+            var set = Resources.Load<PrefabSetScriptableObject>($"{PrefabSetsLocalPath}/{_PrefabSetName}");
             return set != null;
         }
 
@@ -57,7 +63,7 @@ namespace Utils
             if (PrefabSetExist(_PrefabSetName))
                 return GetPrefabSet(_PrefabSetName);
             var set = ScriptableObject.CreateInstance<PrefabSetScriptableObject>();
-            AssetDatabase.CreateAsset(set, $"Assets/Resources/prefab_sets/{_PrefabSetName}.asset");
+            AssetDatabase.CreateAsset(set, $"{PrefabSetsPath}/{_PrefabSetName}.asset");
             AssetDatabase.SaveAssets();
             return set;
         }

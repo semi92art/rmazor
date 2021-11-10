@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Controllers;
 using DI.Extensions;
 using Entities;
 using GameHelpers;
@@ -21,12 +21,11 @@ namespace Games.RazorMaze.Views.MazeItems
         #region constants
 
         private const string SoundClipNameSawWorking   = "saw_working";
-        private const string SoundClipNameSawStartMove = "saw_start_move";
         
         #endregion
         
         #region nonpublic members
-        
+
         private Vector2 m_Position;
         private bool m_Rotating;
         
@@ -93,11 +92,13 @@ namespace Games.RazorMaze.Views.MazeItems
         public override void OnMoveStarted(MazeItemMoveEventArgs _Args)
         {
             float dist = Vector2.Distance(_Args.From.ToVector2(), _Args.To.ToVector2());
-            // Managers.SoundManager.PlayClip(SoundClipNameSawStartMove, _Volume: 0.1f);
-            Managers.SoundManager.PlayClip(SoundClipNameSawWorking, _Volume: 0.1f, _Tags: $"{GetHashCode()}");
+            float attenuateTime = dist / _Args.Speed;
+            var info = new AudioClipArgs(SoundClipNameSawWorking, EAudioClipType.Sound, 0.1f,
+                _Id: _Args.Info.GetHashCode().ToString(), _AttenuationSecondsOnStop: attenuateTime);
+            Managers.AudioManager.PlayClip(info);
             Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
             {
-                Managers.SoundManager.StopClip(SoundClipNameSawWorking, dist / _Args.Speed, _Tags: $"{GetHashCode()}");
+                Managers.AudioManager.StopClip(info);
             }));
         }
 
@@ -156,14 +157,11 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private void StartRotation()
         {
-            // Managers.SoundManager.PlayClip( SoundClipNameSawWorking, true, 0.02f, _Tags: $"{GetHashCode()}");
-
             m_Rotating = true;
         }
 
         private void StopRotation()
         {
-            // Managers.SoundManager.StopClip( SoundClipNameSawWorking, _Tags: $"{GetHashCode()}");
             m_Rotating = false;
         }
 

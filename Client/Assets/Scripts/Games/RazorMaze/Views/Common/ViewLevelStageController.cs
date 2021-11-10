@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Constants;
+using Controllers;
 using DialogViewers;
 using Entities;
 using GameHelpers;
@@ -13,7 +14,6 @@ using Games.RazorMaze.Views.MazeItems;
 using Games.RazorMaze.Views.UI;
 using Mono_Installers;
 using Ticker;
-using UnityEngine;
 using UnityEngine.Events;
 using Utils;
 
@@ -27,18 +27,19 @@ namespace Games.RazorMaze.Views.Common
 
     public class ViewLevelStageController : IViewLevelStageController
     {
-        #region constants
-
-        private const string SoundClipNameLevelStart = "level_start";
-        private const string SoundClipNameLevelComplete = "level_complete";
-
-        #endregion
-        
         #region nonpublic members
+        
+        private static AudioClipArgs AudioClipArgsLevelStart => 
+            new AudioClipArgs("level_start", EAudioClipType.Sound);
+        private static AudioClipArgs AudioClipArgsLevelComplete => 
+            new AudioClipArgs("level_complete", EAudioClipType.Sound);
+        private static AudioClipArgs AudioClipArgsMainTheme =>
+            new AudioClipArgs("main_theme", EAudioClipType.Music, _Loop: true);
 
         private readonly List<IOnLevelStageChanged> m_Proceeders = new List<IOnLevelStageChanged>();
 
         private bool m_NextLevelMustBeFirstInGroup;
+        private bool m_FirstTimeLevelLoaded;
 
         #endregion
 
@@ -218,11 +219,15 @@ namespace Games.RazorMaze.Views.Common
         {
             if (_Args.Stage == ELevelStage.Loaded)
             {
-                Dbg.Log("SoundClipNameLevelStart");
-                Managers.Notify(_SM => _SM.PlayClip(SoundClipNameLevelStart));
+                Managers.AudioManager.PlayClip(AudioClipArgsLevelStart);
+                if (!m_FirstTimeLevelLoaded)
+                {
+                    Managers.AudioManager.PlayClip(AudioClipArgsMainTheme);
+                    m_FirstTimeLevelLoaded = true;
+                }
             }
-            else if (_Args.Stage == ELevelStage.Finished)
-                Managers.Notify(_SM => _SM.PlayClip(SoundClipNameLevelComplete));
+            else if (_Args.Stage == ELevelStage.Finished && _Args.PreviousStage != ELevelStage.Paused)
+                Managers.AudioManager.PlayClip(AudioClipArgsLevelComplete);
         }
         
         #endregion

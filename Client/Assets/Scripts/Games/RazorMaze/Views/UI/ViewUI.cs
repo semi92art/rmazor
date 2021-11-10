@@ -13,11 +13,12 @@ namespace Games.RazorMaze.Views.UI
     {
         #region inject
 
-        private IBigDialogViewer       BigDialogViewer      { get; }
-        private IProposalDialogViewer  ProposalDialogViewer { get; }
-        private IDialogPanels          DialogPanels         { get; }
-        private ILoadingController     LoadingController    { get; }
-        private IViewInput Input    { get; }
+        private IUITicker             UITicker             { get; }
+        private IBigDialogViewer      BigDialogViewer      { get; }
+        private IProposalDialogViewer ProposalDialogViewer { get; }
+        private IDialogPanels         DialogPanels         { get; }
+        private ILoadingController    LoadingController    { get; }
+        private IViewInput            Input                { get; }
 
         public ViewUI(
             IUITicker _UITicker,
@@ -29,12 +30,12 @@ namespace Games.RazorMaze.Views.UI
             IViewInput _Input)
             : base(_ViewUIGameControls)
         {
+            UITicker = _UITicker;
             BigDialogViewer = _BigDialogViewer;
             ProposalDialogViewer = _ProposalDialogViewer;
             DialogPanels = _DialogPanels;
             LoadingController = _LoadingController;
             Input = _Input;
-            _UITicker.Register(this);
         }
 
         #endregion
@@ -43,6 +44,7 @@ namespace Games.RazorMaze.Views.UI
 
         public override void Init()
         {
+            UITicker.Register(this);
             Input.Command += OnCommand;
             CreateCanvas();
             var parent = m_Canvas.RTransform();

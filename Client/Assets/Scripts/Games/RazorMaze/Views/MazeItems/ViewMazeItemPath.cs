@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Controllers;
 using DI.Extensions;
 using Entities;
 using Exceptions;
@@ -26,12 +27,6 @@ namespace Games.RazorMaze.Views.MazeItems
     
     public class ViewMazeItemPath : ViewMazeItemBase, IViewMazeItemPath, IUpdateTick
     {
-        #region constants
-
-        private const string SoundClipNameCollectPoint = "collect_point"; 
-
-        #endregion
-        
         #region shapes
 
         private GameObject     m_MoneyItem;
@@ -44,7 +39,10 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region nonpublic members
 
+        private static AudioClipArgs AudioClipArgsCollectMoneyItem => 
+            new AudioClipArgs("collect_point", EAudioClipType.Sound);
         protected override string ObjectName => "Path Block";
+        
         private bool m_Collect;
         private bool m_LeftBorderInited, m_RightBorderInited, m_BottomBorderInited, m_TopBorderInited;
         private bool m_BottomLeftCornerInited, m_BottomRightCornerInited, m_TopLeftCornerInited, m_TopRightCornerInited;
@@ -146,8 +144,7 @@ namespace Games.RazorMaze.Views.MazeItems
             if (_Collect && Props.IsMoneyItem)
             {
                 MoneyItemCollected?.Invoke();
-                Managers.Notify(_SM => _SM.PlayClip(
-                    SoundClipNameCollectPoint, _Tags: Props.Position.ToString()));
+                Managers.AudioManager.PlayClip(AudioClipArgsCollectMoneyItem);
                 m_MoneyItemRenderer.enabled = false;
             }
             var col = ColorProvider.GetColor(ColorIds.Path);

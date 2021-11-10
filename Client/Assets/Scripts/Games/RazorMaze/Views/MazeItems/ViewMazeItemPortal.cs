@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Controllers;
 using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Models;
@@ -31,11 +32,12 @@ namespace Games.RazorMaze.Views.MazeItems
         private const int    GravityItemsCount   = 30;
         private const float  GravitySpawnTime    = 1f;
         private const float  GravityItemsSpeed   = 1f;
-        private const string PortalSoundClipName = "portal";
         
         #endregion
         
         #region nonpublic members
+
+        private static AudioClipArgs AudioClipArgsPortal => new AudioClipArgs("portal", EAudioClipType.Sound);
 
         private float m_GravitySpawnTimer;
         
@@ -115,7 +117,7 @@ namespace Games.RazorMaze.Views.MazeItems
         public void DoTeleport(PortalEventArgs _Args)
         {
             if (_Args.IsPortFrom)
-                Managers.Notify(_SM => _SM.PlayClip(PortalSoundClipName));
+                Managers.AudioManager.PlayClip(AudioClipArgsPortal);
             Coroutines.Run(Coroutines.Lerp(
                 1f, 
                 3f,

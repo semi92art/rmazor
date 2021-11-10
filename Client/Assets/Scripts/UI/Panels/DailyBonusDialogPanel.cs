@@ -102,7 +102,7 @@ namespace UI.Panels
 
                 dbProps.Click = () =>
                 {
-                    Managers.Notify(_SM => _SM.PlayClip(AudioClipNames.UIButtonClick));
+                    Managers.Notify(_SM => _SM.PlayClip(CommonAudioClipArgs.UiButtonClick));
                     DialogViewer.CloseAll();
                 };
                 

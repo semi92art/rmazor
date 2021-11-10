@@ -25,6 +25,11 @@ namespace Games.RazorMaze.Views.Helpers
     
     public interface IViewAppearTransitioner
     {
+        void DoAppearMazeItemTransition(bool _Appear,
+            Dictionary<IEnumerable<Component>, Func<Color>> _Sets,
+            IViewMazeItem _MazeItem,
+            UnityAction _OnFinish);
+        
         void DoAppearTransition(
             bool _Appear,
             Dictionary<IEnumerable<Component>, Func<Color>> _Sets,
@@ -54,7 +59,17 @@ namespace Games.RazorMaze.Views.Helpers
         #endregion
 
         #region api
-        
+
+        public void DoAppearMazeItemTransition(
+            bool _Appear,
+            Dictionary<IEnumerable<Component>,
+                Func<Color>> _Sets, IViewMazeItem _MazeItem,
+            UnityAction _OnFinish)
+        {
+            // const float transitionTime = 0.3f;
+            // float delay = GetDelay(_Appear, _Type, _ItemPosition);
+        }
+
         public void DoAppearTransition(
             bool _Appear,
             Dictionary<IEnumerable<Component>, Func<Color>> _Sets,
@@ -130,7 +145,12 @@ namespace Games.RazorMaze.Views.Helpers
         }
 
         #endregion
-        
+
+        // private float GetDelay(bool _Appear, IViewMazeItem _MazeItem)
+        // {
+        //     
+        // }
+        //
         private float GetDelay(bool _Appear, EAppearTransitionType _Type, V2Int? _Position = null)
         {
             const float coeff = 0.05f;

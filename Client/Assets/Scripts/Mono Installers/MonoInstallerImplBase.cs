@@ -18,7 +18,7 @@ namespace Mono_Installers
             Container.Bind<ILevelsLoader>()       .To<LevelsLoader>()           .AsSingle();
             Container.Bind<IManagersGetter>()     .To<ManagersGetter>()         .AsSingle();
 
-            Container.Bind<ISoundManager>()       .To<SoundManager>()           .AsSingle();
+            Container.Bind<IAudioManager>()       .To<AudioManager>()           .AsSingle();
             
         }
     }

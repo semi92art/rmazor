@@ -63,7 +63,7 @@ namespace UI
         
         protected void SoundOnClick()
         {
-            Managers.SoundManager.PlayClip(AudioClipNames.UIButtonClick);
+            Managers.AudioManager.PlayClip(CommonAudioClipArgs.UiButtonClick);
         }
 
         #endregion

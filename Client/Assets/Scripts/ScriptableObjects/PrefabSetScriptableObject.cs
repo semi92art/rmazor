@@ -19,7 +19,7 @@ namespace ScriptableObjects
         public class PrefabsList : ReorderableArray<Prefab> { }
 
         public bool bundles;
-        [Header("Prefabs"), Reorderable(paginate = true, pageSize = 20)]
+        [Header("Prefabs"), Reorderable(paginate = true, pageSize = 50)]
         public PrefabsList prefabs;
     }
 }

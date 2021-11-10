@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
@@ -13,10 +14,11 @@ namespace Managers
     {
         #region constants
 
-        private const string SoundsBundleName = "sounds";
-        private const string LevelsBundleName = "levels";
-        private const string CommonBundleName = "common";
-        private const string BundlesUri = "https://raw.githubusercontent.com/semi92art/bundles/main/mgc";
+        public const  string BundleNamesListName = "bundle_names";
+        public const  string CommonBundleName    = "common";
+        private const string SoundsBundleName    = "sounds";
+        private const string LevelsBundleName    = "levels";
+        private const string BundlesUri          = "https://raw.githubusercontent.com/semi92art/bundles/main/mgc";
         
         #endregion
         
@@ -38,8 +40,9 @@ namespace Managers
         
         #region nonpublic members
 
-        private static readonly string[] m_BundleNames = {SoundsBundleName, LevelsBundleName};
-        private static readonly Dictionary<string, List<AssetInfo>> m_Bundles = new Dictionary<string, List<AssetInfo>>();
+        private static readonly string[] BundleNames = {CommonBundleName, SoundsBundleName, LevelsBundleName};
+        private static readonly Dictionary<string, List<AssetInfo>> Bundles = new Dictionary<string, List<AssetInfo>>();
+        private static Dictionary<string, string> _bundleNamesDict = new Dictionary<string, string>();
         
         #endregion
         
@@ -57,13 +60,22 @@ namespace Managers
         public static bool BundlesLoaded { get; private set; }
         public static List<string> Errors { get; } = new List<string>();
 
-        public static T GetAsset<T>(string _AssetName, string _BundleName) where T : Object
+        public static T GetAsset<T>(string _AssetName, string _PrefabSetName) where T : Object
         {
             if (!BundlesLoaded)
                 Dbg.LogError("Bundles were not initialized");
-            
-            return m_Bundles[_BundleName].FirstOrDefault(
-                _Info => _Info.Name.GetFileName(false) == _AssetName)?.Asset as T;
+            if (!_bundleNamesDict.ContainsKey(_AssetName))
+            {
+                Dbg.LogError($"Key {_AssetName} was not found in bundles names dictionary");
+                return null;
+            }
+            string bundleName = _bundleNamesDict[_AssetName];
+            var dict = Bundles[_PrefabSetName]
+                .ToDictionary(
+                    _Bundle => _Bundle.Name,
+                    _Bundle => _Bundle.Asset);
+            var result = dict[bundleName];
+            return result as T;
         }
         
         #endregion
@@ -72,8 +84,18 @@ namespace Managers
         
         private static IEnumerator LoadBundles()
         {
-            foreach (var bundleName in m_BundleNames)
+            foreach (var bundleName in BundleNames)
                 yield return LoadBundle(bundleName);
+            var bundleNamesRaw =
+                Bundles[CommonBundleName]
+                    .FirstOrDefault(_Info => _Info.Name.Contains(BundleNamesListName))
+                    ?.Asset as TextAsset;
+            if (bundleNamesRaw == null)
+            {
+                Dbg.LogError("Bundle with other bundle names was not loaded correctly.");
+                yield break;
+            }
+            _bundleNamesDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(bundleNamesRaw.text);
             BundlesLoaded = true;
             Dbg.Log("Bundles initialized!");
         }
@@ -107,8 +129,8 @@ namespace Managers
                         yield break;
                     }
                     
-                    m_Bundles.Add(_BundleName, new List<AssetInfo>());
-                    var cachedAssets = m_Bundles[_BundleName];
+                    Bundles.Add(_BundleName, new List<AssetInfo>());
+                    var cachedAssets = Bundles[_BundleName];
                     cachedAssets.AddRange(from assetName in loadedBundle.GetAllAssetNames() 
                         let asset = loadedBundle.LoadAsset(assetName) 
                         select new AssetInfo(assetName, asset));

@@ -20,7 +20,7 @@ public class DebugManager : IDebugManager
 #endif
     
 #if DEVELOPMENT_BUILD
-    private static GameObject _debugReporter;
+    private static UnityEngine.GameObject _debugReporter;
 #endif
 
     #endregion
@@ -76,7 +76,6 @@ public class DebugManager : IDebugManager
                 null,
                 "debug_console",
                 "reporter");
-        _debugReporter.SetActive(debugOn);
 #endif
     }
 

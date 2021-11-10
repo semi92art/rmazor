@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
+using Controllers;
 using DI.Extensions;
 using Entities;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
+using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
@@ -26,11 +28,10 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         #region constants
 
-        private const float StartPos = 0.1f;
+        private const float StartPos  = 0.1f;
         private const float MiddlePos = 0.2f;
-        private const float FinalPos = 0.7f;
-        private const string SoundClipNameTrapReactOut = "trap_react_out"; 
-        
+        private const float FinalPos  = 0.7f;
+
         #endregion
         
         #region nonpublic members
@@ -119,8 +120,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 case ItemsProceederBase.StageIdle: break;
                 case TrapsReactProceeder.StagePreReact:   coroutine = HandlePreReact(); break;
                 case TrapsReactProceeder.StageReact:
-                    Managers.Notify(_SM => 
-                        _SM.PlayClip(SoundClipNameTrapReactOut, _Tags: $"{_Args.Info}"));
+                    Managers.AudioManager.PlayClip(GetAudioClipInfoTrapReactOut(_Args.Info));
                     coroutine = HandleReact(); break;
                 case TrapsReactProceeder.StageAfterReact: coroutine = HandlePostReact(); break;
                 default: throw new ArgumentOutOfRangeException(
@@ -266,6 +266,11 @@ namespace Games.RazorMaze.Views.MazeItems
             if (Vector2.Distance(cPos, itemPos) + RazorMazeUtils.Epsilon > 1f) 
                 return;
             Model.LevelStaging.KillCharacter();
+        }
+        
+        private static AudioClipArgs GetAudioClipInfoTrapReactOut(IMazeItemProceedInfo _Info)
+        {
+            return new AudioClipArgs("trap_react_out", EAudioClipType.Sound, _Id: _Info.GetHashCode().ToString());
         }
         
         #endregion

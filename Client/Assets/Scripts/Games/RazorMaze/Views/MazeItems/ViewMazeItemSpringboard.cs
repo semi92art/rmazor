@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Controllers;
 using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Models;
@@ -29,12 +30,13 @@ namespace Games.RazorMaze.Views.MazeItems
         private const float  SpringboardHeight = 0.3f;
         private const float  SpringboardWidth  = 0.4f;
         private const float  JumpCoefficient   = 0.2f;
-        private const string SpringboardJumpSoundClipName = "springboard_jump";
-        
+
         #endregion
         
         #region nonpublic members
 
+        private static AudioClipArgs _audioClipArgsSpringboardJump => 
+            new AudioClipArgs("springboard_jump", EAudioClipType.Sound);
         private Vector2 m_Edge1Start, m_Edge2Start;
         
         #endregion
@@ -86,7 +88,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public void MakeJump(SpringboardEventArgs _Args)
         {
-            Managers.Notify(_SM => _SM.PlayClip(SpringboardJumpSoundClipName));
+            Managers.AudioManager.PlayClip(_audioClipArgsSpringboardJump);
             Coroutines.Run(JumpCoroutine());
         }
 

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Constants;
+using Controllers;
 using DI.Extensions;
 using Entities;
 using GameHelpers;
@@ -25,16 +26,15 @@ namespace Games.RazorMaze.Views.MazeItems
     
     public class ViewMazeItemTrapIncreasing : ViewMazeItemBase, IViewMazeItemTrapIncreasing, IUpdateTick
     {
-        #region constants
-
-        private const string SoundClipNameTrapIncreasingOpen = "sword_open";
-        private const string SoundClipNameTrapIncreasingRotate = "sword_spinning";
-        private const string SoundClipNameTrapIncreasingClose = "sword_close";
-
-        #endregion
-        
         #region nonpublic members
 
+        private static AudioClipArgs AudioClipArgsTrapIncreasingOpen =>
+            new AudioClipArgs("sword_open", EAudioClipType.Sound);
+        private static AudioClipArgs AudioClipArgsTrapIncreasingRotate => 
+            new AudioClipArgs("sword_spinning", EAudioClipType.Sound, _Loop: true);
+        private static AudioClipArgs AudioClipArgsTrapIncreasingClose => 
+            new AudioClipArgs("sword_close", EAudioClipType.Sound);
+        
         private static int AnimKeyOpen => AnimKeys.Anim;
         private static int AnimKeyClose => AnimKeys.Stop;
         
@@ -148,7 +148,7 @@ namespace Games.RazorMaze.Views.MazeItems
             {
                 if (m_DoPlaySwordSpinningSound)
                 {
-                    Managers.SoundManager.PlayClip(SoundClipNameTrapIncreasingRotate, true);
+                    Managers.AudioManager.PlayClip(AudioClipArgsTrapIncreasingRotate);
                     m_DoPlaySwordSpinningSound = false;
                 }
             };
@@ -208,7 +208,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 return;
             m_TrapOpened = true;
             OpenTrapCoroutine(true);
-            Managers.SoundManager.PlayClip(SoundClipNameTrapIncreasingOpen);
+            Managers.AudioManager.PlayClip(AudioClipArgsTrapIncreasingOpen);
         }
 
         private void CloseTrap()
@@ -220,8 +220,8 @@ namespace Games.RazorMaze.Views.MazeItems
             m_TrapOpened = false;
             OpenTrapCoroutine(false);
             m_DoPlaySwordSpinningSound = true;
-            Managers.SoundManager.StopClip(SoundClipNameTrapIncreasingRotate);
-            Managers.SoundManager.PlayClip(SoundClipNameTrapIncreasingClose);
+            Managers.AudioManager.StopClip(AudioClipArgsTrapIncreasingRotate);
+            Managers.AudioManager.PlayClip(AudioClipArgsTrapIncreasingClose);
         }
 
         private void OpenTrapCoroutine(bool _Open)

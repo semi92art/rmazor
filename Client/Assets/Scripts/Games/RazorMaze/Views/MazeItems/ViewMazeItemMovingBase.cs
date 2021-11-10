@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Controllers;
 using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Models;
@@ -24,9 +25,9 @@ namespace Games.RazorMaze.Views.MazeItems
     
     public abstract class ViewMazeItemMovingBase : ViewMazeItemBase, IViewMazeItemMovingBlock
     {
-        #region constants
-
-        protected const string SoundClipNameBlockDrop = "block_drop";
+        #region nonpublic members
+        
+        protected static AudioClipArgs AudioClipArgsBlockDrop => new AudioClipArgs("block_drop", EAudioClipType.Sound);
         
         #endregion
         
@@ -91,7 +92,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public virtual void OnMoveFinished(MazeItemMoveEventArgs _Args)
         {
-            Managers.Notify(_SM => _SM.PlayClip(SoundClipNameBlockDrop));
+            Managers.AudioManager.PlayClip(AudioClipArgsBlockDrop);
         }
 
         #endregion

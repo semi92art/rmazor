@@ -8,11 +8,11 @@ namespace Settings
     
     public class MusicSetting : SettingBase<bool>, IMusicSetting
     {
-        private ISoundManager SoundManager { get; }
+        private IAudioManager AudioManager { get; }
 
-        public MusicSetting(ISoundManager _SoundManager)
+        public MusicSetting(IAudioManager _AudioManager)
         {
-            SoundManager = _SoundManager;
+            AudioManager = _AudioManager;
         }
 
         public override SaveKey Key => SaveKey.SettingSoundOn;
@@ -24,7 +24,7 @@ namespace Settings
 
         public override void Put(bool _MusicOn)
         {
-            SoundManager.EnableSound(_MusicOn, "music");
+            AudioManager.EnableAudio(_MusicOn, EAudioClipType.Music);
             base.Put(_MusicOn);
         }
     }

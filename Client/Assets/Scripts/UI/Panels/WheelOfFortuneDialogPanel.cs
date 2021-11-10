@@ -126,7 +126,7 @@ namespace UI.Panels
 
         private void StartSpinOrWatchAd()
         {
-            Managers.SoundManager.PlayClip(AudioClipNames.UIButtonClick);
+            Managers.AudioManager.PlayClip(CommonAudioClipArgs.UiButtonClick);
             if (!m_IsLocked)
             {
                 Managers.AnalyticsManager.SendAnalytic(NotifyMessageSpinButtonClick);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Controllers;
 using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Models;
@@ -19,9 +20,10 @@ namespace Games.RazorMaze.Views.MazeItems
     
     public class ViewMazeItemGravityBlockFree : ViewMazeItemMovingBase, IViewMazeItemGravityBlockFree 
     {
-        #region constants
+        #region nonpublic members
 
-        protected const string SoundClipBlockSlidingDown = "block_sliding_down";
+        private static AudioClipArgs AudioClipArgsBlockSlidingDown => 
+            new AudioClipArgs("block_sliding_down", EAudioClipType.Sound, 0.3f, true);
 
         #endregion
         
@@ -70,7 +72,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public override void OnMoveStarted(MazeItemMoveEventArgs _Args)
         {
-            Managers.SoundManager.PlayClip(SoundClipBlockSlidingDown, true, 0.3f);
+            Managers.AudioManager.PlayClip(AudioClipArgsBlockSlidingDown);
         }
 
         public override void OnMoving(MazeItemMoveEventArgs _Args)
@@ -87,7 +89,7 @@ namespace Games.RazorMaze.Views.MazeItems
             if (ProceedingStage != EProceedingStage.ActiveAndWorking)
                 return;
             SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(_Args.To));
-            Managers.SoundManager.StopClip(SoundClipBlockSlidingDown);
+            Managers.AudioManager.StopClip(AudioClipArgsBlockSlidingDown);
         }
 
         #endregion

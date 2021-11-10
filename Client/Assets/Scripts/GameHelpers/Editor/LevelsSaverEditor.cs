@@ -27,8 +27,8 @@ namespace GameHelpers.Editor
             File.WriteAllText(LevelsAssetPath(_GameId, _HeapIndex), serialized);
             var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(LevelsAssetPath(_GameId, _HeapIndex));
             EditorUtility.SetDirty(asset);
-            AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+            AssetDatabase.SaveAssets();
         }
 
         private static void CreateLevelsAssetIfNotExist(int _GameId, int _HeapIndex)
@@ -44,7 +44,6 @@ namespace GameHelpers.Editor
                 File.WriteAllText(assetPath, serialized);
                 AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
             }
-
             if (_HeapIndex > 0)
                 return;
             var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(assetPath);
@@ -52,12 +51,13 @@ namespace GameHelpers.Editor
             if (!ResLoader.PrefabSetExist(setName))
                 ResLoader.CreatePrefabSetIfNotExist(setName);
             PrefabUtilsEx.SetPrefab(setName, LevelsAssetName(0), asset);
-            
             AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
             AssetDatabase.SaveAssets();
         }
 
-        private static string LevelsAssetPath(int _GameId, int _HeapIndex) =>
-            $"Assets/Prefabs/Levels/Game_{_GameId}/{LevelsAssetName(_HeapIndex)}.json";
+        private static string LevelsAssetPath(int _GameId, int _HeapIndex)
+        {
+            return $"Assets/Prefabs/Levels/Game_{_GameId}/{LevelsAssetName(_HeapIndex)}.json";
+        }
     }
 }

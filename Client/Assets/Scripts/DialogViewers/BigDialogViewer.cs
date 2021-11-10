@@ -113,7 +113,7 @@ namespace DialogViewers
             
             m_CloseButton.SetOnClick(() =>
             {
-                Managers.SoundManager.PlayClip(AudioClipNames.UIButtonClick);
+                Managers.AudioManager.PlayClip(CommonAudioClipArgs.UiButtonClick);
                 CloseAll();
             });
         }

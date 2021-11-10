@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Controllers;
 using DI.Extensions;
 using Entities;
 using GameHelpers;
@@ -31,16 +32,16 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         #region constants
         
-        private const float BulletContainerRadius = 0.4f;
-        private const string SoundClipNameBulletFly = "shuriken";
+        private const  float         BulletContainerRadius = 0.4f;
         
         #endregion
         
         #region nonpublic members
 
-        private float m_RotatingSpeed;
-        private bool m_BulletRotating;
+        private static AudioClipArgs _audioClipArgsShurikenFly => new AudioClipArgs("shuriken", EAudioClipType.Sound);
         
+        private float     m_RotatingSpeed;
+        private bool      m_BulletRotating;
         private Transform m_BulletTr;
         private Transform m_Bullet;
         private Transform m_BulletFakeContainer;
@@ -343,7 +344,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private IEnumerator DoShoot(TurretShotEventArgs _Args)
         {
-            Managers.SoundManager.PlayClip(SoundClipNameBulletFly);
+            Managers.AudioManager.PlayClip(_audioClipArgsShurikenFly);
             var fromPos = _Args.From.ToVector2();
             V2Int point = default;
             bool movedToTheEnd = false;

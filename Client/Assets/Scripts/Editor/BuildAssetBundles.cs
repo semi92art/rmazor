@@ -3,7 +3,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Exceptions;
+using Managers;
+using Newtonsoft.Json;
+using ScriptableObjects;
 using UnityEditor;
+using UnityEngine;
 using Utils;
 using Utils.Editor;
 
@@ -16,9 +20,68 @@ public static class BuildAssetBundles
     private const string RepositoryName = "bundles";
     private static string BundlesPath => $"Assets/AssetBundles/{GetOsBundleSubPath()}";
     private static string PushCommand => $"push https://{Token}@github.com/{UserName}/{RepositoryName}.git";
+
+    [MenuItem("Tools/Bundles/Build and Push")]
+    public static void BuildAndPushAssetBundles()
+    {
+        CreateBundleNamesSetList();
+        BuildAllAssetBundles();
+        CopyBundlesToGitFolder();
+        PushBundles();
+    }
     
-    [MenuItem("Tools/Bundles/Build")]
-    public static void BuildAllAssetBundles()
+    private static void CreateBundleNamesSetList()
+    {
+        var bundleNamesSet = ResLoader.GetPrefabSet(AssetBundleManager.CommonBundleName);
+        
+        var allPrefabSets = Resources
+            .LoadAll<PrefabSetScriptableObject>(ResLoader.PrefabSetsLocalPath)
+            .Where(_Set => _Set.bundles && !_Set.name.Contains(AssetBundleManager.CommonBundleName));
+        var dict = allPrefabSets
+            .SelectMany(_Set => _Set.prefabs)
+            .ToDictionary(_Item => _Item.name, _Item => AssetDatabase.GetAssetPath(_Item.item).ToLower());
+        string dictSerialized = JsonConvert.SerializeObject(dict);
+        string path = "Assets/Prefabs/bundle_names.asset";
+        var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(path);
+        if (asset == null)
+        {
+            asset = new TextAsset(dictSerialized);
+            AssetDatabase.CreateAsset(asset, path);
+        }
+        else if (asset.text != dictSerialized)
+        {
+            File.WriteAllText(path, dictSerialized);
+            asset = AssetDatabase.LoadAssetAtPath<TextAsset>(path);
+        }
+        
+        var assetImporter = AssetImporter.GetAtPath(path);
+        assetImporter.SetAssetBundleNameAndVariant(AssetBundleManager.CommonBundleName, null);
+
+        var pref = bundleNamesSet.prefabs.FirstOrDefault(
+            _Item => _Item.name == AssetBundleManager.BundleNamesListName);
+        if (pref == null)
+        {
+            pref = new PrefabSetScriptableObject.Prefab
+            {
+                name = "bundle_names",
+                item = asset
+            };
+            bundleNamesSet.prefabs.Add(pref);
+        }
+        else if (pref.item == null)
+        {
+            pref.item = asset;
+        }
+
+        EditorUtility.SetDirty(asset);
+        EditorUtility.SetDirty(bundleNamesSet);
+        
+        AssetDatabase.Refresh();
+        AssetDatabase.SaveAssets();
+        Dbg.Log("Bundle names updated successfully!");
+    }
+
+    private static void BuildAllAssetBundles()
     {
         if (!Directory.Exists(BundlesPath))
             Directory.CreateDirectory(BundlesPath);
@@ -26,11 +89,9 @@ public static class BuildAssetBundles
             BundlesPath,
             BuildAssetBundleOptions.None,
             EditorUserBuildSettings.activeBuildTarget);
-        CopyBundlesToGitFolder();
     }
-
-    [MenuItem("Tools/Bundles/Push")]
-    public static void PushBundles()
+    
+    private static void PushBundles()
     {
         EditorUtility.ClearProgressBar();
         EditorUtility.DisplayProgressBar(ProgressBarTitle, "Staging in git...", 20f);

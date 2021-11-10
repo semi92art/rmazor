@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Controllers;
 using DI.Extensions;
 using Entities;
 using Exceptions;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
+using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
@@ -25,17 +27,16 @@ namespace Games.RazorMaze.Views.MazeItems
         #region constants
 
         private const float ShapeScale = 0.35f;
-        private const string SoundClipNameTrapMoving = "mace_roll";
 
         #endregion
         
         #region nonpubilc members
 
-        private bool m_Rotate;
-        private float m_RotationSpeed;
-        private Vector3 m_RotateDirection;
-        private Vector3 m_Angles;
-        private Vector2 m_Position;
+        private bool      m_Rotate;
+        private float     m_RotationSpeed;
+        private Vector3   m_RotateDirection;
+        private Vector3   m_Angles;
+        private Vector2   m_Position;
         private Transform m_MaceTr;
 
         #endregion
@@ -130,9 +131,7 @@ namespace Games.RazorMaze.Views.MazeItems
             m_RotateDirection = GetRotationDirection(dir);
             m_MaceTr.rotation = Quaternion.Euler(Vector3.zero);
             m_Rotate = true;
-            Managers.Notify(_SM => _SM.PlayClip(
-                SoundClipNameTrapMoving, true, 
-                _Tags: $"{_Args.Info.GetHashCode()}"));
+            Managers.AudioManager.PlayClip(GetAudioClipArgsTrapRotate(_Args.Info));
             if (!MazeShaker.ShakeMaze)
                 MazeShaker.ShakeMaze = true;
         }
@@ -150,8 +149,7 @@ namespace Games.RazorMaze.Views.MazeItems
             base.OnMoveFinished(_Args);
             SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(_Args.To));
             m_Rotate = false;
-            Managers.Notify(_SM => _SM.StopClip(
-                SoundClipNameTrapMoving, _Tags: $"{_Args.Info.GetHashCode()}"));
+            Managers.AudioManager.StopClip(GetAudioClipArgsTrapRotate(_Args.Info));
             if (MazeShaker.ShakeMaze)
                 MazeShaker.ShakeMaze = false;
         }
@@ -256,6 +254,11 @@ namespace Games.RazorMaze.Views.MazeItems
             }
             else if (_ColorId == ColorIds.Background)
                 m_InnerDisc.Color = _Color;
+        }
+
+        private AudioClipArgs GetAudioClipArgsTrapRotate(IMazeItemProceedInfo _Info)
+        {
+            return new AudioClipArgs("mace_roll", EAudioClipType.Sound, _Loop: true, _Id: _Info.GetHashCode().ToString());
         }
 
         #endregion
