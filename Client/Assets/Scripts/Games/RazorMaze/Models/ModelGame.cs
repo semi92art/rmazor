@@ -84,7 +84,6 @@ namespace Games.RazorMaze.Models
         public void Init()
         {
             LevelStaging.LevelStageChanged                 += OnLevelStageChanged;
-            LevelStaging.LevelStageChanged                 += MazeRotation.OnLevelStageChanged;
             MazeRotation.RotationFinishedInternal          += MazeOnRotationFinishedInternal;
             Character.CharacterMoveStarted                 += CharacterOnMoveStarted;
             Character.CharacterMoveContinued               += CharacterOnMoveContinued;

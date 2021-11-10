@@ -1,4 +1,5 @@
-﻿using Exceptions;
+﻿using System;
+using Exceptions;
 using Games.RazorMaze.Views;
 using Ticker;
 using UnityEngine.Events;
@@ -107,7 +108,7 @@ namespace Games.RazorMaze.Models
                     default, default, Data.Orientation, true);
                 RotationStarted?.Invoke(args);
             }
-            if (_Args.Stage == ELevelStage.ReadyToStart)
+            else if (_Args.Stage == ELevelStage.ReadyToStart)
             {
                 if (Data.Orientation == MazeOrientation.North)
                     return;

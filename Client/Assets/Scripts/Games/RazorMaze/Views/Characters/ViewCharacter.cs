@@ -116,11 +116,13 @@ namespace Games.RazorMaze.Views.Characters
                 }
                 
                 m_Activated = value;
-                m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = value;
-                Tail.Activated = value;
-                Effector.Activated = value;
-                if (value)
-                    m_Animator.SetTrigger(AnimKeyStartJumping);
+                m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = false;
+
+                if (!value)
+                {
+                    Tail.Activated = false;
+                    Effector.Activated = false;
+                }
             }
         }
 
@@ -208,7 +210,11 @@ namespace Games.RazorMaze.Views.Characters
 
         public override void Appear(bool _Appear)
         {
-            Tail.HideTail();
+            if (_Appear)
+            {
+                m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = true;
+                m_Animator.SetTrigger(AnimKeyStartJumping);
+            }
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
             if (_Appear)
                 m_Animator.SetTrigger(AnimKeyStartJumping);
@@ -220,8 +226,10 @@ namespace Games.RazorMaze.Views.Characters
                     {new Component[] {m_Eye1Shape, m_Eye2Shape}, () => ColorProvider.GetColor(ColorIds.Background)}
                 },
                 Model.Character.Position,
-                () => AppearingState = _Appear ?
-                    EAppearingState.Appeared : EAppearingState.Dissapeared);
+                () =>
+                {
+                    AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared;
+                });
         }
 
         #endregion
@@ -316,8 +324,9 @@ namespace Games.RazorMaze.Views.Characters
                 {
                     SetPosition(CoordinateConverter.ToLocalCharacterPosition(Model.Data.Info.Path.First()));
                     LookAtByOrientation(EMazeMoveDirection.Right, false);
-                    m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = true;
-                    m_Animator.SetTrigger(AnimKeyStartJumping);
+                    // FIXME это нужно отрефакторить будет
+                    // m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = true;
+                    // m_Animator.SetTrigger(AnimKeyStartJumping);
                     Tail.Activated = true;
                     Tail.HideTail();
                 }));

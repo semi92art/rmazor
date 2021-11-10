@@ -22,7 +22,6 @@ namespace Utils
         {
             for (uint i = 0; i < _NumOfFrames; i++)
                 yield return new WaitForEndOfFrame();
-
             _Action?.Invoke();
         }
 

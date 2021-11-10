@@ -102,7 +102,7 @@ namespace Games.RazorMaze.Views.MazeItems
             set
             {
                 m_ActivatedInSpawnPool = value;
-                EnableInitializedShapes(value);
+                EnableInitializedShapes(false);
             }
         }
         
@@ -371,6 +371,8 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             if (m_Shape.IsNotNull() && !Props.IsMoneyItem)   
                 m_Shape.enabled = _Enable;
+            if (m_MoneyItemRenderer.IsNotNull() && Props.IsMoneyItem)
+                m_MoneyItemRenderer.enabled = _Enable;
             
             if (m_LeftBorderInited)        m_LeftBorder.enabled        = _Enable;
             if (m_RightBorderInited)       m_RightBorder.enabled       = _Enable;

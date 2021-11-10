@@ -16,7 +16,7 @@ namespace Games.RazorMaze.Views.Rotation
         #region nonpublic members
 
         private Rigidbody2D m_Rb;
-        private bool m_EnableRotation;
+        private bool        m_EnableRotation;
 
         #endregion
         
@@ -63,14 +63,7 @@ namespace Games.RazorMaze.Views.Rotation
         public override void OnRotationStarted(MazeRotationEventArgs _Args)
         {
             if (_Args.Instantly)
-            {
-                GetRotationParams(_Args,
-                    out _,
-                    out float endAngle,
-                    out _,
-                    out _);
-                m_Rb.SetRotation(endAngle);
-            }
+                m_Rb.transform.eulerAngles = Vector3.zero;
             else
                 Coroutines.Run(RotationCoroutine(_Args));
         }

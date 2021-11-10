@@ -64,7 +64,10 @@ namespace Games.RazorMaze.Views.Characters
                 if (value)
                 {
                     if (!m_Initialized)
+                    {
                         InitPrefab();
+                        m_Initialized = true;
+                    }
                     UpdatePrefab();    
                 }
                 m_Activated = value;
@@ -77,7 +80,11 @@ namespace Games.RazorMaze.Views.Characters
             if (_Args.Stage == ELevelStage.CharacterKilled)
                 Coroutines.Run(DisappearCoroutine(true, Model.Character.Position));
             else if (_Args.Stage != ELevelStage.Finished)
+            {
+                if (!m_Initialized)
+                    Activated = true;
                 m_DeathShapes.ForEach(_Shape => _Shape.enabled = false);
+            }
         }
         
         public void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
@@ -122,8 +129,6 @@ namespace Games.RazorMaze.Views.Characters
                 _Shape.enabled = false;
             });
             m_DeathShapes.Shuffle();
-            
-            m_Initialized = true;
         }
 
         private void UpdatePrefab()

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Constants;
 using Controllers;
@@ -183,7 +184,7 @@ namespace Games.RazorMaze.Views.Common
                         },
                         () =>
                         {
-                            Model.LevelStaging.UnloadLevel();
+                            Input.RaiseCommand(InputCommands.UnloadLevel, null, true);
                         }));
                     break;
                 case ELevelStage.Unloaded:
