@@ -21,7 +21,7 @@ namespace Games.RazorMaze.Views.MazeItems
 {
     public interface IViewMazeItemPath : IViewMazeItem
     {
-        bool        Collected            { get; set; }
+        bool        Collected          { get; set; }
         UnityAction MoneyItemCollected { get; set; } 
     }
     
@@ -166,19 +166,23 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             if (Props.IsMoneyItem)
             {
-                m_MoneyItem = PrefabUtilsEx.InitPrefab(Object.transform, "views", "money_item");
-                m_MoneyItemRenderer = m_MoneyItem.GetCompItem<SpriteRenderer>("renderer");
-                m_MoneyItemRenderer.color = ColorProvider.GetColor(ColorIds.Path);
-                m_MoneyItem.transform.SetLocalPosXY(Vector2.zero);
-                m_MoneyItem.transform.localScale = Vector3.one * CoordinateConverter.Scale;
+                if (m_MoneyItemRenderer.IsNull())
+                {
+                    m_MoneyItem = PrefabUtilsEx.InitPrefab(Object.transform, "views", "money_item");
+                    m_MoneyItemRenderer = m_MoneyItem.GetCompItem<SpriteRenderer>("renderer");
+                    m_MoneyItemRenderer.color = ColorProvider.GetColor(ColorIds.Path);
+                    m_MoneyItem.transform.SetLocalPosXY(Vector2.zero);
+                    m_MoneyItem.transform.localScale = Vector3.one * CoordinateConverter.Scale;
+                }
+                m_MoneyItem.SetActive(true);
                 m_Shape.enabled = false;
             }
             else
             {
                 if (m_MoneyItem != null)
                 {
-                    m_MoneyItem.DestroySafe();
-                    m_MoneyItemRenderer = null;
+                    m_MoneyItem.SetActive(false);
+                    // m_MoneyItemRenderer = null;
                 }
             }
             m_Shape.Width = m_Shape.Height = CoordinateConverter.Scale * 0.4f;
