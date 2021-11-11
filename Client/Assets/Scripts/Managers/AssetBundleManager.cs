@@ -66,7 +66,7 @@ namespace Managers
                 Dbg.LogError("Bundles were not initialized");
             if (!_bundleNamesDict.ContainsKey(_AssetName))
             {
-                Dbg.LogError(@$"Bundle key ""{_AssetName}"" was not found in bundles names dictionary");
+                Dbg.LogError($"Bundle key \"{_AssetName}\" was not found in bundles names dictionary");
                 return null;
             }
             string bundleName = _bundleNamesDict[_AssetName];
@@ -76,7 +76,7 @@ namespace Managers
                     _Bundle => _Bundle.Asset);
             if (!dict.ContainsKey(bundleName))
             {
-                Dbg.LogError(@$"Bundle name ""{bundleName}"" was not found in bundles");
+                Dbg.LogError($"Bundle name \"{bundleName}\" was not found in bundles");
                 return null;
             }
             var result = dict[bundleName];

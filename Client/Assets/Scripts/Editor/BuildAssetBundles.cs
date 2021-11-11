@@ -21,13 +21,31 @@ public static class BuildAssetBundles
     private static string BundlesPath => $"Assets/AssetBundles/{GetOsBundleSubPath()}";
     private static string PushCommand => $"push https://{Token}@github.com/{UserName}/{RepositoryName}.git";
 
-    [MenuItem("Tools/Bundles/Build and Push")]
-    public static void BuildAndPushAssetBundles()
+    [MenuItem("Tools/Bundles/Build")]
+    public static void BuildBundles()
     {
         CreateBundleNamesSetList();
-        BuildAllAssetBundles();
+        BuildAllAssetBundles(BuildAssetBundleOptions.None);
+    }
+
+    [MenuItem("Tools/Bundles/Build forced")]
+    public static void BuildBundlesForced()
+    {
+        CreateBundleNamesSetList();
+        BuildAllAssetBundles(BuildAssetBundleOptions.ForceRebuildAssetBundle);
+    }
+    
+    [MenuItem("Tools/Bundles/Push")]
+    public static void PushBundlesToGit()
+    {
         CopyBundlesToGitFolder();
         PushBundles();
+    }
+
+    [MenuItem("Tools/Bundles/Clear Cache")]
+    public static void ClearBundlesCache()
+    {
+        Dbg.Log(Caching.ClearCache() ? "Successfully cleaned the cache" : "Cache is being used");
     }
     
     private static void CreateBundleNamesSetList()
@@ -81,13 +99,13 @@ public static class BuildAssetBundles
         Dbg.Log("Bundle names updated successfully!");
     }
 
-    private static void BuildAllAssetBundles()
+    private static void BuildAllAssetBundles(BuildAssetBundleOptions _Options)
     {
         if (!Directory.Exists(BundlesPath))
             Directory.CreateDirectory(BundlesPath);
         BuildPipeline.BuildAssetBundles(
             BundlesPath,
-            BuildAssetBundleOptions.None,
+            _Options,
             EditorUserBuildSettings.activeBuildTarget);
     }
     
