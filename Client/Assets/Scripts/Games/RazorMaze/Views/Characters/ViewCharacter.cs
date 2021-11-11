@@ -138,7 +138,7 @@ namespace Games.RazorMaze.Views.Characters
         {
             if (m_NeedToInvokeOnReadyToContinue)
             {
-                SetDefaultCharacterState();
+                SetDefaultCharacterState(false);
                 m_NeedToInvokeOnReadyToContinue = false;
             }
         }
@@ -188,12 +188,12 @@ namespace Games.RazorMaze.Views.Characters
             switch (_Args.Stage)
             {
                 case ELevelStage.Loaded:
-                    SetDefaultCharacterState();
+                    SetDefaultCharacterState(false);
                     Activated = true;
                     break;
                 case ELevelStage.ReadyToStart:
                     if (m_OrientationCache == MazeOrientation.North)
-                        SetDefaultCharacterState();
+                        SetDefaultCharacterState(true);
                     else
                         m_NeedToInvokeOnReadyToContinue = true;
                     break;
@@ -316,7 +316,7 @@ namespace Games.RazorMaze.Views.Characters
             m_Head.transform.localScale = scaleCoeff * new Vector3(horScale, vertScale, 1f);
         }
         
-        private void SetDefaultCharacterState()
+        private void SetDefaultCharacterState(bool _EnableHead)
         {
             Coroutines.Run(Coroutines.WaitWhile(
                 () => !m_Initialized,
@@ -325,8 +325,11 @@ namespace Games.RazorMaze.Views.Characters
                     SetPosition(CoordinateConverter.ToLocalCharacterPosition(Model.Data.Info.Path.First()));
                     LookAtByOrientation(EMazeMoveDirection.Right, false);
                     // FIXME это нужно отрефакторить будет
-                    // m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = true;
-                    // m_Animator.SetTrigger(AnimKeyStartJumping);
+                    if (_EnableHead)
+                    {
+                        m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = true;
+                    }
+                    m_Animator.SetTrigger(AnimKeyStartJumping);
                     Tail.Activated = true;
                     Tail.HideTail();
                 }));
