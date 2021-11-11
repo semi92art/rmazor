@@ -7,8 +7,10 @@ using Games.RazorMaze.Views.InputConfigurators;
 using UI;
 using UI.Factories;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Utils;
+using TouchPhase = UnityEngine.TouchPhase;
 
 namespace DebugConsole
 {
@@ -107,43 +109,42 @@ namespace DebugConsole
 
         private void Update()
         {
-            if (Input.GetKeyUp(KeyCode.Return))
+            if (Keyboard.current.enterKey.wasPressedThisFrame)
                 RunCommand();
-
             //Toggle visibility when tilde key pressed
-            if (Input.GetKeyUp("`"))
+            if (Keyboard.current.numpadDivideKey.wasPressedThisFrame)
                 ToggleVisibility();
 
             //Arrow up in history
-            if (Input.GetKeyUp(KeyCode.UpArrow))
+            if (Keyboard.current.upArrowKey.wasPressedThisFrame)
                 UpCommand();
-            if (Input.GetKeyUp(KeyCode.DownArrow))
+            if (Keyboard.current.downArrowKey.wasPressedThisFrame)
                 DownCommand();
 
             //Visibility on mouse swipe
-            if (Input.GetMouseButtonDown(0))
-                m_SwipeFirstPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-            else if (Input.GetMouseButtonUp(0))
+            if (Mouse.current.leftButton.wasPressedThisFrame)
+                m_SwipeFirstPosition = Mouse.current.position.ReadValue();
+            else if (Mouse.current.leftButton.wasReleasedThisFrame)
             {
-                m_SwipeLastPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+                m_SwipeLastPosition = Mouse.current.position.ReadValue();
                 if ((m_SwipeFirstPosition.x - m_SwipeLastPosition.x > m_SwipeDragDistance) && !m_IsVisible)
                     ToggleVisibility();
                 if ((m_SwipeLastPosition.x - m_SwipeFirstPosition.x > m_SwipeDragDistance) && m_IsVisible)
                     ToggleVisibility();
             }
-
-            if (Input.touches.Length > 0)
+            
+            if (Touchscreen.current != null && Touchscreen.current.touches.Count > 0)
             {
-                Touch t = Input.GetTouch(0);
- 
-                if (t.phase == TouchPhase.Began)
+                var t = Touchscreen.current.touches[0];
+                
+                if (t.press.wasPressedThisFrame)
                 {
-                    m_FirstPressPos = new Vector2(t.position.x, t.position.y);
+                    m_FirstPressPos = t.position.ReadValue();
                 }
  
-                if (t.phase == TouchPhase.Ended)
+                if (t.press.wasReleasedThisFrame)
                 {
-                    m_SecondPressPos = new Vector2(t.position.x, t.position.y);
+                    m_SecondPressPos = t.position.ReadValue();
                     m_CurrentSwipe = new Vector3(m_SecondPressPos.x - m_FirstPressPos.x, m_SecondPressPos.y - m_FirstPressPos.y);
  
                     // check istap

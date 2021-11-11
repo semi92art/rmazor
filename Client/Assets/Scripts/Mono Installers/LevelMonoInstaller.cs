@@ -128,7 +128,7 @@ namespace Mono_Installers
             
 
 #if UNITY_EDITOR
-            Container.Bind<IViewInput>().To<ViewInputInEditor>().AsSingle();
+            Container.Bind<IViewInput>().To<ViewInputInEditor2>().AsSingle();
 #else
             Container.Bind<IViewInput>().To<ViewInput>()        .AsSingle();
 #endif

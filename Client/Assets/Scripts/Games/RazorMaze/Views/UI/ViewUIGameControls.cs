@@ -218,8 +218,8 @@ namespace Games.RazorMaze.Views.UI
                 + Vector2.left * horOffset + Vector2.down * topOffset);
             m_ShopButton = goShopButton.GetCompItem<ButtonOnRaycast>("button");
             m_SettingsButton = goSettingsButton.GetCompItem<ButtonOnRaycast>("button");
-            m_ShopButton.OnClickEvent.AddListener(CommandShop);
-            m_SettingsButton.OnClickEvent.AddListener(CommandSettings);
+            m_ShopButton.Init(CommandShop, () => Model.LevelStaging.LevelStage, CameraProvider);
+            m_SettingsButton.Init(CommandSettings, () => Model.LevelStaging.LevelStage, CameraProvider);
             goShopButton.SetActive(false);
             goSettingsButton.SetActive(false);
         }
@@ -328,8 +328,8 @@ namespace Games.RazorMaze.Views.UI
                 + Vector2.right * horOffset + Vector2.up * bottomOffset);
             m_RotateClockwiseButton = goRCb.GetCompItem<ButtonOnRaycast>("button");
             m_RotateCounterClockwiseButton = goRCCb.GetCompItem<ButtonOnRaycast>("button");
-            m_RotateClockwiseButton.OnClickEvent.AddListener(CommandRotateClockwise);
-            m_RotateCounterClockwiseButton.OnClickEvent.AddListener(CommandRotateCounterClockwise);
+            m_RotateClockwiseButton.Init(CommandRotateClockwise, () => Model.LevelStaging.LevelStage, CameraProvider);
+            m_RotateCounterClockwiseButton.Init(CommandRotateClockwise, () => Model.LevelStaging.LevelStage, CameraProvider);
             m_RotatingButtonShapes.AddRange(new ShapeRenderer[]
             {
                 goRCb.GetCompItem<Disc>("outer_disc"), 

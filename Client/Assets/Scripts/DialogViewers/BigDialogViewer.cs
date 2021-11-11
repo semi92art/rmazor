@@ -13,6 +13,7 @@ using UI.Factories;
 using UI.Panels;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Utils;
 
@@ -146,7 +147,7 @@ namespace DialogViewers
         
         public virtual void UpdateTick()
         {
-            if (!ProposalDialogViewer.IsShowing && UnityEngine.Input.GetKeyDown(KeyCode.Escape))
+            if (!ProposalDialogViewer.IsShowing && Keyboard.current.escapeKey.wasPressedThisFrame)
                 CloseAll();
         }
         
