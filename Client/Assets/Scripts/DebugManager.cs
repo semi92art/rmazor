@@ -18,10 +18,6 @@ public class DebugManager : IDebugManager
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
     public DebugConsole.IDebugConsoleController Console => DebugConsole.DebugConsoleView.Instance.Controller;
 #endif
-    
-#if DEVELOPMENT_BUILD
-    private static UnityEngine.GameObject _debugReporter;
-#endif
 
     #endregion
 
@@ -42,7 +38,6 @@ public class DebugManager : IDebugManager
     public void Init()
     {
         InitDebugConsole();
-        InitDebugReporter();
         bool doEnable = SaveUtils.GetValue<bool>(SaveKey.DebugUtilsOn);
         EnableDebug(doEnable);
         Initialized?.Invoke();
@@ -52,9 +47,6 @@ public class DebugManager : IDebugManager
     {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         DebugConsole.DebugConsoleView.Instance.enabled = _Enable;
-#endif
-#if DEVELOPMENT_BUILD
-        _debugReporter.SetActive(_Enable);
 #endif
     }
     
@@ -66,16 +58,6 @@ public class DebugManager : IDebugManager
     {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         DebugConsole.DebugConsoleView.Instance.Init(CommandsProceeder);
-#endif
-    }
-    
-    private static void InitDebugReporter()
-    {
-#if DEVELOPMENT_BUILD
-        _debugReporter = GameHelpers.PrefabUtilsEx.InitPrefab(
-                null,
-                "debug_console",
-                "reporter");
 #endif
     }
 
