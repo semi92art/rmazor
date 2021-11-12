@@ -263,10 +263,16 @@ namespace Games.RazorMaze.Views.MazeItems
             var character = Model.Character;
             var cPos = character.IsMoving ? 
                 character.MovingInfo.PrecisePosition : character.Position.ToVector2();
-            if (m_DeathZone.All(_P =>
-                Vector2.Distance(_P, cPos) + RazorMazeUtils.Epsilon > distance)) 
-                return;
-            Model.LevelStaging.KillCharacter();
+            bool death = false;
+            for (int i = 0; i < m_DeathZone.Count; i++)
+            {
+                if (!(Vector2.Distance(m_DeathZone[i], cPos) + RazorMazeUtils.Epsilon < distance))
+                    continue;
+                death = true;
+                break;
+            }
+            if (death)
+                Model.LevelStaging.KillCharacter();
         }
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)

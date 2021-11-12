@@ -67,6 +67,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
             var goLeanTouch = new GameObject("Lean Touch");
             goLeanTouch.SetParent(GetContainer());
             var lt = goLeanTouch.AddComponent<LeanTouch>();
+            lt.useGUILayout = false;
             lt.TapThreshold = 0.5f;
             lt.SwipeThreshold = 50f;
             lt.ReferenceDpi = 200;

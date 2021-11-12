@@ -20,6 +20,7 @@ namespace Games.RazorMaze.Models.InputSchedulers
     {
         #region nonpublic members
 
+        private int m_UiCommandsCount;
         private readonly Queue<Tuple<EInputCommand, object[]>> m_UiCommands = new Queue<Tuple<EInputCommand, object[]>>();
 
         #endregion
@@ -74,6 +75,7 @@ namespace Games.RazorMaze.Models.InputSchedulers
                 case EInputCommand.ReadyToUnloadLevel:
                 case EInputCommand.LoadLevelByIndex:
                     m_UiCommands.Enqueue(new Tuple<EInputCommand, object[]>(_Command, _Args));
+                    m_UiCommandsCount++;
                     break;
             }
         }
@@ -89,9 +91,10 @@ namespace Games.RazorMaze.Models.InputSchedulers
 
         private void ScheduleUiCommands()
         {
-            if (!m_UiCommands.Any())
+            if (m_UiCommandsCount == 0)
                 return;
             var (key, args) = m_UiCommands.Dequeue();
+            m_UiCommandsCount--;
             UiCommand?.Invoke(key, args);
         }
         

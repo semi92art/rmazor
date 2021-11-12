@@ -67,7 +67,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         private void ProceedTraps(CharacterMovingEventArgs _Args)
         {
-            foreach (var info in GetProceedInfos(Types)
+            foreach (var info in ProceedInfos
                 .Where(_Info => _Info.IsProceeding && _Info.ReadyToSwitchStage))
             {
                 var trapReactFinalPoint = (info.CurrentPosition + info.Direction).ToVector2();

@@ -55,7 +55,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
-            var possiblePortals = (from info in GetProceedInfos(Types)
+            var possiblePortals = (from info in ProceedInfos
                     where PathContainsItem(_Args.From, _Args.To, info.CurrentPosition) 
                           && RazorMazeUtils.CompareItemsOnPath(
                         _Args.From, _Args.To, _Args.Position, info.CurrentPosition) >= 0

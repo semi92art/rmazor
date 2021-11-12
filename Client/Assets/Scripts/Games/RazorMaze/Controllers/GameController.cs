@@ -1,5 +1,6 @@
 ﻿using Games.RazorMaze.Models;
 using Games.RazorMaze.Views;
+using Ticker;
 using UnityEngine;
 using UnityEngine.Events;
 using Utils;

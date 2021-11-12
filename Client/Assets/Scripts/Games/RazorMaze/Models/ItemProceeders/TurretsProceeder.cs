@@ -85,9 +85,13 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         private void ProceedTurrets()
         {
-            var infos = GetProceedInfos(Types);
-            foreach (var info in infos.Where(_Info => _Info.IsProceeding && _Info.ReadyToSwitchStage))
+            for (int i = 0; i < ProceedInfos.Length; i++)
             {
+                var info = ProceedInfos[i];
+                if (!info.IsProceeding)
+                    continue;
+                if (!info.ReadyToSwitchStage)
+                    continue;
                 info.ReadyToSwitchStage = false;
                 ProceedCoroutine(info, ProceedTurretCoroutine(info));
             }

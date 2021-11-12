@@ -12,8 +12,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
 {
     public interface IItemsProceeder : IOnLevelStageChanged
     {
-        Dictionary<EMazeItemType, List<IMazeItemProceedInfo>> ProceedInfos { get; }
-        EMazeItemType[] Types { get; }
+        IMazeItemProceedInfo[] ProceedInfos { get; }
+        EMazeItemType[]        Types        { get; }
     }
 
     public abstract class ItemsProceederBase : IItemsProceeder
@@ -60,9 +60,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
         #region api
         
         public abstract EMazeItemType[] Types { get; }
-        public Dictionary<EMazeItemType, List<IMazeItemProceedInfo>> ProceedInfos { get; } =
-            new Dictionary<EMazeItemType, List<IMazeItemProceedInfo>>();
-        
+        public IMazeItemProceedInfo[] ProceedInfos { get; private set; } = new IMazeItemProceedInfo[0];
+
         public virtual void OnLevelStageChanged(LevelStageArgs _Args)
         {
             switch (_Args.Stage)
@@ -104,9 +103,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         private void CollectItems(MazeInfo _Info)
         {
-            ProceedInfos.Clear();
-            foreach (var type in Types)
-                ProceedInfos.Add(type, new List<IMazeItemProceedInfo>());
+            var infos = new List<IMazeItemProceedInfo>();
 
             var newInfos = _Info.MazeItems
                 .Where(_Item => Types.Contains(_Item.Type))
@@ -128,22 +125,15 @@ namespace Games.RazorMaze.Models.ItemProceeders
             foreach (var newInfo in newInfos)
             {
                 m_CoroutinesDict.Add(newInfo, new Queue<IEnumerator>());
-                var list = ProceedInfos[newInfo.Type];
-                if (!list.Contains(newInfo))
-                    list.Add(newInfo);
+                if (!infos.Contains(newInfo))
+                    infos.Add(newInfo);
             }
-        }
-
-        protected IEnumerable<IMazeItemProceedInfo> GetProceedInfos(IEnumerable<EMazeItemType> _Types)
-        {
-            return _Types.SelectMany(_Type => 
-                ProceedInfos.ContainsKey(_Type) ? ProceedInfos[_Type] : new List<IMazeItemProceedInfo>());
+            ProceedInfos = infos.ToArray();
         }
         
         private void StartProceed(bool? _ProceedKillerInfoIfTrue = null)
         {
-            var infos = GetProceedInfos(Types);
-            foreach (var info in infos)
+            foreach (var info in ProceedInfos)
             {
                 info.IsProceeding = true;
                 info.ReadyToSwitchStage = true;
@@ -161,19 +151,19 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         private void ContinueProceed()
         {
-            foreach (var info in GetProceedInfos(Types))
+            foreach (var info in ProceedInfos)
                 info.IsProceeding = true;
         }
 
         private void PauseProceed()
         {
-            foreach (var info in GetProceedInfos(Types))
+            foreach (var info in ProceedInfos)
                 info.IsProceeding = false;
         }
 
         private void FinishProceed(bool _DropInfo)
         {
-            var infos = GetProceedInfos(Types);
+            var infos = ProceedInfos;
             foreach (var info in infos)
             {
                 info.IsProceeding = false;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Linq;
 using Games.RazorMaze.Models.ProceedInfos;
 using Ticker;
 using Utils;
@@ -66,14 +65,13 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         private void ProceedTraps()
         {
-            foreach (var info in GetProceedInfos(Types)
-                .Where(_Info => _Info.IsProceeding))
+            for (int i = 0; i < ProceedInfos.Length; i++)
             {
-                if (info.ReadyToSwitchStage)
-                {
-                    info.ReadyToSwitchStage = false;
-                    ProceedCoroutine(info, ProceedTrap(info));
-                }
+                var info = ProceedInfos[i];
+                if (!info.ReadyToSwitchStage || !info.IsProceeding)
+                    continue;
+                info.ReadyToSwitchStage = false;
+                ProceedCoroutine(info, ProceedTrap(info));
             }
         }
         

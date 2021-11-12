@@ -55,9 +55,11 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         private void ProceedTrapsMoving()
         {
-            var infos = GetProceedInfos(Types);
-            foreach (var info in infos.Where(_Info => _Info.IsProceeding))
+            for (int i = 0; i < ProceedInfos.Length; i++)
             {
+                var info = ProceedInfos[i];
+                if (!info.IsProceeding)
+                    continue;
                 if (info.ProceedingStage != StageIdle)
                     continue;
                 CheckForCharacterDeath(info, info.CurrentPosition.ToVector2());

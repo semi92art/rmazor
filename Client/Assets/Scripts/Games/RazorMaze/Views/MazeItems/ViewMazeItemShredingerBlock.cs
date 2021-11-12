@@ -266,8 +266,8 @@ namespace Games.RazorMaze.Views.MazeItems
         private void ProceedOpenedBlockState()
         {
             m_LineOffset += Time.deltaTime * ViewSettings.ShredingerLineOffsetSpeed;
-            foreach (var line in m_OpenedLines)
-                line.DashOffset = m_LineOffset;
+            for (int i = 0; i < m_OpenedLines.Count; i++)
+                m_OpenedLines[i].DashOffset = m_LineOffset;
         }
         
         private void CloseBlock()

@@ -64,9 +64,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
         {
-            var infos = GetProceedInfos(Types);
             var path = RazorMazeUtils.GetFullPath(_Args.From, _Args.To);
-            foreach (var info in infos.Where(_Info => _Info.IsProceeding))
+            foreach (var info in ProceedInfos.Where(_Info => _Info.IsProceeding))
             {
                 if (path.Contains(info.CurrentPosition)
                     && info.CurrentPosition != _Args.To

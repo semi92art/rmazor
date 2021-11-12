@@ -103,8 +103,7 @@ namespace Games.RazorMaze.Models
         {
             var itemProceeders = GetInterfaceOfProceeders<IItemsProceeder>(GetProceeders());
             var result = itemProceeders
-                .SelectMany(_P => _P.ProceedInfos.Values
-                    .SelectMany(_V => _V));
+                .SelectMany(_P => _P.ProceedInfos);
             return result;
         }
         

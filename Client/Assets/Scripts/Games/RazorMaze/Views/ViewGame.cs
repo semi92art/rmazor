@@ -42,6 +42,7 @@ namespace Games.RazorMaze.Views
         private IMazeCoordinateConverter CoordinateConverter { get; }
         private IDebugManager            DebugManager        { get; }
         private IColorProvider           ColorProvider       { get; }
+        private ICameraProvider          CameraProvider      { get; }
 
         public ViewGame(
             IContainersGetter _ContainersGetter,
@@ -66,11 +67,13 @@ namespace Games.RazorMaze.Views
             IManagersGetter _Managers, 
             IMazeCoordinateConverter _CoordinateConverter,
             IDebugManager _DebugManager,
-            IColorProvider _ColorProvider)
+            IColorProvider _ColorProvider,
+            ICameraProvider _CameraProvider)
         {
             ContainersGetter = _ContainersGetter;
             UI = _UI;
             InputController = _InputController;
+            LevelStageController = _LevelStageController;
             CommandsProceeder = _CommandsProceeder;
             Character = _Character;
             Common = _Common;
@@ -90,7 +93,7 @@ namespace Games.RazorMaze.Views
             CoordinateConverter = _CoordinateConverter;
             DebugManager = _DebugManager;
             ColorProvider = _ColorProvider;
-            LevelStageController = _LevelStageController;
+            CameraProvider = _CameraProvider;
         }
         
         #endregion
@@ -165,6 +168,7 @@ namespace Games.RazorMaze.Views
                     ShredingerBlocksGroup,
                     SpringboardItemsGroup,
                     GravityItemsGroup,
+                    CameraProvider
                 }.Where(_Proceeder => _Proceeder != null)
                 .ToList();
             return result;

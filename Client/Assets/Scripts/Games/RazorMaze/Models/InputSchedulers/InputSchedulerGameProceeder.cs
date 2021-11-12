@@ -24,7 +24,7 @@ namespace Games.RazorMaze.Models.InputSchedulers
         #endregion
         
         #region nonpublic members
-
+        
         private readonly Queue<EInputCommand> m_MoveCommands   = new Queue<EInputCommand>();
         private readonly Queue<EInputCommand> m_RotateCommands = new Queue<EInputCommand>();
         
@@ -102,7 +102,7 @@ namespace Games.RazorMaze.Models.InputSchedulers
 
         private void ScheduleMovementCommands()
         {
-            if (m_MovementLocked || !m_MoveCommands.Any())
+            if (m_MovementLocked || m_MoveCommandsCount == 0)
                 return;
             var cmd = m_MoveCommands.Dequeue();
             m_MoveCommandsCount--;
@@ -112,7 +112,7 @@ namespace Games.RazorMaze.Models.InputSchedulers
 
         private void ScheduleRotationCommands()
         {
-            if (m_RotationLocked || !m_RotateCommands.Any())
+            if (m_RotationLocked || m_RotateCommandsCount == 0)
                 return;
             var cmd = m_RotateCommands.Dequeue();
             m_RotateCommandsCount--;

@@ -263,10 +263,10 @@ namespace Games.RazorMaze.Views.Common
         
         private void ProceedBackgroundIdleItems()
         {
-            int k = 0;
-            foreach (var shape in m_BackIdleItemsPool)
+            for (int i = 0; i < m_BackIdleItemsPool.Count; i++)
             {
-                var speed = m_BackIdleItemSpeeds[k++] * Time.deltaTime;
+                var shape = m_BackIdleItemsPool[i];                
+                var speed = m_BackIdleItemSpeeds[i] * Time.deltaTime;
                 shape.transform.PlusPosXY(speed.x, speed.y);
                 if (IsInsideOfScreenBounds(shape.transform.position.XY(), new Vector2(1f, 1f)))
                     continue;

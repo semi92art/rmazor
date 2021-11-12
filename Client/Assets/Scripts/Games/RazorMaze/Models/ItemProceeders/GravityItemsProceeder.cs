@@ -15,15 +15,17 @@ namespace Games.RazorMaze.Models.ItemProceeders
         void OnMazeOrientationChanged();
     }
     
-    public class GravityItemsProceeder : MovingItemsProceederBase, IGravityItemsProceeder, IGetAllProceedInfos
+    public class GravityItemsProceeder : 
+        MovingItemsProceederBase, 
+        IGravityItemsProceeder, 
+        IGetAllProceedInfos
     {
         #region constants
 
         public const int StageDrop = 1;
         
         #endregion
-
-
+        
         #region inject
         
         private IPathItemsProceeder PathItemsProceeder { get; }
@@ -77,7 +79,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         private void MoveMazeItemsGravity(MazeOrientation _Orientation, V2Int _CharacterPoint)
         {
             var dropDirection = RazorMazeUtils.GetDropDirection(_Orientation);
-            var infos = GetProceedInfos(Types).Where(_Info => _Info.IsProceeding).ToList();
+            var infos = ProceedInfos.Where(_Info => _Info.IsProceeding).ToList();
             var infosMovedDict = infos.ToDictionary(_Info => _Info, _Info => false);
             TryMoveMazeItemsGravityCore(dropDirection, _CharacterPoint, infosMovedDict);
         }

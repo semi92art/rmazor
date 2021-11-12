@@ -52,7 +52,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
-            var info = (from inf in GetProceedInfos(Types)
+            var info = (from inf in ProceedInfos
                     where inf.CurrentPosition == _Args.Position select inf)
                 .FirstOrDefault();
 

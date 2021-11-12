@@ -22,7 +22,7 @@ namespace DialogViewers
         void Show(IDialogPanel _Item);
     }
     
-    public class ProposalDialogViewer : IProposalDialogViewer, IUpdateTick
+    public class ProposalDialogViewer : IProposalDialogViewer
     {
         #region nonpublic members
         
@@ -46,7 +46,6 @@ namespace DialogViewers
         {
             ViewSettings = _ViewSettings;
             Ticker = _Ticker;
-            _Ticker.Register(this);
         }
 
         #endregion
@@ -110,12 +109,7 @@ namespace DialogViewers
                 }));
             IsShowing = false;
         }
-        
-        public void UpdateTick()
-        {
 
-        }
-        
         #endregion
     }
 
