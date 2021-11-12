@@ -154,7 +154,8 @@ namespace Mono_Installers
             Container.Bind<IColorProvider>()    .FromComponentInNewPrefab(colorProvider) .AsSingle();
             Container.Bind<IDebugManager>()     .To<DebugManager>()                      .AsSingle();
             Container.Bind<ILoadingController>().To<LoadingController>()                 .AsSingle().When(_ => Release);
-            
+            Container.Bind<IVibrationManager>() .To<VibrationManager>()                  .AsSingle();
+
             #endregion
         }
     }

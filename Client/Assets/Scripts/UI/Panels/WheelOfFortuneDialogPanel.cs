@@ -136,8 +136,9 @@ namespace UI.Panels
             }
             else
             {
-                Managers.AnalyticsManager.SendAnalytic(NotifyMessageWatchAdButtonClick);
-                Managers.Notify(_OnAdsManager: _AM => _AM.ShowRewardedAd(WatchAdFinishAction));
+                Managers.Notify(
+                    _OnAdsManager: _AM => _AM.ShowRewardedAd(WatchAdFinishAction),
+                    _OnAnalyticsManager: _AM => _AM.SendAnalytic(NotifyMessageWatchAdButtonClick));
             }
         }
 

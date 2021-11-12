@@ -98,11 +98,11 @@ namespace UI.Panels
                     || dbProps.Day == dailyBonusDay && IsDailyBonusGotToday())
                     dbProps.IsTomorrow = true;
                 var dbItemClone = dbItem.Clone();
-                DailyBonusItem dbi = dbItemClone.GetComponent<DailyBonusItem>();
+                var dbi = dbItemClone.GetComponent<DailyBonusItem>();
 
                 dbProps.Click = () =>
                 {
-                    Managers.Notify(_SM => _SM.PlayClip(CommonAudioClipArgs.UiButtonClick));
+                    Managers.AudioManager.PlayClip(CommonAudioClipArgs.UiButtonClick);
                     DialogViewer.CloseAll();
                 };
                 

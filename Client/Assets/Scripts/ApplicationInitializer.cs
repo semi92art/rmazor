@@ -44,6 +44,7 @@ public class ApplicationInitializer : MonoBehaviour
     
     private void Start()
     {
+        Application.targetFrameRate = 120;
         SceneManager.sceneLoaded += OnSceneLoaded;
         DataFieldsMigrator.InitDefaultDataFieldValues();
         InitGameManagers();

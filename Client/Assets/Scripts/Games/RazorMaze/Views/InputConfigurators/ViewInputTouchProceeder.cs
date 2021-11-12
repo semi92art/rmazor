@@ -104,7 +104,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
         private void OnSwipeForMove(Vector2 _Delta)
         {
             const float angThreshold = 30f * Mathf.Deg2Rad;
-            const float distThreshold = 0.1f;
+            const float distThreshold = 0.01f;
             EInputCommand? key = null;
             float absDx = Mathf.Abs(_Delta.x);
             float absDy = Mathf.Abs(_Delta.y);

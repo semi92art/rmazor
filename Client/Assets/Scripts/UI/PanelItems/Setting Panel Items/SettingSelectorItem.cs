@@ -54,7 +54,7 @@ namespace UI.PanelItems.Setting_Panel_Items
         {
             if (!m_IsInitialized) 
                 return;
-            Managers.Notify(_SM => _SM.PlayClip(CommonAudioClipArgs.UiButtonClick));
+            Managers.AudioManager.PlayClip(CommonAudioClipArgs.UiButtonClick);
             m_OnSelect?.Invoke(title.text);
 
             foreach (var item in m_Items.ToArray())

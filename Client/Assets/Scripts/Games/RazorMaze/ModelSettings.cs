@@ -20,19 +20,88 @@ namespace Games.RazorMaze
         [SerializeField] private float turretProjectileSpeed;
         [SerializeField] private float shredingerBlockProceedTime;
 
-        public float CharacterSpeed => characterSpeed;
-        public float MovingItemsSpeed => movingItemsSpeed;
-        public float GravityBlockSpeed => gravityBlockSpeed;
-        public float GravityTrapSpeed => gravityTrapSpeed;
-        public float MovingItemsPause => movingItemsPause;
-        public float TrapPreReactTime => trapPreReactTime;
-        public float TrapReactTime => trapReactTime;
-        public float TrapAfterReactTime => trapAfterReactTime;
-        public float TrapIncreasingIdleTime => trapIncreasingIdleTime;
-        public float TrapIncreasingIncreasedTime => trapIncreasingIncreasedTime;
-        public float TurretPreShootInterval => turretPreShootInterval;
-        public float TurretShootInterval => turretShootInterval;
-        public float TurretProjectileSpeed => turretProjectileSpeed;
-        public float ShredingerBlockProceedTime => shredingerBlockProceedTime;
+        public float CharacterSpeed
+        {
+            get => characterSpeed;
+            set => characterSpeed = value;
+        }
+
+        public float MovingItemsSpeed
+        {
+            get => movingItemsSpeed;
+            set => movingItemsSpeed = value;
+        }
+
+        public float GravityBlockSpeed
+        {
+            get => gravityBlockSpeed;
+            set => gravityBlockSpeed = value;
+        }
+
+        public float GravityTrapSpeed
+        {
+            get => gravityTrapSpeed;
+            set => gravityTrapSpeed = value;
+        }
+
+        public float MovingItemsPause
+        {
+            get => movingItemsPause;
+            set => movingItemsPause = value;
+        }
+
+        public float TrapPreReactTime
+        {
+            get => trapPreReactTime;
+            set => trapPreReactTime = value;
+        }
+
+        public float TrapReactTime
+        {
+            get => trapReactTime;
+            set => trapReactTime = value;
+        }
+
+        public float TrapAfterReactTime
+        {
+            get => trapAfterReactTime;
+            set => trapAfterReactTime = value;
+        }
+
+        public float TrapIncreasingIdleTime
+        {
+            get => trapIncreasingIdleTime;
+            set => trapIncreasingIdleTime = value;
+        }
+
+        public float TrapIncreasingIncreasedTime
+        {
+            get => trapIncreasingIncreasedTime;
+            set => trapIncreasingIncreasedTime = value;
+        }
+
+        public float TurretPreShootInterval
+        {
+            get => turretPreShootInterval;
+            set => turretPreShootInterval = value;
+        }
+
+        public float TurretShootInterval
+        {
+            get => turretShootInterval;
+            set => turretShootInterval = value;
+        }
+
+        public float TurretProjectileSpeed
+        {
+            get => turretProjectileSpeed;
+            set => turretProjectileSpeed = value;
+        }
+
+        public float ShredingerBlockProceedTime
+        {
+            get => shredingerBlockProceedTime;
+            set => shredingerBlockProceedTime = value;
+        }
     }
 }

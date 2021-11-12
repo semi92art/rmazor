@@ -114,7 +114,7 @@ namespace UI.Panels.ShopPanels
                         Pivot = Vector2.one * 0.5f,
                         SizeDelta = new Vector2(306f, 66f)
                     }),
-                PrefabSetName, "money_panel");
+                "ui_game", "money_mini_panel");
             m_MoneyText = obj.GetCompItem<TextMeshProUGUI>("money");
             var moneyEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money);
             Coroutines.Run(Coroutines.WaitWhile(

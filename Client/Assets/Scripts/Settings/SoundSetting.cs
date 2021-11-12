@@ -24,7 +24,7 @@ namespace Settings
 
         public override void Put(bool _VolumeOn)
         {
-            Managers.Notify(_SM => _SM.EnableAudio(_VolumeOn, EAudioClipType.Sound));
+            Managers.AudioManager.EnableAudio(_VolumeOn, EAudioClipType.Sound);
             base.Put(_VolumeOn);
         }
     }

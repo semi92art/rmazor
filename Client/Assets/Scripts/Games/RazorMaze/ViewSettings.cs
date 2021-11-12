@@ -20,19 +20,88 @@ namespace Games.RazorMaze
         [SerializeField] private float   proposalDialogAnimSpeed;
         [SerializeField] private Vector4 screenOffsets;
 
-        public float   LineWidth                  => lineWidth * 0.01f;
-        public float   CornerWidth                => cornerWidth * 0.01f;
-        public float   CornerRadius               => cornerRadius * 0.01f;
-        public float   MovingTrapRotationSpeed    => -movingTrapRotationSpeed;
-        public float   ShredingerLineOffsetSpeed  => shredingerLineOffsetSpeed * 0.01f;
-        public float   TurretBulletRotationSpeed  => turretBulletRotationSpeed * -10f;
-        public int     BlockItemsCount            => blockItemsCount;
-        public int     PathItemsCount             => pathItemsCount;
-        public bool    StartPathItemFilledOnStart => startPathItemFilledOnStart;
-        public float   MazeRotationSpeed          => mazeRotationSpeed;
-        public float   FinishTimeExcellent        => finishTimeExcellent * 0.1f;
-        public float   FinishTimeGood             => finishTimeGood * 0.1f;
-        public float   ProposalDialogAnimSpeed    => proposalDialogAnimSpeed;
-        public Vector4 ScreenOffsets              => screenOffsets;
+        public float   LineWidth
+        {
+            get => lineWidth * 0.01f;
+            set => lineWidth = value / 0.01f;
+        }
+
+        public float   CornerWidth
+        {
+            get => cornerWidth * 0.01f;
+            set => cornerWidth = value / 0.01f;
+        }
+
+        public float   CornerRadius
+        {
+            get => cornerRadius * 0.01f;
+            set => cornerRadius = value / 0.01f;
+        }
+
+        public float   MovingTrapRotationSpeed
+        {
+            get => -movingTrapRotationSpeed;
+            set => movingTrapRotationSpeed = -value;
+        }
+
+        public float   ShredingerLineOffsetSpeed
+        {
+            get => shredingerLineOffsetSpeed * 0.01f;
+            set => shredingerLineOffsetSpeed = value / 0.01f;
+        }
+
+        public float   TurretBulletRotationSpeed
+        {
+            get => turretBulletRotationSpeed * -10f;
+            set => turretBulletRotationSpeed = value / -10f;
+        }
+
+        public int     BlockItemsCount
+        {
+            get => blockItemsCount;
+            set => blockItemsCount = value;
+        }
+
+        public int     PathItemsCount
+        {
+            get => pathItemsCount;
+            set => pathItemsCount = value;
+        }
+
+        public bool    StartPathItemFilledOnStart
+        {
+            get => startPathItemFilledOnStart;
+            set => startPathItemFilledOnStart = value;
+        }
+
+        public float   MazeRotationSpeed
+        {
+            get => mazeRotationSpeed;
+            set => mazeRotationSpeed = value;
+        }
+
+        public float   FinishTimeExcellent
+        {
+            get => finishTimeExcellent * 0.1f;
+            set => finishTimeExcellent = value / 0.1f;
+        }
+
+        public float   FinishTimeGood
+        {
+            get => finishTimeGood * 0.1f;
+            set => finishTimeGood = value / 0.1f;
+        }
+
+        public float   ProposalDialogAnimSpeed
+        {
+            get => proposalDialogAnimSpeed;
+            set => proposalDialogAnimSpeed = value;
+        }
+
+        public Vector4 ScreenOffsets
+        {
+            get => screenOffsets;
+            set => screenOffsets = value;
+        }
     }
 }

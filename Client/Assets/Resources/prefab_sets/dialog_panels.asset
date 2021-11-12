@@ -18,7 +18,7 @@ MonoBehaviour:
     - item: {fileID: 5978263261467836251, guid: 7e45bf9e0822bbf47b4b8f6edc54dc26,
         type: 3}
       name: daily_bonus_panel
-    - item: {fileID: 8219298684319459333, guid: eede4cca5bdbb6c45b2af9c30986f819,
+    - item: {fileID: 8219298684319459333, guid: 73337473a73836f44b3e012213015ba9,
         type: 3}
       name: shop_panel
     - item: {fileID: 432638780763177933, guid: 9e00b2062e325984c8c051e07412d92a, type: 3}

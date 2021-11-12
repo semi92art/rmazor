@@ -49,7 +49,7 @@ public class ButtonOnRaycast : MonoBehaviour
         int touchCount = LeanInput.GetTouchCount();
         if (touchCount == 0)
             return false;
-        CommonUtils.GetTouch(0, out _, out _, out _, out bool began, out _);
+        Utils.CommonUtils.GetTouch(0, out _, out _, out _, out bool began, out _);
         return began;
 #endif
     }

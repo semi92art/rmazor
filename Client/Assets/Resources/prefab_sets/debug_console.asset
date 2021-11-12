@@ -12,11 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1600272214c7aa418cb76f5cc38aecb, type: 3}
   m_Name: debug_console
   m_EditorClassIdentifier: 
+  bundles: 0
   prefabs:
     array:
     - item: {fileID: 6739011661087431237, guid: 302b725af59c27942abb2cc52411cb24,
         type: 3}
       name: console
-    - item: {fileID: 8945480434963055887, guid: a857730524c9ebc4ab26e948698a179a,
-        type: 3}
-      name: reporter
