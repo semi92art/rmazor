@@ -74,7 +74,7 @@ public class EditorBuilder : EditorWindow
             BuildAssetBundles.BuildBundles();
         
         var bpo = new BuildPlayerOptions();
-        bpo.scenes = new[] {SceneNames.Preload, SceneNames.Main, SceneNames.Level}
+        bpo.scenes = new[] {SceneNames.Preload, SceneNames.Level}
             .Select(_Name => $"Assets/Scenes/{_Name}.unity").ToArray();
         
         string folder = $"Builds/{m_PlatformNames[m_PlatformIdx]}";

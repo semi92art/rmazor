@@ -88,8 +88,8 @@ namespace Games.RazorMaze.Views.InputConfigurators
         {
             var goLeanFingerFlick = new GameObject("Lean Finger Flick");
             goLeanFingerFlick.SetParent(GetContainer());
-            var lfs = goLeanFingerFlick.AddComponent<LeanFingerSwipe>();
-            lfs.OnDelta.AddListener(OnSwipeForMove);
+            var lff = goLeanFingerFlick.AddComponent<LeanFingerFlick>();
+            lff.OnDelta.AddListener(OnSwipeForMove);
         }
 
         private void InitLeanTouchForTapToNext()
@@ -104,7 +104,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
         private void OnSwipeForMove(Vector2 _Delta)
         {
             const float angThreshold = 30f * Mathf.Deg2Rad;
-            const float distThreshold = 0.01f;
+            const float distThreshold = 0f;
             EInputCommand? key = null;
             float absDx = Mathf.Abs(_Delta.x);
             float absDy = Mathf.Abs(_Delta.y);

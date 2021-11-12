@@ -12,7 +12,6 @@ namespace Utils.Editor
             EditorBuildSettings.scenes = new[]
             {
                 new EditorBuildSettingsScene($"Assets/Scenes/{SceneNames.Preload}.unity", true),
-                new EditorBuildSettingsScene($"Assets/Scenes/{SceneNames.Main}.unity", true),
                 new EditorBuildSettingsScene($"Assets/Scenes/{SceneNames.Level}.unity", true)
             };
         }

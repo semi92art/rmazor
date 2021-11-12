@@ -1,6 +1,7 @@
 ﻿using Exceptions;
 using UnityEngine;
 using Lofelt.NiceVibrations;
+using Utils;
 
 namespace Controllers
 {
@@ -31,15 +32,16 @@ namespace Controllers
     {
         public void PlayPreset(EVibrationPreset _Preset)
         {
-            // if (!IsHapticSupported())
-            //     Handheld.Vibrate();
-            // else
-            // {
+            if (!IsHapticSupported())
+                Dbg.LogWarning("Haptic is not supported!!!");
+            else
+            {
                 HapticPatterns.PresetType? presetType = null;
                 switch (_Preset)
                 {
                     case EVibrationPreset.CharacterMove:
-                        Play(EVibrationPower.Low,  0.01f);
+                        presetType = HapticPatterns.PresetType.LightImpact;
+                        // Play(EVibrationPower.Low,  0.01f);
                         break;
                     case EVibrationPreset.CharacterDeath:
                         presetType = HapticPatterns.PresetType.Failure;
@@ -56,7 +58,7 @@ namespace Controllers
                 }
                 if (presetType.HasValue)
                     HapticPatterns.PlayPreset(presetType.Value);
-            // }
+            }
         }
 
         public void Play(EVibrationPower _Power, float? _Seconds = null)

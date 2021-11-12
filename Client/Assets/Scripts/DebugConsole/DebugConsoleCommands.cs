@@ -85,9 +85,6 @@ namespace DebugConsole
                         case "preload":
                             SceneManager.LoadScene(SceneNames.Preload);
                             break;
-                        case "menu":
-                            SceneManager.LoadScene(SceneNames.Main);
-                            break;
                         case "level":
                             SceneManager.LoadScene(SceneNames.Level);
                             break;

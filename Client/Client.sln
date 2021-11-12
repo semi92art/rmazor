@@ -3,11 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{12F44184-A422-5F27-22E6-507969043F15}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StompyRobot.SRDebugger", "StompyRobot.SRDebugger.csproj", "{ED8FF9FB-4FBC-1B72-EB29-3A3E15ACDD8E}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject", "Zenject.csproj", "{0898FB1C-79D9-7D34-FC5A-21903B2631DA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject-IntegrationTests", "Zenject-IntegrationTests.csproj", "{E0E0649D-BFD2-8602-DBB0-B6F7DE77B242}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeanTouchPlus", "LeanTouchPlus.csproj", "{D8EED591-AF60-38C3-3B96-F841E164AD5A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StompyRobot.SRF", "StompyRobot.SRF.csproj", "{879BC5DB-943B-85D7-128C-D2A350190458}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapesRuntime", "ShapesRuntime.csproj", "{1111FC99-634B-6458-F1E8-50EA98AFE3EB}"
 EndProject
@@ -33,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Malee.ReorderableList", "Ma
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject-PoolMonitor-Editor", "Zenject-PoolMonitor-Editor.csproj", "{8AB4B263-B378-A08D-B943-C308151A6EF3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StompyRobot.SRDebugger.Editor", "StompyRobot.SRDebugger.Editor.csproj", "{510F9C97-58F2-6423-DE8C-5D0E12A1900F}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject-UnitTests-Editor", "Zenject-UnitTests-Editor.csproj", "{C63E1E6E-8CE1-4F55-5DA4-49773C4445A0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{5544F79C-5306-909F-C855-53D6959D5DFD}"
@@ -53,6 +59,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleMobileAds.Editor", "G
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lofelt.NiceVibrations.Editor", "Lofelt.NiceVibrations.Editor.csproj", "{B8203AE2-C8BD-A83B-140B-6724D85F8207}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StompyRobot.SRF.Editor", "StompyRobot.SRF.Editor.csproj", "{59221EE5-7A81-DFA9-F478-B84E8F19BAFD}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor-firstpass", "Assembly-CSharp-Editor-firstpass.csproj", "{2292066C-03A4-5733-4636-43653C20A180}"
 EndProject
 Global
@@ -65,6 +73,10 @@ Global
 		{12F44184-A422-5F27-22E6-507969043F15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12F44184-A422-5F27-22E6-507969043F15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12F44184-A422-5F27-22E6-507969043F15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED8FF9FB-4FBC-1B72-EB29-3A3E15ACDD8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED8FF9FB-4FBC-1B72-EB29-3A3E15ACDD8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED8FF9FB-4FBC-1B72-EB29-3A3E15ACDD8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED8FF9FB-4FBC-1B72-EB29-3A3E15ACDD8E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0898FB1C-79D9-7D34-FC5A-21903B2631DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0898FB1C-79D9-7D34-FC5A-21903B2631DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0898FB1C-79D9-7D34-FC5A-21903B2631DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -77,6 +89,10 @@ Global
 		{D8EED591-AF60-38C3-3B96-F841E164AD5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8EED591-AF60-38C3-3B96-F841E164AD5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8EED591-AF60-38C3-3B96-F841E164AD5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{879BC5DB-943B-85D7-128C-D2A350190458}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{879BC5DB-943B-85D7-128C-D2A350190458}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{879BC5DB-943B-85D7-128C-D2A350190458}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{879BC5DB-943B-85D7-128C-D2A350190458}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1111FC99-634B-6458-F1E8-50EA98AFE3EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1111FC99-634B-6458-F1E8-50EA98AFE3EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1111FC99-634B-6458-F1E8-50EA98AFE3EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -125,6 +141,10 @@ Global
 		{8AB4B263-B378-A08D-B943-C308151A6EF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AB4B263-B378-A08D-B943-C308151A6EF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8AB4B263-B378-A08D-B943-C308151A6EF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{510F9C97-58F2-6423-DE8C-5D0E12A1900F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{510F9C97-58F2-6423-DE8C-5D0E12A1900F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{510F9C97-58F2-6423-DE8C-5D0E12A1900F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{510F9C97-58F2-6423-DE8C-5D0E12A1900F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C63E1E6E-8CE1-4F55-5DA4-49773C4445A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C63E1E6E-8CE1-4F55-5DA4-49773C4445A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C63E1E6E-8CE1-4F55-5DA4-49773C4445A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -165,6 +185,10 @@ Global
 		{B8203AE2-C8BD-A83B-140B-6724D85F8207}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8203AE2-C8BD-A83B-140B-6724D85F8207}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8203AE2-C8BD-A83B-140B-6724D85F8207}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59221EE5-7A81-DFA9-F478-B84E8F19BAFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59221EE5-7A81-DFA9-F478-B84E8F19BAFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59221EE5-7A81-DFA9-F478-B84E8F19BAFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59221EE5-7A81-DFA9-F478-B84E8F19BAFD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2292066C-03A4-5733-4636-43653C20A180}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2292066C-03A4-5733-4636-43653C20A180}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2292066C-03A4-5733-4636-43653C20A180}.Release|Any CPU.ActiveCfg = Release|Any CPU

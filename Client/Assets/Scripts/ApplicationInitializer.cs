@@ -1,7 +1,10 @@
 ﻿using Constants;
 using DI.Extensions;
+using Entities;
 using GameHelpers;
+using Games.RazorMaze.Controllers;
 using Managers;
+using Mono_Installers;
 using Network;
 using Ticker;
 using UnityEngine;
@@ -19,22 +22,28 @@ public class ApplicationInitializer : MonoBehaviour
     
     #region inject
     
-    private IGameTicker GameTicker { get; set; }
-    private IAdsManager AdsManager { get; set; }
-    private IAnalyticsManager AnalyticsManager { get; set; }
+    private IGameTicker          GameTicker          { get; set; }
+    private IAdsManager          AdsManager          { get; set; }
+    private IAnalyticsManager    AnalyticsManager    { get; set; }
     private ILocalizationManager LocalizationManager { get; set; }
+    private ILevelsLoader        LevelsLoader        { get; set; }
+    private IScoreManager        ScoreManager        { get; set; }
 
     [Inject] 
     public void Inject(
         IGameTicker _GameTicker,
         IAdsManager _AdsManager,
         IAnalyticsManager _AnalyticsManager,
-        ILocalizationManager _LocalizationManager)
+        ILocalizationManager _LocalizationManager,
+        ILevelsLoader _LevelsLoader,
+        IScoreManager _ScoreManager)
     {
         GameTicker = _GameTicker;
         AdsManager = _AdsManager;
         AnalyticsManager = _AnalyticsManager;
         LocalizationManager = _LocalizationManager;
+        LevelsLoader = _LevelsLoader;
+        ScoreManager = _ScoreManager;
     }
 
 
@@ -45,20 +54,22 @@ public class ApplicationInitializer : MonoBehaviour
     private void Start()
     {
         Application.targetFrameRate = 120;
-        SceneManager.sceneLoaded += OnSceneLoaded;
         DataFieldsMigrator.InitDefaultDataFieldValues();
         InitGameManagers();
         GameTicker.ClearRegisteredObjects();
-        SceneManager.LoadScene(SceneNames.Main);
+        LevelMonoInstaller.Release = true;
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        SceneManager.LoadScene(SceneNames.Level);
     }
     
     private void OnSceneLoaded(Scene _Scene, LoadSceneMode _)
     {
-        
-        if (_Scene.name.EqualsIgnoreCase(SceneNames.Main))
+        if (_Scene.name.EqualsIgnoreCase(SceneNames.Level))
         {
             GameClientUtils.GameId = 1; // если игра будет только одна, то и париться с GameId нет смысла
+            InitGameController();
         }
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     #endregion
@@ -71,6 +82,23 @@ public class ApplicationInitializer : MonoBehaviour
         AdsManager.Init();
         AnalyticsManager.Init();
         LocalizationManager.Init();
+    }
+    
+    private void InitGameController()
+    {
+        Coroutines.Run(Coroutines.WaitWhile(
+            () => !AssetBundleManager.BundlesLoaded,
+            () =>
+            {
+                var controller = GameController.CreateInstance();
+                controller.Initialized += () =>
+                {
+                    int levelIndex = SaveUtils.GetValue<int>(SaveKey.CurrentLevelIndex);
+                    var info = LevelsLoader.LoadLevel(1, levelIndex);
+                    controller.Model.LevelStaging.LoadLevel(info, levelIndex);
+                };
+                controller.Init();
+            }));
     }
 
 
