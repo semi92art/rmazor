@@ -79,4 +79,6 @@ ProjectSettings/AndroidLogcatSettings.asset
 Prototyping*
 Prototyping.meta*
 
+/[Aa]ssets/[Pp]lugins/[Aa]ndroid/*
+
 !/_Other/*
