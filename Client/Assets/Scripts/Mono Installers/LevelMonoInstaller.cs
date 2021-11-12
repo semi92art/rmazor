@@ -125,12 +125,13 @@ namespace Mono_Installers
             Container.Bind<ISettingDialogPanel>()           .To<SettingsDialogPanel>()           .AsSingle().When(_ => Release);
             Container.Bind<ICharacterDiedDialogPanel>()     .To<CharacterDiedDialogPanel>()      .AsSingle().When(_ => Release);
             Container.Bind<IRateGameDialogPanel>()          .To<RateGameDialogPanel>()           .AsSingle().When(_ => Release);
-            
 
+            Container.Bind<IViewInputCommandsProceeder>()   .To<ViewInputCommandsProceeder>()    .AsSingle();
+            Container.Bind<IViewInputTouchProceeder>()      .To<ViewInputTouchProceeder>()       .AsSingle();
 #if UNITY_EDITOR
-            Container.Bind<IViewInput>().To<ViewInputInEditor2>().AsSingle();
+            Container.Bind<IViewInputController>()          .To<ViewInputControllerInEditor>()   .AsSingle();
 #else
-            Container.Bind<IViewInput>().To<ViewInput>()        .AsSingle();
+            Container.Bind<IViewInputController>()          .To<ViewInputController>()           .AsSingle();
 #endif
             
             #endregion

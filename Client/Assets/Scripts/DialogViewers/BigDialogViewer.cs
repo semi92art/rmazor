@@ -7,13 +7,13 @@ using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.InputConfigurators;
+using Lean.Common;
 using Ticker;
 using UI;
 using UI.Factories;
 using UI.Panels;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Utils;
 
@@ -69,20 +69,20 @@ namespace DialogViewers
 
         #region inject
 
-        private IManagersGetter        Managers          { get; }
-        private IUITicker              Ticker            { get; }
-        private IViewInput Input { get; }
-        private IColorProvider         ColorProvider     { get; }
+        private IManagersGetter             Managers          { get; }
+        private IUITicker                   Ticker            { get; }
+        private IViewInputCommandsProceeder CommandsProceeder { get; }
+        private IColorProvider              ColorProvider     { get; }
 
         public BigDialogViewer(
             IManagersGetter _Managers,
             IUITicker _Ticker,
-            IViewInput _Input,
+            IViewInputCommandsProceeder _CommandsProceeder,
             IColorProvider _ColorProvider)
         {
             Managers = _Managers;
             Ticker = _Ticker;
-            Input = _Input;
+            CommandsProceeder = _CommandsProceeder;
             ColorProvider = _ColorProvider;
             _Ticker.Register(this);
         }
@@ -142,12 +142,12 @@ namespace DialogViewers
             
             PanelStack.Push(lastPanel);
             ShowCore(null, true, true);
-            Input.RaiseCommand(InputCommands.UnPauseLevel, null, true);
+            CommandsProceeder.RaiseCommand(EInputCommand.UnPauseLevel, null, true);
         }
         
         public virtual void UpdateTick()
         {
-            if (!ProposalDialogViewer.IsShowing && Keyboard.current.escapeKey.wasPressedThisFrame)
+            if (!ProposalDialogViewer.IsShowing && LeanInput.GetDown(KeyCode.Space))
                 CloseAll();
         }
         

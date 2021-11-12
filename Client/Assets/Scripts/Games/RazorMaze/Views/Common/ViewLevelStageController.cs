@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Constants;
 using Controllers;
@@ -46,23 +45,23 @@ namespace Games.RazorMaze.Views.Common
 
         #region inject
 
-        private IGameTicker           GameTicker           { get; }
-        private IModelGame            Model                { get; }
-        private IManagersGetter       Managers             { get; }
-        private IViewCharacter        Character            { get; }
-        private IViewInput            Input                { get; }
-        private IContainersGetter     ContainersGetter     { get; }
-        private IMazeShaker           MazeShaker           { get; }
-        private IDialogPanels         DialogPanels         { get; }
-        private IProposalDialogViewer ProposalDialogViewer { get; }
-        private ILevelsLoader         LevelsLoader         { get; }
+        private IGameTicker                 GameTicker           { get; }
+        private IModelGame                  Model                { get; }
+        private IManagersGetter             Managers             { get; }
+        private IViewCharacter              Character            { get; }
+        private IViewInputCommandsProceeder CommandsProceeder    { get; }
+        private IContainersGetter           ContainersGetter     { get; }
+        private IMazeShaker                 MazeShaker           { get; }
+        private IDialogPanels               DialogPanels         { get; }
+        private IProposalDialogViewer       ProposalDialogViewer { get; }
+        private ILevelsLoader               LevelsLoader         { get; }
 
         public ViewLevelStageController(
             IGameTicker _GameTicker,
             IModelGame _Model,
             IManagersGetter _Managers,
             IViewCharacter _Character,
-            IViewInput _Input,
+            IViewInputCommandsProceeder _CommandsProceeder,
             IContainersGetter _ContainersGetter,
             IMazeShaker _MazeShaker,
             IDialogPanels _DialogPanels,
@@ -73,7 +72,7 @@ namespace Games.RazorMaze.Views.Common
             Model = _Model;
             Managers = _Managers;
             Character = _Character;
-            Input = _Input;
+            CommandsProceeder = _CommandsProceeder;
             ContainersGetter = _ContainersGetter;
             MazeShaker = _MazeShaker;
             DialogPanels = _DialogPanels;
@@ -89,7 +88,7 @@ namespace Games.RazorMaze.Views.Common
         
         public void Init()
         {
-            Input.Command += OnCommand;
+            CommandsProceeder.Command += OnCommand;
             Initialized?.Invoke();
         }
 
@@ -118,9 +117,9 @@ namespace Games.RazorMaze.Views.Common
 
         #region nonpublic methods
 
-        private void OnCommand(int _Key, object[] _Args)
+        private void OnCommand(EInputCommand _Key, object[] _Args)
         {
-            if (_Key != InputCommands.ReadyToUnloadLevel)
+            if (_Key != EInputCommand.ReadyToUnloadLevel)
                 return;
             if (_Args == null || !_Args.Any())
                 return;
@@ -184,16 +183,16 @@ namespace Games.RazorMaze.Views.Common
                         },
                         () =>
                         {
-                            Input.RaiseCommand(InputCommands.UnloadLevel, null, true);
+                            CommandsProceeder.RaiseCommand(EInputCommand.UnloadLevel, null, true);
                         }));
                     break;
                 case ELevelStage.Unloaded:
                     if (SaveUtils.GetValue<bool>(SaveKey.AllLevelsPassed ) && (_Args.LevelIndex - 2) % 3 == 0)
-                        Input.RaiseCommand(InputCommands.LoadFirstLevelFromRandomGroup, null, true);
+                        CommandsProceeder.RaiseCommand(EInputCommand.LoadFirstLevelFromRandomGroup, null, true);
                     else if (m_NextLevelMustBeFirstInGroup)
-                        Input.RaiseCommand(InputCommands.LoadFirstLevelFromCurrentGroup, null, true);
+                        CommandsProceeder.RaiseCommand(EInputCommand.LoadFirstLevelFromCurrentGroup, null, true);
                     else if (RazorMazeUtils.LoadNextLevelAutomatically)
-                        Input.RaiseCommand(InputCommands.LoadNextLevel, null, true);
+                        CommandsProceeder.RaiseCommand(EInputCommand.LoadNextLevel, null, true);
                     break;
                 case ELevelStage.CharacterKilled:
                     MazeShaker.OnCharacterDeathAnimation(

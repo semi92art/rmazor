@@ -9,7 +9,7 @@ namespace DebugConsole
 {
     public interface IDebugConsoleController
     {
-        void Init(IViewInput _Input);
+        void Init(IViewInputCommandsProceeder _CommandsProceeder);
         void RegisterCommand(string _Command, DebugConsoleController.CommandHandler _Handler, string _Description);
     }
     
@@ -62,20 +62,20 @@ namespace DebugConsole
 
         #region api
         
-        public IViewInput Input { get; private set; }
-        public string[] Log { get; private set; }
-        public Queue<string> Scrollback { get; } = new Queue<string>(ScrollbackSize);
+        public IViewInputCommandsProceeder             CommandsProceeder { get; private set; }
+        public string[]                                Log { get; private set; }
+        public Queue<string>                           Scrollback { get; } = new Queue<string>(ScrollbackSize);
         public Dictionary<string, CommandRegistration> Commands { get;} = new Dictionary<string, CommandRegistration>();
-        public List<string> CommandHistory { get; } = new List<string>();
+        public List<string>                            CommandHistory { get; } = new List<string>();
 
         public void RaiseLogChangedEvent(string[] _Args)
         {
             OnLogChanged?.Invoke(_Args);
         }
 
-        public void Init(IViewInput _Input)
+        public void Init(IViewInputCommandsProceeder _CommandsProceeder)
         {
-            Input = _Input;
+            CommandsProceeder = _CommandsProceeder;
         }
 
         public void RegisterCommand(string _Command, CommandHandler _Handler, string _Description)

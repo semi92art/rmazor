@@ -80,7 +80,7 @@ namespace Games.RazorMaze.Views.UI
             IModelGame _Model,
             IContainersGetter _ContainersGetter,
             IMazeCoordinateConverter _CoordinateConverter,
-            IViewInput _Input,
+            IViewInputCommandsProceeder _CommandsProceeder,
             IViewAppearTransitioner _AppearTransitioner,
             IGameTicker _GameTicker,
             ILevelsLoader _LevelsLoader,
@@ -88,7 +88,7 @@ namespace Games.RazorMaze.Views.UI
             IAnalyticsManager _AnalyticsManager,
             ICameraProvider _CameraProvider,
             IColorProvider _ColorProvider) 
-            : base(_Input)
+            : base(_CommandsProceeder)
         {
             ViewSettings = _ViewSettings;
             Prompt = _Prompt;
@@ -149,8 +149,8 @@ namespace Games.RazorMaze.Views.UI
                         _Info => RazorMazeUtils.GravityItemTypes().Contains(_Info.Type));
                     if (!enableRotation)
                     {
-                        Input.LockCommand(InputCommands.RotateClockwise);
-                        Input.LockCommand(InputCommands.RotateCounterClockwise);
+                        CommandsProceeder.LockCommand(EInputCommand.RotateClockwise);
+                        CommandsProceeder.LockCommand(EInputCommand.RotateCounterClockwise);
                     }
                     break;
                 case ELevelStage.Finished:
@@ -297,8 +297,8 @@ namespace Games.RazorMaze.Views.UI
                 anim.SetTrigger(AnimKeyStartLogoHide);
             var trigerrer1 = go.GetCompItem<AnimationTriggerer>("trigerrer_1");
             var trigerrer2 = go.GetCompItem<AnimationTriggerer>("trigerrer_2");
-            trigerrer1.Trigger1 += () =>  Input.LockAllCommands();
-            trigerrer2.Trigger1 += () => Input.UnlockAllCommands();
+            trigerrer1.Trigger1 += () =>  CommandsProceeder.LockAllCommands();
+            trigerrer2.Trigger1 += () => CommandsProceeder.UnlockAllCommands();
             var eye1 = go.GetCompItem<Rectangle>("eye_1");
             var eye2 = go.GetCompItem<Rectangle>("eye_2");
             eye1.Color = eye2.Color = ColorProvider.GetColor(ColorIds.Background);
@@ -430,19 +430,19 @@ namespace Games.RazorMaze.Views.UI
                 case ELevelStage.ReadyToUnloadLevel:
                 case ELevelStage.Unloaded:
                 case ELevelStage.CharacterKilled:
-                    Input.LockAllCommands();
-                    Input.UnlockCommand(InputCommands.ShopMenu);
-                    Input.UnlockCommand(InputCommands.SettingsMenu);
+                    CommandsProceeder.LockAllCommands();
+                    CommandsProceeder.UnlockCommand(EInputCommand.ShopMenu);
+                    CommandsProceeder.UnlockCommand(EInputCommand.SettingsMenu);
                     break;
                 case ELevelStage.Finished:
-                    Input.LockAllCommands();
-                    Input.UnlockCommand(InputCommands.ShopMenu);
-                    Input.UnlockCommand(InputCommands.SettingsMenu);
-                    Input.UnlockCommand(InputCommands.ReadyToUnloadLevel);
+                    CommandsProceeder.LockAllCommands();
+                    CommandsProceeder.UnlockCommand(EInputCommand.ShopMenu);
+                    CommandsProceeder.UnlockCommand(EInputCommand.SettingsMenu);
+                    CommandsProceeder.UnlockCommand(EInputCommand.ReadyToUnloadLevel);
                     break;
                 case ELevelStage.ReadyToStart:
                 case ELevelStage.StartedOrContinued:
-                    Input.UnlockAllCommands();
+                    CommandsProceeder.UnlockAllCommands();
                     break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Args.Stage);
@@ -491,24 +491,24 @@ namespace Games.RazorMaze.Views.UI
         
         private void CommandRotateClockwise()
         {
-            Input.RaiseCommand(InputCommands.RotateClockwise, null);
+            CommandsProceeder.RaiseCommand(EInputCommand.RotateClockwise, null);
         }
         
         private void CommandRotateCounterClockwise()
         {
-            Input.RaiseCommand(InputCommands.RotateCounterClockwise, null);
+            CommandsProceeder.RaiseCommand(EInputCommand.RotateCounterClockwise, null);
         }
 
         private void CommandShop()
         {
             AnalyticsManager.SendAnalytic(AnalyticIds.ShopButtonPressed);
-            Input.RaiseCommand(InputCommands.ShopMenu, null);
+            CommandsProceeder.RaiseCommand(EInputCommand.ShopMenu, null);
         }
 
         private void CommandSettings()
         {
             AnalyticsManager.SendAnalytic(AnalyticIds.SettingsButtonPressed);
-            Input.RaiseCommand(InputCommands.SettingsMenu, null);
+            CommandsProceeder.RaiseCommand(EInputCommand.SettingsMenu, null);
         }
 
         private Transform GetGameUIContainer()

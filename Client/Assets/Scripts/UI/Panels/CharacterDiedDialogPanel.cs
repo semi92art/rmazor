@@ -56,9 +56,9 @@ namespace UI.Panels
 
         #region inject
 
-        private ViewSettings           ViewSettings         { get; }
-        private IProposalDialogViewer  ProposalDialogViewer { get; }
-        private IViewInput Input    { get; }
+        private ViewSettings                ViewSettings         { get; }
+        private IProposalDialogViewer       ProposalDialogViewer { get; }
+        private IViewInputCommandsProceeder CommandsProceeder    { get; }
 
         public CharacterDiedDialogPanel(
             ViewSettings _ViewSettings,
@@ -68,12 +68,12 @@ namespace UI.Panels
             IUITicker _UITicker,
             ICameraProvider _CameraProvider,
             IColorProvider _ColorProvider,
-            IViewInput _Input) 
+            IViewInputCommandsProceeder _CommandsProceeder) 
             : base(_Managers, _UITicker, _DialogViewer, _CameraProvider, _ColorProvider)
         {
             ViewSettings = _ViewSettings;
             ProposalDialogViewer = _ProposalDialogViewer;
-            Input = _Input;
+            CommandsProceeder = _CommandsProceeder;
         }
         
         #endregion
@@ -129,8 +129,8 @@ namespace UI.Panels
         {
             Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
             {
-                Input.LockCommand(InputCommands.ShopMenu);
-                Input.LockCommand(InputCommands.SettingsMenu);    
+                CommandsProceeder.LockCommand(EInputCommand.ShopMenu);
+                CommandsProceeder.LockCommand(EInputCommand.SettingsMenu);    
             }));
             m_Animator.speed = ViewSettings.ProposalDialogAnimSpeed;
             m_Animator.SetTrigger(AnimKeys.Anim);
@@ -156,8 +156,8 @@ namespace UI.Panels
 
         public override void OnDialogHide()
         {
-            Input.UnlockCommand(InputCommands.ShopMenu);
-            Input.UnlockCommand(InputCommands.SettingsMenu);
+            CommandsProceeder.UnlockCommand(EInputCommand.ShopMenu);
+            CommandsProceeder.UnlockCommand(EInputCommand.SettingsMenu);
         }
 
         #endregion
@@ -220,15 +220,15 @@ namespace UI.Panels
                 {
                     void RaiseContinueCommand()
                     {
-                        Input.RaiseCommand(
-                            InputCommands.ReadyToStartLevel,
+                        CommandsProceeder.RaiseCommand(
+                            EInputCommand.ReadyToStartLevel,
                             null, 
                             true);
                     }
                     void RaiseLoadFirstLevelInGroupCommand()
                     {
-                        Input.RaiseCommand(
-                            InputCommands.ReadyToUnloadLevel,
+                        CommandsProceeder.RaiseCommand(
+                            EInputCommand.ReadyToUnloadLevel,
                             new object[] { CommonInputCommandArgs.LoadFirstLevelFromGroupArg }, 
                             true);
                     }

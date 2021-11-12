@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 using Utils;
 
 namespace DI.Extensions
@@ -44,12 +45,37 @@ namespace DI.Extensions
         public static void MinusLocalPosXY(this Transform _T, Vector2 _XY) => _T.localPosition = _T.localPosition.MinusX(_XY.x).MinusY(_XY.y);
 
         public static void LookAt2D(this Transform _T, Vector2 _To) => _T.eulerAngles = DirectionEulerAngles(_T.transform.position, _To);
-
+        
+        public static bool IsFullyVisibleFrom(this RectTransform _Item, RectTransform _Rect)
+        {
+            if (!_Item.gameObject.activeInHierarchy)
+                return false;
+            return _Item.CountCornersVisibleFrom(_Rect) == 4;
+        }
+        
+        public static bool IsVisibleFrom(this RectTransform _Item, RectTransform _Rect)
+        {
+            if (!_Item.gameObject.activeInHierarchy)
+                return false;
+            return _Item.CountCornersVisibleFrom(_Rect) > 0;
+        }
+        
         #endregion
         
         #region nonpublic methods
 
         private static Vector3 DirectionEulerAngles(Vector2 _From, Vector2 _To) => Vector3.forward * GeometryUtils.ZAngle(_From, _To);
+        
+        private static int CountCornersVisibleFrom(this RectTransform _Item, RectTransform _Rect)
+        {
+            var itemCorners = new Vector3[4];
+            _Item.GetWorldCorners(itemCorners);
+            var rectCorners = new Vector3[4];
+            _Rect.GetWorldCorners(rectCorners);
+            var polygon = rectCorners.Select(_P => new Vector2(_P.x, _P.y)).ToArray();
+            return itemCorners.Select(_Corner => new Vector2(_Corner.x, _Corner.y))
+                .Count(_Point => GeometryUtils.IsPointInPolygon(polygon, _Point));
+        }
 
         #endregion
     }

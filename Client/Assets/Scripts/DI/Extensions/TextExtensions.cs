@@ -84,5 +84,10 @@ namespace DI.Extensions
         {
             return ((long) _Value).ToNumeric();
         }
+        
+        public static string Shortened(this string _Text, int _Length, bool _Ellipsis = true)
+        {
+            return _Text.Substring(0, _Length) + (_Ellipsis ? "..." : string.Empty);
+        }
     }
 }

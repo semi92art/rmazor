@@ -13,12 +13,12 @@ namespace Games.RazorMaze.Views.UI
     {
         #region inject
 
-        private IUITicker             UITicker             { get; }
-        private IBigDialogViewer      BigDialogViewer      { get; }
-        private IProposalDialogViewer ProposalDialogViewer { get; }
-        private IDialogPanels         DialogPanels         { get; }
-        private ILoadingController    LoadingController    { get; }
-        private IViewInput            Input                { get; }
+        private IUITicker                   UITicker             { get; }
+        private IBigDialogViewer            BigDialogViewer      { get; }
+        private IProposalDialogViewer       ProposalDialogViewer { get; }
+        private IDialogPanels               DialogPanels         { get; }
+        private ILoadingController          LoadingController    { get; }
+        private IViewInputCommandsProceeder CommandsProceeder    { get; }
 
         public ViewUI(
             IUITicker _UITicker,
@@ -27,7 +27,7 @@ namespace Games.RazorMaze.Views.UI
             IDialogPanels _DialogPanels,
             ILoadingController _LoadingController,
             IViewUIGameControls _ViewUIGameControls,
-            IViewInput _Input)
+            IViewInputCommandsProceeder _CommandsProceeder)
             : base(_ViewUIGameControls)
         {
             UITicker = _UITicker;
@@ -35,7 +35,7 @@ namespace Games.RazorMaze.Views.UI
             ProposalDialogViewer = _ProposalDialogViewer;
             DialogPanels = _DialogPanels;
             LoadingController = _LoadingController;
-            Input = _Input;
+            CommandsProceeder = _CommandsProceeder;
         }
 
         #endregion
@@ -45,7 +45,7 @@ namespace Games.RazorMaze.Views.UI
         public override void Init()
         {
             UITicker.Register(this);
-            Input.Command += OnCommand;
+            CommandsProceeder.Command += OnCommand;
             CreateCanvas();
             var parent = m_Canvas.RTransform();
             BigDialogViewer.Init(parent);
@@ -54,19 +54,19 @@ namespace Games.RazorMaze.Views.UI
             RaiseInitializedEvent();
         }
 
-        private void OnCommand(int _Key, object[] _Args)
+        private void OnCommand(EInputCommand _Key, object[] _Args)
         {
             switch (_Key)
             {
-                case InputCommands.SettingsMenu:
+                case EInputCommand.SettingsMenu:
                     DialogPanels.SettingDialogPanel.Init();
                     BigDialogViewer.Show(DialogPanels.SettingDialogPanel);
-                    Input.RaiseCommand(InputCommands.PauseLevel, null, true);
+                    CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);
                     break;
-                case InputCommands.ShopMenu:
+                case EInputCommand.ShopMenu:
                     DialogPanels.ShopDialogPanel.Init();
                     BigDialogViewer.Show(DialogPanels.ShopDialogPanel);
-                    Input.RaiseCommand(InputCommands.PauseLevel, null, true);
+                    CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);
                     break;
             }
         }

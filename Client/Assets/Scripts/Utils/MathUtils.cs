@@ -6,6 +6,8 @@ namespace Utils
 {
     public static class MathUtils
     {
+        public static readonly System.Random RandomGen = new System.Random();
+        
         public static int Lerp(int _A, int _B, float _T)
         {
             return (int)((1 - _T) * _A + _T * _B);
@@ -48,9 +50,37 @@ namespace Utils
 
         public static int ClampInverse(int _Val, int _Min, int _Max)
         {
-            if (_Val > _Max) return _Min;
-            if (_Val < _Min) return _Max;
-            return _Val;
+            return _Val > _Max ? _Min : _Val < _Min ? _Max : _Val;
+        }
+        
+        public static bool IsInRange(long _Val, long _Min, long _Max)
+        {
+            return _Val >= _Min && _Val <= _Max;
+        }
+    
+        public static bool IsInRange(int _Val, int _Min, int _Max)
+        {
+            return _Val >= _Min && _Val <= _Max;
+        }
+        
+        /// <summary>
+        /// Generates random float value in range of 0.0 and 1.0
+        /// </summary>
+        /// <param name="_Random">Random generator</param>
+        /// <returns>Random value in range of 0.0 and 1.0</returns>
+        public static float NextFloat(this System.Random _Random)
+        {
+            return (float) _Random.NextDouble();
+        }
+        
+        /// <summary>
+        /// Generates random float value in range of -1.0 and 1.0
+        /// </summary>
+        /// <param name="_Random">Random generator</param>
+        /// <returns>Random value in range of -1.0 and 1.0</returns>
+        public static float NextFloatAlt(this System.Random _Random)
+        {
+            return 2f * ((float) _Random.NextDouble() - 0.5f);
         }
     }
 }

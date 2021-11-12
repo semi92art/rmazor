@@ -3,15 +3,16 @@ using System.Linq;
 using Exceptions;
 using Games.RazorMaze.Views;
 using Ticker;
+using UnityEngine.Events;
 
 namespace Games.RazorMaze.Models.InputSchedulers
 {
     public interface IInputSchedulerGameProceeder : IAddCommand, IOnLevelStageChanged
     {
-        event InputCommandHandler MoveCommand; 
-        event InputCommandHandler RotateCommand;
-        void UnlockMovement(bool _Unlock);
-        void UnlockRotation(bool _Unlock);
+        event UnityAction<EInputCommand, object[]> MoveCommand; 
+        event UnityAction<EInputCommand, object[]> RotateCommand;
+        void                                       UnlockMovement(bool _Unlock);
+        void                                       UnlockRotation(bool _Unlock);
     }
     
     public class InputSchedulerGameProceeder : IInputSchedulerGameProceeder, IUpdateTick
@@ -24,8 +25,8 @@ namespace Games.RazorMaze.Models.InputSchedulers
         
         #region nonpublic members
 
-        private readonly Queue<int> m_MoveCommands = new Queue<int>();
-        private readonly Queue<int> m_RotateCommands = new Queue<int>();
+        private readonly Queue<EInputCommand> m_MoveCommands   = new Queue<EInputCommand>();
+        private readonly Queue<EInputCommand> m_RotateCommands = new Queue<EInputCommand>();
         
         private bool m_MovementLocked = true;
         private bool m_RotationLocked = true;
@@ -55,8 +56,8 @@ namespace Games.RazorMaze.Models.InputSchedulers
 
         #region api
 
-        public event InputCommandHandler MoveCommand; 
-        public event InputCommandHandler RotateCommand;
+        public event UnityAction<EInputCommand, object[]> MoveCommand; 
+        public event UnityAction<EInputCommand, object[]> RotateCommand;
         
         public void UpdateTick()
         {
@@ -64,20 +65,20 @@ namespace Games.RazorMaze.Models.InputSchedulers
             ScheduleRotationCommands();
         }
 
-        public void AddCommand(int _Command, object[] _Args = null)
+        public void AddCommand(EInputCommand _Command, object[] _Args = null)
         {
             switch (_Command)
             {
-                case InputCommands.MoveDown:
-                case InputCommands.MoveLeft:
-                case InputCommands.MoveRight:
-                case InputCommands.MoveUp:
+                case EInputCommand.MoveDown:
+                case EInputCommand.MoveLeft:
+                case EInputCommand.MoveRight:
+                case EInputCommand.MoveUp:
                     if (m_MoveCommandsCount >= MaxCommandsCount) return;
                     m_MoveCommands.Enqueue(_Command);
                     m_MoveCommandsCount++;
                     break;
-                case InputCommands.RotateClockwise:
-                case InputCommands.RotateCounterClockwise:
+                case EInputCommand.RotateClockwise:
+                case EInputCommand.RotateCounterClockwise:
                     if (m_RotateCommandsCount >= MaxCommandsCount) return;
                     m_RotateCommands.Enqueue(_Command);
                     m_RotateCommandsCount++;
@@ -106,7 +107,7 @@ namespace Games.RazorMaze.Models.InputSchedulers
             var cmd = m_MoveCommands.Dequeue();
             m_MoveCommandsCount--;
             m_MovementLocked = true;
-            MoveCommand?.Invoke(cmd);
+            MoveCommand?.Invoke(cmd, null);
         }
 
         private void ScheduleRotationCommands()
@@ -116,34 +117,34 @@ namespace Games.RazorMaze.Models.InputSchedulers
             var cmd = m_RotateCommands.Dequeue();
             m_RotateCommandsCount--;
             m_RotationLocked = true;
-            RotateCommand?.Invoke(cmd);
+            RotateCommand?.Invoke(cmd, null);
         }
         
-        private void OnMoveCommand(int _Command, object[] _Args)
+        private void OnMoveCommand(EInputCommand _Command, object[] _Args)
         {
             EMazeMoveDirection dir = default;
             switch (_Command)
             {
-                case InputCommands.MoveUp:    dir = EMazeMoveDirection.Up;    break;
-                case InputCommands.MoveDown:  dir = EMazeMoveDirection.Down;  break;
-                case InputCommands.MoveLeft:  dir = EMazeMoveDirection.Left;  break;
-                case InputCommands.MoveRight: dir = EMazeMoveDirection.Right; break;
-                case InputCommands.RotateClockwise:
-                case InputCommands.RotateCounterClockwise:
+                case EInputCommand.MoveUp:    dir = EMazeMoveDirection.Up;    break;
+                case EInputCommand.MoveDown:  dir = EMazeMoveDirection.Down;  break;
+                case EInputCommand.MoveLeft:  dir = EMazeMoveDirection.Left;  break;
+                case EInputCommand.MoveRight: dir = EMazeMoveDirection.Right; break;
+                case EInputCommand.RotateClockwise:
+                case EInputCommand.RotateCounterClockwise:
                     break;
                 default: throw new SwitchCaseNotImplementedException(_Command);
             }
             Character.Move(dir);
         }
         
-        private void OnRotateCommand(int _Command, object[] _Args)
+        private void OnRotateCommand(EInputCommand _Command, object[] _Args)
         {
             MazeRotateDirection dir;
             switch (_Command)
             {
-                case InputCommands.RotateClockwise:       
+                case EInputCommand.RotateClockwise:       
                     dir = MazeRotateDirection.Clockwise;        break;
-                case InputCommands.RotateCounterClockwise:
+                case EInputCommand.RotateCounterClockwise:
                     dir = MazeRotateDirection.CounterClockwise; break;
                 default: throw new SwitchCaseNotImplementedException(_Command);
             }

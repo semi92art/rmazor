@@ -56,14 +56,14 @@ namespace Games.RazorMaze.Views.UI
 
         #region inject
 
-        private IModelGame               Model               { get; }
-        private IGameTicker              GameTicker          { get; }
-        private IContainersGetter        ContainersGetter    { get; }
-        private IMazeCoordinateConverter CoordinateConverter { get; }
-        private ILocalizationManager     LocalizationManager { get; }
-        private IViewInput               Input               { get; }
-        private ICameraProvider          CameraProvider      { get; }
-        private IColorProvider           ColorProvider       { get; }
+        private IModelGame                  Model               { get; }
+        private IGameTicker                 GameTicker          { get; }
+        private IContainersGetter           ContainersGetter    { get; }
+        private IMazeCoordinateConverter    CoordinateConverter { get; }
+        private ILocalizationManager        LocalizationManager { get; }
+        private IViewInputCommandsProceeder CommandsProceeder   { get; }
+        private ICameraProvider             CameraProvider      { get; }
+        private IColorProvider              ColorProvider       { get; }
 
         public ViewUIPrompt(
             IModelGame _Model,
@@ -71,7 +71,7 @@ namespace Games.RazorMaze.Views.UI
             IContainersGetter _ContainersGetter,
             IMazeCoordinateConverter _CoordinateConverter,
             ILocalizationManager _LocalizationManager,
-            IViewInput _Input,
+            IViewInputCommandsProceeder _CommandsProceeder,
             ICameraProvider _CameraProvider,
             IColorProvider _ColorProvider)
         {
@@ -80,7 +80,7 @@ namespace Games.RazorMaze.Views.UI
             ContainersGetter = _ContainersGetter;
             CoordinateConverter = _CoordinateConverter;
             LocalizationManager = _LocalizationManager;
-            Input = _Input;
+            CommandsProceeder = _CommandsProceeder;
             CameraProvider = _CameraProvider;
             ColorProvider = _ColorProvider;
         }
@@ -95,7 +95,7 @@ namespace Games.RazorMaze.Views.UI
         public void Init()
         {
             GameTicker.Register(this);
-            Input.Command += InputConfiguratorOnCommand;
+            CommandsProceeder.Command += InputConfiguratorOnCommand;
             Initialized?.Invoke();
         }
         
@@ -152,11 +152,11 @@ namespace Games.RazorMaze.Views.UI
                               || _Info.Type == EMazeItemType.GravityTrap);
         }
         
-        private void InputConfiguratorOnCommand(int _Key, object[] _Args)
+        private void InputConfiguratorOnCommand(EInputCommand _Key, object[] _Args)
         {
             if (m_PromptHowToRotateShown || !MazeContainsGravityItems())
                 return;
-            if (_Key == InputCommands.RotateClockwise)
+            if (_Key == EInputCommand.RotateClockwise)
             {
                 if (m_HowToRotateClockwisePromptHidden)
                     return;
@@ -164,7 +164,7 @@ namespace Games.RazorMaze.Views.UI
                 HidePrompt();
                 ShowPromptHowToRotateCounterClockwise();
             }
-            else if (_Key == InputCommands.RotateCounterClockwise)
+            else if (_Key == EInputCommand.RotateCounterClockwise)
             {
                 if (m_HowToRotateClockwisePromptHidden)
                 {
@@ -173,7 +173,7 @@ namespace Games.RazorMaze.Views.UI
                     m_HowToRotateCounterClockwisePromptHidden = true;
                     HidePrompt();
                     ShowPromptSwipeToStart();
-                    Input.UnlockAllCommands();
+                    CommandsProceeder.UnlockAllCommands();
                     InTutorial = false;
                     m_PromptHowToRotateShown = true;
                     SaveUtils.PutValue(SaveKey.PromptHowToRotateShown, true);
@@ -183,8 +183,8 @@ namespace Games.RazorMaze.Views.UI
 
         private void ShowPromptHowToRotateClockwise()
         {
-            Input.LockAllCommands();
-            Input.UnlockCommand(InputCommands.RotateClockwise);
+            CommandsProceeder.LockAllCommands();
+            CommandsProceeder.UnlockCommand(EInputCommand.RotateClockwise);
             var mazeBounds = CoordinateConverter.GetMazeBounds();
             ShowPrompt(KeyPromptHowToRotateClockwise, new Vector3(mazeBounds.center.x, 
                 GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y));
@@ -192,8 +192,8 @@ namespace Games.RazorMaze.Views.UI
         
         private void ShowPromptHowToRotateCounterClockwise()
         {
-            Input.LockAllCommands();
-            Input.UnlockCommand(InputCommands.RotateCounterClockwise);
+            CommandsProceeder.LockAllCommands();
+            CommandsProceeder.UnlockCommand(EInputCommand.RotateCounterClockwise);
             var mazeBounds = CoordinateConverter.GetMazeBounds();
             ShowPrompt(KeyPromptHowToRotateCounter, new Vector3(mazeBounds.center.x, 
                 GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y + 1f));

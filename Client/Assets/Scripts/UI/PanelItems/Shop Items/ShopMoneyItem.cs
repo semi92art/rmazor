@@ -1,4 +1,5 @@
-﻿using Entities;
+﻿using DI.Extensions;
+using Entities;
 using Games.RazorMaze.Views.Common;
 using Ticker;
 using UnityEngine.Events;

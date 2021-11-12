@@ -1,11 +1,12 @@
-﻿using UnityEngine;
+﻿using Lean.Common;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 public class ButtonOnRaycast : MonoBehaviour
 {
-    public                   Collider                 collider;
-    [SerializeField] private UnityEvent               OnClickEvent;
+    public new               Collider                 collider;
+    [SerializeField] private UnityEvent               onClickEvent;
     private                  System.Func<ELevelStage> m_LevelStage;
     private                  ICameraProvider          m_CameraProvider;
     private                  bool                     m_Initialized;
@@ -16,7 +17,7 @@ public class ButtonOnRaycast : MonoBehaviour
     private void Update()
     {
         if (!m_Initialized
-            || !Mouse.current.leftButton.wasPressedThisFrame 
+            || !IsTouch()
             || m_LevelStage() == ELevelStage.Paused)
         {
             m_State = 0;
@@ -28,15 +29,28 @@ public class ButtonOnRaycast : MonoBehaviour
         if (hit.collider != collider)
             return;
         if (m_State == 0)
-            OnClickEvent?.Invoke();
+            onClickEvent?.Invoke();
         m_State = 1;
     }
 
     public void Init(UnityAction _Action, System.Func<ELevelStage> _LevelStage, ICameraProvider _CameraProvider)
     {
-        OnClickEvent.AddListener(_Action);
+        onClickEvent.AddListener(_Action);
         m_LevelStage = _LevelStage;
         m_CameraProvider = _CameraProvider;
         m_Initialized = true;
+    }
+
+    private bool IsTouch()
+    {
+#if UNITY_EDITOR
+        return LeanInput.GetMouseDown(0);
+#else
+        int touchCount = LeanInput.GetTouchCount();
+        if (touchCount == 0)
+            return false;
+        CommonUtils.GetTouch(0, out _, out _, out _, out bool began, out _);
+        return began;
+#endif
     }
 }

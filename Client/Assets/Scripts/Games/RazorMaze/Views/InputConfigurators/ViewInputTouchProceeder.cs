@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Constants;
+﻿using Constants;
 using DI.Extensions;
 using GameHelpers;
 using Games.RazorMaze.Models;
@@ -13,70 +10,38 @@ using Utils;
 
 namespace Games.RazorMaze.Views.InputConfigurators
 {
-    public class ViewInput : IViewInput
+    public interface IViewInputTouchProceeder : IInit, IOnLevelStageChanged { }
+    
+    public class ViewInputTouchProceeder : IViewInputTouchProceeder
     {
         #region nonpublic members
 
-        private LeanTouch m_LeanTouch;
-        private LeanMultiSwipe m_LeanMultiSwipe;
-        private LeanFingerTap m_LeanFingerTap;
-        private readonly List<int> m_LockedCommands = new List<int>();
-
+        private LeanFingerTap   m_LeanFingerTap;
+        
         #endregion
 
         #region inject
 
-        private IModelGame Model { get; }
-        private IContainersGetter ContainersGetter { get; }
+        protected IModelGame                  Model             { get; }
+        protected IContainersGetter           ContainersGetter  { get; }
+        protected IViewInputCommandsProceeder CommandsProceeder { get; }
 
-        protected ViewInput(IModelGame _Model, IContainersGetter _ContainersGetter)
+        protected ViewInputTouchProceeder(
+            IModelGame _Model,
+            IContainersGetter _ContainersGetter,
+            IViewInputCommandsProceeder _CommandsProceeder)
         {
             Model = _Model;
             ContainersGetter = _ContainersGetter;
+            CommandsProceeder = _CommandsProceeder;
         }
 
         #endregion
 
         #region api
-
-        public event UnityAction<int, object[]> Command;
-        public event UnityAction<int, object[]> InternalCommand;
+        
         public event UnityAction Initialized;
-        
-        public void LockCommand(int _Key)
-        {
-            if (!m_LockedCommands.Contains(_Key))
-                m_LockedCommands.Add(_Key);
-        }
 
-        public void UnlockCommand(int _Key)
-        {
-            if (m_LockedCommands.Contains(_Key))
-                m_LockedCommands.Remove(_Key);
-        }
-
-        public void LockCommands(IEnumerable<int> _Keys)
-        {
-            foreach (var key in _Keys)
-                LockCommand(key);
-        }
-
-        public void UnlockCommands(IEnumerable<int> _Keys)
-        {
-            foreach (var key in _Keys)
-                UnlockCommand(key);
-        }
-
-        public void LockAllCommands()
-        {
-            LockCommands(Enumerable.Range(1, 50));
-        }
-
-        public void UnlockAllCommands()
-        {
-            UnlockCommands(Enumerable.Range(1, 50));
-        }
-        
         public virtual void Init()
         {
             InitLeanTouch();
@@ -85,13 +50,6 @@ namespace Games.RazorMaze.Views.InputConfigurators
             Initialized?.Invoke();
         }
         
-        public void RaiseCommand(int _Key, object[] _Args, bool _Forced = false)
-        {
-            InternalCommand?.Invoke(_Key, _Args);
-            if (!m_LockedCommands.Contains(_Key) || _Forced)
-                Command?.Invoke(_Key, _Args);
-        }
-
         #endregion
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
@@ -123,16 +81,14 @@ namespace Games.RazorMaze.Views.InputConfigurators
 #if UNITY_EDITOR
             lt.FingerTexture = PrefabUtilsEx.GetObject<Texture2D>("icons", "finger_texture");
 #endif
-            m_LeanTouch = lt;
         }
 
         private void InitLeanTouchForMove()
         {
-            var goLeanFingerSwipe = new GameObject("Lean Finger Touch");
-            goLeanFingerSwipe.SetParent(GetContainer());
-            var lms = goLeanFingerSwipe.AddComponent<LeanMultiSwipe>();
-            lms.OnFingers.AddListener(OnSwipeForMove);
-            m_LeanMultiSwipe = lms;
+            var goLeanFingerFlick = new GameObject("Lean Finger Flick");
+            goLeanFingerFlick.SetParent(GetContainer());
+            var lfs = goLeanFingerFlick.AddComponent<LeanFingerSwipe>();
+            lfs.OnDelta.AddListener(OnSwipeForMove);
         }
 
         private void InitLeanTouchForTapToNext()
@@ -144,17 +100,21 @@ namespace Games.RazorMaze.Views.InputConfigurators
             m_LeanFingerTap = lft;
         }
 
-        private void OnSwipeForMove(List<LeanFinger> _Fingers)
+        private void OnSwipeForMove(Vector2 _Delta)
         {
-            if (_Fingers.Count > 1)
-                return;
-            var distance = _Fingers[0].ScreenDelta;
-            int key;
-            if (Mathf.Abs(distance.x) > Mathf.Abs(distance.y))
-                key = distance.x < 0 ? InputCommands.MoveLeft : InputCommands.MoveRight;
-            else
-                key = distance.y < 0 ? InputCommands.MoveDown : InputCommands.MoveUp;
-            RaiseCommand(key, null);
+            const float angThreshold = 30f * Mathf.Deg2Rad;
+            const float distThreshold = 0.1f;
+            EInputCommand? key = null;
+            float absDx = Mathf.Abs(_Delta.x);
+            float absDy = Mathf.Abs(_Delta.y);
+            float absNormDx = Mathf.Abs( _Delta.x / GraphicUtils.ScreenSize.x);
+            float absNormDy = Mathf.Abs(_Delta.y / GraphicUtils.ScreenSize.y);
+            if (absDx > absDy && absDy / absDx < Mathf.Tan(angThreshold) && absNormDx > distThreshold)
+                key = _Delta.x < 0 ? EInputCommand.MoveLeft : EInputCommand.MoveRight;
+            else if (absDx < absDy && absDx / absDy < Mathf.Tan(angThreshold) && absNormDy > distThreshold)
+                key = _Delta.y < 0 ? EInputCommand.MoveDown : EInputCommand.MoveUp;
+            if (key.HasValue)
+                CommandsProceeder.RaiseCommand(key.Value, null);
         }
 
         private Transform GetContainer()
@@ -168,7 +128,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
                 return;
             if (Model.LevelStaging.LevelStage != ELevelStage.Finished) 
                 return;
-            RaiseCommand(InputCommands.ReadyToUnloadLevel, null);
+            CommandsProceeder.RaiseCommand(EInputCommand.ReadyToUnloadLevel, null);
         }
 
         #endregion

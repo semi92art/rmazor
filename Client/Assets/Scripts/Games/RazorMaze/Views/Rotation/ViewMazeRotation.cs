@@ -22,12 +22,12 @@ namespace Games.RazorMaze.Views.Rotation
         
         #region inject
         
-        private ViewSettings      ViewSettings     { get; }
-        private IContainersGetter ContainersGetter { get; }
-        private IGameTicker       GameTicker       { get; }
-        private IModelGame        Model            { get; }
-        private IViewCharacter    Character        { get; }
-        private IViewInput        Input            { get; }
+        private ViewSettings                ViewSettings      { get; }
+        private IContainersGetter           ContainersGetter  { get; }
+        private IGameTicker                 GameTicker        { get; }
+        private IModelGame                  Model             { get; }
+        private IViewCharacter              Character         { get; }
+        private IViewInputCommandsProceeder CommandsProceeder { get; }
 
         public ViewMazeRotation(
             ViewSettings _ViewSettings,
@@ -35,14 +35,14 @@ namespace Games.RazorMaze.Views.Rotation
             IGameTicker _GameTicker,
             IModelGame _Model,
             IViewCharacter _Character,
-            IViewInput _Input)
+            IViewInputCommandsProceeder _CommandsProceeder)
         {
             ViewSettings = _ViewSettings;
             ContainersGetter = _ContainersGetter;
             GameTicker = _GameTicker;
             Model = _Model;
             Character = _Character;
-            Input = _Input;
+            CommandsProceeder = _CommandsProceeder;
         }
         
         #endregion
@@ -83,8 +83,8 @@ namespace Games.RazorMaze.Views.Rotation
                         return;
                     if (!m_EnableRotation)
                     {
-                        Input.LockCommand(InputCommands.RotateClockwise);
-                        Input.LockCommand(InputCommands.RotateCounterClockwise);
+                        CommandsProceeder.LockCommand(EInputCommand.RotateClockwise);
+                        CommandsProceeder.LockCommand(EInputCommand.RotateCounterClockwise);
                     }
                     break;
                 case ELevelStage.ReadyToUnloadLevel:

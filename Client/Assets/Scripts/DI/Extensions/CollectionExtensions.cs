@@ -67,5 +67,29 @@ namespace DI.Extensions
                     _Kvp => _Kvp.Key,
                     _Kvp => _Kvp.Value);
         }
+        
+        public static Dictionary<TKey, TValue> Clone<TKey, TValue>
+            (this Dictionary<TKey, TValue> _Original) where TValue : ICloneable
+        {
+            var res = new Dictionary<TKey, TValue>(_Original.Count,
+                _Original.Comparer);
+            foreach (var entry in _Original)
+            {
+                res.Add(entry.Key, (TValue) entry.Value.Clone());
+            }
+            return res;
+        }
+        
+        public static Dictionary<TKey, TValue> CloneAlt<TKey, TValue>
+            (this Dictionary<TKey, TValue> _Original) where TValue : struct
+        {
+            var res = new Dictionary<TKey, TValue>(_Original.Count,
+                _Original.Comparer);
+            foreach (var entry in _Original)
+            {
+                res.Add(entry.Key, entry.Value);
+            }
+            return res;
+        }
     }
 }

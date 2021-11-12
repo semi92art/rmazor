@@ -1,0 +1,29 @@
+﻿namespace Games.RazorMaze.Models
+{
+    public enum EInputCommand
+    {
+        MoveUp,
+        MoveDown,
+        MoveLeft,
+        MoveRight,
+        RotateClockwise,
+        RotateCounterClockwise,
+        LoadCurrentLevel,
+        LoadFirstLevelFromCurrentGroup,
+        LoadNextLevel,
+        UnloadLevel,
+        ReadyToStartLevel,
+        StartOrContinueLevel,
+        PauseLevel,
+        UnPauseLevel,
+        FinishLevel,
+        KillCharacter,
+        LoadRandomLevel,
+        ShopMenu,
+        SettingsMenu,
+        LoadRandomLevelWithRotation,
+        ReadyToUnloadLevel,
+        LoadLevelByIndex,
+        LoadFirstLevelFromRandomGroup
+    }
+}

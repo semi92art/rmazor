@@ -78,7 +78,7 @@ namespace Controllers
                         _OnResult?.Invoke(AuthResult.FailedNoInternet);
                         break;
                     default:
-                        throw new SwitchCaseNotImplementedException(_Result);
+                        throw new Exceptions.SwitchCaseNotImplementedException(_Result);
                 }
             });
         }

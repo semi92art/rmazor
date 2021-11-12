@@ -8,11 +8,11 @@ namespace Games.RazorMaze.Views.UI
 {
     public abstract class ViewUIGameControlsBase : IViewUIGameControls
     {
-        protected IViewInput Input { get; }
+        protected IViewInputCommandsProceeder CommandsProceeder { get; }
 
-        protected ViewUIGameControlsBase(IViewInput _Input)
+        protected ViewUIGameControlsBase(IViewInputCommandsProceeder _CommandsProceeder)
         {
-            Input = _Input;
+            CommandsProceeder = _CommandsProceeder;
         }
 
         public event UnityAction Initialized;
@@ -28,14 +28,14 @@ namespace Games.RazorMaze.Views.UI
             var type = _Args.Info.Type;
             if (RazorMazeUtils.GravityItemTypes().Contains(type))
             {
-                Input.LockCommands(new []
+                CommandsProceeder.LockCommands(new []
                 {
-                    InputCommands.MoveLeft,
-                    InputCommands.MoveRight,
-                    InputCommands.MoveDown,
-                    InputCommands.MoveUp,
-                    InputCommands.RotateClockwise,
-                    InputCommands.RotateCounterClockwise
+                    EInputCommand.MoveLeft,
+                    EInputCommand.MoveRight,
+                    EInputCommand.MoveDown,
+                    EInputCommand.MoveUp,
+                    EInputCommand.RotateClockwise,
+                    EInputCommand.RotateCounterClockwise
                 });
             }
         }
@@ -45,14 +45,14 @@ namespace Games.RazorMaze.Views.UI
             var type = _Args.Info.Type;
             if (RazorMazeUtils.GravityItemTypes().Contains(type))
             {
-                Input.UnlockCommands(new []
+                CommandsProceeder.UnlockCommands(new []
                 {
-                    InputCommands.MoveLeft,
-                    InputCommands.MoveRight,
-                    InputCommands.MoveDown,
-                    InputCommands.MoveUp,
-                    InputCommands.RotateClockwise,
-                    InputCommands.RotateCounterClockwise
+                    EInputCommand.MoveLeft,
+                    EInputCommand.MoveRight,
+                    EInputCommand.MoveDown,
+                    EInputCommand.MoveUp,
+                    EInputCommand.RotateClockwise,
+                    EInputCommand.RotateCounterClockwise
                 });
             }
         }

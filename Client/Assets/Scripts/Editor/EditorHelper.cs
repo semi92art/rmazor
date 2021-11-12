@@ -51,8 +51,8 @@ public class EditorHelper : EditorWindow
     [MenuItem("Tools/Android Logcat",false, 4)]
     public static void ShowAndroidLogcatWindow()
     {
-        Type tLogcat = typeof(ColumnData).Assembly.GetType("Unity.Android.Logcat.AndroidLogcatConsoleWindow");
-        MethodInfo mInfoShow = tLogcat?.GetMethod("ShowWindow",
+        var tLogcat = typeof(Unity.Android.Logcat.ColumnData).Assembly.GetType("Unity.Android.Logcat.AndroidLogcatConsoleWindow");
+        var mInfoShow = tLogcat?.GetMethod("ShowWindow",
             BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
         mInfoShow?.Invoke(null, null);
     }

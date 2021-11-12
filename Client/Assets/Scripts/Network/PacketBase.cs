@@ -98,7 +98,7 @@ namespace Network
             ResponseRaw = _Json;
             try
             {
-                if (!CommonUtils.IsInRange(ResponseCode, 200, 299))
+                if (!NetworkUtils.IsPacketSuccess(ResponseCode))
                     m_ErrorMessage = JsonConvert.DeserializeObject<ErrorResponseArgs>(_Json);
             }
             catch (JsonReaderException)
@@ -107,9 +107,9 @@ namespace Network
                 throw;
             }
             
-            if (CommonUtils.IsInRange(ResponseCode, 200, 299))
+            if (NetworkUtils.IsPacketSuccess(ResponseCode))
                 InvokeSuccess();
-            else if (CommonUtils.IsInRange(ResponseCode, 300, 599) || ResponseCode == 0)
+            else
                 InvokeFail();
 
             IsDone = true;

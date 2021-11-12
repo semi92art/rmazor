@@ -132,7 +132,7 @@ public abstract class SpawnPoolBase<T> : ISpawnPool<T>
     
         private void ActivateOrDeactivate(int _Index, bool _Activate)
         {
-            if (!CommonUtils.IsInRange(_Index, 0, Collection.Count - 1))
+            if (!MathUtils.IsInRange(_Index, 0, Collection.Count - 1))
                 return;
             var item = Collection[_Index];
             Activate(item, _Activate);

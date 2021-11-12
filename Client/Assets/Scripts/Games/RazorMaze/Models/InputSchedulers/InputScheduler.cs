@@ -1,10 +1,10 @@
-﻿namespace Games.RazorMaze.Models.InputSchedulers
-{
-    public delegate void InputCommandHandler(int _Command, object[] _Args = null);
+﻿using UnityEngine.Events;
 
+namespace Games.RazorMaze.Models.InputSchedulers
+{
     public interface IAddCommand
     {
-        void AddCommand(int _Command, params object[] _Args);
+        void AddCommand(EInputCommand _Command, params object[] _Args);
     }
     
     public interface IInputScheduler : IInputSchedulerGameProceeder, IInputSchedulerUiProceeder { }
@@ -35,11 +35,11 @@
         
         #region api
         
-        public event InputCommandHandler MoveCommand;
-        public event InputCommandHandler RotateCommand;
-        public event InputCommandHandler UiCommand;
+        public event UnityAction<EInputCommand, object[]> MoveCommand;
+        public event UnityAction<EInputCommand, object[]> RotateCommand;
+        public event UnityAction<EInputCommand, object[]> UiCommand;
 
-        public void AddCommand(int _Command, object[] _Args = null)
+        public void AddCommand(EInputCommand _Command, object[] _Args = null)
         {
             InputSchedulerGameProceeder.AddCommand(_Command, _Args);
             InputSchedulerUiProceeder.AddCommand(_Command, _Args);
@@ -59,7 +59,6 @@
         }
 
         #endregion
-
-
+        
     }
 }

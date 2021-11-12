@@ -84,7 +84,7 @@ namespace Games.RazorMaze.Controllers
             Model.Character.CharacterMoveFinished                     += View.OnCharacterMoveFinished;
             Model.LevelStaging.LevelStageChanged                      += View.OnLevelStageChanged;
             
-            View.Input.Command                                        += Model.InputScheduler.AddCommand;
+            View.CommandsProceeder.Command                            += Model.InputScheduler.AddCommand;
             View.MazeRotation.RotationFinished                        += Model.MazeRotation.OnRotationFinished;
             
             View.Init();
@@ -128,7 +128,7 @@ namespace Games.RazorMaze.Controllers
             Model.Character.CharacterMoveFinished                     -= View.OnCharacterMoveFinished;
             Model.LevelStaging.LevelStageChanged                      -= View.OnLevelStageChanged;
             
-            View.Input.Command                                        -= Model.InputScheduler.AddCommand;
+            View.CommandsProceeder.Command                            -= Model.InputScheduler.AddCommand;
             View.MazeRotation.RotationFinished                        -= Model.MazeRotation.OnRotationFinished;
         }
 

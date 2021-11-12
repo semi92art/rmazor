@@ -42,7 +42,7 @@ public class ServerConnectionTests
             yield return new WaitForEndOfFrame();
             
         //Assert
-        Assert.IsTrue(CommonUtils.IsInRange(request.responseCode, 200, 299));
+        Assert.IsTrue(NetworkUtils.IsPacketSuccess(request.responseCode));
             
         Dbg.Log($"Response code: {request.responseCode}");
         Dbg.Log(request.downloadHandler.text);

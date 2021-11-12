@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using DI.Extensions;
 using GameHelpers;
 using Games.RazorMaze.Views.InputConfigurators;
+using Lean.Common;
 using UI;
 using UI.Factories;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Utils;
-using TouchPhase = UnityEngine.TouchPhase;
 
 namespace DebugConsole
 {
@@ -87,7 +87,7 @@ namespace DebugConsole
         private Vector2 m_CurrentSwipe;
         public enum Swipe { None, Up, Down, Left, Right }
 
-        private IViewInput m_Input;
+        private IViewInputCommandsProceeder m_CommandsProceeder;
 
         #endregion
 
@@ -109,22 +109,23 @@ namespace DebugConsole
 
         private void Update()
         {
-            if (Keyboard.current.enterKey.wasPressedThisFrame)
+            
+            if (LeanInput.GetDown(KeyCode.Return))
                 RunCommand();
             //Toggle visibility when tilde key pressed
-            if (Keyboard.current.numpadDivideKey.wasPressedThisFrame)
+            if (LeanInput.GetDown(KeyCode.KeypadDivide))
                 ToggleVisibility();
 
             //Arrow up in history
-            if (Keyboard.current.upArrowKey.wasPressedThisFrame)
+            if (LeanInput.GetDown(KeyCode.UpArrow))
                 UpCommand();
-            if (Keyboard.current.downArrowKey.wasPressedThisFrame)
+            if (LeanInput.GetDown(KeyCode.DownArrow))
                 DownCommand();
 
             //Visibility on mouse swipe
-            if (Mouse.current.leftButton.wasPressedThisFrame)
+            if (LeanInput.GetMouseDown(0))
                 m_SwipeFirstPosition = Mouse.current.position.ReadValue();
-            else if (Mouse.current.leftButton.wasReleasedThisFrame)
+            else if (LeanInput.GetMouseUp(0))
             {
                 m_SwipeLastPosition = Mouse.current.position.ReadValue();
                 if ((m_SwipeFirstPosition.x - m_SwipeLastPosition.x > m_SwipeDragDistance) && !m_IsVisible)
@@ -133,11 +134,12 @@ namespace DebugConsole
                     ToggleVisibility();
             }
             
-            if (Touchscreen.current != null && Touchscreen.current.touches.Count > 0)
+            if (LeanInput.GetTouchCount() > 0 )
             {
+                LeanInput.GetTouch(0, out _, out var pos, out _, out bool set);
                 var t = Touchscreen.current.touches[0];
                 
-                if (t.press.wasPressedThisFrame)
+                if (set)
                 {
                     m_FirstPressPos = t.position.ReadValue();
                 }
@@ -210,10 +212,10 @@ namespace DebugConsole
 
         #region public methods
 
-        public void Init(IViewInput _Input)
+        public void Init(IViewInputCommandsProceeder _CommandsProceeder)
         {
-            m_Input = _Input;
-            m_Controller.Init(_Input);
+            m_CommandsProceeder = _CommandsProceeder;
+            m_Controller.Init(m_CommandsProceeder);
         }
 
         #endregion
@@ -356,8 +358,8 @@ namespace DebugConsole
         private void SetVisibility(bool _Visible)
         {
             if (_Visible)
-                m_Input.LockAllCommands();
-            else m_Input.UnlockAllCommands();
+                m_CommandsProceeder.LockAllCommands();
+            else m_CommandsProceeder.UnlockAllCommands();
             m_IsVisible = _Visible;
             viewContainer.SetActive(_Visible);
             if (inputField.text == "`")

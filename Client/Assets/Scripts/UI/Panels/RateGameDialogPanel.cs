@@ -36,9 +36,9 @@ namespace UI.Panels
 
         #region inject
         
-        private IProposalDialogViewer ProposalDialogViewer { get; }
-        private IViewInput            Input                { get; }
-        private ViewSettings          ViewSettings         { get; }
+        private IProposalDialogViewer       ProposalDialogViewer { get; }
+        private IViewInputCommandsProceeder CommandsProceeder    { get; }
+        private ViewSettings                ViewSettings         { get; }
 
         public RateGameDialogPanel(
             IManagersGetter _Managers,
@@ -47,12 +47,12 @@ namespace UI.Panels
             ICameraProvider _CameraProvider,
             IColorProvider _ColorProvider,
             IProposalDialogViewer _ProposalDialogViewer,
-            IViewInput _Input,
+            IViewInputCommandsProceeder _CommandsProceeder,
             ViewSettings _ViewSettings)
             : base(_Managers, _Ticker, _DialogViewer, _CameraProvider, _ColorProvider)
         {
             ProposalDialogViewer = _ProposalDialogViewer;
-            Input = _Input;
+            CommandsProceeder = _CommandsProceeder;
             ViewSettings = _ViewSettings;
         }
 
@@ -94,9 +94,9 @@ namespace UI.Panels
         {
             Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
             {
-                Input.LockCommand(InputCommands.ReadyToUnloadLevel);
-                Input.LockCommand(InputCommands.ShopMenu);
-                Input.LockCommand(InputCommands.SettingsMenu);
+                CommandsProceeder.LockCommand(EInputCommand.ReadyToUnloadLevel);
+                CommandsProceeder.LockCommand(EInputCommand.ShopMenu);
+                CommandsProceeder.LockCommand(EInputCommand.SettingsMenu);
             }));
             m_Animator.speed = ViewSettings.ProposalDialogAnimSpeed;
             m_Animator.SetTrigger(AnimKeys.Anim);
@@ -105,9 +105,9 @@ namespace UI.Panels
 
         public override void OnDialogHide()
         {
-            Input.UnlockCommand(InputCommands.ReadyToUnloadLevel);
-            Input.UnlockCommand(InputCommands.ShopMenu);
-            Input.UnlockCommand(InputCommands.SettingsMenu);
+            CommandsProceeder.UnlockCommand(EInputCommand.ReadyToUnloadLevel);
+            CommandsProceeder.UnlockCommand(EInputCommand.ShopMenu);
+            CommandsProceeder.UnlockCommand(EInputCommand.SettingsMenu);
         }
 
         #endregion

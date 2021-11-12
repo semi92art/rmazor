@@ -128,5 +128,10 @@ namespace DI.Extensions
             _Child = go;
             return go.GetOrAddComponent<T>();
         }
+        
+        public static void SetGoActive<T>(this T _Item, bool _Active) where T : Component
+        {
+            _Item.gameObject.SetActive(_Active);
+        }
     }
 }
