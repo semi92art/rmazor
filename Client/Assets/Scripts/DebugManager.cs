@@ -1,7 +1,6 @@
-﻿using Entities;
-using Games.RazorMaze.Views.InputConfigurators;
+﻿using Games.RazorMaze.Views.InputConfigurators;
+using Settings;
 using UnityEngine.Events;
-using Utils;
 
 public interface IDebugManager : IInit
 {
@@ -24,10 +23,14 @@ public class DebugManager : IDebugManager
     #region inject
 
     private IViewInputCommandsProceeder CommandsProceeder { get; }
-    
-    public DebugManager(IViewInputCommandsProceeder _CommandsProceeder)
+    private IDebugSetting               DebugSetting      { get; }
+
+    public DebugManager(
+        IViewInputCommandsProceeder _CommandsProceeder, 
+        IDebugSetting _DebugSetting)
     {
         CommandsProceeder = _CommandsProceeder;
+        DebugSetting = _DebugSetting;
     }
 
     #endregion
@@ -37,9 +40,9 @@ public class DebugManager : IDebugManager
     public event UnityAction Initialized;
     public void Init()
     {
+        DebugSetting.OnValueSet = EnableDebug;
         InitDebugConsole();
-        bool doEnable = SaveUtils.GetValue<bool>(SaveKey.DebugUtilsOn);
-        EnableDebug(doEnable);
+        EnableDebug(DebugSetting.Get());
         Initialized?.Invoke();
     }
 

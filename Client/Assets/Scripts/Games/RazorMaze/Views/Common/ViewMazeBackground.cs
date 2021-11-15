@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Constants;
@@ -347,15 +346,23 @@ namespace Games.RazorMaze.Views.Common
         
         private void SetForegroundColors(int _Level)
         {
-            BackgroundColor = ColorProvider.GetColor(ColorIds.Background);
-            int colorIdx = (_Level / RazorMazeUtils.LevelsInGroup) % 10;
-            float h = colorIdx / 10f;
-            float s = 52f / 100f;
-            float v = 42f / 100f;
+            int group = _Level / RazorMazeUtils.LevelsInGroup;
+            float h = GetHForHSV(group);
+            float s = 80f / 100f;
+            float v = 70f / 100f;
             var newMainColor = Color.HSVToRGB(h, s, v);
             ColorProvider.SetColor(ColorIds.Main, newMainColor);
-            ColorProvider.SetColor(ColorIds.Border, newMainColor.SetA(0.5f));
-            ColorProvider.SetColor(ColorIds.Background, Color.HSVToRGB(h, s, 10f / 100f));
+            ColorProvider.SetColor(ColorIds.Background, Color.HSVToRGB(h, s, 5f / 100f));
+        }
+
+        private static float GetHForHSV(int _Group)
+        {
+            var values = new float[]
+            {
+                30, 55, 80, 140, 185, 225, 265, 305, 330
+            }.Select(_H => _H / 360f).ToArray();
+            int idx = _Group % values.Length;
+            return values[idx];
         }
 
         #endregion

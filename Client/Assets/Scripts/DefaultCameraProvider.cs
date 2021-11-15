@@ -23,6 +23,6 @@ public class DefaultCameraProvider : MonoBehaviour, ICameraProvider, IOnLevelSta
 
     public void OnLevelStageChanged(LevelStageArgs _Args)
     {
-        m_TranslucentSource.enabled = _Args.Stage == ELevelStage.Paused;
+        m_TranslucentSource.enabled = _Args.Stage == ELevelStage.Paused || _Args.Stage == ELevelStage.CharacterKilled;
     }
 }

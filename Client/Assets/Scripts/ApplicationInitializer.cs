@@ -1,4 +1,5 @@
 ﻿using Constants;
+using Controllers;
 using DI.Extensions;
 using Entities;
 using GameHelpers;
@@ -28,6 +29,7 @@ public class ApplicationInitializer : MonoBehaviour
     private ILocalizationManager LocalizationManager { get; set; }
     private ILevelsLoader        LevelsLoader        { get; set; }
     private IScoreManager        ScoreManager        { get; set; }
+    private IHapticsManager      HapticsManager      { get; set; }
 
     [Inject] 
     public void Inject(
@@ -36,7 +38,8 @@ public class ApplicationInitializer : MonoBehaviour
         IAnalyticsManager _AnalyticsManager,
         ILocalizationManager _LocalizationManager,
         ILevelsLoader _LevelsLoader,
-        IScoreManager _ScoreManager)
+        IScoreManager _ScoreManager,
+        IHapticsManager _HapticsManager)
     {
         GameTicker = _GameTicker;
         AdsManager = _AdsManager;
@@ -44,6 +47,7 @@ public class ApplicationInitializer : MonoBehaviour
         LocalizationManager = _LocalizationManager;
         LevelsLoader = _LevelsLoader;
         ScoreManager = _ScoreManager;
+        HapticsManager = _HapticsManager;
     }
 
 
@@ -53,7 +57,7 @@ public class ApplicationInitializer : MonoBehaviour
     
     private void Start()
     {
-        Application.targetFrameRate = 120;
+        Application.targetFrameRate = 60;
         DataFieldsMigrator.InitDefaultDataFieldValues();
         InitGameManagers();
         GameTicker.ClearRegisteredObjects();
@@ -79,9 +83,10 @@ public class ApplicationInitializer : MonoBehaviour
     private void InitGameManagers()
     {
         GameClient.Instance.Init();
-        AdsManager.Init();
-        AnalyticsManager.Init();
+        AdsManager         .Init();
+        AnalyticsManager   .Init();
         LocalizationManager.Init();
+        HapticsManager     .Init();
     }
     
     private void InitGameController()

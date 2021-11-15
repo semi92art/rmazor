@@ -7,7 +7,7 @@ namespace Settings
         ISoundSetting SoundSetting { get; }
         IMusicSetting MusicSetting { get; }
         INotificationSetting NotificationSetting { get; }
-        IVibrationSetting VibrationSetting { get; }
+        IHapticsSetting HapticsSetting { get; }
         ILanguageSetting LanguageSetting { get; }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         IDebugSetting DebugSetting { get; }
@@ -19,7 +19,7 @@ namespace Settings
         public ISoundSetting SoundSetting { get; }
         public IMusicSetting MusicSetting { get; }
         public INotificationSetting NotificationSetting { get; }
-        public IVibrationSetting VibrationSetting { get; }
+        public IHapticsSetting HapticsSetting { get; }
         public ILanguageSetting LanguageSetting { get; }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         [Inject] public IDebugSetting DebugSetting { get; }
@@ -29,13 +29,13 @@ namespace Settings
             ISoundSetting _SoundSetting,
             IMusicSetting _MusicSetting,
             INotificationSetting _NotificationSetting, 
-            IVibrationSetting _VibrationSetting,
+            IHapticsSetting _HapticsSetting,
             ILanguageSetting _LanguageSetting)
         {
             SoundSetting = _SoundSetting;
             MusicSetting = _MusicSetting;
             NotificationSetting = _NotificationSetting;
-            VibrationSetting = _VibrationSetting;
+            HapticsSetting = _HapticsSetting;
             LanguageSetting = _LanguageSetting;
         }
     }

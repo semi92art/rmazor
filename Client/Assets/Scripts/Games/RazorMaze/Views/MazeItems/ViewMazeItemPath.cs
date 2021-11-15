@@ -202,25 +202,24 @@ namespace Games.RazorMaze.Views.MazeItems
                     m_TopLeftCorner.Color = _Color;
                 if (m_TopRightCornerInited && !m_TopRightCornerIsOuterAndNearTrapIncreasing)
                     m_TopRightCorner.Color = _Color;
-            }
-            else if (_ColorId == ColorIds.Border)
-            {
+
+                var borderCol = MainColorToBorderColor(_Color);
                 if (m_LeftBorderInited)
-                    m_LeftBorder.Color = _Color;
+                    m_LeftBorder.Color = borderCol;
                 if (m_RightBorderInited)
-                    m_RightBorder.Color = _Color;
+                    m_RightBorder.Color = borderCol;
                 if (m_BottomBorderInited)
-                    m_BottomBorder.Color = _Color;
+                    m_BottomBorder.Color = borderCol;
                 if (m_TopBorderInited)
-                    m_TopBorder.Color = _Color;
+                    m_TopBorder.Color = borderCol;
                 if (m_BottomLeftCornerInited && m_BottomLeftCornerIsOuterAndNearTrapIncreasing)
-                    m_BottomLeftCorner.Color = _Color;
+                    m_BottomLeftCorner.Color = borderCol;
                 if (m_BottomRightCornerInited && m_BottomRightCornerIsOuterAndNearTrapIncreasing)
-                    m_BottomRightCorner.Color = _Color;
+                    m_BottomRightCorner.Color = borderCol;
                 if (m_TopLeftCornerInited && m_TopLeftCornerIsOuterAndNearTrapIncreasing)
-                    m_TopLeftCorner.Color = _Color;
+                    m_TopLeftCorner.Color = borderCol;
                 if (m_TopRightCornerInited && m_TopRightCornerIsOuterAndNearTrapIncreasing)
-                    m_TopRightCorner.Color = _Color;
+                    m_TopRightCorner.Color = borderCol;
             }
             else if (_ColorId == ColorIds.Path && !Collected)
             {
@@ -405,7 +404,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 border = Object.AddComponentOnNewChild<Line>("Border", out _);
             border.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
             border.EndCaps = LineEndCap.None;
-            border.Color = ColorProvider.GetColor(ColorIds.Border);
+            border.Color = MainColorToBorderColor(ColorProvider.GetColor(ColorIds.Main));
             border.SortingOrder = SortingOrders.PathLine;
             (border.Start, border.End, border.Dashed) = GetBorderPointsAndDashed(_Side, false, false);
             border.transform.position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
@@ -447,7 +446,8 @@ namespace Games.RazorMaze.Views.MazeItems
             corner.AngRadiansStart = Mathf.Deg2Rad * angles.x;
             corner.AngRadiansEnd = Mathf.Deg2Rad * angles.y;
             bool isOuterAndNearTrapIncreasing = IsCornerOuterAndNearTrapIncreasing(_Right, _Up, _Inner);
-            corner.Color = ColorProvider.GetColor(isOuterAndNearTrapIncreasing ? ColorIds.Border : ColorIds.Main);
+            var col = ColorProvider.GetColor(ColorIds.Main);
+            corner.Color = isOuterAndNearTrapIncreasing ? MainColorToBorderColor(col) : col;
             corner.SortingOrder = SortingOrders.PathJoint;
             corner.enabled = false;
             
@@ -668,7 +668,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 borders.Add(m_RightBorder);
             var sets = new Dictionary<IEnumerable<Component>, Func<Color>>
             {
-                {borders, () => ColorProvider.GetColor(ColorIds.Border)}
+                {borders, () => MainColorToBorderColor(ColorProvider.GetColor(ColorIds.Main))}
             };
             return sets;
         }
@@ -677,7 +677,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             var setsRaw = new Dictionary<Color, List<Component>>();
             var defCornerCol = ColorProvider.GetColor(ColorIds.Main);
-            var altCornerCol = ColorProvider.GetColor(ColorIds.Border);
+            var altCornerCol = MainColorToBorderColor(ColorProvider.GetColor(ColorIds.Main));
             setsRaw.Add(defCornerCol, new List<Component>());
             if (altCornerCol != defCornerCol)
                 setsRaw.Add(altCornerCol, new List<Component>());
@@ -698,6 +698,11 @@ namespace Games.RazorMaze.Views.MazeItems
                     _Kvp => (IEnumerable<Component>)_Kvp.Value,
                     _Kvp => new Func<Color>(() => _Kvp.Key));
             return sets;
+        }
+
+        private static Color MainColorToBorderColor(Color _Color)
+        {
+            return _Color.SetA(0.5f);
         }
 
         #endregion

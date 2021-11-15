@@ -245,6 +245,7 @@ namespace Games.RazorMaze.Views.UI
         {
             m_RunShowPromptCoroutine = false;
             const float loopTime = 1f;
+            var secondColor = Color.red;
             if (m_CurrentPromptInfo != null && m_CurrentPromptInfo.NeedToHide)
             {
                 m_CurrentPromptInfo.PromptGo.DestroySafe();
@@ -257,8 +258,8 @@ namespace Games.RazorMaze.Views.UI
                 loopTime * 2f,
                 _Progress =>
                 {
-                    m_CurrentPromptInfo.PromptText.color = 
-                        ColorProvider.GetColor(ColorIds.UI).SetA(_Progress);
+                    var firstColor = ColorProvider.GetColor(ColorIds.UI);
+                    m_CurrentPromptInfo.PromptText.color = Color.Lerp(firstColor, secondColor, _Progress);
                 },
                 GameTicker,
                 (_, __) => m_RunShowPromptCoroutine = true,

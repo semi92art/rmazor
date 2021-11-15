@@ -12,27 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1600272214c7aa418cb76f5cc38aecb, type: 3}
   m_Name: icons
   m_EditorClassIdentifier: 
+  bundles: 0
   prefabs:
     array:
-    - item: {fileID: 21300000, guid: e0199762ef15195438b83abfc9825838, type: 3}
-      name: icon_close
-    - item: {fileID: 21300000, guid: 036dd3a227ea2874fb8b7c2c3b220aff, type: 3}
-      name: icon_back
     - item: {fileID: 2800000, guid: 25c48be3a87ea0f489a6d41c9c9a2194, type: 3}
       name: finger_texture
-    - item: {fileID: 21300000, guid: 7af5957e7f72e454491c722a37daec46, type: 3}
-      name: icon_life_enabled
-    - item: {fileID: 21300000, guid: 6a8f01446c5568647b1886fd1e790fe9, type: 3}
-      name: icon_life_disabled
-    - item: {fileID: 21300000, guid: 6a8f01446c5568647b1886fd1e790fe9, type: 3}
-      name: icon_life_disabled
-    - item: {fileID: 21300000, guid: 68c8f87274b316548b0c04a3c72896bc, type: 3}
-      name: icon_wof
-    - item: {fileID: 21300000, guid: 741e236cc25104143a7d108c5bf4d241, type: 3}
-      name: icon_daily_bonus
-    - item: {fileID: 21300000, guid: 68d0d043197159e479bbbb738c6a52f4, type: 3}
-      name: icon_shop
-    - item: {fileID: 21300000, guid: 65fd4d530d54bed4da013596e6c00afe, type: 3}
-      name: icon_login
     - item: {fileID: 21300000, guid: 79aa76a1610e52348a314d2db03133fe, type: 3}
       name: icon_no_ads

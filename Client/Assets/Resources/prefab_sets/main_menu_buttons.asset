@@ -12,28 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1600272214c7aa418cb76f5cc38aecb, type: 3}
   m_Name: main_menu_buttons
   m_EditorClassIdentifier: 
+  bundles: 0
   prefabs:
     array:
-    - item: {fileID: 1020629676104538080, guid: d83106e4e643a6046a0ef01e36e1d8dc,
-        type: 3}
-      name: settings_button
-    - item: {fileID: 6592728042775572582, guid: 5eef98311fa7f15408a5a3490aafbdb3,
-        type: 3}
-      name: play_button
-    - item: {fileID: 4466409264557108589, guid: fec898ce281d2934bb99f9b869ff2955,
-        type: 3}
-      name: select_game_button
-    - item: {fileID: 2601192048318346412, guid: 7e959f70d47cecc48959d0790bfa9bb6,
-        type: 3}
-      name: settings_button_small
     - item: {fileID: 5541025160145569569, guid: 80bb05ea1757fad4b97a0dd009723495,
         type: 3}
       name: dialog_close_button
-    - item: {fileID: 2669723317995466324, guid: 815b44f26b8e0e84ba878a0716bfbffa,
-        type: 3}
-      name: watch_ad_button
-    - item: {fileID: 925053068623849952, guid: e6562c47e8724f94a90349fd5057a674, type: 3}
-      name: ratings_button
-    - item: {fileID: 4879237508897305277, guid: 4b69c59c60a82fb47acc0e971985e9d7,
-        type: 3}
-      name: bottom_group_button_template

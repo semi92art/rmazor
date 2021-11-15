@@ -10,7 +10,7 @@ namespace Entities
     public delegate void ShopManagerHandler(IShopManager Manager);
     public delegate void LocalizationManagerHandler(ILocalizationManager Manager);
     public delegate void ScoreManagerHandler(IScoreManager Manager);
-    public delegate void VibrationManagerHandler(IVibrationManager Manager);
+    public delegate void HapticsManagerHandler(IHapticsManager Manager);
     
     public interface IManagersGetter
     {
@@ -20,7 +20,7 @@ namespace Entities
         IShopManager         ShopManager         { get; }
         ILocalizationManager LocalizationManager { get; }
         IScoreManager        ScoreManager        { get; }
-        IVibrationManager    VibrationManager    { get; }
+        IHapticsManager      HapticsManager      { get; }
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         IDebugManager        DebugManager { get; }
@@ -32,7 +32,7 @@ namespace Entities
             ShopManagerHandler _OnShopManager = null,
             LocalizationManagerHandler _OnLocalizationManager = null,
             ScoreManagerHandler _OnScoreManager = null,
-            VibrationManagerHandler _OnVibrationManager = null);
+            HapticsManagerHandler _OnHapticsManager = null);
     }
 
     public class ManagersGetter : IManagersGetter
@@ -45,7 +45,7 @@ namespace Entities
         public IShopManager         ShopManager         { get; }
         public ILocalizationManager LocalizationManager { get; }
         public IScoreManager        ScoreManager        { get; }
-        public IVibrationManager    VibrationManager    { get; }
+        public IHapticsManager      HapticsManager      { get; }
 
         public ManagersGetter(
             IAudioManager        _AudioManager,
@@ -54,7 +54,7 @@ namespace Entities
             IShopManager         _ShopManager,
             ILocalizationManager _LocalizationManager,
             IScoreManager        _ScoreManager,
-            IVibrationManager    _VibrationManager)
+            IHapticsManager      _HapticsManager)
         {
             AudioManager        = _AudioManager;
             AnalyticsManager    = _AnalyticsManager;
@@ -62,7 +62,7 @@ namespace Entities
             ShopManager         = _ShopManager;
             LocalizationManager = _LocalizationManager;
             ScoreManager        = _ScoreManager;
-            VibrationManager    = _VibrationManager;
+            HapticsManager      = _HapticsManager;
         }
         
         #endregion
@@ -81,7 +81,7 @@ namespace Entities
             ShopManagerHandler             _OnShopManager = null,
             LocalizationManagerHandler    _OnLocalizationManager = null,
             ScoreManagerHandler           _OnScoreManager = null,
-            VibrationManagerHandler       _OnVibrationManager = null)
+            HapticsManagerHandler         _OnHapticsManager = null)
         {
             _OnSoundManager         ?.Invoke(AudioManager);
             _OnAnalyticsManager     ?.Invoke(AnalyticsManager);
@@ -89,7 +89,7 @@ namespace Entities
             _OnShopManager          ?.Invoke(ShopManager);
             _OnLocalizationManager  ?.Invoke(LocalizationManager);
             _OnScoreManager         ?.Invoke(ScoreManager);
-            _OnVibrationManager     ?.Invoke(VibrationManager);
+            _OnHapticsManager       ?.Invoke(HapticsManager);
         }
 
         #endregion

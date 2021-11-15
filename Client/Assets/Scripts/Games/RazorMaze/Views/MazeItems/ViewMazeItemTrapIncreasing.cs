@@ -209,6 +209,7 @@ namespace Games.RazorMaze.Views.MazeItems
             m_TrapOpened = true;
             OpenTrapCoroutine(true);
             Managers.AudioManager.PlayClip(AudioClipArgsTrapIncreasingOpen);
+            Managers.HapticsManager.PlayPreset(EHapticsPresetType.HeavyImpact);
         }
 
         private void CloseTrap()

@@ -1,5 +1,4 @@
-﻿using Controllers;
-using DI.Extensions;
+﻿using DI.Extensions;
 using Entities;
 using GameHelpers;
 using Games.RazorMaze.Models;
@@ -10,7 +9,6 @@ using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Utils;
 using Ticker;
 using UnityEngine;
-using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
@@ -89,18 +87,7 @@ namespace Games.RazorMaze.Views.MazeItems
             }
         }
 
-        public override void OnMoveStarted(MazeItemMoveEventArgs _Args)
-        {
-            float dist = Vector2.Distance(_Args.From.ToVector2(), _Args.To.ToVector2());
-            float attenuateTime = dist / _Args.Speed;
-            var info = new AudioClipArgs(SoundClipNameSawWorking, EAudioClipType.Sound, 0.1f,
-                _Id: _Args.Info.GetHashCode().ToString(), _AttenuationSecondsOnStop: attenuateTime);
-            Managers.AudioManager.PlayClip(info);
-            Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
-            {
-                Managers.AudioManager.StopClip(info);
-            }));
-        }
+        public override void OnMoveStarted(MazeItemMoveEventArgs _Args) { }
 
         public override void OnMoving(MazeItemMoveEventArgs _Args)
         {

@@ -31,14 +31,14 @@ namespace Games.RazorMaze.Views.MazeItems
     public class ViewMazeItemTurret : ViewMazeItemBase, IViewMazeItemTurret, IUpdateTick
     {
         #region constants
-        
-        private const  float         BulletContainerRadius = 0.4f;
+
+        private const float BulletContainerRadius = 0.4f;
         
         #endregion
         
         #region nonpublic members
 
-        private static AudioClipArgs _audioClipArgsShurikenFly => new AudioClipArgs("shuriken", EAudioClipType.Sound);
+        private static AudioClipArgs AudioClipArgsShurikenFly => new AudioClipArgs("shuriken", EAudioClipType.Sound);
         
         private float     m_RotatingSpeed;
         private bool      m_BulletRotating;
@@ -344,7 +344,8 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private IEnumerator DoShoot(TurretShotEventArgs _Args)
         {
-            Managers.AudioManager.PlayClip(_audioClipArgsShurikenFly);
+            Managers.AudioManager.PlayClip(AudioClipArgsShurikenFly);
+            Managers.HapticsManager.PlayPreset(EHapticsPresetType.HeavyImpact);
             var fromPos = _Args.From.ToVector2();
             V2Int point = default;
             bool movedToTheEnd = false;

@@ -4,7 +4,6 @@ namespace Games.RazorMaze.Views.Common
 {
     public static class ColorIds
     {
-        public static readonly int Border;
         public static readonly int Main;
         public static readonly int Background; //!!!
         public static readonly int BackgroundIdleItems;
@@ -25,7 +24,6 @@ namespace Games.RazorMaze.Views.Common
 
         static ColorIds()
         {
-            Border                   = GetHash(nameof(Border));
             Main                     = GetHash(nameof(Main));
             Background               = GetHash(nameof(Background));
             BackgroundIdleItems      = GetHash(nameof(BackgroundIdleItems)     .WithSpaces());

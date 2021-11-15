@@ -23,6 +23,8 @@ namespace DialogViewers
     {
         void Show(IDialogPanel _ItemTo, bool _HidePrevious = true);
         void CloseAll();
+        bool IsInTransition { get; }
+        bool IsShowing      { get; }
     }
     
     public class BigDialogViewer : IBigDialogViewer, IAction, IUpdateTick
@@ -45,22 +47,23 @@ namespace DialogViewers
 
         #region constants
 
-        private const int AkStateCloseButtonDisabled = 0;
-        private const int AkStateCloseButtonEnabled = 1;
-        private const float TransitionTime = 0.2f;
+        private const int   AkStateCloseButtonDisabled = 0;
+        private const int   AkStateCloseButtonEnabled  = 1;
+        private const float TransitionTime             = 0.2f;
 
         #endregion
         
         #region nonpublic members
 
-        private static int AkEnableCloseButton => AnimKeys.Anim2;
+        private static int AkEnableCloseButton  => AnimKeys.Anim2;
         private static int AkDisableCloseButton => AnimKeys.Stop2;
-        private static int AkState => AnimKeys.State;
+        private static int AkState              => AnimKeys.State;
         
-        private Button m_CloseButton;
-        private Animator m_CloseButtonAnim;
-        private Image m_Background;
+        private Button        m_CloseButton;
+        private Animator      m_CloseButtonAnim;
+        private Image         m_Background;
         private RectTransform m_DialogContainer;
+        
         private readonly Stack<IDialogPanel> PanelStack = new Stack<IDialogPanel>();
         private readonly Dictionary<int, GraphicAlphas> GraphicsAlphas = 
             new Dictionary<int, GraphicAlphas>();
@@ -91,8 +94,10 @@ namespace DialogViewers
 
         #region api
         
-        public RectTransform Container => m_DialogContainer;
-        public UnityAction Action { get; set; }
+        public RectTransform Container      => m_DialogContainer;
+        public UnityAction   Action         { get; set; }
+        public bool          IsInTransition { get; private set; }
+        public bool          IsShowing      { get; private set; }
 
         public void Init(RectTransform _Parent)
         {
@@ -107,6 +112,8 @@ namespace DialogViewers
             m_DialogContainer = go.GetCompItem<RectTransform>("dialog_container");
             m_CloseButton = go.GetCompItem<Button>("close_button");
             m_CloseButtonAnim = go.GetCompItem<Animator>("buttons_animator");
+            
+            m_CloseButton.RTransform().anchoredPosition = new Vector2(0f, 100f);
 
             var borderColor = ColorProvider.GetColor(ColorIds.UiBorderDefault);
             m_CloseButton.GetCompItem<Image>("border").color = borderColor;
@@ -144,7 +151,7 @@ namespace DialogViewers
             ShowCore(null, true, true);
             CommandsProceeder.RaiseCommand(EInputCommand.UnPauseLevel, null, true);
         }
-        
+
         public virtual void UpdateTick()
         {
             if (!ProposalDialogViewer.IsShowing && LeanInput.GetDown(KeyCode.Space))
@@ -172,12 +179,15 @@ namespace DialogViewers
                 int instId = fromPanel.GetInstanceID();
                 if (!GraphicsAlphas.ContainsKey(instId))
                     GraphicsAlphas.Add(instId, new GraphicAlphas(fromPanel));
+                IsInTransition = true;
                 Coroutines.Run(Coroutines.DoTransparentTransition(
                     fromPanel, GraphicsAlphas[instId].Alphas, TransitionTime,
                     Ticker,
                     true,
                     () =>
                     {
+                        IsInTransition = false;
+                        IsShowing = _ItemTo != null;
                         if (!_GoBack)
                             return;
                         Object.Destroy(fromPanel.gameObject);

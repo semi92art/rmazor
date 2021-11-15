@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
 using Lean.Localization;
+using Settings;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -36,12 +37,25 @@ public class LeanLocalizationManager : ILocalizationManager
 
     #endregion
 
+    #region inject
+
+    private ILanguageSetting LanguageSetting { get; }
+    
+    public LeanLocalizationManager(ILanguageSetting _LanguageSetting)
+    {
+        LanguageSetting = _LanguageSetting;
+    }
+
+    #endregion
+
     #region api
 
     public event UnityAction Initialized;
 
     public void Init()
     {
+        LanguageSetting.OnValueSet = SetLanguage;
+        LanguageSetting.GetValue = GetCurrentLanguage;
         if (m_Localization != null)
             return;
         var go = new GameObject("Localization");

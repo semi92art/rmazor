@@ -32,7 +32,7 @@ namespace Entities
         public static SaveKey DailyBonusLastDate       => new SaveKey("daily_bonus_last_date", typeof(DateTime));
         public static SaveKey SettingSoundOn           => new SaveKey("sound_on", typeof(bool));
         public static SaveKey SettingMusicOn           => new SaveKey("music_on", typeof(bool));
-        public static SaveKey SettingVibrationOn       => new SaveKey("vibration_on", typeof(bool));
+        public static SaveKey SettingHapticsOn       => new SaveKey("haptics_on", typeof(bool));
         public static SaveKey DailyBonusLastClickedDay => new SaveKey("daily_bonus_last_day", typeof(int));
         public static SaveKey DisableAds               => new SaveKey("disable_ads", typeof(bool));
         public static SaveKey GameWasRated             => new SaveKey("game_was_rated", typeof(bool));

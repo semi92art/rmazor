@@ -10,10 +10,36 @@ using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItemGroups;
 using Games.RazorMaze.Views.Rotation;
 using Games.RazorMaze.Views.UI;
-using Ticker;
 using UnityEngine.Events;
 namespace Games.RazorMaze.Views
 {
+    public interface IViewGame :
+        IInit,
+        IOnLevelStageChanged,
+        ICharacterMoveStarted,
+        ICharacterMoveContinued,
+        ICharacterMoveFinished
+    {
+        IContainersGetter              ContainersGetter      { get; }
+        IViewUI                        UI                    { get; }
+        IViewLevelStageController      LevelStageController  { get; }
+        IViewInputCommandsProceeder    CommandsProceeder     { get; }
+        IViewCharacter                 Character             { get; }
+        IViewMazeCommon                Common                { get; }
+        IViewMazeBackground            Background            { get; }
+        IViewMazeRotation              MazeRotation          { get; }
+        IViewMazePathItemsGroup        PathItemsGroup        { get; }
+        IViewMazeMovingItemsGroup      MovingItemsGroup      { get; }
+        IViewMazeTrapsReactItemsGroup  TrapsReactItemsGroup  { get; }
+        IViewMazeTrapsIncItemsGroup    TrapsIncItemsGroup    { get; }
+        IViewMazeTurretsGroup          TurretsGroup          { get; }
+        IViewMazePortalsGroup          PortalsGroup          { get; }
+        IViewMazeShredingerBlocksGroup ShredingerBlocksGroup { get; }
+        IViewMazeSpringboardItemsGroup SpringboardItemsGroup { get; }
+        IViewMazeGravityItemsGroup     GravityItemsGroup     { get; }
+        IManagersGetter                Managers              { get; }
+    }
+    
     public class ViewGame : IViewGame
     {
         #region inject
@@ -36,11 +62,9 @@ namespace Games.RazorMaze.Views
         public IViewMazeShredingerBlocksGroup ShredingerBlocksGroup { get; }
         public IViewMazeSpringboardItemsGroup SpringboardItemsGroup { get; }
         public IViewMazeGravityItemsGroup     GravityItemsGroup     { get; }
+        public IManagersGetter                Managers              { get; }
 
-        private IGameTicker              GameTicker          { get; }
-        private IManagersGetter          Managers            { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IDebugManager            DebugManager        { get; }
         private IColorProvider           ColorProvider       { get; }
         private ICameraProvider          CameraProvider      { get; }
 
@@ -63,10 +87,8 @@ namespace Games.RazorMaze.Views
             IViewMazeShredingerBlocksGroup _ShredingerBlocksGroup,
             IViewMazeSpringboardItemsGroup _SpringboardItemsGroup,
             IViewMazeGravityItemsGroup _GravityItemsGroup,
-            IGameTicker _GameTicker,
             IManagersGetter _Managers, 
             IMazeCoordinateConverter _CoordinateConverter,
-            IDebugManager _DebugManager,
             IColorProvider _ColorProvider,
             ICameraProvider _CameraProvider)
         {
@@ -88,10 +110,8 @@ namespace Games.RazorMaze.Views
             ShredingerBlocksGroup = _ShredingerBlocksGroup;
             SpringboardItemsGroup = _SpringboardItemsGroup;
             GravityItemsGroup = _GravityItemsGroup;
-            GameTicker = _GameTicker;
             Managers = _Managers;
             CoordinateConverter = _CoordinateConverter;
-            DebugManager = _DebugManager;
             ColorProvider = _ColorProvider;
             CameraProvider = _CameraProvider;
         }
@@ -104,8 +124,9 @@ namespace Games.RazorMaze.Views
         
         public void Init()
         {
+            Managers.DebugManager.Init();
+            Managers.AudioManager.Init();
             ColorProvider.Init();
-            DebugManager.Init();
             CoordinateConverter.Init();
             var proceeders = GetProceeders();
 
@@ -158,7 +179,6 @@ namespace Games.RazorMaze.Views
                     InputController,
                     Character,
                     MazeRotation,
-                    Background,
                     PathItemsGroup,
                     MovingItemsGroup,
                     TrapsReactItemsGroup,
@@ -168,6 +188,7 @@ namespace Games.RazorMaze.Views
                     ShredingerBlocksGroup,
                     SpringboardItemsGroup,
                     GravityItemsGroup,
+                    Background,
                     CameraProvider
                 }.Where(_Proceeder => _Proceeder != null)
                 .ToList();

@@ -100,7 +100,7 @@ namespace UI.Panels
             InitSettingItem(SettingsGetter.MusicSetting);
             InitSettingItem(SettingsGetter.LanguageSetting);
             // InitSettingItem(SettingsGetter.NotificationSetting);
-            InitSettingItem(SettingsGetter.VibrationSetting);
+            InitSettingItem(SettingsGetter.HapticsSetting);
             InitRateUsButton();
             InitLeaderboardsButton();
             InitRestorePurchasesButton();

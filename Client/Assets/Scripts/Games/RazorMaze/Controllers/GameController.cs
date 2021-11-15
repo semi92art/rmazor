@@ -1,6 +1,5 @@
 ﻿using Games.RazorMaze.Models;
 using Games.RazorMaze.Views;
-using Ticker;
 using UnityEngine;
 using UnityEngine.Events;
 using Utils;
@@ -56,7 +55,7 @@ namespace Games.RazorMaze.Controllers
         
         public void Init()
         {
-            SROptions.Init(ModelSettings, ViewSettings);
+            SROptions.Init(Model, View, ModelSettings, ViewSettings);
             bool modelInitialized = false;
             bool viewInitialized = false;
             Model.Initialized += () => modelInitialized = true;

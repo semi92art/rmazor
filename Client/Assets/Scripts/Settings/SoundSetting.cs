@@ -1,6 +1,5 @@
-﻿using Controllers;
-using Entities;
-using Lean.Localization;
+﻿using Entities;
+using UnityEngine.Events;
 
 namespace Settings
 {
@@ -8,24 +7,20 @@ namespace Settings
     
     public class SoundSetting : SettingBase<bool>, ISoundSetting
     {
-        private IManagersGetter Managers { get; }
-        
-        public SoundSetting(IManagersGetter _Managers)
-        {
-            Managers = _Managers;
-        }
-
-        public override SaveKey Key => SaveKey.SettingSoundOn;
-        public override string TitleKey => "Sound";
-        public override ESettingLocation Location => ESettingLocation.MiniButtons;
-        public override ESettingType Type => ESettingType.OnOff;
-        public override string SpriteOnKey => "setting_sound_on";
-        public override string SpriteOffKey => "setting_sound_off";
+        public override UnityAction<bool> OnValueSet   { get; set; }
+        public override SaveKey           Key          => SaveKey.SettingSoundOn;
+        public override string            TitleKey     => "Sound";
+        public override ESettingLocation  Location     => ESettingLocation.MiniButtons;
+        public override ESettingType      Type         => ESettingType.OnOff;
+        public override string            SpriteOnKey  => "setting_sound_on";
+        public override string            SpriteOffKey => "setting_sound_off";
 
         public override void Put(bool _VolumeOn)
         {
-            Managers.AudioManager.EnableAudio(_VolumeOn, EAudioClipType.Sound);
             base.Put(_VolumeOn);
+            OnValueSet?.Invoke(_VolumeOn);
         }
+
+        
     }
 }

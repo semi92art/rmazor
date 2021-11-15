@@ -1,5 +1,6 @@
 ﻿using Controllers;
 using DialogViewers;
+using Entities;
 using Games.RazorMaze;
 using Games.RazorMaze.Controllers;
 using Games.RazorMaze.Models;
@@ -17,7 +18,6 @@ using Games.RazorMaze.Views.MazeItems;
 using Games.RazorMaze.Views.MazeItems.Additional;
 using Games.RazorMaze.Views.Rotation;
 using Games.RazorMaze.Views.UI;
-using Settings;
 using UI.Panels;
 using UI.Panels.ShopPanels;
 using UnityEngine;
@@ -135,26 +135,17 @@ namespace Mono_Installers
 #endif
             
             #endregion
-            
-            #region settings
-
-            Container.Bind<ISoundSetting>()       .To<SoundSetting>()        .AsSingle();
-            Container.Bind<IMusicSetting>()       .To<MusicSetting>()        .AsSingle();
-            Container.Bind<INotificationSetting>().To<NotificationsSetting>().AsSingle();
-            Container.Bind<IVibrationSetting>()   .To<VibrationSetting>()    .AsSingle();
-            Container.Bind<ILanguageSetting>()    .To<LanguageSetting>()     .AsSingle();
-            Container.Bind<IDebugSetting>()       .To<DebugSetting>()        .AsSingle();
-            Container.Bind<ISettingsGetter>()     .To<SettingsGetter>()      .AsSingle();
-
-            #endregion
 
             #region other
 
             Container.Bind<ICameraProvider>()   .FromComponentInNewPrefab(cameraProvider).AsSingle();
             Container.Bind<IColorProvider>()    .FromComponentInNewPrefab(colorProvider) .AsSingle();
-            Container.Bind<IDebugManager>()     .To<DebugManager>()                      .AsSingle();
             Container.Bind<ILoadingController>().To<LoadingController>()                 .AsSingle().When(_ => Release);
-            Container.Bind<IVibrationManager>() .To<VibrationManager>()                  .AsSingle();
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Container.Bind<IDebugManager>()     .To<DebugManager>()                      .AsSingle();
+#endif
+            Container.Bind<IAudioManager>()       .To<AudioManager>()             .AsSingle();
+            Container.Bind<IManagersGetter>()     .To<ManagersGetter>()           .AsSingle();
 
             #endregion
         }

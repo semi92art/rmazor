@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Constants;
 using DI.Extensions;
+using DialogViewers;
+using Entities;
 using Exceptions;
 using GameHelpers;
 using Games.RazorMaze.Models;
@@ -10,7 +13,6 @@ using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.InputConfigurators;
-using Managers;
 using Shapes;
 using Ticker;
 using TMPro;
@@ -26,7 +28,7 @@ namespace Games.RazorMaze.Views.UI
 
     }
     
-    public class ViewUIGameControls : ViewUIGameControlsBase, IUpdateTick
+    public class ViewUIGameControls : ViewUIGameControlsBase
     {
         #region nonpublic members
 
@@ -54,8 +56,7 @@ namespace Games.RazorMaze.Views.UI
         private          Dictionary<string, Animator> m_StartLogoCharAnims;
         private          bool                         m_OnStart              = true;
         private readonly List<Component>              m_RotatingButtonShapes = new List<Component>();
-        private          Disc                         m_RotateClockwiseButtonOuterDisc;
-        private          Disc                         m_RotateCounterClockwiseButtonOuterDisc;
+        private readonly List<Component>              m_RotatingButtonShapes2 = new List<Component>();
 
         #endregion
         
@@ -66,13 +67,14 @@ namespace Games.RazorMaze.Views.UI
         private IModelGame               Model               { get; }
         private IContainersGetter        ContainersGetter    { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
+        private IViewInputTouchProceeder TouchProceeder      { get; }
         private IViewAppearTransitioner  AppearTransitioner  { get; }
         private IGameTicker              GameTicker          { get; }
         private ILevelsLoader            LevelsLoader        { get; }
-        private ILocalizationManager     LocalizationManager { get; }
-        private IAnalyticsManager        AnalyticsManager    { get; }
         private ICameraProvider          CameraProvider      { get; }
         private IColorProvider           ColorProvider       { get; }
+        private IManagersGetter          Managers            { get; }
+        private IBigDialogViewer         BigDialogViewer     { get; }
 
         public ViewUIGameControls(
             ViewSettings _ViewSettings,
@@ -81,13 +83,14 @@ namespace Games.RazorMaze.Views.UI
             IContainersGetter _ContainersGetter,
             IMazeCoordinateConverter _CoordinateConverter,
             IViewInputCommandsProceeder _CommandsProceeder,
+            IViewInputTouchProceeder _TouchProceeder,
             IViewAppearTransitioner _AppearTransitioner,
             IGameTicker _GameTicker,
             ILevelsLoader _LevelsLoader,
-            ILocalizationManager _LocalizationManager,
-            IAnalyticsManager _AnalyticsManager,
             ICameraProvider _CameraProvider,
-            IColorProvider _ColorProvider) 
+            IColorProvider _ColorProvider,
+            IManagersGetter _Managers,
+            IBigDialogViewer _BigDialogViewer) 
             : base(_CommandsProceeder)
         {
             ViewSettings = _ViewSettings;
@@ -95,13 +98,14 @@ namespace Games.RazorMaze.Views.UI
             Model = _Model;
             ContainersGetter = _ContainersGetter;
             CoordinateConverter = _CoordinateConverter;
+            TouchProceeder = _TouchProceeder;
             AppearTransitioner = _AppearTransitioner;
             GameTicker = _GameTicker;
             LevelsLoader = _LevelsLoader;
-            LocalizationManager = _LocalizationManager;
-            AnalyticsManager = _AnalyticsManager;
             CameraProvider = _CameraProvider;
             ColorProvider = _ColorProvider;
+            Managers = _Managers;
+            BigDialogViewer = _BigDialogViewer;
         }
 
         #endregion
@@ -169,14 +173,6 @@ namespace Games.RazorMaze.Views.UI
             }
             Prompt.OnLevelStageChanged(_Args);
         }
-        
-        public void UpdateTick()
-        {
-            if (!m_GameUiInitialized)
-                return;
-            m_RotateClockwiseButtonOuterDisc.DashOffset -= Time.deltaTime * 0.25f;
-            m_RotateCounterClockwiseButtonOuterDisc.DashOffset += Time.deltaTime * 0.25f;
-        }
 
         #endregion
 
@@ -189,15 +185,44 @@ namespace Games.RazorMaze.Views.UI
             InitStartLogo();
             InitRotateButtons();
             GameTicker.Register(this);
+            ColorProvider.ColorChanged += ColorProviderOnColorChanged;
         }
-        
+
+        private void ColorProviderOnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId == ColorIds.UI)
+            {
+                foreach (var shapeComp in m_RotatingButtonShapes)
+                {
+                    if (shapeComp is ShapeRenderer rend)
+                        rend.Color = _Color;
+                }
+                
+                foreach (var shapeComp in m_RotatingButtonShapes2)
+                {
+                    if (shapeComp is ShapeRenderer rend)
+                        rend.Color = _Color.SetA(0.2f);
+                }
+
+                foreach (var rendComp in m_Renderers)
+                {
+                    if (rendComp is ShapeRenderer rend1)
+                        rend1.Color = _Color;
+                    else if (rendComp is SpriteRenderer rend2)
+                        rend2.color = _Color;
+                    else if (rendComp is TMP_Text rend3)
+                        rend3.color = _Color;
+                }
+            }
+        }
+
         private void InitTopButtons()
         {
-            const float topOffset = 1f;
+            const float topOffset = 0f;
             const float horOffset = 1f;
             float scale = GraphicUtils.AspectRatio * 3f;
             var bounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
-            
+            float yPos = CoordinateConverter.GetScreenOffsets().w;
             var cont = GetGameUIContainer();
             var goShopButton = PrefabUtilsEx.InitPrefab(
                 cont, "ui_game", "shop_button");
@@ -210,16 +235,26 @@ namespace Games.RazorMaze.Views.UI
             });
             goShopButton.transform.localScale = scale * Vector3.one;
             goShopButton.transform.SetPosXY(
-                new Vector2(bounds.min.x, bounds.max.y)
+                new Vector2(bounds.min.x, yPos)
                 + Vector2.right * horOffset + Vector2.down * topOffset);
             goSettingsButton.transform.localScale = scale * Vector3.one;
             goSettingsButton.transform.SetPosXY(
-                (Vector2)bounds.max
+                new Vector2(bounds.max.x, yPos)
                 + Vector2.left * horOffset + Vector2.down * topOffset);
             m_ShopButton = goShopButton.GetCompItem<ButtonOnRaycast>("button");
             m_SettingsButton = goSettingsButton.GetCompItem<ButtonOnRaycast>("button");
-            m_ShopButton.Init(CommandShop, () => Model.LevelStaging.LevelStage, CameraProvider);
-            m_SettingsButton.Init(CommandSettings, () => Model.LevelStaging.LevelStage, CameraProvider);
+            m_ShopButton.Init(
+                CommandShop, 
+                () => Model.LevelStaging.LevelStage, 
+                CameraProvider,
+                Managers.HapticsManager);
+            TouchProceeder.OnTap += m_ShopButton.OnTap;
+            m_SettingsButton.Init(
+                CommandSettings, 
+                () => Model.LevelStaging.LevelStage,
+                CameraProvider,
+                Managers.HapticsManager);
+            TouchProceeder.OnTap += m_SettingsButton.OnTap;
             goShopButton.SetActive(false);
             goSettingsButton.SetActive(false);
         }
@@ -228,7 +263,7 @@ namespace Games.RazorMaze.Views.UI
         {
             var bounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
             var mazeBounds = CoordinateConverter.GetMazeBounds();
-            float yPos = bounds.max.y;
+            float yPos = CoordinateConverter.GetScreenOffsets().w;
             var cont = GetGameUIContainer();
             var goLevelText = PrefabUtilsEx.InitPrefab(
                 cont, "ui_game", "level_text");
@@ -240,7 +275,7 @@ namespace Games.RazorMaze.Views.UI
                 yPos);
             var goLevelCheckMark = PrefabUtilsEx.GetPrefab(
                 "ui_game", "level_check_mark");
-            float markHeight = goLevelCheckMark.GetCompItem<Rectangle>("body").Height;
+            yPos -= 2f;
             for (int i = 0; i < RazorMazeUtils.LevelsInGroup; i++)
             {
                 var go = Object.Instantiate(goLevelCheckMark, cont);
@@ -254,15 +289,11 @@ namespace Games.RazorMaze.Views.UI
                 float xCoeff1 = 8f * ((i + 0.5f) / RazorMazeUtils.LevelsInGroup - 0.5f);
                 go.transform.SetLocalPosXY(
                     mazeBounds.center.x + xCoeff1,
-                    yPos 
-                    - m_LevelText.rectTransform.rect.height 
-                    - markHeight * 0.5f);
-                if (i == RazorMazeUtils.LevelsInGroup - 1)
-                    yPos += -m_LevelText.rectTransform.rect.height - markHeight - 2f;
+                    yPos);
             }
+            yPos -= 3.5f;
             m_Renderers.Add(m_LevelText);
             goLevelCheckMark.DestroySafe();
-            
             var goCongrads = PrefabUtilsEx.InitPrefab(
                 cont, "ui_game", "congratulations_panel");
             goCongrads.transform.SetPosXY(new Vector2(bounds.center.x, yPos));
@@ -274,16 +305,17 @@ namespace Games.RazorMaze.Views.UI
 
         private void InitStartLogo()
         {
+            const float topOffset = 12f;
             var go = PrefabUtilsEx.InitPrefab(
                 GetGameUIContainer(),
                 "ui_game",
                 "start_logo");
-            var bounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
             var mazeBounds = CoordinateConverter.GetMazeBounds();
+            float yPos = CoordinateConverter.GetScreenOffsets().w - topOffset;
             go.transform.SetLocalPosXY(
                 mazeBounds.center.x,
-                bounds.max.y - 15f);
-            go.transform.localScale = Vector3.one * 5f;
+                yPos);
+            go.transform.localScale = Vector3.one * 4f;
             m_StartLogoCharAnims = new Dictionary<string, Animator>
             {
                 {"R1", go.GetCompItem<Animator>("R1")},
@@ -306,7 +338,6 @@ namespace Games.RazorMaze.Views.UI
         
         private void InitRotateButtons()
         {
-            const float bottomOffset = 1f;
             const float horOffset = 1f;
             var cont = GetGameUIContainer();
             var goRCb = PrefabUtilsEx.InitPrefab(
@@ -315,24 +346,35 @@ namespace Games.RazorMaze.Views.UI
                 cont, "ui_game", "rotate_counter_clockwise_button");
             float scale = CoordinateConverter.Scale * 0.2f;
             var bounds = GraphicUtils.GetVisibleBounds();
+            float yPos = CoordinateConverter.GetScreenOffsets().z;
             var rcbDisc = goRCb.GetCompItem<Disc>("button");
             goRCb.transform.localScale = scale * Vector3.one;
             goRCb.transform.SetPosXY(
-                new Vector2(bounds.max.x, bounds.min.y) 
-                + scale * rcbDisc.Radius * (Vector2.left + Vector2.up)
-                + Vector2.left * horOffset + Vector2.up * bottomOffset);
+                new Vector2(bounds.center.x, yPos) 
+                + (Vector2.right + Vector2.up) * scale * rcbDisc.Radius 
+                + Vector2.right * horOffset);
             goRCCb.transform.localScale = scale * Vector3.one;
             goRCCb.transform.SetPosXY(
-                (Vector2)bounds.min
-                + scale * rcbDisc.Radius * (Vector2.right + Vector2.up)
-                + Vector2.right * horOffset + Vector2.up * bottomOffset);
+                new Vector2(bounds.center.x, yPos)
+                + (Vector2.left + Vector2.up) * scale * rcbDisc.Radius
+                + Vector2.left * horOffset);
             m_RotateClockwiseButton = goRCb.GetCompItem<ButtonOnRaycast>("button");
             m_RotateCounterClockwiseButton = goRCCb.GetCompItem<ButtonOnRaycast>("button");
-            m_RotateClockwiseButton.Init(CommandRotateClockwise, () => Model.LevelStaging.LevelStage, CameraProvider);
-            m_RotateCounterClockwiseButton.Init(CommandRotateClockwise, () => Model.LevelStaging.LevelStage, CameraProvider);
+            m_RotateClockwiseButton.Init(
+                CommandRotateClockwise, 
+                () => Model.LevelStaging.LevelStage, 
+                CameraProvider,
+                Managers.HapticsManager);
+            TouchProceeder.OnTap += m_RotateClockwiseButton.OnTap;
+            m_RotateCounterClockwiseButton.Init(
+                CommandRotateCounterClockwise, 
+                () => Model.LevelStaging.LevelStage,
+                CameraProvider,
+                Managers.HapticsManager);
+            TouchProceeder.OnTap += m_RotateCounterClockwiseButton.OnTap;
             m_RotatingButtonShapes.AddRange(new ShapeRenderer[]
             {
-                goRCb.GetCompItem<Disc>("outer_disc"), 
+                goRCb.GetCompItem<Disc>("outer_disc"),
                 goRCb.GetCompItem<Disc>("line"),
                 goRCb.GetCompItem<Line>("arrow_part_1"), 
                 goRCb.GetCompItem<Line>("arrow_part_2"), 
@@ -341,9 +383,9 @@ namespace Games.RazorMaze.Views.UI
                 goRCCb.GetCompItem<Line>("arrow_part_1"), 
                 goRCCb.GetCompItem<Line>("arrow_part_2")
             });
-
-            m_RotateClockwiseButtonOuterDisc = goRCb.GetCompItem<Disc>("outer_disc");
-            m_RotateCounterClockwiseButtonOuterDisc = goRCCb.GetCompItem<Disc>("outer_disc");
+            
+            m_RotatingButtonShapes2.Add(goRCb.GetCompItem<Disc>("inner_disc"));
+            m_RotatingButtonShapes2.Add(goRCCb.GetCompItem<Disc>("inner_disc"));
             
             goRCb.SetActive(false);
             goRCCb.SetActive(false);
@@ -395,7 +437,7 @@ namespace Games.RazorMaze.Views.UI
         {
             if (_Show)
             {
-                LocalizationManager.AddTextObject(
+                Managers.LocalizationManager.AddTextObject(
                     m_LevelText,
                     "level", 
                     _Text => _Text + " " + (Model.Data.LevelIndex + 1));
@@ -485,30 +527,60 @@ namespace Games.RazorMaze.Views.UI
             AppearTransitioner.DoAppearTransition(_Show, 
                 new Dictionary<IEnumerable<Component>, System.Func<Color>>
                 {
-                    {m_RotatingButtonShapes, () => ColorProvider.GetColor(ColorIds.Main)}
+                    {m_RotatingButtonShapes, () => ColorProvider.GetColor(ColorIds.UI)},
+                    {m_RotatingButtonShapes2, () => ColorProvider.GetColor(ColorIds.UI).SetA(0.2f)},
                 }, _Type: EAppearTransitionType.WithoutDelay);
         }
         
         private void CommandRotateClockwise()
         {
+            if (BigDialogViewer.IsShowing || BigDialogViewer.IsInTransition)
+                return;
             CommandsProceeder.RaiseCommand(EInputCommand.RotateClockwise, null);
+            Coroutines.Run(ButtonAnimCoroutine(m_RotateClockwiseButton.transform));
         }
         
         private void CommandRotateCounterClockwise()
         {
+            if (BigDialogViewer.IsShowing || BigDialogViewer.IsInTransition)
+                return;
             CommandsProceeder.RaiseCommand(EInputCommand.RotateCounterClockwise, null);
+            Coroutines.Run(ButtonAnimCoroutine(m_RotateCounterClockwiseButton.transform));
         }
 
         private void CommandShop()
         {
-            AnalyticsManager.SendAnalytic(AnalyticIds.ShopButtonPressed);
+            if (BigDialogViewer.IsShowing || BigDialogViewer.IsInTransition)
+                return;
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIds.ShopButtonPressed);
             CommandsProceeder.RaiseCommand(EInputCommand.ShopMenu, null);
         }
 
         private void CommandSettings()
         {
-            AnalyticsManager.SendAnalytic(AnalyticIds.SettingsButtonPressed);
+            if (BigDialogViewer.IsShowing || BigDialogViewer.IsInTransition)
+                return;
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIds.SettingsButtonPressed);
             CommandsProceeder.RaiseCommand(EInputCommand.SettingsMenu, null);
+        }
+
+        private IEnumerator ButtonAnimCoroutine(Transform _Button)
+        {
+            var startScale = _Button.transform.localScale;
+            const float minScale = 0.7f;
+            yield return Coroutines.Lerp(
+                0f,
+                1f,
+                0.1f,
+                _P => _Button.localScale = startScale * _P,
+                GameTicker,
+                _ProgressFormula: _P =>
+                {
+                    if (_P < 0.5f)
+                        return minScale + (1f - _P * 2f) * (1f - minScale);
+                    else
+                        return minScale + (_P * 2f - 1f) * (1f - minScale);
+                });
         }
 
         private Transform GetGameUIContainer()
@@ -528,7 +600,7 @@ namespace Games.RazorMaze.Views.UI
 
         private void SetCongratsString()
         {
-            LocalizationManager.AddTextObject(m_CompletedText, "completed");
+            Managers.LocalizationManager.AddTextObject(m_CompletedText, "completed");
             float levelTime = Model.LevelStaging.LevelTime;
             int diesCount = Model.LevelStaging.DiesCount;
             int pathesCount = Model.PathItemsProceeder.PathProceeds.Count;
@@ -540,7 +612,7 @@ namespace Games.RazorMaze.Views.UI
                 congradsKey = "good_job";
             else
                 congradsKey = "not_bad";
-            LocalizationManager.AddTextObject(
+            Managers.LocalizationManager.AddTextObject(
                 m_CongratsText, 
                 congradsKey, 
                 _Text => _Text.ToUpperInvariant());

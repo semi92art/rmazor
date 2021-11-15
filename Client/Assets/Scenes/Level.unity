@@ -307,6 +307,8 @@ MonoBehaviour:
     type: 3}
   colorProvider: {fileID: 5801256520906685625, guid: c93dbf76a6376f148b36a1c337a4924c,
     type: 3}
+  hapticsManager: {fileID: 7385490592317120953, guid: 1dc01ca2ab041494a9cee1c2490f747e,
+    type: 3}
 --- !u!114 &703413959
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -365,7 +367,7 @@ GameObject:
   - component: {fileID: 934508345}
   - component: {fileID: 934508344}
   m_Layer: 0
-  m_Name: EventSystem
+  m_Name: Event System
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

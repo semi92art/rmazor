@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
@@ -7,8 +6,10 @@ using Entities;
 using Exceptions;
 using GameHelpers;
 using Games.RazorMaze.Views.ContainerGetters;
+using Settings;
 using Ticker;
 using UnityEngine;
+using UnityEngine.Events;
 using Utils;
 
 namespace Controllers
@@ -93,30 +94,6 @@ namespace Controllers
 
         public AudioClipInfo(
             AudioSource _Source,
-            string _ClipName,
-            EAudioClipType _Type,
-            float _Volume = 1f,
-            bool _Loop = false, 
-            string _Id = null,
-            bool _IsUiSound = false,
-            float _AttenuationSecondsOnPlay = 0f,
-            float _AttenuationSecondsOnStop = 0f) 
-            : base(
-                _ClipName,
-                _Type, 
-                _Volume, 
-                _Loop,
-                _Id,
-                _IsUiSound, 
-                _AttenuationSecondsOnPlay, 
-                _AttenuationSecondsOnStop)
-        {
-            m_Source = _Source;
-            Loop = _Loop;
-        }
-
-        public AudioClipInfo(
-            AudioSource _Source,
             AudioClipArgs _Args)
             : base(
                 _Args.ClipName,
@@ -133,7 +110,7 @@ namespace Controllers
         }
     }
 
-    public interface IAudioManager
+    public interface IAudioManager : IInit
     {
         void PlayClip(AudioClipArgs _Args);
         void PauseClip(AudioClipArgs _Args);
@@ -153,24 +130,40 @@ namespace Controllers
         #region inject
         
         private IContainersGetter ContainersGetter { get; }
-        private IGameTicker GameTicker { get; }
-        private IUITicker UITicker { get; }
+        private IGameTicker       GameTicker       { get; }
+        private IUITicker         UITicker         { get; }
+        private IMusicSetting     MusicSetting     { get; }
+        private ISoundSetting     SoundSetting     { get; }
 
         public AudioManager(
             IContainersGetter _ContainersGetter,
             IGameTicker _GameTicker,
-            IUITicker _UITicker)
+            IUITicker _UITicker,
+            IMusicSetting _MusicSetting,
+            ISoundSetting _SoundSetting)
         {
             ContainersGetter = _ContainersGetter;
             GameTicker = _GameTicker;
             UITicker = _UITicker;
-            
-            GameTicker.Register(this);
+            MusicSetting = _MusicSetting;
+            SoundSetting = _SoundSetting;
+
         }
 
         #endregion
 
         #region api
+        
+        public event UnityAction Initialized;
+        public void Init()
+        {
+            GameTicker.Register(this);
+            MusicSetting.OnValueSet = _MusicOn => EnableAudio(_MusicOn, EAudioClipType.Music);
+            SoundSetting.OnValueSet = _MusicOn => EnableAudio(_MusicOn, EAudioClipType.Sound);
+            EnableAudio(MusicSetting.Get(), EAudioClipType.Music);
+            EnableAudio(SoundSetting.Get(), EAudioClipType.Sound);
+            Initialized?.Invoke();
+        }
 
         public void PlayClip(AudioClipArgs _Args)
         {
@@ -188,19 +181,19 @@ namespace Controllers
                 m_ClipInfos.Add(info);
             }
 
-            void SetVolume(float _Volume) => info.Volume = info.StartVolume = _Volume; 
+            info.StartVolume = _Args.StartVolume;
             switch (info.Type)
             {
                 case EAudioClipType.Sound:
-                    SetVolume(SaveUtils.GetValue<bool>(SaveKey.SettingSoundOn) ? 1f : 0f);
+                    info.Volume = SaveUtils.GetValue<bool>(SaveKey.SettingSoundOn) ? info.StartVolume : 0f;
                     break;
                 case EAudioClipType.Music:
-                    SetVolume(SaveUtils.GetValue<bool>(SaveKey.SettingMusicOn) ? 1f : 0f);
+                    info.Volume = SaveUtils.GetValue<bool>(SaveKey.SettingMusicOn) ? info.StartVolume : 0f;
                     break;
                 default:
                     throw new SwitchCaseNotImplementedException(info.Type);
             }
-
+            
             if (info.OnPause)
                 info.OnPause = false;
             else
