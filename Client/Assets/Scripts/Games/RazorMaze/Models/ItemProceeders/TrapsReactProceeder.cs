@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
+using DI.Extensions;
+using Entities;
 using Games.RazorMaze.Models.ProceedInfos;
 using Ticker;
 using UnityEngine;
@@ -74,8 +76,10 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     continue;
                 if (!info.ReadyToSwitchStage)
                     continue;
-                var trapReactFinalPoint = (info.CurrentPosition + info.Direction).ToVector2();
-                if (Vector2.Distance(trapReactFinalPoint, _Args.PrecisePosition) < 0.9f)
+                var trapReactFinalPoint = (info.CurrentPosition + info.Direction);
+                var path = RazorMazeUtils.GetFullPath(
+                    (V2Int) _Args.PreviousPrecisePosition, (V2Int) _Args.PrecisePosition);
+                if (path.Contains(trapReactFinalPoint))
                     ProceedCoroutine(info, ProceedTrap(info));
             }
         }

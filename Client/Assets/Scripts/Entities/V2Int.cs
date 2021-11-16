@@ -57,5 +57,9 @@ namespace Entities
         public static V2Int zero => new V2Int(Vector2Int.zero);
         
         public static implicit operator Vector2(V2Int _V) => _V.ToVector2();
+        public static explicit operator V2Int(Vector2 _V)
+        {
+            return new V2Int(Mathf.RoundToInt(_V.x), Mathf.RoundToInt(_V.y));
+        }
     }
 }

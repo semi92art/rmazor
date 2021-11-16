@@ -259,13 +259,23 @@ namespace Games.RazorMaze.Views.MazeItems
                 return;
             var dir = Props.Directions.First();
             var pos = Props.Position;
-            var itemPos = (dir + pos).ToVector2();
+            var itemPos = dir + pos;
             var character = Model.Character;
-            var cPos = character.IsMoving ? 
-                character.MovingInfo.PrecisePosition : character.Position.ToVector2();
-            if (Vector2.Distance(cPos, itemPos) + RazorMazeUtils.Epsilon > 1f) 
-                return;
-            Model.LevelStaging.KillCharacter();
+
+            if (character.IsMoving)
+            {
+                var charInfo = Model.Character.MovingInfo;
+                var path = RazorMazeUtils.GetFullPath(
+                    (V2Int) charInfo.PreviousPrecisePosition, (V2Int) charInfo.PrecisePosition);
+                if (path.Contains(itemPos))
+                    Model.LevelStaging.KillCharacter();
+            }
+            else
+            {
+                var cPos = character.Position.ToVector2();
+                if (Vector2.Distance(cPos, itemPos) + RazorMazeUtils.Epsilon < 1f) 
+                    Model.LevelStaging.KillCharacter();
+            }
         }
         
         private static AudioClipArgs GetAudioClipInfoTrapReactOut(IMazeItemProceedInfo _Info)
