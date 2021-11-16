@@ -137,7 +137,6 @@ namespace Games.RazorMaze
             int min, max;
             IEnumerable<int> range;
             IEnumerable<V2Int> result = null;
-            
             if (_From.X == _To.X)
             {
                 min = Math.Min(_From.Y, _To.Y);
@@ -146,7 +145,6 @@ namespace Games.RazorMaze
                 result = range.Select(_V => new V2Int(_From.X, _V));
                 if (min == _To.Y) result = result.Reverse();
             }
-
             if (_From.Y == _To.Y)
             {
                 min = Math.Min(_From.X, _To.X);
@@ -155,7 +153,6 @@ namespace Games.RazorMaze
                 result = range.Select(_V => new V2Int(_V, _From.Y));
                 if (min == _To.X) result = result.Reverse();
             }
-            
             if (result == null)
                 throw new ArgumentException($"Cannot build direct path from {_From} to {_To}");
             return result.ToList();
@@ -172,14 +169,28 @@ namespace Games.RazorMaze
         public static int CompareItemsOnPath(V2Int _From, V2Int _To, V2Int _A, V2Int _B)
         {
             var fullPath = GetFullPath(_From, _To);
-            if (!fullPath.Contains(_A))
-                throw new ArgumentException($"Path from {_From} to {_To} does not contain point _A {_A}");
-            if (!fullPath.Contains(_B))
-                throw new ArgumentException($"Path from {_From} to {_To} does not contain point _B {_B}");
+            return CompareItemsOnPath(fullPath, _A, _B);
+        }
+
+        /// <summary>
+        /// returns -1 if _A less than _B, 0 if _A equals _B, 1 if _A greater than _B
+        /// </summary>
+        /// <param name="_Path">path</param>
+        /// <param name="_A">first path item</param>
+        /// <param name="_B">second path item</param>
+        /// <returns></returns>
+        public static int CompareItemsOnPath(List<V2Int> _Path, V2Int _A, V2Int _B)
+        {
+            if (!_Path.Contains(_A))
+                throw new ArgumentException($"Path from {_Path.First()} to" +
+                                            $" {_Path.Last()} does not contain point _A {_A}");
+            if (!_Path.Contains(_B))
+                throw new ArgumentException($"Path from {_Path.Last()} to" +
+                                            $" {_Path.Last()} does not contain point _B {_B}");
             if (_A == _B)
                 return 0;
-            float distA = Vector2.Distance(_From.ToVector2(), _A.ToVector2());
-            float distB = Vector2.Distance(_From.ToVector2(), _B.ToVector2());
+            float distA = Vector2.Distance(_Path[0].ToVector2(), _A.ToVector2());
+            float distB = Vector2.Distance(_Path[0].ToVector2(), _B.ToVector2());
             return distA < distB ? -1 : 1;
         }
         

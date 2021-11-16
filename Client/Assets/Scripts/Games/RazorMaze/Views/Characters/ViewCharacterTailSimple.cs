@@ -28,14 +28,14 @@ namespace Games.RazorMaze.Views.Characters
         private ModelSettings            ModelSettings       { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
         private IContainersGetter        ContainersGetter    { get; }
-        private IGameTicker              GameTicker          { get; }
+        private IViewGameTicker              GameTicker          { get; }
         private IColorProvider           ColorProvider       { get; }
 
         public ViewCharacterTailSimple(
             ModelSettings _ModelSettings,
             IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IGameTicker _GameTicker,
+            IViewGameTicker _GameTicker,
             IColorProvider _ColorProvider)
         {
             ModelSettings = _ModelSettings;

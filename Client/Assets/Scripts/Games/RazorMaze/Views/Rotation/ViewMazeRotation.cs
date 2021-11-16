@@ -24,7 +24,7 @@ namespace Games.RazorMaze.Views.Rotation
         
         private ViewSettings                ViewSettings      { get; }
         private IContainersGetter           ContainersGetter  { get; }
-        private IGameTicker                 GameTicker        { get; }
+        private IViewGameTicker                 GameTicker        { get; }
         private IModelGame                  Model             { get; }
         private IViewCharacter              Character         { get; }
         private IViewInputCommandsProceeder CommandsProceeder { get; }
@@ -32,7 +32,7 @@ namespace Games.RazorMaze.Views.Rotation
         public ViewMazeRotation(
             ViewSettings _ViewSettings,
             IContainersGetter _ContainersGetter, 
-            IGameTicker _GameTicker,
+            IViewGameTicker _GameTicker,
             IModelGame _Model,
             IViewCharacter _Character,
             IViewInputCommandsProceeder _CommandsProceeder)

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Entities;
 using Games.RazorMaze.Models.ProceedInfos;
 using Ticker;
@@ -40,8 +39,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
             IModelData _Data,
             IModelCharacter _Character,
             IModelLevelStaging _LevelStaging,
-            IGameTicker _Ticker)
-            : base (_Settings, _Data, _Character, _LevelStaging, _Ticker) { }
+            IModelGameTicker _GameTicker)
+            : base (_Settings, _Data, _Character, _LevelStaging, _GameTicker) { }
         
         #endregion
         
@@ -52,20 +51,22 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
-            var info = (from inf in ProceedInfos
-                    where inf.CurrentPosition == _Args.Position select inf)
-                .FirstOrDefault();
-
+            IMazeItemProceedInfo info = null;
+            for (int i = 0; i < ProceedInfos.Length; i++)
+            {
+                if (ProceedInfos[i].CurrentPosition != _Args.Position)
+                    continue;
+                info = ProceedInfos[i];
+                break;
+            }
             if (info == null)
             {
                 m_LastArgs = null;
                 return;
             }
-
             if (m_LastArgs != null)
                 return;
-            
-            var charInverseDir = -RazorMazeUtils.GetDirectionVector(_Args.Direction, Data.Orientation);
+            var charInverseDir = -1 * RazorMazeUtils.GetDirectionVector(_Args.Direction, Data.Orientation);
             V2Int newDirection = default;
             if (info.Direction == V2Int.up + V2Int.left)
                 newDirection = charInverseDir == V2Int.up ? V2Int.left : V2Int.up;
@@ -76,7 +77,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
             else if (info.Direction == V2Int.down + V2Int.right)
                 newDirection = charInverseDir == V2Int.down ? V2Int.right : V2Int.down;
             var moveDirection = RazorMazeUtils.GetMoveDirection(newDirection, Data.Orientation);
-            
             m_LastArgs = new SpringboardEventArgs(moveDirection, info);
             SpringboardEvent?.Invoke(m_LastArgs);
         }

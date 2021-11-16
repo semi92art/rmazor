@@ -38,14 +38,14 @@ namespace Games.RazorMaze.Models.ItemProceeders
         protected IModelData         Data         { get; }
         protected IModelCharacter    Character    { get; }
         protected IModelLevelStaging LevelStaging { get; }
-        protected IGameTicker        GameTicker   { get; }
+        protected IModelGameTicker   GameTicker   { get; }
         
         protected ItemsProceederBase(
             ModelSettings _Settings, 
             IModelData _Data,
             IModelCharacter _Character,
             IModelLevelStaging _LevelStaging,
-            IGameTicker _GameTicker)
+            IModelGameTicker _GameTicker)
         {
             Settings = _Settings;
             Data = _Data;

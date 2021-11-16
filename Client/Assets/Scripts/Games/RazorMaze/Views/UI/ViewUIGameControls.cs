@@ -69,7 +69,7 @@ namespace Games.RazorMaze.Views.UI
         private IMazeCoordinateConverter CoordinateConverter { get; }
         private IViewInputTouchProceeder TouchProceeder      { get; }
         private IViewAppearTransitioner  AppearTransitioner  { get; }
-        private IGameTicker              GameTicker          { get; }
+        private IViewGameTicker              GameTicker          { get; }
         private ILevelsLoader            LevelsLoader        { get; }
         private ICameraProvider          CameraProvider      { get; }
         private IColorProvider           ColorProvider       { get; }
@@ -85,7 +85,7 @@ namespace Games.RazorMaze.Views.UI
             IViewInputCommandsProceeder _CommandsProceeder,
             IViewInputTouchProceeder _TouchProceeder,
             IViewAppearTransitioner _AppearTransitioner,
-            IGameTicker _GameTicker,
+            IViewGameTicker _GameTicker,
             ILevelsLoader _LevelsLoader,
             ICameraProvider _CameraProvider,
             IColorProvider _ColorProvider,
@@ -248,13 +248,11 @@ namespace Games.RazorMaze.Views.UI
                 () => Model.LevelStaging.LevelStage, 
                 CameraProvider,
                 Managers.HapticsManager);
-            TouchProceeder.OnTap += m_ShopButton.OnTap;
             m_SettingsButton.Init(
                 CommandSettings, 
                 () => Model.LevelStaging.LevelStage,
                 CameraProvider,
                 Managers.HapticsManager);
-            TouchProceeder.OnTap += m_SettingsButton.OnTap;
             goShopButton.SetActive(false);
             goSettingsButton.SetActive(false);
         }
@@ -365,13 +363,11 @@ namespace Games.RazorMaze.Views.UI
                 () => Model.LevelStaging.LevelStage, 
                 CameraProvider,
                 Managers.HapticsManager);
-            TouchProceeder.OnTap += m_RotateClockwiseButton.OnTap;
             m_RotateCounterClockwiseButton.Init(
                 CommandRotateCounterClockwise, 
                 () => Model.LevelStaging.LevelStage,
                 CameraProvider,
                 Managers.HapticsManager);
-            TouchProceeder.OnTap += m_RotateCounterClockwiseButton.OnTap;
             m_RotatingButtonShapes.AddRange(new ShapeRenderer[]
             {
                 goRCb.GetCompItem<Disc>("outer_disc"),

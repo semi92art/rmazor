@@ -47,7 +47,7 @@ namespace Games.RazorMaze.Views.MazeItems
         protected IModelGame               Model               { get; }
         protected IMazeCoordinateConverter CoordinateConverter { get; }
         protected IContainersGetter        ContainersGetter    { get; }
-        protected IGameTicker              GameTicker          { get; }
+        protected IViewGameTicker              GameTicker          { get; }
         protected IViewAppearTransitioner  Transitioner        { get; }
         protected IManagersGetter          Managers            { get; }
         protected IColorProvider           ColorProvider       { get; }
@@ -58,7 +58,7 @@ namespace Games.RazorMaze.Views.MazeItems
             IModelGame _Model,
             IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IGameTicker _GameTicker,
+            IViewGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
             IManagersGetter _Managers,
             IColorProvider _ColorProvider)

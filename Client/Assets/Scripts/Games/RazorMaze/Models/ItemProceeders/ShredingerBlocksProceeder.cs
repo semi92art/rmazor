@@ -24,7 +24,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
     public interface IShredingerBlocksProceeder :
         IItemsProceeder, 
-        ICharacterMoveContinued, 
         ICharacterMoveFinished,
         IGetAllProceedInfos
     {
@@ -46,22 +45,17 @@ namespace Games.RazorMaze.Models.ItemProceeders
             IModelData _Data,
             IModelCharacter _Character,
             IModelLevelStaging _LevelStaging,
-            IGameTicker _GameTicker) 
+            IModelGameTicker _GameTicker) 
             : base(_Settings, _Data, _Character, _LevelStaging, _GameTicker) { }
         
         #endregion
         
         #region api
         
-        public override EMazeItemType[] Types => new[] {EMazeItemType.ShredingerBlock};
-        public event ShredingerBlockHandler ShredingerBlockEvent;
-        public Func<IEnumerable<IMazeItemProceedInfo>> GetAllProceedInfos { get; set; }
+        public override EMazeItemType[]         Types => new[] {EMazeItemType.ShredingerBlock};
+        public event ShredingerBlockHandler     ShredingerBlockEvent;
+        public Func<List<IMazeItemProceedInfo>> GetAllProceedInfos { get; set; }
 
-        public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
-        {
-            // TODO если понадобится более быстрая активация блоков шредингера во время движения
-        }
-        
         public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
         {
             var path = RazorMazeUtils.GetFullPath(_Args.From, _Args.To);

@@ -1,35 +1,42 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Games.RazorMaze.Models.InputSchedulers;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views;
-using Mono_Installers;
 using UnityEngine.Events;
 
 namespace Games.RazorMaze.Models
 {
     public interface IModelGame : IInit, IOnLevelStageChanged
     {
-        IModelData                                Data { get; }
-        IModelMazeRotation                        MazeRotation { get; }
-        IPathItemsProceeder                       PathItemsProceeder { get; }
-        ITrapsMovingProceeder                     TrapsMovingProceeder { get; }
-        IGravityItemsProceeder                    GravityItemsProceeder { get; }
-        ITrapsReactProceeder                      TrapsReactProceeder { get; }
-        ITrapsIncreasingProceeder                 TrapsIncreasingProceeder { get; }
-        ITurretsProceeder                         TurretsProceeder { get; }
-        IPortalsProceeder                         PortalsProceeder { get; }
-        IShredingerBlocksProceeder                ShredingerBlocksProceeder { get; }
-        ISpringboardProceeder                     SpringboardProceeder { get; }
-        IModelCharacter                           Character { get; }
-        IModelLevelStaging                        LevelStaging { get; }
-        IInputScheduler                           InputScheduler { get; }
-        IEnumerable<IMazeItemProceedInfo>         GetAllProceedInfos();
+        IModelData                 Data                      { get; }
+        IModelMazeRotation         MazeRotation              { get; }
+        IPathItemsProceeder        PathItemsProceeder        { get; }
+        ITrapsMovingProceeder      TrapsMovingProceeder      { get; }
+        IGravityItemsProceeder     GravityItemsProceeder     { get; }
+        ITrapsReactProceeder       TrapsReactProceeder       { get; }
+        ITrapsIncreasingProceeder  TrapsIncreasingProceeder  { get; }
+        ITurretsProceeder          TurretsProceeder          { get; }
+        IPortalsProceeder          PortalsProceeder          { get; }
+        IShredingerBlocksProceeder ShredingerBlocksProceeder { get; }
+        ISpringboardProceeder      SpringboardProceeder      { get; }
+        IModelCharacter            Character                 { get; }
+        IModelLevelStaging         LevelStaging              { get; }
+        IInputScheduler            InputScheduler            { get; }
+        List<IMazeItemProceedInfo> GetAllProceedInfos();
     }
     
     public class ModelGame : IModelGame
     {
+        #region nonpublic members
+
+        private List<IMazeItemProceedInfo> m_AllProceedInfosCached;
+        private List<object>               m_Proceeders;
+
+        #endregion
+        
         #region api
         
         public event UnityAction Initialized;
@@ -83,72 +90,7 @@ namespace Games.RazorMaze.Models
 
         public void Init()
         {
-            LevelStaging.LevelStageChanged                 += OnLevelStageChanged;
-            MazeRotation.RotationFinishedInternal          += MazeOnRotationFinishedInternal;
-            Character.CharacterMoveStarted                 += CharacterOnMoveStarted;
-            Character.CharacterMoveContinued               += CharacterOnMoveContinued;
-            Character.CharacterMoveFinished                += CharacterOnFinishMove;
-            PortalsProceeder.PortalEvent                   += Character.OnPortal;
-            SpringboardProceeder.SpringboardEvent          += Character.OnSpringboard;
-            ShredingerBlocksProceeder.ShredingerBlockEvent += GravityItemsProceeder.OnShredingerBlockEvent;
-
-            var getProceedInfosItems = GetInterfaceOfProceeders<IGetAllProceedInfos>(GetProceeders());
-            foreach (var item in getProceedInfosItems)
-                item.GetAllProceedInfos = GetAllProceedInfos;
-
-            Initialized?.Invoke();
-        }
-
-        public IEnumerable<IMazeItemProceedInfo> GetAllProceedInfos()
-        {
-            var itemProceeders = GetInterfaceOfProceeders<IItemsProceeder>(GetProceeders());
-            var result = itemProceeders
-                .SelectMany(_P => _P.ProceedInfos);
-            return result;
-        }
-        
-        public void OnLevelStageChanged(LevelStageArgs _Args)
-        {
-            var proceeders = GetInterfaceOfProceeders<IOnLevelStageChanged>(GetProceeders());
-            foreach (var proceeder in proceeders)
-                proceeder.OnLevelStageChanged(_Args);
-        }
-        
-        #endregion
-
-        #region event methods
-        
-        private void MazeOnRotationFinishedInternal(MazeRotationEventArgs _Args)
-        {
-            InputScheduler.UnlockRotation(true);
-            GravityItemsProceeder.OnMazeOrientationChanged();
-        }
-        
-        private void CharacterOnMoveStarted(CharacterMovingEventArgs _Args)
-        {
-            GravityItemsProceeder.OnCharacterMoveStarted(_Args);
-        }
-
-        private void CharacterOnMoveContinued(CharacterMovingEventArgs _Args)
-        {
-            var proceeders = GetInterfaceOfProceeders<ICharacterMoveContinued>(GetProceeders());
-            foreach (var proceeder in proceeders)
-                proceeder.OnCharacterMoveContinued(_Args);
-        }
-        
-        private void CharacterOnFinishMove(CharacterMovingEventArgs _Args)
-        {
-            InputScheduler.UnlockMovement(true);
-            ShredingerBlocksProceeder.OnCharacterMoveFinished(_Args);
-        }
-
-        #endregion
-        
-        #region nonpublic methods
-
-        private List<object> GetProceeders()
-        {
-            var result = new List<object>
+            m_Proceeders = new List<object>
             {
                 PathItemsProceeder,
                 Character,
@@ -163,14 +105,92 @@ namespace Games.RazorMaze.Models
                 InputScheduler,
                 LevelStaging,
                 MazeRotation
-            }.Where(_Proceeder => _Proceeder != null)
-                .ToList();
-            return result;
-        } 
+            };
+            
+            LevelStaging.LevelStageChanged                 += OnLevelStageChanged;
+            MazeRotation.RotationFinishedInternal          += MazeOnRotationFinishedInternal;
+            Character.CharacterMoveStarted                 += CharacterOnMoveStarted;
+            Character.CharacterMoveContinued               += CharacterOnMoveContinued;
+            Character.CharacterMoveFinished                += CharacterOnFinishMove;
+            PortalsProceeder.PortalEvent                   += Character.OnPortal;
+            SpringboardProceeder.SpringboardEvent          += Character.OnSpringboard;
+            ShredingerBlocksProceeder.ShredingerBlockEvent += GravityItemsProceeder.OnShredingerBlockEvent;
+
+            var getProceedInfosItems = GetInterfaceOfProceeders<IGetAllProceedInfos>(m_Proceeders);
+            foreach (var item in getProceedInfosItems)
+                item.GetAllProceedInfos = GetAllProceedInfos;
+
+            Initialized?.Invoke();
+        }
         
-        private static List<T> GetInterfaceOfProceeders<T>(IEnumerable<object> _Proceeders) where T : class
+        public List<IMazeItemProceedInfo> GetAllProceedInfos()
         {
-            return _Proceeders.Where(_Proceeder => _Proceeder is T).Cast<T>().ToList();
+            if (m_AllProceedInfosCached != null)
+                return m_AllProceedInfosCached;
+            var itemProceeders =
+                GetInterfaceOfProceeders<IItemsProceeder>(m_Proceeders);
+            var result = itemProceeders
+                .SelectMany(_P => _P.ProceedInfos)
+                .ToList();
+            m_AllProceedInfosCached = result;
+            return result;
+        }
+        
+        public void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            if (_Args.Stage == ELevelStage.Unloaded)
+                m_AllProceedInfosCached = null;
+            var proceeders =
+                GetInterfaceOfProceeders<IOnLevelStageChanged>(m_Proceeders);
+            for (int i = 0; i < proceeders.Count; i++)
+                proceeders[i].OnLevelStageChanged(_Args);
+        }
+        
+        #endregion
+
+        #region event methods
+        
+        private void MazeOnRotationFinishedInternal(MazeRotationEventArgs _Args)
+        {
+            InputScheduler.UnlockRotation(true);
+            GravityItemsProceeder.OnMazeOrientationChanged();
+        }
+        
+        private void CharacterOnMoveStarted(CharacterMovingEventArgs _Args)
+        {
+            var proceeders = 
+                GetInterfaceOfProceeders<ICharacterMoveStarted>(m_Proceeders);
+            for (int i = 0; i < proceeders.Count; i++)
+                proceeders[i].OnCharacterMoveStarted(_Args);
+        }
+
+        private void CharacterOnMoveContinued(CharacterMovingEventArgs _Args)
+        {
+            var proceeders =
+                GetInterfaceOfProceeders<ICharacterMoveContinued>(m_Proceeders);
+            for (int i = 0; i < proceeders.Count; i++)
+                proceeders[i].OnCharacterMoveContinued(_Args);
+        }
+        
+        private void CharacterOnFinishMove(CharacterMovingEventArgs _Args)
+        {
+            InputScheduler.UnlockMovement(true);
+            ShredingerBlocksProceeder.OnCharacterMoveFinished(_Args);
+        }
+
+        #endregion
+        
+        #region nonpublic methods
+        
+        private static List<T> GetInterfaceOfProceeders<T>(IReadOnlyList<object> _Proceeders) where T : class
+        {
+            var result = new List<T>();
+            for (int i = 0; i < _Proceeders.Count; i++)
+            {
+                if (_Proceeders[i] is T tVal)
+                    result.Add(tVal);
+            }
+            return result;
         }
 
         #endregion

@@ -22,8 +22,10 @@ public class ApplicationInitializer : MonoBehaviour
     #endregion
     
     #region inject
-    
-    private IGameTicker          GameTicker          { get; set; }
+
+    private IViewGameTicker      ViewGameTicker      { get; set; }
+    private IModelGameTicker     ModelGameTicker     { get; set; }
+    private IUITicker            UITicker            { get; set; }
     private IAdsManager          AdsManager          { get; set; }
     private IAnalyticsManager    AnalyticsManager    { get; set; }
     private ILocalizationManager LocalizationManager { get; set; }
@@ -33,7 +35,9 @@ public class ApplicationInitializer : MonoBehaviour
 
     [Inject] 
     public void Inject(
-        IGameTicker _GameTicker,
+        IViewGameTicker _ViewGameTicker,
+        IModelGameTicker _ModelGameTicker,
+        IUITicker _UITicker,
         IAdsManager _AdsManager,
         IAnalyticsManager _AnalyticsManager,
         ILocalizationManager _LocalizationManager,
@@ -41,7 +45,9 @@ public class ApplicationInitializer : MonoBehaviour
         IScoreManager _ScoreManager,
         IHapticsManager _HapticsManager)
     {
-        GameTicker = _GameTicker;
+        ViewGameTicker = _ViewGameTicker;
+        ModelGameTicker = _ModelGameTicker;
+        UITicker = _UITicker;
         AdsManager = _AdsManager;
         AnalyticsManager = _AnalyticsManager;
         LocalizationManager = _LocalizationManager;
@@ -60,7 +66,6 @@ public class ApplicationInitializer : MonoBehaviour
         Application.targetFrameRate = 60;
         DataFieldsMigrator.InitDefaultDataFieldValues();
         InitGameManagers();
-        GameTicker.ClearRegisteredObjects();
         LevelMonoInstaller.Release = true;
         SceneManager.sceneLoaded += OnSceneLoaded;
         SceneManager.LoadScene(SceneNames.Level);

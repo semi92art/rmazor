@@ -51,9 +51,4 @@ public class ButtonOnRaycast : MonoBehaviour
         m_HapticsManager = _HapticsManager;
         m_Initialized = true;
     }
-
-    public void OnTap(Vector2 _ScreenPosition)
-    {
-        // m_ScreenPosition = _ScreenPosition;
-    }
 }

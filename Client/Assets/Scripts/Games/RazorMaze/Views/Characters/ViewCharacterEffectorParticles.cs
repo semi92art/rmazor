@@ -33,14 +33,14 @@ namespace Games.RazorMaze.Views.Characters
         
         private IMazeCoordinateConverter CoordinateConverter { get; }
         private IContainersGetter        ContainersGetter    { get; }
-        private IGameTicker              GameTicker          { get; }
+        private IViewGameTicker              GameTicker          { get; }
         private IModelGame               Model               { get; }
         private IColorProvider           ColorProvider       { get; }
 
         public ViewCharacterEffectorParticles(
             IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IGameTicker _GameTicker,
+            IViewGameTicker _GameTicker,
             IModelGame _Model,
             IColorProvider _ColorProvider)
         {

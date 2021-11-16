@@ -1,5 +1,4 @@
 ﻿using Controllers;
-using Entities;
 using GameHelpers;
 using Managers;
 using Settings;
@@ -36,10 +35,11 @@ namespace Mono_Installers
 
             #endregion
             
-            Container.Bind<ICommonTicker>()       .To<CommonTicker>()           .AsSingle();
-            Container.Bind<IGameTicker>()         .To<GameTicker>()             .AsSingle();
-            Container.Bind<IUITicker>()           .To<UITicker>()               .AsSingle();
-            Container.Bind<ILevelsLoader>()       .To<LevelsLoader>()           .AsSingle();
+            Container.Bind<ICommonTicker>()       .To<CommonTicker>()             .AsSingle();
+            Container.Bind<IViewGameTicker>()     .To<ViewGameTicker>()           .AsSingle();
+            Container.Bind<IModelGameTicker>()    .To<ModelGameTicker>()          .AsSingle();
+            Container.Bind<IUITicker>()           .To<UITicker>()                 .AsSingle();
+            Container.Bind<ILevelsLoader>()       .To<LevelsLoader>()             .AsSingle();
         }
     }
 }

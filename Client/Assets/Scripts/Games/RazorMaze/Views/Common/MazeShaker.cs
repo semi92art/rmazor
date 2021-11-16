@@ -40,12 +40,12 @@ namespace Games.RazorMaze.Views.Common
 
         private IContainersGetter ContainersGetter { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IGameTicker GameTicker { get; }
+        private IViewGameTicker GameTicker { get; }
 
         public MazeShaker(
             IContainersGetter _ContainersGetter, 
             IMazeCoordinateConverter _CoordinateConverter,
-            IGameTicker _GameTicker)
+            IViewGameTicker _GameTicker)
         {
             ContainersGetter = _ContainersGetter;
             CoordinateConverter = _CoordinateConverter;

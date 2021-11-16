@@ -15,7 +15,8 @@ namespace Ticker
         void ClearRegisteredObjects();
     }
 
-    public interface IGameTicker : ITicker { }
+    public interface IViewGameTicker : ITicker { }
+    public interface IModelGameTicker : ITicker { }
     public interface IUITicker : ITicker { }
     public interface ICommonTicker : ITicker { }
     
@@ -54,10 +55,16 @@ namespace Ticker
         }
     }
     
-    public class GameTicker : Ticker, IGameTicker
+    public class ViewGameTicker : Ticker, IViewGameTicker
     {
         protected override TickerManager TickerManager => 
-            CommonUtils.MonoBehSingleton(ref m_TickerManager, "Game Ticker Manager");
+            CommonUtils.MonoBehSingleton(ref m_TickerManager, "View Game Ticker Manager");
+    }
+    
+    public class ModelGameTicker : Ticker, IModelGameTicker
+    {
+        protected override TickerManager TickerManager => 
+            CommonUtils.MonoBehSingleton(ref m_TickerManager, "Model Game Ticker Manager");
     }
     
     public class UITicker : Ticker, IUITicker

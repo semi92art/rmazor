@@ -27,8 +27,11 @@ namespace Games.RazorMaze.Views.MazeItems.Props
                 return false;
             if (_Info.Path.Count != Path.Count)
                 return false;
-            if (_Info.Path.Where((_Pos, _Index) => _Pos != Path[_Index]).Any())
-                return false;
+            for (int i = 0; i < _Info.Path.Count; i++)
+            {
+                if (_Info.Path[i] != Path[i])
+                    return false;
+            }
             if (Directions.Any() && _Info.Direction != Directions.First())
                 return false;
             return true;

@@ -46,7 +46,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             IModelData _Data,
             IModelCharacter _Character,
             IModelLevelStaging _LevelStaging,
-            IGameTicker _GameTicker) 
+            IModelGameTicker _GameTicker) 
             : base(_Settings, _Data, _Character, _LevelStaging, _GameTicker) { }
 
         #endregion
@@ -67,9 +67,13 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         private void ProceedTraps(CharacterMovingEventArgs _Args)
         {
-            foreach (var info in ProceedInfos
-                .Where(_Info => _Info.IsProceeding && _Info.ReadyToSwitchStage))
+            for (int i = 0; i < ProceedInfos.Length; i++)
             {
+                var info = ProceedInfos[i];
+                if (!info.IsProceeding)
+                    continue;
+                if (!info.ReadyToSwitchStage)
+                    continue;
                 var trapReactFinalPoint = (info.CurrentPosition + info.Direction).ToVector2();
                 if (Vector2.Distance(trapReactFinalPoint, _Args.PrecisePosition) < 0.9f)
                     ProceedCoroutine(info, ProceedTrap(info));

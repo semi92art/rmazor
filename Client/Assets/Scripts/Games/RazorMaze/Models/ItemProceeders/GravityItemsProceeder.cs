@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Entities;
+using Exceptions;
 using Games.RazorMaze.Models.ProceedInfos;
 using Ticker;
 using Utils;
@@ -35,7 +36,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             IModelData _Data, 
             IModelCharacter _Character,
             IModelLevelStaging _LevelStaging,
-            IGameTicker _GameTicker,
+            IModelGameTicker _GameTicker,
             IPathItemsProceeder _PathItemsProceeder) 
             : base (_Settings, _Data, _Character, _LevelStaging, _GameTicker)
         {
@@ -48,7 +49,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         public override EMazeItemType[] Types => RazorMazeUtils.GravityItemTypes();
 
-        public Func<IEnumerable<IMazeItemProceedInfo>> GetAllProceedInfos { private get; set; }
+        public Func<List<IMazeItemProceedInfo>> GetAllProceedInfos { private get; set; }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
@@ -79,8 +80,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
         private void MoveMazeItemsGravity(MazeOrientation _Orientation, V2Int _CharacterPoint)
         {
             var dropDirection = RazorMazeUtils.GetDropDirection(_Orientation);
-            var infos = ProceedInfos.Where(_Info => _Info.IsProceeding).ToList();
-            var infosMovedDict = infos.ToDictionary(_Info => _Info, _Info => false);
+            var infos = ProceedInfos.Where(_Info => _Info.IsProceeding);
+            var infosMovedDict = 
+                infos.ToDictionary(_Info => _Info, _Info => false);
             TryMoveMazeItemsGravityCore(dropDirection, _CharacterPoint, infosMovedDict);
         }
 
@@ -117,8 +119,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     return MoveGravityBlockFree(_Info, _DropDirection, _CharacterPoint, _InfosMoved);
                 case EMazeItemType.GravityTrap:
                     return MoveGravityTrap(_Info, _DropDirection, _CharacterPoint, _InfosMoved);
+                default: throw new SwitchCaseNotImplementedException(_Info.Type);
             }
-            return false;
         }
 
         private bool MoveGravityBlock(

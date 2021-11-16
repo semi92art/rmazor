@@ -68,7 +68,7 @@ namespace Games.RazorMaze.Views.Common
 
         private IMazeCoordinateConverter CoordinateConverter { get; }
         private IContainersGetter        ContainersGetter    { get; }
-        private IGameTicker              GameTicker          { get; }
+        private IViewGameTicker              GameTicker          { get; }
         private ICameraProvider          CameraProvider      { get; }
         private IColorProvider           ColorProvider       { get; }
         private IViewAppearTransitioner  Transitioner        { get; }
@@ -76,7 +76,7 @@ namespace Games.RazorMaze.Views.Common
         public ViewMazeBackground(
             IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IGameTicker _GameTicker,
+            IViewGameTicker _GameTicker,
             ICameraProvider _CameraProvider,
             IColorProvider _ColorProvider,
             IViewAppearTransitioner _Transitioner)

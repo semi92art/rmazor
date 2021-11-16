@@ -7,7 +7,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
 {
     public delegate void PathProceedHandler(V2Int PathItem);
     
-    public interface IPathItemsProceeder : ICharacterMoveContinued
+    public interface IPathItemsProceeder : ICharacterMoveContinued, ICharacterMoveStarted
     {
         bool                     AllPathsProceeded { get; }
         Dictionary<V2Int, bool>  PathProceeds       { get; }
@@ -17,6 +17,13 @@ namespace Games.RazorMaze.Models.ItemProceeders
     
     public class PathItemsProceeder : IPathItemsProceeder, IOnLevelStageChanged
     {
+        #region nonpublic members
+
+        private List<V2Int> m_CurrentFullPath;
+        private bool        m_AllPathItemsNotInPathProceeded;
+
+        #endregion
+        
         #region inject
         
         private IModelData Data { get; }
@@ -34,11 +41,17 @@ namespace Games.RazorMaze.Models.ItemProceeders
         public Dictionary<V2Int, bool>  PathProceeds       { get; private set; }
         public event PathProceedHandler PathProceedEvent;
         public event PathProceedHandler AllPathsProceededEvent;
+        
+        public void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
+        {
+            m_CurrentFullPath = RazorMazeUtils.GetFullPath(_Args.From, _Args.To);
+            m_AllPathItemsNotInPathProceeded = PathProceeds.Values.All(_Proceeded => _Proceeded);
+        }
 
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
-            foreach (var pathItem in RazorMazeUtils.GetFullPath(_Args.From, _Args.Position))
-                ProceedPathItem(pathItem);
+            for (int i = 0; i < m_CurrentFullPath.Count; i++)
+                ProceedPathItem(m_CurrentFullPath[i]);
         }
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
@@ -57,18 +70,22 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 return;
             PathProceeds[_PathItem] = true;
             PathProceedEvent?.Invoke(_PathItem);
-
-            if (PathProceeds.Values.All(_Proceeded => _Proceeded))
+            if (!m_AllPathItemsNotInPathProceeded)
+                return;
+            for (int i = 0; i < m_CurrentFullPath.Count; i++)
             {
-                AllPathsProceeded = true;
-                AllPathsProceededEvent?.Invoke(_PathItem);
+                if (!PathProceeds[m_CurrentFullPath[i]])
+                    return;
             }
+            AllPathsProceeded = true;
+            AllPathsProceededEvent?.Invoke(_PathItem);
         }
 
         private void CollectPathProceeds()
         {
             AllPathsProceeded = false;
-            PathProceeds = Data.Info.Path.ToDictionary(_P => _P, _P => false);
+            PathProceeds = Data.Info.Path
+                .ToDictionary(_P => _P, _P => false);
             PathProceeds[Data.Info.Path[0]] = true;
         }
         

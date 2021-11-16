@@ -59,7 +59,7 @@ namespace Games.RazorMaze.Views.MazeItems
             IModelGame _Model,
             IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IGameTicker _GameTicker,
+            IViewGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
             IManagersGetter _Managers,
             IColorProvider _ColorProvider)

@@ -13,14 +13,14 @@ namespace Games.RazorMaze.Views.Common
     {
         #region inject
 
-        protected IGameTicker GameTicker { get; }
+        protected IViewGameTicker GameTicker { get; }
         protected IMazeItemsCreator MazeItemsCreator { get; }
         protected IModelData ModelData { get; }
         protected IContainersGetter ContainersGetter { get; }
         protected IMazeCoordinateConverter CoordinateConverter { get; }
 
         protected ViewMazeCommonBase(
-            IGameTicker _GameTicker,
+            IViewGameTicker _GameTicker,
             IMazeItemsCreator _MazeItemsCreator,
             IModelData _ModelData,
             IContainersGetter _ContainersGetter, 

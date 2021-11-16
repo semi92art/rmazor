@@ -59,7 +59,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             IModelData _Data,
             IModelCharacter _Character,
             IModelLevelStaging _LevelStaging,
-            IGameTicker _GameTicker,
+            IModelGameTicker _GameTicker,
             IPathItemsProceeder _PathItemsProceeder) 
             : base(_Settings, _Data, _Character, _LevelStaging, _GameTicker)
         {
@@ -70,9 +70,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region api
         
-        public override EMazeItemType[] Types => new[] {EMazeItemType.Turret};
-        public event TurretShotEventHandler TurretShoot;
-        public Func<IEnumerable<IMazeItemProceedInfo>> GetAllProceedInfos { private get; set; }
+        public override EMazeItemType[]         Types => new[] {EMazeItemType.Turret};
+        public event TurretShotEventHandler     TurretShoot;
+        public Func<List<IMazeItemProceedInfo>> GetAllProceedInfos { private get; set; }
         
         public void UpdateTick()
         {

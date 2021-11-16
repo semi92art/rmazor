@@ -1,7 +1,5 @@
-﻿using System;
-using Exceptions;
+﻿using Exceptions;
 using Games.RazorMaze.Views;
-using Ticker;
 using UnityEngine.Events;
 using Utils;
 
@@ -41,23 +39,17 @@ namespace Games.RazorMaze.Models
     
     public class ModelMazeRotation : IModelMazeRotation 
     {
-        private ModelSettings Settings { get; }
-        private IModelData Data { get; }
-        private IGameTicker GameTicker { get; }
 
-        public ModelMazeRotation(
-            ModelSettings _Settings,
-            IModelData _Data,
-            IGameTicker _GameTicker)
+        private IModelData       Data       { get; }
+
+        public ModelMazeRotation(IModelData _Data)
         {
-            Settings = _Settings;
             Data = _Data;
-            GameTicker = _GameTicker;
         }
-        
+
         public event MazeOrientationHandler RotationStarted;
         public event MazeOrientationHandler RotationFinishedInternal;
-        public event UnityAction Initialized;
+        public event UnityAction            Initialized;
         
         public void Init()
         {
@@ -82,22 +74,6 @@ namespace Games.RazorMaze.Models
             RotationFinishedInternal?.Invoke(_Args);
         }
         
-        private static MazeOrientation GetNextOrientation(
-            MazeRotateDirection _Direction,
-            MazeOrientation _Orientation)
-        {
-            int orient = (int) _Orientation;
-            switch (_Direction)
-            {
-                case MazeRotateDirection.Clockwise:
-                    orient = MathUtils.ClampInverse(orient + 1, 0, 3); break;
-                case MazeRotateDirection.CounterClockwise:
-                    orient = MathUtils.ClampInverse(orient - 1, 0, 3); break;
-                default: throw new SwitchCaseNotImplementedException(_Direction);
-            }
-            return (MazeOrientation) orient;
-        }
-
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             var stage = _Args.Stage;
@@ -121,6 +97,22 @@ namespace Games.RazorMaze.Models
                     rotDir, currOrient, Data.Orientation, false);
                 RotationStarted?.Invoke(args);
             }
+        }
+        
+        private static MazeOrientation GetNextOrientation(
+            MazeRotateDirection _Direction,
+            MazeOrientation _Orientation)
+        {
+            int orient = (int) _Orientation;
+            switch (_Direction)
+            {
+                case MazeRotateDirection.Clockwise:
+                    orient = MathUtils.ClampInverse(orient + 1, 0, 3); break;
+                case MazeRotateDirection.CounterClockwise:
+                    orient = MathUtils.ClampInverse(orient - 1, 0, 3); break;
+                default: throw new SwitchCaseNotImplementedException(_Direction);
+            }
+            return (MazeOrientation) orient;
         }
     }
 }

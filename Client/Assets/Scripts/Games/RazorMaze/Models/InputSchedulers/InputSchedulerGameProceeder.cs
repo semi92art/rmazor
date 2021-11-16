@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Exceptions;
+﻿using Exceptions;
 using Games.RazorMaze.Views;
 using Ticker;
 using UnityEngine.Events;
@@ -24,9 +22,9 @@ namespace Games.RazorMaze.Models.InputSchedulers
         #endregion
         
         #region nonpublic members
-        
-        private readonly Queue<EInputCommand> m_MoveCommands   = new Queue<EInputCommand>();
-        private readonly Queue<EInputCommand> m_RotateCommands = new Queue<EInputCommand>();
+
+        private readonly EInputCommand?[]      m_MoveCommands   = new EInputCommand?[MaxCommandsCount];
+        private readonly EInputCommand?[]      m_RotateCommands = new EInputCommand?[MaxCommandsCount];
         
         private bool m_MovementLocked = true;
         private bool m_RotationLocked = true;
@@ -41,15 +39,15 @@ namespace Games.RazorMaze.Models.InputSchedulers
         private IModelMazeRotation MazeRotation { get; }
         
         public InputSchedulerGameProceeder(
-            IGameTicker _GameTicker,
+            IModelGameTicker _GameTicker,
             IModelCharacter _Character,
             IModelMazeRotation _MazeRotation)
         {
             Character = _Character;
             MazeRotation = _MazeRotation;
-            _GameTicker.Register(this);
             MoveCommand += OnMoveCommand;
             RotateCommand += OnRotateCommand;
+            _GameTicker.Register(this);
         }
 
         #endregion
@@ -74,13 +72,13 @@ namespace Games.RazorMaze.Models.InputSchedulers
                 case EInputCommand.MoveRight:
                 case EInputCommand.MoveUp:
                     if (m_MoveCommandsCount >= MaxCommandsCount) return;
-                    m_MoveCommands.Enqueue(_Command);
+                    m_MoveCommands[m_MoveCommandsCount] = _Command;
                     m_MoveCommandsCount++;
                     break;
                 case EInputCommand.RotateClockwise:
                 case EInputCommand.RotateCounterClockwise:
                     if (m_RotateCommandsCount >= MaxCommandsCount) return;
-                    m_RotateCommands.Enqueue(_Command);
+                    m_RotateCommands[m_RotateCommandsCount] = _Command;
                     m_RotateCommandsCount++;
                     break;
             }
@@ -104,20 +102,28 @@ namespace Games.RazorMaze.Models.InputSchedulers
         {
             if (m_MovementLocked || m_MoveCommandsCount == 0)
                 return;
-            var cmd = m_MoveCommands.Dequeue();
+            int idx = MaxCommandsCount - m_MoveCommandsCount;
+            EInputCommand? cmd;
+            (cmd, m_MoveCommands[idx]) = (m_MoveCommands[idx], null);
+            if (!cmd.HasValue)
+                return;
             m_MoveCommandsCount--;
             m_MovementLocked = true;
-            MoveCommand?.Invoke(cmd, null);
+            MoveCommand?.Invoke(cmd.Value, null);
         }
 
         private void ScheduleRotationCommands()
         {
             if (m_RotationLocked || m_RotateCommandsCount == 0)
                 return;
-            var cmd = m_RotateCommands.Dequeue();
+            int idx = MaxCommandsCount - m_RotateCommandsCount;
+            EInputCommand? cmd;
+            (cmd, m_RotateCommands[idx]) = (m_RotateCommands[idx], null);
+            if (!cmd.HasValue)
+                return;
             m_RotateCommandsCount--;
             m_RotationLocked = true;
-            RotateCommand?.Invoke(cmd, null);
+            RotateCommand?.Invoke(cmd.Value, null);
         }
         
         private void OnMoveCommand(EInputCommand _Command, object[] _Args)
@@ -155,13 +161,15 @@ namespace Games.RazorMaze.Models.InputSchedulers
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage != ELevelStage.StartedOrContinued)
+            if (_Args.Stage == ELevelStage.StartedOrContinued)
+                return;
+            for (int i = 0; i < MaxCommandsCount; i++)
             {
-                m_MoveCommands.Clear();
-                m_MoveCommandsCount = 0;
-                m_RotateCommands.Clear();
-                m_RotateCommandsCount = 0;
+                m_MoveCommands[i] = null;
+                m_RotateCommands[i] = null;
             }
+            m_MoveCommandsCount = 0;
+            m_RotateCommandsCount = 0;
         }
     }
 }

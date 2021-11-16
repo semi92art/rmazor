@@ -6,6 +6,6 @@ namespace Games.RazorMaze.Models
 {
     public interface IGetAllProceedInfos
     {
-        Func<IEnumerable<IMazeItemProceedInfo>> GetAllProceedInfos { set; }
+        Func<List<IMazeItemProceedInfo>> GetAllProceedInfos { set; }
     }
 }

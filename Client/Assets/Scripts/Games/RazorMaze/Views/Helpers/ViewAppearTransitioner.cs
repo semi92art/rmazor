@@ -44,12 +44,12 @@ namespace Games.RazorMaze.Views.Helpers
         
         private IModelGame               Model               { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IGameTicker              GameTicker          { get; }
+        private IViewGameTicker              GameTicker          { get; }
 
         public ViewAppearTransitioner(
             IModelGame _Model, 
             IMazeCoordinateConverter _CoordinateConverter, 
-            IGameTicker _GameTicker)
+            IViewGameTicker _GameTicker)
         {
             Model = _Model;
             CoordinateConverter = _CoordinateConverter;

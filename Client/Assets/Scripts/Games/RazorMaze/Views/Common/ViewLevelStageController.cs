@@ -45,7 +45,8 @@ namespace Games.RazorMaze.Views.Common
 
         #region inject
 
-        private IGameTicker                 GameTicker           { get; }
+        private IViewGameTicker             ViewGameTicker       { get; }
+        private IModelGameTicker            ModelGameTicker      { get; }
         private IModelGame                  Model                { get; }
         private IManagersGetter             Managers             { get; }
         private IViewCharacter              Character            { get; }
@@ -57,7 +58,8 @@ namespace Games.RazorMaze.Views.Common
         private ILevelsLoader               LevelsLoader         { get; }
 
         public ViewLevelStageController(
-            IGameTicker _GameTicker,
+            IViewGameTicker _ViewGameTicker,
+            IModelGameTicker _ModelGameTicker,
             IModelGame _Model,
             IManagersGetter _Managers,
             IViewCharacter _Character,
@@ -68,7 +70,8 @@ namespace Games.RazorMaze.Views.Common
             IProposalDialogViewer _ProposalDialogViewer,
             ILevelsLoader _LevelsLoader)
         {
-            GameTicker = _GameTicker;
+            ViewGameTicker = _ViewGameTicker;
+            ModelGameTicker = _ModelGameTicker;
             Model = _Model;
             Managers = _Managers;
             Character = _Character;
@@ -212,7 +215,9 @@ namespace Games.RazorMaze.Views.Common
 
         private void ProceedTime(LevelStageArgs _Args)
         {
-            GameTicker.Pause = _Args.Stage == ELevelStage.Paused;
+            bool pause = _Args.Stage == ELevelStage.Paused;
+            ViewGameTicker.Pause = pause;
+            ModelGameTicker.Pause = pause;
         }
 
         private void ProceedSounds(LevelStageArgs _Args)

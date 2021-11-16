@@ -32,7 +32,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             IModelCharacter _Character,
             IModelLevelStaging _LevelStaging,
             IPathItemsProceeder _PathItemsProceeder,
-            IGameTicker _GameTicker)
+            IModelGameTicker _GameTicker)
             : base(_Settings, _Data, _Character, _LevelStaging, _GameTicker)
         {
             PathItemsProceeder = _PathItemsProceeder;

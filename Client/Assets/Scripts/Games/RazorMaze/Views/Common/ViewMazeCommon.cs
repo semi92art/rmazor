@@ -28,7 +28,7 @@ namespace Games.RazorMaze.Views.Common
         private ViewSettings ViewSettings { get; }
         
         public ViewMazeCommon(
-            IGameTicker _GameTicker,
+            IViewGameTicker _GameTicker,
             IMazeItemsCreator _MazeItemsCreator, 
             IModelData _ModelData,
             IContainersGetter _ContainersGetter, 
@@ -66,7 +66,13 @@ namespace Games.RazorMaze.Views.Common
 
         public override IViewMazeItem GetItem(IMazeItemProceedInfo _Info)
         {
-            return m_BlockPools[_Info.Type].FirstOrDefault(_Itm => _Itm.Equal(_Info));
+            var infos = m_BlockPools[_Info.Type];
+            for (int i = 0; i < infos.Count; i++)
+            {
+                if (infos[i].Equal(_Info))
+                    return infos[i];
+            }
+            return null;
         }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)

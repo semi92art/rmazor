@@ -71,7 +71,7 @@ namespace Games.RazorMaze.Views.MazeItems
             IModelGame _Model,
             IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
-            IGameTicker _GameTicker,
+            IViewGameTicker _GameTicker,
             IViewTurretBulletTail _BulletTail,
             IViewMazeBackground _Background,
             IViewAppearTransitioner _Transitioner,

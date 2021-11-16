@@ -67,10 +67,10 @@ public class ModelLevelStaging : IModelLevelStaging, IInit, IUpdateTick
     
     #region inject
     
-    private IModelData Data { get; }
-    private IGameTicker GameTicker { get; }
+    private IModelData       Data       { get; }
+    private IModelGameTicker GameTicker { get; }
 
-    public ModelLevelStaging(IModelData _Data, IGameTicker _GameTicker)
+    public ModelLevelStaging(IModelData _Data, IModelGameTicker _GameTicker)
     {
         Data = _Data;
         GameTicker = _GameTicker;

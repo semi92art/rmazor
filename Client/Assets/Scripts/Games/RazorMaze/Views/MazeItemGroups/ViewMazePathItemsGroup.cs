@@ -139,7 +139,14 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         private void UnfillStartPathItem()
         {
-            PathItems.Single(_Item => _Item.Props.IsStartNode).Collected = true;
+            for (int i = 0; i < PathItems.Count; i++)
+            {
+                var item = PathItems[i];
+                if (!item.Props.IsStartNode) 
+                    continue;
+                item.Collected = true;
+                break;
+            }
         }
 
         private void OnMoneyItemCollected()

@@ -8,6 +8,8 @@ namespace Games.RazorMaze.Views.InputConfigurators
     public class ViewInputControllerInEditor : ViewInputController, IUpdateTick
     {
         #region inject
+        
+        private IUITicker UITicker { get; }
 
         public ViewInputControllerInEditor(
             IViewInputCommandsProceeder _CommandsProceeder,
@@ -15,13 +17,19 @@ namespace Games.RazorMaze.Views.InputConfigurators
             IUITicker _UITicker) 
             : base(_CommandsProceeder, _TouchProceeder)
         {
-            _UITicker.Register(this);
+            UITicker = _UITicker;
         }
 
         #endregion
 
         #region api
-        
+
+        public override void Init()
+        {
+            UITicker.Register(this);
+            base.Init();
+        }
+
         public void UpdateTick()
         {
             bool forced = false;

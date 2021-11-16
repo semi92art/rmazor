@@ -57,7 +57,7 @@ namespace Games.RazorMaze.Views.UI
         #region inject
 
         private IModelGame                  Model               { get; }
-        private IGameTicker                 GameTicker          { get; }
+        private IViewGameTicker                 GameTicker          { get; }
         private IContainersGetter           ContainersGetter    { get; }
         private IMazeCoordinateConverter    CoordinateConverter { get; }
         private ILocalizationManager        LocalizationManager { get; }
@@ -67,7 +67,7 @@ namespace Games.RazorMaze.Views.UI
 
         public ViewUIPrompt(
             IModelGame _Model,
-            IGameTicker _GameTicker,
+            IViewGameTicker _GameTicker,
             IContainersGetter _ContainersGetter,
             IMazeCoordinateConverter _CoordinateConverter,
             ILocalizationManager _LocalizationManager,

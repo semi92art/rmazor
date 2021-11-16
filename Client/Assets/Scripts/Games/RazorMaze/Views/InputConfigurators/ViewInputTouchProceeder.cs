@@ -36,14 +36,14 @@ namespace Games.RazorMaze.Views.InputConfigurators
         protected      IModelGame                  Model             { get; }
         protected      IContainersGetter           ContainersGetter  { get; }
         protected      IViewInputCommandsProceeder CommandsProceeder { get; }
-        private        IGameTicker                 GameTicker        { get; }
+        private        IViewGameTicker                 GameTicker        { get; }
         private static ICameraProvider             CameraProvider    { get; set; }
 
         protected ViewInputTouchProceeder(
             IModelGame _Model,
             IContainersGetter _ContainersGetter,
             IViewInputCommandsProceeder _CommandsProceeder,
-            IGameTicker _GameTicker,
+            IViewGameTicker _GameTicker,
             ICameraProvider _CameraProvider)
         {
             Model = _Model;

@@ -58,7 +58,7 @@ namespace Games.RazorMaze.Views.Characters
         
         private IViewCharacterTail      Tail          { get; }
         private IViewCharacterEffector  Effector      { get; }
-        private IGameTicker             GameTicker    { get; }
+        private IViewGameTicker             GameTicker    { get; }
         private IViewAppearTransitioner Transitioner  { get; }
         private IManagersGetter         Managers      { get; }
         private IMazeShaker             MazeShaker    { get; }
@@ -72,7 +72,7 @@ namespace Games.RazorMaze.Views.Characters
             IViewMazeCommon _ViewMazeCommon,
             IViewCharacterTail _Tail,
             IViewCharacterEffector _Effector,
-            IGameTicker _GameTicker,
+            IViewGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
             IManagersGetter _Managers,
             IMazeShaker _MazeShaker,

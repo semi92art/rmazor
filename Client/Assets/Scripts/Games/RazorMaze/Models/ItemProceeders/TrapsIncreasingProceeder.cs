@@ -22,7 +22,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
     
     public delegate void MazeItemTrapIncreasingEventHandler(MazeItemTrapIncreasingEventArgs Args);
     
-    public interface ITrapsIncreasingProceeder : IItemsProceeder, ICharacterMoveContinued
+    public interface ITrapsIncreasingProceeder : IItemsProceeder
     {
         event MazeItemTrapIncreasingEventHandler TrapIncreasingStageChanged;
     }
@@ -42,7 +42,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             IModelData _Data,
             IModelCharacter _Character,
             IModelLevelStaging _LevelStaging,
-            IGameTicker _GameTicker) 
+            IModelGameTicker _GameTicker) 
             : base(_Settings, _Data, _Character, _LevelStaging, _GameTicker) { }
 
         #endregion
@@ -51,8 +51,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         public override EMazeItemType[] Types => new[] {EMazeItemType.TrapIncreasing};
         public event MazeItemTrapIncreasingEventHandler TrapIncreasingStageChanged;
-
-        public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args) { }
 
         public void UpdateTick()
         {

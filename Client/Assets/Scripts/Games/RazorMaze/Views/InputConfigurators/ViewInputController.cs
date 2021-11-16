@@ -1,13 +1,4 @@
-﻿using System.Collections.Generic;
-using Constants;
-using DI.Extensions;
-using GameHelpers;
-using Games.RazorMaze.Models;
-using Games.RazorMaze.Views.ContainerGetters;
-using Lean.Touch;
-using UnityEngine;
-using UnityEngine.Events;
-using Utils;
+﻿using UnityEngine.Events;
 
 namespace Games.RazorMaze.Views.InputConfigurators
 {
@@ -28,7 +19,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
 
         public event UnityAction Initialized;
         
-        public void Init()
+        public virtual void Init()
         {
             TouchProceeder.Init();
             Initialized?.Invoke();

@@ -130,14 +130,14 @@ namespace Controllers
         #region inject
         
         private IContainersGetter ContainersGetter { get; }
-        private IGameTicker       GameTicker       { get; }
+        private IViewGameTicker       GameTicker       { get; }
         private IUITicker         UITicker         { get; }
         private IMusicSetting     MusicSetting     { get; }
         private ISoundSetting     SoundSetting     { get; }
 
         public AudioManager(
             IContainersGetter _ContainersGetter,
-            IGameTicker _GameTicker,
+            IViewGameTicker _GameTicker,
             IUITicker _UITicker,
             IMusicSetting _MusicSetting,
             ISoundSetting _SoundSetting)

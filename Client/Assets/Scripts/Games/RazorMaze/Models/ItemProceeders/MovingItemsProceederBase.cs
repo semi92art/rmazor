@@ -50,7 +50,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             IModelData _Data, 
             IModelCharacter _Character,
             IModelLevelStaging _LevelStaging,
-            IGameTicker _GameTicker) 
+            IModelGameTicker _GameTicker) 
             : base(_Settings, _Data, _Character, _LevelStaging, _GameTicker) { }
 
         public event MazeItemMoveHandler MazeItemMoveStarted;

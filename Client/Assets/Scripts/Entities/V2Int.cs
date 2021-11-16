@@ -17,11 +17,17 @@ namespace Entities
         public V2Int(Vector2Int _V) { x = _V.x; y = _V.y; }
         public Vector2Int ToVector2Int() => new Vector2Int(X, Y);
         public Vector2 ToVector2() => new Vector2(X, Y);
-        public static V2Int operator +(V2Int _V1, V2Int _V2) => new V2Int(_V1.X + _V2.X, _V1.Y + _V2.Y);
-        public static V2Int operator -(V2Int _V) => new V2Int(-_V.X, -_V.Y);
-        public static V2Int operator -(V2Int _V1, V2Int _V2) => new V2Int(_V1.X - _V2.X, _V1.Y - _V2.Y);
-        public static bool operator ==(V2Int _V1, V2Int _V2) => _V1.X == _V2.X && _V1.Y == _V2.Y;
-        public static bool operator !=(V2Int _V1, V2Int _V2) => !(_V1 == _V2);
+
+        public static V2Int operator -(V2Int _V)               => new V2Int(-_V.x, -_V.y);
+        public static V2Int operator +(V2Int _A, V2Int _B)     => new V2Int(_A.x + _B.x, _A.y + _B.y);
+        public static V2Int operator -(V2Int _A, V2Int _B)     => new V2Int(_A.x - _B.x, _A.y - _B.y);
+        public static V2Int operator *(V2Int _A, V2Int _B)     => new V2Int(_A.x * _B.x, _A.y * _B.y);
+        public static V2Int operator *(int _A, V2Int _B)       => new V2Int(_A * _B.x, _A * _B.y);
+        public static V2Int operator *(V2Int _A, int _B)       => new V2Int(_A.x * _B, _A.y * _B);
+        public static V2Int operator /(V2Int _A, int _B)       => new V2Int(_A.x / _B, _A.y / _B);
+        public static bool operator ==(V2Int _Lhs, V2Int _Rhs) => _Lhs.x == _Rhs.x && _Lhs.y == _Rhs.y;
+        public static bool operator !=(V2Int _Lhs, V2Int _Rhs) => !(_Lhs == _Rhs);
+        
         public bool Equals(V2Int other) => X == other.X && Y == other.Y;
         public override bool Equals(object obj) => obj is V2Int other && Equals(other);
         public override int GetHashCode() { unchecked { return (X * 397) ^ Y; } }
