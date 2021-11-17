@@ -11,6 +11,7 @@ using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
+using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
@@ -31,7 +32,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private GameObject     m_MoneyItem;
         private SpriteRenderer m_MoneyItemRenderer;
-        private Rectangle      m_Shape;
+        private Rectangle      m_PathShape;
         private Line           m_LeftBorder,       m_RightBorder,       m_BottomBorder,  m_TopBorder;
         private Disc           m_BottomLeftCorner, m_BottomRightCorner, m_TopLeftCorner, m_TopRightCorner;
         
@@ -63,7 +64,8 @@ namespace Games.RazorMaze.Views.MazeItems
             IViewGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
             IManagersGetter _Managers,
-            IColorProvider _ColorProvider)
+            IColorProvider _ColorProvider,
+            IViewInputCommandsProceeder _CommandsProceeder)
             : base(
                 _ViewSettings,
                 _Model,
@@ -72,7 +74,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 _GameTicker,
                 _Transitioner,
                 _Managers,
-                _ColorProvider) { }
+                _ColorProvider,
+                _CommandsProceeder) { }
         
         #endregion
 
@@ -80,7 +83,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public override Component[] Shapes => new Component[]
         {
-            m_Shape,
+            m_PathShape,
             m_LeftBorder, m_RightBorder, m_BottomBorder, m_TopBorder,
             m_BottomLeftCorner, m_BottomRightCorner, m_TopLeftCorner, m_TopRightCorner,
             m_MoneyItemRenderer
@@ -94,7 +97,8 @@ namespace Games.RazorMaze.Views.MazeItems
             GameTicker,
             Transitioner,
             Managers,
-            ColorProvider);
+            ColorProvider,
+            CommandsProceeder);
 
         public override bool ActivatedInSpawnPool
         {
@@ -123,7 +127,7 @@ namespace Games.RazorMaze.Views.MazeItems
             if (!Initialized || !ActivatedInSpawnPool)
                 return;
             
-            float dOffset = Time.deltaTime * 3f;
+            float dOffset = GameTicker.DeltaTime * 3f;
             
             if (m_LeftBorderInited && m_LeftBorder.Dashed)
                 m_LeftBorder.DashOffset -= dOffset;
@@ -147,8 +151,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 Managers.AudioManager.PlayClip(AudioClipArgsCollectMoneyItem);
                 m_MoneyItemRenderer.enabled = false;
             }
-            var col = ColorProvider.GetColor(ColorIds.Path);
-            m_Shape.Color = _Collect ? col.SetA(0f) : col;
+            var col = ColorProvider.GetColor(ColorIds.Main);
+            m_PathShape.Color = _Collect ? col.SetA(0f) : col;
         }
 
         protected override void InitShape()
@@ -156,10 +160,12 @@ namespace Games.RazorMaze.Views.MazeItems
             var sh = Object.AddComponentOnNewChild<Rectangle>("Path Item", out _);
             sh.Type = Rectangle.RectangleType.RoundedBorder;
             sh.CornerRadiusMode = Rectangle.RectangleCornerRadiusMode.Uniform;
-            sh.Color = ColorProvider.GetColor(ColorIds.Path);
+            sh.CornerRadius = CoordinateConverter.Scale * ViewSettings.CornerRadius;
+            sh.Thickness = CoordinateConverter.Scale * ViewSettings.LineWidth;
+            sh.Color = ColorProvider.GetColor(ColorIds.Main);
             sh.SortingOrder = SortingOrders.Path;
             sh.enabled = false;
-            m_Shape = sh;
+            m_PathShape = sh;
         }
 
         protected override void UpdateShape()
@@ -170,12 +176,12 @@ namespace Games.RazorMaze.Views.MazeItems
                 {
                     m_MoneyItem = PrefabUtilsEx.InitPrefab(Object.transform, "views", "money_item");
                     m_MoneyItemRenderer = m_MoneyItem.GetCompItem<SpriteRenderer>("renderer");
-                    m_MoneyItemRenderer.color = ColorProvider.GetColor(ColorIds.Path);
+                    m_MoneyItemRenderer.color = ColorProvider.GetColor(ColorIds.MoneyItem);
                     m_MoneyItem.transform.SetLocalPosXY(Vector2.zero);
                     m_MoneyItem.transform.localScale = Vector3.one * CoordinateConverter.Scale;
                 }
                 m_MoneyItem.SetActive(true);
-                m_Shape.enabled = false;
+                m_PathShape.enabled = false;
             }
             else
             {
@@ -185,8 +191,8 @@ namespace Games.RazorMaze.Views.MazeItems
                     // m_MoneyItemRenderer = null;
                 }
             }
-            m_Shape.Width = m_Shape.Height = CoordinateConverter.Scale * 0.4f;
-            m_Shape.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale * 2f;
+            m_PathShape.Width = m_PathShape.Height = CoordinateConverter.Scale * 0.4f;
+            m_PathShape.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale * 2f;
             SetBordersAndCorners();
         }
 
@@ -202,6 +208,8 @@ namespace Games.RazorMaze.Views.MazeItems
                     m_TopLeftCorner.Color = _Color;
                 if (m_TopRightCornerInited && !m_TopRightCornerIsOuterAndNearTrapIncreasing)
                     m_TopRightCorner.Color = _Color;
+                
+                m_PathShape.Color = _Color;
 
                 var borderCol = MainColorToBorderColor(_Color);
                 if (m_LeftBorderInited)
@@ -221,12 +229,10 @@ namespace Games.RazorMaze.Views.MazeItems
                 if (m_TopRightCornerInited && m_TopRightCornerIsOuterAndNearTrapIncreasing)
                     m_TopRightCorner.Color = borderCol;
             }
-            else if (_ColorId == ColorIds.Path && !Collected)
+            else if (_ColorId == ColorIds.MoneyItem && !Collected)
             {
                 if (Props.IsMoneyItem)
                     m_MoneyItemRenderer.color = _Color;
-                else
-                    m_Shape.Color = _Color;
             }
         }
 
@@ -372,8 +378,8 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private void EnableInitializedShapes(bool _Enable)
         {
-            if (m_Shape.IsNotNull() && !Props.IsMoneyItem)   
-                m_Shape.enabled = _Enable;
+            if (m_PathShape.IsNotNull() && !Props.IsMoneyItem)   
+                m_PathShape.enabled = _Enable;
             if (m_MoneyItemRenderer.IsNotNull() && Props.IsMoneyItem)
                 m_MoneyItemRenderer.enabled = _Enable;
             
@@ -643,14 +649,16 @@ namespace Games.RazorMaze.Views.MazeItems
             var result = borderSets.ConcatWithDictionary(cornerSets);
             if (_Appear && !Props.IsStartNode || !_Appear && !Collected)
             {
-                var comp = Props.IsMoneyItem ? (Component)m_MoneyItemRenderer : m_Shape;
-                result.Add(new [] {comp}, () => ColorProvider.GetColor(ColorIds.Path));
+                if (Props.IsMoneyItem)
+                    result.Add(new [] {m_MoneyItemRenderer}, () => ColorProvider.GetColor(ColorIds.MoneyItem));
+                else
+                    result.Add(new [] {m_PathShape}, () => ColorProvider.GetColor(ColorIds.Main));
             }
             else
             {
                 if (Props.IsMoneyItem)
                     m_MoneyItemRenderer.enabled = false;
-                m_Shape.enabled = false;
+                m_PathShape.enabled = false;
             }
             return result;
         }

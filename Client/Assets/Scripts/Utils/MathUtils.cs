@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq;
+using DI.Extensions;
 using UnityEngine;
 
 namespace Utils
 {
     public static class MathUtils
     {
+        public const           float         Epsilon   = 1e-5f;
         public static readonly System.Random RandomGen = new System.Random();
         
         public static int Lerp(int _A, int _B, float _T)
@@ -81,6 +83,90 @@ namespace Utils
         public static float NextFloatAlt(this System.Random _Random)
         {
             return 2f * ((float) _Random.NextDouble() - 0.5f);
+        }
+        
+        //https://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
+        public static float MinDistanceBetweenPointAndSegment(Vector2 _SegStart, Vector2 _SegEnd, Vector2 _Point)
+        {
+            float l2 = DistanceSquared(_SegStart, _SegEnd);
+            if (l2 == 0.0) return Vector2.Distance(_Point, _SegStart);
+            float t = Mathf.Max(
+                0, Mathf.Min(1, 
+                    Vector2.Dot(_Point - _SegStart, _SegEnd - _SegStart) / l2));
+            var projection = _SegStart + t * (_SegEnd - _SegStart);
+            return Vector2.Distance(_Point, projection);
+        }
+        
+        /// <summary>
+        /// Test whether two line segments intersect. If so, calculate the intersection point.
+        /// <see cref="http://stackoverflow.com/a/14143738/292237"/>
+        /// </summary>
+        /// <param name="_P1">Vector to the start point of p.</param>
+        /// <param name="_P2">Vector to the end point of p.</param>
+        /// <param name="_Q1">Vector to the start point of q.</param>
+        /// <param name="_Q2">Vector to the end point of q.</param>
+        /// <param name="_Intersection">The point of intersection, if any.</param>
+        /// <param name="considerCollinearOverlapAsIntersect">Do we consider overlapping lines as intersecting?
+        /// </param>
+        /// <returns>True if an intersection point was found.</returns>
+        public static Vector2? LineSegementsIntersect(
+            Vector2 _P1, 
+            Vector2 _P2, 
+            Vector2 _Q1,
+            Vector2 _Q2, 
+            bool considerCollinearOverlapAsIntersect = false)
+        {
+            var r = _P2 - _P1;
+            var s = _Q2 - _Q1;
+            var rxs = r.Cross(s);
+            var qpxr = (_Q1 - _P1).Cross(r);
+            // If r x s = 0 and (q - p) x r = 0, then the two lines are collinear.
+            if (rxs.IsZero() && qpxr.IsZero())
+            {
+                // 1. If either  0 <= (q - p) * r <= r * r or 0 <= (p - q) * s <= * s
+                // then the two lines are overlapping,
+                if (considerCollinearOverlapAsIntersect)
+                {
+                    var pr1 = Product(_Q1 - _P1, r);
+                    var pr2 = Product(r, r);
+                    var pr3 = Product(_P1 - _Q1, s);
+                    var pr4 = Product(s, s);
+                    if (0 <= pr1 && pr1 <= pr2 || 0 <= pr3 && pr3 <= pr4)
+                        return null;
+                }
+                // 2. If neither 0 <= (q - p) * r = r * r nor 0 <= (p - q) * s <= s * s
+                // then the two lines are collinear but disjoint.
+                // No need to implement this expression, as it follows from the expression above.
+                return null;
+            }
+            // 3. If r x s = 0 and (q - p) x r != 0, then the two lines are parallel and non-intersecting.
+            if (rxs.IsZero() && !qpxr.IsZero())
+                return null;
+            // t = (q - p) x s / (r x s)
+            var t = (_Q1 - _P1).Cross(s)/rxs;
+            // u = (q - p) x r / (r x s)
+            var u = (_Q1 - _P1).Cross(r)/rxs;
+            // 4. If r x s != 0 and 0 <= t <= 1 and 0 <= u <= 1
+            // the two line segments meet at the point p + t r = q + u s.
+            if (!rxs.IsZero() && (0 <= t && t <= 1) && (0 <= u && u <= 1))
+            {
+                // We can calculate the intersection point using either t or u.
+                return _P1 + t*r;
+            }
+            // 5. Otherwise, the two line segments are not parallel but do not intersect.
+            return null;
+        }
+        
+        private static float Product(Vector2 _V1, Vector2 _V2)
+        {
+            return _V1.x * _V2.x + _V1.y * _V2.y;
+        }
+        
+        public static float DistanceSquared(Vector2 _A, Vector2 _B)
+        {
+            float num1 = _A.x - _B.x;
+            float num2 = _A.y - _B.y;
+            return num1 * num1 + num2 * num2;
         }
     }
 }

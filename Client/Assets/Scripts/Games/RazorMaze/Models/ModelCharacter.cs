@@ -333,7 +333,8 @@ namespace Games.RazorMaze.Models
                     Position = _To;
                     IsMoving = false;
                 },
-                () => thisCount != m_Counter || !Alive);
+                () => thisCount != m_Counter || !Alive,
+                _FixedUpdate: true);
         }
         
         private void Revive(bool _WithNotify = true)

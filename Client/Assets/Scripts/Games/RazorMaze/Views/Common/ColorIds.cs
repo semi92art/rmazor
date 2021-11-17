@@ -1,4 +1,5 @@
-﻿using DI.Extensions;
+﻿using System.Collections.Generic;
+using DI.Extensions;
 
 namespace Games.RazorMaze.Views.Common
 {
@@ -12,7 +13,7 @@ namespace Games.RazorMaze.Views.Common
         public static readonly int CharacterTail;
         public static readonly int MazeItem1;
         public static readonly int MazeItem2;
-        public static readonly int Path;
+        public static readonly int MoneyItem;
         public static readonly int UI;
         public static readonly int UiDialogItemNormal;
         public static readonly int UiDialogItemPressed;
@@ -32,7 +33,7 @@ namespace Games.RazorMaze.Views.Common
             CharacterTail            = GetHash(nameof(CharacterTail)           .WithSpaces());
             MazeItem1                = GetHash(nameof(MazeItem1)               .WithSpaces());
             MazeItem2                = GetHash(nameof(MazeItem2)               .WithSpaces());
-            Path                     = GetHash(nameof(Path));
+            MoneyItem                = GetHash(nameof(MoneyItem)               .WithSpaces());
             UI                       = GetHash(nameof(UI));
             UiDialogItemNormal       = GetHash(nameof(UiDialogItemNormal)      .WithSpaces());
             UiDialogItemPressed      = GetHash(nameof(UiDialogItemPressed)     .WithSpaces());
@@ -47,5 +48,31 @@ namespace Games.RazorMaze.Views.Common
         {
             return _S.GetHashCode();
         }
+
+        public static string GetColorNameById(int _Id)
+        {
+            return ColorNamesDict[_Id];
+        }
+        
+        private static Dictionary<int, string> ColorNamesDict => new Dictionary<int, string>
+        {
+            {Main, nameof(Main).WithSpaces()},
+            {Background, nameof(Background).WithSpaces()},
+            {BackgroundIdleItems, nameof(BackgroundIdleItems).WithSpaces()},
+            {BackgroundCongratsItems, nameof(BackgroundCongratsItems).WithSpaces()},
+            {Character, nameof(Character).WithSpaces()},
+            {CharacterTail, nameof(CharacterTail).WithSpaces()},
+            {MazeItem1, nameof(MazeItem1).WithSpaces()},
+            {MazeItem2, nameof(MazeItem2).WithSpaces()},
+            {MoneyItem, nameof(MoneyItem).WithSpaces()},
+            {UI, nameof(UI)},
+            {UiDialogItemNormal, nameof(UiDialogItemNormal).WithSpaces()},
+            {UiDialogItemPressed, nameof(UiDialogItemPressed).WithSpaces()},
+            {UiDialogItemDisabled, nameof(UiDialogItemDisabled).WithSpaces()},
+            {UiDialogItemSelected, nameof(UiDialogItemSelected).WithSpaces()},
+            {UiDialogBackground, nameof(UiDialogBackground).WithSpaces()},
+            {UiBorderDefault, nameof(UiBorderDefault).WithSpaces()},
+            {UiTextDefault, nameof(UiTextDefault).WithSpaces()}
+        };
     }
 }

@@ -22,12 +22,7 @@ namespace Utils
 #endif
         }
 
-        public static int GetMenuTargetFps()
-        {
-            return IsGoodQuality() ? 60 : 30;
-        }
-
-        public static int GetGameTargetFps()
+        public static int GetTargetFps()
         {
             return IsGoodQuality() ? 120 : 60;
         }

@@ -63,7 +63,7 @@ public class ApplicationInitializer : MonoBehaviour
     
     private void Start()
     {
-        Application.targetFrameRate = 60;
+        Application.targetFrameRate = GraphicUtils.GetTargetFps();
         DataFieldsMigrator.InitDefaultDataFieldValues();
         InitGameManagers();
         LevelMonoInstaller.Release = true;

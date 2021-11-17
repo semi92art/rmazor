@@ -88,11 +88,12 @@ namespace Games.RazorMaze.Views.InputConfigurators
             else if (LeanInput.GetDown(KeyCode.Alpha4))
                 (_CommandKey, _Forced) = (EInputCommand.FinishLevel, true);
             else if (LeanInput.GetDown(KeyCode.Alpha5))
-                (_CommandKey, _Forced) = (EInputCommand.UnloadLevel, true);
-                
+                (_CommandKey, _Forced) = (EInputCommand.ReadyToUnloadLevel, true);
             else if (LeanInput.GetDown(KeyCode.Alpha6))
-                (_CommandKey, _Forced) = (EInputCommand.PauseLevel, true);
+                (_CommandKey, _Forced) = (EInputCommand.UnloadLevel, true);
             else if (LeanInput.GetDown(KeyCode.Alpha7))
+                (_CommandKey, _Forced) = (EInputCommand.PauseLevel, true);
+            else if (LeanInput.GetDown(KeyCode.Alpha8))
                 (_CommandKey, _Forced) = (EInputCommand.KillCharacter, true);
         }
 

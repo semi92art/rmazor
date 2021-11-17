@@ -58,16 +58,18 @@ namespace Utils
             ITicker _Ticker,
             UnityAction<bool, float> _OnFinish = null,
             Func<bool> _BreakPredicate = null,
-            Func<float, float> _ProgressFormula = null)
+            Func<float, float> _ProgressFormula = null,
+            bool _FixedUpdate = false)
         {
             if (_OnProgress == null)
                 yield break;
-        
-            float currTime = _Ticker.Time;
+
+            float GetTime() => _FixedUpdate ? _Ticker.FixedTime : _Ticker.Time;
+            float currTime = GetTime();
             float progress = _From;
             bool breaked = false;
             
-            while (_Ticker.Time < currTime + _Time)
+            while (GetTime() < currTime + _Time)
             {
                 if (_BreakPredicate != null && _BreakPredicate())
                 {
@@ -76,15 +78,23 @@ namespace Utils
                 }
                 if (_Ticker.Pause)
                 {
-                    yield return new WaitForEndOfFrame();
+                    if (_FixedUpdate)
+                        yield return new WaitForFixedUpdate();
+                    else 
+                        yield return new WaitForEndOfFrame();
                     continue;
                 }
-                float timeCoeff = 1 - (currTime + _Time - _Ticker.Time) / _Time;
+                float timeCoeff = 1 - (currTime + _Time - GetTime()) / _Time;
                 progress = Mathf.Lerp(_From, _To, timeCoeff);
                 if (_ProgressFormula != null)
                     progress = _ProgressFormula(progress);
                 _OnProgress(progress);
-                yield return new WaitForEndOfFrame();
+                {
+                    if (_FixedUpdate)
+                        yield return new WaitForFixedUpdate();
+                    else 
+                        yield return new WaitForEndOfFrame();
+                }
             }
             if (_BreakPredicate != null && _BreakPredicate())
                 breaked = true;

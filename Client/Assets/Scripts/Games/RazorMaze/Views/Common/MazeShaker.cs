@@ -130,7 +130,7 @@ namespace Games.RazorMaze.Views.Common
                 return;
             if (!m_ShakeMaze)
                 return;
-            float amplitude = 0.25f;
+            float amplitude = 0.1f;
             Vector2 res;
             res.x = m_StartPosition.x + amplitude * Mathf.Sin(GameTicker.Time * 200f);
             res.y = m_StartPosition.y + amplitude * Mathf.Cos(GameTicker.Time * 100f);

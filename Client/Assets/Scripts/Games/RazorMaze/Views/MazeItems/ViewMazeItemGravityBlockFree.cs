@@ -9,6 +9,7 @@ using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
+using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
@@ -44,7 +45,8 @@ namespace Games.RazorMaze.Views.MazeItems
             IViewGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
             IManagersGetter _Managers,
-            IColorProvider _ColorProvider)
+            IColorProvider _ColorProvider,
+            IViewInputCommandsProceeder _CommandsProceeder)
             : base(
                 _ViewSettings,
                 _Model,
@@ -53,7 +55,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 _GameTicker,
                 _Transitioner,
                 _Managers,
-                _ColorProvider) { }
+                _ColorProvider,
+                _CommandsProceeder) { }
         
         #endregion
         
@@ -68,7 +71,8 @@ namespace Games.RazorMaze.Views.MazeItems
             GameTicker,
             Transitioner,
             Managers,
-            ColorProvider);
+            ColorProvider,
+            CommandsProceeder);
 
         public override void OnMoveStarted(MazeItemMoveEventArgs _Args)
         {

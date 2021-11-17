@@ -7,12 +7,15 @@ namespace Ticker
     {
         event UnityAction Paused;
         event UnityAction UnPaused;
-        float Time { get; }
-        bool Pause { get; set; }
-        void Reset();
-        void Register(object _Object);
-        void Unregister(object _Object);
-        void ClearRegisteredObjects();
+        float             Time           { get; }
+        float             DeltaTime      { get; }
+        float             FixedTime      { get; }
+        float             FixedDeltaTime { get; }
+        bool              Pause          { get; set; }
+        void              Reset();
+        void              Register(object _Object);
+        void              Unregister(object _Object);
+        void              ClearRegisteredObjects();
     }
 
     public interface IViewGameTicker : ITicker { }
@@ -33,8 +36,11 @@ namespace Ticker
         
         public event UnityAction Paused;
         public event UnityAction UnPaused;
-        public float Time => TickerManager.Time;
-    
+        public float             Time           => TickerManager.Time;
+        public float             DeltaTime      => TickerManager.DeltaTime;
+        public float             FixedTime      => TickerManager.FixedTime;
+        public float             FixedDeltaTime => TickerManager.FixedDeltaTime;
+
         public bool Pause
         {
             get => TickerManager.Pause;

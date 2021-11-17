@@ -56,8 +56,10 @@ namespace Utils
             Func<bool> _Predicate,
             UnityAction _Action,
             UnityAction _FinishAction,
+            ITicker _Ticker,
             Func<bool> _Pause = null,
-            bool _WaitEndOfFrame = true)
+            bool _WaitEndOfFrame = true,
+            bool _FixedUpdate = false)
         {
             if (_Action == null || _Predicate == null)
                 yield break;
@@ -67,9 +69,10 @@ namespace Utils
                 if (_Pause != null && _Pause())
                     continue;
                 _Action();
-                if (_WaitEndOfFrame)
-                    yield return new WaitForSecondsRealtime(Time.deltaTime);
-                // yield return new WaitForEndOfFrame();
+                if (!_WaitEndOfFrame) 
+                    continue;
+                float dt = _FixedUpdate ? _Ticker.FixedDeltaTime : _Ticker.DeltaTime;
+                yield return new WaitForSecondsRealtime(dt);
             }
         
             _FinishAction?.Invoke();

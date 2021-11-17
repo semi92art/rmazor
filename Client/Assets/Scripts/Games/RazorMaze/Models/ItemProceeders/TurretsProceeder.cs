@@ -11,26 +11,23 @@ namespace Games.RazorMaze.Models.ItemProceeders
 {
     public class TurretShotEventArgs : EventArgs
     {
-        public IMazeItemProceedInfo Info { get; }
-        public V2Int From { get; }
-        public V2Int To { get; }
-        public V2Int Direction { get; }
-        public float ProjectileSpeed { get; }
-        public bool PreShoot { get; }
+        public IMazeItemProceedInfo Info      { get; }
+        public V2Int                From      { get; }
+        public V2Int                To        { get; }
+        public V2Int                Direction { get; }
+        public bool                 PreShoot  { get; }
 
         public TurretShotEventArgs(
             IMazeItemProceedInfo _Info,
             V2Int _From,
             V2Int _To, 
             V2Int _Direction,
-            float _ProjectileSpeed,
             bool _PreShoot)
         {
             Info = _Info;
             From = _From;
             To = _To;
             Direction = _Direction;
-            ProjectileSpeed = _ProjectileSpeed;
             PreShoot = _PreShoot;
         }
     }
@@ -121,7 +118,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 _Info.CurrentPosition, 
                 to,
                 _Info.Direction,
-                Settings.TurretProjectileSpeed * 0.1f,
                 _PreShoot));
         }
         

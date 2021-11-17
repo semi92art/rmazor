@@ -11,9 +11,11 @@ using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
+using Games.RazorMaze.Views.InputConfigurators;
 using Shapes;
 using Ticker;
 using UnityEngine;
+using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
@@ -63,7 +65,8 @@ namespace Games.RazorMaze.Views.MazeItems
             IViewAppearTransitioner _Transitioner,
             IManagersGetter _Managers,
             IMazeShaker _MazeShaker,
-            IColorProvider _ColorProvider)
+            IColorProvider _ColorProvider,
+            IViewInputCommandsProceeder _CommandsProceeder)
             : base(
                 _ViewSettings,
                 _Model,
@@ -72,7 +75,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 _GameTicker,
                 _Transitioner,
                 _Managers,
-                _ColorProvider)
+                _ColorProvider,
+                _CommandsProceeder)
         {
             MazeShaker = _MazeShaker;
         }
@@ -92,7 +96,8 @@ namespace Games.RazorMaze.Views.MazeItems
             Transitioner,
             Managers,
             MazeShaker,
-            ColorProvider);
+            ColorProvider,
+            CommandsProceeder);
 
         public override bool ActivatedInSpawnPool
         {
@@ -180,7 +185,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             if (!m_Rotate)
                 return;
-            m_Angles += m_RotateDirection * Time.deltaTime * m_RotationSpeed * 100f;
+            m_Angles += m_RotateDirection * GameTicker.DeltaTime * ViewSettings.GravityTrapRotationSpeed;
             m_Angles = ClampAngles(m_Angles);
             m_MaceTr.rotation = Quaternion.Euler(m_Angles);
         }
@@ -221,11 +226,25 @@ namespace Games.RazorMaze.Views.MazeItems
                 return;
             if (Model.LevelStaging.LevelStage == ELevelStage.Finished)
                 return;
-            var ch = Model.Character;
-            var cPos = ch.IsMoving ? ch.MovingInfo.PrecisePosition : ch.Position.ToVector2();
-            if (Vector2.Distance(cPos, m_Position) > 0.9f)
-                return;
-            Model.LevelStaging.KillCharacter();
+            if (Model.Character.IsMoving)
+            {
+                var cPos = Model.Character.MovingInfo.PrecisePosition;
+                var cPosPrev = Model.Character.MovingInfo.PreviousPrecisePosition;
+                float dist = MathUtils.MinDistanceBetweenPointAndSegment(
+                    cPosPrev, 
+                    cPos,
+                    m_Position);
+                if (dist + MathUtils.Epsilon > 1f)
+                    return;
+                CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, null);
+            }
+            else
+            {
+                var cPos = Model.Character.Position.ToVector2();
+                if (Vector2.Distance(cPos, m_Position) + MathUtils.Epsilon > 0.9f)
+                    return;
+                CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, null);
+            }
         }
 
         protected override void InitWallBlockMovingPaths() { }

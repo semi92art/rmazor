@@ -8,6 +8,7 @@ using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
+using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItems.Props;
 using Shapes;
 using Ticker;
@@ -43,14 +44,15 @@ namespace Games.RazorMaze.Views.MazeItems
 
         #region inject
 
-        protected ViewSettings             ViewSettings        { get; }
-        protected IModelGame               Model               { get; }
-        protected IMazeCoordinateConverter CoordinateConverter { get; }
-        protected IContainersGetter        ContainersGetter    { get; }
-        protected IViewGameTicker              GameTicker          { get; }
-        protected IViewAppearTransitioner  Transitioner        { get; }
-        protected IManagersGetter          Managers            { get; }
-        protected IColorProvider           ColorProvider       { get; }
+        protected ViewSettings                ViewSettings        { get; }
+        protected IModelGame                  Model               { get; }
+        protected IMazeCoordinateConverter    CoordinateConverter { get; }
+        protected IContainersGetter           ContainersGetter    { get; }
+        protected IViewGameTicker             GameTicker          { get; }
+        protected IViewAppearTransitioner     Transitioner        { get; }
+        protected IManagersGetter             Managers            { get; }
+        protected IColorProvider              ColorProvider       { get; }
+        protected IViewInputCommandsProceeder CommandsProceeder   { get; }
 
 
         protected ViewMazeItemBase (
@@ -61,7 +63,8 @@ namespace Games.RazorMaze.Views.MazeItems
             IViewGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
             IManagersGetter _Managers,
-            IColorProvider _ColorProvider)
+            IColorProvider _ColorProvider,
+            IViewInputCommandsProceeder _CommandsProceeder)
         {
             ViewSettings = _ViewSettings;
             Model = _Model;
@@ -71,6 +74,7 @@ namespace Games.RazorMaze.Views.MazeItems
             Transitioner = _Transitioner;
             Managers = _Managers;
             ColorProvider = _ColorProvider;
+            CommandsProceeder = _CommandsProceeder;
         }
 
         #endregion

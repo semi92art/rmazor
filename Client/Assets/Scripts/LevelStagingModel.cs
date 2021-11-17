@@ -97,7 +97,7 @@ public class ModelLevelStaging : IModelLevelStaging, IInit, IUpdateTick
     public void UpdateTick()
     {
         if (m_DoUpdateLevelTime)
-            LevelTime += Time.deltaTime;
+            LevelTime += GameTicker.DeltaTime;
     }
     
     public virtual void LoadLevel(MazeInfo _Info, int _LevelIndex)

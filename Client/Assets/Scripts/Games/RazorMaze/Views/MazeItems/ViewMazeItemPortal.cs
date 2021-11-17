@@ -9,6 +9,7 @@ using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
+using Games.RazorMaze.Views.InputConfigurators;
 using Shapes;
 using SpawnPools;
 using Ticker;
@@ -62,7 +63,8 @@ namespace Games.RazorMaze.Views.MazeItems
             IViewGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
             IManagersGetter _Managers,
-            IColorProvider _ColorProvider)
+            IColorProvider _ColorProvider,
+            IViewInputCommandsProceeder _CommandsProceeder)
             : base(
                 _ViewSettings,
                 _Model,
@@ -71,7 +73,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 _GameTicker,
                 _Transitioner,
                 _Managers,
-                _ColorProvider) { }
+                _ColorProvider,
+                _CommandsProceeder) { }
         
         #endregion
 
@@ -85,7 +88,8 @@ namespace Games.RazorMaze.Views.MazeItems
             GameTicker,
             Transitioner,
             Managers,
-            ColorProvider);
+            ColorProvider,
+            CommandsProceeder);
         
         public override Component[] Shapes => new Component[] {m_Center}.Concat(m_Orbits).ToArray();
 
@@ -108,7 +112,7 @@ namespace Games.RazorMaze.Views.MazeItems
             {
                 bool clockwise = i.InRange(new V2Int(0, 3), new V2Int(7, 10));
                 float c = clockwise ? -1f : 1f;
-                m_Orbits[i].transform.Rotate(Vector3.forward * RotationSpeed * c * Time.deltaTime * 50f);
+                m_Orbits[i].transform.Rotate(Vector3.forward * RotationSpeed * c * GameTicker.DeltaTime * 50f);
             }
             if (AppearingState == EAppearingState.Appeared)
                 UpdateGravityItems();
@@ -230,7 +234,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private void UpdateGravityItems()
         {
-            m_GravitySpawnTimer += Time.deltaTime;
+            m_GravitySpawnTimer += GameTicker.DeltaTime;
             if (m_GravitySpawnTimer < GravitySpawnTime)
                 return;
 

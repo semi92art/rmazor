@@ -11,6 +11,7 @@ using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
+using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItems.Additional;
 using Games.RazorMaze.Views.MazeItems.Props;
 using Games.RazorMaze.Views.Utils;
@@ -62,12 +63,14 @@ namespace Games.RazorMaze.Views.MazeItems
         #endregion
         
         #region inject
-        
-        private IViewTurretBulletTail BulletTail { get; }
-        private IViewMazeBackground Background { get; }
+
+        private ModelSettings               ModelSettings     { get; }
+        private IViewTurretBulletTail       BulletTail        { get; }
+        private IViewMazeBackground         Background        { get; }
 
         public ViewMazeItemTurret(
             ViewSettings _ViewSettings,
+            ModelSettings _ModelSettings,
             IModelGame _Model,
             IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
@@ -76,7 +79,8 @@ namespace Games.RazorMaze.Views.MazeItems
             IViewMazeBackground _Background,
             IViewAppearTransitioner _Transitioner,
             IManagersGetter _Managers,
-            IColorProvider _ColorProvider)
+            IColorProvider _ColorProvider,
+            IViewInputCommandsProceeder _CommandsProceeder)
             : base(
                 _ViewSettings, 
                 _Model, 
@@ -85,8 +89,10 @@ namespace Games.RazorMaze.Views.MazeItems
                 _GameTicker,
                 _Transitioner,
                 _Managers,
-                _ColorProvider)
+                _ColorProvider,
+                _CommandsProceeder)
         {
+            ModelSettings = _ModelSettings;
             BulletTail = _BulletTail;
             Background = _Background;
         }
@@ -105,6 +111,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         public override object Clone() => new ViewMazeItemTurret(
             ViewSettings,
+            ModelSettings,
             Model,
             CoordinateConverter, 
             ContainersGetter, 
@@ -113,7 +120,8 @@ namespace Games.RazorMaze.Views.MazeItems
             Background,
             Transitioner,
             Managers,
-            ColorProvider);
+            ColorProvider,
+            CommandsProceeder);
 
         public override bool ActivatedInSpawnPool
         {
@@ -152,13 +160,13 @@ namespace Games.RazorMaze.Views.MazeItems
                 return;
             if (AppearingState == EAppearingState.Dissapeared)
                 return;
-            m_BulletHolderBorder.DashOffset += 2f * Time.deltaTime;
+            m_BulletHolderBorder.DashOffset += 2f * GameTicker.DeltaTime;
             if (AppearingState == EAppearingState.Appearing)
                 return;
             if (!m_BulletRotating)
                 m_Bullet.localEulerAngles = m_BulletFakeTr.localEulerAngles;
             else
-                m_Bullet.Rotate(Vector3.forward * m_RotatingSpeed * Time.deltaTime);
+                m_Bullet.Rotate(Vector3.forward * m_RotatingSpeed * GameTicker.DeltaTime);
         }
 
         #endregion
@@ -346,7 +354,8 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             Managers.AudioManager.PlayClip(AudioClipArgsShurikenFly);
             Managers.HapticsManager.PlayPreset(EHapticsPresetType.HeavyImpact);
-            var fromPos = _Args.From.ToVector2();
+            var projectilePos = _Args.From.ToVector2();
+            var projectilePosPrev = projectilePos;
             V2Int point = default;
             bool movedToTheEnd = false;
             m_BulletRotating = true;
@@ -355,22 +364,36 @@ namespace Games.RazorMaze.Views.MazeItems
             yield return Coroutines.DoWhile(
                 () =>
                 {
-                    if (point == Model.Character.Position
-                        && Model.Character.Alive
-                        && !Model.PathItemsProceeder.AllPathsProceeded
-                        && Model.LevelStaging.LevelStage != ELevelStage.Finished
-                        && fullPath.Contains(point))
+                    if (Model.Character.IsMoving)
                     {
-                        Model.LevelStaging.KillCharacter();
-                        return false;
+                        if (fullPath.Contains(point) 
+                            && CheckForDeathWhileCharacterMoving(
+                            projectilePosPrev,
+                            projectilePos,
+                            Model.Character.MovingInfo.PreviousPrecisePosition,
+                            Model.Character.MovingInfo.PrecisePosition))
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        if (fullPath.Contains(point) 
+                            && CheckForCharacterDeathWhileCharacterNotMoving(
+                                Model.Character.Position,
+                                projectilePos))
+                        {
+                            return false;
+                        }
                     }
                     return !movedToTheEnd;
                 },
                 () =>
                 {
-                    fromPos += _Args.Direction.ToVector2() * _Args.ProjectileSpeed;
-                    m_BulletTr.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(fromPos));
-                    point = V2Int.Round(fromPos);
+                    projectilePosPrev = projectilePos;
+                    projectilePos += _Args.Direction.ToVector2() * ModelSettings.TurretProjectileSpeed * GameTicker.FixedDeltaTime;
+                    m_BulletTr.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(projectilePos));
+                    point = V2Int.Round(projectilePos);
                     BulletTail.ShowTail(_Args);
                     if (point == _Args.To + _Args.Direction)
                         movedToTheEnd = true;
@@ -379,9 +402,9 @@ namespace Games.RazorMaze.Views.MazeItems
                     m_BulletRotating = false;
                     m_Bullet.SetGoActive(false);
                     BulletTail.HideTail(_Args);
-                    // Managers.Notify(_SM => _SM.StopClip(
-                    //     SoundClipNameBulletFly));
-                });
+                },
+                GameTicker,
+                _FixedUpdate: true);
         }
 
         private Tuple<float, float> GetBarrelDiscAngles(bool _Opened)
@@ -448,6 +471,55 @@ namespace Games.RazorMaze.Views.MazeItems
                 {new [] {m_Body}, () => ColorProvider.GetColor(ColorIds.Main)},
                 {bulletRenderers, () => bulletRenderersCol}
             };
+        }
+
+        private bool CheckForCharacterDeathWhileCharacterNotMoving(Vector2 _CharacterPos, Vector2 _ProjectilePos)
+        {
+            if (!IsDeathPossible())
+                return false;
+            bool result = Vector2.Distance(_CharacterPos, _ProjectilePos) + MathUtils.Epsilon < 0.9f;
+            if (result)
+                CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, null);
+            return result;
+        }
+
+        private bool CheckForDeathWhileCharacterMoving(
+            Vector2 _ProjectileStart,
+            Vector2 _ProjectileEnd,
+            Vector2 _CharacterStart,
+            Vector2 _CharacterEnd)
+        {
+            if (!IsDeathPossible())
+                return false;
+            var intersection = MathUtils.LineSegementsIntersect(
+                _ProjectileStart, 
+                _ProjectileEnd,
+                _CharacterStart,
+                _CharacterEnd);
+            if (intersection.HasValue)
+            {
+                CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, 
+                    new object[] { CoordinateConverter.ToLocalMazeItemPosition(intersection.Value) });
+                return true;
+            }
+            var projAveragePos = (_ProjectileStart + _ProjectileEnd) * 0.5f;
+            var charAveragePos = (_CharacterStart + _CharacterEnd) * 0.5f;
+            if (!(Vector2.Distance(projAveragePos, charAveragePos) + MathUtils.Epsilon < 0.9f)) 
+                return false;
+            CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, 
+                new object[] { CoordinateConverter.ToLocalMazeItemPosition(charAveragePos) });
+            return true;
+        }
+
+        private bool IsDeathPossible()
+        {
+            if (!Model.Character.Alive)
+                return false;
+            if (Model.LevelStaging.LevelStage == ELevelStage.Finished)
+                return false;
+            if (Model.PathItemsProceeder.AllPathsProceeded)
+                return false;
+            return true;
         }
 
         #endregion

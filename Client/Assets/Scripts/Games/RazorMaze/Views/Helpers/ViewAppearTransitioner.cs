@@ -25,11 +25,6 @@ namespace Games.RazorMaze.Views.Helpers
     
     public interface IViewAppearTransitioner
     {
-        void DoAppearMazeItemTransition(bool _Appear,
-            Dictionary<IEnumerable<Component>, Func<Color>> _Sets,
-            IViewMazeItem _MazeItem,
-            UnityAction _OnFinish);
-        
         void DoAppearTransition(
             bool _Appear,
             Dictionary<IEnumerable<Component>, Func<Color>> _Sets,
@@ -44,7 +39,7 @@ namespace Games.RazorMaze.Views.Helpers
         
         private IModelGame               Model               { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IViewGameTicker              GameTicker          { get; }
+        private IViewGameTicker          GameTicker          { get; }
 
         public ViewAppearTransitioner(
             IModelGame _Model, 
@@ -59,16 +54,6 @@ namespace Games.RazorMaze.Views.Helpers
         #endregion
 
         #region api
-
-        public void DoAppearMazeItemTransition(
-            bool _Appear,
-            Dictionary<IEnumerable<Component>,
-                Func<Color>> _Sets, IViewMazeItem _MazeItem,
-            UnityAction _OnFinish)
-        {
-            // const float transitionTime = 0.3f;
-            // float delay = GetDelay(_Appear, _Type, _ItemPosition);
-        }
 
         public void DoAppearTransition(
             bool _Appear,

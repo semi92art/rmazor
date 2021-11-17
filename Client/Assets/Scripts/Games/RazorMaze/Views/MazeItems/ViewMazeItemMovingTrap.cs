@@ -6,19 +6,21 @@ using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
+using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.Utils;
 using Ticker;
 using UnityEngine;
+using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
     public interface IViewMazeItemMovingTrap : IViewMazeItemMovingBlock { }
     
-    public class ViewMazeItemMovingTrap : ViewMazeItemMovingBase, IViewMazeItemMovingTrap, IUpdateTick
+    public class ViewMazeItemMovingTrap : ViewMazeItemMovingBase, IViewMazeItemMovingTrap, IUpdateTick, IFixedUpdateTick
     {
         #region constants
 
-        private const string SoundClipNameSawWorking   = "saw_working";
+        private const string SoundClipNameSawWorking = "saw_working";
         
         #endregion
         
@@ -26,7 +28,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private Vector2 m_Position;
         private bool m_Rotating;
-        
+
         #endregion
         
         #region shapes
@@ -34,6 +36,7 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override string ObjectName => "Moving Trap Block";
 
         private SpriteRenderer m_Saw;
+        private Vector2        m_PrecisePosition;
 
         #endregion
         
@@ -47,7 +50,8 @@ namespace Games.RazorMaze.Views.MazeItems
             IViewGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
             IManagersGetter _Managers,
-            IColorProvider _ColorProvider)
+            IColorProvider _ColorProvider,
+            IViewInputCommandsProceeder _CommandsProceeder)
             : base(
                 _ViewSettings,
                 _Model, 
@@ -56,7 +60,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 _GameTicker,
                 _Transitioner,
                 _Managers,
-                _ColorProvider) { }
+                _ColorProvider,
+                _CommandsProceeder) { }
         
         #endregion
         
@@ -72,7 +77,8 @@ namespace Games.RazorMaze.Views.MazeItems
             GameTicker,
             Transitioner,
             Managers,
-            ColorProvider);
+            ColorProvider,
+            CommandsProceeder);
 
         public override EProceedingStage ProceedingStage
         {
@@ -93,9 +99,9 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             if (ProceedingStage != EProceedingStage.ActiveAndWorking)
                 return;
-            var precisePosition = Vector2.Lerp(
+            m_PrecisePosition = Vector2.Lerp(
                 _Args.From.ToVector2(), _Args.To.ToVector2(), _Args.Progress);
-            SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(precisePosition));
+            SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(m_PrecisePosition));
         }
 
         public override void OnMoveFinished(MazeItemMoveEventArgs _Args)
@@ -112,6 +118,13 @@ namespace Games.RazorMaze.Views.MazeItems
             DoRotation();
         }
 
+        public void FixedUpdateTick()
+        {
+            if (!Initialized || !ActivatedInSpawnPool)
+                return;
+            CheckForCharacterDeath();
+        }
+        
         #endregion
 
         #region nonpublic methods
@@ -130,6 +143,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected override void UpdateShape()
         {
+            m_PrecisePosition = Props.Position;
             Object.transform.localScale = Vector3.one * CoordinateConverter.Scale;
             base.UpdateShape();
         }
@@ -138,7 +152,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             if (!m_Rotating)
                 return;
-            float rotSpeed = ViewSettings.MovingTrapRotationSpeed * Time.deltaTime; 
+            float rotSpeed = ViewSettings.MovingTrapRotationSpeed * GameTicker.DeltaTime; 
             m_Saw.transform.Rotate(Vector3.forward * rotSpeed);
         }
 
@@ -157,6 +171,51 @@ namespace Games.RazorMaze.Views.MazeItems
             if (_ColorId == ColorIds.MazeItem1)
                 m_Saw.color = _Color;
             base.OnColorChanged(_ColorId, _Color);
+        }
+        
+        private void CheckForCharacterDeath()
+        {
+            if (!Model.Character.Alive)
+                return;
+            if (Model.PathItemsProceeder.AllPathsProceeded)
+                return;
+            if (Model.LevelStaging.LevelStage == ELevelStage.Finished)
+                return;
+            if (Model.Character.IsMoving)
+            {
+                var cPos = Model.Character.MovingInfo.PrecisePosition;
+                var cPosPrev = Model.Character.MovingInfo.PreviousPrecisePosition;
+                float dist = MathUtils.MinDistanceBetweenPointAndSegment(
+                    cPosPrev, 
+                    cPos,
+                    m_PrecisePosition);
+                if (dist + MathUtils.Epsilon > 1f)
+                    return;
+                var deathPos = GetPerpendicular(cPosPrev, cPos, m_PrecisePosition);
+                CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, 
+                    null);
+            }
+            else
+            {
+                var cPos = Model.Character.Position.ToVector2();
+                if (Vector2.Distance(cPos, m_PrecisePosition) + MathUtils.Epsilon > 1f)
+                    return;
+                CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, null);
+            }
+        }
+
+        private static Vector2 GetPerpendicular(Vector2 _SegStart, Vector2 _SegEnd, Vector2 _P)
+        {
+            float x1 = _SegStart.x;
+            float y1 = _SegStart.y;
+            float x2 = _SegEnd.x;
+            float y2 = _SegEnd.y;
+            float x3 = _P.x;
+            float y3 = _P.y;
+            float k = ((y2-y1) * (x3-x1) - (x2-x1) * (y3-y1)) / ((y2-y1) * (y2-y1) + (x2-x1) * (x2-x1));
+            float x4 = x3 - k * (y2 - y1);
+            float y4 = y3 + k * (x2 - x1);
+            return new Vector2(x4, y4);
         }
 
         #endregion

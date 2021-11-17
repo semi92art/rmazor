@@ -71,6 +71,7 @@ namespace Games.RazorMaze
              
             SceneManager.sceneLoaded += (_Scene, _Mode) =>
             {
+                Application.targetFrameRate = GraphicUtils.GetTargetFps();
                 Coroutines.Run(Coroutines.WaitWhile(
                     () => !AssetBundleManager.BundlesLoaded,
                     () =>

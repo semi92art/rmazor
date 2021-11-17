@@ -2,6 +2,7 @@
 using Games.RazorMaze.Views;
 using Ticker;
 using UnityEngine.Events;
+using Utils;
 
 namespace Games.RazorMaze.Models.InputSchedulers
 {
@@ -102,7 +103,7 @@ namespace Games.RazorMaze.Models.InputSchedulers
         {
             if (m_MovementLocked || m_MoveCommandsCount == 0)
                 return;
-            int idx = MaxCommandsCount - m_MoveCommandsCount;
+            int idx = m_MoveCommandsCount - 1;
             EInputCommand? cmd;
             (cmd, m_MoveCommands[idx]) = (m_MoveCommands[idx], null);
             if (!cmd.HasValue)
@@ -116,7 +117,7 @@ namespace Games.RazorMaze.Models.InputSchedulers
         {
             if (m_RotationLocked || m_RotateCommandsCount == 0)
                 return;
-            int idx = MaxCommandsCount - m_RotateCommandsCount;
+            int idx = m_RotateCommandsCount - 1;
             EInputCommand? cmd;
             (cmd, m_RotateCommands[idx]) = (m_RotateCommands[idx], null);
             if (!cmd.HasValue)

@@ -11,6 +11,7 @@ using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
+using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItems;
 using Shapes;
 using Ticker;
@@ -33,6 +34,7 @@ namespace Games.RazorMaze.Views.Characters
         
         private Rectangle m_HeadShape;
         private Rectangle m_Eye1Shape, m_Eye2Shape;
+        private bool      m_EnableMoving;
         
         #endregion
         
@@ -56,14 +58,15 @@ namespace Games.RazorMaze.Views.Characters
         
         #region inject
         
-        private IViewCharacterTail      Tail          { get; }
-        private IViewCharacterEffector  Effector      { get; }
-        private IViewGameTicker             GameTicker    { get; }
-        private IViewAppearTransitioner Transitioner  { get; }
-        private IManagersGetter         Managers      { get; }
-        private IMazeShaker             MazeShaker    { get; }
-        private IColorProvider          ColorProvider { get; }
-        private ViewSettings            ViewSettings  { get; }
+        private IViewCharacterTail          Tail              { get; }
+        private IViewCharacterEffector      Effector          { get; }
+        private IViewGameTicker             GameTicker        { get; }
+        private IViewAppearTransitioner     Transitioner      { get; }
+        private IManagersGetter             Managers          { get; }
+        private IMazeShaker                 MazeShaker        { get; }
+        private IColorProvider              ColorProvider     { get; }
+        private IViewInputCommandsProceeder CommandsProceeder { get; }
+        private ViewSettings                ViewSettings      { get; }
 
         public ViewCharacter(
             IMazeCoordinateConverter _CoordinateConverter, 
@@ -77,6 +80,7 @@ namespace Games.RazorMaze.Views.Characters
             IManagersGetter _Managers,
             IMazeShaker _MazeShaker,
             IColorProvider _ColorProvider,
+            IViewInputCommandsProceeder _CommandsProceeder,
             ViewSettings _ViewSettings) 
             : base(
                 _CoordinateConverter, 
@@ -92,6 +96,7 @@ namespace Games.RazorMaze.Views.Characters
             Managers = _Managers;
             MazeShaker = _MazeShaker;
             ColorProvider = _ColorProvider;
+            CommandsProceeder = _CommandsProceeder;
         }
         
         #endregion
@@ -107,6 +112,7 @@ namespace Games.RazorMaze.Views.Characters
                 {
                     if (!m_Initialized)
                     {
+                        CommandsProceeder.Command += OnCommand;
                         ColorProvider.ColorChanged += OnColorChanged;
                         MazeShaker.Init();
                         InitPrefab();
@@ -124,6 +130,15 @@ namespace Games.RazorMaze.Views.Characters
                     Effector.Activated = false;
                 }
             }
+        }
+
+        private void OnCommand(EInputCommand _Command, object[] _Args)
+        {
+            
+            if (_Command != EInputCommand.KillCharacter)
+                return;
+            m_EnableMoving = false;
+
         }
 
         private void OnColorChanged(int _ColorId, Color _Color)
@@ -152,6 +167,8 @@ namespace Games.RazorMaze.Views.Characters
 
         public override void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
         {
+            if (!m_EnableMoving)
+                return;
             m_Animator.SetTrigger(AnimKeyStartMove);
             SetOrientation(_Args.Direction);
             Tail.ShowTail(_Args);
@@ -160,6 +177,8 @@ namespace Games.RazorMaze.Views.Characters
 
         public override void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
+            if (!m_EnableMoving)
+                return;
             if (!m_ShowCharacterHeadAndTail)
                 return;
             var prevPos = CoordinateConverter.ToLocalCharacterPosition(_Args.From);
@@ -171,6 +190,8 @@ namespace Games.RazorMaze.Views.Characters
 
         public override void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
         {
+            if (!m_EnableMoving)
+                return;
             m_Animator.SetTrigger(AnimKeyBump);
             if (m_ShowCharacterHeadAndTail)
                 Tail.HideTail(_Args);
@@ -193,6 +214,7 @@ namespace Games.RazorMaze.Views.Characters
                     Activated = true;
                     break;
                 case ELevelStage.ReadyToStart:
+                    m_EnableMoving = true;
                     if (m_OrientationCache == MazeOrientation.North)
                         SetDefaultCharacterState(true);
                     else

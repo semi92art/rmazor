@@ -11,6 +11,7 @@ namespace Ticker
 
         private bool m_Paused;
         private float m_Delta;
+        private float m_FixedDelta;
         private readonly List<IUpdateTick> m_UpdateInfoDict = new List<IUpdateTick>();
         private readonly List<IFixedUpdateTick> m_FixedUpdateInfoDict = new List<IFixedUpdateTick>();
         private readonly List<ILateUpdateTick> m_LateUpdateInfoDict = new List<ILateUpdateTick>();
@@ -22,7 +23,10 @@ namespace Ticker
 
         public event UnityAction Paused;
         public event UnityAction UnPaused;
-        public float Time { get; private set; }
+        public float             Time           { get; private set; }
+        public float             DeltaTime      => UnityEngine.Time.deltaTime;
+        public float             FixedTime      { get; private set; }
+        public float             FixedDeltaTime => UnityEngine.Time.fixedDeltaTime;
 
         public bool Pause
         {
@@ -101,7 +105,11 @@ namespace Ticker
         private void FixedUpdate()
         {
             if (Pause)
+            {
+                m_FixedDelta += UnityEngine.Time.fixedTime;
                 return;
+            }
+            FixedTime = UnityEngine.Time.fixedTime - m_FixedDelta;
             for (int i = 0; i < m_FixedUpdateInfoDict.Count; i++)
                 m_FixedUpdateInfoDict[i]?.FixedUpdateTick();
         }
@@ -130,22 +138,14 @@ namespace Ticker
         
         private void RegisterUpdateMethods(object _Object)
         {
-            switch (_Object)
-            {
-                case IUpdateTick onUpdateObj:
-                    m_UpdateInfoDict.Add(onUpdateObj);
-                    break;
-                case IFixedUpdateTick onFixedUpdateObj:
-                    m_FixedUpdateInfoDict.Add(onFixedUpdateObj);
-                    break;
-                case ILateUpdateTick onLateUpdateObj:
-                    m_LateUpdateInfoDict.Add(onLateUpdateObj);
-                    break;
-                case IDrawGizmosTick onDrawGizmosObj:
-                    m_DrawGizmosInfoDict.Add(onDrawGizmosObj);
-                    break;
-            }
-
+            if (_Object is IUpdateTick onUpdateObj)
+                m_UpdateInfoDict.Add(onUpdateObj);
+            if (_Object is IFixedUpdateTick onFixedUpdateObj)
+                m_FixedUpdateInfoDict.Add(onFixedUpdateObj);
+            if (_Object is ILateUpdateTick onLateUpdateObj)
+                m_LateUpdateInfoDict.Add(onLateUpdateObj);
+            if (_Object is IDrawGizmosTick onDrawGizmosObj)
+                m_DrawGizmosInfoDict.Add(onDrawGizmosObj);
             RemoveNullObjects();
         }
 

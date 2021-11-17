@@ -51,13 +51,13 @@ namespace Games.RazorMaze.Prot.Editor
             {
                 if (targetsCopy.Length == 1)
                 {
-                    var type = (EMazeItemType)EditorGUI.EnumPopup(popupRect, props.Type);
+                    var type = MazeItemsPopup(popupRect, props.Type);
                     if (props.Type != type)
                         targetsCopy[0].SetType(type, false, false);
                 }
                 else
                 {
-                    m_Type = (EMazeItemType)EditorGUI.EnumPopup(popupRect, m_Type);
+                    m_Type = MazeItemsPopup(popupRect, m_Type);
                     GUILayout.Space(20);
                     EditorUtilsEx.GuiButtonAction("Set type", () =>
                     {
@@ -96,6 +96,14 @@ namespace Games.RazorMaze.Prot.Editor
 
         private static void SetAsPathItemStart(ViewMazeItemProt _Item)
         {
+            var prevStartNodes =
+                LevelDesigner.Instance.maze
+                    .Where(_Node => _Node.Props.IsNode && _Node.Props.IsStartNode);
+            foreach (var node in prevStartNodes)
+            {
+                if (node != _Item)
+                    node.SetType(node.Props.Type, true, false);
+            }
             _Item.SetType(_Item.Props.Type, true, !_Item.Props.IsStartNode);
         }
 
@@ -243,6 +251,32 @@ namespace Games.RazorMaze.Prot.Editor
                 _Props1.Pair = _Props2.Position;
                 _Props2.Pair = _Props1.Position;    
             });
+        }
+
+        private EMazeItemType MazeItemsPopup(Rect _Rect, EMazeItemType _ItemType)
+        {
+            var itemSymbolsDict = new Dictionary<EMazeItemType, char>
+            {
+                {EMazeItemType.Block, '\u20DE'},
+                {EMazeItemType.GravityBlock, '\u23FA'},
+                {EMazeItemType.GravityBlockFree, '\u2601'},
+                {EMazeItemType.ShredingerBlock, '\u25A8'},
+                {EMazeItemType.Springboard, '\u22CC'},
+                {EMazeItemType.Portal, '\u058D'},
+                {EMazeItemType.TrapMoving, '\u2618'},
+                {EMazeItemType.TrapReact, '\u234B'},
+                {EMazeItemType.TrapIncreasing, '\u2602'},
+                {EMazeItemType.Turret, '\u260F'},
+                {EMazeItemType.GravityTrap, '\u2622'}
+            };
+
+            var keys = itemSymbolsDict.Keys.ToList();
+            int idx = keys.IndexOf(_ItemType);
+            var popupContent = itemSymbolsDict
+                .Select(_Kvp => $"{_Kvp.Key} {_Kvp.Value}")
+                .ToArray();
+            int newIdx = EditorGUI.Popup(_Rect, idx, popupContent);
+            return keys[newIdx];
         }
     }
 }

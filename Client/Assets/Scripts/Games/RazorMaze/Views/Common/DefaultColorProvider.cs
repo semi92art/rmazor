@@ -42,7 +42,7 @@ namespace Games.RazorMaze.Views.Common
         {
             if (m_ColorsDict.ContainsKey(_Id)) 
                 return m_ColorsDict[_Id];
-            Dbg.LogWarning($"Color with key {_Id} was not set.");
+            Dbg.LogWarning($"Color \"{ColorIds.GetColorNameById(_Id)}\" with key \"{_Id}\" was not set.");
             return default;
         }
 

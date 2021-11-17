@@ -8,6 +8,7 @@ using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
@@ -21,34 +22,39 @@ namespace Games.RazorMaze.Views.Characters
     {
         #region nonpublic members
 
-        private bool m_Initialized;
-        private bool m_Activated;
-        private GameObject m_DeathShapesContainer;
+        private bool                m_Initialized;
+        private bool                m_Activated;
+        private GameObject          m_DeathShapesContainer;
         private List<ShapeRenderer> m_DeathShapes;
         private EMazeMoveDirection? m_MoveDirection;
+        private Vector2?            m_FromPos;
+        private Vector2?            m_DeathPos;
         
         #endregion
         
         #region inject
         
-        private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IContainersGetter        ContainersGetter    { get; }
-        private IViewGameTicker              GameTicker          { get; }
-        private IModelGame               Model               { get; }
-        private IColorProvider           ColorProvider       { get; }
+        private IMazeCoordinateConverter    CoordinateConverter { get; }
+        private IContainersGetter           ContainersGetter    { get; }
+        private IViewGameTicker             GameTicker          { get; }
+        private IModelGame                  Model               { get; }
+        private IColorProvider              ColorProvider       { get; }
+        private IViewInputCommandsProceeder CommandsProceeder   { get; }
 
         public ViewCharacterEffectorParticles(
             IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IViewGameTicker _GameTicker,
             IModelGame _Model,
-            IColorProvider _ColorProvider)
+            IColorProvider _ColorProvider,
+            IViewInputCommandsProceeder _CommandsProceeder)
         {
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
             GameTicker = _GameTicker;
             Model = _Model;
             ColorProvider = _ColorProvider;
+            CommandsProceeder = _CommandsProceeder;
         }
         
         #endregion
@@ -65,6 +71,7 @@ namespace Games.RazorMaze.Views.Characters
                 {
                     if (!m_Initialized)
                     {
+                        CommandsProceeder.Command += OnCommand;
                         InitPrefab();
                         m_Initialized = true;
                     }
@@ -89,6 +96,7 @@ namespace Games.RazorMaze.Views.Characters
         
         public void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
         {
+            m_FromPos = CoordinateConverter.ToLocalCharacterPosition(_Args.From);
             m_MoveDirection = _Args.Direction;
         }
 
@@ -99,6 +107,7 @@ namespace Games.RazorMaze.Views.Characters
 
         public void OnAllPathProceed(V2Int _LastPos)
         {
+            m_FromPos = null;
             Coroutines.Run(DisappearCoroutine(false, _LastPos));
         }
 
@@ -141,7 +150,9 @@ namespace Games.RazorMaze.Views.Characters
         {
             var center = m_MoveDirection.HasValue && _Death ? 
                 ContainersGetter.GetContainer(ContainerNames.Character).localPosition : 
-                (Vector3)CoordinateConverter.ToLocalCharacterPosition(_LastPos);
+                (Vector3)CoordinateConverter.ToLocalMazeItemPosition(_LastPos);
+            if (m_DeathPos.HasValue)
+                center = m_DeathPos.Value;
             m_DeathShapesContainer.transform.localPosition = center;
             Activated = true;
             int deathShapesCount = m_DeathShapes.Count;
@@ -192,6 +203,28 @@ namespace Games.RazorMaze.Views.Characters
                 },
                 GameTicker,
                 (_Finished, _Progress) => Activated = false);
+        }
+        
+        private void OnCommand(EInputCommand _Command, object[] _Args)
+        {
+            if (_Command != EInputCommand.KillCharacter)
+                return;
+            if (_Args == null || !_Args.Any())
+                m_DeathPos = null;
+            else
+            {
+                var newDeathPos = (Vector2) _Args[0];
+                if (!m_DeathPos.HasValue)
+                    m_DeathPos = newDeathPos;
+                else if (m_FromPos.HasValue)
+                {
+                    if (Vector2.Distance(newDeathPos, m_FromPos.Value) <
+                        Vector2.Distance(m_DeathPos.Value, m_FromPos.Value))
+                    {
+                        m_DeathPos = newDeathPos;
+                    }
+                }
+            }
         }
         
         #endregion

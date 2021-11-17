@@ -11,6 +11,7 @@ using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
+using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
@@ -62,7 +63,8 @@ namespace Games.RazorMaze.Views.MazeItems
             IViewGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
             IManagersGetter _Managers,
-            IColorProvider _ColorProvider)
+            IColorProvider _ColorProvider,
+            IViewInputCommandsProceeder _CommandsProceeder)
             : base(
                 _ViewSettings,
                 _Model,
@@ -71,7 +73,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 _GameTicker,
                 _Transitioner,
                 _Managers,
-                _ColorProvider)
+                _ColorProvider,
+                _CommandsProceeder)
         {
             ModelSettings = _ModelSettings;
         }
@@ -80,7 +83,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region api
         
-        public override Component[] Shapes => new Component[] {m_Line, m_Trap};
+        public override Component[] Shapes => new Component[] {m_Line, m_Trap, m_Mask};
 
         public override bool ActivatedInSpawnPool
         {
@@ -101,7 +104,8 @@ namespace Games.RazorMaze.Views.MazeItems
             GameTicker,
             Transitioner,
             Managers,
-            ColorProvider);
+            ColorProvider,
+            CommandsProceeder);
         
         public void UpdateTick()
         {
@@ -268,13 +272,13 @@ namespace Games.RazorMaze.Views.MazeItems
                 var path = RazorMazeUtils.GetFullPath(
                     (V2Int) charInfo.PreviousPrecisePosition, (V2Int) charInfo.PrecisePosition);
                 if (path.Contains(itemPos))
-                    Model.LevelStaging.KillCharacter();
+                    CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, 
+                        new object[] { CoordinateConverter.ToLocalMazeItemPosition(itemPos) });
             }
             else
             {
-                var cPos = character.Position.ToVector2();
-                if (Vector2.Distance(cPos, itemPos) + RazorMazeUtils.Epsilon < 1f) 
-                    Model.LevelStaging.KillCharacter();
+                if (itemPos == character.Position) 
+                    CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, null);
             }
         }
         

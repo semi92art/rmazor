@@ -264,8 +264,8 @@ namespace Games.RazorMaze.Views.Common
         {
             for (int i = 0; i < m_BackIdleItemsPool.Count; i++)
             {
-                var shape = m_BackIdleItemsPool[i];                
-                var speed = m_BackIdleItemSpeeds[i] * Time.deltaTime;
+                var shape = m_BackIdleItemsPool[i];
+                var speed = m_BackIdleItemSpeeds[i] * GameTicker.DeltaTime;
                 shape.transform.PlusPosXY(speed.x, speed.y);
                 if (IsInsideOfScreenBounds(shape.transform.position.XY(), new Vector2(1f, 1f)))
                     continue;

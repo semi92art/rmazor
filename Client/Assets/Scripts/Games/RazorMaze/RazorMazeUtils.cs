@@ -12,7 +12,7 @@ namespace Games.RazorMaze
     {
         #region api
 
-        public const float Epsilon = 1e-5f;
+        
         public const int LevelsInGroup = 3;
         
         public static bool LoadNextLevelAutomatically = true;

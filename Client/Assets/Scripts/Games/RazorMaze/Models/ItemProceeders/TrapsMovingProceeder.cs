@@ -62,8 +62,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     continue;
                 if (info.ProceedingStage != StageIdle)
                     continue;
-                CheckForCharacterDeath(info, info.CurrentPosition.ToVector2());
-                info.PauseTimer += Time.deltaTime;
+                info.PauseTimer += GameTicker.DeltaTime;
                 if (info.PauseTimer < Settings.MovingItemsPause)
                     continue;
                 info.PauseTimer = 0;
@@ -126,7 +125,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 {
                     var precisePosition = V2Int.Lerp(_From, _To, _Progress);
                     _Info.CurrentPosition = V2Int.Round(precisePosition);
-                    CheckForCharacterDeath(_Info, precisePosition);
                     InvokeMoveContinued(new MazeItemMoveEventArgs(
                         _Info, _From, _To, Settings.MovingItemsSpeed, _Progress, _Info.BusyPositions));
                 },
@@ -142,18 +140,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 });
         }
         
-        private void CheckForCharacterDeath(IMazeItemProceedInfo _Info, Vector2 _ItemPrecisePosition)
-        {
-            if (!Character.Alive || PathItemsProceeder.AllPathsProceeded)
-                return;
-            var cPos = Character.IsMoving ?
-                Character.MovingInfo.PrecisePosition : Character.Position.ToVector2();
-            if (Vector2.Distance(cPos, _ItemPrecisePosition) + RazorMazeUtils.Epsilon > 1f)
-                return;
-            KillerProceedInfo = _Info;
-            LevelStaging.KillCharacter();
-        }
-
         #endregion
     }
 }

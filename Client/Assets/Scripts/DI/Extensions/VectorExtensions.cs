@@ -1,9 +1,15 @@
 ﻿using UnityEngine;
+using Utils;
 
 namespace DI.Extensions
 {
     public static class VectorExtensions
     {
+        public static bool IsZero(this float _V)
+        {
+            return Mathf.Abs(_V) < MathUtils.Epsilon;
+        }
+        
         public static Vector4 SetX (this Vector4 _V, float _X) => new Vector4(_X, _V.y, _V.z, _V.w);
         public static Vector4 SetY (this Vector4 _V, float _Y) => new Vector4(_V.x, _Y, _V.z, _V.w);
         public static Vector4 SetZ (this Vector4 _V, float _Z) => new Vector4(_V.x, _V.y, _Z, _V.w);
@@ -44,6 +50,14 @@ namespace DI.Extensions
             return _V;
         }
         
-        public static Vector3 Abs(this Vector3 _V) => new Vector3(Mathf.Abs(_V.x), Mathf.Abs(_V.y), Mathf.Abs(_V.z));
+        public static Vector3 Abs(this Vector3 _V)
+        {
+            return new Vector3(Mathf.Abs(_V.x), Mathf.Abs(_V.y), Mathf.Abs(_V.z));
+        }
+
+        public static float Cross(this Vector2 _V1, Vector2 _V2)
+        {
+            return _V1.x * _V2.y - _V1.y * _V2.x;
+        }
     }
 }
