@@ -15,7 +15,7 @@ MonoBehaviour:
   characterSpeed: 150
   movingItemsSpeed: 6
   gravityBlockSpeed: 15
-  gravityTrapSpeed: 15
+  gravityTrapSpeed: 10
   movingItemsPause: 1
   trapPreReactTime: 0.5
   trapReactTime: 0.5
@@ -24,5 +24,5 @@ MonoBehaviour:
   trapIncreasingIncreasedTime: 2
   turretPreShootInterval: 2
   turretShootInterval: 0.5
-  turretProjectileSpeed: 3.5
+  turretProjectileSpeed: 20
   shredingerBlockProceedTime: 3

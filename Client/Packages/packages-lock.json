@@ -26,15 +26,6 @@
       "source": "builtin",
       "dependencies": {}
     },
-    "com.unity.ads": {
-      "version": "3.5.2",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.ugui": "1.0.0"
-      },
-      "url": "https://packages.unity.com"
-    },
     "com.unity.analytics": {
       "version": "3.3.5",
       "depth": 0,
@@ -126,8 +117,26 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
+    "com.unity.services.core": {
+      "version": "1.1.0-pre.8",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.modules.unitywebrequest": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.services.mediation": {
+      "version": "file:../_Other/additional packages/mediation.tgz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {
+        "com.unity.settings-manager": "1.0.3",
+        "com.unity.services.core": "1.1.0-pre.8"
+      }
+    },
     "com.unity.settings-manager": {
-      "version": "1.0.0",
+      "version": "1.0.3",
       "depth": 1,
       "source": "registry",
       "dependencies": {},

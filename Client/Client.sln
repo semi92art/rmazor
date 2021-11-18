@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapesRuntime", "ShapesRunt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject-IntegrationTests-Editor", "Zenject-IntegrationTests-Editor.csproj", "{4447421C-7A95-F426-D8E0-DB4A715D0533}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleMobileAds", "GoogleMobileAds.csproj", "{4B84457B-B769-8D97-D4F3-0157426DCDE1}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeanTouch", "LeanTouch.csproj", "{FDB6BAFA-5DCE-E9B8-C7F1-00DAB331447B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeTai.TranslucentImage", "LeTai.TranslucentImage.csproj", "{CD00A28F-59F8-B495-8C64-E2B8ECF5583A}"
@@ -54,8 +52,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject-Editor", "Zenject-Editor.csproj", "{8696C941-20A0-23DF-0A15-667F30A831C4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject-TestFramework", "Zenject-TestFramework.csproj", "{564002D1-8410-89EA-F063-B34A3ADCECED}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleMobileAds.Editor", "GoogleMobileAds.Editor.csproj", "{3D45007E-E207-85CF-0FE7-60952118F595}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lofelt.NiceVibrations.Editor", "Lofelt.NiceVibrations.Editor.csproj", "{B8203AE2-C8BD-A83B-140B-6724D85F8207}"
 EndProject
@@ -101,10 +97,6 @@ Global
 		{4447421C-7A95-F426-D8E0-DB4A715D0533}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4447421C-7A95-F426-D8E0-DB4A715D0533}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4447421C-7A95-F426-D8E0-DB4A715D0533}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4B84457B-B769-8D97-D4F3-0157426DCDE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4B84457B-B769-8D97-D4F3-0157426DCDE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4B84457B-B769-8D97-D4F3-0157426DCDE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4B84457B-B769-8D97-D4F3-0157426DCDE1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FDB6BAFA-5DCE-E9B8-C7F1-00DAB331447B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FDB6BAFA-5DCE-E9B8-C7F1-00DAB331447B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FDB6BAFA-5DCE-E9B8-C7F1-00DAB331447B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -177,10 +169,6 @@ Global
 		{564002D1-8410-89EA-F063-B34A3ADCECED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{564002D1-8410-89EA-F063-B34A3ADCECED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{564002D1-8410-89EA-F063-B34A3ADCECED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3D45007E-E207-85CF-0FE7-60952118F595}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3D45007E-E207-85CF-0FE7-60952118F595}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3D45007E-E207-85CF-0FE7-60952118F595}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3D45007E-E207-85CF-0FE7-60952118F595}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B8203AE2-C8BD-A83B-140B-6724D85F8207}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B8203AE2-C8BD-A83B-140B-6724D85F8207}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8203AE2-C8BD-A83B-140B-6724D85F8207}.Release|Any CPU.ActiveCfg = Release|Any CPU

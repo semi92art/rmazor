@@ -42,6 +42,7 @@ namespace Utils
 #elif UNITY_IPHONE
             return "iOS";
 #endif
+            return null;
         }
 
         public static bool CheckForInternetConnection()

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Xml.Linq;
-using DI.Extensions;
 using ScriptableObjects;
 using UnityEditor;
 using UnityEngine;
@@ -14,34 +10,12 @@ namespace Utils
     {
         #region constants
 
-        public const string PrefabSetsLocalPath = "prefab_sets";
-        public const string PrefabSetsPath      = "Assets/Resources/" + PrefabSetsLocalPath;
+        public const  string PrefabSetsLocalPath = "prefab_sets";
+        private const string PrefabSetsPath      = "Assets/Resources/" + PrefabSetsLocalPath;
         
         #endregion
-        
-        #region nonpublic
 
-        private static readonly XElement Ads;
-
-        #endregion
-    
-        #region static constructor
-
-        static ResLoader()
-        {
-            Ads = FromResources(@"configs\ads");
-        }
-    
-        #endregion
-    
         #region API
-    
-        public static string GoogleAdsApplicationId => GetAdsNodeValue("app_id");
-        public static string GoogleAdsBannerId => GetAdsNodeValue("banner");
-        public static string GoogleAdsFullscreenId => GetAdsNodeValue("fullscreen");
-        public static string GoogleAdsRewardId => GetAdsNodeValue("reward");
-        public static string GoogleAdsNativeAdId => GetAdsNodeValue("native");
-        public static List<string> GoogleTestDeviceIds => Ads.Elements("test_device").Select(_El => _El.Value).ToList();
 
         public static PrefabSetScriptableObject GetPrefabSet(string _PrefabSetName)
         {
@@ -76,23 +50,11 @@ namespace Utils
 
         #endregion
         
-        #region nonpublic methods
-    
-        private static XElement FromResources(string _Path)
+        public static XElement FromResources(string _Path)
         {
             var textAsset = Resources.Load<TextAsset>(_Path);
             using (var ms = new MemoryStream(textAsset.bytes))
                 return XDocument.Load(ms).Element("data");
         }
-
-        private static string GetAdsNodeValue(string _Type)
-        {
-            Func<string, string, bool> compareOsNames = (_S1, _S2) => _S1.EqualsIgnoreCase(_S2);
-            return Ads.Elements("ad")
-                .First(_El => _El.Attribute("os").Value.EqualsIgnoreCase(CommonUtils.GetOsName())
-                && _El.Attribute("type")?.Value == _Type).Value;
-        }
-        
-        #endregion
     }
 }

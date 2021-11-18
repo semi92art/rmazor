@@ -2,6 +2,7 @@
 using Games.RazorMaze;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views;
+using Utils;
 
 public partial class SROptions
 {
@@ -9,7 +10,8 @@ public partial class SROptions
     private const string CategoryCharacter  = "Character";
     private const string CategoryCommon     = "Common";
     private const string CategoryLoadLevels = "Load Levels";
-    private const string Haptics = "Haptics";
+    private const string CategoryHaptics    = "Haptics";
+    private const string CategoryAds        = "Ads";
 
     private static IModelGame    _model;
     private static IViewGame     _view;
@@ -298,20 +300,38 @@ public partial class SROptions
         }
     }
 
-    [Category(Haptics)]
+    [Category(CategoryHaptics)]
     public float Amplitude { get; set; }
     
-    [Category(Haptics)]
+    [Category(CategoryHaptics)]
     public float Frequency { get; set; }
     
-    [Category(Haptics)]
+    [Category(CategoryHaptics)]
     public float Duration { get; set; }
     
-    [Category(Haptics)]
+    [Category(CategoryHaptics)]
     public bool Play_Constant
     {
         get => false;
         set => _view.Managers.HapticsManager.Play(Amplitude, Frequency, Duration);
+    }
+
+    [Category(CategoryAds)]
+    public bool Rewarded_Ad_Ready_State
+    {
+        get => false;
+        set => Dbg.Log($"Rewarded ad ready state: {_view.Managers.AdsManager.RewardedAdReady}.");
+    }
+    
+    [Category(CategoryAds)]
+    public bool Show_Rewarded_Ad
+    {
+        get => false;
+        set
+        {
+            _view.Managers.AdsManager.ShowRewardedAd(
+                () => Dbg.Log("Rewarded ad was shown."));
+        }
     }
 
     #endregion
