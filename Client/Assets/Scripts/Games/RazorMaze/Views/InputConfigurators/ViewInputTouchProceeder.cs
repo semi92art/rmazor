@@ -22,30 +22,34 @@ namespace Games.RazorMaze.Views.InputConfigurators
     
     public class ViewInputTouchProceeder : IViewInputTouchProceeder, IUpdateTick
     {
-
         #region nonpublic members
 
         private          LeanFingerTap       m_LeanFingerTap;
         private readonly List<Vector2>       m_TouchPositionsQueue = new List<Vector2>(500);
         private          EMazeMoveDirection? m_PrevMoveDirection;
+        private          bool                m_InPauseBetweenMoveCommands;
+        private          float               m_PauseBetweenMoveCommandsTimer;
         
         #endregion
 
         #region inject
 
+        private        ViewSettings                ViewSettings      { get; }
         protected      IModelGame                  Model             { get; }
         protected      IContainersGetter           ContainersGetter  { get; }
         protected      IViewInputCommandsProceeder CommandsProceeder { get; }
-        private        IViewGameTicker                 GameTicker        { get; }
+        private        IViewGameTicker             GameTicker        { get; }
         private static ICameraProvider             CameraProvider    { get; set; }
 
         protected ViewInputTouchProceeder(
+            ViewSettings _ViewSettings,
             IModelGame _Model,
             IContainersGetter _ContainersGetter,
             IViewInputCommandsProceeder _CommandsProceeder,
             IViewGameTicker _GameTicker,
             ICameraProvider _CameraProvider)
         {
+            ViewSettings = _ViewSettings;
             Model = _Model;
             ContainersGetter = _ContainersGetter;
             CommandsProceeder = _CommandsProceeder;
@@ -150,6 +154,13 @@ namespace Games.RazorMaze.Views.InputConfigurators
 
         private void ProceedTouchForMove()
         {
+            if (m_InPauseBetweenMoveCommands)
+            {
+                m_PauseBetweenMoveCommandsTimer += GameTicker.DeltaTime;
+                if (m_PauseBetweenMoveCommandsTimer > ViewSettings.PauseBetweenMoveCommands)
+                    m_InPauseBetweenMoveCommands = false;
+            }
+            
             const int maxTactsToCheck = 10;
             if (!IsFingerOnScreen())
             {
@@ -175,6 +186,8 @@ namespace Games.RazorMaze.Views.InputConfigurators
                 var command = GetMoveCommand(moveDir.Value);
                 CommandsProceeder.RaiseCommand(command, null);
                 m_PrevMoveDirection = moveDir.Value;
+                m_InPauseBetweenMoveCommands = true;
+                m_PauseBetweenMoveCommandsTimer = 0f;
                 break;
             }
             

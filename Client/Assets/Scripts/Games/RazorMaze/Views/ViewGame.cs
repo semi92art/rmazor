@@ -124,7 +124,9 @@ namespace Games.RazorMaze.Views
         
         public void Init()
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             Managers.DebugManager.Init();
+#endif
             Managers.AudioManager.Init();
             ColorProvider.Init();
             CoordinateConverter.Init();

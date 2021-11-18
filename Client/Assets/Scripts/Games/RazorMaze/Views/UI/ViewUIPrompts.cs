@@ -148,12 +148,13 @@ namespace Games.RazorMaze.Views.UI
         private bool MazeContainsGravityItems()
         {
             return Model.GetAllProceedInfos()
-                .Any(_Info => _Info.Type == EMazeItemType.GravityBlock
-                              || _Info.Type == EMazeItemType.GravityTrap);
+                .Any(_Info => RazorMazeUtils.GravityItemTypes().Contains(_Info.Type));
         }
         
         private void InputConfiguratorOnCommand(EInputCommand _Key, object[] _Args)
         {
+            if (_Key != EInputCommand.RotateClockwise && _Key != EInputCommand.RotateCounterClockwise)
+                return;
             if (m_PromptHowToRotateShown || !MazeContainsGravityItems())
                 return;
             if (_Key == EInputCommand.RotateClockwise)

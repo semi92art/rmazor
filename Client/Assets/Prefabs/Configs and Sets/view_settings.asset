@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edbe76a02fa3404f9e04b54b4caf98f8, type: 3}
   m_Name: view_settings
   m_EditorClassIdentifier: 
-  lineWidth: 7
+  lineWidth: 10
   cornerWidth: 15
   cornerRadius: 30
-  movingTrapRotationSpeed: 800
+  movingTrapRotationSpeed: 400
   shredingerLineOffsetSpeed: 200
   turretBulletRotationSpeed: 100
   blockItemsCount: 100
@@ -25,4 +25,6 @@ MonoBehaviour:
   finishTimeExcellent: 3
   finishTimeGood: 5
   proposalDialogAnimSpeed: 2
+  gravityTrapRotationSpeed: 1000
+  pauseBetweenMoveCommands: 0.1
   screenOffsets: {x: 1, y: 1, z: 1, w: 5}

@@ -19,6 +19,7 @@ namespace Games.RazorMaze
         [SerializeField] private float   finishTimeGood;
         [SerializeField] private float   proposalDialogAnimSpeed;
         [SerializeField] private float   gravityTrapRotationSpeed;
+        [SerializeField] private float   pauseBetweenMoveCommands;
         [SerializeField] private Vector4 screenOffsets;
 
         public float   LineWidth
@@ -109,6 +110,12 @@ namespace Games.RazorMaze
         {
             get => screenOffsets;
             set => screenOffsets = value;
+        }
+
+        public float PauseBetweenMoveCommands
+        {
+            get => pauseBetweenMoveCommands;
+            set => pauseBetweenMoveCommands = value;
         }
     }
 }
