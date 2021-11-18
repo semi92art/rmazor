@@ -7,7 +7,7 @@ using GameHelpers;
 using Games.RazorMaze.Views.Common;
 using Lean.Localization;
 using Managers;
-using MkeyFW;
+// using MkeyFW;
 using Ticker;
 using TMPro;
 using UI.Entities;
@@ -34,7 +34,7 @@ namespace UI.Panels
         #region nonpublic members
         
         private GameObject m_Wheel;
-        private WheelController m_WheelController;
+        // private WheelController m_WheelController;
         private Button m_SpinButton;
         private TextMeshProUGUI m_Title;
         private Image m_WatchAdImage;
@@ -103,7 +103,7 @@ namespace UI.Panels
                 null,
                 "wheel_of_fortune",
                 "wheel_main");
-            m_WheelController = m_Wheel.GetCompItem<WheelController>("wheel_controller");
+            // m_WheelController = m_Wheel.GetCompItem<WheelController>("wheel_controller");
             SpriteRenderer background = m_Wheel.GetCompItem<SpriteRenderer>("background");
             // background.color = ColorUtils.GetColorFromCurrentPalette(CommonPaletteColors.UiMainBackground);
             var cameraBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
@@ -121,7 +121,7 @@ namespace UI.Panels
 
             m_IsLocked = CheckIfWofSpinToday();
             m_SpinButton.SetOnClick(StartSpinOrWatchAd);
-            m_WheelController.Init(DialogViewer, SpinFinishAction);
+            // m_WheelController.Init(DialogViewer, SpinFinishAction);
         }
 
         private void StartSpinOrWatchAd()
@@ -130,7 +130,7 @@ namespace UI.Panels
             if (!m_IsLocked)
             {
                 Managers.AnalyticsManager.SendAnalytic(NotifyMessageSpinButtonClick);
-                Coroutines.Run(Coroutines.Action(() => m_WheelController.StartSpin()));
+                // Coroutines.Run(Coroutines.Action(() => m_WheelController.StartSpin()));
                 SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, DateTime.Now.Date);
                 m_SpinButton.interactable = false;
             }

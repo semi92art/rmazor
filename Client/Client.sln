@@ -21,13 +21,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeanTouch", "LeanTouch.cspr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeTai.TranslucentImage", "LeTai.TranslucentImage.csproj", "{CD00A28F-59F8-B495-8C64-E2B8ECF5583A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lofelt.NiceVibrations.Demo", "Lofelt.NiceVibrations.Demo.csproj", "{946A4A3F-4E40-0FD7-8D0C-EF33188DD618}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-firstpass", "Assembly-CSharp-firstpass.csproj", "{079D398E-4AFC-CD7E-7881-F923D075EBD1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeanCommon", "LeanCommon.csproj", "{545E4CB8-41BF-ACBD-DD64-59140A6D59CE}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeTai.TranslucentImage.Demo", "LeTai.TranslucentImage.Demo.csproj", "{09C28489-6BA3-B9C7-35EC-A1322F14E2F3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lofelt.NiceVibrations", "Lofelt.NiceVibrations.csproj", "{AEC2CF37-67D3-8178-4448-056750033767}"
 EndProject
@@ -105,10 +101,6 @@ Global
 		{CD00A28F-59F8-B495-8C64-E2B8ECF5583A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD00A28F-59F8-B495-8C64-E2B8ECF5583A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD00A28F-59F8-B495-8C64-E2B8ECF5583A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{946A4A3F-4E40-0FD7-8D0C-EF33188DD618}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{946A4A3F-4E40-0FD7-8D0C-EF33188DD618}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{946A4A3F-4E40-0FD7-8D0C-EF33188DD618}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{946A4A3F-4E40-0FD7-8D0C-EF33188DD618}.Release|Any CPU.Build.0 = Release|Any CPU
 		{079D398E-4AFC-CD7E-7881-F923D075EBD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{079D398E-4AFC-CD7E-7881-F923D075EBD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{079D398E-4AFC-CD7E-7881-F923D075EBD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -117,10 +109,6 @@ Global
 		{545E4CB8-41BF-ACBD-DD64-59140A6D59CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{545E4CB8-41BF-ACBD-DD64-59140A6D59CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{545E4CB8-41BF-ACBD-DD64-59140A6D59CE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{09C28489-6BA3-B9C7-35EC-A1322F14E2F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{09C28489-6BA3-B9C7-35EC-A1322F14E2F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{09C28489-6BA3-B9C7-35EC-A1322F14E2F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{09C28489-6BA3-B9C7-35EC-A1322F14E2F3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AEC2CF37-67D3-8178-4448-056750033767}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AEC2CF37-67D3-8178-4448-056750033767}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AEC2CF37-67D3-8178-4448-056750033767}.Release|Any CPU.ActiveCfg = Release|Any CPU
