@@ -15,7 +15,7 @@ MonoBehaviour:
   set:
     array:
     - name: Main
-      color: {r: 0.8113208, g: 0.22579211, b: 0.22579211, a: 1}
+      color: {r: 0.5283019, g: 0.027411893, b: 0.027411893, a: 1}
     - name: Border
       color: {r: 0.8117648, g: 0.227451, b: 0.227451, a: 0.46666667}
     - name: Maze Item 1
@@ -48,7 +48,9 @@ MonoBehaviour:
       color: {r: 0.5372549, g: 0.5372549, b: 0.5372549, a: 1}
     - name: Ui Dialog Background
       color: {r: 0.69803923, g: 0.6784314, b: 0.6156863, a: 1}
-    - name: Ui Border Default
+    - name: Ui Border
       color: {r: 1, g: 1, b: 1, a: 1}
-    - name: Ui Text Default
+    - name: Ui Text
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - name: Ui Background
       color: {r: 1, g: 1, b: 1, a: 1}

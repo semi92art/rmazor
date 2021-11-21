@@ -115,7 +115,7 @@ namespace DialogViewers
             
             m_CloseButton.RTransform().anchoredPosition = new Vector2(0f, 100f);
 
-            var borderColor = ColorProvider.GetColor(ColorIds.UiBorderDefault);
+            var borderColor = ColorProvider.GetColor(ColorIds.UiBorder);
             m_CloseButton.GetCompItem<Image>("border").color = borderColor;
             m_CloseButton.GetCompItem<Image>("icon").color = borderColor;
             

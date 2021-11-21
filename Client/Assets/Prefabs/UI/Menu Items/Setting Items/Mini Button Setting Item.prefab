@@ -259,6 +259,8 @@ MonoBehaviour:
   background: {fileID: 0}
   border: {fileID: 2047959464355671154}
   texts: []
+  images: []
+  dialogBackground: {fileID: 0}
   icon: {fileID: 2266018837000881322}
   toggle: {fileID: 8008235699256900239}
 --- !u!1 &6958598504915039423

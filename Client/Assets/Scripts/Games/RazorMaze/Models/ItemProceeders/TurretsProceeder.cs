@@ -110,9 +110,11 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         private void ProceedTurret(IMazeItemProceedInfo _Info, bool _PreShoot)
         {
+            var proceedInfos = GetAllProceedInfos();
             var to = _Info.CurrentPosition + _Info.Direction;
-            while (ValidPosition(to))
+            while (ValidPosition(to, proceedInfos))
                 to += _Info.Direction;
+            to -= _Info.Direction;
             TurretShoot?.Invoke(new TurretShotEventArgs(
                 _Info, 
                 _Info.CurrentPosition, 
@@ -121,15 +123,15 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 _PreShoot));
         }
         
-        private bool ValidPosition(V2Int _Position)
+        private bool ValidPosition(V2Int _Position, IReadOnlyCollection<IMazeItemProceedInfo> _ProceedInfos)
         {
             bool isOnNode = PathItemsProceeder.PathProceeds.Keys.Any(_Pos => _Pos == _Position);
-            bool isMazeItem = GetAllProceedInfos().Any(_O => 
+            bool isMazeItem = _ProceedInfos.Any(_O => 
                 _O.CurrentPosition == _Position
                 && (_O.Type == EMazeItemType.Block
                     || _O.Type == EMazeItemType.TrapIncreasing
                     || _O.Type == EMazeItemType.Turret));
-            var shredinger = GetAllProceedInfos()
+            var shredinger = _ProceedInfos
                 .FirstOrDefault(_Info =>
                     _Info.Type == EMazeItemType.ShredingerBlock
                     && _Info.CurrentPosition == _Position);

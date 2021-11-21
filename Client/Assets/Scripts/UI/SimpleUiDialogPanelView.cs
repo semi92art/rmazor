@@ -1,14 +1,13 @@
-﻿using DI.Extensions;
-using Games.RazorMaze.Views.Common;
+﻿using Games.RazorMaze.Views.Common;
+using Ticker;
 
 namespace UI
 {
     public class SimpleUiDialogPanelView : SimpleUiItemBase
     {
-        // protected void OnEnable()
-        // {
-        //     if (!background.IsNull())
-        //         background.color = m_ColorProvider.GetColor(ColorIds.UiDialogBackground);
-        // }
+        public void Init(IUITicker _Ticker, IColorProvider _ColorProvider)
+        {
+            InitCore(_Ticker, _ColorProvider);
+        }
     }
 }

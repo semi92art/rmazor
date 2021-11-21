@@ -26,7 +26,7 @@ namespace UI.PanelItems.Setting_Panel_Items
             InitCore(_Managers, _UITicker, _ColorProvider);
             name = "Setting";
             _Managers.LocalizationManager.AddTextObject(title, _TitleKey);
-            ToggleGroup tg = gameObject.AddComponent<ToggleGroup>();
+            var tg = gameObject.AddComponent<ToggleGroup>();
             offToggle.group = tg;
             onToggle.group = tg;
             if (_IsOn)

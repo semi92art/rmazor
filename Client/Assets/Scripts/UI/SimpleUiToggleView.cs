@@ -5,16 +5,15 @@ using UnityEngine.UI;
 
 namespace UI
 {
-    public class SimpleUiButtonView : SimpleUiItemBase
+    public class SimpleUiToggleView : SimpleUiItemBase
     {
-        [SerializeField] private Button button;
+        [SerializeField] private Toggle toggle;
         
         public void Init(IUITicker _Ticker, IColorProvider _ColorProvider)
         {
             InitCore(_Ticker, _ColorProvider);
-            // button.targetGraphic.color = _ColorProvider.GetColor(ColorIds.UiDialogItemNormal);
-            button.transition = Selectable.Transition.ColorTint;
-            UpdateButtonColors();
+            toggle.transition = Selectable.Transition.ColorTint;
+            UpdateToggleColors();
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
@@ -25,14 +24,13 @@ namespace UI
                 || _ColorId == ColorIds.UiDialogItemSelected
                 || _ColorId == ColorIds.UiDialogItemDisabled)
             {
-                UpdateButtonColors();
+                UpdateToggleColors();
             }
         }
 
-
-        private void UpdateButtonColors()
+        private void UpdateToggleColors()
         {
-            button.colors = GetColorBlock();
+            toggle.colors = GetColorBlock();
         }
     }
 }

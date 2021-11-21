@@ -3,23 +3,22 @@ using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Views.Common;
 using Ticker;
-using Utils;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI
 {
-    public interface INormalPressedDisabled
+    public abstract class SimpleUiDialogItemView : SimpleUiItemBase
     {
-        void SetNormal();
-        void SetPressed();
-        void SetSelected();
-        void SetDisabled();
-    }
-    
-    public abstract class SimpleUiDialogItemView : SimpleUiItemBase, INormalPressedDisabled
-    {
+        #region serialized
+
+        [SerializeField] protected Image dialogBackground;  
+
+        #endregion
+        
         #region nonpublic members
 
-        protected IManagersGetter Managers      { get; private set; }
+        protected IManagersGetter Managers { get; private set; }
 
         #endregion
 
@@ -57,8 +56,18 @@ namespace UI
             Managers = _Managers;
             InitCore(_UITicker, _ColorProvider);
 
-            if (!background.IsNull())
-                background.color = _ColorProvider.GetColor(ColorIds.UiDialogItemNormal);
+            if (dialogBackground.IsNotNull())
+                dialogBackground.color = _ColorProvider.GetColor(ColorIds.UiDialogBackground);
+        }
+        
+        protected override void OnColorChanged(int _ColorId, Color _Color)
+        {
+            base.OnColorChanged(_ColorId, _Color);
+            if (_ColorId == ColorIds.UiDialogBackground)
+            {
+                if (dialogBackground.IsNotNull())
+                    dialogBackground.color = _Color;
+            }
         }
         
         protected void SoundOnClick()

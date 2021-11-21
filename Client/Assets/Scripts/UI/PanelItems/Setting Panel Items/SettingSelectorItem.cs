@@ -39,9 +39,6 @@ namespace UI.PanelItems.Setting_Panel_Items
             title.text = _Text;
             name = $"{_Text} Setting";
             m_OnSelect = _Select;
-            // var pointerDown = new EventTrigger.Entry { eventID = EventTriggerType.PointerDown };
-            // pointerDown.callback.AddListener(Select);
-            // trigger.triggers.Add(pointerDown);
 
             m_IsInitialized = true;
 

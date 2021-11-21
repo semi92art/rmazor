@@ -1,4 +1,6 @@
-﻿using Constants;
+﻿using System.Linq;
+using Constants;
+using DI.Extensions;
 using Entities;
 using GameHelpers;
 using Games.RazorMaze.Views.Common;
@@ -12,6 +14,8 @@ public class ColorsHelper : EditorWindow
     private IColorProvider                        m_ColorProvider;
     private ColorSetScriptableObject              m_ColorSetScrObj;
     private ColorSetScriptableObject.ColorItemSet m_ColorSet;
+    private Color?                                m_UiColor;
+    private Color                                 m_UiColorCheck;
     
     [MenuItem("Tools/Colors Helper", false, 2)]
     public static void ShowWindow()
@@ -44,12 +48,60 @@ public class ColorsHelper : EditorWindow
             m_ColorProvider = FindObjectOfType<DefaultColorProvider>();
         }
         
+        EditorUtilsEx.HorizontalLine(Color.gray);
+        GUILayout.Label("UI Color:");
+        if (!m_UiColor.HasValue)
+        {
+            var uiSetItem = m_ColorSet.FirstOrDefault(_Item => ColorIds.GetHash(_Item.name) == ColorIds.UI);
+            if (uiSetItem != null)
+            {
+                m_UiColor = EditorGUILayout.ColorField(uiSetItem.color);
+                m_UiColorCheck = uiSetItem.color;
+            }
+        }
+        else
+        {
+            m_UiColor = EditorGUILayout.ColorField(m_UiColor.Value);
+        }
+        if (m_UiColor.HasValue && m_UiColor != m_UiColorCheck)
+            SetUiColors(m_UiColor.Value);
+        if (m_UiColor.HasValue)
+            m_UiColorCheck = m_UiColor.Value;
+
+        EditorUtilsEx.HorizontalLine(Color.gray);
+        
         EditorUtilsEx.GuiButtonAction("Save",
             () =>
             {
                 m_ColorSetScrObj.set = m_ColorSet;
                 AssetDatabase.SaveAssets();
             });
+    }
+
+    private void SetUiColors(Color _Color)
+    {
+        var coloIds = new []
+        {
+            ColorIds.UI,
+            ColorIds.UiBackground,
+            ColorIds.UiBorder,
+            ColorIds.UiText,
+            ColorIds.UiDialogItemNormal,
+            ColorIds.UiDialogItemPressed,
+            ColorIds.UiDialogItemSelected,
+            ColorIds.UiDialogItemDisabled,
+            ColorIds.UiDialogBackground
+        };
+        foreach (var id in coloIds)
+        {
+            var item = m_ColorSet.FirstOrDefault(_Item => ColorIds.GetHash(_Item.name) == id);
+            if (item == null) 
+                continue;
+            var col = item.color;
+            var newCol = _Color.SetA(col.a);
+            m_ColorProvider?.SetColor(id, newCol);
+            item.color = newCol;
+        }
     }
 
     private void DisplayColors()

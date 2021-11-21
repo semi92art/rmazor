@@ -257,7 +257,9 @@ namespace Games.RazorMaze.Views.MazeItems
         private IEnumerator HandleTurretShootCoroutine(TurretShotEventArgs _Args)
         {
             var toPos = _Args.To.ToVector2();
-            EnableBulletMasksAndSetPositions(toPos, toPos + _Args.Direction.ToVector2() * 0.9f);
+            EnableBulletMasksAndSetPositions(
+                toPos + _Args.Direction.ToVector2(), 
+                toPos + _Args.Direction.ToVector2() + _Args.Direction.ToVector2() * 0.9f);
             Coroutines.Run(AnimateFakeBulletAndCloseBarrel(0.2f));
             yield return DoShoot(_Args);
         }
@@ -395,7 +397,7 @@ namespace Games.RazorMaze.Views.MazeItems
                     m_BulletTr.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(projectilePos));
                     point = V2Int.Round(projectilePos);
                     BulletTail.ShowTail(_Args);
-                    if (point == _Args.To + _Args.Direction)
+                    if (point == _Args.To + _Args.Direction + _Args.Direction)
                         movedToTheEnd = true;
                 }, () =>
                 {

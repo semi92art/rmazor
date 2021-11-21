@@ -19,6 +19,7 @@ namespace UI.PanelItems.Setting_Panel_Items
             IColorProvider _ColorProvider,
             UnityAction _Select)
         {
+            texts.Add(title);
             InitCore(_Managers, _UITicker, _ColorProvider);
             name = "Setting";
             button.onClick.AddListener(SoundOnClick);

@@ -17,7 +17,6 @@ namespace UI.PanelItems.Setting_Panel_Items
         [SerializeField] private TextMeshProUGUI    title;
         [SerializeField] private Button             button;
         public                   TextMeshProUGUI    setting;
-        public                   SimpleUiButtonView buttonView;
 
         public void Init(
             IManagersGetter _Managers,
@@ -31,7 +30,6 @@ namespace UI.PanelItems.Setting_Panel_Items
             ISettingSelectorDialogPanel _SelectorPanel = null)
         {
             InitCore(_Managers, _UITicker, _ColorProvider);
-            buttonView.Init(_ColorProvider);
             _Managers.LocalizationManager.AddTextObject(title, _TitleKey);
             setting.text = _Value?.Invoke();
             button.SetOnClick(() =>

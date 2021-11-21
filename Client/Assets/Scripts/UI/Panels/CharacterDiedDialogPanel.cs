@@ -120,6 +120,10 @@ namespace UI.Panels
             m_MoneyIcon2.sprite = moneyIconSprite;
             m_ButtonWatchAds.onClick.AddListener(OnWatchAdsButtonClick);
             m_ButtonPayMoney.onClick.AddListener(OnPayMoneyButtonClick);
+            
+            go.GetCompItem<SimpleUiButtonView>("watch_ads_button").Init(Ticker, ColorProvider);
+            go.GetCompItem<SimpleUiButtonView>("pay_money_button").Init(Ticker, ColorProvider);
+            go.GetCompItem<SimpleUiDialogPanelView>("dialog_panel_view").Init(Ticker, ColorProvider);
 
             m_AdsWatched = false;
             m_MoneyPayed = false;

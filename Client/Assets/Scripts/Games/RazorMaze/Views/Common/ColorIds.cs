@@ -20,8 +20,9 @@ namespace Games.RazorMaze.Views.Common
         public static readonly int UiDialogItemDisabled;
         public static readonly int UiDialogItemSelected;
         public static readonly int UiDialogBackground;
-        public static readonly int UiBorderDefault;
-        public static readonly int UiTextDefault;
+        public static readonly int UiBorder;
+        public static readonly int UiText;
+        public static readonly int UiBackground;
 
         static ColorIds()
         {
@@ -40,8 +41,9 @@ namespace Games.RazorMaze.Views.Common
             UiDialogItemDisabled     = GetHash(nameof(UiDialogItemDisabled)    .WithSpaces());
             UiDialogItemSelected     = GetHash(nameof(UiDialogItemSelected)    .WithSpaces());
             UiDialogBackground       = GetHash(nameof(UiDialogBackground)      .WithSpaces());
-            UiBorderDefault          = GetHash(nameof(UiBorderDefault)         .WithSpaces());
-            UiTextDefault            = GetHash(nameof(UiTextDefault)           .WithSpaces());
+            UiBorder                 = GetHash(nameof(UiBorder)                .WithSpaces());
+            UiText                   = GetHash(nameof(UiText)                  .WithSpaces());
+            UiBackground             = GetHash(nameof(UiBackground)            .WithSpaces());
         }
 
         public static int GetHash(string _S)
@@ -71,8 +73,9 @@ namespace Games.RazorMaze.Views.Common
             {UiDialogItemDisabled, nameof(UiDialogItemDisabled).WithSpaces()},
             {UiDialogItemSelected, nameof(UiDialogItemSelected).WithSpaces()},
             {UiDialogBackground, nameof(UiDialogBackground).WithSpaces()},
-            {UiBorderDefault, nameof(UiBorderDefault).WithSpaces()},
-            {UiTextDefault, nameof(UiTextDefault).WithSpaces()}
+            {UiBorder, nameof(UiBorder).WithSpaces()},
+            {UiText, nameof(UiText).WithSpaces()},
+            {UiBackground, nameof(UiBackground).WithSpaces()}
         };
     }
 }
