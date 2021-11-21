@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using DI.Extensions;
+using Entities;
 using GameHelpers;
 using Games.RazorMaze.Views.InputConfigurators;
 using Lean.Common;
@@ -212,10 +213,10 @@ namespace DebugConsole
 
         #region public methods
 
-        public void Init(IViewInputCommandsProceeder _CommandsProceeder)
+        public void Init(IViewInputCommandsProceeder _CommandsProceeder, IManagersGetter _Managers)
         {
             m_CommandsProceeder = _CommandsProceeder;
-            m_Controller.Init(m_CommandsProceeder);
+            m_Controller.Init(_CommandsProceeder, _Managers);
         }
 
         #endregion

@@ -8,7 +8,7 @@ namespace Settings
     public class SoundSetting : SettingBase<bool>, ISoundSetting
     {
         public override UnityAction<bool> OnValueSet   { get; set; }
-        public override SaveKey           Key          => SaveKey.SettingSoundOn;
+        public override SaveKey<bool>     Key          => SaveKeys.SettingSoundOn;
         public override string            TitleKey     => "Sound";
         public override ESettingLocation  Location     => ESettingLocation.MiniButtons;
         public override ESettingType      Type         => ESettingType.OnOff;

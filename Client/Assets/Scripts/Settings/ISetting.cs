@@ -7,7 +7,7 @@ namespace Settings
     public interface ISetting<T>
     {
         UnityAction<T>   OnValueSet   { get; set; }
-        SaveKey          Key          { get; }
+        SaveKey<T>       Key          { get; }
         string           TitleKey     { get; }
         ESettingLocation Location     { get; }
         ESettingType     Type         { get; }

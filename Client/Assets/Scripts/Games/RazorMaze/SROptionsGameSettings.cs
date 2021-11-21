@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using Entities;
 using Games.RazorMaze;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views;
@@ -323,6 +324,24 @@ public partial class SROptions
         set => Dbg.Log($"Rewarded ad ready state: {_view.Managers.AdsManager.RewardedAdReady}.");
     }
     
+    [Category(CategoryAds)]
+    public bool Show_Ads
+    {
+        get
+        {
+            var res = SaveUtils.GetValue(SaveKeys.DisableAds);
+            if (res.HasValue) return 
+                res.Value;
+            SaveUtils.PutValue(SaveKeys.DisableAds, false);
+            return false;
+        }
+        set
+        {
+            SaveUtils.PutValue(SaveKeys.DisableAds, !value);
+            Dbg.Log($"Ads enabled: {value}.");
+        }
+    }
+
     [Category(CategoryAds)]
     public bool Show_Rewarded_Ad
     {

@@ -15,9 +15,14 @@ namespace Utils
         public static void OnScoreChanged(ScoresEventArgs _Args, TMP_Text _Text)
         {
             Coroutines.Run(Coroutines.WaitWhile(
-                () => !_Args.ScoresEntity.Loaded,
+                () => _Args.ScoresEntity.Result == EEntityResult.Pending,
                 () =>
                 {
+                    if (_Args.ScoresEntity.Result == EEntityResult.Fail)
+                    {
+                        Dbg.LogWarning("Failed to load score");
+                        return;
+                    }
                     var score = _Args.ScoresEntity.GetFirstScore();
                     if (!score.HasValue || _Text.IsNull())
                         return;
@@ -28,7 +33,7 @@ namespace Utils
 
         private static int GetMoneySpentOnPurchases()
         {
-            var boughtPurchaseIds = SaveUtils.GetValue<List<int>>(SaveKey.BoughtPurchaseIds);
+            var boughtPurchaseIds = SaveUtils.GetValue(SaveKeys.BoughtPurchaseIds);
             ShopItemsScriptableObject.ShopItemSet GetSet(string _Key) => PrefabUtilsEx
                 .GetObject<ShopItemsScriptableObject>("shop_items", _Key).set;
             var sets = new List<ShopItemsScriptableObject.ShopItemSet>

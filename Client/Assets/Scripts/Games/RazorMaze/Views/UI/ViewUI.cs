@@ -91,7 +91,7 @@ namespace Games.RazorMaze.Views.UI
             bool mustShowRateGamePanel = _Args.LevelIndex % 10 == 0 && _Args.LevelIndex != 0;
             if (!mustShowRateGamePanel)
                 return;
-            bool gameWasRatedAlready = SaveUtils.GetValue<bool>(SaveKey.GameWasRated);
+            bool gameWasRatedAlready = SaveUtils.GetValue(SaveKeys.GameWasRated);
             if (gameWasRatedAlready)
                 return;
             var panel = DialogPanels.RateGameDialogPanel;

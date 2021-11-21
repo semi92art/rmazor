@@ -113,7 +113,7 @@ namespace UI.Panels
 
         private bool IsDailyBonusGotToday()
         {
-            var lastDate = SaveUtils.GetValue<DateTime>(SaveKey.DailyBonusLastDate);
+            var lastDate = SaveUtils.GetValue(SaveKeys.DailyBonusLastDate);
             var today = DateTime.Now.Date;
             int daysPast = Mathf.FloorToInt((float)(today - lastDate.Date).TotalDays);
             return daysPast == 0;
@@ -121,7 +121,7 @@ namespace UI.Panels
         
         private int GetCurrentDailyBonusDay()
         {
-            int lastItemClickedDay = SaveUtils.GetValue<int>(SaveKey.DailyBonusLastClickedDay);
+            int lastItemClickedDay = SaveUtils.GetValue(SaveKeys.DailyBonusLastClickedDay);
             return lastItemClickedDay + 1;
         }
         

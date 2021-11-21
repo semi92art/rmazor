@@ -15,7 +15,7 @@ namespace Settings
     {
         public          Func<Language> GetValue { get; set; }
         public override UnityAction<Language> OnValueSet { get; set; }
-        public override SaveKey               Key        => null;
+        public override SaveKey<Language> Key => null;
         public override string                TitleKey   => "Language";
         public override ESettingLocation      Location   => ESettingLocation.Main;
         public override ESettingType          Type       => ESettingType.InPanelSelector;

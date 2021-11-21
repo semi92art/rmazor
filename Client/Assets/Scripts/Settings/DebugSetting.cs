@@ -8,7 +8,7 @@ namespace Settings
     public class DebugSetting : SettingBase<bool>, IDebugSetting
     {
         public override UnityAction<bool> OnValueSet { get; set; }
-        public override SaveKey           Key        => SaveKey.DebugUtilsOn;
+        public override SaveKey<bool>     Key        => SaveKeys.DebugUtilsOn;
         public override string            TitleKey   => "Debug";
         public override ESettingLocation  Location   => ESettingLocation.Main;
         public override ESettingType      Type       => ESettingType.OnOff;

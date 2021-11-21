@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Constants;
+using Entities;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Purchasing;
@@ -17,9 +19,10 @@ namespace Managers
     
     public class ShopItemArgs : EventArgs
     {
-        public string Price { get; set; }
-        public string Currency { get; set; }
-        public Func<EShopProductResult> Result { get; set; }
+        public string                   Price      { get; set; }
+        public string                   Currency   { get; set; }
+        public bool                     HasReceipt { get; set; }
+        public Func<EShopProductResult> Result     { get; set; }
     }
     
     public interface IShopManager : IInit
@@ -32,23 +35,13 @@ namespace Managers
     
     public class UnityIAPShopManagerFacade : UnityIAPShopManager, IShopManager
     {
-        // Product identifiers for all products capable of being purchased: 
-        // "convenience" general identifiers for use with Purchasing, and their store-specific identifier 
-        // counterparts for use with and outside of Unity Purchasing. Define store-specific identifiers 
-        // also on each platform's publisher dashboard (iTunes Connect, Google Play Developer Console, etc.)
-
-        // General product identifiers for the consumable, non-consumable, and subscription products.
-        // Use these handles in the code to reference which product to purchase. Also use these values 
-        // when defining the Product Identifiers on the store. Except, for illustration purposes, the 
-        // kProductIDSubscription - it has custom Apple and Google identifiers. We declare their store-
-        // specific mapping to Unity Purchasing's AddProduct, below.
 
         protected override List<ProductInfo> Products => new List<ProductInfo>
         {
-            new ProductInfo(1, "money_1", ProductType.Consumable),
-            new ProductInfo(2, "money_4", ProductType.Consumable),
-            new ProductInfo(3, "money_3", ProductType.Consumable),
-            new ProductInfo(4, "money_2", ProductType.Consumable)
+            new ProductInfo(PurchaseKeys.Money1, "small_pack_of_coins", ProductType.Consumable),
+            new ProductInfo(PurchaseKeys.Money2, "medium_pack_of_coins", ProductType.Consumable),
+            new ProductInfo(PurchaseKeys.Money3, "big_pack_of_coins", ProductType.Consumable),
+            new ProductInfo(PurchaseKeys.NoAds, "disable_mandatory_advertising", ProductType.NonConsumable)
         };
         
         private readonly Dictionary<string, UnityAction> m_OnPurchaseActions =
@@ -60,6 +53,8 @@ namespace Managers
         
         public void Init()
         {
+
+            
             InitializePurchasing();
             Coroutines.Run(Coroutines.WaitWhile(
                 () =>  m_StoreController == null || m_StoreExtensionProvider == null,
@@ -119,6 +114,8 @@ namespace Managers
                     // The first phase of restoration. If no more responses are received on ProcessPurchase then 
                     // no purchases are available to be restored.
                     Dbg.Log("RestorePurchases continuing: " + _Result + ". If no further messages, no purchases available to restore.");
+                    if (_Result)
+                        SaveUtils.PutValue(SaveKeys.DisableAds, null);
                 });
             }
             // Otherwise ...
@@ -187,6 +184,7 @@ namespace Managers
                 return;
             }
             _Args.Price = product.metadata.localizedPriceString;
+            _Args.HasReceipt = product.hasReceipt;
             shopProductResult = EShopProductResult.Success;
         }
 

@@ -131,7 +131,7 @@ namespace UI.Panels
             {
                 Managers.AnalyticsManager.SendAnalytic(NotifyMessageSpinButtonClick);
                 // Coroutines.Run(Coroutines.Action(() => m_WheelController.StartSpin()));
-                SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, DateTime.Now.Date);
+                SaveUtils.PutValue(SaveKeys.WheelOfFortuneLastDate, DateTime.Now.Date);
                 m_SpinButton.interactable = false;
             }
             else
@@ -155,13 +155,13 @@ namespace UI.Panels
 
         private void WatchAdFinishAction()
         {
-            SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, DateTime.Now.Date.AddDays(-1));
+            SaveUtils.PutValue(SaveKeys.WheelOfFortuneLastDate, DateTime.Now.Date.AddDays(-1));
             m_IsLocked = CheckIfWofSpinToday();
         }
         
         private bool CheckIfWofSpinToday()
         {
-            DateTime lastDate = SaveUtils.GetValue<DateTime>(SaveKey.WheelOfFortuneLastDate);
+            DateTime lastDate = SaveUtils.GetValue(SaveKeys.WheelOfFortuneLastDate);
             bool spinedToday = lastDate == DateTime.Now.Date;
             m_Title.text = spinedToday ? LeanLocalization.GetTranslationText("WatchAd") : LeanLocalization.GetTranslationText("Spin");
             m_Title.RTransform().Set(new RectTransformLite

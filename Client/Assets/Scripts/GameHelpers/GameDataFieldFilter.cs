@@ -101,8 +101,8 @@ namespace GameHelpers
         {
             var fields = FieldIds
                 .Select(_FieldId =>
-                    SaveUtils.GetValue<GameDataField>(
-                        SaveKey.GameDataFieldValue(AccountId, m_GameId, _FieldId)))
+                    SaveUtils.GetValue(
+                        SaveKeys.GameDataFieldValue(AccountId, m_GameId, _FieldId)))
                 .ToList();
             foreach (var field in fields)
             {

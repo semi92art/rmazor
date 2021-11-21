@@ -17,6 +17,7 @@ using Shapes;
 using Ticker;
 using UnityEngine;
 using UnityEngine.Events;
+using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
@@ -126,17 +127,19 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             if (!Initialized || !ActivatedInSpawnPool)
                 return;
-            
+
+            const float minOffset = -2f * Mathf.PI * 100f;
+            const float maxOffset = 2f * Mathf.PI * 100f;
             float dOffset = GameTicker.DeltaTime * 3f;
             
             if (m_LeftBorderInited && m_LeftBorder.Dashed)
-                m_LeftBorder.DashOffset -= dOffset;
+                m_LeftBorder.DashOffset = MathUtils.ClampInverse(m_LeftBorder.DashOffset - dOffset, minOffset, maxOffset);
             if (m_RightBorderInited && m_RightBorder.Dashed)
-                m_RightBorder.DashOffset += dOffset;
+                m_RightBorder.DashOffset = MathUtils.ClampInverse(m_RightBorder.DashOffset + dOffset, minOffset, maxOffset);
             if (m_BottomBorderInited && m_BottomBorder.Dashed)
-                m_BottomBorder.DashOffset += dOffset;
+                m_BottomBorder.DashOffset = MathUtils.ClampInverse(m_BottomBorder.DashOffset + dOffset, minOffset, maxOffset);
             if (m_TopBorderInited && m_TopBorder.Dashed)
-                m_TopBorder.DashOffset -= dOffset;
+                m_TopBorder.DashOffset = MathUtils.ClampInverse(m_TopBorder.DashOffset - dOffset, minOffset, maxOffset);
         }
 
         #endregion

@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Constants;
 using Entities;
 using GameHelpers;
+using GooglePlayGames.BasicApi;
 using UnityEngine;
 using Utils;
 
@@ -29,6 +31,34 @@ namespace Managers
     
     public class ScoreManager : IScoreManager
     {
+        #region types
+
+        private class ScoreArgs
+        {
+            public ushort Id         { get; }
+            public string Key        { get; }
+            public bool   OnlyCached { get; }
+
+            public ScoreArgs(ushort _Id, string _Key, bool _OnlyCached)
+            {
+                Id = _Id;
+                Key = _Key;
+                OnlyCached = _OnlyCached;
+            }
+        }
+
+        #endregion
+        
+        #region nonpublic members
+
+        private readonly IReadOnlyList<ScoreArgs> m_ScoreArgsList = new List<ScoreArgs>
+        {
+            new ScoreArgs(DataFieldIds.Money, Application.platform == RuntimePlatform.Android ? GPGSIds.coins : "money", false),
+            new ScoreArgs(DataFieldIds.Level, "level", true)
+        };
+
+        #endregion
+        
         #region api
 
         public event ScoresEventHandler OnScoresChanged;
@@ -42,7 +72,7 @@ namespace Managers
 #elif UNITY_ANDROID
             return GetScoreAndroid(_Id);
 #elif UNITY_IPHONE
-            return GetMainScoreIos(_Id);
+            return GetScoreIos(_Id);
 #endif
         }
 
@@ -75,14 +105,14 @@ namespace Managers
 
         private static ScoresEntity GetScoreCached(ushort _Id)
         {
-            var scores = new ScoresEntity();
+            var scores = new ScoresEntity{Result = EEntityResult.Pending};
             var gdff = new GameDataFieldFilter(GameClientUtils.AccountId, GameClientUtils.GameId,
                 _Id) {OnlyLocal = true};
             gdff.Filter(_Fields =>
             {
                 var scoreField = _Fields.First();
-                scores.Scores.Add(_Id, scoreField.ToInt());
-                scores.Loaded = true;
+                scores.Value.Add(_Id, scoreField.ToInt());
+                scores.Result = EEntityResult.Success;
             });
             return scores;
         }
@@ -100,18 +130,27 @@ namespace Managers
         
         private string GetScoreKey(ushort _Id)
         {
-            return null; // TODO
+            var args = m_ScoreArgsList.FirstOrDefault(_Args => _Args.Id == _Id);
+            if (args != null) 
+                return m_ScoreArgsList.FirstOrDefault(_Args => _Args.Id == _Id)?.Key;
+            Dbg.LogError($"Score with id {_Id} does not exist.");
+            return null;
         }
 
         private bool IsScoreOnlyCached(ushort _Id)
         {
-            return true; // TODO
+            var args = m_ScoreArgsList.FirstOrDefault(_Args => _Args.Id == _Id);
+            if (args != null) 
+                return args.OnlyCached;
+            Dbg.LogError($"Score with id {_Id} does not exist.");
+            return true;
         }
 
 #if UNITY_ANDROID && !UNITY_EDITOR
+
         private ScoresEntity GetScoreAndroid(ushort _Id)
         {
-            var result = new ScoresEntity();
+            var result = new ScoresEntity{Result = EEntityResult.Pending};
             GooglePlayGames.PlayGamesPlatform.Instance.LoadScores(
                 GetScoreKey(_Id),
                 GooglePlayGames.BasicApi.LeaderboardStart.PlayerCentered,
@@ -119,11 +158,13 @@ namespace Managers
                 GooglePlayGames.BasicApi.LeaderboardCollection.Public,
                 GooglePlayGames.BasicApi.LeaderboardTimeSpan.AllTime,
                 _Data =>
-                { 
+                {
                     if (_Data.Valid)
                     {
-                        result.Scores.Add(_Id, System.Convert.ToInt32(_Data.PlayerScore.value));
-                        result.Loaded = true;
+                        result.Value.Add(_Id, System.Convert.ToInt32(_Data.PlayerScore.value));
+                        result.Result = _Data.Status == ResponseStatus.Success
+                            ? EEntityResult.Success
+                            : EEntityResult.Fail;
                     }
                     else result = GetScoreCached(_Id);
                 });
@@ -141,20 +182,20 @@ namespace Managers
         
         private static void ShowLeaderboardAndroid()
         {
-            GooglePlayGames.PlayGamesPlatform.Instance.ShowLeaderboardUI(GPGSIds.leaderboard_infinite_level);
+            GooglePlayGames.PlayGamesPlatform.Instance.ShowLeaderboardUI(GPGSIds.coins);
         }
 
 #elif UNITY_IPHONE && !UNITY_EDITOR
 
-        private ScoresEntity GetMainScoreIos(ushort _Id)
+        private ScoresEntity GetScoreIos(ushort _Id)
         {
             if (!Social.localUser.authenticated)
             {
                 Dbg.LogWarning("User is not authenticated to Game Center");
                 return GetScoreCached(_Id);
             }
-            var score = new ScoresEntity();
-            Social.LoadScores( "mazes_infinite_level_score", _Scores =>
+            var score = new ScoresEntity{Result = EEntityResult.Pending};
+            Social.LoadScores( "coins", _Scores =>
             {
                 var cachedScore = GetScoreCached(_Id).GetScore(_Id);
                 var socialScore = _Scores.FirstOrDefault(_S => _S.userID == Social.localUser.id);
@@ -164,12 +205,15 @@ namespace Managers
                         SetScoreIos(_Id, cachedScore.Value);
                     else 
                         SetScoreCache(_Id, (int)socialScore.value);
-                    score.Scores.Add(_Id, (int)socialScore.value);
+                    score.Value.Add(_Id, (int)socialScore.value);
+                    score.Result = EEntityResult.Success;
                 }
                 else
+                {
+                    score.Result = EEntityResult.Fail;
                     Dbg.LogWarning("Failed to get score from Game Center leaderboard");
-                score.Scores = GetScoreCached(_Id).Scores;
-                score.Loaded = true;
+                }
+                score.Value = GetScoreCached(_Id).Value;
             });
             return score;
         }

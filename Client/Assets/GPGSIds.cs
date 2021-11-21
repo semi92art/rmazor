@@ -24,7 +24,6 @@
 
 public static class GPGSIds
 {
-        public const string leaderboard_infinite_level = "CgkI1IvonNkDEAIQAA"; // <GPGSID>
-
+    public const string coins = "CgkI1IvonNkDEAIQAA"; // <GPGSID>
 }
 

@@ -27,8 +27,8 @@ namespace Games.RazorMaze.Editor
 
         private static int HeapIndex
         {
-            get => SaveUtils.GetValue<int>(SaveKey.DesignerHeapIndex);
-            set => SaveUtils.PutValue(SaveKey.DesignerHeapIndex, value);
+            get => SaveUtils.GetValue(SaveKeys.DesignerHeapIndex);
+            set => SaveUtils.PutValue(SaveKeys.DesignerHeapIndex, value);
         }
         private static int _heapIndexCheck;
         
@@ -118,7 +118,7 @@ namespace Games.RazorMaze.Editor
             if (LevelsList == null)
                 LevelsList = new HeapReorderableList(_gameId, HeapIndex, _SelectedIndex =>
                 {
-                    SaveUtils.PutValue(SaveKey.DesignerSelectedLevel, _SelectedIndex);
+                    SaveUtils.PutValue(SaveKeys.DesignerSelectedLevel, _SelectedIndex);
                 });
             else LevelsList.Reload(HeapIndex);
             

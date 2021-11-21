@@ -12,12 +12,12 @@ namespace GameHelpers
     {
         public static void InitDefaultDataFieldValues()
         {
-            if (SaveUtils.GetValue<bool>(SaveKey.NotFirstLaunch))
+            if (SaveUtils.GetValue(SaveKeys.NotFirstLaunch))
                 return;
             Dbg.Log(nameof(InitDefaultDataFieldValues));
             int accId = GameClientUtils.DefaultAccountId;
             new GameDataField(100, accId, 1, DataFieldIds.Money).Save(true);
-            SaveUtils.PutValue(SaveKey.NotFirstLaunch, true);
+            SaveUtils.PutValue(SaveKeys.NotFirstLaunch, true);
         }
 
         public static void MigrateFromPrevious()

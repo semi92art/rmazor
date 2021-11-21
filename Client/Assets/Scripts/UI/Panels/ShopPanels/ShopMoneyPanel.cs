@@ -102,13 +102,18 @@ namespace UI.Panels.ShopPanels
 
         private void OnPaid(int _Reward)
         {
-            var score = Managers.ScoreManager.GetScore(DataFieldIds.Money);
+            var scoreEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money);
             Coroutines.Run(Coroutines.WaitWhile(
-                () => score.Loaded,
+                () => scoreEntity.Result == EEntityResult.Pending,
                 () =>
                 {
+                    if (scoreEntity.Result == EEntityResult.Fail)
+                    {
+                        Dbg.LogError("Failed to load score entity");
+                        return;
+                    }
                     Managers.ScoreManager
-                        .SetScore(DataFieldIds.Money, score.GetFirstScore().Value + _Reward);
+                        .SetScore(DataFieldIds.Money, scoreEntity.GetFirstScore().Value + _Reward);
                 }));
         }
 

@@ -185,10 +185,10 @@ namespace Controllers
             switch (info.Type)
             {
                 case EAudioClipType.Sound:
-                    info.Volume = SaveUtils.GetValue<bool>(SaveKey.SettingSoundOn) ? info.StartVolume : 0f;
+                    info.Volume = SaveUtils.GetValue(SaveKeys.SettingSoundOn) ? info.StartVolume : 0f;
                     break;
                 case EAudioClipType.Music:
-                    info.Volume = SaveUtils.GetValue<bool>(SaveKey.SettingMusicOn) ? info.StartVolume : 0f;
+                    info.Volume = SaveUtils.GetValue(SaveKeys.SettingMusicOn) ? info.StartVolume : 0f;
                     break;
                 default:
                     throw new SwitchCaseNotImplementedException(info.Type);
@@ -239,9 +239,9 @@ namespace Controllers
             foreach (var info in infos)
                 info.Volume = _Enable ? info.StartVolume : 0f;
             if (_Types.Contains(EAudioClipType.Sound))
-                SaveUtils.PutValue(SaveKey.SettingSoundOn, _Enable);
+                SaveUtils.PutValue(SaveKeys.SettingSoundOn, _Enable);
             if (_Types.Contains(EAudioClipType.Music))
-                SaveUtils.PutValue(SaveKey.SettingMusicOn, _Enable);
+                SaveUtils.PutValue(SaveKeys.SettingMusicOn, _Enable);
         }
         
         #endregion

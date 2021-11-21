@@ -111,7 +111,7 @@ namespace Games.RazorMaze.Models
             MazeRotation.RotationFinishedInternal          += MazeOnRotationFinishedInternal;
             Character.CharacterMoveStarted                 += CharacterOnMoveStarted;
             Character.CharacterMoveContinued               += CharacterOnMoveContinued;
-            Character.CharacterMoveFinished                += CharacterOnFinishMove;
+            Character.CharacterMoveFinished                += CharacterOnMoveFinished;
             PortalsProceeder.PortalEvent                   += Character.OnPortal;
             SpringboardProceeder.SpringboardEvent          += Character.OnSpringboard;
             ShredingerBlocksProceeder.ShredingerBlockEvent += GravityItemsProceeder.OnShredingerBlockEvent;
@@ -172,10 +172,13 @@ namespace Games.RazorMaze.Models
                 proceeders[i].OnCharacterMoveContinued(_Args);
         }
         
-        private void CharacterOnFinishMove(CharacterMovingEventArgs _Args)
+        private void CharacterOnMoveFinished(CharacterMovingEventArgs _Args)
         {
+            var proceeders =
+                GetInterfaceOfProceeders<ICharacterMoveFinished>(m_Proceeders);
+            for (int i = 0; i < proceeders.Count; i++)
+                proceeders[i].OnCharacterMoveFinished(_Args);
             InputScheduler.UnlockMovement(true);
-            ShredingerBlocksProceeder.OnCharacterMoveFinished(_Args);
         }
 
         #endregion

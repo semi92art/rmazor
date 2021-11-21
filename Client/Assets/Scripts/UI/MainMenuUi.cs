@@ -353,7 +353,7 @@
 //
 //         private void CheckIfDailyBonusNotChosenToday()
 //         {
-//             DateTime lastDate = SaveUtils.GetValue<DateTime>(SaveKey.DailyBonusLastDate);
+//             DateTime lastDate = SaveUtils.GetValue(SaveKeys.DailyBonusLastDate);
 //             if (!m_DailyBonusAnimator.IsNull())
 //                 m_DailyBonusAnimator.SetTrigger(
 //                     lastDate.Date == DateTime.Now.Date ?

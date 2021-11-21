@@ -103,7 +103,7 @@ public class ApplicationInitializer : MonoBehaviour
                 var controller = GameController.CreateInstance();
                 controller.Initialized += () =>
                 {
-                    int levelIndex = SaveUtils.GetValue<int>(SaveKey.CurrentLevelIndex);
+                    int levelIndex = SaveUtils.GetValue(SaveKeys.CurrentLevelIndex);
                     var info = LevelsLoader.LoadLevel(1, levelIndex);
                     controller.Model.LevelStaging.LoadLevel(info, levelIndex);
                 };

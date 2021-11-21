@@ -88,9 +88,14 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                     int moneyItemsCount = m_MoneyItemsCollectedCount;
                     var moneyEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money);
                     Coroutines.Run(Coroutines.WaitWhile(
-                        () => !moneyEntity.Loaded,
+                        () => moneyEntity.Result == EEntityResult.Pending,
                         () =>
                         {
+                            if (moneyEntity.Result == EEntityResult.Fail)
+                            {
+                                Dbg.LogError("Failed to load money entity");
+                                return;
+                            }
                             var currentMoneyCount = moneyEntity.GetFirstScore();
                             if (currentMoneyCount.HasValue)
                             {

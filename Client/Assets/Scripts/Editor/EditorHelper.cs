@@ -104,7 +104,7 @@ public class EditorHelper : EditorWindow
             EditorUtilsEx.HorizontalZone(() =>
             {
                 if (GUILayout.Button("Set Game Id:"))
-                    SaveUtils.PutValue(SaveKey.GameId, m_GameId);
+                    SaveUtils.PutValue(SaveKeys.GameId, m_GameId);
                 m_GameId = EditorGUILayout.IntField(m_GameId);
             });
             
@@ -229,34 +229,34 @@ public class EditorHelper : EditorWindow
     private void UpdateTestUrl(bool _Forced = false)
     {
         if (string.IsNullOrEmpty(m_DebugServerUrl))
-            m_DebugServerUrl = SaveUtils.GetValue<string>(SaveKey.ServerUrl);
+            m_DebugServerUrl = SaveUtils.GetValue(SaveKeys.ServerUrl);
         if (m_DebugServerUrl != m_TestUrlCheck || _Forced)
-            SaveUtils.PutValue(SaveKey.ServerUrl, m_DebugServerUrl);
+            SaveUtils.PutValue(SaveKeys.ServerUrl, m_DebugServerUrl);
         m_TestUrlCheck = m_DebugServerUrl;
     }
 
     private void UpdateGameId()
     {
         if (m_GameId == -1)
-            m_GameId = SaveUtils.GetValue<int>(SaveKey.GameId);
+            m_GameId = SaveUtils.GetValue(SaveKeys.GameId);
         if (m_GameId != m_GameIdCheck)
-            SaveUtils.PutValue(SaveKey.GameId, m_GameId);
+            SaveUtils.PutValue(SaveKeys.GameId, m_GameId);
         m_GameIdCheck = m_GameId;
     }
 
     private void UpdateQuality()
     {
         if (m_Quality == -1)
-            m_Quality = SaveUtils.GetValue<bool>(SaveKey.GoodQuality) ? 1 : 0;
+            m_Quality = SaveUtils.GetValue(SaveKeys.GoodQuality) ? 1 : 0;
         if (m_Quality != m_QualityCheck)
-            SaveUtils.PutValue(SaveKey.GoodQuality, m_Quality != 0);
+            SaveUtils.PutValue(SaveKeys.GoodQuality, m_Quality != 0);
         m_QualityCheck = m_Quality;
     }
 
     private void EnableDailyBonus()
     {
-        SaveUtils.PutValue(SaveKey.DailyBonusLastDate, DateTime.Now.Date.AddDays(-1));
-        SaveUtils.PutValue(SaveKey.DailyBonusLastClickedDay, m_DailyBonusIndex);
+        SaveUtils.PutValue(SaveKeys.DailyBonusLastDate, DateTime.Now.Date.AddDays(-1));
+        SaveUtils.PutValue(SaveKeys.DailyBonusLastClickedDay, m_DailyBonusIndex);
     }
 
     private void CreateTestUsers(int _Count)
@@ -343,20 +343,20 @@ public class EditorHelper : EditorWindow
     private static Dictionary<string, string> GetAllSaveKeyValues() =>
         new Dictionary<string, string>
         {
-            {"Last connection succeeded", SaveUtils.GetValue<bool>(SaveKey.LastDbConnectionSuccess).ToString()},
-            {"Login", SaveUtils.GetValue<string>(SaveKey.Login) ?? "not exist"},
-            {"Password hash", SaveUtils.GetValue<string>(SaveKey.PasswordHash) ?? "not exist"},
+            {"Last connection succeeded", SaveUtils.GetValue(SaveKeys.LastDbConnectionSuccess).ToString()},
+            {"Login", SaveUtils.GetValue(SaveKeys.Login) ?? "not exist"},
+            {"Password hash", SaveUtils.GetValue(SaveKeys.PasswordHash) ?? "not exist"},
             {"Account id", GameClientUtils.AccountId.ToString()},
-            {"Game id", SaveUtils.GetValue<int>(SaveKey.GameId).ToString()},
+            {"Game id", SaveUtils.GetValue(SaveKeys.GameId).ToString()},
             {"First curr.", GetGameFieldCached(DataFieldIds.Money)},
         };
 
     private static string GetGameFieldCached(ushort _FieldId)
     {
-        int? accountId = SaveUtils.GetValue<int?>(SaveKey.AccountId);
-        int gameId = SaveUtils.GetValue<int>(SaveKey.GameId);
-        var field = SaveUtils.GetValue<GameDataField>(
-            SaveKey.GameDataFieldValue(accountId ?? GameClientUtils.DefaultAccountId, gameId, _FieldId));
+        int? accountId = SaveUtils.GetValue(SaveKeys.AccountId);
+        int gameId = SaveUtils.GetValue(SaveKeys.GameId);
+        var field = SaveUtils.GetValue(
+            SaveKeys.GameDataFieldValue(accountId ?? GameClientUtils.DefaultAccountId, gameId, _FieldId));
         return DataFieldValueString(field);
     }
 

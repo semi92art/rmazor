@@ -14,6 +14,7 @@ using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
 using UnityEngine;
+using Utils;
 
 namespace Games.RazorMaze.Views.MazeItems
 {
@@ -147,7 +148,7 @@ namespace Games.RazorMaze.Views.MazeItems
             polyLineGo.SetParent(_Container);
             polyLineGo.transform.SetLocalPosXY(Vector2.zero);
             var polyLine = polyLineGo.AddComponent<Polyline>();
-            polyLine.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
+            polyLine.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale * 0.5f;
             polyLine.Color = GetPolyLineColor();
             polyLine.SetPoints(_Points);
             polyLine.Closed = false;
@@ -163,7 +164,7 @@ namespace Games.RazorMaze.Views.MazeItems
             jointGo.transform.SetLocalPosXY(_Point);
             var joint = jointGo.AddComponent<Disc>();
             joint.Color = GetJointColor();
-            joint.Radius = ViewSettings.LineWidth * CoordinateConverter.Scale * 2f;
+            joint.Radius = ViewSettings.LineWidth * CoordinateConverter.Scale * 0.5f;
             joint.Type = DiscType.Disc;
             joint.SortingOrder = SortingOrders.PathJoint;
             return joint;
@@ -178,7 +179,7 @@ namespace Games.RazorMaze.Views.MazeItems
             (line.Start, line.End) = (_Start, _End);
             line.Color = GetLineColor();
             line.Dashed = true;
-            line.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
+            line.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale * 0.5f;
             line.DashSize = 2f;
             line.DashType = DashType.Rounded;
             return line;
@@ -219,6 +220,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private Color GetJointColor()
         {
+            // return ColorUtils.Empty;
             return GetMainColor();
         }
 

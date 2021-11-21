@@ -46,8 +46,8 @@ namespace Games.RazorMaze
 
         private static MazeInfo MazeInfo
         {
-            get => SaveUtils.GetValue<MazeInfo>(SaveKey.DesignerMazeInfo);
-            set => SaveUtils.PutValue(SaveKey.DesignerMazeInfo, value);
+            get => SaveUtils.GetValue(SaveKeys.DesignerMazeInfo);
+            set => SaveUtils.PutValue(SaveKeys.DesignerMazeInfo, value);
         }
         
         static LevelDesigner()
@@ -79,7 +79,7 @@ namespace Games.RazorMaze
                         var controller = GameController.CreateInstance();
                         controller.Initialized += () =>
                         {
-                            int selectedLevel = SaveUtils.GetValue<int>(SaveKey.DesignerSelectedLevel);
+                            int selectedLevel = SaveUtils.GetValue(SaveKeys.DesignerSelectedLevel);
                             controller.Model.LevelStaging.LoadLevel(MazeInfo, selectedLevel);
                             RazorMazeUtils.LoadNextLevelAutomatically = false;
                         };

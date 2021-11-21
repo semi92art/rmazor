@@ -104,7 +104,7 @@ namespace Games.RazorMaze.Views.UI
             switch (_Args.Stage)
             {
                 case ELevelStage.Loaded:
-                    m_PromptHowToRotateShown = SaveUtils.GetValue<bool>(SaveKey.PromptHowToRotateShown);
+                    m_PromptHowToRotateShown = SaveUtils.GetValue(SaveKeys.PromptHowToRotateShown);
                     break;
                 case ELevelStage.ReadyToStart:
                     if (_Args.PreviousStage != ELevelStage.Paused)
@@ -177,7 +177,7 @@ namespace Games.RazorMaze.Views.UI
                     CommandsProceeder.UnlockAllCommands();
                     InTutorial = false;
                     m_PromptHowToRotateShown = true;
-                    SaveUtils.PutValue(SaveKey.PromptHowToRotateShown, true);
+                    SaveUtils.PutValue(SaveKeys.PromptHowToRotateShown, true);
                 }
             }
         }

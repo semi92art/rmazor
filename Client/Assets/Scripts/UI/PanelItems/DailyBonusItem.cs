@@ -48,8 +48,8 @@ namespace UI.PanelItems
                 // BankManager.Instance.SetIncome(money, icon.RTransform());
                 // BankManager.Instance.PlusBankItems(money);
             
-                SaveUtils.PutValue(SaveKey.DailyBonusLastDate, DateTime.Today);
-                SaveUtils.PutValue(SaveKey.DailyBonusLastClickedDay, _Props.Day);
+                SaveUtils.PutValue(SaveKeys.DailyBonusLastDate, DateTime.Today);
+                SaveUtils.PutValue(SaveKeys.DailyBonusLastClickedDay, _Props.Day);
                 iconAnimator.SetTrigger(AnimKeys.Stop);
             });
         

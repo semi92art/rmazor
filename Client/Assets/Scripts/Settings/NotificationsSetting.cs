@@ -8,7 +8,7 @@ namespace Settings
     public class NotificationsSetting : SettingBase<bool>, INotificationSetting
     {
         public override UnityAction<bool> OnValueSet   { get; set; }
-        public override SaveKey           Key          => SaveKey.SettingNotificationsOn;
+        public override SaveKey<bool>     Key          => SaveKeys.SettingNotificationsOn;
         public override string            TitleKey     => "Notifications";
         public override ESettingLocation  Location     => ESettingLocation.MiniButtons;
         public override ESettingType      Type         => ESettingType.OnOff;

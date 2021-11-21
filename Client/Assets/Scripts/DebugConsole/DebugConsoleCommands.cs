@@ -138,7 +138,7 @@ namespace DebugConsole
         
         private static void EnableSpinButton(string[] _Args)
         {
-            SaveUtils.PutValue(SaveKey.WheelOfFortuneLastDate, DateTime.Now.Date.AddDays(-1));
+            SaveUtils.PutValue(SaveKeys.WheelOfFortuneLastDate, DateTime.Now.Date.AddDays(-1));
         }
 
         private static void EnableAds(string[] _Args)
@@ -153,7 +153,12 @@ namespace DebugConsole
                 Controller.AppendLogLine(@"Wrong argument! Need ""true"" or ""false""");
                 return;
             }
-            AdsManager.Instance.ShowAds = _Args[0] == "true";
+            var entity = new BoolEntity
+            {
+                Result = EEntityResult.Success,
+                Value = _Args[0] == "true"
+            };
+            Controller.Managers.AdsManager.ShowAds = entity;
         }
 
         private static void FinishLevel(string[] _Args)
@@ -169,7 +174,6 @@ namespace DebugConsole
                 Controller.AppendLogLine("Wrong. Need level index!");
                 return;
             }
-
             Controller.CommandsProceeder.RaiseCommand(
                 EInputCommand.LoadLevelByIndex, 
                 new object [] { levelIndex },

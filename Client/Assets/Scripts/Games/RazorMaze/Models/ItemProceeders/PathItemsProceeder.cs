@@ -7,10 +7,13 @@ namespace Games.RazorMaze.Models.ItemProceeders
 {
     public delegate void PathProceedHandler(V2Int PathItem);
     
-    public interface IPathItemsProceeder : ICharacterMoveContinued, ICharacterMoveStarted
+    public interface IPathItemsProceeder :
+        ICharacterMoveStarted, 
+        ICharacterMoveContinued, 
+        ICharacterMoveFinished
     {
         bool                     AllPathsProceeded { get; }
-        Dictionary<V2Int, bool>  PathProceeds       { get; }
+        Dictionary<V2Int, bool>  PathProceeds      { get; }
         event PathProceedHandler PathProceedEvent;
         event PathProceedHandler AllPathsProceededEvent;
     }
@@ -53,8 +56,14 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
-            for (int i = 0; i < m_CurrentFullPath.Count; i++)
-                ProceedPathItem(m_CurrentFullPath[i]);
+            var path = RazorMazeUtils.GetFullPath(_Args.From, _Args.Position);
+            for (int i = 0; i < path.Count; i++)
+                ProceedPathItem(path[i]);
+        }
+        
+        public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
+        {
+            ProceedPathItem(_Args.To);
         }
         
         public void OnLevelStageChanged(LevelStageArgs _Args)

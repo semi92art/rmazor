@@ -126,7 +126,7 @@ namespace UI.Panels
         private void OnRateGameButtonClick()
         {
             Managers.ShopManager.RateGame();
-            SaveUtils.PutValue(SaveKey.GameWasRated, true);
+            SaveUtils.PutValue(SaveKeys.GameWasRated, true);
             ProposalDialogViewer.Back();
             
         }

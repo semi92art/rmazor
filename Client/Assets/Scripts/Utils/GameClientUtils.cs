@@ -10,36 +10,36 @@ namespace Utils
 
         public static int PreviousAccountId
         {
-            get => SaveUtils.GetValue<int?>(SaveKey.PreviousAccountId) ?? DefaultAccountId;
-            set => SaveUtils.PutValue(SaveKey.PreviousAccountId, (int?)value);
+            get => SaveUtils.GetValue(SaveKeys.PreviousAccountId) ?? DefaultAccountId;
+            set => SaveUtils.PutValue(SaveKeys.PreviousAccountId, value);
         }
         
         public static int AccountId
         {
-            get => SaveUtils.GetValue<int?>(SaveKey.AccountId) ?? DefaultAccountId;
+            get => SaveUtils.GetValue(SaveKeys.AccountId) ?? DefaultAccountId;
             set
             {
                 PreviousAccountId = AccountId;
-                SaveUtils.PutValue(SaveKey.AccountId, (int?) value);
+                SaveUtils.PutValue(SaveKeys.AccountId, value);
             }
         }
 
         public static string Login
         {
-            get => SaveUtils.GetValue<string>(SaveKey.Login);
-            set => SaveUtils.PutValue(SaveKey.Login, value);
+            get => SaveUtils.GetValue(SaveKeys.Login);
+            set => SaveUtils.PutValue(SaveKeys.Login, value);
         }
 
         public static string PasswordHash
         {
-            get => SaveUtils.GetValue<string>(SaveKey.PasswordHash);
-            set => SaveUtils.PutValue(SaveKey.PasswordHash, value);
+            get => SaveUtils.GetValue(SaveKeys.PasswordHash);
+            set => SaveUtils.PutValue(SaveKeys.PasswordHash, value);
         }
 
         public static int GameId
         {
-            get => SaveUtils.GetValue<int>(SaveKey.GameId);
-            set => SaveUtils.PutValue(SaveKey.GameId, value);
+            get => SaveUtils.GetValue(SaveKeys.GameId);
+            set => SaveUtils.PutValue(SaveKeys.GameId, value);
         }
 
         public static string DeviceId
@@ -79,8 +79,8 @@ namespace Utils
             {
 #if UNITY_EDITOR
                 if (CommonData.Testing)
-                    return SaveUtils.GetValue<string>(SaveKey.ServerUrl);
-                return SaveUtils.GetValue<string>(SaveKey.ServerUrl);
+                    return SaveUtils.GetValue(SaveKeys.ServerUrl);
+                return SaveUtils.GetValue(SaveKeys.ServerUrl);
 #else
                return "http://77.37.152.15:7000";
 #endif
@@ -89,8 +89,8 @@ namespace Utils
         
         public static bool InternetConnection
         {
-            get => SaveUtils.GetValue<bool>(SaveKey.LastIntConnectionSuccess);
-            set => SaveUtils.PutValue(SaveKey.LastIntConnectionSuccess, value);
+            get => SaveUtils.GetValue(SaveKeys.LastIntConnectionSuccess);
+            set => SaveUtils.PutValue(SaveKeys.LastIntConnectionSuccess, value);
         }
     }
 }

@@ -142,9 +142,14 @@ namespace UI.Panels
             var moneyCountEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money);
             IndicateMoneyCountLoading(true);
             Coroutines.Run(Coroutines.WaitWhile(
-                () => !moneyCountEntity.Loaded,
+                () => moneyCountEntity.Result == EEntityResult.Pending,
                 () =>
                 {
+                    if (moneyCountEntity.Result == EEntityResult.Fail)
+                    {
+                        Dbg.LogError("Failed to load money count entity");
+                        return;
+                    }
                     var moneyCount = moneyCountEntity.GetFirstScore();
                     if (!moneyCount.HasValue)
                         return;

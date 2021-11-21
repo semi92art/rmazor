@@ -118,8 +118,16 @@ namespace UI.Panels.ShopPanels
             m_MoneyText = obj.GetCompItem<TextMeshProUGUI>("money");
             var moneyEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money);
             Coroutines.Run(Coroutines.WaitWhile(
-                () => !moneyEntity.Loaded,
-                () => m_MoneyText.text = moneyEntity.GetFirstScore().ToString()));
+                () => moneyEntity.Result == EEntityResult.Pending,
+                () =>
+                {
+                    if (moneyEntity.Result == EEntityResult.Fail)
+                    {
+                        Dbg.LogError("Failed to load money entity");
+                        return;
+                    }
+                    m_MoneyText.text = moneyEntity.GetFirstScore().ToString();
+                }));
             Managers.ScoreManager.OnScoresChanged -= OnScoreChanged; 
             Managers.ScoreManager.OnScoresChanged += OnScoreChanged;
         }

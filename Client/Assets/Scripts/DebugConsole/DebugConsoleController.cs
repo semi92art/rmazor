@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using Entities;
 using Games.RazorMaze.Views.InputConfigurators;
 using Utils;
 
@@ -9,7 +10,7 @@ namespace DebugConsole
 {
     public interface IDebugConsoleController
     {
-        void Init(IViewInputCommandsProceeder _CommandsProceeder);
+        void Init(IViewInputCommandsProceeder _CommandsProceeder, IManagersGetter _Managers);
         void RegisterCommand(string _Command, DebugConsoleController.CommandHandler _Handler, string _Description);
     }
     
@@ -63,6 +64,7 @@ namespace DebugConsole
         #region api
         
         public IViewInputCommandsProceeder             CommandsProceeder { get; private set; }
+        public IManagersGetter                         Managers { get; private set; }
         public string[]                                Log { get; private set; }
         public Queue<string>                           Scrollback { get; } = new Queue<string>(ScrollbackSize);
         public Dictionary<string, CommandRegistration> Commands { get;} = new Dictionary<string, CommandRegistration>();
@@ -73,9 +75,10 @@ namespace DebugConsole
             OnLogChanged?.Invoke(_Args);
         }
 
-        public void Init(IViewInputCommandsProceeder _CommandsProceeder)
+        public void Init(IViewInputCommandsProceeder _CommandsProceeder, IManagersGetter _Managers)
         {
             CommandsProceeder = _CommandsProceeder;
+            Managers = _Managers;
         }
 
         public void RegisterCommand(string _Command, CommandHandler _Handler, string _Description)

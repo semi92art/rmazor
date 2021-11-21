@@ -147,7 +147,7 @@ namespace Games.RazorMaze.Views.Common
             switch (_Args.Stage)
             {
                 case ELevelStage.Loaded:
-                    SaveUtils.PutValue(SaveKey.CurrentLevelIndex, _Args.LevelIndex);
+                    SaveUtils.PutValue(SaveKeys.CurrentLevelIndex, _Args.LevelIndex);
                     m_NextLevelMustBeFirstInGroup = false;
                     Character.Appear(true);
                     foreach (var mazeItem in mazeItems)
@@ -162,6 +162,10 @@ namespace Games.RazorMaze.Views.Common
                 case ELevelStage.ReadyToStart:
                     break;
                 case ELevelStage.Finished:
+                    if (_Args.LevelIndex % 3 == 0)
+                    {
+                        Managers.AdsManager.ShowInterstitialAd(null);
+                    }
                     Managers.AnalyticsManager.SendAnalytic(AnalyticIds.LevelFinished, 
                         new Dictionary<string, object>
                         {
@@ -169,12 +173,12 @@ namespace Games.RazorMaze.Views.Common
                             {"level_time", Model.LevelStaging.LevelTime},
                             {"dies_count", Model.LevelStaging.DiesCount}
                         });
-                    bool allLevelsPassed = SaveUtils.GetValue<bool>(SaveKey.AllLevelsPassed);
+                    bool allLevelsPassed = SaveUtils.GetValue(SaveKeys.AllLevelsPassed);
                     if (!allLevelsPassed)
                     {
-                        SaveUtils.PutValue(SaveKey.CurrentLevelIndex, _Args.LevelIndex + 1);
+                        SaveUtils.PutValue(SaveKeys.CurrentLevelIndex, _Args.LevelIndex + 1);
                         if (_Args.LevelIndex + 1 >= LevelsLoader.GetLevelsCount(GameClientUtils.GameId))
-                            SaveUtils.PutValue(SaveKey.AllLevelsPassed, true);
+                            SaveUtils.PutValue(SaveKeys.AllLevelsPassed, true);
                     }
                     break;
                 case ELevelStage.ReadyToUnloadLevel:
@@ -190,7 +194,7 @@ namespace Games.RazorMaze.Views.Common
                         }));
                     break;
                 case ELevelStage.Unloaded:
-                    if (SaveUtils.GetValue<bool>(SaveKey.AllLevelsPassed ) && (_Args.LevelIndex - 2) % 3 == 0)
+                    if (SaveUtils.GetValue(SaveKeys.AllLevelsPassed ) && (_Args.LevelIndex - 2) % 3 == 0)
                         CommandsProceeder.RaiseCommand(EInputCommand.LoadFirstLevelFromRandomGroup, null, true);
                     else if (m_NextLevelMustBeFirstInGroup)
                         CommandsProceeder.RaiseCommand(EInputCommand.LoadFirstLevelFromCurrentGroup, null, true);

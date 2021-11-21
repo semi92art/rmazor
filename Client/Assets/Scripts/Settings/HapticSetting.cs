@@ -9,7 +9,7 @@ namespace Settings
     public class HapticsSetting : SettingBase<bool>, IHapticsSetting
     {
         public override UnityAction<bool> OnValueSet   { get; set; }
-        public override SaveKey           Key          => SaveKey.SettingHapticsOn;
+        public override SaveKey<bool>     Key          => SaveKeys.SettingHapticsOn;
         public override string            TitleKey     => "Haptics";
         public override ESettingLocation  Location     => ESettingLocation.MiniButtons;
         public override ESettingType      Type         => ESettingType.OnOff;
