@@ -71,7 +71,7 @@ namespace Games.RazorMaze.Views.Helpers
 
                 var startCol = _Appear ? ToAlpha0 : set.Value;
                 var endCol = !_Appear ? ToAlpha0 : set.Value;
-                var shapes = set.Key.Where(_Shape => _Shape != null).ToList();
+                var shapes = set.Key.Where(_Shape => _Shape.IsNotNull()).ToList();
                 
                 foreach (var shape in shapes)
                 {

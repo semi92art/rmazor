@@ -138,7 +138,7 @@ namespace Games.RazorMaze.Models
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage == ELevelStage.Unloaded)
+            if (_Args.Stage == ELevelStage.Loaded)
                 m_AllProceedInfosCached = null;
             var proceeders =
                 GetInterfaceOfProceeders<IOnLevelStageChanged>(m_Proceeders);

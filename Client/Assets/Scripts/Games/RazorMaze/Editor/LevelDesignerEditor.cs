@@ -291,9 +291,11 @@ namespace Games.RazorMaze.Editor
                 var settings = PrefabUtilsEx.GetObject<ViewSettings>(
                     "model_settings", "view_settings");
                 var converter = new MazeCoordinateConverter(settings, null);
+                var containersGetter = new ContainersGetter(null, converter);
+                converter.GetContainer = containersGetter.GetContainer;
                 converter.Init();
                 converter.MazeSize = _Info.Size;
-                var contGetter = new ContainersGetter(converter);
+                var contGetter = new ContainersGetter(null, converter);
                 var mazeItemsCreator = new MazeItemsCreatorInEditor(contGetter, converter);
                 m_Des.maze = mazeItemsCreator.CreateMazeItems(_Info)
                     .Cast<ViewMazeItemProt>()
@@ -319,6 +321,8 @@ namespace Games.RazorMaze.Editor
             var settings = PrefabUtilsEx.GetObject<ViewSettings>(
                 "model_settings", "view_settings");
             var converter = new MazeCoordinateConverter(settings, null);
+            var containersGetter = new ContainersGetter(null, converter);
+            converter.GetContainer = containersGetter.GetContainer;
             converter.Init();
             converter.MazeSize = _Size;
             var bounds = new Bounds(converter.GetMazeCenter(), converter.GetMazeBounds().size);

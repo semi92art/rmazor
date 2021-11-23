@@ -42,14 +42,16 @@ namespace UI.Panels
         public virtual void Init()
         {
             Ticker.Register(this);
+            ColorProvider.ColorChanged += OnColorChanged;
         }
-
+        
         protected void SetTranslucentBackgroundSource(GameObject _Object)
         {
             var translBack = _Object.GetCompItem<TranslucentImage>("translucent_background");
             translBack.source = CameraProvider.MainCamera.GetComponent<TranslucentImageSource>();
         }
         
+        protected virtual void OnColorChanged(int _ColorId, Color _Color) { }
         public virtual void OnDialogEnable() { }
         public virtual void OnDialogShow() { }
         public virtual void OnDialogHide() { }

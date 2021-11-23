@@ -1,4 +1,5 @@
-﻿using Games.RazorMaze.Views.Common;
+﻿using DI.Extensions;
+using Games.RazorMaze.Views.Common;
 using Ticker;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,7 +14,8 @@ namespace UI
         {
             InitCore(_Ticker, _ColorProvider);
             // button.targetGraphic.color = _ColorProvider.GetColor(ColorIds.UiDialogItemNormal);
-            button.transition = Selectable.Transition.ColorTint;
+            if (button.IsNotNull())
+                button.transition = Selectable.Transition.ColorTint;
             UpdateButtonColors();
         }
 
@@ -32,7 +34,8 @@ namespace UI
 
         private void UpdateButtonColors()
         {
-            button.colors = GetColorBlock();
+            if (button.IsNotNull())
+                button.colors = GetColorBlock();
         }
     }
 }

@@ -107,6 +107,8 @@ namespace Games.RazorMaze.Controllers
 
         protected virtual void OnDestroy()
         {
+            if (Model == null || View == null)
+                return;
             Model.PathItemsProceeder.AllPathsProceededEvent           -= View.Character.OnAllPathProceed;
             Model.PathItemsProceeder.AllPathsProceededEvent           -= View.LevelStageController.OnAllPathProceed;
             Model.PathItemsProceeder.PathProceedEvent                 -= View.PathItemsGroup.OnPathProceed;

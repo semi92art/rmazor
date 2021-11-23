@@ -91,7 +91,7 @@ namespace Games.RazorMaze.Views.Common
                 _Progress =>
                 {
                     float distance = _Progress < 0.5f ? _Progress * amplitude : (1f - _Progress) * amplitude;
-                    var res = startPos + distance * dir.ToVector2();
+                    var res = startPos + distance * dir;
                     m_MazeContainer.position = res;
                 },
                 GameTicker,

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Constants;
 using DI.Extensions;
@@ -16,6 +17,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using Utils;
+using Object = UnityEngine.Object;
 
 namespace DialogViewers
 {
@@ -24,7 +26,6 @@ namespace DialogViewers
         void Show(IDialogPanel _ItemTo, bool _HidePrevious = true);
         void CloseAll();
         bool IsInTransition { get; }
-        bool IsShowing      { get; }
     }
     
     public class BigDialogViewer : IBigDialogViewer, IAction, IUpdateTick
@@ -76,17 +77,20 @@ namespace DialogViewers
         private IUITicker                   Ticker            { get; }
         private IViewInputCommandsProceeder CommandsProceeder { get; }
         private IColorProvider              ColorProvider     { get; }
+        private ICameraProvider             CameraProvider    { get; }
 
         public BigDialogViewer(
             IManagersGetter _Managers,
             IUITicker _Ticker,
             IViewInputCommandsProceeder _CommandsProceeder,
-            IColorProvider _ColorProvider)
+            IColorProvider _ColorProvider,
+            ICameraProvider _CameraProvider)
         {
             Managers = _Managers;
             Ticker = _Ticker;
             CommandsProceeder = _CommandsProceeder;
             ColorProvider = _ColorProvider;
+            CameraProvider = _CameraProvider;
             _Ticker.Register(this);
         }
         
@@ -94,10 +98,11 @@ namespace DialogViewers
 
         #region api
         
-        public RectTransform Container      => m_DialogContainer;
-        public UnityAction   Action         { get; set; }
-        public bool          IsInTransition { get; private set; }
-        public bool          IsShowing      { get; private set; }
+        public RectTransform Container                 => m_DialogContainer;
+        public Func<bool>    IsOtherDialogViewersShowing { get; set; }
+        public UnityAction   Action                    { get; set; }
+        public bool          IsInTransition            { get; private set; }
+        public bool          IsShowing                 { get; private set; }
 
         public void Init(RectTransform _Parent)
         {
@@ -128,6 +133,7 @@ namespace DialogViewers
 
         public void Show(IDialogPanel _ItemTo, bool _HidePrevious = true)
         {
+            CameraProvider.EnableTranslucentSource(true);
             ShowCore(_ItemTo, _HidePrevious, false);
             m_CloseButton.transform.SetAsLastSibling();
         }
@@ -154,7 +160,9 @@ namespace DialogViewers
 
         public virtual void UpdateTick()
         {
-            if (!ProposalDialogViewer.IsShowing && LeanInput.GetDown(KeyCode.Space))
+            if (IsOtherDialogViewersShowing != null && IsOtherDialogViewersShowing())
+                return;
+            if (LeanInput.GetDown(KeyCode.Space))
                 CloseAll();
         }
         
@@ -188,6 +196,8 @@ namespace DialogViewers
                     {
                         IsInTransition = false;
                         IsShowing = _ItemTo != null;
+                        if (!IsShowing && (IsOtherDialogViewersShowing == null || !IsOtherDialogViewersShowing()))
+                            CameraProvider.EnableTranslucentSource(false);
                         if (!_GoBack)
                             return;
                         Object.Destroy(fromPanel.gameObject);

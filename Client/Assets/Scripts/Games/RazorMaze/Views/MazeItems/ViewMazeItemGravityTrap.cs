@@ -83,7 +83,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #endregion
         
-        #region apico
+        #region api
         
         public override Component[] Shapes => new Component[] {m_OuterDisc}.Concat(m_Cones).ToArray();
         
@@ -113,7 +113,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             base.OnLevelStageChanged(_Args);
             if (_Args.Stage == ELevelStage.ReadyToStart || _Args.Stage == ELevelStage.Loaded)
-                m_Position = Props.Position.ToVector2();
+                m_Position = Props.Position;
         }
 
         public void UpdateTick()
@@ -145,7 +145,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             if (ProceedingStage != EProceedingStage.ActiveAndWorking)
                 return;
-            m_Position = Vector2.Lerp(_Args.From.ToVector2(), _Args.To.ToVector2(), _Args.Progress);
+            m_Position = Vector2.Lerp(_Args.From, _Args.To, _Args.Progress);
             SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(m_Position));
         }
 
@@ -240,7 +240,7 @@ namespace Games.RazorMaze.Views.MazeItems
             }
             else
             {
-                var cPos = Model.Character.Position.ToVector2();
+                Vector2 cPos = Model.Character.Position;
                 if (Vector2.Distance(cPos, m_Position) + MathUtils.Epsilon > 0.9f)
                     return;
                 CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, null);

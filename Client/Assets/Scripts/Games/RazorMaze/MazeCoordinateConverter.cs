@@ -1,6 +1,7 @@
 ﻿using System;
 using DI.Extensions;
 using Entities;
+using Games.RazorMaze.Views.ContainerGetters;
 using UnityEngine;
 using Utils;
 
@@ -8,16 +9,16 @@ namespace Games.RazorMaze
 {
     public interface IMazeCoordinateConverter
     {
-        bool Initialized();
-        V2Int MazeSize { get; set; }
-        float Scale { get; }
-        void Init();
-        Vector2 GetMazeCenter();
-        Bounds GetMazeBounds();
-        Vector4 GetScreenOffsets();
-        Vector2 ToGlobalMazePosition(Vector2 _Point);
-        Vector2 ToLocalMazeItemPosition(Vector2 _Point);
-        Vector2 ToLocalCharacterPosition(Vector2 _Point);
+        Func<string, Transform> GetContainer { get; set; }
+        bool            InitializedAndMazeSizeSet();
+        V2Int           MazeSize { get; set; }
+        float           Scale    { get; }
+        void            Init();
+        Vector2         GetMazeCenter();
+        Bounds          GetMazeBounds();
+        Vector2         ToGlobalMazeItemPosition(Vector2 _Point);
+        Vector2         ToLocalMazeItemPosition(Vector2 _Point);
+        Vector2         ToLocalCharacterPosition(Vector2 _Point);
     }
     
     [Serializable]
@@ -27,11 +28,12 @@ namespace Games.RazorMaze
 
         private float m_LeftOffset, m_RightOffset, m_BottomOffset, m_TopOffset;
 
-        private V2Int m_MazeSize;
-        private float m_Scale;
-        private Vector2 m_Center;
-        private bool m_OffsetsInitialized;
-        private bool m_MazeSizeSet;
+        private V2Int     m_MazeSize;
+        private float     m_Scale;
+        private Vector2   m_Center;
+        private bool      m_Initialized;
+        private bool      m_MazeSizeSet;
+        [SerializeField] private Transform m_MazeItemFake;
 
         #endregion
 
@@ -49,10 +51,12 @@ namespace Games.RazorMaze
         #endregion
         
         #region api
-        
-        public bool Initialized()
+
+        public Func<string, Transform> GetContainer { get; set; }
+
+        public bool InitializedAndMazeSizeSet()
         {
-            return m_OffsetsInitialized && m_MazeSizeSet;
+            return m_Initialized && m_MazeSizeSet;
         }
 
         public V2Int MazeSize
@@ -79,10 +83,13 @@ namespace Games.RazorMaze
         
         public void Init()
         {
-            (m_LeftOffset, m_RightOffset) = (ViewSettings.ScreenOffsets.x, ViewSettings.ScreenOffsets.y);
-            (m_BottomOffset, m_TopOffset) = (ViewSettings.ScreenOffsets.z, ViewSettings.ScreenOffsets.w);
+            var vs = ViewSettings;
+            (m_LeftOffset, m_RightOffset) = (vs.LeftScreenOffset, vs.RightScreenOffset);
+            (m_BottomOffset, m_TopOffset) = (vs.BottomScreenOffset, vs.TopScreenOffset);
             SetCenterPoint();
-            m_OffsetsInitialized = true;
+            m_Initialized = true;
+            m_MazeItemFake = CommonUtils.FindOrCreateGameObject("Maze Item Fake", out _).transform;
+            m_MazeItemFake.SetParent(GetContainer(ContainerNames.MazeItems));
         }
 
         public Vector2 GetMazeCenter()
@@ -90,52 +97,42 @@ namespace Games.RazorMaze
             return m_Center;
         }
 
-        public Vector4 GetScreenOffsets()
-        {
-            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider?.MainCamera);
-            return new Vector4(
-                screenBounds.min.x + m_LeftOffset,
-                 screenBounds.max.x - m_RightOffset,
-                screenBounds.min.y + m_BottomOffset,
-                screenBounds.max.y - m_TopOffset);
-        }
-        
         public Bounds GetMazeBounds()
         {
             if (CheckForErrors())
                 return default;
-            return new Bounds(m_Center,
-                new Vector3(
-                    m_MazeSize.X * m_Scale,
-                    m_MazeSize.Y * m_Scale,
-                    0f));
+            return new Bounds(m_Center, m_Scale * new Vector2(m_MazeSize.X, m_MazeSize.Y));
         }
 
-        public Vector2 ToGlobalMazePosition(Vector2 _Point)
+        public Vector2 ToGlobalMazeItemPosition(Vector2 _Point)
         {
-            if (CheckForErrors())
-                return default;
-            return (_Point - m_MazeSize.ToVector2() * 0.5f) * m_Scale;
+            m_MazeItemFake.SetLocalPosXY(ToLocalMazeItemPosition(_Point));
+            return m_MazeItemFake.position;
         }
 
         public Vector2 ToLocalMazeItemPosition(Vector2 _Point)
         {
-            return ToGlobalMazePosition(_Point)
-                .PlusX(m_Scale * 0.5f)
-                .MinusY(GetMazeCenter().y);
+            return ToLocalMazePosition(_Point)
+                .PlusX(m_Scale * 0.5f);
         }
         
         public Vector2 ToLocalCharacterPosition(Vector2 _Point)
         {
-            return ToGlobalMazePosition(_Point)
+            return ToLocalMazePosition(_Point)
                 .PlusX(m_Scale * 0.5f)
-                .MinusY(GetMazeCenter().y)
                 .PlusY(m_Scale * 0.5f);
         }
 
         #endregion
 
         #region nonpublic menhods
+
+        private Vector2 ToLocalMazePosition(Vector2 _Point)
+        {
+            if (CheckForErrors())
+                return default;
+            return m_Scale * (_Point - (Vector2)m_MazeSize * 0.5f);
+        }
 
         private void SetCenterPoint()
         {
@@ -158,7 +155,7 @@ namespace Games.RazorMaze
 
         private bool CheckForErrors()
         {
-            if (!Initialized())
+            if (!InitializedAndMazeSizeSet())
             {
                 Dbg.LogError("Coordinate converter was not initialized.");
                 return true;

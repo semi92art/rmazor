@@ -185,7 +185,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 Props.Position + V2Int.down + V2Int.right,
                 Props.Position + V2Int.up + V2Int.left,
                 Props.Position + V2Int.up + V2Int.right
-            }.Select(_P => _P.ToVector2())
+            }.Select(_P => (Vector2)_P)
                 .ToList();
         }
 
@@ -267,7 +267,7 @@ namespace Games.RazorMaze.Views.MazeItems
             const float distance = 0.5f;
             var character = Model.Character;
             var cPos = character.IsMoving ? 
-                character.MovingInfo.PrecisePosition : character.Position.ToVector2();
+                character.MovingInfo.PrecisePosition : character.Position;
             bool death = false;
             for (int i = 0; i < m_DeathZone.Count; i++)
             {

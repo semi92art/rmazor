@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Events;
+using Utils;
 
 namespace Games.RazorMaze.Editor
 {
@@ -208,10 +209,17 @@ namespace Games.RazorMaze.Editor
 
         private static Color GetContentColor(int _Index)
         {
-            int a = _Index % (RazorMazeUtils.LevelsInGroup * 2);
-            return a < RazorMazeUtils.LevelsInGroup ?
-                new Color(0.2f, 0.2f, 0.2f) : new Color(0.32f, 0.32f, 0.32f);
+            int groupIndex = RazorMazeUtils.GetGroupIndex(_Index);
+            int idx = (groupIndex - 1) % RazorMazeUtils.LevelsInGroupList.Length;
+            return GroupColors[idx];
         }
+
+        private static readonly Color[] GroupColors =
+        {
+            new Color(0.2f, 0.2f, 0.2f),
+            new Color(0.32f, 0.32f, 0.32f),
+            new Color(0.41f, 0.41f, 0.41f),
+        };
         
         private static readonly Color[] FilterColors =
         {

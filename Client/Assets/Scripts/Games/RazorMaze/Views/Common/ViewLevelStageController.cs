@@ -138,11 +138,13 @@ namespace Games.RazorMaze.Views.Common
                 .Where(_P => _P != null);
             foreach (var group in mazeItemGroups)
                 mazeItems.AddRange(group.GetActiveItems());
+            IViewMazePathItemsGroup pathItemsGroup = null;
             if (m_Proceeders
                     .FirstOrDefault(_P => _P is IViewMazePathItemsGroup)
-                is IViewMazePathItemsGroup pathItemsGroup)
+                is IViewMazePathItemsGroup g)
             {
-                mazeItems.AddRange(pathItemsGroup.PathItems);
+                pathItemsGroup = g;
+                mazeItems.AddRange(g.PathItems);
             }
             switch (_Args.Stage)
             {
@@ -150,6 +152,13 @@ namespace Games.RazorMaze.Views.Common
                     SaveUtils.PutValue(SaveKeys.CurrentLevelIndex, _Args.LevelIndex);
                     m_NextLevelMustBeFirstInGroup = false;
                     Character.Appear(true);
+                    if (pathItemsGroup != null)
+                        foreach (var pathItem in pathItemsGroup.PathItems)
+                        {
+                            bool collect = Model.PathItemsProceeder.PathProceeds[pathItem.Props.Position];
+                            pathItem.Collected = collect;
+                        }
+
                     foreach (var mazeItem in mazeItems)
                         mazeItem.Appear(true);
                     Coroutines.Run(Coroutines.WaitWhile(() =>

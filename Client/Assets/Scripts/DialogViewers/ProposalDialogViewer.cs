@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Constants;
 using DI.Extensions;
@@ -13,6 +14,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using Utils;
+using Object = UnityEngine.Object;
 
 namespace DialogViewers
 {
@@ -39,21 +41,27 @@ namespace DialogViewers
 
         #region inject
 
-        private ViewSettings ViewSettings { get; }
-        private IUITicker    Ticker       { get; }
+        private ViewSettings    ViewSettings   { get; }
+        private IUITicker       Ticker         { get; }
+        private ICameraProvider CameraProvider { get; }
 
-        public ProposalDialogViewer(ViewSettings _ViewSettings, IUITicker _Ticker)
+        public ProposalDialogViewer(
+            ViewSettings _ViewSettings,
+            IUITicker _Ticker,
+            ICameraProvider _CameraProvider)
         {
             ViewSettings = _ViewSettings;
             Ticker = _Ticker;
+            CameraProvider = _CameraProvider;
         }
 
         #endregion
 
         #region api
 
-        public RectTransform Container => m_DialogContainer;
-        public static bool IsShowing { get; private set; }
+        public        RectTransform Container                   => m_DialogContainer;
+        public        Func<bool>    IsOtherDialogViewersShowing { get; set; }
+        public        bool          IsShowing                   { get; private set; }
         
         public void Init(RectTransform _Parent)
         {
@@ -76,6 +84,7 @@ namespace DialogViewers
 
         public void Show(IDialogPanel _Item)
         {
+            CameraProvider.EnableTranslucentSource(true);
             m_Panel = _Item;
             var panel = m_Panel.Panel;
             m_Alphas = panel.GetComponentsInChildrenEx<Graphic>()
@@ -90,10 +99,10 @@ namespace DialogViewers
             m_Animator.SetTrigger(AkShow);
             IsShowing = true;
         }
+        
         public void Back(UnityAction _OnFinish = null)
         {
             m_Animator.SetTrigger(AkHide);
-            
             Coroutines.Run(Coroutines.DoTransparentTransition(
                 m_Panel.Panel,
                 m_Alphas,
@@ -102,12 +111,14 @@ namespace DialogViewers
                 true,
                 () =>
                 {
+                    IsShowing = false;
+                    if (IsOtherDialogViewersShowing == null || !IsOtherDialogViewersShowing())
+                        CameraProvider.EnableTranslucentSource(false);
                     m_Panel.OnDialogHide();
                     Object.Destroy(m_Panel.Panel.gameObject);
                     m_Panel = null;
                     _OnFinish?.Invoke();
                 }));
-            IsShowing = false;
         }
 
         #endregion
@@ -115,20 +126,24 @@ namespace DialogViewers
 
     public class ProposalDialogViewerFake : IProposalDialogViewer
     {
-        public void          Init(RectTransform _Parent)
+        public RectTransform Container                   { get; }
+        public bool          IsShowing                   { get; }
+        public Func<bool>    IsOtherDialogViewersShowing { get; set; }
+
+        public void Init(RectTransform _Parent)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
-        public RectTransform Container { get; }
-        public void          Back(UnityAction _OnFinish = null)
+
+        public void Back(UnityAction _OnFinish = null)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
-        public void          Show(IDialogPanel _Item)
+        public void Show(IDialogPanel _Item)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

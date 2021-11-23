@@ -83,7 +83,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             if (ProceedingStage != EProceedingStage.ActiveAndWorking)
                 return;
-            var pos = Vector2.Lerp(_Args.From.ToVector2(), _Args.To.ToVector2(), _Args.Progress);
+            var pos = Vector2.Lerp(_Args.From, _Args.To, _Args.Progress);
             SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(pos));
         }
 

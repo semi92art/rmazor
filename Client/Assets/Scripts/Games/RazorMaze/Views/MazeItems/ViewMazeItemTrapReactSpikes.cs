@@ -163,7 +163,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             (m_Line.Start, m_Line.End) = GetTrapPosRotAndLineEdges();
             var scale = CoordinateConverter.Scale;
-            var dir = Props.Directions.First().ToVector2();
+            Vector2 dir = Props.Directions.First();
             var trapTr = m_Trap.transform;
             trapTr.localRotation = Quaternion.Euler(0f, 0f, GetTrapAngle(Props.Directions.First()));
             trapTr.SetLocalPosXY(dir * scale * StartPos);
@@ -197,7 +197,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private IEnumerator HandlePreReact()
         {
             var scale = CoordinateConverter.Scale;
-            var dir = Props.Directions.First().ToVector2();
+            Vector2 dir = Props.Directions.First();
             yield return Coroutines.Lerp(
                 StartPos,
                 MiddlePos,
@@ -210,7 +210,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private IEnumerator HandleReact()
         {
             var scale = CoordinateConverter.Scale;
-            var dir = Props.Directions.First().ToVector2();
+            Vector2 dir = Props.Directions.First();
             yield return Coroutines.Lerp(
                 MiddlePos,
                 FinalPos,
@@ -223,7 +223,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private IEnumerator HandlePostReact()
         {
             var scale = CoordinateConverter.Scale;
-            var dir = Props.Directions.First().ToVector2();
+            Vector2 dir = Props.Directions.First();
             yield return Coroutines.Lerp(
                 FinalPos,
                 StartPos,
@@ -235,7 +235,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private Tuple<Vector2, Vector2> GetTrapPosRotAndLineEdges()
         {
-            var dir = Props.Directions.First().ToVector2();
+            Vector2 dir = Props.Directions.First();
             var dirOrth = new Vector2(dir.y, dir.x);
             var A = dir * 0.35f;
             var B = A + dirOrth * 0.45f;

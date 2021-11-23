@@ -96,7 +96,9 @@ namespace Games.RazorMaze
             maze = new List<ViewMazeItemProt>();
             foreach (Transform mazeObj in mazeObject.transform)
             {
-                maze.Add(mazeObj.gameObject.GetComponent<ViewMazeItemProt>());
+                var mazeItem = mazeObj.gameObject.GetComponent<ViewMazeItemProt>();
+                if (mazeItem.IsNotNull()) 
+                    maze.Add(mazeItem);
             }
             var protItemStart = maze.FirstOrDefault(_Item => _Item.Props.IsStartNode);
             if (protItemStart == null)

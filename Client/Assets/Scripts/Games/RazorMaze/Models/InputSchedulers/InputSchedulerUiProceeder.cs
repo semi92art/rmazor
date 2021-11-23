@@ -119,15 +119,15 @@ namespace Games.RazorMaze.Models.InputSchedulers
                     LevelStaging.LoadLevel(info, levelIndex);
                     break;
                 case EInputCommand.LoadFirstLevelFromCurrentGroup:
-                    int group = Data.LevelIndex / RazorMazeUtils.LevelsInGroup;
-                    levelIndex = group * RazorMazeUtils.LevelsInGroup;
+                    int group = RazorMazeUtils.GetGroupIndex(Data.LevelIndex);
+                    levelIndex = RazorMazeUtils.GetFirstLevelInGroup(group);
                     info = LevelsLoader.LoadLevel(gameId, levelIndex); 
                     LevelStaging.LoadLevel(info, levelIndex);
                     break;
                 case EInputCommand.LoadFirstLevelFromRandomGroup:
                     int randLevelIdx = Mathf.RoundToInt(Random.value * LevelsLoader.GetLevelsCount(gameId));
-                    int randGroup = randLevelIdx / RazorMazeUtils.LevelsInGroup;
-                    levelIndex = randGroup * RazorMazeUtils.LevelsInGroup;
+                    int randGroup = RazorMazeUtils.GetGroupIndex(randLevelIdx);
+                    levelIndex = RazorMazeUtils.GetFirstLevelInGroup(randGroup);
                     info = LevelsLoader.LoadLevel(gameId, levelIndex);
                     LevelStaging.LoadLevel(info, levelIndex);
                     break;

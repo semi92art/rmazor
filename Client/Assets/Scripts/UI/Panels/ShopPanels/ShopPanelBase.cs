@@ -12,6 +12,7 @@ using UI.Entities;
 using UI.Factories;
 using UI.PanelItems.Shop_Items;
 using UnityEngine;
+using UnityEngine.UI;
 using Utils;
 
 namespace UI.Panels.ShopPanels
@@ -26,14 +27,16 @@ namespace UI.Panels.ShopPanels
         
         #region nonpublic members
 
-        protected virtual Vector2 StartContentPos =>  Vector2.zero;
-        protected abstract string ItemSetName { get; }
-        protected abstract string PanelPrefabName { get; }
-        protected abstract string PanelItemPrefabName { get; }
-        protected abstract RectTransformLite ShopItemRectLite { get; }
-        protected RectTransform m_Panel;
-        protected RectTransform m_Content;
-        protected TextMeshProUGUI m_MoneyText;
+        protected virtual  Vector2           StartContentPos     =>  Vector2.zero;
+        protected abstract string            ItemSetName         { get; }
+        protected abstract string            PanelPrefabName     { get; }
+        protected abstract string            PanelItemPrefabName { get; }
+        protected abstract RectTransformLite ShopItemRectLite    { get; }
+        
+        protected          RectTransform     m_Panel;
+        protected          RectTransform     m_Content;
+        protected          TextMeshProUGUI   m_MoneyText;
+        protected          Image             m_MoneyIcon;
 
         #endregion
 
@@ -116,6 +119,9 @@ namespace UI.Panels.ShopPanels
                     }),
                 "ui_game", "money_mini_panel");
             m_MoneyText = obj.GetCompItem<TextMeshProUGUI>("money");
+            m_MoneyIcon = obj.GetCompItem<Image>("icon");
+            m_MoneyText.color = ColorProvider.GetColor(ColorIds.UiText);
+            m_MoneyIcon.color = ColorProvider.GetColor(ColorIds.UI);
             var moneyEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money);
             Coroutines.Run(Coroutines.WaitWhile(
                 () => moneyEntity.Result == EEntityResult.Pending,
@@ -145,6 +151,14 @@ namespace UI.Panels.ShopPanels
                     ShopItemRectLite),
                 PrefabSetName, PanelItemPrefabName);
             return obj.GetComponent<T>();
+        }
+
+        protected override void OnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId == ColorIds.UI)
+                m_MoneyIcon.color = _Color;
+            else if (_ColorId == ColorIds.UiText)
+                m_MoneyText.color = _Color;
         }
 
         #endregion

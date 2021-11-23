@@ -37,20 +37,20 @@ MonoBehaviour:
     - name: Background Congrats Items
       color: {r: 1, g: 1, b: 1, a: 0.7647059}
     - name: UI
-      color: {r: 1, g: 1, b: 1, a: 1}
+      color: {r: 0.8679245, g: 0.61502916, b: 0.19241722, a: 1}
     - name: Ui Dialog Item Normal
-      color: {r: 1, g: 1, b: 1, a: 0.29803923}
+      color: {r: 0.8679245, g: 0.61502916, b: 0.19241722, a: 0.29803923}
     - name: Ui Dialog Item Pressed
-      color: {r: 1, g: 1, b: 1, a: 0.5019608}
+      color: {r: 0.8679245, g: 0.61502916, b: 0.19241722, a: 0.5019608}
     - name: Ui Dialog Item Selected
-      color: {r: 1, g: 1, b: 1, a: 0.5019608}
+      color: {r: 0.8679245, g: 0.61502916, b: 0.19241722, a: 0.49411765}
     - name: Ui Dialog Item Disabled
-      color: {r: 0.5372549, g: 0.5372549, b: 0.5372549, a: 1}
+      color: {r: 0.8679245, g: 0.61502916, b: 0.19241722, a: 1}
     - name: Ui Dialog Background
-      color: {r: 0.69803923, g: 0.6784314, b: 0.6156863, a: 1}
+      color: {r: 0.8679245, g: 0.61502916, b: 0.19241722, a: 0.23529412}
     - name: Ui Border
-      color: {r: 1, g: 1, b: 1, a: 1}
+      color: {r: 0.8679245, g: 0.61502916, b: 0.19241722, a: 1}
     - name: Ui Text
-      color: {r: 1, g: 1, b: 1, a: 1}
+      color: {r: 0.8679245, g: 0.61502916, b: 0.19241722, a: 1}
     - name: Ui Background
-      color: {r: 1, g: 1, b: 1, a: 1}
+      color: {r: 0.8679245, g: 0.61502916, b: 0.19241722, a: 1}

@@ -1,4 +1,5 @@
-﻿using Games.RazorMaze.Views.Common;
+﻿using DI.Extensions;
+using Games.RazorMaze.Views.Common;
 using Ticker;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,7 +13,8 @@ namespace UI
         public void Init(IUITicker _Ticker, IColorProvider _ColorProvider)
         {
             InitCore(_Ticker, _ColorProvider);
-            toggle.transition = Selectable.Transition.ColorTint;
+            if (toggle.IsNotNull())
+                toggle.transition = Selectable.Transition.ColorTint;
             UpdateToggleColors();
         }
 
@@ -30,7 +32,8 @@ namespace UI
 
         private void UpdateToggleColors()
         {
-            toggle.colors = GetColorBlock();
+            if (toggle.IsNotNull())
+                toggle.colors = GetColorBlock();
         }
     }
 }

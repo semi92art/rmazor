@@ -4,7 +4,6 @@ using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
-using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
 using UnityEngine;
@@ -14,6 +13,12 @@ namespace Games.RazorMaze.Views.Characters
 {
     public class ViewCharacterTailSimple : IViewCharacterTail
     {
+        #region constants
+
+        private const float MaxTailLength = 4f;
+        
+        #endregion
+        
         #region nonpublic members
 
         private Triangle m_Tail;
@@ -28,7 +33,7 @@ namespace Games.RazorMaze.Views.Characters
         private ModelSettings            ModelSettings       { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
         private IContainersGetter        ContainersGetter    { get; }
-        private IViewGameTicker              GameTicker          { get; }
+        private IViewGameTicker          GameTicker          { get; }
         private IColorProvider           ColorProvider       { get; }
 
         public ViewCharacterTailSimple(
@@ -78,11 +83,12 @@ namespace Games.RazorMaze.Views.Characters
             m_Hiding = false;
             m_Tail.enabled = true;
             var dir = (_Args.To - _Args.From).Normalized;
-            var a = _Args.From.ToVector2() - dir * 0.4f;
             var orth = new Vector2(dir.y, dir.x);
-            var currPos = Vector2.Lerp(_Args.From.ToVector2(), _Args.To.ToVector2(), _Args.Progress);
-            var b = currPos - dir * 0.4f + orth * 0.3f;
-            var c = currPos - dir * 0.4f - orth * 0.3f;
+            var currPos = Vector2.Lerp(_Args.From, _Args.To, _Args.Progress);
+            var b = currPos - dir * 0.2f + orth * 0.3f;
+            var c = currPos - dir * 0.2f - orth * 0.3f;
+            var d = (b + c) * 0.5f;
+            var a = Vector2.Distance(_Args.From, d) < MaxTailLength ? _Args.From : d - dir * MaxTailLength;
             m_Tail.A = CoordinateConverter.ToLocalCharacterPosition(a);
             m_Tail.B = CoordinateConverter.ToLocalCharacterPosition(b);
             m_Tail.C = CoordinateConverter.ToLocalCharacterPosition(c);
@@ -113,9 +119,9 @@ namespace Games.RazorMaze.Views.Characters
         private IEnumerator HideTailCoroutine(CharacterMovingEventArgs _Args)
         {
             m_Hiding = true;
-            var startA = (Vector2)m_Tail.A;
+            Vector2 startA = m_Tail.A;
             var dir = (_Args.To - _Args.From).Normalized;
-            var finishA = CoordinateConverter.ToLocalCharacterPosition(_Args.To.ToVector2() - dir * 0.4f);
+            var finishA = CoordinateConverter.ToLocalCharacterPosition(_Args.To - dir * 0.4f);
             var distance = V2Int.Distance(_Args.From, _Args.To);
             yield return Coroutines.Lerp(
                 0f,

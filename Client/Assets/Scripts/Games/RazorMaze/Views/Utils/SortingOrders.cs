@@ -1,6 +1,5 @@
 ﻿using Exceptions;
 using Games.RazorMaze.Models;
-using UnityEngine;
 
 namespace Games.RazorMaze.Views.Utils
 {
@@ -9,8 +8,8 @@ namespace Games.RazorMaze.Views.Utils
         public const int BackgroundItem = Path - 1;
         public const int Path           = -1;
         public const int PathLine       = Path + 1;
-        public const int PathJoint      = Path + 2;
-        public const int Character      = Path + 500;
+        public const int PathJoint      = Path + 100;
+        public const int Character      = Path + 400;
         
         public static int GetBlockSortingOrder(EMazeItemType _Type)
         {
@@ -29,9 +28,9 @@ namespace Games.RazorMaze.Views.Utils
                 case EMazeItemType.Springboard:
                     return Path + 5;
                 case EMazeItemType.TrapReact:
-                    return Path + 50;
+                    return Path + 200;
                 case EMazeItemType.Turret:
-                    return Path + 51;
+                    return Path + 300;
                 default: throw new SwitchCaseNotImplementedException(_Type);
             }
         }

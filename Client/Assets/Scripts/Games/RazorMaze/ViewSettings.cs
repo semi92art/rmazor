@@ -20,7 +20,11 @@ namespace Games.RazorMaze
         [SerializeField] private float   proposalDialogAnimSpeed;
         [SerializeField] private float   gravityTrapRotationSpeed;
         [SerializeField] private float   pauseBetweenMoveCommands;
-        [SerializeField] private Vector4 screenOffsets;
+        [SerializeField] private float   leftScreenOffset;
+        [SerializeField] private float   rightScreenOffset;
+        [SerializeField] private float   bottomScreenOffset;
+        [SerializeField] private float   topScreenOffset;
+        
 
         public float   LineWidth
         {
@@ -106,16 +110,34 @@ namespace Games.RazorMaze
             set => gravityTrapRotationSpeed = value;
         }
 
-        public Vector4 ScreenOffsets
-        {
-            get => screenOffsets;
-            set => screenOffsets = value;
-        }
-
         public float PauseBetweenMoveCommands
         {
             get => pauseBetweenMoveCommands;
             set => pauseBetweenMoveCommands = value;
+        }
+
+        public float LeftScreenOffset
+        {
+            get => leftScreenOffset;
+            set => leftScreenOffset = value;
+        }
+
+        public float RightScreenOffset
+        {
+            get => rightScreenOffset;
+            set => rightScreenOffset = value;
+        }
+
+        public float BottomScreenOffset
+        {
+            get => bottomScreenOffset;
+            set => bottomScreenOffset = value;
+        }
+
+        public float TopScreenOffset
+        {
+            get => topScreenOffset;
+            set => topScreenOffset = value;
         }
     }
 }

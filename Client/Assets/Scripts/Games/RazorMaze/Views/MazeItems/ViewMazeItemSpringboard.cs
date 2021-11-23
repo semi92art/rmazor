@@ -151,24 +151,24 @@ namespace Games.RazorMaze.Views.MazeItems
         
         private Tuple<Vector2, Vector2, Vector2, Vector2> GetSpringboardAndPillarEdges()
         {
-            var V = Props.Directions.First().ToVector2();
-            var Vorth = new Vector2(-V.x, V.y);
-            var A1 = -V * 0.4f;
-            var D = A1 + V * SpringboardHeight;
-            var B = D - Vorth * SpringboardWidth * 0.5f;
-            var C = D + Vorth * SpringboardWidth * 0.5f;
-            A1 *= CoordinateConverter.Scale;
-            B *= CoordinateConverter.Scale;
-            C *= CoordinateConverter.Scale;
-            D *= CoordinateConverter.Scale;
-            return new Tuple<Vector2, Vector2, Vector2, Vector2>(A1, D, B, C);
+            Vector2 v = Props.Directions.First();
+            var vOrth = new Vector2(-v.x, v.y);
+            var a = -v * 0.4f;
+            var d = a + v * SpringboardHeight;
+            var b = d - vOrth * SpringboardWidth * 0.5f;
+            var c = d + vOrth * SpringboardWidth * 0.5f;
+            a *= CoordinateConverter.Scale;
+            b *= CoordinateConverter.Scale;
+            c *= CoordinateConverter.Scale;
+            d *= CoordinateConverter.Scale;
+            return new Tuple<Vector2, Vector2, Vector2, Vector2>(a, d, b, c);
         }
 
         private Tuple<Vector2, Vector2, Vector2> GetSpringboardEdgesOnJump(float _C)
         {
-            var V = Props.Directions.First().ToVector2();
-            var edge1 = m_Edge1Start + V * _C;
-            var edge2 = m_Edge2Start + V * _C;
+            Vector2 v = Props.Directions.First();
+            var edge1 = m_Edge1Start + v * _C;
+            var edge2 = m_Edge2Start + v * _C;
             var pillarEdge = (edge1 + edge2) * 0.5f;
             return new Tuple<Vector2, Vector2, Vector2>(edge1, edge2, pillarEdge);
         }

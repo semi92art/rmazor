@@ -15,13 +15,13 @@ namespace Entities
 
         [JsonConstructor] public V2Int(int _X, int _Y) { x = _X; y = _Y; }
         public V2Int(Vector2Int _V) { x = _V.x; y = _V.y; }
-        public Vector2Int ToVector2Int() => new Vector2Int(X, Y);
-        public Vector2 ToVector2() => new Vector2(X, Y);
-
         public static V2Int operator -(V2Int _V)               => new V2Int(-_V.x, -_V.y);
         public static V2Int operator +(V2Int _A, V2Int _B)     => new V2Int(_A.x + _B.x, _A.y + _B.y);
+        public static Vector2 operator +(V2Int _A, Vector2 _B) => new Vector2(_A.x + _B.x, _A.y + _B.y);
+        public static Vector2 operator +(Vector2 _A, V2Int _B) => new Vector2(_A.x + _B.x, _A.y + _B.y);
         public static V2Int operator -(V2Int _A, V2Int _B)     => new V2Int(_A.x - _B.x, _A.y - _B.y);
         public static V2Int operator *(V2Int _A, V2Int _B)     => new V2Int(_A.x * _B.x, _A.y * _B.y);
+        public static Vector2 operator *(float _A, V2Int _B)   => new Vector2(_A * _B.x, _A * _B.y);
         public static V2Int operator *(int _A, V2Int _B)       => new V2Int(_A * _B.x, _A * _B.y);
         public static V2Int operator *(V2Int _A, int _B)       => new V2Int(_A.x * _B, _A.y * _B);
         public static V2Int operator /(V2Int _A, int _B)       => new V2Int(_A.x / _B, _A.y / _B);
@@ -56,10 +56,20 @@ namespace Entities
         public static V2Int one => new V2Int(Vector2Int.one);
         public static V2Int zero => new V2Int(Vector2Int.zero);
         
-        public static implicit operator Vector2(V2Int _V) => _V.ToVector2();
+        public static implicit operator Vector2(V2Int _V)    => _V.ToVector2();
+        
+        public static implicit operator Vector2Int(V2Int _V) => _V.ToVector2Int();
+        
         public static explicit operator V2Int(Vector2 _V)
         {
             return new V2Int(Mathf.RoundToInt(_V.x), Mathf.RoundToInt(_V.y));
         }
+        public static explicit operator V2Int(Vector2Int _V)
+        {
+            return new V2Int(Mathf.RoundToInt(_V.x), Mathf.RoundToInt(_V.y));
+        }
+        
+        private Vector2Int ToVector2Int() => new Vector2Int(X, Y);
+        private Vector2    ToVector2()    => new Vector2(X, Y);
     }
 }

@@ -7,6 +7,7 @@ using Exceptions;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ProceedInfos;
+using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeItems.Props;
 using Games.RazorMaze.Views.Utils;
 using Shapes;
@@ -29,15 +30,18 @@ namespace Games.RazorMaze.Views.MazeItems
         #region nonpublic members
 
         private IMazeCoordinateConverter m_Converter;
+        private IContainersGetter m_ContainersGetter;
         private IMazeCoordinateConverter Converter
         {
             get
             {
-                if (m_Converter == null || !m_Converter.Initialized())
+                if (m_Converter == null || !m_Converter.InitializedAndMazeSizeSet())
                 {
                     var settings = PrefabUtilsEx.GetObject<ViewSettings>(
                         "model_settings", "view_settings");
                     m_Converter = new MazeCoordinateConverter(settings, null);
+                    m_ContainersGetter = new ContainersGetter(null, m_Converter);
+                    m_Converter.GetContainer = m_ContainersGetter.GetContainer;
                     m_Converter.Init();
                     m_Converter.MazeSize = mazeSize;
                 }
@@ -336,21 +340,16 @@ namespace Games.RazorMaze.Views.MazeItems
             
             foreach (var direct in dirs)
             {
-                var posVector2 = props.Position.ToVector2();
-                var dirVector2 = direct.ToVector2();
+                Vector2 posVector2 = props.Position;
+                Vector2 dirVector2 = direct;
                 Gizmos.DrawSphere(ToWorldPosition(posVector2 + dirVector2), 0.5f);
                 Gizmos.DrawLine(pos, ToWorldPosition(posVector2 + dirVector2));
             }
         }
-        
-        private Vector2 ToWorldPosition(V2Int _Point)
-        {
-            return Converter.ToLocalMazeItemPosition(_Point).PlusY(Converter.GetMazeCenter().y);
-        }
-        
+
         private Vector2 ToWorldPosition(Vector2 _Point)
         {
-            return Converter.ToLocalMazeItemPosition(_Point).PlusY(Converter.GetMazeCenter().y);
+            return Converter.ToLocalMazeItemPosition(_Point);
         }
         
         #endregion

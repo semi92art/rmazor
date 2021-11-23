@@ -59,7 +59,7 @@ namespace Managers
                 return GetShowAdsCached();
 #elif UNITY_ANDROID
                 return GetShowAdsAndroid();
-#elif UNITY_IPHONE
+#elif UNITY_IPHONE || UNITY_IOS
                 return GetShowAdsIos();
 #endif
             }

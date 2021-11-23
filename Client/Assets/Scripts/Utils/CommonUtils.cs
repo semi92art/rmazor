@@ -39,7 +39,7 @@ namespace Utils
         {
 #if UNITY_ANDROID
             return "Android";
-#elif UNITY_IPHONE
+#elif UNITY_IPHONE || UNITY_IOS
             return "iOS";
 #endif
             return null;

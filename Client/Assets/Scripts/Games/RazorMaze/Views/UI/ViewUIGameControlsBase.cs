@@ -1,11 +1,17 @@
 ﻿using System.Linq;
-using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.InputConfigurators;
 using UnityEngine.Events;
 
 namespace Games.RazorMaze.Views.UI
 {
+    public interface IViewUIGameControls : IInit, IOnLevelStageChanged
+    {
+        void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args);
+        void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args);
+
+    }
+    
     public abstract class ViewUIGameControlsBase : IViewUIGameControls
     {
         protected IViewInputCommandsProceeder CommandsProceeder { get; }
@@ -16,7 +22,7 @@ namespace Games.RazorMaze.Views.UI
         }
 
         public event UnityAction Initialized;
-        public void Init()
+        public virtual void Init()
         {
             Initialized?.Invoke();
         }
@@ -28,15 +34,9 @@ namespace Games.RazorMaze.Views.UI
             var type = _Args.Info.Type;
             if (RazorMazeUtils.GravityItemTypes().Contains(type))
             {
-                CommandsProceeder.LockCommands(new []
-                {
-                    EInputCommand.MoveLeft,
-                    EInputCommand.MoveRight,
-                    EInputCommand.MoveDown,
-                    EInputCommand.MoveUp,
-                    EInputCommand.RotateClockwise,
-                    EInputCommand.RotateCounterClockwise
-                });
+                var commands = RazorMazeUtils.GetMoveCommands()
+                    .Concat(RazorMazeUtils.GetRotateCommands());
+                CommandsProceeder.LockCommands(commands);
             }
         }
 
@@ -45,15 +45,9 @@ namespace Games.RazorMaze.Views.UI
             var type = _Args.Info.Type;
             if (RazorMazeUtils.GravityItemTypes().Contains(type))
             {
-                CommandsProceeder.UnlockCommands(new []
-                {
-                    EInputCommand.MoveLeft,
-                    EInputCommand.MoveRight,
-                    EInputCommand.MoveDown,
-                    EInputCommand.MoveUp,
-                    EInputCommand.RotateClockwise,
-                    EInputCommand.RotateCounterClockwise
-                });
+                var commands = RazorMazeUtils.GetMoveCommands()
+                    .Concat(RazorMazeUtils.GetRotateCommands());
+                CommandsProceeder.UnlockCommands(commands);
             }
         }
     }

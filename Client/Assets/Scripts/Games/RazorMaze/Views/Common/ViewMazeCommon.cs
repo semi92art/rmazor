@@ -79,11 +79,6 @@ namespace Games.RazorMaze.Views.Common
         {
             if (_Args.Stage == ELevelStage.Loaded)
             {
-                CoordinateConverter.MazeSize = ModelData.Info.Size;
-                var mazeItemsCont = ContainersGetter.GetContainer(ContainerNames.MazeItems);
-                mazeItemsCont.SetLocalPosXY(Vector2.zero);
-                mazeItemsCont.PlusLocalPosY(CoordinateConverter.Scale * 0.5f);
-                
                 DeactivateAllBlocks();
                 MazeItemsCreator.InitAndActivateBlockItems(ModelData.Info, m_BlockPools);
             }

@@ -97,7 +97,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
         {
             AllPathsProceeded = false;
             PathProceeds = Data.Info.Path
-                .ToDictionary(_P => _P, _P => false);
+                .ToDictionary(
+                    _P => _P, 
+                    _P => Data.Info.MazeItems.Any(_Item => _Item.Position == _P));
             PathProceeds[Data.Info.Path[0]] = true;
         }
         

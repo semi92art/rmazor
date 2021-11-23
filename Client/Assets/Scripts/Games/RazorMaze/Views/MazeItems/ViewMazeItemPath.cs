@@ -52,6 +52,11 @@ namespace Games.RazorMaze.Views.MazeItems
         private bool m_BottomRightCornerIsOuterAndNearTrapIncreasing;
         private bool m_TopLeftCornerIsOuterAndNearTrapIncreasing;
         private bool m_TopRightCornerIsOuterAndNearTrapIncreasing;
+        private bool m_IsLeftBorderInverseOffset;
+        private bool m_IsRightBorderInverseOffset;
+        private bool m_IsBottomBorderInverseOffset;
+        private bool m_IsTopBorderInverseOffset;
+        private float m_DashedOffset;
         
         #endregion
         
@@ -127,19 +132,30 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             if (!Initialized || !ActivatedInSpawnPool)
                 return;
-
-            const float minOffset = -2f * Mathf.PI * 100f;
             const float maxOffset = 2f * Mathf.PI * 100f;
             float dOffset = GameTicker.DeltaTime * 3f;
-            
+            m_DashedOffset += dOffset;
+            m_DashedOffset = MathUtils.ClampInverse(m_DashedOffset, 0, maxOffset);
             if (m_LeftBorderInited && m_LeftBorder.Dashed)
-                m_LeftBorder.DashOffset = MathUtils.ClampInverse(m_LeftBorder.DashOffset - dOffset, minOffset, maxOffset);
+            {
+                float offset = !m_IsLeftBorderInverseOffset ? -m_DashedOffset : m_DashedOffset + 0.5f;
+                m_LeftBorder.DashOffset = offset;
+            }
             if (m_RightBorderInited && m_RightBorder.Dashed)
-                m_RightBorder.DashOffset = MathUtils.ClampInverse(m_RightBorder.DashOffset + dOffset, minOffset, maxOffset);
+            {
+                float offset = !m_IsRightBorderInverseOffset ? m_DashedOffset : -1f * (m_DashedOffset + 0.5f);
+                m_RightBorder.DashOffset = offset;
+            }
             if (m_BottomBorderInited && m_BottomBorder.Dashed)
-                m_BottomBorder.DashOffset = MathUtils.ClampInverse(m_BottomBorder.DashOffset + dOffset, minOffset, maxOffset);
+            {
+                float offset = !m_IsBottomBorderInverseOffset ? m_DashedOffset : -1f * (m_DashedOffset + 0.5f);
+                m_BottomBorder.DashOffset = offset;
+            }
             if (m_TopBorderInited && m_TopBorder.Dashed)
-                m_TopBorder.DashOffset = MathUtils.ClampInverse(m_TopBorder.DashOffset - dOffset, minOffset, maxOffset);
+            {
+                float offset = !m_IsTopBorderInverseOffset ? -m_DashedOffset : m_DashedOffset + 0.5f;
+                m_TopBorder.DashOffset = offset;
+            }
         }
 
         #endregion
@@ -189,13 +205,12 @@ namespace Games.RazorMaze.Views.MazeItems
             else
             {
                 if (m_MoneyItem != null)
-                {
                     m_MoneyItem.SetActive(false);
-                    // m_MoneyItemRenderer = null;
-                }
+                m_PathShape.Width = m_PathShape.Height = CoordinateConverter.Scale * 0.4f;
+                m_PathShape.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale * 2f;
             }
-            m_PathShape.Width = m_PathShape.Height = CoordinateConverter.Scale * 0.4f;
-            m_PathShape.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale * 2f;
+            if (Model.PathItemsProceeder.PathProceeds[Props.Position])
+                Collect(true);
             SetBordersAndCorners();
         }
 
@@ -345,38 +360,54 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private void AdjustBorders()
         {
+            bool adjStart, adjEnd;
             var pos = Props.Position;
-            AdjustBorder(pos, V2Int.left, V2Int.down, V2Int.up, m_LeftBorderInited, ref m_LeftBorder);
-            AdjustBorder(pos, V2Int.right, V2Int.down, V2Int.up, m_RightBorderInited, ref m_RightBorder);
-            AdjustBorder(pos, V2Int.down, V2Int.left, V2Int.right, m_BottomBorderInited, ref m_BottomBorder);
-            AdjustBorder(pos, V2Int.up, V2Int.left, V2Int.right, m_TopBorderInited, ref m_TopBorder);
+            AdjustBorder(pos, V2Int.left, m_LeftBorderInited, ref m_LeftBorder, out adjStart, out adjEnd);
+            if (adjStart && !adjEnd)
+            {
+                m_IsLeftBorderInverseOffset = true;
+                (m_LeftBorder.Start, m_LeftBorder.End) = (m_LeftBorder.End, m_LeftBorder.Start);
+            }
+            AdjustBorder(pos, V2Int.right, m_RightBorderInited, ref m_RightBorder, out adjStart, out adjEnd);
+            if (adjStart && !adjEnd)
+            {
+                m_IsRightBorderInverseOffset = true;
+                (m_RightBorder.Start, m_RightBorder.End) = (m_RightBorder.End, m_RightBorder.Start);
+            }
+            AdjustBorder(pos, V2Int.down, m_BottomBorderInited, ref m_BottomBorder, out adjStart, out adjEnd);
+            if (adjStart && !adjEnd)
+            {
+                m_IsBottomBorderInverseOffset = true;
+                (m_BottomBorder.Start, m_BottomBorder.End) = (m_BottomBorder.End, m_BottomBorder.Start);
+            }
+            AdjustBorder(pos, V2Int.up, m_TopBorderInited, ref m_TopBorder, out adjStart, out adjEnd);
+            if (adjStart && !adjEnd)
+            {
+                m_IsTopBorderInverseOffset = true;
+                (m_TopBorder.Start, m_TopBorder.End) = (m_TopBorder.End, m_TopBorder.Start);
+            }
         }
 
         private void AdjustBorder(
             V2Int _Position,
             V2Int _Direction,
-            V2Int _Dir1, 
-            V2Int _Dir2, 
             bool _BorderInitialized,
-            ref Line _Border)
+            ref Line _Border,
+            out bool _AdjustStart,
+            out bool _AdjustEnd)
         {
+            var dir1 = _Direction == V2Int.left || _Direction == V2Int.right ? V2Int.down : V2Int.left;
+            var dir2 = _Direction == V2Int.left || _Direction == V2Int.right ? V2Int.up : V2Int.right;
+            _AdjustStart = false;
+            _AdjustEnd = false;
             if (PathExist(_Position + _Direction) || !_BorderInitialized) 
                 return;
-            if (!TurretExist(_Position + _Direction))
-            {
-                var bPoints = GetBorderPointsAndDashed(_Direction, true, true);
-                if (PathExist(_Position + _Direction + _Dir1) || TurretExist(_Position + _Direction + _Dir1))
-                    _Border.Start = bPoints.Item1;
-                if (PathExist(_Position + _Direction + _Dir2) || TurretExist(_Position + _Direction + _Dir2))
-                    _Border.End = bPoints.Item2;
-            }
-            else
-            {
-                if (TurretDirection(_Position + _Direction) == _Dir1)
-                    _Border.Start = Average(_Border.Start, _Border.End);
-                else if (TurretDirection(_Position + _Direction) == _Dir2)
-                    _Border.End = Average(_Border.Start, _Border.End);
-            }
+            var (start, end, _) = GetBorderPointsAndDashed(_Direction, true, true);
+            if (PathExist(_Position + _Direction + dir1) || TurretExist(_Position + _Direction + dir1))
+                (_AdjustStart, _Border.Start) = (true, start);
+            if (PathExist(_Position + _Direction + dir2) || TurretExist(_Position + _Direction + dir2))
+                (_AdjustEnd, _Border.End) = (true, end);
+            _Border.DashSize = 4f * Vector3.Distance(_Border.Start, _Border.End) / CoordinateConverter.Scale;
         }
 
         private void EnableInitializedShapes(bool _Enable)
@@ -417,8 +448,10 @@ namespace Games.RazorMaze.Views.MazeItems
             border.SortingOrder = SortingOrders.PathLine;
             (border.Start, border.End, border.Dashed) = GetBorderPointsAndDashed(_Side, false, false);
             border.transform.position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
-            border.DashSize = 1f;
             border.enabled = false;
+            border.DashSpace = DashSpace.FixedCount;
+            border.DashSnap = DashSnapping.Off;
+            border.DashType = DashType.Rounded;
             switch (_Side)
             {
                 case EMazeMoveDirection.Up: m_TopBorder = border; m_TopBorderInited = true; break;
@@ -524,7 +557,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private Tuple<Vector2, Vector2, bool> GetBorderPointsAndDashed(EMazeMoveDirection _Side, bool _StartLimit, bool _EndLimit)
         {
             Vector2 start, end;
-            var pos = Props.Position.ToVector2();
+            Vector2 pos = Props.Position;
             var cr = ViewSettings.CornerRadius;
             switch (_Side)
             {
@@ -564,7 +597,7 @@ namespace Games.RazorMaze.Views.MazeItems
             bool _Up,
             bool _Inner)
         {
-            var pos = Props.Position.ToVector2();
+            Vector2 pos = Props.Position;
             var cr = ViewSettings.CornerRadius;
             float xIndent = (_Right ? 1f : -1f) * (_Inner ? -1f : 1f);
             float yIndent = (_Up ? 1f : -1f) * (_Inner ? -1f : 1f);
@@ -642,7 +675,6 @@ namespace Games.RazorMaze.Views.MazeItems
             if (!_Appear) 
                 return;
             EnableInitializedShapes(true);
-            Collected = false;
         }
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
@@ -654,7 +686,7 @@ namespace Games.RazorMaze.Views.MazeItems
             {
                 if (Props.IsMoneyItem)
                     result.Add(new [] {m_MoneyItemRenderer}, () => ColorProvider.GetColor(ColorIds.MoneyItem));
-                else
+                else if (!Collected)
                     result.Add(new [] {m_PathShape}, () => ColorProvider.GetColor(ColorIds.Main));
             }
             else

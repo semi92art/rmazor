@@ -16,7 +16,7 @@ namespace Utils
             return SaveUtils.GetValue(SaveKeys.GoodQuality);
 #elif UNITY_ANDROID
             return CommonUtils.GetAndroidSdkLevel() >= 27; // Android 8.1 (API level 27)
-#elif UNITY_IPHONE
+#elif UNITY_IPHONE || UNITY_IOS
             // TODO
             return true;
 #endif

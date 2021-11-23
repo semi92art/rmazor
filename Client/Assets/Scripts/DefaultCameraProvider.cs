@@ -1,18 +1,19 @@
 ﻿using GameHelpers;
-using Games.RazorMaze.Views;
 using LeTai.Asset.TranslucentImage;
 using UnityEngine;
 
 public interface ICameraProvider
 {
     Camera MainCamera { get; }
+    void   EnableTranslucentSource(bool _Enable);
 }
     
-public class DefaultCameraProvider : MonoBehaviour, ICameraProvider, IOnLevelStageChanged
+public class DefaultCameraProvider : MonoBehaviour, ICameraProvider
 {
     private TranslucentImageSource m_TranslucentSource;
     
     public Camera MainCamera { get; private set; }
+
 
     private void Awake()
     {
@@ -21,8 +22,8 @@ public class DefaultCameraProvider : MonoBehaviour, ICameraProvider, IOnLevelSta
         PrefabUtilsEx.GetObject<ScalableBlurConfig>("views", "level_blur_config").Strength = 10f;
     }
 
-    public void OnLevelStageChanged(LevelStageArgs _Args)
+    public void EnableTranslucentSource(bool _Enable)
     {
-        m_TranslucentSource.enabled = _Args.Stage == ELevelStage.Paused || _Args.Stage == ELevelStage.CharacterKilled;
+        m_TranslucentSource.enabled = _Enable;
     }
 }

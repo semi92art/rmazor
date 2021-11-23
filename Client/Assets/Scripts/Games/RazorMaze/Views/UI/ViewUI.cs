@@ -50,6 +50,8 @@ namespace Games.RazorMaze.Views.UI
             var parent = m_Canvas.RTransform();
             BigDialogViewer.Init(parent);
             ProposalDialogViewer.Init(parent);
+            BigDialogViewer.IsOtherDialogViewersShowing = () => ProposalDialogViewer.IsShowing;
+            ProposalDialogViewer.IsOtherDialogViewersShowing = () => BigDialogViewer.IsShowing;
             UIGameControls.Init();
             RaiseInitializedEvent();
         }
@@ -64,8 +66,8 @@ namespace Games.RazorMaze.Views.UI
                     CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);
                     break;
                 case EInputCommand.ShopMenu:
-                    DialogPanels.ShopDialogPanel.Init();
-                    BigDialogViewer.Show(DialogPanels.ShopDialogPanel);
+                    DialogPanels.ShopMoneyDialogPanel.Init();
+                    BigDialogViewer.Show(DialogPanels.ShopMoneyDialogPanel);
                     CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);
                     break;
             }

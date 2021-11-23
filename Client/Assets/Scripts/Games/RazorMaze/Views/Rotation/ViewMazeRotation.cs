@@ -22,15 +22,17 @@ namespace Games.RazorMaze.Views.Rotation
         
         #region inject
         
-        private ViewSettings                ViewSettings      { get; }
-        private IContainersGetter           ContainersGetter  { get; }
-        private IViewGameTicker                 GameTicker        { get; }
-        private IModelGame                  Model             { get; }
-        private IViewCharacter              Character         { get; }
-        private IViewInputCommandsProceeder CommandsProceeder { get; }
+        private ViewSettings                ViewSettings        { get; }
+        private IMazeCoordinateConverter    CoordinateConverter { get; }
+        private IContainersGetter           ContainersGetter    { get; }
+        private IViewGameTicker             GameTicker          { get; }
+        private IModelGame                  Model               { get; }
+        private IViewCharacter              Character           { get; }
+        private IViewInputCommandsProceeder CommandsProceeder   { get; }
 
         public ViewMazeRotation(
             ViewSettings _ViewSettings,
+            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter, 
             IViewGameTicker _GameTicker,
             IModelGame _Model,
@@ -38,6 +40,7 @@ namespace Games.RazorMaze.Views.Rotation
             IViewInputCommandsProceeder _CommandsProceeder)
         {
             ViewSettings = _ViewSettings;
+            CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
             GameTicker = _GameTicker;
             Model = _Model;
@@ -54,7 +57,7 @@ namespace Games.RazorMaze.Views.Rotation
 
         public override void Init()
         {
-            var cont = ContainersGetter.GetContainer(ContainerNames.Maze);
+            var cont = ContainersGetter.GetContainer(ContainerNames.MazeHolder);
             m_Rb = cont.gameObject.AddComponent<Rigidbody2D>();
             m_Rb.gravityScale = 0;
             m_Rb.constraints = RigidbodyConstraints2D.FreezePosition;
@@ -105,10 +108,10 @@ namespace Games.RazorMaze.Views.Rotation
                 out float realSkidAngle);
             
             yield return Coroutines.Lerp(
-                startAngle, 
-                endAngle + realSkidAngle, 
+                startAngle,
+                endAngle + realSkidAngle,
                 rotationAngleDistance / (90f * ViewSettings.MazeRotationSpeed),
-                _Angle => m_Rb.SetRotation(_Angle),
+                _Angle => m_Rb.transform.rotation = Quaternion.Euler(0f, 0f, _Angle),
                 GameTicker, 
                 (_, __) =>
                 {
@@ -117,7 +120,7 @@ namespace Games.RazorMaze.Views.Rotation
                         endAngle + realSkidAngle,
                         endAngle,
                         1 / (ViewSettings.MazeRotationSpeed * 2f),
-                        _Angle => m_Rb.SetRotation(_Angle),
+                        _Angle => m_Rb.transform.rotation = Quaternion.Euler(0f, 0f, _Angle),
                         GameTicker,
                         (___, ____) => Character.OnRotationAfterFinished(_Args)));
                 });

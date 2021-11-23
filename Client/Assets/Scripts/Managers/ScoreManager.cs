@@ -3,7 +3,6 @@ using System.Linq;
 using Constants;
 using Entities;
 using GameHelpers;
-using GooglePlayGames.BasicApi;
 using UnityEngine;
 using Utils;
 
@@ -71,7 +70,7 @@ namespace Managers
             return GetScoreCached(_Id);
 #elif UNITY_ANDROID
             return GetScoreAndroid(_Id);
-#elif UNITY_IPHONE
+#elif UNITY_IPHONE || UNITY_IOS
             return GetScoreIos(_Id);
 #endif
         }
@@ -94,7 +93,7 @@ namespace Managers
             //do nothing
 #elif UNITY_ANDROID
             ShowLeaderboardAndroid();
-#elif UNITY_IPHONE
+#elif UNITY_IPHONE || UNITY_IOS
             ShowLeaderboardIos();
 #endif
         }
@@ -162,7 +161,7 @@ namespace Managers
                     if (_Data.Valid)
                     {
                         result.Value.Add(_Id, System.Convert.ToInt32(_Data.PlayerScore.value));
-                        result.Result = _Data.Status == ResponseStatus.Success
+                        result.Result = _Data.Status == GooglePlayGames.BasicApi.ResponseStatus.Success
                             ? EEntityResult.Success
                             : EEntityResult.Fail;
                     }
@@ -185,7 +184,7 @@ namespace Managers
             GooglePlayGames.PlayGamesPlatform.Instance.ShowLeaderboardUI(GPGSIds.coins);
         }
 
-#elif UNITY_IPHONE && !UNITY_EDITOR
+#elif (UNITY_IPHONE || UNITY_IOS) && !UNITY_EDITOR
 
         private ScoresEntity GetScoreIos(ushort _Id)
         {

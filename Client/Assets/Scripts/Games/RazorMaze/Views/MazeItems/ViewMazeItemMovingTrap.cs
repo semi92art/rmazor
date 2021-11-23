@@ -100,7 +100,7 @@ namespace Games.RazorMaze.Views.MazeItems
             if (ProceedingStage != EProceedingStage.ActiveAndWorking)
                 return;
             m_PrecisePosition = Vector2.Lerp(
-                _Args.From.ToVector2(), _Args.To.ToVector2(), _Args.Progress);
+                _Args.From, _Args.To, _Args.Progress);
             SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(m_PrecisePosition));
         }
 
@@ -197,7 +197,7 @@ namespace Games.RazorMaze.Views.MazeItems
             }
             else
             {
-                var cPos = Model.Character.Position.ToVector2();
+                Vector2 cPos = Model.Character.Position;
                 if (Vector2.Distance(cPos, m_PrecisePosition) + MathUtils.Epsilon > 1f)
                     return;
                 CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, null);

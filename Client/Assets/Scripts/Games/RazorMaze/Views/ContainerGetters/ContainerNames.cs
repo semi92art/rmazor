@@ -2,6 +2,7 @@
 {
     public class ContainerNames
     {
+        public const string MazeHolder   = nameof(MazeHolder);
         public const string Maze         = nameof(Maze);
         public const string MazeItems    = nameof(MazeItems);
         public const string Character    = nameof(Character);

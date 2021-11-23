@@ -12,8 +12,9 @@ namespace Games.RazorMaze
     {
         #region api
 
+        public static readonly int[] LevelsInGroupList = {3, 4, 5};
         
-        public const int LevelsInGroup = 3;
+        // public const int LevelsInGroup = 3;
         
         public static bool LoadNextLevelAutomatically = true;
 
@@ -37,6 +38,26 @@ namespace Games.RazorMaze
                 case MazeOrientation.West:  return V2Int.left;
                 default: throw new SwitchCaseNotImplementedException(_Orientation);
             }
+        }
+
+        public static EInputCommand[] GetMoveCommands()
+        {
+            return new[]
+            {
+                EInputCommand.MoveLeft,
+                EInputCommand.MoveRight,
+                EInputCommand.MoveDown,
+                EInputCommand.MoveUp
+            };
+        }
+
+        public static EInputCommand[] GetRotateCommands()
+        {
+            return new[]
+            {
+                EInputCommand.RotateClockwise,
+                EInputCommand.RotateCounterClockwise
+            };
         }
         
         public static V2Int GetDirectionVector(EMazeMoveDirection _Direction, MazeOrientation _Orientation)
@@ -189,9 +210,60 @@ namespace Games.RazorMaze
                                             $" {_Path.Last()} does not contain point _B {_B}");
             if (_A == _B)
                 return 0;
-            float distA = Vector2.Distance(_Path[0].ToVector2(), _A.ToVector2());
-            float distB = Vector2.Distance(_Path[0].ToVector2(), _B.ToVector2());
+            float distA = Vector2.Distance(_Path[0], _A);
+            float distB = Vector2.Distance(_Path[0], _B);
             return distA < distB ? -1 : 1;
+        }
+
+        public static int GetGroupIndex(int _LevelIndex)
+        {
+            int levelIndexTemp = 0;
+            int groupIndexInList = 0;
+            int groupIndex = 0;
+            while (levelIndexTemp <= _LevelIndex)
+            {
+                levelIndexTemp += LevelsInGroupList[groupIndexInList];
+                groupIndex++;
+                groupIndexInList++;
+                if (groupIndexInList >= LevelsInGroupList.Length)
+                    groupIndexInList = 0;
+            }
+            return groupIndex;
+        }
+
+        public static int GetLevelsInGroup(int _GroupIndex)
+        {
+            int groupIndexInList = (_GroupIndex - 1) % LevelsInGroupList.Length;
+            return LevelsInGroupList[groupIndexInList];
+        }
+
+        public static int GetIndexInGroup(int _LevelIndex)
+        {
+            int groupIndex = GetGroupIndex(_LevelIndex);
+            int groupIndexInList = 0;
+            int levelsCount = 0;
+            for (int i = 0; i < groupIndex - 1; i++)
+            {
+                levelsCount += LevelsInGroupList[groupIndexInList];
+                groupIndexInList++;
+                if (groupIndexInList >= LevelsInGroupList.Length)
+                    groupIndexInList = 0;
+            }
+            return _LevelIndex - levelsCount;
+        }
+
+        public static int GetFirstLevelInGroup(int _GroupIndex)
+        {
+            int groupIndexInList = 0;
+            int index = 0;
+            for (int i = 0; i < _GroupIndex - 1; i++)
+            {
+                index += LevelsInGroupList[groupIndexInList];
+                groupIndexInList++;
+                if (groupIndexInList >= LevelsInGroupList.Length)
+                    groupIndexInList = 0;
+            }
+            return index;
         }
         
         #endregion

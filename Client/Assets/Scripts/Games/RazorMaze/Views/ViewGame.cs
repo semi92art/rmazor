@@ -130,14 +130,8 @@ namespace Games.RazorMaze.Views
             Managers.AudioManager.Init();
             ColorProvider.Init();
             CoordinateConverter.Init();
-            var proceeders = GetProceeders();
-
-            var onLevelStageChangeds = GetInterfaceOfProceeders<IOnLevelStageChanged>(proceeders);
-            LevelStageController.RegisterProceeders(onLevelStageChangeds);
-
-            GetInterfaceOfProceeders<IInit>(GetProceeders())
-                .ToList()
-                .ForEach(_InitObj => _InitObj.Init());
+            LevelStageController.RegisterProceeders(GetInterfaceOfProceeders<IOnLevelStageChanged>());
+            GetInterfaceOfProceeders<IInit>().ForEach(_InitObj => _InitObj.Init());
             LevelStageController.Init();
             Initialized?.Invoke();
         }
@@ -149,21 +143,21 @@ namespace Games.RazorMaze.Views
         
         public void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
         {
-            var proceeders = GetInterfaceOfProceeders<ICharacterMoveStarted>(GetProceeders());
+            var proceeders = GetInterfaceOfProceeders<ICharacterMoveStarted>();
             foreach (var proceeder in proceeders)
                 proceeder.OnCharacterMoveStarted(_Args);
         }
 
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
-            var proceeders = GetInterfaceOfProceeders<ICharacterMoveContinued>(GetProceeders());
+            var proceeders = GetInterfaceOfProceeders<ICharacterMoveContinued>();
             foreach (var proceeder in proceeders)
                 proceeder.OnCharacterMoveContinued(_Args);
         }
         
         public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
         {
-            var proceeders = GetInterfaceOfProceeders<ICharacterMoveFinished>(GetProceeders());
+            var proceeders = GetInterfaceOfProceeders<ICharacterMoveFinished>();
             foreach (var proceeder in proceeders)
                 proceeder.OnCharacterMoveFinished(_Args);
         }
@@ -171,11 +165,12 @@ namespace Games.RazorMaze.Views
         #endregion
         
         #region nonpublic methods
-        
-        private List<object> GetProceeders()
+
+        private List<T> GetInterfaceOfProceeders<T>() where T : class
         {
-            var result = new List<object>
+            var proceeders = new List<object>
                 {
+                    ContainersGetter,
                     Common,
                     UI,                         
                     InputController,
@@ -192,14 +187,8 @@ namespace Games.RazorMaze.Views
                     GravityItemsGroup,
                     Background,
                     CameraProvider
-                }.Where(_Proceeder => _Proceeder != null)
-                .ToList();
-            return result;
-        }
-
-        private static List<T> GetInterfaceOfProceeders<T>(IEnumerable<object> _Proceeders) where T : class
-        {
-            return _Proceeders.Where(_Proceeder => _Proceeder is T).Cast<T>().ToList();
+                }.Where(_Proceeder => _Proceeder != null);
+            return proceeders.Where(_Proceeder => _Proceeder is T).Cast<T>().ToList();
         }
         
         #endregion

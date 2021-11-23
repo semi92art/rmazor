@@ -131,7 +131,7 @@ namespace Games.RazorMaze.Views.MazeItems
             const float delta = 0.5f;
             const float duration = 0.1f;
             var startPos = m_ClosedBlock.transform.localPosition;
-            var dir = RazorMazeUtils.GetDirectionVector(_Args.Direction, Model.Data.Orientation).ToVector2();
+            Vector2 dir = RazorMazeUtils.GetDirectionVector(_Args.Direction, Model.Data.Orientation);
             Coroutines.Run(Coroutines.Lerp(
                 0f,
                 delta,

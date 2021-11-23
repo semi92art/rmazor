@@ -93,6 +93,8 @@ MonoBehaviour:
     array:
     - item: {fileID: 9052606748294611113}
       name: money
+    - item: {fileID: 9101500182172352993}
+      name: icon
 --- !u!1 &8835765816628374585
 GameObject:
   m_ObjectHideFlags: 0

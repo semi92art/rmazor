@@ -9,7 +9,6 @@ using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.InputConfigurators;
-using Games.RazorMaze.Views.Utils;
 using Shapes;
 using Ticker;
 using UnityEngine;
@@ -118,7 +117,7 @@ namespace Games.RazorMaze.Views.Characters
         private void InitPrefab()
         {
             var prefab = PrefabUtilsEx.InitPrefab(
-                ContainersGetter.GetContainer(ContainerNames.Maze).transform,
+                null,
                 CommonPrefabSetNames.Views,
                 "character_death");
             m_DeathShapesContainer = prefab.GetContentItem("death items");
@@ -148,12 +147,17 @@ namespace Games.RazorMaze.Views.Characters
         
         private IEnumerator DisappearCoroutine(bool _Death, V2Int _LastPos = default)
         {
-            var center = m_MoveDirection.HasValue && _Death ? 
-                ContainersGetter.GetContainer(ContainerNames.Character).localPosition : 
-                (Vector3)CoordinateConverter.ToLocalMazeItemPosition(_LastPos);
-            if (m_DeathPos.HasValue)
-                center = m_DeathPos.Value;
-            m_DeathShapesContainer.transform.localPosition = center;
+            Vector3 cent;
+            if (m_MoveDirection.HasValue && _Death)
+            {
+                cent = ContainersGetter.GetContainer(ContainerNames.Character).position;
+                m_DeathShapesContainer.transform.position = cent;
+            }
+            else
+            {
+                cent = CoordinateConverter.ToGlobalMazeItemPosition(_LastPos);
+                m_DeathShapesContainer.transform.position = cent;
+            }
             Activated = true;
             int deathShapesCount = m_DeathShapes.Count;
             var startAngles = Enumerable
@@ -169,7 +173,7 @@ namespace Games.RazorMaze.Views.Characters
             if (m_MoveDirection.HasValue && _Death)
             {
                 float sqrt2 = Mathf.Sqrt(2f);
-                var moveDir = RazorMazeUtils.GetDirectionVector(m_MoveDirection.Value, MazeOrientation.North).ToVector2();
+                Vector2 moveDir = RazorMazeUtils.GetDirectionVector(m_MoveDirection.Value, MazeOrientation.North);
                 for (int i = 0; i < deathShapesCount; i++)
                 {
                     float dist = Vector2.Distance(moveDir, startDirections[i]);

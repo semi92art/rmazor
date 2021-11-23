@@ -33,9 +33,12 @@ namespace Games.RazorMaze.Views.Common
         
         #region nonpublic members
 
-        private readonly BehavioursSpawnPool<ShapeRenderer>    m_BackIdleItemsPool     = new BehavioursSpawnPool<ShapeRenderer>();
-        private readonly BehavioursSpawnPool<Animator>         m_BackCongratsItemsPool = new BehavioursSpawnPool<Animator>();
-        private readonly Dictionary<Animator, ShapeRenderer[]> m_BackCongratsItemsDict = new Dictionary<Animator, ShapeRenderer[]>();
+        private readonly BehavioursSpawnPool<ShapeRenderer> m_BackIdleItemsPool = 
+            new BehavioursSpawnPool<ShapeRenderer>();
+        private readonly BehavioursSpawnPool<Animator> m_BackCongratsItemsPool = 
+            new BehavioursSpawnPool<Animator>();
+        private readonly Dictionary<Animator, ShapeRenderer[]> m_BackCongratsItemsDict = 
+            new Dictionary<Animator, ShapeRenderer[]>();
 
         private readonly List<Vector2> m_BackIdleItemSpeeds = new List<Vector2>(PoolSize);
         private readonly Random        m_Random             = new Random();
@@ -115,9 +118,9 @@ namespace Games.RazorMaze.Views.Common
                 m_BackItemsColor = _Color;
                 foreach (var rend in m_BackIdleItemsPool)
                     rend.Color = _Color;
-                foreach (var rend in m_BackCongratsItemsDict
-                    .SelectMany(_Kvp => _Kvp.Value))
-                    rend.Color = _Color;
+                // foreach (var rend in m_BackCongratsItemsDict
+                //     .SelectMany(_Kvp => _Kvp.Value))
+                //     rend.Color = _Color;
             }
             else if (_ColorId == ColorIds.Background)
                 BackgroundColor = _Color;
@@ -232,14 +235,18 @@ namespace Games.RazorMaze.Views.Common
                     .SelectMany(_T => content.GetComponentsInChildren(_T))
                     .Cast<ShapeRenderer>()
                     .ToArray();
+                
+                int colIdx = Mathf.FloorToInt(UnityEngine.Random.value * m_CongradColorSet.Length);
+                var col = m_CongradColorSet[colIdx];
+
                 triggerer.Trigger1 = () =>
                 {
                     foreach (var shape in shapes)
-                        shape.Color = ColorProvider.GetColor(ColorIds.BackgroundCongratsItems);
+                        shape.Color = col;
                 };
                 triggerer.Trigger2 = () =>
                 {
-                    var startColA = ColorProvider.GetColor(ColorIds.BackgroundCongratsItems).a;
+                    var startColA = col.a;
                     Coroutines.Run(Coroutines.Lerp(
                         1f,
                         0f,
@@ -287,6 +294,16 @@ namespace Games.RazorMaze.Views.Common
             m_BackCongratsItemsPool.Activate(item);
             item.SetTrigger(AnimKeys.Anim);
         }
+
+        private static readonly Color[] m_CongradColorSet =
+        {
+            new Color(0.72f, 1f, 0.58f),
+            new Color(1f, 0.81f, 0.45f),
+            new Color(0.56f, 1f, 0.86f),
+            new Color(0.44f, 0.55f, 1f),
+            new Color(0.91f, 0.52f, 1f),
+            new Color(1f, 0.49f, 0.52f),
+        };
         
         private Vector2 RandomPositionOnScreen(bool _Inside = true, Vector2? _Padding = null)
         {
@@ -333,20 +350,22 @@ namespace Games.RazorMaze.Views.Common
 
         private bool IsInsideOfScreenBounds(Vector2 _Position, Vector2 _Padding)
         {
-            var min = (Vector2) m_ScreenBounds.min;
-            var max = (Vector2) m_ScreenBounds.max;
+            Vector2 min = m_ScreenBounds.min;
+            Vector2 max = m_ScreenBounds.max;
             return _Position.x > min.x - _Padding.x 
                    && _Position.y > min.y - _Padding.y
                    && _Position.x < max.x + _Padding.x
                    && _Position.y < max.y + _Padding.y;
         }
 
-        private Vector2 RandomSpeed() =>
-            new Vector2(m_Random.NextFloatAlt(), m_Random.NextFloatAlt());
-        
-        private void SetForegroundColors(int _Level)
+        private Vector2 RandomSpeed()
         {
-            int group = _Level / RazorMazeUtils.LevelsInGroup;
+            return new Vector2(m_Random.NextFloatAlt(), m_Random.NextFloatAlt());
+        }
+
+        private void SetForegroundColors(int _LevelIndex)
+        {
+            int group = RazorMazeUtils.GetGroupIndex(_LevelIndex);
             float h = GetHForHSV(group);
             float s = 80f / 100f;
             float v = 70f / 100f;

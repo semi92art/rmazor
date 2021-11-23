@@ -27,7 +27,7 @@ namespace UI.PanelItems.Shop_Items
         public TextMeshProUGUI title;
         public Image itemIcon;
         [SerializeField] protected Button buyButton;
-        [SerializeField] protected Button watchAdButton;
+        [SerializeField] protected Image watchAdImage;
         [SerializeField] protected Animator loadingAnim;
 
         public virtual void Init(
@@ -63,7 +63,7 @@ namespace UI.PanelItems.Shop_Items
         
         protected void IndicateLoading(bool _Indicate, bool _BuyForWatchingAd)
         {
-            watchAdButton.SetGoActive(!_Indicate && _BuyForWatchingAd);
+            watchAdImage.SetGoActive(!_Indicate && _BuyForWatchingAd);
             price.SetGoActive(!_Indicate && !_BuyForWatchingAd);
             loadingAnim.SetGoActive(_Indicate);
             loadingAnim.enabled = _Indicate;

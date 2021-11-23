@@ -83,8 +83,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 for (int i = 0; i < possiblePortals.Count; i++)
                 {
                     var possiblePortal = possiblePortals[i];
-                    float newDistToStart = Vector2.Distance(
-                        _Args.From.ToVector2(), possiblePortal.CurrentPosition.ToVector2());
+                    float newDistToStart = Vector2.Distance(_Args.From, possiblePortal.CurrentPosition);
                     if (newDistToStart > distToStart)
                         continue;
                     portalItem = possiblePortal;
@@ -97,10 +96,10 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 return;
             }
             var V = (_Args.To - _Args.From).Normalized;
-            var A = portalItem.CurrentPosition.ToVector2();
+            Vector2 A = portalItem.CurrentPosition;
             var B =
-                _Args.From.ToVector2() 
-                + V * _Args.Progress * (_Args.To - _Args.From).ToVector2().magnitude;
+                _Args.From
+                + V * _Args.Progress * ((Vector2)(_Args.To - _Args.From)).magnitude;
             var C = V * (A - B);
             var m = C.x + C.y;
             if (m > 0f)

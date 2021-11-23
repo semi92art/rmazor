@@ -29,7 +29,7 @@ namespace Controllers
         {
 #if UNITY_ANDROID
             InitGooglePlayServices();
-#elif  UNITY_IPHONE
+#elif  UNITY_IPHONE || UNITY_IOS
 
 #endif
         }
@@ -40,7 +40,7 @@ namespace Controllers
             Login(SystemInfo.deviceUniqueIdentifier, "unity", _OnDoIfRegister);         
 #elif UNITY_ANDROID
             AuthenticateWithGoogle(_OnDoIfRegister);
-#elif UNITY_IPHONE
+#elif UNITY_IPHONE || UNITY_IOS
             AuthenticateWithApple(_OnDoIfRegister);
 #endif
         }

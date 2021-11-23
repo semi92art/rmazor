@@ -77,6 +77,8 @@ namespace Games.RazorMaze.Views.MazeItems
                     m_PathPolyLine.enabled = false;
                 foreach (var pathJoint in m_PathJoints)
                     pathJoint.enabled = false;
+                foreach (var pathLine in m_PathLines)
+                    pathLine.enabled = false;
                 base.ActivatedInSpawnPool = value;
             }
         }

@@ -256,10 +256,10 @@ namespace Games.RazorMaze.Views.MazeItems
         
         private IEnumerator HandleTurretShootCoroutine(TurretShotEventArgs _Args)
         {
-            var toPos = _Args.To.ToVector2();
+            Vector2 toPos = _Args.To;
             EnableBulletMasksAndSetPositions(
-                toPos + _Args.Direction.ToVector2(), 
-                toPos + _Args.Direction.ToVector2() + _Args.Direction.ToVector2() * 0.9f);
+                _Args.Direction + toPos, 
+                toPos + _Args.Direction + 0.9f * _Args.Direction);
             Coroutines.Run(AnimateFakeBulletAndCloseBarrel(0.2f));
             yield return DoShoot(_Args);
         }
@@ -356,7 +356,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             Managers.AudioManager.PlayClip(AudioClipArgsShurikenFly);
             Managers.HapticsManager.PlayPreset(EHapticsPresetType.HeavyImpact);
-            var projectilePos = _Args.From.ToVector2();
+            Vector2 projectilePos = _Args.From;
             var projectilePosPrev = projectilePos;
             V2Int point = default;
             bool movedToTheEnd = false;
@@ -393,7 +393,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 () =>
                 {
                     projectilePosPrev = projectilePos;
-                    projectilePos += _Args.Direction.ToVector2() * ModelSettings.TurretProjectileSpeed * GameTicker.FixedDeltaTime;
+                    projectilePos += (Vector2)_Args.Direction * ModelSettings.TurretProjectileSpeed * GameTicker.FixedDeltaTime;
                     m_BulletTr.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(projectilePos));
                     point = V2Int.Round(projectilePos);
                     BulletTail.ShowTail(_Args);

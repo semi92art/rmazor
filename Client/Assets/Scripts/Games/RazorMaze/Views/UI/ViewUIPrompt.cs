@@ -10,12 +10,11 @@ using Games.RazorMaze.Views.InputConfigurators;
 using Ticker;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 using Utils;
 
 namespace Games.RazorMaze.Views.UI
 {
-    public interface IViewUIPrompt : IOnLevelStageChanged, IInit
+    public interface IViewUIPrompt : IOnLevelStageChanged, IInitViewUIItem
     {
         bool InTutorial { get; }
     }
@@ -44,7 +43,8 @@ namespace Games.RazorMaze.Views.UI
         #endregion
 
         #region nonpublic members
-        
+
+        private float      m_BottomOffset;
         private bool       m_HowToRotateClockwisePromptHidden;
         private bool       m_HowToRotateCounterClockwisePromptHidden;
         private bool       m_PromptHowToRotateShown;
@@ -57,9 +57,8 @@ namespace Games.RazorMaze.Views.UI
         #region inject
 
         private IModelGame                  Model               { get; }
-        private IViewGameTicker                 GameTicker          { get; }
+        private IViewGameTicker             GameTicker          { get; }
         private IContainersGetter           ContainersGetter    { get; }
-        private IMazeCoordinateConverter    CoordinateConverter { get; }
         private ILocalizationManager        LocalizationManager { get; }
         private IViewInputCommandsProceeder CommandsProceeder   { get; }
         private ICameraProvider             CameraProvider      { get; }
@@ -69,7 +68,6 @@ namespace Games.RazorMaze.Views.UI
             IModelGame _Model,
             IViewGameTicker _GameTicker,
             IContainersGetter _ContainersGetter,
-            IMazeCoordinateConverter _CoordinateConverter,
             ILocalizationManager _LocalizationManager,
             IViewInputCommandsProceeder _CommandsProceeder,
             ICameraProvider _CameraProvider,
@@ -78,7 +76,6 @@ namespace Games.RazorMaze.Views.UI
             Model = _Model;
             GameTicker = _GameTicker;
             ContainersGetter = _ContainersGetter;
-            CoordinateConverter = _CoordinateConverter;
             LocalizationManager = _LocalizationManager;
             CommandsProceeder = _CommandsProceeder;
             CameraProvider = _CameraProvider;
@@ -89,14 +86,13 @@ namespace Games.RazorMaze.Views.UI
 
         #region api
 
-        public bool              InTutorial { get; private set; }
-        public event UnityAction Initialized;
-        
-        public void Init()
+        public bool InTutorial { get; private set; }
+
+        public void Init(Vector4 _Offsets)
         {
+            m_BottomOffset = _Offsets.z;
             GameTicker.Register(this);
             CommandsProceeder.Command += InputConfiguratorOnCommand;
-            Initialized?.Invoke();
         }
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
@@ -186,34 +182,40 @@ namespace Games.RazorMaze.Views.UI
         {
             CommandsProceeder.LockAllCommands();
             CommandsProceeder.UnlockCommand(EInputCommand.RotateClockwise);
-            var mazeBounds = CoordinateConverter.GetMazeBounds();
-            ShowPrompt(KeyPromptHowToRotateClockwise, new Vector3(mazeBounds.center.x, 
-                GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y));
+            var screenBounds = GraphicUtils.GetVisibleBounds();
+            var position = new Vector3(
+                screenBounds.center.x,
+                GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y + m_BottomOffset + 10f);
+            ShowPrompt(KeyPromptHowToRotateClockwise, position);
         }
         
         private void ShowPromptHowToRotateCounterClockwise()
         {
             CommandsProceeder.LockAllCommands();
             CommandsProceeder.UnlockCommand(EInputCommand.RotateCounterClockwise);
-            var mazeBounds = CoordinateConverter.GetMazeBounds();
-            ShowPrompt(KeyPromptHowToRotateCounter, new Vector3(mazeBounds.center.x, 
-                GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y + 1f));
+            var screenBounds = GraphicUtils.GetVisibleBounds();
+            var position = new Vector3(
+                screenBounds.center.x,
+                GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y + m_BottomOffset + 10f);
+            ShowPrompt(KeyPromptHowToRotateCounter, position);
         }
 
         private void ShowPromptSwipeToStart()
         {
-            ShowPrompt(KeyPromptSwipeToStart, new Vector3(
-                CoordinateConverter.GetMazeBounds().center.x,
-                (GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y 
-                 + CoordinateConverter.GetMazeBounds().min.y) * 0.5f));
+            var screenBounds = GraphicUtils.GetVisibleBounds();
+            var position = new Vector3(
+                screenBounds.center.x,
+                GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y + m_BottomOffset + 5f);
+            ShowPrompt(KeyPromptSwipeToStart, position);
         }
 
         private void ShopPromptTapToNext()
         {
-            ShowPrompt(KeyPromptTapToNext, new Vector3(
-                CoordinateConverter.GetMazeBounds().center.x,
-                (GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y 
-                 + CoordinateConverter.GetMazeBounds().min.y) * 0.5f));
+            var screenBounds = GraphicUtils.GetVisibleBounds();
+            var position = new Vector3(
+                screenBounds.center.x,
+                GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y + m_BottomOffset + 5f);
+            ShowPrompt(KeyPromptTapToNext, position);
         }
 
         private void ShowPrompt(string _Key, Vector3 _Position)
@@ -228,8 +230,8 @@ namespace Games.RazorMaze.Views.UI
             text.fontSize = 18f;
             LocalizationManager.AddTextObject(text, _Key);
             text.color = ColorProvider.GetColor(ColorIds.UI).SetA(0f);
-            var mazeBounds = CoordinateConverter.GetMazeBounds();
-            text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, mazeBounds.size.x);
+            var screenBounds = GraphicUtils.GetVisibleBounds();
+            text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, screenBounds.size.x);
             if (m_CurrentPromptInfo != null && m_CurrentPromptInfo.PromptGo != null)
                 m_CurrentPromptInfo.PromptGo.DestroySafe();
             m_CurrentPromptInfo = new PromptInfo {Key = _Key, PromptGo = promptGo, PromptText = text};
