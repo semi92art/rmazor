@@ -26,7 +26,7 @@ namespace Mono_Installers
 
             #region managers
 
-            Container.Bind<IAdsManager>()         .To<UnityMediationAdsManager>()               .AsSingle();
+            Container.Bind<IAdsManager>()         .To<GoogleAdMobAdsManager>()    .AsSingle();
             Container.Bind<IAnalyticsManager>()   .To<AnalyticsManager>()         .AsSingle();
             Container.Bind<IShopManager>()        .To<UnityIAPShopManagerFacade>().AsSingle();
             Container.Bind<ILocalizationManager>().To<LeanLocalizationManager>()  .AsSingle();
