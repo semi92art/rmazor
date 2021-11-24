@@ -62,11 +62,11 @@ namespace Games.RazorMaze.Views.ContainerGetters
             var cont = CommonUtils.FindOrCreateGameObject(_Name, out _).transform;
             cont.SetParent(inMaze ? GetContainer(ContainerNames.Maze) : null);
             if (isMazeHolder)
-                cont.SetLocalPosXY(CoordinateConverter.GetMazeCenter() * 2f);
+                cont.SetLocalPosXY(CoordinateConverter.GetMazeCenter());
             else if (isMaze)
             {
                 cont.SetParent(GetContainer(ContainerNames.MazeHolder));
-                cont.SetLocalPosXY(CoordinateConverter.GetMazeCenter() * -1f);
+                cont.SetLocalPosXY(Vector2.zero);
             }
             m_Initialized[_Name] = true;
             m_Containers[_Name] = cont;

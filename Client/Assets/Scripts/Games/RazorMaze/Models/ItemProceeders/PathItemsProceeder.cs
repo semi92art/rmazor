@@ -99,7 +99,13 @@ namespace Games.RazorMaze.Models.ItemProceeders
             PathProceeds = Data.Info.Path
                 .ToDictionary(
                     _P => _P, 
-                    _P => Data.Info.MazeItems.Any(_Item => _Item.Position == _P));
+                    _P => Data.Info.MazeItems.Any(_Item =>
+                    {
+                        if (_Item.Position != _P)
+                            return false;
+                        var types = new[] {EMazeItemType.Portal, EMazeItemType.ShredingerBlock};
+                        return types.Contains(_Item.Type);
+                    }));
             PathProceeds[Data.Info.Path[0]] = true;
         }
         
