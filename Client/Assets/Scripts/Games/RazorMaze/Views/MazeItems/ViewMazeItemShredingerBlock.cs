@@ -32,7 +32,13 @@ namespace Games.RazorMaze.Views.MazeItems
             new AudioClipArgs("shredinger_open", EAudioClipType.Sound);
         private static AudioClipArgs AudioClipArgsCloseBlock =>
             new AudioClipArgs("shredinger_close", EAudioClipType.Sound);
-        
+
+        protected override string ObjectName => "Shredinger Block";
+
+        private            Rectangle  m_ClosedBlock;
+        private readonly   List<Line> m_OpenedLines   = new List<Line>();
+        private readonly   List<Disc> m_OpenedCorners = new List<Disc>();
+
         private float m_LineOffset;
         private bool  m_IsBlockClosed;
         private bool  m_IsCloseCoroutineRunning;
@@ -41,15 +47,6 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #endregion
 
-        #region shapes
-
-        protected override string     ObjectName => "Shredinger Block";
-        private readonly   List<Line> m_OpenedLines   = new List<Line>();
-        private readonly   List<Disc> m_OpenedCorners = new List<Disc>();
-        private            Rectangle  m_ClosedBlock;
-
-        #endregion
-        
         #region inject
         
         public ViewMazeItemShredingerBlock(
@@ -119,9 +116,9 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public void UpdateTick()
         {
-            if (!Initialized || !ActivatedInSpawnPool)
+            if (!Initialized)
                 return;
-            if (ProceedingStage == EProceedingStage.Inactive)
+            if (!ActivatedInSpawnPool)
                 return;
             ProceedOpenedBlockState();
         }
@@ -167,7 +164,6 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             var closedBlock = Object.AddComponentOnNewChild<Rectangle>("Shredinger Block", out _);
             closedBlock.Type = Rectangle.RectangleType.RoundedBorder;
-            closedBlock.Color = ColorProvider.GetColor(ColorIds.Main);
             closedBlock.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
             m_ClosedBlock = closedBlock;
             
@@ -199,7 +195,6 @@ namespace Games.RazorMaze.Views.MazeItems
                 line.Dashed = true;
                 line.DashSize = 2f;
                 line.DashType = DashType.Rounded;
-                line.Color = ColorProvider.GetColor(ColorIds.Main);
                 line.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
             }
 
@@ -232,7 +227,6 @@ namespace Games.RazorMaze.Views.MazeItems
             foreach (var corner in m_OpenedCorners)
             {
                 corner.Type = DiscType.Arc;
-                corner.Color = ColorProvider.GetColor(ColorIds.Main);
                 corner.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
                 corner.ArcEndCaps = ArcEndCap.Round;
             }
@@ -241,30 +235,28 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override void UpdateShape()
         {
             Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
-            m_ClosedBlock.Width = m_ClosedBlock.Height = CoordinateConverter.Scale * 0.9f;
-            m_ClosedBlock.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale;
-            m_ClosedBlock.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
+            float scale = CoordinateConverter.Scale;
+            m_ClosedBlock.Width = m_ClosedBlock.Height = scale * 0.9f;
+            m_ClosedBlock.CornerRadius = ViewSettings.CornerRadius * scale;
+            m_ClosedBlock.Thickness = ViewSettings.LineWidth * scale;
             foreach (var corner in m_OpenedCorners)
             {
                 corner.Radius = GetCornerRadius();
-                corner.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
+                corner.Thickness = ViewSettings.LineWidth * scale;
             }
             foreach (var line in m_OpenedLines)
-            {
-                line.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
-            }
+                line.Thickness = ViewSettings.LineWidth * scale;
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == ColorIds.Main)
-            {
-                m_ClosedBlock.Color = _Color;
-                foreach (var item in m_OpenedCorners)
-                    item.Color = _Color;
-                foreach (var item in m_OpenedLines)
-                    item.Color = _Color;
-            }
+            if (_ColorId != ColorIds.Main) 
+                return;
+            m_ClosedBlock.Color = _Color;
+            foreach (var item in m_OpenedCorners)
+                item.Color = _Color;
+            foreach (var item in m_OpenedLines)
+                item.Color = _Color;
         }
 
         private void ProceedOpenedBlockState()
@@ -285,31 +277,53 @@ namespace Games.RazorMaze.Views.MazeItems
             Managers.AudioManager.PlayClip(AudioClipArgsOpenBlock);
             Coroutines.Run(CloseBlockCoroutine(false));
         }
-
+        
         private IEnumerator CloseBlockCoroutine(bool _Close, bool _Immediately = false)
         {
+            if ((m_IsCloseCoroutineRunning && _Close 
+                 || m_IsOpenCoroutineRunning && !_Close)
+                && _Immediately == m_IsCloseOrOpenImmediately)
+                yield break;
+            int levelIndex = Model.Data.LevelIndex;
             m_IsCloseOrOpenImmediately = _Immediately;
             if (_Immediately)
+                CloseBlockImmediately(_Close);
+            IndicateCoroutineStage(true, _Close);
+            yield return CheckForAlreadyRunningOppositeCoroutine(_Close);
+            if (m_IsCloseOrOpenImmediately)
             {
-                if (!ActivatedInSpawnPool)
-                    yield break;
-                var shapesOpen1 = m_OpenedLines
-                    .Cast<ShapeRenderer>()
-                    .Concat(m_OpenedCorners)
-                    .ToList();
-                m_ClosedBlock.enabled = _Close;
-                shapesOpen1.ForEach(_Shape => _Shape.enabled = !_Close);
-                m_IsBlockClosed = _Close;
-                shapesOpen1.ForEach(_Shape => _Shape.Color = ColorProvider.GetColor(ColorIds.Main));
-                m_ClosedBlock.Color = ColorProvider.GetColor(ColorIds.Main);
+                IndicateCoroutineStage(false, _Close);
+                m_IsCloseOrOpenImmediately = false;
                 yield break;
             }
-            
-            if (_Close)
-                m_IsCloseCoroutineRunning = true;
-            else 
-                m_IsOpenCoroutineRunning = true;
-
+            var levelStage = Model.LevelStaging.LevelStage;
+            if (levelStage == ELevelStage.ReadyToUnloadLevel
+                || levelStage == ELevelStage.Unloaded
+                || levelIndex != Model.Data.LevelIndex)
+            {
+                IndicateCoroutineStage(false, _Close);
+                yield break;
+            }
+            yield return CloseBlockCoroutineCore(_Close);
+        }
+        
+        private void CloseBlockImmediately(bool _Close)
+        {
+            if (!ActivatedInSpawnPool)
+                return;
+            var shapesOpen1 = m_OpenedLines
+                .Cast<ShapeRenderer>()
+                .Concat(m_OpenedCorners)
+                .ToList();
+            m_ClosedBlock.enabled = _Close;
+            shapesOpen1.ForEach(_Shape => _Shape.enabled = !_Close);
+            m_IsBlockClosed = _Close;
+            shapesOpen1.ForEach(_Shape => _Shape.Color = ColorProvider.GetColor(ColorIds.Main));
+            m_ClosedBlock.Color = ColorProvider.GetColor(ColorIds.Main);
+        }
+        
+        private IEnumerator CheckForAlreadyRunningOppositeCoroutine(bool _Close)
+        {
             if (_Close)
             {
                 while (m_IsOpenCoroutineRunning)
@@ -320,13 +334,19 @@ namespace Games.RazorMaze.Views.MazeItems
                 while (m_IsCloseCoroutineRunning)
                     yield return null;
             }
+            yield return null;
+        }
+        
+        private void IndicateCoroutineStage(bool _Start, bool _Close)
+        {
+            if (_Close)
+                m_IsCloseCoroutineRunning = _Start;
+            else 
+                m_IsOpenCoroutineRunning = _Start;
+        }
 
-            if (m_IsCloseOrOpenImmediately)
-            {
-                m_IsCloseOrOpenImmediately = false;
-                yield break;
-            }
-            
+        private IEnumerator CloseBlockCoroutineCore(bool _Close)
+        {
             var shapesOpen = m_OpenedLines
                 .Cast<ShapeRenderer>()
                 .Concat(m_OpenedCorners)
@@ -335,7 +355,6 @@ namespace Games.RazorMaze.Views.MazeItems
                 m_ClosedBlock.enabled = true;
             else
                 shapesOpen.ForEach(_Shape => _Shape.enabled = true);
-            
             yield return Coroutines.Lerp(
                 0f,
                 1f,
@@ -344,18 +363,16 @@ namespace Games.RazorMaze.Views.MazeItems
                 {
                     float cAppear = 1f - (_Progress - 1f) * (_Progress - 1f);
                     float cDissapear = 1f - _Progress * _Progress;
-                    var partsOpenColor = ColorProvider.GetColor(ColorIds.Main).SetA(_Close ? cDissapear : cAppear);
-                    var partsClosedColor = ColorProvider.GetColor(ColorIds.Main).SetA(_Close ? cAppear : cDissapear);
+                    var col = ColorProvider.GetColor(ColorIds.Main);
+                    var partsOpenColor = col.SetA(_Close ? cDissapear : cAppear);
+                    var partsClosedColor = col.SetA(_Close ? cAppear : cDissapear);
                     shapesOpen.ForEach(_Shape => _Shape.Color = partsOpenColor);
                     m_ClosedBlock.Color = partsClosedColor;
                 },
                 GameTicker,
                 (_Breaked, _Progress) =>
                 {
-                    if (_Close)
-                        m_IsCloseCoroutineRunning = false;
-                    else 
-                        m_IsOpenCoroutineRunning = false;
+                    IndicateCoroutineStage(false, _Close);
                     if (_Breaked)
                         return;
                     if (_Close)
