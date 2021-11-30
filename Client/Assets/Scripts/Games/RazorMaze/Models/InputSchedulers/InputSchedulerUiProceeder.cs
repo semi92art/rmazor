@@ -106,10 +106,10 @@ namespace Games.RazorMaze.Models.InputSchedulers
             switch (_Command)
             {
                 case EInputCommand.LoadCurrentLevel:
-                    LevelStaging.LoadLevel(Data.Info, Data.LevelIndex);
+                    LevelStaging.LoadLevel(Data.Info, LevelStaging.LevelIndex);
                     break;
                 case EInputCommand.LoadNextLevel:
-                    levelIndex = Data.LevelIndex + 1;
+                    levelIndex = LevelStaging.LevelIndex + 1;
                     info = LevelsLoader.LoadLevel(gameId, levelIndex);
                     LevelStaging.LoadLevel(info, levelIndex);
                     break;
@@ -119,7 +119,7 @@ namespace Games.RazorMaze.Models.InputSchedulers
                     LevelStaging.LoadLevel(info, levelIndex);
                     break;
                 case EInputCommand.LoadFirstLevelFromCurrentGroup:
-                    int group = RazorMazeUtils.GetGroupIndex(Data.LevelIndex);
+                    int group = RazorMazeUtils.GetGroupIndex(LevelStaging.LevelIndex);
                     levelIndex = RazorMazeUtils.GetFirstLevelInGroup(group);
                     info = LevelsLoader.LoadLevel(gameId, levelIndex); 
                     LevelStaging.LoadLevel(info, levelIndex);

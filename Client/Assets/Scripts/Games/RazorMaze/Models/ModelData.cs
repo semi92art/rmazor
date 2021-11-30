@@ -7,7 +7,6 @@ namespace Games.RazorMaze.Models
     
     public interface IModelData
     {
-        int LevelIndex { get; set; }
         MazeInfo Info { get; set; }
         MazeOrientation Orientation { get; set; }
         bool ProceedingControls { get; set; }
@@ -24,7 +23,6 @@ namespace Games.RazorMaze.Models
 
         #region api
         
-        public int LevelIndex { get; set; }
         public MazeOrientation Orientation { get; set; } = MazeOrientation.North;
         public bool ProceedingControls { get; set; } = true;
 

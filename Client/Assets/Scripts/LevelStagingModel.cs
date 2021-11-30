@@ -40,21 +40,22 @@ public delegate void LevelStageHandler(LevelStageArgs _Args);
 
 public interface IModelLevelStaging
 {
-    float LevelTime { get; }
-    int DiesCount { get; }
-    ELevelStage LevelStage { get; }
-    ELevelStage PrevLevelStage { get; }
-    ELevelStage PrevPrevLevelStage { get; }
+    int                     LevelIndex         { get; set; }
+    float                   LevelTime          { get; }
+    int                     DiesCount          { get; }
+    ELevelStage             LevelStage         { get; }
+    ELevelStage             PrevLevelStage     { get; }
+    ELevelStage             PrevPrevLevelStage { get; }
     event LevelStageHandler LevelStageChanged;
-    void LoadLevel(MazeInfo _Info, int _LevelIndex);
-    void ReadyToStartLevel();
-    void StartOrContinueLevel();
-    void PauseLevel();
-    void UnPauseLevel();
-    void FinishLevel();
-    void KillCharacter();
-    void ReadyToUnloadLevel();
-    void UnloadLevel();
+    void                    LoadLevel(MazeInfo _Info, int _LevelIndex);
+    void                    ReadyToStartLevel();
+    void                    StartOrContinueLevel();
+    void                    PauseLevel();
+    void                    UnPauseLevel();
+    void                    FinishLevel();
+    void                    KillCharacter();
+    void                    ReadyToUnloadLevel();
+    void                    UnloadLevel();
 }
 
 public class ModelLevelStaging : IModelLevelStaging, IInit, IUpdateTick
@@ -81,6 +82,7 @@ public class ModelLevelStaging : IModelLevelStaging, IInit, IUpdateTick
     
     #region api
 
+    public int                     LevelIndex         { get; set; }
     public float                   LevelTime          { get; private set; }
     public int                     DiesCount          { get; private set; }
     public ELevelStage             LevelStage         { get; private set; } = ELevelStage.Unloaded;
@@ -102,7 +104,7 @@ public class ModelLevelStaging : IModelLevelStaging, IInit, IUpdateTick
     
     public virtual void LoadLevel(MazeInfo _Info, int _LevelIndex)
     {
-        (Data.Info, Data.LevelIndex) = (_Info, _LevelIndex);
+        (Data.Info, LevelIndex) = (_Info, _LevelIndex);
         InvokeLevelStageChanged(ELevelStage.Loaded);
     }
 
@@ -163,7 +165,7 @@ public class ModelLevelStaging : IModelLevelStaging, IInit, IUpdateTick
             DiesCount = 0;
         LevelStage = _Stage;
         LevelStageChanged?.Invoke(new LevelStageArgs(
-            Data.LevelIndex,
+            LevelIndex,
             LevelStage,
             PrevLevelStage,
             PrevPrevLevelStage));

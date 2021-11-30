@@ -111,7 +111,7 @@ namespace Games.RazorMaze.Views.UI
             Managers.LocalizationManager.AddTextObject(
                 m_LevelText,
                 "level", 
-                _Text => _Text + " " + (Model.Data.LevelIndex + 1));
+                _Text => _Text + " " + (Model.LevelStaging.LevelIndex + 1));
         }
 
         #endregion
@@ -174,7 +174,7 @@ namespace Games.RazorMaze.Views.UI
             foreach (var checkmark in m_CheckMarks)
                 checkmark.gameObject.SetActive(false);
             var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
-            int groupIndex = RazorMazeUtils.GetGroupIndex(Model.Data.LevelIndex);
+            int groupIndex = RazorMazeUtils.GetGroupIndex(Model.LevelStaging.LevelIndex);
             int levelsInGroup = RazorMazeUtils.GetLevelsInGroup(groupIndex);
             float yPos = screenBounds.max.y - m_TopOffset - 4f;
             for (int i = 0; i < levelsInGroup; i++)

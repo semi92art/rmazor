@@ -284,7 +284,7 @@ namespace Games.RazorMaze.Views.MazeItems
                  || m_IsOpenCoroutineRunning && !_Close)
                 && _Immediately == m_IsCloseOrOpenImmediately)
                 yield break;
-            int levelIndex = Model.Data.LevelIndex;
+            int levelIndex = Model.LevelStaging.LevelIndex;
             m_IsCloseOrOpenImmediately = _Immediately;
             if (_Immediately)
                 CloseBlockImmediately(_Close);
@@ -299,7 +299,7 @@ namespace Games.RazorMaze.Views.MazeItems
             var levelStage = Model.LevelStaging.LevelStage;
             if (levelStage == ELevelStage.ReadyToUnloadLevel
                 || levelStage == ELevelStage.Unloaded
-                || levelIndex != Model.Data.LevelIndex)
+                || levelIndex != Model.LevelStaging.LevelIndex)
             {
                 IndicateCoroutineStage(false, _Close);
                 yield break;
