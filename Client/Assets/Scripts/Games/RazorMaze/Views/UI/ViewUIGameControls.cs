@@ -151,12 +151,12 @@ namespace Games.RazorMaze.Views.UI
                 case ELevelStage.ReadyToUnloadLevel:
                 case ELevelStage.Unloaded:
                 case ELevelStage.CharacterKilled:
-                    CommandsProceeder.LockAllCommands();
+                    CommandsProceeder.LockCommands(CommandsProceeder.GetAllCommands());
                     CommandsProceeder.UnlockCommand(EInputCommand.ShopMenu);
                     CommandsProceeder.UnlockCommand(EInputCommand.SettingsMenu);
                     break;
                 case ELevelStage.Finished:
-                    CommandsProceeder.LockAllCommands();
+                    CommandsProceeder.LockCommands(CommandsProceeder.GetAllCommands());
                     CommandsProceeder.UnlockCommand(EInputCommand.ShopMenu);
                     CommandsProceeder.UnlockCommand(EInputCommand.SettingsMenu);
                     CommandsProceeder.UnlockCommand(EInputCommand.ReadyToUnloadLevel);

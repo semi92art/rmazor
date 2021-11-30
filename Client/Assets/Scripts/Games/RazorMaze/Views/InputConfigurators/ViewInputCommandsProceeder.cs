@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DI.Extensions;
 using Games.RazorMaze.Models;
 using UnityEngine.Events;
 
@@ -11,63 +12,83 @@ namespace Games.RazorMaze.Views.InputConfigurators
         event UnityAction<EInputCommand, object[]> Command; 
         event UnityAction<EInputCommand, object[]> InternalCommand; 
         
-        void LockCommand(EInputCommand _Key);
-        void UnlockCommand(EInputCommand _Key);
-        void LockCommands(IEnumerable<EInputCommand> _Keys);
-        void UnlockCommands(IEnumerable<EInputCommand> _Keys);
-        void LockAllCommands();
-        void UnlockAllCommands();
-        void RaiseCommand(EInputCommand _Key, object[] _Args, bool _Forced = false);
+        void                       LockCommand(EInputCommand _Key, string _Group = "common");
+        void                       UnlockCommand(EInputCommand _Key, string _Group = "common");
+        void                       LockCommands(IEnumerable<EInputCommand> _Keys, string _Group = "common");
+        void                       UnlockCommands(IEnumerable<EInputCommand> _Keys, string _Group = "common");
+        IEnumerable<EInputCommand> GetAllCommands();
+        void                       UnlockAllCommands();
+        void                       RaiseCommand(EInputCommand _Key, object[] _Args, bool _Forced = false);
     }
     
     public class ViewInputCommandsProceeder : IViewInputCommandsProceeder
     {
-        private readonly List<EInputCommand> m_LockedCommands = new List<EInputCommand>();
+        private readonly Dictionary<string, List<EInputCommand>> m_LockedCommands = 
+            new Dictionary<string, List<EInputCommand>>();
         
         public event UnityAction<EInputCommand, object[]> Command;
         public event UnityAction<EInputCommand, object[]> InternalCommand;
         
-        public void LockCommand(EInputCommand _Key)
+        public void LockCommand(EInputCommand _Key, string _Group = "common")
         {
-            if (!m_LockedCommands.Contains(_Key))
-                m_LockedCommands.Add(_Key);
+            if (!m_LockedCommands.ContainsKey(_Group))
+                m_LockedCommands.Add(_Group, new List<EInputCommand>());
+            var commandsGroup = m_LockedCommands[_Group];
+            if (!commandsGroup.Contains(_Key))
+                commandsGroup.Add(_Key);
         }
 
-        public void UnlockCommand(EInputCommand _Key)
+        public void UnlockCommand(EInputCommand _Key, string _Group = "common")
         {
-            if (m_LockedCommands.Contains(_Key))
-                m_LockedCommands.Remove(_Key);
+            if (_Group.EqualsIgnoreCase("all"))
+            {
+                foreach (var commands in m_LockedCommands.Values)
+                    commands.Clear();
+                return;
+            }
+            if (!m_LockedCommands.ContainsKey(_Group))
+                return;
+            var commandsGroup = m_LockedCommands[_Group];
+            if (commandsGroup == null)
+                return;
+            if (commandsGroup.Contains(_Key))
+                commandsGroup.Remove(_Key);
         }
 
-        public void LockCommands(IEnumerable<EInputCommand> _Keys)
+        public void LockCommands(IEnumerable<EInputCommand> _Keys, string _Group = "common")
         {
             foreach (var key in _Keys)
                 LockCommand(key);
         }
 
-        public void UnlockCommands(IEnumerable<EInputCommand> _Keys)
+        public void UnlockCommands(IEnumerable<EInputCommand> _Keys, string _Group = "common")
         {
             foreach (var key in _Keys)
-                UnlockCommand(key);
+                UnlockCommand(key, _Group);
         }
 
-        public void LockAllCommands()
+        public IEnumerable<EInputCommand> GetAllCommands()
         {
-            var allCommands = Enum.GetValues(typeof(EInputCommand)).Cast<EInputCommand>();
-            LockCommands(allCommands);
+            return Enum.GetValues(typeof(EInputCommand)).Cast<EInputCommand>();
         }
 
         public void UnlockAllCommands()
         {
-            var allCommands = Enum.GetValues(typeof(EInputCommand)).Cast<EInputCommand>();
+            var allCommands = GetAllCommands();
             UnlockCommands(allCommands);
         }
         
         public void RaiseCommand(EInputCommand _Key, object[] _Args, bool _Forced = false)
         {
             InternalCommand?.Invoke(_Key, _Args);
-            if (!m_LockedCommands.Contains(_Key) || _Forced)
+            if (_Forced)
+            {
                 Command?.Invoke(_Key, _Args);
+                return;
+            }
+            if (m_LockedCommands.Values.Any(_Group => _Group.Contains(_Key)))
+                return;
+            Command?.Invoke(_Key, _Args);
         }
     }
 }

@@ -359,7 +359,7 @@ namespace DebugConsole
         private void SetVisibility(bool _Visible)
         {
             if (_Visible)
-                m_CommandsProceeder.LockAllCommands();
+                m_CommandsProceeder.LockCommands(m_CommandsProceeder.GetAllCommands());
             else m_CommandsProceeder.UnlockAllCommands();
             m_IsVisible = _Visible;
             viewContainer.SetActive(_Visible);

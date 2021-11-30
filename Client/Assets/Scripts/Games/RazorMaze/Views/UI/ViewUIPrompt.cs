@@ -180,7 +180,7 @@ namespace Games.RazorMaze.Views.UI
 
         private void ShowPromptHowToRotateClockwise()
         {
-            CommandsProceeder.LockAllCommands();
+            CommandsProceeder.LockCommands(CommandsProceeder.GetAllCommands());
             CommandsProceeder.UnlockCommand(EInputCommand.RotateClockwise);
             var screenBounds = GraphicUtils.GetVisibleBounds();
             var position = new Vector3(
@@ -191,7 +191,7 @@ namespace Games.RazorMaze.Views.UI
         
         private void ShowPromptHowToRotateCounterClockwise()
         {
-            CommandsProceeder.LockAllCommands();
+            CommandsProceeder.LockCommands(CommandsProceeder.GetAllCommands());
             CommandsProceeder.UnlockCommand(EInputCommand.RotateCounterClockwise);
             var screenBounds = GraphicUtils.GetVisibleBounds();
             var position = new Vector3(

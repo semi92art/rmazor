@@ -97,7 +97,7 @@ namespace Games.RazorMaze.Views.UI
                 anim.SetTrigger(AnimKeyStartLogoHide);
             var trigerrer1 = go.GetCompItem<AnimationTriggerer>("trigerrer_1");
             var trigerrer2 = go.GetCompItem<AnimationTriggerer>("trigerrer_2");
-            trigerrer1.Trigger1 += () =>  CommandsProceeder.LockAllCommands();
+            trigerrer1.Trigger1 += () => CommandsProceeder.LockCommands(CommandsProceeder.GetAllCommands());
             trigerrer2.Trigger1 += () => CommandsProceeder.UnlockAllCommands();
             var eye1 = go.GetCompItem<Rectangle>("eye_1");
             var eye2 = go.GetCompItem<Rectangle>("eye_2");
