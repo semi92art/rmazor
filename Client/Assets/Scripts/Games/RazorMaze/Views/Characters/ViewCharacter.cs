@@ -230,6 +230,7 @@ namespace Games.RazorMaze.Views.Characters
                     break;
             }
             Effector.OnLevelStageChanged(_Args);
+            MazeShaker.OnLevelStageChanged(_Args);
         }
 
         public override void Appear(bool _Appear)

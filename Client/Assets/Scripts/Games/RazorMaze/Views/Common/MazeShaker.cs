@@ -5,16 +5,14 @@ using DI.Extensions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeItems;
-using Shapes;
 using Ticker;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using Utils;
 
 namespace Games.RazorMaze.Views.Common
 {
-    public interface IMazeShaker : IInit
+    public interface IMazeShaker : IInit, IOnLevelStageChanged
     {
         bool ShakeMaze { get; set; }
         IEnumerator HitMazeCoroutine(CharacterMovingEventArgs _Args);
@@ -63,9 +61,7 @@ namespace Games.RazorMaze.Views.Common
             set
             {
                 m_ShakeMaze = value;
-                if (value)
-                    m_StartPosition = m_MazeContainer.position;
-                else
+                if (!value)
                     m_MazeContainer.position = m_StartPosition;
             }
         }
@@ -77,12 +73,17 @@ namespace Games.RazorMaze.Views.Common
             Initialized?.Invoke();
             m_Initialized = true;
         }
+        
+        public void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            if (_Args.Stage == ELevelStage.Loaded)
+                m_StartPosition = CoordinateConverter.GetMazeCenter();
+        }
 
         public IEnumerator HitMazeCoroutine(CharacterMovingEventArgs _Args)
         {
             const float amplitude = 0.5f;
             var dir = RazorMazeUtils.GetDirectionVector(_Args.Direction, MazeOrientation.North);
-            Vector2 startPos = m_MazeContainer.position;
             const float duration = 0.1f;
             yield return Coroutines.Lerp(
                 0f,
@@ -91,19 +92,18 @@ namespace Games.RazorMaze.Views.Common
                 _Progress =>
                 {
                     float distance = _Progress < 0.5f ? _Progress * amplitude : (1f - _Progress) * amplitude;
-                    var res = startPos + distance * dir;
+                    var res = (Vector2)m_StartPosition + distance * dir;
                     m_MazeContainer.position = res;
                 },
                 GameTicker,
                 (_Finished, _Progress) =>
                 {
-                    m_MazeContainer.position = startPos;
+                    m_MazeContainer.position = m_StartPosition;
                 });
         }
 
         public IEnumerator ShakeMazeCoroutine()
         {
-            var startPos = m_MazeContainer.position;
             const float duration = 1f;
             yield return Coroutines.Lerp(
                 1f,
@@ -113,14 +113,14 @@ namespace Games.RazorMaze.Views.Common
                 {
                     float amplitude = 0.5f * _Progress;
                     Vector2 res;
-                    res.x = startPos.x + amplitude * Mathf.Sin(GameTicker.Time * 200f);
-                    res.y = startPos.y + amplitude * Mathf.Cos(GameTicker.Time * 100f);
+                    res.x = m_StartPosition.x + amplitude * Mathf.Sin(GameTicker.Time * 200f);
+                    res.y = m_StartPosition.y + amplitude * Mathf.Cos(GameTicker.Time * 100f);
                     m_MazeContainer.position = res;
                 },
                 GameTicker,
                 (_Finished, _Progress) =>
                 {
-                    m_MazeContainer.position = startPos;
+                    m_MazeContainer.position = m_StartPosition;
                 });
         }
         
