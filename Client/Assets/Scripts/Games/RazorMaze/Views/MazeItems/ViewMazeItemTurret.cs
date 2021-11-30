@@ -160,7 +160,9 @@ namespace Games.RazorMaze.Views.MazeItems
                 return;
             if (AppearingState == EAppearingState.Dissapeared)
                 return;
-            m_BulletHolderBorder.DashOffset += 2f * GameTicker.DeltaTime;
+            m_BulletHolderBorder.DashOffset = MathUtils.ClampInverse(
+                m_BulletHolderBorder.DashOffset += 2f * GameTicker.DeltaTime,
+                0f, 10f);
             if (AppearingState == EAppearingState.Appearing)
                 return;
             if (!m_BulletRotating)

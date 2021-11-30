@@ -132,7 +132,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             if (!Initialized || !ActivatedInSpawnPool)
                 return;
-            const float maxOffset = 2f * Mathf.PI * 100f;
+            const float maxOffset = 10f;
             float dOffset = GameTicker.DeltaTime * 3f;
             m_DashedOffset += dOffset;
             m_DashedOffset = MathUtils.ClampInverse(m_DashedOffset, 0, maxOffset);
@@ -266,10 +266,10 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private void ClearBordersAndCorners()
         {
-            if (m_LeftBorderInited)        m_LeftBorder       .enabled = false;
-            if (m_RightBorderInited)       m_RightBorder      .enabled = false;
-            if (m_BottomBorderInited)      m_BottomBorder     .enabled = false;
-            if (m_TopBorderInited)         m_TopBorder        .enabled = false;
+            if (m_LeftBorderInited)   (m_LeftBorder.enabled, m_LeftBorder.DashOffset)     = (false, 0f);
+            if (m_RightBorderInited)  (m_RightBorder.enabled, m_RightBorder.DashOffset)   = (false, 0f);
+            if (m_BottomBorderInited) (m_BottomBorder.enabled, m_BottomBorder.DashOffset) = (false, 0f);
+            if (m_TopBorderInited)    (m_TopBorder.enabled, m_TopBorder.DashOffset)       = (false, 0f);
             
             if (m_BottomLeftCornerInited)  m_BottomLeftCorner .enabled = false;
             if (m_BottomRightCornerInited) m_BottomRightCorner.enabled = false;
@@ -278,19 +278,21 @@ namespace Games.RazorMaze.Views.MazeItems
             
             m_LeftBorderInited = m_RightBorderInited = m_BottomBorderInited = m_TopBorderInited = false;
             m_BottomLeftCornerInited = m_BottomRightCornerInited = m_TopLeftCornerInited = m_TopRightCornerInited = false;
+            m_IsLeftBorderInverseOffset = m_IsRightBorderInverseOffset =
+                m_IsBottomBorderInverseOffset = m_IsTopBorderInverseOffset = false;
         }
 
         private void InitBorders()
         {
-            Func<V2Int, bool> mustInitBorder = _Pos => !TurretExist(_Pos) && !PathExist(_Pos);
+            bool MustInitBorder(V2Int _Pos) => !TurretExist(_Pos) && !PathExist(_Pos);
             var pos = Props.Position;
-            if (mustInitBorder(pos + V2Int.left))
+            if (MustInitBorder(pos + V2Int.left))
                 InitBorder(EMazeMoveDirection.Left);
-            if (mustInitBorder(pos + V2Int.right))
+            if (MustInitBorder(pos + V2Int.right))
                 InitBorder(EMazeMoveDirection.Right);
-            if (mustInitBorder(pos + V2Int.up))
+            if (MustInitBorder(pos + V2Int.up))
                 InitBorder(EMazeMoveDirection.Up);
-            if (mustInitBorder(pos + V2Int.down))
+            if (MustInitBorder(pos + V2Int.down))
                 InitBorder(EMazeMoveDirection.Down);
         }
 
@@ -407,6 +409,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 (_AdjustStart, _Border.Start) = (true, start);
             if (PathExist(_Position + _Direction + dir2) || TurretExist(_Position + _Direction + dir2))
                 (_AdjustEnd, _Border.End) = (true, end);
+            if (!PathExist(_Position + dir1))
+                (_AdjustStart, _Border.Start) = (true, start);
             _Border.DashSize = 4f * Vector3.Distance(_Border.Start, _Border.End) / CoordinateConverter.Scale;
         }
 
@@ -641,11 +645,6 @@ namespace Games.RazorMaze.Views.MazeItems
             return GetItemInfo(_Position, EMazeItemType.Turret) != null;
         }
 
-        private V2Int TurretDirection(V2Int _Position)
-        {
-            return GetItemInfo(_Position, EMazeItemType.Turret).Direction;
-        }
-
         private bool SpringboardExist(V2Int _Position)
         {
             return GetItemInfo(_Position, EMazeItemType.Springboard) != null;
@@ -667,8 +666,6 @@ namespace Games.RazorMaze.Views.MazeItems
                 .FirstOrDefault(_Item => _Item.CurrentPosition == _Position
                                 && _Item.Type == _Type); 
         }
-
-        private static Vector3 Average(Vector3 _A, Vector3 _B) => (_A + _B) * 0.5f;
 
         protected override void OnAppearStart(bool _Appear)
         {
