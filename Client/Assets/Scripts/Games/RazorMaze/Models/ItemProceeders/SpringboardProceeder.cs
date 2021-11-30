@@ -19,7 +19,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
     public delegate void SpringboardEventHandler(SpringboardEventArgs _Args);
 
-    public interface ISpringboardProceeder : IItemsProceeder, ICharacterMoveContinued
+    public interface ISpringboardProceeder : IItemsProceeder, ICharacterMoveContinued, ICharacterMoveFinished
     {
         event SpringboardEventHandler SpringboardEvent;
     }
@@ -51,10 +51,22 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
         {
+            ProceedSpringboardIfOnPosition(_Args.Position, _Args.Direction, false);
+        }
+        
+        #endregion
+
+        public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
+        {
+            ProceedSpringboardIfOnPosition(_Args.To, _Args.Direction, true);
+        }
+
+        private void ProceedSpringboardIfOnPosition(V2Int _Position, EMazeMoveDirection _Direction, bool _Forced)
+        {
             IMazeItemProceedInfo info = null;
             for (int i = 0; i < ProceedInfos.Length; i++)
             {
-                if (ProceedInfos[i].CurrentPosition != _Args.Position)
+                if (ProceedInfos[i].CurrentPosition != _Position)
                     continue;
                 info = ProceedInfos[i];
                 break;
@@ -64,9 +76,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 m_LastArgs = null;
                 return;
             }
-            if (m_LastArgs != null)
+            if (m_LastArgs != null && !_Forced)
                 return;
-            var charInverseDir = -1 * RazorMazeUtils.GetDirectionVector(_Args.Direction, Data.Orientation);
+            var charInverseDir = -1 * RazorMazeUtils.GetDirectionVector(_Direction, Data.Orientation);
             V2Int newDirection = default;
             if (info.Direction == V2Int.up + V2Int.left)
                 newDirection = charInverseDir == V2Int.up ? V2Int.left : V2Int.up;
@@ -80,7 +92,5 @@ namespace Games.RazorMaze.Models.ItemProceeders
             m_LastArgs = new SpringboardEventArgs(moveDirection, info);
             SpringboardEvent?.Invoke(m_LastArgs);
         }
-        
-        #endregion
     }
 }
