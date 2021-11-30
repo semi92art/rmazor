@@ -109,7 +109,6 @@ namespace Games.RazorMaze.Models.InputSchedulers
             if (!cmd.HasValue)
                 return;
             m_MoveCommandsCount--;
-            m_MovementLocked = true;
             MoveCommand?.Invoke(cmd.Value, null);
         }
 
@@ -123,7 +122,6 @@ namespace Games.RazorMaze.Models.InputSchedulers
             if (!cmd.HasValue)
                 return;
             m_RotateCommandsCount--;
-            m_RotationLocked = true;
             RotateCommand?.Invoke(cmd.Value, null);
         }
         

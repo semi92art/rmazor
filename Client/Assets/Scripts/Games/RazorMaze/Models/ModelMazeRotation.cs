@@ -32,7 +32,7 @@ namespace Games.RazorMaze.Models
     public interface IModelMazeRotation : IInit, IOnLevelStageChanged
     {
         event MazeOrientationHandler RotationStarted;
-        event MazeOrientationHandler RotationFinishedInternal;
+        event MazeOrientationHandler RotationFinished;
         void StartRotation(MazeRotateDirection _Direction, MazeOrientation? _NextOrientation = null);
         void OnRotationFinished(MazeRotationEventArgs _Args);
     }
@@ -40,7 +40,7 @@ namespace Games.RazorMaze.Models
     public class ModelMazeRotation : IModelMazeRotation 
     {
 
-        private IModelData       Data       { get; }
+        private IModelData Data { get; }
 
         public ModelMazeRotation(IModelData _Data)
         {
@@ -48,7 +48,7 @@ namespace Games.RazorMaze.Models
         }
 
         public event MazeOrientationHandler RotationStarted;
-        public event MazeOrientationHandler RotationFinishedInternal;
+        public event MazeOrientationHandler RotationFinished;
         public event UnityAction            Initialized;
         
         public void Init()
@@ -71,7 +71,7 @@ namespace Games.RazorMaze.Models
 
         public void OnRotationFinished(MazeRotationEventArgs _Args)
         {
-            RotationFinishedInternal?.Invoke(_Args);
+            RotationFinished?.Invoke(_Args);
         }
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
