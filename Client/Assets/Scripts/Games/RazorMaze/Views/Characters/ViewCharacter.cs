@@ -153,7 +153,7 @@ namespace Games.RazorMaze.Views.Characters
         {
             if (m_NeedToInvokeOnReadyToContinue)
             {
-                SetDefaultCharacterState(false);
+                SetDefaultCharacterState(true);
                 m_NeedToInvokeOnReadyToContinue = false;
             }
         }
