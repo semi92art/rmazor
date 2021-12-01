@@ -30,7 +30,7 @@ namespace Games.RazorMaze.Views.UI
         private IViewUICongratsMessage   CongratsMessage     { get; }
         private IViewUIStartLogo         StartLogo           { get; }
         private IViewUILevelsPanel       LevelsPanel         { get; }
-        private IViewUIRotationButtons   RotationButtons     { get; }
+        private IViewUIRotationControls   RotationControls     { get; }
         private IViewUITopButtons        TopButtons          { get; }
 
         public ViewUIGameControls(
@@ -41,7 +41,7 @@ namespace Games.RazorMaze.Views.UI
             IViewUICongratsMessage _CongratsMessage,
             IViewUIStartLogo _StartLogo,
             IViewUILevelsPanel _LevelsPanel,
-            IViewUIRotationButtons _RotationButtons,
+            IViewUIRotationControls _RotationControls,
             IViewUITopButtons _TopButtons) 
             : base(_CommandsProceeder)
         {
@@ -51,7 +51,7 @@ namespace Games.RazorMaze.Views.UI
             CongratsMessage = _CongratsMessage;
             StartLogo = _StartLogo;
             LevelsPanel = _LevelsPanel;
-            RotationButtons = _RotationButtons;
+            RotationControls = _RotationControls;
             TopButtons = _TopButtons;
         }
 
@@ -112,7 +112,7 @@ namespace Games.RazorMaze.Views.UI
             var allRenderers = 
                 CongratsMessage.GetRenderers()
                     .Concat(LevelsPanel.GetRenderers())
-                    .Concat(RotationButtons.GetRenderers())
+                    .Concat(RotationControls.GetRenderers())
                     .Concat(TopButtons.GetRenderers());
             foreach (var rendComp in allRenderers)
             {
@@ -174,7 +174,7 @@ namespace Games.RazorMaze.Views.UI
         {
             var proceeders = new List<object>
                 {
-                    CongratsMessage, StartLogo, RotationButtons, Prompt, TopButtons, LevelsPanel
+                    CongratsMessage, StartLogo, RotationControls, Prompt, TopButtons, LevelsPanel
                 }.Where(_Proceeder => _Proceeder != null);
             return proceeders.Where(_Proceeder => _Proceeder is T).Cast<T>().ToList();
         }

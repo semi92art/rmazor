@@ -185,7 +185,7 @@ namespace Games.RazorMaze.Views.UI
             var screenBounds = GraphicUtils.GetVisibleBounds();
             var position = new Vector3(
                 screenBounds.center.x,
-                GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y + m_BottomOffset + 10f);
+                GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y + m_BottomOffset + 7f);
             ShowPrompt(KeyPromptHowToRotateClockwise, position);
         }
         
@@ -196,7 +196,7 @@ namespace Games.RazorMaze.Views.UI
             var screenBounds = GraphicUtils.GetVisibleBounds();
             var position = new Vector3(
                 screenBounds.center.x,
-                GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y + m_BottomOffset + 10f);
+                GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y + m_BottomOffset + 7f);
             ShowPrompt(KeyPromptHowToRotateCounter, position);
         }
 
@@ -205,7 +205,7 @@ namespace Games.RazorMaze.Views.UI
             var screenBounds = GraphicUtils.GetVisibleBounds();
             var position = new Vector3(
                 screenBounds.center.x,
-                GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y + m_BottomOffset + 5f);
+                GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y + m_BottomOffset + 7f);
             ShowPrompt(KeyPromptSwipeToStart, position);
         }
 
@@ -214,7 +214,7 @@ namespace Games.RazorMaze.Views.UI
             var screenBounds = GraphicUtils.GetVisibleBounds();
             var position = new Vector3(
                 screenBounds.center.x,
-                GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y + m_BottomOffset + 5f);
+                GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y + m_BottomOffset + 7f);
             ShowPrompt(KeyPromptTapToNext, position);
         }
 

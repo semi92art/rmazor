@@ -18,12 +18,12 @@ using Utils;
 
 namespace Games.RazorMaze.Views.UI
 {
-    public interface IViewUIRotationButtons : 
+    public interface IViewUIRotationControls : 
         IOnLevelStageChanged,
         IInitViewUIItem,
         IViewUIGetRenderers { }
     
-    public class ViewUIRotationButtons : IViewUIRotationButtons
+    public class ViewUIRotationControls : IViewUIRotationControls
     {
         #region nonpublic members
         
@@ -49,7 +49,7 @@ namespace Games.RazorMaze.Views.UI
         private IViewGameTicker             GameTicker          { get; }
         private IViewAppearTransitioner     AppearTransitioner  { get; }
 
-        public ViewUIRotationButtons(
+        public ViewUIRotationControls(
             IModelGame _Model,
             IColorProvider _ColorProvider,
             IContainersGetter _ContainersGetter,
@@ -130,7 +130,7 @@ namespace Games.RazorMaze.Views.UI
                 cont, "ui_game", "rotate_clockwise_button");
             var goRCCb = PrefabUtilsEx.InitPrefab(
                 cont, "ui_game", "rotate_counter_clockwise_button");
-            float scale = 1f;
+            float scale = 0.5f;
             float yPos = screenBounds.min.y + m_BottomOffset;
             var rcbDisc = goRCb.GetCompItem<Disc>("button");
             goRCb.transform.localScale = scale * Vector3.one;

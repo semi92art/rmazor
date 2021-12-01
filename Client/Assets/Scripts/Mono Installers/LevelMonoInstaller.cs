@@ -82,7 +82,7 @@ namespace Mono_Installers
                 Container.Bind<IViewUICongratsMessage>()     .To<ViewUICongratsMessage>()         .AsSingle();
                 Container.Bind<IViewUIStartLogo>()           .To<ViewUIStartLogo>()               .AsSingle();
                 Container.Bind<IViewUILevelsPanel>()         .To<ViewUILevelsPanel>()             .AsSingle();
-                Container.Bind<IViewUIRotationButtons>()     .To<ViewUIRotationButtons>()         .AsSingle();
+                Container.Bind<IViewUIRotationControls>()     .To<ViewUIRotationControls>()         .AsSingle();
                 Container.Bind<IViewUITopButtons>()          .To<ViewUITopButtons>()              .AsSingle();
             }
             
