@@ -72,8 +72,12 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
                     IsStartNode = pathItemPos == _Info.Path.First(),
                     Position = pathItemPos
                 };
-                if (moneyItemIndices.Contains(i) && _Info.MazeItems.All(_Item => _Item.Position != pathItemPos))
+                if (moneyItemIndices.Contains(i)
+                    && _Info.MazeItems.All(_Item => _Item.Position != pathItemPos)
+                    && _Info.MazeItems.All(_Item => !_Item.Path.Contains(pathItemPos)))
+                {
                     props.IsMoneyItem = true;
+                }
                 var pathItemInPool = _PathPool.FirstInactive;
                 pathItemInPool.Init(props);
                 _PathPool.Activate(pathItemInPool);
