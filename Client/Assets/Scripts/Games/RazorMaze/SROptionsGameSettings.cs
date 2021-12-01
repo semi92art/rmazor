@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using Constants;
 using Entities;
 using Games.RazorMaze;
 using Games.RazorMaze.Models;
@@ -202,6 +203,33 @@ public partial class SROptions
     {
         get => _viewSettings.ProposalDialogAnimSpeed;
         set => _viewSettings.ProposalDialogAnimSpeed = value;
+    }
+
+    [Category(CategoryCommon)]
+    public bool AddMoney500
+    {
+        get => false;
+        set
+        {
+            var moneyEntity = _view.Managers.ScoreManager.GetScore(DataFieldIds.Money);
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => moneyEntity.Result != EEntityResult.Pending,
+                () =>
+                {
+                    if (moneyEntity.Result == EEntityResult.Fail)
+                    {
+                        Dbg.LogError("Failed to load money score.");
+                        return;
+                    }
+                    var score = moneyEntity.GetFirstScore();
+                    if (!score.HasValue)
+                    {
+                        Dbg.LogError("Money score entity does not contain first score.");
+                        return;
+                    }
+                    _view.Managers.ScoreManager.SetScore(DataFieldIds.Money, score.Value + 500);
+                }));
+        } 
     }
 
     #endregion
