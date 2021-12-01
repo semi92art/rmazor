@@ -3,6 +3,7 @@ using System.Linq;
 using Constants;
 using DI.Extensions;
 using GameHelpers;
+using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.InputConfigurators;
@@ -58,10 +59,22 @@ namespace Games.RazorMaze.Views.UI
 
         public void Init(Vector4 _Offsets)
         {
+            CommandsProceeder.Command += OnCommand;
             m_TopOffset = _Offsets.w;
             InitStartLogo();
         }
-        
+
+        private void OnCommand(EInputCommand _Command, object[] _Args)
+        {
+            if (m_OnStart
+                && (RazorMazeUtils.GetMoveCommands().Contains(_Command)
+                || RazorMazeUtils.GetRotateCommands().Contains(_Command)))
+            {
+                HideStartLogo();
+                m_OnStart = false;
+            }
+        }
+
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             ShowStartLogo(_Args);
@@ -119,10 +132,6 @@ namespace Games.RazorMaze.Views.UI
             {
                 case ELevelStage.ReadyToStart when _Args.PreviousStage != ELevelStage.Paused && m_OnStart:
                     ShowStartLogo();
-                    break;
-                case ELevelStage.StartedOrContinued when m_OnStart:
-                    HideStartLogo();
-                    m_OnStart = false;
                     break;
             }
         }
