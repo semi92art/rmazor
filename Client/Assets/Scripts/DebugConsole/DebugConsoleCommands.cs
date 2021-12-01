@@ -32,6 +32,7 @@ namespace DebugConsole
             Controller.RegisterCommand("enable_ads", EnableAds, "Enable or disable advertising (true/false)");
             Controller.RegisterCommand("finish_level", FinishLevel, "Finish current level");
             Controller.RegisterCommand("load_level", LoadLevel, "Load level by index");
+            Controller.RegisterCommand("set_money", SetMoney, "Set money count");
         }
 
         private static void Reload(string[] _Args)
@@ -178,6 +179,16 @@ namespace DebugConsole
                 EInputCommand.LoadLevelByIndex, 
                 new object [] { levelIndex },
                 true);
+        }
+
+        private static void SetMoney(string[] _Args)
+        {
+            if (_Args == null || !_Args.Any() || _Args.Length > 1 || !int.TryParse(_Args[0], out int moneyCount))
+            {
+                Controller.AppendLogLine("Wrong. Need money count!");
+                return;
+            }
+            Controller.Managers.ScoreManager.SetScore(DataFieldIds.Money, moneyCount);
         }
     }
 }
