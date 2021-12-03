@@ -69,11 +69,12 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 case ELevelStage.Loaded:
                     CollectItems(Data.Info);
                     break;
+                case ELevelStage.ReadyToStart when _Args.PreviousStage != ELevelStage.Paused:
+                    StartProceed(true);
+                    break;
+                case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.Paused:
                 case ELevelStage.StartedOrContinued:
                     ContinueProceed();
-                    break;
-                case ELevelStage.ReadyToStart:
-                    StartProceed(true);
                     break;
                 case ELevelStage.Paused:
                     PauseProceed();
@@ -86,7 +87,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 default:
                     throw new SwitchCaseNotImplementedException(_Args.Stage);
             }
-            if (_Args.Stage != ELevelStage.Loaded && _Args.Stage != ELevelStage.ReadyToStart) 
+            if (_Args.Stage != ELevelStage.Loaded) 
                 return;
             foreach (var coroutinesQueue in m_CoroutinesDict
                 .Select(_Kvp => _Kvp.Value))

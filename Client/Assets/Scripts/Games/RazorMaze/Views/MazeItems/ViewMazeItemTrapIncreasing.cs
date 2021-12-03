@@ -215,7 +215,7 @@ namespace Games.RazorMaze.Views.MazeItems
             if (stage == ELevelStage.Finished || stage == ELevelStage.Unloaded)
                 return;
             m_TrapOpened = true;
-            OpenTrapCoroutine(true);
+            m_Animator.SetTrigger(AnimKeyOpen);
             Managers.AudioManager.PlayClip(AudioClipArgsTrapIncreasingOpen);
         }
 
@@ -226,15 +226,10 @@ namespace Games.RazorMaze.Views.MazeItems
             if (m_TrapOpened.HasValue && !m_TrapOpened.Value)
                 return;
             m_TrapOpened = false;
-            OpenTrapCoroutine(false);
+            m_Animator.SetTrigger(AnimKeyClose);
             m_DoPlaySwordSpinningSound = true;
             Managers.AudioManager.StopClip(AudioClipArgsTrapIncreasingRotate);
             Managers.AudioManager.PlayClip(AudioClipArgsTrapIncreasingClose);
-        }
-
-        private void OpenTrapCoroutine(bool _Open)
-        {
-            m_Animator.SetTrigger(_Open ? AnimKeyOpen : AnimKeyClose);
         }
 
         protected override void OnAppearStart(bool _Appear)
