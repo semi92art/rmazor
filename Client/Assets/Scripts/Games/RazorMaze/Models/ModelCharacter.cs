@@ -171,7 +171,7 @@ namespace Games.RazorMaze.Models
             return nextPos;
         }
 
-        private bool IsNextPositionValid(
+        private static bool IsNextPositionValid(
             IReadOnlyList<IMazeItemProceedInfo> _ProceedInfos,
             IReadOnlyList<V2Int> _PathItems,
             V2Int _From,

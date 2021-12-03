@@ -74,40 +74,46 @@ namespace Games.RazorMaze.Views.MazeItemGroups
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage == ELevelStage.Loaded)
+            switch (_Args.Stage)
             {
-                DeactivateAllPaths();
-                MazeItemsCreator.InitPathItems(ModelData.Info, m_PathsPool);
-                if (!ViewSettings.StartPathItemFilledOnStart)
-                    UnfillStartPathItem();
-            }
-            else if (_Args.Stage == ELevelStage.Finished && _Args.PreviousStage != ELevelStage.Paused)
-            {
-                if (m_MoneyItemsCollectedCount > 0)
+                case ELevelStage.Loaded:
                 {
-                    int moneyItemsCount = m_MoneyItemsCollectedCount;
-                    var moneyEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money);
-                    Coroutines.Run(Coroutines.WaitWhile(
-                        () => moneyEntity.Result == EEntityResult.Pending,
-                        () =>
-                        {
-                            if (moneyEntity.Result == EEntityResult.Fail)
-                            {
-                                Dbg.LogError("Failed to load money entity");
-                                return;
-                            }
-                            var currentMoneyCount = moneyEntity.GetFirstScore();
-                            if (currentMoneyCount.HasValue)
-                            {
-                                Managers.ScoreManager.SetScore(
-                                    DataFieldIds.Money, 
-                                    currentMoneyCount.Value + moneyItemsCount);
-                            }
-                        }));
+                    DeactivateAllPaths();
+                    MazeItemsCreator.InitPathItems(ModelData.Info, m_PathsPool);
+                    if (!ViewSettings.StartPathItemFilledOnStart)
+                        UnfillStartPathItem();
+                    break;
                 }
+                case ELevelStage.Finished when _Args.PreviousStage != ELevelStage.Paused:
+                {
+                    if (m_MoneyItemsCollectedCount > 0)
+                    {
+                        int moneyItemsCount = m_MoneyItemsCollectedCount;
+                        var moneyEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money);
+                        Coroutines.Run(Coroutines.WaitWhile(
+                            () => moneyEntity.Result == EEntityResult.Pending,
+                            () =>
+                            {
+                                if (moneyEntity.Result == EEntityResult.Fail)
+                                {
+                                    Dbg.LogError("Failed to load money entity");
+                                    return;
+                                }
+                                var currentMoneyCount = moneyEntity.GetFirstScore();
+                                if (currentMoneyCount.HasValue)
+                                {
+                                    Managers.ScoreManager.SetScore(
+                                        DataFieldIds.Money, 
+                                        currentMoneyCount.Value + moneyItemsCount);
+                                }
+                            }));
+                    }
+                    break;
+                }
+                case ELevelStage.ReadyToUnloadLevel:
+                    m_MoneyItemsCollectedCount = 0;
+                    break;
             }
-            else if (_Args.Stage == ELevelStage.ReadyToUnloadLevel)
-                m_MoneyItemsCollectedCount = 0;
             foreach (var item in PathItems)
                 item.OnLevelStageChanged(_Args);
         }

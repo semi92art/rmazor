@@ -1,7 +1,6 @@
 ﻿using System;
 using Games.RazorMaze.Models;
 using Ticker;
-using UnityEngine;
 using UnityEngine.Events;
 
 public enum ELevelStage
