@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Games.RazorMaze.Models.InputSchedulers;
 using Games.RazorMaze.Models.ItemProceeders;
@@ -120,6 +119,7 @@ namespace Games.RazorMaze.Models
             var getProceedInfosItems = GetInterfaceOfProceeders<IGetAllProceedInfos>(m_Proceeders);
             foreach (var item in getProceedInfosItems)
                 item.GetAllProceedInfos = GetAllProceedInfos;
+            Character.GetStartPosition = () => PathItemsProceeder.PathProceeds.First().Key;
 
             Initialized?.Invoke();
         }

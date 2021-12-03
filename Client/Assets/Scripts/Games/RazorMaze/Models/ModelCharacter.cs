@@ -46,16 +46,17 @@ namespace Games.RazorMaze.Models
 
     public interface IModelCharacter : IOnLevelStageChanged, IGetAllProceedInfos
     {
-        bool Alive { get; }
-        V2Int Position { get; }
-        bool IsMoving { get; }
-        CharacterMovingEventArgs MovingInfo { get; }
+        bool                         Alive            { get; }
+        V2Int                        Position         { get; }
+        bool                         IsMoving         { get; }
+        CharacterMovingEventArgs     MovingInfo       { get; }
+        Func<V2Int>                  GetStartPosition { get; set; }
         event CharacterMovingHandler CharacterMoveStarted;
         event CharacterMovingHandler CharacterMoveContinued;
         event CharacterMovingHandler CharacterMoveFinished;
-        void Move(EMazeMoveDirection _Direction);
-        void OnPortal(PortalEventArgs _Args);
-        void OnSpringboard(SpringboardEventArgs _Args);
+        void                         Move(EMazeMoveDirection _Direction);
+        void                         OnPortal(PortalEventArgs _Args);
+        void                         OnSpringboard(SpringboardEventArgs _Args);
     }
 
     public class ModelCharacter : IModelCharacter
@@ -70,20 +71,17 @@ namespace Games.RazorMaze.Models
 
         private ModelSettings Settings { get; }
         private IModelData Data { get; }
-        private IPathItemsProceeder PathItemsProceeder { get; }
         private IModelLevelStaging LevelStaging { get; }
         private IModelGameTicker GameTicker { get; }
 
         public ModelCharacter(
             ModelSettings _Settings, 
             IModelData _Data, 
-            IPathItemsProceeder _PathItemsProceeder,
             IModelLevelStaging _LevelStaging,
             IModelGameTicker _GameTicker)
         {
             Settings = _Settings;
             Data = _Data;
-            PathItemsProceeder = _PathItemsProceeder;
             LevelStaging = _LevelStaging;
             GameTicker = _GameTicker;
         }
@@ -92,14 +90,17 @@ namespace Games.RazorMaze.Models
 
         #region api
 
-        public bool Alive { get; private set; } = true;
-        public V2Int Position { get; private set; }
-        public bool IsMoving { get; private set; }
+        public bool                     Alive      { get; private set; } = true;
+        public V2Int                    Position   { get; private set; }
+        public bool                     IsMoving   { get; private set; }
         public CharacterMovingEventArgs MovingInfo { get; private set; }
+
+        
+        public Func<V2Int>                      GetStartPosition   { get;         set; }
         public Func<List<IMazeItemProceedInfo>> GetAllProceedInfos { private get; set; }
-        public event CharacterMovingHandler CharacterMoveStarted;
-        public event CharacterMovingHandler CharacterMoveContinued;
-        public event CharacterMovingHandler CharacterMoveFinished;
+        public event CharacterMovingHandler     CharacterMoveStarted;
+        public event CharacterMovingHandler     CharacterMoveContinued;
+        public event CharacterMovingHandler     CharacterMoveFinished;
 
         public void Move(EMazeMoveDirection _Direction)
         {
@@ -129,7 +130,7 @@ namespace Games.RazorMaze.Models
         {
             if (_Args.Stage == ELevelStage.Loaded)
             {
-                Position = PathItemsProceeder.PathProceeds.Keys.First();
+                Position = GetStartPosition();
             }
             else if (_Args.Stage == ELevelStage.ReadyToStart)
                 Revive(false);
@@ -341,7 +342,7 @@ namespace Games.RazorMaze.Models
         {
             if (Alive)
                 return;
-            Position = PathItemsProceeder.PathProceeds.First().Key;
+            Position = GetStartPosition();
             if (_WithNotify)
                 LevelStaging.ReadyToStartLevel();
             Alive = true;

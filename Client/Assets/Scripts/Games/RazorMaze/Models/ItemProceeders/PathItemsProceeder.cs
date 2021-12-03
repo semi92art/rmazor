@@ -29,11 +29,13 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region inject
         
-        private IModelData Data { get; }
+        private IModelData      Data      { get; }
+        private IModelCharacter Character { get; }
 
-        public PathItemsProceeder(IModelData _Data)
+        public PathItemsProceeder(IModelData _Data, IModelCharacter _Character)
         {
             Data = _Data;
+            Character = _Character;
         }
         
         #endregion
@@ -78,6 +80,10 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         private void ProceedPathItem(V2Int _PathItem)
         {
+            if (!Character.Alive)
+                return;
+            if (AllPathsProceeded)
+                return;
             if (!PathProceeds.ContainsKey(_PathItem) || PathProceeds[_PathItem])
                 return;
             PathProceeds[_PathItem] = true;
