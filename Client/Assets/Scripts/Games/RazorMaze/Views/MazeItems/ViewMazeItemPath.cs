@@ -33,6 +33,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private GameObject     m_MoneyItem;
         private SpriteRenderer m_MoneyItemRenderer;
+        private Animator       m_MoneyItemAnimator;
         private Rectangle      m_PathShape;
         private Line           m_LeftBorder,       m_RightBorder,       m_BottomBorder,  m_TopBorder;
         private Disc           m_BottomLeftCorner, m_BottomRightCorner, m_TopLeftCorner, m_TopRightCorner;
@@ -128,6 +129,24 @@ namespace Games.RazorMaze.Views.MazeItems
 
         public UnityAction MoneyItemCollected { get; set; }
 
+        public override void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            base.OnLevelStageChanged(_Args);
+            if (!Props.IsMoneyItem)
+                return;
+            switch (_Args.Stage)
+            {
+                case ELevelStage.Paused:
+                    m_MoneyItemAnimator.speed = 0f;
+                    break;
+                case ELevelStage.ReadyToStart:
+                case ELevelStage.StartedOrContinued:
+                case ELevelStage.Finished:
+                    m_MoneyItemAnimator.speed = 1f;
+                    break;
+            }
+        }
+
         public void UpdateTick()
         {
             if (!Initialized || !ActivatedInSpawnPool)
@@ -195,6 +214,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 {
                     m_MoneyItem = PrefabUtilsEx.InitPrefab(Object.transform, "views", "money_item");
                     m_MoneyItemRenderer = m_MoneyItem.GetCompItem<SpriteRenderer>("renderer");
+                    m_MoneyItemAnimator = m_MoneyItem.GetCompItem<Animator>("animator");
                     m_MoneyItemRenderer.color = ColorProvider.GetColor(ColorIds.MoneyItem);
                     m_MoneyItem.transform.SetLocalPosXY(Vector2.zero);
                     m_MoneyItem.transform.localScale = Vector3.one * CoordinateConverter.Scale;
