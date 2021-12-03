@@ -249,7 +249,7 @@ public partial class SROptions
                 return;
             _view.CommandsProceeder.RaiseCommand(
                 EInputCommand.LoadLevelByIndex, 
-                new object[] { Level_Index },
+                new object[] { Level_Index + 1 },
                 true);
         }
     }

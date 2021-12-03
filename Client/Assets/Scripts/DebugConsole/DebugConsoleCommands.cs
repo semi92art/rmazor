@@ -177,7 +177,7 @@ namespace DebugConsole
             }
             Controller.CommandsProceeder.RaiseCommand(
                 EInputCommand.LoadLevelByIndex, 
-                new object [] { levelIndex },
+                new object [] { levelIndex + 1 },
                 true);
         }
 
