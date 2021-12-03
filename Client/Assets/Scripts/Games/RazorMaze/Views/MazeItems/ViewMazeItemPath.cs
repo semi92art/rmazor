@@ -42,7 +42,7 @@ namespace Games.RazorMaze.Views.MazeItems
         #region nonpublic members
 
         private static AudioClipArgs AudioClipArgsCollectMoneyItem => 
-            new AudioClipArgs("collect_point", EAudioClipType.Sound);
+            new AudioClipArgs("collect_point", EAudioClipType.GameSound);
         protected override string ObjectName => "Path Block";
         
         private bool m_Collect;

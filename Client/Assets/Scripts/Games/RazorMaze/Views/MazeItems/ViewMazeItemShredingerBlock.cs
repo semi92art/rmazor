@@ -29,9 +29,9 @@ namespace Games.RazorMaze.Views.MazeItems
         #region nonpublic members
 
         private static AudioClipArgs AudioClipArgsOpenBlock => 
-            new AudioClipArgs("shredinger_open", EAudioClipType.Sound);
+            new AudioClipArgs("shredinger_open", EAudioClipType.GameSound);
         private static AudioClipArgs AudioClipArgsCloseBlock =>
-            new AudioClipArgs("shredinger_close", EAudioClipType.Sound);
+            new AudioClipArgs("shredinger_close", EAudioClipType.GameSound);
 
         protected override string ObjectName => "Shredinger Block";
 

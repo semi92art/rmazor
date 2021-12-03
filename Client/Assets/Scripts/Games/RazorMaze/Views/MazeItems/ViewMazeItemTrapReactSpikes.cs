@@ -284,7 +284,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         private static AudioClipArgs GetAudioClipInfoTrapReactOut(IMazeItemProceedInfo _Info)
         {
-            return new AudioClipArgs("trap_react_out", EAudioClipType.Sound, _Id: _Info.GetHashCode().ToString());
+            return new AudioClipArgs("trap_react_out", EAudioClipType.GameSound, _Id: _Info.GetHashCode().ToString());
         }
         
         #endregion

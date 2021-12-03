@@ -8,7 +8,7 @@ namespace Settings
     public class MusicSetting : SettingBase<bool>, IMusicSetting
     {
         public override UnityAction<bool> OnValueSet   { get; set; }
-        public override SaveKey<bool>     Key          => SaveKeys.SettingSoundOn;
+        public override SaveKey<bool>     Key          => SaveKeys.SettingMusicOn;
         public override string            TitleKey     => "Music";
         public override ESettingLocation  Location     => ESettingLocation.MiniButtons;
         public override ESettingType      Type         => ESettingType.OnOff;

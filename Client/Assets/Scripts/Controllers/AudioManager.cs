@@ -5,10 +5,12 @@ using DI.Extensions;
 using Entities;
 using Exceptions;
 using GameHelpers;
+using Games.RazorMaze.Views;
 using Games.RazorMaze.Views.ContainerGetters;
 using Settings;
 using Ticker;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.Events;
 using Utils;
 
@@ -16,107 +18,20 @@ namespace Controllers
 {
     public enum EAudioClipType
     {
-        Sound,
+        GameSound,
+        UiSound,
         Music
     }
     
-    public class AudioClipArgs
-    {
-        public         string         ClipName                 { get; }
-        public         EAudioClipType Type                     { get; }
-        public         string         Id                       { get; }
-        public         bool           IsUiSound                { get; }
-        public         bool           Loop                     { get; set; }
-        public         float          StartVolume              { get; set; }
-        public         float          AttenuationSecondsOnPlay { get; set; }
-        public         float          AttenuationSecondsOnStop { get; set; }
-
-        public AudioClipArgs(
-            string _ClipName,
-            EAudioClipType _Type,
-            float _Volume = 1f, 
-            bool _Loop = false, 
-            string _Id = null,
-            bool _IsUiSound = false,
-            float _AttenuationSecondsOnPlay = 0f,
-            float _AttenuationSecondsOnStop = 0f)
-        {
-            ClipName = _ClipName;
-            Type = _Type;
-            StartVolume = _Volume;
-            Loop = _Loop;
-            Id = _Id;
-            IsUiSound = _IsUiSound;
-            AttenuationSecondsOnPlay = _AttenuationSecondsOnPlay;
-            AttenuationSecondsOnStop = _AttenuationSecondsOnStop;
-        }
-    }
-
-    public class AudioClipInfo : AudioClipArgs
-    {
-        private AudioSource m_Source    { get; }
-
-        private bool m_OnPause;
-        public bool OnPause
-        {
-            get => m_OnPause;
-            set
-            {
-                if (value)
-                    m_Source.Pause();
-                else m_Source.UnPause();
-                m_OnPause = value;
-            }
-        }
-
-        public float Volume
-        {
-            get => m_Source.volume;
-            set => m_Source.volume = value;
-        }
-
-        public new bool Loop
-        {
-            get => m_Source.loop;
-            set => m_Source.loop = value;
-        }
-
-        public bool Playing
-        {
-            get => m_Source.isPlaying;
-            set
-            {
-                if (value)
-                    m_Source.Play();
-                else m_Source.Stop();
-            }
-        }
-
-        public AudioClipInfo(
-            AudioSource _Source,
-            AudioClipArgs _Args)
-            : base(
-                _Args.ClipName,
-                _Args.Type, 
-                _Args.StartVolume,
-                _Args.Loop, 
-                _Args.Id,
-                _Args.IsUiSound,
-                _Args.AttenuationSecondsOnPlay, 
-                _Args.AttenuationSecondsOnStop)
-        {
-            m_Source = _Source;
-            Loop = _Args.Loop;
-        }
-    }
-
-    public interface IAudioManager : IInit
+    public interface IAudioManager : IInit, IOnLevelStageChanged
     {
         void PlayClip(AudioClipArgs _Args);
         void PauseClip(AudioClipArgs _Args);
         void UnPauseClip(AudioClipArgs _Args);
         void StopClip(AudioClipArgs _Args);
-        void EnableAudio(bool _Enable, params EAudioClipType[] _Types);
+        void EnableAudio(bool _Enable, EAudioClipType _Type);
+        void MuteAudio(EAudioClipType _Type);
+        void UnmuteAudio(EAudioClipType _Type);
     }
     
     public class AudioManager : IAudioManager
@@ -124,13 +39,16 @@ namespace Controllers
         #region nonpublic members
 
         private readonly List<AudioClipInfo> m_ClipInfos = new List<AudioClipInfo>();
+        private          AudioMixer          m_Mixer;
+        private          AudioMixerGroup     m_MasterGroup;
+        private          AudioMixerGroup     m_MutedGroup;
         
         #endregion
         
         #region inject
         
         private IContainersGetter ContainersGetter { get; }
-        private IViewGameTicker       GameTicker       { get; }
+        private IViewGameTicker   GameTicker       { get; }
         private IUITicker         UITicker         { get; }
         private IMusicSetting     MusicSetting     { get; }
         private ISoundSetting     SoundSetting     { get; }
@@ -159,9 +77,15 @@ namespace Controllers
         {
             GameTicker.Register(this);
             MusicSetting.OnValueSet = _MusicOn => EnableAudio(_MusicOn, EAudioClipType.Music);
-            SoundSetting.OnValueSet = _MusicOn => EnableAudio(_MusicOn, EAudioClipType.Sound);
+            SoundSetting.OnValueSet = _MusicOn =>
+            {
+                EnableAudio(_MusicOn, EAudioClipType.UiSound);
+                EnableAudio(_MusicOn, EAudioClipType.GameSound);
+            };
             EnableAudio(MusicSetting.Get(), EAudioClipType.Music);
-            EnableAudio(SoundSetting.Get(), EAudioClipType.Sound);
+            EnableAudio(SoundSetting.Get(), EAudioClipType.UiSound);
+            EnableAudio(SoundSetting.Get(), EAudioClipType.GameSound);
+            InitAudioMixer();
             Initialized?.Invoke();
         }
 
@@ -180,28 +104,14 @@ namespace Controllers
                 info = new AudioClipInfo(audioSource, _Args);
                 m_ClipInfos.Add(info);
             }
-
             info.StartVolume = _Args.StartVolume;
-            switch (info.Type)
-            {
-                case EAudioClipType.Sound:
-                    info.Volume = SaveUtils.GetValue(SaveKeys.SettingSoundOn) ? info.StartVolume : 0f;
-                    break;
-                case EAudioClipType.Music:
-                    info.Volume = SaveUtils.GetValue(SaveKeys.SettingMusicOn) ? info.StartVolume : 0f;
-                    break;
-                default:
-                    throw new SwitchCaseNotImplementedException(info.Type);
-            }
-            
+            info.Volume = SaveUtils.GetValue(GetSaveKeyByType(info.Type)) ? info.StartVolume : 0f;
             if (info.OnPause)
                 info.OnPause = false;
             else
                 info.Playing = true;
             if (info.AttenuationSecondsOnPlay > float.Epsilon)
                 Coroutines.Run(AttenuateCoroutine(info, true));
-            else
-                info.Volume = info.StartVolume;
         }
 
         public void PauseClip(AudioClipArgs _Args)
@@ -230,23 +140,55 @@ namespace Controllers
                 info.Playing = false;
         }
 
-        public void EnableAudio(bool _Enable, params EAudioClipType[] _Types)
+        public void EnableAudio(bool _Enable, EAudioClipType _Type)
         {
-            if (_Types == null)
-                return;
-            var infos = !_Types.Any()
-                ? m_ClipInfos : m_ClipInfos.Where(_Info => _Types.Contains(_Info.Type));
+            var infos = m_ClipInfos.Where(_Info => _Type == _Info.Type);
             foreach (var info in infos)
                 info.Volume = _Enable ? info.StartVolume : 0f;
-            if (_Types.Contains(EAudioClipType.Sound))
-                SaveUtils.PutValue(SaveKeys.SettingSoundOn, _Enable);
-            if (_Types.Contains(EAudioClipType.Music))
-                SaveUtils.PutValue(SaveKeys.SettingMusicOn, _Enable);
+            SaveUtils.PutValue(GetSaveKeyByType(_Type), _Enable);
+        }
+
+        public void MuteAudio(EAudioClipType _Type)
+        {
+            MuteAudio(true, _Type);
+        }
+
+        public void UnmuteAudio(EAudioClipType _Type)
+        {
+            MuteAudio(false, _Type);
         }
         
+        public void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            if (_Args.Stage != ELevelStage.Loaded) 
+                return;
+            m_ClipInfos
+                .Where(_Info => !string.IsNullOrEmpty(_Info.Id))
+                .ToList()
+                .ForEach(_Info =>
+                {
+                    _Info.DestroySource();
+                    m_ClipInfos.Remove(_Info);
+                });
+        }
+
         #endregion
         
         #region nonpublic methods
+
+        private void InitAudioMixer()
+        {
+            m_Mixer = PrefabUtilsEx.GetObject<AudioMixer>("audio_mixers", "default_mixer");
+            m_MasterGroup = m_Mixer.FindMatchingGroups("Master")[0];
+            m_MutedGroup = m_Mixer.FindMatchingGroups("Master/Muted")[0];
+        }
+        
+        private void MuteAudio(bool _Mute, EAudioClipType _Type)
+        {
+            var infos = m_ClipInfos.Where(_Info => _Type == _Info.Type);
+            foreach (var info in infos)
+                info.MixerGroup = _Mute ? m_MutedGroup : m_MasterGroup;
+        }
 
         private IEnumerator AttenuateCoroutine(AudioClipInfo _Info, bool _AttenuateUp)
         {
@@ -257,7 +199,7 @@ namespace Controllers
                 endVolume,
                 _AttenuateUp ? _Info.AttenuationSecondsOnPlay : _Info.AttenuationSecondsOnStop,
                 _Volume => _Info.Volume = _Volume,
-                _Info.IsUiSound ? (ITicker)UITicker : GameTicker,
+                _Info.Type == EAudioClipType.UiSound ? (ITicker)UITicker : GameTicker,
                 (_, __) =>
                 {
                     if (!_AttenuateUp)
@@ -280,6 +222,21 @@ namespace Controllers
                         return false;
                     return true;
                 });
+        }
+
+        private static SaveKey<bool> GetSaveKeyByType(EAudioClipType _Type)
+        {
+            switch (_Type)
+            {
+                case EAudioClipType.GameSound:
+                    return SaveKeys.SettingSoundOn;
+                case EAudioClipType.UiSound:
+                    return SaveKeys.SettingSoundOn;
+                case EAudioClipType.Music:
+                    return SaveKeys.SettingMusicOn;
+                default:
+                    throw new SwitchCaseNotImplementedException(_Type);
+            }
         }
 
         #endregion

@@ -37,7 +37,7 @@ namespace Games.RazorMaze.Views.MazeItems
         #region nonpublic members
 
         private static AudioClipArgs _audioClipArgsSpringboardJump => 
-            new AudioClipArgs("springboard_jump", EAudioClipType.Sound);
+            new AudioClipArgs("springboard_jump", EAudioClipType.GameSound);
         private Vector2 m_Edge1Start, m_Edge2Start;
         
         #endregion

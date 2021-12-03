@@ -38,7 +38,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region nonpublic members
 
-        private static AudioClipArgs AudioClipArgsPortal => new AudioClipArgs("portal", EAudioClipType.Sound);
+        private static AudioClipArgs AudioClipArgsPortal => new AudioClipArgs("portal", EAudioClipType.GameSound);
 
         private float m_GravitySpawnTimer;
         

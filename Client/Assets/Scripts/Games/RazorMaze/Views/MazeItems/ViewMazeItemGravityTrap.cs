@@ -277,7 +277,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private AudioClipArgs GetAudioClipArgsTrapRotate(IMazeItemProceedInfo _Info)
         {
-            return new AudioClipArgs("mace_roll", EAudioClipType.Sound, _Loop: true, _Id: _Info.GetHashCode().ToString());
+            return new AudioClipArgs("mace_roll", EAudioClipType.GameSound, _Loop: true, _Id: _Info.GetHashCode().ToString());
         }
 
         #endregion

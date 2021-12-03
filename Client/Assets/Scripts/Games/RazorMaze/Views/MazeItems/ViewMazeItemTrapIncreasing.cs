@@ -30,11 +30,11 @@ namespace Games.RazorMaze.Views.MazeItems
         #region nonpublic members
 
         private static AudioClipArgs AudioClipArgsTrapIncreasingOpen =>
-            new AudioClipArgs("sword_open", EAudioClipType.Sound);
+            new AudioClipArgs("sword_open", EAudioClipType.GameSound);
         private static AudioClipArgs AudioClipArgsTrapIncreasingRotate => 
-            new AudioClipArgs("sword_spinning", EAudioClipType.Sound, _Loop: true);
+            new AudioClipArgs("sword_spinning", EAudioClipType.GameSound, _Loop: true);
         private static AudioClipArgs AudioClipArgsTrapIncreasingClose => 
-            new AudioClipArgs("sword_close", EAudioClipType.Sound);
+            new AudioClipArgs("sword_close", EAudioClipType.GameSound);
         
         private static int AnimKeyOpen => AnimKeys.Anim;
         private static int AnimKeyClose => AnimKeys.Stop;

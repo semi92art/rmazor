@@ -39,7 +39,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region nonpublic members
 
-        private static AudioClipArgs AudioClipArgsShurikenFly => new AudioClipArgs("shuriken", EAudioClipType.Sound);
+        private static AudioClipArgs AudioClipArgsShurikenFly => new AudioClipArgs("shuriken", EAudioClipType.GameSound);
         
         private float     m_RotatingSpeed;
         private bool      m_BulletRotating;

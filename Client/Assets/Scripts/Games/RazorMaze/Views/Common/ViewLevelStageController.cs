@@ -4,6 +4,7 @@ using Constants;
 using Controllers;
 using DialogViewers;
 using Entities;
+using Exceptions;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Characters;
@@ -30,9 +31,9 @@ namespace Games.RazorMaze.Views.Common
         #region nonpublic members
         
         private static AudioClipArgs AudioClipArgsLevelStart => 
-            new AudioClipArgs("level_start", EAudioClipType.Sound);
+            new AudioClipArgs("level_start", EAudioClipType.GameSound);
         private static AudioClipArgs AudioClipArgsLevelComplete => 
-            new AudioClipArgs("level_complete", EAudioClipType.Sound);
+            new AudioClipArgs("level_complete", EAudioClipType.GameSound);
         private static AudioClipArgs AudioClipArgsMainTheme =>
             new AudioClipArgs("main_theme", EAudioClipType.Music, _Loop: true);
 
@@ -235,17 +236,35 @@ namespace Games.RazorMaze.Views.Common
 
         private void ProceedSounds(LevelStageArgs _Args)
         {
-            if (_Args.Stage == ELevelStage.Loaded)
+            var audioManager = Managers.AudioManager;
+            switch (_Args.Stage)
             {
-                Managers.AudioManager.PlayClip(AudioClipArgsLevelStart);
-                if (!m_FirstTimeLevelLoaded)
-                {
-                    Managers.AudioManager.PlayClip(AudioClipArgsMainTheme);
-                    m_FirstTimeLevelLoaded = true;
-                }
+                case ELevelStage.Loaded:
+                    audioManager.PlayClip(AudioClipArgsLevelStart);
+                    if (!m_FirstTimeLevelLoaded)
+                    {
+                        audioManager.PlayClip(AudioClipArgsMainTheme);
+                        m_FirstTimeLevelLoaded = true;
+                    }
+                    break;
+                case ELevelStage.Finished when _Args.PreviousStage != ELevelStage.Paused:
+                    audioManager.PlayClip(AudioClipArgsLevelComplete);
+                    break;
+                case ELevelStage.Paused:
+                    audioManager.MuteAudio(EAudioClipType.GameSound);
+                    break;
+                case ELevelStage.ReadyToStart:
+                case ELevelStage.StartedOrContinued:
+                case ELevelStage.Finished:
+                    audioManager.UnmuteAudio(EAudioClipType.GameSound);
+                    break;
+                case ELevelStage.ReadyToUnloadLevel:
+                case ELevelStage.Unloaded:
+                case ELevelStage.CharacterKilled:
+                    break;
+                default:
+                    throw new SwitchCaseNotImplementedException(_Args.Stage);
             }
-            else if (_Args.Stage == ELevelStage.Finished && _Args.PreviousStage != ELevelStage.Paused)
-                Managers.AudioManager.PlayClip(AudioClipArgsLevelComplete);
         }
         
         #endregion

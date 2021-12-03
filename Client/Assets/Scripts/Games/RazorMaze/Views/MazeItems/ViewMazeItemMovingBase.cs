@@ -29,7 +29,7 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         #region nonpublic members
         
-        protected static AudioClipArgs AudioClipArgsBlockDrop => new AudioClipArgs("block_drop", EAudioClipType.Sound);
+        protected static AudioClipArgs AudioClipArgsBlockDrop => new AudioClipArgs("block_drop", EAudioClipType.GameSound);
         
         #endregion
         

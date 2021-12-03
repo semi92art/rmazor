@@ -197,7 +197,7 @@ namespace Games.RazorMaze.Views.Characters
                 Tail.HideTail(_Args);
             Coroutines.Run(MazeShaker.HitMazeCoroutine(_Args));
             int randClipId = 1 + Mathf.FloorToInt(5f * Random.value);
-            Managers.AudioManager.PlayClip(new AudioClipArgs($"character_end_move_{randClipId}", EAudioClipType.Sound));
+            Managers.AudioManager.PlayClip(new AudioClipArgs($"character_end_move_{randClipId}", EAudioClipType.GameSound));
             Managers.HapticsManager.PlayPreset(EHapticsPresetType.LightImpact);
             Effector.OnCharacterMoveFinished(_Args);
         }
@@ -224,7 +224,7 @@ namespace Games.RazorMaze.Views.Characters
                     m_OrientationCache = Model.Data.Orientation;
                     m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = false;
                     Tail.HideTail();
-                    Managers.AudioManager.PlayClip(new AudioClipArgs("character_death", EAudioClipType.Sound));
+                    Managers.AudioManager.PlayClip(new AudioClipArgs("character_death", EAudioClipType.GameSound));
                     Managers.HapticsManager.PlayPreset(EHapticsPresetType.Failure);
                     Coroutines.Run(MazeShaker.ShakeMazeCoroutine());
                     break;
