@@ -357,7 +357,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private IEnumerator DoShoot(TurretShotEventArgs _Args)
         {
             Managers.AudioManager.PlayClip(AudioClipArgsShurikenFly);
-            Managers.HapticsManager.PlayPreset(EHapticsPresetType.HeavyImpact);
+            Managers.HapticsManager.PlayPreset(EHapticsPresetType.Selection);
             Vector2 projectilePos = _Args.From;
             var projectilePosPrev = projectilePos;
             V2Int point = default;
