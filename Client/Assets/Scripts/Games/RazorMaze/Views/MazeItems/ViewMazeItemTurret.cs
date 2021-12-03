@@ -517,6 +517,10 @@ namespace Games.RazorMaze.Views.MazeItems
 
         private bool IsDeathPossible()
         {
+            if (!Initialized || !ActivatedInSpawnPool)
+                return false;
+            if (ProceedingStage != EProceedingStage.ActiveAndWorking)
+                return false;
             if (!Model.Character.Alive)
                 return false;
             if (Model.LevelStaging.LevelStage == ELevelStage.Finished)

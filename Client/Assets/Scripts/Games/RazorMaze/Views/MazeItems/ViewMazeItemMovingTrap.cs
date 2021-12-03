@@ -122,6 +122,8 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             if (!Initialized || !ActivatedInSpawnPool)
                 return;
+            if (ProceedingStage != EProceedingStage.ActiveAndWorking)
+                return;
             CheckForCharacterDeath();
         }
         

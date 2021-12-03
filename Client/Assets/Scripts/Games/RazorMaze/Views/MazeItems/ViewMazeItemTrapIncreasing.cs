@@ -129,6 +129,10 @@ namespace Games.RazorMaze.Views.MazeItems
         
         public void UpdateTick()
         {
+            if (!Initialized || !ActivatedInSpawnPool)
+                return;
+            if (ProceedingStage != EProceedingStage.ActiveAndWorking)
+                return;
             if (!m_ReadyToKill)
                 return;
             CheckForCharacterDeath();
