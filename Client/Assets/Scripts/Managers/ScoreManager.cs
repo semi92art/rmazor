@@ -4,6 +4,7 @@ using Constants;
 using Entities;
 using GameHelpers;
 using UnityEngine;
+using UnityEngine.Events;
 using Utils;
 
 namespace Managers
@@ -20,7 +21,7 @@ namespace Managers
         }
     }
 
-    public interface IScoreManager
+    public interface IScoreManager : IInit
     {
         event ScoresEventHandler OnScoresChanged;
         ScoresEntity GetScore(ushort _Id);
@@ -61,6 +62,12 @@ namespace Managers
         #region api
 
         public event ScoresEventHandler OnScoresChanged;
+        
+        public event UnityAction Initialized;
+        public void Init()
+        {
+            AuthenticateSocial(() => Initialized?.Invoke());
+        }
 
         public ScoresEntity GetScore(ushort _Id)
         {
@@ -101,6 +108,26 @@ namespace Managers
         #endregion
 
         #region nonpublic methods
+
+        private void AuthenticateSocial(UnityAction _OnSucceed)
+        {
+            Social.localUser.Authenticate(_Success =>
+            {
+                if (_Success)
+                {
+                    Dbg.Log("Social authentication succeeded.");
+                    string userInfo = "Username: " + Social.localUser.userName +
+                                      "\nUser ID: " + Social.localUser.id +
+                                      "\nIsUnderage: " + Social.localUser.underage;
+                    Dbg.Log(userInfo);
+                    _OnSucceed?.Invoke();
+                }
+                else
+                {
+                    Dbg.LogError("Social authentication failed.");
+                }
+            });
+        }
 
         private static ScoresEntity GetScoreCached(ushort _Id)
         {
@@ -242,8 +269,6 @@ namespace Managers
         }
 
 #endif
-
-
 
         #endregion
     }

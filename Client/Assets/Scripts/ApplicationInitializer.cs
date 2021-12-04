@@ -88,6 +88,7 @@ public class ApplicationInitializer : MonoBehaviour
     private void InitGameManagers()
     {
         GameClient.Instance.Init();
+        ScoreManager       .Init();
         AdsManager         .Init();
         AnalyticsManager   .Init();
         LocalizationManager.Init();
