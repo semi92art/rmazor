@@ -116,7 +116,7 @@ namespace Games.RazorMaze.Views.MazeItems
             CoordinateConverter, 
             ContainersGetter, 
             GameTicker,
-            BulletTail,
+            BulletTail.Clone() as IViewTurretBulletTail, 
             Background,
             Transitioner,
             Managers,
@@ -152,6 +152,7 @@ namespace Games.RazorMaze.Views.MazeItems
             m_BulletRenderer.sortingOrder = _Order;
             m_BulletMask.frontSortingOrder = m_BulletMask2.frontSortingOrder = _Order;
             m_BulletMask.backSortingOrder = m_BulletMask2.backSortingOrder = _Order - 1;
+            BulletTail.SetSortingOrder(_Order);
         }
 
         public void UpdateTick()
@@ -284,7 +285,8 @@ namespace Games.RazorMaze.Views.MazeItems
                 m_BulletFakeTr.SetGoActive(false);
                 var bulletPos = CoordinateConverter.ToLocalMazeItemPosition(Props.Position);
                 m_BulletTr.transform.SetLocalPosXY(bulletPos);
-                
+
+                Coroutines.Run(HighlightBarrel(true));
                 Coroutines.Run(OpenBarrel(true, false));
             }, _Delay);
         }
@@ -295,6 +297,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 () =>
                 {
                     Coroutines.Run(AnimateFakeBulletBeforeShoot());
+                    Coroutines.Run(HighlightBarrel(false));
                     Coroutines.Run(OpenBarrel(false, false));
                 },
                 _Delay);
@@ -354,6 +357,21 @@ namespace Games.RazorMaze.Views.MazeItems
                 GameTicker);
         }
 
+        private IEnumerator HighlightBarrel(bool _Open)
+        {
+            var defCol = ColorProvider.GetColor(ColorIds.Main);
+            var highlightCol = ColorProvider.GetColor(ColorIds.MazeItem1);
+            var startCol = _Open ? defCol : highlightCol;
+            var endCol = !_Open ? defCol : highlightCol;
+            
+            yield return Coroutines.Lerp(
+                startCol,
+                endCol,
+                0.1f,
+                _Color => m_Body.Color = _Color,
+                GameTicker);
+        }
+
         private IEnumerator DoShoot(TurretShotEventArgs _Args)
         {
             Managers.AudioManager.PlayClip(AudioClipArgsShurikenFly);
@@ -398,14 +416,14 @@ namespace Games.RazorMaze.Views.MazeItems
                     projectilePos += (Vector2)_Args.Direction * ModelSettings.TurretProjectileSpeed * GameTicker.FixedDeltaTime;
                     m_BulletTr.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(projectilePos));
                     point = V2Int.Round(projectilePos);
-                    BulletTail.ShowTail(_Args);
-                    if (point == _Args.To + _Args.Direction + _Args.Direction)
+                    BulletTail.ShowTail(_Args, projectilePos);
+                    if (point == _Args.To + 2 * _Args.Direction)
                         movedToTheEnd = true;
                 }, () =>
                 {
                     m_BulletRotating = false;
                     m_Bullet.SetGoActive(false);
-                    BulletTail.HideTail(_Args);
+                    BulletTail.HideTail();
                 },
                 GameTicker,
                 _FixedUpdate: true);
