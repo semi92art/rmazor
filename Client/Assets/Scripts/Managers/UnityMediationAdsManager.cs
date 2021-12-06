@@ -35,7 +35,7 @@ namespace Managers
         public override bool              RewardedAdReady     => false; // m_RewardedAd.AdState == AdState.Loaded;
         public override bool              InterstitialAdReady => false;// m_InterstitialAd.AdState == AdState.Loaded;
 
-        public override void ShowRewardedAd(UnityAction _OnPaid)
+        public override void ShowRewardedAd(UnityAction _OnShown)
         {
             var showAds = ShowAds;
             Coroutines.Run(Coroutines.WaitWhile(
@@ -48,7 +48,7 @@ namespace Managers
                         return;
                     if (RewardedAdReady)
                     {
-                        m_OnRewardedAdShown = _OnPaid;
+                        m_OnRewardedAdShown = _OnShown;
                         // m_RewardedAd.Show();
                     }
                     else
@@ -83,9 +83,10 @@ namespace Managers
                 }));
         }
 
-        protected override async void InitConfigs()
+        protected override async void InitConfigs(UnityAction _OnSuccess)
         {
             await UnityServices.InitializeAsync();
+            _OnSuccess?.Invoke();
             // MediationService.Instance.ImpressionEventPublisher.OnImpression += OnImpression;
         }
 

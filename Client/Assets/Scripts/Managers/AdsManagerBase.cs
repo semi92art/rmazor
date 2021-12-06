@@ -4,6 +4,7 @@ using System.Xml.Linq;
 using Constants;
 using DI.Extensions;
 using Entities;
+using UnityEngine;
 using UnityEngine.Events;
 using Utils;
 
@@ -15,7 +16,7 @@ namespace Managers
         bool              RewardedAdReady     { get; }
         bool              InterstitialAdReady { get; }
         event UnityAction RewardedAdLoaded;
-        void              ShowRewardedAd(UnityAction _OnPaid);
+        void              ShowRewardedAd(UnityAction _OnShown);
         void              ShowInterstitialAd(UnityAction _OnShown);
     }
     
@@ -38,8 +39,7 @@ namespace Managers
         {
             get
             {
-
-#if UNITY_EDITOR
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
                 return GetShowAdsCached();
 #elif UNITY_ANDROID
                 return GetShowAdsAndroid();
@@ -63,17 +63,19 @@ namespace Managers
         public virtual void Init()
         {
             m_Ads = ResLoader.FromResources(@"configs\ads");
-            InitConfigs();
-            InitRewardedAd();
-            InitInterstitialAd();
+            InitConfigs(() =>
+            {
+                InitRewardedAd();
+                InitInterstitialAd();
+            });
             Initialized?.Invoke();
             m_Initialized = true;
         }
 
-        public abstract void ShowRewardedAd(UnityAction _OnPaid);
+        public abstract void ShowRewardedAd(UnityAction _OnShown);
         public abstract void ShowInterstitialAd(UnityAction _OnShown);
 
-        protected abstract void InitConfigs();
+        protected abstract void InitConfigs(UnityAction _OnSuccess);
         protected abstract void InitRewardedAd();
         protected abstract void InitInterstitialAd();
         

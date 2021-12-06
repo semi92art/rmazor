@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using DI.Extensions;
 using GoogleMobileAds.Api;
 using UnityEngine.Events;
@@ -16,7 +15,6 @@ namespace Managers
 
         private RewardedAd     m_RewardedAd;
         private InterstitialAd m_InterstitialAd;
-        private AdRequest      m_AdRequest;
         private bool           m_ShowAds;
 
         #endregion
@@ -32,13 +30,16 @@ namespace Managers
         public override bool RewardedAdReady     => m_RewardedAd.IsLoaded();
         public override bool InterstitialAdReady => m_InterstitialAd.IsLoaded();
         
-        public override void ShowRewardedAd(UnityAction _OnPaid)
+        public override void ShowRewardedAd(UnityAction _OnShown)
         {
-            m_OnRewardedAdShown = _OnPaid;
+            m_OnRewardedAdShown = _OnShown;
             if (RewardedAdReady)
                 m_RewardedAd.Show();
             else
-                m_RewardedAd.LoadAd(m_AdRequest);
+            {
+                var adRequest = new AdRequest.Builder().Build();
+                m_RewardedAd.LoadAd(adRequest);
+            }
         }
         
         public override void ShowInterstitialAd(UnityAction _OnShown)
@@ -47,27 +48,39 @@ namespace Managers
             if (InterstitialAdReady)
                 m_InterstitialAd.Show();
             else
-                m_InterstitialAd.LoadAd(m_AdRequest);
+            {
+                var adRequest = new AdRequest.Builder().Build();
+                m_InterstitialAd.LoadAd(adRequest);
+            }
         }
         
         #endregion
 
         #region nonpublic methods
 
-        protected override void InitConfigs()
+        protected override void InitConfigs(UnityAction _OnSuccess)
         {
-            new RequestConfiguration.Builder()
+            var reqConfig = new RequestConfiguration.Builder()
                 .SetTestDeviceIds(GetTestDeviceIds())
                 .build();
-            MobileAds.Initialize(_InitStatus => { });
-            m_AdRequest = new AdRequest.Builder().Build();
+            MobileAds.SetRequestConfiguration(reqConfig);
+            MobileAds.Initialize(_InitStatus =>
+            {
+                var map = _InitStatus.getAdapterStatusMap();
+                foreach (var kvp in map)
+                {
+                    Dbg.Log($"Google AdMob initialization status: {kvp.Key}:{kvp.Value.Description}:{kvp.Value.InitializationState}");
+                }
+                _OnSuccess?.Invoke();
+            });
         }
 
         protected override void InitRewardedAd()
         {
             string rewardedAdId = GetAdsNodeValue("admob", "interstitial");
             m_RewardedAd = new RewardedAd(rewardedAdId);
-            m_RewardedAd.LoadAd(m_AdRequest);
+            var adRequest = new AdRequest.Builder().Build();
+            m_RewardedAd.LoadAd(adRequest);
             m_RewardedAd.OnAdLoaded += OnRewardedAdLoaded;
             m_RewardedAd.OnAdFailedToLoad += OnRewardedAdFailedToLoad;
             m_RewardedAd.OnPaidEvent += OnRewardedAdPaidEvent;
@@ -78,7 +91,8 @@ namespace Managers
         {
             string interstitialAdId = GetAdsNodeValue("admob", "reward");
             m_InterstitialAd = new InterstitialAd(interstitialAdId);
-            m_InterstitialAd.LoadAd(m_AdRequest);
+            var adRequest = new AdRequest.Builder().Build();
+            m_InterstitialAd.LoadAd(adRequest);
             m_InterstitialAd.OnAdLoaded += OnInterstitialAdLoaded;
             m_InterstitialAd.OnAdFailedToLoad += OnInterstitialAdFailedToLoad;
             m_InterstitialAd.OnAdClosed += OnInterstitialAdClosed;
@@ -112,7 +126,8 @@ namespace Managers
         private void OnRewardedAdClosed(object _Sender, EventArgs _E)
         {
             Dbg.Log(nameof(OnRewardedAdClosed).WithSpaces());
-            m_RewardedAd.LoadAd(m_AdRequest);
+            var adRequest = new AdRequest.Builder().Build();
+            m_RewardedAd.LoadAd(adRequest);
         }
         
         private void OnInterstitialAdLoaded(object _Sender, EventArgs _E)
@@ -128,7 +143,8 @@ namespace Managers
         private void OnInterstitialAdClosed(object _Sender, EventArgs _E)
         {
             Dbg.Log(nameof(OnInterstitialAdClosed).WithSpaces());
-            m_InterstitialAd.LoadAd(m_AdRequest);
+            var adRequest = new AdRequest.Builder().Build();
+            m_InterstitialAd.LoadAd(adRequest);
         }
         
         #endregion
