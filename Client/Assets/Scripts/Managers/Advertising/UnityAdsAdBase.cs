@@ -3,13 +3,14 @@ using UnityEngine.Advertisements;
 using UnityEngine.Events;
 using Utils;
 
-namespace Managers
+namespace Managers.Advertising
 {
     public interface IUnityAdsAd
     {
         bool Ready { get; }
         void Init(string _UnitId);
         void ShowAd(UnityAction _OnShown);
+        void LoadAd();
     }
     
     public class UnityAdsAdBase : IUnityAdsAd, IUnityAdsLoadListener, IUnityAdsShowListener
@@ -77,7 +78,7 @@ namespace Managers
             LoadAd();
         }
         
-        protected virtual void LoadAd()
+        public virtual void LoadAd()
         {
             Ready = false;
             Advertisement.Load(m_UnitId, this);

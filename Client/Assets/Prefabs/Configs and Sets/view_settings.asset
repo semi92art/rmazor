@@ -31,3 +31,4 @@ MonoBehaviour:
   rightScreenOffset: 1
   bottomScreenOffset: 10
   topScreenOffset: 20
+  adsProvider: -1

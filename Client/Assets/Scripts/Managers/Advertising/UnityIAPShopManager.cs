@@ -2,7 +2,7 @@
 using UnityEngine.Purchasing;
 using Utils;
 
-namespace Managers
+namespace Managers.Advertising
 {
     public abstract class UnityIAPShopManager : IStoreListener
     {

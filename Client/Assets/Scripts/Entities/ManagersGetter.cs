@@ -1,5 +1,6 @@
 ﻿using Controllers;
 using Managers;
+using Managers.Advertising;
 using Zenject;
 
 namespace Entities
@@ -16,7 +17,7 @@ namespace Entities
     {
         IAudioManager        AudioManager        { get; }
         IAnalyticsManager    AnalyticsManager    { get; }
-        IAdsManager          AdsManager          { get; } 
+        IAdsManager          AdsManager         { get; } 
         IShopManager         ShopManager         { get; }
         ILocalizationManager LocalizationManager { get; }
         IScoreManager        ScoreManager        { get; }
@@ -41,7 +42,7 @@ namespace Entities
         
         public IAudioManager        AudioManager        { get; }
         public IAnalyticsManager    AnalyticsManager    { get; }
-        public IAdsManager          AdsManager          { get; } 
+        public IAdsManager          AdsManager         { get; } 
         public IShopManager         ShopManager         { get; }
         public ILocalizationManager LocalizationManager { get; }
         public IScoreManager        ScoreManager        { get; }
@@ -78,7 +79,7 @@ namespace Entities
             SoundManagerHandler           _OnSoundManager = null,
             AnalyticsManagerHandler       _OnAnalyticsManager = null,
             AdsManagerHandler             _OnAdsManager = null,
-            ShopManagerHandler             _OnShopManager = null,
+            ShopManagerHandler            _OnShopManager = null,
             LocalizationManagerHandler    _OnLocalizationManager = null,
             ScoreManagerHandler           _OnScoreManager = null,
             HapticsManagerHandler         _OnHapticsManager = null)

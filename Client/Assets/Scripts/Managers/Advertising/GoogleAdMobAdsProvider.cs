@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
+using Entities;
 using GoogleMobileAds.Api;
 using UnityEngine.Events;
 using Utils;
 
-namespace Managers
+namespace Managers.Advertising
 {
-    public class GoogleAdMobAdsManager : AdsManagerBase
+    public class GoogleAdMobAdsProvider : AdsProviderBase
     {
 
         #region nonpublic members
@@ -21,7 +22,7 @@ namespace Managers
 
         #region inject
 
-        public GoogleAdMobAdsManager(IShopManager _ShopManager) : base(_ShopManager) { }
+        public GoogleAdMobAdsProvider(IShopManager _ShopManager) : base(_ShopManager) { }
 
         #endregion
 
@@ -30,28 +31,52 @@ namespace Managers
         public override bool RewardedAdReady     => m_RewardedAd.IsLoaded();
         public override bool InterstitialAdReady => m_InterstitialAd.IsLoaded();
         
-        public override void ShowRewardedAd(UnityAction _OnShown)
+        public override void ShowRewardedAd(UnityAction _OnShown, BoolEntity _ShowAds)
         {
-            m_OnRewardedAdShown = _OnShown;
-            if (RewardedAdReady)
-                m_RewardedAd.Show();
-            else
-            {
-                var adRequest = new AdRequest.Builder().Build();
-                m_RewardedAd.LoadAd(adRequest);
-            }
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => _ShowAds.Result == EEntityResult.Pending,
+                () =>
+                {
+                    if (_ShowAds.Result != EEntityResult.Success)
+                        return;
+                    if (!_ShowAds.Value)
+                        return;
+                    if (RewardedAdReady)
+                    {
+                        m_OnRewardedAdShown = _OnShown;
+                        m_RewardedAd.Show();
+                    }
+                    else
+                    {
+                        Dbg.Log("Rewarded ad is not ready.");
+                        var adRequest = new AdRequest.Builder().Build();
+                        m_RewardedAd.LoadAd(adRequest);
+                    }
+                }));
         }
         
-        public override void ShowInterstitialAd(UnityAction _OnShown)
+        public override void ShowInterstitialAd(UnityAction _OnShown, BoolEntity _ShowAds)
         {
-            m_OnInterstitialShown = _OnShown;
-            if (InterstitialAdReady)
-                m_InterstitialAd.Show();
-            else
-            {
-                var adRequest = new AdRequest.Builder().Build();
-                m_InterstitialAd.LoadAd(adRequest);
-            }
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => _ShowAds.Result == EEntityResult.Pending,
+                () =>
+                {
+                    if (_ShowAds.Result != EEntityResult.Success)
+                        return;
+                    if (!_ShowAds.Value)
+                        return;
+                    if (InterstitialAdReady)
+                    {
+                        m_OnInterstitialShown = _OnShown;
+                        m_InterstitialAd.Show();
+                    }
+                    else
+                    {
+                        Dbg.Log("Interstitial ad is not ready.");
+                        var adRequest = new AdRequest.Builder().Build();
+                        m_InterstitialAd.LoadAd(adRequest);
+                    }
+                }));
         }
         
         #endregion
@@ -100,7 +125,7 @@ namespace Managers
         
         private List<string> GetTestDeviceIds()
         {
-            return m_Ads.Elements("test_device").Select(_El => _El.Value).ToList();
+            return m_AdsData.Elements("test_device").Select(_El => _El.Value).ToList();
         }
 
         #endregion

@@ -1,17 +1,18 @@
 ﻿using System.Linq;
 using DI.Extensions;
-using UnityEngine.Events;
+using Entities;
 using UnityEngine.Advertisements;
+using UnityEngine.Events;
 using Utils;
 
-namespace Managers
+namespace Managers.Advertising
 {
-    public class UnityAdsAdsManager : AdsManagerBase, IUnityAdsInitializationListener
+    public class UnityAdsProvider : AdsProviderBase, IUnityAdsInitializationListener
     {
         private IUnityAdsInterstitialAd  InterstitialAd  { get; }
         private IUnityAdsRewardedAd RewardedAd { get; }
 
-        public UnityAdsAdsManager(
+        public UnityAdsProvider(
             IUnityAdsInterstitialAd _InterstitialAd,
             IUnityAdsRewardedAd _RewardedAd,
             IShopManager _ShopManager) : base(_ShopManager)
@@ -23,14 +24,50 @@ namespace Managers
         public override bool RewardedAdReady     => RewardedAd.Ready;
         public override bool InterstitialAdReady => InterstitialAd.Ready;
         
-        public override void ShowRewardedAd(UnityAction _OnShown)
+        public override void ShowRewardedAd(UnityAction _OnShown, BoolEntity _ShowAds)
         {
-            RewardedAd.ShowAd(_OnShown);
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => _ShowAds.Result == EEntityResult.Pending,
+                () =>
+                {
+                    if (_ShowAds.Result != EEntityResult.Success)
+                        return;
+                    if (!_ShowAds.Value)
+                        return;
+                    if (RewardedAdReady)
+                    {
+                        m_OnRewardedAdShown = _OnShown;
+                        RewardedAd.ShowAd(_OnShown);
+                    }
+                    else
+                    {
+                        Dbg.Log("Rewarded ad is not ready.");
+                        RewardedAd.LoadAd();
+                    }
+                }));
         }
 
-        public override void ShowInterstitialAd(UnityAction _OnShown)
+        public override void ShowInterstitialAd(UnityAction _OnShown, BoolEntity _ShowAds)
         {
-            InterstitialAd.ShowAd(_OnShown);
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => _ShowAds.Result == EEntityResult.Pending,
+                () =>
+                {
+                    if (_ShowAds.Result != EEntityResult.Success)
+                        return;
+                    if (!_ShowAds.Value)
+                        return;
+                    if (InterstitialAdReady)
+                    {
+                        m_OnInterstitialShown = _OnShown;
+                        InterstitialAd.ShowAd(_OnShown);
+                    }
+                    else
+                    {
+                        Dbg.Log("Interstitial ad is not ready.");
+                        InterstitialAd.LoadAd();
+                    }
+                }));
         }
 
         protected override void InitConfigs(UnityAction _OnSuccess)
@@ -62,7 +99,7 @@ namespace Managers
 #elif UNITY_IOS || UNITY_IPHONE
             os = "ios";
 #endif
-            return m_Ads.Elements("game_id")
+            return m_AdsData.Elements("game_id")
                 .FirstOrDefault(_El => _El.Attribute("os")?.Value == os)
                 ?.Value;
         }

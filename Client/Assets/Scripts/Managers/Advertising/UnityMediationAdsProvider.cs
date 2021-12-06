@@ -1,20 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using Constants;
-using DI.Extensions;
-using Entities;
-using Newtonsoft.Json;
-using UnityEngine.Events;
+﻿using Entities;
 using Unity.Services.Core;
+using UnityEngine.Events;
+using Utils; 
 // using Unity.Services.Mediation;
-using Utils;
 
-namespace Managers
+namespace Managers.Advertising
 {
     
-    public class UnityMediationAdsManager : AdsManagerBase
+    public class UnityMediationAdsProvider : AdsProviderBase
     {
 
         #region nonpublic members
@@ -26,7 +19,7 @@ namespace Managers
 
         #region inject
 
-        public UnityMediationAdsManager(IShopManager _ShopManager) : base(_ShopManager) { }
+        public UnityMediationAdsProvider(IShopManager _ShopManager) : base(_ShopManager) { }
 
         #endregion
 
@@ -35,16 +28,15 @@ namespace Managers
         public override bool              RewardedAdReady     => false; // m_RewardedAd.AdState == AdState.Loaded;
         public override bool              InterstitialAdReady => false;// m_InterstitialAd.AdState == AdState.Loaded;
 
-        public override void ShowRewardedAd(UnityAction _OnShown)
+        public override void ShowRewardedAd(UnityAction _OnShown, BoolEntity _ShowAds)
         {
-            var showAds = ShowAds;
             Coroutines.Run(Coroutines.WaitWhile(
-                () => showAds.Result == EEntityResult.Pending,
+                () => _ShowAds.Result == EEntityResult.Pending,
                 () =>
                 {
-                    if (showAds.Result != EEntityResult.Success)
+                    if (_ShowAds.Result != EEntityResult.Success)
                         return;
-                    if (!showAds.Value)
+                    if (!_ShowAds.Value)
                         return;
                     if (RewardedAdReady)
                     {
@@ -59,16 +51,15 @@ namespace Managers
                 }));
         }
 
-        public override void ShowInterstitialAd(UnityAction _OnShown)
+        public override void ShowInterstitialAd(UnityAction _OnShown, BoolEntity _ShowAds)
         {
-            var showAds = ShowAds;
             Coroutines.Run(Coroutines.WaitWhile(
-                () => showAds.Result == EEntityResult.Pending,
+                () => _ShowAds.Result == EEntityResult.Pending,
                 () =>
                 {
-                    if (showAds.Result != EEntityResult.Success)
+                    if (_ShowAds.Result != EEntityResult.Success)
                         return;
-                    if (!showAds.Value)
+                    if (!_ShowAds.Value)
                         return;
                     if (InterstitialAdReady)
                     {

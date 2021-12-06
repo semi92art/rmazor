@@ -1,30 +1,39 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Games.RazorMaze
 {
+    [Flags]
+    public enum EAdsProvider
+    {
+        GoogleAds,
+        UnityAds,
+        UnityMediation
+    }
+    
     [CreateAssetMenu(fileName = "view_settings", menuName = "View Settings", order = 1)]
     public class ViewSettings : ScriptableObject
     {
-        [SerializeField] private float   lineWidth;
-        [SerializeField] private float   cornerWidth;
-        [SerializeField] private float   cornerRadius;
-        [SerializeField] private float   movingTrapRotationSpeed;
-        [SerializeField] private float   shredingerLineOffsetSpeed;
-        [SerializeField] private float   turretBulletRotationSpeed;
-        [SerializeField] private int     blockItemsCount;
-        [SerializeField] private int     pathItemsCount;
-        [SerializeField] private bool    startPathItemFilledOnStart;
-        [SerializeField] private float   mazeRotationSpeed;
-        [SerializeField] private float   finishTimeExcellent;
-        [SerializeField] private float   finishTimeGood;
-        [SerializeField] private float   proposalDialogAnimSpeed;
-        [SerializeField] private float   gravityTrapRotationSpeed;
-        [SerializeField] private float   pauseBetweenMoveCommands;
-        [SerializeField] private float   leftScreenOffset;
-        [SerializeField] private float   rightScreenOffset;
-        [SerializeField] private float   bottomScreenOffset;
-        [SerializeField] private float   topScreenOffset;
-        
+        [SerializeField] private float        lineWidth;
+        [SerializeField] private float        cornerWidth;
+        [SerializeField] private float        cornerRadius;
+        [SerializeField] private float        movingTrapRotationSpeed;
+        [SerializeField] private float        shredingerLineOffsetSpeed;
+        [SerializeField] private float        turretBulletRotationSpeed;
+        [SerializeField] private int          blockItemsCount;
+        [SerializeField] private int          pathItemsCount;
+        [SerializeField] private bool         startPathItemFilledOnStart;
+        [SerializeField] private float        mazeRotationSpeed;
+        [SerializeField] private float        finishTimeExcellent;
+        [SerializeField] private float        finishTimeGood;
+        [SerializeField] private float        proposalDialogAnimSpeed;
+        [SerializeField] private float        gravityTrapRotationSpeed;
+        [SerializeField] private float        pauseBetweenMoveCommands;
+        [SerializeField] private float        leftScreenOffset;
+        [SerializeField] private float        rightScreenOffset;
+        [SerializeField] private float        bottomScreenOffset;
+        [SerializeField] private float        topScreenOffset;
+        [SerializeField] private EAdsProvider adsProvider;
 
         public float   LineWidth
         {
@@ -138,6 +147,12 @@ namespace Games.RazorMaze
         {
             get => topScreenOffset;
             set => topScreenOffset = value;
+        }
+
+        public EAdsProvider AdsProvider
+        {
+            get => adsProvider;
+            set => adsProvider = value;
         }
     }
 }

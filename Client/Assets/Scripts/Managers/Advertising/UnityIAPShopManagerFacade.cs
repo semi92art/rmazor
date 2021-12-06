@@ -8,7 +8,7 @@ using UnityEngine.Events;
 using UnityEngine.Purchasing;
 using Utils;
 
-namespace Managers
+namespace Managers.Advertising
 {
     public enum EShopProductResult
     {

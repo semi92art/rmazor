@@ -1,6 +1,7 @@
 ﻿using Controllers;
 using GameHelpers;
 using Managers;
+using Managers.Advertising;
 using Settings;
 using Ticker;
 using Zenject;
@@ -42,7 +43,7 @@ namespace Mono_Installers
             
 #if UNITY_IOS || UNITY_IPHONE
 
-            Container.Bind<IAdsManager>()            .To<UnityAdsAdsManager>()    .AsSingle();
+            Container.Bind<IAdsManager>()            .To<CustomMediationAdsProvider>().AsSingle();
             Container.Bind<IUnityAdsRewardedAd>()    .To<UnityAdsRewardedAd>()    .AsSingle();
             Container.Bind<IUnityAdsInterstitialAd>().To<UnityAdsInterstitialAd>().AsSingle();
             

@@ -1,5 +1,5 @@
 ﻿
-namespace Managers
+namespace Managers.Advertising
 {
     public interface IUnityAdsInterstitialAd : IUnityAdsAd { }
     

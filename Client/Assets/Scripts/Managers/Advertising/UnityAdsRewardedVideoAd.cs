@@ -1,7 +1,7 @@
 ﻿using UnityEngine.Advertisements;
 using Utils;
 
-namespace Managers
+namespace Managers.Advertising
 {
     public interface IUnityAdsRewardedAd : IUnityAdsAd { }
     
