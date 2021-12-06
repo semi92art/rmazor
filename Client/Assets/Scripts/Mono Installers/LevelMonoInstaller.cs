@@ -82,7 +82,7 @@ namespace Mono_Installers
                 Container.Bind<IViewUICongratsMessage>()     .To<ViewUICongratsMessage>()         .AsSingle();
                 Container.Bind<IViewUIStartLogo>()           .To<ViewUIStartLogo>()               .AsSingle();
                 Container.Bind<IViewUILevelsPanel>()         .To<ViewUILevelsPanel>()             .AsSingle();
-                Container.Bind<IViewUIRotationControls>()     .To<ViewUIRotationControls>()         .AsSingle();
+                Container.Bind<IViewUIRotationControls>()     .To<ViewUIRotationControls>()       .AsSingle();
                 Container.Bind<IViewUITopButtons>()          .To<ViewUITopButtons>()              .AsSingle();
             }
             
@@ -98,7 +98,7 @@ namespace Mono_Installers
             Container.Bind<IViewCharacterEffector>()         .To<ViewCharacterEffectorParticles>().AsSingle();
             Container.Bind<IViewCharacterTail>()             .To<ViewCharacterTailSimple>()       .AsSingle();
             
-            Container.Bind<IViewTurretBulletTail>()          .To<ViewTurretBulletTailSimple>()    .AsSingle();
+            Container.Bind<IViewTurretBulletTail>()          .To<ViewTurretBulletTailFake>()      .AsSingle();
 
             Container.Bind<IViewMazeItemPath>()              .To<ViewMazeItemPath>()              .AsSingle();
             Container.Bind<IViewMazeItemGravityBlock>()      .To<ViewMazeItemGravityBlock>()      .AsSingle();
