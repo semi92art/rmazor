@@ -22,7 +22,7 @@ MonoBehaviour:
   trapAfterReactTime: 0.1
   trapIncreasingIdleTime: 2
   trapIncreasingIncreasedTime: 2
-  turretPreShootInterval: 2
+  turretPreShootInterval: 1.5
   turretShootInterval: 0.5
   turretProjectileSpeed: 20
   shredingerBlockProceedTime: 3
