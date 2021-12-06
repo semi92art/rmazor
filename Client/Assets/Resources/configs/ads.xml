@@ -20,7 +20,12 @@
 	<ad source="unity_ads" type="interstitial" os="ios">Interstitial_iOS</ad>
 	<!--Test Devices-->
 	<test_device os="android">FE989E63CDFFFB64D9E6A288C137E1E2</test_device><!--Xiaomi Mi Mix 2 (Artem)-->
+	<test_device os="android">16DB30D44D674B09110966E0648E783D</test_device><!--Xiaomi Mi Mix 2 (Artem) (новый)-->
 	<test_device os="android">A7BDF038439EAB9E32977E9485093F43</test_device><!--Xiaomi Redmi Note 2 (Artem)-->
-	<test_device os="android">B648AEC33D2557D0BFD1FD486B3E7678</test_device><!--Xiaomi Redmi Note 5 (Artem)-->
+	<test_device os="android">B648AEC33D2557D0BFD1FD486B3E7678</test_device><!--Xiaomi Redmi Note 5 (Artem) (новый)-->
 	<test_device os="android">7D516587810FD383626B5C782FB4078A</test_device><!--Galaxy S10 (Artem)-->
+	<test_device os="android">CCF954D464D11BD437D3885E0CDAE854</test_device><!--Galaxy S10 (Artem)-->
+    <!--Game Ids-->
+	<game_id source="unity_ads" os="ios">4458390</game_id>
+	<game_id source="unity_ads" os="android">4458391</game_id>
 </data>
