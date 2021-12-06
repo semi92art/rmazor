@@ -26,12 +26,10 @@ namespace Mono_Installers
 
             #region managers
 
-            Container.Bind<IAdsManager>()         .To<GoogleAdMobAdsManager>()    .AsSingle();
             Container.Bind<IAnalyticsManager>()   .To<AnalyticsManager>()         .AsSingle();
             Container.Bind<IShopManager>()        .To<UnityIAPShopManagerFacade>().AsSingle();
             Container.Bind<ILocalizationManager>().To<LeanLocalizationManager>()  .AsSingle();
             Container.Bind<IScoreManager>()       .To<ScoreManager>()             .AsSingle();
-            Container.Bind<IHapticsManager>()     .To<HapticsManager>()           .AsSingle();
 
             #endregion
             
@@ -40,6 +38,17 @@ namespace Mono_Installers
             Container.Bind<IModelGameTicker>()    .To<ModelGameTicker>()          .AsSingle();
             Container.Bind<IUITicker>()           .To<UITicker>()                 .AsSingle();
             Container.Bind<ILevelsLoader>()       .To<LevelsLoader>()             .AsSingle();
+            Container.Bind<IHapticsManager>()     .To<HapticsManager>()           .AsSingle();
+            
+#if UNITY_IOS || UNITY_IPHONE
+
+            Container.Bind<IAdsManager>()            .To<UnityAdsAdsManager>()    .AsSingle();
+            Container.Bind<IUnityAdsRewardedAd>()    .To<UnityAdsRewardedAd>()    .AsSingle();
+            Container.Bind<IUnityAdsInterstitialAd>().To<UnityAdsInterstitialAd>().AsSingle();
+            
+#elif UNITY_ANDROID
+            Container.Bind<IAdsManager>()         .To<GoogleAdMobAdsManager>()    .AsSingle();
+#endif
         }
     }
 }
