@@ -31,8 +31,8 @@ namespace DialogViewers
     public class BigDialogViewer : IBigDialogViewer, IAction, IUpdateTick
     {
         #region types
-        
-        protected class GraphicAlphas
+
+        private class GraphicAlphas
         {
             public Dictionary<Graphic, float> Alphas { get; }
 
