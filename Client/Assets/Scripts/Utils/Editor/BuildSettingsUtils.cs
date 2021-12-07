@@ -1,6 +1,11 @@
-﻿using Constants;
+﻿using System.Collections.Generic;
+using System.IO;
+using Constants;
 using UnityEditor;
+using UnityEditor.Callbacks;
 using UnityEngine.SceneManagement;
+using System.Linq;
+using System.Xml.Linq;
 
 namespace Utils.Editor
 {
@@ -21,6 +26,32 @@ namespace Utils.Editor
         {
             string path = SceneManager.GetActiveScene().path;
             EditorBuildSettings.scenes = new[] {new EditorBuildSettingsScene(path, true)};
+        }
+
+        [PostProcessBuild]
+        public static void OnPostProcessBuild(BuildTarget _Target, string _PathToBuild)
+        {
+            if (_Target != BuildTarget.iOS)
+                return;
+            const string infoPlistFileName = "Info.plist";
+            string infoPlistPath = Path.Combine(_PathToBuild, infoPlistFileName);
+            if (!File.Exists(infoPlistPath))
+            {
+                Dbg.LogWarning($"{infoPlistFileName} does not exist.");
+                return;
+            }
+            var xDoc = XDocument.Load(infoPlistPath);
+            var infoPlistXel = xDoc.Element("plist");
+            var dictEls = infoPlistXel?.Elements("dict").ToList() ?? new List<XElement>();
+            var first = dictEls.FirstOrDefault();
+            if (first == null)
+            {
+                Dbg.LogWarning($"Element \"dict\" not found in {infoPlistFileName}");
+                return;
+            }
+            first.Add(new XElement("key", "GADIsAdManagerApp"));
+            first.Add(new XElement("true"));
+            xDoc.Save(infoPlistPath);
         }
     }
 }
