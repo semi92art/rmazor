@@ -58,9 +58,9 @@ namespace UI.Panels
         public IAction Action { get; set; }
         public override EUiCategory Category => EUiCategory.DailyBonus;
         
-        public override void Init()
+        public override void LoadPanel()
         {
-            base.Init();
+            base.LoadPanel();
             var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     DialogViewer.Container,

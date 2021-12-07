@@ -95,19 +95,19 @@ namespace UI.Panels.ShopPanels
 
         private void OpenShopMoneyPanel()
         {
-            ShopMoneyPanel.Init();
+            ShopMoneyPanel.LoadPanel();
             DialogViewer.Show(ShopMoneyPanel);
         }
 
         private void OpenShopHeadsPanel()
         {
-            ShopHeadsPanel.Init();
+            ShopHeadsPanel.LoadPanel();
             DialogViewer.Show(ShopHeadsPanel);
         }
 
         private void OpenShopTailsPanel()
         {
-            ShopTailsPanel.Init();   
+            ShopTailsPanel.LoadPanel();   
             DialogViewer.Show(ShopTailsPanel);
         }
 

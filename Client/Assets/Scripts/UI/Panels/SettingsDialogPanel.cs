@@ -75,9 +75,9 @@ namespace UI.Panels
         
         public override EUiCategory Category => EUiCategory.Settings;
         
-        public override void Init()
+        public override void LoadPanel()
         {
-            base.Init();
+            base.LoadPanel();
             var sp = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(DialogViewer.Container, RtrLites.FullFill),
                 CommonPrefabSetNames.DialogPanels, "settings_panel");

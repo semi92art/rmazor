@@ -62,9 +62,9 @@ namespace UI.Panels
 
         public override EUiCategory Category => EUiCategory.RateGame;
         
-        public override void Init()
+        public override void LoadPanel()
         {
-            base.Init();
+            base.LoadPanel();
             var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     ProposalDialogViewer.Container,

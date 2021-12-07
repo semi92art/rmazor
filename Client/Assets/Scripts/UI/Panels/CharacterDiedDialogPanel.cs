@@ -82,9 +82,10 @@ namespace UI.Panels
         
         public override EUiCategory Category => EUiCategory.CharacterDied;
 
-        public override void Init()
+        public override void LoadPanel()
         {
-            base.Init();
+            Dbg.Log(nameof(CharacterDiedDialogPanel) + ": " + nameof(LoadPanel));
+            base.LoadPanel();
             var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     ProposalDialogViewer.Container,

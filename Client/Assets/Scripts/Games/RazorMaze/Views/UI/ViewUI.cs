@@ -53,6 +53,7 @@ namespace Games.RazorMaze.Views.UI
             BigDialogViewer.IsOtherDialogViewersShowing = () => ProposalDialogViewer.IsShowing;
             ProposalDialogViewer.IsOtherDialogViewersShowing = () => BigDialogViewer.IsShowing;
             UIGameControls.Init();
+            DialogPanels.Init();
             RaiseInitializedEvent();
         }
 
@@ -61,12 +62,12 @@ namespace Games.RazorMaze.Views.UI
             switch (_Key)
             {
                 case EInputCommand.SettingsMenu:
-                    DialogPanels.SettingDialogPanel.Init();
+                    DialogPanels.SettingDialogPanel.LoadPanel();
                     BigDialogViewer.Show(DialogPanels.SettingDialogPanel);
                     CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);
                     break;
                 case EInputCommand.ShopMenu:
-                    DialogPanels.ShopMoneyDialogPanel.Init();
+                    DialogPanels.ShopMoneyDialogPanel.LoadPanel();
                     BigDialogViewer.Show(DialogPanels.ShopMoneyDialogPanel);
                     CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);
                     break;
@@ -97,7 +98,7 @@ namespace Games.RazorMaze.Views.UI
             if (gameWasRatedAlready)
                 return;
             var panel = DialogPanels.RateGameDialogPanel;
-            panel.Init();
+            panel.LoadPanel();
             ProposalDialogViewer.Show(panel);
         }
 

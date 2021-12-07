@@ -70,7 +70,7 @@ namespace UI.Panels
 
 
 
-        public override void Init()
+        public override void LoadPanel()
         {
             // UiManager.Instance.OnCurrentMenuCategoryChanged += (_Prev, _New) =>
             // {
@@ -78,7 +78,7 @@ namespace UI.Panels
             //         OnPanelClose();
             // };
             
-            base.Init();
+            base.LoadPanel();
             GameObject wofPan = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     DialogViewer.Container,
@@ -149,7 +149,7 @@ namespace UI.Panels
             RewardPanel.PreInit(
                 _Reward, 
                 () => { });
-            RewardPanel.Init();
+            RewardPanel.LoadPanel();
             ProposalDialogViewer.Show(RewardPanel);
         }
 

@@ -55,9 +55,9 @@ namespace UI.Panels.ShopPanels
 
         #region api
 
-        public override void Init()
+        public override void LoadPanel()
         {
-            base.Init();
+            base.LoadPanel();
             var sp = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     DialogViewer.Container,

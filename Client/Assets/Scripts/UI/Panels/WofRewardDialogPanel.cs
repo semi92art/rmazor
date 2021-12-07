@@ -64,9 +64,9 @@ namespace UI.Panels
             m_OnClose = _OnClose;
         }
 
-        public override void Init()
+        public override void LoadPanel()
         {
-            base.Init();
+            base.LoadPanel();
             var go = PrefabUtilsEx.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     ProposalDialogViewer.Container,

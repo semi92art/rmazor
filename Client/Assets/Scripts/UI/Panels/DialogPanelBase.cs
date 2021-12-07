@@ -39,7 +39,7 @@ namespace UI.Panels
         public abstract EUiCategory Category { get; }
         public RectTransform Panel { get; protected set; }
         
-        public virtual void Init()
+        public virtual void LoadPanel()
         {
             Ticker.Register(this);
             ColorProvider.ColorChanged += OnColorChanged;

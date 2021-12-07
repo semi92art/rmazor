@@ -220,7 +220,7 @@ namespace Games.RazorMaze.Views.Common
                             if (!LevelMonoInstaller.Release)
                                 return;
                             var panel = DialogPanels.CharacterDiedDialogPanel;
-                            panel.Init();
+                            panel.LoadPanel();
                             ProposalDialogViewer.Show(panel);
                         });
                     break;

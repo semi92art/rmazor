@@ -6,7 +6,7 @@ namespace UI.Panels
     {
         EUiCategory Category { get; }
         RectTransform Panel { get; }
-        void Init();
+        void LoadPanel();
         void OnDialogShow();
         void OnDialogHide();
         void OnDialogEnable();

@@ -39,7 +39,7 @@ namespace UI.PanelItems.Setting_Panel_Items
                 if (items == null || _SelectorPanel == null)
                     return;
                 _SelectorPanel.PreInit(_Value?.Invoke(), items, _OnSelect);
-                _SelectorPanel.Init();
+                _SelectorPanel.LoadPanel();
                 _UiDialogViewer.Show(_SelectorPanel);
             });
         }
