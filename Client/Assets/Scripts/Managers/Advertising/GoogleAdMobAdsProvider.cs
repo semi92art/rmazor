@@ -145,12 +145,12 @@ namespace Managers.Advertising
         private void OnRewardedAdPaidEvent(object _Sender, AdValueEventArgs _E)
         {
             Dbg.Log(nameof(OnRewardedAdPaidEvent).WithSpaces());
-            m_OnRewardedAdShown?.Invoke();
         }
         
         private void OnRewardedAdClosed(object _Sender, EventArgs _E)
         {
             Dbg.Log(nameof(OnRewardedAdClosed).WithSpaces());
+            m_OnRewardedAdShown?.Invoke();
             var adRequest = new AdRequest.Builder().Build();
             m_RewardedAd.LoadAd(adRequest);
         }

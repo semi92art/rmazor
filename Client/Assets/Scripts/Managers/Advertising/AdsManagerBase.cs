@@ -45,12 +45,6 @@ namespace Managers.Advertising
         public virtual void Init(XElement _AdsData)
         {
             m_AdsData = _AdsData;
-            throw new System.NotImplementedException();
-        }
-        
-        public virtual void Init()
-        {
-            m_AdsData = ResLoader.FromResources(@"configs\ads");
             InitConfigs(() =>
             {
                 InitRewardedAd();
@@ -66,8 +60,6 @@ namespace Managers.Advertising
         protected abstract void InitConfigs(UnityAction _OnSuccess);
         protected abstract void InitRewardedAd();
         protected abstract void InitInterstitialAd();
-        
-        
         
         protected string GetAdsNodeValue(string _Source, string _Type)
         {
