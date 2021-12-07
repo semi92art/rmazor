@@ -27,6 +27,7 @@ namespace UI.PanelItems.Shop_Items
             }
             InitCore(_Managers, _UITicker, _ColorProvider, _Click, _Info, FinishAction);
             m_BuyButtonImage = buyButton.GetComponent<Image>();
+            m_BuyButtonImage.color = _ColorProvider.GetColor(ColorIds.UiDialogBackground);
             itemIcon.sprite = _Info.Icon;
             if (_Info.Reward > 0)
                 title.text = _Info.Reward.ToString();
