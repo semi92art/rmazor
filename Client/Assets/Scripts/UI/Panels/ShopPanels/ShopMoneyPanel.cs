@@ -1,4 +1,5 @@
-﻿using Constants;
+﻿using System.Collections.Generic;
+using Constants;
 using DI.Extensions;
 using DialogViewers;
 using Entities;
@@ -15,7 +16,7 @@ using Utils;
 
 namespace UI.Panels.ShopPanels
 {
-    public interface IShopMoneyDialogPanel : IDialogPanel { }
+    public interface IShopMoneyDialogPanel : IDialogPanel, IInit { }
     
     public class ShopMoneyPanel : ShopPanelBase<ShopMoneyItem>, IShopMoneyDialogPanel
     {
@@ -55,7 +56,14 @@ namespace UI.Panels.ShopPanels
         #region api
 
         public override EUiCategory Category => EUiCategory.Shop;
+        public event UnityAction    Initialized;
         
+        public void Init()
+        {
+            LoadItemInfos();
+            Initialized?.Invoke();
+        }
+
         #endregion
 
         #region nonpublic methods
