@@ -143,7 +143,7 @@ namespace Managers
             return scores;
         }
 
-        private static void SetScoreCache(ushort _Id, int _Value)
+        private void SetScoreCache(ushort _Id, int _Value)
         {
             var gdff = new GameDataFieldFilter(GameClientUtils.AccountId, GameClientUtils.GameId,
                 _Id) {OnlyLocal = true};
@@ -152,6 +152,7 @@ namespace Managers
                 var scoreField = _Fields.First();
                 scoreField.SetValue(_Value).Save(true);
             });
+            OnScoresChanged?.Invoke(new ScoresEventArgs(GetScoreCached(_Id)));
         }
         
         private string GetScoreKey(ushort _Id)
