@@ -30,7 +30,7 @@ MonoBehaviour:
     - item: {fileID: 4343252772721228017, guid: 73337473a73836f44b3e012213015ba9,
         type: 3}
       name: money_panel
-    - item: {fileID: 21300000, guid: f984313fec13b6643b5b11021375e65f, type: 3}
+    - item: {fileID: 21300000, guid: a72d9290f8656dc4585b1b8a6bb93e27, type: 3}
       name: shop_money_icon
     - item: {fileID: 21300000, guid: f381e85536623a8419dbe60abd727f0e, type: 3}
       name: shop_heads_icon

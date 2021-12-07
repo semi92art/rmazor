@@ -2,13 +2,16 @@
 using Entities;
 using Games.RazorMaze.Views.Common;
 using Ticker;
+using UnityEngine;
 using UnityEngine.Events;
-using Utils;
+using UnityEngine.UI;
 
 namespace UI.PanelItems.Shop_Items
 {
     public class ShopMoneyItem : ShopItemBase
     {
+        private Image m_BuyButtonImage;
+        
         public override void Init(
             IManagersGetter _Managers,
             IUITicker _UITicker,
@@ -18,19 +21,24 @@ namespace UI.PanelItems.Shop_Items
         {
             void FinishAction()
             {
-                price.text = $"{_Info.Price} {_Info.Currency}";
+                price.SetGoActive(!_Info.BuyForWatchingAd);
+                if (!_Info.BuyForWatchingAd)
+                    price.text = $"{_Info.Price} {_Info.Currency}";
             }
             InitCore(_Managers, _UITicker, _ColorProvider, _Click, _Info, FinishAction);
+            m_BuyButtonImage = buyButton.GetComponent<Image>();
             itemIcon.sprite = _Info.Icon;
-            title.text = _Info.Reward.ToString();
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => !_Info.Ready,
-                () =>
-                {
-                    IndicateLoading(false, _Info.BuyForWatchingAd);
-                    buyButton.SetGoActive(!_Info.BuyForWatchingAd);
-                    price.text = $"{_Info.Price} {_Info.Currency}";
-                }));
+            if (_Info.Reward > 0)
+                title.text = _Info.Reward.ToString();
+        }
+
+        protected override void OnColorChanged(int _ColorId, Color _Color)
+        {
+            base.OnColorChanged(_ColorId, _Color);
+            if (_ColorId == ColorIds.UiDialogBackground)
+            {
+                m_BuyButtonImage.color = _Color;
+            }
         }
     }
 }

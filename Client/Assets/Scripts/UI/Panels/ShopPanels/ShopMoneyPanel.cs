@@ -4,13 +4,13 @@ using DialogViewers;
 using Entities;
 using GameHelpers;
 using Games.RazorMaze.Views.Common;
-using Managers;
 using Managers.Advertising;
 using ScriptableObjects;
 using Ticker;
 using UI.Entities;
 using UI.PanelItems.Shop_Items;
 using UnityEngine;
+using UnityEngine.Events;
 using Utils;
 
 namespace UI.Panels.ShopPanels
@@ -59,46 +59,95 @@ namespace UI.Panels.ShopPanels
 
         protected override void InitItems()
         {
-            var set = PrefabUtilsEx.GetObject<ShopMoneyItemsScriptableObject>(
-                PrefabSetName, ItemSetName).set;
-            foreach (var itemInSet in set)
-            {
-                var info = itemInSet.watchingAds ? null : Managers.ShopManager.GetItemInfo(itemInSet.purchaseKey);
-                var item = CreateItem();
-                var args = new ViewShopItemInfo
+            var showAdsEntity = Managers.AdsManager.ShowAds;
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => showAdsEntity.Result == EEntityResult.Pending,
+                () =>
                 {
-                    BuyForWatchingAd = itemInSet.watchingAds,
-                    Reward = itemInSet.reward,
-                    Icon = itemInSet.icon
-                };
-                item.Init(Managers,
-                    Ticker,
-                    ColorProvider,
-                    () =>
+                    if (showAdsEntity.Result == EEntityResult.Fail)
                     {
-                        if (itemInSet.watchingAds)
-                            Managers.AdsManager.ShowRewardedAd(() => OnPaid(args.Reward));
-                        else
-                            Managers.ShopManager.Purchase(itemInSet.purchaseKey, () => OnPaid(args.Reward));
-                    },
-                    args);
-                Coroutines.Run(Coroutines.WaitWhile(
-                    () =>
+                        Dbg.LogError("Failed to load ShowAds entity");
+                        return;
+                    }
+                    var set = PrefabUtilsEx.GetObject<ShopMoneyItemsScriptableObject>(
+                        PrefabSetName, ItemSetName).set;
+                    var moneyIcon = PrefabUtilsEx.GetObject<Sprite>("shop_items", "shop_money_icon");
+                    foreach (var itemInSet in set)
                     {
-                        if (info != null)
-                            return info.Result() == EShopProductResult.Pending;
-                        return !Managers.AdsManager.RewardedAdReady;
-                    },
-                    () =>
-                    {
-                        if (info?.Result() == EShopProductResult.Success)
+                        var args = itemInSet.watchingAds ? null : Managers.ShopManager.GetItemInfo(itemInSet.purchaseKey);
+                        var info = new ViewShopItemInfo
                         {
-                            args.Currency = info.Currency;
-                            args.Price = info.Price;
-                        }
-                        args.Ready = true;
-                    }));
+                            PurchaseKey = itemInSet.purchaseKey,
+                            BuyForWatchingAd = itemInSet.watchingAds,
+                            Reward = itemInSet.reward,
+                            Icon = moneyIcon
+                        };
+                        InitItem(args, info);
+                    }
+
+                    if (!showAdsEntity.Value)
+                        return;
+                    
+                    var argsDisableAds = Managers.ShopManager.GetItemInfo(PurchaseKeys.NoAds);
+                    var infoDisableAds = new ViewShopItemInfo
+                    {
+                        PurchaseKey = PurchaseKeys.NoAds,
+                        Icon = PrefabUtilsEx.GetObject<Sprite>(PrefabSetName, "shop_no_ads_icon"),
+                        BuyForWatchingAd = false,
+                        Reward = 0
+                    };
+                    var itemDisableAds = InitItem(argsDisableAds, infoDisableAds, BuyHideAdsItem);
+                    Managers.LocalizationManager.AddTextObject(itemDisableAds.title, "no_ads");
+                }));
+        }
+
+        private ShopMoneyItem InitItem(ShopItemArgs _Args, ViewShopItemInfo _Info, UnityAction _OnPaid = null)
+        {
+            void OnPaidReal()
+            {
+                if (_OnPaid != null)
+                    _OnPaid.Invoke();
+                else
+                    OnPaid(_Info.Reward);
             }
+            var item = CreateItem();
+            item.Init(Managers,
+                Ticker,
+                ColorProvider,
+                () =>
+                {
+                    if (_Info.BuyForWatchingAd)
+                        Managers.AdsManager.ShowRewardedAd(OnPaidReal);
+                    else
+                        Managers.ShopManager.Purchase(_Info.PurchaseKey, OnPaidReal);
+                },
+                _Info);
+            Coroutines.Run(Coroutines.WaitWhile(
+                () =>
+                {
+                    if (_Args != null)
+                        return _Args.Result() == EShopProductResult.Pending;
+                    return !Managers.AdsManager.RewardedAdReady;
+                },
+                () =>
+                {
+                    if (_Args?.Result() == EShopProductResult.Success)
+                    {
+                        _Info.Currency = _Args.Currency;
+                        _Info.Price = _Args.Price;
+                    }
+                    _Info.Ready = true;
+                }));
+            return item;
+        }
+        
+        private void BuyHideAdsItem()
+        {
+            Managers.AdsManager.ShowAds = new BoolEntity
+            {
+                Result = EEntityResult.Success,
+                Value = false
+            };
         }
 
         private void OnPaid(int _Reward)
@@ -113,8 +162,14 @@ namespace UI.Panels.ShopPanels
                         Dbg.LogError("Failed to load score entity");
                         return;
                     }
+                    var firstVal = scoreEntity.GetFirstScore();
+                    if (!firstVal.HasValue)
+                    {
+                        Dbg.LogError("Money score entity does not contain first value");
+                        return;
+                    }
                     Managers.ScoreManager
-                        .SetScore(DataFieldIds.Money, scoreEntity.GetFirstScore().Value + _Reward);
+                        .SetScore(DataFieldIds.Money, firstVal.Value + _Reward);
                 }));
         }
 

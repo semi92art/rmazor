@@ -12,13 +12,14 @@ namespace UI.PanelItems.Shop_Items
 {
     public class ViewShopItemInfo
     {
+        public int    PurchaseKey      { get; set; }
         public bool   BuyForWatchingAd { get; set; }
-        public int    UnlockingLevel { get; set; }
-        public string Price { get; set; }
-        public bool   Ready { get; set; }
-        public Sprite Icon { get; set; }
-        public string Currency { get; set; }
-        public int    Reward { get; set; }
+        public int    UnlockingLevel   { get; set; }
+        public string Price            { get; set; }
+        public bool   Ready            { get; set; }
+        public Sprite Icon             { get; set; }
+        public string Currency         { get; set; }
+        public int    Reward           { get; set; }
     }
     
     public abstract class ShopItemBase : SimpleUiDialogItemView
@@ -45,6 +46,8 @@ namespace UI.PanelItems.Shop_Items
             ViewShopItemInfo _Info,
             UnityAction _LoadingFinishAction)
         {
+            watchAdImage.SetGoActive(true);
+            loadingAnim.SetGoActive(true);
             name = "Shop Item";
             InitCore(_Managers, _UITicker, _ColorProvider);
             buyButton.onClick.AddListener(SoundOnClick);
@@ -56,7 +59,6 @@ namespace UI.PanelItems.Shop_Items
                 () =>
                 {
                     IndicateLoading(false, _Info.BuyForWatchingAd);
-                    buyButton.SetGoActive(!_Info.BuyForWatchingAd);
                     _LoadingFinishAction?.Invoke();
                 }));
         }

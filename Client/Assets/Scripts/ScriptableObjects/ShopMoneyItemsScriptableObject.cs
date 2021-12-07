@@ -11,7 +11,6 @@ namespace ScriptableObjects
         public class MoneyItem
         {
             public int    purchaseKey;
-            public Sprite icon;
             public int    reward;
             public bool   watchingAds;
         }

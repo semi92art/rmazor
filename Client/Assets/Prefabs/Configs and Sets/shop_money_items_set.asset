@@ -15,18 +15,14 @@ MonoBehaviour:
   set:
     array:
     - purchaseKey: -1
-      icon: {fileID: 21300000, guid: f984313fec13b6643b5b11021375e65f, type: 3}
       reward: 100
       watchingAds: 1
     - purchaseKey: 1
-      icon: {fileID: 21300000, guid: f984313fec13b6643b5b11021375e65f, type: 3}
       reward: 500
       watchingAds: 0
     - purchaseKey: 2
-      icon: {fileID: 21300000, guid: f984313fec13b6643b5b11021375e65f, type: 3}
       reward: 1000
       watchingAds: 0
     - purchaseKey: 3
-      icon: {fileID: 21300000, guid: f984313fec13b6643b5b11021375e65f, type: 3}
       reward: 5000
       watchingAds: 0

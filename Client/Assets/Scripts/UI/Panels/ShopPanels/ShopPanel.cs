@@ -69,40 +69,28 @@ namespace UI.Panels.ShopPanels
 
         protected override void InitItems()
         {
-            var showAdsEntity = Managers.AdsManager.ShowAds;
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => showAdsEntity.Result == EEntityResult.Pending,
-                () =>
+            var dict = new Dictionary<string, Tuple<string, UnityAction>>
+            {
+                {"shop_money_icon", new Tuple<string, UnityAction>("coins", OpenShopMoneyPanel)},
+                {"shop_heads_icon", new Tuple<string, UnityAction>("heads", OpenShopHeadsPanel)},
+                {"shop_tails_icon", new Tuple<string, UnityAction>("tails", OpenShopTailsPanel)}
+            };
+            
+            foreach (var kvp in dict)
+            {
+                var item = CreateItem();
+                Managers.LocalizationManager.AddTextObject(item.title, kvp.Value.Item1);
+                var args = new ViewShopItemInfo
                 {
-                    if (showAdsEntity.Result == EEntityResult.Fail)
-                    {
-                        Dbg.LogError("Failed to load ShowAds entity");
-                        return;
-                    }
-                    var dict = new Dictionary<string, Tuple<string, UnityAction>>
-                    {
-                        {"shop_money_icon", new Tuple<string, UnityAction>("coins", OpenShopMoneyPanel)},
-                        {"shop_heads_icon", new Tuple<string, UnityAction>("heads", OpenShopHeadsPanel)},
-                        {"shop_tails_icon", new Tuple<string, UnityAction>("tails", OpenShopTailsPanel)}
-                    };
-                    if (showAdsEntity.Value)
-                        dict.Add("shop_no_ads_icon", new Tuple<string, UnityAction>("no_ads", BuyHideAdsItem));
-                    foreach (var kvp in dict)
-                    {
-                        var item = CreateItem();
-                        Managers.LocalizationManager.AddTextObject(item.title, kvp.Value.Item1);
-                        var args = new ViewShopItemInfo
-                        {
-                            Icon = PrefabUtilsEx.GetObject<Sprite>(PrefabSetName, kvp.Key)
-                        };
-                        item.Init(
-                            Managers,
-                            Ticker,
-                            ColorProvider,
-                            kvp.Value.Item2,
-                            args);
-                    }
-                }));
+                    Icon = PrefabUtilsEx.GetObject<Sprite>(PrefabSetName, kvp.Key)
+                };
+                item.Init(
+                    Managers,
+                    Ticker,
+                    ColorProvider,
+                    kvp.Value.Item2,
+                    args);
+            }
         }
 
         private void OpenShopMoneyPanel()
@@ -123,11 +111,6 @@ namespace UI.Panels.ShopPanels
             DialogViewer.Show(ShopTailsPanel);
         }
 
-        private void BuyHideAdsItem()
-        {
-            // TODO
-        }
-        
         #endregion
     }
 }
