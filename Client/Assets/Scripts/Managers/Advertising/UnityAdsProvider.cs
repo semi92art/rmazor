@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using DI.Extensions;
 using Entities;
 using UnityEngine.Advertisements;
 using UnityEngine.Events;
@@ -9,6 +8,8 @@ namespace Managers.Advertising
 {
     public class UnityAdsProvider : AdsProviderBase, IUnityAdsInitializationListener
     {
+        private bool m_TestMode;
+        
         private IUnityAdsInterstitialAd  InterstitialAd  { get; }
         private IUnityAdsRewardedAd RewardedAd { get; }
 
@@ -21,9 +22,10 @@ namespace Managers.Advertising
             RewardedAd = _RewardedAd;
         }
 
-        public override bool RewardedAdReady     => RewardedAd.Ready;
-        public override bool InterstitialAdReady => InterstitialAd.Ready;
-        
+        public override bool RewardedAdReady => m_TestMode || RewardedAd.Ready;
+
+        public override bool InterstitialAdReady => m_TestMode || InterstitialAd.Ready;
+
         public override void ShowRewardedAd(UnityAction _OnShown, BoolEntity _ShowAds)
         {
             Coroutines.Run(Coroutines.WaitWhile(
@@ -72,12 +74,12 @@ namespace Managers.Advertising
 
         protected override void InitConfigs(UnityAction _OnSuccess)
         {
-            bool testMode = false;
+            m_TestMode = false;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            testMode = true;
+            m_TestMode = true;
 #endif
             string gameId = GetGameId();
-            Advertisement.Initialize(gameId, testMode, false, this);
+            Advertisement.Initialize(gameId, m_TestMode, this);
             _OnSuccess?.Invoke();
         }
 

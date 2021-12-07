@@ -21,13 +21,6 @@ namespace Managers.Advertising
         void ShowRewardedAd(UnityAction _OnShown, BoolEntity _ShowAds);
         void ShowInterstitialAd(UnityAction _OnShown, BoolEntity _ShowAds);
     }
-
-    public interface IAdsManager : IAdsProviderBase, IInit
-    {
-        BoolEntity ShowAds { get; set; }
-        void       ShowRewardedAd(UnityAction _OnShown);
-        void       ShowInterstitialAd(UnityAction _OnShown);
-    }
     
     public abstract class AdsProviderBase : IAdsProvider
     {
@@ -43,7 +36,6 @@ namespace Managers.Advertising
             ShopManager = _ShopManager;
         }
         
-
 
         public abstract bool RewardedAdReady     { get; }
         public abstract bool InterstitialAdReady { get; }

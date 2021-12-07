@@ -5,7 +5,7 @@ using Utils;
 
 namespace Managers.Advertising
 {
-    public interface IUnityAdsAd
+    public interface IUnityAdsAd : IUnityAdsLoadListener, IUnityAdsShowListener
     {
         bool Ready { get; }
         void Init(string _UnitId);
@@ -13,7 +13,7 @@ namespace Managers.Advertising
         void LoadAd();
     }
     
-    public class UnityAdsAdBase : IUnityAdsAd, IUnityAdsLoadListener, IUnityAdsShowListener
+    public class UnityAdsAdBase : IUnityAdsAd
     {
         protected string      m_UnitId;
         protected UnityAction m_OnShown;

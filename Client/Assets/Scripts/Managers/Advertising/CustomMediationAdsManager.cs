@@ -3,17 +3,25 @@ using System.Linq;
 using Constants;
 using Entities;
 using GameHelpers;
-using Games.RazorMaze;
 using UnityEngine.Events;
 using Utils;
 
 namespace Managers.Advertising
 {
+    public interface IAdsManager : IAdsProviderBase, IInit
+    {
+        BoolEntity ShowAds { get; set; }
+        void       ShowRewardedAd(UnityAction _OnShown);
+        void       ShowInterstitialAd(UnityAction _OnShown);
+    }
+    
     public class CustomMediationAdsManager : IAdsManager
     {
         #region nonpublic members
 
         private readonly List<IAdsProvider> m_Providers = new List<IAdsProvider>();
+        private          IAdsProvider       m_LastRewardedAdProvider;
+        private          IAdsProvider       m_LastInterstitialAdProvider;
         
         #endregion
 
@@ -51,18 +59,110 @@ namespace Managers.Advertising
                 SaveUtils.PutValue(SaveKeys.DisableAds, !value.Value);
             }
         }
+
+        public bool RewardedAdReady     => m_Providers.Any(_P => _P.RewardedAdReady);
+        public bool InterstitialAdReady => m_Providers.Any(_P => _P.InterstitialAdReady);
+
+        public event UnityAction Initialized;
+
+        public void Init()
+        {
+            InitProviders();
+            Initialized?.Invoke();
+        }
+
+        public void ShowRewardedAd(UnityAction _OnShown)
+        {
+            var readyProviders = m_Providers
+                .Where(_P => _P.RewardedAdReady)
+                .ToList();
+            if (!readyProviders.Any())
+            {
+                Dbg.LogWarning("Rewarded ad was not ready to be shown.");
+                return;
+            }
+            if (readyProviders.Count == 1)
+                m_LastRewardedAdProvider = readyProviders.FirstOrDefault();
+            else
+            {
+                int idx = readyProviders.IndexOf(m_LastRewardedAdProvider);
+                if (idx == -1)
+                    m_LastRewardedAdProvider = readyProviders.FirstOrDefault();
+                else
+                {
+                    idx = MathUtils.ClampInverse(idx + 1, 0, readyProviders.Count - 1);
+                    m_LastRewardedAdProvider = readyProviders[idx];
+                }
+            }
+            m_LastRewardedAdProvider?.ShowRewardedAd(_OnShown, ShowAds);
+        }
+
+        public void ShowInterstitialAd(UnityAction _OnShown)
+        {
+            var readyProviders = m_Providers
+                .Where(_P => _P.InterstitialAdReady)
+                .ToList();
+            if (!readyProviders.Any())
+            {
+                Dbg.LogWarning("Interstitial ad was not ready to be shown.");
+                return;
+            }
+            if (readyProviders.Count == 1)
+                m_LastInterstitialAdProvider = readyProviders.FirstOrDefault();
+            else
+            {
+                int idx = readyProviders.IndexOf(m_LastInterstitialAdProvider);
+                if (idx == -1)
+                    m_LastInterstitialAdProvider = readyProviders.FirstOrDefault();
+                else
+                {
+                    idx = MathUtils.ClampInverse(idx + 1, 0, readyProviders.Count);
+                    m_LastInterstitialAdProvider = readyProviders[idx];
+                }
+            }
+            m_LastInterstitialAdProvider?.ShowInterstitialAd(_OnShown, ShowAds);
+        }
+
+        #endregion
+
+        #region nonpublic methods
+
+        private void InitProviders()
+        {
+            var adsProvider = GameSettings.AdsProvider;
+            if (adsProvider.HasFlag(EAdsProvider.GoogleAds))
+            {
+                var man = new GoogleAdMobAdsProvider(ShopManager);
+                man.Init();
+                m_Providers.Add(man);
+            }
+            if (adsProvider.HasFlag(EAdsProvider.UnityAds))
+            {
+                var intAd = new UnityAdsInterstitialAd();
+                var rewAd = new UnityAdsRewardedAd();
+                var man = new UnityAdsProvider(intAd, rewAd, ShopManager);
+                man.Init();
+                m_Providers.Add(man);
+            }
+            if (adsProvider.HasFlag(EAdsProvider.UnityMediation))
+            {
+                var man = new UnityMediationAdsProvider(ShopManager);
+                man.Init();
+                m_Providers.Add(man);
+            }
+        }
         
-        private BoolEntity GetShowAdsCached()
+        private static BoolEntity GetShowAdsCached()
         {
             var val = SaveUtils.GetValue(SaveKeys.DisableAds);
             var result = new BoolEntity {Result = EEntityResult.Success};
             if (val.HasValue)
             {
-                result.Value = val.Value;
+                result.Value = !val.Value;
                 return result;
             }
             SaveUtils.PutValue(SaveKeys.DisableAds, false);
-            result.Value = false;
+            result.Value = true;
             return result;
         }
         
@@ -105,68 +205,6 @@ namespace Managers.Advertising
                     args.Value = !itemInfo.HasReceipt;
                 }));
             return args;
-        }
-
-        public bool RewardedAdReady     => m_Providers.Any(_P => _P.RewardedAdReady);
-        public bool InterstitialAdReady => m_Providers.Any(_P => _P.InterstitialAdReady);
-
-        public event UnityAction Initialized;
-
-        public void Init()
-        {
-            InitProviders();
-            Initialized?.Invoke();
-        }
-
-        public void ShowRewardedAd(UnityAction _OnShown)
-        {
-            var p = m_Providers.FirstOrDefault(_P => _P.RewardedAdReady);
-            if (p != null)
-            {
-                p.ShowRewardedAd(_OnShown, ShowAds);
-                return;
-            }
-            Dbg.LogWarning($"{p.GetType().Name} Rewarded ad was not ready to be shown.");
-        }
-
-        public void ShowInterstitialAd(UnityAction _OnShown)
-        {
-            var p = m_Providers.FirstOrDefault(_P => _P.RewardedAdReady);
-            if (p != null)
-            {
-                p.ShowRewardedAd(_OnShown, ShowAds);
-                return;
-            }
-            Dbg.LogWarning($"{p.GetType().Name} Interstitial ad was not ready to be shown.");
-        }
-
-        #endregion
-
-        #region nonpublic methods
-
-        private void InitProviders()
-        {
-            var adsProvider = GameSettings.AdsProvider;
-            if (adsProvider.HasFlag(EAdsProvider.GoogleAds))
-            {
-                var man = new GoogleAdMobAdsProvider(ShopManager);
-                man.Init();
-                m_Providers.Add(man);
-            }
-            if (adsProvider.HasFlag(EAdsProvider.UnityAds))
-            {
-                var intAd = new UnityAdsInterstitialAd();
-                var rewAd = new UnityAdsRewardedAd();
-                var man = new UnityAdsProvider(intAd, rewAd, ShopManager);
-                man.Init();
-                m_Providers.Add(man);
-            }
-            if (adsProvider.HasFlag(EAdsProvider.UnityMediation))
-            {
-                var man = new UnityMediationAdsProvider(ShopManager);
-                man.Init();
-                m_Providers.Add(man);
-            }
         }
 
         #endregion
