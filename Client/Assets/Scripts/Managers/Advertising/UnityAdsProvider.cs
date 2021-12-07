@@ -106,12 +106,13 @@ namespace Managers.Advertising
         
         public void OnInitializationComplete()
         {
-            Dbg.Log(nameof(OnInitializationComplete).WithSpaces());
+            Dbg.Log($"{nameof(UnityAdsProvider)} {nameof(OnInitializationComplete)}");
         }
 
         public void OnInitializationFailed(UnityAdsInitializationError _Error, string _Message)
         {
-            Dbg.Log(nameof(OnInitializationFailed).WithSpaces() + ": " + _Error + ": " + _Message);
+            Dbg.Log($"{nameof(UnityAdsProvider)} " +
+                    $"{nameof(OnInitializationFailed)}" + ": " + _Error + ": " + _Message);
         }
     }
 }

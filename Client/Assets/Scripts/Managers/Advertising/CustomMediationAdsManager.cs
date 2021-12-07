@@ -126,7 +126,7 @@ namespace Managers.Advertising
                 p.ShowRewardedAd(_OnShown, ShowAds);
                 return;
             }
-            Dbg.LogWarning("Rewarded ad was not ready to be shown.");
+            Dbg.LogWarning($"{p.GetType().Name} Rewarded ad was not ready to be shown.");
         }
 
         public void ShowInterstitialAd(UnityAction _OnShown)
@@ -137,7 +137,7 @@ namespace Managers.Advertising
                 p.ShowRewardedAd(_OnShown, ShowAds);
                 return;
             }
-            Dbg.LogWarning("Rewarded ad was not ready to be shown.");
+            Dbg.LogWarning($"{p.GetType().Name} Interstitial ad was not ready to be shown.");
         }
 
         #endregion

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using UnityEngine.Events;
 using UnityEngine.Purchasing;
 using Utils;
 
 namespace Managers.Advertising
 {
-    public abstract class UnityIAPShopManager : IStoreListener
+    public abstract class UnityIAPShopManager : IStoreListener, IInit
     {
         #region types
 
@@ -33,6 +34,12 @@ namespace Managers.Advertising
         #endregion
         
         #region api
+        
+        public event UnityAction Initialized;
+        public virtual void Init()
+        {
+            InitializePurchasing();
+        }
 
         public abstract PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs _Args);
         public abstract void RestorePurchases();
@@ -41,20 +48,23 @@ namespace Managers.Advertising
         {
             m_StoreController = _Controller;         // Overall Purchasing system, configured with products for this application.
             m_StoreExtensionProvider = _Extensions;  // Store specific subsystem, for accessing device-specific store features.
+            Dbg.LogWarning($"{nameof(UnityIAPShopManager)} {nameof(OnInitialized)}");
+            Initialized?.Invoke();
         }
 
         public void OnInitializeFailed(InitializationFailureReason _Error)
         {
             // Purchasing set-up has not succeeded. Check error for reason. Consider sharing this reason with the user.
-            Dbg.LogWarning("OnInitializeFailed InitializationFailureReason:" + _Error);
+            Dbg.LogWarning($"{nameof(UnityIAPShopManager)} {nameof(OnInitializeFailed)}" +
+                           $" {nameof(InitializationFailureReason)}:" + _Error);
         }
         
         public void OnPurchaseFailed(Product _Product, PurchaseFailureReason _FailureReason)
         {
             // A product purchase attempt did not succeed. Check failureReason for more detail. Consider sharing 
             // this reason with the user to guide their troubleshooting actions.
-            Dbg.LogWarning("OnPurchaseFailed: FAIL. Product: " +
-                           $"'{_Product.definition.storeSpecificId}', PurchaseFailureReason: {_FailureReason}");
+            Dbg.LogWarning($"{nameof(UnityIAPShopManager)} {nameof(OnPurchaseFailed)}" +
+                           $" {nameof(PurchaseFailureReason)}:" + _FailureReason);
         }
         
         #endregion
@@ -63,9 +73,9 @@ namespace Managers.Advertising
         
         protected void InitializePurchasing() 
         {
-            // If we have already connected to Purchasing ...
-            if (IsInitialized())
-                return;
+            // // If we have already connected to Purchasing ...
+            // if (IsInitialized())
+            //     return;
             // Create a builder, first passing in a suite of Unity provided stores.
             var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
             // Add a product to sell / restore by way of its identifier, associating the general identifier

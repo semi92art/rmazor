@@ -38,10 +38,10 @@ namespace Managers.Advertising
 
         protected override List<ProductInfo> Products => new List<ProductInfo>
         {
-            new ProductInfo(PurchaseKeys.Money1, "small_pack_of_coins", ProductType.Consumable),
-            new ProductInfo(PurchaseKeys.Money2, "medium_pack_of_coins", ProductType.Consumable),
-            new ProductInfo(PurchaseKeys.Money3, "big_pack_of_coins", ProductType.Consumable),
-            new ProductInfo(PurchaseKeys.NoAds, "disable_mandatory_advertising", ProductType.NonConsumable)
+            new ProductInfo(PurchaseKeys.Money1, "small_pack_of_coins",           ProductType.Consumable),
+            new ProductInfo(PurchaseKeys.Money2, "medium_pack_of_coins",          ProductType.Consumable),
+            new ProductInfo(PurchaseKeys.Money3, "big_pack_of_coins",             ProductType.Consumable),
+            new ProductInfo(PurchaseKeys.NoAds,  "disable_mandatory_advertising", ProductType.NonConsumable)
         };
         
         private readonly Dictionary<string, UnityAction> m_OnPurchaseActions =
@@ -49,19 +49,6 @@ namespace Managers.Advertising
 
         #region api
 
-        public event UnityAction Initialized;
-        
-        public void Init()
-        {
-
-            
-            InitializePurchasing();
-            Coroutines.Run(Coroutines.WaitWhile(
-                () =>  m_StoreController == null || m_StoreExtensionProvider == null,
-                () => Initialized?.Invoke()));
-            
-        }
-        
         public void Purchase(int _Key, UnityAction _OnPurchase)
         {
             string id = GetProductId(_Key);
@@ -96,7 +83,8 @@ namespace Managers.Advertising
             if (!IsInitialized())
             {
                 // ... report the situation and stop restoring. Consider either waiting longer, or retrying initialization.
-                Dbg.LogWarning("RestorePurchases FAIL. Not initialized.");
+                Dbg.LogWarning($"{nameof(UnityIAPShopManagerFacade)}: " +
+                               $"RestorePurchases FAIL. Not initialized.");
                 return;
             }
             // If we are running on an Apple device ... 
@@ -104,7 +92,7 @@ namespace Managers.Advertising
                 Application.platform == RuntimePlatform.OSXPlayer)
             {
                 // ... begin restoring purchases
-                Dbg.Log("RestorePurchases started ...");
+                Dbg.Log($"{nameof(UnityIAPShopManagerFacade)}: RestorePurchases started ...");
 
                 // Fetch the Apple store-specific subsystem.
                 var apple = m_StoreExtensionProvider.GetExtension<IAppleExtensions>();
@@ -113,7 +101,9 @@ namespace Managers.Advertising
                 apple.RestoreTransactions(_Result => {
                     // The first phase of restoration. If no more responses are received on ProcessPurchase then 
                     // no purchases are available to be restored.
-                    Dbg.Log("RestorePurchases continuing: " + _Result + ". If no further messages, no purchases available to restore.");
+                    Dbg.Log($"{nameof(UnityIAPShopManagerFacade)}: " +
+                            $"RestorePurchases continuing: " + _Result + ". " +
+                            "If no further messages, no purchases available to restore.");
                     if (_Result)
                         SaveUtils.PutValue(SaveKeys.DisableAds, null);
                 });
@@ -122,7 +112,8 @@ namespace Managers.Advertising
             else
             {
                 // We are not running on an Apple device. No work is necessary to restore purchases.
-                Dbg.Log("RestorePurchases FAIL. Not supported on this platform. Current = " + Application.platform);
+                Dbg.Log($"{nameof(UnityIAPShopManagerFacade)}: " +
+                        $"RestorePurchases FAIL. Not supported on this platform. Current = " + Application.platform);
             }
         }
 
@@ -135,7 +126,8 @@ namespace Managers.Advertising
                 if (!string.Equals(_Args.purchasedProduct.definition.id, kvp.Key, StringComparison.Ordinal)) 
                     continue;
                 purchaseActionFound = true;
-                Dbg.Log($"ProcessPurchase: PASS. Product: '{_Args.purchasedProduct.definition.id}'");
+                Dbg.Log($"{nameof(UnityIAPShopManagerFacade)}: " +
+                        $"ProcessPurchase: PASS. Product: '{_Args.purchasedProduct.definition.id}'");
                 kvp.Value?.Invoke();
                 m_OnPurchaseActions.Remove(kvp.Key);
                 break;
@@ -143,7 +135,7 @@ namespace Managers.Advertising
             // Or ... an unknown product has been purchased by this user. Fill in additional products here....
             if (!purchaseActionFound) 
             {
-                Dbg.Log("ProcessPurchase: FAIL. " +
+                Dbg.Log($"{nameof(UnityIAPShopManagerFacade)}: ProcessPurchase: FAIL. " +
                         $"Unrecognized product: '{_Args.purchasedProduct.definition.id}'");
             }
             // Return a flag indicating whether this product has completely been received, or if the application needs 
@@ -161,7 +153,8 @@ namespace Managers.Advertising
             var product = Products.FirstOrDefault(_P => _P.Key == _Key);
             if (product != null) 
                 return product.Id;
-            Dbg.LogError($"Get Product Id failed. Product with key {_Key} does not exist");
+            Dbg.LogError($"{nameof(UnityIAPShopManagerFacade)}: " +
+                         $"Get Product Id failed. Product with key {_Key} does not exist");
             return string.Empty;
         }
 
@@ -171,7 +164,7 @@ namespace Managers.Advertising
             _Args.Result = () => shopProductResult;
             if (!IsInitialized())
             {
-                Dbg.LogWarning("Get Product Item Info Failed. Not initialized.");
+                Dbg.LogWarning($"{nameof(UnityIAPShopManagerFacade)}: Get Product Item Info Failed. Not initialized.");
                 shopProductResult = EShopProductResult.Fail;
                 return;
             }
@@ -179,7 +172,8 @@ namespace Managers.Advertising
             var product = m_StoreController.products.set.FirstOrDefault(_P => _P.definition.id == id);
             if (product == null)
             {
-                Dbg.LogWarning($"Get Product Item Info Failed. Product with id {id} does not exist");
+                Dbg.LogWarning($"{nameof(UnityIAPShopManagerFacade)}: " +
+                               $"Get Product Item Info Failed. Product with id {id} does not exist");
                 shopProductResult = EShopProductResult.Fail;
                 return;
             }
