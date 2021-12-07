@@ -14,42 +14,37 @@ namespace Mono_Installers
         {
             #region settings
 
-            Container.Bind<ISettingsGetter>()     .To<SettingsGetter>()      .AsSingle();
-            Container.Bind<ISoundSetting>()       .To<SoundSetting>()        .AsSingle();
-            Container.Bind<IMusicSetting>()       .To<MusicSetting>()        .AsSingle();
-            Container.Bind<INotificationSetting>().To<NotificationsSetting>().AsSingle();
-            Container.Bind<IHapticsSetting>()     .To<HapticsSetting>()      .AsSingle();
-            Container.Bind<ILanguageSetting>()    .To<LanguageSetting>()     .AsSingle();
+            Container.Bind<ISettingsGetter>()     .To<SettingsGetter>()               .AsSingle();
+            Container.Bind<ISoundSetting>()       .To<SoundSetting>()                 .AsSingle();
+            Container.Bind<IMusicSetting>()       .To<MusicSetting>()                 .AsSingle();
+            Container.Bind<INotificationSetting>().To<NotificationsSetting>()         .AsSingle();
+            Container.Bind<IHapticsSetting>()     .To<HapticsSetting>()               .AsSingle();
+            Container.Bind<ILanguageSetting>()    .To<LanguageSetting>()              .AsSingle();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            Container.Bind<IDebugSetting>()       .To<DebugSetting>()        .AsSingle();
+            Container.Bind<IDebugSetting>()       .To<DebugSetting>()                 .AsSingle();
 #endif
             #endregion
 
             #region managers
 
-            Container.Bind<IAnalyticsManager>()   .To<AnalyticsManager>()         .AsSingle();
-            Container.Bind<IShopManager>()        .To<UnityIAPShopManagerFacade>().AsSingle();
-            Container.Bind<ILocalizationManager>().To<LeanLocalizationManager>()  .AsSingle();
-            Container.Bind<IScoreManager>()       .To<ScoreManager>()             .AsSingle();
+            Container.Bind<IAnalyticsManager>()   .To<AnalyticsManager>()             .AsSingle();
+            Container.Bind<IShopManager>()        .To<UnityIAPShopManagerFacade>()    .AsSingle();
+            Container.Bind<ILocalizationManager>().To<LeanLocalizationManager>()      .AsSingle();
+            Container.Bind<IScoreManager>()       .To<ScoreManager>()                 .AsSingle();
 
             #endregion
             
-            Container.Bind<ICommonTicker>()       .To<CommonTicker>()             .AsSingle();
-            Container.Bind<IViewGameTicker>()     .To<ViewGameTicker>()           .AsSingle();
-            Container.Bind<IModelGameTicker>()    .To<ModelGameTicker>()          .AsSingle();
-            Container.Bind<IUITicker>()           .To<UITicker>()                 .AsSingle();
-            Container.Bind<ILevelsLoader>()       .To<LevelsLoader>()             .AsSingle();
-            Container.Bind<IHapticsManager>()     .To<HapticsManager>()           .AsSingle();
+            Container.Bind<ICommonTicker>()       .To<CommonTicker>()                 .AsSingle();
+            Container.Bind<IViewGameTicker>()     .To<ViewGameTicker>()               .AsSingle();
+            Container.Bind<IModelGameTicker>()    .To<ModelGameTicker>()              .AsSingle();
+            Container.Bind<IUITicker>()           .To<UITicker>()                     .AsSingle();
+            Container.Bind<ILevelsLoader>()       .To<LevelsLoader>()                 .AsSingle();
+            Container.Bind<IHapticsManager>()     .To<HapticsManager>()               .AsSingle();
             
-#if UNITY_IOS || UNITY_IPHONE
 
-            Container.Bind<IAdsManager>()            .To<CustomMediationAdsProvider>().AsSingle();
-            Container.Bind<IUnityAdsRewardedAd>()    .To<UnityAdsRewardedAd>()    .AsSingle();
-            Container.Bind<IUnityAdsInterstitialAd>().To<UnityAdsInterstitialAd>().AsSingle();
-            
-#elif UNITY_ANDROID
-            Container.Bind<IAdsManager>()         .To<GoogleAdMobAdsManager>()    .AsSingle();
-#endif
+            Container.Bind<IAdsManager>()            .To<CustomMediationAdsManager>().AsSingle();
+            Container.Bind<IUnityAdsRewardedAd>()    .To<UnityAdsRewardedAd>()        .AsSingle();
+            Container.Bind<IUnityAdsInterstitialAd>().To<UnityAdsInterstitialAd>()    .AsSingle();
         }
     }
 }

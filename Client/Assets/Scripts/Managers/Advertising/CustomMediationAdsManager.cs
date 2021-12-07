@@ -8,7 +8,7 @@ using Utils;
 
 namespace Managers.Advertising
 {
-    public class CustomMediationAdsProvider : IAdsManager
+    public class CustomMediationAdsManager : IAdsManager
     {
         #region nonpublic members
 
@@ -21,7 +21,7 @@ namespace Managers.Advertising
         private IShopManager ShopManager  { get; }
         private ViewSettings ViewSettings { get; }
         
-        public CustomMediationAdsProvider(
+        public CustomMediationAdsManager(
             IShopManager _ShopManager,
             ViewSettings _ViewSettings)
         {
