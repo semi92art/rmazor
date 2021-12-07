@@ -2,7 +2,7 @@
 
 namespace Games.RazorMaze
 {
-    [CreateAssetMenu(fileName = "model_settings", menuName = "Model Settings", order = 1)]
+    [CreateAssetMenu(fileName = "model_settings", menuName = "Configs and Sets/Model Settings", order = 1)]
     public class ModelSettings : ScriptableObject
     {
         [SerializeField] private float characterSpeed;

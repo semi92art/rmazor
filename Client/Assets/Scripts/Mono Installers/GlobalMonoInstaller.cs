@@ -10,8 +10,12 @@ namespace Mono_Installers
 {
     public class GlobalMonoInstaller : MonoInstaller
     {
+        public CommonGameSettings commonGameSettings;
+        
         public override void InstallBindings()
         {
+            Container.Bind<CommonGameSettings>().FromScriptableObject(commonGameSettings).AsSingle();
+            
             #region settings
 
             Container.Bind<ISettingsGetter>()     .To<SettingsGetter>()               .AsSingle();
@@ -42,7 +46,7 @@ namespace Mono_Installers
             Container.Bind<IHapticsManager>()     .To<HapticsManager>()               .AsSingle();
             
 
-            Container.Bind<IAdsManager>()            .To<CustomMediationAdsManager>().AsSingle();
+            Container.Bind<IAdsManager>()            .To<CustomMediationAdsManager>() .AsSingle();
             Container.Bind<IUnityAdsRewardedAd>()    .To<UnityAdsRewardedAd>()        .AsSingle();
             Container.Bind<IUnityAdsInterstitialAd>().To<UnityAdsInterstitialAd>()    .AsSingle();
         }

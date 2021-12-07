@@ -48,6 +48,7 @@ public class EditorHelper : EditorWindow
     }
     
 #if UNITY_ANDROID
+    
     [MenuItem("Tools/Android Logcat",false, 4)]
     public static void ShowAndroidLogcatWindow()
     {
@@ -69,13 +70,14 @@ public class EditorHelper : EditorWindow
     {
         m_TabPage = GUILayout.Toolbar (
             m_TabPage, 
-            new [] {"Common", "Cached Data", "Model Settings", "View Settings"});
+            new [] {"Common", "Cached Data", "Model Settings", "View Settings", "Common Settings"});
         switch (m_TabPage) 
         {
-            case 0: CommonTabPage();        break;
-            case 1: CachedDataTabPage();    break;
-            case 2: ModelSettingsTabPage(); break;
-            case 3: ViewSettingsTabPage();  break;
+            case 0:  CommonTabPage();                 break;
+            case 1:  CachedDataTabPage();             break;
+            case 2:  ModelSettingsTabPage();          break;
+            case 3:  ViewSettingsTabPage();           break;
+            case 4:  ViewCommonGameSettingsTabPage(); break;
             default: throw new SwitchCaseNotImplementedException(m_TabPage);
         }
     }
@@ -203,6 +205,15 @@ public class EditorHelper : EditorWindow
         var settings = PrefabUtilsEx.GetObject<ViewSettings>(
             "model_settings", "view_settings");
         var type = typeof(ViewSettings);
+        var fieldInfos = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
+        SettingsTabPageCore(settings, fieldInfos.ToList());
+    }
+
+    private void ViewCommonGameSettingsTabPage()
+    {
+        var settings = PrefabUtilsEx.GetObject<CommonGameSettings>(
+            "model_settings", "common_game_settings");
+        var type = typeof(CommonGameSettings);
         var fieldInfos = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
         SettingsTabPageCore(settings, fieldInfos.ToList());
     }

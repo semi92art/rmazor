@@ -2,6 +2,7 @@
 using System.Linq;
 using Constants;
 using Entities;
+using GameHelpers;
 using Games.RazorMaze;
 using UnityEngine.Events;
 using Utils;
@@ -19,14 +20,14 @@ namespace Managers.Advertising
         #region inject
 
         private IShopManager ShopManager  { get; }
-        private ViewSettings ViewSettings { get; }
+        private CommonGameSettings GameSettings { get; }
         
         public CustomMediationAdsManager(
             IShopManager _ShopManager,
-            ViewSettings _ViewSettings)
+            CommonGameSettings _GameSettings)
         {
             ShopManager = _ShopManager;
-            ViewSettings = _ViewSettings;
+            GameSettings = _GameSettings;
         }
 
         #endregion
@@ -145,7 +146,7 @@ namespace Managers.Advertising
 
         private void InitProviders()
         {
-            var adsProvider = ViewSettings.AdsProvider;
+            var adsProvider = GameSettings.AdsProvider;
             if (adsProvider.HasFlag(EAdsProvider.GoogleAds))
             {
                 var man = new GoogleAdMobAdsProvider(ShopManager);

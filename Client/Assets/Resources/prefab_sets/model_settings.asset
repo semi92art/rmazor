@@ -12,9 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1600272214c7aa418cb76f5cc38aecb, type: 3}
   m_Name: model_settings
   m_EditorClassIdentifier: 
+  bundles: 0
   prefabs:
     array:
     - item: {fileID: 11400000, guid: 243986dd30cfcce4abbf025e950c2262, type: 2}
       name: model_settings
     - item: {fileID: 11400000, guid: 95742306892dcc5439babdbcfba0b157, type: 2}
       name: view_settings
+    - item: {fileID: 11400000, guid: 7b4a7ac8dabe081468d40370feba620a, type: 2}
+      name: common_game_settings
