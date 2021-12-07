@@ -16,6 +16,7 @@ public class ColorsHelper : EditorWindow
     private ColorSetScriptableObject.ColorItemSet m_ColorSet;
     private Color?                                m_UiColor;
     private Color                                 m_UiColorCheck;
+    private bool                                  m_ChangeOnlyHueUi = true;
     
     [MenuItem("Tools/Colors Helper", false, 2)]
     public static void ShowWindow()
@@ -63,6 +64,7 @@ public class ColorsHelper : EditorWindow
         {
             m_UiColor = EditorGUILayout.ColorField(m_UiColor.Value);
         }
+        m_ChangeOnlyHueUi = EditorGUILayout.Toggle("Only Hue", m_ChangeOnlyHueUi);
         if (m_UiColor.HasValue && m_UiColor != m_UiColorCheck)
             SetUiColors(m_UiColor.Value);
         if (m_UiColor.HasValue)
@@ -98,9 +100,19 @@ public class ColorsHelper : EditorWindow
             if (item == null) 
                 continue;
             var col = item.color;
-            var newCol = _Color.SetA(col.a);
-            m_ColorProvider?.SetColor(id, newCol);
-            item.color = newCol;
+            Color newColor;
+            if (m_ChangeOnlyHueUi)
+            {
+                Color.RGBToHSV(_Color, out float h, out _, out _);
+                Color.RGBToHSV(col, out _, out float s, out float v);
+                newColor = Color.HSVToRGB(h, s, v).SetA(col.a);
+            }
+            else
+            {
+                newColor = _Color.SetA(col.a);
+            }
+            m_ColorProvider?.SetColor(id, newColor);
+            item.color = newColor;
         }
     }
 
