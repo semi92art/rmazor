@@ -33,6 +33,9 @@ namespace UI.Panels.ShopPanels
             Pivot = Vector2.one * 0.5f,
             SizeDelta = new Vector2(300f, 110)
         };
+        
+        private readonly Dictionary<int, ShopItemArgs> m_ShopItemArgsDict = new Dictionary<int, ShopItemArgs>();
+        private readonly Dictionary<int, ShopMoneyItem> m_MoneyItems = new Dictionary<int, ShopMoneyItem>();
 
         #endregion
         
@@ -57,8 +60,36 @@ namespace UI.Panels.ShopPanels
 
         #region nonpublic methods
 
+        private void LoadItemInfos()
+        {
+            Dbg.Log(nameof(LoadItemInfos));
+            var set = PrefabUtilsEx.GetObject<ShopMoneyItemsScriptableObject>(
+                PrefabSetName, ItemSetName).set;
+            foreach (var itemInSet in set)
+            {
+                bool doAddShopArgs = false;
+                if (m_ShopItemArgsDict.ContainsKey(itemInSet.purchaseKey))
+                {
+                    if (m_ShopItemArgsDict[itemInSet.purchaseKey].Result() != EShopProductResult.Success)
+                    {
+                        m_ShopItemArgsDict.Remove(itemInSet.purchaseKey);
+                        doAddShopArgs = true;
+                    }
+                }
+                else doAddShopArgs = true;
+                if (!doAddShopArgs)
+                    return;
+                var args = itemInSet.watchingAds ? null : Managers.ShopManager.GetItemInfo(itemInSet.purchaseKey);
+                m_ShopItemArgsDict.Add(itemInSet.purchaseKey, args);
+            }
+            var argsNoAds = Managers.ShopManager.GetItemInfo(PurchaseKeys.NoAds);
+            m_ShopItemArgsDict.Add(PurchaseKeys.NoAds, argsNoAds);
+        }
+
         protected override void InitItems()
         {
+            LoadItemInfos();
+            m_MoneyItems.Clear();
             var showAdsEntity = Managers.AdsManager.ShowAds;
             Coroutines.Run(Coroutines.WaitWhile(
                 () => showAdsEntity.Result == EEntityResult.Pending,
@@ -74,7 +105,7 @@ namespace UI.Panels.ShopPanels
                     var moneyIcon = PrefabUtilsEx.GetObject<Sprite>("shop_items", "shop_money_icon");
                     foreach (var itemInSet in set)
                     {
-                        var args = itemInSet.watchingAds ? null : Managers.ShopManager.GetItemInfo(itemInSet.purchaseKey);
+                        var args = m_ShopItemArgsDict[itemInSet.purchaseKey];
                         var info = new ViewShopItemInfo
                         {
                             PurchaseKey = itemInSet.purchaseKey,
@@ -82,13 +113,14 @@ namespace UI.Panels.ShopPanels
                             Reward = itemInSet.reward,
                             Icon = moneyIcon
                         };
-                        InitItem(args, info);
+                        var item = InitItem(args, info);
+                        m_MoneyItems.Add(info.PurchaseKey, item);
                     }
 
                     if (!showAdsEntity.Value)
                         return;
-                    
-                    var argsDisableAds = Managers.ShopManager.GetItemInfo(PurchaseKeys.NoAds);
+
+                    var argsDisableAds = m_ShopItemArgsDict[PurchaseKeys.NoAds];
                     var infoDisableAds = new ViewShopItemInfo
                     {
                         PurchaseKey = PurchaseKeys.NoAds,
@@ -97,6 +129,7 @@ namespace UI.Panels.ShopPanels
                         Reward = 0
                     };
                     var itemDisableAds = InitItem(argsDisableAds, infoDisableAds, BuyHideAdsItem);
+                    m_MoneyItems.Add(PurchaseKeys.NoAds, itemDisableAds);
                     Managers.LocalizationManager.AddTextObject(itemDisableAds.title, "no_ads");
                 }));
         }
@@ -148,6 +181,11 @@ namespace UI.Panels.ShopPanels
                 Result = EEntityResult.Success,
                 Value = false
             };
+            int key = PurchaseKeys.NoAds;
+            if (!m_MoneyItems.ContainsKey(key))
+                return;
+            m_MoneyItems[key].gameObject.DestroySafe();
+            m_MoneyItems.Remove(key);
         }
 
         private void OnPaid(int _Reward)
