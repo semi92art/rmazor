@@ -34,6 +34,8 @@ namespace Utils
         private static int GetMoneySpentOnPurchases()
         {
             var boughtPurchaseIds = SaveUtils.GetValue(SaveKeys.BoughtPurchaseIds);
+            if (boughtPurchaseIds == null)
+                return 0;
             ShopItemsScriptableObject.ShopItemSet GetSet(string _Key) => PrefabUtilsEx
                 .GetObject<ShopItemsScriptableObject>("shop_items", _Key).set;
             var sets = new List<ShopItemsScriptableObject.ShopItemSet>
