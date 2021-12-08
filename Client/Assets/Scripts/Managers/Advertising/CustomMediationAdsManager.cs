@@ -116,7 +116,7 @@ namespace Managers.Advertising
                     m_LastInterstitialAdProvider = readyProviders.FirstOrDefault();
                 else
                 {
-                    idx = MathUtils.ClampInverse(idx + 1, 0, readyProviders.Count);
+                    idx = MathUtils.ClampInverse(idx + 1, 0, readyProviders.Count - 1);
                     m_LastInterstitialAdProvider = readyProviders[idx];
                 }
             }
