@@ -70,7 +70,6 @@ namespace UI.Panels.ShopPanels
 
         private void LoadItemInfos()
         {
-            Dbg.Log(nameof(LoadItemInfos));
             var set = PrefabUtilsEx.GetObject<ShopMoneyItemsScriptableObject>(
                 PrefabSetName, ItemSetName).set;
             foreach (var itemInSet in set)
@@ -78,7 +77,8 @@ namespace UI.Panels.ShopPanels
                 bool doAddShopArgs = false;
                 if (m_ShopItemArgsDict.ContainsKey(itemInSet.purchaseKey))
                 {
-                    if (m_ShopItemArgsDict[itemInSet.purchaseKey].Result() != EShopProductResult.Success)
+                    var args = m_ShopItemArgsDict[itemInSet.purchaseKey];
+                    if (args == null || args.Result() != EShopProductResult.Success)
                     {
                         m_ShopItemArgsDict.Remove(itemInSet.purchaseKey);
                         doAddShopArgs = true;
@@ -86,10 +86,13 @@ namespace UI.Panels.ShopPanels
                 }
                 else doAddShopArgs = true;
                 if (!doAddShopArgs)
-                    return;
-                var args = itemInSet.watchingAds ? null : Managers.ShopManager.GetItemInfo(itemInSet.purchaseKey);
-                m_ShopItemArgsDict.Add(itemInSet.purchaseKey, args);
+                    continue;
+                var newArgs = itemInSet.watchingAds ? 
+                    null : Managers.ShopManager.GetItemInfo(itemInSet.purchaseKey);
+                m_ShopItemArgsDict.Add(itemInSet.purchaseKey, newArgs);
             }
+            if (m_ShopItemArgsDict.ContainsKey(PurchaseKeys.NoAds))
+                return;
             var argsNoAds = Managers.ShopManager.GetItemInfo(PurchaseKeys.NoAds);
             m_ShopItemArgsDict.Add(PurchaseKeys.NoAds, argsNoAds);
         }
