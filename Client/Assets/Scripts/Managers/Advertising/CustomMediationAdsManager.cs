@@ -3,6 +3,7 @@ using System.Linq;
 using Constants;
 using Entities;
 using GameHelpers;
+using Ticker;
 using UnityEngine.Events;
 using Utils;
 
@@ -27,15 +28,18 @@ namespace Managers.Advertising
 
         #region inject
 
-        private IShopManager ShopManager  { get; }
+        private IShopManager       ShopManager  { get; }
         private CommonGameSettings GameSettings { get; }
-        
+        private IViewGameTicker    GameTicker   { get; }
+
         public CustomMediationAdsManager(
             IShopManager _ShopManager,
-            CommonGameSettings _GameSettings)
+            CommonGameSettings _GameSettings,
+            IViewGameTicker _GameTicker)
         {
             ShopManager = _ShopManager;
             GameSettings = _GameSettings;
+            GameTicker = _GameTicker;
         }
 
         #endregion
@@ -139,8 +143,8 @@ namespace Managers.Advertising
             }
             if (adsProvider.HasFlag(EAdsProvider.UnityAds))
             {
-                var intAd = new UnityAdsInterstitialAd();
-                var rewAd = new UnityAdsRewardedAd();
+                var intAd = new UnityAdsInterstitialAd(GameTicker);
+                var rewAd = new UnityAdsRewardedAd(GameTicker);
                 var man = new UnityAdsProvider(intAd, rewAd, ShopManager);
                 man.Init(adsConfig);
                 m_Providers.Add(man);

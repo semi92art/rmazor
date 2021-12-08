@@ -48,11 +48,7 @@ namespace Mono_Installers
             Container.Bind<IUITicker>()           .To<UITicker>()                     .AsSingle();
             Container.Bind<ILevelsLoader>()       .To<LevelsLoader>()                 .AsSingle();
             Container.Bind<IHapticsManager>()     .To<HapticsManager>()               .AsSingle();
-            
-
-            Container.Bind<IAdsManager>()            .To<CustomMediationAdsManager>() .AsSingle();
-            Container.Bind<IUnityAdsRewardedAd>()    .To<UnityAdsRewardedAd>()        .AsSingle();
-            Container.Bind<IUnityAdsInterstitialAd>().To<UnityAdsInterstitialAd>()    .AsSingle();
+            Container.Bind<IAdsManager>()         .To<CustomMediationAdsManager>()    .AsSingle();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using DI.Extensions;
+using Ticker;
 using UnityEngine.Advertisements;
 using UnityEngine.Events;
 using Utils;
@@ -13,15 +14,24 @@ namespace Managers.Advertising
         void LoadAd();
     }
     
-    public class UnityAdsAdBase : IUnityAdsAd
+    public class UnityAdsAdBase : IUnityAdsAd, IUpdateTick
     {
+        protected bool        m_DoInvokeOnShown;
         protected string      m_UnitId;
         protected UnityAction m_OnShown;
+
+        private   IViewGameTicker GameTicker { get; }
+        
+        protected UnityAdsAdBase(IViewGameTicker _GameTicker)
+        {
+            GameTicker = _GameTicker;
+        }
         
         public bool Ready { get; protected set; }
         
         public void Init(string _UnitId)
         {
+            GameTicker.Register(this);
             m_UnitId = _UnitId;
             LoadAd();
         }
@@ -34,14 +44,14 @@ namespace Managers.Advertising
 
         public virtual void OnUnityAdsAdLoaded(string _PlacementId)
         {
-            Dbg.Log(nameof(OnUnityAdsAdLoaded).WithSpaces() + ": " + _PlacementId);
+            Dbg.Log(nameof(OnUnityAdsAdLoaded) + ": " + _PlacementId);
             Ready = true;
         }
 
         public virtual void OnUnityAdsFailedToLoad(string _PlacementId, UnityAdsLoadError _Error, string _Message)
         {
             string message = string.Join(": ", 
-                nameof(OnUnityAdsFailedToLoad).WithSpaces(), _PlacementId, _Message);
+                nameof(OnUnityAdsFailedToLoad), _PlacementId, _Message);
             Dbg.Log(message);
             Ready = false;
             LoadAd();
@@ -50,7 +60,7 @@ namespace Managers.Advertising
         public virtual void OnUnityAdsShowFailure(string _PlacementId, UnityAdsShowError _Error, string _Message)
         {
             string message = string.Join(": ", 
-                nameof(OnUnityAdsShowFailure).WithSpaces(), _PlacementId, _Message);
+                nameof(OnUnityAdsShowFailure), _PlacementId, _Message);
             Dbg.Log(message);
             Ready = false;
             LoadAd();
@@ -58,22 +68,22 @@ namespace Managers.Advertising
 
         public virtual void OnUnityAdsShowStart(string _PlacementId)
         {
-            Dbg.Log(nameof(OnUnityAdsShowStart).WithSpaces() + ": " + _PlacementId);
+            Dbg.Log(nameof(OnUnityAdsShowStart) + ": " + _PlacementId);
             Ready = false;
         }
 
         public virtual void OnUnityAdsShowClick(string _PlacementId)
         {
-            Dbg.Log(nameof(OnUnityAdsShowClick).WithSpaces() + ": " + _PlacementId);
+            Dbg.Log(nameof(OnUnityAdsShowClick) + ": " + _PlacementId);
             Ready = false;
         }
 
         public virtual void OnUnityAdsShowComplete(string _PlacementId, UnityAdsShowCompletionState _ShowCompletionState)
         {
             string message = string.Join(": ", 
-                nameof(OnUnityAdsShowComplete).WithSpaces(), _PlacementId, _ShowCompletionState);
+                GetType().Name, nameof(OnUnityAdsShowComplete), _PlacementId, _ShowCompletionState);
             Dbg.Log(message);
-            m_OnShown?.Invoke();
+            m_DoInvokeOnShown = true;
             Ready = false;
             LoadAd();
         }
@@ -82,6 +92,15 @@ namespace Managers.Advertising
         {
             Ready = false;
             Advertisement.Load(m_UnitId, this);
+        }
+
+        public void UpdateTick()
+        {
+            if (m_DoInvokeOnShown)
+            {
+                m_OnShown?.Invoke();
+                m_DoInvokeOnShown = false;
+            }
         }
     }
 }
