@@ -20,7 +20,7 @@ namespace UI.PanelItems.Shop_Items
             UnityAction _Click,
             ViewShopItemInfo _Info)
         {
-            InitCore(_Managers, _UITicker, _ColorProvider);
+            Init(_Managers, _UITicker, _ColorProvider);
             name = "Shop Item";
             button.onClick.AddListener(SoundOnClick);
             button.onClick.AddListener(_Click);

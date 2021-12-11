@@ -16,13 +16,11 @@ namespace Games.RazorMaze.Views.Common
         public static readonly int MoneyItem;
         public static readonly int UI;
         public static readonly int UiDialogItemNormal;
-        public static readonly int UiDialogItemPressed;
-        public static readonly int UiDialogItemDisabled;
-        public static readonly int UiDialogItemSelected;
         public static readonly int UiDialogBackground;
         public static readonly int UiBorder;
         public static readonly int UiText;
         public static readonly int UiBackground;
+        public static readonly int UiItemHighlighted;
 
         static ColorIds()
         {
@@ -37,13 +35,11 @@ namespace Games.RazorMaze.Views.Common
             MoneyItem                = GetHash(nameof(MoneyItem)               .WithSpaces());
             UI                       = GetHash(nameof(UI));
             UiDialogItemNormal       = GetHash(nameof(UiDialogItemNormal)      .WithSpaces());
-            UiDialogItemPressed      = GetHash(nameof(UiDialogItemPressed)     .WithSpaces());
-            UiDialogItemDisabled     = GetHash(nameof(UiDialogItemDisabled)    .WithSpaces());
-            UiDialogItemSelected     = GetHash(nameof(UiDialogItemSelected)    .WithSpaces());
             UiDialogBackground       = GetHash(nameof(UiDialogBackground)      .WithSpaces());
             UiBorder                 = GetHash(nameof(UiBorder)                .WithSpaces());
             UiText                   = GetHash(nameof(UiText)                  .WithSpaces());
             UiBackground             = GetHash(nameof(UiBackground)            .WithSpaces());
+            UiItemHighlighted        = GetHash(nameof(UiItemHighlighted)       .WithSpaces());
         }
 
         public static int GetHash(string _S)
@@ -58,24 +54,22 @@ namespace Games.RazorMaze.Views.Common
         
         private static Dictionary<int, string> ColorNamesDict => new Dictionary<int, string>
         {
-            {Main, nameof(Main).WithSpaces()},
-            {Background, nameof(Background).WithSpaces()},
-            {BackgroundIdleItems, nameof(BackgroundIdleItems).WithSpaces()},
-            {BackgroundCongratsItems, nameof(BackgroundCongratsItems).WithSpaces()},
-            {Character, nameof(Character).WithSpaces()},
-            {CharacterTail, nameof(CharacterTail).WithSpaces()},
-            {MazeItem1, nameof(MazeItem1).WithSpaces()},
-            {MazeItem2, nameof(MazeItem2).WithSpaces()},
-            {MoneyItem, nameof(MoneyItem).WithSpaces()},
-            {UI, nameof(UI)},
-            {UiDialogItemNormal, nameof(UiDialogItemNormal).WithSpaces()},
-            {UiDialogItemPressed, nameof(UiDialogItemPressed).WithSpaces()},
-            {UiDialogItemDisabled, nameof(UiDialogItemDisabled).WithSpaces()},
-            {UiDialogItemSelected, nameof(UiDialogItemSelected).WithSpaces()},
-            {UiDialogBackground, nameof(UiDialogBackground).WithSpaces()},
-            {UiBorder, nameof(UiBorder).WithSpaces()},
-            {UiText, nameof(UiText).WithSpaces()},
-            {UiBackground, nameof(UiBackground).WithSpaces()}
+            {Main,                     nameof(Main).WithSpaces()},
+            {Background,               nameof(Background).WithSpaces()},
+            {BackgroundIdleItems,      nameof(BackgroundIdleItems).WithSpaces()},
+            {BackgroundCongratsItems,  nameof(BackgroundCongratsItems).WithSpaces()},
+            {Character,                nameof(Character).WithSpaces()},
+            {CharacterTail,            nameof(CharacterTail).WithSpaces()},
+            {MazeItem1,                nameof(MazeItem1).WithSpaces()},
+            {MazeItem2,                nameof(MazeItem2).WithSpaces()},
+            {MoneyItem,                nameof(MoneyItem).WithSpaces()},
+            {UI,                       nameof(UI)},
+            {UiDialogItemNormal,       nameof(UiDialogItemNormal).WithSpaces()},
+            {UiDialogBackground,       nameof(UiDialogBackground).WithSpaces()},
+            {UiBorder,                 nameof(UiBorder).WithSpaces()},
+            {UiText,                   nameof(UiText).WithSpaces()},
+            {UiBackground,             nameof(UiBackground).WithSpaces()},
+            {UiItemHighlighted,        nameof(UiItemHighlighted).WithSpaces()}
         };
     }
 }

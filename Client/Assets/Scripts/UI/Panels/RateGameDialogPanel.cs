@@ -88,6 +88,9 @@ namespace UI.Panels
             m_TextRateGame.text = Managers.LocalizationManager.GetTranslation("rate_game");
             m_IconCharacter.color = ColorProvider.GetColor(ColorIds.Character);
             m_Eye1.color = m_Eye2.color = ColorProvider.GetColor(ColorIds.Background);
+            var closeButtonAnimator = m_ButtonClose.GetComponent<Animator>();
+            if (closeButtonAnimator.IsNotNull())
+                closeButtonAnimator.enabled = false;
         }
         
         public override void OnDialogShow()

@@ -125,6 +125,8 @@ namespace UI.Panels.ShopPanels
                             Icon = moneyIcon
                         };
                         var item = InitItem(args, info);
+                        if (info.BuyForWatchingAd)
+                            item.Highlighted = true;
                         m_MoneyItems.Add(info.PurchaseKey, item);
                     }
 
@@ -199,7 +201,7 @@ namespace UI.Panels.ShopPanels
             m_MoneyItems.Remove(key);
         }
 
-        private void OnPaid(int _Reward)
+        private void OnPaid(long _Reward)
         {
             var scoreEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money);
             Coroutines.Run(Coroutines.WaitWhile(

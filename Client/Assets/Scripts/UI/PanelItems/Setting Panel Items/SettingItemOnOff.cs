@@ -23,7 +23,7 @@ namespace UI.PanelItems.Setting_Panel_Items
             string _TitleKey,
             UnityAction<bool> _Action)
         {
-            InitCore(_Managers, _UITicker, _ColorProvider);
+            Init(_Managers, _UITicker, _ColorProvider);
             name = "Setting";
             _Managers.LocalizationManager.AddTextObject(title, _TitleKey);
             var tg = gameObject.AddComponent<ToggleGroup>();

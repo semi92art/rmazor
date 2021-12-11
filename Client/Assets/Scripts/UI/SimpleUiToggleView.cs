@@ -1,6 +1,5 @@
 ﻿using DI.Extensions;
 using Games.RazorMaze.Views.Common;
-using Ticker;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,31 +8,30 @@ namespace UI
     public class SimpleUiToggleView : SimpleUiItemBase
     {
         [SerializeField] private Toggle toggle;
+
+        private bool m_IsToggleNotNull;
         
-        public void Init(IUITicker _Ticker, IColorProvider _ColorProvider)
+        protected override void CheckIfSerializedItemsNotNull()
         {
-            InitCore(_Ticker, _ColorProvider);
-            if (toggle.IsNotNull())
-                toggle.transition = Selectable.Transition.ColorTint;
-            UpdateToggleColors();
+            base.CheckIfSerializedItemsNotNull();
+            m_IsToggleNotNull = toggle.IsNotNull();
+        }
+
+        protected override void SetColorsOnInit()
+        {
+            base.SetColorsOnInit();
+            if (m_IsToggleNotNull)
+                toggle.targetGraphic.color = ColorProvider.GetColor(ColorIds.UI);
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             base.OnColorChanged(_ColorId, _Color);
-            if (_ColorId == ColorIds.UiDialogItemNormal
-                || _ColorId == ColorIds.UiDialogItemPressed
-                || _ColorId == ColorIds.UiDialogItemSelected
-                || _ColorId == ColorIds.UiDialogItemDisabled)
+            if (_ColorId == ColorIds.UI)
             {
-                UpdateToggleColors();
+                if (m_IsToggleNotNull)
+                    toggle.targetGraphic.color = _Color;
             }
-        }
-
-        private void UpdateToggleColors()
-        {
-            if (toggle.IsNotNull())
-                toggle.colors = GetColorBlock();
         }
     }
 }

@@ -19,6 +19,7 @@ namespace Games.RazorMaze.Views.UI
         private IDialogPanels               DialogPanels         { get; }
         private ILoadingController          LoadingController    { get; }
         private IViewInputCommandsProceeder CommandsProceeder    { get; }
+        private IManagersGetter             Managers             { get; }
 
         public ViewUI(
             IUITicker _UITicker,
@@ -27,7 +28,8 @@ namespace Games.RazorMaze.Views.UI
             IDialogPanels _DialogPanels,
             ILoadingController _LoadingController,
             IViewUIGameControls _ViewUIGameControls,
-            IViewInputCommandsProceeder _CommandsProceeder)
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IManagersGetter _Managers)
             : base(_ViewUIGameControls)
         {
             UITicker = _UITicker;
@@ -36,6 +38,7 @@ namespace Games.RazorMaze.Views.UI
             DialogPanels = _DialogPanels;
             LoadingController = _LoadingController;
             CommandsProceeder = _CommandsProceeder;
+            Managers = _Managers;
         }
 
         #endregion
@@ -88,18 +91,22 @@ namespace Games.RazorMaze.Views.UI
         {
             if (_Args.Stage != ELevelStage.Finished) 
                 return;
-            // FIXME
-            // if (!GameClientUtils.InternetConnection)
-            //     return;
-            bool mustShowRateGamePanel = _Args.LevelIndex % 10 == 0 && _Args.LevelIndex != 0;
+            if (!NetworkUtils.IsInternetConnectionAvailable())
+                return;
+            int ratePanelShowsCount = SaveUtils.GetValue(SaveKeys.RatePanelShowsCount);
+            bool mustShowRateGamePanel =
+                _Args.LevelIndex != 0
+                && _Args.LevelIndex % 10 == 0
+                && !SaveUtils.GetValue(SaveKeys.GameWasRated)
+                && ratePanelShowsCount < 10;
             if (!mustShowRateGamePanel)
                 return;
-            bool gameWasRatedAlready = SaveUtils.GetValue(SaveKeys.GameWasRated);
-            if (gameWasRatedAlready)
-                return;
-            var panel = DialogPanels.RateGameDialogPanel;
-            panel.LoadPanel();
-            ProposalDialogViewer.Show(panel);
+            
+            Managers.ShopManager.RateGame();
+            // var panel = DialogPanels.RateGameDialogPanel;
+            // panel.LoadPanel();
+            // ProposalDialogViewer.Show(panel);
+            SaveUtils.PutValue(SaveKeys.RatePanelShowsCount, ratePanelShowsCount + 1);
         }
 
         #endregion

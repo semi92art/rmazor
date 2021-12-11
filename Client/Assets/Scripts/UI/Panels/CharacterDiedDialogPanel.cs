@@ -45,12 +45,10 @@ namespace UI.Panels
         private Button             m_ButtonWatchAds;
         private Button             m_ButtonPayMoney;
         private Animator           m_AnimLoadingAds;
-        private Animator           m_AnimLoadingMoneyCount;
-        private Animator           m_AnimLoadingMoneyCount2;
         private ProceduralImage    m_RoundFilledBorder;
         private bool               m_AdsWatched;
         private bool               m_MoneyPayed;
-        private int                m_MoneyCount;
+        private long               m_MoneyCount;
 
         #endregion
 
@@ -104,8 +102,6 @@ namespace UI.Panels
             m_TextContinue            = go.GetCompItem<TextMeshProUGUI>("continue_text");
             m_TextNotEnoughMoney      = go.GetCompItem<TextMeshProUGUI>("not_enough_money_text");
             m_AnimLoadingAds          = go.GetCompItem<Animator>("loading_ads_anim");
-            m_AnimLoadingMoneyCount   = go.GetCompItem<Animator>("loading_money_count_anim");
-            m_AnimLoadingMoneyCount2  = go.GetCompItem<Animator>("loading_money_count_anim_2");
             m_MoneyIcon1              = go.GetCompItem<Image>("money_icon_1");
             m_MoneyIcon2              = go.GetCompItem<Image>("money_icon_2");
             m_IconWatchAds            = go.GetCompItem<Image>("watch_ads_icon");
@@ -122,9 +118,9 @@ namespace UI.Panels
             m_ButtonWatchAds.onClick.AddListener(OnWatchAdsButtonClick);
             m_ButtonPayMoney.onClick.AddListener(OnPayMoneyButtonClick);
             
-            go.GetCompItem<SimpleUiButtonView>("watch_ads_button").Init(Ticker, ColorProvider);
-            go.GetCompItem<SimpleUiButtonView>("pay_money_button").Init(Ticker, ColorProvider);
-            go.GetCompItem<SimpleUiDialogPanelView>("dialog_panel_view").Init(Ticker, ColorProvider);
+            go.GetCompItem<SimpleUiButtonView>("watch_ads_button").Init(Managers, Ticker, ColorProvider);
+            go.GetCompItem<SimpleUiButtonView>("pay_money_button").Init(Managers, Ticker, ColorProvider);
+            go.GetCompItem<SimpleUiDialogPanelView>("dialog_panel_view").Init(Managers, Ticker, ColorProvider);
 
             m_AdsWatched = false;
             m_MoneyPayed = false;
@@ -183,8 +179,6 @@ namespace UI.Panels
 
         private void IndicateMoneyCountLoading(bool _Indicate, bool _IsMoneyEnough = true)
         {
-            m_AnimLoadingMoneyCount.SetGoActive(_Indicate);
-            m_AnimLoadingMoneyCount2.SetGoActive(_Indicate);
             m_MoneyIcon2.enabled = !_Indicate;
             m_TextMoneyCount.enabled = !_Indicate;
             if (_Indicate)
@@ -205,11 +199,7 @@ namespace UI.Panels
 
         private void OnWatchAdsButtonClick()
         {
-#if UNITY_EDITOR
-            m_AdsWatched = true;
-#else
             Managers.AdsManager.ShowRewardedAd(() => m_AdsWatched = true);
-#endif
         }
 
         private void OnPayMoneyButtonClick()

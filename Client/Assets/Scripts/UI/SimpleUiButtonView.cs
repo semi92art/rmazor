@@ -1,6 +1,5 @@
-﻿using DI.Extensions;
-using Games.RazorMaze.Views.Common;
-using Ticker;
+﻿using Games.RazorMaze.Views.Common;
+using StansAssets.Foundation.Extensions;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,33 +8,30 @@ namespace UI
     public class SimpleUiButtonView : SimpleUiItemBase
     {
         [SerializeField] private Button button;
+
+        private bool m_IsButtonNotNull;
         
-        public void Init(IUITicker _Ticker, IColorProvider _ColorProvider)
+        protected override void CheckIfSerializedItemsNotNull()
         {
-            InitCore(_Ticker, _ColorProvider);
-            // button.targetGraphic.color = _ColorProvider.GetColor(ColorIds.UiDialogItemNormal);
+            base.CheckIfSerializedItemsNotNull();
+            m_IsButtonNotNull = button.IsNotNull();
+        }
+
+        protected override void SetColorsOnInit()
+        {
+            base.SetColorsOnInit();
             if (button.IsNotNull())
-                button.transition = Selectable.Transition.ColorTint;
-            UpdateButtonColors();
+                button.targetGraphic.color = ColorProvider.GetColor(ColorIds.UiDialogItemNormal);
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             base.OnColorChanged(_ColorId, _Color);
-            if (_ColorId == ColorIds.UiDialogItemNormal
-                || _ColorId == ColorIds.UiDialogItemPressed
-                || _ColorId == ColorIds.UiDialogItemSelected
-                || _ColorId == ColorIds.UiDialogItemDisabled)
+            if (_ColorId == ColorIds.UiDialogItemNormal)
             {
-                UpdateButtonColors();
+                if (m_IsButtonNotNull)
+                    button.targetGraphic.color = _Color;
             }
-        }
-
-
-        private void UpdateButtonColors()
-        {
-            if (button.IsNotNull())
-                button.colors = GetColorBlock();
         }
     }
 }

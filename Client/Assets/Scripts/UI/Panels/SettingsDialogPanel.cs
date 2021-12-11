@@ -204,6 +204,7 @@ namespace UI.Panels
                 ColorProvider,
                 () => Managers.ShopManager.RateGame());
             Managers.LocalizationManager.AddTextObject(item.title, "rate_game");
+            item.Highlighted = true;
         }
 
         private void InitLeaderboardsButton()

@@ -12,6 +12,7 @@ using UI.Entities;
 using UI.Factories;
 using UI.PanelItems.Setting_Panel_Items;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -19,7 +20,7 @@ namespace UI.Panels
 {
     public interface ISettingSelectorDialogPanel : IDialogPanel
     {
-        void PreInit(string _DefaultValue, List<string> _Items, Action<string> _OnSelect);
+        void PreInit(string _DefaultValue, List<string> _Items, UnityAction<string> _OnSelect);
     }
     
     public class SettingsSelectorPanel : DialogPanelBase, ISettingSelectorDialogPanel
@@ -27,7 +28,7 @@ namespace UI.Panels
         #region private members
 
         private List<string> m_Items;
-        private Action<string> m_OnSelect;
+        private UnityAction<string> m_OnSelect;
         private string m_DefaultValue;
         private RectTransform m_Content;
         private ToggleGroup m_ToggleGroup;
@@ -53,7 +54,7 @@ namespace UI.Panels
         public override EUiCategory Category => EUiCategory.Settings;
 
 
-        public void PreInit(string _DefaultValue, List<string> _Items, Action<string> _OnSelect)
+        public void PreInit(string _DefaultValue, List<string> _Items, UnityAction<string> _OnSelect)
         {
             m_DefaultValue = _DefaultValue;
             m_Items = _Items;

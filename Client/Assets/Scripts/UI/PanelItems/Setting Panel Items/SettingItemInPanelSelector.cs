@@ -8,6 +8,7 @@ using Ticker;
 using TMPro;
 using UI.Panels;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace UI.PanelItems.Setting_Panel_Items
@@ -25,11 +26,11 @@ namespace UI.PanelItems.Setting_Panel_Items
             IColorProvider _ColorProvider,
             string _TitleKey,
             Func<string> _Value,
-            Action<string> _OnSelect,
+            UnityAction<string> _OnSelect,
             Func<List<string>> _ListOfItems = null,
             ISettingSelectorDialogPanel _SelectorPanel = null)
         {
-            InitCore(_Managers, _UITicker, _ColorProvider);
+            Init(_Managers, _UITicker, _ColorProvider);
             _Managers.LocalizationManager.AddTextObject(title, _TitleKey);
             setting.text = _Value?.Invoke();
             button.SetOnClick(() =>

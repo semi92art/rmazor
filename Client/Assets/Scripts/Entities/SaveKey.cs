@@ -28,6 +28,7 @@ namespace Entities
         public static SaveKey<int>  DesignerHeapIndex        => new SaveKey<int>("designer_heap_index");
         public static SaveKey<int>  CurrentLevelIndex        => new SaveKey<int>("current_level_index");
         public static SaveKey<int>  DailyBonusLastClickedDay => new SaveKey<int>("daily_bonus_last_day");
+        public static SaveKey<int>  RatePanelShowsCount      => new SaveKey<int>("rate_panel_shows_count");
         
         public static SaveKey<string> Login        => new SaveKey<string>("login");
         public static SaveKey<string> PasswordHash => new SaveKey<string>("password_hash");

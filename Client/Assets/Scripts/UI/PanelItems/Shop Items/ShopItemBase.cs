@@ -31,25 +31,22 @@ namespace UI.PanelItems.Shop_Items
         [SerializeField] protected Image watchAdImage;
         [SerializeField] protected Animator loadingAnim;
 
+        protected ViewShopItemInfo m_Info;
+        private   bool             m_IsBuyButtonNotNull;
+        private   bool             m_IsWatchAdImageNotNull;
+        
         public virtual void Init(
             IManagersGetter _Managers,
             IUITicker _UITicker,
             IColorProvider _ColorProvider,
             UnityAction _Click,
-            ViewShopItemInfo _Info) { }
-
-        protected void InitCore(
-            IManagersGetter _Managers,
-            IUITicker _UITicker,
-            IColorProvider _ColorProvider,
-            UnityAction _Click,
-            ViewShopItemInfo _Info,
-            UnityAction _LoadingFinishAction)
+            ViewShopItemInfo _Info)
         {
+            base.Init(_Managers, _UITicker, _ColorProvider);
+            m_Info = _Info;
             watchAdImage.SetGoActive(true);
             loadingAnim.SetGoActive(true);
             name = "Shop Item";
-            InitCore(_Managers, _UITicker, _ColorProvider);
             buyButton.onClick.AddListener(SoundOnClick);
             buyButton.onClick.AddListener(_Click);
             itemIcon.sprite = _Info.Icon;
@@ -59,16 +56,65 @@ namespace UI.PanelItems.Shop_Items
                 () =>
                 {
                     IndicateLoading(false, _Info.BuyForWatchingAd);
-                    _LoadingFinishAction?.Invoke();
+                    FinishAction();
                 }));
         }
         
-        protected void IndicateLoading(bool _Indicate, bool _BuyForWatchingAd)
+        public override void Init(
+            IManagersGetter _Managers, 
+            IUITicker _UITicker, 
+            IColorProvider _ColorProvider)
+        {
+            throw new System.NotSupportedException();
+        }
+
+        protected override void CheckIfSerializedItemsNotNull()
+        {
+            base.CheckIfSerializedItemsNotNull();
+            m_IsBuyButtonNotNull = buyButton.IsNotNull();
+            m_IsWatchAdImageNotNull = watchAdImage.IsNotNull();
+        }
+
+        protected override void SetColorsOnInit()
+        {
+            base.SetColorsOnInit();
+            if (m_IsBuyButtonNotNull)
+                buyButton.targetGraphic.color = ColorProvider.GetColor(ColorIds.UiDialogBackground);
+            if (m_IsWatchAdImageNotNull)
+                watchAdImage.color = ColorProvider.GetColor(ColorIds.UI);
+        }
+
+        protected override void OnColorChanged(int _ColorId, Color _Color)
+        {
+            base.OnColorChanged(_ColorId, _Color);
+            if (_ColorId == ColorIds.UiDialogBackground)
+            {
+                if (m_IsBuyButtonNotNull)
+                    buyButton.targetGraphic.color = _Color;
+            }
+            else if (_ColorId == ColorIds.UI)
+            {
+                if (m_IsWatchAdImageNotNull)
+                    watchAdImage.color = _Color;
+            }
+        }
+
+        private void IndicateLoading(bool _Indicate, bool _BuyForWatchingAd)
         {
             watchAdImage.SetGoActive(!_Indicate && _BuyForWatchingAd);
             price.SetGoActive(!_Indicate && !_BuyForWatchingAd);
             loadingAnim.SetGoActive(_Indicate);
             loadingAnim.enabled = _Indicate;
+        }
+
+        protected virtual void FinishAction()
+        {
+            price.SetGoActive(!m_Info.BuyForWatchingAd);
+            if (m_Info.BuyForWatchingAd) 
+                return;
+            price.text = $"{m_Info.Price} {m_Info.Currency}";
+            if (string.IsNullOrEmpty(price.text) || string.IsNullOrWhiteSpace(price.text))
+                price.text = Managers.LocalizationManager.GetTranslation("buy");
         }
     }
 }
