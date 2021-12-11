@@ -33,7 +33,7 @@ namespace Games.RazorMaze.Models.ProceedInfos
         public V2Int StartPosition => m_Item.Position;
         public List<V2Int> Path => m_Item.Path.ToList();
         public V2Int Pair => m_Item.Pair;
-        public V2Int Direction => m_Item.Direction;
+        public V2Int Direction => m_Item.Directions.First();
         
         public bool IsProceeding { get; set; }
         public int ProceedingStage { get; set; }

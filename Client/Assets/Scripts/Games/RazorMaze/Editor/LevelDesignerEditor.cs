@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Reflection;
 using Constants;
 using DI.Extensions;
 using Entities;
@@ -8,8 +9,8 @@ using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Debug;
 using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.MazeItems;
+using ModestTree;
 using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;
@@ -17,11 +18,11 @@ using Utils.Editor;
 
 namespace Games.RazorMaze.Editor
 {
-    public class LevelDesignerEditor : EditorWindow
+    public partial class LevelDesignerEditor : EditorWindow
     {
         #region static members
         
-        public static HeapReorderableList LevelsList;
+        private static HeapReorderableList LevelsList;
         private static LevelDesigner m_Des => LevelDesigner.Instance;
         private static int _gameId = 1;
 
@@ -103,7 +104,7 @@ namespace Games.RazorMaze.Editor
             m_LoadedLevelHeapIndex = HeapIndex;
             LevelsList.SetupLoadedLevel(m_LoadedLevelIndex, m_LoadedLevelHeapIndex);
         }
-        
+
         private void LoadLevel(MazeInfo _Info)
         {
             CreateObjects(_Info);
@@ -195,7 +196,12 @@ namespace Games.RazorMaze.Editor
 
         private void ShowFixUtilsTabPage()
         {
-            EditorUtilsEx.GuiButtonAction("Fix Paths", LevelDesignerFixUtils.FixPaths);
+            var t = typeof(LevelDesignerEditor);
+            var methods = t.GetMethods(BindingFlags.Static | BindingFlags.Public);
+            foreach (var method in methods.Where(_M => _M.HasAttribute(typeof(FixUtilAttribute))))
+                EditorUtilsEx.GuiButtonAction(
+                    method.Name.WithSpaces(), 
+                    () => method.Invoke(null, null));
         }
 
         private void ShowMazeGeneratorZone()

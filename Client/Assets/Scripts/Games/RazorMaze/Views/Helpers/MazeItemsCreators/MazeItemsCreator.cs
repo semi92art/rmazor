@@ -93,7 +93,7 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
                     Type = mazeItem.Type,
                     Position = mazeItem.Position,
                     Path = mazeItem.Path,
-                    Directions = new List<V2Int>{mazeItem.Direction},
+                    Directions = mazeItem.Directions,
                     Pair = mazeItem.Pair,
                     IsNode = false,
                     IsStartNode = false

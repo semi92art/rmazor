@@ -127,7 +127,7 @@ namespace Games.RazorMaze
                         return dirs.Select(_Dir =>
                                 new MazeItem
                                 {
-                                    Direction = _Dir,
+                                    Directions = new List<V2Int> {_Dir},
                                     Pair = _Item.Pair,
                                     Path = _Item.Path,
                                     Type = _Item.Type,
