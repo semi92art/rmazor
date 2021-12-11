@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" package="xyz.windsoft.mtassets.nat" android:versionCode="1" android:versionName="1.0">
+  <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="26" />
+  <uses-permission android:name="android.permission.WAKE_LOCK" />
+  <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+  <uses-permission android:name="android.permission.BLUETOOTH" />
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+  <uses-permission android:name="android.permission.VIBRATE" />
+  <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.FLASHLIGHT" />
+  <uses-permission android:name="android.permission.CAMERA" />
+  <application android:hardwareAccelerated="true" tools:ignore="GoogleAppIndexingWarning">
+    <activity android:name="xyz.windsoft.mtassets.nat.Activities.FullsreenWebview" android:configChanges="orientation|screenSize" android:label="@string/title_activity_fullsreen_webview" android:screenOrientation="portrait" android:theme="@style/DefaultTheme" />
+    <receiver android:name="xyz.windsoft.mtassets.nat.Receivers.OnInactivityNotification" />
+    <receiver android:name="xyz.windsoft.mtassets.nat.Receivers.OnChangeDate">
+      <intent-filter>
+        <action android:name="android.intent.action.TIME_SET" />
+      </intent-filter>
+    </receiver>
+    <receiver android:name="xyz.windsoft.mtassets.nat.Receivers.OnChangeTimeZone">
+      <intent-filter>
+        <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+      </intent-filter>
+    </receiver>
+    <receiver android:name="xyz.windsoft.mtassets.nat.ScheduledReceivers.OnReceiveChannel_1" />
+    <receiver android:name="xyz.windsoft.mtassets.nat.ScheduledReceivers.OnReceiveChannel_2" />
+    <receiver android:name="xyz.windsoft.mtassets.nat.ScheduledReceivers.OnReceiveChannel_3" />
+    <receiver android:name="xyz.windsoft.mtassets.nat.ScheduledReceivers.OnReceiveChannel_4" />
+    <receiver android:name="xyz.windsoft.mtassets.nat.ScheduledReceivers.OnReceiveChannel_5" />
+    <receiver android:name="xyz.windsoft.mtassets.nat.ScheduledReceivers.OnReceiveChannel_6" />
+    <receiver android:name="xyz.windsoft.mtassets.nat.ScheduledReceivers.OnReceiveChannel_7" />
+    <receiver android:name="xyz.windsoft.mtassets.nat.ScheduledReceivers.OnReceiveChannel_8" />
+    <receiver android:name="xyz.windsoft.mtassets.nat.ScheduledReceivers.OnReceiveChannel_9" />
+    <receiver android:name="xyz.windsoft.mtassets.nat.ScheduledReceivers.OnReceiveChannel_10" />
+    <receiver android:name="xyz.windsoft.mtassets.nat.ScheduledReceivers.OnReceiveChannel_11" />
+    <receiver android:name="xyz.windsoft.mtassets.nat.ScheduledReceivers.OnReceiveChannel_12" />
+    <receiver android:name="xyz.windsoft.mtassets.nat.ScheduledReceivers.OnReceiveChannel_13" />
+    <receiver android:name="xyz.windsoft.mtassets.nat.ScheduledReceivers.OnReceiveChannel_14" />
+    <receiver android:name="xyz.windsoft.mtassets.nat.ScheduledReceivers.OnReceiveChannel_15" />
+    <receiver android:name="xyz.windsoft.mtassets.nat.ScheduledReceivers.OnReceiveChannel_16" />
+    <receiver android:name="xyz.windsoft.mtassets.nat.ScheduledReceivers.OnReceiveChannel_17" />
+    <receiver android:name="xyz.windsoft.mtassets.nat.ScheduledReceivers.OnReceiveChannel_18" />
+    <receiver android:name="xyz.windsoft.mtassets.nat.ScheduledReceivers.OnReceiveChannel_19" />
+    <receiver android:name="xyz.windsoft.mtassets.nat.ScheduledReceivers.OnReceiveChannel_20" />
+    <meta-data android:name="sendNotificationOnChangeTime" android:value="true" />
+    <meta-data android:name="titleOfTimeChangedNotification" android:value="Time Changed" />
+    <meta-data android:name="textOfTimeChangedNotification" android:value="Time has changed on your device. This may affect the way time goes by in this app, to keep everything running, please open the app now." />
+    <meta-data android:name="enableAccurateNotify" android:value="true" />
+  </application>
+</manifest>
