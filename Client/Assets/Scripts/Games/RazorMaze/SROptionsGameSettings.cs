@@ -22,14 +22,12 @@ public partial class SROptions
     
     public static void Init(
         IModelGame _Model,
-        IViewGame _View,
-        ModelSettings _ModelSettings,
-        ViewSettings _ViewSettings)
+        IViewGame _View)
     {
         _model = _Model;
         _view = _View;
-        _modelSettings = _ModelSettings;
-        _viewSettings = _ViewSettings;
+        _modelSettings = _Model.Settings;
+        _viewSettings = _View.Settings;
 
         SRDebug.Instance.PanelVisibilityChanged += OnPanelVisibilityChanged;
     }
@@ -59,6 +57,13 @@ public partial class SROptions
     {
         get => _modelSettings.CharacterSpeed;
         set => _modelSettings.CharacterSpeed = value;
+    }
+
+    [Category(CategoryCharacter)]
+    public float MoveThreshold
+    {
+        get => _viewSettings.MoveSwipeThreshold;
+        set => _viewSettings.MoveSwipeThreshold = value;
     }
 
     [Category(CategoryMazeItems)]

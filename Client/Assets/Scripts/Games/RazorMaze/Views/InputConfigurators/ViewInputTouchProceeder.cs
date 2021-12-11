@@ -29,6 +29,8 @@ namespace Games.RazorMaze.Views.InputConfigurators
         private          EMazeMoveDirection? m_PrevMoveDirection;
         private          bool                m_InPauseBetweenMoveCommands;
         private          float               m_PauseBetweenMoveCommandsTimer;
+        private          int                 m_TactCount;
+        private          float               m_TouchForMoveTimer;
         
         #endregion
 
@@ -160,21 +162,19 @@ namespace Games.RazorMaze.Views.InputConfigurators
                 if (m_PauseBetweenMoveCommandsTimer > ViewSettings.PauseBetweenMoveCommands)
                     m_InPauseBetweenMoveCommands = false;
             }
-            
-            const int maxTactsToCheck = 10;
-            if (!IsFingerOnScreen())
+            if (!IsFingerOnScreen()
+                || m_TouchForMoveTimer > ViewSettings.MoveSwipeThreshold)
             {
-                if (m_TactCount == 0)
+                if (m_TouchForMoveTimer == 0f)
                     return;
+                m_TouchForMoveTimer = 0;
                 m_TactCount = 0;
                 m_PrevMoveDirection = null;
                 m_TouchPositionsQueue.Clear();
                 return;
             }
-            
             var pos = GetFingerPosition();
-            
-            for (int i = 0; i < Math.Min(maxTactsToCheck, m_TactCount); i++)
+            for (int i = 0; i < m_TactCount; i++)
             {
                 var prevPos = m_TouchPositionsQueue[m_TactCount - 1 - i];
                 var delta = pos - prevPos;
@@ -190,12 +190,10 @@ namespace Games.RazorMaze.Views.InputConfigurators
                 m_PauseBetweenMoveCommandsTimer = 0f;
                 break;
             }
-            
             m_TouchPositionsQueue.Add(pos);
+            m_TouchForMoveTimer += GameTicker.DeltaTime;
             m_TactCount++;
         }
-
-        private int m_TactCount;
 
         public static bool IsFingerOnScreen()
         {
@@ -219,7 +217,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
 #endif
         }
 
-        private EMazeMoveDirection? GetMoveDirection(Vector2 _Delta)
+        private static EMazeMoveDirection? GetMoveDirection(Vector2 _Delta)
         {
             const float angThreshold = 30f * Mathf.Deg2Rad;
             const float distThreshold = 0.05f;
@@ -235,7 +233,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
             return res;
         }
 
-        private EInputCommand GetMoveCommand(EMazeMoveDirection _MoveDirection)
+        private static EInputCommand GetMoveCommand(EMazeMoveDirection _MoveDirection)
         {
             switch (_MoveDirection)
             {
