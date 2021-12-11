@@ -153,5 +153,19 @@ namespace Utils
             _Ended    = touch.phase == TouchPhase.Ended;
 #endif
         }
+
+        public static void ShowAlertDialog(string _Title, string _Text)
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorUtility.DisplayDialog(_Title, _Text, "OK");
+#elif UNITY_ANDROID
+            MTAssets.NativeAndroidToolkit.NativeAndroid.Dialogs
+                .ShowSimpleAlertDialog(_Title, _Text);
+#elif UNITY_IPHONE || UNITY_IOS
+            var alert = new SA.iOS.UIKit.ISN_UIAlertController(
+                _Title, _Text, SA.iOS.UIKit.ISN_UIAlertControllerStyle.Alert);
+            alert.Present();
+#endif
+        }
     }
 }

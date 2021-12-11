@@ -173,5 +173,12 @@ namespace Utils
             float num2 = _A.y - _B.y;
             return num1 * num1 + num2 * num2;
         }
+
+        public static float TriangleWave(float _V, float _Period, float _Amplitude)
+        {
+            float p = _Period;
+            float a = _Amplitude;
+            return Mathf.Abs((_V - 4 * p) % p - p * 0.5f) * 4f * a / p - a;
+        }
     }
 }
