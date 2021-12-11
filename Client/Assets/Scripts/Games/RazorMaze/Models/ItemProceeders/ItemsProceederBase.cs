@@ -69,7 +69,10 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 case ELevelStage.Loaded:
                     CollectItems(Data.Info);
                     break;
-                case ELevelStage.ReadyToStart when _Args.PreviousStage != ELevelStage.Paused:
+                case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.CharacterKilled:
+                    break;
+                case ELevelStage.ReadyToStart when _Args.PreviousStage != ELevelStage.Paused
+                                                   && _Args.PreviousStage != ELevelStage.CharacterKilled:
                     StartProceed(true);
                     break;
                 case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.Paused:
