@@ -31,20 +31,14 @@ namespace Games.RazorMaze.Controllers
         
         public  IModelGame    Model         { get; private set; }
         public  IViewGame     View          { get; private set; }
-        private ModelSettings ModelSettings { get; set; }
-        private ViewSettings  ViewSettings  { get; set; }
 
         [Inject]
         public void Inject(
             IModelGame _Model,
-            IViewGame _View,
-            ModelSettings _ModelSettings,
-            ViewSettings _ViewSettings)
+            IViewGame _View)
         {
             Model = _Model;
             View = _View;
-            ModelSettings = _ModelSettings;
-            ViewSettings = _ViewSettings;
         }
 
         #endregion
@@ -55,7 +49,7 @@ namespace Games.RazorMaze.Controllers
         
         public void Init()
         {
-            SROptions.Init(Model, View, ModelSettings, ViewSettings);
+            SROptions.Init(Model, View);
             bool modelInitialized = false;
             bool viewInitialized = false;
             Model.Initialized += () => modelInitialized = true;

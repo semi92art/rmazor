@@ -89,9 +89,6 @@ public class ColorsHelper : EditorWindow
             ColorIds.UiBorder,
             ColorIds.UiText,
             ColorIds.UiDialogItemNormal,
-            ColorIds.UiDialogItemPressed,
-            ColorIds.UiDialogItemSelected,
-            ColorIds.UiDialogItemDisabled,
             ColorIds.UiDialogBackground
         };
         foreach (var id in coloIds)

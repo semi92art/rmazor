@@ -4,21 +4,21 @@ using Managers;
 
 namespace Entities
 {
-    public class ScoresEntity : EntityBase<Dictionary<int, int>>
+    public class ScoresEntity : EntityBase<Dictionary<int, long>>
     {
         public ScoresEntity()
         {
-            Value = new Dictionary<int, int>();
+            Value = new Dictionary<int, long>();
         }
 
-        public int? GetFirstScore()
+        public long? GetFirstScore()
         {
             if (Value.Any())
                 return Value.First().Value;
             return null;
         }
         
-        public int? GetScore(int _Key)
+        public long? GetScore(int _Key)
         {
             if (Value.ContainsKey(_Key))
                 return Value[_Key];

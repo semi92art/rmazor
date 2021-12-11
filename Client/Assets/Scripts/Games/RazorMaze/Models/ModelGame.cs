@@ -10,6 +10,7 @@ namespace Games.RazorMaze.Models
 {
     public interface IModelGame : IInit, IOnLevelStageChanged
     {
+        ModelSettings              Settings                  { get; }
         IModelData                 Data                      { get; }
         IModelMazeRotation         MazeRotation              { get; }
         IPathItemsProceeder        PathItemsProceeder        { get; }
@@ -35,27 +36,27 @@ namespace Games.RazorMaze.Models
         private List<object>               m_Proceeders;
 
         #endregion
-        
-        #region api
-        
-        public event UnityAction Initialized;
-        
-        public IModelData                         Data { get; }
-        public IModelMazeRotation                 MazeRotation { get; }
-        public IPathItemsProceeder                PathItemsProceeder { get; }
-        public ITrapsMovingProceeder              TrapsMovingProceeder { get; }
-        public IGravityItemsProceeder             GravityItemsProceeder { get; }
-        public ITrapsReactProceeder               TrapsReactProceeder { get; }
-        public ITrapsIncreasingProceeder          TrapsIncreasingProceeder { get; }
-        public ITurretsProceeder                  TurretsProceeder { get; }
-        public IPortalsProceeder                  PortalsProceeder { get; }
-        public IShredingerBlocksProceeder         ShredingerBlocksProceeder { get; }
-        public ISpringboardProceeder              SpringboardProceeder { get; }
-        public IModelCharacter                    Character { get; }
-        public IModelLevelStaging                 LevelStaging { get; }
-        public IInputScheduler                    InputScheduler { get; }
+
+        #region inject
+
+        public ModelSettings              Settings                  { get; }
+        public IModelData                 Data                      { get; }
+        public IModelMazeRotation         MazeRotation              { get; }
+        public IPathItemsProceeder        PathItemsProceeder        { get; }
+        public ITrapsMovingProceeder      TrapsMovingProceeder      { get; }
+        public IGravityItemsProceeder     GravityItemsProceeder     { get; }
+        public ITrapsReactProceeder       TrapsReactProceeder       { get; }
+        public ITrapsIncreasingProceeder  TrapsIncreasingProceeder  { get; }
+        public ITurretsProceeder          TurretsProceeder          { get; }
+        public IPortalsProceeder          PortalsProceeder          { get; }
+        public IShredingerBlocksProceeder ShredingerBlocksProceeder { get; }
+        public ISpringboardProceeder      SpringboardProceeder      { get; }
+        public IModelCharacter            Character                 { get; }
+        public IModelLevelStaging         LevelStaging              { get; }
+        public IInputScheduler            InputScheduler            { get; }
 
         public ModelGame(
+            ModelSettings                         _Settings,
             IModelData                            _Data,
             IModelMazeRotation                    _MazeRotation,
             IPathItemsProceeder                   _PathItemsProceeder,
@@ -71,6 +72,7 @@ namespace Games.RazorMaze.Models
             IShredingerBlocksProceeder            _ShredingerBlocksProceeder,
             ISpringboardProceeder                 _SpringboardProceeder)
         {
+            Settings                              = _Settings;
             Data                                  = _Data;
             MazeRotation                          = _MazeRotation;
             PathItemsProceeder                    = _PathItemsProceeder;
@@ -86,6 +88,14 @@ namespace Games.RazorMaze.Models
             ShredingerBlocksProceeder             = _ShredingerBlocksProceeder;
             SpringboardProceeder                  = _SpringboardProceeder;
         }
+
+        #endregion
+        
+        #region api
+        
+        public event UnityAction Initialized;
+        
+        
 
         public void Init()
         {

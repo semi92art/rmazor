@@ -20,6 +20,7 @@ namespace Games.RazorMaze.Views
         ICharacterMoveContinued,
         ICharacterMoveFinished
     {
+        ViewSettings                   Settings              { get; }
         IContainersGetter              ContainersGetter      { get; }
         IViewUI                        UI                    { get; }
         IViewLevelStageController      LevelStageController  { get; }
@@ -43,7 +44,8 @@ namespace Games.RazorMaze.Views
     public class ViewGame : IViewGame
     {
         #region inject
-        
+
+        public ViewSettings                   Settings              { get; }
         public IContainersGetter              ContainersGetter      { get; }
         public IViewUI                        UI                    { get; }
         public IViewLevelStageController      LevelStageController  { get; }
@@ -69,51 +71,53 @@ namespace Games.RazorMaze.Views
         private ICameraProvider          CameraProvider      { get; }
 
         public ViewGame(
-            IContainersGetter _ContainersGetter,
-            IViewUI _UI,
-            IViewLevelStageController _LevelStageController,
-            IViewInputController _InputController,
-            IViewInputCommandsProceeder _CommandsProceeder,
-            IViewCharacter _Character,
-            IViewMazeCommon _Common,
-            IViewMazeBackground _Background,
-            IViewMazeRotation _MazeRotation,
-            IViewMazePathItemsGroup _PathItemsGroup,
-            IViewMazeMovingItemsGroup _MovingItemsGroup,
-            IViewMazeTrapsReactItemsGroup _TrapsReactItemsGroup,
-            IViewMazeTrapsIncItemsGroup _TrapsIncItemsGroup,
-            IViewMazeTurretsGroup _TurretsGroup,
-            IViewMazePortalsGroup _PortalsGroup,
-            IViewMazeShredingerBlocksGroup _ShredingerBlocksGroup,
-            IViewMazeSpringboardItemsGroup _SpringboardItemsGroup,
-            IViewMazeGravityItemsGroup _GravityItemsGroup,
-            IManagersGetter _Managers, 
-            IMazeCoordinateConverter _CoordinateConverter,
-            IColorProvider _ColorProvider,
-            ICameraProvider _CameraProvider)
+            ViewSettings                          _Settings,
+            IContainersGetter                     _ContainersGetter,
+            IViewUI                               _UI,
+            IViewLevelStageController             _LevelStageController,
+            IViewInputController                  _InputController,
+            IViewInputCommandsProceeder           _CommandsProceeder,
+            IViewCharacter                        _Character,
+            IViewMazeCommon                       _Common,
+            IViewMazeBackground                   _Background,
+            IViewMazeRotation                     _MazeRotation,
+            IViewMazePathItemsGroup               _PathItemsGroup,
+            IViewMazeMovingItemsGroup             _MovingItemsGroup,
+            IViewMazeTrapsReactItemsGroup         _TrapsReactItemsGroup,
+            IViewMazeTrapsIncItemsGroup           _TrapsIncItemsGroup,
+            IViewMazeTurretsGroup                 _TurretsGroup,
+            IViewMazePortalsGroup                 _PortalsGroup,
+            IViewMazeShredingerBlocksGroup        _ShredingerBlocksGroup,
+            IViewMazeSpringboardItemsGroup        _SpringboardItemsGroup,
+            IViewMazeGravityItemsGroup            _GravityItemsGroup,
+            IManagersGetter                       _Managers, 
+            IMazeCoordinateConverter              _CoordinateConverter,
+            IColorProvider                        _ColorProvider,
+            ICameraProvider                       _CameraProvider)
         {
-            ContainersGetter = _ContainersGetter;
-            UI = _UI;
-            InputController = _InputController;
-            LevelStageController = _LevelStageController;
-            CommandsProceeder = _CommandsProceeder;
-            Character = _Character;
-            Common = _Common;
-            Background = _Background;
-            MazeRotation = _MazeRotation;
-            PathItemsGroup = _PathItemsGroup;
-            MovingItemsGroup = _MovingItemsGroup;
-            TrapsReactItemsGroup = _TrapsReactItemsGroup;
-            TrapsIncItemsGroup = _TrapsIncItemsGroup;
-            TurretsGroup = _TurretsGroup;
-            PortalsGroup = _PortalsGroup;
-            ShredingerBlocksGroup = _ShredingerBlocksGroup;
-            SpringboardItemsGroup = _SpringboardItemsGroup;
-            GravityItemsGroup = _GravityItemsGroup;
-            Managers = _Managers;
-            CoordinateConverter = _CoordinateConverter;
-            ColorProvider = _ColorProvider;
-            CameraProvider = _CameraProvider;
+            Settings =               _Settings;
+            ContainersGetter =       _ContainersGetter;
+            UI =                     _UI;
+            InputController =        _InputController;
+            LevelStageController =   _LevelStageController;
+            CommandsProceeder =      _CommandsProceeder;
+            Character =              _Character;
+            Common =                 _Common;
+            Background =             _Background;
+            MazeRotation =           _MazeRotation;
+            PathItemsGroup =         _PathItemsGroup;
+            MovingItemsGroup =       _MovingItemsGroup;
+            TrapsReactItemsGroup =   _TrapsReactItemsGroup;
+            TrapsIncItemsGroup =     _TrapsIncItemsGroup;
+            TurretsGroup =           _TurretsGroup;
+            PortalsGroup =           _PortalsGroup;
+            ShredingerBlocksGroup =  _ShredingerBlocksGroup;
+            SpringboardItemsGroup =  _SpringboardItemsGroup;
+            GravityItemsGroup =      _GravityItemsGroup;
+            Managers =               _Managers;
+            CoordinateConverter =    _CoordinateConverter;
+            ColorProvider =          _ColorProvider;
+            CameraProvider =         _CameraProvider;
         }
         
         #endregion
