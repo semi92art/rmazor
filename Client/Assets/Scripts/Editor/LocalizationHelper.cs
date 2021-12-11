@@ -191,6 +191,7 @@ public class LocalizationHelper : EditorWindow
         }
 
         AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
         Dbg.Log("Localization changes saved successfully");
     }
 
