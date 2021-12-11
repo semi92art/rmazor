@@ -32,6 +32,17 @@ namespace Managers.Advertising
         protected IExtensionProvider m_StoreExtensionProvider; // The store-specific Purchasing subsystems.
         
         #endregion
+
+        #region inject
+        
+        protected ILocalizationManager LocalizationManager { get; }
+
+        protected UnityIAPShopManager(ILocalizationManager _LocalizationManager)
+        {
+            LocalizationManager = _LocalizationManager;
+        }
+
+        #endregion
         
         #region api
         
@@ -97,6 +108,9 @@ namespace Managers.Advertising
         {
             if (!IsInitialized())
             {
+                string oopsText = LocalizationManager.GetTranslation("oops");
+                string failToBuyProduct = LocalizationManager.GetTranslation("service_connection_error");
+                CommonUtils.ShowAlertDialog(oopsText, failToBuyProduct);
                 Dbg.LogWarning("BuyProductID FAIL. Not initialized.");
                 return;
             }

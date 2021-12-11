@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Constants;
@@ -35,6 +36,7 @@ namespace Managers.Advertising
     
     public class UnityIAPShopManagerFacade : UnityIAPShopManager, IShopManager
     {
+        #region nonpublic members
 
         protected override List<ProductInfo> Products => new List<ProductInfo>
         {
@@ -47,10 +49,27 @@ namespace Managers.Advertising
         private readonly Dictionary<string, UnityAction> m_OnPurchaseActions =
             new Dictionary<string, UnityAction>();
 
+        #endregion
+
+        #region inject
+
+        public UnityIAPShopManagerFacade(ILocalizationManager _LocalizationManager)
+            : base(_LocalizationManager) { }
+
+        #endregion
+
+
         #region api
 
         public void Purchase(int _Key, UnityAction _OnPurchase)
         {
+#if !UNITY_EDITOR
+            if (!NetworkUtils.IsInternetConnectionAvailable())
+            {
+                CommonUtils.ShowAlertDialog("OOPS!!!", "No internet connection");
+                return;
+            }
+#endif
             string id = GetProductId(_Key);
             if (m_OnPurchaseActions.ContainsKey(id))
                 m_OnPurchaseActions[id] = _OnPurchase;
@@ -61,12 +80,23 @@ namespace Managers.Advertising
 
         public void RateGame()
         {
+            if (!NetworkUtils.IsInternetConnectionAvailable())
+            {
+                string oopsText = LocalizationManager.GetTranslation("oops");
+                string noIntConnText = LocalizationManager.GetTranslation("no_internet_connection");
+                CommonUtils.ShowAlertDialog(oopsText, noIntConnText);
+                Dbg.LogWarning("Failed to rate game: No internet connection.");
+                return;
+            }
+            
 #if UNITY_EDITOR
             Dbg.Log("Rating game available only on device.");
 #elif UNITY_ANDROID
-            Application.OpenURL ("market://details?id=" + Application.productName);
+            Coroutines.Run(RateGameAndroid());
+            // Application.OpenURL ("market://details?id=" + Application.productName);
 #elif UNITY_IOS || UNITY_IPHONE
-            Application.OpenURL("itms-apps://itunes.apple.com/us/developer/best-free-games-3d/id959029626"); // TODO
+            RateGameIos();
+            // Application.OpenURL("itms-apps://itunes.apple.com/us/developer/best-free-games-3d/id959029626");
 #endif
         }
 
@@ -79,15 +109,23 @@ namespace Managers.Advertising
 
         public override void RestorePurchases()
         {
-            // If Purchasing has not yet been set up ...
-            if (!IsInitialized())
+            if (!NetworkUtils.IsInternetConnectionAvailable())
             {
-                // ... report the situation and stop restoring. Consider either waiting longer, or retrying initialization.
-                Dbg.LogWarning($"{nameof(UnityIAPShopManagerFacade)}: " +
-                               $"RestorePurchases FAIL. Not initialized.");
+                string oopsText = LocalizationManager.GetTranslation("oops");
+                string noIntConnText = LocalizationManager.GetTranslation("no_internet_connection");
+                CommonUtils.ShowAlertDialog(oopsText, noIntConnText);
+                Dbg.LogWarning("Failed to rate game: No internet connection.");
                 return;
             }
-            // If we are running on an Apple device ... 
+            if (!IsInitialized())
+            {
+                string oopsText = LocalizationManager.GetTranslation("oops");
+                string failToRestoreText = LocalizationManager.GetTranslation("service_connection_error");
+                CommonUtils.ShowAlertDialog(oopsText, failToRestoreText);
+                Dbg.LogWarning("RestorePurchases FAIL. Not initialized.");
+                return;
+            }
+            
             if (Application.platform == RuntimePlatform.IPhonePlayer || 
                 Application.platform == RuntimePlatform.OSXPlayer)
             {
@@ -108,10 +146,8 @@ namespace Managers.Advertising
                         SaveUtils.PutValue(SaveKeys.DisableAds, null);
                 });
             }
-            // Otherwise ...
             else
             {
-                // We are not running on an Apple device. No work is necessary to restore purchases.
                 Dbg.Log($"{nameof(UnityIAPShopManagerFacade)}: " +
                         $"RestorePurchases FAIL. Not supported on this platform. Current = " + Application.platform);
             }
@@ -181,6 +217,38 @@ namespace Managers.Advertising
             _Args.HasReceipt = product.hasReceipt;
             shopProductResult = EShopProductResult.Success;
         }
+        
+#if UNITY_ANDROID
+
+        private IEnumerator RateGameAndroid()
+        {
+            var reviewManager = new Google.Play.Review.ReviewManager();
+            var requestFlowOperation = reviewManager.RequestReviewFlow();
+            yield return requestFlowOperation;
+            if (requestFlowOperation.Error != Google.Play.Review.ReviewErrorCode.NoError)
+            {
+                // Log error. For example, using requestFlowOperation.Error.ToString().
+                yield break;
+            }
+            var playReviewInfo = requestFlowOperation.GetResult();
+            var launchFlowOperation = reviewManager.LaunchReviewFlow(playReviewInfo);
+            yield return launchFlowOperation;
+            playReviewInfo = null; // Reset the object
+            if (launchFlowOperation.Error != Google.Play.Review.ReviewErrorCode.NoError)
+            {
+                Dbg.LogError($"Failed to rate game: {requestFlowOperation.Error}");
+                yield break;
+            }
+        }
+        
+#elif UNITY_IPHONE || UNITY_IOS
+
+        private void RateGameIos()
+        {
+            SA.iOS.StoreKit.ISN_SKStoreReviewController.RequestReview();
+        }
+        
+#endif
 
         #endregion
     }
