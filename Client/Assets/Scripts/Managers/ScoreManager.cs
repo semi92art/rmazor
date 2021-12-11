@@ -25,7 +25,7 @@ namespace Managers
     {
         event ScoresEventHandler OnScoresChanged;
         ScoresEntity GetScore(ushort _Id);
-        void SetScore(ushort _Id, int _Value);
+        void SetScore(ushort _Id, long _Value);
         void ShowLeaderboard();
     }
     
@@ -57,6 +57,17 @@ namespace Managers
             new ScoreArgs(DataFieldIds.Level, "level", true)
         };
 
+        #region inject
+
+        private ILocalizationManager LocalizationManager { get; }
+        
+        public ScoreManager(ILocalizationManager _LocalizationManager)
+        {
+            LocalizationManager = _LocalizationManager;
+        }
+
+        #endregion
+
         #endregion
         
         #region api
@@ -66,13 +77,22 @@ namespace Managers
         public event UnityAction Initialized;
         public void Init()
         {
-            AuthenticateSocial(() => Initialized?.Invoke());
+            AuthenticatePlatformGameService(() => Initialized?.Invoke());
         }
 
         public ScoresEntity GetScore(ushort _Id)
         {
             if (IsScoreOnlyCached(_Id))
                 return GetScoreCached(_Id);
+            
+            var scoreEntity = new ScoresEntity{Result = EEntityResult.Pending};
+            if (!IsAuthenticatedInPlatformGameService())
+            {
+                Dbg.LogWarning($"{nameof(GetScore)}: User is not authenticated");
+                GetScoreCached(_Id, ref scoreEntity);
+                return scoreEntity;
+            }
+            
 #if UNITY_EDITOR
             return GetScoreCached(_Id);
 #elif UNITY_ANDROID
@@ -82,7 +102,7 @@ namespace Managers
 #endif
         }
 
-        public void SetScore(ushort _Id, int _Value)
+        public void SetScore(ushort _Id, long _Value)
         {
             SetScoreCache(_Id, _Value);
             if (IsScoreOnlyCached(_Id))
@@ -96,8 +116,22 @@ namespace Managers
 
         public void ShowLeaderboard()
         {
+            if (!NetworkUtils.IsInternetConnectionAvailable())
+            {
+                string noIntConnText = LocalizationManager.GetTranslation("no_internet_connection");
+                Dbg.LogWarning($"{nameof(ShowLeaderboard)}: {noIntConnText}");
+                CommonUtils.ShowAlertDialog("OOPS!!!", noIntConnText);
+                return;
+            }
+            if (!IsAuthenticatedInPlatformGameService())
+            {
+                string failedToLoadLeadText = LocalizationManager.GetTranslation("failed_to_load_lead");
+                Dbg.LogWarning($"{nameof(ShowLeaderboard)}: {failedToLoadLeadText}");
+                CommonUtils.ShowAlertDialog("OOPS!!!", failedToLoadLeadText);
+                return;
+            }
 #if UNITY_EDITOR
-            //do nothing
+            CommonUtils.ShowAlertDialog("Предупреждение", "Доступно только на девайсе.");
 #elif UNITY_ANDROID
             ShowLeaderboardAndroid();
 #elif UNITY_IPHONE || UNITY_IOS
@@ -108,29 +142,44 @@ namespace Managers
         #endregion
 
         #region nonpublic methods
-
-        private void AuthenticateSocial(UnityAction _OnSucceed)
+        
+        private static bool IsAuthenticatedInPlatformGameService()
         {
-            Social.localUser.Authenticate(_Success =>
-            {
-                if (_Success)
-                {
-                    Dbg.Log("Social authentication succeeded.");
-                    string userInfo = "Username: " + Social.localUser.userName +
-                                      "\nUser ID: " + Social.localUser.id +
-                                      "\nIsUnderage: " + Social.localUser.underage;
-                    Dbg.Log(userInfo);
-                    _OnSucceed?.Invoke();
-                }
-                else
-                {
-                    Dbg.LogError("Social authentication failed.");
-                }
-            });
+#if UNITY_EDITOR
+            return true;
+#elif UNITY_ANDROID
+            return GooglePlayGames.PlayGamesPlatform.Instance.IsAuthenticated();
+#elif UNITY_IPHONE || UNITY_IOS
+            return SA.iOS.GameKit.ISN_GKLocalPlayer.LocalPlayer.Authenticated;
+#endif
         }
 
+        private static void AuthenticatePlatformGameService(UnityAction _OnSucceed)
+        {
+#if UNITY_EDITOR
+            return;
+#endif
+            if (!NetworkUtils.IsInternetConnectionAvailable())
+            {
+                Dbg.LogWarning(AuthMessage(false, "No internet connection"));
+                return;
+            }
+            
+#if UNITY_ANDROID
+            AuthenticateAndroid(_OnSucceed);
+#elif UNITY_IPHONE || UNITY_IOS
+            AuthenticateIos(_OnSucceed);
+#endif
+        }
+
+        private static void GetScoreCached(ushort _Id, ref ScoresEntity _ScoresEntity)
+        {
+            _ScoresEntity = GetScoreCached(_Id);
+        }
+        
         private static ScoresEntity GetScoreCached(ushort _Id)
         {
+            Dbg.Log(nameof(GetScoreCached) + ": " + DataFieldIds.GetDataFieldName(_Id));
             var scores = new ScoresEntity{Result = EEntityResult.Pending};
             var gdff = new GameDataFieldFilter(GameClientUtils.AccountId, GameClientUtils.GameId,
                 _Id) {OnlyLocal = true};
@@ -143,7 +192,7 @@ namespace Managers
             return scores;
         }
 
-        private void SetScoreCache(ushort _Id, int _Value)
+        private void SetScoreCache(ushort _Id, long _Value)
         {
             var gdff = new GameDataFieldFilter(GameClientUtils.AccountId, GameClientUtils.GameId,
                 _Id) {OnlyLocal = true};
@@ -152,6 +201,7 @@ namespace Managers
                 var scoreField = _Fields.First();
                 scoreField.SetValue(_Value).Save(true);
             });
+            Dbg.Log(nameof(OnScoresChanged));
             OnScoresChanged?.Invoke(new ScoresEventArgs(GetScoreCached(_Id)));
         }
         
@@ -173,38 +223,74 @@ namespace Managers
             return true;
         }
 
-#if UNITY_ANDROID && !UNITY_EDITOR
+#if UNITY_ANDROID
+
+        private static void AuthenticateAndroid(UnityAction _OnSucceed)
+        {
+            GooglePlayGames.PlayGamesPlatform.Instance.Authenticate((_Success, _Messsage) =>
+            {
+                Dbg.LogWarning(AuthMessage(_Success, _Messsage));
+                if (_Success)
+                    _OnSucceed?.Invoke();
+            });
+        }
 
         private ScoresEntity GetScoreAndroid(ushort _Id)
         {
-            var result = new ScoresEntity{Result = EEntityResult.Pending};
+            var scoreEntity = new ScoresEntity{Result = EEntityResult.Pending};
             GooglePlayGames.PlayGamesPlatform.Instance.LoadScores(
                 GetScoreKey(_Id),
                 GooglePlayGames.BasicApi.LeaderboardStart.PlayerCentered,
-                100,
+                1,
                 GooglePlayGames.BasicApi.LeaderboardCollection.Public,
                 GooglePlayGames.BasicApi.LeaderboardTimeSpan.AllTime,
                 _Data =>
                 {
                     if (_Data.Valid)
                     {
-                        result.Value.Add(_Id, System.Convert.ToInt32(_Data.PlayerScore.value));
-                        result.Result = _Data.Status == GooglePlayGames.BasicApi.ResponseStatus.Success
-                            ? EEntityResult.Success
-                            : EEntityResult.Fail;
+                        if (_Data.Status == GooglePlayGames.BasicApi.ResponseStatus.Success)
+                        {
+                            if (_Data.PlayerScore != null)
+                            {
+                                scoreEntity.Value.Add(_Id, _Data.PlayerScore.value);
+                                scoreEntity.Result = EEntityResult.Success;
+                            }
+                            else
+                            {
+                                Dbg.LogWarning($"Remote score data PlayerScore is null");
+                                GetScoreCached(_Id, ref scoreEntity);
+                            }
+                        }
+                        else
+                        {
+                            Dbg.LogWarning($"Remote score data status: {_Data.Status}");
+                            GetScoreCached(_Id, ref scoreEntity);
+                        }
                     }
-                    else result = GetScoreCached(_Id);
+                    else
+                    {
+                        Dbg.LogWarning("Remote score data is not valid.");
+                        GetScoreCached(_Id, ref scoreEntity);
+                    }
                 });
-            return result;
+            return scoreEntity;
         }
         
-        private void SetScoreAndroid(ushort _Id, int _Value)
+        private void SetScoreAndroid(ushort _Id, long _Value)
         {
-            Social.ReportScore(_Value, GetScoreKey(_Id), _Success => 
+            if (!IsAuthenticatedInPlatformGameService())
             {
-                if (!_Success)
-                    Dbg.LogError("Failed to post leaderboard score");
-            });
+                Dbg.LogWarning($"{nameof(SetScoreAndroid)}: User is not authenticated to GooglePlayGames.");
+                return;
+            }
+            GooglePlayGames.PlayGamesPlatform.Instance.ReportScore(
+                _Value,
+                GetScoreKey(_Id),
+                _Success =>
+                {
+                    if (!_Success)
+                        Dbg.LogWarning("Failed to post leaderboard score");
+                });
         }
         
         private static void ShowLeaderboardAndroid()
@@ -212,64 +298,112 @@ namespace Managers
             GooglePlayGames.PlayGamesPlatform.Instance.ShowLeaderboardUI(GPGSIds.coins);
         }
 
-#elif (UNITY_IPHONE || UNITY_IOS) && !UNITY_EDITOR
+#elif UNITY_IPHONE || UNITY_IOS
+
+        private static void AuthenticateIos(UnityAction _OnSuccess)
+        {
+            SA.iOS.GameKit.ISN_GKLocalPlayer.SetAuthenticateHandler(_Result =>
+            {
+                if (_Result.IsSucceeded)
+                {
+                    var player = SA.iOS.GameKit.ISN_GKLocalPlayer.LocalPlayer;
+                    var sb = new System.Text.StringBuilder();
+                    sb.Append($"player id: {player.PlayerID}\n");
+                    sb.Append($"player Alias: {player.Alias}\n");
+                    sb.Append($"player DisplayName: {player.DisplayName}\n");
+                    sb.Append($"player Authenticated: {player.Authenticated}\n");
+                    sb.Append($"player Underage: {player.Underage}\n");
+
+                    player.GenerateIdentityVerificationSignatureWithCompletionHandler(_SignatureResult =>
+                    {
+                        if(_SignatureResult.IsSucceeded) 
+                        {
+                            Dbg.Log($"signatureResult.PublicKeyUrl: {_SignatureResult.PublicKeyUrl}");
+                            Dbg.Log($"signatureResult.Timestamp: {_SignatureResult.Timestamp}");
+                            Dbg.Log($"signatureResult.Salt.Length: {_SignatureResult.Salt.Length}");
+                            Debug.Log($"signatureResult.Signature.Length: {_SignatureResult.Signature.Length}");
+                        } 
+                        else 
+                        {
+                            Dbg.LogError($"IdentityVerificationSignature has failed: {_SignatureResult.Error.FullMessage}");
+                        }
+                    });
+                }
+                else 
+                {
+                    Dbg.LogError(AuthMessage(false, 
+                        $"Error with code: {_Result.Error.Code} and description: {_Result.Error.Message}"));
+                }
+            });
+        }
 
         private ScoresEntity GetScoreIos(ushort _Id)
         {
-            if (!Social.localUser.authenticated)
+            var scoreEntity = new ScoresEntity{Result = EEntityResult.Pending};
+
+            var leaderboardRequest = new SA.iOS.GameKit.ISN_GKLeaderboard
             {
-                Dbg.LogWarning("User is not authenticated to Game Center");
-                return GetScoreCached(_Id);
-            }
-            var score = new ScoresEntity{Result = EEntityResult.Pending};
-            Social.LoadScores( "coins", _Scores =>
+                Identifier = GetScoreKey(_Id),
+                PlayerScope = SA.iOS.GameKit.ISN_GKLeaderboardPlayerScope.Global,
+                TimeScope = SA.iOS.GameKit.ISN_GKLeaderboardTimeScope.AllTime,
+                Range = new SA.iOS.Foundation.ISN_NSRange(1, 25)
+            };
+            
+            leaderboardRequest.LoadScores(_Result => 
             {
-                var cachedScore = GetScoreCached(_Id).GetScore(_Id);
-                var socialScore = _Scores.FirstOrDefault(_S => _S.userID == Social.localUser.id);
-                if (socialScore != null)
+                if (_Result.IsSucceeded) 
                 {
-                    if (cachedScore.HasValue && cachedScore > (int)socialScore.value)
-                        SetScoreIos(_Id, cachedScore.Value);
-                    else 
-                        SetScoreCache(_Id, (int)socialScore.value);
-                    score.Value.Add(_Id, (int)socialScore.value);
-                    score.Result = EEntityResult.Success;
-                }
-                else
+                    scoreEntity.Value.Add(_Id, (int)leaderboardRequest.LocalPlayerScore.Value);
+                    scoreEntity.Result = EEntityResult.Success;
+                } else
                 {
-                    score.Result = EEntityResult.Fail;
-                    Dbg.LogWarning("Failed to get score from Game Center leaderboard");
+                    GetScoreCached(_Id, ref scoreEntity);
+                    Dbg.LogWarning("Score Load failed! Code: " + _Result.Error.Code + " Message: " + _Result.Error.Message);
                 }
-                score.Value = GetScoreCached(_Id).Value;
             });
-            return score;
+            return scoreEntity;
         }
         
-        private void SetScoreIos(ushort _Id, int _Value)
+        private void SetScoreIos(ushort _Id, long _Value)
         {
-            if (!Social.localUser.authenticated)
+            if (!IsAuthenticatedInPlatformGameService())
             {
                 Dbg.LogWarning("User is not authenticated to Game Center");
                 return;
             }
-            Social.LoadScores( GetScoreKey(_Id), _Scores =>
+            
+            var scoreReporter = new SA.iOS.GameKit.ISN_GKScore(GetScoreKey(_Id))
             {
-                var socialScore = _Scores.FirstOrDefault(_S => _S.userID == Social.localUser.id);
-                if (socialScore == null)
+                Value = _Value
+            };
+
+            scoreReporter.Report(_Result =>
+            {
+                if (_Result.IsSucceeded) 
+                    Dbg.Log("Score Report Success");
+                else
                 {
-                    Dbg.LogWarning("Failed to set score to Game Center leaderboard");
-                    return;
+                    Dbg.LogError("Score Report failed! Code: " + 
+                                 _Result.Error.Code + " Message: " + _Result.Error.Message);
                 }
-                socialScore.value = _Value;
             });
         }
         
         private static void ShowLeaderboardIos()
         {
-            Social.ShowLeaderboardUI();
+            var viewController = new SA.iOS.GameKit.ISN_GKGameCenterViewController
+            {
+                ViewState = SA.iOS.GameKit.ISN_GKGameCenterViewControllerState.Leaderboards
+            };
+            viewController.Show();
         }
 
 #endif
+        
+        private static string AuthMessage(bool _Success, string _AddMessage)
+        {
+            return $"{(_Success ? "Success" : "Fail")} on authentication to game service: {_AddMessage}";
+        }
 
         #endregion
     }
