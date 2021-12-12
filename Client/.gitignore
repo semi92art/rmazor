@@ -79,4 +79,17 @@ ProjectSettings/AndroidLogcatSettings.asset
 Prototyping*
 Prototyping.meta*
 
+/[Aa]ssets/[Pp]lugins/[Aa]ndroid/*
+!/[Aa]ssets/[Pp]lugins/[Aa]ndroid/launcherTemplate.gradle
+!/[Aa]ssets/[Pp]lugins/[Aa]ndroid/launcherTemplate.gradle.meta
+!/[Aa]ssets/[Pp]lugins/[Aa]ndroid/mainTemplate.gradle
+!/[Aa]ssets/[Pp]lugins/[Aa]ndroid/mainTemplate.gradle.meta
+!/[Aa]ssets/[Pp]lugins/[Aa]ndroid/gradleTemplate.properties
+!/[Aa]ssets/[Pp]lugins/[Aa]ndroid/gradleTemplate.properties.meta
+!/[Aa]ssets/[Pp]lugins/[Aa]ndroid/GoogleMobileAdsPlugin.androidlib
+!/[Aa]ssets/[Pp]lugins/[Aa]ndroid/GoogleMobileAdsPlugin.androidlib/AndroidManifest.xml
+!/[Aa]ssets/[Pp]lugins/[Aa]ndroid/GoogleMobileAdsPlugin.androidlib/AndroidManifest.xml.meta
+!/[Aa]ssets/[Pp]lugins/[Aa]ndroid/GoogleMobileAdsPlugin.androidlib/project.properties
+!/[Aa]ssets/[Pp]lugins/[Aa]ndroid/GoogleMobileAdsPlugin.androidlib/project.properties.meta
+
 !/_Other/*
