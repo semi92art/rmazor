@@ -1,5 +1,5 @@
 ﻿using Entities;
-using Unity.Services.Core;
+// using Unity.Services.Core;
 using UnityEngine.Events;
 using Utils; 
 // using Unity.Services.Mediation;
@@ -76,7 +76,7 @@ namespace Managers.Advertising
 
         protected override async void InitConfigs(UnityAction _OnSuccess)
         {
-            await UnityServices.InitializeAsync();
+            // await UnityServices.InitializeAsync();
             _OnSuccess?.Invoke();
             // MediationService.Instance.ImpressionEventPublisher.OnImpression += OnImpression;
         }
