@@ -59,7 +59,6 @@ sysinfo.txt
 *.apk
 *.aab
 *.unitypackage
-!_Other/additional-packages/**/*.unitypackage
 
 # Crashlytics generated file
 crashlytics-build.properties
@@ -79,10 +78,5 @@ crashlytics-build.properties
 ProjectSettings/AndroidLogcatSettings.asset
 Prototyping*
 Prototyping.meta*
-
-/[Aa]ssets/[Pp]lugins/[Aa]ndroid/*
-!/[Aa]ssets/[Pp]lugins/[Aa]ndroid/launcherTemplate.gradle
-!/[Aa]ssets/[Pp]lugins/[Aa]ndroid/mainTemplate.gradle
-!/[Aa]ssets/[Pp]lugins/[Aa]ndroid/gradleTemplate.properties
 
 !/_Other/*
