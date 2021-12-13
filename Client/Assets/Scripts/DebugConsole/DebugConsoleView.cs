@@ -6,6 +6,7 @@ using Entities;
 using GameHelpers;
 using Games.RazorMaze.Views.InputConfigurators;
 using Lean.Common;
+using Managers;
 using UI;
 using UI.Factories;
 using UnityEngine;
@@ -28,7 +29,7 @@ namespace DebugConsole
 
         private static DebugConsoleView Create()
         {
-            Canvas canvas = UiFactory.UiCanvas(
+            var canvas = UiFactory.UiCanvas(
                 "DebugConsoleCanvas",
                 RenderMode.ScreenSpaceOverlay,
                 true,
@@ -44,7 +45,7 @@ namespace DebugConsole
             
             DontDestroyOnLoad(canvas);
 
-            return PrefabUtilsEx.InitUiPrefab(
+            return new PrefabSetManager(new AssetBundleManagerFake()).InitUiPrefab(
                 UiFactory.UiRectTransform(canvas.RTransform(), RtrLites.FullFill),
                 "debug_console", "console").GetComponent<DebugConsoleView>();
         }
@@ -53,15 +54,17 @@ namespace DebugConsole
         
         #region serialized fields
 
-        public GameObject viewContainer; //Container for console view, should be a child of this GameObject
-        public Text logTextArea;
-        public InputField inputField;
-        public ScrollRect textScrollbar;
-        public Button enterCommand;
-        public Button downCommand;
-        public Button upCommand;
-        public GameObject consoleLog;
-        public GameObject consoleScrollBar;
+        // Container for console view, should be a child of this GameObject
+        [SerializeField] private GameObject viewContainer; 
+        [SerializeField] private Text       logTextArea;
+        [SerializeField] private InputField inputField;
+        [SerializeField] private ScrollRect textScrollbar;
+        [SerializeField] private Button     enterCommand;
+        [SerializeField] private Button     exitCommand;
+        [SerializeField] private Button     downCommand;
+        [SerializeField] private Button     upCommand;
+        [SerializeField] private GameObject consoleLog;
+        [SerializeField] private GameObject consoleScrollBar;
 
         #endregion
         
@@ -89,6 +92,7 @@ namespace DebugConsole
         public enum Swipe { None, Up, Down, Left, Right }
 
         private IViewInputCommandsProceeder m_CommandsProceeder;
+        private IManagersGetter             m_Managers;
 
         #endregion
 
@@ -110,7 +114,8 @@ namespace DebugConsole
 
         private void Update()
         {
-            
+            if (LeanInput.GetDown(KeyCode.Escape) && m_IsVisible)
+                ToggleVisibility();
             if (LeanInput.GetDown(KeyCode.Return))
                 RunCommand();
             //Toggle visibility when tilde key pressed
@@ -196,15 +201,12 @@ namespace DebugConsole
             switch (inputField.touchScreenKeyboard.status)
             {
                 case TouchScreenKeyboard.Status.Visible:
-                    UpdatePositionsForKeyboard();
                     break;
                 case TouchScreenKeyboard.Status.Done:
-                    CreatePositions();
                     RunCommand();
                     break;
                 case TouchScreenKeyboard.Status.Canceled:
                 case TouchScreenKeyboard.Status.LostFocus:
-                    CreatePositions();
                     break;
             }
         }
@@ -216,14 +218,11 @@ namespace DebugConsole
         public void Init(IViewInputCommandsProceeder _CommandsProceeder, IManagersGetter _Managers)
         {
             m_CommandsProceeder = _CommandsProceeder;
+            m_Managers = _Managers;
             m_Controller.Init(_CommandsProceeder, _Managers);
         }
-
-        #endregion
-
-        #region nonpublic methods
         
-        private void UpCommand()
+        public void UpCommand()
         {
             m_CurrentCommand++;
             m_Index = m_Controller.CommandHistory.Count - m_CurrentCommand;
@@ -236,7 +235,7 @@ namespace DebugConsole
             inputField.Select();
         }
 
-        private void DownCommand()
+        public void DownCommand()
         {
             m_CurrentCommand--;
             m_Index = m_Controller.CommandHistory.Count - m_CurrentCommand;
@@ -251,7 +250,7 @@ namespace DebugConsole
             inputField.Select();
         }
 
-        private void RunCommand()
+        public void RunCommand()
         {
             m_Controller.RunCommandString(inputField.text);
             inputField.text = "";
@@ -260,96 +259,13 @@ namespace DebugConsole
             m_CurrentCommand = 0;
         }
 
-        private void CreatePositions()
-        {
-            var canvas = GameObject.Find("DebugConsoleCanvas");
-            RectTransform canvasRectTransform = canvas.RTransform();
-            float screenWidth = canvasRectTransform.sizeDelta.x;
-            float screenHeight = canvasRectTransform.sizeDelta.y;
-            //Log
-            RectTransform logAreaRectTransform = consoleLog.RTransform();
-            logAreaRectTransform.SetLeft(0);
-            logAreaRectTransform.SetRight(screenWidth - screenWidth * 0.9f);
-            logAreaRectTransform.SetTop(0);
-            logAreaRectTransform.SetBottom(screenHeight * 0.1f);
+        #endregion
 
-            //Scroll
-            RectTransform scrollRectTransform = consoleScrollBar.RTransform();
-            scrollRectTransform.SetLeft(screenWidth - screenWidth * 0.1f);
-            scrollRectTransform.SetRight(0);
-            scrollRectTransform.SetTop(0);
-            scrollRectTransform.SetBottom(screenHeight * 0.1f);
-
-            //Input
-            RectTransform inputRectTransform = inputField.RTransform();
-            inputRectTransform.SetLeft(0);
-            inputRectTransform.SetRight(screenWidth - screenWidth * 0.7f);
-            inputRectTransform.SetTop(screenHeight - screenHeight * 0.1f);
-            inputRectTransform.SetBottom(0);        
-
-            //EnterButton
-            RectTransform enterButtonRectTransform = enterCommand.RTransform();
-            enterButtonRectTransform.SetLeft(screenWidth - screenWidth * 0.3f);
-            enterButtonRectTransform.SetRight(0);
-            enterButtonRectTransform.SetTop(screenHeight - screenHeight * 0.1f);
-            enterButtonRectTransform.SetBottom(screenHeight * 0.05f);
-
-            //UpButton
-            RectTransform upButtonRectTransform = upCommand.RTransform();
-            upButtonRectTransform.SetLeft(screenWidth - screenWidth * 0.3f);
-            upButtonRectTransform.SetRight(screenWidth * 0.15f);
-            upButtonRectTransform.SetTop(screenHeight - screenHeight * 0.05f);
-            upButtonRectTransform.SetBottom(0);
-
-            //DownButton
-            RectTransform downButtonRectTransform = downCommand.RTransform();
-            downButtonRectTransform.SetLeft(screenWidth - screenWidth * 0.15f);
-            downButtonRectTransform.SetRight(0);
-            downButtonRectTransform.SetTop(screenHeight - screenHeight * 0.05f);
-            downButtonRectTransform.SetBottom(0);
-
-        }
-
-        private void UpdatePositionsForKeyboard()
-        {
-            var canvas = GameObject.Find("DebugConsoleCanvas");
-            RectTransform canvasRectTransform = canvas.RTransform();
-            float screenWidth = canvasRectTransform.sizeDelta.x;
-            float screenHeight = canvasRectTransform.sizeDelta.y;
-            //Log
-            RectTransform logAreaRectTransform = consoleLog.RTransform();
-            logAreaRectTransform.SetTop(0);
-            logAreaRectTransform.SetBottom(screenHeight * 0.5f);
-            //Scroll
-            RectTransform scrollRectTransform = consoleScrollBar.RTransform();
-            scrollRectTransform.SetTop(0);
-            scrollRectTransform.SetBottom(screenHeight * 0.5f);
-                
-            //Input
-            RectTransform inputRectTransform = inputField.RTransform();
-            inputRectTransform.SetTop(screenHeight - screenHeight * 0.5f);
-            inputRectTransform.SetBottom(0);        
-
-            //EnterButton
-            RectTransform enterButtonRectTransform = enterCommand.RTransform();
-            enterButtonRectTransform.SetTop(screenHeight - screenHeight * 0.5f);
-            enterButtonRectTransform.SetBottom(screenHeight * 0.45f);
-
-            //UpButton
-            RectTransform upButtonRectTransform = upCommand.RTransform();
-            upButtonRectTransform.SetTop(screenHeight - screenHeight * 0.45f);
-            upButtonRectTransform.SetBottom(screenHeight * 0.4f);
-
-            //DownButton
-            RectTransform downButtonRectTransform = downCommand.RTransform();
-            downButtonRectTransform.SetTop(screenHeight - screenHeight * 0.45f);
-            downButtonRectTransform.SetBottom(screenHeight * 0.4f);
-        }
+        #region nonpublic methods
 
         private void ToggleVisibility()
         {
             SetVisibility(!viewContainer.activeSelf);
-            CreatePositions();
             textScrollbar.verticalNormalizedPosition = 0f;
             inputField.ActivateInputField();
             inputField.Select();

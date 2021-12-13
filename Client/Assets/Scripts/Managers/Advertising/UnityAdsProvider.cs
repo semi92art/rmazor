@@ -8,23 +8,40 @@ namespace Managers.Advertising
 {
     public class UnityAdsProvider : AdsProviderBase, IUnityAdsInitializationListener
     {
-        private bool m_TestMode;
-        
         private IUnityAdsInterstitialAd  InterstitialAd  { get; }
         private IUnityAdsRewardedAd RewardedAd { get; }
 
         public UnityAdsProvider(
             IUnityAdsInterstitialAd _InterstitialAd,
             IUnityAdsRewardedAd _RewardedAd,
-            IShopManager _ShopManager) : base(_ShopManager)
+            IShopManager _ShopManager,
+            bool _TestMode) : base(_ShopManager, _TestMode)
         {
             InterstitialAd = _InterstitialAd;
             RewardedAd = _RewardedAd;
         }
 
-        public override bool RewardedAdReady => m_TestMode || RewardedAd.Ready;
+        public override bool RewardedAdReady
+        {
+            get
+            {
+#if UNITY_EDITOR
+                return true;
+#endif
+                return RewardedAd.Ready;
+            }
+        }
 
-        public override bool InterstitialAdReady => m_TestMode || InterstitialAd.Ready;
+        public override bool InterstitialAdReady
+        {
+            get
+            {
+#if UNITY_EDITOR
+                return true;
+#endif
+                return InterstitialAd.Ready;
+            }
+        }
 
         public override void ShowRewardedAd(UnityAction _OnShown, BoolEntity _ShowAds)
         {
@@ -74,10 +91,6 @@ namespace Managers.Advertising
 
         protected override void InitConfigs(UnityAction _OnSuccess)
         {
-            m_TestMode = false;
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            m_TestMode = true;
-#endif
             string gameId = GetGameId();
             Advertisement.Initialize(gameId, m_TestMode, this);
             _OnSuccess?.Invoke();

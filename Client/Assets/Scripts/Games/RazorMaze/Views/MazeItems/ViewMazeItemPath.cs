@@ -212,7 +212,8 @@ namespace Games.RazorMaze.Views.MazeItems
             {
                 if (m_MoneyItemRenderer.IsNull())
                 {
-                    m_MoneyItem = PrefabUtilsEx.InitPrefab(Object.transform, "views", "money_item");
+                    m_MoneyItem = Managers.PrefabSetManager.InitPrefab(
+                        Object.transform, "views", "money_item");
                     m_MoneyItemRenderer = m_MoneyItem.GetCompItem<SpriteRenderer>("renderer");
                     m_MoneyItemAnimator = m_MoneyItem.GetCompItem<Animator>("animator");
                     m_MoneyItemRenderer.color = ColorProvider.GetColor(ColorIds.MoneyItem);

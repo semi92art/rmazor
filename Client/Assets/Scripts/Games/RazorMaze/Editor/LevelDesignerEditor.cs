@@ -9,6 +9,7 @@ using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Debug;
 using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.MazeItems;
+using Managers;
 using ModestTree;
 using UnityEditor;
 using UnityEngine;
@@ -294,7 +295,7 @@ namespace Games.RazorMaze.Editor
             {
                 var container = CommonUtils.FindOrCreateGameObject("Maze", out _).transform;
                 container.gameObject.DestroyChildrenSafe();
-                var settings = PrefabUtilsEx.GetObject<ViewSettings>(
+                var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ViewSettings>(
                     "model_settings", "view_settings");
                 var converter = new MazeCoordinateConverter(settings, null);
                 var containersGetter = new ContainersGetter(null, converter);
@@ -324,7 +325,7 @@ namespace Games.RazorMaze.Editor
 
         public static void FocusCamera(V2Int _Size)
         {
-            var settings = PrefabUtilsEx.GetObject<ViewSettings>(
+            var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ViewSettings>(
                 "model_settings", "view_settings");
             var converter = new MazeCoordinateConverter(settings, null);
             var containersGetter = new ContainersGetter(null, converter);

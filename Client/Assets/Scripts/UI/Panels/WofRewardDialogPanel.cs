@@ -2,10 +2,8 @@
 using DI.Extensions;
 using DialogViewers;
 using Entities;
-using Exceptions;
 using GameHelpers;
 using Games.RazorMaze.Views.Common;
-using Managers;
 using Ticker;
 using TMPro;
 using UI.Factories;
@@ -53,9 +51,7 @@ namespace UI.Panels
         #endregion
         
         #region api
-
-
-
+        
         public override EUiCategory Category => EUiCategory.WheelOfFortune;
         
         public void PreInit(long _Reward, UnityAction _OnClose)
@@ -67,7 +63,7 @@ namespace UI.Panels
         public override void LoadPanel()
         {
             base.LoadPanel();
-            var go = PrefabUtilsEx.InitUiPrefab(
+            var go = Managers.PrefabSetManager.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     ProposalDialogViewer.Container,
                     RtrLites.FullFill),
@@ -86,7 +82,7 @@ namespace UI.Panels
             string prefabSet;
             iconName = "gold_coin_0";
             prefabSet = "coins";
-            Sprite iconSprite = PrefabUtilsEx.GetObject<Sprite>(prefabSet, iconName);
+            Sprite iconSprite = Managers.PrefabSetManager.GetObject<Sprite>(prefabSet, iconName);
             m_RewardIcon.sprite = iconSprite;
             m_RewardCount.text = m_Reward.ToNumeric();
         }

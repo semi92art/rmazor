@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GameHelpers;
 using GameHelpers.Editor;
 using Games.RazorMaze.Models;
+using Managers;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Events;
-using Utils;
 
 namespace Games.RazorMaze.Editor
 {
@@ -21,7 +22,7 @@ namespace Games.RazorMaze.Editor
         private static readonly Color BackgroundLoadedLevelColor = new Color(0f, 1f, 0.19f, 0.43f);
 
         private readonly ReorderableList m_List;
-        private readonly LevelsSaverEditor m_LevelsSaver = new LevelsSaverEditor();
+        private readonly LevelsSaverEditor m_LevelsSaver = new LevelsSaverEditor(new PrefabSetManager(new AssetBundleManagerFake()));
         private readonly int m_GameId;
         private readonly Dictionary<EMazeItemType, bool> m_Filters = new Dictionary<EMazeItemType, bool>();
 

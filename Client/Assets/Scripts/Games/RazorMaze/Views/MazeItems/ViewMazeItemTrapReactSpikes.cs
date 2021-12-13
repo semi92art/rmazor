@@ -52,7 +52,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region inject
 
-        private ModelSettings ModelSettings { get; }
+        private ModelSettings     ModelSettings    { get; }
 
         public ViewMazeItemTrapReactSpikes(
             ViewSettings _ViewSettings,
@@ -143,11 +143,12 @@ namespace Games.RazorMaze.Views.MazeItems
             line.Color = ColorProvider.GetColor(ColorIds.MazeItem1);
             line.EndCaps = LineEndCap.Round;
             var trap = Object.AddComponentOnNewChild<SpriteRenderer>("Trap Sprite", out _);
-            trap.sprite = PrefabUtilsEx.GetObject<Sprite>("views", "trap_react_spikes");
+            trap.sprite = Managers.PrefabSetManager.GetObject<Sprite>(
+                "views", "trap_react_spikes");
             trap.sortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
             trap.color = ColorProvider.GetColor(ColorIds.MazeItem1);
             trap.maskInteraction = SpriteMaskInteraction.VisibleOutsideMask;
-            var maskGo = PrefabUtilsEx.InitPrefab(
+            var maskGo = Managers.PrefabSetManager.InitPrefab(
                 Object.transform, "views", "turret_bullet_mask");
             maskGo.name = "Trap React Mask";
             var mask = maskGo.GetCompItem<SpriteMask>("mask");

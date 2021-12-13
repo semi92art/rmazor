@@ -58,7 +58,7 @@ namespace UI.Panels.ShopPanels
         public override void LoadPanel()
         {
             base.LoadPanel();
-            var sp = PrefabUtilsEx.InitUiPrefab(
+            var sp = Managers.PrefabSetManager.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     DialogViewer.Container,
                     RtrLites.FullFill),
@@ -81,7 +81,7 @@ namespace UI.Panels.ShopPanels
 
         protected virtual void InitItems()
         {
-            var set = PrefabUtilsEx.GetObject<ShopItemsScriptableObject>(
+            var set = Managers.PrefabSetManager.GetObject<ShopItemsScriptableObject>(
                 PrefabSetName, ItemSetName).set;
             foreach (var itemInSet in set)
             {
@@ -107,7 +107,7 @@ namespace UI.Panels.ShopPanels
         
         protected void InitMoneyPanel()
         {
-            var obj = PrefabUtilsEx.InitUiPrefab(
+            var obj = Managers.PrefabSetManager.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_Panel,
                     new RectTransformLite
@@ -122,7 +122,7 @@ namespace UI.Panels.ShopPanels
             m_MoneyIcon = obj.GetCompItem<Image>("icon");
             m_MoneyText.color = ColorProvider.GetColor(ColorIds.UiText);
             m_MoneyIcon.color = ColorProvider.GetColor(ColorIds.UI);
-            var moneyEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money);
+            var moneyEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money, true);
             Coroutines.Run(Coroutines.WaitWhile(
                 () => moneyEntity.Result == EEntityResult.Pending,
                 () =>
@@ -145,7 +145,7 @@ namespace UI.Panels.ShopPanels
         
         protected T CreateItem()
         {
-            var obj = PrefabUtilsEx.InitUiPrefab(
+            var obj = Managers.PrefabSetManager.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_Content,
                     ShopItemRectLite),

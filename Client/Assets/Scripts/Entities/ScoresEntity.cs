@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using DI.Extensions;
 using Managers;
 
 namespace Entities
@@ -20,9 +21,7 @@ namespace Entities
         
         public long? GetScore(int _Key)
         {
-            if (Value.ContainsKey(_Key))
-                return Value[_Key];
-            return null;
+            return Value.GetSafe(_Key, out _);
         }
     }
 }

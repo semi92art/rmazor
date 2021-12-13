@@ -39,6 +39,7 @@ namespace Games.RazorMaze.Views.Characters
         private IModelGame                  Model               { get; }
         private IColorProvider              ColorProvider       { get; }
         private IViewInputCommandsProceeder CommandsProceeder   { get; }
+        private IPrefabSetManager           PrefabSetManager    { get; }
 
         public ViewCharacterEffectorParticles(
             IMazeCoordinateConverter _CoordinateConverter,
@@ -46,7 +47,8 @@ namespace Games.RazorMaze.Views.Characters
             IViewGameTicker _GameTicker,
             IModelGame _Model,
             IColorProvider _ColorProvider,
-            IViewInputCommandsProceeder _CommandsProceeder)
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IPrefabSetManager _PrefabSetManager)
         {
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
@@ -54,6 +56,7 @@ namespace Games.RazorMaze.Views.Characters
             Model = _Model;
             ColorProvider = _ColorProvider;
             CommandsProceeder = _CommandsProceeder;
+            PrefabSetManager = _PrefabSetManager;
         }
         
         #endregion
@@ -116,7 +119,7 @@ namespace Games.RazorMaze.Views.Characters
 
         private void InitPrefab()
         {
-            var prefab = PrefabUtilsEx.InitPrefab(
+            var prefab = PrefabSetManager.InitPrefab(
                 null,
                 CommonPrefabSetNames.Views,
                 "character_death");

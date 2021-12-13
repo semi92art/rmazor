@@ -26,7 +26,6 @@ namespace Games.RazorMaze
         [SerializeField] private float bottomScreenOffset;
         [SerializeField] private float topScreenOffset;
         [SerializeField] private float moveSwipeThreshold;
-        
 
         public float   LineWidth
         {

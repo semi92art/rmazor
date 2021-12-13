@@ -82,7 +82,7 @@ namespace UI.Panels.ShopPanels
                 Managers.LocalizationManager.AddTextObject(item.title, kvp.Value.Item1);
                 var args = new ViewShopItemInfo
                 {
-                    Icon = PrefabUtilsEx.GetObject<Sprite>(PrefabSetName, kvp.Key)
+                    Icon = Managers.PrefabSetManager.GetObject<Sprite>(PrefabSetName, kvp.Key)
                 };
                 item.Init(
                     Managers,

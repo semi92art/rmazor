@@ -101,10 +101,15 @@ namespace GameHelpers
         {
             var fields = FieldIds
                 .Select(_FieldId =>
-                    SaveUtils.GetValue(
-                        SaveKeys.GameDataFieldValue(AccountId, m_GameId, _FieldId)))
+                {
+                    var gdfv = SaveUtils.GetValue(
+                        SaveKeys.GameDataFieldValue(AccountId, m_GameId, _FieldId));
+                    if (gdfv == null)
+                        gdfv = new GameDataField(default, AccountId, m_GameId, _FieldId);
+                    return gdfv;
+                })
                 .ToList();
-            foreach (var field in fields)
+            foreach (var field in fields.Where(_F => _F != null))
             {
                 field.AccountId = AccountId;
                 field.GameId = m_GameId;

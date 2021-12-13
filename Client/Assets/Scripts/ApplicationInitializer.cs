@@ -1,14 +1,15 @@
-﻿using Constants;
+﻿using System.Collections.Generic;
+using Constants;
 using Controllers;
 using DI.Extensions;
 using Entities;
 using GameHelpers;
 using Games.RazorMaze.Controllers;
+using Games.RazorMaze.Models;
 using Managers;
 using Managers.Advertising;
 using Mono_Installers;
 using Network;
-using Ticker;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;
@@ -16,17 +17,8 @@ using Zenject;
 
 public class ApplicationInitializer : MonoBehaviour
 {
-    #region nonpublic members
-
-    private static GameObject _debugReporter; 
-    
-    #endregion
-    
     #region inject
-
-    private IViewGameTicker      ViewGameTicker      { get; set; }
-    private IModelGameTicker     ModelGameTicker     { get; set; }
-    private IUITicker            UITicker            { get; set; }
+    
     private IAdsManager          AdsManager          { get; set; }
     private IAnalyticsManager    AnalyticsManager    { get; set; }
     private ILocalizationManager LocalizationManager { get; set; }
@@ -36,19 +28,14 @@ public class ApplicationInitializer : MonoBehaviour
 
     [Inject] 
     public void Inject(
-        IViewGameTicker _ViewGameTicker,
-        IModelGameTicker _ModelGameTicker,
-        IUITicker _UITicker,
         IAdsManager _AdsManager,
         IAnalyticsManager _AnalyticsManager,
         ILocalizationManager _LocalizationManager,
         ILevelsLoader _LevelsLoader,
         IScoreManager _ScoreManager,
-        IHapticsManager _HapticsManager)
+        IHapticsManager _HapticsManager,
+        IAssetBundleManager _AssetBundleManager)
     {
-        ViewGameTicker = _ViewGameTicker;
-        ModelGameTicker = _ModelGameTicker;
-        UITicker = _UITicker;
         AdsManager = _AdsManager;
         AnalyticsManager = _AnalyticsManager;
         LocalizationManager = _LocalizationManager;
@@ -89,27 +76,74 @@ public class ApplicationInitializer : MonoBehaviour
     private void InitGameManagers()
     {
         GameClient.Instance.Init();
-        ScoreManager       .Init();
         AdsManager         .Init();
         AnalyticsManager   .Init();
         LocalizationManager.Init();
         HapticsManager     .Init();
+        ScoreManager.Initialized += OnScoreManagerInitialized;
+        ScoreManager       .Init();
     }
     
     private void InitGameController()
     {
+        var controller = GameController.CreateInstance();
+        controller.Initialized += () =>
+        {
+            var levelEntity = ScoreManager.GetScore(DataFieldIds.Level, true);
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => levelEntity.Result == EEntityResult.Pending,
+                () =>
+                {
+                    var levelIndex = levelEntity.GetFirstScore();
+                    if (levelEntity.Result == EEntityResult.Fail
+                        || !levelIndex.HasValue)
+                    {
+                        ScoreManager.SetScore(DataFieldIds.Level, 0, true);
+                        LoadLevelByIndex(controller, 0);
+                        return;
+                    }
+                    LoadLevelByIndex(controller, (int)levelIndex.Value);
+                }));
+        };
+        controller.Init();
+    }
+
+    private void LoadLevelByIndex(IGameController _Controller, int _LevelIndex)
+    {
+        var info = LevelsLoader.LoadLevel(1, _LevelIndex);
+        _Controller.Model.LevelStaging.LoadLevel(info, _LevelIndex);
+    }
+
+    private void OnScoreManagerInitialized()
+    {
+        ushort id = DataFieldIds.Money;
+        var moneyEntityServer = ScoreManager.GetScore(id, false);
+        var moneyEntityCache = ScoreManager.GetScore(id, true);
         Coroutines.Run(Coroutines.WaitWhile(
-            () => !AssetBundleManager.BundlesLoaded,
+            () =>
+                moneyEntityServer.Result == EEntityResult.Pending
+                && moneyEntityCache.Result == EEntityResult.Pending,
             () =>
             {
-                var controller = GameController.CreateInstance();
-                controller.Initialized += () =>
+                var moneyServer = moneyEntityServer.GetFirstScore();
+                if (moneyEntityServer.Result == EEntityResult.Fail
+                || !moneyServer.HasValue)
                 {
-                    int levelIndex = SaveUtils.GetValue(SaveKeys.CurrentLevelIndex);
-                    var info = LevelsLoader.LoadLevel(1, levelIndex);
-                    controller.Model.LevelStaging.LoadLevel(info, levelIndex);
-                };
-                controller.Init();
+                    Dbg.LogWarning("Failed to load money from server");
+                    return;
+                }
+                var moneyCache = moneyEntityCache.GetFirstScore();
+                if (moneyEntityCache.Result == EEntityResult.Fail
+                    || !moneyCache.HasValue)
+                {
+                    Dbg.LogError("Failed to load money from cache");
+                    return;
+                }
+
+                if (moneyServer.Value > moneyCache.Value)
+                    ScoreManager.SetScore(id, moneyServer.Value, true);
+                else if (moneyServer.Value < moneyCache.Value)
+                    ScoreManager.SetScore(id, moneyCache.Value, false);
             }));
     }
 

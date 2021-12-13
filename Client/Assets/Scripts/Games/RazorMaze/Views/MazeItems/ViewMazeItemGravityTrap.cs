@@ -4,7 +4,6 @@ using Controllers;
 using DI.Extensions;
 using Entities;
 using Exceptions;
-using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Models.ProceedInfos;
@@ -165,7 +164,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         protected override void InitShape()
         {
-            var go = PrefabUtilsEx.InitPrefab(
+            var go = Managers.PrefabSetManager.InitPrefab(
                 Object.transform, "views", "gravity_trap");
             m_MaceTr = go.GetCompItem<Transform>("container");
             m_OuterDisc = go.GetCompItem<Disc>("outer disc");

@@ -13,12 +13,12 @@ namespace ScriptableObjects
         {
             public Object item;
             public string name;
+            public bool   bundle;
         }
     
         [Serializable]
         public class PrefabsList : ReorderableArray<Prefab> { }
 
-        public bool bundles;
         [Header("Prefabs"), Reorderable(paginate = true, pageSize = 50)]
         public PrefabsList prefabs;
     }

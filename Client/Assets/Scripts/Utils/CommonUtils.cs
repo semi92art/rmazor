@@ -3,6 +3,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using DI.Extensions;
+using SA.iOS.UIKit;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -164,6 +165,8 @@ namespace Utils
 #elif UNITY_IPHONE || UNITY_IOS
             var alert = new SA.iOS.UIKit.ISN_UIAlertController(
                 _Title, _Text, SA.iOS.UIKit.ISN_UIAlertControllerStyle.Alert);
+            var action = new SA.iOS.UIKit.ISN_UIAlertAction("OK", ISN_UIAlertActionStyle.Default, () => { });
+            alert.AddAction(action);
             alert.Present();
 #endif
         }

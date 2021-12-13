@@ -89,7 +89,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                     if (m_MoneyItemsCollectedCount > 0)
                     {
                         int moneyItemsCount = m_MoneyItemsCollectedCount;
-                        var moneyEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money);
+                        var moneyEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money, true);
                         Coroutines.Run(Coroutines.WaitWhile(
                             () => moneyEntity.Result == EEntityResult.Pending,
                             () =>
@@ -104,7 +104,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                                 {
                                     Managers.ScoreManager.SetScore(
                                         DataFieldIds.Money, 
-                                        currentMoneyCount.Value + moneyItemsCount);
+                                        currentMoneyCount.Value + moneyItemsCount, false);
                                 }
                             }));
                     }

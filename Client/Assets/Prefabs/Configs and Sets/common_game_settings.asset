@@ -13,3 +13,5 @@ MonoBehaviour:
   m_Name: common_game_settings
   m_EditorClassIdentifier: 
   adsProvider: 3
+  adsTestMode: 1
+  adsLoadDelay: 3

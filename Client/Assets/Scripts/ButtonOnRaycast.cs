@@ -23,18 +23,21 @@ public class ButtonOnRaycast : MonoBehaviour
     private System.Func<ELevelStage> m_LevelStage;
     private ICameraProvider          m_CameraProvider;
     private IHapticsManager          m_HapticsManager;
+    private IViewInputTouchProceeder m_ViewInputTouchProceeder;
 
     
     public void Init(
         UnityAction _Action,
         System.Func<ELevelStage> _LevelStage, 
         ICameraProvider _CameraProvider,
-        IHapticsManager _HapticsManager)
+        IHapticsManager _HapticsManager,
+        IViewInputTouchProceeder _ViewInputTouchProceeder)
     {
         onClickEvent.AddListener(_Action);
         m_LevelStage = _LevelStage;
         m_CameraProvider = _CameraProvider;
         m_HapticsManager = _HapticsManager;
+        m_ViewInputTouchProceeder = _ViewInputTouchProceeder;
         m_Initialized = true;
     }
 
@@ -49,14 +52,14 @@ public class ButtonOnRaycast : MonoBehaviour
         m_PrevButtonState = m_ButtonState;
         m_PrevFingerState = m_FingerState;
 
-        if (ViewInputTouchProceeder.IsFingerOnScreen())
+        if (m_ViewInputTouchProceeder.IsFingerOnScreen())
             ProceedButtonNotIdleState();
         else
             ProceedButtonIdleState();
         
         ProceedButtonClick();
 
-        if (!ViewInputTouchProceeder.IsFingerOnScreen())
+        if (!m_ViewInputTouchProceeder.IsFingerOnScreen())
         {
             m_EnteredOnThisTouchSession = false;
             m_ExitedOnThisTimeSession = false;

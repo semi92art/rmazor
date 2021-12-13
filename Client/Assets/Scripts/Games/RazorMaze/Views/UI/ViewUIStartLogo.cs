@@ -32,11 +32,12 @@ namespace Games.RazorMaze.Views.UI
 
         #region inject
         
-        private ICameraProvider             CameraProvider      { get; }
-        private IContainersGetter           ContainersGetter    { get; }
-        private IViewInputCommandsProceeder CommandsProceeder   { get; }
-        private IColorProvider              ColorProvider       { get; }
-        private IViewGameTicker             GameTicker          { get; }
+        private ICameraProvider             CameraProvider    { get; }
+        private IContainersGetter           ContainersGetter  { get; }
+        private IViewInputCommandsProceeder CommandsProceeder { get; }
+        private IColorProvider              ColorProvider     { get; }
+        private IViewGameTicker             GameTicker        { get; }
+        private IPrefabSetManager           PrefabSetManager  { get; }
 
 
         public ViewUIStartLogo(
@@ -44,13 +45,15 @@ namespace Games.RazorMaze.Views.UI
             IContainersGetter _ContainersGetter,
             IViewInputCommandsProceeder _CommandsProceeder,
             IColorProvider _ColorProvider,
-            IViewGameTicker _GameTicker)
+            IViewGameTicker _GameTicker,
+            IPrefabSetManager _PrefabSetManager)
         {
             CameraProvider = _CameraProvider;
             ContainersGetter = _ContainersGetter;
             CommandsProceeder = _CommandsProceeder;
             ColorProvider = _ColorProvider;
             GameTicker = _GameTicker;
+            PrefabSetManager = _PrefabSetManager;
         }
 
         #endregion
@@ -88,7 +91,7 @@ namespace Games.RazorMaze.Views.UI
         {
             var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
             const float additionalOffset = 8f;
-            var go = PrefabUtilsEx.InitPrefab(
+            var go = PrefabSetManager.InitPrefab(
                 ContainersGetter.GetContainer(ContainerNames.GameUI),
                 "ui_game",
                 "start_logo");

@@ -51,13 +51,15 @@ public static class BuildAssetBundles
     private static void CreateBundleNamesSetList()
     {
         var bundleNamesSet = ResLoader.GetPrefabSet(AssetBundleManager.CommonBundleName);
-        
         var allPrefabSets = Resources
             .LoadAll<PrefabSetScriptableObject>(ResLoader.PrefabSetsLocalPath)
-            .Where(_Set => _Set.bundles && !_Set.name.Contains(AssetBundleManager.CommonBundleName));
+            .Where(_Set => !_Set.name.Contains(AssetBundleManager.CommonBundleName));
         var dict = allPrefabSets
             .SelectMany(_Set => _Set.prefabs)
-            .ToDictionary(_Item => _Item.name, _Item => AssetDatabase.GetAssetPath(_Item.item).ToLower());
+            .Where(_P => _P.bundle)
+            .ToDictionary(
+                _Item => _Item.name, 
+                _Item => AssetDatabase.GetAssetPath(_Item.item).ToLower());
         string dictSerialized = JsonConvert.SerializeObject(dict);
         string path = "Assets/Prefabs/bundle_names.asset";
         var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(path);

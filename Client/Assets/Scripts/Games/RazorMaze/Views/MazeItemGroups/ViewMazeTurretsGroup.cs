@@ -1,10 +1,13 @@
 ﻿using System.Linq;
+using Controllers;
+using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeItems;
 using Games.RazorMaze.Views.Utils;
+using Utils;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
@@ -12,18 +15,25 @@ namespace Games.RazorMaze.Views.MazeItemGroups
     {
         #region nonpublic members
 
-        private int m_BulletCounter;
+        private          int   m_BulletCounter;
+        private          bool  m_IsHapticPause;
         
         #endregion
         
         #region inject
         
+        private IManagersGetter Managers { get; }
+        
         public ViewMazeTurretsGroup(
             IModelData _Data,
             IViewMazeCommon _Common,
             IMazeCoordinateConverter _Converter,
-            IContainersGetter _ContainersGetter)
-            : base(_Data, _Common, _Converter, _ContainersGetter) { }
+            IContainersGetter _ContainersGetter,
+            IManagersGetter _Managers)
+            : base(_Data, _Common, _Converter, _ContainersGetter)
+        {
+            Managers = _Managers;
+        }
         
         #endregion
         
@@ -61,13 +71,17 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         {
             var item = Common.GetItem<IViewMazeItemTurret>(_Args.Info);
             item?.Shoot(_Args);
+            // FIXME ебаный костыль. Требуется более разумный вызов хаптиков и звуков заодно.
+            if (!m_IsHapticPause)
+            {
+                Managers.HapticsManager.PlayPreset(EHapticsPresetType.Selection);
+                m_IsHapticPause = true;
+                Coroutines.Run(Coroutines.Delay(
+                    () => m_IsHapticPause = false,
+                    0.5f));
+            }
         }
 
-        private int GetBulletSortingOrder()
-        {
-            return SortingOrders.GetBlockSortingOrder(EMazeItemType.Turret) + m_BulletCounter++;
-        }
-        
         #endregion
     }
 }

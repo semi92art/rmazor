@@ -105,7 +105,7 @@ namespace Games.RazorMaze.Views.UI
             var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
             float yPos = screenBounds.max.y - m_TopOffset - 4f - 3.5f;
             var cont = ContainersGetter.GetContainer(ContainerNames.GameUI);
-            var goCongrads = PrefabUtilsEx.InitPrefab(
+            var goCongrads = Managers.PrefabSetManager.InitPrefab(
                 cont, "ui_game", "congratulations_panel");
             m_CompletedText = goCongrads.GetCompItem<TextMeshPro>("text_completed");
             m_CongratsText = goCongrads.GetCompItem<TextMeshPro>("text_congrats");

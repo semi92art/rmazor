@@ -64,9 +64,9 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region inject
 
-        private ModelSettings               ModelSettings     { get; }
-        private IViewTurretBulletTail       BulletTail        { get; }
-        private IViewMazeBackground         Background        { get; }
+        private ModelSettings         ModelSettings    { get; }
+        private IViewTurretBulletTail BulletTail       { get; }
+        private IViewMazeBackground   Background       { get; }
 
         public ViewMazeItemTurret(
             ViewSettings _ViewSettings,
@@ -191,7 +191,7 @@ namespace Games.RazorMaze.Views.MazeItems
             bhb.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type) + 1;
             bhb.DashSize = 2f;
             var bulletParent = ContainersGetter.GetContainer(ContainerNames.MazeItems);
-            var bulletGo = PrefabUtilsEx.InitPrefab(
+            var bulletGo = Managers.PrefabSetManager.InitPrefab(
                 bulletParent, "views", "turret_bullet");
             var bulletFakeGo = UnityEngine.Object.Instantiate(bulletGo);
             bulletFakeGo.SetParent(bulletParent);
@@ -208,7 +208,7 @@ namespace Games.RazorMaze.Views.MazeItems
             m_BulletRenderer = m_Bullet.GetComponent<SpriteRenderer>();
             m_BulletRenderer.color = ColorProvider.GetColor(ColorIds.MazeItem1);
 
-            var bmGo = PrefabUtilsEx.InitPrefab(
+            var bmGo = Managers.PrefabSetManager.InitPrefab(
                 bulletParent, "views", "turret_bullet_mask");
             var bmGo2 = UnityEngine.Object.Instantiate(bmGo);
             bmGo2.SetParent(bulletParent);
@@ -375,7 +375,6 @@ namespace Games.RazorMaze.Views.MazeItems
         private IEnumerator DoShoot(TurretShotEventArgs _Args)
         {
             Managers.AudioManager.PlayClip(AudioClipArgsShurikenFly);
-            Managers.HapticsManager.PlayPreset(EHapticsPresetType.Selection);
             Vector2 projectilePos = _Args.From;
             var projectilePosPrev = projectilePos;
             V2Int point = default;

@@ -188,7 +188,7 @@ namespace DebugConsole
                 Controller.AppendLogLine("Wrong. Need money count!");
                 return;
             }
-            Controller.Managers.ScoreManager.SetScore(DataFieldIds.Money, moneyCount);
+            Controller.Managers.ScoreManager.SetScore(DataFieldIds.Money, moneyCount, false);
         }
     }
 }

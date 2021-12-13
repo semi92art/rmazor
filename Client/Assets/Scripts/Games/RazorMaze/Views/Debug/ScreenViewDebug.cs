@@ -3,6 +3,7 @@ using DI.Extensions;
 using Entities;
 using GameHelpers;
 using Games.RazorMaze.Views.Debug;
+using Managers;
 using UnityEditor;
 using UnityEngine;
 using Utils;
@@ -34,7 +35,7 @@ namespace Games.RazorMaze.Views.Debug
                 Dbg.LogError("Maze size incorrect.");
                 return;
             }
-            var settings = PrefabUtilsEx.GetObject<ViewSettings>(
+            var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ViewSettings>(
                 "model_settings", "view_settings");
             m_Converter = new MazeCoordinateConverter(settings, null);
             m_Converter.Init();

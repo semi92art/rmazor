@@ -134,7 +134,7 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override void InitShape()
         {
             var saw = Object.AddComponentOnNewChild<SpriteRenderer>("Moving Trap", out _);
-            saw.sprite = PrefabUtilsEx.GetObject<Sprite>("views", "moving_trap");
+            saw.sprite = Managers.PrefabSetManager.GetObject<Sprite>("views", "moving_trap");
             saw.color = Color.white;
             saw.sortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
             saw.enabled = false;

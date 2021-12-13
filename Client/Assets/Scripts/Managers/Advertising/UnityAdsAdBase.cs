@@ -1,4 +1,4 @@
-﻿using DI.Extensions;
+﻿using GameHelpers;
 using Ticker;
 using UnityEngine.Advertisements;
 using UnityEngine.Events;
@@ -17,13 +17,17 @@ namespace Managers.Advertising
     public class UnityAdsAdBase : IUnityAdsAd, IUpdateTick
     {
         protected bool        m_DoInvokeOnShown;
+        protected bool        m_DoLoadAdWithDelay;
+        protected float       m_LoadAdDelayTimer;
         protected string      m_UnitId;
         protected UnityAction m_OnShown;
 
-        private   IViewGameTicker GameTicker { get; }
+        private CommonGameSettings Settings   { get; }
+        private IViewGameTicker    GameTicker { get; }
         
-        protected UnityAdsAdBase(IViewGameTicker _GameTicker)
+        protected UnityAdsAdBase(CommonGameSettings _Settings,  IViewGameTicker _GameTicker)
         {
+            Settings = _Settings;
             GameTicker = _GameTicker;
         }
         
@@ -52,9 +56,9 @@ namespace Managers.Advertising
         {
             string message = string.Join(": ", 
                 nameof(OnUnityAdsFailedToLoad), _PlacementId, _Message);
-            Dbg.Log(message);
+            Dbg.LogWarning(message);
             Ready = false;
-            LoadAd();
+            m_DoLoadAdWithDelay = true;
         }
 
         public virtual void OnUnityAdsShowFailure(string _PlacementId, UnityAdsShowError _Error, string _Message)
@@ -100,6 +104,16 @@ namespace Managers.Advertising
             {
                 m_OnShown?.Invoke();
                 m_DoInvokeOnShown = false;
+            }
+
+            if (m_DoLoadAdWithDelay)
+            {
+                m_LoadAdDelayTimer += GameTicker.DeltaTime;
+                if (!(m_LoadAdDelayTimer > Settings.AdsLoadDelay)) 
+                    return;
+                LoadAd();
+                m_LoadAdDelayTimer = 0f;
+                m_DoLoadAdWithDelay = false;
             }
         }
     }

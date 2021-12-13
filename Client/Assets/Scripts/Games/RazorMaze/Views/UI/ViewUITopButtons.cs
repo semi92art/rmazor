@@ -34,12 +34,13 @@ namespace Games.RazorMaze.Views.UI
 
         #region inject
 
-        private IModelGame                  Model               { get; }
-        private IContainersGetter           ContainersGetter    { get; }
-        private ICameraProvider             CameraProvider      { get; }
-        private IManagersGetter             Managers            { get; }
-        private IBigDialogViewer            BigDialogViewer     { get; }
-        private IViewInputCommandsProceeder CommandsProceeder   { get; }
+        private IModelGame                  Model                   { get; }
+        private IContainersGetter           ContainersGetter        { get; }
+        private ICameraProvider             CameraProvider          { get; }
+        private IManagersGetter             Managers                { get; }
+        private IBigDialogViewer            BigDialogViewer         { get; }
+        private IViewInputCommandsProceeder CommandsProceeder       { get; }
+        private IViewInputTouchProceeder    ViewInputTouchProceeder { get; }
 
         public ViewUITopButtons(
             IModelGame _Model,
@@ -47,7 +48,8 @@ namespace Games.RazorMaze.Views.UI
             ICameraProvider _CameraProvider,
             IManagersGetter _Managers,
             IBigDialogViewer _BigDialogViewer,
-            IViewInputCommandsProceeder _CommandsProceeder)
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IViewInputTouchProceeder _ViewInputTouchProceeder)
         {
             Model = _Model;
             ContainersGetter = _ContainersGetter;
@@ -55,6 +57,7 @@ namespace Games.RazorMaze.Views.UI
             Managers = _Managers;
             BigDialogViewer = _BigDialogViewer;
             CommandsProceeder = _CommandsProceeder;
+            ViewInputTouchProceeder = _ViewInputTouchProceeder;
         }
 
         #endregion
@@ -96,9 +99,9 @@ namespace Games.RazorMaze.Views.UI
             var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
             float yPos = screenBounds.max.y - m_TopOffset;
             var cont = ContainersGetter.GetContainer(ContainerNames.GameUI);
-            var goShopButton = PrefabUtilsEx.InitPrefab(
+            var goShopButton = Managers.PrefabSetManager.InitPrefab(
                 cont, "ui_game", "shop_button");
-            var goSettingsButton = PrefabUtilsEx.InitPrefab(
+            var goSettingsButton = Managers.PrefabSetManager.InitPrefab(
                 cont, "ui_game", "settings_button");
             m_Renderers.AddRange( new Component[]
             {
@@ -119,12 +122,14 @@ namespace Games.RazorMaze.Views.UI
                 CommandShop, 
                 () => Model.LevelStaging.LevelStage, 
                 CameraProvider,
-                Managers.HapticsManager);
+                Managers.HapticsManager,
+                ViewInputTouchProceeder);
             m_SettingsButton.Init(
                 CommandSettings, 
                 () => Model.LevelStaging.LevelStage,
                 CameraProvider,
-                Managers.HapticsManager);
+                Managers.HapticsManager,
+                ViewInputTouchProceeder);
             goShopButton.SetActive(false);
             goSettingsButton.SetActive(false);
         }

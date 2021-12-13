@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using DI.Extensions;
 using UnityEditor;
 using UnityEngine;
 using Utils;
@@ -147,9 +148,7 @@ public class LocalizationHelper : EditorWindow
                 var keyAndValue = line.Split(new[] {" = "}, StringSplitOptions.None);
                 string key = keyAndValue[0];
                 string value = keyAndValue[1];
-                if (!m_LocalizedDict.ContainsKey(key))
-                    m_LocalizedDict.Add(key, new KeyValues());
-                m_LocalizedDict[key].Values.Add(language, value);
+                m_LocalizedDict.SetSafe(key, new KeyValues {Values = {{language, value}}});
             }
         }
     }

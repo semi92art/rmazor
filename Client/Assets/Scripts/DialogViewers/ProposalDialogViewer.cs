@@ -41,18 +41,21 @@ namespace DialogViewers
 
         #region inject
 
-        private ViewSettings    ViewSettings   { get; }
-        private IUITicker       Ticker         { get; }
-        private ICameraProvider CameraProvider { get; }
+        private ViewSettings      ViewSettings     { get; }
+        private IUITicker         Ticker           { get; }
+        private ICameraProvider   CameraProvider   { get; }
+        private IPrefabSetManager PrefabSetManager { get; }
 
         public ProposalDialogViewer(
             ViewSettings _ViewSettings,
             IUITicker _Ticker,
-            ICameraProvider _CameraProvider)
+            ICameraProvider _CameraProvider,
+            IPrefabSetManager _PrefabSetManager)
         {
             ViewSettings = _ViewSettings;
             Ticker = _Ticker;
             CameraProvider = _CameraProvider;
+            PrefabSetManager = _PrefabSetManager;
         }
 
         #endregion
@@ -65,7 +68,7 @@ namespace DialogViewers
         
         public void Init(RectTransform _Parent)
         {
-            var go = PrefabUtilsEx.InitUiPrefab(
+            var go = PrefabSetManager.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     _Parent,
                     RtrLites.FullFill),

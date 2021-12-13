@@ -4,6 +4,7 @@ using DI.Extensions;
 using Entities;
 using GameHelpers;
 using Games.RazorMaze.Views.Common;
+using Managers;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -29,7 +30,7 @@ public class ColorsHelper : EditorWindow
     {
         if (m_ColorSet == null)
         {
-            m_ColorSetScrObj = PrefabUtilsEx.GetObject<ColorSetScriptableObject>(
+            m_ColorSetScrObj = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ColorSetScriptableObject>(
                 "views", "color_set");
             m_ColorSet = m_ColorSetScrObj.set;
         }

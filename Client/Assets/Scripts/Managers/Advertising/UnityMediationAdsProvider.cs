@@ -19,7 +19,7 @@ namespace Managers.Advertising
 
         #region inject
 
-        public UnityMediationAdsProvider(IShopManager _ShopManager) : base(_ShopManager) { }
+        public UnityMediationAdsProvider(IShopManager _ShopManager, bool _TestMode) : base(_ShopManager, _TestMode) { }
 
         #endregion
 

@@ -52,20 +52,22 @@ namespace Controllers
         private IUITicker         UITicker         { get; }
         private IMusicSetting     MusicSetting     { get; }
         private ISoundSetting     SoundSetting     { get; }
+        private IPrefabSetManager PrefabSetManager { get; }
 
         public AudioManager(
             IContainersGetter _ContainersGetter,
             IViewGameTicker _GameTicker,
             IUITicker _UITicker,
             IMusicSetting _MusicSetting,
-            ISoundSetting _SoundSetting)
+            ISoundSetting _SoundSetting,
+            IPrefabSetManager _PrefabSetManager)
         {
             ContainersGetter = _ContainersGetter;
             GameTicker = _GameTicker;
             UITicker = _UITicker;
             MusicSetting = _MusicSetting;
             SoundSetting = _SoundSetting;
-
+            PrefabSetManager = _PrefabSetManager;
         }
 
         #endregion
@@ -92,26 +94,33 @@ namespace Controllers
         public void PlayClip(AudioClipArgs _Args)
         {
             var info = FindClipInfo(_Args);
-            if (info == null)
+            if (info != null)
             {
-                var clip = PrefabUtilsEx.GetObject<AudioClip>("sounds", _Args.ClipName);
-                if (clip == null)
-                    return;
-                var go = new GameObject($"AudioClip_{_Args.ClipName}");
-                go.SetParent(ContainersGetter.GetContainer(ContainerNames.AudioSources));
-                var audioSource = go.AddComponent<AudioSource>();
-                audioSource.clip = clip;
-                info = new AudioClipInfo(audioSource, _Args);
-                m_ClipInfos.Add(info);
+                PlayClipCore(_Args, info);
+                return;
             }
-            info.StartVolume = _Args.StartVolume;
-            info.Volume = SaveUtils.GetValue(GetSaveKeyByType(info.Type)) ? info.StartVolume : 0f;
-            if (info.OnPause)
-                info.OnPause = false;
-            else
-                info.Playing = true;
-            if (info.AttenuationSecondsOnPlay > float.Epsilon)
-                Coroutines.Run(AttenuateCoroutine(info, true));
+            
+            var clipEntity = PrefabSetManager.GetObjectEntity<AudioClip>("sounds", _Args.ClipName);
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => clipEntity.Result == EEntityResult.Pending,
+                () =>
+                {
+                    if (clipEntity.Result == EEntityResult.Fail)
+                    {
+                        Dbg.LogWarning($"Sound clip with name {_Args.ClipName} not found in prefab sets");
+                        return;
+                    }
+                    var clip = clipEntity.Value;
+                    if (clip == null)
+                        return;
+                    var go = new GameObject($"AudioClip_{_Args.ClipName}");
+                    go.SetParent(ContainersGetter.GetContainer(ContainerNames.AudioSources));
+                    var audioSource = go.AddComponent<AudioSource>();
+                    audioSource.clip = clip;
+                    info = new AudioClipInfo(audioSource, _Args);
+                    m_ClipInfos.Add(info);
+                    PlayClipCore(_Args, info);
+                }));
         }
 
         public void PauseClip(AudioClipArgs _Args)
@@ -178,9 +187,21 @@ namespace Controllers
 
         private void InitAudioMixer()
         {
-            m_Mixer = PrefabUtilsEx.GetObject<AudioMixer>("audio_mixers", "default_mixer");
+            m_Mixer = PrefabSetManager.GetObject<AudioMixer>("audio_mixers", "default_mixer");
             m_MasterGroup = m_Mixer.FindMatchingGroups("Master")[0];
             m_MutedGroup = m_Mixer.FindMatchingGroups("Master/Muted")[0];
+        }
+
+        private void PlayClipCore(AudioClipArgs _Args, AudioClipInfo _Info)
+        {
+            _Info.StartVolume = _Args.StartVolume;
+            _Info.Volume = SaveUtils.GetValue(GetSaveKeyByType(_Info.Type)) ? _Info.StartVolume : 0f;
+            if (_Info.OnPause)
+                _Info.OnPause = false;
+            else
+                _Info.Playing = true;
+            if (_Info.AttenuationSecondsOnPlay > float.Epsilon)
+                Coroutines.Run(AttenuateCoroutine(_Info, true));
         }
         
         private void MuteAudio(bool _Mute, EAudioClipType _Type)

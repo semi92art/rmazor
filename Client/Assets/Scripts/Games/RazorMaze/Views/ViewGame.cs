@@ -95,29 +95,29 @@ namespace Games.RazorMaze.Views
             IColorProvider                        _ColorProvider,
             ICameraProvider                       _CameraProvider)
         {
-            Settings =               _Settings;
-            ContainersGetter =       _ContainersGetter;
-            UI =                     _UI;
-            InputController =        _InputController;
-            LevelStageController =   _LevelStageController;
-            CommandsProceeder =      _CommandsProceeder;
-            Character =              _Character;
-            Common =                 _Common;
-            Background =             _Background;
-            MazeRotation =           _MazeRotation;
-            PathItemsGroup =         _PathItemsGroup;
-            MovingItemsGroup =       _MovingItemsGroup;
-            TrapsReactItemsGroup =   _TrapsReactItemsGroup;
-            TrapsIncItemsGroup =     _TrapsIncItemsGroup;
-            TurretsGroup =           _TurretsGroup;
-            PortalsGroup =           _PortalsGroup;
-            ShredingerBlocksGroup =  _ShredingerBlocksGroup;
-            SpringboardItemsGroup =  _SpringboardItemsGroup;
-            GravityItemsGroup =      _GravityItemsGroup;
-            Managers =               _Managers;
-            CoordinateConverter =    _CoordinateConverter;
-            ColorProvider =          _ColorProvider;
-            CameraProvider =         _CameraProvider;
+            Settings               = _Settings;
+            ContainersGetter       = _ContainersGetter;
+            UI                     = _UI;
+            InputController        = _InputController;
+            LevelStageController   = _LevelStageController;
+            CommandsProceeder      = _CommandsProceeder;
+            Character              = _Character;
+            Common                 = _Common;
+            Background             = _Background;
+            MazeRotation           = _MazeRotation;
+            PathItemsGroup         = _PathItemsGroup;
+            MovingItemsGroup       = _MovingItemsGroup;
+            TrapsReactItemsGroup   = _TrapsReactItemsGroup;
+            TrapsIncItemsGroup     = _TrapsIncItemsGroup;
+            TurretsGroup           = _TurretsGroup;
+            PortalsGroup           = _PortalsGroup;
+            ShredingerBlocksGroup  = _ShredingerBlocksGroup;
+            SpringboardItemsGroup  = _SpringboardItemsGroup;
+            GravityItemsGroup      = _GravityItemsGroup;
+            Managers               = _Managers;
+            CoordinateConverter    = _CoordinateConverter;
+            ColorProvider          = _ColorProvider;
+            CameraProvider         = _CameraProvider;
         }
         
         #endregion
@@ -132,6 +132,7 @@ namespace Games.RazorMaze.Views
             Managers.DebugManager.Init();
 #endif
             Managers.AudioManager.Init();
+            Managers.AssetBundleManager.Init();
             ColorProvider.Init();
             CoordinateConverter.Init();
             LevelStageController.RegisterProceeders(GetInterfaceOfProceeders<IOnLevelStageChanged>());

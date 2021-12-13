@@ -49,7 +49,7 @@ namespace UI.Panels
             IProposalDialogViewer _ProposalDialogViewer,
             IViewInputCommandsProceeder _CommandsProceeder,
             ViewSettings _ViewSettings)
-            : base(_Managers, _Ticker, _DialogViewer, _CameraProvider, _ColorProvider)
+            : base( _Managers, _Ticker, _DialogViewer, _CameraProvider, _ColorProvider)
         {
             ProposalDialogViewer = _ProposalDialogViewer;
             CommandsProceeder = _CommandsProceeder;
@@ -65,7 +65,7 @@ namespace UI.Panels
         public override void LoadPanel()
         {
             base.LoadPanel();
-            var go = PrefabUtilsEx.InitUiPrefab(
+            var go = Managers.PrefabSetManager.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     ProposalDialogViewer.Container,
                     RtrLites.FullFill),

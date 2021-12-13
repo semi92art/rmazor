@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using DI.Extensions;
 using Entities;
 using GameHelpers;
 using UnityEngine;
 using UnityEngine.Events;
 using Utils;
+using Zenject;
 
 namespace Games.RazorMaze.Views.Common
 {
@@ -24,6 +26,18 @@ namespace Games.RazorMaze.Views.Common
 
         #endregion
 
+        #region inject
+        
+        private IPrefabSetManager PrefabSetManager { get; set; }
+
+        [Inject]
+        public void Inject(IPrefabSetManager _PrefabSetManager)
+        {
+            PrefabSetManager = _PrefabSetManager;
+        }
+
+        #endregion
+
         #region api
         
         public event UnityAction<int, Color>   ColorChanged;
@@ -32,7 +46,7 @@ namespace Games.RazorMaze.Views.Common
         
         public void Init()
         {
-            m_Set = PrefabUtilsEx.GetObject<ColorSetScriptableObject>(
+            m_Set = PrefabSetManager.GetObject<ColorSetScriptableObject>(
                 "views", "color_set").set;
             foreach (var item in m_Set)
                 m_ColorsDict.Add(ColorIds.GetHash(item.name), item.color);
@@ -48,12 +62,8 @@ namespace Games.RazorMaze.Views.Common
 
         public void SetColor(int _Id, Color _Color)
         {
-            if (m_ColorsDict.ContainsKey(_Id))
-            {
-                m_ColorsDict[_Id] = _Color;
-                ColorChanged?.Invoke(_Id, _Color);
-            }
-            else m_ColorsDict.Add(_Id, _Color);
+            m_ColorsDict.SetSafe(_Id, _Color);
+            ColorChanged?.Invoke(_Id, _Color);
         }
         
         #endregion

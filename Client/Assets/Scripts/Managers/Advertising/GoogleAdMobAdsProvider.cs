@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
 using Entities;
+using GameHelpers;
 using GoogleMobileAds.Api;
 using UnityEngine.Events;
 using Utils;
@@ -21,8 +22,13 @@ namespace Managers.Advertising
         #endregion
 
         #region inject
+        private CommonGameSettings Settings { get; }
 
-        public GoogleAdMobAdsProvider(IShopManager _ShopManager) : base(_ShopManager) { }
+        public GoogleAdMobAdsProvider(CommonGameSettings _Settings, IShopManager _ShopManager, bool _TestMode)
+            : base(_ShopManager, _TestMode)
+        {
+            Settings = _Settings;
+        }
 
         #endregion
 

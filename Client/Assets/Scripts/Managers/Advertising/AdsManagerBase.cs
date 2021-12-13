@@ -24,6 +24,7 @@ namespace Managers.Advertising
     
     public abstract class AdsProviderBase : IAdsProvider
     {
+        protected bool        m_TestMode;
         protected XElement    m_AdsData;
         protected bool        m_Initialized;
         protected UnityAction m_OnRewardedAdShown;
@@ -31,9 +32,10 @@ namespace Managers.Advertising
         
         protected IShopManager ShopManager { get; }
 
-        protected AdsProviderBase(IShopManager _ShopManager)
+        protected AdsProviderBase(IShopManager _ShopManager, bool _TestMode)
         {
             ShopManager = _ShopManager;
+            m_TestMode = _TestMode;
         }
         
 

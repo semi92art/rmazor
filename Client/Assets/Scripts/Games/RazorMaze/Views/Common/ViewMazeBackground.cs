@@ -71,10 +71,11 @@ namespace Games.RazorMaze.Views.Common
 
         private IMazeCoordinateConverter CoordinateConverter { get; }
         private IContainersGetter        ContainersGetter    { get; }
-        private IViewGameTicker              GameTicker          { get; }
+        private IViewGameTicker          GameTicker          { get; }
         private ICameraProvider          CameraProvider      { get; }
         private IColorProvider           ColorProvider       { get; }
         private IViewAppearTransitioner  Transitioner        { get; }
+        private IPrefabSetManager        PrefabSetManager    { get; }
 
         public ViewMazeBackground(
             IMazeCoordinateConverter _CoordinateConverter,
@@ -82,7 +83,8 @@ namespace Games.RazorMaze.Views.Common
             IViewGameTicker _GameTicker,
             ICameraProvider _CameraProvider,
             IColorProvider _ColorProvider,
-            IViewAppearTransitioner _Transitioner)
+            IViewAppearTransitioner _Transitioner,
+            IPrefabSetManager _PrefabSetManager)
         {
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
@@ -90,6 +92,7 @@ namespace Games.RazorMaze.Views.Common
             CameraProvider = _CameraProvider;
             ColorProvider = _ColorProvider;
             Transitioner = _Transitioner;
+            PrefabSetManager = _PrefabSetManager;
 
             GameTicker.Register(this);
         }
@@ -217,7 +220,7 @@ namespace Games.RazorMaze.Views.Common
             var sourceGos = new List<GameObject>();
             for (int i = 0; i < 1; i++)
             {
-                var sourceGo = PrefabUtilsEx.GetPrefab(
+                var sourceGo = PrefabSetManager.GetPrefab(
                     "views", $"background_item_congrats_{i + 1}");
                 sourceGos.Add(sourceGo);
             }

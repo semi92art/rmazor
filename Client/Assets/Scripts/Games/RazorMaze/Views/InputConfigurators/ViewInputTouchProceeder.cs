@@ -18,6 +18,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
     public interface IViewInputTouchProceeder : IInit, IOnLevelStageChanged
     {
         UnityAction<Vector2> OnTap { get; set; }
+        bool                 IsFingerOnScreen();
     }
     
     public class ViewInputTouchProceeder : IViewInputTouchProceeder, IUpdateTick
@@ -41,7 +42,8 @@ namespace Games.RazorMaze.Views.InputConfigurators
         protected      IContainersGetter           ContainersGetter  { get; }
         protected      IViewInputCommandsProceeder CommandsProceeder { get; }
         private        IViewGameTicker             GameTicker        { get; }
-        private static ICameraProvider             CameraProvider    { get; set; }
+        private        ICameraProvider             CameraProvider    { get; set; }
+        private        IPrefabSetManager           PrefabSetManager  { get; }
 
         protected ViewInputTouchProceeder(
             ViewSettings _ViewSettings,
@@ -49,7 +51,8 @@ namespace Games.RazorMaze.Views.InputConfigurators
             IContainersGetter _ContainersGetter,
             IViewInputCommandsProceeder _CommandsProceeder,
             IViewGameTicker _GameTicker,
-            ICameraProvider _CameraProvider)
+            ICameraProvider _CameraProvider,
+            IPrefabSetManager _PrefabSetManager)
         {
             ViewSettings = _ViewSettings;
             Model = _Model;
@@ -57,6 +60,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
             CommandsProceeder = _CommandsProceeder;
             GameTicker = _GameTicker;
             CameraProvider = _CameraProvider;
+            PrefabSetManager = _PrefabSetManager;
         }
 
         #endregion
@@ -111,7 +115,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
             lt.MovePivotKey = KeyCode.LeftAlt;
             lt.MultiDragKey = KeyCode.LeftAlt;
 #if UNITY_EDITOR
-            lt.FingerTexture = PrefabUtilsEx.GetObject<Texture2D>("icons", "finger_texture");
+            lt.FingerTexture = PrefabSetManager.GetObject<Texture2D>("icons", "finger_texture");
 #endif
         }
 
@@ -140,7 +144,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
         
         private T InitPrefab<T>(string _Name) where T : Component
         {
-            return PrefabUtilsEx
+            return PrefabSetManager
                 .InitPrefab(GetContainer(), "ui_game", _Name)
                 .GetComponent<T>();
         }
@@ -195,7 +199,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
             m_TactCount++;
         }
 
-        public static bool IsFingerOnScreen()
+        public bool IsFingerOnScreen()
         {
 #if UNITY_EDITOR
             var view = CameraProvider.MainCamera.ScreenToViewportPoint(LeanInput.GetMousePosition());

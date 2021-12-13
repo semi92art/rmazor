@@ -1,4 +1,5 @@
-﻿using Ticker;
+﻿using GameHelpers;
+using Ticker;
 using UnityEngine.Advertisements;
 using Utils;
 
@@ -8,7 +9,8 @@ namespace Managers.Advertising
     
     public class UnityAdsRewardedAd : UnityAdsAdBase, IUnityAdsRewardedAd
     {
-        public UnityAdsRewardedAd(IViewGameTicker _GameTicker) : base(_GameTicker) { }
+        public UnityAdsRewardedAd(CommonGameSettings _Settings, IViewGameTicker _GameTicker)
+            : base(_Settings, _GameTicker) { }
         
         public override void OnUnityAdsShowComplete(string _PlacementId, UnityAdsShowCompletionState _ShowCompletionState)
         {

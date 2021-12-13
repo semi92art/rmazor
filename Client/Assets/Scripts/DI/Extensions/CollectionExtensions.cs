@@ -6,18 +6,6 @@ namespace DI.Extensions
 {
     public static class CollectionExtensions
     {
-        public static T GetItem<T>(this Stack<T> _Stack, int _Index, bool _FromTop = true)
-        {
-            var list = new List<T>();
-            while (_Stack.Any())
-                list.Add(_Stack.Pop());
-            for (int i = list.Count - 1; i >= 0; i--)
-                _Stack.Push(list[i]);
-            if (_Index > list.Count - 1 || _Index < 0)
-                return default;
-            return list[_FromTop ? _Index : list.Count - _Index - 1];
-        }
-
         public static ICollection<T> RemoveRange<T>(this ICollection<T> _Collection, IEnumerable<T> _Items)
         {
             var result = _Collection.ToList();
@@ -31,19 +19,6 @@ namespace DI.Extensions
             return _Collection.Select(_Item => (T)_Item.Clone()).ToList();
         }
 
-        public static bool ContainsRange<T>(this IEnumerable<T> _Collection, params T[] _Items)
-        {
-            return _Items.All(_Collection.Contains);
-        }
-        
-        private static void MoveOnEnumerator<T>(IEnumerator<T> _Enumerator, int _Count)
-        {
-            foreach (var _ in Enumerable.Range(0, _Count))
-            {
-                _Enumerator.MoveNext();
-            }
-        }
-        
         public static void Shuffle<T>(this IList<T> list)  
         {  
             var rng = new Random(); 
@@ -67,19 +42,7 @@ namespace DI.Extensions
                     _Kvp => _Kvp.Key,
                     _Kvp => _Kvp.Value);
         }
-        
-        public static Dictionary<TKey, TValue> Clone<TKey, TValue>
-            (this Dictionary<TKey, TValue> _Original) where TValue : ICloneable
-        {
-            var res = new Dictionary<TKey, TValue>(_Original.Count,
-                _Original.Comparer);
-            foreach (var entry in _Original)
-            {
-                res.Add(entry.Key, (TValue) entry.Value.Clone());
-            }
-            return res;
-        }
-        
+
         public static Dictionary<TKey, TValue> CloneAlt<TKey, TValue>
             (this Dictionary<TKey, TValue> _Original) where TValue : struct
         {
@@ -90,6 +53,26 @@ namespace DI.Extensions
                 res.Add(entry.Key, entry.Value);
             }
             return res;
+        }
+
+        public static void SetSafe<T1, T2>(this Dictionary<T1, T2> _Dict, T1 _Key, T2 _Value)
+        {
+            if (!_Dict.ContainsKey(_Key))
+                _Dict.Add(_Key, _Value);
+            else _Dict[_Key] = _Value;
+        }
+
+        public static T2 GetSafe<T1, T2>(this Dictionary<T1, T2> _Dict, T1 _Key, out bool _ContainsKey)
+        {
+            _ContainsKey = _Dict.ContainsKey(_Key);
+            return _ContainsKey ? _Dict[_Key] : default;
+        }
+
+        public static void RemoveSafe<T1, T2>(this Dictionary<T1, T2> _Dict, T1 _Key, out bool _ContainsKey)
+        {
+            _ContainsKey = _Dict.ContainsKey(_Key);
+            if (_ContainsKey)
+                _Dict.Remove(_Key);
         }
     }
 }

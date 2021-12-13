@@ -39,15 +39,16 @@ namespace Games.RazorMaze.Views.UI
 
         #region inject
 
-        private IModelGame                  Model               { get; }
-        private IColorProvider              ColorProvider       { get; }
-        private IContainersGetter           ContainersGetter    { get; }
-        private ICameraProvider             CameraProvider      { get; }
-        private IManagersGetter             Managers            { get; }
-        private IBigDialogViewer            BigDialogViewer     { get; }
-        private IViewInputCommandsProceeder CommandsProceeder   { get; }
-        private IViewGameTicker             GameTicker          { get; }
-        private IViewAppearTransitioner     AppearTransitioner  { get; }
+        private IModelGame                  Model              { get; }
+        private IColorProvider              ColorProvider      { get; }
+        private IContainersGetter           ContainersGetter   { get; }
+        private ICameraProvider             CameraProvider     { get; }
+        private IManagersGetter             Managers           { get; }
+        private IBigDialogViewer            BigDialogViewer    { get; }
+        private IViewInputCommandsProceeder CommandsProceeder  { get; }
+        private IViewGameTicker             GameTicker         { get; }
+        private IViewAppearTransitioner     AppearTransitioner { get; }
+        private IViewInputTouchProceeder    TouchProceeder     { get; }
 
         public ViewUIRotationControls(
             IModelGame _Model,
@@ -58,7 +59,8 @@ namespace Games.RazorMaze.Views.UI
             IBigDialogViewer _BigDialogViewer,
             IViewInputCommandsProceeder _CommandsProceeder,
             IViewGameTicker _GameTicker,
-            IViewAppearTransitioner _AppearTransitioner)
+            IViewAppearTransitioner _AppearTransitioner,
+            IViewInputTouchProceeder _TouchProceeder)
         {
             Model = _Model;
             ColorProvider = _ColorProvider;
@@ -69,6 +71,7 @@ namespace Games.RazorMaze.Views.UI
             CommandsProceeder = _CommandsProceeder;
             GameTicker = _GameTicker;
             AppearTransitioner = _AppearTransitioner;
+            TouchProceeder = _TouchProceeder;
         }
 
         #endregion
@@ -126,9 +129,9 @@ namespace Games.RazorMaze.Views.UI
             var screenBounds = GraphicUtils.GetVisibleBounds();
             const float horOffset = 1f;
             var cont = ContainersGetter.GetContainer(ContainerNames.GameUI);
-            var goRCb = PrefabUtilsEx.InitPrefab(
+            var goRCb = Managers.PrefabSetManager.InitPrefab(
                 cont, "ui_game", "rotate_clockwise_button");
-            var goRCCb = PrefabUtilsEx.InitPrefab(
+            var goRCCb = Managers.PrefabSetManager.InitPrefab(
                 cont, "ui_game", "rotate_counter_clockwise_button");
             float scale = 0.5f;
             float yPos = screenBounds.min.y + m_BottomOffset;
@@ -149,12 +152,14 @@ namespace Games.RazorMaze.Views.UI
                 CommandRotateClockwise, 
                 () => Model.LevelStaging.LevelStage, 
                 CameraProvider,
-                Managers.HapticsManager);
+                Managers.HapticsManager,
+                TouchProceeder);
             m_RotateCounterClockwiseButton.Init(
                 CommandRotateCounterClockwise, 
                 () => Model.LevelStaging.LevelStage,
                 CameraProvider,
-                Managers.HapticsManager);
+                Managers.HapticsManager,
+                TouchProceeder);
             m_RotatingButtonShapes.AddRange(new ShapeRenderer[]
             {
                 goRCb.GetCompItem<Disc>("outer_disc"),

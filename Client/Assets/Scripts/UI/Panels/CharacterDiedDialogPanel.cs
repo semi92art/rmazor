@@ -59,13 +59,13 @@ namespace UI.Panels
         private IViewInputCommandsProceeder CommandsProceeder    { get; }
 
         public CharacterDiedDialogPanel(
-            ViewSettings _ViewSettings,
             IBigDialogViewer _DialogViewer,
-            IProposalDialogViewer _ProposalDialogViewer,
             IManagersGetter _Managers,
             IUITicker _UITicker,
             ICameraProvider _CameraProvider,
             IColorProvider _ColorProvider,
+            ViewSettings _ViewSettings,
+            IProposalDialogViewer _ProposalDialogViewer,
             IViewInputCommandsProceeder _CommandsProceeder) 
             : base(_Managers, _UITicker, _DialogViewer, _CameraProvider, _ColorProvider)
         {
@@ -84,7 +84,7 @@ namespace UI.Panels
         {
             Dbg.Log(nameof(CharacterDiedDialogPanel) + ": " + nameof(LoadPanel));
             base.LoadPanel();
-            var go = PrefabUtilsEx.InitUiPrefab(
+            var go = Managers.PrefabSetManager.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     ProposalDialogViewer.Container,
                     RtrLites.FullFill),
@@ -111,7 +111,7 @@ namespace UI.Panels
             m_TextYouHaveMoney.text   = Managers.LocalizationManager.GetTranslation("you_have") + ":";
             m_TextContinue.text       = Managers.LocalizationManager.GetTranslation("continue");
             m_TextNotEnoughMoney.text = Managers.LocalizationManager.GetTranslation("not_enough_money");
-            var moneyIconSprite = PrefabUtilsEx.GetObject<Sprite>(
+            var moneyIconSprite = Managers.PrefabSetManager.GetObject<Sprite>(
                 "shop_items", "shop_money_icon");
             m_MoneyIcon1.sprite = moneyIconSprite;
             m_MoneyIcon2.sprite = moneyIconSprite;
@@ -140,7 +140,7 @@ namespace UI.Panels
                 () => !Managers.AdsManager.RewardedAdReady,
                 () => IndicateAdsLoading(false)));
 
-            var moneyCountEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money);
+            var moneyCountEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money, true);
             IndicateMoneyCountLoading(true);
             Coroutines.Run(Coroutines.WaitWhile(
                 () => moneyCountEntity.Result == EEntityResult.Pending,
@@ -204,7 +204,7 @@ namespace UI.Panels
 
         private void OnPayMoneyButtonClick()
         {
-            Managers.ScoreManager.SetScore(DataFieldIds.Money, m_MoneyCount - PayToContinueMoneyCount);
+            Managers.ScoreManager.SetScore(DataFieldIds.Money, m_MoneyCount - PayToContinueMoneyCount, false);
             m_MoneyPayed = true;
         }
 

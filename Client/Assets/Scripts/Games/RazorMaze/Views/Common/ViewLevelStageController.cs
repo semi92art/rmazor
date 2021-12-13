@@ -150,7 +150,7 @@ namespace Games.RazorMaze.Views.Common
             switch (_Args.Stage)
             {
                 case ELevelStage.Loaded:
-                    SaveUtils.PutValue(SaveKeys.CurrentLevelIndex, _Args.LevelIndex);
+                    Managers.ScoreManager.SetScore(DataFieldIds.Level, _Args.LevelIndex, true);
                     m_NextLevelMustBeFirstInGroup = false;
                     Character.Appear(true);
                     if (pathItemsGroup != null)
@@ -172,9 +172,12 @@ namespace Games.RazorMaze.Views.Common
                 case ELevelStage.ReadyToStart:
                     break;
                 case ELevelStage.Finished:
-                    if (_Args.LevelIndex % 3 == 0)
+                    bool allLevelsPassed = SaveUtils.GetValue(SaveKeys.AllLevelsPassed);
+                    if (!allLevelsPassed)
                     {
-                        Managers.AdsManager.ShowInterstitialAd(null);
+                        Managers.ScoreManager.SetScore(DataFieldIds.Level, _Args.LevelIndex + 1, true);
+                        if (_Args.LevelIndex + 1 >= LevelsLoader.GetLevelsCount(GameClientUtils.GameId))
+                            SaveUtils.PutValue(SaveKeys.AllLevelsPassed, true);
                     }
                     Managers.AnalyticsManager.SendAnalytic(AnalyticIds.LevelFinished, 
                         new Dictionary<string, object>
@@ -183,13 +186,8 @@ namespace Games.RazorMaze.Views.Common
                             {"level_time", Model.LevelStaging.LevelTime},
                             {"dies_count", Model.LevelStaging.DiesCount}
                         });
-                    bool allLevelsPassed = SaveUtils.GetValue(SaveKeys.AllLevelsPassed);
-                    if (!allLevelsPassed)
-                    {
-                        SaveUtils.PutValue(SaveKeys.CurrentLevelIndex, _Args.LevelIndex + 1);
-                        if (_Args.LevelIndex + 1 >= LevelsLoader.GetLevelsCount(GameClientUtils.GameId))
-                            SaveUtils.PutValue(SaveKeys.AllLevelsPassed, true);
-                    }
+                    if (_Args.LevelIndex % 3 == 0)
+                        Managers.AdsManager.ShowInterstitialAd(null);
                     break;
                 case ELevelStage.ReadyToUnloadLevel:
                     foreach (var mazeItem in mazeItems)

@@ -78,19 +78,22 @@ namespace DialogViewers
         private IViewInputCommandsProceeder CommandsProceeder { get; }
         private IColorProvider              ColorProvider     { get; }
         private ICameraProvider             CameraProvider    { get; }
+        private IPrefabSetManager           PrefabSetManager  { get; }
 
         public BigDialogViewer(
             IManagersGetter _Managers,
             IUITicker _Ticker,
             IViewInputCommandsProceeder _CommandsProceeder,
             IColorProvider _ColorProvider,
-            ICameraProvider _CameraProvider)
+            ICameraProvider _CameraProvider,
+            IPrefabSetManager _PrefabSetManager)
         {
             Managers = _Managers;
             Ticker = _Ticker;
             CommandsProceeder = _CommandsProceeder;
             ColorProvider = _ColorProvider;
             CameraProvider = _CameraProvider;
+            PrefabSetManager = _PrefabSetManager;
             _Ticker.Register(this);
         }
         
@@ -106,7 +109,7 @@ namespace DialogViewers
 
         public void Init(RectTransform _Parent)
         {
-            var go = PrefabUtilsEx.InitUiPrefab(
+            var go = PrefabSetManager.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     _Parent,
                     RtrLites.FullFill),

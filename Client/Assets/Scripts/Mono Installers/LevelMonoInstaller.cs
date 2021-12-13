@@ -139,7 +139,6 @@ namespace Mono_Installers
                 Container.Bind<IShopTailsDialogPanel>()      .To<ShopTailsPanel>()                .AsSingle();
                 Container.Bind<IWofDialogPanel>()            .To<WofDialogPanel>()                .AsSingle();
                 Container.Bind<IWofRewardPanel>()            .To<WofRewardDialogPanel>()          .AsSingle();
-                Container.Bind<IDailyBonusDialogPanel>()     .To<DailyBonusDialogPanel>()         .AsSingle();
                 Container.Bind<ISettingDialogPanel>()        .To<SettingsDialogPanel>()           .AsSingle();
                 Container.Bind<ICharacterDiedDialogPanel>()  .To<CharacterDiedDialogPanel>()      .AsSingle();
                 Container.Bind<IRateGameDialogPanel>()       .To<RateGameDialogPanel>()           .AsSingle();

@@ -15,8 +15,25 @@ namespace GameHelpers
     
     public class LevelsLoader : ILevelsLoader
     {
-        private int m_GameId;
+        #region nonpublic members
+        
+        private int      m_GameId;
         private string[] m_CachedSerializedLevels;
+
+        #endregion
+
+        #region inject
+        
+        protected IPrefabSetManager PrefabSetManager { get; }
+
+        public LevelsLoader(IPrefabSetManager _PrefabSetManager)
+        {
+            PrefabSetManager = _PrefabSetManager;
+        }
+
+        #endregion
+
+        #region api
         
         public MazeInfo LoadLevel(int _GameId, int _Index)
         {
@@ -32,10 +49,14 @@ namespace GameHelpers
             return m_CachedSerializedLevels.Length;
         }
 
+        #endregion
+
+        #region nonpublic methods
+        
         private void CacheLevels(int _GameId)
         {
             m_GameId = _GameId;
-            var asset = PrefabUtilsEx.GetObject<TextAsset>(PrefabSetName(_GameId),
+            var asset = PrefabSetManager.GetObject<TextAsset>(PrefabSetName(_GameId),
                 LevelsAssetName(1));
             var t = typeof(MazeInfo);
             var firstProp = t.GetProperties()[0];
@@ -49,13 +70,17 @@ namespace GameHelpers
             m_CachedSerializedLevels = serializedLevels;
         }
         
-
-        protected static string PrefabSetName(int _GameId) => $"game_{_GameId}_levels";
+        protected static string PrefabSetName(int _GameId)
+        {
+            return $"game_{_GameId}_levels";
+        }
 
         protected static string LevelsAssetName(int _HeapIndex)
         {
             string heapName = _HeapIndex <= 0 ? null : $"levels_{_HeapIndex}";
             return heapName ?? $"levels_{_HeapIndex}";
         }
+
+        #endregion
     }
 }

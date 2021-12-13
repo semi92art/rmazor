@@ -18,9 +18,7 @@ using Utils;
 
 namespace UI.Panels
 {
-    public interface IWofDialogPanel : IDialogPanel
-    {
-    }
+    public interface IWofDialogPanel : IDialogPanel { }
     
     public class WofDialogPanel : DialogPanelBase, IWofDialogPanel
     {
@@ -79,7 +77,7 @@ namespace UI.Panels
             // };
             
             base.LoadPanel();
-            GameObject wofPan = PrefabUtilsEx.InitUiPrefab(
+            GameObject wofPan = Managers.PrefabSetManager.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     DialogViewer.Container,
                     RtrLites.FullFill),
@@ -99,7 +97,7 @@ namespace UI.Panels
         
         private void InstantiateWheel()
         {
-            m_Wheel = PrefabUtilsEx.InitPrefab(
+            m_Wheel = Managers.PrefabSetManager.InitPrefab(
                 null,
                 "wheel_of_fortune",
                 "wheel_main");

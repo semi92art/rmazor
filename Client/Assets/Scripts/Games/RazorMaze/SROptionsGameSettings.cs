@@ -216,7 +216,7 @@ public partial class SROptions
         get => false;
         set
         {
-            var moneyEntity = _view.Managers.ScoreManager.GetScore(DataFieldIds.Money);
+            var moneyEntity = _view.Managers.ScoreManager.GetScore(DataFieldIds.Money, true);
             Coroutines.Run(Coroutines.WaitWhile(
                 () => moneyEntity.Result != EEntityResult.Pending,
                 () =>
@@ -232,7 +232,7 @@ public partial class SROptions
                         Dbg.LogError("Money score entity does not contain first score.");
                         return;
                     }
-                    _view.Managers.ScoreManager.SetScore(DataFieldIds.Money, score.Value + 500);
+                    _view.Managers.ScoreManager.SetScore(DataFieldIds.Money, score.Value + 500, false);
                 }));
         } 
     }

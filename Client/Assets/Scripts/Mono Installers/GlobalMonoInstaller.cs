@@ -39,6 +39,10 @@ namespace Mono_Installers
 #endif
             Container.Bind<ILocalizationManager>().To<LeanLocalizationManager>()      .AsSingle();
             Container.Bind<IScoreManager>()       .To<ScoreManager>()                 .AsSingle();
+            Container.Bind<IHapticsManager>()     .To<HapticsManager>()               .AsSingle();
+            Container.Bind<IAdsManager>()         .To<CustomMediationAdsManager>()    .AsSingle();
+            Container.Bind<IPrefabSetManager>()   .To<PrefabSetManager>()             .AsSingle();
+            Container.Bind<IAssetBundleManager>() .To<AssetBundleManager>()           .AsSingle();
 
             #endregion
             
@@ -47,8 +51,6 @@ namespace Mono_Installers
             Container.Bind<IModelGameTicker>()    .To<ModelGameTicker>()              .AsSingle();
             Container.Bind<IUITicker>()           .To<UITicker>()                     .AsSingle();
             Container.Bind<ILevelsLoader>()       .To<LevelsLoader>()                 .AsSingle();
-            Container.Bind<IHapticsManager>()     .To<HapticsManager>()               .AsSingle();
-            Container.Bind<IAdsManager>()         .To<CustomMediationAdsManager>()    .AsSingle();
         }
     }
 }

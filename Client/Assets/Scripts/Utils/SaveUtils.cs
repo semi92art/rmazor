@@ -8,9 +8,9 @@ namespace Utils
 {
     public static class SaveUtils
     {
-        private const           string    PassPhrase = "f47759941904a9bf6f89736c4541d85";
-        private static readonly string    SavesPath  = Path.Combine(Application.persistentDataPath, "Saves.xml");
-        private static          XDocument _savesDoc;
+        public static readonly string    SavesPath  = Path.Combine(Application.persistentDataPath, "Saves.xml");
+        public static          XDocument SavesDoc;
+        private const          string    PassPhrase = "f47759941904a9bf6f89736c4541d85";
 
         static SaveUtils()
         {
@@ -48,24 +48,24 @@ namespace Utils
         {
             if (File.Exists(SavesPath))
             {
-                _savesDoc = XDocument.Load(SavesPath);
+                SavesDoc = XDocument.Load(SavesPath);
                 return;
             }
-            _savesDoc = new XDocument(
+            SavesDoc = new XDocument(
                 new XComment("This file contains encrypted game data."),
                 new XElement("data"));
-            _savesDoc.Save(SavesPath);
+            SavesDoc.Save(SavesPath);
         }
 
         private static string GetXElementValue(string _Key)
         {
-            var rootEl = _savesDoc.Element("data");
+            var rootEl = SavesDoc.Element("data");
             return rootEl?.Element(_Key)?.Value;
         }
 
         private static void PutXElementValue(string _Key, string _Value)
         {
-            var rootEl = _savesDoc.Element("data");
+            var rootEl = SavesDoc.Element("data");
             if (rootEl == null)
             {
                 Dbg.LogError($"{nameof(PutXElementValue)}: Root element is null");
@@ -75,12 +75,12 @@ namespace Utils
             if (el == null)
             {
                 rootEl.Add(new XElement(_Key, _Value));
-                _savesDoc.Save(SavesPath);
+                SavesDoc.Save(SavesPath);
                 return;
             }
             el.Value = _Value;
             
-            _savesDoc.Save(SavesPath, SaveOptions.None);
+            SavesDoc.Save(SavesPath, SaveOptions.None);
         }
     }
 }

@@ -36,7 +36,7 @@ namespace Utils
             var boughtPurchaseIds = SaveUtils.GetValue(SaveKeys.BoughtPurchaseIds);
             if (boughtPurchaseIds == null)
                 return 0;
-            ShopItemsScriptableObject.ShopItemSet GetSet(string _Key) => PrefabUtilsEx
+            ShopItemsScriptableObject.ShopItemSet GetSet(string _Key) => new PrefabSetManager(new AssetBundleManagerFake())
                 .GetObject<ShopItemsScriptableObject>("shop_items", _Key).set;
             var sets = new List<ShopItemsScriptableObject.ShopItemSet>
             {

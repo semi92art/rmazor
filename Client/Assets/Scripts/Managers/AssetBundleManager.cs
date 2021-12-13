@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DI.Extensions;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Events;
@@ -10,23 +9,20 @@ using Utils;
 
 namespace Managers
 {
-    public static class AssetBundleManager
+    public interface IAssetBundleManager : IInit
     {
-        #region constants
-
-        public const  string BundleNamesListName = "bundle_names";
-        public const  string CommonBundleName    = "common";
-        private const string SoundsBundleName    = "sounds";
-        private const string LevelsBundleName    = "levels";
-        private const string BundlesUri          = "https://raw.githubusercontent.com/semi92art/bundles/main/mgc";
-        
-        #endregion
-        
+        bool         BundlesLoaded { get; }
+        List<string> Errors        { get; }
+        T            GetAsset<T>(string _AssetName, string _PrefabSetName, out bool _Success) where T : Object;
+    }
+    
+    public class AssetBundleManager : IAssetBundleManager
+    {
         #region types
 
         private class AssetInfo
         {
-            public string Name { get; }
+            public string Name  { get; }
             public object Asset { get; }
 
             public AssetInfo(string _Name, object _Asset)
@@ -38,6 +34,16 @@ namespace Managers
         
         #endregion
         
+        #region constants
+
+        public const  string BundleNamesListName = "bundle_names";
+        public const  string CommonBundleName    = "common";
+        private const string SoundsBundleName    = "sounds";
+        private const string LevelsBundleName    = "levels";
+        private const string BundlesUri          = "https://raw.githubusercontent.com/semi92art/bundles/main/mgc";
+        
+        #endregion
+        
         #region nonpublic members
 
         private static readonly string[] BundleNames = {CommonBundleName, SoundsBundleName, LevelsBundleName};
@@ -45,29 +51,34 @@ namespace Managers
         private static Dictionary<string, string> _bundleNamesDict = new Dictionary<string, string>();
         
         #endregion
-        
-        #region constructor
-
-        static AssetBundleManager()
-        {
-            Coroutines.Run(LoadBundles());
-        }
-        
-        #endregion
 
         #region api
 
-        public static bool BundlesLoaded { get; private set; }
-        public static List<string> Errors { get; } = new List<string>();
+        public bool         BundlesLoaded { get; private set; }
+        public List<string> Errors        { get; } = new List<string>();
+        
+        public event UnityAction Initialized;
+        
+        public void Init()
+        {
+            Dbg.Log("Init AssetBunleManager");
+            Coroutines.Run(LoadBundles());
+            Initialized?.Invoke();
+        }
 
-        public static T GetAsset<T>(string _AssetName, string _PrefabSetName) where T : Object
+        public T GetAsset<T>(string _AssetName, string _PrefabSetName, out bool _Success) where T : Object
         {
             if (!BundlesLoaded)
+            {
                 Dbg.LogError("Bundles were not initialized");
+                _Success = false;
+                return default;
+            }
             if (!_bundleNamesDict.ContainsKey(_AssetName))
             {
                 Dbg.LogError($"Bundle key \"{_AssetName}\" was not found in bundles names dictionary");
-                return null;
+                _Success = false;
+                return default;
             }
             string bundleName = _bundleNamesDict[_AssetName];
             var dict = Bundles[_PrefabSetName]
@@ -77,17 +88,18 @@ namespace Managers
             if (!dict.ContainsKey(bundleName))
             {
                 Dbg.LogError($"Bundle name \"{bundleName}\" was not found in bundles");
-                return null;
+                _Success = false;
+                return default;
             }
-            var result = dict[bundleName];
-            return result as T;
+            _Success = true;
+            return dict[bundleName] as T;
         }
         
         #endregion
 
         #region nonpublic methods
         
-        private static IEnumerator LoadBundles()
+        private IEnumerator LoadBundles()
         {
             foreach (var bundleName in BundleNames)
                 yield return LoadBundle(bundleName);
@@ -105,7 +117,7 @@ namespace Managers
             Dbg.Log("Bundles initialized!");
         }
         
-        private static IEnumerator LoadBundle(string _BundleName)
+        private IEnumerator LoadBundle(string _BundleName)
         {
             while (!Caching.ready)
                 yield return null;
@@ -149,5 +161,22 @@ namespace Managers
         }
 
         #endregion
+    }
+
+    public class AssetBundleManagerFake : IAssetBundleManager
+    {
+        public bool              BundlesLoaded => false;
+        public List<string>      Errors        => null;
+        public event UnityAction Initialized;
+        
+        public void Init()
+        {
+            Initialized?.Invoke();
+        }
+
+        public T GetAsset<T>(string _AssetName, string _PrefabSetName, out bool _Success) where T : Object
+        {
+            throw new System.NotSupportedException();
+        }
     }
 }

@@ -70,7 +70,7 @@ namespace UI.Panels.ShopPanels
 
         private void LoadItemInfos()
         {
-            var set = PrefabUtilsEx.GetObject<ShopMoneyItemsScriptableObject>(
+            var set = Managers.PrefabSetManager.GetObject<ShopMoneyItemsScriptableObject>(
                 PrefabSetName, ItemSetName).set;
             foreach (var itemInSet in set)
             {
@@ -111,9 +111,10 @@ namespace UI.Panels.ShopPanels
                         Dbg.LogError("Failed to load ShowAds entity");
                         return;
                     }
-                    var set = PrefabUtilsEx.GetObject<ShopMoneyItemsScriptableObject>(
+                    var set = Managers.PrefabSetManager.GetObject<ShopMoneyItemsScriptableObject>(
                         PrefabSetName, ItemSetName).set;
-                    var moneyIcon = PrefabUtilsEx.GetObject<Sprite>("shop_items", "shop_money_icon");
+                    var moneyIcon = Managers.PrefabSetManager.GetObject<Sprite>(
+                        "shop_items", "shop_money_icon");
                     foreach (var itemInSet in set)
                     {
                         var args = m_ShopItemArgsDict[itemInSet.purchaseKey];
@@ -137,7 +138,7 @@ namespace UI.Panels.ShopPanels
                     var infoDisableAds = new ViewShopItemInfo
                     {
                         PurchaseKey = PurchaseKeys.NoAds,
-                        Icon = PrefabUtilsEx.GetObject<Sprite>(PrefabSetName, "shop_no_ads_icon"),
+                        Icon = Managers.PrefabSetManager.GetObject<Sprite>(PrefabSetName, "shop_no_ads_icon"),
                         BuyForWatchingAd = false,
                         Reward = 0
                     };
@@ -203,7 +204,7 @@ namespace UI.Panels.ShopPanels
 
         private void OnPaid(long _Reward)
         {
-            var scoreEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money);
+            var scoreEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money, true);
             Coroutines.Run(Coroutines.WaitWhile(
                 () => scoreEntity.Result == EEntityResult.Pending,
                 () =>
@@ -220,7 +221,7 @@ namespace UI.Panels.ShopPanels
                         return;
                     }
                     Managers.ScoreManager
-                        .SetScore(DataFieldIds.Money, firstVal.Value + _Reward);
+                        .SetScore(DataFieldIds.Money, firstVal.Value + _Reward, false);
                 }));
         }
 

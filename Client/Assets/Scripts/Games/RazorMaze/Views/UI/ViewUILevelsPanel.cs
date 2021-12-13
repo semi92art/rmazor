@@ -50,12 +50,12 @@ namespace Games.RazorMaze.Views.UI
 
         #region inject
 
-        private IModelGame                  Model               { get; }
-        private IViewInputCommandsProceeder CommandsProceeder   { get; }
-        private IContainersGetter           ContainersGetter    { get; }
-        private ICameraProvider             CameraProvider      { get; }
-        private IViewGameTicker             GameTicker          { get; }
-        private IManagersGetter             Managers            { get; }
+        private IModelGame                  Model             { get; }
+        private IViewInputCommandsProceeder CommandsProceeder { get; }
+        private IContainersGetter           ContainersGetter  { get; }
+        private ICameraProvider             CameraProvider    { get; }
+        private IViewGameTicker             GameTicker        { get; }
+        private IManagersGetter             Managers          { get; }
 
         public ViewUILevelsPanel(
             IModelGame _Model,
@@ -134,7 +134,7 @@ namespace Games.RazorMaze.Views.UI
             m_LevelPanelItemsFinishPositions.Clear();
             var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
             var cont = ContainersGetter.GetContainer(ContainerNames.GameUI);
-            var goLevelText = PrefabUtilsEx.InitPrefab(
+            var goLevelText = Managers.PrefabSetManager.InitPrefab(
                 cont, "ui_game", "level_text");
             m_LevelText = goLevelText.GetCompItem<TextMeshPro>("text");
             m_Renderers.Add(m_LevelText);
@@ -149,7 +149,7 @@ namespace Games.RazorMaze.Views.UI
         {
             var cont = ContainersGetter.GetContainer(ContainerNames.GameUI);
             var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
-            var goLevelCheckMark = PrefabUtilsEx.GetPrefab(
+            var goLevelCheckMark = Managers.PrefabSetManager.GetPrefab(
                 "ui_game", "level_check_mark");
             float yPos = screenBounds.max.y - m_TopOffset - 4f;
             if (m_CheckMarks.Any()) 

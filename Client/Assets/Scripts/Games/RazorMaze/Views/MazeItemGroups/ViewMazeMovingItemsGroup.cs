@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
@@ -58,8 +59,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
 
         public void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
         {
-            if (m_ItemsMoving.ContainsKey(_Args.Info))
-                m_ItemsMoving.Remove(_Args.Info);
+            m_ItemsMoving.RemoveSafe(_Args.Info, out _);
             m_ItemsMoving.Add(_Args.Info, new ViewMovingItemInfo
             {
                 From = CoordinateConverter.ToLocalMazeItemPosition(_Args.From),

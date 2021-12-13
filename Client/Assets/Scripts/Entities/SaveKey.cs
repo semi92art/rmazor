@@ -26,7 +26,6 @@ namespace Entities
         public static SaveKey<int>  GameId                   => new SaveKey<int>("game_id");
         public static SaveKey<int>  DesignerSelectedLevel    => new SaveKey<int>("designer_selected_level");
         public static SaveKey<int>  DesignerHeapIndex        => new SaveKey<int>("designer_heap_index");
-        public static SaveKey<int>  CurrentLevelIndex        => new SaveKey<int>("current_level_index");
         public static SaveKey<int>  DailyBonusLastClickedDay => new SaveKey<int>("daily_bonus_last_day");
         public static SaveKey<int>  RatePanelShowsCount      => new SaveKey<int>("rate_panel_shows_count");
         

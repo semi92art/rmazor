@@ -137,21 +137,21 @@ namespace Managers.Advertising
             var adsProvider = GameSettings.AdsProvider;
             if (adsProvider.HasFlag(EAdsProvider.GoogleAds))
             {
-                var man = new GoogleAdMobAdsProvider(ShopManager);
+                var man = new GoogleAdMobAdsProvider(GameSettings, ShopManager, GameSettings.AdsTestMode);
                 man.Init(adsConfig);
                 m_Providers.Add(man);
             }
             if (adsProvider.HasFlag(EAdsProvider.UnityAds))
             {
-                var intAd = new UnityAdsInterstitialAd(GameTicker);
-                var rewAd = new UnityAdsRewardedAd(GameTicker);
-                var man = new UnityAdsProvider(intAd, rewAd, ShopManager);
+                var intAd = new UnityAdsInterstitialAd(GameSettings, GameTicker);
+                var rewAd = new UnityAdsRewardedAd(GameSettings, GameTicker);
+                var man = new UnityAdsProvider(intAd, rewAd, ShopManager, GameSettings.AdsTestMode);
                 man.Init(adsConfig);
                 m_Providers.Add(man);
             }
             if (adsProvider.HasFlag(EAdsProvider.UnityMediation))
             {
-                var man = new UnityMediationAdsProvider(ShopManager);
+                var man = new UnityMediationAdsProvider(ShopManager, GameSettings.AdsTestMode);
                 man.Init(adsConfig);
                 m_Providers.Add(man);
             }

@@ -8,6 +8,7 @@ using Entities;
 using Exceptions;
 using GameHelpers;
 using Games.RazorMaze;
+using Managers;
 using Network;
 using Network.Packets;
 using UnityEditor;
@@ -43,7 +44,7 @@ public class EditorHelper : EditorWindow
     [MenuItem("Tools/Profiler",false, 3)]
     public static void ShowProfilerWindow()
     {
-        Type tProfiler = typeof(Editor).Assembly.GetType("UnityEditor.ProfilerWindow");
+        var tProfiler = typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.ProfilerWindow");
         GetWindow(tProfiler, false);
     }
     
@@ -195,7 +196,7 @@ public class EditorHelper : EditorWindow
 
     private void ModelSettingsTabPage()
     {
-        var settings = PrefabUtilsEx.GetObject<ModelSettings>(
+        var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ModelSettings>(
             "model_settings", "model_settings");
         var type = typeof(ModelSettings);
         var fieldInfos = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
@@ -204,7 +205,7 @@ public class EditorHelper : EditorWindow
     
     private void ViewSettingsTabPage()
     {
-        var settings = PrefabUtilsEx.GetObject<ViewSettings>(
+        var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ViewSettings>(
             "model_settings", "view_settings");
         var type = typeof(ViewSettings);
         var fieldInfos = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
@@ -213,7 +214,7 @@ public class EditorHelper : EditorWindow
 
     private void ViewCommonGameSettingsTabPage()
     {
-        var settings = PrefabUtilsEx.GetObject<CommonGameSettings>(
+        var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<CommonGameSettings>(
             "model_settings", "common_game_settings");
         var type = typeof(CommonGameSettings);
         var fieldInfos = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);

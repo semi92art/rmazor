@@ -68,23 +68,18 @@ namespace Games.RazorMaze
             GameClientUtils.GameId = 1;
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
             LevelMonoInstaller.Release = false;
-             
+            
             SceneManager.sceneLoaded += (_Scene, _Mode) =>
             {
                 Application.targetFrameRate = GraphicUtils.GetTargetFps();
-                Coroutines.Run(Coroutines.WaitWhile(
-                    () => !AssetBundleManager.BundlesLoaded,
-                    () =>
-                    {
-                        var controller = GameController.CreateInstance();
-                        controller.Initialized += () =>
-                        {
-                            int selectedLevel = SaveUtils.GetValue(SaveKeys.DesignerSelectedLevel);
-                            controller.Model.LevelStaging.LoadLevel(MazeInfo, selectedLevel);
-                            RazorMazeUtils.LoadNextLevelAutomatically = false;
-                        };
-                        controller.Init();
-                    }));
+                var controller = GameController.CreateInstance();
+                controller.Initialized += () =>
+                {
+                    int selectedLevel = SaveUtils.GetValue(SaveKeys.DesignerSelectedLevel);
+                    controller.Model.LevelStaging.LoadLevel(MazeInfo, selectedLevel);
+                    RazorMazeUtils.LoadNextLevelAutomatically = false;
+                };
+                controller.Init();
 
             };
             SceneManager.LoadScene(SceneNames.Level);

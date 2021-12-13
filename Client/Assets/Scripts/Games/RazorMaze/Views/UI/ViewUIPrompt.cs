@@ -63,6 +63,7 @@ namespace Games.RazorMaze.Views.UI
         private IViewInputCommandsProceeder CommandsProceeder   { get; }
         private ICameraProvider             CameraProvider      { get; }
         private IColorProvider              ColorProvider       { get; }
+        private IPrefabSetManager           PrefabSetManager    { get; }
 
         public ViewUIPrompt(
             IModelGame _Model,
@@ -71,7 +72,8 @@ namespace Games.RazorMaze.Views.UI
             ILocalizationManager _LocalizationManager,
             IViewInputCommandsProceeder _CommandsProceeder,
             ICameraProvider _CameraProvider,
-            IColorProvider _ColorProvider)
+            IColorProvider _ColorProvider,
+            IPrefabSetManager _PrefabSetManager)
         {
             Model = _Model;
             GameTicker = _GameTicker;
@@ -80,6 +82,7 @@ namespace Games.RazorMaze.Views.UI
             CommandsProceeder = _CommandsProceeder;
             CameraProvider = _CameraProvider;
             ColorProvider = _ColorProvider;
+            PrefabSetManager = _PrefabSetManager;
         }
 
         #endregion
@@ -222,7 +225,7 @@ namespace Games.RazorMaze.Views.UI
         {
             if (m_CurrentPromptInfo?.Key == _Key)
                 return;
-            var promptGo = PrefabUtilsEx.InitPrefab(
+            var promptGo = PrefabSetManager.InitPrefab(
                 null, "ui_game", _Key);
             promptGo.SetParent(ContainersGetter.GetContainer(ContainerNames.GameUI));
             promptGo.transform.position = _Position;

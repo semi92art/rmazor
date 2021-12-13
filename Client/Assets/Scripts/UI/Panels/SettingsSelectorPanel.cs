@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Constants;
 using DI.Extensions;
 using DialogViewers;
 using Entities;
-using GameHelpers;
 using Games.RazorMaze.Views.Common;
-using LeTai.Asset.TranslucentImage;
 using Ticker;
 using UI.Entities;
 using UI.Factories;
@@ -64,7 +61,7 @@ namespace UI.Panels
         public override void LoadPanel()
         {
             base.LoadPanel();
-            var sp = PrefabUtilsEx.InitUiPrefab(
+            var sp = Managers.PrefabSetManager.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     DialogViewer.Container,
                     RtrLites.FullFill),
@@ -90,7 +87,7 @@ namespace UI.Panels
                 SizeDelta = new Vector2(406, 100)
             };
             
-            var sspi = PrefabUtilsEx.InitUiPrefab(
+            var sspi = Managers.PrefabSetManager.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_Content,
                     sspiRect),

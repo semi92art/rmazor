@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Constants;
+using DI.Extensions;
 using Entities;
 using UnityEngine;
 using UnityEngine.Events;
@@ -71,10 +72,7 @@ namespace Managers.Advertising
             }
 #endif
             string id = GetProductId(_Key);
-            if (m_OnPurchaseActions.ContainsKey(id))
-                m_OnPurchaseActions[id] = _OnPurchase;
-            else
-                m_OnPurchaseActions.Add(id, _OnPurchase);
+            m_OnPurchaseActions.SetSafe(id, _OnPurchase);
             BuyProductID(id);
         }
 

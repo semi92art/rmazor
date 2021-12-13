@@ -10,6 +10,7 @@ using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeItems.Props;
 using Games.RazorMaze.Views.Utils;
+using Managers;
 using Shapes;
 using UnityEngine;
 
@@ -30,14 +31,16 @@ namespace Games.RazorMaze.Views.MazeItems
         #region nonpublic members
 
         private IMazeCoordinateConverter m_Converter;
-        private IContainersGetter m_ContainersGetter;
+        private IContainersGetter        m_ContainersGetter;
+        private IPrefabSetManager        m_PrefabSetManager;
         private IMazeCoordinateConverter Converter
         {
             get
             {
                 if (m_Converter == null || !m_Converter.InitializedAndMazeSizeSet())
                 {
-                    var settings = PrefabUtilsEx.GetObject<ViewSettings>(
+                    m_PrefabSetManager = new PrefabSetManager(new AssetBundleManagerFake());
+                    var settings = m_PrefabSetManager.GetObject<ViewSettings>(
                         "model_settings", "view_settings");
                     m_Converter = new MazeCoordinateConverter(settings, null);
                     m_ContainersGetter = new ContainersGetter(null, m_Converter);
@@ -163,7 +166,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
             if (string.IsNullOrEmpty(objectName)) 
                 return;
-            hint.sprite = PrefabUtilsEx.GetObject<Sprite>("prot_icons", objectName);
+            hint.sprite = m_PrefabSetManager.GetObject<Sprite>("prot_icons", objectName);
             hint.sortingOrder = GetShapeSortingOrder(_Type, false) + 1;
         }
 

@@ -11,6 +11,9 @@ namespace GameHelpers.Editor
 {
     public class LevelsSaverEditor : LevelsLoader
     {
+        public LevelsSaverEditor(IPrefabSetManager _PrefabSetManager) 
+            : base(_PrefabSetManager) { }
+        
         public MazeLevelsList LoadHeapLevels(int _GameId, int _HeapIndex)
         {
             CreateLevelsAssetIfNotExist(_GameId, _HeapIndex);
@@ -31,7 +34,7 @@ namespace GameHelpers.Editor
             AssetDatabase.SaveAssets();
         }
 
-        private static void CreateLevelsAssetIfNotExist(int _GameId, int _HeapIndex)
+        private void CreateLevelsAssetIfNotExist(int _GameId, int _HeapIndex)
         {
             var tempInfo = new MazeLevelsList {Levels = new List<MazeInfo>()};
             string serialized = JsonConvert.SerializeObject(tempInfo, Formatting.None);
@@ -50,7 +53,7 @@ namespace GameHelpers.Editor
             string setName = PrefabSetName(_GameId);
             if (!ResLoader.PrefabSetExist(setName))
                 ResLoader.CreatePrefabSetIfNotExist(setName);
-            PrefabUtilsEx.SetPrefab(setName, LevelsAssetName(0), asset);
+            PrefabSetManager.SetPrefab(setName, LevelsAssetName(0), asset);
             AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
             AssetDatabase.SaveAssets();
         }

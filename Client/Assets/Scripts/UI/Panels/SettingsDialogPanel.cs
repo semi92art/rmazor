@@ -78,7 +78,7 @@ namespace UI.Panels
         public override void LoadPanel()
         {
             base.LoadPanel();
-            var sp = PrefabUtilsEx.InitUiPrefab(
+            var sp = Managers.PrefabSetManager.InitUiPrefab(
                 UiFactory.UiRectTransform(DialogViewer.Container, RtrLites.FullFill),
                 CommonPrefabSetNames.DialogPanels, "settings_panel");
             m_MiniButtonsContent = sp.GetCompItem<RectTransform>("mini_buttons_content");
@@ -231,7 +231,7 @@ namespace UI.Panels
 
         private SettingItemMiniButton CreateMiniButtonSetting()
         {
-            var obj = PrefabUtilsEx.InitUiPrefab(
+            var obj = Managers.PrefabSetManager.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_MiniButtonsContent,
                     m_MiniButtonRectLite),
@@ -241,7 +241,7 @@ namespace UI.Panels
 
         private SettingItemOnOff CreateOnOffSetting()
         {
-            var obj = PrefabUtilsEx.InitUiPrefab(
+            var obj = Managers.PrefabSetManager.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_SettingsContent,
                     m_SettingItemRectLite),
@@ -251,7 +251,7 @@ namespace UI.Panels
 
         private SettingItemInPanelSelector CreateInPanelSelectorSetting()
         {
-            var obj = PrefabUtilsEx.InitUiPrefab(
+            var obj = Managers.PrefabSetManager.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_SettingsContent,
                     m_SettingItemRectLite),
@@ -261,7 +261,7 @@ namespace UI.Panels
 
         private SettingItemAction CreateActionSetting()
         {
-            var obj = PrefabUtilsEx.InitUiPrefab(
+            var obj = Managers.PrefabSetManager.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     m_SettingsContent,
                     m_SettingItemRectLite),
@@ -271,7 +271,7 @@ namespace UI.Panels
 
         private Sprite GetSettingsIconFromPrefabs(string _Key)
         {
-            return PrefabUtilsEx.GetObject<Sprite>(PrefabSetName, _Key);
+            return Managers.PrefabSetManager.GetObject<Sprite>(PrefabSetName, _Key);
         }
 
         private T ConvertValue<T>(object _Value)

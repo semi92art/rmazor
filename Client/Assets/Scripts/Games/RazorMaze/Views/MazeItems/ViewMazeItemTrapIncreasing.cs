@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Constants;
@@ -144,7 +143,7 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected override void InitShape()
         {
-            var prefab = PrefabUtilsEx.InitPrefab(
+            var prefab = Managers.PrefabSetManager.InitPrefab(
                 Object.transform, "views", "trap_increasing");
             prefab.transform.SetLocalPosXY(Vector2.zero);
             m_Animator = prefab.GetCompItem<Animator>("animator");

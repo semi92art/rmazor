@@ -66,6 +66,7 @@ namespace Games.RazorMaze.Views.Characters
         private IMazeShaker                 MazeShaker        { get; }
         private IColorProvider              ColorProvider     { get; }
         private IViewInputCommandsProceeder CommandsProceeder { get; }
+        private IPrefabSetManager           PrefabSetManager  { get; }
         private ViewSettings                ViewSettings      { get; }
 
         public ViewCharacter(
@@ -81,6 +82,7 @@ namespace Games.RazorMaze.Views.Characters
             IMazeShaker _MazeShaker,
             IColorProvider _ColorProvider,
             IViewInputCommandsProceeder _CommandsProceeder,
+            IPrefabSetManager _PrefabSetManager,
             ViewSettings _ViewSettings) 
             : base(
                 _CoordinateConverter, 
@@ -97,6 +99,7 @@ namespace Games.RazorMaze.Views.Characters
             MazeShaker = _MazeShaker;
             ColorProvider = _ColorProvider;
             CommandsProceeder = _CommandsProceeder;
+            PrefabSetManager = _PrefabSetManager;
         }
         
         #endregion
@@ -264,7 +267,7 @@ namespace Games.RazorMaze.Views.Characters
         private void InitPrefab()
         {
             var go = ContainersGetter.GetContainer(ContainerNames.Character).gameObject;
-            var prefab = PrefabUtilsEx.InitPrefab(go.transform, CommonPrefabSetNames.Views, "character");
+            var prefab = PrefabSetManager.InitPrefab(go.transform, CommonPrefabSetNames.Views, "character");
             prefab.transform.SetLocalPosXY(Vector2.zero);
             m_Head = prefab.GetContentItem("head");
             m_Animator = prefab.GetCompItem<Animator>("animator");
