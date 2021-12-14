@@ -133,7 +133,7 @@ namespace Games.RazorMaze.Views.Rotation
             out float _RealSkidAngle)
         {
             _StartAngle = GetAngleByOrientation(_Args.CurrentOrientation);
-            float dirCoeff = _Args.Direction == MazeRotateDirection.Clockwise ? -1 : 1;
+            float dirCoeff = _Args.Direction == EMazeRotateDirection.Clockwise ? -1 : 1;
             _RotationAngleDistance = GetRotationAngleDistance(_Args);
             _EndAngle = _StartAngle + _RotationAngleDistance * dirCoeff;
             _RealSkidAngle = 3f * dirCoeff;
@@ -147,9 +147,9 @@ namespace Games.RazorMaze.Views.Rotation
 
             if (from == to)
                 return 0f;
-            if (dir == MazeRotateDirection.Clockwise && to < from)
+            if (dir == EMazeRotateDirection.Clockwise && to < from)
                 return 90f * (4 - from + to);
-            if (dir == MazeRotateDirection.CounterClockwise && to > from)
+            if (dir == EMazeRotateDirection.CounterClockwise && to > from)
                 return 90f * (4 - to + from);
             return 90f * Mathf.Abs(to - from);
         }

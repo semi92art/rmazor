@@ -5,17 +5,17 @@ using Utils;
 
 namespace Games.RazorMaze.Models
 {
-    public enum MazeRotateDirection {Clockwise, CounterClockwise}
+    public enum EMazeRotateDirection {Clockwise, CounterClockwise}
 
     public class MazeRotationEventArgs
     {
-        public MazeRotateDirection Direction { get; }
+        public EMazeRotateDirection Direction { get; }
         public MazeOrientation CurrentOrientation { get; }
         public MazeOrientation NextOrientation { get; }
         public bool Instantly { get; }
 
         public MazeRotationEventArgs(
-            MazeRotateDirection _Direction, 
+            EMazeRotateDirection _Direction, 
             MazeOrientation _CurrentOrientation,
             MazeOrientation _NextOrientation,
             bool _Instantly)
@@ -33,7 +33,7 @@ namespace Games.RazorMaze.Models
     {
         event MazeOrientationHandler RotationStarted;
         event MazeOrientationHandler RotationFinished;
-        void StartRotation(MazeRotateDirection _Direction, MazeOrientation? _NextOrientation = null);
+        void StartRotation(EMazeRotateDirection _Direction, MazeOrientation? _NextOrientation = null);
         void OnRotationFinished(MazeRotationEventArgs _Args);
     }
     
@@ -57,7 +57,7 @@ namespace Games.RazorMaze.Models
         }
         
         public void StartRotation(
-            MazeRotateDirection _Direction, 
+            EMazeRotateDirection _Direction, 
             MazeOrientation? _NextOrientation = null)
         {
             if (!Data.ProceedingControls)
@@ -89,8 +89,8 @@ namespace Games.RazorMaze.Models
                 if (Data.Orientation == MazeOrientation.North)
                     return;
                 var rotDir = (int) Data.Orientation < 2
-                    ? MazeRotateDirection.CounterClockwise
-                    : MazeRotateDirection.Clockwise;
+                    ? EMazeRotateDirection.CounterClockwise
+                    : EMazeRotateDirection.Clockwise;
                 var currOrient = Data.Orientation;
                 Data.Orientation = MazeOrientation.North;
                 var args = new MazeRotationEventArgs(
@@ -100,15 +100,15 @@ namespace Games.RazorMaze.Models
         }
         
         private static MazeOrientation GetNextOrientation(
-            MazeRotateDirection _Direction,
+            EMazeRotateDirection _Direction,
             MazeOrientation _Orientation)
         {
             int orient = (int) _Orientation;
             switch (_Direction)
             {
-                case MazeRotateDirection.Clockwise:
+                case EMazeRotateDirection.Clockwise:
                     orient = MathUtils.ClampInverse(orient + 1, 0, 3); break;
-                case MazeRotateDirection.CounterClockwise:
+                case EMazeRotateDirection.CounterClockwise:
                     orient = MathUtils.ClampInverse(orient - 1, 0, 3); break;
                 default: throw new SwitchCaseNotImplementedException(_Direction);
             }

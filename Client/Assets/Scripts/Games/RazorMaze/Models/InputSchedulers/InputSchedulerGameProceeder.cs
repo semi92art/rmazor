@@ -144,13 +144,13 @@ namespace Games.RazorMaze.Models.InputSchedulers
         
         private void OnRotateCommand(EInputCommand _Command, object[] _Args)
         {
-            MazeRotateDirection dir;
+            EMazeRotateDirection dir;
             switch (_Command)
             {
                 case EInputCommand.RotateClockwise:       
-                    dir = MazeRotateDirection.Clockwise;        break;
+                    dir = EMazeRotateDirection.Clockwise;        break;
                 case EInputCommand.RotateCounterClockwise:
-                    dir = MazeRotateDirection.CounterClockwise; break;
+                    dir = EMazeRotateDirection.CounterClockwise; break;
                 default: throw new SwitchCaseNotImplementedException(_Command);
             }
             MazeRotation.StartRotation(dir);

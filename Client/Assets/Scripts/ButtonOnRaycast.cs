@@ -52,14 +52,14 @@ public class ButtonOnRaycast : MonoBehaviour
         m_PrevButtonState = m_ButtonState;
         m_PrevFingerState = m_FingerState;
 
-        if (m_ViewInputTouchProceeder.IsFingerOnScreen())
+        if (m_ViewInputTouchProceeder.AreFingersOnScreen(1))
             ProceedButtonNotIdleState();
         else
             ProceedButtonIdleState();
         
         ProceedButtonClick();
 
-        if (!m_ViewInputTouchProceeder.IsFingerOnScreen())
+        if (!m_ViewInputTouchProceeder.AreFingersOnScreen(1))
         {
             m_EnteredOnThisTouchSession = false;
             m_ExitedOnThisTimeSession = false;
@@ -78,7 +78,7 @@ public class ButtonOnRaycast : MonoBehaviour
 
     private void ProceedButtonNotIdleState()
     {
-        var pos = ViewInputTouchProceeder.GetFingerPosition();
+        var pos = m_ViewInputTouchProceeder.GetFingerPosition(0);
         var ray = m_CameraProvider.MainCamera.ScreenPointToRay(pos);
         if (!Physics.Raycast(ray, out var hit))
         {

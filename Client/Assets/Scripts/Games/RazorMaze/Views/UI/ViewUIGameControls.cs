@@ -24,14 +24,14 @@ namespace Games.RazorMaze.Views.UI
         
         #region inject
 
-        private IViewAppearTransitioner  AppearTransitioner  { get; }
-        private IColorProvider           ColorProvider       { get; }
-        private IViewUIPrompt            Prompt              { get; }
-        private IViewUICongratsMessage   CongratsMessage     { get; }
-        private IViewUIStartLogo         StartLogo           { get; }
-        private IViewUILevelsPanel       LevelsPanel         { get; }
-        private IViewUIRotationControls   RotationControls     { get; }
-        private IViewUITopButtons        TopButtons          { get; }
+        private IViewAppearTransitioner AppearTransitioner { get; }
+        private IColorProvider          ColorProvider      { get; }
+        private IViewUIPrompt           Prompt             { get; }
+        private IViewUICongratsMessage  CongratsMessage    { get; }
+        private IViewUIStartLogo        StartLogo          { get; }
+        private IViewUILevelsPanel      LevelsPanel        { get; }
+        private IViewUIRotationControls RotationControls   { get; }
+        private IViewUITopButtons       TopButtons         { get; }
 
         public ViewUIGameControls(
             IViewInputCommandsProceeder _CommandsProceeder,
@@ -112,7 +112,7 @@ namespace Games.RazorMaze.Views.UI
             var allRenderers = 
                 CongratsMessage.GetRenderers()
                     .Concat(LevelsPanel.GetRenderers())
-                    .Concat(RotationControls.GetRenderers())
+                    // .Concat(RotationControls.GetRenderers())
                     .Concat(TopButtons.GetRenderers());
             foreach (var rendComp in allRenderers)
             {
@@ -174,7 +174,7 @@ namespace Games.RazorMaze.Views.UI
         {
             var proceeders = new List<object>
                 {
-                    CongratsMessage, StartLogo, RotationControls, Prompt, TopButtons, LevelsPanel
+                    CongratsMessage, StartLogo, /*RotationControls,*/ Prompt, TopButtons, LevelsPanel
                 }.Where(_Proceeder => _Proceeder != null);
             return proceeders.Where(_Proceeder => _Proceeder is T).Cast<T>().ToList();
         }
