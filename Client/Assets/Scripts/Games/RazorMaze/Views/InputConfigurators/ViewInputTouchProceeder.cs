@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Constants;
 using DI.Extensions;
 using Exceptions;
@@ -32,7 +33,6 @@ namespace Games.RazorMaze.Views.InputConfigurators
         private          float                 m_TouchForMoveTimer;
         private          EMazeRotateDirection? m_PrevRotateDirection;
         private          bool                  m_EnableRotation = true;
-        private          bool                  m_IsOnFingerUp;
         
         #endregion
 
@@ -111,7 +111,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
 #if UNITY_EDITOR
             lt.FingerTexture = PrefabSetManager.GetObject<Texture2D>("icons", "finger_texture");
 #endif
-            LeanTouch.OnFingerUp += LeanTouchOnOnFingerUp;
+            LeanTouch.OnFingerUp += OnFingerUp;
             var goLeanMultiUpdate = new GameObject("Lean Multi Update");
             goLeanMultiUpdate.SetParent(GetContainer());
             var lmu = goLeanMultiUpdate.AddComponent<LeanMultiUpdate>();
@@ -124,7 +124,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
             goLeanMultiUpdate.SetParent(GetContainer());
             var lmu = goLeanMultiUpdate.AddComponent<LeanMultiUpdate>();
             lmu.OnFingers.AddListener(OnLeanMultiUpdateFingers);
-            LeanTouch.OnFingerUp += LeanTouchOnOnFingerUp;
+            LeanTouch.OnFingerUp += OnFingerUp;
         }
 
         private void InitLeanTouchForTapToNext()
@@ -150,21 +150,20 @@ namespace Games.RazorMaze.Views.InputConfigurators
         
         private void OnLeanMultiUpdateFingers(List<LeanFinger> _Fingers)
         {
-            if (m_IsOnFingerUp)
+            for (int i = 0; i < _Fingers.Count; i++)
             {
-                m_IsOnFingerUp = false;
-                return;
+                if (_Fingers[i].Up)
+                    return;
             }
             switch (_Fingers.Count)
             {
                 case 1: ProceedTouchForMove(_Fingers[0]); break;
-                case 2: ProceedTouchForRotate(_Fingers[1]); break;
+                case 2: ProceedTouchForRotate(_Fingers[0]); break;
             }
         }
         
-        private void LeanTouchOnOnFingerUp(LeanFinger _Finger)
+        private void OnFingerUp(LeanFinger _Finger)
         {
-            m_IsOnFingerUp = true;
             m_PrevMoveDirection = null;
             m_TouchPositionsQueue.Clear();
             m_TouchForMoveTimer = 0;
