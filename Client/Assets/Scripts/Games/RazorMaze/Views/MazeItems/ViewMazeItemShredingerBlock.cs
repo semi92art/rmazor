@@ -263,6 +263,7 @@ namespace Games.RazorMaze.Views.MazeItems
         private void ProceedOpenedBlockState()
         {
             m_LineOffset += GameTicker.DeltaTime * ViewSettings.ShredingerLineOffsetSpeed;
+            m_LineOffset = MathUtils.ClampInverse(m_LineOffset, 0f, 10f);
             for (int i = 0; i < m_OpenedLines.Count; i++)
                 m_OpenedLines[i].DashOffset = m_LineOffset;
         }

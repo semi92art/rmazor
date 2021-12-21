@@ -64,13 +64,13 @@ namespace UI.Helpers
 
             if (GUILayout.Button("Copy to clipboard"))
             {
-                StringBuilder sb = new StringBuilder();
-                sb.Append($"Name: {m_RectTransformHelper.gameObject.name},\n");
-                sb.Append($"Anchor Min: {rTr.anchorMin},\n");
-                sb.Append($"Anchor Max: {rTr.anchorMax},\n");
-                sb.Append($"AnchoredPosition: {rTr.anchoredPosition},\n");
-                sb.Append($"Pivot: {rTr.pivot},\n");
-                sb.Append($"SizeDelta: {rTr.sizeDelta})");
+                var sb = new StringBuilder();
+                sb.AppendLine($"Name: {m_RectTransformHelper.gameObject.name},");
+                sb.AppendLine($"Anchor Min: {rTr.anchorMin},");
+                sb.AppendLine($"Anchor Max: {rTr.anchorMax},");
+                sb.AppendLine($"AnchoredPosition: {rTr.anchoredPosition},");
+                sb.AppendLine($"Pivot: {rTr.pivot},");
+                sb.AppendLine($"SizeDelta: {rTr.sizeDelta})");
             
                 sb.ToString().CopyToClipboard();
             }

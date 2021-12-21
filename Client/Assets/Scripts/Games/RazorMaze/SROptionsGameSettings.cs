@@ -254,7 +254,7 @@ public partial class SROptions
                 return;
             _view.CommandsProceeder.RaiseCommand(
                 EInputCommand.LoadLevelByIndex, 
-                new object[] { Level_Index + 1 },
+                new object[] { Level_Index - 1 },
                 true);
         }
     }
@@ -270,6 +270,22 @@ public partial class SROptions
             _view.CommandsProceeder.RaiseCommand(
                 EInputCommand.LoadNextLevel,
                 null, 
+                true);
+        }
+    }
+    
+    [Category(CategoryLoadLevels)]
+    public bool Load_Previous_Level
+    {
+        get => false;
+        set
+        {
+            if (!value)
+                return;
+            int levelIndex = _model.LevelStaging.LevelIndex;
+            _view.CommandsProceeder.RaiseCommand(
+                EInputCommand.LoadLevelByIndex, 
+                new object[] { levelIndex - 1 },
                 true);
         }
     }
@@ -347,7 +363,10 @@ public partial class SROptions
     public bool Play_Constant
     {
         get => false;
-        set => _view.Managers.HapticsManager.Play(Amplitude, Frequency, Duration);
+        set
+        {
+            _view.Managers.HapticsManager.Play(Amplitude, Frequency, Duration);
+        }
     }
 
     [Category(CategoryAds)]
@@ -385,7 +404,7 @@ public partial class SROptions
                 () => Dbg.Log("Rewarded ad was shown."));
         }
     }
-
+    
     #endregion
     
 }

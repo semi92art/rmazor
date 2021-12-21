@@ -8,7 +8,7 @@ namespace GameHelpers
     {
         GoogleAds = 1,
         UnityAds = 2,
-        UnityMediation = 4
+        Facebook = 4
     }
     
     [CreateAssetMenu(fileName = "game_settings", menuName = "Configs and Sets/Game Settings", order = 1)]

@@ -40,6 +40,7 @@ public class LocalizationHelper : EditorWindow
 
     private void OnEnable()
     {
+        Dbg.Log("OnEnable LocHelp");
         LoadResources();
     }
 
@@ -86,9 +87,12 @@ public class LocalizationHelper : EditorWindow
                 GUI.enabled = false;
                 GUILayout.TextField(kvp.Key, GUILayout.Width(150));
                 GUI.enabled = true;
+                var dict = m_LocalizedDict.GetSafe(kvp.Key, out _);
                 foreach (var lang in languages)
                 {
-                    string value = m_LocalizedDict[kvp.Key].Values[lang];
+                    string value = dict.Values.GetSafe(lang, out bool containsKey);
+                    if (!containsKey)
+                        continue;
                     EditorUtilsEx.GUIColorZone(value == "[Empty]" ? new Color(0.51f, 0.13f, 0.12f) : GUI.color, () =>
                     {
                         m_LocalizedDict[kvp.Key].Values[lang] = EditorGUILayout.TextField(value);    
@@ -137,9 +141,9 @@ public class LocalizationHelper : EditorWindow
         m_LocalizedDict = new Dictionary<string, KeyValues>();
         m_Assets = new Dictionary<Language, TextAsset>();
         var languages = GetLanguages();
-        foreach (Language language in languages)
+        foreach (var language in languages)
         {
-            TextAsset textAsset = ResLoader.GetText($@"texts\{language}");
+            var textAsset = ResLoader.GetText($@"texts\{language}");
             m_Assets.Add(language, textAsset);
             var lines = textAsset.text.Split(new[] {"\r\n"}, StringSplitOptions.None)
                 .Except(new[] {string.Empty, null});
@@ -148,7 +152,9 @@ public class LocalizationHelper : EditorWindow
                 var keyAndValue = line.Split(new[] {" = "}, StringSplitOptions.None);
                 string key = keyAndValue[0];
                 string value = keyAndValue[1];
-                m_LocalizedDict.SetSafe(key, new KeyValues {Values = {{language, value}}});
+                if (!m_LocalizedDict.ContainsKey(key))
+                    m_LocalizedDict.Add(key, new KeyValues());
+                m_LocalizedDict[key].Values.Add(language, value);
             }
         }
     }

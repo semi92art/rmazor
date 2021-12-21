@@ -12,26 +12,531 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31eababc099d4442fa4d077e54e58fe7, type: 3}
   m_Name: XCodeProjectSettings
   m_EditorClassIdentifier: 
-  Frameworks: []
+  Frameworks:
+  - FrameworkName: 81
+  - FrameworkName: 38
+  - FrameworkName: 85
   EmbededFrameworks: []
   Libraries: []
   Flags: []
-  PlistVariables: []
-  VariableDictionary: []
+  PlistVariables:
+  - Name: NSCameraUsageDescription
+    Type: 0
+    StringValue: Please change 'Camera Usage Description' with IOS Native UI Kit
+      Editor Settings
+    IntegerValue: 0
+    FloatValue: 0
+    BooleanValue: 1
+    ChildrenIds: []
+  - Name: NSPhotoLibraryUsageDescription
+    Type: 0
+    StringValue: Please change 'Photo Library Usage Description' with IOS Native
+      UI Kit Editor Settings
+    IntegerValue: 0
+    FloatValue: 0
+    BooleanValue: 1
+    ChildrenIds: []
+  - Name: NSPhotoLibraryAddUsageDescription
+    Type: 0
+    StringValue: Please change 'Photo Library Add Usage Description' with IOS Native
+      UI Kit Editor Settings
+    IntegerValue: 0
+    FloatValue: 0
+    BooleanValue: 1
+    ChildrenIds: []
+  - Name: NSMicrophoneUsageDescription
+    Type: 0
+    StringValue: Please change 'Microphone Usage Description' with IOS Native UI
+      Kit Editor Settings
+    IntegerValue: 0
+    FloatValue: 0
+    BooleanValue: 1
+    ChildrenIds: []
+  VariableDictionary:
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: oQMQbZV9FcqCmWi3WsRT
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: 76utgSICJ0wuAiqnqj0k
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: j7rjBMsrN8qw0LwaCZ1m
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: S0CoFBtYN7hGtRBWCUUW
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: T0eEHTe2UHv9GIuaLYXb
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: 8GdARuew8jeVMSQhLXEE
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: vLgNvbUmIhF7Pj7anAxp
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: lYM1HW0t1lV4ohMFb4FP
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: kVWrAH02GXhJRKC6xJij
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: MZWDC0WVIlOBTAZuQXiL
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: QWXOx5GGe8VXxiOTqRQU
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: PZhXa1oPVxo3WnxXcooU
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: kx3mKEJHNkM1fg9N5GC0
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: VxrAE7Hlk8Sh0lXTLoVb
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: uT4aGZNg8VRDr65uBFYv
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: AqpJ1WKIRW11iwJhW0fa
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: iP1VlndklgwqNEDhht2Y
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: YhjbxfM0PojmU5GlK40d
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: HV4fNvSERLO3sOFHNo7N
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: WiHvN8oKTWkTqweD0FvY
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: nMv1PH5rFEewUT40Lpg3
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: XaCqTchx2KlZ7KIGN0PY
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: gkR6EgKeBPJGQswFUlCl
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: mhN08oEikGljRmjZovVL
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: iEr5aw6B6PqvjpK9QAZZ
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: MkEX6YXKvVlFXpIwmsX6
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: SN3AfGHFXnBaRM1gWXOm
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: EoE9BuutFthYj1A5a3uB
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: wVKLqsfLdx4M7F3ijKQx
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: dY83nR0dU9fw4MLOBksO
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: hMYEDxYAlXo5eu3PWKvl
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: SYB03DdaLekRuWGa5M41
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: 3pZtmOcFoRCIV2X166bK
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: 1NettcjxH7Tow83LGtJ3
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: 5V7fdmhvHem6epahaRoH
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: YC1o2EoBcqBKcgTAsL8k
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: Zux9hWrxDDh84HohSJDv
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: Y8783paomqtGGFGDHP2f
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: b8qVAwrlFeF9sPfEnwav
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: u9dgIdwQEjGRh48XGXAm
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: VmgVCGeleLqKHigBc0go
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: cHob1Z8hSCH7OciAVN2D
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: FDxugFsUPbWKWYFYJ52l
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: 4sNtosYKi35R6TikcAlb
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: 5VklpVHxRqid34W0CxxC
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: 3mv5j7m37IJYq8qm5U6A
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: BOWJAvZBdxmQv4tUeaAj
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: 3Zwcb1KS6bsW9n3FY9O4
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: U8knVKJXa30fjkRZKnwV
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: 2dwuCETjoqqU1MHULh59
   Languages: []
   ShellScripts: []
-  m_BuildProperties: []
+  m_BuildProperties:
+  - m_Name: ENABLE_BITCODE
+    m_Value: NO
+    m_Options:
+    - YES
+    - NO
+  - m_Name: ENABLE_TESTABILITY
+    m_Value: NO
+    m_Options:
+    - YES
+    - NO
+  - m_Name: GENERATE_PROFILING_CODE
+    m_Value: NO
+    m_Options:
+    - YES
+    - NO
+  - m_Name: GCC_ENABLE_OBJC_EXCEPTIONS
+    m_Value: YES
+    m_Options:
+    - YES
+    - NO
   Capability:
     iCloud:
       Enabled: 0
       KeyValueStorage: 0
-      iCloudDocument: 0
+      iCloudDocument: 1
       CustomContainers: []
     PushNotifications:
-      Enabled: 0
+      Enabled: 1
       Development: 1
     GameCenter:
-      Enabled: 0
+      Enabled: 1
     SignInWithApple:
       Enabled: 0
     Wallet:
@@ -43,7 +548,7 @@ MonoBehaviour:
       Enabled: 0
       Merchants: []
     InAppPurchase:
-      Enabled: 0
+      Enabled: 1
     Maps:
       Enabled: 0
       Options: 
