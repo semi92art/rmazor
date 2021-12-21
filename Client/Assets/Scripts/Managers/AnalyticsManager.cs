@@ -31,6 +31,8 @@ namespace Managers
 
         public void SendAnalytic(string _AnalyticId, IDictionary<string, object> _EventData = null)
         {
+            if (_EventData == null)
+                _EventData = new Dictionary<string, object>();
             Analytics.CustomEvent(_AnalyticId, _EventData);
             Events.CustomData(_AnalyticId, _EventData);
         }
