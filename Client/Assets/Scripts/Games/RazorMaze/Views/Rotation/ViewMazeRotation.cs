@@ -23,7 +23,6 @@ namespace Games.RazorMaze.Views.Rotation
         #region inject
         
         private ViewSettings                ViewSettings        { get; }
-        private IMazeCoordinateConverter    CoordinateConverter { get; }
         private IContainersGetter           ContainersGetter    { get; }
         private IViewGameTicker             GameTicker          { get; }
         private IModelGame                  Model               { get; }
@@ -32,7 +31,6 @@ namespace Games.RazorMaze.Views.Rotation
 
         public ViewMazeRotation(
             ViewSettings _ViewSettings,
-            IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter, 
             IViewGameTicker _GameTicker,
             IModelGame _Model,
@@ -40,7 +38,6 @@ namespace Games.RazorMaze.Views.Rotation
             IViewInputCommandsProceeder _CommandsProceeder)
         {
             ViewSettings = _ViewSettings;
-            CoordinateConverter = _CoordinateConverter;
             ContainersGetter = _ContainersGetter;
             GameTicker = _GameTicker;
             Model = _Model;
@@ -61,6 +58,7 @@ namespace Games.RazorMaze.Views.Rotation
             m_Rb = cont.gameObject.AddComponent<Rigidbody2D>();
             m_Rb.gravityScale = 0;
             m_Rb.constraints = RigidbodyConstraints2D.FreezePosition;
+            base.Init();
         }
 
         public override void OnRotationStarted(MazeRotationEventArgs _Args)
@@ -69,6 +67,13 @@ namespace Games.RazorMaze.Views.Rotation
                 m_Rb.transform.eulerAngles = Vector3.zero;
             else
                 Coroutines.Run(RotationCoroutine(_Args));
+        }
+
+        public override void OnRotationFinished(MazeRotationEventArgs _Args)
+        {
+            Coroutines.Run(Coroutines.Delay(
+                () => RazorMazeUtils.UnlockCommandsOnRotationFinished(CommandsProceeder),
+                0.5f));
         }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)

@@ -35,10 +35,10 @@ public class EditorHelper : EditorWindow
     private Vector2 m_ModelSettingsScrollPos;
     private Vector2 m_ViewSettingsScrollPos;
 
-    [MenuItem("Tools/Helper", false, 0)]
+    [MenuItem("Tools/Editor Helper", false, 0)]
     public static void ShowWindow()
     {
-        GetWindow<EditorHelper>("Helper");
+        GetWindow<EditorHelper>("Editor Helper");
     }
     
     [MenuItem("Tools/Profiler",false, 3)]
@@ -276,45 +276,54 @@ public class EditorHelper : EditorWindow
     private void CreateTestUsers(int _Count)
     {
         CommonData.Testing = true;
-        GameClient.Instance.Init();
-        int gameId = 1;
-        for (int i = 0; i < _Count; i++)
+        var gc = new GameClient();
+        const int gameId = 1;
+        gc.Initialize += () =>
         {
-            var packet = new RegisterUserPacket(
-                new RegisterUserPacketRequestArgs
-                {
-                    Name = $"{CommonUtils.GetUniqueId()}",
-                    PasswordHash = "test",
-                    GameId = gameId
-                });
-            int ii = i;
-            packet.OnSuccess(() =>
-                {
-                    int accId = packet.Response.Id;
-                    new GameDataField(100, accId, 
-                        GameClientUtils.GameId, DataFieldIds.Money).Save();
-                    Dbg.Log("All test users were created successfully");
-                })
-                .OnFail(() =>
-                {
-                    Dbg.LogError($"Creating test user #{ii + 1} of {_Count} failed");
-                    Dbg.LogError(packet.Response);
-                });
-            GameClient.Instance.Send(packet);
-        }
+            for (int i = 0; i < _Count; i++)
+            {
+                var packet = new RegisterUserPacket(
+                    new RegisterUserPacketRequestArgs
+                    {
+                        Name = $"{CommonUtils.GetUniqueId()}",
+                        PasswordHash = "test",
+                        GameId = gameId
+                    });
+                int ii = i;
+                packet.OnSuccess(() =>
+                    {
+                        int accId = packet.Response.Id;
+                        new GameDataField(gc, 100, accId,
+                            GameClientUtils.GameId, DataFieldIds.Money).Save();
+                        Dbg.Log("All test users were created successfully");
+                    })
+                    .OnFail(() =>
+                    {
+                        Dbg.LogError($"Creating test user #{ii + 1} of {_Count} failed");
+                        Dbg.LogError(packet.Response);
+                    });
+
+                gc.Send(packet);
+            }
+        };
+        gc.Init();
     }
 
     private static void DeleteTestUsers()
     {
         CommonData.Testing = true;
-        GameClient.Instance.Init();
-        IPacket packet = new DeleteTestUsersPacket();
-        packet.OnSuccess(() =>
-            {
-                Dbg.Log("All test users deleted");
-            })
-            .OnFail(() => Dbg.Log($"Failed to delete test users: {packet.ErrorMessage}"));
-        GameClient.Instance.Send(packet);
+        var gc = new GameClient();
+        gc.Initialize += () =>
+        {
+            IPacket packet = new DeleteTestUsersPacket();
+            packet.OnSuccess(() =>
+                {
+                    Dbg.Log("All test users deleted");
+                })
+                .OnFail(() => Dbg.Log($"Failed to delete test users: {packet.ErrorMessage}"));
+            gc.Send(packet);
+        };
+        gc.Init();
     }
 
     private static void GetReadyToCommit()

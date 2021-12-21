@@ -31,12 +31,14 @@ namespace Games.RazorMaze.Views.UI
         
         #region api
 
-        public event UnityAction Initialized;
+        public bool              Initialized { get; private set; }
+        public event UnityAction Initialize;
         
         public virtual void Init()
         {
             CreateCanvas();
-            Initialized?.Invoke();
+            Initialize?.Invoke();
+            Initialized = true;
         }
         
         public abstract void OnLevelStageChanged(LevelStageArgs _Args);
@@ -64,7 +66,7 @@ namespace Games.RazorMaze.Views.UI
 
         protected void RaiseInitializedEvent()
         {
-            Initialized?.Invoke();
+            Initialize?.Invoke();
         }
 
         #endregion

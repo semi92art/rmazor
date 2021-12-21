@@ -21,11 +21,16 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         #endregion
 
-        public override EMazeItemType[] Types => new[] {EMazeItemType.TrapIncreasing};
-        public event UnityAction Initialized;
+        public override EMazeItemType[] Types       => new[] {EMazeItemType.TrapIncreasing};
+        public          bool            Initialized { get; private set; }
+        public event UnityAction        Initialize;
         
-        public void Init() => Initialized?.Invoke();
-        
+        public void Init()
+        {
+            Initialize?.Invoke();
+            Initialized = true;
+        }
+
         public void OnMazeTrapIncreasingStageChanged(MazeItemTrapIncreasingEventArgs _Args)
         {
             Common.GetItem<IViewMazeItemTrapIncreasing>(_Args.Item).OnIncreasing(_Args);

@@ -87,13 +87,15 @@ namespace Games.RazorMaze.Views.Common
         #endregion
 
         #region api
-        
-        public event UnityAction Initialized;
+
+        public bool              Initialized { get; private set; }
+        public event UnityAction Initialize;
         
         public void Init()
         {
             CommandsProceeder.Command += OnCommand;
-            Initialized?.Invoke();
+            Initialize?.Invoke();
+            Initialized = true;
         }
 
         public void RegisterProceeders(IEnumerable<IOnLevelStageChanged> _Proceeders)

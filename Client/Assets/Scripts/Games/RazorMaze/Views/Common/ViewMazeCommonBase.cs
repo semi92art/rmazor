@@ -38,13 +38,20 @@ namespace Games.RazorMaze.Views.Common
         #endregion
         
         #region api
-        
-        public event UnityAction Initialized;
+
+        public bool                         Initialized { get; private set; }
+        public event UnityAction            Initialize;
         public abstract List<IViewMazeItem> MazeItems { get; }
-        public virtual void Init() => Initialized?.Invoke();
-        public abstract IViewMazeItem GetItem(IMazeItemProceedInfo _Info);
-        public virtual T GetItem<T>(IMazeItemProceedInfo _Info)  where T : IViewMazeItem => (T) GetItem(_Info);
-        public abstract void OnLevelStageChanged(LevelStageArgs _Args);
+        
+        public virtual void Init()
+        {
+            Initialize?.Invoke();
+            Initialized = true;
+        }
+
+        public abstract IViewMazeItem       GetItem(IMazeItemProceedInfo _Info);
+        public virtual  T                   GetItem<T>(IMazeItemProceedInfo _Info)  where T : IViewMazeItem => (T) GetItem(_Info);
+        public abstract void                OnLevelStageChanged(LevelStageArgs _Args);
 
         #endregion
     }

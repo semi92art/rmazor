@@ -4,6 +4,7 @@ using Constants;
 using DI.Extensions;
 using Entities;
 using GameHelpers;
+using Network;
 using UnityEngine;
 using UnityEngine.Events;
 using Utils;
@@ -52,7 +53,7 @@ namespace Managers
 
         private readonly IReadOnlyList<ScoreArgs> m_ScoreArgsList = new List<ScoreArgs>
         {
-            new ScoreArgs(DataFieldIds.Money, Application.platform == RuntimePlatform.Android ? GPGSIds.coins : "money"),
+            new ScoreArgs(DataFieldIds.Money, Application.platform == RuntimePlatform.Android ? GPGSIds.coins : "coins"),
             new ScoreArgs(DataFieldIds.Level, "level")
         };
         
@@ -62,10 +63,12 @@ namespace Managers
         
         #region inject
 
+        private IGameClient          GameClient          { get; }
         private ILocalizationManager LocalizationManager { get; }
         
-        public ScoreManager(ILocalizationManager _LocalizationManager)
+        public ScoreManager(IGameClient _GameClient, ILocalizationManager _LocalizationManager)
         {
+            GameClient = _GameClient;
             LocalizationManager = _LocalizationManager;
         }
         
@@ -74,11 +77,12 @@ namespace Managers
         #region api
 
         public event ScoresEventHandler OnScoresChanged;
-        
-        public event UnityAction Initialized;
+
+        public bool              Initialized { get; private set; }
+        public event UnityAction Initialize;
         public void Init()
         {
-            AuthenticatePlatformGameService(() => Initialized?.Invoke());
+            AuthenticatePlatformGameService(() => Initialize?.Invoke());
         }
 
         public ScoresEntity GetScore(ushort _Id, bool _FromCache)
@@ -153,7 +157,7 @@ namespace Managers
 #endif
         }
 
-        private static void AuthenticatePlatformGameService(UnityAction _OnSucceed)
+        private static void AuthenticatePlatformGameService(UnityAction _OnFinish)
         {
 #if UNITY_EDITOR
             return;
@@ -165,22 +169,22 @@ namespace Managers
             }
             
 #if UNITY_ANDROID
-            AuthenticateAndroid(_OnSucceed);
+            AuthenticateAndroid(_OnFinish);
 #elif UNITY_IPHONE || UNITY_IOS
-            AuthenticateIos(_OnSucceed);
+            AuthenticateIos(_OnFinish);
 #endif
         }
 
-        private static void GetScoreCached(ushort _Id, ref ScoresEntity _ScoresEntity)
+        private void GetScoreCached(ushort _Id, ref ScoresEntity _ScoresEntity)
         {
             _ScoresEntity = GetScoreCached(_Id);
         }
         
-        private static ScoresEntity GetScoreCached(ushort _Id)
+        private ScoresEntity GetScoreCached(ushort _Id)
         {
             Dbg.Log(nameof(GetScoreCached) + ": " + DataFieldIds.GetDataFieldName(_Id));
             var scores = new ScoresEntity{Result = EEntityResult.Pending};
-            var gdff = new GameDataFieldFilter(GameClientUtils.AccountId, GameClientUtils.GameId,
+            var gdff = new GameDataFieldFilter(GameClient, GameClientUtils.AccountId, GameClientUtils.GameId,
                 _Id) {OnlyLocal = true};
             gdff.Filter(_Fields =>
             {
@@ -200,7 +204,7 @@ namespace Managers
 
         private void SetScoreCache(ushort _Id, long _Value)
         {
-            var gdff = new GameDataFieldFilter(GameClientUtils.AccountId, GameClientUtils.GameId,
+            var gdff = new GameDataFieldFilter(GameClient, GameClientUtils.AccountId, GameClientUtils.GameId,
                 _Id) {OnlyLocal = true};
             gdff.Filter(_Fields =>
             {
@@ -222,14 +226,14 @@ namespace Managers
 
 #if UNITY_ANDROID
 
-        private static void AuthenticateAndroid(UnityAction _OnSucceed)
+        private static void AuthenticateAndroid(UnityAction _OnFinish)
         {
             GooglePlayGames.PlayGamesPlatform.Instance.Authenticate((_Success, _Messsage) =>
             {
+                _OnFinish?.Invoke();
                 if (_Success)
                 {
                     Dbg.Log(AuthMessage(true, _Messsage));
-                    _OnSucceed?.Invoke();
                 }
                 else 
                     Dbg.LogWarning(AuthMessage(true, _Messsage));
@@ -302,7 +306,7 @@ namespace Managers
 
 #elif UNITY_IPHONE || UNITY_IOS
 
-        private static void AuthenticateIos(UnityAction _OnSuccess)
+        private static void AuthenticateIos(UnityAction _OnFinish)
         {
             SA.iOS.GameKit.ISN_GKLocalPlayer.SetAuthenticateHandler(_Result =>
             {
@@ -310,25 +314,29 @@ namespace Managers
                 {
                     var player = SA.iOS.GameKit.ISN_GKLocalPlayer.LocalPlayer;
                     var sb = new System.Text.StringBuilder();
-                    sb.Append($"player id: {player.PlayerID}\n");
-                    sb.Append($"player Alias: {player.Alias}\n");
-                    sb.Append($"player DisplayName: {player.DisplayName}\n");
-                    sb.Append($"player Authenticated: {player.Authenticated}\n");
-                    sb.Append($"player Underage: {player.Underage}\n");
+                    sb.AppendLine($"player id: {player.PlayerID}");
+                    sb.AppendLine($"player Alias: {player.Alias}");
+                    sb.AppendLine($"player DisplayName: {player.DisplayName}");
+                    sb.AppendLine($"player Authenticated: {player.Authenticated}");
+                    sb.AppendLine($"player Underage: {player.Underage}");
+                    Dbg.Log(sb.ToString());
 
                     player.GenerateIdentityVerificationSignatureWithCompletionHandler(_SignatureResult =>
                     {
-                        if(_SignatureResult.IsSucceeded) 
+                        if(_SignatureResult.IsSucceeded)
                         {
-                            Dbg.Log($"signatureResult.PublicKeyUrl: {_SignatureResult.PublicKeyUrl}");
-                            Dbg.Log($"signatureResult.Timestamp: {_SignatureResult.Timestamp}");
-                            Dbg.Log($"signatureResult.Salt.Length: {_SignatureResult.Salt.Length}");
-                            Debug.Log($"signatureResult.Signature.Length: {_SignatureResult.Signature.Length}");
+                            sb.Clear();
+                            sb.AppendLine($"signatureResult.PublicKeyUrl: {_SignatureResult.PublicKeyUrl}");
+                            sb.AppendLine($"signatureResult.Timestamp: {_SignatureResult.Timestamp}");
+                            sb.AppendLine($"signatureResult.Salt.Length: {_SignatureResult.Salt.Length}");
+                            sb.AppendLine($"signatureResult.Signature.Length: {_SignatureResult.Signature.Length}");
+                            Dbg.Log(sb.ToString());
                         } 
                         else 
                         {
                             Dbg.LogError($"IdentityVerificationSignature has failed: {_SignatureResult.Error.FullMessage}");
                         }
+                        _OnFinish?.Invoke();
                     });
                 }
                 else 
@@ -342,7 +350,6 @@ namespace Managers
         private ScoresEntity GetScoreIos(ushort _Id)
         {
             var scoreEntity = new ScoresEntity{Result = EEntityResult.Pending};
-
             var leaderboardRequest = new SA.iOS.GameKit.ISN_GKLeaderboard
             {
                 Identifier = GetScoreKey(_Id),
@@ -350,14 +357,15 @@ namespace Managers
                 TimeScope = SA.iOS.GameKit.ISN_GKLeaderboardTimeScope.AllTime,
                 Range = new SA.iOS.Foundation.ISN_NSRange(1, 25)
             };
-            
             leaderboardRequest.LoadScores(_Result => 
             {
                 if (_Result.IsSucceeded) 
                 {
-                    scoreEntity.Value.Add(_Id, (int)leaderboardRequest.LocalPlayerScore.Value);
+                    Dbg.Log($"Score Load Succeed: {DataFieldIds.GetDataFieldName(_Id)}: {leaderboardRequest.LocalPlayerScore.Value}");
+                    scoreEntity.Value.Add(_Id, leaderboardRequest.LocalPlayerScore.Value);
                     scoreEntity.Result = EEntityResult.Success;
-                } else
+                } 
+                else
                 {
                     GetScoreCached(_Id, ref scoreEntity);
                     Dbg.LogWarning("Score Load failed! Code: " + _Result.Error.Code + " Message: " + _Result.Error.Message);

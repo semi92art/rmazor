@@ -15,7 +15,7 @@ namespace Network.Packets
         public override void DeserializeResponse(string _Json)
         {
             if (NetworkUtils.IsPacketSuccess(ResponseCode))
-                Response = GameClient.Instance.Deserialize<Account>(_Json);
+                Response = Deserialize<Account>(_Json);
             base.DeserializeResponse(_Json);
         }
     }

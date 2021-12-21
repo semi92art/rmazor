@@ -1,16 +1,18 @@
 ﻿using System;
+using Network;
 using Newtonsoft.Json;
 
 namespace Entities
 {
     public abstract class DataFieldBase
     {
-        [JsonProperty] protected      object   Value          { get; set; }
-        [JsonProperty] public         ushort   FieldId        { get; set; }
-        [JsonProperty] public         DateTime LastUpdateTime => LastUpdate;
-        [JsonIgnore]   public virtual bool     IsSaving       { get; protected set; }
-        [JsonIgnore]   public         int      AccountId      { get; set; }
-        [JsonIgnore]   protected      DateTime LastUpdate;
+        [JsonProperty] protected      object      Value          { get; set; }
+        [JsonProperty] public         ushort      FieldId        { get; set; }
+        [JsonProperty] public         DateTime    LastUpdateTime => LastUpdate;
+        [JsonIgnore]   public virtual bool        IsSaving       { get; protected set; }
+        [JsonIgnore]   public         int         AccountId      { get; set; }
+        [JsonIgnore]   protected      DateTime    LastUpdate;
+        [JsonIgnore]   protected      IGameClient GameClient;
 
         public object             GetValue()    => Value;
         public bool               ToBool()      => Convert.ToBoolean(Value);
@@ -24,8 +26,14 @@ namespace Entities
 
         protected DataFieldBase() { }
         
-        protected DataFieldBase(int _AccountId, ushort _FieldId, object _Value, DateTime _LastUpdate)
+        protected DataFieldBase(
+            IGameClient _GameClient, 
+            int _AccountId, 
+            ushort _FieldId,
+            object _Value, 
+            DateTime _LastUpdate)
         {
+            GameClient = _GameClient;
             AccountId = _AccountId;
             FieldId = _FieldId;
             Value = _Value;

@@ -45,15 +45,16 @@ namespace Games.RazorMaze.Controllers
         
         #region api
 
-        public event UnityAction Initialized;
+        public bool              Initialized { get; private set; }
+        public event UnityAction Initialize;
         
         public void Init()
         {
             SROptions.Init(Model, View);
             bool modelInitialized = false;
             bool viewInitialized = false;
-            Model.Initialized += () => modelInitialized = true;
-            View.Initialized += () => viewInitialized = true;
+            Model.Initialize += () => modelInitialized = true;
+            View.Initialize += () => viewInitialized = true;
             
             Model.Init();
 
@@ -61,6 +62,7 @@ namespace Games.RazorMaze.Controllers
             Model.PathItemsProceeder.AllPathsProceededEvent           += View.LevelStageController.OnAllPathProceed;
             Model.PathItemsProceeder.PathProceedEvent                 += View.PathItemsGroup.OnPathProceed;
             Model.MazeRotation.RotationStarted                        += View.MazeRotation.OnRotationStarted;
+            Model.MazeRotation.RotationFinished                       += View.MazeRotation.OnRotationFinished;
             
             Model.GravityItemsProceeder.MazeItemMoveStarted           += View.GravityItemsGroup.OnMazeItemMoveStarted;
             Model.GravityItemsProceeder.MazeItemMoveStarted           += View.UI.UIGameControls.OnMazeItemMoveStarted;
@@ -92,7 +94,11 @@ namespace Games.RazorMaze.Controllers
             
             Coroutines.Run(Coroutines.WaitWhile(
                 () => !modelInitialized || !viewInitialized,
-                () => Initialized?.Invoke()));
+                () =>
+                {
+                    Initialize?.Invoke();
+                    Initialized = true;
+                }));
         }
 
         #endregion
@@ -107,6 +113,7 @@ namespace Games.RazorMaze.Controllers
             Model.PathItemsProceeder.AllPathsProceededEvent           -= View.LevelStageController.OnAllPathProceed;
             Model.PathItemsProceeder.PathProceedEvent                 -= View.PathItemsGroup.OnPathProceed;
             Model.MazeRotation.RotationStarted                        -= View.MazeRotation.OnRotationStarted;
+            Model.MazeRotation.RotationFinished                       += View.MazeRotation.OnRotationFinished;
             
             Model.GravityItemsProceeder.MazeItemMoveStarted           -= View.MovingItemsGroup.OnMazeItemMoveStarted;
             Model.GravityItemsProceeder.MazeItemMoveStarted           -= View.UI.UIGameControls.OnMazeItemMoveStarted;

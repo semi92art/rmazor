@@ -26,7 +26,6 @@ public class ServerConnectionTests
         //Arrange
         InitGameObjects();
         CommonData.Testing = true;
-        GameClient.Instance.Init();
         string url = $"{GameClientUtils.ServerApiUrl}/timetest";
 
         var request = new UnityWebRequest(url, "GET");
@@ -54,7 +53,7 @@ public class ServerConnectionTests
         //Arrange
         InitGameObjects();
         CommonData.Testing = true;
-        GameClient.Instance.Init();
+        var gc = new GameClient();
         bool requestSuccess = false;
         
         //Act
@@ -66,7 +65,11 @@ public class ServerConnectionTests
             })
             .OnFail(() => requestSuccess = false)
             .OnSuccess(() => requestSuccess = true) as LoginUserPacket;
-        GameClient.Instance.Send(packet);
+        gc.Initialize += () =>
+        {
+            gc.Send(packet);
+        };
+        gc.Init();
         while (!packet.IsDone) 
             yield return new WaitForEndOfFrame();
         
@@ -83,19 +86,24 @@ public class ServerConnectionTests
         //Arrange
         InitGameObjects();
         CommonData.Testing = true;
-        GameClient.Instance.Init();
+        var gc = new GameClient();
         bool requestSuccess = false;
         
         //Act
         IPacket packet = new RegisterUserPacket(
-            new RegisterUserPacketRequestArgs
-            {
-                Name = $"test_{CommonUtils.GetUniqueId()}",
-                PasswordHash = "",
-                GameId = 1
-            })
+                new RegisterUserPacketRequestArgs
+                {
+                    Name = $"test_{CommonUtils.GetUniqueId()}",
+                    PasswordHash = "",
+                    GameId = 1
+                })
             .OnSuccess(() => requestSuccess = true);
-        GameClient.Instance.Send(packet);
+        gc.Initialize += () =>
+        {
+            gc.Send(packet);
+        };
+        gc.Init();
+        
         while (!packet.IsDone) 
             yield return new WaitForEndOfFrame();
         

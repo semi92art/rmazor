@@ -7,9 +7,7 @@ namespace Entities
     public static class SaveKeys
     {
         public static SaveKey<bool?> DisableAds               => new SaveKey<bool?>("disable_ads");
-        public static SaveKey<bool>  AuthorizedAtLeastOnce    => new SaveKey<bool>("authorized_at_least_once");
         public static SaveKey<bool>  LastDbConnectionSuccess  => new SaveKey<bool>("last_connection_succeeded");
-        public static SaveKey<bool>  LastIntConnectionSuccess => new SaveKey<bool>("last_internet_succeeded");
         public static SaveKey<bool>  NotFirstLaunch           => new SaveKey<bool>("not_first_launch");
         public static SaveKey<bool>  SettingNotificationsOn   => new SaveKey<bool>("notifications_on");
         public static SaveKey<bool>  PromptHowToRotateShown   => new SaveKey<bool>("prompt_how_to_rotate_shown");

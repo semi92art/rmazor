@@ -2,7 +2,6 @@
 using Games.RazorMaze.Views;
 using Ticker;
 using UnityEngine.Events;
-using Utils;
 
 namespace Games.RazorMaze.Models.InputSchedulers
 {
@@ -10,8 +9,8 @@ namespace Games.RazorMaze.Models.InputSchedulers
     {
         event UnityAction<EInputCommand, object[]> MoveCommand; 
         event UnityAction<EInputCommand, object[]> RotateCommand;
-        void                                       UnlockMovement(bool _Unlock);
-        void                                       UnlockRotation(bool _Unlock);
+        void                                       LockMovement(bool _Lock);
+        void                                       LockRotation(bool _Lock);
     }
     
     public class InputSchedulerGameProceeder : IInputSchedulerGameProceeder, IUpdateTick
@@ -85,14 +84,14 @@ namespace Games.RazorMaze.Models.InputSchedulers
             }
         }
         
-        public void UnlockMovement(bool _Unlock)
+        public void LockMovement(bool _Lock)
         {
-            m_MovementLocked = !_Unlock;
+            m_MovementLocked = _Lock;
         }
 
-        public void UnlockRotation(bool _Unlock)
+        public void LockRotation(bool _Lock)
         {
-            m_RotationLocked = !_Unlock;
+            m_RotationLocked = _Lock;
         }
 
         #endregion

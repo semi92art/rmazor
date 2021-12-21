@@ -20,28 +20,39 @@ namespace Entities
             {
                 m_IsSaving = value;
                 if (value)
-                    GameClient.Instance.ExecutingGameFields.Add(this);
-                else GameClient.Instance.ExecutingGameFields.Remove(this);
+                    GameClient.ExecutingGameFields.Add(this);
+                else GameClient.ExecutingGameFields.Remove(this);
             }
         }
 
 
         public GameDataField() { }
         
-        public GameDataField(GameFieldDto _Args) 
-            : base(_Args.AccountId, _Args.FieldId, _Args.Value, _Args.LastUpdate)
+        public GameDataField(IGameClient _GameClient, GameFieldDto _Args) 
+            : base(_GameClient, _Args.AccountId, _Args.FieldId, _Args.Value, _Args.LastUpdate)
         {
             GameId = _Args.GameId;
         }
 
-        public GameDataField(object _Value, int _AccountId, int _GameId, ushort _FieldId, DateTime _LastUpdate)
-            : base(_AccountId, _FieldId, _Value, _LastUpdate)
+        public GameDataField(
+            IGameClient _GameClient,
+            object _Value, 
+            int _AccountId,
+            int _GameId,
+            ushort _FieldId, 
+            DateTime _LastUpdate)
+            : base(_GameClient, _AccountId, _FieldId, _Value, _LastUpdate)
         {
             GameId = _GameId;
         }
         
-        public GameDataField(object _Value, int _AccountId, int _GameId, ushort _FieldId)
-        : this(_Value, _AccountId, _GameId, _FieldId, DateTime.Now) { }
+        public GameDataField(
+            IGameClient _GameClient,
+            object _Value, 
+            int _AccountId,
+            int _GameId,
+            ushort _FieldId)
+        : this(_GameClient, _Value, _AccountId, _GameId, _FieldId, DateTime.Now) { }
 
         public GameDataField SetValue(object _Value)
         {
@@ -56,7 +67,7 @@ namespace Entities
                 return;
             Coroutines.Run(Coroutines.WaitWhile(() =>
             {
-                var execFields = GameClient.Instance.ExecutingGameFields;
+                var execFields = GameClient.ExecutingGameFields;
                 return execFields.Any(_F => _F.AccountId == AccountId
                                             && _F.FieldId == FieldId && _F.IsSaving);
             }, () =>
@@ -81,7 +92,7 @@ namespace Entities
                     })
                     .OnFail(() => IsSaving = false);
                 IsSaving = true;
-                GameClient.Instance.Send(packet);
+                GameClient.Send(packet);
             }));
         }
     }

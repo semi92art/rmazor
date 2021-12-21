@@ -3,6 +3,7 @@ using System.Linq;
 using Constants;
 using Entities;
 using GameHelpers;
+using Managers.IAP;
 using Ticker;
 using UnityEngine.Events;
 using Utils;
@@ -30,16 +31,16 @@ namespace Managers.Advertising
 
         private IShopManager       ShopManager  { get; }
         private CommonGameSettings GameSettings { get; }
-        private IViewGameTicker    GameTicker   { get; }
+        private ICommonTicker      Ticker       { get; }
 
         public CustomMediationAdsManager(
             IShopManager _ShopManager,
             CommonGameSettings _GameSettings,
-            IViewGameTicker _GameTicker)
+            ICommonTicker _Ticker)
         {
             ShopManager = _ShopManager;
             GameSettings = _GameSettings;
-            GameTicker = _GameTicker;
+            Ticker = _Ticker;
         }
 
         #endregion
@@ -50,7 +51,7 @@ namespace Managers.Advertising
         {
             get
             {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
+#if UNITY_EDITOR
                 return GetShowAdsCached();
 #elif UNITY_ANDROID
                 return GetShowAdsAndroid();
@@ -67,18 +68,19 @@ namespace Managers.Advertising
         public bool RewardedAdReady     => m_Providers.Any(_P => _P.RewardedAdReady);
         public bool InterstitialAdReady => m_Providers.Any(_P => _P.InterstitialAdReady);
 
-        public event UnityAction Initialized;
+        public bool              Initialized { get; }
+        public event UnityAction Initialize;
 
         public void Init()
         {
             InitProviders();
-            Initialized?.Invoke();
+            Initialize?.Invoke();
         }
 
         public void ShowRewardedAd(UnityAction _OnShown)
         {
             var readyProviders = m_Providers
-                .Where(_P => _P.RewardedAdReady)
+                .Where(_P => _P != null && _P.RewardedAdReady)
                 .ToList();
             if (!readyProviders.Any())
             {
@@ -86,25 +88,25 @@ namespace Managers.Advertising
                 return;
             }
             if (readyProviders.Count == 1)
-                m_LastRewardedAdProvider = readyProviders.FirstOrDefault();
+                m_LastRewardedAdProvider = readyProviders.First();
             else
             {
                 int idx = readyProviders.IndexOf(m_LastRewardedAdProvider);
                 if (idx == -1)
-                    m_LastRewardedAdProvider = readyProviders.FirstOrDefault();
+                    m_LastRewardedAdProvider = readyProviders.First();
                 else
                 {
                     idx = MathUtils.ClampInverse(idx + 1, 0, readyProviders.Count - 1);
                     m_LastRewardedAdProvider = readyProviders[idx];
                 }
             }
-            m_LastRewardedAdProvider?.ShowRewardedAd(_OnShown, ShowAds);
+            m_LastRewardedAdProvider.ShowRewardedAd(_OnShown, ShowAds);
         }
 
         public void ShowInterstitialAd(UnityAction _OnShown)
         {
             var readyProviders = m_Providers
-                .Where(_P => _P.InterstitialAdReady)
+                .Where(_P => _P != null && _P.InterstitialAdReady)
                 .ToList();
             if (!readyProviders.Any())
             {
@@ -112,19 +114,19 @@ namespace Managers.Advertising
                 return;
             }
             if (readyProviders.Count == 1)
-                m_LastInterstitialAdProvider = readyProviders.FirstOrDefault();
+                m_LastInterstitialAdProvider = readyProviders.First();
             else
             {
                 int idx = readyProviders.IndexOf(m_LastInterstitialAdProvider);
                 if (idx == -1)
-                    m_LastInterstitialAdProvider = readyProviders.FirstOrDefault();
+                    m_LastInterstitialAdProvider = readyProviders.First();
                 else
                 {
                     idx = MathUtils.ClampInverse(idx + 1, 0, readyProviders.Count - 1);
                     m_LastInterstitialAdProvider = readyProviders[idx];
                 }
             }
-            m_LastInterstitialAdProvider?.ShowInterstitialAd(_OnShown, ShowAds);
+            m_LastInterstitialAdProvider.ShowInterstitialAd(_OnShown, ShowAds);
         }
 
         #endregion
@@ -143,17 +145,15 @@ namespace Managers.Advertising
             }
             if (adsProvider.HasFlag(EAdsProvider.UnityAds))
             {
-                var intAd = new UnityAdsInterstitialAd(GameSettings, GameTicker);
-                var rewAd = new UnityAdsRewardedAd(GameSettings, GameTicker);
+                var intAd = new UnityAdsInterstitialAd(GameSettings, Ticker);
+                var rewAd = new UnityAdsRewardedAd(GameSettings, Ticker);
                 var man = new UnityAdsProvider(intAd, rewAd, ShopManager, GameSettings.AdsTestMode);
                 man.Init(adsConfig);
                 m_Providers.Add(man);
             }
-            if (adsProvider.HasFlag(EAdsProvider.UnityMediation))
+            if (adsProvider.HasFlag(EAdsProvider.Facebook))
             {
-                var man = new UnityMediationAdsProvider(ShopManager, GameSettings.AdsTestMode);
-                man.Init(adsConfig);
-                m_Providers.Add(man);
+                // TODO
             }
         }
         
@@ -190,26 +190,28 @@ namespace Managers.Advertising
         private BoolEntity GetShowAdsCore()
         {
             var cached = GetShowAdsCached();
-            if (!cached.Value)
-                return cached;
-            var args = new BoolEntity();
-            var itemInfo = ShopManager.GetItemInfo(PurchaseKeys.NoAds);
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => itemInfo.Result() == EShopProductResult.Pending,
-                () =>
-                {
-                    switch (itemInfo.Result())
-                    {
-                        case EShopProductResult.Success:
-                            args.Result = EEntityResult.Success; 
-                            break;
-                        case EShopProductResult.Fail:
-                            args.Result = EEntityResult.Fail;
-                            break;
-                    }
-                    args.Value = !itemInfo.HasReceipt;
-                }));
-            return args;
+            return cached;
+            // if (!cached.Value)
+            // var args = new BoolEntity();
+            // var itemInfo = ShopManager.GetItemInfo(PurchaseKeys.NoAds);
+            // Coroutines.Run(Coroutines.WaitWhile(
+            //     () => itemInfo.Result() == EShopProductResult.Pending,
+            //     () =>
+            //     {
+            //         switch (itemInfo.Result())
+            //         {
+            //             case EShopProductResult.Success:
+            //                 args.Result = EEntityResult.Success; 
+            //                 break;
+            //             case EShopProductResult.Fail:
+            //                 Dbg.LogWarning("Failed to load ShowAds entity");
+            //                 args.Value = cached.Value;
+            //                 args.Result = EEntityResult.Success;
+            //                 break;
+            //         }
+            //         args.Value = !itemInfo.HasReceipt;
+            //     }));
+            // return args;
         }
 
         #endregion

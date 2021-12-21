@@ -45,15 +45,15 @@ namespace Games.RazorMaze.Models.InputSchedulers
             InputSchedulerUiProceeder.AddCommand(_Command, _Args);
         }
 
-        public void UnlockMovement(bool _Unlock) => InputSchedulerGameProceeder.UnlockMovement(_Unlock);
-        public void UnlockRotation(bool _Unlock) => InputSchedulerGameProceeder.UnlockRotation(_Unlock);
+        public void LockMovement(bool _Lock) => InputSchedulerGameProceeder.LockMovement(_Lock);
+        public void LockRotation(bool _Lock) => InputSchedulerGameProceeder.LockRotation(_Lock);
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            bool unlockMoveAndRot = _Args.Stage == ELevelStage.StartedOrContinued 
-                                  || _Args.Stage == ELevelStage.ReadyToStart;
-            UnlockMovement(unlockMoveAndRot);
-            UnlockRotation(unlockMoveAndRot);
+            bool @lock = _Args.Stage != ELevelStage.StartedOrContinued 
+                        && _Args.Stage != ELevelStage.ReadyToStart;
+            LockMovement(@lock);
+            LockRotation(@lock);
             InputSchedulerGameProceeder.OnLevelStageChanged(_Args);
             InputSchedulerUiProceeder.OnLevelStageChanged(_Args);
         }

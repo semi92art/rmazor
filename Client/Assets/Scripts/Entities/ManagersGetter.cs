@@ -2,6 +2,7 @@
 using GameHelpers;
 using Managers;
 using Managers.Advertising;
+using Managers.IAP;
 using Zenject;
 
 namespace Entities

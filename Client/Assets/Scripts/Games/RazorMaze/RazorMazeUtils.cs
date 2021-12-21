@@ -4,6 +4,7 @@ using System.Linq;
 using Entities;
 using Exceptions;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Views.InputConfigurators;
 using UnityEngine;
 
 namespace Games.RazorMaze
@@ -58,6 +59,18 @@ namespace Games.RazorMaze
                 EInputCommand.RotateClockwise,
                 EInputCommand.RotateCounterClockwise
             };
+        }
+
+        public static void LockCommandsOnRotationStarted(IViewInputCommandsProceeder _CommandsProceeder)
+        {
+            _CommandsProceeder.LockCommands(GetMoveCommands());
+            _CommandsProceeder.LockCommands(GetRotateCommands());
+        }
+        
+        public static void UnlockCommandsOnRotationFinished(IViewInputCommandsProceeder _CommandsProceeder)
+        {
+            _CommandsProceeder.UnlockCommands(GetMoveCommands());
+            _CommandsProceeder.UnlockCommands(GetRotateCommands());
         }
         
         public static V2Int GetDirectionVector(EMazeMoveDirection _Direction, MazeOrientation _Orientation)

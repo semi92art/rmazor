@@ -1,5 +1,4 @@
-﻿
-using GameHelpers;
+﻿using GameHelpers;
 using Ticker;
 
 namespace Managers.Advertising
@@ -8,7 +7,7 @@ namespace Managers.Advertising
     
     public class UnityAdsInterstitialAd : UnityAdsAdBase, IUnityAdsInterstitialAd
     {
-        public UnityAdsInterstitialAd(CommonGameSettings _Settings, IViewGameTicker _GameTicker) 
-            : base(_Settings, _GameTicker) { }
+        public UnityAdsInterstitialAd(CommonGameSettings _Settings, ICommonTicker _CommonTicker) 
+            : base(_Settings, _CommonTicker) { }
     }
 }

@@ -40,14 +40,16 @@ namespace Controllers
         #endregion
         
         #region api
-        
-        public event UnityAction Initialized;
+
+        public bool              Initialized { get; private set; }
+        public event UnityAction Initialize;
         public void Init()
         {
             HapticController.Init();
             Setting.OnValueSet = EnableHaptics;
             EnableHaptics(Setting.Get());
-            Initialized?.Invoke();
+            Initialize?.Invoke();
+            Initialized = true;
         }
         
         public void PlayPreset(EHapticsPresetType _Preset)

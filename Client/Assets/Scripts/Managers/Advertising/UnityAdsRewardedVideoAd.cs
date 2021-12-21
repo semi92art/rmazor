@@ -9,8 +9,8 @@ namespace Managers.Advertising
     
     public class UnityAdsRewardedAd : UnityAdsAdBase, IUnityAdsRewardedAd
     {
-        public UnityAdsRewardedAd(CommonGameSettings _Settings, IViewGameTicker _GameTicker)
-            : base(_Settings, _GameTicker) { }
+        public UnityAdsRewardedAd(CommonGameSettings _Settings, ICommonTicker _CommonTicker)
+            : base(_Settings, _CommonTicker) { }
         
         public override void OnUnityAdsShowComplete(string _PlacementId, UnityAdsShowCompletionState _ShowCompletionState)
         {

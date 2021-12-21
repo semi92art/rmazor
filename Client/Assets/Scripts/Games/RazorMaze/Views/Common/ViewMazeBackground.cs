@@ -55,7 +55,6 @@ namespace Games.RazorMaze.Views.Common
             set => CameraProvider.MainCamera.backgroundColor = value;
         }
         
-        private bool      m_Initialized;
         private bool      m_LoadedFirstTime;
         private Transform m_Container;
         private Color     m_BackItemsColor;
@@ -100,8 +99,9 @@ namespace Games.RazorMaze.Views.Common
         #endregion
         
         #region api
-        
-        public event UnityAction Initialized;
+
+        public bool              Initialized { get; private set; }
+        public event UnityAction Initialize;
 
         public void Init()
         {
@@ -110,8 +110,8 @@ namespace Games.RazorMaze.Views.Common
             m_BackItemsColor = ColorProvider.GetColor(ColorIds.BackgroundIdleItems);
             InitBackgroundIdleItems();
             InitBackgroundCongratsItems();
-            Initialized?.Invoke();
-            m_Initialized = true;
+            Initialize?.Invoke();
+            Initialized = true;
         }
 
         private void OnColorChanged(int _ColorId, Color _Color)
@@ -153,7 +153,7 @@ namespace Games.RazorMaze.Views.Common
         
         public void UpdateTick()
         {
-            if (!m_Initialized)
+            if (!Initialized)
                 return;
             ProceedBackgroundIdleItems();
             if (!m_DoAnimateCongrats)

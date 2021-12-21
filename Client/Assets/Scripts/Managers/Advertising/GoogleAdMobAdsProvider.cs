@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DI.Extensions;
 using Entities;
 using GameHelpers;
 using GoogleMobileAds.Api;
+using Managers.IAP;
 using UnityEngine.Events;
 using Utils;
 
@@ -17,7 +17,6 @@ namespace Managers.Advertising
 
         private RewardedAd     m_RewardedAd;
         private InterstitialAd m_InterstitialAd;
-        private bool           m_ShowAds;
 
         #endregion
 
@@ -34,8 +33,8 @@ namespace Managers.Advertising
 
         #region api
         
-        public override bool RewardedAdReady     => m_RewardedAd.IsLoaded();
-        public override bool InterstitialAdReady => m_InterstitialAd.IsLoaded();
+        public override bool RewardedAdReady     => m_RewardedAd != null && m_RewardedAd.IsLoaded();
+        public override bool InterstitialAdReady => m_InterstitialAd != null && m_InterstitialAd.IsLoaded();
         
         public override void ShowRewardedAd(UnityAction _OnShown, BoolEntity _ShowAds)
         {
@@ -112,21 +111,23 @@ namespace Managers.Advertising
             m_RewardedAd = new RewardedAd(rewardedAdId);
             var adRequest = new AdRequest.Builder().Build();
             m_RewardedAd.LoadAd(adRequest);
-            m_RewardedAd.OnAdLoaded += OnRewardedAdLoaded;
-            m_RewardedAd.OnAdFailedToLoad += OnRewardedAdFailedToLoad;
-            m_RewardedAd.OnPaidEvent += OnRewardedAdPaidEvent;
-            m_RewardedAd.OnAdClosed += OnRewardedAdClosed;
+            m_RewardedAd.OnAdLoaded              += OnRewardedAdLoaded;
+            m_RewardedAd.OnAdFailedToLoad        += OnRewardedAdFailedToLoad;
+            m_RewardedAd.OnPaidEvent             += OnRewardedAdPaidEvent;
+            m_RewardedAd.OnAdClosed              += OnRewardedAdClosed;
+            m_RewardedAd.OnUserEarnedReward      += OnRewardedAdUserEarnedReward;
+            m_RewardedAd.OnAdDidRecordImpression += OnRewardedAdDidRecordImpression;
         }
-        
+
         protected override void InitInterstitialAd()
         {
             string interstitialAdId = GetAdsNodeValue("admob", "reward");
             m_InterstitialAd = new InterstitialAd(interstitialAdId);
             var adRequest = new AdRequest.Builder().Build();
             m_InterstitialAd.LoadAd(adRequest);
-            m_InterstitialAd.OnAdLoaded += OnInterstitialAdLoaded;
+            m_InterstitialAd.OnAdLoaded       += OnInterstitialAdLoaded;
             m_InterstitialAd.OnAdFailedToLoad += OnInterstitialAdFailedToLoad;
-            m_InterstitialAd.OnAdClosed += OnInterstitialAdClosed;
+            m_InterstitialAd.OnAdClosed       += OnInterstitialAdClosed;
         }
         
         private List<string> GetTestDeviceIds()
@@ -140,40 +141,52 @@ namespace Managers.Advertising
 
         private void OnRewardedAdLoaded(object _Sender, EventArgs _E)
         {
-            Dbg.Log(nameof(OnRewardedAdLoaded).WithSpaces());
+            Dbg.Log("GoogleAds: " + nameof(OnRewardedAdLoaded));
         }
         
         private void OnRewardedAdFailedToLoad(object _Sender, AdFailedToLoadEventArgs _E)
         {
-            Dbg.Log(nameof(OnRewardedAdFailedToLoad).WithSpaces());
+            Dbg.Log("GoogleAds: " + nameof(OnRewardedAdFailedToLoad));
         }
         
         private void OnRewardedAdPaidEvent(object _Sender, AdValueEventArgs _E)
         {
-            Dbg.Log(nameof(OnRewardedAdPaidEvent).WithSpaces());
+            Dbg.Log("GoogleAds: " + nameof(OnRewardedAdPaidEvent));
         }
         
         private void OnRewardedAdClosed(object _Sender, EventArgs _E)
         {
-            Dbg.Log(nameof(OnRewardedAdClosed).WithSpaces());
+            Dbg.Log("GoogleAds: " + nameof(OnRewardedAdClosed));
             m_OnRewardedAdShown?.Invoke();
             var adRequest = new AdRequest.Builder().Build();
             m_RewardedAd.LoadAd(adRequest);
         }
         
+        private void OnRewardedAdDidRecordImpression(object _Sender, EventArgs _E)
+        {
+            Dbg.Log(nameof(OnRewardedAdDidRecordImpression));
+        }
+
+        private void OnRewardedAdUserEarnedReward(object _Sender, Reward _E)
+        {
+            Dbg.Log("GoogleAds: " + nameof(OnRewardedAdUserEarnedReward)
+                                  + ": amount: " + _E.Amount + 
+                                  ", type: " + _E.Type);
+        }
+        
         private void OnInterstitialAdLoaded(object _Sender, EventArgs _E)
         {
-            Dbg.Log(nameof(OnInterstitialAdLoaded).WithSpaces());
+            Dbg.Log("GoogleAds: " + nameof(OnInterstitialAdLoaded));
         }
         
         private void OnInterstitialAdFailedToLoad(object _Sender, AdFailedToLoadEventArgs _E)
         {
-            Dbg.Log(nameof(OnInterstitialAdFailedToLoad).WithSpaces());
+            Dbg.Log("GoogleAds: " + nameof(OnInterstitialAdFailedToLoad));
         }
         
         private void OnInterstitialAdClosed(object _Sender, EventArgs _E)
         {
-            Dbg.Log(nameof(OnInterstitialAdClosed).WithSpaces());
+            Dbg.Log("GoogleAds: " + nameof(OnInterstitialAdClosed));
             var adRequest = new AdRequest.Builder().Build();
             m_InterstitialAd.LoadAd(adRequest);
         }

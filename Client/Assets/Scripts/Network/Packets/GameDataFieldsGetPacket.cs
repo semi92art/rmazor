@@ -13,7 +13,7 @@ namespace Network.Packets
         public override void DeserializeResponse(string _Json)
         {
             if (NetworkUtils.IsPacketSuccess(ResponseCode))
-                Response = GameClient.Instance.Deserialize<GameFieldDto[]>(_Json);
+                Response = Deserialize<GameFieldDto[]>(_Json);
             base.DeserializeResponse(_Json);
         }
     }

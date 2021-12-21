@@ -21,10 +21,12 @@ namespace Games.RazorMaze.Views.UI
             CommandsProceeder = _CommandsProceeder;
         }
 
-        public event UnityAction Initialized;
+        public bool              Initialized { get; private set; }
+        public event UnityAction Initialize;
         public virtual void Init()
         {
-            Initialized?.Invoke();
+            Initialize?.Invoke();
+            Initialized = true;
         }
 
         public abstract void OnLevelStageChanged(LevelStageArgs _Args);

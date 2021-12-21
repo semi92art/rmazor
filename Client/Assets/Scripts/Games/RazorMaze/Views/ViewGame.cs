@@ -123,8 +123,9 @@ namespace Games.RazorMaze.Views
         #endregion
 
         #region api
-        
-        public event UnityAction Initialized;
+
+        public bool              Initialized { get; private set; }
+        public event UnityAction Initialize;
         
         public void Init()
         {
@@ -138,7 +139,8 @@ namespace Games.RazorMaze.Views
             LevelStageController.RegisterProceeders(GetInterfaceOfProceeders<IOnLevelStageChanged>());
             GetInterfaceOfProceeders<IInit>().ForEach(_InitObj => _InitObj.Init());
             LevelStageController.Init();
-            Initialized?.Invoke();
+            Initialize?.Invoke();
+            Initialized = true;
         }
         
         public void OnLevelStageChanged(LevelStageArgs _Args)

@@ -23,19 +23,19 @@ namespace Managers.Advertising
         protected UnityAction m_OnShown;
 
         private CommonGameSettings Settings   { get; }
-        private IViewGameTicker    GameTicker { get; }
+        private ICommonTicker      CommonTicker { get; }
         
-        protected UnityAdsAdBase(CommonGameSettings _Settings,  IViewGameTicker _GameTicker)
+        protected UnityAdsAdBase(CommonGameSettings _Settings,  ICommonTicker _CommonTicker)
         {
             Settings = _Settings;
-            GameTicker = _GameTicker;
+            CommonTicker = _CommonTicker;
         }
         
         public bool Ready { get; protected set; }
         
         public void Init(string _UnitId)
         {
-            GameTicker.Register(this);
+            CommonTicker.Register(this);
             m_UnitId = _UnitId;
             LoadAd();
         }
@@ -102,13 +102,14 @@ namespace Managers.Advertising
         {
             if (m_DoInvokeOnShown)
             {
+                Dbg.Log("m_OnShown?.Invoke()");
                 m_OnShown?.Invoke();
                 m_DoInvokeOnShown = false;
             }
 
             if (m_DoLoadAdWithDelay)
             {
-                m_LoadAdDelayTimer += GameTicker.DeltaTime;
+                m_LoadAdDelayTimer += CommonTicker.DeltaTime;
                 if (!(m_LoadAdDelayTimer > Settings.AdsLoadDelay)) 
                     return;
                 LoadAd();

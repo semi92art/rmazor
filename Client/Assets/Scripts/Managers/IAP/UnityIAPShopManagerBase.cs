@@ -3,33 +3,17 @@ using UnityEngine.Events;
 using UnityEngine.Purchasing;
 using Utils;
 
-namespace Managers.Advertising
+namespace Managers.IAP
 {
-    public abstract class UnityIAPShopManager : IStoreListener, IInit
+    public abstract class UnityIAPShopManagerBase : ShopManagerBase, IStoreListener, IInit
     {
-        #region types
 
-        protected class ProductInfo
-        {
-            public int Key { get; }
-            public string Id { get; }
-            public ProductType Type { get; }
-            
-            public ProductInfo(int _Key, string _Id, ProductType _Type)
-            {
-                Key = _Key;
-                Id = _Id;
-                Type = _Type;
-            }
-        }
-
-        #endregion
         
         #region nonpublic members
-     
-        protected abstract List<ProductInfo> Products { get; }
-        protected IStoreController m_StoreController;          // The Unity Purchasing system.
-        protected IExtensionProvider m_StoreExtensionProvider; // The store-specific Purchasing subsystems.
+
+        protected abstract override List<ProductInfo> Products { get; }
+        protected          IStoreController   m_StoreController;        // The Unity Purchasing system.
+        protected          IExtensionProvider m_StoreExtensionProvider; // The store-specific Purchasing subsystems.
         
         #endregion
 
@@ -37,7 +21,7 @@ namespace Managers.Advertising
         
         protected ILocalizationManager LocalizationManager { get; }
 
-        protected UnityIAPShopManager(ILocalizationManager _LocalizationManager)
+        protected UnityIAPShopManagerBase(ILocalizationManager _LocalizationManager)
         {
             LocalizationManager = _LocalizationManager;
         }
@@ -45,8 +29,10 @@ namespace Managers.Advertising
         #endregion
         
         #region api
+
+        public bool              Initialized { get; private set; }
+        public event UnityAction Initialize;
         
-        public event UnityAction Initialized;
         public virtual void Init()
         {
             InitializePurchasing();
@@ -57,24 +43,22 @@ namespace Managers.Advertising
 
         public void OnInitialized(IStoreController _Controller, IExtensionProvider _Extensions)
         {
-            m_StoreController = _Controller;         // Overall Purchasing system, configured with products for this application.
-            m_StoreExtensionProvider = _Extensions;  // Store specific subsystem, for accessing device-specific store features.
-            Dbg.LogWarning($"{nameof(UnityIAPShopManager)} {nameof(OnInitialized)}");
-            Initialized?.Invoke();
+            m_StoreController = _Controller;
+            m_StoreExtensionProvider = _Extensions;
+            Dbg.Log($"{nameof(UnityIAPShopManagerBase)} {nameof(OnInitialized)}");
+            Initialize?.Invoke();
+            Initialized = true;
         }
 
         public void OnInitializeFailed(InitializationFailureReason _Error)
         {
-            // Purchasing set-up has not succeeded. Check error for reason. Consider sharing this reason with the user.
-            Dbg.LogWarning($"{nameof(UnityIAPShopManager)} {nameof(OnInitializeFailed)}" +
+            Dbg.LogWarning($"{nameof(UnityIAPShopManagerBase)} {nameof(OnInitializeFailed)}" +
                            $" {nameof(InitializationFailureReason)}:" + _Error);
         }
         
         public void OnPurchaseFailed(Product _Product, PurchaseFailureReason _FailureReason)
         {
-            // A product purchase attempt did not succeed. Check failureReason for more detail. Consider sharing 
-            // this reason with the user to guide their troubleshooting actions.
-            Dbg.LogWarning($"{nameof(UnityIAPShopManager)} {nameof(OnPurchaseFailed)}" +
+            Dbg.LogWarning($"{nameof(UnityIAPShopManagerBase)} {nameof(OnPurchaseFailed)}" +
                            $" {nameof(PurchaseFailureReason)}:" + _FailureReason);
         }
         
@@ -100,7 +84,6 @@ namespace Managers.Advertising
         
         protected bool IsInitialized()
         {
-            // Only say we are initialized if both the Purchasing references are set.
             return m_StoreController != null && m_StoreExtensionProvider != null;
         }
         
@@ -122,8 +105,6 @@ namespace Managers.Advertising
                 return;
             }
             Dbg.Log($"Purchasing product asychronously: '{product.definition.id}'");
-            // ... buy the product. Expect a response either through ProcessPurchase or OnPurchaseFailed 
-            // asynchronously.
             m_StoreController.InitiatePurchase(product);
         }
 

@@ -28,7 +28,6 @@ namespace Games.RazorMaze.Views.Common
         #region nonpublic members
 
         private Transform m_MazeContainer;
-        private bool m_Initialized;
         private Vector3 m_StartPosition;
         private bool m_ShakeMaze;
 
@@ -65,13 +64,15 @@ namespace Games.RazorMaze.Views.Common
                     m_MazeContainer.position = m_StartPosition;
             }
         }
-        public event UnityAction Initialized;
+
+        public bool              Initialized { get; private set; }
+        public event UnityAction Initialize;
         
         public void Init()
         {
             m_MazeContainer = ContainersGetter.GetContainer(ContainerNames.Maze);
-            Initialized?.Invoke();
-            m_Initialized = true;
+            Initialize?.Invoke();
+            Initialized = true;
         }
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
@@ -126,7 +127,7 @@ namespace Games.RazorMaze.Views.Common
         
         public void UpdateTick()
         {
-            if (!m_Initialized)
+            if (!Initialized)
                 return;
             if (!m_ShakeMaze)
                 return;

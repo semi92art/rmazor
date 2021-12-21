@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Entities;
+using Managers.IAP;
 using UnityEngine.Advertisements;
 using UnityEngine.Events;
 using Utils;
@@ -28,7 +29,7 @@ namespace Managers.Advertising
 #if UNITY_EDITOR
                 return true;
 #endif
-                return RewardedAd.Ready;
+                return RewardedAd != null && RewardedAd.Ready;
             }
         }
 
@@ -39,12 +40,13 @@ namespace Managers.Advertising
 #if UNITY_EDITOR
                 return true;
 #endif
-                return InterstitialAd.Ready;
+                return InterstitialAd != null && InterstitialAd.Ready;
             }
         }
 
         public override void ShowRewardedAd(UnityAction _OnShown, BoolEntity _ShowAds)
         {
+            Dbg.Log("Start showing UnityAds Rewarded Ad");
             Coroutines.Run(Coroutines.WaitWhile(
                 () => _ShowAds.Result == EEntityResult.Pending,
                 () =>
@@ -68,6 +70,7 @@ namespace Managers.Advertising
 
         public override void ShowInterstitialAd(UnityAction _OnShown, BoolEntity _ShowAds)
         {
+            Dbg.Log("Start showing UnityAds Interstitial Ad");
             Coroutines.Run(Coroutines.WaitWhile(
                 () => _ShowAds.Result == EEntityResult.Pending,
                 () =>

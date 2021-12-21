@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using Constants;
+using DI.Extensions;
 using Entities;
 using UnityEditor;
 using UnityEngine.Events;
 using Utils;
 
-namespace Managers.Advertising
+namespace Managers.IAP
 {
-    public class ShopManagerFake : IShopManager
+    public class ShopManagerFake : ShopManagerBase, IShopManager
     {
         private const EShopProductResult Result = EShopProductResult.Fail;
         
@@ -18,36 +19,36 @@ namespace Managers.Advertising
                 Currency = "RUB",
                 Price = "100",
                 Result = () => Result,
-                HasReceipt = false
             }},
             {PurchaseKeys.Money2, new ShopItemArgs
             {
                 Currency = "RUB",
                 Price = "200",
                 Result = () => Result,
-                HasReceipt = false
             }},
             {PurchaseKeys.Money3, new ShopItemArgs
             {
                 Currency = "RUB",
                 Price = "300",
                 Result = () => Result,
-                HasReceipt = false
             }},
             {PurchaseKeys.NoAds, new ShopItemArgs
             {
                 Currency = "RUB",
                 Price = "100",
                 Result = () => EShopProductResult.Success,
-                HasReceipt = false
             }},
         };
         
-        public event UnityAction Initialized;
+        private readonly   Dictionary<int, UnityAction> m_PurchaseActions = new Dictionary<int, UnityAction>();
+        protected override List<ProductInfo>            Products    => null;
+        public             bool                         Initialized { get; private set; }
+        public event UnityAction                        Initialize;
         
         public void Init()
         {
-            Initialized?.Invoke();
+            Initialize?.Invoke();
+            Initialized = true;
         }
 
         public void RestorePurchases()
@@ -56,15 +57,9 @@ namespace Managers.Advertising
             Dbg.Log("Purchases restored.");
         }
 
-        public void Purchase(int _Key, UnityAction _OnPurchase)
+        public void Purchase(int _Key)
         {
-            if (!NetworkUtils.IsInternetConnectionAvailable())
-            {
-#if UNITY_EDITOR
-                EditorUtility.DisplayDialog("Dialog", "Available only on device", "OK");
-#endif
-            }
-            _OnPurchase?.Invoke();
+            m_PurchaseActions[_Key]?.Invoke();
         }
 
         public void RateGame()
@@ -78,6 +73,16 @@ namespace Managers.Advertising
         {
             var args = m_ShopItems[_Key];
             return args;
+        }
+
+        public void SetPurchaseAction(int _Key, UnityAction _Action)
+        {
+            m_PurchaseActions.SetSafe(_Key, _Action);
+        }
+
+        public void SetDeferredAction(int _Key, UnityAction _Action)
+        {
+            // do nothing
         }
     }
 }

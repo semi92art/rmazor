@@ -27,7 +27,6 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         private SpawnPool<IViewMazeItemPath> m_PathsPool;
         private bool                         m_FirstMoveDone;
-        private bool                         m_Initialized;
         private int                          m_MoneyItemsCollectedCount;
         
         #endregion
@@ -53,8 +52,9 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         #endregion
         
         #region api
-        
-        public event UnityAction Initialized;
+
+        public bool              Initialized { get; private set; }
+        public event UnityAction Initialize;
 
         public List<IViewMazeItemPath> PathItems => m_PathsPool.Where(_Item => _Item.ActivatedInSpawnPool).ToList();
 
@@ -62,8 +62,8 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         {
             if (m_PathsPool == null)
                 InitPoolsOnStart();
-            Initialized?.Invoke();
-            m_Initialized = true;
+            Initialize?.Invoke();
+            Initialized = true;
         }
 
         public void OnPathProceed(V2Int _PathItem)

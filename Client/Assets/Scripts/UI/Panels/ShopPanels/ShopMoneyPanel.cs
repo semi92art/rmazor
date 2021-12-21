@@ -3,9 +3,8 @@ using Constants;
 using DI.Extensions;
 using DialogViewers;
 using Entities;
-using GameHelpers;
 using Games.RazorMaze.Views.Common;
-using Managers.Advertising;
+using Managers.IAP;
 using ScriptableObjects;
 using Ticker;
 using UI.Entities;
@@ -55,18 +54,39 @@ namespace UI.Panels.ShopPanels
 
         #region api
 
-        public override EUiCategory Category => EUiCategory.Shop;
-        public event UnityAction    Initialized;
+        public override EUiCategory Category    => EUiCategory.Shop;
+        public          bool        Initialized { get; private set; }
+        public event UnityAction    Initialize;
         
         public void Init()
         {
-            LoadItemInfos();
-            Initialized?.Invoke();
+            Coroutines.Run(Coroutines.WaitWhile(() => !Managers.ShopManager.Initialized,
+                () =>
+                {
+                    InitPurchaseActions();
+                    LoadItemInfos();
+                    Initialize?.Invoke();
+                    Initialized = true;
+                }));
         }
 
         #endregion
 
         #region nonpublic methods
+
+        private void InitPurchaseActions()
+        {
+            var set = Managers.PrefabSetManager.GetObject<ShopMoneyItemsScriptableObject>(
+                PrefabSetName, ItemSetName).set;
+            foreach (var itemInSet in set)
+            {
+                if (itemInSet.watchingAds)
+                    continue;
+                Managers.ShopManager.SetPurchaseAction(
+                    itemInSet.purchaseKey, 
+                    () => OnPaid(itemInSet.reward));
+            }
+        }
 
         private void LoadItemInfos()
         {
@@ -108,7 +128,7 @@ namespace UI.Panels.ShopPanels
                 {
                     if (showAdsEntity.Result == EEntityResult.Fail)
                     {
-                        Dbg.LogError("Failed to load ShowAds entity");
+                        Dbg.LogError("showAdsEntity.Result Fail");
                         return;
                     }
                     var set = Managers.PrefabSetManager.GetObject<ShopMoneyItemsScriptableObject>(
@@ -166,7 +186,7 @@ namespace UI.Panels.ShopPanels
                     if (_Info.BuyForWatchingAd)
                         Managers.AdsManager.ShowRewardedAd(OnPaidReal);
                     else
-                        Managers.ShopManager.Purchase(_Info.PurchaseKey, OnPaidReal);
+                        Managers.ShopManager.Purchase(_Info.PurchaseKey);
                 },
                 _Info);
             Coroutines.Run(Coroutines.WaitWhile(
@@ -195,7 +215,7 @@ namespace UI.Panels.ShopPanels
                 Result = EEntityResult.Success,
                 Value = false
             };
-            int key = PurchaseKeys.NoAds;
+            const int key = PurchaseKeys.NoAds;
             if (!m_MoneyItems.ContainsKey(key))
                 return;
             m_MoneyItems[key].gameObject.DestroySafe();

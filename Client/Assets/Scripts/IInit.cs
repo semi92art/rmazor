@@ -2,7 +2,8 @@
 
 public interface IInit
 {
-    event UnityAction Initialized;
+    bool Initialized { get; }
+    event UnityAction Initialize;
     void Init();
 }
 

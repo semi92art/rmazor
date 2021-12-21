@@ -20,8 +20,8 @@ namespace GameHelpers
         
         #region constructors
 
-        public GameDataFieldFilter(int _AccountId, int _GameId, params ushort[] _FieldIds)
-            : base(_AccountId, _FieldIds)
+        public GameDataFieldFilter(IGameClient _GameClient, int _AccountId, int _GameId, params ushort[] _FieldIds)
+            : base(_GameClient, _AccountId, _FieldIds)
         {
             m_GameId = _GameId;
         }
@@ -75,7 +75,7 @@ namespace GameHelpers
                 m_Fields = GetCachedFields();
                 _FinishAction?.Invoke(m_Fields);
             });
-            GameClient.Instance.Send(packet);
+            GameClient.Send(packet);
         }
         
         private IReadOnlyList<GameDataField> FilterGameFields(bool _ForceRefresh)
@@ -88,7 +88,7 @@ namespace GameHelpers
             else
             {
                 var packet = CreatePacket();
-                GameClient.Instance.Send(packet, false);
+                GameClient.Send(packet, false);
 
                 var dataFieldValues = GetFromDtos(packet.Response.ToList());
                 m_Fields = dataFieldValues;
@@ -105,7 +105,7 @@ namespace GameHelpers
                     var gdfv = SaveUtils.GetValue(
                         SaveKeys.GameDataFieldValue(AccountId, m_GameId, _FieldId));
                     if (gdfv == null)
-                        gdfv = new GameDataField(default, AccountId, m_GameId, _FieldId);
+                        gdfv = new GameDataField(GameClient, default, AccountId, m_GameId, _FieldId);
                     return gdfv;
                 })
                 .ToList();
@@ -120,7 +120,7 @@ namespace GameHelpers
         private List<GameDataField> GetFromDtos(IEnumerable<GameFieldDto> _Dtos)
         {
             return _Dtos
-                .Select(_Dto => new GameDataField(_Dto))
+                .Select(_Dto => new GameDataField(GameClient, _Dto))
                 .ToList();
         }
 

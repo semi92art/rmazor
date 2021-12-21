@@ -1,14 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Network;
 
 namespace GameHelpers
 {
     public abstract class DataFieldFilterBase
     {
+
         #region nonpublic members
 
         protected readonly int AccountId;
         protected readonly ushort[] FieldIds;
+        protected IGameClient GameClient { get; }
         
         #endregion
         
@@ -20,8 +23,9 @@ namespace GameHelpers
 
         #region constructors
 
-        protected DataFieldFilterBase(int _AccountId, params ushort[] _FieldIds)
+        protected DataFieldFilterBase(IGameClient _GameClient, int _AccountId, params ushort[] _FieldIds)
         {
+            GameClient = _GameClient;
             AccountId = _AccountId;    
             FieldIds = _FieldIds;
         }

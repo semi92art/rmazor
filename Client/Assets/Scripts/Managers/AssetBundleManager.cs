@@ -56,14 +56,15 @@ namespace Managers
 
         public bool         BundlesLoaded { get; private set; }
         public List<string> Errors        { get; } = new List<string>();
-        
-        public event UnityAction Initialized;
+
+        public bool              Initialized { get; private set; }
+        public event UnityAction Initialize;
         
         public void Init()
         {
-            Dbg.Log("Init AssetBunleManager");
             Coroutines.Run(LoadBundles());
-            Initialized?.Invoke();
+            Initialize?.Invoke();
+            Initialized = true;
         }
 
         public T GetAsset<T>(string _AssetName, string _PrefabSetName, out bool _Success) where T : Object
@@ -167,11 +168,13 @@ namespace Managers
     {
         public bool              BundlesLoaded => false;
         public List<string>      Errors        => null;
-        public event UnityAction Initialized;
+        public bool              Initialized   { get; private set; }
+        public event UnityAction Initialize;
         
         public void Init()
         {
-            Initialized?.Invoke();
+            Initialize?.Invoke();
+            Initialized = true;
         }
 
         public T GetAsset<T>(string _AssetName, string _PrefabSetName, out bool _Success) where T : Object

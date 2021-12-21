@@ -23,9 +23,14 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         #region api
 
-        public override EMazeItemType[] Types => new[] {EMazeItemType.TrapReact};
-        public event UnityAction Initialized;
-        public void Init() => Initialized?.Invoke();
+        public override EMazeItemType[] Types       => new[] {EMazeItemType.TrapReact};
+        public          bool            Initialized { get; private set; }
+        public event UnityAction        Initialize;
+        public void                     Init()
+        {
+            Initialize?.Invoke();
+            Initialized = true;
+        }
 
         public void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args)
         {

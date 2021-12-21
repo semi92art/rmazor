@@ -6,16 +6,33 @@ namespace Network
 {
     public abstract class PacketBase : IPacket
     {
-        #region public properties
+        #region nonpublic members
+
+        private ErrorResponseArgs m_ErrorMessage;
+        private Action            m_Success;
+        private Action            m_Fail;
+
+        #endregion
         
-        public abstract string Id { get; }
-        public abstract string Url { get; }
-        public virtual string Method => "POST";
-        public virtual bool OnlyOne => false;
-        public virtual bool Resend => false;
-        public bool IsDone { get; set; }
-        public object Request { get; }
-        public string ResponseRaw { get; private set; }
+        #region constructor
+
+        protected PacketBase(object _Request)
+        {
+            Request = _Request;
+        }
+
+        #endregion
+        
+        #region api
+
+        public abstract string Id          { get; }
+        public abstract string Url         { get; }
+        public virtual  string Method      => "POST";
+        public virtual  bool   OnlyOne     => false;
+        public virtual  bool   Resend      => false;
+        public          bool   IsDone      { get; set; }
+        public          object Request     { get; }
+        public          string ResponseRaw { get; private set; }
         
         public ErrorResponseArgs ErrorMessage {
             get
@@ -31,27 +48,6 @@ namespace Network
         }
         
         public long ResponseCode { get; set; }
-
-        #endregion
-        
-        #region nonpublic members
-
-        private ErrorResponseArgs m_ErrorMessage;
-        private Action m_Success;
-        private Action m_Fail;
-
-        #endregion
-        
-        #region constructor
-
-        protected PacketBase(object _Request)
-        {
-            Request = _Request;
-        }
-
-        #endregion
-        
-        #region nonpublic methods
         
         public void InvokeSuccess()
         {
@@ -76,11 +72,7 @@ namespace Network
                 Dbg.LogError($"OnFail error: {e.Message};\n StackTrace: {e.StackTrace}");
             }
         }
-
-        #endregion
         
-        #region public methods
-
         public virtual IPacket OnSuccess(Action _Action)
         {
             m_Success = _Action;
@@ -114,7 +106,22 @@ namespace Network
 
             IsDone = true;
         }
-        
+
         #endregion
+
+        #region nonpublic methods
+
+        protected T Deserialize<T>(string _Json)
+        {
+            return JsonConvert.DeserializeObject<T>(_Json);
+        }
+
+        #endregion
+        
+
+        
+
+
+        
     }
 }

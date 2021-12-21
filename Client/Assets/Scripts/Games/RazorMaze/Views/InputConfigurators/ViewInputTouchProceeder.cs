@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Constants;
 using DI.Extensions;
 using Exceptions;
@@ -33,6 +32,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
         private          float                 m_TouchForMoveTimer;
         private          EMazeRotateDirection? m_PrevRotateDirection;
         private          bool                  m_EnableRotation = true;
+        private          bool                  m_FingerOnScreen;
         
         #endregion
 
@@ -68,7 +68,8 @@ namespace Games.RazorMaze.Views.InputConfigurators
 
         #region api
 
-        public event UnityAction    Initialized;
+        public bool                 Initialized { get; private set; }
+        public event UnityAction    Initialize;
         public UnityAction<Vector2> OnTap { get; set; }
 
         public virtual void Init()
@@ -76,7 +77,8 @@ namespace Games.RazorMaze.Views.InputConfigurators
             InitLeanTouch();
             InitLeanTouchForMoveAndRotate();
             InitLeanTouchForTapToNext();
-            Initialized?.Invoke();
+            Initialize?.Invoke();
+            Initialized = true;
         }
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
@@ -116,8 +118,21 @@ namespace Games.RazorMaze.Views.InputConfigurators
             goLeanMultiUpdate.SetParent(GetContainer());
             var lmu = goLeanMultiUpdate.AddComponent<LeanMultiUpdate>();
             lmu.OnFingers.AddListener(OnLeanMultiUpdateFingers);
+            
+            LeanTouch.OnFingerDown += LeanTouchOnOnFingerDown;
+            LeanTouch.OnFingerUp += LeanTouchOnOnFingerUp;
         }
-
+        
+        private void LeanTouchOnOnFingerDown(LeanFinger _Obj)
+        {
+            m_FingerOnScreen = true;
+        }
+        
+        private void LeanTouchOnOnFingerUp(LeanFinger _Obj)
+        {
+            m_FingerOnScreen = false;
+        }
+        
         private void InitLeanTouchForMoveAndRotate()
         {
             var goLeanMultiUpdate = new GameObject("Lean Multi Update");
@@ -135,17 +150,6 @@ namespace Games.RazorMaze.Views.InputConfigurators
             lft.OnFinger.AddListener(MoveNext);
             lft.OnFinger.AddListener(_Finger => OnTap?.Invoke(_Finger.ScreenPosition));
             m_LeanFingerTap = lft;
-        }
-
-        private void RotateCommand(EMazeRotateDirection _Direction)
-        {
-            var cmd = _Direction switch
-            {
-                EMazeRotateDirection.Clockwise        => EInputCommand.RotateClockwise,
-                EMazeRotateDirection.CounterClockwise => EInputCommand.RotateCounterClockwise,
-                _                                     => throw new SwitchCaseNotImplementedException(_Direction)
-            };
-            CommandsProceeder.RaiseCommand(cmd, null);
         }
         
         private void OnLeanMultiUpdateFingers(List<LeanFinger> _Fingers)
@@ -181,7 +185,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
                 return;
             }
             var pos = _Finger.ScreenPosition;
-            for (int i = Mathf.Min(m_TouchPositionsQueue.Count - 1, 10); i >= 0; i--)
+            for (int i = Mathf.Min(m_TouchPositionsQueue.Count - 1, 100); i >= 0; i--)
             {
                 var prevPos = m_TouchPositionsQueue[i];
                 var delta = pos - prevPos;
@@ -190,8 +194,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
                     continue;
                 if (m_PrevMoveDirection == moveDir)
                     continue;
-                var command = GetMoveCommand(moveDir.Value);
-                CommandsProceeder.RaiseCommand(command, null);
+                Move(moveDir.Value);
                 m_PrevMoveDirection = moveDir.Value;
                 break;
             }
@@ -210,7 +213,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
                 var rotDir = GetRotateDirection(pos - prevPos);
                 if (!rotDir.HasValue || rotDir == m_PrevRotateDirection) 
                     continue;
-                RotateCommand(rotDir.Value);
+                Rotate(rotDir.Value);
                 m_PrevRotateDirection = rotDir;
                 m_EnableRotation = false;
                 break;
@@ -220,6 +223,11 @@ namespace Games.RazorMaze.Views.InputConfigurators
 
         public bool AreFingersOnScreen(int _Count)
         {
+            if (_Count == 1)
+            {
+                return m_FingerOnScreen;
+            }
+            
 #if UNITY_EDITOR
             if (_Count > 1)
                 return false;
@@ -245,7 +253,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
         private static EMazeMoveDirection? GetMoveDirection(Vector2 _Delta)
         {
             const float angThreshold = 30f * Mathf.Deg2Rad;
-            const float distThreshold = 0.05f;
+            const float distThreshold = 0.02f;
             EMazeMoveDirection? res = null;
             float absDx = Mathf.Abs(_Delta.x);
             float absDy = Mathf.Abs(_Delta.y);
@@ -271,26 +279,34 @@ namespace Games.RazorMaze.Views.InputConfigurators
             return res;
         }
 
-        private static EInputCommand GetMoveCommand(EMazeMoveDirection _MoveDirection)
-        {
-            switch (_MoveDirection)
-            {
-                case EMazeMoveDirection.Left:
-                    return EInputCommand.MoveLeft;
-                case EMazeMoveDirection.Right:
-                    return EInputCommand.MoveRight;
-                case EMazeMoveDirection.Down:
-                    return EInputCommand.MoveDown;
-                case EMazeMoveDirection.Up:
-                    return EInputCommand.MoveUp;
-                default:
-                    throw new SwitchCaseNotImplementedException(_MoveDirection);
-            }
-        }
-
         private Transform GetContainer()
         {
             return ContainersGetter.GetContainer(ContainerNames.TouchInput);
+        }
+
+        private void Move(EMazeMoveDirection _Direction)
+        {
+            var command = _Direction switch
+            {
+                EMazeMoveDirection.Left  => EInputCommand.MoveLeft,
+                EMazeMoveDirection.Right => EInputCommand.MoveRight,
+                EMazeMoveDirection.Down  => EInputCommand.MoveDown,
+                EMazeMoveDirection.Up    => EInputCommand.MoveUp,
+                _                        => throw new SwitchCaseNotImplementedException(_Direction)
+            };
+            CommandsProceeder.RaiseCommand(command, null);
+        }
+
+        private void Rotate(EMazeRotateDirection _Direction)
+        {
+            var command = _Direction switch
+            {
+                EMazeRotateDirection.Clockwise        => EInputCommand.RotateClockwise,
+                EMazeRotateDirection.CounterClockwise => EInputCommand.RotateCounterClockwise,
+                _                                     => throw new SwitchCaseNotImplementedException(_Direction)
+            };
+            CommandsProceeder.RaiseCommand(command, null);
+            RazorMazeUtils.LockCommandsOnRotationStarted(CommandsProceeder);
         }
 
         private void MoveNext(LeanFinger _Finger)

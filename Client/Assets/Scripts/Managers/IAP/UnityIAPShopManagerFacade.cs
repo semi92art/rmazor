@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Constants;
@@ -10,7 +9,7 @@ using UnityEngine.Events;
 using UnityEngine.Purchasing;
 using Utils;
 
-namespace Managers.Advertising
+namespace Managers.IAP
 {
     public enum EShopProductResult
     {
@@ -23,32 +22,23 @@ namespace Managers.Advertising
     {
         public string                   Price      { get; set; }
         public string                   Currency   { get; set; }
-        public bool                     HasReceipt { get; set; }
         public Func<EShopProductResult> Result     { get; set; }
     }
     
-    public interface IShopManager : IInit
-    {
-        void RestorePurchases();
-        void Purchase(int _Key, UnityAction _OnPurchase);
-        void RateGame();
-        ShopItemArgs GetItemInfo(int _Key);
-    }
-    
-    public class UnityIAPShopManagerFacade : UnityIAPShopManager, IShopManager
+    public class UnityIAPShopManagerFacade : UnityIAPShopManagerBase, IShopManager
     {
         #region nonpublic members
 
         protected override List<ProductInfo> Products => new List<ProductInfo>
         {
-            new ProductInfo(PurchaseKeys.Money1, "small_pack_of_coins",           ProductType.Consumable),
-            new ProductInfo(PurchaseKeys.Money2, "medium_pack_of_coins",          ProductType.Consumable),
-            new ProductInfo(PurchaseKeys.Money3, "big_pack_of_coins",             ProductType.Consumable),
-            new ProductInfo(PurchaseKeys.NoAds,  "disable_mandatory_advertising", ProductType.NonConsumable)
+            new ProductInfo(PurchaseKeys.Money1, $"small_pack_of_coins{(Application.platform == RuntimePlatform.IPhonePlayer ? "_2" : string.Empty)}",           ProductType.Consumable),
+            new ProductInfo(PurchaseKeys.Money2, $"medium_pack_of_coins{(Application.platform == RuntimePlatform.IPhonePlayer ? "_2" : string.Empty)}",          ProductType.Consumable),
+            new ProductInfo(PurchaseKeys.Money3, $"big_pack_of_coins{(Application.platform == RuntimePlatform.IPhonePlayer ? "_2" : string.Empty)}",             ProductType.Consumable),
+            new ProductInfo(PurchaseKeys.NoAds,  $"disable_mandatory_advertising{(Application.platform == RuntimePlatform.IPhonePlayer ? "_2" : string.Empty)}", ProductType.NonConsumable)
         };
         
-        private readonly Dictionary<string, UnityAction> m_OnPurchaseActions =
-            new Dictionary<string, UnityAction>();
+        private readonly Dictionary<int, UnityAction> m_OnPurchaseActions =
+            new Dictionary<int, UnityAction>();
 
         #endregion
 
@@ -59,10 +49,9 @@ namespace Managers.Advertising
 
         #endregion
 
-
         #region api
 
-        public void Purchase(int _Key, UnityAction _OnPurchase)
+        public void Purchase(int _Key)
         {
 #if !UNITY_EDITOR
             if (!NetworkUtils.IsInternetConnectionAvailable())
@@ -72,7 +61,6 @@ namespace Managers.Advertising
             }
 #endif
             string id = GetProductId(_Key);
-            m_OnPurchaseActions.SetSafe(id, _OnPurchase);
             BuyProductID(id);
         }
 
@@ -91,10 +79,8 @@ namespace Managers.Advertising
             Dbg.Log("Rating game available only on device.");
 #elif UNITY_ANDROID
             Coroutines.Run(RateGameAndroid());
-            // Application.OpenURL ("market://details?id=" + Application.productName);
 #elif UNITY_IOS || UNITY_IPHONE
             RateGameIos();
-            // Application.OpenURL("itms-apps://itunes.apple.com/us/developer/best-free-games-3d/id959029626");
 #endif
         }
 
@@ -103,6 +89,16 @@ namespace Managers.Advertising
             var res = new ShopItemArgs();
             GetProductItemInfo(_Key, ref res);
             return res;
+        }
+
+        public void SetPurchaseAction(int _Key, UnityAction _OnPurchase)
+        {
+            m_OnPurchaseActions.SetSafe(_Key, _OnPurchase);
+        }
+
+        public void SetDeferredAction(int _Key, UnityAction _Action)
+        {
+            // TODO
         }
 
         public override void RestorePurchases()
@@ -147,34 +143,28 @@ namespace Managers.Advertising
             else
             {
                 Dbg.Log($"{nameof(UnityIAPShopManagerFacade)}: " +
-                        $"RestorePurchases FAIL. Not supported on this platform. Current = " + Application.platform);
+                        "RestorePurchases FAIL. Not supported on this platform. Current = " + Application.platform);
             }
         }
 
         public override PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs _Args)
         {
-            bool purchaseActionFound = false;
-            foreach (var kvp in m_OnPurchaseActions.ToList())
+            string id = _Args.purchasedProduct.definition.id;
+            var info = Products
+                .FirstOrDefault(_P => _P.Id == _Args.purchasedProduct.definition.id);
+            if (info == null)
             {
-                // A consumable product has been purchased by this user.
-                if (!string.Equals(_Args.purchasedProduct.definition.id, kvp.Key, StringComparison.Ordinal)) 
-                    continue;
-                purchaseActionFound = true;
-                Dbg.Log($"{nameof(UnityIAPShopManagerFacade)}: " +
-                        $"ProcessPurchase: PASS. Product: '{_Args.purchasedProduct.definition.id}'");
-                kvp.Value?.Invoke();
-                m_OnPurchaseActions.Remove(kvp.Key);
-                break;
+                Dbg.LogError($"Product with id {id} does not have product");
+                return PurchaseProcessingResult.Complete;
             }
-            // Or ... an unknown product has been purchased by this user. Fill in additional products here....
-            if (!purchaseActionFound) 
+            var action = m_OnPurchaseActions.GetSafe(info.Key, out bool containsKey);
+            if (!containsKey)
             {
-                Dbg.Log($"{nameof(UnityIAPShopManagerFacade)}: ProcessPurchase: FAIL. " +
-                        $"Unrecognized product: '{_Args.purchasedProduct.definition.id}'");
+                Dbg.LogError($"Product with id {id} does not have puchase action");
+                return PurchaseProcessingResult.Complete;
             }
-            // Return a flag indicating whether this product has completely been received, or if the application needs 
-            // to be reminded of this purchase at next app launch. Use PurchaseProcessingResult.Pending when still 
-            // saving purchased products to the cloud, and when that save is delayed. 
+            action?.Invoke();
+            Dbg.Log($"ProcessPurchase: PASS. Product: '{_Args.purchasedProduct.definition.id}'");
             return PurchaseProcessingResult.Complete;
         }
 
@@ -182,24 +172,13 @@ namespace Managers.Advertising
         
         #region nonpublic methods
 
-        private string GetProductId(int _Key)
-        {
-            var product = Products.FirstOrDefault(_P => _P.Key == _Key);
-            if (product != null) 
-                return product.Id;
-            Dbg.LogError($"{nameof(UnityIAPShopManagerFacade)}: " +
-                         $"Get Product Id failed. Product with key {_Key} does not exist");
-            return string.Empty;
-        }
-
         private void GetProductItemInfo(int _Key, ref ShopItemArgs _Args)
         {
-            var shopProductResult = EShopProductResult.Pending;
-            _Args.Result = () => shopProductResult;
+            _Args.Result = () => EShopProductResult.Pending;
             if (!IsInitialized())
             {
                 Dbg.LogWarning($"{nameof(UnityIAPShopManagerFacade)}: Get Product Item Info Failed. Not initialized.");
-                shopProductResult = EShopProductResult.Fail;
+                _Args.Result = () => EShopProductResult.Fail;
                 return;
             }
             string id = GetProductId(_Key);
@@ -208,33 +187,47 @@ namespace Managers.Advertising
             {
                 Dbg.LogWarning($"{nameof(UnityIAPShopManagerFacade)}: " +
                                $"Get Product Item Info Failed. Product with id {id} does not exist");
-                shopProductResult = EShopProductResult.Fail;
+                _Args.Result = () => EShopProductResult.Fail;
                 return;
             }
             _Args.Price = product.metadata.localizedPriceString;
-            _Args.HasReceipt = product.hasReceipt;
-            shopProductResult = EShopProductResult.Success;
+            _Args.Result = () => EShopProductResult.Success;
         }
         
 #if UNITY_ANDROID
 
         private IEnumerator RateGameAndroid()
         {
+            void OpenAppPageInStoreDirectly() => Application.OpenURL ("market://details?id=" + Application.productName);
+            
             var reviewManager = new Google.Play.Review.ReviewManager();
             var requestFlowOperation = reviewManager.RequestReviewFlow();
             yield return requestFlowOperation;
+            if (!requestFlowOperation.IsSuccessful)
+            {
+                Dbg.LogWarning($"requestFlowOperation.IsSuccessful: {requestFlowOperation.IsSuccessful}");
+                OpenAppPageInStoreDirectly();
+                yield break;
+            }
             if (requestFlowOperation.Error != Google.Play.Review.ReviewErrorCode.NoError)
             {
-                // Log error. For example, using requestFlowOperation.Error.ToString().
+                Dbg.LogWarning($"Failed to load rate game panel: {requestFlowOperation.Error}");
+                OpenAppPageInStoreDirectly();
                 yield break;
             }
             var playReviewInfo = requestFlowOperation.GetResult();
             var launchFlowOperation = reviewManager.LaunchReviewFlow(playReviewInfo);
+            if (!launchFlowOperation.IsSuccessful)
+            {
+                Dbg.LogWarning($"launchFlowOperation.IsSuccessful: {launchFlowOperation.IsSuccessful}");
+                OpenAppPageInStoreDirectly();
+                yield break;
+            }
             yield return launchFlowOperation;
-            playReviewInfo = null; // Reset the object
             if (launchFlowOperation.Error != Google.Play.Review.ReviewErrorCode.NoError)
             {
-                Dbg.LogError($"Failed to rate game: {requestFlowOperation.Error}");
+                Dbg.LogWarning($"Failed to launch rate game panel: {launchFlowOperation.Error}");
+                OpenAppPageInStoreDirectly();
                 yield break;
             }
         }

@@ -13,10 +13,8 @@ public class ButtonOnRaycast : MonoBehaviour
 
     private bool         m_Initialized;
     private EButtonState m_ButtonState;
-    private EButtonState m_PrevButtonState;
     private EFingerState m_FingerState;
     private EFingerState m_PrevFingerState;
-    private int          m_ClickState;
     private bool         m_EnteredOnThisTouchSession;
     private bool         m_ExitedOnThisTimeSession;
 
@@ -48,22 +46,16 @@ public class ButtonOnRaycast : MonoBehaviour
         if (m_LevelStage() == ELevelStage.Paused
             || m_LevelStage() == ELevelStage.CharacterKilled)
             return;
-        
-        m_PrevButtonState = m_ButtonState;
         m_PrevFingerState = m_FingerState;
-
         if (m_ViewInputTouchProceeder.AreFingersOnScreen(1))
             ProceedButtonNotIdleState();
         else
             ProceedButtonIdleState();
-        
         ProceedButtonClick();
-
-        if (!m_ViewInputTouchProceeder.AreFingersOnScreen(1))
-        {
-            m_EnteredOnThisTouchSession = false;
-            m_ExitedOnThisTimeSession = false;
-        }
+        if (m_ViewInputTouchProceeder.AreFingersOnScreen(1)) 
+            return;
+        m_EnteredOnThisTouchSession = false;
+        m_ExitedOnThisTimeSession = false;
     }
 
     private void ProceedButtonIdleState()
@@ -93,7 +85,6 @@ public class ButtonOnRaycast : MonoBehaviour
                 m_ButtonState = EButtonState.Idle;
             return;
         }
-
         if (m_ButtonState == EButtonState.Idle)
             m_ButtonState = EButtonState.Down;
         else if (m_ButtonState == EButtonState.Down)
@@ -107,7 +98,6 @@ public class ButtonOnRaycast : MonoBehaviour
                 m_FingerState = EFingerState.Out;
             return;
         }
-
         if (m_FingerState == EFingerState.Out)
             m_FingerState = EFingerState.Enter;
         else if (m_FingerState == EFingerState.None || m_FingerState == EFingerState.Enter)
@@ -120,12 +110,10 @@ public class ButtonOnRaycast : MonoBehaviour
             m_EnteredOnThisTouchSession = true;
         else if (m_FingerState == EFingerState.Exit)
             m_ExitedOnThisTimeSession = true;
-
         if (m_EnteredOnThisTouchSession || m_ExitedOnThisTimeSession)
             return;
         if (m_PrevFingerState != EFingerState.Stay || m_ButtonState != EButtonState.Up)
             return;
- 
         m_HapticsManager.PlayPreset(EHapticsPresetType.Selection);
         onClickEvent?.Invoke();
     }

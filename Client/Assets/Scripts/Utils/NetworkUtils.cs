@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Globalization;
+using System.Net;
 
 namespace Utils
 {
@@ -9,17 +10,29 @@ namespace Utils
             return MathUtils.IsInRange(_ResponseCode, 200, 299);
         }
 
-        public static bool IsInternetConnectionAvailable()
+        public static bool IsInternetConnectionAvailable(int _TimeoutMs = 10000, string _Url = null)
         {
-#if UNITY_EDITOR
-            return Application.internetReachability != NetworkReachability.NotReachable;
-#elif UNITY_ANDROID
-            return MTAssets.NativeAndroidToolkit.NativeAndroid.Utils.isInternetConnectivityAvailable();
-#elif UNITY_IOS || UNITY_IPHONE
-            return GameClientUtils.InternetConnection;
-#endif
+            try
+            {
+                _Url ??= CultureInfo.InstalledUICulture switch
+                {
+                    { Name: var n } when n.StartsWith("fa") => // Iran
+                        "http://www.aparat.com",
+                    { Name: var n } when n.StartsWith("zh") => // China
+                        "http://www.baidu.com",
+                    _ =>
+                        "http://www.gstatic.com/generate_204"
+                };
+                var request = (HttpWebRequest)WebRequest.Create(_Url);
+                request.KeepAlive = false;
+                request.Timeout = _TimeoutMs;
+                using ((HttpWebResponse)request.GetResponse()) 
+                    return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
-        
-
     }
 }

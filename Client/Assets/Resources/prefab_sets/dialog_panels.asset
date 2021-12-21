@@ -12,31 +12,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1600272214c7aa418cb76f5cc38aecb, type: 3}
   m_Name: dialog_panels
   m_EditorClassIdentifier: 
-  bundles: 0
   prefabs:
     array:
-    - item: {fileID: 5978263261467836251, guid: 7e45bf9e0822bbf47b4b8f6edc54dc26,
-        type: 3}
-      name: daily_bonus_panel
-    - item: {fileID: 8219298684319459333, guid: 73337473a73836f44b3e012213015ba9,
-        type: 3}
-      name: shop_panel
     - item: {fileID: 432638780763177933, guid: 9e00b2062e325984c8c051e07412d92a, type: 3}
       name: settings_panel
+      bundle: 0
     - item: {fileID: 432638780763177933, guid: 622fc568ecbde9f448197a9bf5ef69dc, type: 3}
       name: settings_selector_panel
+      bundle: 0
     - item: {fileID: 8219298684319459333, guid: da554ec90fcd34345ba1654db919878b,
         type: 3}
       name: shop_money_panel
+      bundle: 0
     - item: {fileID: 8219298684319459333, guid: 667335171afcbc04b8649684f7996939,
         type: 3}
       name: shop_heads_panel
+      bundle: 0
     - item: {fileID: 8219298684319459333, guid: da4f8ca4c665e314482b12c01ade75c4,
         type: 3}
       name: shop_tails_panel
+      bundle: 0
     - item: {fileID: 8219298684319459333, guid: aada0e6c1e3f9b246bc089aa5d754518,
         type: 3}
       name: character_died_panel
+      bundle: 0
     - item: {fileID: 8219298684319459333, guid: dc03f95562103b9488bece8533f26b73,
         type: 3}
       name: rate_game_panel
+      bundle: 0

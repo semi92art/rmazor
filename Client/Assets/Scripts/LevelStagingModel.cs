@@ -87,12 +87,14 @@ public class ModelLevelStaging : IModelLevelStaging, IInit, IUpdateTick
     public ELevelStage             LevelStage         { get; private set; } = ELevelStage.Unloaded;
     public ELevelStage             PrevLevelStage     { get; private set; } = ELevelStage.Unloaded;
     public ELevelStage             PrevPrevLevelStage { get; private set; } = ELevelStage.Unloaded;
+    public bool                    Initialized        { get; private set; }
     public event LevelStageHandler LevelStageChanged;
-    public event UnityAction       Initialized;
+    public event UnityAction       Initialize;
     
     public void Init()
     {
-        Initialized?.Invoke();
+        Initialize?.Invoke();
+        Initialized = true;
     }
     
     public void UpdateTick()

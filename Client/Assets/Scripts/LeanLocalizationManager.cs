@@ -50,7 +50,8 @@ public class LeanLocalizationManager : ILocalizationManager
 
     #region api
 
-    public event UnityAction Initialized;
+    public bool              Initialized { get; private set; }
+    public event UnityAction Initialize;
 
     public void Init()
     {
@@ -79,9 +80,9 @@ public class LeanLocalizationManager : ILocalizationManager
             leanCsv.Source = Resources.Load<TextAsset>($"Texts/{kvp.Key}");
             leanCsv.Language = kvp.Key.ToString();    
         }
-
         m_Localization.DefaultLanguage = "English";
-        Initialized?.Invoke();
+        Initialize?.Invoke();
+        Initialized = true;
     }
 
     public string GetTranslation(string _Key)

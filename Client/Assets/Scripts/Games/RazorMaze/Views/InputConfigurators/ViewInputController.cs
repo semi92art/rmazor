@@ -17,12 +17,14 @@ namespace Games.RazorMaze.Views.InputConfigurators
             TouchProceeder = _TouchProceeder;
         }
 
-        public event UnityAction Initialized;
+        public bool              Initialized { get; private set; }
+        public event UnityAction Initialize;
         
         public virtual void Init()
         {
             TouchProceeder.Init();
-            Initialized?.Invoke();
+            Initialize?.Invoke();
+            Initialized = true;
         }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)

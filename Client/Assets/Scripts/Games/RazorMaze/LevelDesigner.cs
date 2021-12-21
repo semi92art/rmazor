@@ -73,7 +73,7 @@ namespace Games.RazorMaze
             {
                 Application.targetFrameRate = GraphicUtils.GetTargetFps();
                 var controller = GameController.CreateInstance();
-                controller.Initialized += () =>
+                controller.Initialize += () =>
                 {
                     int selectedLevel = SaveUtils.GetValue(SaveKeys.DesignerSelectedLevel);
                     controller.Model.LevelStaging.LoadLevel(MazeInfo, selectedLevel);

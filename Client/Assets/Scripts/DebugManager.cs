@@ -40,14 +40,16 @@ public class DebugManager : IDebugManager
     #endregion
 
     #region api
-    
-    public event UnityAction Initialized;
+
+    public bool              Initialized { get; private set; }
+    public event UnityAction Initialize;
     public void Init()
     {
         DebugSetting.OnValueSet = EnableDebug;
         InitDebugConsole();
         EnableDebug(DebugSetting.Get());
-        Initialized?.Invoke();
+        Initialize?.Invoke();
+        Initialized = true;
     }
 
     public void EnableDebug(bool _Enable)

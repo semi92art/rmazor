@@ -41,8 +41,9 @@ namespace Games.RazorMaze.Views.Common
         #region api
         
         public event UnityAction<int, Color>   ColorChanged;
-        public IReadOnlyDictionary<int, Color> Colors => m_ColorsDict;
-        public event UnityAction               Initialized;
+        public IReadOnlyDictionary<int, Color> Colors      => m_ColorsDict;
+        public bool                            Initialized { get; private set; }
+        public event UnityAction               Initialize;
         
         public void Init()
         {
@@ -50,6 +51,8 @@ namespace Games.RazorMaze.Views.Common
                 "views", "color_set").set;
             foreach (var item in m_Set)
                 m_ColorsDict.Add(ColorIds.GetHash(item.name), item.color);
+            Initialize?.Invoke();
+            Initialized = true;
         }
 
         public Color GetColor(int _Id)

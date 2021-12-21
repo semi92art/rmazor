@@ -2,6 +2,8 @@
 using GameHelpers;
 using Managers;
 using Managers.Advertising;
+using Managers.IAP;
+using Network;
 using Settings;
 using Ticker;
 using Zenject;
@@ -31,11 +33,14 @@ namespace Mono_Installers
 
             #region managers
 
+            Container.Bind<IGameClient>()         .To<GameClient>()                   .AsSingle();
             Container.Bind<IAnalyticsManager>()   .To<AnalyticsManager>()             .AsSingle();
 #if UNITY_EDITOR
             Container.Bind<IShopManager>()        .To<ShopManagerFake>()              .AsSingle();
-#else
+#elif UNITY_ANDROID
             Container.Bind<IShopManager>()        .To<UnityIAPShopManagerFacade>()    .AsSingle();
+#elif UNITY_IOS || UNITY_ANDROID
+            Container.Bind<IShopManager>()        .To<AppleSAShopManager>()           .AsSingle();
 #endif
             Container.Bind<ILocalizationManager>().To<LeanLocalizationManager>()      .AsSingle();
             Container.Bind<IScoreManager>()       .To<ScoreManager>()                 .AsSingle();

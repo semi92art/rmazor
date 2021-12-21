@@ -12,32 +12,18 @@ using Utils;
 
 namespace Network
 {
-    public class GameClient : IInit
+    public interface IGameClient : IInit
     {
-        #region singleton
-        
-        private static GameClient _instance;
-
-        public static GameClient Instance
-        {
-            get
-            {
-                if (_instance != null) 
-                    return _instance;
-                
-                _instance = new GameClient(); 
-                _instance.Init();
-                return _instance;
-            }
-        }
-        
-        #endregion
-        
+        List<GameDataField> ExecutingGameFields { get; }
+        void                Send(IPacket _Packet, bool _Async = true);
+    }
+    
+    public class GameClient : IGameClient
+    {
         #region nonpublic members
 
         private bool m_FirstRequest = true;
         private bool m_DatabaseConnectionTestStarted;
-        private bool m_InternetConnectionTestStarted;
 
         private bool DatabaseConnection
         {
@@ -49,21 +35,19 @@ namespace Network
         
         #region api
 
-        public event UnityAction Initialized;
-        public readonly List<GameDataField> ExecutingGameFields = new List<GameDataField>();
+        public bool                Initialized { get; private set; }
+        public event UnityAction   Initialize;
+        public List<GameDataField> ExecutingGameFields { get; } = new List<GameDataField>();
         
         public void Init()
         {
             if (GameClientUtils.GameId == 0)
                 GameClientUtils.GameId = GameClientUtils.DefaultGameId;
-            if (!CommonData.Testing)
-            {
-                Initialized?.Invoke();
-                return;
-            }
-            TestDatabaseConnection();
-            TestInternetConnection();
-            Initialized?.Invoke();
+            Initialize?.Invoke();
+            Initialized = true;
+            // if (!CommonData.Testing)
+            //     return;
+            // TestDatabaseConnection();
         }
         
         public void Send(IPacket _Packet, bool _Async = true)
@@ -141,26 +125,6 @@ namespace Network
                     );
                 Coroutines.Run(Coroutines.Action(() => SendRequestToDatabase(testPacket, 2f)));
             }, 5f,
-            float.MaxValue,
-            CommonTicker.Instance,
-            () => false));
-        }
-
-        private void TestInternetConnection()
-        {
-            if (m_InternetConnectionTestStarted)
-                return;
-            m_InternetConnectionTestStarted = true;
-            Coroutines.Run(Coroutines.Repeat(
-            () =>
-            {
-                var r = new UnityWebRequest("http://google.com", "GET");
-                Coroutines.Run(Coroutines.WaitWhile(() =>
-                !r.isDone && !r.isHttpError && !r.isNetworkError,
-                () => GameClientUtils.InternetConnection = r.isDone && !r.isHttpError && !r.isNetworkError));
-                r.SendWebRequest();
-            },
-            5f,
             float.MaxValue,
             CommonTicker.Instance,
             () => false));

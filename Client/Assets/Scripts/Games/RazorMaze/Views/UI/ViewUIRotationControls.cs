@@ -5,7 +5,6 @@ using System.Linq;
 using DI.Extensions;
 using DialogViewers;
 using Entities;
-using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
@@ -149,13 +148,13 @@ namespace Games.RazorMaze.Views.UI
             m_RotateClockwiseButton = goRCb.GetCompItem<ButtonOnRaycast>("button");
             m_RotateCounterClockwiseButton = goRCCb.GetCompItem<ButtonOnRaycast>("button");
             m_RotateClockwiseButton.Init(
-                CommandRotateClockwise, 
+                () => CommandRotate(true), 
                 () => Model.LevelStaging.LevelStage, 
                 CameraProvider,
                 Managers.HapticsManager,
                 TouchProceeder);
             m_RotateCounterClockwiseButton.Init(
-                CommandRotateCounterClockwise, 
+                () => CommandRotate(false), 
                 () => Model.LevelStaging.LevelStage,
                 CameraProvider,
                 Managers.HapticsManager,
@@ -178,23 +177,16 @@ namespace Games.RazorMaze.Views.UI
             goRCb.SetActive(false);
             goRCCb.SetActive(false);
         }
-        
-        private void CommandRotateClockwise()
+
+        private void CommandRotate(bool _Clockwise)
         {
             if (BigDialogViewer.IsShowing || BigDialogViewer.IsInTransition)
                 return;
-            CommandsProceeder.RaiseCommand(EInputCommand.RotateClockwise, null);
-            Coroutines.Run(ButtonOnClickCoroutine(m_RotateClockwiseButton));
+            CommandsProceeder.RaiseCommand(_Clockwise ? EInputCommand.RotateClockwise : EInputCommand.RotateCounterClockwise, null);
+            Coroutines.Run(ButtonOnClickCoroutine(_Clockwise ? m_RotateClockwiseButton : m_RotateCounterClockwiseButton));
+            RazorMazeUtils.LockCommandsOnRotationStarted(CommandsProceeder);
         }
-        
-        private void CommandRotateCounterClockwise()
-        {
-            if (BigDialogViewer.IsShowing || BigDialogViewer.IsInTransition)
-                return;
-            CommandsProceeder.RaiseCommand(EInputCommand.RotateCounterClockwise, null);
-            Coroutines.Run(ButtonOnClickCoroutine(m_RotateCounterClockwiseButton));
-        }
-        
+
         private void ShowRotatingButtons(LevelStageArgs _Args)
         {
             bool MazeContainsGravityItems()

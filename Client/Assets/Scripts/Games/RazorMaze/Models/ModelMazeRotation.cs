@@ -49,11 +49,13 @@ namespace Games.RazorMaze.Models
 
         public event MazeOrientationHandler RotationStarted;
         public event MazeOrientationHandler RotationFinished;
-        public event UnityAction            Initialized;
+        public bool                         Initialized { get; private set; }
+        public event UnityAction            Initialize;
         
         public void Init()
         {
-            Initialized?.Invoke();
+            Initialize?.Invoke();
+            Initialized = true;
         }
         
         public void StartRotation(

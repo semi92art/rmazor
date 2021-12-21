@@ -8,13 +8,21 @@ namespace Games.RazorMaze.Views.Rotation
     {
         #region api
 
-        public event UnityAction Initialized;
-        public abstract event UnityAction<float> RotationContinued;
+        public bool                                  Initialized { get; private set; }
+        public event          UnityAction            Initialize;
+        public abstract event UnityAction<float>     RotationContinued;
         public abstract event MazeOrientationHandler RotationFinished;
         
-        public virtual void Init() => Initialized?.Invoke();
+        public virtual void Init()
+        {
+            Initialize?.Invoke();
+            Initialized = true;
+        }
+
         public abstract void OnRotationStarted(MazeRotationEventArgs _Args);
+        public abstract void OnRotationFinished(MazeRotationEventArgs _Args);
         public abstract void OnLevelStageChanged(LevelStageArgs _Args);
+
 
         #endregion
         

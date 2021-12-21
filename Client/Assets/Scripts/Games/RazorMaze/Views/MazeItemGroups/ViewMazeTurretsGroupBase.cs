@@ -36,10 +36,16 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         #region api
 
-        public override EMazeItemType[] Types => new[] {EMazeItemType.Turret};
-        public event UnityAction Initialized;
-        public virtual void Init() => Initialized?.Invoke();
-        public abstract void OnTurretShoot(TurretShotEventArgs _Args);
+        public override EMazeItemType[] Types       => new[] {EMazeItemType.Turret};
+        public          bool            Initialized { get; private set; }
+        public event UnityAction        Initialize;
+        public virtual  void            Init()
+        {
+            Initialize?.Invoke();
+            Initialized = true;
+        }
+
+        public abstract void            OnTurretShoot(TurretShotEventArgs _Args);
 
         #endregion
 

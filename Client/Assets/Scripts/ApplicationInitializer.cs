@@ -1,15 +1,15 @@
-﻿using System.Collections.Generic;
-using Constants;
+﻿using Constants;
 using Controllers;
 using DI.Extensions;
 using Entities;
 using GameHelpers;
 using Games.RazorMaze.Controllers;
-using Games.RazorMaze.Models;
 using Managers;
 using Managers.Advertising;
+using Managers.IAP;
 using Mono_Installers;
 using Network;
+using ScriptableObjects;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;
@@ -19,29 +19,38 @@ public class ApplicationInitializer : MonoBehaviour
 {
     #region inject
     
+    private IGameClient          GameClient          { get; set; }
     private IAdsManager          AdsManager          { get; set; }
     private IAnalyticsManager    AnalyticsManager    { get; set; }
     private ILocalizationManager LocalizationManager { get; set; }
     private ILevelsLoader        LevelsLoader        { get; set; }
     private IScoreManager        ScoreManager        { get; set; }
     private IHapticsManager      HapticsManager      { get; set; }
+    private IShopManager         ShopManager         { get; set; }
+    private IPrefabSetManager    PrefabSetManager    { get; set; }
 
     [Inject] 
     public void Inject(
+        IGameClient _GameClient,
         IAdsManager _AdsManager,
         IAnalyticsManager _AnalyticsManager,
         ILocalizationManager _LocalizationManager,
         ILevelsLoader _LevelsLoader,
         IScoreManager _ScoreManager,
         IHapticsManager _HapticsManager,
-        IAssetBundleManager _AssetBundleManager)
+        IAssetBundleManager _AssetBundleManager,
+        IShopManager _ShopManager,
+        IPrefabSetManager _PrefabSetManager)
     {
+        GameClient = _GameClient;
         AdsManager = _AdsManager;
         AnalyticsManager = _AnalyticsManager;
         LocalizationManager = _LocalizationManager;
         LevelsLoader = _LevelsLoader;
         ScoreManager = _ScoreManager;
         HapticsManager = _HapticsManager;
+        ShopManager = _ShopManager;
+        PrefabSetManager = _PrefabSetManager;
     }
 
 
@@ -52,7 +61,7 @@ public class ApplicationInitializer : MonoBehaviour
     private void Start()
     {
         Application.targetFrameRate = GraphicUtils.GetTargetFps();
-        DataFieldsMigrator.InitDefaultDataFieldValues();
+        DataFieldsMigrator.InitDefaultDataFieldValues(GameClient);
         InitGameManagers();
         LevelMonoInstaller.Release = true;
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -75,19 +84,21 @@ public class ApplicationInitializer : MonoBehaviour
     
     private void InitGameManagers()
     {
-        GameClient.Instance.Init();
+        GameClient         .Init();
         AdsManager         .Init();
         AnalyticsManager   .Init();
         LocalizationManager.Init();
         HapticsManager     .Init();
-        ScoreManager.Initialized += OnScoreManagerInitialized;
+        ScoreManager       .Initialize += OnScoreManagerInitialize;
         ScoreManager       .Init();
+        // ShopManager        .Initialize += InitPurchaseActions;
+        ShopManager        .Init();
     }
     
     private void InitGameController()
     {
         var controller = GameController.CreateInstance();
-        controller.Initialized += () =>
+        controller.Initialize += () =>
         {
             var levelEntity = ScoreManager.GetScore(DataFieldIds.Level, true);
             Coroutines.Run(Coroutines.WaitWhile(
@@ -114,15 +125,15 @@ public class ApplicationInitializer : MonoBehaviour
         _Controller.Model.LevelStaging.LoadLevel(info, _LevelIndex);
     }
 
-    private void OnScoreManagerInitialized()
+    private void OnScoreManagerInitialize()
     {
-        ushort id = DataFieldIds.Money;
+        const ushort id = DataFieldIds.Money;
         var moneyEntityServer = ScoreManager.GetScore(id, false);
         var moneyEntityCache = ScoreManager.GetScore(id, true);
         Coroutines.Run(Coroutines.WaitWhile(
             () =>
                 moneyEntityServer.Result == EEntityResult.Pending
-                && moneyEntityCache.Result == EEntityResult.Pending,
+                || moneyEntityCache.Result == EEntityResult.Pending,
             () =>
             {
                 var moneyServer = moneyEntityServer.GetFirstScore();
@@ -136,7 +147,7 @@ public class ApplicationInitializer : MonoBehaviour
                 if (moneyEntityCache.Result == EEntityResult.Fail
                     || !moneyCache.HasValue)
                 {
-                    Dbg.LogError("Failed to load money from cache");
+                    Dbg.LogWarning("Failed to load money from cache");
                     return;
                 }
 
@@ -146,7 +157,52 @@ public class ApplicationInitializer : MonoBehaviour
                     ScoreManager.SetScore(id, moneyCache.Value, false);
             }));
     }
-
-
+    
+    // private void InitPurchaseActions()
+    // {
+    //     var set = PrefabSetManager.GetObject<ShopMoneyItemsScriptableObject>(
+    //             "shop_money_items_set", "shop_money_panel").set;
+    //     foreach (var itemInSet in set)
+    //     {
+    //         if (itemInSet.watchingAds)
+    //             continue;
+    //         ShopManager.SetOnPurchaseAction(
+    //             itemInSet.purchaseKey, 
+    //             () => OnGotCoinsReward(itemInSet.reward));
+    //     }
+    //     ShopManager.SetOnPurchaseAction(PurchaseKeys.NoAds, BuyHideAdsItem);
+    // }
+    //
+    // private void BuyHideAdsItem()
+    // {
+    //     AdsManager.ShowAds = new BoolEntity
+    //     {
+    //         Result = EEntityResult.Success,
+    //         Value = false
+    //     };
+    // }
+    //
+    // private void OnGotCoinsReward(long _Reward)
+    // {
+    //     var scoreEntity = ScoreManager.GetScore(DataFieldIds.Money, true);
+    //     Coroutines.Run(Coroutines.WaitWhile(
+    //         () => scoreEntity.Result == EEntityResult.Pending,
+    //         () =>
+    //         {
+    //             if (scoreEntity.Result == EEntityResult.Fail)
+    //             {
+    //                 Dbg.LogError("Failed to load score entity");
+    //                 return;
+    //             }
+    //             var firstVal = scoreEntity.GetFirstScore();
+    //             if (!firstVal.HasValue)
+    //             {
+    //                 Dbg.LogError("Money score entity does not contain first value");
+    //                 return;
+    //             }
+    //             ScoreManager.SetScore(DataFieldIds.Money, firstVal.Value + _Reward, false);
+    //         }));
+    // }
+    
     #endregion
 }

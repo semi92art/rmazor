@@ -39,12 +39,14 @@ namespace Games.RazorMaze.Views.UI
             RateGameDialogPanel         = _RateGameDialogPanel;
         }
 
-        public event UnityAction Initialized;
+        public bool              Initialized { get; private set; }
+        public event UnityAction Initialize;
         
         public void Init()
         {
             ShopMoneyDialogPanel.Init();
-            Initialized?.Invoke();
+            Initialize?.Invoke();
+            Initialized = true;
         }
     }
 
@@ -56,7 +58,8 @@ namespace Games.RazorMaze.Views.UI
         public IShopMoneyDialogPanel       ShopMoneyDialogPanel       => null;
         public ICharacterDiedDialogPanel   CharacterDiedDialogPanel   => null;
         public IRateGameDialogPanel        RateGameDialogPanel        => null;
-        public event UnityAction           Initialized;
-        public void Init() { Initialized?.Invoke();}
+        public bool                        Initialized                => false;
+        public event UnityAction           Initialize;
+        public void                        Init() { Initialize?.Invoke();}
     }
 }

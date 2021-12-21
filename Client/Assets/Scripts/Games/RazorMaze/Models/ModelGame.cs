@@ -92,8 +92,9 @@ namespace Games.RazorMaze.Models
         #endregion
         
         #region api
-        
-        public event UnityAction Initialized;
+
+        public bool              Initialized { get; private set; }
+        public event UnityAction Initialize;
         
         
 
@@ -131,7 +132,8 @@ namespace Games.RazorMaze.Models
                 item.GetAllProceedInfos = GetAllProceedInfos;
             Character.GetStartPosition = () => PathItemsProceeder.PathProceeds.First().Key;
 
-            Initialized?.Invoke();
+            Initialize?.Invoke();
+            Initialized = true;
         }
         
         public List<IMazeItemProceedInfo> GetAllProceedInfos()
@@ -163,12 +165,14 @@ namespace Games.RazorMaze.Models
         
         private void OnMazeRotationStarted(MazeRotationEventArgs _Args)
         {
-            InputScheduler.UnlockRotation(false);
+            InputScheduler.LockRotation(true);
+            InputScheduler.LockMovement(true);
         }
         
         private void OnMazeRotationFinished(MazeRotationEventArgs _Args)
         {
-            InputScheduler.UnlockRotation(true);
+            InputScheduler.LockRotation(false);
+            InputScheduler.LockMovement(false);
             GravityItemsProceeder.OnMazeOrientationChanged();
         }
         
@@ -178,7 +182,8 @@ namespace Games.RazorMaze.Models
                 GetInterfaceOfProceeders<ICharacterMoveStarted>(m_Proceeders);
             for (int i = 0; i < proceeders.Count; i++)
                 proceeders[i].OnCharacterMoveStarted(_Args);
-            InputScheduler.UnlockMovement(false);
+            InputScheduler.LockMovement(true);
+            InputScheduler.LockRotation(true);
         }
 
         private void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
@@ -195,7 +200,8 @@ namespace Games.RazorMaze.Models
                 GetInterfaceOfProceeders<ICharacterMoveFinished>(m_Proceeders);
             for (int i = 0; i < proceeders.Count; i++)
                 proceeders[i].OnCharacterMoveFinished(_Args);
-            InputScheduler.UnlockMovement(true);
+            InputScheduler.LockMovement(false);
+            InputScheduler.LockRotation(false);
         }
 
         #endregion
