@@ -17,26 +17,23 @@ namespace Games.RazorMaze.Views.UI
         private IBigDialogViewer            BigDialogViewer      { get; }
         private IProposalDialogViewer       ProposalDialogViewer { get; }
         private IDialogPanels               DialogPanels         { get; }
-        private ILoadingController          LoadingController    { get; }
         private IViewInputCommandsProceeder CommandsProceeder    { get; }
         private IManagersGetter             Managers             { get; }
 
         public ViewUI(
-            IUITicker _UITicker,
-            IBigDialogViewer _BigDialogViewer,
-            IProposalDialogViewer _ProposalDialogViewer,
-            IDialogPanels _DialogPanels,
-            ILoadingController _LoadingController,
-            IViewUIGameControls _ViewUIGameControls,
+            IUITicker                   _UITicker,
+            IBigDialogViewer            _BigDialogViewer,
+            IProposalDialogViewer       _ProposalDialogViewer,
+            IDialogPanels               _DialogPanels,
+            IViewUIGameControls         _GameControls,
             IViewInputCommandsProceeder _CommandsProceeder,
-            IManagersGetter _Managers)
-            : base(_ViewUIGameControls)
+            IManagersGetter             _Managers)
+            : base(_GameControls)
         {
             UITicker = _UITicker;
             BigDialogViewer = _BigDialogViewer;
             ProposalDialogViewer = _ProposalDialogViewer;
             DialogPanels = _DialogPanels;
-            LoadingController = _LoadingController;
             CommandsProceeder = _CommandsProceeder;
             Managers = _Managers;
         }
@@ -55,7 +52,7 @@ namespace Games.RazorMaze.Views.UI
             ProposalDialogViewer.Init(parent);
             BigDialogViewer.IsOtherDialogViewersShowing = () => ProposalDialogViewer.IsShowing;
             ProposalDialogViewer.IsOtherDialogViewersShowing = () => BigDialogViewer.IsShowing;
-            UIGameControls.Init();
+            GameControls.Init();
             DialogPanels.Init();
             RaiseInitializedEvent();
         }
@@ -79,7 +76,7 @@ namespace Games.RazorMaze.Views.UI
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            UIGameControls.OnLevelStageChanged(_Args);
+            GameControls.OnLevelStageChanged(_Args);
             ShowRateGamePanel(_Args);
         }
         

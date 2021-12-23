@@ -3,11 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using Utils;
 
-#if UNITY_EDITOR
-
-#endif
-
-namespace GameHelpers
+namespace UI.Helpers
 {
     public class TransformHelper : MonoBehaviour
     {
@@ -37,12 +33,8 @@ namespace GameHelpers
 
         public override void OnInspectorGUI()
         {
-            if (m_Transform is RectTransform)
-            {
-                GUILayout.Label("This helper is not intended for gameobjects with RectTransform component");
-                return;
-            }
-        
+            if (GUILayout.Button("Clone"))
+                m_TransformHelper.gameObject.Clone();
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Set Position"))
                 SetPosition();
@@ -50,58 +42,47 @@ namespace GameHelpers
             m_TransformHelper.ScreenPosIndex = EditorGUILayout.Popup(
                 m_TransformHelper.ScreenPosIndex, m_ScreenPosOptions);
             GUILayout.EndHorizontal();
-            
         }
 
         private void SetPosition()
         {
             switch (m_TransformHelper.ScreenPosIndex)
             {
-                case 0:
-                    SetCenter();
-                    break;
-                case 1:
-                    SetTopLeft();
-                    break;
-                case 2:
-                    SetTopRight();
-                    break;
-                case 3:
-                    SetBottomLeft();
-                    break;
-                case 4:
-                    SetBottomRight();
-                    break;
+                case 0: SetCenter();      break;
+                case 1: SetTopLeft();     break;
+                case 2: SetTopRight();    break;
+                case 3: SetBottomLeft();  break;
+                case 4: SetBottomRight(); break;
             }
         }
 
         private void SetCenter()
         {
-            Bounds bounds = GraphicUtils.GetVisibleBounds();
+            var bounds = GraphicUtils.GetVisibleBounds();
             m_Transform.SetPosXY(bounds.center.x, bounds.center.y);
         }
 
         private void SetTopLeft()
         {
-            Bounds bounds = GraphicUtils.GetVisibleBounds();
+            var bounds = GraphicUtils.GetVisibleBounds();
             m_Transform.SetPosXY(bounds.min.x, bounds.max.y);
         }
 
         private void SetTopRight()
         {
-            Bounds bounds = GraphicUtils.GetVisibleBounds();
+            var bounds = GraphicUtils.GetVisibleBounds();
             m_Transform.SetPosXY(bounds.max.x, bounds.max.y);
         }
 
         private void SetBottomLeft()
         {
-            Bounds bounds = GraphicUtils.GetVisibleBounds();
+            var bounds = GraphicUtils.GetVisibleBounds();
             m_Transform.SetPosXY(bounds.min.x, bounds.min.y);
         }
 
         private void SetBottomRight()
         {
-            Bounds bounds = GraphicUtils.GetVisibleBounds();
+            var bounds = GraphicUtils.GetVisibleBounds();
             m_Transform.SetPosXY(bounds.max.x, bounds.min.y);
         }
     }

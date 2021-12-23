@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Linq;
 using DI.Extensions;
-using Entities;
+using Exceptions;
 using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Common;
@@ -16,7 +16,8 @@ namespace Games.RazorMaze.Views.UI
 {
     public interface IViewUIPrompt : IOnLevelStageChanged, IInitViewUIItem
     {
-        bool InTutorial { get; }
+        void OnTutorialStarted(ETutorialType _Type);
+        void OnTutorialFinished(ETutorialType _Type);
     }
 
     public class ViewUIPrompt : IViewUIPrompt, IUpdateTick
@@ -35,21 +36,17 @@ namespace Games.RazorMaze.Views.UI
 
         #region constants
 
-        private const string KeyPromptHowToRotateClockwise = "swipe_to_rotate_clockwise";
-        private const string KeyPromptHowToRotateCounter   = "swipe_to_rotate_counter";
-        private const string KeyPromptSwipeToStart         = "swipe_to_start";
-        private const string KeyPromptTapToNext            = "tap_to_next";
+        private const string KeyPromptSwipeToStart = "swipe_to_start";
+        private const string KeyPromptTapToNext    = "tap_to_next";
 
         #endregion
 
         #region nonpublic members
 
         private float      m_BottomOffset;
-        private bool       m_HowToRotateClockwisePromptHidden;
-        private bool       m_HowToRotateCounterClockwisePromptHidden;
-        private bool       m_PromptHowToRotateShown;
         private PromptInfo m_CurrentPromptInfo;
         private bool       m_RunShowPromptCoroutine;
+        private bool       m_InTutorial;
 
 
         #endregion
@@ -66,14 +63,14 @@ namespace Games.RazorMaze.Views.UI
         private IPrefabSetManager           PrefabSetManager    { get; }
 
         public ViewUIPrompt(
-            IModelGame _Model,
-            IViewGameTicker _GameTicker,
-            IContainersGetter _ContainersGetter,
-            ILocalizationManager _LocalizationManager,
+            IModelGame                  _Model,
+            IViewGameTicker             _GameTicker,
+            IContainersGetter           _ContainersGetter,
+            ILocalizationManager        _LocalizationManager,
             IViewInputCommandsProceeder _CommandsProceeder,
-            ICameraProvider _CameraProvider,
-            IColorProvider _ColorProvider,
-            IPrefabSetManager _PrefabSetManager)
+            ICameraProvider             _CameraProvider,
+            IColorProvider              _ColorProvider,
+            IPrefabSetManager           _PrefabSetManager)
         {
             Model = _Model;
             GameTicker = _GameTicker;
@@ -88,32 +85,22 @@ namespace Games.RazorMaze.Views.UI
         #endregion
 
         #region api
-
-        public bool InTutorial { get; private set; }
-
+        
         public void Init(Vector4 _Offsets)
         {
             m_BottomOffset = _Offsets.z;
             GameTicker.Register(this);
-            CommandsProceeder.Command += InputConfiguratorOnCommand;
+            CommandsProceeder.Command += OnCommand;
         }
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             switch (_Args.Stage)
             {
-                case ELevelStage.Loaded:
-                    m_PromptHowToRotateShown = SaveUtils.GetValue(SaveKeys.PromptHowToRotateShown);
-                    break;
                 case ELevelStage.ReadyToStart:
                     if (_Args.PreviousStage != ELevelStage.Paused)
                     {
-                        if (!m_PromptHowToRotateShown && MazeContainsGravityItems())
-                        {
-                            InTutorial = true;
-                            ShowPromptHowToRotateClockwise();
-                        }
-                        else
+                        if (!m_InTutorial)
                             ShowPromptSwipeToStart();
                     }
                     break;
@@ -131,6 +118,13 @@ namespace Games.RazorMaze.Views.UI
                         && _Args.PrePreviousStage == ELevelStage.ReadyToUnloadLevel)
                         HidePrompt();
                     break;
+                case ELevelStage.Loaded:
+                case ELevelStage.Paused:
+                case ELevelStage.Unloaded:
+                case ELevelStage.CharacterKilled:
+                    break;
+                default:
+                    throw new SwitchCaseNotImplementedException(_Args.Stage);
             }
         }
         
@@ -139,68 +133,24 @@ namespace Games.RazorMaze.Views.UI
             if (m_RunShowPromptCoroutine)
                 Coroutines.Run(ShowPromptCoroutine());
         }
+        
+        public void OnTutorialStarted(ETutorialType _Type)
+        {
+            m_InTutorial = true;
+        }
+
+        public void OnTutorialFinished(ETutorialType _Type)
+        {
+            m_InTutorial = false;
+        }
 
         #endregion
 
         #region nonpublic methods
-
-        private bool MazeContainsGravityItems()
-        {
-            return Model.GetAllProceedInfos()
-                .Any(_Info => RazorMazeUtils.GravityItemTypes().Contains(_Info.Type));
-        }
         
-        private void InputConfiguratorOnCommand(EInputCommand _Key, object[] _Args)
+        private void OnCommand(EInputCommand _Key, object[] _Args)
         {
-            if (_Key != EInputCommand.RotateClockwise && _Key != EInputCommand.RotateCounterClockwise)
-                return;
-            if (m_PromptHowToRotateShown || !MazeContainsGravityItems())
-                return;
-            if (_Key == EInputCommand.RotateClockwise)
-            {
-                if (m_HowToRotateClockwisePromptHidden)
-                    return;
-                m_HowToRotateClockwisePromptHidden = true;
-                HidePrompt();
-                ShowPromptHowToRotateCounterClockwise();
-            }
-            else if (_Key == EInputCommand.RotateCounterClockwise)
-            {
-                if (m_HowToRotateClockwisePromptHidden)
-                {
-                    if (m_HowToRotateCounterClockwisePromptHidden)
-                        return;
-                    m_HowToRotateCounterClockwisePromptHidden = true;
-                    HidePrompt();
-                    ShowPromptSwipeToStart();
-                    CommandsProceeder.UnlockAllCommands();
-                    InTutorial = false;
-                    m_PromptHowToRotateShown = true;
-                    SaveUtils.PutValue(SaveKeys.PromptHowToRotateShown, true);
-                }
-            }
-        }
 
-        private void ShowPromptHowToRotateClockwise()
-        {
-            CommandsProceeder.LockCommands(CommandsProceeder.GetAllCommands());
-            CommandsProceeder.UnlockCommand(EInputCommand.RotateClockwise);
-            var screenBounds = GraphicUtils.GetVisibleBounds();
-            var position = new Vector3(
-                screenBounds.center.x,
-                GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y + m_BottomOffset + 7f);
-            ShowPrompt(KeyPromptHowToRotateClockwise, position);
-        }
-        
-        private void ShowPromptHowToRotateCounterClockwise()
-        {
-            CommandsProceeder.LockCommands(CommandsProceeder.GetAllCommands());
-            CommandsProceeder.UnlockCommand(EInputCommand.RotateCounterClockwise);
-            var screenBounds = GraphicUtils.GetVisibleBounds();
-            var position = new Vector3(
-                screenBounds.center.x,
-                GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y + m_BottomOffset + 7f);
-            ShowPrompt(KeyPromptHowToRotateCounter, position);
         }
 
         private void ShowPromptSwipeToStart()

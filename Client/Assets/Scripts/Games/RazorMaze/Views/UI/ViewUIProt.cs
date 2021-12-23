@@ -4,7 +4,7 @@
     {
         public override void OnLevelStageChanged(LevelStageArgs _Args) { }
 
-        public ViewUIProt(IViewUIGameControls _UIGameControls) : base(_UIGameControls)
+        public ViewUIProt(IViewUIGameControls _GameControls) : base(_GameControls)
         {
         }
     }

@@ -7,7 +7,7 @@ namespace Games.RazorMaze.Views.UI
 {
     public interface IViewUI : IInit, IOnLevelStageChanged
     {
-        IViewUIGameControls UIGameControls { get; }
+        IViewUIGameControls GameControls { get; }
     }
     
     public abstract class ViewUIBase : IViewUI
@@ -20,11 +20,11 @@ namespace Games.RazorMaze.Views.UI
 
         #region constructor
 
-        public IViewUIGameControls UIGameControls { get; }
+        public IViewUIGameControls GameControls { get; }
 
-        protected ViewUIBase(IViewUIGameControls _UIGameControls)
+        protected ViewUIBase(IViewUIGameControls _GameControls)
         {
-            UIGameControls = _UIGameControls;
+            GameControls = _GameControls;
         }
 
         #endregion

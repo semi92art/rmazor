@@ -10,5 +10,6 @@
         public const string GameUI       = nameof(GameUI);
         public const string AudioSources = nameof(AudioSources);
         public const string TouchInput   = nameof(TouchInput);
+        public const string Tutorial     = nameof(Tutorial);
     }
 }

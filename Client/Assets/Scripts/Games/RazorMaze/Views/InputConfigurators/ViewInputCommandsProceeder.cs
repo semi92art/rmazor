@@ -4,6 +4,7 @@ using System.Linq;
 using DI.Extensions;
 using Games.RazorMaze.Models;
 using UnityEngine.Events;
+using Utils;
 
 namespace Games.RazorMaze.Views.InputConfigurators
 {
@@ -17,7 +18,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
         void                       LockCommands(IEnumerable<EInputCommand> _Keys, string _Group = "common");
         void                       UnlockCommands(IEnumerable<EInputCommand> _Keys, string _Group = "common");
         IEnumerable<EInputCommand> GetAllCommands();
-        void                       UnlockAllCommands();
+        void                       UnlockAllCommands(string _Group = "common");
         void                       RaiseCommand(EInputCommand _Key, object[] _Args, bool _Forced = false);
     }
     
@@ -58,7 +59,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
         public void LockCommands(IEnumerable<EInputCommand> _Keys, string _Group = "common")
         {
             foreach (var key in _Keys)
-                LockCommand(key);
+                LockCommand(key, _Group);
         }
 
         public void UnlockCommands(IEnumerable<EInputCommand> _Keys, string _Group = "common")
@@ -72,10 +73,10 @@ namespace Games.RazorMaze.Views.InputConfigurators
             return Enum.GetValues(typeof(EInputCommand)).Cast<EInputCommand>();
         }
 
-        public void UnlockAllCommands()
+        public void UnlockAllCommands(string _Group = "common")
         {
             var allCommands = GetAllCommands();
-            UnlockCommands(allCommands);
+            UnlockCommands(allCommands, _Group);
         }
         
         public void RaiseCommand(EInputCommand _Key, object[] _Args, bool _Forced = false)

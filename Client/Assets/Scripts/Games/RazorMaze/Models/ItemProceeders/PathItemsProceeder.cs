@@ -16,6 +16,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         Dictionary<V2Int, bool>  PathProceeds      { get; }
         event PathProceedHandler PathProceedEvent;
         event PathProceedHandler AllPathsProceededEvent;
+        void ProceedPathItem(V2Int _PathItem);
     }
     
     public class PathItemsProceeder : IPathItemsProceeder, IOnLevelStageChanged
@@ -73,12 +74,8 @@ namespace Games.RazorMaze.Models.ItemProceeders
             if (_Args.Stage == ELevelStage.Loaded)
                 CollectPathProceeds();
         }
-        
-        #endregion
-        
-        #region nonpublic methods
 
-        private void ProceedPathItem(V2Int _PathItem)
+        public void ProceedPathItem(V2Int _PathItem)
         {
             if (!Character.Alive)
                 return;
@@ -98,6 +95,10 @@ namespace Games.RazorMaze.Models.ItemProceeders
             AllPathsProceeded = true;
             AllPathsProceededEvent?.Invoke(_PathItem);
         }
+        
+        #endregion
+        
+        #region nonpublic methods
 
         private void CollectPathProceeds()
         {

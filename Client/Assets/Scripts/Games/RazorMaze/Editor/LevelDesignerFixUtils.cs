@@ -11,7 +11,7 @@ namespace Games.RazorMaze.Editor
         [FixUtil]
         public static void FixTrapsReact()
         {
-            var levels = LevelsList.Levels;
+            var levels = _levelsList.Levels;
             foreach (var l in levels)
             {
                 var trapReactMazeItems = l.MazeItems
@@ -38,14 +38,14 @@ namespace Games.RazorMaze.Editor
                     item.Directions = new List<V2Int> { item.Direction };
                 }
             }
-            LevelsList.Save();
+            _levelsList.Save();
         }
 
         [FixUtil]
         public static void FindLevelsWithNonPairPortals()
         {
             bool errors = false;
-            var levels = LevelsList.Levels;
+            var levels = _levelsList.Levels;
             for (int i = 0; i < levels.Count; i++)
             {
                 var l = levels[i];
@@ -67,7 +67,7 @@ namespace Games.RazorMaze.Editor
         public static void FindLevelsWithTurretsInvalid()
         {
             bool errors = false;
-            var levels = LevelsList.Levels;
+            var levels = _levelsList.Levels;
             for (int i = 0; i < levels.Count; i++)
             {
                 var l = levels[i];
@@ -89,7 +89,7 @@ namespace Games.RazorMaze.Editor
         public static void FindLevelsWithReactsTrapsInvalid()
         {
             bool errors = false;
-            var levels = LevelsList.Levels;
+            var levels = _levelsList.Levels;
             for (int i = 0; i < levels.Count; i++)
             {
                 var l = levels[i];
@@ -111,7 +111,7 @@ namespace Games.RazorMaze.Editor
         public static void FindLevelsWithMovingTrapsInvalid()
         {
             bool errors = false;
-            var levels = LevelsList.Levels;
+            var levels = _levelsList.Levels;
             for (int i = 0; i < levels.Count; i++)
             {
                 var l = levels[i];
@@ -133,7 +133,7 @@ namespace Games.RazorMaze.Editor
         public static void FindLevelsWithGravityBlocksInvalid()
         {
             bool errors = false;
-            var levels = LevelsList.Levels;
+            var levels = _levelsList.Levels;
             for (int i = 0; i < levels.Count; i++)
             {
                 var l = levels[i];

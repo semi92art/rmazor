@@ -4,19 +4,13 @@ using UnityEditor;
 using UnityEngine;
 using Utils;
 
-#if UNITY_EDITOR
-
-#endif
-
 namespace UI.Helpers
 {
-    public class RectTransformHelper : MonoBehaviour
-    {
-    }
+    public class RectTransformHelper : TransformHelper { }
 
 #if UNITY_EDITOR
     [CustomEditor(typeof(RectTransformHelper))]
-    public class RectTransformHelperEditor : Editor
+    public class RectTransformHelperEditor : TransformHelperEditor
     {
         private RectTransformHelper m_RectTransformHelper;
         private GUIStyle m_Bold;
@@ -33,7 +27,9 @@ namespace UI.Helpers
 
         public override void OnInspectorGUI()
         {
-            RectTransform rTr = m_RectTransformHelper.RTransform();
+            base.OnInspectorGUI();
+            
+            var rTr = m_RectTransformHelper.RTransform();
             var anchMin = rTr.anchorMin;
             var anchMax = rTr.anchorMax;
             var anchPos = rTr.anchoredPosition;
@@ -75,9 +71,6 @@ namespace UI.Helpers
                 sb.ToString().CopyToClipboard();
             }
 
-            if (GUILayout.Button("Clone"))
-                m_RectTransformHelper.gameObject.Clone();
-            
             GUILayout.Space(5);
             GUILayout.Label("Additional info:", m_Bold);
             GUILayout.Space(5);

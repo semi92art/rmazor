@@ -106,7 +106,10 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
             ViewMazeItemProps _Props) 
         {
             var tr = new GameObject("Path Item").transform;
-            tr.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems));
+            var go = GameObject.Find(ContainerNames.MazeItems);
+            if (go == null)
+                go = new GameObject(ContainerNames.MazeItems);
+            tr.SetParent(go.transform);
             var item = tr.gameObject.AddComponent<ViewMazeItemProt>();
             item.MazeSize = _MazeSize; 
             item.Init(_Props);
@@ -129,7 +132,10 @@ namespace Games.RazorMaze.Views.Helpers.MazeItemsCreators
             ViewMazeItemProps _Props)
         {
             var tr = new GameObject("Maze Item").transform;
-            tr.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems));
+            var go = GameObject.Find(ContainerNames.MazeItems);
+            if (go == null)
+                go = new GameObject(ContainerNames.MazeItems);
+            tr.SetParent(go.transform);
             var item = tr.gameObject.AddComponent<ViewMazeItemProt>();
 
             item.MazeSize = _MazeSize;

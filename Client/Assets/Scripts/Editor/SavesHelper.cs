@@ -10,6 +10,7 @@ public class SavesHelper : EditorWindow
     [MenuItem("Tools/Saves Helper", false)]
     public static void ShowWindow()
     {
+        SaveUtils.ReloadSaves();
         GetWindow<SavesHelper>("Saves Helper");
     }
 

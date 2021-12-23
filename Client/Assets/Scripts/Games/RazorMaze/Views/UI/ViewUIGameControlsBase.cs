@@ -38,7 +38,7 @@ namespace Games.RazorMaze.Views.UI
             {
                 var commands = RazorMazeUtils.GetMoveCommands()
                     .Concat(RazorMazeUtils.GetRotateCommands());
-                CommandsProceeder.LockCommands(commands);
+                CommandsProceeder.LockCommands(commands, nameof(IViewUIGameControls));
             }
         }
 
@@ -49,7 +49,7 @@ namespace Games.RazorMaze.Views.UI
             {
                 var commands = RazorMazeUtils.GetMoveCommands()
                     .Concat(RazorMazeUtils.GetRotateCommands());
-                CommandsProceeder.UnlockCommands(commands);
+                CommandsProceeder.UnlockCommands(commands, nameof(IViewUIGameControls));
             }
         }
     }

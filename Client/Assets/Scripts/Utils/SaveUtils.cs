@@ -44,6 +44,11 @@ namespace Utils
             PutXElementValue(_Key.Key, value);
         }
 
+        public static void ReloadSaves()
+        {
+            SavesDoc = XDocument.Load(SavesPath);
+        }
+
         private static void CreateSavesFileIfNotExist()
         {
             if (File.Exists(SavesPath))

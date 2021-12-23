@@ -102,7 +102,7 @@ namespace DI.Extensions
         public static GameObject Clone(this GameObject _Object)
         {
             var tr = _Object.transform;
-            GameObject cloned = Object.Instantiate(_Object, tr.position, tr.rotation, tr.parent);
+            var cloned = Object.Instantiate(_Object, tr.position, tr.rotation, tr.parent);
             cloned.name = _Object.name;
             return cloned;
         }

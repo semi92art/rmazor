@@ -92,9 +92,12 @@ namespace Games.RazorMaze.Views.UI
                 return;
             bool enableRotation = Model.GetAllProceedInfos()
                 .Any(_Info => RazorMazeUtils.GravityItemTypes().Contains(_Info.Type));
+            var commands = RazorMazeUtils.GetRotateCommands();
+            var group = nameof(IViewUIRotationControls);
             if (enableRotation) 
-                return;
-            CommandsProceeder.LockCommands(RazorMazeUtils.GetRotateCommands());
+                CommandsProceeder.UnlockCommands(commands, group);
+            else
+                CommandsProceeder.LockCommands(commands, group);
         }
 
         public List<Component> GetRenderers()
