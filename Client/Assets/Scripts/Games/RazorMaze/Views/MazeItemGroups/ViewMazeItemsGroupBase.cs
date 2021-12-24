@@ -3,7 +3,6 @@ using System.Linq;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.MazeItems;
-using Utils;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
@@ -23,7 +22,6 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         }
 
         #endregion
-        
 
         #region api
         

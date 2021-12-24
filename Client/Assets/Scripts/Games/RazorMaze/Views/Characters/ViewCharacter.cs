@@ -152,14 +152,7 @@ namespace Games.RazorMaze.Views.Characters
                 m_Eye1Shape.Color = m_Eye2Shape.Color = _Color;
         }
 
-        public override void OnRotationAfterFinished(MazeRotationEventArgs _Args)
-        {
-            if (m_NeedToInvokeOnReadyToContinue)
-            {
-                SetDefaultCharacterState(true);
-                m_NeedToInvokeOnReadyToContinue = false;
-            }
-        }
+        public override void OnRotationAfterFinished(MazeRotationEventArgs _Args) { }
 
         public override void OnAllPathProceed(V2Int _LastPath)
         {
@@ -218,10 +211,7 @@ namespace Games.RazorMaze.Views.Characters
                     break;
                 case ELevelStage.ReadyToStart:
                     m_EnableMoving = true;
-                    if (m_OrientationCache == MazeOrientation.North)
-                        SetDefaultCharacterState(true);
-                    else
-                        m_NeedToInvokeOnReadyToContinue = true;
+                    SetDefaultCharacterState(true);
                     break;
                 case ELevelStage.CharacterKilled:
                     m_OrientationCache = Model.Data.Orientation;

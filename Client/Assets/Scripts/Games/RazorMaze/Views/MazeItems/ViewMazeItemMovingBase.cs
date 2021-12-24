@@ -87,8 +87,8 @@ namespace Games.RazorMaze.Views.MazeItems
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
-
-            if (_Args.Stage == ELevelStage.Loaded || _Args.Stage == ELevelStage.ReadyToStart)
+            if ((_Args.Stage == ELevelStage.Loaded || _Args.Stage == ELevelStage.ReadyToStart)
+            && _Args.PreviousStage != ELevelStage.CharacterKilled)
             {
                 Object.transform.localPosition = CoordinateConverter.ToLocalMazeItemPosition(Props.Position);
             }

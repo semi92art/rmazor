@@ -86,7 +86,7 @@ namespace Games.RazorMaze.Models
                     default, default, Data.Orientation, true);
                 RotationStarted?.Invoke(args);
             }
-            else if (_Args.Stage == ELevelStage.ReadyToStart)
+            else if (_Args.Stage == ELevelStage.ReadyToStart && _Args.PreviousStage != ELevelStage.CharacterKilled)
             {
                 if (Data.Orientation == MazeOrientation.North)
                     return;
