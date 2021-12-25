@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Constants;
 using Entities;
 using GameHelpers;
 using Managers.IAP;
@@ -29,13 +28,13 @@ namespace Managers.Advertising
 
         #region inject
 
-        private IShopManager       ShopManager  { get; }
         private CommonGameSettings GameSettings { get; }
+        private IShopManager       ShopManager  { get; }
         private ICommonTicker      Ticker       { get; }
 
         public CustomMediationAdsManager(
-            IShopManager _ShopManager,
             CommonGameSettings _GameSettings,
+            IShopManager _ShopManager,
             ICommonTicker _Ticker)
         {
             ShopManager = _ShopManager;
@@ -49,20 +48,8 @@ namespace Managers.Advertising
         
         public BoolEntity ShowAds 
         {
-            get
-            {
-#if UNITY_EDITOR
-                return GetShowAdsCached();
-#elif UNITY_ANDROID
-                return GetShowAdsAndroid();
-#elif UNITY_IPHONE || UNITY_IOS
-                return GetShowAdsIos();
-#endif
-            }
-            set
-            {
-                SaveUtils.PutValue(SaveKeys.DisableAds, !value.Value);
-            }
+            get => GetShowAdsCached();
+            set => SaveUtils.PutValue(SaveKeys.DisableAds, !value.Value);
         }
 
         public bool RewardedAdReady     => m_Providers.Any(_P => _P.RewardedAdReady);
@@ -169,49 +156,6 @@ namespace Managers.Advertising
             SaveUtils.PutValue(SaveKeys.DisableAds, false);
             result.Value = true;
             return result;
-        }
-        
-#if UNITY_ANDROID && !UNITY_EDITOR
-        
-        private BoolEntity GetShowAdsAndroid()
-        {
-            return GetShowAdsCore();
-        }
-        
-#elif (UNITY_IOS || UNITY_IPHONE) && !UNITY_EDITOR
-
-        private BoolEntity GetShowAdsIos()
-        {
-            return GetShowAdsCore();
-        }
-        
-#endif
-        
-        private BoolEntity GetShowAdsCore()
-        {
-            var cached = GetShowAdsCached();
-            return cached;
-            // if (!cached.Value)
-            // var args = new BoolEntity();
-            // var itemInfo = ShopManager.GetItemInfo(PurchaseKeys.NoAds);
-            // Coroutines.Run(Coroutines.WaitWhile(
-            //     () => itemInfo.Result() == EShopProductResult.Pending,
-            //     () =>
-            //     {
-            //         switch (itemInfo.Result())
-            //         {
-            //             case EShopProductResult.Success:
-            //                 args.Result = EEntityResult.Success; 
-            //                 break;
-            //             case EShopProductResult.Fail:
-            //                 Dbg.LogWarning("Failed to load ShowAds entity");
-            //                 args.Value = cached.Value;
-            //                 args.Result = EEntityResult.Success;
-            //                 break;
-            //         }
-            //         args.Value = !itemInfo.HasReceipt;
-            //     }));
-            // return args;
         }
 
         #endregion

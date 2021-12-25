@@ -243,9 +243,9 @@ public class EditorHelper : EditorWindow
     private void UpdateTestUrl(bool _Forced = false)
     {
         if (string.IsNullOrEmpty(m_DebugServerUrl))
-            m_DebugServerUrl = SaveUtils.GetValue(SaveKeys.ServerUrl);
+            m_DebugServerUrl = SaveUtilsInEditor.GetValue(SaveKeysInEditor.ServerUrl);
         if (m_DebugServerUrl != m_TestUrlCheck || _Forced)
-            SaveUtils.PutValue(SaveKeys.ServerUrl, m_DebugServerUrl);
+            SaveUtilsInEditor.PutValue(SaveKeysInEditor.ServerUrl, m_DebugServerUrl);
         m_TestUrlCheck = m_DebugServerUrl;
     }
 

@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Text;
 using Constants;
 using DI.Extensions;
 using Entities;
@@ -7,8 +6,10 @@ using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.Factories;
 using Games.RazorMaze.Views.InputConfigurators;
 using Shapes;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using Utils;
@@ -43,31 +44,37 @@ namespace Games.RazorMaze.Views.UI
         private static int AkRotateCounterClockwise => AnimKeys.Anim2;
         private static int AkIdlePrompt             => AnimKeys.Stop;
         
-        private bool     m_MovementTutorialStarted;
-        private bool     m_RotationTutorialStarted;
-        private bool     m_MovementTutorialFinished;
-        private bool     m_RotationTutorialFinished;
-        private bool     m_ReadyToSecondMovementStep;
-        private bool     m_ReadyToThirdMovementStep;
-        private bool     m_ReadyToFourthMovementStep;
-        private bool     m_ReadyToFinishMovementTutorial;
-        private bool     m_ReadyToSecondRotationStep;
-        private bool     m_ReadyToFinishRotationTutorial;
-        private Vector4  m_Offsets;
-        private Animator m_MovePrompt;
-        private Animator m_RotatePrompt;
+        private bool                          m_MovementTutorialStarted;
+        private bool                          m_RotationTutorialStarted;
+        private bool                          m_MovementTutorialFinished;
+        private bool                          m_RotationTutorialFinished;
+        private bool                          m_ReadyToSecondMovementStep;
+        private bool                          m_ReadyToThirdMovementStep;
+        private bool                          m_ReadyToFourthMovementStep;
+        private bool                          m_ReadyToFinishMovementTutorial;
+        private bool                          m_ReadyToSecondRotationStep;
+        private bool                          m_ReadyToFinishRotationTutorial;
+        private Vector4                       m_Offsets;
+        private Animator                      m_MovePrompt;
+        private Animator                      m_RotatePrompt;
+        private IRotatingPossibilityIndicator m_RotPossIndicator;
+        private TextMeshPro                   m_RotPossText;
+        private Animator                      m_RotPossTextAnim;
+        private AnimationTriggerer            m_RotPossTextTriggerer;
 
         #endregion
 
         #region inject
 
-        private IModelGame                  Model               { get; }
-        private IPrefabSetManager           PrefabSetManager    { get; }
-        private IContainersGetter           ContainersGetter    { get; }
-        private IMazeCoordinateConverter    CoordinateConverter { get; }
-        private IViewInputCommandsProceeder CommandsProceeder   { get; }
-        private ICameraProvider             CameraProvider      { get; }
-        private IColorProvider              ColorProvider       { get; }
+        private IModelGame                           Model               { get; }
+        private IPrefabSetManager                    PrefabSetManager    { get; }
+        private IContainersGetter                    ContainersGetter    { get; }
+        private IMazeCoordinateConverter             CoordinateConverter { get; }
+        private IViewInputCommandsProceeder          CommandsProceeder   { get; }
+        private ICameraProvider                      CameraProvider      { get; }
+        private IColorProvider                       ColorProvider       { get; }
+        private IRotatingPossibilityIndicatorFactory RotPossIndFactory   { get; }
+        private ILocalizationManager                 LocalizationManager { get; }
 
         public ViewUITutorial(
             IModelGame _Model,
@@ -76,7 +83,9 @@ namespace Games.RazorMaze.Views.UI
             IMazeCoordinateConverter _CoordinateConverter,
             IViewInputCommandsProceeder _CommandsProceeder,
             ICameraProvider _CameraProvider,
-            IColorProvider _ColorProvider)
+            IColorProvider _ColorProvider,
+            IRotatingPossibilityIndicatorFactory _RotPossIndFactory,
+            ILocalizationManager _LocalizationManager)
         {
             Model = _Model;
             PrefabSetManager = _PrefabSetManager;
@@ -85,6 +94,8 @@ namespace Games.RazorMaze.Views.UI
             CommandsProceeder = _CommandsProceeder;
             CameraProvider = _CameraProvider;
             ColorProvider = _ColorProvider;
+            RotPossIndFactory = _RotPossIndFactory;
+            LocalizationManager = _LocalizationManager;
         }
 
         #endregion
@@ -187,6 +198,7 @@ namespace Games.RazorMaze.Views.UI
         {
             if (m_RotationTutorialStarted || m_RotationTutorialFinished)
                 return;
+            SaveUtils.PutValue(SaveKeys.EnableRotation, true);
             TutorialStarted?.Invoke(ETutorialType.Rotation);
             var cont = ContainersGetter.GetContainer(ContainerNames.Tutorial);
             var goRotPrompt = PrefabSetManager.InitPrefab(
@@ -273,6 +285,7 @@ namespace Games.RazorMaze.Views.UI
             m_RotatePrompt.transform.SetPosXY(
                 CoordinateConverter.GetMazeCenter().x,
                 GetScreenBounds().min.y +  m_Offsets.z + 10f);
+            CommandsProceeder.UnlockCommands(RazorMazeUtils.GetRotateCommands(), "all");
             CommandsProceeder.LockCommands(RazorMazeUtils.GetRotateCommands(), GetGroupName());
             CommandsProceeder.UnlockCommand(EInputCommand.RotateCounterClockwise, GetGroupName());
             while (!m_ReadyToSecondRotationStep)
@@ -290,6 +303,36 @@ namespace Games.RazorMaze.Views.UI
             CommandsProceeder.UnlockCommand(EInputCommand.RotateClockwise, GetGroupName());
             while (!m_ReadyToFinishRotationTutorial)
                 yield return null;
+            yield return RotationTutorialThirdStepCoroutine();
+        }
+
+        private IEnumerator RotationTutorialThirdStepCoroutine()
+        {
+            m_RotatePrompt.SetTrigger(AkIdlePrompt);
+            m_RotPossIndicator = RotPossIndFactory.Create();
+            m_RotPossIndicator.Shape.Color = ColorProvider.GetColor(ColorIds.UI).SetA(0f);
+            m_RotPossIndicator.Animator.SetTrigger(AnimKeys.Anim);
+            var cont = ContainersGetter.GetContainer(ContainerNames.Tutorial);
+            var goRotPossText = PrefabSetManager.InitPrefab(
+                cont, "tutorials", "rotation_possibility_text");
+            var screenBounds = GraphicUtils.GetVisibleBounds();
+            goRotPossText.transform.SetPosXY(
+                screenBounds.center.x,
+                screenBounds.min.y + 5f);
+            m_RotPossText = goRotPossText.GetCompItem<TextMeshPro>("text");
+            m_RotPossText.rectTransform.sizeDelta = m_RotPossText.rectTransform.sizeDelta.SetX(
+                screenBounds.max.x - screenBounds.min.x - 3f);
+            m_RotPossText.color = ColorProvider.GetColor(ColorIds.UI).SetA(0f);
+            m_RotPossTextAnim = goRotPossText.GetCompItem<Animator>("animator");
+            LocalizationManager.AddTextObject(m_RotPossText, "rotation_possibility_text");
+            bool readyToNextStage = false;
+            m_RotPossIndicator.Triggerer.Trigger1 = () => readyToNextStage = true;
+            m_RotPossTextAnim.SetTrigger(AnimKeys.Anim);
+            m_RotPossIndicator.Animator.SetTrigger(AnimKeys.Anim2);
+            while (!readyToNextStage)
+                yield return null;
+            m_RotPossTextAnim.SetTrigger(AnimKeys.Stop);
+            m_RotPossIndicator.Animator.SetTrigger(AnimKeys.Stop);
             FinishRotationTutorial();
         }
 
@@ -297,7 +340,7 @@ namespace Games.RazorMaze.Views.UI
         {
             CommandsProceeder.UnlockCommands(RazorMazeUtils.GetMoveCommands(), GetGroupName());
             CommandsProceeder.UnlockCommands(RazorMazeUtils.GetRotateCommands(), GetGroupName());
-            m_RotatePrompt.SetTrigger(AkIdlePrompt);
+            
             m_RotationTutorialFinished = true;
             SaveUtils.PutValue(SaveKeys.RotationTutorialFinished, true);
             TutorialFinished?.Invoke(ETutorialType.Rotation);
@@ -308,7 +351,7 @@ namespace Games.RazorMaze.Views.UI
             return GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
         }
 
-        private string GetGroupName()
+        private static string GetGroupName()
         {
             return nameof(IViewUITutorial);
         }

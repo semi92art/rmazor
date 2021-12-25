@@ -68,7 +68,7 @@ namespace UI.Panels
                     ProposalDialogViewer.Container,
                     RtrLites.FullFill),
                 CommonPrefabSetNames.DialogPanels, "wof_reward_panel");
-            Panel = go.RTransform();
+            PanelObject = go.RTransform();
             go.SetActive(false);
             
             m_RewardIcon = go.GetCompItem<Image>("reward_icon");

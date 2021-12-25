@@ -170,5 +170,11 @@ namespace Utils
             alert.Present();
 #endif
         }
+
+        public static void InitSRDebugger()
+        {
+            Dbg.Log("SRDebug.Init");
+            SRDebug.Init();
+        }
     }
 }

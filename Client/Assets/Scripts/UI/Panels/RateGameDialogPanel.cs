@@ -70,7 +70,7 @@ namespace UI.Panels
                     ProposalDialogViewer.Container,
                     RtrLites.FullFill),
                 CommonPrefabSetNames.DialogPanels, "rate_game_panel");
-            Panel = go.RTransform();
+            PanelObject = go.RTransform();
             go.SetActive(false);
 
             m_Animator        = go.GetCompItem<Animator>("animator");

@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using Games.RazorMaze.Models;
-
-namespace Entities
+﻿namespace Entities
 {
-
-    
     public class SaveKey<T>
     {
         public string Key { get; }

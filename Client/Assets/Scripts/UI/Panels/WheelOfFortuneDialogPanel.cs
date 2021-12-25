@@ -88,7 +88,7 @@ namespace UI.Panels
             m_WatchAdImage = m_SpinButton.GetCompItem<Image>("watch_ad_image");
             m_WatchAdBackground = m_SpinButton.GetContentItem("watch_ad_background");
             InstantiateWheel();
-            Panel = wofPan.RTransform();
+            PanelObject = wofPan.RTransform();
         }
 
         #endregion

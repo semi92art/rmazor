@@ -24,6 +24,7 @@ namespace Games.RazorMaze.Views
         IContainersGetter              ContainersGetter      { get; }
         IViewUI                        UI                    { get; }
         IViewLevelStageController      LevelStageController  { get; }
+        IViewInputController           InputController       { get; }
         IViewInputCommandsProceeder    CommandsProceeder     { get; }
         IViewCharacter                 Character             { get; }
         IViewMazeCommon                Common                { get; }

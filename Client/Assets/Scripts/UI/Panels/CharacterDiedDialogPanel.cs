@@ -82,14 +82,13 @@ namespace UI.Panels
 
         public override void LoadPanel()
         {
-            Dbg.Log(nameof(CharacterDiedDialogPanel) + ": " + nameof(LoadPanel));
             base.LoadPanel();
             var go = Managers.PrefabSetManager.InitUiPrefab(
                 UiFactory.UiRectTransform(
                     ProposalDialogViewer.Container,
                     RtrLites.FullFill),
                 CommonPrefabSetNames.DialogPanels, "character_died_panel");
-            Panel = go.RTransform();
+            PanelObject = go.RTransform();
             go.SetActive(false);
 
             m_Animator                = go.GetCompItem<Animator>("animator");

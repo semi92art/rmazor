@@ -10,6 +10,7 @@ using Games.RazorMaze.Views;
 using Games.RazorMaze.Views.Characters;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
+using Games.RazorMaze.Views.Factories;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.InputConfigurators;
@@ -84,7 +85,10 @@ namespace Mono_Installers
                 Container.Bind<IViewUILevelsPanel>()         .To<ViewUILevelsPanel>()             .AsSingle();
                 Container.Bind<IViewUIRotationControls>()    .To<ViewUIRotationControls>()        .AsSingle();
                 Container.Bind<IViewUITopButtons>()          .To<ViewUITopButtons>()              .AsSingle();
-                Container.Bind<IViewUITutorial>()           .To<ViewUITutorial>()               .AsSingle();
+                Container.Bind<IViewUITutorial>()            .To<ViewUITutorial>()                .AsSingle();
+                Container.Bind<IRotatingPossibilityIndicatorFactory>()
+                    .To<RotatingPossibilityIndicatorFactory>()
+                    .AsSingle();
             }
             
             Container.Bind<IViewGame>()                      .To<ViewGame>()                      .AsSingle();
@@ -146,7 +150,7 @@ namespace Mono_Installers
             }
             
             Container.Bind<IViewInputCommandsProceeder>()    .To<ViewInputCommandsProceeder>()    .AsSingle();
-            Container.Bind<IViewInputTouchProceeder>()       .To<ViewInputTouchProceeder>()       .AsSingle();
+            Container.Bind<IViewInputTouchProceeder>()       .To<ViewInputTouchProceederWithSRDebugInit>()       .AsSingle();
 #if UNITY_EDITOR
             Container.Bind<IViewInputController>()           .To<ViewInputControllerInEditor>()   .AsSingle();
 #else

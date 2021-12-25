@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Constants;
 using DI.Extensions;
+using Entities;
 using Exceptions;
 using GameHelpers;
 using Games.RazorMaze.Models;
@@ -34,19 +35,23 @@ namespace Games.RazorMaze.Views.InputConfigurators
         private          bool                  m_EnableRotation = true;
         private          bool                  m_FingerOnScreen;
         
+
+        
         #endregion
 
         #region inject
 
-        private ViewSettings                ViewSettings      { get; }
-        private IModelGame                  Model             { get; }
-        private IContainersGetter           ContainersGetter  { get; }
-        private IViewInputCommandsProceeder CommandsProceeder { get; }
-        private IViewGameTicker             GameTicker        { get; }
-        private ICameraProvider             CameraProvider    { get; }
-        private IPrefabSetManager           PrefabSetManager  { get; }
+        protected CommonGameSettings          CommonGameSettings { get; }
+        protected ViewSettings                ViewSettings       { get; }
+        protected IModelGame                  Model              { get; }
+        protected IContainersGetter           ContainersGetter   { get; }
+        protected IViewInputCommandsProceeder CommandsProceeder  { get; }
+        protected IViewGameTicker             GameTicker         { get; }
+        protected ICameraProvider             CameraProvider     { get; }
+        protected IPrefabSetManager           PrefabSetManager   { get; }
 
         protected ViewInputTouchProceeder(
+            CommonGameSettings _CommonGameSettings,
             ViewSettings _ViewSettings,
             IModelGame _Model,
             IContainersGetter _ContainersGetter,
@@ -55,6 +60,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
             ICameraProvider _CameraProvider,
             IPrefabSetManager _PrefabSetManager)
         {
+            CommonGameSettings = _CommonGameSettings;
             ViewSettings = _ViewSettings;
             Model = _Model;
             ContainersGetter = _ContainersGetter;
@@ -147,8 +153,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
             var goLeanFingerTap = new GameObject("Lean Finger Tap");
             goLeanFingerTap.SetParent(GetContainer());
             var lft = goLeanFingerTap.AddComponent<LeanFingerTap>();
-            lft.OnFinger.AddListener(MoveNext);
-            lft.OnFinger.AddListener(_Finger => OnTap?.Invoke(_Finger.ScreenPosition));
+            lft.OnFinger.AddListener(OnTapCore);
             m_LeanFingerTap = lft;
         }
         
@@ -205,6 +210,8 @@ namespace Games.RazorMaze.Views.InputConfigurators
         private void ProceedTouchForRotate(LeanFinger _Finger)
         {
             if (!m_EnableRotation)
+                return;
+            if (!SaveUtils.GetValue(SaveKeys.EnableRotation))
                 return;
             var pos = _Finger.ScreenPosition;
             for (int i = m_TouchPositionsQueue2.Count - 1; i >= 0; i--)
@@ -309,14 +316,22 @@ namespace Games.RazorMaze.Views.InputConfigurators
             RazorMazeUtils.LockCommandsOnRotationStarted(CommandsProceeder);
         }
 
+        protected virtual void OnTapCore(LeanFinger _Finger)
+        {
+            OnTap?.Invoke(_Finger.ScreenPosition);
+            MoveNext(_Finger);
+        }
+
         private void MoveNext(LeanFinger _Finger)
         {
-            if (!(_Finger.LastScreenPosition.y / GraphicUtils.ScreenSize.y < 0.8f)) 
+            if (_Finger.LastScreenPosition.y / GraphicUtils.ScreenSize.y > 0.8f) 
                 return;
             if (Model.LevelStaging.LevelStage != ELevelStage.Finished) 
                 return;
             CommandsProceeder.RaiseCommand(EInputCommand.ReadyToUnloadLevel, null);
         }
+
+
 
         #endregion
     }

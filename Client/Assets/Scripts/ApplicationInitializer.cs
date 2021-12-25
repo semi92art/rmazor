@@ -9,7 +9,6 @@ using Managers.Advertising;
 using Managers.IAP;
 using Mono_Installers;
 using Network;
-using ScriptableObjects;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;
@@ -19,6 +18,7 @@ public class ApplicationInitializer : MonoBehaviour
 {
     #region inject
     
+    private CommonGameSettings   Settings            { get; set; }
     private IGameClient          GameClient          { get; set; }
     private IAdsManager          AdsManager          { get; set; }
     private IAnalyticsManager    AnalyticsManager    { get; set; }
@@ -31,6 +31,7 @@ public class ApplicationInitializer : MonoBehaviour
 
     [Inject] 
     public void Inject(
+        CommonGameSettings _Settings,
         IGameClient _GameClient,
         IAdsManager _AdsManager,
         IAnalyticsManager _AnalyticsManager,
@@ -42,6 +43,7 @@ public class ApplicationInitializer : MonoBehaviour
         IShopManager _ShopManager,
         IPrefabSetManager _PrefabSetManager)
     {
+        Settings = _Settings;
         GameClient = _GameClient;
         AdsManager = _AdsManager;
         AnalyticsManager = _AnalyticsManager;
@@ -60,6 +62,8 @@ public class ApplicationInitializer : MonoBehaviour
     
     private void Start()
     {
+        if (Settings.SrDebuggerOn)
+            CommonUtils.InitSRDebugger();
         Application.targetFrameRate = GraphicUtils.GetTargetFps();
         DataFieldsMigrator.InitDefaultDataFieldValues(GameClient);
         InitGameManagers();

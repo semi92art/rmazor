@@ -1,5 +1,7 @@
-﻿using Games.RazorMaze.Models;
+﻿using GameHelpers;
+using Games.RazorMaze.Models;
 using Games.RazorMaze.Views;
+using Games.RazorMaze.Views.InputConfigurators;
 using UnityEngine;
 using UnityEngine.Events;
 using Utils;
@@ -19,8 +21,8 @@ namespace Games.RazorMaze.Controllers
         
         public static IGameController CreateInstance()
         {
-            var go = CommonUtils.FindOrCreateGameObject("Game Manager", out bool _WasFound);
-            var instance = _WasFound ? go.GetComponent<GameController>() 
+            var go = CommonUtils.FindOrCreateGameObject("Game Manager", out bool wasFound);
+            var instance = wasFound ? go.GetComponent<GameController>() 
                 : go.AddComponent<GameController>();
             return instance;
         }
@@ -29,16 +31,19 @@ namespace Games.RazorMaze.Controllers
 
         #region inject
         
-        public  IModelGame    Model         { get; private set; }
-        public  IViewGame     View          { get; private set; }
+        public  IModelGame         Model    { get; private set; }
+        public  IViewGame          View     { get; private set; }
+        private CommonGameSettings Settings { get; set; }
 
         [Inject]
         public void Inject(
             IModelGame _Model,
-            IViewGame _View)
+            IViewGame _View,
+            CommonGameSettings _Settings)
         {
             Model = _Model;
             View = _View;
+            Settings = _Settings;
         }
 
         #endregion
@@ -50,7 +55,8 @@ namespace Games.RazorMaze.Controllers
         
         public void Init()
         {
-            SROptions.Init(Model, View);
+            DefineSrDebuggerInitialization();
+            
             bool modelInitialized = false;
             bool viewInitialized = false;
             Model.Initialize += () => modelInitialized = true;
@@ -99,6 +105,23 @@ namespace Games.RazorMaze.Controllers
                     Initialize?.Invoke();
                     Initialized = true;
                 }));
+        }
+
+        #endregion
+
+        #region nonpublic members
+
+        private void DefineSrDebuggerInitialization()
+        {
+            if (Settings.SrDebuggerOn)
+                OnSrDebugInitialized();
+            else if (View.InputController.TouchProceeder is ViewInputTouchProceederWithSRDebugInit proceeder)
+                proceeder.OnSrDebugInitialized = OnSrDebugInitialized;
+        }
+
+        private void OnSrDebugInitialized()
+        {
+            SROptions.Init(Model, View);
         }
 
         #endregion

@@ -5,7 +5,6 @@ using System.Linq;
 using Controllers;
 using DI.Extensions;
 using Entities;
-using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
@@ -329,12 +328,10 @@ namespace Games.RazorMaze.Views.MazeItems
             float openedStart, openedEnd, closedStart, closedEnd;
             (openedStart, openedEnd) = GetBarrelDiscAngles(true);
             (closedStart, closedEnd) = GetBarrelDiscAngles(false);
-
             float startFrom = _Open ? closedStart : openedStart;
             float startTo = !_Open ? closedStart : openedStart;
             float endFrom = _Open ? closedEnd : openedEnd;
             float endTo = !_Open ? closedEnd : openedEnd;
-
             if (_Open)
                 m_BulletRotating = true;
 
@@ -344,7 +341,6 @@ namespace Games.RazorMaze.Views.MazeItems
                 m_Body.AngRadiansEnd = endTo;
                 yield break;
             }
-
             yield return Coroutines.Lerp(
                 0f,
                 1f,
@@ -363,13 +359,13 @@ namespace Games.RazorMaze.Views.MazeItems
             var highlightCol = ColorProvider.GetColor(ColorIds.MazeItem1);
             var startCol = _Open ? defCol : highlightCol;
             var endCol = !_Open ? defCol : highlightCol;
-            
             yield return Coroutines.Lerp(
                 startCol,
                 endCol,
                 0.1f,
                 _Color => m_Body.Color = _Color,
-                GameTicker);
+                GameTicker,
+                _BreakPredicate: () => AppearingState != EAppearingState.Appeared);
         }
 
         private IEnumerator DoShoot(TurretShotEventArgs _Args)

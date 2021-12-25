@@ -18,26 +18,26 @@ namespace Managers.IAP
             {
                 Currency = "RUB",
                 Price = "100",
-                Result = () => Result,
+                Result = () => Result
             }},
             {PurchaseKeys.Money2, new ShopItemArgs
             {
                 Currency = "RUB",
                 Price = "200",
-                Result = () => Result,
+                Result = () => Result
             }},
             {PurchaseKeys.Money3, new ShopItemArgs
             {
                 Currency = "RUB",
                 Price = "300",
-                Result = () => Result,
+                Result = () => Result
             }},
             {PurchaseKeys.NoAds, new ShopItemArgs
             {
                 Currency = "RUB",
                 Price = "100",
-                Result = () => EShopProductResult.Success,
-            }},
+                Result = () => Result
+            }}
         };
         
         private readonly   Dictionary<int, UnityAction> m_PurchaseActions = new Dictionary<int, UnityAction>();

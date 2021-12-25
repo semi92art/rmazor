@@ -7,6 +7,7 @@ using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.InputConfigurators;
+using Games.RazorMaze.Views.MazeItems;
 using UnityEngine;
 using Utils;
 
@@ -136,7 +137,8 @@ namespace Games.RazorMaze.Views.UI
         
         private void CommandShop()
         {
-            if (BigDialogViewer.IsShowing || BigDialogViewer.IsInTransition)
+            if (BigDialogViewer.CurrentPanel != null
+                && BigDialogViewer.CurrentPanel.AppearingState != EAppearingState.Dissapeared)
                 return;
             Managers.AnalyticsManager.SendAnalytic(AnalyticIds.ShopButtonPressed);
             CommandsProceeder.RaiseCommand(EInputCommand.ShopMenu, null);
@@ -144,7 +146,8 @@ namespace Games.RazorMaze.Views.UI
 
         private void CommandSettings()
         {
-            if (BigDialogViewer.IsShowing || BigDialogViewer.IsInTransition)
+            if (BigDialogViewer.CurrentPanel != null
+                && BigDialogViewer.CurrentPanel.AppearingState != EAppearingState.Dissapeared)
                 return;
             Managers.AnalyticsManager.SendAnalytic(AnalyticIds.SettingsButtonPressed);
             CommandsProceeder.RaiseCommand(EInputCommand.SettingsMenu, null);

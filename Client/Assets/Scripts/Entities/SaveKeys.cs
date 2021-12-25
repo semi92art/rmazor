@@ -19,22 +19,19 @@ namespace Entities
         public static SaveKey<bool>  GameWasRated             => new SaveKey<bool>("game_was_rated");
         public static SaveKey<bool>  MovementTutorialFinished => new SaveKey<bool>("mov_tut_finished");
         public static SaveKey<bool>  RotationTutorialFinished => new SaveKey<bool>("rot_tut_finished");
+        public static SaveKey<bool>  EnableRotation           => new SaveKey<bool>("enable_rotation");
         
         
         public static SaveKey<int?> PreviousAccountId        => new SaveKey<int?>("previous_account_id");
         public static SaveKey<int?> AccountId                => new SaveKey<int?>("account_id");
         public static SaveKey<int>  GameId                   => new SaveKey<int>("game_id");
-        public static SaveKey<int>  DesignerSelectedLevel    => new SaveKey<int>("designer_selected_level");
-        public static SaveKey<int>  DesignerHeapIndex        => new SaveKey<int>("designer_heap_index");
         public static SaveKey<int>  DailyBonusLastClickedDay => new SaveKey<int>("daily_bonus_last_day");
         public static SaveKey<int>  RatePanelShowsCount      => new SaveKey<int>("rate_panel_shows_count");
         
         public static SaveKey<string> Login        => new SaveKey<string>("login");
         public static SaveKey<string> PasswordHash => new SaveKey<string>("password_hash");
-        public static SaveKey<string> ServerUrl    => new SaveKey<string>("debug_server_url");
-        
+
         public static SaveKey<DateTime>  WheelOfFortuneLastDate => new SaveKey<DateTime>("wof_last_date");
-        public static SaveKey<MazeInfo>  DesignerMazeInfo       => new SaveKey<MazeInfo>("designer_maze_info");
         public static SaveKey<List<int>> BoughtPurchaseIds      => new SaveKey<List<int>>("bought_purchase_ids");
         public static SaveKey<DateTime>  DailyBonusLastDate     => new SaveKey<DateTime>("daily_bonus_last_date");
         

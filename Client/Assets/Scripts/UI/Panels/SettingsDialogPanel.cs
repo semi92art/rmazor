@@ -87,7 +87,7 @@ namespace UI.Panels
             m_MiniButtonsContent.gameObject.DestroyChildrenSafe();
             m_SettingsContent.gameObject.DestroyChildrenSafe();
             InitSettingItems();
-            Panel = sp.RTransform();
+            PanelObject = sp.RTransform();
         }
 
         #endregion

@@ -17,6 +17,7 @@ namespace GameHelpers
         [SerializeField] private EAdsProvider adsProvider;
         [SerializeField] private bool         adsTestMode;
         [SerializeField] private float        adsLoadDelay;
+        [SerializeField] private bool         srDebuggerOn;
         
         public EAdsProvider AdsProvider
         {
@@ -34,6 +35,12 @@ namespace GameHelpers
         {
             get => adsLoadDelay;
             set => adsLoadDelay = value;
+        }
+
+        public bool SrDebuggerOn
+        {
+            get => srDebuggerOn;
+            set => srDebuggerOn = value;
         }
     }
 }

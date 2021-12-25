@@ -4,6 +4,7 @@ using System.Linq;
 using Entities;
 using Exceptions;
 using Games.RazorMaze.Models;
+using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.InputConfigurators;
 using UnityEngine;
 
@@ -61,16 +62,26 @@ namespace Games.RazorMaze
             };
         }
 
-        public static void LockCommandsOnRotationStarted(IViewInputCommandsProceeder _CommandsProceeder)
+        public static void LockCommandsOnRotationStarted(
+            IViewInputCommandsProceeder _CommandsProceeder,
+            string _Group = "common")
         {
-            _CommandsProceeder.LockCommands(GetMoveCommands());
-            _CommandsProceeder.LockCommands(GetRotateCommands());
+            _CommandsProceeder.LockCommands(GetMoveCommands(), _Group);
+            _CommandsProceeder.LockCommands(GetRotateCommands(), _Group);
         }
         
-        public static void UnlockCommandsOnRotationFinished(IViewInputCommandsProceeder _CommandsProceeder)
+        public static void UnlockCommandsOnRotationFinished(
+            IViewInputCommandsProceeder _CommandsProceeder,
+            string _Group = "common")
         {
-            _CommandsProceeder.UnlockCommands(GetMoveCommands());
-            _CommandsProceeder.UnlockCommands(GetRotateCommands());
+            _CommandsProceeder.UnlockCommands(GetMoveCommands(), _Group);
+            _CommandsProceeder.UnlockCommands(GetRotateCommands(), _Group);
+        }
+        
+        public static bool MazeContainsGravityItems(IEnumerable<IMazeItemProceedInfo> _Infos)
+        {
+            return _Infos
+                .Any(_Info => GravityItemTypes().Contains(_Info.Type));
         }
         
         public static V2Int GetDirectionVector(EMazeMoveDirection _Direction, MazeOrientation _Orientation)

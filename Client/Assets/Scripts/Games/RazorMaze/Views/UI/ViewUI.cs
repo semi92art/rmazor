@@ -4,6 +4,7 @@ using DialogViewers;
 using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.InputConfigurators;
+using Games.RazorMaze.Views.MazeItems;
 using Ticker;
 using Utils;
 
@@ -50,8 +51,18 @@ namespace Games.RazorMaze.Views.UI
             var parent = m_Canvas.RTransform();
             BigDialogViewer.Init(parent);
             ProposalDialogViewer.Init(parent);
-            BigDialogViewer.IsOtherDialogViewersShowing = () => ProposalDialogViewer.IsShowing;
-            ProposalDialogViewer.IsOtherDialogViewersShowing = () => BigDialogViewer.IsShowing;
+            BigDialogViewer.IsOtherDialogViewersShowing = () =>
+            {
+                var panel = ProposalDialogViewer.CurrentPanel;
+                return panel != null && 
+                       panel.AppearingState != EAppearingState.Dissapeared;
+            };
+            ProposalDialogViewer.IsOtherDialogViewersShowing = () =>
+            {
+                var panel = BigDialogViewer.CurrentPanel;
+                return panel != null && 
+                       panel.AppearingState != EAppearingState.Dissapeared;
+            };
             GameControls.Init();
             DialogPanels.Init();
             RaiseInitializedEvent();

@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using GameHelpers;
-using Games.RazorMaze.Views;
-using Ticker;
 using UnityEngine;
 using UnityEngine.Events;
 using Utils;
@@ -11,20 +8,13 @@ using Random = UnityEngine.Random;
 
 namespace Games.RazorMaze.Models.InputSchedulers
 {
-    public interface IInputSchedulerUiProceeder : IAddCommand, IOnLevelStageChanged
+    public interface IInputSchedulerUiProceeder : IAddCommand
     {
         event UnityAction<EInputCommand, object[]> UiCommand;
     }
     
-    public class InputSchedulerUiProceeder : IInputSchedulerUiProceeder, IUpdateTick
+    public class InputSchedulerUiProceeder : IInputSchedulerUiProceeder
     {
-        #region nonpublic members
-
-        private int m_UiCommandsCount;
-        private readonly Queue<Tuple<EInputCommand, object[]>> m_UiCommands = new Queue<Tuple<EInputCommand, object[]>>();
-
-        #endregion
-
         #region inject
 
         private IModelLevelStaging LevelStaging { get; }
@@ -32,7 +22,6 @@ namespace Games.RazorMaze.Models.InputSchedulers
         private ILevelsLoader LevelsLoader { get; }
 
         public InputSchedulerUiProceeder(
-            IUITicker _Ticker,
             IModelLevelStaging _LevelStaging,
             IModelData _Data,
             ILevelsLoader _LevelsLoader)
@@ -40,7 +29,6 @@ namespace Games.RazorMaze.Models.InputSchedulers
             LevelStaging = _LevelStaging;
             Data = _Data;
             LevelsLoader = _LevelsLoader;
-            _Ticker.Register(this);
             UiCommand += OnUiCommand;
         }
 
@@ -49,12 +37,7 @@ namespace Games.RazorMaze.Models.InputSchedulers
         #region api
 
         public event UnityAction<EInputCommand, object[]> UiCommand;
-        
-        public void UpdateTick()
-        {
-            ScheduleUiCommands();
-        }
-        
+
         public void AddCommand(EInputCommand _Command, object[] _Args = null)
         {
             switch (_Command)
@@ -74,30 +57,15 @@ namespace Games.RazorMaze.Models.InputSchedulers
                 case EInputCommand.KillCharacter:
                 case EInputCommand.ReadyToUnloadLevel:
                 case EInputCommand.LoadLevelByIndex:
-                    m_UiCommands.Enqueue(new Tuple<EInputCommand, object[]>(_Command, _Args));
-                    m_UiCommandsCount++;
+                    UiCommand?.Invoke(_Command, _Args);
                     break;
             }
-        }
-        
-        public void OnLevelStageChanged(LevelStageArgs _Args)
-        {
-            
         }
 
         #endregion
 
         #region nonpublic methods
 
-        private void ScheduleUiCommands()
-        {
-            if (m_UiCommandsCount == 0)
-                return;
-            var (key, args) = m_UiCommands.Dequeue();
-            m_UiCommandsCount--;
-            UiCommand?.Invoke(key, args);
-        }
-        
         private void OnUiCommand(EInputCommand _Command, object[] _Args)
         {
             MazeInfo info;
@@ -140,14 +108,14 @@ namespace Games.RazorMaze.Models.InputSchedulers
                     break;
                 case EInputCommand.LoadRandomLevelWithRotation:
                     levelIndex = Mathf.RoundToInt(
-                        UnityEngine.Random.value *
+                        Random.value *
                         LevelsLoader.GetLevelsCount(gameId));
                     info = LevelsLoader.LoadLevel(gameId, levelIndex);
                     while (info.MazeItems.All(_Item =>
                         _Item.Type != EMazeItemType.GravityBlock && _Item.Type != EMazeItemType.GravityTrap))
                     {
                         levelIndex = Mathf.RoundToInt(
-                            UnityEngine.Random.value *
+                            Random.value *
                             LevelsLoader.GetLevelsCount(gameId));
                         info = LevelsLoader.LoadLevel(gameId, levelIndex);
                     }

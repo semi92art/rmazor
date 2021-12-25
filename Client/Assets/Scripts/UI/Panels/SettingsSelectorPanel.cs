@@ -70,7 +70,7 @@ namespace UI.Panels
             m_ToggleGroup = sp.AddComponent<ToggleGroup>();
             m_Content = sp.GetCompItem<RectTransform>("content");
             InitItems();
-            Panel = sp.RTransform();
+            PanelObject = sp.RTransform();
         }
         
         #endregion

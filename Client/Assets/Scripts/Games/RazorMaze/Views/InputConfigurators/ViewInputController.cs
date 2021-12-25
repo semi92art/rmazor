@@ -2,12 +2,16 @@
 
 namespace Games.RazorMaze.Views.InputConfigurators
 {
-    public interface IViewInputController : IInit, IOnLevelStageChanged { }
+    public interface IViewInputController : IInit, IOnLevelStageChanged
+    {
+        IViewInputCommandsProceeder CommandsProceeder { get; }
+        IViewInputTouchProceeder    TouchProceeder    { get; }
+    }
     
     public class ViewInputController : IViewInputController
     {
-        protected IViewInputCommandsProceeder CommandsProceeder { get; }
-        protected IViewInputTouchProceeder    TouchProceeder    { get; }
+        public IViewInputCommandsProceeder CommandsProceeder { get; }
+        public IViewInputTouchProceeder    TouchProceeder    { get; }
 
         public ViewInputController(
             IViewInputCommandsProceeder _CommandsProceeder,

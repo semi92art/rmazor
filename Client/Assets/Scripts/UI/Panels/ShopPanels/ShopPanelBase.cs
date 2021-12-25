@@ -67,7 +67,7 @@ namespace UI.Panels.ShopPanels
             m_Panel = sp.GetCompItem<RectTransform>("panel");
             m_Content = sp.GetCompItem<RectTransform>("content");
             SetTranslucentBackgroundSource(sp);
-            Panel = sp.RTransform();
+            PanelObject = sp.RTransform();
             m_Content.gameObject.DestroyChildrenSafe();
             InitItems();
             InitMoneyPanel();

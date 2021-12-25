@@ -86,6 +86,7 @@ namespace UI.Panels.ShopPanels
                     itemInSet.purchaseKey, 
                     () => OnPaid(itemInSet.reward));
             }
+            Managers.ShopManager.SetPurchaseAction(PurchaseKeys.NoAds, BuyHideAdsItem);
         }
 
         private void LoadItemInfos()

@@ -55,7 +55,6 @@ namespace Games.RazorMaze.Models.InputSchedulers
             LockMovement(@lock);
             LockRotation(@lock);
             InputSchedulerGameProceeder.OnLevelStageChanged(_Args);
-            InputSchedulerUiProceeder.OnLevelStageChanged(_Args);
         }
 
         #endregion

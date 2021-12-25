@@ -27,11 +27,13 @@ namespace Games.RazorMaze.Views.UI
         private static int AnimKeyStartLogoAppear    => AnimKeys.Anim;
         private static int AnimKeyStartLogoDisappear => AnimKeys.Stop;
         private static int AnimKeyStartLogoHide      => AnimKeys.Stop2;
-        
+
+        private GameObject                   m_StartLogoObj;
         private Dictionary<string, Animator> m_StartLogoCharAnims;
         private float                        m_TopOffset;
         private bool                         m_OnStart = true;
         private ETutorialType?               m_TutorialType;
+        private bool                         m_LogoShowingAnimationPassed;
 
         #endregion
 
@@ -126,29 +128,8 @@ namespace Games.RazorMaze.Views.UI
             };
             foreach (var anim in m_StartLogoCharAnims.Values)
                 anim.SetTrigger(AnimKeyStartLogoHide);
-            // var trigerrer1 = go.GetCompItem<AnimationTriggerer>("trigerrer_1");
-            // var trigerrer2 = go.GetCompItem<AnimationTriggerer>("trigerrer_2");
-            // trigerrer1.Trigger1 += () =>
-            // {
-            //     CommandsProceeder.LockCommands(RazorMazeUtils.GetMoveCommands());
-            //     CommandsProceeder.LockCommands(RazorMazeUtils.GetRotateCommands());
-            // };
-            // trigerrer2.Trigger1 += () =>
-            // {
-            //     switch (m_TutorialType)
-            //     {
-            //         case null:
-            //             CommandsProceeder.UnlockCommands(RazorMazeUtils.GetMoveCommands());
-            //             CommandsProceeder.UnlockCommands(RazorMazeUtils.GetRotateCommands());
-            //             break;
-            //         case ETutorialType.Movement:
-            //             CommandsProceeder.UnlockCommand(EInputCommand.MoveRight);
-            //             break;
-            //         case ETutorialType.Rotation:
-            //             CommandsProceeder.UnlockCommand(EInputCommand.RotateClockwise);
-            //             break;
-            //     }
-            // };
+            var trigerrer2 = go.GetCompItem<AnimationTriggerer>("trigerrer_2");
+            trigerrer2.Trigger1 += () => m_LogoShowingAnimationPassed = true;
             var eye1 = go.GetCompItem<Rectangle>("eye_1");
             var eye2 = go.GetCompItem<Rectangle>("eye_2");
             eye1.Color = eye2.Color = ColorProvider.GetColor(ColorIds.Background);
@@ -161,6 +142,7 @@ namespace Games.RazorMaze.Views.UI
                 .Except(new [] { eye1, eye2})
                 .ToList()
                 .ForEach(_Shape => _Shape.Color = uiCol.SetA(_Shape.Color.a));
+            m_StartLogoObj = go;
         }
         
         private void ShowStartLogo(LevelStageArgs _Args)
@@ -195,6 +177,11 @@ namespace Games.RazorMaze.Views.UI
 
         private void HideStartLogo()
         {
+            if (!m_LogoShowingAnimationPassed)
+            {
+                m_StartLogoObj.SetActive(false);
+                return;
+            }
             foreach (var anim in m_StartLogoCharAnims.Values)
                 anim.speed = 3f;
             foreach (var anim in m_StartLogoCharAnims.Values)

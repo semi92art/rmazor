@@ -5,6 +5,7 @@ using Constants;
 using DI.Extensions;
 using GameHelpers;
 using Games.RazorMaze;
+using Games.RazorMaze.Views.MazeItems;
 using LeTai.Asset.TranslucentImage;
 using Ticker;
 using UI;
@@ -24,7 +25,7 @@ namespace DialogViewers
         void Show(IDialogPanel _Item);
     }
     
-    public class ProposalDialogViewer : IProposalDialogViewer
+    public class ProposalDialogViewer : DialogViewerBase, IProposalDialogViewer
     {
         #region nonpublic members
         
@@ -34,7 +35,6 @@ namespace DialogViewers
         private RectTransform              m_DialogContainer;
         private Animator                   m_Animator;
         private TranslucentImage           m_Background;
-        private IDialogPanel               m_Panel;
         private Dictionary<Graphic, float> m_Alphas;
         
         #endregion
@@ -62,11 +62,9 @@ namespace DialogViewers
 
         #region api
 
-        public        RectTransform Container                   => m_DialogContainer;
-        public        Func<bool>    IsOtherDialogViewersShowing { get; set; }
-        public        bool          IsShowing                   { get; private set; }
+        public override RectTransform Container => m_DialogContainer;
         
-        public void Init(RectTransform _Parent)
+        public override void Init(RectTransform _Parent)
         {
             var go = PrefabSetManager.InitUiPrefab(
                 UiFactory.UiRectTransform(
@@ -87,41 +85,52 @@ namespace DialogViewers
 
         public void Show(IDialogPanel _Item)
         {
+            if (_Item == null)
+                return;
+            if (_Item is ICharacterDiedDialogPanel)
+                Dbg.Log("Show CharacterDiedDialogPanel");
+            
             CameraProvider.EnableTranslucentSource(true);
-            m_Panel = _Item;
-            var panel = m_Panel.Panel;
+            CurrentPanel = _Item;
+            var panel = CurrentPanel.PanelObject;
             m_Alphas = panel.GetComponentsInChildrenEx<Graphic>()
                 .Distinct()
                 .ToDictionary(_El => _El, _El => _El.color.a);
-            Coroutines.Run(Coroutines.DoTransparentTransition(
+            Coroutines.Run(DoTransparentTransition(
                 panel, 
                 m_Alphas,
                 0.2f,
-                Ticker));
-            m_Panel.OnDialogShow();
+                Ticker,
+                false,
+                () =>
+                {
+                    CurrentPanel.AppearingState = EAppearingState.Appeared;
+                }));
+            CurrentPanel.OnDialogShow();
             m_Animator.SetTrigger(AkShow);
-            IsShowing = true;
+            CurrentPanel.AppearingState = EAppearingState.Appearing;
         }
         
         public void Back(UnityAction _OnFinish = null)
         {
+            var panel = CurrentPanel;
             m_Animator.SetTrigger(AkHide);
-            Coroutines.Run(Coroutines.DoTransparentTransition(
-                m_Panel.Panel,
+            Coroutines.Run(DoTransparentTransition(
+                panel.PanelObject,
                 m_Alphas,
                 0.2f,
                 Ticker,
                 true,
                 () =>
                 {
-                    IsShowing = false;
+                    panel.AppearingState = EAppearingState.Dissapeared;
                     if (IsOtherDialogViewersShowing == null || !IsOtherDialogViewersShowing())
                         CameraProvider.EnableTranslucentSource(false);
-                    m_Panel.OnDialogHide();
-                    Object.Destroy(m_Panel.Panel.gameObject);
-                    m_Panel = null;
+                    panel.OnDialogHide();
+                    Object.Destroy(panel.PanelObject.gameObject);
                     _OnFinish?.Invoke();
                 }));
+            panel.AppearingState = EAppearingState.Dissapearing;
         }
 
         #endregion
@@ -129,24 +138,12 @@ namespace DialogViewers
 
     public class ProposalDialogViewerFake : IProposalDialogViewer
     {
-        public RectTransform Container                   { get; }
-        public bool          IsShowing                   { get; }
-        public Func<bool>    IsOtherDialogViewersShowing { get; set; }
+        public IDialogPanel    CurrentPanel                => null;
+        public RectTransform   Container                   => null;
+        public Func<bool>      IsOtherDialogViewersShowing { get; set; }
 
-        public void Init(RectTransform _Parent)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        public void Back(UnityAction _OnFinish = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Show(IDialogPanel _Item)
-        {
-            throw new NotImplementedException();
-        }
+        public void Init(RectTransform _Parent)        { }
+        public void Back(UnityAction _OnFinish = null) { }
+        public void Show(IDialogPanel _Item)           { }
     }
 }

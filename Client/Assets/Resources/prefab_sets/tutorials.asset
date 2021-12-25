@@ -21,3 +21,7 @@ MonoBehaviour:
     - item: {fileID: 502671076815402621, guid: 386bd80762b12b643b79c074a8fdfe6a, type: 3}
       name: hand_swipe_rotation
       bundle: 0
+    - item: {fileID: 1367967221709213486, guid: d4d46194c6a16034dbef86b8766cc8a3,
+        type: 3}
+      name: rotation_possibility_text
+      bundle: 0

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Constants;
 using DI.Extensions;
@@ -8,6 +7,7 @@ using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.InputConfigurators;
+using Games.RazorMaze.Views.MazeItems;
 using Lean.Common;
 using Ticker;
 using UI;
@@ -25,10 +25,9 @@ namespace DialogViewers
     {
         void Show(IDialogPanel _ItemTo, bool _HidePrevious = true);
         void CloseAll();
-        bool IsInTransition { get; }
     }
     
-    public class BigDialogViewer : IBigDialogViewer, IAction, IUpdateTick
+    public class BigDialogViewer : DialogViewerBase, IBigDialogViewer, IAction, IUpdateTick
     {
         #region types
 
@@ -100,14 +99,11 @@ namespace DialogViewers
         #endregion
 
         #region api
-        
-        public RectTransform Container                 => m_DialogContainer;
-        public Func<bool>    IsOtherDialogViewersShowing { get; set; }
-        public UnityAction   Action                    { get; set; }
-        public bool          IsInTransition            { get; private set; }
-        public bool          IsShowing                 { get; private set; }
 
-        public void Init(RectTransform _Parent)
+        public override RectTransform Container                   => m_DialogContainer;
+        public          UnityAction   Action                      { get; set; }
+
+        public override void Init(RectTransform _Parent)
         {
             var go = PrefabSetManager.InitUiPrefab(
                 UiFactory.UiRectTransform(
@@ -137,8 +133,9 @@ namespace DialogViewers
         public void Show(IDialogPanel _ItemTo, bool _HidePrevious = true)
         {
             CameraProvider.EnableTranslucentSource(true);
-            ShowCore(_ItemTo, _HidePrevious, false);
+            CurrentPanel = _ItemTo;
             m_CloseButton.transform.SetAsLastSibling();
+            ShowCore(_ItemTo, _HidePrevious, false);
         }
         
         public void CloseAll()
@@ -153,7 +150,7 @@ namespace DialogViewers
             foreach (var pan in panelsToDestroy
                 .Where(_Panel => _Panel != null))
             {
-                Object.Destroy(pan.Panel.gameObject);
+                Object.Destroy(pan.PanelObject.gameObject);
             }
             
             PanelStack.Push(lastPanel);
@@ -174,57 +171,54 @@ namespace DialogViewers
         #region nonpublic methods
 
         private void ShowCore(
-            IDialogPanel _ItemTo,
+            IDialogPanel _PanelTo,
             bool _HidePrevious,
             bool _GoBack)
         {
-            var itemFrom = !PanelStack.Any() ? null : PanelStack.Peek();
-            if (itemFrom == null && _ItemTo == null)
+            var panelFrom = !PanelStack.Any() ? null : PanelStack.Peek();
+            if (panelFrom == null && _PanelTo == null)
                 return;
-
-            var fromPanel = itemFrom?.Panel;
-            var toPanel = _ItemTo?.Panel;
-            
-            if (itemFrom != null && fromPanel != null && _HidePrevious)
+            var panelFromObj = panelFrom?.PanelObject;
+            var panelToObj = _PanelTo?.PanelObject;
+            if (panelFrom != null && panelFromObj != null && _HidePrevious)
             {
-                int instId = fromPanel.GetInstanceID();
+                panelFrom.AppearingState = EAppearingState.Dissapearing;
+                int instId = panelFromObj.GetInstanceID();
                 if (!GraphicsAlphas.ContainsKey(instId))
-                    GraphicsAlphas.Add(instId, new GraphicAlphas(fromPanel));
-                IsInTransition = true;
-                Coroutines.Run(Coroutines.DoTransparentTransition(
-                    fromPanel, GraphicsAlphas[instId].Alphas, TransitionTime,
+                    GraphicsAlphas.Add(instId, new GraphicAlphas(panelFromObj));
+                Coroutines.Run(DoTransparentTransition(
+                    panelFromObj, GraphicsAlphas[instId].Alphas, TransitionTime,
                     Ticker,
                     true,
                     () =>
                     {
-                        IsInTransition = false;
-                        IsShowing = _ItemTo != null;
-                        if (!IsShowing && (IsOtherDialogViewersShowing == null || !IsOtherDialogViewersShowing()))
+                        if (_PanelTo == null && (IsOtherDialogViewersShowing == null || !IsOtherDialogViewersShowing()))
                             CameraProvider.EnableTranslucentSource(false);
+                        panelFrom.AppearingState = EAppearingState.Dissapeared;
                         if (!_GoBack)
                             return;
-                        Object.Destroy(fromPanel.gameObject);
-                        // ReSharper disable once SuspiciousTypeConversion.Global
-                        var monobeh = itemFrom as MonoBehaviour;
-                        if (monobeh != null)
-                            Object.Destroy(monobeh.gameObject);
+                        Object.Destroy(panelFromObj.gameObject);
                     }));
             }
-
-            if (toPanel != null)
+            if (panelToObj != null)
             {
-                int instId = toPanel.GetInstanceID();
+                CurrentPanel = _PanelTo;
+                _PanelTo.AppearingState = EAppearingState.Appearing;
+                int instId = panelToObj.GetInstanceID();
                 if (!GraphicsAlphas.ContainsKey(instId))
-                    GraphicsAlphas.Add(instId, new GraphicAlphas(toPanel));
-                Coroutines.Run(Coroutines.DoTransparentTransition(
-                    toPanel, GraphicsAlphas[instId].Alphas, TransitionTime,
+                    GraphicsAlphas.Add(instId, new GraphicAlphas(panelToObj));
+                Coroutines.Run(DoTransparentTransition(
+                    panelToObj, GraphicsAlphas[instId].Alphas, TransitionTime,
                     Ticker,
                     false, 
-                    () => m_Background.enabled = true));
-                _ItemTo.OnDialogEnable();
+                    () =>
+                    {
+                        _PanelTo.AppearingState = EAppearingState.Appeared;
+                        m_Background.enabled = true;
+                    }));
+                _PanelTo.OnDialogEnable();
             }
-
-            FinishShowing(itemFrom, _ItemTo, _GoBack, toPanel);
+            FinishShowing(panelFrom, _PanelTo, _GoBack, panelToObj);
         }
 
         private void FinishShowing(
@@ -237,7 +231,7 @@ namespace DialogViewers
             ClearGraphicsAlphas();
         
             if (_PanelTo == null)
-                ClearPanelStack();
+                PanelStack.Clear();
             else
             {
                 if (!PanelStack.Any())
@@ -259,21 +253,7 @@ namespace DialogViewers
                     GraphicsAlphas.Remove(item.Key);
             }
         }
-        
-        private void ClearPanelStack()
-        {
-            var list = new List<IDialogPanel>();
-            while(PanelStack.Any())
-                list.Add(PanelStack.Pop());
-            foreach (var monobeh in from item in list
-                where item != null
-                // ReSharper disable once SuspiciousTypeConversion.Global
-                select item as MonoBehaviour)
-            {
-                Object.Destroy(monobeh);
-            }
-        }
-        
+
         private void SetCloseButtonsState(bool _CloseAll)
         {
             if (m_CloseButtonAnim.IsNull())

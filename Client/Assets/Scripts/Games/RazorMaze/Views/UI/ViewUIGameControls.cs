@@ -93,22 +93,22 @@ namespace Games.RazorMaze.Views.UI
             foreach (var uiItem in allInitItems)
                 uiItem.Init(new Vector4(0, 0, BottomOffset, TopOffset));
             ColorProvider.ColorChanged += OnColorChanged;
-            Tutorial.TutorialStarted += OnTutorialStarted;
-            Tutorial.TutorialFinished += OnTutorialFinished;
+            Tutorial.TutorialStarted   += OnTutorialStarted;
+            Tutorial.TutorialFinished  += OnTutorialFinished;
         }
-
-
 
         private void OnTutorialStarted(ETutorialType _Type)
         {
             Prompt.OnTutorialStarted(_Type);
             StartLogo.OnTutorialStarted(_Type);
+            RotationControls.OnTutorialStarted(_Type);
         }
         
         private void OnTutorialFinished(ETutorialType _Type)
         {
             Prompt.OnTutorialFinished(_Type);
             StartLogo.OnTutorialFinished(_Type);
+            Prompt.OnTutorialFinished(_Type);
         }
 
         private void OnColorChanged(int _ColorId, Color _Color)
@@ -118,7 +118,6 @@ namespace Games.RazorMaze.Views.UI
             var allRenderers = 
                 CongratsMessage.GetRenderers()
                     .Concat(LevelsPanel.GetRenderers())
-                    // .Concat(RotationControls.GetRenderers())
                     .Concat(TopButtons.GetRenderers());
             foreach (var rendComp in allRenderers)
             {
@@ -200,7 +199,7 @@ namespace Games.RazorMaze.Views.UI
                 {
                     CongratsMessage, 
                     StartLogo,
-                    /*RotationControls,*/ 
+                    RotationControls, 
                     Prompt,
                     TopButtons,
                     LevelsPanel, 

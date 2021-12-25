@@ -79,8 +79,8 @@ namespace Utils
             {
 #if UNITY_EDITOR
                 if (CommonData.Testing)
-                    return SaveUtils.GetValue(SaveKeys.ServerUrl);
-                return SaveUtils.GetValue(SaveKeys.ServerUrl);
+                    return SaveUtilsInEditor.GetValue(SaveKeysInEditor.ServerUrl);
+                return SaveUtilsInEditor.GetValue(SaveKeysInEditor.ServerUrl);
 #else
                return "http://77.37.152.15:7000";
 #endif

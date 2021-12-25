@@ -196,7 +196,7 @@ namespace Managers.IAP
         
 #if UNITY_ANDROID
 
-        private IEnumerator RateGameAndroid()
+        private System.Collections.IEnumerator RateGameAndroid()
         {
             void OpenAppPageInStoreDirectly() => Application.OpenURL ("market://details?id=" + Application.productName);
             

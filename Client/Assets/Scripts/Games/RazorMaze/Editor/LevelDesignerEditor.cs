@@ -37,8 +37,8 @@ namespace Games.RazorMaze.Editor
 
         private static int HeapIndex
         {
-            get => SaveUtils.GetValue(SaveKeys.DesignerHeapIndex);
-            set => SaveUtils.PutValue(SaveKeys.DesignerHeapIndex, value);
+            get => SaveUtilsInEditor.GetValue(SaveKeysInEditor.DesignerHeapIndex);
+            set => SaveUtilsInEditor.PutValue(SaveKeysInEditor.DesignerHeapIndex, value);
         }
         private static int _heapIndexCheck;
         
@@ -66,6 +66,8 @@ namespace Games.RazorMaze.Editor
 
         private void OnEnable()
         {
+            if (SceneManager.GetActiveScene().name != SceneNames.Prototyping)
+                return;
             _assetBundleManager = new AssetBundleManagerFake();
             _prefabSetManager = new PrefabSetManager(_assetBundleManager);
             _viewSettings = _prefabSetManager.GetObject<ViewSettings>(
@@ -141,7 +143,7 @@ namespace Games.RazorMaze.Editor
             if (_levelsList == null)
                 _levelsList = new HeapReorderableList(_gameId, HeapIndex, _SelectedIndex =>
                 {
-                    SaveUtils.PutValue(SaveKeys.DesignerSelectedLevel, _SelectedIndex);
+                    SaveUtilsInEditor.PutValue(SaveKeysInEditor.DesignerSelectedLevel, _SelectedIndex);
                 });
             else _levelsList.Reload(HeapIndex);
             

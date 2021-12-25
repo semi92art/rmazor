@@ -4,7 +4,6 @@ using System.Linq;
 using DI.Extensions;
 using Games.RazorMaze.Models;
 using UnityEngine.Events;
-using Utils;
 
 namespace Games.RazorMaze.Views.InputConfigurators
 {

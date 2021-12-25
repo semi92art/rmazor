@@ -1,8 +1,8 @@
 ﻿using DI.Extensions;
 using DialogViewers;
 using Entities;
-using GameHelpers;
 using Games.RazorMaze.Views.Common;
+using Games.RazorMaze.Views.MazeItems;
 using LeTai.Asset.TranslucentImage;
 using Ticker;
 using UnityEngine;
@@ -37,9 +37,10 @@ namespace UI.Panels
 
         #region api
 
-        public abstract EUiCategory Category { get; }
-        public RectTransform Panel { get; protected set; }
-        
+        public abstract EUiCategory     Category       { get; }
+        public          EAppearingState AppearingState { get; set; }
+        public          RectTransform   PanelObject    { get; protected set; }
+
         public virtual void LoadPanel()
         {
             Ticker.Register(this);

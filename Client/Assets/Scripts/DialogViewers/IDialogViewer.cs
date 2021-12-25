@@ -1,12 +1,14 @@
-﻿using UnityEngine;
+﻿using Games.RazorMaze.Views.MazeItems;
+using UI.Panels;
+using UnityEngine;
 
 namespace DialogViewers
 {
     public interface IDialogViewerBase
     {
-        void              Init(RectTransform _Parent);
+        IDialogPanel      CurrentPanel                { get; }
         RectTransform     Container                   { get; }
-        bool              IsShowing                   { get; }
         System.Func<bool> IsOtherDialogViewersShowing { get; set; }
+        void              Init(RectTransform _Parent);
     }
 }
