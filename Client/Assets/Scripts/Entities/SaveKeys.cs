@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Games.RazorMaze.Models;
+using UnityEngine;
 
 namespace Entities
 {
@@ -35,7 +36,14 @@ namespace Entities
         public static SaveKey<List<int>> BoughtPurchaseIds      => new SaveKey<List<int>>("bought_purchase_ids");
         public static SaveKey<DateTime>  DailyBonusLastDate     => new SaveKey<DateTime>("daily_bonus_last_date");
         
-        public static SaveKey<GameDataField> GameDataFieldValue(int _AccountId, int _GameId, ushort _FieldId) =>
-            new SaveKey<GameDataField>($"df_value_cache_{_AccountId}_{_GameId}_{_FieldId}");
+        public static SaveKey<GameDataField> GameDataFieldValue(int _AccountId, int _GameId, ushort _FieldId)
+        {
+            return new SaveKey<GameDataField>($"df_value_cache_{_AccountId}_{_GameId}_{_FieldId}");
+        }
+
+        public static SaveKey<uint> BundleVersion(string _BundleName)
+        {
+            return new SaveKey<uint>($"bundle_version_{_BundleName}");
+        } 
     }
 }

@@ -1,18 +1,20 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Entities;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
 using Utils;
+using Object = UnityEngine.Object;
 
 namespace Managers
 {
     public interface IAssetBundleManager : IInit
     {
         bool         BundlesLoaded { get; }
-        List<string> Errors        { get; }
         T            GetAsset<T>(string _AssetName, string _PrefabSetName, out bool _Success) where T : Object;
     }
     
@@ -54,10 +56,8 @@ namespace Managers
 
         #region api
 
-        public bool         BundlesLoaded { get; private set; }
-        public List<string> Errors        { get; } = new List<string>();
-
-        public bool              Initialized { get; private set; }
+        public bool              BundlesLoaded { get; private set; }
+        public bool              Initialized   { get; private set; }
         public event UnityAction Initialize;
         
         public void Init()
@@ -118,47 +118,59 @@ namespace Managers
             Dbg.Log("Bundles initialized!");
         }
         
-        private IEnumerator LoadBundle(string _BundleName)
+        private static IEnumerator LoadBundle(string _BundleName)
         {
             while (!Caching.ready)
                 yield return null;
-            
-            using (var bundleVersionRequest = UnityWebRequest.Get(
-                GetRemotePath($"{_BundleName}.unity3d.version")))
+            string bundleVersionPath = $"{_BundleName}.unity3d.version";
+            using var bundleVersionRequest = UnityWebRequest.Get(
+                GetRemotePath(bundleVersionPath));
+            yield return bundleVersionRequest.SendWebRequest();
+            uint version;
+            if (bundleVersionRequest.result == UnityWebRequest.Result.ConnectionError)
             {
-                yield return bundleVersionRequest.SendWebRequest();
-                string version = bundleVersionRequest.downloadHandler.text;
-                if (bundleVersionRequest.isHttpError || bundleVersionRequest.isNetworkError)
-                {
-                    Dbg.LogError(bundleVersionRequest.error);
-                    yield break;
-                }
-                using (var bundleRequest = UnityWebRequestAssetBundle.GetAssetBundle(
-                    GetRemotePath($"{_BundleName}.unity3d"), Hash128.Compute(version)))
-                {
-                    yield return bundleRequest.SendWebRequest();
-                    var loadedBundle = DownloadHandlerAssetBundle.GetContent(bundleRequest);
-
-                    if (loadedBundle == null)
-                    {
-                        string error = $"Failed to load bundle {_BundleName} from remote server";
-                        Errors.Add(error);
-                        Dbg.LogError(error);
-                        yield break;
-                    }
-                    
-                    Bundles.Add(_BundleName, new List<AssetInfo>());
-                    var cachedAssets = Bundles[_BundleName];
-                    cachedAssets.AddRange(from assetName in loadedBundle.GetAllAssetNames() 
-                        let asset = loadedBundle.LoadAsset(assetName) 
-                        select new AssetInfo(assetName, asset));
-                }
+                Dbg.LogWarning(bundleVersionRequest.error);
+                version = GetCahcedHash(bundleVersionPath);
             }
+            else
+            {
+                uint.TryParse(bundleVersionRequest.downloadHandler.text, out version);
+                PutCachedHash(bundleVersionPath, version);
+            }
+            string bundleName = $"{_BundleName}.unity3d";
+            var cachedBundle = new CachedAssetBundle(bundleName, Hash128.Compute(version));
+            var uri = new Uri(GetRemotePath($"{_BundleName}.unity3d"));
+            using var bundleRequest = UnityWebRequestAssetBundle.GetAssetBundle(uri, cachedBundle);
+            yield return bundleRequest.SendWebRequest();
+            var loadedBundle = DownloadHandlerAssetBundle.GetContent(bundleRequest);
+            if (loadedBundle == null)
+            {
+                string error = $"Failed to load bundle {_BundleName} from remote server";
+                Dbg.LogError(error);
+                yield break;
+            }
+            Bundles.Add(_BundleName, new List<AssetInfo>());
+            var cachedAssets = Bundles[_BundleName];
+            cachedAssets.AddRange(from assetName in loadedBundle.GetAllAssetNames() 
+                let asset = loadedBundle.LoadAsset(assetName) 
+                select new AssetInfo(assetName, asset));
         }
 
         private static string GetRemotePath(string _Name)
         {
             return string.Join("/", BundlesUri, CommonUtils.GetOsName(), _Name);
+        }
+
+        private static uint GetCahcedHash(string _BundleName)
+        {
+            var saveKey = SaveKeys.BundleVersion(_BundleName);
+            return SaveUtils.GetValue(saveKey);
+        }
+
+        private static void PutCachedHash(string _BundleName, uint _Hash)
+        {
+            var saveKey = SaveKeys.BundleVersion(_BundleName);
+            SaveUtils.PutValue(saveKey, _Hash);
         }
 
         #endregion
