@@ -7,18 +7,17 @@ TextAsset:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: bundle_names
-  m_Script: '{"main_theme":"assets/sounds/main_theme.wav","ui_button_click":"assets/sounds/ui/ui_button_click.wav","character_end_move_1":"assets/sounds/gameplay/character/character_end_move_1.wav","character_end_move_2":"assets/sounds/gameplay/character/character_end_move_2.wav","character_end_move_3":"assets/sounds/gameplay/character/character_end_move_3.wav","character_end_move_4":"assets/sounds/gameplay/character/character_end_move_4.wav","character_end_move_5":"assets/sounds/gameplay/character/character_end_move_5.wav","character_death":"assets/sounds/gameplay/character/character_dead_wav.wav","collect_point":"assets/sounds/gameplay/character/collect_point_2.wav","level_start":"assets/sounds/gameplay/other/level_start_2.wav","level_complete":"assets/sounds/gameplay/other/level_complete.wav","portal":"assets/sounds/gameplay/block
-    items/portal/portal_2.wav","block_drop":"assets/sounds/gameplay/block items/gravity
-    block/block_drop.wav","mace_roll":"assets/sounds/gameplay/block items/gravity
-    trap/mace_roll_wav.wav","saw_working":"assets/sounds/gameplay/block items/moving
-    trap/saw_working_wav.wav","saw_start_move":"assets/sounds/gameplay/block items/moving
-    trap/saw_start_move_wav.wav","shredinger_open":"assets/sounds/gameplay/block
-    items/shredinger/shredinger_open_wav.wav","shredinger_close":"assets/sounds/gameplay/block
-    items/shredinger/shredinger_close_wav.wav","springboard_jump":"assets/sounds/gameplay/block
-    items/springboard/springboard_jump_wav.wav","sword_open":"assets/sounds/gameplay/block
-    items/trap increasing/sword_open_wav.wav","sword_close":"assets/sounds/gameplay/block
+  m_Script: '{"levels_1":"assets/prefabs/levels/game_1/levels_1.json","block_drop":"assets/sounds/gameplay/block
+    items/gravity block/block_drop.wav","block_sliding_down":"assets/sounds/gameplay/block
+    items/gravity block/block_sliding_down.wav","character_death":"assets/sounds/gameplay/character/character_dead_wav.wav","character_end_move_1":"assets/sounds/gameplay/character/character_end_move_1.wav","character_end_move_2":"assets/sounds/gameplay/character/character_end_move_2.wav","character_end_move_3":"assets/sounds/gameplay/character/character_end_move_3.wav","character_end_move_4":"assets/sounds/gameplay/character/character_end_move_4.wav","character_end_move_5":"assets/sounds/gameplay/character/character_end_move_5.wav","collect_point":"assets/sounds/gameplay/character/collect_point_2.wav","level_complete":"assets/sounds/gameplay/other/level_complete.wav","level_start":"assets/sounds/gameplay/other/level_start_2.wav","mace_roll":"assets/sounds/gameplay/block
+    items/gravity trap/mace_roll_wav.wav","main_theme":"assets/sounds/main_theme.wav","maze_rotation":"assets/sounds/gameplay/other/maze_rotation_wav.wav","portal":"assets/sounds/gameplay/block
+    items/portal/portal_2.wav","saw_start_move":"assets/sounds/gameplay/block items/moving
+    trap/saw_start_move_wav.wav","saw_working":"assets/sounds/gameplay/block items/moving
+    trap/saw_working_wav.wav","shredinger_close":"assets/sounds/gameplay/block items/shredinger/shredinger_close_wav.wav","shredinger_open":"assets/sounds/gameplay/block
+    items/shredinger/shredinger_open_wav.wav","shuriken":"assets/sounds/gameplay/block
+    items/turret/shuriken_wav_2.wav","springboard_jump":"assets/sounds/gameplay/block
+    items/springboard/springboard_jump_wav.wav","sword_close":"assets/sounds/gameplay/block
+    items/trap increasing/sword_open_wav.wav","sword_open":"assets/sounds/gameplay/block
     items/trap increasing/sword_open_wav.wav","sword_spinning":"assets/sounds/gameplay/block
     items/trap increasing/sword_spinning_wav.wav","trap_react_out":"assets/sounds/gameplay/block
-    items/trap react/trap_react_out_wav.wav","shuriken":"assets/sounds/gameplay/block
-    items/turret/shuriken_wav_2.wav","maze_rotation":"assets/sounds/gameplay/other/maze_rotation_wav.wav","block_sliding_down":"assets/sounds/gameplay/block
-    items/gravity block/block_sliding_down.wav"}'
+    items/trap react/trap_react_out_wav.wav","ui_button_click":"assets/sounds/ui/ui_button_click.wav"}'

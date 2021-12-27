@@ -25,14 +25,14 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         void PreShoot(TurretShotEventArgs _Args);
         void Shoot(TurretShotEventArgs _Args);
-        void SetBulletSortingOrder(int _Order);
+        void SetProjectileSortingOrder(int _Order);
     }
     
     public class ViewMazeItemTurret : ViewMazeItemBase, IViewMazeItemTurret, IUpdateTick
     {
         #region constants
 
-        private const float BulletContainerRadius = 0.4f;
+        private const float ProjectileContainerRadius = 0.4f;
         
         #endregion
         
@@ -41,11 +41,11 @@ namespace Games.RazorMaze.Views.MazeItems
         private static AudioClipArgs AudioClipArgsShurikenFly => new AudioClipArgs("shuriken", EAudioClipType.GameSound);
         
         private float     m_RotatingSpeed;
-        private bool      m_BulletRotating;
-        private Transform m_BulletTr;
-        private Transform m_Bullet;
-        private Transform m_BulletFakeContainer;
-        private Transform m_BulletFakeTr;
+        private bool      m_ProjectileRotating;
+        private Transform m_ProjectileTr;
+        private Transform m_Projectile;
+        private Transform m_ProjectileFakeContainer;
+        private Transform m_ProjectileFakeTr;
         
         #endregion
         
@@ -53,28 +53,26 @@ namespace Games.RazorMaze.Views.MazeItems
 
         protected override string ObjectName => "Turret Block";
         private Disc m_Body;
-        private Disc m_BulletHolderBorder;
-        private SpriteRenderer m_BulletRenderer;
-        private SpriteRenderer m_BulletFakeRenderer;
-        private SpriteMask m_BulletMask;
-        private SpriteMask m_BulletMask2;
+        private Disc m_ProjectileHolderBorder;
+        private SpriteRenderer m_ProjectileRenderer;
+        private SpriteRenderer m_ProjectileFakeRenderer;
+        private SpriteMask m_ProjectileMask;
+        private SpriteMask m_ProjectileMask2;
 
         #endregion
         
         #region inject
 
-        private ModelSettings         ModelSettings    { get; }
-        private IViewTurretBulletTail BulletTail       { get; }
-        private IViewMazeBackground   Background       { get; }
+        private IViewTurretProjectileTail ProjectileTail { get; }
+        private IViewMazeBackground       Background     { get; }
 
         public ViewMazeItemTurret(
             ViewSettings _ViewSettings,
-            ModelSettings _ModelSettings,
             IModelGame _Model,
             IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IViewGameTicker _GameTicker,
-            IViewTurretBulletTail _BulletTail,
+            IViewTurretProjectileTail _ProjectileTail,
             IViewMazeBackground _Background,
             IViewAppearTransitioner _Transitioner,
             IManagersGetter _Managers,
@@ -91,8 +89,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 _ColorProvider,
                 _CommandsProceeder)
         {
-            ModelSettings = _ModelSettings;
-            BulletTail = _BulletTail;
+            ProjectileTail = _ProjectileTail;
             Background = _Background;
         }
         
@@ -103,19 +100,18 @@ namespace Games.RazorMaze.Views.MazeItems
         public override Component[] Shapes => new Component[]
         {
             m_Body,
-            m_BulletHolderBorder,
-            m_BulletRenderer,
-            m_BulletFakeRenderer
+            m_ProjectileHolderBorder,
+            m_ProjectileRenderer,
+            m_ProjectileFakeRenderer
         };
         
         public override object Clone() => new ViewMazeItemTurret(
             ViewSettings,
-            ModelSettings,
             Model,
             CoordinateConverter, 
             ContainersGetter, 
             GameTicker,
-            BulletTail.Clone() as IViewTurretBulletTail, 
+            ProjectileTail.Clone() as IViewTurretProjectileTail, 
             Background,
             Transitioner,
             Managers,
@@ -127,8 +123,8 @@ namespace Games.RazorMaze.Views.MazeItems
             get => base.ActivatedInSpawnPool;
             set
             {
-                m_BulletMask.enabled = false;
-                m_BulletMask2.enabled = false;
+                m_ProjectileMask.enabled = false;
+                m_ProjectileMask2.enabled = false;
                 base.ActivatedInSpawnPool = value;
             }
         }
@@ -136,7 +132,7 @@ namespace Games.RazorMaze.Views.MazeItems
         public override void Init(ViewMazeItemProps _Props)
         {
             base.Init(_Props);
-            BulletTail.Init();
+            ProjectileTail.Init();
         }
 
         public void PreShoot(TurretShotEventArgs _Args) => Coroutines.Run(HandleTurretPreShootCoroutine());
@@ -146,12 +142,12 @@ namespace Games.RazorMaze.Views.MazeItems
             Coroutines.Run(HandleTurretShootCoroutine(_Args));
         }
 
-        public void SetBulletSortingOrder(int _Order)
+        public void SetProjectileSortingOrder(int _Order)
         {
-            m_BulletRenderer.sortingOrder = _Order;
-            m_BulletMask.frontSortingOrder = m_BulletMask2.frontSortingOrder = _Order;
-            m_BulletMask.backSortingOrder = m_BulletMask2.backSortingOrder = _Order - 1;
-            BulletTail.SetSortingOrder(_Order);
+            m_ProjectileRenderer.sortingOrder = _Order;
+            m_ProjectileMask.frontSortingOrder = m_ProjectileMask2.frontSortingOrder = _Order;
+            m_ProjectileMask.backSortingOrder = m_ProjectileMask2.backSortingOrder = _Order - 1;
+            ProjectileTail.SetSortingOrder(_Order);
         }
 
         public void UpdateTick()
@@ -160,15 +156,15 @@ namespace Games.RazorMaze.Views.MazeItems
                 return;
             if (AppearingState == EAppearingState.Dissapeared)
                 return;
-            m_BulletHolderBorder.DashOffset = MathUtils.ClampInverse(
-                m_BulletHolderBorder.DashOffset += 2f * GameTicker.DeltaTime,
+            m_ProjectileHolderBorder.DashOffset = MathUtils.ClampInverse(
+                m_ProjectileHolderBorder.DashOffset += 2f * GameTicker.DeltaTime,
                 0f, 10f);
             if (AppearingState == EAppearingState.Appearing)
                 return;
-            if (!m_BulletRotating)
-                m_Bullet.localEulerAngles = m_BulletFakeTr.localEulerAngles;
+            if (!m_ProjectileRotating)
+                m_Projectile.localEulerAngles = m_ProjectileFakeTr.localEulerAngles;
             else
-                m_Bullet.Rotate(Vector3.forward * m_RotatingSpeed * GameTicker.DeltaTime);
+                m_Projectile.Rotate(Vector3.forward * m_RotatingSpeed * GameTicker.DeltaTime);
         }
 
         #endregion
@@ -189,35 +185,35 @@ namespace Games.RazorMaze.Views.MazeItems
             bhb.Type = DiscType.Ring;
             bhb.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type) + 1;
             bhb.DashSize = 2f;
-            var bulletParent = ContainersGetter.GetContainer(ContainerNames.MazeItems);
-            var bulletGo = Managers.PrefabSetManager.InitPrefab(
-                bulletParent, "views", "turret_bullet");
-            var bulletFakeGo = UnityEngine.Object.Instantiate(bulletGo);
-            bulletFakeGo.SetParent(bulletParent);
-            bulletFakeGo.name = "Turret Bullet Fake";
+            var ProjectileParent = ContainersGetter.GetContainer(ContainerNames.MazeItems);
+            var ProjectileGo = Managers.PrefabSetManager.InitPrefab(
+                ProjectileParent, "views", "turret_bullet");
+            var ProjectileFakeGo = UnityEngine.Object.Instantiate(ProjectileGo);
+            ProjectileFakeGo.SetParent(ProjectileParent);
+            ProjectileFakeGo.name = "Turret Projectile Fake";
             
-            m_BulletFakeContainer = bulletFakeGo.transform;
-            m_BulletFakeRenderer = bulletFakeGo.GetCompItem<SpriteRenderer>("bullet");
-            m_BulletFakeRenderer.color = ColorProvider.GetColor(ColorIds.MazeItem1);
+            m_ProjectileFakeContainer = ProjectileFakeGo.transform;
+            m_ProjectileFakeRenderer = ProjectileFakeGo.GetCompItem<SpriteRenderer>("bullet");
+            m_ProjectileFakeRenderer.color = ColorProvider.GetColor(ColorIds.MazeItem1);
             
-            m_BulletTr = bulletGo.transform;
-            m_BulletFakeTr = bulletFakeGo.transform;
+            m_ProjectileTr = ProjectileGo.transform;
+            m_ProjectileFakeTr = ProjectileFakeGo.transform;
             
-            m_Bullet = bulletGo.GetContentItem("bullet").transform;
-            m_BulletRenderer = m_Bullet.GetComponent<SpriteRenderer>();
-            m_BulletRenderer.color = ColorProvider.GetColor(ColorIds.MazeItem1);
+            m_Projectile = ProjectileGo.GetContentItem("bullet").transform;
+            m_ProjectileRenderer = m_Projectile.GetComponent<SpriteRenderer>();
+            m_ProjectileRenderer.color = ColorProvider.GetColor(ColorIds.MazeItem1);
 
             var bmGo = Managers.PrefabSetManager.InitPrefab(
-                bulletParent, "views", "turret_bullet_mask");
+                ProjectileParent, "views", "turret_bullet_mask");
             var bmGo2 = UnityEngine.Object.Instantiate(bmGo);
-            bmGo2.SetParent(bulletParent);
+            bmGo2.SetParent(ProjectileParent);
             
             var bm = bmGo.GetCompItem<SpriteMask>("mask");
             var bm2 = bmGo2.GetCompItem<SpriteMask>("mask");
             bm.enabled = bm2.enabled = false;
             bm.isCustomRangeActive = bm2.isCustomRangeActive = true;
             
-            (m_Body, m_BulletHolderBorder, m_BulletMask, m_BulletMask2) = (body, bhb, bm, bm2);
+            (m_Body, m_ProjectileHolderBorder, m_ProjectileMask, m_ProjectileMask2) = (body, bhb, bm, bm2);
         }
 
         protected override void UpdateShape()
@@ -225,24 +221,24 @@ namespace Games.RazorMaze.Views.MazeItems
             var scale = CoordinateConverter.Scale;
             m_Body.Radius = CoordinateConverter.Scale * 0.5f;
             m_Body.Thickness = ViewSettings.LineWidth * scale;
-            var bulletScale = Vector3.one * scale * BulletContainerRadius * 0.9f;
-            m_BulletTr.transform.localScale = m_BulletFakeTr.transform.localScale = bulletScale;
-            m_BulletTr.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
-            m_BulletFakeTr.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+            var ProjectileScale = Vector3.one * scale * ProjectileContainerRadius * 0.9f;
+            m_ProjectileTr.transform.localScale = m_ProjectileFakeTr.transform.localScale = ProjectileScale;
+            m_ProjectileTr.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+            m_ProjectileFakeTr.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             var maskScale = scale * Vector3.one;
-            m_BulletMask.transform.localScale = maskScale;
-            m_BulletMask2.transform.localScale = maskScale;
-            m_BulletHolderBorder.Radius = scale * BulletContainerRadius * 0.9f;
-            m_BulletHolderBorder.Thickness = ViewSettings.LineWidth * scale * 0.5f;
+            m_ProjectileMask.transform.localScale = maskScale;
+            m_ProjectileMask2.transform.localScale = maskScale;
+            m_ProjectileHolderBorder.Radius = scale * ProjectileContainerRadius * 0.9f;
+            m_ProjectileHolderBorder.Thickness = ViewSettings.LineWidth * scale * 0.5f;
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             if (_ColorId == ColorIds.MazeItem1)
             {
-                m_BulletHolderBorder.Color = _Color;
-                m_BulletRenderer.color = _Color;
-                m_BulletFakeRenderer.color = _Color;
+                m_ProjectileHolderBorder.Color = _Color;
+                m_ProjectileRenderer.color = _Color;
+                m_ProjectileFakeRenderer.color = _Color;
             }
             else if (_ColorId == ColorIds.Main)
             {
@@ -253,16 +249,16 @@ namespace Games.RazorMaze.Views.MazeItems
         private IEnumerator HandleTurretPreShootCoroutine()
         {
             Coroutines.Run(IncreaseRotatingSpeed(0.1f));
-            yield return ActivateRealBulletAndOpenBarrel(0.2f);
+            yield return ActivateRealProjectileAndOpenBarrel(0.2f);
         }
         
         private IEnumerator HandleTurretShootCoroutine(TurretShotEventArgs _Args)
         {
             Vector2 toPos = _Args.To;
-            EnableBulletMasksAndSetPositions(
+            EnableProjectileMasksAndSetPositions(
                 _Args.Direction + toPos, 
                 toPos + _Args.Direction + 0.9f * _Args.Direction);
-            Coroutines.Run(AnimateFakeBulletAndCloseBarrel(0.2f));
+            Coroutines.Run(AnimateFakeProjectileAndCloseBarrel(0.2f));
             yield return DoShoot(_Args);
         }
 
@@ -272,54 +268,55 @@ namespace Games.RazorMaze.Views.MazeItems
                 0f, 
                 1f,
                 _Duration, 
-                _Progress => m_RotatingSpeed = ViewSettings.TurretBulletRotationSpeed * _Progress,
+                _Progress => m_RotatingSpeed = ViewSettings.TurretProjectileRotationSpeed * _Progress,
                 GameTicker);
         }
 
-        private IEnumerator ActivateRealBulletAndOpenBarrel(float _Delay)
+        private IEnumerator ActivateRealProjectileAndOpenBarrel(float _Delay)
         {
-            yield return Coroutines.Delay(() =>
+            yield return Coroutines.Delay(_Delay,
+                () =>
             {
-                m_Bullet.SetGoActive(true);
-                m_BulletFakeTr.SetGoActive(false);
-                var bulletPos = CoordinateConverter.ToLocalMazeItemPosition(Props.Position);
-                m_BulletTr.transform.SetLocalPosXY(bulletPos);
+                m_Projectile.SetGoActive(true);
+                m_ProjectileFakeTr.SetGoActive(false);
+                var ProjectilePos = CoordinateConverter.ToLocalMazeItemPosition(Props.Position);
+                m_ProjectileTr.transform.SetLocalPosXY(ProjectilePos);
 
                 Coroutines.Run(HighlightBarrel(true));
                 Coroutines.Run(OpenBarrel(true, false));
-            }, _Delay);
+            });
         }
 
-        private IEnumerator AnimateFakeBulletAndCloseBarrel(float _Delay)
+        private IEnumerator AnimateFakeProjectileAndCloseBarrel(float _Delay)
         {
             yield return Coroutines.Delay(
+                _Delay,
                 () =>
                 {
-                    Coroutines.Run(AnimateFakeBulletBeforeShoot());
+                    Coroutines.Run(AnimateFakeProjectileBeforeShoot());
                     Coroutines.Run(HighlightBarrel(false));
                     Coroutines.Run(OpenBarrel(false, false));
-                },
-                _Delay);
+                });
         }
 
-        private void EnableBulletMasksAndSetPositions(Vector2 _Mask1Pos, Vector2 _Mask2Pos)
+        private void EnableProjectileMasksAndSetPositions(Vector2 _Mask1Pos, Vector2 _Mask2Pos)
         {
-            m_BulletMask.enabled = m_BulletMask2.enabled = true;
-            m_BulletMask.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(_Mask1Pos));
-            m_BulletMask2.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(_Mask2Pos));
+            m_ProjectileMask.enabled = m_ProjectileMask2.enabled = true;
+            m_ProjectileMask.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(_Mask1Pos));
+            m_ProjectileMask2.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(_Mask2Pos));
         }
         
-        private IEnumerator AnimateFakeBulletBeforeShoot()
+        private IEnumerator AnimateFakeProjectileBeforeShoot()
         {
-            m_BulletFakeContainer.transform.localScale = Vector3.zero;
-            m_BulletFakeTr.SetGoActive(true);
-            m_BulletFakeContainer.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+            m_ProjectileFakeContainer.transform.localScale = Vector3.zero;
+            m_ProjectileFakeTr.SetGoActive(true);
+            m_ProjectileFakeContainer.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             yield return Coroutines.Lerp(
                 0f, 
                 1f,
                 0.2f,
-                _Progress => m_BulletFakeContainer.transform.localScale =
-                    Vector3.one * _Progress * CoordinateConverter.Scale * BulletContainerRadius * 0.9f,
+                _Progress => m_ProjectileFakeContainer.transform.localScale =
+                    Vector3.one * _Progress * CoordinateConverter.Scale * ProjectileContainerRadius * 0.9f,
                 GameTicker);
         }
         
@@ -333,7 +330,7 @@ namespace Games.RazorMaze.Views.MazeItems
             float endFrom = _Open ? closedEnd : openedEnd;
             float endTo = !_Open ? closedEnd : openedEnd;
             if (_Open)
-                m_BulletRotating = true;
+                m_ProjectileRotating = true;
 
             if (_Instantly)
             {
@@ -373,55 +370,72 @@ namespace Games.RazorMaze.Views.MazeItems
             Managers.AudioManager.PlayClip(AudioClipArgsShurikenFly);
             Vector2 projectilePos = _Args.From;
             var projectilePosPrev = projectilePos;
-            V2Int point = default;
+            V2Int point;
             bool movedToTheEnd = false;
-            m_BulletRotating = true;
-            m_RotatingSpeed = ViewSettings.TurretBulletRotationSpeed;
+            m_ProjectileRotating = true;
+            m_RotatingSpeed = ViewSettings.TurretProjectileRotationSpeed;
             var fullPath = RazorMazeUtils.GetFullPath(_Args.From, _Args.To);
             yield return Coroutines.DoWhile(
                 () =>
                 {
-                    if (Model.Character.IsMoving)
-                    {
-                        if (fullPath.Contains(point) 
-                            && CheckForDeathWhileCharacterMoving(
-                            projectilePosPrev,
-                            projectilePos,
-                            Model.Character.MovingInfo.PreviousPrecisePosition,
-                            Model.Character.MovingInfo.PrecisePosition))
-                        {
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        if (fullPath.Contains(point) 
-                            && CheckForCharacterDeathWhileCharacterNotMoving(
-                                Model.Character.Position,
-                                projectilePos))
-                        {
-                            return false;
-                        }
-                    }
-                    return !movedToTheEnd;
+                    return ProjectileMovingPredicate(
+                        fullPath, 
+                        projectilePos,
+                        projectilePosPrev,
+                        ref movedToTheEnd);
                 },
                 () =>
                 {
                     projectilePosPrev = projectilePos;
-                    projectilePos += (Vector2)_Args.Direction * ModelSettings.TurretProjectileSpeed * GameTicker.FixedDeltaTime;
-                    m_BulletTr.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(projectilePos));
+                    projectilePos += (Vector2)_Args.Direction * Model.Settings.TurretProjectileSpeed * GameTicker.FixedDeltaTime;
+                    m_ProjectileTr.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(projectilePos));
                     point = V2Int.Round(projectilePos);
-                    BulletTail.ShowTail(_Args, projectilePos);
+                    ProjectileTail.ShowTail(_Args, projectilePos);
                     if (point == _Args.To + 2 * _Args.Direction)
                         movedToTheEnd = true;
                 }, () =>
                 {
-                    m_BulletRotating = false;
-                    m_Bullet.SetGoActive(false);
-                    BulletTail.HideTail();
+                    m_ProjectileRotating = false;
+                    m_Projectile.SetGoActive(false);
+                    ProjectileTail.HideTail();
                 },
                 GameTicker,
                 _FixedUpdate: true);
+        }
+
+        private bool ProjectileMovingPredicate(
+            ICollection<V2Int> _ProjectilePath,
+            Vector2 _ProjectilePosition,
+            Vector2 _PrevProjectilePosition,
+            ref bool _MovedToTheEnd)
+        {
+            if (Model.LevelStaging.LevelStage == ELevelStage.Finished
+            || Model.LevelStaging.LevelStage == ELevelStage.ReadyToUnloadLevel)
+                return false;
+            var point = (V2Int)_ProjectilePosition;
+            if (Model.Character.IsMoving)
+            {
+                if (_ProjectilePath.Contains(point) 
+                    && CheckForDeathWhileCharacterMoving(
+                        _PrevProjectilePosition,
+                        _ProjectilePosition,
+                        Model.Character.MovingInfo.PreviousPrecisePosition,
+                        Model.Character.MovingInfo.PrecisePosition))
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (_ProjectilePath.Contains(point) 
+                    && CheckForCharacterDeathWhileCharacterNotMoving(
+                        Model.Character.Position,
+                        _ProjectilePosition))
+                {
+                    return false;
+                }
+            }
+            return !_MovedToTheEnd;
         }
 
         private Tuple<float, float> GetBarrelDiscAngles(bool _Opened)
@@ -456,12 +470,12 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             if (_Appear)
             {
-                m_Bullet.SetGoActive(true);
-                m_BulletMask.enabled = true;
-                m_BulletMask2.enabled = true;
-                m_BulletRotating = false;
-                m_BulletFakeTr.SetGoActive(false);
-                Coroutines.Run(AnimateFakeBulletBeforeShoot());
+                m_Projectile.SetGoActive(true);
+                m_ProjectileMask.enabled = true;
+                m_ProjectileMask2.enabled = true;
+                m_ProjectileRotating = false;
+                m_ProjectileFakeTr.SetGoActive(false);
+                Coroutines.Run(AnimateFakeProjectileBeforeShoot());
                 Coroutines.Run(OpenBarrel(false, true));
             }
             base.OnAppearStart(_Appear);
@@ -471,22 +485,22 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             if (!_Appear)
             {
-                m_BulletMask.enabled = false;
-                m_BulletMask2.enabled = false;
-                m_BulletRotating = false;
+                m_ProjectileMask.enabled = false;
+                m_ProjectileMask2.enabled = false;
+                m_ProjectileRotating = false;
             }
             base.OnAppearFinish(_Appear);
         }
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
-            var bulletRenderers = new Component[] {m_BulletRenderer, m_BulletFakeRenderer};
-            var bulletRenderersCol = _Appear ? ColorProvider.GetColor(ColorIds.MazeItem1) : m_BulletFakeRenderer.color;
+            var ProjectileRenderers = new Component[] {m_ProjectileRenderer, m_ProjectileFakeRenderer};
+            var ProjectileRenderersCol = _Appear ? ColorProvider.GetColor(ColorIds.MazeItem1) : m_ProjectileFakeRenderer.color;
             return new Dictionary<IEnumerable<Component>, Func<Color>>
             {
-                {new [] {m_BulletHolderBorder}, () => ColorProvider.GetColor(ColorIds.MazeItem1)},
+                {new [] {m_ProjectileHolderBorder}, () => ColorProvider.GetColor(ColorIds.MazeItem1)},
                 {new [] {m_Body}, () => ColorProvider.GetColor(ColorIds.Main)},
-                {bulletRenderers, () => bulletRenderersCol}
+                {ProjectileRenderers, () => ProjectileRenderersCol}
             };
         }
 

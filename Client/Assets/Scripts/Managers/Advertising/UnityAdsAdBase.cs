@@ -80,6 +80,7 @@ namespace Managers.Advertising
         {
             Dbg.Log(nameof(OnUnityAdsShowClick) + ": " + _PlacementId);
             Ready = false;
+            LoadAd();
         }
 
         public virtual void OnUnityAdsShowComplete(string _PlacementId, UnityAdsShowCompletionState _ShowCompletionState)

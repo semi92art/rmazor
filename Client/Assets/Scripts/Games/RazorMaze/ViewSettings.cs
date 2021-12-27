@@ -11,7 +11,7 @@ namespace Games.RazorMaze
         [SerializeField] private float cornerRadius;
         [SerializeField] private float movingTrapRotationSpeed;
         [SerializeField] private float shredingerLineOffsetSpeed;
-        [SerializeField] private float turretBulletRotationSpeed;
+        [SerializeField] private float turretProjectileRotationSpeed;
         [SerializeField] private int   blockItemsCount;
         [SerializeField] private int   pathItemsCount;
         [SerializeField] private bool  startPathItemFilledOnStart;
@@ -57,10 +57,10 @@ namespace Games.RazorMaze
             set => shredingerLineOffsetSpeed = value / 0.01f;
         }
 
-        public float   TurretBulletRotationSpeed
+        public float   TurretProjectileRotationSpeed
         {
-            get => turretBulletRotationSpeed * -10f;
-            set => turretBulletRotationSpeed = value / -10f;
+            get => turretProjectileRotationSpeed * -10f;
+            set => turretProjectileRotationSpeed = value / -10f;
         }
 
         public int     BlockItemsCount

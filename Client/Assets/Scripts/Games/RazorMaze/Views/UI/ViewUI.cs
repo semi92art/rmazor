@@ -1,5 +1,4 @@
-﻿using Controllers;
-using DI.Extensions;
+﻿using DI.Extensions;
 using DialogViewers;
 using Entities;
 using Games.RazorMaze.Models;
@@ -111,9 +110,6 @@ namespace Games.RazorMaze.Views.UI
                 return;
             
             Managers.ShopManager.RateGame();
-            // var panel = DialogPanels.RateGameDialogPanel;
-            // panel.LoadPanel();
-            // ProposalDialogViewer.Show(panel);
             SaveUtils.PutValue(SaveKeys.RatePanelShowsCount, ratePanelShowsCount + 1);
         }
 

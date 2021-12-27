@@ -11,7 +11,6 @@ namespace Games.RazorMaze.Views.UI
         IShopDialogPanel            ShopDialogPanel            { get; }
         IShopMoneyDialogPanel       ShopMoneyDialogPanel       { get; }
         ICharacterDiedDialogPanel   CharacterDiedDialogPanel   { get; }
-        IRateGameDialogPanel        RateGameDialogPanel        { get; }
     }
 
     public class DialogPanels : IDialogPanels
@@ -21,22 +20,19 @@ namespace Games.RazorMaze.Views.UI
         public IShopDialogPanel            ShopDialogPanel            { get; }
         public IShopMoneyDialogPanel       ShopMoneyDialogPanel       { get; }
         public ICharacterDiedDialogPanel   CharacterDiedDialogPanel   { get; }
-        public IRateGameDialogPanel        RateGameDialogPanel        { get; }
 
         public DialogPanels(
             ISettingDialogPanel         _SettingDialogPanel,
             ISettingSelectorDialogPanel _SettingSelectorDialogPanel, 
             IShopDialogPanel            _ShopDialogPanel,
             IShopMoneyDialogPanel       _ShopMoneyDialogPanel,
-            ICharacterDiedDialogPanel   _CharacterDiedDialogPanel, 
-            IRateGameDialogPanel        _RateGameDialogPanel)
+            ICharacterDiedDialogPanel   _CharacterDiedDialogPanel)
         {
             SettingDialogPanel          = _SettingDialogPanel;
             SettingSelectorDialogPanel  = _SettingSelectorDialogPanel;
             ShopDialogPanel             = _ShopDialogPanel;
             ShopMoneyDialogPanel        = _ShopMoneyDialogPanel;
             CharacterDiedDialogPanel    = _CharacterDiedDialogPanel;
-            RateGameDialogPanel         = _RateGameDialogPanel;
         }
 
         public bool              Initialized { get; private set; }
@@ -57,7 +53,6 @@ namespace Games.RazorMaze.Views.UI
         public IShopDialogPanel            ShopDialogPanel            => null;
         public IShopMoneyDialogPanel       ShopMoneyDialogPanel       => null;
         public ICharacterDiedDialogPanel   CharacterDiedDialogPanel   => null;
-        public IRateGameDialogPanel        RateGameDialogPanel        => null;
         public bool                        Initialized                => false;
         public event UnityAction           Initialize;
         public void                        Init() { Initialize?.Invoke();}

@@ -25,10 +25,13 @@ namespace Managers.IAP
         public Func<EShopProductResult> Result     { get; set; }
     }
     
-    public class UnityIAPShopManagerFacade : UnityIAPShopManagerBase, IShopManager
+    public class UnityIAPShopManager : ShopManagerBase, IShopManager, IStoreListener
     {
         #region nonpublic members
 
+        protected          IStoreController   m_StoreController;
+        protected          IExtensionProvider m_StoreExtensionProvider;
+        
         protected override List<ProductInfo> Products => new List<ProductInfo>
         {
             new ProductInfo(PurchaseKeys.Money1, $"small_pack_of_coins{(Application.platform == RuntimePlatform.IPhonePlayer ? "_2" : string.Empty)}",           ProductType.Consumable),
@@ -44,12 +47,45 @@ namespace Managers.IAP
 
         #region inject
 
-        public UnityIAPShopManagerFacade(ILocalizationManager _LocalizationManager)
-            : base(_LocalizationManager) { }
+        protected ILocalizationManager LocalizationManager { get; }
+
+        public UnityIAPShopManager(ILocalizationManager _LocalizationManager)
+        {
+            LocalizationManager = _LocalizationManager;
+        }
 
         #endregion
 
         #region api
+        
+        public bool              Initialized { get; private set; }
+        public event UnityAction Initialize;
+        
+        public virtual void Init()
+        {
+            InitializePurchasing();
+        }
+        
+        public void OnInitialized(IStoreController _Controller, IExtensionProvider _Extensions)
+        {
+            m_StoreController = _Controller;
+            m_StoreExtensionProvider = _Extensions;
+            Dbg.Log($"{nameof(OnInitialized)}");
+            Initialize?.Invoke();
+            Initialized = true;
+        }
+        
+        public void OnInitializeFailed(InitializationFailureReason _Error)
+        {
+            Dbg.LogWarning($"{nameof(OnInitializeFailed)}" +
+                           $" {nameof(InitializationFailureReason)}:" + _Error);
+        }
+        
+        public void OnPurchaseFailed(Product _Product, PurchaseFailureReason _FailureReason)
+        {
+            Dbg.LogWarning($"{nameof(OnPurchaseFailed)}" +
+                           $" {nameof(PurchaseFailureReason)}:" + _FailureReason);
+        }
 
         public void Purchase(int _Key)
         {
@@ -101,7 +137,7 @@ namespace Managers.IAP
             // TODO
         }
 
-        public override void RestorePurchases()
+        public void RestorePurchases()
         {
             if (!NetworkUtils.IsInternetConnectionAvailable())
             {
@@ -124,7 +160,7 @@ namespace Managers.IAP
                 Application.platform == RuntimePlatform.OSXPlayer)
             {
                 // ... begin restoring purchases
-                Dbg.Log($"{nameof(UnityIAPShopManagerFacade)}: RestorePurchases started ...");
+                Dbg.Log($"{nameof(UnityIAPShopManager)}: RestorePurchases started ...");
 
                 // Fetch the Apple store-specific subsystem.
                 var apple = m_StoreExtensionProvider.GetExtension<IAppleExtensions>();
@@ -133,7 +169,7 @@ namespace Managers.IAP
                 apple.RestoreTransactions(_Result => {
                     // The first phase of restoration. If no more responses are received on ProcessPurchase then 
                     // no purchases are available to be restored.
-                    Dbg.Log($"{nameof(UnityIAPShopManagerFacade)}: " +
+                    Dbg.Log($"{nameof(UnityIAPShopManager)}: " +
                             $"RestorePurchases continuing: " + _Result + ". " +
                             "If no further messages, no purchases available to restore.");
                     if (_Result)
@@ -142,12 +178,12 @@ namespace Managers.IAP
             }
             else
             {
-                Dbg.Log($"{nameof(UnityIAPShopManagerFacade)}: " +
+                Dbg.Log($"{nameof(UnityIAPShopManager)}: " +
                         "RestorePurchases FAIL. Not supported on this platform. Current = " + Application.platform);
             }
         }
 
-        public override PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs _Args)
+        public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs _Args)
         {
             string id = _Args.purchasedProduct.definition.id;
             var info = Products
@@ -171,13 +207,55 @@ namespace Managers.IAP
         #endregion
         
         #region nonpublic methods
+        
+        protected void InitializePurchasing() 
+        {
+            // // If we have already connected to Purchasing ...
+            // if (IsInitialized())
+            //     return;
+            // Create a builder, first passing in a suite of Unity provided stores.
+            var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
+            // Add a product to sell / restore by way of its identifier, associating the general identifier
+            // with its store-specific identifiers.
+            foreach (var kvp in Products)
+                builder.AddProduct(kvp.Id, kvp.Type);
+            // Kick off the remainder of the set-up with an asynchrounous call, passing the configuration 
+            // and this class' instance. Expect a response either in OnInitialized or OnInitializeFailed.
+            UnityPurchasing.Initialize(this, builder);
+        }
+        
+        protected bool IsInitialized()
+        {
+            return m_StoreController != null && m_StoreExtensionProvider != null;
+        }
+        
+        protected void BuyProductID(string _ProductId)
+        {
+            if (!IsInitialized())
+            {
+                string oopsText = LocalizationManager.GetTranslation("oops");
+                string failToBuyProduct = LocalizationManager.GetTranslation("service_connection_error");
+                CommonUtils.ShowAlertDialog(oopsText, failToBuyProduct);
+                Dbg.LogWarning("BuyProductID FAIL. Not initialized.");
+                return;
+            }
+            var product = m_StoreController.products.WithID(_ProductId);
+            if (product == null || !product.availableToPurchase)
+            {
+                Dbg.LogWarning("BuyProductID: FAIL. Not purchasing product, " +
+                               "either is not found or is not available for purchase");
+                return;
+            }
+            Dbg.Log($"Purchasing product asychronously: '{product.definition.id}'");
+            m_StoreController.InitiatePurchase(product);
+        }
 
         private void GetProductItemInfo(int _Key, ref ShopItemArgs _Args)
         {
             _Args.Result = () => EShopProductResult.Pending;
             if (!IsInitialized())
             {
-                Dbg.LogWarning($"{nameof(UnityIAPShopManagerFacade)}: Get Product Item Info Failed. Not initialized.");
+                Dbg.LogWarning($"{nameof(UnityIAPShopManager)}: Get Product Item Info Failed. Not initialized.");
                 _Args.Result = () => EShopProductResult.Fail;
                 return;
             }
@@ -185,7 +263,7 @@ namespace Managers.IAP
             var product = m_StoreController.products.set.FirstOrDefault(_P => _P.definition.id == id);
             if (product == null)
             {
-                Dbg.LogWarning($"{nameof(UnityIAPShopManagerFacade)}: " +
+                Dbg.LogWarning($"{nameof(UnityIAPShopManager)}: " +
                                $"Get Product Item Info Failed. Product with id {id} does not exist");
                 _Args.Result = () => EShopProductResult.Fail;
                 return;

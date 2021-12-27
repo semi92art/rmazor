@@ -53,7 +53,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
             foreach (var item in GetItems().Cast<IViewMazeItemTurret>())
             {
                 int sortingOrder = SortingOrders.GetBlockSortingOrder(EMazeItemType.Turret) + m_BulletCounter++;
-                item.SetBulletSortingOrder(sortingOrder);
+                item.SetProjectileSortingOrder(sortingOrder);
             }
         }
 
@@ -77,8 +77,8 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                 Managers.HapticsManager.PlayPreset(EHapticsPresetType.Selection);
                 m_IsHapticPause = true;
                 Coroutines.Run(Coroutines.Delay(
-                    () => m_IsHapticPause = false,
-                    0.5f));
+                    0.5f,
+                    () => m_IsHapticPause = false));
             }
         }
 

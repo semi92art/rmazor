@@ -17,7 +17,7 @@ MonoBehaviour:
   cornerRadius: 20
   movingTrapRotationSpeed: 400
   shredingerLineOffsetSpeed: 200
-  turretBulletRotationSpeed: 100
+  turretProjectileRotationSpeed: 100
   blockItemsCount: 100
   pathItemsCount: 300
   startPathItemFilledOnStart: 0

@@ -103,7 +103,7 @@ namespace Mono_Installers
             Container.Bind<IViewCharacterEffector>()         .To<ViewCharacterEffectorParticles>().AsSingle();
             Container.Bind<IViewCharacterTail>()             .To<ViewCharacterTailSimple>()       .AsSingle();
             
-            Container.Bind<IViewTurretBulletTail>()          .To<ViewTurretBulletTailFake>()      .AsSingle();
+            Container.Bind<IViewTurretProjectileTail>()          .To<ViewTurretProjectileTailFake>()      .AsSingle();
 
             Container.Bind<IViewMazeItemPath>()              .To<ViewMazeItemPath>()              .AsSingle();
             Container.Bind<IViewMazeItemGravityBlock>()      .To<ViewMazeItemGravityBlock>()      .AsSingle();
@@ -142,15 +142,14 @@ namespace Mono_Installers
                 Container.Bind<IShopMoneyDialogPanel>()      .To<ShopMoneyPanel>()                .AsSingle();
                 Container.Bind<IShopHeadsDialogPanel>()      .To<ShopHeadsPanel>()                .AsSingle();
                 Container.Bind<IShopTailsDialogPanel>()      .To<ShopTailsPanel>()                .AsSingle();
-                Container.Bind<IWofDialogPanel>()            .To<WofDialogPanel>()                .AsSingle();
-                Container.Bind<IWofRewardPanel>()            .To<WofRewardDialogPanel>()          .AsSingle();
                 Container.Bind<ISettingDialogPanel>()        .To<SettingsDialogPanel>()           .AsSingle();
                 Container.Bind<ICharacterDiedDialogPanel>()  .To<CharacterDiedDialogPanel>()      .AsSingle();
-                Container.Bind<IRateGameDialogPanel>()       .To<RateGameDialogPanel>()           .AsSingle();
             }
             
             Container.Bind<IViewInputCommandsProceeder>()    .To<ViewInputCommandsProceeder>()    .AsSingle();
-            Container.Bind<IViewInputTouchProceeder>()       .To<ViewInputTouchProceederWithSRDebugInit>()       .AsSingle();
+            Container.Bind<IViewInputTouchProceeder>()    
+                .To<ViewInputTouchProceederWithSRDebugInit>()   
+                .AsSingle();
 #if UNITY_EDITOR
             Container.Bind<IViewInputController>()           .To<ViewInputControllerInEditor>()   .AsSingle();
 #else

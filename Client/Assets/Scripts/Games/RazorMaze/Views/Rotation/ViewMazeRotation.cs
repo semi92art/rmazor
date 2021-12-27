@@ -71,8 +71,8 @@ namespace Games.RazorMaze.Views.Rotation
         public override void OnRotationFinished(MazeRotationEventArgs _Args)
         {
             Coroutines.Run(Coroutines.Delay(
-                () => RazorMazeUtils.UnlockCommandsOnRotationFinished(CommandsProceeder),
-                0.5f));
+                0.5f,
+                () => RazorMazeUtils.UnlockCommandsOnRotationFinished(CommandsProceeder)));
         }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)

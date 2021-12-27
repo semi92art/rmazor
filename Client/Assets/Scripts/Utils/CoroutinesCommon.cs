@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using DI.Extensions;
 using Ticker;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
 namespace Utils
 {
@@ -26,8 +22,8 @@ namespace Utils
         }
 
         public static IEnumerator Delay(
-            UnityAction _OnDelay,
             float  _Delay,
+            UnityAction _OnDelay,
             Func<bool> _OnBreak = null
         )
         {

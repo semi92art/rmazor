@@ -48,7 +48,8 @@ namespace UI.Panels
 
         #region api
 
-        public override EUiCategory Category => EUiCategory.Settings;
+        public override EUiCategory Category      => EUiCategory.Settings;
+        public override bool        AllowMultiple => true;
 
 
         public void PreInit(string _DefaultValue, List<string> _Items, UnityAction<string> _OnSelect)
@@ -62,11 +63,10 @@ namespace UI.Panels
         {
             base.LoadPanel();
             var sp = Managers.PrefabSetManager.InitUiPrefab(
-                UiFactory.UiRectTransform(
+                UIUtils.UiRectTransform(
                     DialogViewer.Container,
                     RtrLites.FullFill),
                 CommonPrefabSetNames.DialogPanels, "settings_selector_panel");
-            SetTranslucentBackgroundSource(sp);
             m_ToggleGroup = sp.AddComponent<ToggleGroup>();
             m_Content = sp.GetCompItem<RectTransform>("content");
             InitItems();
@@ -88,7 +88,7 @@ namespace UI.Panels
             };
             
             var sspi = Managers.PrefabSetManager.InitUiPrefab(
-                UiFactory.UiRectTransform(
+                UIUtils.UiRectTransform(
                     m_Content,
                     sspiRect),
                 "setting_items", "settings_selector_item");

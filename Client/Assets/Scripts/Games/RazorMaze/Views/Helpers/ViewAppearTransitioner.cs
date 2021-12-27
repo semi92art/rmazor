@@ -5,7 +5,6 @@ using DI.Extensions;
 using Entities;
 using Exceptions;
 using Games.RazorMaze.Models;
-using Games.RazorMaze.Views.MazeItems;
 using Shapes;
 using Ticker;
 using TMPro;
@@ -87,7 +86,9 @@ namespace Games.RazorMaze.Views.Helpers
                         else if (shape is Renderer rend) rend.enabled = true;
                     }
 
-                Coroutines.Run(Coroutines.Delay(() =>
+                Coroutines.Run(Coroutines.Delay(
+                    delay,
+                    () =>
                     {
                         Coroutines.Run(Coroutines.Lerp(
                             0f,
@@ -124,8 +125,7 @@ namespace Games.RazorMaze.Views.Helpers
                                     }
                                 _OnFinish?.Invoke();
                             }));
-                    },
-                    delay));
+                    }));
             }
         }
 

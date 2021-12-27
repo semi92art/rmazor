@@ -65,8 +65,8 @@ public class ApplicationInitializer : MonoBehaviour
         if (Settings.SrDebuggerOn)
             CommonUtils.InitSRDebugger();
         Application.targetFrameRate = GraphicUtils.GetTargetFps();
-        DataFieldsMigrator.InitDefaultDataFieldValues(GameClient);
         InitGameManagers();
+        InitDefaultData();
         LevelMonoInstaller.Release = true;
         SceneManager.sceneLoaded += OnSceneLoaded;
         SceneManager.LoadScene(SceneNames.Level);
@@ -95,7 +95,6 @@ public class ApplicationInitializer : MonoBehaviour
         HapticsManager     .Init();
         ScoreManager       .Initialize += OnScoreManagerInitialize;
         ScoreManager       .Init();
-        // ShopManager        .Initialize += InitPurchaseActions;
         ShopManager        .Init();
     }
     
@@ -161,52 +160,18 @@ public class ApplicationInitializer : MonoBehaviour
                     ScoreManager.SetScore(id, moneyCache.Value, false);
             }));
     }
-    
-    // private void InitPurchaseActions()
-    // {
-    //     var set = PrefabSetManager.GetObject<ShopMoneyItemsScriptableObject>(
-    //             "shop_money_items_set", "shop_money_panel").set;
-    //     foreach (var itemInSet in set)
-    //     {
-    //         if (itemInSet.watchingAds)
-    //             continue;
-    //         ShopManager.SetOnPurchaseAction(
-    //             itemInSet.purchaseKey, 
-    //             () => OnGotCoinsReward(itemInSet.reward));
-    //     }
-    //     ShopManager.SetOnPurchaseAction(PurchaseKeys.NoAds, BuyHideAdsItem);
-    // }
-    //
-    // private void BuyHideAdsItem()
-    // {
-    //     AdsManager.ShowAds = new BoolEntity
-    //     {
-    //         Result = EEntityResult.Success,
-    //         Value = false
-    //     };
-    // }
-    //
-    // private void OnGotCoinsReward(long _Reward)
-    // {
-    //     var scoreEntity = ScoreManager.GetScore(DataFieldIds.Money, true);
-    //     Coroutines.Run(Coroutines.WaitWhile(
-    //         () => scoreEntity.Result == EEntityResult.Pending,
-    //         () =>
-    //         {
-    //             if (scoreEntity.Result == EEntityResult.Fail)
-    //             {
-    //                 Dbg.LogError("Failed to load score entity");
-    //                 return;
-    //             }
-    //             var firstVal = scoreEntity.GetFirstScore();
-    //             if (!firstVal.HasValue)
-    //             {
-    //                 Dbg.LogError("Money score entity does not contain first value");
-    //                 return;
-    //             }
-    //             ScoreManager.SetScore(DataFieldIds.Money, firstVal.Value + _Reward, false);
-    //         }));
-    // }
-    
+
+    private void InitDefaultData()
+    {
+        if (SaveUtils.GetValue(SaveKeys.NotFirstLaunch))
+            return;
+        DataFieldsMigrator.InitDefaultDataFieldValues(GameClient);
+        LocalizationManager.SetLanguage(Language.English);
+        SaveUtils.PutValue(SaveKeys.SettingSoundOn, true);
+        SaveUtils.PutValue(SaveKeys.SettingMusicOn, true);
+        SaveUtils.PutValue(SaveKeys.SettingHapticsOn, true);
+        SaveUtils.PutValue(SaveKeys.NotFirstLaunch, true);
+    }
+
     #endregion
 }

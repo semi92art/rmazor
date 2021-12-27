@@ -32,7 +32,7 @@ namespace Managers.IAP
             var product = Products.FirstOrDefault(_P => _P.Key == _Key);
             if (product != null) 
                 return product.Id;
-            Dbg.LogError($"{nameof(UnityIAPShopManagerFacade)}: " +
+            Dbg.LogError($"{nameof(UnityIAPShopManager)}: " +
                          $"Get Product Id failed. Product with key {_Key} does not exist");
             return string.Empty;
         }

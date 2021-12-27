@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using DI.Extensions;
 using DialogViewers;
 using Entities;
-using GameHelpers;
 using Games.RazorMaze.Views.Common;
 using Ticker;
 using UI.Entities;
 using UI.PanelItems.Shop_Items;
 using UnityEngine;
 using UnityEngine.Events;
-using Utils;
 
 namespace UI.Panels.ShopPanels
 {
@@ -61,7 +59,8 @@ namespace UI.Panels.ShopPanels
 
         #region api
 
-        public override EUiCategory Category => EUiCategory.Shop;
+        public override EUiCategory Category      => EUiCategory.Shop;
+        public override bool        AllowMultiple => false;
 
         #endregion
 

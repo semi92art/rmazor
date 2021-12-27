@@ -49,7 +49,8 @@ namespace UI.Panels.ShopPanels
 
         #region api
 
-        public override EUiCategory Category => EUiCategory.Shop;
+        public override EUiCategory Category      => EUiCategory.Shop;
+        public override bool        AllowMultiple => false;
 
         #endregion
     }

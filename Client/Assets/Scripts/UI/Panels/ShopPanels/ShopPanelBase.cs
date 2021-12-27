@@ -59,14 +59,13 @@ namespace UI.Panels.ShopPanels
         {
             base.LoadPanel();
             var sp = Managers.PrefabSetManager.InitUiPrefab(
-                UiFactory.UiRectTransform(
+                UIUtils.UiRectTransform(
                     DialogViewer.Container,
                     RtrLites.FullFill),
                 CommonPrefabSetNames.DialogPanels,
                 PanelPrefabName);
             m_Panel = sp.GetCompItem<RectTransform>("panel");
             m_Content = sp.GetCompItem<RectTransform>("content");
-            SetTranslucentBackgroundSource(sp);
             PanelObject = sp.RTransform();
             m_Content.gameObject.DestroyChildrenSafe();
             InitItems();
@@ -108,7 +107,7 @@ namespace UI.Panels.ShopPanels
         protected void InitMoneyPanel()
         {
             var obj = Managers.PrefabSetManager.InitUiPrefab(
-                UiFactory.UiRectTransform(
+                UIUtils.UiRectTransform(
                     m_Panel,
                     new RectTransformLite
                     {
@@ -146,7 +145,7 @@ namespace UI.Panels.ShopPanels
         protected T CreateItem()
         {
             var obj = Managers.PrefabSetManager.InitUiPrefab(
-                UiFactory.UiRectTransform(
+                UIUtils.UiRectTransform(
                     m_Content,
                     ShopItemRectLite),
                 PrefabSetName, PanelItemPrefabName);

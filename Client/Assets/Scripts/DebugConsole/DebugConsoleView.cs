@@ -29,7 +29,7 @@ namespace DebugConsole
 
         private static DebugConsoleView Create()
         {
-            var canvas = UiFactory.UiCanvas(
+            var canvas = UIUtils.UiCanvas(
                 "DebugConsoleCanvas",
                 RenderMode.ScreenSpaceOverlay,
                 true,
@@ -46,7 +46,7 @@ namespace DebugConsole
             DontDestroyOnLoad(canvas);
 
             return new PrefabSetManager(new AssetBundleManagerFake()).InitUiPrefab(
-                UiFactory.UiRectTransform(canvas.RTransform(), RtrLites.FullFill),
+                UIUtils.UiRectTransform(canvas.RTransform(), RtrLites.FullFill),
                 "debug_console", "console").GetComponent<DebugConsoleView>();
         }
 

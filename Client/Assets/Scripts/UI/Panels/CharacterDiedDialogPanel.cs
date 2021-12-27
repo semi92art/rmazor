@@ -78,13 +78,14 @@ namespace UI.Panels
         
         #region api
         
-        public override EUiCategory Category => EUiCategory.CharacterDied;
+        public override EUiCategory Category      => EUiCategory.CharacterDied;
+        public override bool        AllowMultiple => false;
 
         public override void LoadPanel()
         {
             base.LoadPanel();
             var go = Managers.PrefabSetManager.InitUiPrefab(
-                UiFactory.UiRectTransform(
+                UIUtils.UiRectTransform(
                     ProposalDialogViewer.Container,
                     RtrLites.FullFill),
                 CommonPrefabSetNames.DialogPanels, "character_died_panel");

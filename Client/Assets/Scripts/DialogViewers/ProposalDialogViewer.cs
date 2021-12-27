@@ -29,12 +29,7 @@ namespace DialogViewers
     {
         #region nonpublic members
         
-        private static int AkShow => AnimKeys.Anim;
-        private static int AkHide => AnimKeys.Stop;
-
         private RectTransform              m_DialogContainer;
-        private Animator                   m_Animator;
-        private TranslucentImage           m_Background;
         private Dictionary<Graphic, float> m_Alphas;
         
         #endregion
@@ -42,20 +37,15 @@ namespace DialogViewers
         #region inject
 
         private ViewSettings      ViewSettings     { get; }
-        private IUITicker         Ticker           { get; }
-        private ICameraProvider   CameraProvider   { get; }
-        private IPrefabSetManager PrefabSetManager { get; }
 
         public ProposalDialogViewer(
-            ViewSettings _ViewSettings,
-            IUITicker _Ticker,
-            ICameraProvider _CameraProvider,
+            ViewSettings      _ViewSettings,
+            IUITicker         _Ticker,
+            ICameraProvider   _CameraProvider,
             IPrefabSetManager _PrefabSetManager)
+            : base(_CameraProvider, _Ticker, _PrefabSetManager)
         {
-            ViewSettings = _ViewSettings;
-            Ticker = _Ticker;
-            CameraProvider = _CameraProvider;
-            PrefabSetManager = _PrefabSetManager;
+            ViewSettings     = _ViewSettings;
         }
 
         #endregion
@@ -67,7 +57,7 @@ namespace DialogViewers
         public override void Init(RectTransform _Parent)
         {
             var go = PrefabSetManager.InitUiPrefab(
-                UiFactory.UiRectTransform(
+                UIUtils.UiRectTransform(
                     _Parent,
                     RtrLites.FullFill),
                 "dialog_viewers",
@@ -76,10 +66,9 @@ namespace DialogViewers
             Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
             {
                 m_DialogContainer = go.GetCompItem<RectTransform>("dialog_container");
-                m_Animator = go.GetCompItem<Animator>("animator");
-                m_Background = go.GetCompItem<TranslucentImage>("background");
-                m_Animator.speed = ViewSettings.ProposalDialogAnimSpeed;
-                m_Animator.SetTrigger(AkHide);
+                Background = go.GetCompItem<TranslucentImage>("background");
+                Background.source = CameraProvider.TranslucentSource;
+                Background.enabled = false;
             }));
         }
 
@@ -87,10 +76,9 @@ namespace DialogViewers
         {
             if (_Item == null)
                 return;
-            if (_Item is ICharacterDiedDialogPanel)
-                Dbg.Log("Show CharacterDiedDialogPanel");
-            
-            CameraProvider.EnableTranslucentSource(true);
+            if (!_Item.AllowMultiple && CurrentPanel.GetType() == _Item.GetType())
+                return;
+            CameraProvider.TranslucentSource.enabled = true;
             CurrentPanel = _Item;
             var panel = CurrentPanel.PanelObject;
             m_Alphas = panel.GetComponentsInChildrenEx<Graphic>()
@@ -100,32 +88,28 @@ namespace DialogViewers
                 panel, 
                 m_Alphas,
                 0.2f,
-                Ticker,
                 false,
                 () =>
                 {
                     CurrentPanel.AppearingState = EAppearingState.Appeared;
                 }));
             CurrentPanel.OnDialogShow();
-            m_Animator.SetTrigger(AkShow);
             CurrentPanel.AppearingState = EAppearingState.Appearing;
         }
         
         public void Back(UnityAction _OnFinish = null)
         {
             var panel = CurrentPanel;
-            m_Animator.SetTrigger(AkHide);
             Coroutines.Run(DoTransparentTransition(
                 panel.PanelObject,
                 m_Alphas,
                 0.2f,
-                Ticker,
                 true,
                 () =>
                 {
                     panel.AppearingState = EAppearingState.Dissapeared;
                     if (IsOtherDialogViewersShowing == null || !IsOtherDialogViewersShowing())
-                        CameraProvider.EnableTranslucentSource(false);
+                        CameraProvider.TranslucentSource.enabled = false;
                     panel.OnDialogHide();
                     Object.Destroy(panel.PanelObject.gameObject);
                     _OnFinish?.Invoke();

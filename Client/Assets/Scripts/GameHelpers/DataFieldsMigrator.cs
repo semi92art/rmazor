@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Constants;
+﻿using Constants;
 using Entities;
-using Games;
 using Network;
-using Newtonsoft.Json;
 using Utils;
 
 namespace GameHelpers
@@ -13,12 +9,9 @@ namespace GameHelpers
     {
         public static void InitDefaultDataFieldValues(IGameClient _GameClient)
         {
-            if (SaveUtils.GetValue(SaveKeys.NotFirstLaunch))
-                return;
             Dbg.Log(nameof(InitDefaultDataFieldValues));
-            int accId = GameClientUtils.DefaultAccountId;
+            const int accId = GameClientUtils.DefaultAccountId;
             new GameDataField(_GameClient, 100, accId, 1, DataFieldIds.Money).Save(true);
-            SaveUtils.PutValue(SaveKeys.NotFirstLaunch, true);
         }
 
         public static void MigrateFromPrevious(IGameClient _GameClient)

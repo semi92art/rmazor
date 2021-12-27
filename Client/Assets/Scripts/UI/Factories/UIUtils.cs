@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace UI.Factories
 {
-    public static class UiFactory
+    public static class UIUtils
     {
         #region public methods
 

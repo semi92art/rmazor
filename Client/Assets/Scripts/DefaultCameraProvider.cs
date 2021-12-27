@@ -5,14 +5,13 @@ using Zenject;
 
 public interface ICameraProvider
 {
-    Camera MainCamera { get; }
-    void   EnableTranslucentSource(bool _Enable);
+    Camera                 MainCamera        { get; }
+    TranslucentImageSource TranslucentSource { get; }
+    ScalableBlurConfig     BlurConfig        { get; }
 }
     
 public class DefaultCameraProvider : MonoBehaviour, ICameraProvider
 {
-    
-    private TranslucentImageSource m_TranslucentSource;
     private IPrefabSetManager      PrefabSetManager { get; set; }
     
     [Inject]
@@ -21,17 +20,17 @@ public class DefaultCameraProvider : MonoBehaviour, ICameraProvider
         PrefabSetManager = _PrefabSetManager;
     }
     
-    public Camera MainCamera { get; private set; }
+    public Camera                 MainCamera        { get; private set; }
+    public TranslucentImageSource TranslucentSource { get; private set; }
+    public ScalableBlurConfig     BlurConfig        { get; private set; }
 
-    public void EnableTranslucentSource(bool _Enable)
-    {
-        m_TranslucentSource.enabled = _Enable;
-    }
-    
+
     private void Awake()
     {
         MainCamera = Camera.main;
-        m_TranslucentSource = MainCamera.GetComponent<TranslucentImageSource>();
-        PrefabSetManager.GetObject<ScalableBlurConfig>("views", "level_blur_config").Strength = 10f;
+        TranslucentSource = MainCamera.GetComponent<TranslucentImageSource>();
+        BlurConfig = PrefabSetManager.GetObject<ScalableBlurConfig>(
+            "views",
+            "level_blur_config");
     }
 }

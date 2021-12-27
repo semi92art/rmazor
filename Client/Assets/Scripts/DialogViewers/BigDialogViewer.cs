@@ -9,6 +9,7 @@ using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItems;
 using Lean.Common;
+using LeTai.Asset.TranslucentImage;
 using Ticker;
 using UI;
 using UI.Factories;
@@ -73,11 +74,8 @@ namespace DialogViewers
         #region inject
 
         private IManagersGetter             Managers          { get; }
-        private IUITicker                   Ticker            { get; }
         private IViewInputCommandsProceeder CommandsProceeder { get; }
         private IColorProvider              ColorProvider     { get; }
-        private ICameraProvider             CameraProvider    { get; }
-        private IPrefabSetManager           PrefabSetManager  { get; }
 
         public BigDialogViewer(
             IManagersGetter _Managers,
@@ -85,14 +83,12 @@ namespace DialogViewers
             IViewInputCommandsProceeder _CommandsProceeder,
             IColorProvider _ColorProvider,
             ICameraProvider _CameraProvider,
-            IPrefabSetManager _PrefabSetManager)
+            IPrefabSetManager _PrefabSetManager) 
+            : base(_CameraProvider, _Ticker, _PrefabSetManager)
         {
             Managers = _Managers;
-            Ticker = _Ticker;
             CommandsProceeder = _CommandsProceeder;
             ColorProvider = _ColorProvider;
-            CameraProvider = _CameraProvider;
-            PrefabSetManager = _PrefabSetManager;
             _Ticker.Register(this);
         }
         
@@ -106,23 +102,22 @@ namespace DialogViewers
         public override void Init(RectTransform _Parent)
         {
             var go = PrefabSetManager.InitUiPrefab(
-                UiFactory.UiRectTransform(
+                UIUtils.UiRectTransform(
                     _Parent,
                     RtrLites.FullFill),
                 "dialog_viewers",
                 "dialog_viewer");
-            
             m_Background = go.GetCompItem<Image>("background");
             m_DialogContainer = go.GetCompItem<RectTransform>("dialog_container");
             m_CloseButton = go.GetCompItem<Button>("close_button");
             m_CloseButtonAnim = go.GetCompItem<Animator>("buttons_animator");
-            
+            Background = go.GetCompItem<TranslucentImage>("background");
+            Background.source = CameraProvider.TranslucentSource;
+            Background.enabled = false;
             m_CloseButton.RTransform().anchoredPosition = new Vector2(0f, 100f);
-
             var borderColor = ColorProvider.GetColor(ColorIds.UiBorder);
             m_CloseButton.GetCompItem<Image>("border").color = borderColor;
             m_CloseButton.GetCompItem<Image>("icon").color = borderColor;
-            
             m_CloseButton.SetOnClick(() =>
             {
                 Managers.AudioManager.PlayClip(CommonAudioClipArgs.UiButtonClick);
@@ -132,7 +127,7 @@ namespace DialogViewers
 
         public void Show(IDialogPanel _ItemTo, bool _HidePrevious = true)
         {
-            CameraProvider.EnableTranslucentSource(true);
+            CameraProvider.TranslucentSource.enabled = true;
             CurrentPanel = _ItemTo;
             m_CloseButton.transform.SetAsLastSibling();
             ShowCore(_ItemTo, _HidePrevious, false);
@@ -188,12 +183,11 @@ namespace DialogViewers
                     GraphicsAlphas.Add(instId, new GraphicAlphas(panelFromObj));
                 Coroutines.Run(DoTransparentTransition(
                     panelFromObj, GraphicsAlphas[instId].Alphas, TransitionTime,
-                    Ticker,
                     true,
                     () =>
                     {
                         if (_PanelTo == null && (IsOtherDialogViewersShowing == null || !IsOtherDialogViewersShowing()))
-                            CameraProvider.EnableTranslucentSource(false);
+                            CameraProvider.TranslucentSource.enabled = false;
                         panelFrom.AppearingState = EAppearingState.Dissapeared;
                         if (!_GoBack)
                             return;
@@ -209,7 +203,6 @@ namespace DialogViewers
                     GraphicsAlphas.Add(instId, new GraphicAlphas(panelToObj));
                 Coroutines.Run(DoTransparentTransition(
                     panelToObj, GraphicsAlphas[instId].Alphas, TransitionTime,
-                    Ticker,
                     false, 
                     () =>
                     {

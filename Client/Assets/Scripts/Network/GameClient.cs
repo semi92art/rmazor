@@ -92,9 +92,7 @@ namespace Network
             if (_WaitingTime.HasValue)
                 waitingTime = _WaitingTime.Value;
             
-            Coroutines.Run(Coroutines.Delay(
-                () => stopWaiting = true, waitingTime));
-            
+            Coroutines.Run(Coroutines.Delay(waitingTime, () => stopWaiting = true));
             Coroutines.Run(Coroutines.WaitWhile(
                 () => !request.isDone && !stopWaiting,
                 () =>

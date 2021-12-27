@@ -73,17 +73,17 @@ namespace UI.Panels
         
         #region api
         
-        public override EUiCategory Category => EUiCategory.Settings;
-        
+        public override EUiCategory Category      => EUiCategory.Settings;
+        public override bool        AllowMultiple => false;
+
         public override void LoadPanel()
         {
             base.LoadPanel();
             var sp = Managers.PrefabSetManager.InitUiPrefab(
-                UiFactory.UiRectTransform(DialogViewer.Container, RtrLites.FullFill),
+                UIUtils.UiRectTransform(DialogViewer.Container, RtrLites.FullFill),
                 CommonPrefabSetNames.DialogPanels, "settings_panel");
             m_MiniButtonsContent = sp.GetCompItem<RectTransform>("mini_buttons_content");
             m_SettingsContent = sp.GetCompItem<RectTransform>("settings_content");
-            SetTranslucentBackgroundSource(sp);
             m_MiniButtonsContent.gameObject.DestroyChildrenSafe();
             m_SettingsContent.gameObject.DestroyChildrenSafe();
             InitSettingItems();
@@ -232,7 +232,7 @@ namespace UI.Panels
         private SettingItemMiniButton CreateMiniButtonSetting()
         {
             var obj = Managers.PrefabSetManager.InitUiPrefab(
-                UiFactory.UiRectTransform(
+                UIUtils.UiRectTransform(
                     m_MiniButtonsContent,
                     m_MiniButtonRectLite),
                 PrefabSetName, "mini_button_item");
@@ -242,7 +242,7 @@ namespace UI.Panels
         private SettingItemOnOff CreateOnOffSetting()
         {
             var obj = Managers.PrefabSetManager.InitUiPrefab(
-                UiFactory.UiRectTransform(
+                UIUtils.UiRectTransform(
                     m_SettingsContent,
                     m_SettingItemRectLite),
                 PrefabSetName, "on_off_item");
@@ -252,7 +252,7 @@ namespace UI.Panels
         private SettingItemInPanelSelector CreateInPanelSelectorSetting()
         {
             var obj = Managers.PrefabSetManager.InitUiPrefab(
-                UiFactory.UiRectTransform(
+                UIUtils.UiRectTransform(
                     m_SettingsContent,
                     m_SettingItemRectLite),
                 PrefabSetName, "in_panel_selector_item");
@@ -262,7 +262,7 @@ namespace UI.Panels
         private SettingItemAction CreateActionSetting()
         {
             var obj = Managers.PrefabSetManager.InitUiPrefab(
-                UiFactory.UiRectTransform(
+                UIUtils.UiRectTransform(
                     m_SettingsContent,
                     m_SettingItemRectLite),
                 PrefabSetName, "action_item");

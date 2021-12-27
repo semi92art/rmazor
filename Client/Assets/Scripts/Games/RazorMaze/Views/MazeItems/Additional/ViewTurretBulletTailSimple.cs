@@ -11,7 +11,7 @@ using UnityEngine.Rendering;
 
 namespace Games.RazorMaze.Views.MazeItems.Additional
 {
-    public interface IViewTurretBulletTail : ICloneable
+    public interface IViewTurretProjectileTail : ICloneable
     {
         void Init();
         void ShowTail(TurretShotEventArgs _Args, Vector2 _ProjectilePosition);
@@ -20,7 +20,7 @@ namespace Games.RazorMaze.Views.MazeItems.Additional
     }
     
     // FIXME хвост не виден, нужно доработать
-    public class ViewTurretBulletTailSimple : IViewTurretBulletTail
+    public class ViewTurretProjectileTailSimple : IViewTurretProjectileTail
     {
         #region constants
 
@@ -43,7 +43,7 @@ namespace Games.RazorMaze.Views.MazeItems.Additional
         private IContainersGetter        ContainersGetter    { get; }
         private IColorProvider           ColorProvider       { get; }
 
-        public ViewTurretBulletTailSimple(
+        public ViewTurretProjectileTailSimple(
             IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IColorProvider _ColorProvider)
@@ -95,7 +95,7 @@ namespace Games.RazorMaze.Views.MazeItems.Additional
 
         public object Clone()
         {
-            return new ViewTurretBulletTailSimple(CoordinateConverter, ContainersGetter, ColorProvider);
+            return new ViewTurretProjectileTailSimple(CoordinateConverter, ContainersGetter, ColorProvider);
         }
 
         #endregion
@@ -147,9 +147,9 @@ namespace Games.RazorMaze.Views.MazeItems.Additional
         #endregion
     }
 
-    public class ViewTurretBulletTailFake : IViewTurretBulletTail
+    public class ViewTurretProjectileTailFake : IViewTurretProjectileTail
     {
-        public object Clone() => new ViewTurretBulletTailFake();
+        public object Clone() => new ViewTurretProjectileTailFake();
         public void   Init() { }
         public void   ShowTail(TurretShotEventArgs _Args, Vector2 _ProjectilePosition) { }
         public void   HideTail()                                                       { }

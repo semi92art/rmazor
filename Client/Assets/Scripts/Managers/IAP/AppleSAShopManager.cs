@@ -53,12 +53,12 @@ namespace Managers.IAP
         {
             var args = new ShopItemArgs {Result = () => EShopProductResult.Pending};
             Coroutines.Run(Coroutines.Delay(
+                3f,
                 () =>
                 {
                     if (args.Result() == EShopProductResult.Pending)
                         args.Result = () => EShopProductResult.Fail;
-                },
-                3f));
+                }));
             Coroutines.Run(Coroutines.Action(() =>
             {
                 string id = GetProductId(_Key);

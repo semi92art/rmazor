@@ -162,6 +162,7 @@ namespace Games.RazorMaze.Views.Common
 
                 var startLocalScale = shape.transform.localScale;
                 Coroutines.Run(Coroutines.Delay(
+                    Mathf.Max(0f, (dist - 1) * 0.005f),
                     () =>
                     {
                         Coroutines.Run(Coroutines.Lerp(
@@ -180,7 +181,7 @@ namespace Games.RazorMaze.Views.Common
                                 finished[shape] = true;
                             },
                             _ProgressFormula: _P => _P < 0.5f ? 2f * _P : 2f * (1f - _P)));
-                    }, Mathf.Max(0f, (dist - 1) * 0.005f)));
+                    }));
             }
             Coroutines.Run(Coroutines.WaitWhile(
                 () => finished.Values.Any(_F => !_F),

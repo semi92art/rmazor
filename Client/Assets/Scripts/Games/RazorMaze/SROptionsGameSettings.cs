@@ -176,10 +176,10 @@ public partial class SROptions
     }
 
     [Category(CategoryMazeItems)]
-    public float Turret_Bullet_Rotation_Speed
+    public float Turret_Projectile_Rotation_Speed
     {
-        get => _viewSettings.TurretBulletRotationSpeed;
-        set => _viewSettings.TurretBulletRotationSpeed = value;
+        get => _viewSettings.TurretProjectileRotationSpeed;
+        set => _viewSettings.TurretProjectileRotationSpeed = value;
     }
 
     [Category(CategoryCommon)]

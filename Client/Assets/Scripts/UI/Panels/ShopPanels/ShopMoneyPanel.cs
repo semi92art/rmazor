@@ -54,8 +54,9 @@ namespace UI.Panels.ShopPanels
 
         #region api
 
-        public override EUiCategory Category    => EUiCategory.Shop;
-        public          bool        Initialized { get; private set; }
+        public override EUiCategory Category      => EUiCategory.Shop;
+        public override bool        AllowMultiple => false;
+        public          bool        Initialized   { get; private set; }
         public event UnityAction    Initialize;
         
         public void Init()

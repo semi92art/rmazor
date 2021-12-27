@@ -78,6 +78,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         private IEnumerator ProceedBlock(IMazeItemProceedInfo _Info, int _Stage)
         {
             yield return Coroutines.Delay(
+                Settings.ShredingerBlockProceedTime,
                 () =>
                 {
                     var gravityItems = GetAllProceedInfos()
@@ -91,8 +92,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                     }
                     else 
                         SwitchStage(_Info, _Stage);
-                },
-                Settings.ShredingerBlockProceedTime);
+                });
         }
 
         private void SwitchStage(IMazeItemProceedInfo _Info, int _Stage)

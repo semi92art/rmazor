@@ -1,7 +1,5 @@
-﻿using DI.Extensions;
-using DialogViewers;
+﻿using DialogViewers;
 using Entities;
-using GameHelpers;
 using Games.RazorMaze.Views.Common;
 using Ticker;
 using UI.Entities;
@@ -51,8 +49,9 @@ namespace UI.Panels.ShopPanels
 
         #region api
 
-        public override EUiCategory Category => EUiCategory.Shop;
-        
+        public override EUiCategory Category      => EUiCategory.Shop;
+        public override bool        AllowMultiple => false;
+
         #endregion
 
     }
