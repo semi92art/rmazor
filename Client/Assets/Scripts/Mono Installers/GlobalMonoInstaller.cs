@@ -38,7 +38,7 @@ namespace Mono_Installers
 #if UNITY_EDITOR
             Container.Bind<IShopManager>()        .To<ShopManagerFake>()              .AsSingle();
 #elif UNITY_ANDROID
-            Container.Bind<IShopManager>()        .To<UnityIAPShopManagerFacade>()    .AsSingle();
+            Container.Bind<IShopManager>()        .To<UnityIAPShopManager>()          .AsSingle();
 #elif UNITY_IOS || UNITY_ANDROID
             Container.Bind<IShopManager>()        .To<AppleSAShopManager>()           .AsSingle();
 #endif
