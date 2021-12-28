@@ -9,6 +9,7 @@ using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Factories;
 using Games.RazorMaze.Views.InputConfigurators;
 using Shapes;
+using Ticker;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -36,14 +37,6 @@ namespace Games.RazorMaze.Views.UI
 
         #region nonpublic members
 
-        private static int AkMoveLeftPrompt         => AnimKeys.Anim;
-        private static int AkMoveRightPrompt        => AnimKeys.Anim2;
-        private static int AkMoveDownPrompt         => AnimKeys.Anim3;
-        private static int AkMoveUpPrompt           => AnimKeys.Anim4;
-        private static int AkRotateClockwise        => AnimKeys.Anim;
-        private static int AkRotateCounterClockwise => AnimKeys.Anim2;
-        private static int AkIdlePrompt             => AnimKeys.Stop;
-        
         private bool                          m_MovementTutorialStarted;
         private bool                          m_RotationTutorialStarted;
         private bool                          m_MovementTutorialFinished;
@@ -55,8 +48,8 @@ namespace Games.RazorMaze.Views.UI
         private bool                          m_ReadyToSecondRotationStep;
         private bool                          m_ReadyToFinishRotationTutorial;
         private Vector4                       m_Offsets;
-        private Animator                      m_MovePrompt;
-        private Animator                      m_RotatePrompt;
+        private HandSwipeMovement             m_Hsm;
+        private HandSwipeRotation             m_Hsr;
         private IRotatingPossibilityIndicator m_RotPossIndicator;
         private TextMeshPro                   m_RotPossText;
         private Animator                      m_RotPossTextAnim;
@@ -75,6 +68,7 @@ namespace Games.RazorMaze.Views.UI
         private IColorProvider                       ColorProvider       { get; }
         private IRotatingPossibilityIndicatorFactory RotPossIndFactory   { get; }
         private ILocalizationManager                 LocalizationManager { get; }
+        private IViewGameTicker                      Ticker              { get; }
 
         public ViewUITutorial(
             IModelGame _Model,
@@ -85,7 +79,8 @@ namespace Games.RazorMaze.Views.UI
             ICameraProvider _CameraProvider,
             IColorProvider _ColorProvider,
             IRotatingPossibilityIndicatorFactory _RotPossIndFactory,
-            ILocalizationManager _LocalizationManager)
+            ILocalizationManager _LocalizationManager,
+            IViewGameTicker _Ticker)
         {
             Model = _Model;
             PrefabSetManager = _PrefabSetManager;
@@ -96,6 +91,7 @@ namespace Games.RazorMaze.Views.UI
             ColorProvider = _ColorProvider;
             RotPossIndFactory = _RotPossIndFactory;
             LocalizationManager = _LocalizationManager;
+            Ticker = _Ticker;
         }
 
         #endregion
@@ -115,10 +111,6 @@ namespace Games.RazorMaze.Views.UI
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (m_MovementTutorialStarted)
-                m_MovePrompt.speed = _Args.Stage == ELevelStage.Paused ? 0f : 1f;
-            if (m_RotationTutorialStarted)
-                m_RotatePrompt.speed = _Args.Stage == ELevelStage.Paused ? 0f : 1f;
             switch (_Args.Stage)
             {
                 case ELevelStage.Loaded:
@@ -184,12 +176,8 @@ namespace Games.RazorMaze.Views.UI
             var goMovePrompt = PrefabSetManager.InitPrefab(
                 cont, "tutorials", "hand_swipe_movement");
             goMovePrompt.transform.localScale = Vector3.one * 6f;
-            m_MovePrompt = goMovePrompt.GetCompItem<Animator>("animator");
-            var uiCol = ColorProvider.GetColor(ColorIds.UI);
-            var handRend = goMovePrompt.GetCompItem<SpriteRenderer>("hand");
-            handRend.color = uiCol.SetA(handRend.color.a);
-            var traceRend = goMovePrompt.GetCompItem<Triangle>("trace");
-            traceRend.Color = uiCol.SetA(traceRend.Color.a);
+            m_Hsm = goMovePrompt.GetCompItem<HandSwipeMovement>("hsm");
+            m_Hsm.Init(Ticker, CameraProvider, CoordinateConverter, ColorProvider, m_Offsets);
             Coroutines.Run(MovementTutorialFirstStepCoroutine());
             m_MovementTutorialStarted = true;
         }
@@ -204,14 +192,8 @@ namespace Games.RazorMaze.Views.UI
             var goRotPrompt = PrefabSetManager.InitPrefab(
                 cont, "tutorials", "hand_swipe_rotation");
             goRotPrompt.transform.localScale = Vector3.one * 6f;
-            m_RotatePrompt = goRotPrompt.GetCompItem<Animator>("animator");
-            var uiCol = ColorProvider.GetColor(ColorIds.UI);
-            var handRend = goRotPrompt.GetCompItem<SpriteRenderer>("hand");
-            handRend.color = uiCol.SetA(handRend.color.a);
-            var trace1Rend = goRotPrompt.GetCompItem<Triangle>("trace_1");
-            trace1Rend.Color = uiCol.SetA(trace1Rend.Color.a);
-            var trace2Rend = goRotPrompt.GetCompItem<Triangle>("trace_2");
-            trace2Rend.Color = uiCol.SetA(trace2Rend.Color.a);
+            m_Hsr = goRotPrompt.GetCompItem<HandSwipeRotation>("hsr");
+            m_Hsr.Init(Ticker, CameraProvider, CoordinateConverter, ColorProvider, m_Offsets);
             CommandsProceeder.LockCommands(RazorMazeUtils.GetMoveCommands(), GetGroupName());
             Coroutines.Run(RotationTutorialFirstStepCoroutine());
             m_RotationTutorialStarted = true;
@@ -220,10 +202,7 @@ namespace Games.RazorMaze.Views.UI
         
         private IEnumerator MovementTutorialFirstStepCoroutine()
         {
-            m_MovePrompt.SetTrigger(AkMoveRightPrompt);
-            m_MovePrompt.transform.SetPosXY(
-                CoordinateConverter.GetMazeCenter().x,
-                GetScreenBounds().min.y + m_Offsets.z + 10f);
+            m_Hsm.ShowMoveRightPrompt();
             CommandsProceeder.LockCommands(RazorMazeUtils.GetMoveCommands(), GetGroupName());
             CommandsProceeder.UnlockCommand(EInputCommand.MoveRight, GetGroupName());
             while (!m_ReadyToSecondMovementStep)
@@ -233,10 +212,7 @@ namespace Games.RazorMaze.Views.UI
         
         private IEnumerator MovementTutorialSecondStepCoroutine()
         {
-            m_MovePrompt.SetTrigger(AkMoveUpPrompt);
-            m_MovePrompt.transform.SetPosXY(
-                GetScreenBounds().max.x - m_Offsets.y - 5f,
-                CoordinateConverter.GetMazeCenter().y);
+            m_Hsm.ShowMoveUpPrompt();
             CommandsProceeder.LockCommands(RazorMazeUtils.GetMoveCommands(), GetGroupName());
             CommandsProceeder.UnlockCommand(EInputCommand.MoveUp, GetGroupName());
             while (!m_ReadyToThirdMovementStep)
@@ -246,10 +222,7 @@ namespace Games.RazorMaze.Views.UI
 
         private IEnumerator MovementTutorialThirdStepCoroutine()
         {
-            m_MovePrompt.SetTrigger(AkMoveLeftPrompt);
-            m_MovePrompt.transform.SetPosXY(
-                CoordinateConverter.GetMazeCenter().x,
-                GetScreenBounds().min.y +  m_Offsets.z + 10f);
+            m_Hsm.ShowMoveLeftPrompt();
             CommandsProceeder.LockCommands(RazorMazeUtils.GetMoveCommands(), GetGroupName());
             CommandsProceeder.UnlockCommand(EInputCommand.MoveLeft, GetGroupName());
             while (!m_ReadyToFourthMovementStep)
@@ -259,10 +232,7 @@ namespace Games.RazorMaze.Views.UI
 
         private IEnumerator MovementTutorialFourthStepCoroutine()
         {
-            m_MovePrompt.SetTrigger(AkMoveDownPrompt);
-            m_MovePrompt.transform.SetPosXY(
-                GetScreenBounds().max.x - m_Offsets.y - 5f,
-                CoordinateConverter.GetMazeCenter().y);
+            m_Hsm.ShowMoveDownPrompt();
             CommandsProceeder.LockCommands(RazorMazeUtils.GetMoveCommands(), GetGroupName());
             CommandsProceeder.UnlockCommand(EInputCommand.MoveDown, GetGroupName());
             while (!m_ReadyToFinishMovementTutorial)
@@ -272,7 +242,7 @@ namespace Games.RazorMaze.Views.UI
 
         private void FinishMovementTutorial()
         {
-            m_MovePrompt.SetTrigger(AkIdlePrompt);            
+            m_Hsm.HidePrompt();
             CommandsProceeder.UnlockCommands(RazorMazeUtils.GetMoveCommands(), GetGroupName());
             m_MovementTutorialFinished = true;
             SaveUtils.PutValue(SaveKeys.MovementTutorialFinished, true);
@@ -281,10 +251,7 @@ namespace Games.RazorMaze.Views.UI
         
         private IEnumerator RotationTutorialFirstStepCoroutine()
         {
-            m_RotatePrompt.SetTrigger(AkRotateCounterClockwise);
-            m_RotatePrompt.transform.SetPosXY(
-                CoordinateConverter.GetMazeCenter().x,
-                GetScreenBounds().min.y +  m_Offsets.z + 10f);
+            m_Hsr.ShowRotateCounterClockwisePrompt();
             CommandsProceeder.UnlockCommands(RazorMazeUtils.GetRotateCommands(), "all");
             CommandsProceeder.LockCommands(RazorMazeUtils.GetRotateCommands(), GetGroupName());
             CommandsProceeder.UnlockCommand(EInputCommand.RotateCounterClockwise, GetGroupName());
@@ -295,10 +262,7 @@ namespace Games.RazorMaze.Views.UI
 
         private IEnumerator RotationTutorialSecondStepCoroutine()
         {
-            m_RotatePrompt.SetTrigger(AkRotateClockwise);
-            m_RotatePrompt.transform.SetPosXY(
-                CoordinateConverter.GetMazeCenter().x,
-                GetScreenBounds().min.y +  m_Offsets.z + 10f);
+            m_Hsr.ShowRotateClockwisePrompt();
             CommandsProceeder.LockCommands(RazorMazeUtils.GetRotateCommands(), GetGroupName());
             CommandsProceeder.UnlockCommand(EInputCommand.RotateClockwise, GetGroupName());
             while (!m_ReadyToFinishRotationTutorial)
@@ -308,7 +272,7 @@ namespace Games.RazorMaze.Views.UI
 
         private IEnumerator RotationTutorialThirdStepCoroutine()
         {
-            m_RotatePrompt.SetTrigger(AkIdlePrompt);
+            m_Hsr.HidePrompt();
             m_RotPossIndicator = RotPossIndFactory.Create();
             m_RotPossIndicator.Shape.Color = ColorProvider.GetColor(ColorIds.UI).SetA(0f);
             m_RotPossIndicator.Animator.SetTrigger(AnimKeys.Anim);
