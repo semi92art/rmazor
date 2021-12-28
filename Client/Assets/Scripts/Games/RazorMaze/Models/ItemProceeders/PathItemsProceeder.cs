@@ -51,10 +51,16 @@ namespace Games.RazorMaze.Models.ItemProceeders
         public void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
         {
             m_CurrentFullPath = RazorMazeUtils.GetFullPath(_Args.From, _Args.To);
-            m_AllPathItemsNotInPathProceeded = PathProceeds
-                .Where(_Kvp => !m_CurrentFullPath.Contains(_Kvp.Key))
-                .Select(_Kvp => _Kvp.Value)
-                .All(_Value => _Value);
+            m_AllPathItemsNotInPathProceeded = true;
+            foreach (var kvp in PathProceeds)
+            {
+                if (m_CurrentFullPath.Contains(kvp.Key))
+                    continue;
+                if (kvp.Value)
+                    continue;
+                m_AllPathItemsNotInPathProceeded = false;
+                break;
+            }
         }
 
         public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)

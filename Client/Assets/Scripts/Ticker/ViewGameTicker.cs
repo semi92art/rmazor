@@ -37,9 +37,9 @@ namespace Ticker
         public event UnityAction Paused;
         public event UnityAction UnPaused;
         public float             Time           => TickerManager.Time;
-        public float             DeltaTime      => TickerManager.DeltaTime;
+        public float             DeltaTime      => UnityEngine.Time.deltaTime;
         public float             FixedTime      => TickerManager.FixedTime;
-        public float             FixedDeltaTime => TickerManager.FixedDeltaTime;
+        public float             FixedDeltaTime => UnityEngine.Time.fixedDeltaTime;
 
         public bool Pause
         {

@@ -9,13 +9,13 @@ namespace Ticker
     {
         #region nonpublic members
 
-        private bool m_Paused;
-        private float m_Delta;
-        private float m_FixedDelta;
-        private readonly List<IUpdateTick> m_UpdateInfoDict = new List<IUpdateTick>();
+        private          bool                   m_Paused;
+        private          float                  m_Delta;
+        private          float                  m_FixedDelta;
+        private readonly List<IUpdateTick>      m_UpdateInfoDict      = new List<IUpdateTick>();
         private readonly List<IFixedUpdateTick> m_FixedUpdateInfoDict = new List<IFixedUpdateTick>();
-        private readonly List<ILateUpdateTick> m_LateUpdateInfoDict = new List<ILateUpdateTick>();
-        private readonly List<IDrawGizmosTick> m_DrawGizmosInfoDict = new List<IDrawGizmosTick>();
+        private readonly List<ILateUpdateTick>  m_LateUpdateInfoDict  = new List<ILateUpdateTick>();
+        private readonly List<IDrawGizmosTick>  m_DrawGizmosInfoDict  = new List<IDrawGizmosTick>();
         
         #endregion
 
@@ -24,9 +24,7 @@ namespace Ticker
         public event UnityAction Paused;
         public event UnityAction UnPaused;
         public float             Time           { get; private set; }
-        public float             DeltaTime      => UnityEngine.Time.deltaTime;
         public float             FixedTime      { get; private set; }
-        public float             FixedDeltaTime => UnityEngine.Time.fixedDeltaTime;
 
         public bool Pause
         {
