@@ -49,6 +49,9 @@ namespace Utils.Editor
                 Dbg.LogWarning($"Element \"dict\" not found in {infoPlistFileName}");
                 return;
             }
+            var keyElements = first.Elements("key");
+            if (keyElements.Any(_El => _El.Value == "GADIsAdManagerApp"))
+                return;
             first.Add(new XElement("key", "GADIsAdManagerApp"));
             first.Add(new XElement("true"));
             xDoc.Save(infoPlistPath);
