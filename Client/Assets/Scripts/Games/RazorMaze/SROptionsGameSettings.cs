@@ -67,120 +67,15 @@ public partial class SROptions
     }
 
     [Category(CategoryMazeItems)]
-    public float Moving_Items_Speed
-    {
-        get => _modelSettings.MovingItemsSpeed;
-        set => _modelSettings.MovingItemsSpeed = value;
-    }
-
-    [Category(CategoryMazeItems)]
-    public float Gravity_Block_Speed
-    {
-        get => _modelSettings.GravityBlockSpeed;
-        set => _modelSettings.GravityBlockSpeed = value;
-    }
-
-    [Category(CategoryMazeItems)]
-    public float Gravity_Trap_Speed
-    {
-        get => _modelSettings.GravityTrapSpeed;
-        set => _modelSettings.GravityTrapSpeed = value;
-    }
-
-    [Category(CategoryMazeItems)]
-    public float Moving_Items_Pause
-    {
-        get => _modelSettings.MovingItemsPause;
-        set => _modelSettings.MovingItemsPause = value;
-    }
-
-    [Category(CategoryMazeItems)]
-    public float Trap_PreReact_Time
-    {
-        get => _modelSettings.TrapPreReactTime;
-        set => _modelSettings.TrapPreReactTime = value;
-    }
-
-    [Category(CategoryMazeItems)]
-    public float Trap_React_Time
-    {
-        get => _modelSettings.TrapReactTime;
-        set => _modelSettings.TrapReactTime = value;
-    }
-
-    [Category(CategoryMazeItems)]
-    public float Trap_AfterReact_Time
-    {
-        get => _modelSettings.TrapAfterReactTime;
-        set => _modelSettings.TrapAfterReactTime = value;
-    }
-
-    [Category(CategoryMazeItems)]
-    public float Trap_IncreasingIdle_Time
-    {
-        get => _modelSettings.TrapIncreasingIdleTime;
-        set => _modelSettings.TrapIncreasingIdleTime = value;
-    }
-
-    [Category(CategoryMazeItems)]
-    public float Trap_IncreasingIncreased_Time
-    {
-        get => _modelSettings.TrapIncreasingIncreasedTime;
-        set => _modelSettings.TrapIncreasingIncreasedTime = value;
-    }
-
-    [Category(CategoryMazeItems)]
-    public float Turret_PreShoot_Interval
-    {
-        get => _modelSettings.TurretPreShootInterval;
-        set => _modelSettings.TurretPreShootInterval = value;
-    }
-
-    [Category(CategoryMazeItems)]
-    public float Turret_Shoot_Interval
-    {
-        get => _modelSettings.TurretShootInterval;
-        set => _modelSettings.TurretShootInterval = value;
-    }
-
-    [Category(CategoryMazeItems)]
     public float Turret_Projectile_Speed
     {
         get => _modelSettings.TurretProjectileSpeed;
         set => _modelSettings.TurretProjectileSpeed = value;
     }
 
-    [Category(CategoryMazeItems)]
-    public float Shredinger_BlockProceed_Time
-    {
-        get => _modelSettings.ShredingerBlockProceedTime;
-        set => _modelSettings.ShredingerBlockProceedTime = value;
-    }
-
     #endregion
 
     #region view settings
-
-    [Category(CategoryMazeItems)]
-    public float Moving_Trap_Rotation_Speed
-    {
-        get => _viewSettings.MovingTrapRotationSpeed;
-        set => _viewSettings.MovingTrapRotationSpeed = value;
-    }
-
-    [Category(CategoryMazeItems)]
-    public float Shredinger_Line_Offset_Speed
-    {
-        get => _viewSettings.ShredingerLineOffsetSpeed;
-        set => _viewSettings.ShredingerLineOffsetSpeed = value;
-    }
-
-    [Category(CategoryMazeItems)]
-    public float Turret_Projectile_Rotation_Speed
-    {
-        get => _viewSettings.TurretProjectileRotationSpeed;
-        set => _viewSettings.TurretProjectileRotationSpeed = value;
-    }
 
     [Category(CategoryCommon)]
     public float Maze_Rotation_Speed
@@ -190,51 +85,13 @@ public partial class SROptions
     }
 
     [Category(CategoryCommon)]
-    public float Finish_Time_Excellent
-    {
-        get => _viewSettings.FinishTimeExcellent;
-        set => _viewSettings.FinishTimeExcellent = value;
-    }
+    public long Money { get; set; }
 
     [Category(CategoryCommon)]
-    public float Finish_Time_Good
-    {
-        get => _viewSettings.FinishTimeGood;
-        set => _viewSettings.FinishTimeGood = value;
-    }
-
-    [Category(CategoryCommon)]
-    public float Proposal_Dialog_Anim_Speed
-    {
-        get => _viewSettings.ProposalDialogAnimSpeed;
-        set => _viewSettings.ProposalDialogAnimSpeed = value;
-    }
-
-    [Category(CategoryCommon)]
-    public bool AddMoney500
+    public bool Set_Money
     {
         get => false;
-        set
-        {
-            var moneyEntity = _view.Managers.ScoreManager.GetScore(DataFieldIds.Money, true);
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => moneyEntity.Result != EEntityResult.Pending,
-                () =>
-                {
-                    if (moneyEntity.Result == EEntityResult.Fail)
-                    {
-                        Dbg.LogError("Failed to load money score.");
-                        return;
-                    }
-                    var score = moneyEntity.GetFirstScore();
-                    if (!score.HasValue)
-                    {
-                        Dbg.LogError("Money score entity does not contain first score.");
-                        return;
-                    }
-                    _view.Managers.ScoreManager.SetScore(DataFieldIds.Money, score.Value + 500, false);
-                }));
-        } 
+        set => _view.Managers.ScoreManager.SetScore(DataFieldIds.Money, Money, false);
     }
 
     #endregion
