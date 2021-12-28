@@ -76,7 +76,7 @@ namespace DialogViewers
         {
             if (_Item == null)
                 return;
-            if (!_Item.AllowMultiple && CurrentPanel.GetType() == _Item.GetType())
+            if (!_Item.AllowMultiple && CurrentPanel != null && CurrentPanel.GetType() == _Item.GetType())
                 return;
             CameraProvider.TranslucentSource.enabled = true;
             CurrentPanel = _Item;
