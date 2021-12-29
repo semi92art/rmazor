@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DI.Extensions;
 using Games.RazorMaze.Models.ProceedInfos;
 using Ticker;
 using Utils;
@@ -82,7 +83,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 () =>
                 {
                     var gravityItems = GetAllProceedInfos()
-                        .Where(_Inf => RazorMazeUtils.GravityItemTypes().Contains(_Inf.Type))
+                        .Where(_Inf => RazorMazeUtils.GravityItemTypes().ContainsAlt(_Inf.Type))
                         .ToList();
                     if (gravityItems.Any())
                     {

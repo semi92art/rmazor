@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DI.Extensions;
 using Entities;
 using Exceptions;
 using Games.RazorMaze.Models.ProceedInfos;
@@ -365,7 +366,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 return _N.Type != EMazeItemType.ShredingerBlock;
             });
             _GravityBlockItemInfo = _Infos.FirstOrDefault(_Inf => 
-                RazorMazeUtils.GravityItemTypes().Contains(_Inf.Type) 
+                RazorMazeUtils.GravityItemTypes().ContainsAlt(_Inf.Type) 
                 && _Position == (_CheckNextPos ? _Inf.NextPosition : _Inf.CurrentPosition));
             bool result = isOnNode && !isOnStaticBlockItem && _GravityBlockItemInfo == null;
             return result;

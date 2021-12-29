@@ -55,8 +55,6 @@ namespace Games.RazorMaze.Views.Common
             set => CameraProvider.MainCamera.backgroundColor = value;
         }
         
-        private bool      m_LoadedFirstTime;
-        private Transform m_Container;
         private Color     m_BackItemsColor;
         private Bounds    m_ScreenBounds;
         private float     m_LastCongratsItemAnimTime;
@@ -121,9 +119,6 @@ namespace Games.RazorMaze.Views.Common
                 m_BackItemsColor = _Color;
                 foreach (var rend in m_BackIdleItemsPool)
                     rend.Color = _Color;
-                // foreach (var rend in m_BackCongratsItemsDict
-                //     .SelectMany(_Kvp => _Kvp.Value))
-                //     rend.Color = _Color;
             }
             else if (_ColorId == ColorIds.Background)
                 BackgroundColor = _Color;
@@ -147,8 +142,6 @@ namespace Games.RazorMaze.Views.Common
                 foreach (var item in m_BackCongratsItemsPool)
                     m_BackCongratsItemsPool.Deactivate(item);
             }
-            
-            m_LoadedFirstTime = true;
         }
         
         public void UpdateTick()

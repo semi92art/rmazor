@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Text;
 using Entities;
-using GameHelpers;
 using Network.Packets;
 using Newtonsoft.Json;
 using Ticker;
@@ -32,6 +31,17 @@ namespace Network
         }
         
         #endregion
+
+        #region inject
+        
+        private ICommonTicker Ticker { get; }
+
+        public GameClient(ICommonTicker _Ticker)
+        {
+            Ticker = _Ticker;
+        }
+
+        #endregion
         
         #region api
 
@@ -45,21 +55,13 @@ namespace Network
                 GameClientUtils.GameId = GameClientUtils.DefaultGameId;
             Initialize?.Invoke();
             Initialized = true;
-            // if (!CommonData.Testing)
-            //     return;
-            // TestDatabaseConnection();
         }
         
         public void Send(IPacket _Packet, bool _Async = true)
         {
             SendCore(_Packet, _Async);
         }
-        
-        public T Deserialize<T>(string _Json)
-        {
-            return JsonConvert.DeserializeObject<T>(_Json);
-        }
-        
+
         #endregion
         
         #region nonpublic methods
@@ -74,16 +76,13 @@ namespace Network
 
         private void SendRequestToDatabase(IPacket _Packet, float? _WaitingTime = null)
         {
-            var request = new UnityWebRequest(_Packet.Url, _Packet.Method);
-            request.method = _Packet.Method;
+            var request = new UnityWebRequest(_Packet.Url, _Packet.Method) {method = _Packet.Method};
             string json = JsonConvert.SerializeObject(_Packet.Request);
-            byte[] bodyRaw = Encoding.UTF8.GetBytes(json);
+            var bodyRaw = Encoding.UTF8.GetBytes(json);
             request.uploadHandler = new UploadHandlerRaw(bodyRaw) {contentType = "application/json"};
             request.downloadHandler = new DownloadHandlerBuffer();
-            
             bool stopWaiting = false;
             request.SendWebRequest();
-
             float waitingTime = 2f;
             if (!DatabaseConnection)
                 waitingTime = 0f;
@@ -91,7 +90,6 @@ namespace Network
                 waitingTime = 5f;
             if (_WaitingTime.HasValue)
                 waitingTime = _WaitingTime.Value;
-            
             Coroutines.Run(Coroutines.Delay(waitingTime, () => stopWaiting = true));
             Coroutines.Run(Coroutines.WaitWhile(
                 () => !request.isDone && !stopWaiting,
@@ -112,7 +110,7 @@ namespace Network
             Coroutines.Run(Coroutines.Repeat(() =>
             {
                 sw.Restart();
-                IPacket testPacket = new TestConnectionPacket()
+                var testPacket = new TestConnectionPacket()
                     .OnSuccess(() => DatabaseConnection = true)
                     .OnFail(() =>
                         {
@@ -124,7 +122,7 @@ namespace Network
                 Coroutines.Run(Coroutines.Action(() => SendRequestToDatabase(testPacket, 2f)));
             }, 5f,
             float.MaxValue,
-            CommonTicker.Instance,
+            Ticker,
             () => false));
         }
 

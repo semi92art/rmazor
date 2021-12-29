@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DI.Extensions;
 using Entities;
 using Exceptions;
 using Games.RazorMaze.Models;
@@ -81,7 +82,7 @@ namespace Games.RazorMaze
         public static bool MazeContainsGravityItems(IEnumerable<IMazeItemProceedInfo> _Infos)
         {
             return _Infos
-                .Any(_Info => GravityItemTypes().Contains(_Info.Type));
+                .Any(_Info => GravityItemTypes().ContainsAlt(_Info.Type));
         }
         
         public static V2Int GetDirectionVector(EMazeMoveDirection _Direction, MazeOrientation _Orientation)

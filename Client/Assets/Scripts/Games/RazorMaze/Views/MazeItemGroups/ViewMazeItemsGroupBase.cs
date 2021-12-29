@@ -27,20 +27,42 @@ namespace Games.RazorMaze.Views.MazeItemGroups
         
         public abstract EMazeItemType[] Types { get; }
         
-        public IEnumerable<IViewMazeItem> GetItems()
+        public List<IViewMazeItem> GetItems()
         {
-            return Common.MazeItems.Where(_Item => Types.Contains(_Item.Props.Type)).ToList();
+            var result = new List<IViewMazeItem>();
+            var items = Common.GetItems(false);
+            for (int i = 0; i < items.Count; i++)
+            {
+                var item = items[i];
+                if (!Types.Contains(item.Props.Type))
+                    continue;
+                result.Add(item);
+            }
+            return result;
         }
         
-        public IEnumerable<IViewMazeItem> GetActiveItems()
+        public List<IViewMazeItem> GetActiveItems()
         {
-            return GetItems().Where(_Item => _Item.ActivatedInSpawnPool);
+            var result = new List<IViewMazeItem>();
+            var items = Common.GetItems();
+            for (int i = 0; i < items.Count; i++)
+            {
+                var item = items[i];
+                if (!Types.Contains(item.Props.Type))
+                    continue;
+                result.Add(item);
+            }
+            return result;
         }
         
         public virtual void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            foreach (var item in GetItems())
+            var items = GetItems();
+            for (int i = 0; i < items.Count; i++)
+            {
+                var item = items[i];
                 item.OnLevelStageChanged(_Args);
+            }
         }
 
         #endregion

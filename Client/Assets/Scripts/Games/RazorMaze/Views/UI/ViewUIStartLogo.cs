@@ -96,8 +96,8 @@ namespace Games.RazorMaze.Views.UI
         private void OnCommand(EInputCommand _Command, object[] _Args)
         {
             if (m_OnStart
-                && (RazorMazeUtils.GetMoveCommands().Contains(_Command)
-                    || RazorMazeUtils.GetRotateCommands().Contains(_Command)))
+                && (RazorMazeUtils.GetMoveCommands().ContainsAlt(_Command)
+                    || RazorMazeUtils.GetRotateCommands().ContainsAlt(_Command)))
             {
                 HideStartLogo();
                 m_OnStart = false;

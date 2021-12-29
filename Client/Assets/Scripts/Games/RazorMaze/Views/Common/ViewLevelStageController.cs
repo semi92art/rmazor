@@ -177,7 +177,6 @@ namespace Games.RazorMaze.Views.Common
                     bool allLevelsPassed = SaveUtils.GetValue(SaveKeys.AllLevelsPassed);
                     if (!allLevelsPassed)
                     {
-                        Managers.ScoreManager.SetScore(DataFieldIds.Level, _Args.LevelIndex + 1, true);
                         if (_Args.LevelIndex + 1 >= LevelsLoader.GetLevelsCount(GameClientUtils.GameId))
                             SaveUtils.PutValue(SaveKeys.AllLevelsPassed, true);
                     }
@@ -204,6 +203,7 @@ namespace Games.RazorMaze.Views.Common
                         }));
                     break;
                 case ELevelStage.Unloaded:
+                    Managers.ScoreManager.SetScore(DataFieldIds.Level, _Args.LevelIndex + 1, true);
                     if (SaveUtils.GetValue(SaveKeys.AllLevelsPassed ) && (_Args.LevelIndex - 2) % 3 == 0)
                         CommandsProceeder.RaiseCommand(EInputCommand.LoadFirstLevelFromRandomGroup, null, true);
                     else if (m_NextLevelMustBeFirstInGroup)

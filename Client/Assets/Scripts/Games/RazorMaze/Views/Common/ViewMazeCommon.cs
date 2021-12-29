@@ -1,72 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DI.Extensions;
-using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ProceedInfos;
-using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
 using Games.RazorMaze.Views.MazeItems;
 using SpawnPools;
-using Ticker;
-using UnityEngine;
+using UnityEngine.Events;
 
 namespace Games.RazorMaze.Views.Common
 {
-    public class ViewMazeCommon : ViewMazeCommonBase
+    public class ViewMazeCommon : IViewMazeCommon
     {
         #region nonpublic members
 
-        private Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> m_BlockPools;
+        private readonly Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> m_ItemPools = 
+            new Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>>();
+        
+        private readonly List<IViewMazeItem> m_AllItemsCached = new List<IViewMazeItem>();
+        private readonly List<IViewMazeItem> m_ActiveItemsCached = new List<IViewMazeItem>();
         
         #endregion
         
         #region inject
 
-        private IManagersGetter Managers { get; }
-        private ViewSettings ViewSettings { get; }
+        private ViewSettings      ViewSettings     { get; }
+        private IMazeItemsCreator MazeItemsCreator { get; }
+        private IModelData        ModelData        { get; }
         
         public ViewMazeCommon(
-            IViewGameTicker _GameTicker,
             IMazeItemsCreator _MazeItemsCreator, 
-            IModelData _ModelData,
-            IContainersGetter _ContainersGetter, 
-            IMazeCoordinateConverter _CoordinateConverter,
-            IManagersGetter _Managers,
-            ViewSettings _ViewSettings) 
-            : base(_GameTicker, _MazeItemsCreator, _ModelData, _ContainersGetter, _CoordinateConverter)
+            IModelData        _ModelData,
+            ViewSettings      _ViewSettings)
         {
-            Managers = _Managers;
-            ViewSettings = _ViewSettings;
+            MazeItemsCreator  = _MazeItemsCreator;
+            ModelData         = _ModelData;
+            ViewSettings      = _ViewSettings;
         }
         
         #endregion
         
         #region api
+        
+        public bool              Initialized { get; private set; }
+        public event UnityAction Initialize;
 
-        public override List<IViewMazeItem> MazeItems
+        public void Init()
         {
-            get
-            {
-                IEnumerable<IViewMazeItem> res = new List<IViewMazeItem>();
-                return m_BlockPools.Values
-                    .Aggregate(res, (_Current, _Pool) => 
-                        _Current.Concat(_Pool))
-                    .Where(_Item => _Item.Props != null).ToList();
-            }
+            InitBlockPools();
+            Initialize?.Invoke();
+            Initialized = true;
         }
 
-        public override void Init()
+        public IViewMazeItem GetItem(IMazeItemProceedInfo _Info)
         {
-            if (m_BlockPools == null)
-                InitBlockPools();
-            base.Init();
-        }
-
-        public override IViewMazeItem GetItem(IMazeItemProceedInfo _Info)
-        {
-            var infos = m_BlockPools[_Info.Type];
+            var infos = m_ItemPools[_Info.Type];
             for (int i = 0; i < infos.Count; i++)
             {
                 if (infos[i].Equal(_Info))
@@ -74,13 +62,42 @@ namespace Games.RazorMaze.Views.Common
             }
             return null;
         }
-
-        public override void OnLevelStageChanged(LevelStageArgs _Args)
+        
+        public T GetItem<T>(IMazeItemProceedInfo _Info) where T : class, IViewMazeItem
         {
-            if (_Args.Stage == ELevelStage.Loaded)
+            return (T) GetItem(_Info);
+        }
+
+        public List<IViewMazeItem> GetItems(bool _OnlyActive = true)
+        {
+            return _OnlyActive ? m_ActiveItemsCached : m_AllItemsCached;
+        }
+
+        public List<T> GetItems<T>(bool _OnlyActive = true) where T : class, IViewMazeItem
+        {
+            return GetItems(_OnlyActive).OfType<T>().ToList();
+        }
+
+        public void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            if (_Args.Stage != ELevelStage.Loaded) 
+                return;
+            DeactivateAllBlocks();
+            MazeItemsCreator.InitAndActivateBlockItems(ModelData.Info, m_ItemPools);
+            m_AllItemsCached.Clear();
+            m_ActiveItemsCached.Clear();
+            foreach (var kvp in m_ItemPools)
             {
-                DeactivateAllBlocks();
-                MazeItemsCreator.InitAndActivateBlockItems(ModelData.Info, m_BlockPools);
+                for (int i = 0; i < kvp.Value.Count; i++)
+                {
+                    var item = kvp.Value[i];
+                    if (item.Props == null)
+                        continue;
+                    m_AllItemsCached.Add(item);
+                    if (!item.ActivatedInSpawnPool)
+                        continue;
+                    m_ActiveItemsCached.Add(item);
+                }
             }
         }
 
@@ -90,7 +107,6 @@ namespace Games.RazorMaze.Views.Common
         
         private void InitBlockPools()
         {
-            m_BlockPools = new Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>>();
             var itemTypes = Enum
                 .GetValues(typeof(EMazeItemType))
                 .Cast<EMazeItemType>()
@@ -99,7 +115,7 @@ namespace Games.RazorMaze.Views.Common
             foreach (var type in itemTypes)
             {
                 var pool = new SpawnPool<IViewMazeItem>();
-                m_BlockPools.Add(type, pool);
+                m_ItemPools.Add(type, pool);
                 var blockItems = Enumerable
                     .Range(0, ViewSettings.BlockItemsCount)
                     .Select(_ => MazeItemsCreator.CloneDefaultBlock(type))
@@ -110,7 +126,7 @@ namespace Games.RazorMaze.Views.Common
 
         private void DeactivateAllBlocks()
         {
-            foreach (var pool in m_BlockPools.Values)
+            foreach (var pool in m_ItemPools.Values)
             {
                 IViewMazeItem activeItem;
                 while ((activeItem = pool.FirstActive) != null)

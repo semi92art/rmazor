@@ -98,8 +98,6 @@ namespace Games.RazorMaze.Views.UI
         {
             if (_Args.Stage != ELevelStage.Finished) 
                 return;
-            if (!NetworkUtils.IsInternetConnectionAvailable())
-                return;
             int ratePanelShowsCount = SaveUtils.GetValue(SaveKeys.RatePanelShowsCount);
             bool mustShowRateGamePanel =
                 _Args.LevelIndex != 0
@@ -108,7 +106,8 @@ namespace Games.RazorMaze.Views.UI
                 && ratePanelShowsCount < 10;
             if (!mustShowRateGamePanel)
                 return;
-            
+            if (!NetworkUtils.IsInternetConnectionAvailable())
+                return;
             Managers.ShopManager.RateGame();
             SaveUtils.PutValue(SaveKeys.RatePanelShowsCount, ratePanelShowsCount + 1);
         }

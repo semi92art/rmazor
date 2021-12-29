@@ -78,24 +78,24 @@ namespace Games.RazorMaze.Models.ItemProceeders
             V2Int from = _Info.CurrentPosition;
             V2Int to;
             int idx = _Info.Path.IndexOf(_Info.CurrentPosition);
-            var path = _Info.Path.ToList();
+            var path = _Info.Path;
             switch (_Info.MoveByPathDirection)
             {
-                case EMazeItemMoveByPathDirection.Forward:
+                case EMoveByPathDirection.Forward:
                     if (idx == path.Count - 1)
                     {
                         idx--;
-                        _Info.MoveByPathDirection = EMazeItemMoveByPathDirection.Backward;
+                        _Info.MoveByPathDirection = EMoveByPathDirection.Backward;
                     }
                     else
                         idx++;
                     to = path[idx];
                     break;
-                case EMazeItemMoveByPathDirection.Backward:
+                case EMoveByPathDirection.Backward:
                     if (idx == 0)
                     {
                         idx++;
-                        _Info.MoveByPathDirection = EMazeItemMoveByPathDirection.Forward;
+                        _Info.MoveByPathDirection = EMoveByPathDirection.Forward;
                     }
                     else
                         idx--;

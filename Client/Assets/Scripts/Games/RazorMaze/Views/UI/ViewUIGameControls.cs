@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DI.Extensions;
 using Exceptions;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.Common;
@@ -190,7 +191,7 @@ namespace Games.RazorMaze.Views.UI
         private bool MazeContainsGravityItems()
         {
             return Model.GetAllProceedInfos()
-                .Any(_Info => RazorMazeUtils.GravityItemTypes().Contains(_Info.Type));
+                .Any(_Info => RazorMazeUtils.GravityItemTypes().ContainsAlt(_Info.Type));
         }
 
         private List<T> GetInterfaceOfProceeders<T>() where T : class

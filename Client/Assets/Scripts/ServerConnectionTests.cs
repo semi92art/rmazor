@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using GameHelpers;
 using Network;
 using Network.Packets;
+using Ticker;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Networking;
@@ -53,7 +54,7 @@ public class ServerConnectionTests
         //Arrange
         InitGameObjects();
         CommonData.Testing = true;
-        var gc = new GameClient();
+        var gc = new GameClient(new CommonTicker());
         bool requestSuccess = false;
         
         //Act
@@ -86,7 +87,7 @@ public class ServerConnectionTests
         //Arrange
         InitGameObjects();
         CommonData.Testing = true;
-        var gc = new GameClient();
+        var gc = new GameClient(new CommonTicker());
         bool requestSuccess = false;
         
         //Act

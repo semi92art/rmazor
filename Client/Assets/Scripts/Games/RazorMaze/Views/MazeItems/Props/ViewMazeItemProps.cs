@@ -25,15 +25,17 @@ namespace Games.RazorMaze.Views.MazeItems.Props
                 return false;
             if (_Info.StartPosition != Position)
                 return false;
-            if (_Info.Path.Count != Path.Count)
+            if (Directions[0] != _Info.Direction)
                 return false;
-            for (int i = 0; i < _Info.Path.Count; i++)
-            {
-                if (_Info.Path[i] != Path[i])
-                    return false;
-            }
-            if (Directions.Any() && _Info.Direction != Directions.First())
-                return false;
+            // if (_Info.Path.Count != Path.Count)
+            //     return false;
+            // for (int i = 0; i < _Info.Path.Count; i++)
+            // {
+            //     if (_Info.Path[i] != Path[i])
+            //         return false;
+            // }
+            // if (Directions.Any() && _Info.Direction != Directions.First())
+            //     return false;
             return true;
         }
     }

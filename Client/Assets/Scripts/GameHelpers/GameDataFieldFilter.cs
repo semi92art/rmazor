@@ -37,7 +37,7 @@ namespace GameHelpers
 
         public IReadOnlyList<GameDataField> Filter(bool _ForceRefresh = false)
         {
-            return FilterGameFields(_ForceRefresh);
+            return FilterGameFieldsAlt(_ForceRefresh);
         }
         
         #endregion
@@ -53,14 +53,12 @@ namespace GameHelpers
                 _FinishAction?.Invoke(m_Fields);
                 yield break;
             }
-
             if (OnlyLocal)
             {
                 m_Fields = GetCachedFields();
                 _FinishAction?.Invoke(m_Fields);
                 yield break;
             }
-            
             var packet = CreatePacket();
             packet.OnSuccess(() =>
             {
@@ -78,8 +76,9 @@ namespace GameHelpers
             GameClient.Send(packet);
         }
         
-        private IReadOnlyList<GameDataField> FilterGameFields(bool _ForceRefresh)
+        private IReadOnlyList<GameDataField> FilterGameFieldsAlt(bool _ForceRefresh)
         {
+            Dbg.Log("FilterGameFieldsAlt");
             if (WasFiltered(m_Fields, _ForceRefresh))
                 return m_Fields;
             

@@ -34,9 +34,11 @@ namespace GameHelpers
         
         #region nonpublic methods
         
-        protected bool WasFiltered<TSource>(IEnumerable<TSource> _Fields, bool _ForceRefresh) =>
-            _Fields != null && _Fields.Any() && !_ForceRefresh;
-        
+        protected bool WasFiltered<TSource>(IEnumerable<TSource> _Fields, bool _ForceRefresh)
+        {
+            return _Fields != null && _Fields.Any() && !_ForceRefresh;
+        }
+
         #endregion
     }
 }

@@ -74,5 +74,15 @@ namespace DI.Extensions
             if (_ContainsKey)
                 _Dict.Remove(_Key);
         }
+
+        public static bool ContainsAlt<T>(this T[] _Array, T _Item)
+        {
+            for (int i = 0; i < _Array.Length; i++)
+            {
+                if (_Array[i].Equals(_Item))
+                    return true;
+            }
+            return false;
+        }
     }
 }

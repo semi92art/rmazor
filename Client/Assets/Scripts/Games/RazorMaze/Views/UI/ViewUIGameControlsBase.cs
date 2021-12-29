@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using DI.Extensions;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.InputConfigurators;
 using UnityEngine.Events;
@@ -34,7 +35,7 @@ namespace Games.RazorMaze.Views.UI
         public virtual void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
         {
             var type = _Args.Info.Type;
-            if (RazorMazeUtils.GravityItemTypes().Contains(type))
+            if (RazorMazeUtils.GravityItemTypes().ContainsAlt(type))
             {
                 var commands = RazorMazeUtils.GetMoveCommands()
                     .Concat(RazorMazeUtils.GetRotateCommands());
@@ -45,7 +46,7 @@ namespace Games.RazorMaze.Views.UI
         public virtual void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
         {
             var type = _Args.Info.Type;
-            if (RazorMazeUtils.GravityItemTypes().Contains(type))
+            if (RazorMazeUtils.GravityItemTypes().ContainsAlt(type))
             {
                 var commands = RazorMazeUtils.GetMoveCommands()
                     .Concat(RazorMazeUtils.GetRotateCommands());

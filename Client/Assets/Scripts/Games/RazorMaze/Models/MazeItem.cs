@@ -20,7 +20,7 @@ namespace Games.RazorMaze.Models
         MovingBlockFree
     }
 
-    public enum EMazeItemMoveByPathDirection
+    public enum EMoveByPathDirection
     {
         Forward, 
         Backward

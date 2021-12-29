@@ -18,10 +18,36 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
     public abstract class ItemsProceederBase : IItemsProceeder
     {
+        #region types
+
+        private class ViewMazeItemCoroutines
+        {
+            public IEnumerator[] Coroutines { get; private set; }
+            public int           Count      { get; private set; }
+
+            public ViewMazeItemCoroutines()
+            {
+                ClearArray();
+            }
+
+            public void AddCoroutine(IEnumerator _Coroutine)
+            {
+                Coroutines[Count++] = _Coroutine;
+            }
+
+            public void ClearArray()
+            {
+                Coroutines = new IEnumerator[500];
+                Count = 0;
+            }
+        }
+
+        #endregion
+        
         #region nonpublic members
         
-        protected readonly Dictionary<IMazeItemProceedInfo, Queue<IEnumerator>> m_CoroutinesDict =
-            new Dictionary<IMazeItemProceedInfo, Queue<IEnumerator>>();
+        private readonly Dictionary<IMazeItemProceedInfo, ViewMazeItemCoroutines> m_CoroutinesDict =
+            new Dictionary<IMazeItemProceedInfo, ViewMazeItemCoroutines>();
         protected IMazeItemProceedInfo KillerProceedInfo { get; set; }
         
         #endregion
@@ -92,12 +118,12 @@ namespace Games.RazorMaze.Models.ItemProceeders
             }
             if (_Args.Stage != ELevelStage.Loaded) 
                 return;
-            foreach (var coroutinesQueue in m_CoroutinesDict
+            foreach (var coroutines in m_CoroutinesDict
                 .Select(_Kvp => _Kvp.Value))
             {
-                foreach (var coroutine in coroutinesQueue)
+                foreach (var coroutine in coroutines.Coroutines)
                     Coroutines.Stop(coroutine);
-                coroutinesQueue.Clear();
+                coroutines.ClearArray();
             }
         }
         
@@ -115,7 +141,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 {
                     IMazeItemProceedInfo res = new MazeItemProceedInfo
                     {
-                        MoveByPathDirection = EMazeItemMoveByPathDirection.Forward,
+                        MoveByPathDirection = EMoveByPathDirection.Forward,
                         IsProceeding = false,
                         PauseTimer = 0,
                         BusyPositions = new List<V2Int> {_Item.Position},
@@ -128,7 +154,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 });
             foreach (var newInfo in newInfos)
             {
-                m_CoroutinesDict.Add(newInfo, new Queue<IEnumerator>());
+                m_CoroutinesDict.Add(newInfo, new ViewMazeItemCoroutines());
                 if (!infos.Contains(newInfo))
                     infos.Add(newInfo);
             }
@@ -181,7 +207,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         protected virtual void ProceedCoroutine(IMazeItemProceedInfo _ProceedInfo, IEnumerator _Coroutine)
         {
-            m_CoroutinesDict[_ProceedInfo].Enqueue(_Coroutine);
+            m_CoroutinesDict[_ProceedInfo].AddCoroutine(_Coroutine);
             Coroutines.Run(_Coroutine);
         }
         

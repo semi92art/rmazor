@@ -6,8 +6,8 @@ namespace Games.RazorMaze.Views.MazeItemGroups
 {
     public interface IViewMazeItemGroup : IOnLevelStageChanged
     {
-        EMazeItemType[] Types { get; }
-        IEnumerable<IViewMazeItem> GetItems();
-        IEnumerable<IViewMazeItem> GetActiveItems();
+        EMazeItemType[]     Types { get; }
+        List<IViewMazeItem> GetItems();
+        List<IViewMazeItem> GetActiveItems();
     }
 }

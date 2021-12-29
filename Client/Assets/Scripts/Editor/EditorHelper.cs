@@ -11,6 +11,7 @@ using Games.RazorMaze;
 using Managers;
 using Network;
 using Network.Packets;
+using Ticker;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -276,7 +277,7 @@ public class EditorHelper : EditorWindow
     private void CreateTestUsers(int _Count)
     {
         CommonData.Testing = true;
-        var gc = new GameClient();
+        var gc = new GameClient(new CommonTicker());
         const int gameId = 1;
         gc.Initialize += () =>
         {
@@ -312,7 +313,7 @@ public class EditorHelper : EditorWindow
     private static void DeleteTestUsers()
     {
         CommonData.Testing = true;
-        var gc = new GameClient();
+        var gc = new GameClient(new CommonTicker());
         gc.Initialize += () =>
         {
             IPacket packet = new DeleteTestUsersPacket();

@@ -43,10 +43,13 @@ namespace Games.RazorMaze.Views.UI
 
         #region nonpublic members
 
-        private float      m_BottomOffset;
-        private PromptInfo m_CurrentPromptInfo;
-        private bool       m_RunShowPromptCoroutine;
-        private bool       m_InTutorial;
+        private float       m_BottomOffset;
+        private PromptInfo  m_CurrentPromptInfo;
+        private bool        m_RunShowPromptCoroutine;
+        private bool        m_InTutorial;
+        private GameObject  m_PromptObject;
+        private bool        m_IsPromptObjectNull = true;
+        private TextMeshPro m_PromptText;
 
 
         #endregion
@@ -175,19 +178,24 @@ namespace Games.RazorMaze.Views.UI
         {
             if (m_CurrentPromptInfo?.Key == _Key)
                 return;
-            var promptGo = PrefabSetManager.InitPrefab(
-                null, "ui_game", _Key);
-            promptGo.SetParent(ContainersGetter.GetContainer(ContainerNames.GameUI));
-            promptGo.transform.position = _Position;
-            var text = promptGo.GetCompItem<TextMeshPro>("label");
-            text.fontSize = 18f;
-            LocalizationManager.AddTextObject(text, _Key);
-            text.color = ColorProvider.GetColor(ColorIds.UI).SetA(0f);
+            if (m_IsPromptObjectNull)
+            {
+                m_PromptObject = PrefabSetManager.InitPrefab(
+                    null, "ui_game", "prompt");
+                m_PromptObject.SetParent(ContainersGetter.GetContainer(ContainerNames.GameUI));
+                m_PromptText = m_PromptObject.GetCompItem<TextMeshPro>("label");
+                m_PromptText.fontSize = 18f;
+                m_IsPromptObjectNull = false;
+            }
+            m_PromptObject.transform.position = _Position;
+            LocalizationManager.AddTextObject(m_PromptText, _Key);
+            m_PromptText.enabled = true;
+            m_PromptText.color = ColorProvider.GetColor(ColorIds.UI).SetA(0f);
             var screenBounds = GraphicUtils.GetVisibleBounds();
-            text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, screenBounds.size.x);
+            m_PromptText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, screenBounds.size.x);
             if (m_CurrentPromptInfo != null && m_CurrentPromptInfo.PromptGo != null)
                 m_CurrentPromptInfo.PromptGo.DestroySafe();
-            m_CurrentPromptInfo = new PromptInfo {Key = _Key, PromptGo = promptGo, PromptText = text};
+            m_CurrentPromptInfo = new PromptInfo {Key = _Key, PromptGo = m_PromptObject, PromptText = m_PromptText};
             m_RunShowPromptCoroutine = true;
         }
 
@@ -204,7 +212,7 @@ namespace Games.RazorMaze.Views.UI
             var secondColor = Color.red;
             if (m_CurrentPromptInfo != null && m_CurrentPromptInfo.NeedToHide)
             {
-                m_CurrentPromptInfo.PromptGo.DestroySafe();
+                m_CurrentPromptInfo.PromptText.enabled = false;
                 m_CurrentPromptInfo = null;
                 yield break;
             }
