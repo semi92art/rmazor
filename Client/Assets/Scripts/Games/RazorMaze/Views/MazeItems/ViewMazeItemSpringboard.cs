@@ -29,9 +29,9 @@ namespace Games.RazorMaze.Views.MazeItems
     {
         #region constants
         
-        private const float  SpringboardHeight = 0.3f;
-        private const float  SpringboardWidth  = 0.4f;
-        private const float  JumpCoefficient   = 0.2f;
+        private const float  SpringboardHeight = 0.15f;
+        private const float  SpringboardWidth  = 0.3f;
+        private const float  JumpCoefficient   = 0.7f;
 
         #endregion
         
