@@ -111,6 +111,7 @@ namespace Managers.IAP
             var sb = new StringBuilder();
             ISN_SKPaymentQueue.Init(_Result =>
             {
+                Dbg.Log(_Result.ToJson());
                 if (_Result.IsFailed || _Result.HasError)
                 {
                     Dbg.LogWarning($"Failed to init purchasing: isFailed: {_Result.IsFailed}; {_Result.Error.FullMessage}");

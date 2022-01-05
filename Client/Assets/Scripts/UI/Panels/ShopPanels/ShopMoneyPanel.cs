@@ -217,6 +217,9 @@ namespace UI.Panels.ShopPanels
                 Result = EEntityResult.Success,
                 Value = false
             };
+            string dialogTitle = Managers.LocalizationManager.GetTranslation("purchase") + ":";
+            string dialogText = Managers.LocalizationManager.GetTranslation("mandatory_ads_disabled");
+            CommonUtils.ShowAlertDialog(dialogTitle, dialogText);
             const int key = PurchaseKeys.NoAds;
             if (!m_MoneyItems.ContainsKey(key))
                 return;
@@ -244,6 +247,12 @@ namespace UI.Panels.ShopPanels
                     }
                     Managers.ScoreManager
                         .SetScore(DataFieldIds.Money, firstVal.Value + _Reward, false);
+                    string dialogTitle = Managers.LocalizationManager.GetTranslation("purchase") + ":";
+                    string dialogText = _Reward + " " +
+                                        Managers.LocalizationManager
+                                            .GetTranslation("coins")
+                                            .ToLowerInvariant();
+                    CommonUtils.ShowAlertDialog(dialogTitle, dialogText);
                 }));
         }
 

@@ -99,7 +99,8 @@ namespace Managers.Advertising
                 var map = _InitStatus.getAdapterStatusMap();
                 foreach (var kvp in map)
                 {
-                    Dbg.Log($"Google AdMob initialization status: {kvp.Key}:{kvp.Value.Description}:{kvp.Value.InitializationState}");
+                    Dbg.Log($"Google AdMob initialization status: {kvp.Key}:" +
+                            $"{kvp.Value.Description}:{kvp.Value.InitializationState}");
                 }
                 _OnSuccess?.Invoke();
             });
@@ -107,7 +108,8 @@ namespace Managers.Advertising
 
         protected override void InitRewardedAd()
         {
-            string rewardedAdId = GetAdsNodeValue("admob", "interstitial");
+            string rewardedAdId = Settings.TestAds ?
+                "ca-app-pub-3940256099942544/5224354917" : GetAdsNodeValue("admob", "reward");
             m_RewardedAd = new RewardedAd(rewardedAdId);
             var adRequest = new AdRequest.Builder().Build();
             m_RewardedAd.LoadAd(adRequest);
@@ -121,7 +123,8 @@ namespace Managers.Advertising
 
         protected override void InitInterstitialAd()
         {
-            string interstitialAdId = GetAdsNodeValue("admob", "reward");
+            string interstitialAdId = Settings.TestAds ?
+                "ca-app-pub-3940256099942544/8691691433" : GetAdsNodeValue("admob", "interstitial");
             m_InterstitialAd = new InterstitialAd(interstitialAdId);
             var adRequest = new AdRequest.Builder().Build();
             m_InterstitialAd.LoadAd(adRequest);

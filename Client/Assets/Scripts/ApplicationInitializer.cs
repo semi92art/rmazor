@@ -187,54 +187,38 @@ public class ApplicationInitializer : MonoBehaviour
 
     private void SetDefaultLanguage()
     {
+        var language = Language.English;
         switch (Application.systemLanguage)
         {
-            case SystemLanguage.English:
-                LocalizationManager.SetLanguage(Language.English);
-                break;
             case SystemLanguage.Russian:
             case SystemLanguage.Belarusian:
             case SystemLanguage.Ukrainian:
+                language = Language.Russian;
                 LocalizationManager.SetLanguage(Language.Russian);
                 break;
             case SystemLanguage.Spanish:
+                language = Language.Spanish;
                 LocalizationManager.SetLanguage(Language.Spanish);
                 break;
             case SystemLanguage.Portuguese:
+                language = Language.Portugal;
                 LocalizationManager.SetLanguage(Language.Portugal);
                 break;
-            default:
-                LocalizationManager.SetLanguage(Language.English);
-                break;
         }
+        Dbg.Log("Default language: " + language);
+        LocalizationManager.SetLanguage(language);
     }
 
-    private List<ProductInfo> GetProductInfos()
+    private static List<ProductInfo> GetProductInfos()
     {
-        switch (Application.platform)
+        string suffix = Application.platform == RuntimePlatform.IPhonePlayer ? "_2" : string.Empty;
+        return new List<ProductInfo>
         {
-            case RuntimePlatform.Android:
-                return new List<ProductInfo>
-                {
-                    new ProductInfo(PurchaseKeys.Money1, "small_pack_of_coins",           ProductType.Consumable),
-                    new ProductInfo(PurchaseKeys.Money2, "medium_pack_of_coins",          ProductType.Consumable),
-                    new ProductInfo(PurchaseKeys.Money3, "big_pack_of_coins",             ProductType.Consumable),
-                    new ProductInfo(PurchaseKeys.NoAds,  "disable_mandatory_advertising", ProductType.NonConsumable)
-                };
-            case RuntimePlatform.IPhonePlayer:
-            {
-                var appId = Application.identifier;
-                return new List<ProductInfo>
-                {
-                    new ProductInfo(PurchaseKeys.Money1, "small_pack_of_coins_2",           ProductType.Consumable),
-                    new ProductInfo(PurchaseKeys.Money2, "medium_pack_of_coins_2",          ProductType.Consumable),
-                    new ProductInfo(PurchaseKeys.Money3, appId + ".bigpackofcoins",         ProductType.Consumable),
-                    new ProductInfo(PurchaseKeys.NoAds,  "disable_mandatory_advertising_2", ProductType.NonConsumable)
-                };
-            }
-            default:
-                return null;
-        }
+            new ProductInfo(PurchaseKeys.Money1, $"small_pack_of_coins{suffix}",           ProductType.Consumable),
+            new ProductInfo(PurchaseKeys.Money2, $"medium_pack_of_coins{suffix}",          ProductType.Consumable),
+            new ProductInfo(PurchaseKeys.Money3, $"big_pack_of_coins{suffix}",             ProductType.Consumable),
+            new ProductInfo(PurchaseKeys.NoAds,  $"disable_mandatory_advertising{suffix}", ProductType.NonConsumable)
+        };
     }
 
     #endregion

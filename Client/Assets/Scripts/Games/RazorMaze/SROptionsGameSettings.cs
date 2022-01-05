@@ -178,13 +178,6 @@ public partial class SROptions
         get => false;
         set => _view.Managers.HapticsManager.Play(Amplitude, Frequency, Duration);
     }
-
-    [Category(CategoryAds)]
-    public bool Rewarded_Ad_Ready_State
-    {
-        get => false;
-        set => Dbg.Log($"Rewarded ad ready state: {_view.Managers.AdsManager.RewardedAdReady}.");
-    }
     
     [Category(CategoryAds)]
     public bool Show_Ads
@@ -205,10 +198,31 @@ public partial class SROptions
     }
 
     [Category(CategoryAds)]
+    public bool Rewarded_Ad_Ready_State
+    {
+        get => false;
+        set => Dbg.Log($"Rewarded ad ready state: {_view.Managers.AdsManager.RewardedAdReady}.");
+    }
+    
+    [Category(CategoryAds)]
+    public bool Interstitial_Ad_Ready_State
+    {
+        get => false;
+        set => Dbg.Log($"Interstitial ad ready state: {_view.Managers.AdsManager.InterstitialAdReady}.");
+    }
+
+    [Category(CategoryAds)]
     public bool Show_Rewarded_Ad
     {
         get => false;
         set => _view.Managers.AdsManager.ShowRewardedAd(() => Dbg.Log("Rewarded ad was shown."));
+    }
+    
+    [Category(CategoryAds)]
+    public bool Show_Interstitial_Ad
+    {
+        get => false;
+        set => _view.Managers.AdsManager.ShowInterstitialAd(() => Dbg.Log("Interstitial ad was shown."));
     }
     
     [Category(CategoryCommon)]

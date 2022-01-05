@@ -1,6 +1,8 @@
 ﻿using GameHelpers;
 using LeTai.Asset.TranslucentImage;
+using StansAssets.Foundation.Extensions;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Zenject;
 
 public interface ICameraProvider
@@ -21,13 +23,12 @@ public class DefaultCameraProvider : MonoBehaviour, ICameraProvider
     }
     
     public Camera                 MainCamera        => Camera.main;
-    public TranslucentImageSource TranslucentSource { get; private set; }
+    public TranslucentImageSource TranslucentSource => MainCamera.GetComponent<TranslucentImageSource>();
     public ScalableBlurConfig     BlurConfig        { get; private set; }
 
 
     private void Awake()
     {
-        TranslucentSource = MainCamera.GetComponent<TranslucentImageSource>();
         BlurConfig = PrefabSetManager.GetObject<ScalableBlurConfig>(
             "views",
             "level_blur_config");

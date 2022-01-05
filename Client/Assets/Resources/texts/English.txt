@@ -71,3 +71,5 @@ rate_dialog_text = Do you want to rate my game?
 rate_yes = Yes, sure!!!
 rate_not_now = Later
 rate_never = Never
+purchase = Purchase
+mandatory_ads_disabled = Disable mandatory ads
