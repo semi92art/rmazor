@@ -77,7 +77,7 @@ namespace Controllers
             PlayGamesPlatform.Instance.Authenticate(
                 SignInInteractivity.CanPromptOnce, _Result =>
             {
-                Utils.Dbg.Log($"{_Result}");
+                Dbg.Log($"{_Result}");
                 switch (_Result)
                 {
                     case SignInStatus.Success:

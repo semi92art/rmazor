@@ -56,12 +56,12 @@ namespace Games.RazorMaze.Models.ItemProceeders
         public override EMazeItemType[] Types => new[] {EMazeItemType.Portal};
         public event PortalEventHandler PortalEvent;
         
-        public void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
+        public void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
         {
             m_CurrentFullPath = RazorMazeUtils.GetFullPath(_Args.From, _Args.To);
         }
         
-        public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
+        public void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args)
         {
             var possiblePortals = new List<IMazeItemProceedInfo>();
             for (int i = 0; i < ProceedInfos.Length; i++)

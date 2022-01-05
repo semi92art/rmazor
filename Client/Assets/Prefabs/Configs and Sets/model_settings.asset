@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 038016f5fd994b07a88e2f7bc2f55add, type: 3}
   m_Name: model_settings
   m_EditorClassIdentifier: 
-  characterSpeed: 50
+  characterSpeed: 60
   movingItemsSpeed: 6
   gravityBlockSpeed: 15
   gravityTrapSpeed: 10

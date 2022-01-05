@@ -48,7 +48,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         public event PathProceedHandler PathProceedEvent;
         public event PathProceedHandler AllPathsProceededEvent;
         
-        public void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
+        public void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
         {
             m_CurrentFullPath = RazorMazeUtils.GetFullPath(_Args.From, _Args.To);
             m_AllPathItemsNotInPathProceeded = true;
@@ -63,14 +63,14 @@ namespace Games.RazorMaze.Models.ItemProceeders
             }
         }
 
-        public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
+        public void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args)
         {
             var path = RazorMazeUtils.GetFullPath(_Args.From, _Args.Position);
             for (int i = 0; i < path.Count; i++)
                 ProceedPathItem(path[i]);
         }
         
-        public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
+        public void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
         {
             ProceedPathItem(_Args.To);
         }

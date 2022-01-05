@@ -11,5 +11,6 @@
         public const string AudioSources = nameof(AudioSources);
         public const string TouchInput   = nameof(TouchInput);
         public const string Tutorial     = nameof(Tutorial);
+        public const string Ads          = nameof(Ads);
     }
 }

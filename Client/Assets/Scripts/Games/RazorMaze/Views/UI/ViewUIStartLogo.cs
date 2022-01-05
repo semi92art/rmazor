@@ -116,7 +116,7 @@ namespace Games.RazorMaze.Views.UI
             go.transform.SetLocalPosXY(
                 screenBounds.center.x,
                 yPos);
-            go.transform.localScale = Vector3.one * 3f;
+            go.transform.localScale = Vector3.one * GraphicUtils.AspectRatio * 7f;
             m_StartLogoCharAnims = new Dictionary<string, Animator>
             {
                 {"R1", go.GetCompItem<Animator>("R1")},
@@ -133,15 +133,14 @@ namespace Games.RazorMaze.Views.UI
             var eye1 = go.GetCompItem<Rectangle>("eye_1");
             var eye2 = go.GetCompItem<Rectangle>("eye_2");
             eye1.Color = eye2.Color = ColorProvider.GetColor(ColorIds.Background);
-
             var shapeTypes = new [] {typeof(Line), typeof(Disc), typeof(Rectangle)};
-            var uiCol = ColorProvider.GetColor(ColorIds.UI);
+            var startLocoColor = ColorProvider.GetColor(ColorIds.UiStartLogo);
             shapeTypes.SelectMany(_Type => go
                 .GetComponentsInChildren(_Type, true))
                 .Cast<ShapeRenderer>()
                 .Except(new [] { eye1, eye2})
                 .ToList()
-                .ForEach(_Shape => _Shape.Color = uiCol.SetA(_Shape.Color.a));
+                .ForEach(_Shape => _Shape.Color = startLocoColor.SetA(_Shape.Color.a));
             m_StartLogoObj = go;
         }
         

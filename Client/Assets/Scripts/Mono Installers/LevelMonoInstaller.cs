@@ -1,6 +1,7 @@
 ﻿using Controllers;
 using DialogViewers;
 using Entities;
+using GameHelpers;
 using Games.RazorMaze;
 using Games.RazorMaze.Controllers;
 using Games.RazorMaze.Models;
@@ -19,6 +20,7 @@ using Games.RazorMaze.Views.MazeItems;
 using Games.RazorMaze.Views.MazeItems.Additional;
 using Games.RazorMaze.Views.Rotation;
 using Games.RazorMaze.Views.UI;
+using Managers;
 using UI.Panels;
 using UI.Panels.ShopPanels;
 using UnityEngine;
@@ -29,10 +31,7 @@ namespace Mono_Installers
     {
         public static bool Release;
         
-        public ModelSettings modelSettings;
-        public ViewSettings  viewSettings;
-        public GameObject    cameraProvider;
-        public GameObject    colorProvider;
+        public GameObject colorProvider;
 
         public override void InstallBindings()
         {
@@ -40,8 +39,7 @@ namespace Mono_Installers
             Container.Bind<IGameController>()                .To<GameController>()                .AsSingle();
             
             #region model
-            
-            Container.Bind<ModelSettings>()                  .FromScriptableObject(modelSettings) .AsSingle();
+
             Container.Bind<IInputScheduler>()                .To<InputScheduler>()                .AsSingle();
             Container.Bind<IInputSchedulerGameProceeder>()   .To<InputSchedulerGameProceeder>()   .AsSingle();
             Container.Bind<IInputSchedulerUiProceeder>()     .To<InputSchedulerUiProceeder>()     .AsSingle();
@@ -64,7 +62,6 @@ namespace Mono_Installers
 
             #region view
             
-            Container.Bind<ViewSettings>()                   .FromScriptableObject(viewSettings)  .AsSingle();
             Container.Bind<IMazeShaker>()                    .To<MazeShaker>()                    .AsSingle();
             Container.Bind<IMazeCoordinateConverter>()       .To<MazeCoordinateConverter>()       .AsSingle();
             Container.Bind<IContainersGetter>()              .To<ContainersGetter>()              .AsSingle();
@@ -160,7 +157,6 @@ namespace Mono_Installers
 
             #region other
 
-            Container.Bind<ICameraProvider>()   .FromComponentInNewPrefab(cameraProvider).AsSingle();
             Container.Bind<IColorProvider>()    .FromComponentInNewPrefab(colorProvider) .AsSingle();
             Container.Bind<ILoadingController>().To<LoadingController>()                 .AsSingle().When(_ => Release);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD

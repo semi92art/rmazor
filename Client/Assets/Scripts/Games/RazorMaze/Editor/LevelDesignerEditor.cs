@@ -66,17 +66,12 @@ namespace Games.RazorMaze.Editor
 
         private void OnEnable()
         {
-            if (SceneManager.GetActiveScene().name != SceneNames.Prototyping)
-                return;
-            _assetBundleManager = new AssetBundleManagerFake();
-            _prefabSetManager = new PrefabSetManager(_assetBundleManager);
-            _viewSettings = _prefabSetManager.GetObject<ViewSettings>(
-                "model_settings", "view_settings");
-            _coordinateConverter = new MazeCoordinateConverter(_viewSettings, null);
-            _containersGetter = new ContainersGetter(null, _coordinateConverter);
-            _coordinateConverter.GetContainer = _containersGetter.GetContainer;
-            _coordinateConverter.Init();
-            _mazeItemsCreator = new MazeItemsCreatorInEditor(_containersGetter, _coordinateConverter);
+            InitEditor();
+        }
+
+        private void OnFocus()
+        {
+            InitEditor();
         }
 
         private void OnBecameVisible()
@@ -311,6 +306,21 @@ namespace Games.RazorMaze.Editor
         #endregion
         
         #region other
+
+        private void InitEditor()
+        {
+            if (SceneManager.GetActiveScene().name != SceneNames.Prototyping)
+                return;
+            _assetBundleManager = new AssetBundleManagerFake();
+            _prefabSetManager = new PrefabSetManager(_assetBundleManager);
+            _viewSettings = _prefabSetManager.GetObject<ViewSettings>(
+                "model_settings", "view_settings");
+            _coordinateConverter = new MazeCoordinateConverter(_viewSettings, null);
+            _containersGetter = new ContainersGetter(null, _coordinateConverter);
+            _coordinateConverter.GetContainer = _containersGetter.GetContainer;
+            _coordinateConverter.Init();
+            _mazeItemsCreator = new MazeItemsCreatorInEditor(_containersGetter, _coordinateConverter);
+        }
         
         private void CreateObjects(MazeInfo _Info)
         {

@@ -19,7 +19,7 @@ MonoBehaviour:
     - name: Border
       color: {r: 0.8117648, g: 0.227451, b: 0.227451, a: 0.46666667}
     - name: Maze Item 1
-      color: {r: 0.8490566, g: 0.15619439, b: 0.15619439, a: 1}
+      color: {r: 1, g: 1, b: 1, a: 1}
     - name: Maze Item 2
       color: {r: 0, g: 0.92168856, b: 1, a: 1}
     - name: Money Item
@@ -50,3 +50,5 @@ MonoBehaviour:
       color: {r: 0.8679245, g: 0.61502916, b: 0.19241722, a: 1}
     - name: Ui Item Highlighted
       color: {r: 0, g: 0.9215687, b: 1, a: 1}
+    - name: Ui Start Logo
+      color: {r: 1, g: 1, b: 1, a: 1}

@@ -118,7 +118,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                 item.OnLevelStageChanged(_Args);
         }
         
-        public void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
+        public void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
         {
             if (!m_FirstMoveDone && ViewSettings.StartPathItemFilledOnStart)
                 UnfillStartPathItem();

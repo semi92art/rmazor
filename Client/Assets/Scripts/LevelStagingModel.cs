@@ -136,7 +136,7 @@ public class ModelLevelStaging : IModelLevelStaging, IInit, IUpdateTick
 
     public void KillCharacter()
     {
-        Utils.Dbg.Log(nameof(KillCharacter));
+        Dbg.Log(nameof(KillCharacter));
         InvokeLevelStageChanged(ELevelStage.CharacterKilled);
     }
 

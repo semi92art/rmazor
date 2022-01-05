@@ -5,6 +5,7 @@ using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views;
 using UnityEngine.Events;
+using Utils;
 
 namespace Games.RazorMaze.Models
 {
@@ -25,15 +26,15 @@ namespace Games.RazorMaze.Models
         IModelCharacter            Character                 { get; }
         IModelLevelStaging         LevelStaging              { get; }
         IInputScheduler            InputScheduler            { get; }
-        List<IMazeItemProceedInfo> GetAllProceedInfos();
+        IMazeItemProceedInfo[] GetAllProceedInfos();
     }
     
     public class ModelGame : IModelGame
     {
         #region nonpublic members
 
-        private List<IMazeItemProceedInfo> m_AllProceedInfosCached;
-        private List<object>               m_Proceeders;
+        private IMazeItemProceedInfo[] m_AllProceedInfosCached;
+        private List<object>           m_Proceeders;
 
         #endregion
 
@@ -136,7 +137,7 @@ namespace Games.RazorMaze.Models
             Initialized = true;
         }
         
-        public List<IMazeItemProceedInfo> GetAllProceedInfos()
+        public IMazeItemProceedInfo[] GetAllProceedInfos()
         {
             if (m_AllProceedInfosCached != null)
                 return m_AllProceedInfosCached;
@@ -144,7 +145,7 @@ namespace Games.RazorMaze.Models
                 GetInterfaceOfProceeders<IItemsProceeder>(m_Proceeders);
             var result = itemProceeders
                 .SelectMany(_P => _P.ProceedInfos)
-                .ToList();
+                .ToArray();
             m_AllProceedInfosCached = result;
             return result;
         }
@@ -176,7 +177,7 @@ namespace Games.RazorMaze.Models
             GravityItemsProceeder.OnMazeOrientationChanged();
         }
         
-        private void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
+        private void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
         {
             var proceeders = 
                 GetInterfaceOfProceeders<ICharacterMoveStarted>(m_Proceeders);
@@ -186,7 +187,7 @@ namespace Games.RazorMaze.Models
             InputScheduler.LockRotation(true);
         }
 
-        private void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
+        private void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args)
         {
             var proceeders =
                 GetInterfaceOfProceeders<ICharacterMoveContinued>(m_Proceeders);
@@ -194,7 +195,7 @@ namespace Games.RazorMaze.Models
                 proceeders[i].OnCharacterMoveContinued(_Args);
         }
         
-        private void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
+        private void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
         {
             var proceeders =
                 GetInterfaceOfProceeders<ICharacterMoveFinished>(m_Proceeders);

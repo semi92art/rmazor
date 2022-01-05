@@ -2,15 +2,11 @@
 <data>
 	<!--AdMob Android-->
 	<ad source="admob" type="app_id" os="android">ca-app-pub-5357184552698168~9131218519</ad>
-	<ad source="admob" type="banner" os="android">ca-app-pub-5357184552698168/9539053259</ad>
 	<ad source="admob" type="interstitial" os="android">ca-app-pub-5357184552698168/7920765543</ad>
-	<ad source="admob" type="native" os="android">ca-app-pub-5357184552698168/7403844507</ad>
 	<ad source="admob" type="reward" os="android">ca-app-pub-5357184552698168/5216664869</ad>
 	<!--AdMob iOS-->
 	<ad source="admob" type="app_id" os="ios">ca-app-pub-5357184552698168~8964338187</ad>
-	<ad source="admob" type="banner" os="ios">ca-app-pub-5357184552698168/8525354482</ad>
 	<ad source="admob" type="interstitial" os="ios">ca-app-pub-5357184552698168/7483735551</ad>
-	<ad source="admob" type="native" os="ios">ca-app-pub-5357184552698168/5979082196</ad>
 	<ad source="admob" type="reward" os="ios">ca-app-pub-5357184552698168/1768374443</ad>
 	<!--UnityAds Android-->
 	<ad source="unity_ads" type="reward" os="android">Rewarded_Android</ad>
@@ -18,6 +14,17 @@
 	<!--UnityAds iOS-->
 	<ad source="unity_ads" type="reward" os="ios">Rewarded_iOS</ad>
 	<ad source="unity_ads" type="interstitial" os="ios">Interstitial_iOS</ad>
+	<!--Facebook Ads Android-->
+	<ad source="facebook" type="app_id" os="android">2980011355594190</ad>
+	<ad source="facebook" type="reward" os="android">2980011355594190_2980032492258743</ad>
+	<ad source="facebook" type="interstitial" os="android">2980011355594190_2980031122258880</ad>
+	<!--Facebook Ads iOS-->
+	<ad source="facebook" type="app_id" os="ios">2980011355594190</ad>
+	<ad source="facebook" type="reward" os="ios">2980011355594190_2980033868925272</ad>
+	<ad source="facebook" type="interstitial" os="ios">2980011355594190_2980033315591994</ad>
+    <!--Game Ids-->
+	<game_id source="unity_ads" os="ios">4458390</game_id>
+	<game_id source="unity_ads" os="android">4458391</game_id>
 	<!--Test Devices-->
 	<test_device os="android">FE989E63CDFFFB64D9E6A288C137E1E2</test_device><!--Xiaomi Mi Mix 2 (Artem)-->
 	<test_device os="android">16DB30D44D674B09110966E0648E783D</test_device><!--Xiaomi Mi Mix 2 (Artem) (новый)-->
@@ -25,7 +32,4 @@
 	<test_device os="android">B648AEC33D2557D0BFD1FD486B3E7678</test_device><!--Xiaomi Redmi Note 5 (Artem) (новый)-->
 	<test_device os="android">7D516587810FD383626B5C782FB4078A</test_device><!--Galaxy S10 (Artem)-->
 	<test_device os="android">CCF954D464D11BD437D3885E0CDAE854</test_device><!--Galaxy S10 (Artem)-->
-    <!--Game Ids-->
-	<game_id source="unity_ads" os="ios">4458390</game_id>
-	<game_id source="unity_ads" os="android">4458391</game_id>
 </data>

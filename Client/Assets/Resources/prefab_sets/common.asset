@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1600272214c7aa418cb76f5cc38aecb, type: 3}
   m_Name: common
   m_EditorClassIdentifier: 
-  bundles: 1
   prefabs:
     array:
     - item: {fileID: 4900000, guid: 92474ce0d56fbaa4286f72cfb978f296, type: 2}
       name: bundle_names
+      bundle: 1

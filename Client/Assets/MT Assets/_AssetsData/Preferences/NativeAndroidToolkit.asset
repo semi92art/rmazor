@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51bd2a3573793a941abf109d84f067d3, type: 3}
   m_Name: NativeAndroidToolkit
   m_EditorClassIdentifier: 
-  projectName: RMAZOR
+  projectName: rmazor
   natInstalledInFirstScene: 1
   modifyAndroidManifest: 0
   declareUnityPlayerActivity: 1
@@ -20,17 +20,17 @@ MonoBehaviour:
   requestPermissionsOnOpen: 1
   iconOfNotifications: {fileID: 2800000, guid: 9806ffc3754eea641b5c8749644efd40, type: 3}
   iconIsValid: 1
-  filePermission: 1
-  cameraPermission: 1
-  accessWifiStatePermission: 1
-  vibratePermission: 1
-  networkStatePermission: 1
-  bluetoothPermission: 1
-  internetPermission: 1
-  modifyAudioPermission: 1
-  keepDeviceEnabled: 1
+  filePermission: 0
+  cameraPermission: 0
+  accessWifiStatePermission: 0
+  vibratePermission: 0
+  networkStatePermission: 0
+  bluetoothPermission: 0
+  internetPermission: 0
+  modifyAudioPermission: 0
+  keepDeviceEnabled: 0
   enableAccurateNotify: 1
-  warningOnChangeDate: 1
+  warningOnChangeDate: 0
   titleOfWarningOnChangeDate: Time Changed
   textOfWarningOnChangeDate: Time has changed on your device. This may affect the
     way time goes by in this app, to keep everything running, please open the app

@@ -2,6 +2,7 @@
 using Entities;
 using Games.RazorMaze.Models.ProceedInfos;
 using Ticker;
+using Utils;
 
 namespace Games.RazorMaze.Models.ItemProceeders
 {
@@ -19,7 +20,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
     public delegate void SpringboardEventHandler(SpringboardEventArgs _Args);
 
-    public interface ISpringboardProceeder : IItemsProceeder, ICharacterMoveContinued, ICharacterMoveFinished
+    public interface ISpringboardProceeder : IItemsProceeder, ICharacterMoveFinished
     {
         event SpringboardEventHandler SpringboardEvent;
     }
@@ -49,29 +50,19 @@ namespace Games.RazorMaze.Models.ItemProceeders
         public override EMazeItemType[] Types => new[] {EMazeItemType.Springboard};
         public event SpringboardEventHandler SpringboardEvent;
 
-        public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
-        {
-            ProceedSpringboardIfOnPosition(_Args.Position, _Args.Direction, false);
-        }
-        
         #endregion
 
-        public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
+        public void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
         {
-            ProceedSpringboardIfOnPosition(_Args.To, _Args.Direction, true);
+            ProceedSpringboardIfOnPosition(_Args.BlockOnFinish, _Args.Direction, true);
         }
 
-        private void ProceedSpringboardIfOnPosition(V2Int _Position, EMazeMoveDirection _Direction, bool _Forced)
+        private void ProceedSpringboardIfOnPosition(
+            IMazeItemProceedInfo _Info,
+            EMazeMoveDirection _Direction,
+            bool _Forced)
         {
-            IMazeItemProceedInfo info = null;
-            for (int i = 0; i < ProceedInfos.Length; i++)
-            {
-                if (ProceedInfos[i].CurrentPosition != _Position)
-                    continue;
-                info = ProceedInfos[i];
-                break;
-            }
-            if (info == null)
+            if (_Info == null || _Info.Type != EMazeItemType.Springboard)
             {
                 m_LastArgs = null;
                 return;
@@ -80,16 +71,16 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 return;
             var charInverseDir = -1 * RazorMazeUtils.GetDirectionVector(_Direction, Data.Orientation);
             V2Int newDirection = default;
-            if (info.Direction == V2Int.up + V2Int.left)
+            if (_Info.Direction == V2Int.up + V2Int.left)
                 newDirection = charInverseDir == V2Int.up ? V2Int.left : V2Int.up;
-            else if (info.Direction == V2Int.up + V2Int.right)
+            else if (_Info.Direction == V2Int.up + V2Int.right)
                 newDirection = charInverseDir == V2Int.up ? V2Int.right : V2Int.up;
-            else if (info.Direction == V2Int.down + V2Int.left)
+            else if (_Info.Direction == V2Int.down + V2Int.left)
                 newDirection = charInverseDir == V2Int.down ? V2Int.left : V2Int.down;
-            else if (info.Direction == V2Int.down + V2Int.right)
+            else if (_Info.Direction == V2Int.down + V2Int.right)
                 newDirection = charInverseDir == V2Int.down ? V2Int.right : V2Int.down;
             var moveDirection = RazorMazeUtils.GetMoveDirection(newDirection, Data.Orientation);
-            m_LastArgs = new SpringboardEventArgs(moveDirection, info);
+            m_LastArgs = new SpringboardEventArgs(moveDirection, _Info);
             SpringboardEvent?.Invoke(m_LastArgs);
         }
     }

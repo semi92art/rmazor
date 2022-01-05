@@ -124,7 +124,7 @@ namespace Games.RazorMaze.Views.MazeItems
             ProceedOpenedBlockState();
         }
         
-        public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
+        public void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
         {
             const float delta = 0.5f;
             const float duration = 0.1f;

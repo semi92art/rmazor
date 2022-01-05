@@ -5,7 +5,7 @@ namespace Games.RazorMaze.Views.Characters
 {
     public interface IViewCharacterTail : IActivated
     {
-        void ShowTail(CharacterMovingEventArgs _Args);
-        void HideTail(CharacterMovingEventArgs _Args = null);
+        void ShowTail(CharacterMoveEventArgsBase _Args);
+        void HideTail(CharacterMovingFinishedEventArgs _Args = null);
     }
 }

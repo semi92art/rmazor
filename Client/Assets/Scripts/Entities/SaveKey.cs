@@ -2,7 +2,9 @@
 {
     public class SaveKey<T>
     {
-        public string Key { get; }
+        public bool   IsDirty     { get; set; } = true;
+        public T      CachedValue { get; set; }
+        public string Key         { get; }
     
         public SaveKey(string _Key)
         {

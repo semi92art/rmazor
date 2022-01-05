@@ -12,41 +12,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1600272214c7aa418cb76f5cc38aecb, type: 3}
   m_Name: setting_items
   m_EditorClassIdentifier: 
-  bundles: 0
   prefabs:
     array:
     - item: {fileID: 6522426653106204139, guid: 2a5d6c79425cb3248b9e9ff17e7218d2,
         type: 3}
       name: on_off_item
+      bundle: 0
     - item: {fileID: 8041470958209576828, guid: 260b900de87b8a840a00972cda69a11f,
         type: 3}
       name: in_panel_selector_item
+      bundle: 0
     - item: {fileID: 2929232023256113801, guid: d457401d0c26133488ea36866a5e23c1,
         type: 3}
       name: settings_selector_item
-    - item: {fileID: 7376073956075380456, guid: 7144402696e850d49aa4baee52c5a118,
-        type: 3}
-      name: slider_item
+      bundle: 0
     - item: {fileID: 6522426653106204139, guid: d9f44cc69e04ead40a10f60f57f78d04,
         type: 3}
       name: mini_button_item
+      bundle: 0
     - item: {fileID: 6522426653106204139, guid: d9f44cc69e04ead40a10f60f57f78d04,
         type: 3}
       name: mini_button_item
+      bundle: 0
     - item: {fileID: 21300000, guid: 0fca485151eef5e48980e1790cb00a8d, type: 3}
       name: setting_sound_on
+      bundle: 0
     - item: {fileID: 21300000, guid: 4d2b838604b669146bc164b33de3d98d, type: 3}
       name: setting_sound_off
+      bundle: 0
     - item: {fileID: 21300000, guid: f6f1b9c9caa40fc49bec4713881d8e98, type: 3}
       name: setting_music_on
+      bundle: 0
     - item: {fileID: 21300000, guid: d619c25973fd54c45bcfd45feabe464a, type: 3}
       name: setting_music_off
+      bundle: 0
     - item: {fileID: 21300000, guid: d619c25973fd54c45bcfd45feabe464a, type: 3}
       name: setting_music_off
+      bundle: 0
     - item: {fileID: 21300000, guid: 7fe552b69a36a2548a37a14657a4551d, type: 3}
       name: setting_haptics_on
+      bundle: 0
     - item: {fileID: 21300000, guid: e2b3b24047bbb6146be8c4686e47db21, type: 3}
       name: setting_haptics_off
+      bundle: 0
     - item: {fileID: 2929232023256113801, guid: 31a1c442b6170f14fa528fd2e1f60cb3,
         type: 3}
       name: action_item
+      bundle: 0

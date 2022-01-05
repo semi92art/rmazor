@@ -5,7 +5,6 @@ using System.Linq;
 using Controllers;
 using DI.Extensions;
 using Entities;
-using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
@@ -25,7 +24,7 @@ namespace Games.RazorMaze.Views.MazeItems
         void MakeJump(SpringboardEventArgs _Args);
     }
     
-    public class ViewMazeItemSpringboard : ViewMazeItemBase, IViewMazeItemSpringboard
+    public class ViewMazeItemSpringboard : ViewMazeItemBase, IViewMazeItemSpringboard, IUpdateTick
     {
         #region constants
         
@@ -37,31 +36,31 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region nonpublic members
 
+        protected override string ObjectName => "Springboard Block";
         private static AudioClipArgs _audioClipArgsSpringboardJump => 
             new AudioClipArgs("springboard_jump", EAudioClipType.GameSound);
-        private Vector2 m_Edge1Start, m_Edge2Start;
         
-        #endregion
-
-        #region shapes
-
-        protected override string ObjectName => "Springboard Block";
-        private Line m_Springboard;
-        private Line m_Pillar;
+        private Vector2 m_Edge1Start, m_Edge2Start;
+        private Color   m_NonHighlightColor;
+        private Color   m_HighlightColor;
+        private float   m_HighlightTimer;
+        private Line    m_Springboard;
+        private Line    m_Pillar;
+        private bool    m_IsAnimatedHighlight;
         
         #endregion
         
         #region inject
         
         public ViewMazeItemSpringboard(
-            ViewSettings _ViewSettings,
-            IModelGame _Model,
-            IMazeCoordinateConverter _CoordinateConverter, 
-            IContainersGetter _ContainersGetter,
-            IViewGameTicker _GameTicker,
-            IViewAppearTransitioner _Transitioner,
-            IManagersGetter _Managers,
-            IColorProvider _ColorProvider,
+            ViewSettings                _ViewSettings,
+            IModelGame                  _Model,
+            IMazeCoordinateConverter    _CoordinateConverter, 
+            IContainersGetter           _ContainersGetter,
+            IViewGameTicker             _GameTicker,
+            IViewAppearTransitioner     _Transitioner,
+            IManagersGetter             _Managers,
+            IColorProvider              _ColorProvider,
             IViewInputCommandsProceeder _CommandsProceeder) 
             : base(
                 _ViewSettings,
@@ -96,6 +95,22 @@ namespace Games.RazorMaze.Views.MazeItems
             Managers.AudioManager.PlayClip(_audioClipArgsSpringboardJump);
             Coroutines.Run(JumpCoroutine());
         }
+        
+        public void UpdateTick()
+        {
+            if (!m_IsAnimatedHighlight)
+                return;
+            if (!ActivatedInSpawnPool)
+                return;
+            if (AppearingState != EAppearingState.Appeared)
+                return;
+            if (Model.LevelStaging.LevelStage == ELevelStage.Finished)
+                return;
+            m_HighlightTimer += GameTicker.DeltaTime;
+            float coeff = Mathf.Cos(m_HighlightTimer * 10f) * 0.5f + 0.5f;
+            var color = Color.Lerp(m_NonHighlightColor, m_HighlightColor, coeff);
+            m_Springboard.Color = m_Pillar.Color = color;
+        }
 
         #endregion
 
@@ -106,7 +121,10 @@ namespace Games.RazorMaze.Views.MazeItems
             m_Pillar = Object.AddComponentOnNewChild<Line>("Springboard Item", out _);
             m_Springboard = Object.AddComponentOnNewChild<Line>("Springboard", out _);
             m_Pillar.EndCaps = m_Springboard.EndCaps = LineEndCap.Round;
-            m_Pillar.Color = m_Springboard.Color = ColorProvider.GetColor(ColorIds.Main);
+            m_IsAnimatedHighlight = ViewSettings.SpringboardAnimatedHighlight;
+            m_NonHighlightColor  = m_Pillar.Color = m_Springboard.Color =
+                ColorProvider.GetColor(m_IsAnimatedHighlight ? ColorIds.Main : ColorIds.MazeItem2);
+            m_HighlightColor = ColorProvider.GetColor(ColorIds.MazeItem2);
         }
 
         protected override void UpdateShape()
@@ -123,8 +141,23 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             if (_ColorId == ColorIds.Main)
             {
-                m_Pillar.Color = _Color;
-                m_Springboard.Color = _Color;
+                if (m_IsAnimatedHighlight)
+                    m_NonHighlightColor = _Color;
+                else
+                {
+                    m_Pillar.Color = _Color;
+                    m_Springboard.Color = _Color;
+                }
+            }
+            else if (_ColorId == ColorIds.MazeItem2)
+            {
+                if (m_IsAnimatedHighlight)
+                    m_HighlightColor = _Color;
+                else
+                {
+                    m_Pillar.Color = _Color;
+                    m_Springboard.Color = _Color;
+                }
             }
         }
 
@@ -178,11 +211,10 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             return new Dictionary<IEnumerable<Component>, Func<Color>>
             {
-                {Shapes, () => ColorProvider.GetColor(ColorIds.Main)}
+                {Shapes, () => m_NonHighlightColor}
             };
         }
         
         #endregion
-        
     }
 }

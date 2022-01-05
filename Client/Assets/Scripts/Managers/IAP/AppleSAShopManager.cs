@@ -1,55 +1,65 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
-using Constants;
 using SA.iOS.StoreKit;
-using UnityEngine;
+using SA.iOS.UIKit;
 using UnityEngine.Events;
-using UnityEngine.Purchasing;
 using Utils;
 
 namespace Managers.IAP
 {
-    public class AppleSAShopManager : ShopManagerBase, IShopManager
+    public class AppleSAShopManager : ShopManagerBase
     {
-        protected override List<ProductInfo> Products => new List<ProductInfo>
-        {
-            new ProductInfo(PurchaseKeys.Money1, "small_pack_of_coins_2",           ProductType.Consumable),
-            new ProductInfo(PurchaseKeys.Money2, "medium_pack_of_coins_2",          ProductType.Consumable),
-            new ProductInfo(PurchaseKeys.Money3, Application.identifier + ".bigpackofcoins",             ProductType.Consumable),
-            new ProductInfo(PurchaseKeys.NoAds,  "disable_mandatory_advertising_2", ProductType.NonConsumable),
-        };
+
+        #region nonpublic members
 
         private ISN_iSKPaymentTransactionObserverFacade m_Observer;
         
-        public bool              Initialized { get; private set; }
-        public event UnityAction Initialize;
-        public void Init()
+        #endregion
+
+        #region inject
+        private IRemoteConfigManager RemoteConfigManager { get; }
+
+        public AppleSAShopManager(IRemoteConfigManager _RemoteConfigManager)
+        {
+            RemoteConfigManager = _RemoteConfigManager;
+        }
+
+        #endregion
+        
+        #region api
+        
+        public override void Init()
         {
             InitPurchasing(() =>
             {
-                Initialize?.Invoke();
-                Initialized = true;
+                base.Init();
             });
         }
 
-        public void RestorePurchases()
+        public override void RestorePurchases()
         {
             ISN_SKPaymentQueue.RestoreCompletedTransactions();
         }
 
-        public void Purchase(int _Key)
+        public override void Purchase(int _Key)
         {
             string id = GetProductId(_Key);
             ISN_SKPaymentQueue.AddPayment(id);
         }
 
-        public void RateGame()
+        public override void RateGame(bool _JustSuggest = true)
         {
-            ISN_SKStoreReviewController.RequestReview();
+            if (_JustSuggest)
+                ISN_SKStoreReviewController.RequestReview();
+            else
+            {
+                string appId = RemoteConfigManager.GetConfig<string>("common.iosgameid");
+                string writeReviewURL = $"https://itunes.apple.com/app/id{appId}?action=write-review";
+                ISN_UIApplication.OpenURL(writeReviewURL);
+            }
         }
 
-        public ShopItemArgs GetItemInfo(int _Key)
+        public override ShopItemArgs GetItemInfo(int _Key)
         {
             var args = new ShopItemArgs {Result = () => EShopProductResult.Pending};
             Coroutines.Run(Coroutines.Delay(
@@ -78,18 +88,22 @@ namespace Managers.IAP
             return args;
         }
 
-        public void SetPurchaseAction(int _Key, UnityAction _Action)
+        public override void SetPurchaseAction(int _Key, UnityAction _Action)
         {
             string id = GetProductId(_Key);
             m_Observer.SetPurchaseAction(id, _Action);
         }
 
-        public void SetDeferredAction(int _Key, UnityAction _Action)
+        public override void SetDeferredAction(int _Key, UnityAction _Action)
         {
             string id = GetProductId(_Key);
             m_Observer.SetDeferredAction(id, _Action);
         }
 
+        #endregion
+
+        #region nonpublic methods
+        
         private void InitPurchasing(UnityAction _OnFinish)
         {
             foreach (var product in Products)
@@ -128,5 +142,7 @@ namespace Managers.IAP
             m_Observer = new AppleSATransactionObserver();
             ISN_SKPaymentQueue.AddTransactionObserver(m_Observer);
         }
+
+        #endregion
     }
 }

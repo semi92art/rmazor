@@ -2,13 +2,12 @@
 using Constants;
 using DI.Extensions;
 using Entities;
-using UnityEditor;
 using UnityEngine.Events;
 using Utils;
 
 namespace Managers.IAP
 {
-    public class ShopManagerFake : ShopManagerBase, IShopManager
+    public class ShopManagerFake : ShopManagerBase
     {
         private const EShopProductResult Result = EShopProductResult.Fail;
         
@@ -41,46 +40,35 @@ namespace Managers.IAP
         };
         
         private readonly   Dictionary<int, UnityAction> m_PurchaseActions = new Dictionary<int, UnityAction>();
-        protected override List<ProductInfo>            Products    => null;
-        public             bool                         Initialized { get; private set; }
-        public event UnityAction                        Initialize;
-        
-        public void Init()
-        {
-            Initialize?.Invoke();
-            Initialized = true;
-        }
 
-        public void RestorePurchases()
+        public override void RestorePurchases()
         {
             SaveUtils.PutValue(SaveKeys.DisableAds, null);
             Dbg.Log("Purchases restored.");
         }
 
-        public void Purchase(int _Key)
+        public override void Purchase(int _Key)
         {
             m_PurchaseActions[_Key]?.Invoke();
         }
 
-        public void RateGame()
+        public override void RateGame(bool _JustSuggest = true)
         {
-#if UNITY_EDITOR
-            EditorUtility.DisplayDialog("Dialog", "Available only on device", "OK");
-#endif
+            // do nothing
         }
 
-        public ShopItemArgs GetItemInfo(int _Key)
+        public override ShopItemArgs GetItemInfo(int _Key)
         {
             var args = m_ShopItems[_Key];
             return args;
         }
 
-        public void SetPurchaseAction(int _Key, UnityAction _Action)
+        public override void SetPurchaseAction(int _Key, UnityAction _Action)
         {
             m_PurchaseActions.SetSafe(_Key, _Action);
         }
 
-        public void SetDeferredAction(int _Key, UnityAction _Action)
+        public override void SetDeferredAction(int _Key, UnityAction _Action)
         {
             // do nothing
         }

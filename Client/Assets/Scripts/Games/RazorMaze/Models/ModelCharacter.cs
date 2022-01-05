@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Entities;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Models.ProceedInfos;
@@ -12,51 +11,23 @@ using Utils;
 
 namespace Games.RazorMaze.Models
 {
-    public class CharacterMovingEventArgs : EventArgs
-    {
-        public EMazeMoveDirection Direction                    { get; }
-        public V2Int              From                         { get; }
-        public V2Int              To                           { get; }
-        public V2Int              Position                     { get; }
-        public Vector2            PrecisePosition              { get; }
-        public Vector2            PreviousPrecisePosition      { get; }
-        public float              Progress                     { get; }
-        public V2Int?             ShredingerBlockPosWhoStopped { get; }
-
-        public CharacterMovingEventArgs(
-            EMazeMoveDirection _Direction, 
-            V2Int _From,
-            V2Int _To,
-            float _Progress,
-            float _PreviousProgress,
-            V2Int? _ShredingerBlockPosWhoStopped)
-        {
-            Direction = _Direction;
-            From = _From;
-            To = _To;
-            PrecisePosition = V2Int.Lerp(_From, _To, _Progress);
-            PreviousPrecisePosition = V2Int.Lerp(_From, _To, _PreviousProgress);
-            Position = V2Int.Round(PrecisePosition);
-            Progress = _Progress;
-            ShredingerBlockPosWhoStopped = _ShredingerBlockPosWhoStopped;
-        }
-    }
-    
-    public delegate void CharacterMovingHandler(CharacterMovingEventArgs _Args);
+    public delegate void CharacterMovingStartedHandler(CharacterMovingStartedEventArgs _Args);
+    public delegate void CharacterMovingContinuedHandler(CharacterMovingContinuedEventArgs _Args);
+    public delegate void CharacterMovingFinishedHandler(CharacterMovingFinishedEventArgs _Args);
 
     public interface IModelCharacter : IOnLevelStageChanged, IGetAllProceedInfos
     {
-        bool                         Alive            { get; }
-        V2Int                        Position         { get; }
-        bool                         IsMoving         { get; }
-        CharacterMovingEventArgs     MovingInfo       { get; }
-        Func<V2Int>                  GetStartPosition { get; set; }
-        event CharacterMovingHandler CharacterMoveStarted;
-        event CharacterMovingHandler CharacterMoveContinued;
-        event CharacterMovingHandler CharacterMoveFinished;
-        void                         Move(EMazeMoveDirection _Direction);
-        void                         OnPortal(PortalEventArgs _Args);
-        void                         OnSpringboard(SpringboardEventArgs _Args);
+        bool                                  Alive            { get; }
+        V2Int                                 Position         { get; }
+        bool                                  IsMoving         { get; }
+        CharacterMovingContinuedEventArgs     MovingInfo       { get; }
+        Func<V2Int>                           GetStartPosition { get; set; }
+        event CharacterMovingStartedHandler   CharacterMoveStarted;
+        event CharacterMovingContinuedHandler CharacterMoveContinued;
+        event CharacterMovingFinishedHandler  CharacterMoveFinished;
+        void                                  Move(EMazeMoveDirection _Direction);
+        void                                  OnPortal(PortalEventArgs _Args);
+        void                                  OnSpringboard(SpringboardEventArgs _Args);
     }
 
     public class ModelCharacter : IModelCharacter
@@ -90,17 +61,17 @@ namespace Games.RazorMaze.Models
 
         #region api
 
-        public bool                     Alive      { get; private set; } = true;
-        public V2Int                    Position   { get; private set; }
-        public bool                     IsMoving   { get; private set; }
-        public CharacterMovingEventArgs MovingInfo { get; private set; }
+        public bool                              Alive      { get; private set; } = true;
+        public V2Int                             Position   { get; private set; }
+        public bool                              IsMoving   { get; private set; }
+        public CharacterMovingContinuedEventArgs MovingInfo { get; private set; }
 
         
-        public Func<V2Int>                      GetStartPosition   { get;         set; }
-        public Func<List<IMazeItemProceedInfo>> GetAllProceedInfos { private get; set; }
-        public event CharacterMovingHandler     CharacterMoveStarted;
-        public event CharacterMovingHandler     CharacterMoveContinued;
-        public event CharacterMovingHandler     CharacterMoveFinished;
+        public Func<V2Int>                           GetStartPosition   { get;         set; }
+        public Func<IMazeItemProceedInfo[]>          GetAllProceedInfos { private get; set; }
+        public event CharacterMovingStartedHandler   CharacterMoveStarted;
+        public event CharacterMovingContinuedHandler CharacterMoveContinued;
+        public event CharacterMovingFinishedHandler  CharacterMoveFinished;
 
         public void Move(EMazeMoveDirection _Direction)
         {
@@ -112,30 +83,21 @@ namespace Games.RazorMaze.Models
                 LevelStaging.StartOrContinueLevel();
             
             var from = Position;
-            V2Int? shredingerBlockPosWhoStopped;
-            var to = GetNewPosition(from, _Direction, out shredingerBlockPosWhoStopped);
-            var args = new CharacterMovingEventArgs(
-                _Direction,
-                from, 
-                to, 
-                0, 
-                0f,
-                shredingerBlockPosWhoStopped);
-            (IsMoving, MovingInfo) = (true, args);
-            CharacterMoveStarted?.Invoke(MovingInfo);
+            var to = GetNewPosition(from, _Direction, out var shredingerBlockPosWhoStopped);
+            var args = new CharacterMovingStartedEventArgs(_Direction, from, to);
+            IsMoving = true;
+            CharacterMoveStarted?.Invoke(args);
             Coroutines.Run(MoveCharacterCore(_Direction, from, to, shredingerBlockPosWhoStopped));
         }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage == ELevelStage.Loaded)
+            switch (_Args.Stage)
             {
-                Position = GetStartPosition();
+                case ELevelStage.Loaded:          Position = GetStartPosition(); break;
+                case ELevelStage.ReadyToStart:    Revive(false);      break;
+                case ELevelStage.CharacterKilled: Die();                         break;
             }
-            else if (_Args.Stage == ELevelStage.ReadyToStart)
-                Revive(false);
-            else if (_Args.Stage == ELevelStage.CharacterKilled)
-                Die();
         }
         
         public void OnPortal(PortalEventArgs _Args)
@@ -146,6 +108,7 @@ namespace Games.RazorMaze.Models
 
         public void OnSpringboard(SpringboardEventArgs _Args)
         {
+            Position = _Args.Info.CurrentPosition;
             Move(_Args.Direction);
         }
 
@@ -173,7 +136,7 @@ namespace Games.RazorMaze.Models
         }
 
         private static bool IsNextPositionValid(
-            IReadOnlyList<IMazeItemProceedInfo> _ProceedInfos,
+            IMazeItemProceedInfo[] _ProceedInfos,
             IReadOnlyList<V2Int> _PathItems,
             V2Int _From,
             V2Int _CurrentPosition,
@@ -193,7 +156,7 @@ namespace Games.RazorMaze.Models
 
             if (!isNode)
             {
-                for (int i = 0; i < _ProceedInfos.Count; i++)
+                for (int i = 0; i < _ProceedInfos.Length; i++)
                 {
                     var info = _ProceedInfos[i];
                     if (info.CurrentPosition != _NextPosition)
@@ -206,7 +169,7 @@ namespace Games.RazorMaze.Models
             }
 
             IMazeItemProceedInfo shredinger = null;
-            for (int i = 0; i < _ProceedInfos.Count; i++)
+            for (int i = 0; i < _ProceedInfos.Length; i++)
             {
                 var info = _ProceedInfos[i];
                 if (info.Type != EMazeItemType.ShredingerBlock)
@@ -224,7 +187,7 @@ namespace Games.RazorMaze.Models
             }
 
             bool isMazeItem = false;
-            for (int i = 0; i < _ProceedInfos.Count; i++)
+            for (int i = 0; i < _ProceedInfos.Length; i++)
             {
                 var info = _ProceedInfos[i];
                 if (info.CurrentPosition != _NextPosition)
@@ -241,7 +204,7 @@ namespace Games.RazorMaze.Models
                 return false;
 
             bool isBuzyMazeItem = false;
-            for (int i = 0; i < _ProceedInfos.Count; i++)
+            for (int i = 0; i < _ProceedInfos.Length; i++)
             {
                 var info = _ProceedInfos[i];
                 if (info.Type != EMazeItemType.GravityBlock && info.Type != EMazeItemType.GravityBlockFree)
@@ -263,8 +226,25 @@ namespace Games.RazorMaze.Models
             if (isBuzyMazeItem)
                 return false;
             
+            bool isPrevSpringboard = false;
+            if (_CurrentPosition != _From)
+            {
+                for (int i = 0; i < _ProceedInfos.Length; i++)
+                {
+                    var info = _ProceedInfos[i];
+                    if (info.CurrentPosition != _CurrentPosition)
+                        continue;
+                    if (info.Type != EMazeItemType.Springboard)
+                        continue;
+                    isPrevSpringboard = true;
+                    break;
+                }
+            }
+            if (isPrevSpringboard)
+                return false;
+            
             bool isPrevPortal = false;
-            for (int i = 0; i < _ProceedInfos.Count; i++)
+            for (int i = 0; i < _ProceedInfos.Length; i++)
             {
                 var info = _ProceedInfos[i];
                 if (info.CurrentPosition != _CurrentPosition)
@@ -274,9 +254,9 @@ namespace Games.RazorMaze.Models
                 isPrevPortal = true;
                 break;
             }
-            
+
             bool isStartFromPortal = false;
-            for (int i = 0; i < _ProceedInfos.Count; i++)
+            for (int i = 0; i < _ProceedInfos.Length; i++)
             {
                 var info = _ProceedInfos[i];
                 if (info.CurrentPosition != _From)
@@ -307,13 +287,12 @@ namespace Games.RazorMaze.Models
                 pathLength / Settings.CharacterSpeed,
                 _Progress =>
                 {
-                    MovingInfo = new CharacterMovingEventArgs(
+                    MovingInfo = new CharacterMovingContinuedEventArgs(
                         _Direction,
                         _From,
                         _To,
                         _Progress,
-                        lastProgress,  
-                        _ShredingerBlockPosWhoStopped);
+                        lastProgress);
                     lastProgress = _Progress;
                     Position = V2Int.Round(MovingInfo.PrecisePosition);
                     CharacterMoveContinued?.Invoke(MovingInfo);
@@ -321,18 +300,37 @@ namespace Games.RazorMaze.Models
                 GameTicker,
                 (_Stopped, _Progress) =>
                 {
-                    if (_Stopped) 
-                        return;
-                    var args = new CharacterMovingEventArgs(
+                    var infos = GetAllProceedInfos();
+                    IMazeItemProceedInfo blockOnFinish = null;
+                    for (int i = 0; i < infos.Length; i++)
+                    {
+                        var info = infos[i];
+                        if (info.StartPosition != _To)
+                            continue;
+                        blockOnFinish = info;
+                        break;
+                    }
+                    IMazeItemProceedInfo blockWhoStopped = null;
+                    if (_ShredingerBlockPosWhoStopped.HasValue)
+                    {
+                        for (int i = 0; i < infos.Length; i++)
+                        {
+                            var info = infos[i];
+                            if (info.StartPosition != _ShredingerBlockPosWhoStopped.Value)
+                                continue;
+                            blockWhoStopped = info;
+                            break;
+                        }
+                    }
+                    var args = new CharacterMovingFinishedEventArgs(
                         _Direction,
                         _From,
                         _To,
-                        1, 
-                        lastProgress,
-                        _ShredingerBlockPosWhoStopped);
+                        blockOnFinish,
+                        blockWhoStopped);
                     CharacterMoveFinished?.Invoke(args);
-                    Position = _To;
                     IsMoving = false;
+                    Position = _To;
                 },
                 () => thisCount != m_Counter || !Alive,
                 _FixedUpdate: true);

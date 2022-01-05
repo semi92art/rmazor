@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
 using Entities;
@@ -38,7 +37,7 @@ namespace Controllers
     {
         #region nonpublic members
 
-        private readonly List<AudioClipInfo> m_ClipInfos = new List<AudioClipInfo>();
+        private readonly AudioClipInfo[] m_ClipInfos = new AudioClipInfo[500];
         private          AudioMixer          m_Mixer;
         private          AudioMixerGroup     m_MasterGroup;
         private          AudioMixerGroup     m_MutedGroup;
@@ -120,7 +119,7 @@ namespace Controllers
                     var audioSource = go.AddComponent<AudioSource>();
                     audioSource.clip = clip;
                     info = new AudioClipInfo(audioSource, _Args);
-                    m_ClipInfos.Add(info);
+                    AddInfo(info);
                     PlayClipCore(_Args, info);
                 }));
         }
@@ -153,9 +152,15 @@ namespace Controllers
 
         public void EnableAudio(bool _Enable, EAudioClipType _Type)
         {
-            var infos = m_ClipInfos.Where(_Info => _Type == _Info.Type);
-            foreach (var info in infos)
+            for (int i = 0; i < m_ClipInfos.Length; i++)
+            {
+                var info = m_ClipInfos[i];
+                if (info == null)
+                    continue;
+                if (info.Type != _Type)
+                    continue;
                 info.Volume = _Enable ? info.StartVolume : 0f;
+            }
             SaveUtils.PutValue(GetSaveKeyByType(_Type), _Enable);
         }
 
@@ -173,14 +178,14 @@ namespace Controllers
         {
             if (_Args.Stage != ELevelStage.Loaded) 
                 return;
-            m_ClipInfos
-                .Where(_Info => !string.IsNullOrEmpty(_Info.Id))
-                .ToList()
-                .ForEach(_Info =>
-                {
-                    _Info.DestroySource();
-                    m_ClipInfos.Remove(_Info);
-                });
+            for (int i = 0; i < m_ClipInfos.Length; i++)
+            {
+                var info = m_ClipInfos[i];
+                if (info == null)
+                    continue;
+                if (!string.IsNullOrEmpty(info.Id))
+                    m_ClipInfos[i] = null;
+            }
         }
 
         #endregion
@@ -208,9 +213,15 @@ namespace Controllers
         
         private void MuteAudio(bool _Mute, EAudioClipType _Type)
         {
-            var infos = m_ClipInfos.Where(_Info => _Type == _Info.Type);
-            foreach (var info in infos)
+            for (int i = 0; i < m_ClipInfos.Length; i++)
+            {
+                var info = m_ClipInfos[i];
+                if (info == null)
+                    continue;
+                if (info.Type != _Type)
+                    continue;
                 info.MixerGroup = _Mute ? m_MutedGroup : m_MasterGroup;
+            }
         }
 
         private IEnumerator AttenuateCoroutine(AudioClipInfo _Info, bool _AttenuateUp)
@@ -234,17 +245,20 @@ namespace Controllers
         {
             if (_Args == null)
                 return null;
-            return m_ClipInfos.FirstOrDefault(
-                _Info =>
-                {
-                    if (_Info.ClipName != _Args.ClipName)
-                        return false;
-                    if (_Info.Type != _Args.Type)
-                        return false;
-                    if (_Info.Id != _Args.Id)
-                        return false;
-                    return true;
-                });
+            for (int i = 0; i < m_ClipInfos.Length; i++)
+            {
+                var info = m_ClipInfos[i];
+                if (info == null)
+                    continue;
+                if (info.ClipName != _Args.ClipName)
+                    continue;
+                if (info.Type != _Args.Type)
+                    continue;
+                if (info.Id != _Args.Id)
+                    continue;
+                return info;
+            }
+            return null;
         }
 
         private static SaveKey<bool> GetSaveKeyByType(EAudioClipType _Type)
@@ -259,6 +273,19 @@ namespace Controllers
                     return SaveKeys.SettingMusicOn;
                 default:
                     throw new SwitchCaseNotImplementedException(_Type);
+            }
+        }
+
+        private void AddInfo(AudioClipInfo _Info)
+        {
+            int i = 0;
+            while (i < m_ClipInfos.Length)
+            {
+                i++;
+                if (m_ClipInfos[i] != null)
+                    continue;
+                m_ClipInfos[i] = _Info;
+                break;
             }
         }
 

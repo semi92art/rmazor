@@ -1,4 +1,5 @@
-﻿using Constants;
+﻿using System.Collections.Generic;
+using Constants;
 using Controllers;
 using DI.Extensions;
 using Entities;
@@ -10,6 +11,7 @@ using Managers.IAP;
 using Mono_Installers;
 using Network;
 using UnityEngine;
+using UnityEngine.Purchasing;
 using UnityEngine.SceneManagement;
 using Utils;
 using Zenject;
@@ -28,31 +30,37 @@ public class ApplicationInitializer : MonoBehaviour
     private IHapticsManager      HapticsManager      { get; set; }
     private IShopManager         ShopManager         { get; set; }
     private IPrefabSetManager    PrefabSetManager    { get; set; }
+    private IRemoteConfigManager RemoteConfigManager { get; set; }
+    private ICameraProvider      CameraProvider      { get; set; }
 
     [Inject] 
     public void Inject(
-        CommonGameSettings _Settings,
-        IGameClient _GameClient,
-        IAdsManager _AdsManager,
-        IAnalyticsManager _AnalyticsManager,
+        CommonGameSettings   _Settings,
+        IGameClient          _GameClient,
+        IAdsManager          _AdsManager,
+        IAnalyticsManager    _AnalyticsManager,
         ILocalizationManager _LocalizationManager,
-        ILevelsLoader _LevelsLoader,
-        IScoreManager _ScoreManager,
-        IHapticsManager _HapticsManager,
-        IAssetBundleManager _AssetBundleManager,
-        IShopManager _ShopManager,
-        IPrefabSetManager _PrefabSetManager)
+        ILevelsLoader        _LevelsLoader,
+        IScoreManager        _ScoreManager,
+        IHapticsManager      _HapticsManager,
+        IAssetBundleManager  _AssetBundleManager,
+        IShopManager         _ShopManager,
+        IPrefabSetManager    _PrefabSetManager,
+        IRemoteConfigManager _RemoteConfigManager,
+        ICameraProvider      _CameraProvider)
     {
-        Settings = _Settings;
-        GameClient = _GameClient;
-        AdsManager = _AdsManager;
-        AnalyticsManager = _AnalyticsManager;
+        Settings            = _Settings;
+        GameClient          = _GameClient;
+        AdsManager          = _AdsManager;
+        AnalyticsManager    = _AnalyticsManager;
         LocalizationManager = _LocalizationManager;
-        LevelsLoader = _LevelsLoader;
-        ScoreManager = _ScoreManager;
-        HapticsManager = _HapticsManager;
-        ShopManager = _ShopManager;
-        PrefabSetManager = _PrefabSetManager;
+        LevelsLoader        = _LevelsLoader;
+        ScoreManager        = _ScoreManager;
+        HapticsManager      = _HapticsManager;
+        ShopManager         = _ShopManager;
+        PrefabSetManager    = _PrefabSetManager;
+        RemoteConfigManager = _RemoteConfigManager;
+        CameraProvider      = _CameraProvider;
     }
 
 
@@ -62,6 +70,8 @@ public class ApplicationInitializer : MonoBehaviour
     
     private void Start()
     {
+        // костыль: если на iOS стоит светлая тема, задник камеры автоматом ставится белым
+        CameraProvider.MainCamera.backgroundColor = Color.black; 
         if (Settings.SrDebuggerOn)
             CommonUtils.InitSRDebugger();
         Application.targetFrameRate = GraphicUtils.GetTargetFps();
@@ -88,16 +98,18 @@ public class ApplicationInitializer : MonoBehaviour
     
     private void InitGameManagers()
     {
+        ScoreManager       .Initialize += OnScoreManagerInitialize;
+        ShopManager.RegisterProductInfos(GetProductInfos());
+        RemoteConfigManager.Initialize += () => AdsManager.Init();
         GameClient         .Init();
-        AdsManager         .Init();
         AnalyticsManager   .Init();
         LocalizationManager.Init();
         HapticsManager     .Init();
-        ScoreManager       .Initialize += OnScoreManagerInitialize;
         ScoreManager       .Init();
         ShopManager        .Init();
+        RemoteConfigManager.Init();
     }
-    
+
     private void InitGameController()
     {
         var controller = GameController.CreateInstance();
@@ -166,11 +178,63 @@ public class ApplicationInitializer : MonoBehaviour
         if (SaveUtils.GetValue(SaveKeys.NotFirstLaunch))
             return;
         DataFieldsMigrator.InitDefaultDataFieldValues(GameClient);
-        LocalizationManager.SetLanguage(Language.English);
         SaveUtils.PutValue(SaveKeys.SettingSoundOn, true);
         SaveUtils.PutValue(SaveKeys.SettingMusicOn, true);
         SaveUtils.PutValue(SaveKeys.SettingHapticsOn, true);
         SaveUtils.PutValue(SaveKeys.NotFirstLaunch, true);
+        SetDefaultLanguage();
+    }
+
+    private void SetDefaultLanguage()
+    {
+        switch (Application.systemLanguage)
+        {
+            case SystemLanguage.English:
+                LocalizationManager.SetLanguage(Language.English);
+                break;
+            case SystemLanguage.Russian:
+            case SystemLanguage.Belarusian:
+            case SystemLanguage.Ukrainian:
+                LocalizationManager.SetLanguage(Language.Russian);
+                break;
+            case SystemLanguage.Spanish:
+                LocalizationManager.SetLanguage(Language.Spanish);
+                break;
+            case SystemLanguage.Portuguese:
+                LocalizationManager.SetLanguage(Language.Portugal);
+                break;
+            default:
+                LocalizationManager.SetLanguage(Language.English);
+                break;
+        }
+    }
+
+    private List<ProductInfo> GetProductInfos()
+    {
+        switch (Application.platform)
+        {
+            case RuntimePlatform.Android:
+                return new List<ProductInfo>
+                {
+                    new ProductInfo(PurchaseKeys.Money1, "small_pack_of_coins",           ProductType.Consumable),
+                    new ProductInfo(PurchaseKeys.Money2, "medium_pack_of_coins",          ProductType.Consumable),
+                    new ProductInfo(PurchaseKeys.Money3, "big_pack_of_coins",             ProductType.Consumable),
+                    new ProductInfo(PurchaseKeys.NoAds,  "disable_mandatory_advertising", ProductType.NonConsumable)
+                };
+            case RuntimePlatform.IPhonePlayer:
+            {
+                var appId = Application.identifier;
+                return new List<ProductInfo>
+                {
+                    new ProductInfo(PurchaseKeys.Money1, "small_pack_of_coins_2",           ProductType.Consumable),
+                    new ProductInfo(PurchaseKeys.Money2, "medium_pack_of_coins_2",          ProductType.Consumable),
+                    new ProductInfo(PurchaseKeys.Money3, appId + ".bigpackofcoins",         ProductType.Consumable),
+                    new ProductInfo(PurchaseKeys.NoAds,  "disable_mandatory_advertising_2", ProductType.NonConsumable)
+                };
+            }
+            default:
+                return null;
+        }
     }
 
     #endregion

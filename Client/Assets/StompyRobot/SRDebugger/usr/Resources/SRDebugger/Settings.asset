@@ -57,7 +57,7 @@ MonoBehaviour:
   _apiKey: 75b6c994b10b4c4b824334675935e49a
   _enableBugReporter: 1
   _enableBugReportScreenshot: 1
-  _disabledTabs: 
+  _disabledTabs: 03000000
   _profilerAlignment: 2
   _optionsAlignment: 3
   _consoleAlignment: 0

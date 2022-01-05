@@ -182,7 +182,6 @@ namespace Managers
         
         private ScoresEntity GetScoreCached(ushort _Id)
         {
-            Dbg.Log(nameof(GetScoreCached) + ": " + DataFieldIds.GetDataFieldName(_Id));
             var scores = new ScoresEntity{Result = EEntityResult.Pending};
             var gdff = new GameDataFieldFilter(GameClient, GameClientUtils.AccountId, GameClientUtils.GameId,
                 _Id) {OnlyLocal = true};
@@ -211,7 +210,6 @@ namespace Managers
                 var scoreField = _Fields.First();
                 scoreField.SetValue(_Value).Save(true);
             });
-            Dbg.Log(nameof(OnScoresChanged));
             OnScoresChanged?.Invoke(new ScoresEventArgs(GetScoreCached(_Id)));
         }
         

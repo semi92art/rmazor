@@ -20,14 +20,13 @@ public class DefaultCameraProvider : MonoBehaviour, ICameraProvider
         PrefabSetManager = _PrefabSetManager;
     }
     
-    public Camera                 MainCamera        { get; private set; }
+    public Camera                 MainCamera        => Camera.main;
     public TranslucentImageSource TranslucentSource { get; private set; }
     public ScalableBlurConfig     BlurConfig        { get; private set; }
 
 
     private void Awake()
     {
-        MainCamera = Camera.main;
         TranslucentSource = MainCamera.GetComponent<TranslucentImageSource>();
         BlurConfig = PrefabSetManager.GetObject<ScalableBlurConfig>(
             "views",

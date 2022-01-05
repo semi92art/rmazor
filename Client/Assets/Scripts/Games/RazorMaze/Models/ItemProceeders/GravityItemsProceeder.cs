@@ -50,7 +50,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
 
         public override EMazeItemType[] Types => RazorMazeUtils.GravityItemTypes();
 
-        public Func<List<IMazeItemProceedInfo>> GetAllProceedInfos { private get; set; }
+        public Func<IMazeItemProceedInfo[]> GetAllProceedInfos { private get; set; }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
@@ -69,7 +69,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             MoveMazeItemsGravity(Data.Orientation, Character.Position);
         }
 
-        public void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
+        public void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
         {
             MoveMazeItemsGravity(Data.Orientation, _Args.To);
         }

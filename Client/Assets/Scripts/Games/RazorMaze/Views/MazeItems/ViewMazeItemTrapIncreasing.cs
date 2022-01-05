@@ -52,7 +52,7 @@ namespace Games.RazorMaze.Views.MazeItems
         protected override string ObjectName => "Trap Increasing Block";
         private readonly List<Line> m_BladeContainers = new List<Line>();
         private readonly List<SpriteRenderer> m_Blades = new List<SpriteRenderer>();
-        private Disc m_Center;
+        private Disc m_Center, m_Center2;
 
         #endregion
 
@@ -83,7 +83,7 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region api
         
-        public override Component[] Shapes => new Component[]{m_Center}
+        public override Component[] Shapes => new Component[]{m_Center, m_Center2}
             .Concat(m_Blades)
             .Concat(m_BladeContainers)
             .ToArray();
@@ -148,6 +148,7 @@ namespace Games.RazorMaze.Views.MazeItems
             prefab.transform.SetLocalPosXY(Vector2.zero);
             m_Animator = prefab.GetCompItem<Animator>("animator");
             m_Center = prefab.GetCompItem<Disc>("center");
+            m_Center2 = prefab.GetCompItem<Disc>("center_2");
             m_Triggerer = prefab.GetCompItem<AnimationTriggerer>("triggerer");
             m_Triggerer.Trigger1 += () => m_ReadyToKill = true;
             m_Triggerer.Trigger2 += () => m_ReadyToKill = false;
@@ -197,10 +198,11 @@ namespace Games.RazorMaze.Views.MazeItems
             if (_ColorId == ColorIds.MazeItem1)
             {
                 m_Center.Color = _Color;
+                m_Center2.Color = _Color;
                 foreach (var item in m_Blades)
                     item.color = _Color;
                 foreach (var item in m_BladeContainers)
-                    item.Color = _Color;
+                    item.Color = _Color.SetA(0.5f);
             }
         }
 
@@ -283,7 +285,7 @@ namespace Games.RazorMaze.Views.MazeItems
             var col = ColorProvider.GetColor(ColorIds.MazeItem1);
             return new Dictionary<IEnumerable<Component>, Func<Color>>
             {
-                {new Component[] { m_Center }, () => col}, 
+                {new Component[] { m_Center, m_Center2 }, () => col}, 
                 {m_Blades, () => col}, 
                 {m_BladeContainers, () => col.SetA(0.5f)}
             };

@@ -5,9 +5,9 @@ namespace Games.RazorMaze
     [CreateAssetMenu(fileName = "model_settings", menuName = "Configs and Sets/Model Settings", order = 1)]
     public class ModelSettings : ScriptableObject
     {
-        [SerializeField] private float characterSpeed;
-        [SerializeField] private float movingItemsSpeed;
-        [SerializeField] private float gravityBlockSpeed;
+        [SerializeField] public  float characterSpeed;
+        [SerializeField] public  float movingItemsSpeed;
+        [SerializeField] public  float gravityBlockSpeed;
         [SerializeField] private float gravityTrapSpeed;
         [SerializeField] private float movingItemsPause;
         [SerializeField] private float trapPreReactTime;

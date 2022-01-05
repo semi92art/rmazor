@@ -514,7 +514,7 @@ namespace Games.RazorMaze.Views.MazeItems
             corner.AngRadiansEnd = Mathf.Deg2Rad * angles.y;
             bool isOuterAndNearTrapIncreasing = IsCornerOuterAndNearTrapIncreasing(_Right, _Up, _Inner);
             var col = ColorProvider.GetColor(ColorIds.Main);
-            corner.Color = isOuterAndNearTrapIncreasing ? MainColorToBorderColor(col) : col;
+            corner.Color = col;
             corner.SortingOrder = SortingOrders.PathJoint;
             corner.enabled = false;
             
@@ -738,7 +738,7 @@ namespace Games.RazorMaze.Views.MazeItems
         {
             var setsRaw = new Dictionary<Color, List<Component>>();
             var defCornerCol = ColorProvider.GetColor(ColorIds.Main);
-            var altCornerCol = MainColorToBorderColor(ColorProvider.GetColor(ColorIds.Main));
+            var altCornerCol = ColorProvider.GetColor(ColorIds.Main);
             setsRaw.Add(defCornerCol, new List<Component>());
             if (altCornerCol != defCornerCol)
                 setsRaw.Add(altCornerCol, new List<Component>());

@@ -85,7 +85,7 @@ public partial class SROptions
     }
 
     [Category(CategoryCommon)]
-    public long Money { get; set; }
+    public int Money { get; set; }
 
     [Category(CategoryCommon)]
     public bool Set_Money
@@ -107,8 +107,6 @@ public partial class SROptions
         get => false;
         set
         {
-            if (!value)
-                return;
             _view.CommandsProceeder.RaiseCommand(
                 EInputCommand.LoadLevelByIndex, 
                 new object[] { Level_Index - 1 },
@@ -120,15 +118,7 @@ public partial class SROptions
     public bool Load_Next_Level
     {
         get => false;
-        set
-        {
-            if (!value)
-                return;
-            _view.CommandsProceeder.RaiseCommand(
-                EInputCommand.LoadNextLevel,
-                null, 
-                true);
-        }
+        set => _view.CommandsProceeder.RaiseCommand(EInputCommand.LoadNextLevel, null, true);
     }
     
     [Category(CategoryLoadLevels)]
@@ -137,8 +127,6 @@ public partial class SROptions
         get => false;
         set
         {
-            if (!value)
-                return;
             int levelIndex = _model.LevelStaging.LevelIndex;
             _view.CommandsProceeder.RaiseCommand(
                 EInputCommand.LoadLevelByIndex, 
@@ -151,60 +139,28 @@ public partial class SROptions
     public bool Load_Current_Level
     {
         get => false;
-        set
-        {
-            if (!value)
-                return;
-            _view.CommandsProceeder.RaiseCommand(
-                EInputCommand.LoadCurrentLevel,
-                null, 
-                true);
-        }
+        set => _view.CommandsProceeder.RaiseCommand(EInputCommand.LoadCurrentLevel, null, true);
     }
     
     [Category(CategoryLoadLevels)]
     public bool Load_Random_Level
     {
         get => false;
-        set
-        {
-            if (!value)
-                return;
-            _view.CommandsProceeder.RaiseCommand(
-                EInputCommand.LoadRandomLevel,
-                null, 
-                true);
-        }
+        set => _view.CommandsProceeder.RaiseCommand(EInputCommand.LoadRandomLevel, null, true);
     }
     
     [Category(CategoryLoadLevels)]
     public bool Load_Random_Level_With_Rotation
     {
         get => false;
-        set
-        {
-            if (!value)
-                return;
-            _view.CommandsProceeder.RaiseCommand(
-                EInputCommand.LoadRandomLevelWithRotation,
-                null, 
-                true);
-        }
+        set => _view.CommandsProceeder.RaiseCommand(EInputCommand.LoadRandomLevelWithRotation, null, true);
     }
     
     [Category(CategoryLoadLevels)]
     public bool Finish_Current_Level
     {
         get => false;
-        set
-        {
-            if (!value)
-                return;
-            _view.CommandsProceeder.RaiseCommand(
-                EInputCommand.FinishLevel,
-                null, 
-                true);
-        }
+        set => _view.CommandsProceeder.RaiseCommand(EInputCommand.FinishLevel, null, true);
     }
 
     [Category(CategoryHaptics)]
@@ -220,10 +176,7 @@ public partial class SROptions
     public bool Play_Constant
     {
         get => false;
-        set
-        {
-            _view.Managers.HapticsManager.Play(Amplitude, Frequency, Duration);
-        }
+        set => _view.Managers.HapticsManager.Play(Amplitude, Frequency, Duration);
     }
 
     [Category(CategoryAds)]
@@ -255,11 +208,14 @@ public partial class SROptions
     public bool Show_Rewarded_Ad
     {
         get => false;
-        set
-        {
-            _view.Managers.AdsManager.ShowRewardedAd(
-                () => Dbg.Log("Rewarded ad was shown."));
-        }
+        set => _view.Managers.AdsManager.ShowRewardedAd(() => Dbg.Log("Rewarded ad was shown."));
+    }
+    
+    [Category(CategoryCommon)]
+    public bool Show_Rate_Dilalog
+    {
+        get => false;
+        set => _view.Managers.ShopManager.RateGame();
     }
     
     #endregion

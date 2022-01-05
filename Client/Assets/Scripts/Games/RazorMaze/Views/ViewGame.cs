@@ -10,6 +10,7 @@ using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItemGroups;
 using Games.RazorMaze.Views.Rotation;
 using Games.RazorMaze.Views.UI;
+using Managers;
 using UnityEngine.Events;
 namespace Games.RazorMaze.Views
 {
@@ -149,21 +150,21 @@ namespace Games.RazorMaze.Views
             LevelStageController.OnLevelStageChanged(_Args);
         }
         
-        public void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
+        public void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
         {
             var proceeders = GetInterfaceOfProceeders<ICharacterMoveStarted>();
             foreach (var proceeder in proceeders)
                 proceeder.OnCharacterMoveStarted(_Args);
         }
 
-        public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
+        public void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args)
         {
             var proceeders = GetInterfaceOfProceeders<ICharacterMoveContinued>();
             foreach (var proceeder in proceeders)
                 proceeder.OnCharacterMoveContinued(_Args);
         }
         
-        public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
+        public void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
         {
             var proceeders = GetInterfaceOfProceeders<ICharacterMoveFinished>();
             foreach (var proceeder in proceeders)
@@ -194,7 +195,7 @@ namespace Games.RazorMaze.Views
                     SpringboardItemsGroup,
                     GravityItemsGroup,
                     Background,
-                    CameraProvider
+                    CameraProvider,
                 }.Where(_Proceeder => _Proceeder != null);
             return proceeders.Where(_Proceeder => _Proceeder is T).Cast<T>().ToList();
         }

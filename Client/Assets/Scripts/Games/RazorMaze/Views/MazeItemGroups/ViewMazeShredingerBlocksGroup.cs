@@ -3,7 +3,6 @@ using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.MazeItems;
-using Utils;
 
 namespace Games.RazorMaze.Views.MazeItemGroups
 {
@@ -26,13 +25,13 @@ namespace Games.RazorMaze.Views.MazeItemGroups
             item.BlockClosed = _Args.Stage == ShredingerBlocksProceeder.StageClosed;
         }
 
-        public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
+        public void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
         {
-            if (!_Args.ShredingerBlockPosWhoStopped.HasValue)
+            if (_Args.BlockWhoStopped == null || _Args.BlockWhoStopped.Type != EMazeItemType.ShredingerBlock)
                 return;
             GetItems()
                 .Cast<IViewMazeItemShredingerBlock>()
-                .SingleOrDefault(_Item => _Item.Props.Position == _Args.ShredingerBlockPosWhoStopped.Value)
+                .SingleOrDefault(_Item => _Item.Props.Position == _Args.BlockWhoStopped.StartPosition)
                 ?.OnCharacterMoveFinished(_Args);
         }
     }

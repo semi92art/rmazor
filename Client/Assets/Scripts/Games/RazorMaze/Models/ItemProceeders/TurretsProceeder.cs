@@ -67,9 +67,9 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region api
         
-        public override EMazeItemType[]         Types => new[] {EMazeItemType.Turret};
-        public event TurretShotEventHandler     TurretShoot;
-        public Func<List<IMazeItemProceedInfo>> GetAllProceedInfos { private get; set; }
+        public override EMazeItemType[]     Types => new[] {EMazeItemType.Turret};
+        public event TurretShotEventHandler TurretShoot;
+        public Func<IMazeItemProceedInfo[]> GetAllProceedInfos { private get; set; }
         
         public void UpdateTick()
         {

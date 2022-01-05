@@ -211,7 +211,7 @@ namespace Games.RazorMaze.Views.Common
         private void InitBackgroundCongratsItems()
         {
             var sourceGos = new List<GameObject>();
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 2; i++)
             {
                 var sourceGo = PrefabSetManager.GetPrefab(
                     "views", $"background_item_congrats_{i + 1}");
@@ -246,7 +246,7 @@ namespace Games.RazorMaze.Views.Common
                     Coroutines.Run(Coroutines.Lerp(
                         1f,
                         0f,
-                        1f / (2f * CongratsAnimSpeed),
+                        1f / (6f * CongratsAnimSpeed),
                         _Progress =>
                         {
                             foreach (var shape in shapes)
@@ -270,9 +270,9 @@ namespace Games.RazorMaze.Views.Common
                 var shape = m_BackIdleItemsPool[i];
                 var speed = m_BackIdleItemSpeeds[i] * GameTicker.DeltaTime;
                 shape.transform.PlusPosXY(speed.x, speed.y);
-                if (IsInsideOfScreenBounds(shape.transform.position.XY(), new Vector2(1f, 1f)))
+                if (IsInsideOfScreenBounds(shape.transform.position.XY(), Vector2.one))
                     continue;
-                shape.transform.SetPosXY(RandomPositionOnScreen(false, new Vector2(1f, 1f)));
+                shape.transform.SetPosXY(RandomPositionOnScreen(false, Vector2.one));
             }
         }
 
@@ -285,8 +285,9 @@ namespace Games.RazorMaze.Views.Common
             var item = m_BackCongratsItemsPool.FirstInactive;
             if (item.IsNull())
                 return;
-            item.transform.position = RandomPositionOnScreen();
-            item.transform.localScale = Vector3.one * (0.5f + 3f * UnityEngine.Random.value);
+            var tr = item.transform;
+            tr.position = RandomPositionOnScreen();
+            tr.localScale = Vector3.one * (0.5f + 2f * UnityEngine.Random.value);
             m_BackCongratsItemsPool.Activate(item);
             item.SetTrigger(AnimKeys.Anim);
         }
@@ -363,8 +364,8 @@ namespace Games.RazorMaze.Views.Common
         {
             int group = RazorMazeUtils.GetGroupIndex(_LevelIndex);
             float h = GetHForHSV(group);
-            float s = 80f / 100f;
-            float v = 70f / 100f;
+            float s = 100f / 100f;
+            float v = 100f / 100f;
             var newMainColor = Color.HSVToRGB(h, s, v);
             ColorProvider.SetColor(ColorIds.Main, newMainColor);
             ColorProvider.SetColor(ColorIds.Background, Color.HSVToRGB(h, s, 5f / 100f));
@@ -374,7 +375,15 @@ namespace Games.RazorMaze.Views.Common
         {
             var values = new float[]
             {
-                30, 55, 80, 140, 185, 225, 265, 305, 330
+                30,  // 1
+                185, // 5
+                55,  // 2
+                225, // 6
+                80,  // 3
+                265, // 7
+                140, // 4
+                305, // 8
+                // 330  // 9
             }.Select(_H => _H / 360f).ToArray();
             int idx = _Group % values.Length;
             return values[idx];

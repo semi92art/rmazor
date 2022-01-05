@@ -2,6 +2,6 @@
 {
     public interface ICharacterMoveFinished
     {
-        void OnCharacterMoveFinished(CharacterMovingEventArgs _Args);
+        void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args);
     }
 }

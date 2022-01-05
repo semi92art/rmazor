@@ -14,8 +14,8 @@ namespace Games.RazorMaze.Views.Common
 {
     public interface IMazeShaker : IInit, IOnLevelStageChanged
     {
-        bool ShakeMaze { get; set; }
-        IEnumerator HitMazeCoroutine(CharacterMovingEventArgs _Args);
+        bool        ShakeMaze { get; set; }
+        IEnumerator HitMazeCoroutine(CharacterMovingFinishedEventArgs _Args);
         IEnumerator ShakeMazeCoroutine();
         void OnCharacterDeathAnimation(
             Vector2             _DeathPosition,
@@ -81,7 +81,7 @@ namespace Games.RazorMaze.Views.Common
                 m_StartPosition = CoordinateConverter.GetMazeCenter();
         }
 
-        public IEnumerator HitMazeCoroutine(CharacterMovingEventArgs _Args)
+        public IEnumerator HitMazeCoroutine(CharacterMovingFinishedEventArgs _Args)
         {
             const float amplitude = 0.5f;
             var dir = RazorMazeUtils.GetDirectionVector(_Args.Direction, MazeOrientation.North);

@@ -304,10 +304,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04e81e2efdb244aeb8b5ce8eb6b54570, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  modelSettings: {fileID: 11400000, guid: 243986dd30cfcce4abbf025e950c2262, type: 2}
-  viewSettings: {fileID: 11400000, guid: 95742306892dcc5439babdbcfba0b157, type: 2}
-  cameraProvider: {fileID: 5545151479159213484, guid: 03ed9e87e94ffab48bd88ba242001363,
-    type: 3}
   colorProvider: {fileID: 5801256520906685625, guid: c93dbf76a6376f148b36a1c337a4924c,
     type: 3}
 --- !u!114 &703413959

@@ -51,13 +51,13 @@ namespace Games.RazorMaze.Views.MazeItems
         
         #region shapes
 
-        protected override string ObjectName => "Turret Block";
-        private Disc m_Body;
-        private Disc m_ProjectileHolderBorder;
-        private SpriteRenderer m_ProjectileRenderer;
-        private SpriteRenderer m_ProjectileFakeRenderer;
-        private SpriteMask m_ProjectileMask;
-        private SpriteMask m_ProjectileMask2;
+        protected override string         ObjectName => "Turret Block";
+        private            Disc           m_Body;
+        private            Disc           m_ProjectileHolderBorder;
+        private            SpriteRenderer m_ProjectileRenderer;
+        private            SpriteRenderer m_ProjectileFakeRenderer;
+        private            SpriteMask     m_ProjectileMask;
+        private            SpriteMask     m_ProjectileMask2;
 
         #endregion
         
@@ -135,7 +135,17 @@ namespace Games.RazorMaze.Views.MazeItems
             ProjectileTail.Init();
         }
 
-        public void PreShoot(TurretShotEventArgs _Args) => Coroutines.Run(HandleTurretPreShootCoroutine());
+        public override void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            base.OnLevelStageChanged(_Args);
+            if (_Args.Stage == ELevelStage.Finished && _Args.PreviousStage != ELevelStage.Paused)
+                StopProceedingTurret();
+        }
+
+        public void PreShoot(TurretShotEventArgs _Args)
+        {
+            Coroutines.Run(HandleTurretPreShootCoroutine());
+        }
 
         public void Shoot(TurretShotEventArgs _Args)
         {
@@ -185,34 +195,28 @@ namespace Games.RazorMaze.Views.MazeItems
             bhb.Type = DiscType.Ring;
             bhb.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type) + 1;
             bhb.DashSize = 2f;
-            var ProjectileParent = ContainersGetter.GetContainer(ContainerNames.MazeItems);
-            var ProjectileGo = Managers.PrefabSetManager.InitPrefab(
-                ProjectileParent, "views", "turret_bullet");
-            var ProjectileFakeGo = UnityEngine.Object.Instantiate(ProjectileGo);
-            ProjectileFakeGo.SetParent(ProjectileParent);
-            ProjectileFakeGo.name = "Turret Projectile Fake";
-            
-            m_ProjectileFakeContainer = ProjectileFakeGo.transform;
-            m_ProjectileFakeRenderer = ProjectileFakeGo.GetCompItem<SpriteRenderer>("bullet");
+            var projectileParent = ContainersGetter.GetContainer(ContainerNames.MazeItems);
+            var projectileGo = Managers.PrefabSetManager.InitPrefab(
+                projectileParent, "views", "turret_bullet");
+            var projectileFakeGo = UnityEngine.Object.Instantiate(projectileGo);
+            projectileFakeGo.SetParent(projectileParent);
+            projectileFakeGo.name = "Turret Projectile Fake";
+            m_ProjectileFakeContainer = projectileFakeGo.transform;
+            m_ProjectileFakeRenderer = projectileFakeGo.GetCompItem<SpriteRenderer>("bullet");
             m_ProjectileFakeRenderer.color = ColorProvider.GetColor(ColorIds.MazeItem1);
-            
-            m_ProjectileTr = ProjectileGo.transform;
-            m_ProjectileFakeTr = ProjectileFakeGo.transform;
-            
-            m_Projectile = ProjectileGo.GetContentItem("bullet").transform;
+            m_ProjectileTr = projectileGo.transform;
+            m_ProjectileFakeTr = projectileFakeGo.transform;
+            m_Projectile = projectileGo.GetContentItem("bullet").transform;
             m_ProjectileRenderer = m_Projectile.GetComponent<SpriteRenderer>();
             m_ProjectileRenderer.color = ColorProvider.GetColor(ColorIds.MazeItem1);
-
             var bmGo = Managers.PrefabSetManager.InitPrefab(
-                ProjectileParent, "views", "turret_bullet_mask");
+                projectileParent, "views", "turret_bullet_mask");
             var bmGo2 = UnityEngine.Object.Instantiate(bmGo);
-            bmGo2.SetParent(ProjectileParent);
-            
+            bmGo2.SetParent(projectileParent);
             var bm = bmGo.GetCompItem<SpriteMask>("mask");
             var bm2 = bmGo2.GetCompItem<SpriteMask>("mask");
             bm.enabled = bm2.enabled = false;
             bm.isCustomRangeActive = bm2.isCustomRangeActive = true;
-            
             (m_Body, m_ProjectileHolderBorder, m_ProjectileMask, m_ProjectileMask2) = (body, bhb, bm, bm2);
         }
 
@@ -279,9 +283,8 @@ namespace Games.RazorMaze.Views.MazeItems
             {
                 m_Projectile.SetGoActive(true);
                 m_ProjectileFakeTr.SetGoActive(false);
-                var ProjectilePos = CoordinateConverter.ToLocalMazeItemPosition(Props.Position);
-                m_ProjectileTr.transform.SetLocalPosXY(ProjectilePos);
-
+                var projectilePos = CoordinateConverter.ToLocalMazeItemPosition(Props.Position);
+                m_ProjectileTr.transform.SetLocalPosXY(projectilePos);
                 Coroutines.Run(HighlightBarrel(true));
                 Coroutines.Run(OpenBarrel(true, false));
             });
@@ -320,7 +323,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 GameTicker);
         }
         
-        private IEnumerator OpenBarrel(bool _Open, bool _Instantly)
+        private IEnumerator OpenBarrel(bool _Open, bool _Instantly, bool _Forced = false)
         {
             float openedStart, openedEnd, closedStart, closedEnd;
             (openedStart, openedEnd) = GetBarrelDiscAngles(true);
@@ -331,8 +334,7 @@ namespace Games.RazorMaze.Views.MazeItems
             float endTo = !_Open ? closedEnd : openedEnd;
             if (_Open)
                 m_ProjectileRotating = true;
-
-            if (_Instantly)
+            if (_Instantly && (_Forced || Model.LevelStaging.LevelStage != ELevelStage.Finished))
             {
                 m_Body.AngRadiansStart = startTo;
                 m_Body.AngRadiansEnd = endTo;
@@ -347,22 +349,34 @@ namespace Games.RazorMaze.Views.MazeItems
                     m_Body.AngRadiansStart = Mathf.Lerp(startFrom, startTo, _Progress);
                     m_Body.AngRadiansEnd = Mathf.Lerp(endFrom, endTo, _Progress);
                 },
-                GameTicker);
+                GameTicker,
+                _BreakPredicate: () =>
+                {
+                    if (_Forced)
+                        return false;
+                    return Model.LevelStaging.LevelStage == ELevelStage.Finished;
+                });
         }
 
-        private IEnumerator HighlightBarrel(bool _Open)
+        private IEnumerator HighlightBarrel(bool _Open, bool _Instantly = false, bool _Forced = false)
         {
             var defCol = ColorProvider.GetColor(ColorIds.Main);
             var highlightCol = ColorProvider.GetColor(ColorIds.MazeItem1);
             var startCol = _Open ? defCol : highlightCol;
             var endCol = !_Open ? defCol : highlightCol;
+            if (_Instantly && (_Forced || Model.LevelStaging.LevelStage != ELevelStage.Finished))
+            {
+                m_Body.Color = endCol;
+                yield break;
+            }
             yield return Coroutines.Lerp(
                 startCol,
                 endCol,
                 0.1f,
                 _Color => m_Body.Color = _Color,
                 GameTicker,
-                _BreakPredicate: () => AppearingState != EAppearingState.Appeared);
+                _BreakPredicate: () => AppearingState != EAppearingState.Appeared
+                                       || Model.LevelStaging.LevelStage == ELevelStage.Finished);
         }
 
         private IEnumerator DoShoot(TurretShotEventArgs _Args)
@@ -409,9 +423,6 @@ namespace Games.RazorMaze.Views.MazeItems
             Vector2 _PrevProjectilePosition,
             ref bool _MovedToTheEnd)
         {
-            if (Model.LevelStaging.LevelStage == ELevelStage.Finished
-            || Model.LevelStaging.LevelStage == ELevelStage.ReadyToUnloadLevel)
-                return false;
             var point = (V2Int)_ProjectilePosition;
             if (Model.Character.IsMoving)
             {
@@ -436,6 +447,17 @@ namespace Games.RazorMaze.Views.MazeItems
                 }
             }
             return !_MovedToTheEnd;
+        }
+
+        private void StopProceedingTurret()
+        {
+            Coroutines.Run(Coroutines.WaitEndOfFrame(
+                () =>
+                {
+                    Coroutines.Run(OpenBarrel(false, true, true));
+                    Coroutines.Run(HighlightBarrel(false, true, true));
+                }));
+            m_ProjectileRotating = false;
         }
 
         private Tuple<float, float> GetBarrelDiscAngles(bool _Opened)

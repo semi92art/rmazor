@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Games.RazorMaze
 {
@@ -26,6 +25,9 @@ namespace Games.RazorMaze
         [SerializeField] private float bottomScreenOffset;
         [SerializeField] private float topScreenOffset;
         [SerializeField] private float moveSwipeThreshold;
+        [SerializeField] private bool  springboardAnimatedHighlight;
+        public                   int   rateRequestsFrequency;
+        public                   int   adsRequestsFrequency;
 
         public float   LineWidth
         {
@@ -145,6 +147,18 @@ namespace Games.RazorMaze
         {
             get => moveSwipeThreshold;
             set => moveSwipeThreshold = value;
+        }
+
+        public bool SpringboardAnimatedHighlight
+        {
+            get => springboardAnimatedHighlight;
+            set => springboardAnimatedHighlight = value;
+        }
+
+        public int RateRequestsFrequency
+        {
+            get => rateRequestsFrequency;
+            set => rateRequestsFrequency = value;
         }
     }
 }

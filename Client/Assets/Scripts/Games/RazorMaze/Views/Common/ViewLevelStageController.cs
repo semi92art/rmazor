@@ -187,7 +187,8 @@ namespace Games.RazorMaze.Views.Common
                             {"level_time", Model.LevelStaging.LevelTime},
                             {"dies_count", Model.LevelStaging.DiesCount}
                         });
-                    if (_Args.LevelIndex % 3 == 0)
+
+                    if ((_Args.LevelIndex + 1) % 3 == 0)
                         Managers.AdsManager.ShowInterstitialAd(null);
                     break;
                 case ELevelStage.ReadyToUnloadLevel:

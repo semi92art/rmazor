@@ -78,7 +78,7 @@ namespace Games.RazorMaze.Views.Characters
                 m_Tail.Color = _Color;
         }
 
-        public void ShowTail(CharacterMovingEventArgs _Args)
+        public void ShowTail(CharacterMoveEventArgsBase _Args)
         {
             m_Hiding = false;
             m_Tail.enabled = true;
@@ -95,7 +95,7 @@ namespace Games.RazorMaze.Views.Characters
             m_Tail.gameObject.transform.SetPosXY(CoordinateConverter.GetMazeCenter());
         }
 
-        public void HideTail(CharacterMovingEventArgs _Args = null)
+        public void HideTail(CharacterMovingFinishedEventArgs _Args = null)
         {
             m_Tail.enabled = _Args != null;
             if (_Args != null)                
@@ -116,7 +116,7 @@ namespace Games.RazorMaze.Views.Characters
             m_Tail.enabled = false;
         }
 
-        private IEnumerator HideTailCoroutine(CharacterMovingEventArgs _Args)
+        private IEnumerator HideTailCoroutine(CharacterMovingFinishedEventArgs _Args)
         {
             m_Hiding = true;
             Vector2 startA = m_Tail.A;

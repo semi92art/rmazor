@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 469c24fdb3bd6431b92cc1465bd9166b, type: 3}
+  m_Name: RemoteConfigDataStoreAsset
+  m_EditorClassIdentifier: 
+  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"2633805e-c4f0-4266-b784-7940fe68e820\"\r\n   
+    },\r\n    \"rs\": {\r\n      \"key\": \"ads.admob\",\r\n      \"type\": \"bool\",\r\n     
+    \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
+    \"d0f91389-2c15-40fc-b06f-76b0521e032d\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"key\": \"ads.unityads\",\r\n      \"type\": \"bool\",\r\n      \"value\": true\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"78b2115e-1f20-4429-a985-888d6011365c\"\r\n   
+    },\r\n    \"rs\": {\r\n      \"key\": \"ads.facebook\",\r\n      \"type\": \"bool\",\r\n     
+    \"value\": false\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
+    \"70a9d217-4acc-4083-b091-74756c000603\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"key\": \"character.speed\",\r\n      \"type\": \"float\",\r\n      \"value\":
+    40.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"6a7ffac2-0180-4425-980c-2103ec4eef38\"\r\n   
+    },\r\n    \"rs\": {\r\n      \"key\": \"mazeitems.movingtrap.speed\",\r\n     
+    \"type\": \"float\",\r\n      \"value\": 6.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
+    {\r\n      \"entityId\": \"1f438d86-ed84-468c-b2c2-4ab1a4a7b9c5\"\r\n    },\r\n   
+    \"rs\": {\r\n      \"key\": \"mazeitems.gravityblock.speed\",\r\n      \"type\":
+    \"float\",\r\n      \"value\": 15.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
+    {\r\n      \"entityId\": \"0a3acb73-b0d5-4f80-85ab-50bb39e2e98e\"\r\n    },\r\n   
+    \"rs\": {\r\n      \"key\": \"common.raterequestsfrequency\",\r\n      \"type\":
+    \"int\",\r\n      \"value\": 20\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
+    {\r\n      \"entityId\": \"7eaef4a1-0901-4823-913b-a8d9b5bbf5ba\"\r\n    },\r\n   
+    \"rs\": {\r\n      \"key\": \"ads.adsrequestsfrequency\",\r\n      \"type\":
+    \"string\",\r\n      \"value\": \"5\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
+    {\r\n      \"entityId\": \"6acdb29b-99a2-4c65-857a-b73347f714b4\"\r\n    },\r\n   
+    \"rs\": {\r\n      \"key\": \"common.iosgameid\",\r\n      \"type\": \"string\",\r\n     
+    \"value\": \"[Empty]\"\r\n    }\r\n  }\r\n]"
+  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"2633805e-c4f0-4266-b784-7940fe68e820\"\r\n   
+    },\r\n    \"rs\": {\r\n      \"key\": \"ads.admob\",\r\n      \"type\": \"bool\",\r\n     
+    \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
+    \"d0f91389-2c15-40fc-b06f-76b0521e032d\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"key\": \"ads.unityads\",\r\n      \"type\": \"bool\",\r\n      \"value\": true\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"78b2115e-1f20-4429-a985-888d6011365c\"\r\n   
+    },\r\n    \"rs\": {\r\n      \"key\": \"ads.facebook\",\r\n      \"type\": \"bool\",\r\n     
+    \"value\": false\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
+    \"70a9d217-4acc-4083-b091-74756c000603\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"key\": \"character.speed\",\r\n      \"type\": \"float\",\r\n      \"value\":
+    40.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"6a7ffac2-0180-4425-980c-2103ec4eef38\"\r\n   
+    },\r\n    \"rs\": {\r\n      \"key\": \"mazeitems.movingtrap.speed\",\r\n     
+    \"type\": \"float\",\r\n      \"value\": 6.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
+    {\r\n      \"entityId\": \"1f438d86-ed84-468c-b2c2-4ab1a4a7b9c5\"\r\n    },\r\n   
+    \"rs\": {\r\n      \"key\": \"mazeitems.gravityblock.speed\",\r\n      \"type\":
+    \"float\",\r\n      \"value\": 15.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
+    {\r\n      \"entityId\": \"0a3acb73-b0d5-4f80-85ab-50bb39e2e98e\"\r\n    },\r\n   
+    \"rs\": {\r\n      \"key\": \"common.raterequestsfrequency\",\r\n      \"type\":
+    \"int\",\r\n      \"value\": 20\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
+    {\r\n      \"entityId\": \"7eaef4a1-0901-4823-913b-a8d9b5bbf5ba\"\r\n    },\r\n   
+    \"rs\": {\r\n      \"key\": \"ads.adsrequestsfrequency\",\r\n      \"type\":
+    \"string\",\r\n      \"value\": \"5\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
+    {\r\n      \"entityId\": \"6acdb29b-99a2-4c65-857a-b73347f714b4\"\r\n    },\r\n   
+    \"rs\": {\r\n      \"key\": \"common.iosgameid\",\r\n      \"type\": \"string\",\r\n     
+    \"value\": \"[Empty]\"\r\n    }\r\n  }\r\n]"
+  _environments: "[\r\n  {\r\n    \"projectId\": \"abcef6a4-92c3-4c35-894e-21fc8a854301\",\r\n   
+    \"name\": \"production\",\r\n    \"id\": \"1d652336-ffe1-4303-b76b-bf9a581cf50a\",\r\n   
+    \"isDefault\": true,\r\n    \"createdAt\": \"2021-08-16T21:54:30Z\",\r\n    \"updatedAt\":
+    \"2021-08-16T21:54:30Z\"\r\n  }\r\n]"

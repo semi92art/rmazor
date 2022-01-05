@@ -293,6 +293,7 @@ public class NativeAndroidDataHandler : MonoBehaviour
     //Monitor of time for the app. Responsible for storing the time the game was last closed.
     public void Update()
     {
+        return;
         //Increase time of monitor, with unscaled delta time
         delayOfTimeMonitor += Time.unscaledDeltaTime;
 

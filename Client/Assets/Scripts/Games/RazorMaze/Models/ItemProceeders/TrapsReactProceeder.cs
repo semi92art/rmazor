@@ -58,7 +58,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         public override EMazeItemType[] Types => new[] {EMazeItemType.TrapReact};
         public event MazeItemTrapReactEventHandler TrapReactStageChanged;
 
-        public void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
+        public void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args)
         {
             ProceedTraps(_Args);
         }
@@ -67,7 +67,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region nonpublic methods
 
-        private void ProceedTraps(CharacterMovingEventArgs _Args)
+        private void ProceedTraps(CharacterMovingContinuedEventArgs _Args)
         {
             for (int i = 0; i < ProceedInfos.Length; i++)
             {

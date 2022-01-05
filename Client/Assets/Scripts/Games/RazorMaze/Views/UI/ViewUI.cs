@@ -103,10 +103,8 @@ namespace Games.RazorMaze.Views.UI
                 _Args.LevelIndex != 0
                 && _Args.LevelIndex % 10 == 0
                 && !SaveUtils.GetValue(SaveKeys.GameWasRated)
-                && ratePanelShowsCount < 10;
+                && ratePanelShowsCount < 3;
             if (!mustShowRateGamePanel)
-                return;
-            if (!NetworkUtils.IsInternetConnectionAvailable())
                 return;
             Managers.ShopManager.RateGame();
             SaveUtils.PutValue(SaveKeys.RatePanelShowsCount, ratePanelShowsCount + 1);

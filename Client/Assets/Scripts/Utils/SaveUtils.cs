@@ -25,18 +25,26 @@ namespace Utils
         
         public static T GetValue<T>(SaveKey<T> _Key)
         {
+            if (!_Key.IsDirty)
+                return _Key.CachedValue;
             string value = GetXElementValue(_Key.Key);
             if (string.IsNullOrEmpty(value))
                 return default;
 #if !UNITY_EDITOR
             value = StringCipher.Decrypt(value, PassPhrase);
 #endif
-            var result = JsonConvert.DeserializeObject<T>(value, SerializerSettings);
+            T result = JsonConvert.DeserializeObject<T>(value, SerializerSettings);
+            _Key.CachedValue = result;
             return result;
         }
         
         public static void PutValue<T>(SaveKey<T> _Key, T _Value)
         {
+            if (_Key.IsDirty)
+            {
+                _Key.IsDirty = false;
+                _Key.CachedValue = _Value;
+            }
             string value = JsonConvert.SerializeObject(_Value, SerializerSettings);
 #if !UNITY_EDITOR
             value = StringCipher.Encrypt(value, PassPhrase);

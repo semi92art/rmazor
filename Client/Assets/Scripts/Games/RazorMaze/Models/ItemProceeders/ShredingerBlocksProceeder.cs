@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
 using Games.RazorMaze.Models.ProceedInfos;
@@ -53,22 +52,23 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         #region api
         
-        public override EMazeItemType[]         Types => new[] {EMazeItemType.ShredingerBlock};
-        public event ShredingerBlockHandler     ShredingerBlockEvent;
-        public Func<List<IMazeItemProceedInfo>> GetAllProceedInfos { get; set; }
+        public override EMazeItemType[]     Types => new[] {EMazeItemType.ShredingerBlock};
+        public event ShredingerBlockHandler ShredingerBlockEvent;
+        public Func<IMazeItemProceedInfo[]> GetAllProceedInfos { get; set; }
 
-        public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
+        public void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
         {
             var path = RazorMazeUtils.GetFullPath(_Args.From, _Args.To);
             foreach (var info in ProceedInfos.Where(_Info => _Info.IsProceeding))
             {
-                if (path.Contains(info.CurrentPosition)
-                    && info.CurrentPosition != _Args.To
-                    && info.ProceedingStage == StageIdle)
-                {
-                    SwitchStage(info, StageClosed);
-                    ProceedCoroutine(info, ProceedBlock(info, StageIdle));
-                }
+                if (!path.Contains(info.CurrentPosition))
+                    continue;
+                if (info.CurrentPosition == _Args.To)
+                    continue;
+                if (info.ProceedingStage != StageIdle)
+                    continue;
+                SwitchStage(info, StageClosed);
+                ProceedCoroutine(info, ProceedBlock(info, StageIdle));
             }
         }
 

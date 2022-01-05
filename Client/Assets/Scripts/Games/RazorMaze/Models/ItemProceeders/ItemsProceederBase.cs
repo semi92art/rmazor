@@ -48,7 +48,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
         
         private readonly Dictionary<IMazeItemProceedInfo, ViewMazeItemCoroutines> m_CoroutinesDict =
             new Dictionary<IMazeItemProceedInfo, ViewMazeItemCoroutines>();
-        protected IMazeItemProceedInfo KillerProceedInfo { get; set; }
         
         #endregion
         
@@ -94,12 +93,13 @@ namespace Games.RazorMaze.Models.ItemProceeders
             {
                 case ELevelStage.Loaded:
                     CollectItems(Data.Info);
+                    ClearCoroutines();
                     break;
                 case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.CharacterKilled:
                     break;
                 case ELevelStage.ReadyToStart when _Args.PreviousStage != ELevelStage.Paused
                                                    && _Args.PreviousStage != ELevelStage.CharacterKilled:
-                    StartProceed(true);
+                    StartProceed();
                     break;
                 case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.Paused:
                 case ELevelStage.StartedOrContinued:
@@ -108,22 +108,15 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 case ELevelStage.Paused:
                     PauseProceed();
                     break;
-                case ELevelStage.Unloaded:
-                case ELevelStage.Finished:
-                case ELevelStage.CharacterKilled:
+                case ELevelStage.Finished when _Args.PreviousStage != ELevelStage.Paused:
+                    ClearCoroutines();
+                    break;
                 case ELevelStage.ReadyToUnloadLevel: 
+                case ELevelStage.Unloaded:
+                case ELevelStage.CharacterKilled:
                     break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Args.Stage);
-            }
-            if (_Args.Stage != ELevelStage.Loaded) 
-                return;
-            foreach (var coroutines in m_CoroutinesDict
-                .Select(_Kvp => _Kvp.Value))
-            {
-                foreach (var coroutine in coroutines.Coroutines)
-                    Coroutines.Stop(coroutine);
-                coroutines.ClearArray();
             }
         }
         
@@ -161,7 +154,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
             ProceedInfos = infos.ToArray();
         }
         
-        private void StartProceed(bool? _ProceedKillerInfoIfTrue = null)
+        private void StartProceed()
         {
             foreach (var info in ProceedInfos)
             {
@@ -169,13 +162,6 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 info.ReadyToSwitchStage = true;
                 info.CurrentPosition = info.StartPosition;
                 info.ProceedingStage = StageIdle;
-            }
-            if (_ProceedKillerInfoIfTrue.HasValue
-                && !_ProceedKillerInfoIfTrue.Value 
-                && KillerProceedInfo != null)
-            {
-                KillerProceedInfo.IsProceeding = false;
-                KillerProceedInfo = null;
             }
         }
         
@@ -191,24 +177,31 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 info.IsProceeding = false;
         }
 
-        private void FinishProceed(bool _DropInfo)
+        private void FinishProceed()
         {
             var infos = ProceedInfos;
             foreach (var info in infos)
             {
                 info.IsProceeding = false;
                 info.ReadyToSwitchStage = false;
-                if (_DropInfo)
-                {
-                    info.CurrentPosition = info.StartPosition;
-                }
             }
         }
 
-        protected virtual void ProceedCoroutine(IMazeItemProceedInfo _ProceedInfo, IEnumerator _Coroutine)
+        protected void ProceedCoroutine(IMazeItemProceedInfo _ProceedInfo, IEnumerator _Coroutine)
         {
             m_CoroutinesDict[_ProceedInfo].AddCoroutine(_Coroutine);
             Coroutines.Run(_Coroutine);
+        }
+        
+        private void ClearCoroutines()
+        {
+            foreach (var coroutines in m_CoroutinesDict
+                .Select(_Kvp => _Kvp.Value))
+            {
+                foreach (var coroutine in coroutines.Coroutines)
+                    Coroutines.Stop(coroutine);
+                coroutines.ClearArray();
+            }
         }
         
         protected static bool PathContainsItem(V2Int _From, V2Int _To, V2Int _Point)

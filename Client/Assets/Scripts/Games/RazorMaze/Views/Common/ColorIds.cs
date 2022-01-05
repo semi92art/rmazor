@@ -21,6 +21,7 @@ namespace Games.RazorMaze.Views.Common
         public static readonly int UiText;
         public static readonly int UiBackground;
         public static readonly int UiItemHighlighted;
+        public static readonly int UiStartLogo;
 
         static ColorIds()
         {
@@ -40,6 +41,7 @@ namespace Games.RazorMaze.Views.Common
             UiText                   = GetHash(nameof(UiText)                  .WithSpaces());
             UiBackground             = GetHash(nameof(UiBackground)            .WithSpaces());
             UiItemHighlighted        = GetHash(nameof(UiItemHighlighted)       .WithSpaces());
+            UiStartLogo              = GetHash(nameof(UiStartLogo)             .WithSpaces());
         }
 
         public static int GetHash(string _S)
@@ -69,7 +71,8 @@ namespace Games.RazorMaze.Views.Common
             {UiBorder,                 nameof(UiBorder).WithSpaces()},
             {UiText,                   nameof(UiText).WithSpaces()},
             {UiBackground,             nameof(UiBackground).WithSpaces()},
-            {UiItemHighlighted,        nameof(UiItemHighlighted).WithSpaces()}
+            {UiItemHighlighted,        nameof(UiItemHighlighted).WithSpaces()},
+            {UiStartLogo,              nameof(UiStartLogo).WithSpaces()}
         };
     }
 }

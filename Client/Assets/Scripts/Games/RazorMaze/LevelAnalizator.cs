@@ -19,7 +19,6 @@ namespace Games.RazorMaze
         
         public static bool IsValid(MazeInfo _Info, bool _FastValidation = true)
         {
-            var sw = Stopwatch.StartNew();
             var pathItems = _Info.Path;
             if (!pathItems.Any())
                 return false;
@@ -36,13 +35,9 @@ namespace Games.RazorMaze
                 FollowRandomDirection(ref currPathItemPos, solves, pathItems);
                 if (solves.Any(_N => !_N.Solved)) 
                     continue;
-                sw.Stop();
-                //Utils.Dbg.Log($"Time elapsed: {sw.Elapsed.TotalMilliseconds}");
                 return true;
 
             }
-            sw.Stop();
-            //Utils.Dbg.Log($"Time elapsed: {sw.Elapsed.TotalMilliseconds}");
             return false;
         }
         

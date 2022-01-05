@@ -2,6 +2,6 @@
 {
     public interface ICharacterMoveStarted
     {
-        void OnCharacterMoveStarted(CharacterMovingEventArgs _Args);
+        void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args);
     }
 }

@@ -199,35 +199,30 @@ public class EditorHelper : EditorWindow
     {
         var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ModelSettings>(
             "model_settings", "model_settings");
-        var type = typeof(ModelSettings);
-        var fieldInfos = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
-        SettingsTabPageCore(settings, fieldInfos.ToList());
+        SettingsTabPageCore(settings, typeof(ModelSettings));
     }
     
     private void ViewSettingsTabPage()
     {
         var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ViewSettings>(
             "model_settings", "view_settings");
-        var type = typeof(ViewSettings);
-        var fieldInfos = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
-        SettingsTabPageCore(settings, fieldInfos.ToList());
+        SettingsTabPageCore(settings, typeof(ViewSettings));
     }
 
     private void ViewCommonGameSettingsTabPage()
     {
         var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<CommonGameSettings>(
             "model_settings", "common_game_settings");
-        var type = typeof(CommonGameSettings);
-        var fieldInfos = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
-        SettingsTabPageCore(settings, fieldInfos.ToList());
+        SettingsTabPageCore(settings, typeof(CommonGameSettings));
     }
 
-    private void SettingsTabPageCore(Object _Settings, List<FieldInfo> _FieldInfos)
+    private void SettingsTabPageCore(Object _Settings, Type _Type)
     {
+        var fieldInfos = _Type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
         var serObj = new SerializedObject(_Settings);
         EditorUtilsEx.ScrollViewZone(ref m_ViewSettingsScrollPos, () =>
         {
-            foreach (var fieldInfo in _FieldInfos)
+            foreach (var fieldInfo in fieldInfos)
             {
                 var prop = serObj.FindProperty(fieldInfo.Name);
                 EditorGUILayout.PropertyField(prop);

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Constants;
 using DI.Extensions;
 using Entities;
 using UnityEngine;
@@ -25,21 +24,13 @@ namespace Managers.IAP
         public Func<EShopProductResult> Result     { get; set; }
     }
     
-    public class UnityIAPShopManager : ShopManagerBase, IShopManager, IStoreListener
+    public class UnityIAPShopManager : ShopManagerBase, IStoreListener
     {
         #region nonpublic members
 
-        protected          IStoreController   m_StoreController;
-        protected          IExtensionProvider m_StoreExtensionProvider;
-        
-        protected override List<ProductInfo> Products => new List<ProductInfo>
-        {
-            new ProductInfo(PurchaseKeys.Money1, $"small_pack_of_coins{(Application.platform == RuntimePlatform.IPhonePlayer ? "_2" : string.Empty)}",           ProductType.Consumable),
-            new ProductInfo(PurchaseKeys.Money2, $"medium_pack_of_coins{(Application.platform == RuntimePlatform.IPhonePlayer ? "_2" : string.Empty)}",          ProductType.Consumable),
-            new ProductInfo(PurchaseKeys.Money3, $"big_pack_of_coins{(Application.platform == RuntimePlatform.IPhonePlayer ? "_2" : string.Empty)}",             ProductType.Consumable),
-            new ProductInfo(PurchaseKeys.NoAds,  $"disable_mandatory_advertising{(Application.platform == RuntimePlatform.IPhonePlayer ? "_2" : string.Empty)}", ProductType.NonConsumable)
-        };
-        
+        private IStoreController   m_StoreController;
+        private IExtensionProvider m_StoreExtensionProvider;
+
         private readonly Dictionary<int, UnityAction> m_OnPurchaseActions =
             new Dictionary<int, UnityAction>();
 
@@ -47,7 +38,7 @@ namespace Managers.IAP
 
         #region inject
 
-        protected ILocalizationManager LocalizationManager { get; }
+        private ILocalizationManager        LocalizationManager { get; }
 
         public UnityIAPShopManager(ILocalizationManager _LocalizationManager)
         {
@@ -57,11 +48,8 @@ namespace Managers.IAP
         #endregion
 
         #region api
-        
-        public bool              Initialized { get; private set; }
-        public event UnityAction Initialize;
-        
-        public virtual void Init()
+
+        public override void Init()
         {
             InitializePurchasing();
         }
@@ -71,8 +59,7 @@ namespace Managers.IAP
             m_StoreController = _Controller;
             m_StoreExtensionProvider = _Extensions;
             Dbg.Log($"{nameof(OnInitialized)}");
-            Initialize?.Invoke();
-            Initialized = true;
+            base.Init();
         }
         
         public void OnInitializeFailed(InitializationFailureReason _Error)
@@ -87,7 +74,7 @@ namespace Managers.IAP
                            $" {nameof(PurchaseFailureReason)}:" + _FailureReason);
         }
 
-        public void Purchase(int _Key)
+        public override void Purchase(int _Key)
         {
 #if !UNITY_EDITOR
             if (!NetworkUtils.IsInternetConnectionAvailable())
@@ -100,7 +87,7 @@ namespace Managers.IAP
             BuyProductID(id);
         }
 
-        public void RateGame()
+        public override void RateGame(bool _JustSuggest = true)
         {
             if (!NetworkUtils.IsInternetConnectionAvailable())
             {
@@ -114,30 +101,30 @@ namespace Managers.IAP
 #if UNITY_EDITOR
             Dbg.Log("Rating game available only on device.");
 #elif UNITY_ANDROID
-            Coroutines.Run(RateGameAndroid());
+            Coroutines.Run(RateGameAndroid(_JustSuggest));
 #elif UNITY_IOS || UNITY_IPHONE
             RateGameIos();
 #endif
         }
 
-        public ShopItemArgs GetItemInfo(int _Key)
+        public override ShopItemArgs GetItemInfo(int _Key)
         {
             var res = new ShopItemArgs();
             GetProductItemInfo(_Key, ref res);
             return res;
         }
 
-        public void SetPurchaseAction(int _Key, UnityAction _OnPurchase)
+        public override void SetPurchaseAction(int _Key, UnityAction _OnPurchase)
         {
             m_OnPurchaseActions.SetSafe(_Key, _OnPurchase);
         }
 
-        public void SetDeferredAction(int _Key, UnityAction _Action)
+        public override void SetDeferredAction(int _Key, UnityAction _Action)
         {
-            // TODO
+            // do nothing
         }
 
-        public void RestorePurchases()
+        public override void RestorePurchases()
         {
             if (!NetworkUtils.IsInternetConnectionAvailable())
             {
@@ -274,10 +261,37 @@ namespace Managers.IAP
         
 #if UNITY_ANDROID
 
-        private System.Collections.IEnumerator RateGameAndroid()
+        private System.Collections.IEnumerator RateGameAndroid(bool _JustSuggest)
         {
-            void OpenAppPageInStoreDirectly() => Application.OpenURL ("market://details?id=" + Application.productName);
+            if (_JustSuggest)
+            {
+                string title = LocalizationManager.GetTranslation("rate_dialog_title");
+                string text = LocalizationManager.GetTranslation("rate_dialog_text") + "\n" +
+                    "\u2B50\u2B50\u2B50\u2B50\u2B50";
+                string ok = LocalizationManager.GetTranslation("rate_yes");
+                string notNow = LocalizationManager.GetTranslation("rate_not_now");
+                string never = LocalizationManager.GetTranslation("rate_never");
+                MTAssets.NativeAndroidToolkit.NativeAndroid.Dialogs.ShowNeutralDialog(title, text, ok, notNow, never);
+                MTAssets.NativeAndroidToolkit.Events.DialogsEvents.onNeutralYes = () =>
+                {
+                    Coroutines.Run(RateGameAndroid(false));
+                };
+                MTAssets.NativeAndroidToolkit.Events.DialogsEvents.onNeutralNo = () =>
+                {
+
+                };
+                MTAssets.NativeAndroidToolkit.Events.DialogsEvents.onNeutralNeutral = () =>
+                {
+                    SaveUtils.PutValue(SaveKeys.GameWasRated, true);
+                };
+                yield break;
+            }
             
+            static void OpenAppPageInStoreDirectly()
+            {
+                Application.OpenURL("market://details?id=" + Application.productName);
+            }
+
             var reviewManager = new Google.Play.Review.ReviewManager();
             var requestFlowOperation = reviewManager.RequestReviewFlow();
             yield return requestFlowOperation;
@@ -308,6 +322,7 @@ namespace Managers.IAP
                 OpenAppPageInStoreDirectly();
                 yield break;
             }
+            SaveUtils.PutValue(SaveKeys.GameWasRated, true);
         }
         
 #elif UNITY_IPHONE || UNITY_IOS

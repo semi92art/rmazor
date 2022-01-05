@@ -96,14 +96,16 @@ namespace Games.RazorMaze.Views.Characters
             }
         }
         
-        public void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
+        public void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
         {
             m_FromPos = CoordinateConverter.ToLocalCharacterPosition(_Args.From);
             m_MoveDirection = _Args.Direction;
         }
 
-        public void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
+        public void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
         {
+            if (_Args.BlockOnFinish != null && _Args.BlockOnFinish.Type == EMazeItemType.Springboard)
+                return;
             m_MoveDirection = null;
         }
 

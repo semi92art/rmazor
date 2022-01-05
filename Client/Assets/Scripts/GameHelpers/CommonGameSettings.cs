@@ -15,7 +15,6 @@ namespace GameHelpers
     public class CommonGameSettings : ScriptableObject
     {
         [SerializeField] private EAdsProvider adsProvider;
-        [SerializeField] private bool         adsTestMode;
         [SerializeField] private float        adsLoadDelay;
         [SerializeField] private bool         srDebuggerOn;
         
@@ -23,12 +22,6 @@ namespace GameHelpers
         {
             get => adsProvider;
             set => adsProvider = value;
-        }
-        
-        public bool AdsTestMode
-        {
-            get => adsTestMode;
-            set => adsTestMode = value;
         }
 
         public float AdsLoadDelay

@@ -14,7 +14,6 @@ using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItems;
 using Shapes;
-using Ticker;
 using UnityEngine;
 using Utils;
 using Random = UnityEngine.Random;
@@ -46,12 +45,9 @@ namespace Games.RazorMaze.Views.Characters
         
         private GameObject         m_Head;
         private Animator           m_Animator;
-        private EMazeMoveDirection m_PrevVertDir = EMazeMoveDirection.Up;
         private EMazeMoveDirection m_PrevHorDir  = EMazeMoveDirection.Right;
         private bool               m_Activated;
         private bool               m_Initialized;
-        private bool               m_NeedToInvokeOnReadyToContinue;
-        private MazeOrientation    m_OrientationCache = MazeOrientation.North;
         private bool               m_ShowCharacterHeadAndTail;
 
         #endregion
@@ -60,14 +56,12 @@ namespace Games.RazorMaze.Views.Characters
         
         private IViewCharacterTail          Tail              { get; }
         private IViewCharacterEffector      Effector          { get; }
-        private IViewGameTicker             GameTicker        { get; }
         private IViewAppearTransitioner     Transitioner      { get; }
         private IManagersGetter             Managers          { get; }
         private IMazeShaker                 MazeShaker        { get; }
         private IColorProvider              ColorProvider     { get; }
         private IViewInputCommandsProceeder CommandsProceeder { get; }
         private IPrefabSetManager           PrefabSetManager  { get; }
-        private ViewSettings                ViewSettings      { get; }
 
         public ViewCharacter(
             IMazeCoordinateConverter _CoordinateConverter, 
@@ -76,14 +70,12 @@ namespace Games.RazorMaze.Views.Characters
             IViewMazeCommon _ViewMazeCommon,
             IViewCharacterTail _Tail,
             IViewCharacterEffector _Effector,
-            IViewGameTicker _GameTicker,
             IViewAppearTransitioner _Transitioner,
             IManagersGetter _Managers,
             IMazeShaker _MazeShaker,
             IColorProvider _ColorProvider,
             IViewInputCommandsProceeder _CommandsProceeder,
-            IPrefabSetManager _PrefabSetManager,
-            ViewSettings _ViewSettings) 
+            IPrefabSetManager _PrefabSetManager) 
             : base(
                 _CoordinateConverter, 
                 _Model, 
@@ -92,9 +84,7 @@ namespace Games.RazorMaze.Views.Characters
         {
             Tail = _Tail;
             Effector = _Effector;
-            GameTicker = _GameTicker;
             Transitioner = _Transitioner;
-            ViewSettings = _ViewSettings;
             Managers = _Managers;
             MazeShaker = _MazeShaker;
             ColorProvider = _ColorProvider;
@@ -161,7 +151,7 @@ namespace Games.RazorMaze.Views.Characters
             Effector.OnAllPathProceed(_LastPath);
         }
 
-        public override void OnCharacterMoveStarted(CharacterMovingEventArgs _Args)
+        public override void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
         {
             if (!m_EnableMoving)
                 return;
@@ -171,21 +161,21 @@ namespace Games.RazorMaze.Views.Characters
             Effector.OnCharacterMoveStarted(_Args);
         }
 
-        public override void OnCharacterMoveContinued(CharacterMovingEventArgs _Args)
+        public override void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args)
         {
             if (!m_EnableMoving)
                 return;
             if (!m_ShowCharacterHeadAndTail)
                 return;
-            var prevPos = CoordinateConverter.ToLocalCharacterPosition(_Args.From);
-            var nextPos = CoordinateConverter.ToLocalCharacterPosition(_Args.To);
-            var pos = Vector2.Lerp(prevPos, nextPos, _Args.Progress);
+            var pos = CoordinateConverter.ToLocalCharacterPosition(_Args.PrecisePosition);
             SetPosition(pos);
             Tail.ShowTail(_Args);
         }
 
-        public override void OnCharacterMoveFinished(CharacterMovingEventArgs _Args)
+        public override void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
         {
+            if (_Args.BlockOnFinish != null && _Args.BlockOnFinish.Type == EMazeItemType.Springboard)
+                return;
             if (!m_EnableMoving)
                 return;
             m_Animator.SetTrigger(AnimKeyBump);
@@ -214,7 +204,6 @@ namespace Games.RazorMaze.Views.Characters
                     SetDefaultCharacterState(true);
                     break;
                 case ELevelStage.CharacterKilled:
-                    m_OrientationCache = Model.Data.Orientation;
                     m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = false;
                     Tail.HideTail();
                     Managers.AudioManager.PlayClip(new AudioClipArgs("character_death", EAudioClipType.GameSound));
@@ -301,7 +290,6 @@ namespace Games.RazorMaze.Views.Characters
             {
                 case EMazeMoveDirection.Up:
                 case EMazeMoveDirection.Down:
-                    m_PrevVertDir = _Direction;
                     break;
                 case EMazeMoveDirection.Right:
                 case EMazeMoveDirection.Left:

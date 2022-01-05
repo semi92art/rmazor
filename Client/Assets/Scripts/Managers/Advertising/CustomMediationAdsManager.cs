@@ -122,11 +122,16 @@ namespace Managers.Advertising
 
         private void InitProviders()
         {
+            bool testMode = true;
+#if !UNITY_EDITOR && !DEVELOPMENT_BUILD
+            testMode = false;
+#endif
+            
             var adsConfig = ResLoader.FromResources(@"configs\ads");
             var adsProvider = GameSettings.AdsProvider;
             if (adsProvider.HasFlag(EAdsProvider.GoogleAds))
             {
-                var man = new GoogleAdMobAdsProvider(GameSettings, ShopManager, GameSettings.AdsTestMode);
+                var man = new GoogleAdMobAdsProvider(GameSettings, ShopManager, testMode);
                 man.Init(adsConfig);
                 m_Providers.Add(man);
             }
@@ -134,7 +139,7 @@ namespace Managers.Advertising
             {
                 var intAd = new UnityAdsInterstitialAd(GameSettings, Ticker);
                 var rewAd = new UnityAdsRewardedAd(GameSettings, Ticker);
-                var man = new UnityAdsProvider(intAd, rewAd, ShopManager, GameSettings.AdsTestMode);
+                var man = new UnityAdsProvider(intAd, rewAd, ShopManager, testMode);
                 man.Init(adsConfig);
                 m_Providers.Add(man);
             }
