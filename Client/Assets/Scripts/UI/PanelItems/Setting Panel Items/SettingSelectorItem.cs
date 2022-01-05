@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Views.Common;
 using Ticker;
@@ -8,7 +10,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using Utils;
-using DI.Extensions;
 
 namespace UI.PanelItems.Setting_Panel_Items
 {
@@ -54,7 +55,7 @@ namespace UI.PanelItems.Setting_Panel_Items
 
         public override void Init(IManagersGetter _Managers, IUITicker _UITicker, IColorProvider _ColorProvider)
         {
-            throw new System.NotSupportedException();
+            throw new NotSupportedException();
         }
 
         public void SetItems(IEnumerable<SettingSelectorItem> _Items)

@@ -5,7 +5,6 @@ using Games.RazorMaze.Models.ItemProceeders;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views;
 using UnityEngine.Events;
-using Utils;
 
 namespace Games.RazorMaze.Models
 {

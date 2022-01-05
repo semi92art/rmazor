@@ -10,8 +10,8 @@ using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItemGroups;
 using Games.RazorMaze.Views.Rotation;
 using Games.RazorMaze.Views.UI;
-using Managers;
 using UnityEngine.Events;
+
 namespace Games.RazorMaze.Views
 {
     public interface IViewGame :

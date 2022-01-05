@@ -11,7 +11,6 @@ using UI.PanelItems.Setting_Panel_Items;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
 namespace UI.Panels
 {

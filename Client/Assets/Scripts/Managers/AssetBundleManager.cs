@@ -191,7 +191,7 @@ namespace Managers
 
         public T GetAsset<T>(string _AssetName, string _PrefabSetName, out bool _Success) where T : Object
         {
-            throw new System.NotSupportedException();
+            throw new NotSupportedException();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Entities;
 
 namespace DI.Extensions
@@ -17,14 +18,14 @@ namespace DI.Extensions
         
         public static string ToRoman(int _Number)
         {
-            if (_Number < 0 || _Number >= 40) throw new System.ArgumentOutOfRangeException();
+            if (_Number < 0 || _Number >= 40) throw new ArgumentOutOfRangeException();
             if (_Number < 1) return string.Empty;
             if (_Number >= 10) return "X" + ToRoman(_Number - 10);
             if (_Number >= 9) return "IX" + ToRoman(_Number - 9);
             if (_Number >= 5) return "V" + ToRoman(_Number - 5);
             if (_Number >= 4) return "IV" + ToRoman(_Number - 4);
             if (_Number >= 1) return "I" + ToRoman(_Number - 1);
-            throw new System.ArgumentOutOfRangeException();
+            throw new ArgumentOutOfRangeException();
         }
     }
 }

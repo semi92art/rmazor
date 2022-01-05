@@ -4,7 +4,6 @@ using Constants;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
-using Utils;
 
 public class EditorBuilder : EditorWindow
 {

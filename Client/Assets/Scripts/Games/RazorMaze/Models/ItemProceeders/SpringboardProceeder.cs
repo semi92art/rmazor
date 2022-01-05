@@ -2,7 +2,6 @@
 using Entities;
 using Games.RazorMaze.Models.ProceedInfos;
 using Ticker;
-using Utils;
 
 namespace Games.RazorMaze.Models.ItemProceeders
 {

@@ -2,7 +2,6 @@
 using System.Linq;
 using Malee.List;
 using UnityEngine;
-using Utils;
 
 [DisallowMultipleComponent]
 public class PrefabContent : MonoBehaviour

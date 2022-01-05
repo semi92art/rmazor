@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
 using Entities;
+using Google.Play.Review;
+using MTAssets.NativeAndroidToolkit;
+using MTAssets.NativeAndroidToolkit.Events;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Purchasing;
@@ -261,7 +265,7 @@ namespace Managers.IAP
         
 #if UNITY_ANDROID
 
-        private System.Collections.IEnumerator RateGameAndroid(bool _JustSuggest)
+        private IEnumerator RateGameAndroid(bool _JustSuggest)
         {
             if (_JustSuggest)
             {
@@ -271,16 +275,16 @@ namespace Managers.IAP
                 string ok = LocalizationManager.GetTranslation("rate_yes");
                 string notNow = LocalizationManager.GetTranslation("rate_not_now");
                 string never = LocalizationManager.GetTranslation("rate_never");
-                MTAssets.NativeAndroidToolkit.NativeAndroid.Dialogs.ShowNeutralDialog(title, text, ok, notNow, never);
-                MTAssets.NativeAndroidToolkit.Events.DialogsEvents.onNeutralYes = () =>
+                NativeAndroid.Dialogs.ShowNeutralDialog(title, text, ok, notNow, never);
+                DialogsEvents.onNeutralYes = () =>
                 {
                     Coroutines.Run(RateGameAndroid(false));
                 };
-                MTAssets.NativeAndroidToolkit.Events.DialogsEvents.onNeutralNo = () =>
+                DialogsEvents.onNeutralNo = () =>
                 {
 
                 };
-                MTAssets.NativeAndroidToolkit.Events.DialogsEvents.onNeutralNeutral = () =>
+                DialogsEvents.onNeutralNeutral = () =>
                 {
                     SaveUtils.PutValue(SaveKeys.GameWasRated, true);
                 };
@@ -292,7 +296,7 @@ namespace Managers.IAP
                 Application.OpenURL("market://details?id=" + Application.productName);
             }
 
-            var reviewManager = new Google.Play.Review.ReviewManager();
+            var reviewManager = new ReviewManager();
             var requestFlowOperation = reviewManager.RequestReviewFlow();
             yield return requestFlowOperation;
             if (!requestFlowOperation.IsSuccessful)
@@ -301,7 +305,7 @@ namespace Managers.IAP
                 OpenAppPageInStoreDirectly();
                 yield break;
             }
-            if (requestFlowOperation.Error != Google.Play.Review.ReviewErrorCode.NoError)
+            if (requestFlowOperation.Error != ReviewErrorCode.NoError)
             {
                 Dbg.LogWarning($"Failed to load rate game panel: {requestFlowOperation.Error}");
                 OpenAppPageInStoreDirectly();
@@ -316,7 +320,7 @@ namespace Managers.IAP
                 yield break;
             }
             yield return launchFlowOperation;
-            if (launchFlowOperation.Error != Google.Play.Review.ReviewErrorCode.NoError)
+            if (launchFlowOperation.Error != ReviewErrorCode.NoError)
             {
                 Dbg.LogWarning($"Failed to launch rate game panel: {launchFlowOperation.Error}");
                 OpenAppPageInStoreDirectly();

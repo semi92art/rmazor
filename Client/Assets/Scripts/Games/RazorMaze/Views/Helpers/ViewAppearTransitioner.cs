@@ -11,6 +11,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using Utils;
+using Random = UnityEngine.Random;
 
 namespace Games.RazorMaze.Views.Helpers
 {
@@ -154,7 +155,7 @@ namespace Games.RazorMaze.Views.Helpers
                         return 0f;
                     return (_Appear ? _Position.Value.Y : mazeSize.Y -_Position.Value.Y) * coeff;
                 case EAppearTransitionType.Random:
-                    return UnityEngine.Random.value * 10f * coeff;
+                    return Random.value * 10f * coeff;
                 case EAppearTransitionType.WithoutDelay:
                     return 0;
                 default:

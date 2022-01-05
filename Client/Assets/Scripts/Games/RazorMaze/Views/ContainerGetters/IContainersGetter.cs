@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Games.RazorMaze.Views.ContainerGetters
+﻿namespace Games.RazorMaze.Views.ContainerGetters
 {
 
 }

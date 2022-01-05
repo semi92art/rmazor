@@ -1,4 +1,5 @@
-﻿using DI.Extensions;
+﻿using System;
+using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Views.Common;
 using Ticker;
@@ -65,7 +66,7 @@ namespace UI.PanelItems.Shop_Items
             IUITicker _UITicker, 
             IColorProvider _ColorProvider)
         {
-            throw new System.NotSupportedException();
+            throw new NotSupportedException();
         }
 
         protected override void CheckIfSerializedItemsNotNull()

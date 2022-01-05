@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Utils;
 
 public class HelloWorld : MonoBehaviour
 {

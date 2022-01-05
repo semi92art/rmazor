@@ -1,4 +1,6 @@
 ﻿// using AudienceNetwork;
+
+using System;
 using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Views.ContainerGetters;
@@ -37,12 +39,12 @@ namespace Managers.Advertising
         public override    bool InterstitialAdReady { get; }
         public override    void ShowRewardedAd(UnityAction _OnShown, BoolEntity _ShowAds)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public override    void ShowInterstitialAd(UnityAction _OnShown, BoolEntity _ShowAds)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         protected override void InitConfigs(UnityAction _OnSuccess)

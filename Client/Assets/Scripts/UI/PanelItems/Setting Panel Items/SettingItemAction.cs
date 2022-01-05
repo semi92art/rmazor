@@ -1,4 +1,5 @@
-﻿using Entities;
+﻿using System;
+using Entities;
 using Games.RazorMaze.Views.Common;
 using StansAssets.Foundation.Extensions;
 using Ticker;
@@ -30,7 +31,7 @@ namespace UI.PanelItems.Setting_Panel_Items
 
         public override void Init(IManagersGetter _Managers, IUITicker _UITicker, IColorProvider _ColorProvider)
         {
-            throw new System.NotSupportedException();
+            throw new NotSupportedException();
         }
 
         protected override void CheckIfSerializedItemsNotNull()

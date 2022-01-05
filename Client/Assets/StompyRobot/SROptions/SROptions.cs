@@ -10,9 +10,9 @@ public delegate void SROptionsPropertyChanged(object sender, string propertyName
 #endif
 public partial class SROptions : INotifyPropertyChanged
 {
-    private static SROptions _current;
+    private static Games.RazorMaze.SROptions _current;
 
-    public static SROptions Current
+    public static Games.RazorMaze.SROptions Current
     {
         get { return _current; }
     }
@@ -21,7 +21,7 @@ public partial class SROptions : INotifyPropertyChanged
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     public static void OnStartup()
     {
-        _current = new SROptions(); // Need to reset options here so if we enter play-mode without a domain reload there will be the default set of options.
+        _current = new Games.RazorMaze.SROptions(); // Need to reset options here so if we enter play-mode without a domain reload there will be the default set of options.
         SRServiceManager.GetService<SRDebugger.Internal.InternalOptionsRegistry>().AddOptionContainer(Current);
     }
 #endif

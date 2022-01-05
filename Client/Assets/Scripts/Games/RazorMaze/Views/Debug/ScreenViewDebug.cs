@@ -2,7 +2,6 @@
 using DI.Extensions;
 using Entities;
 using GameHelpers;
-using Games.RazorMaze.Views.Debug;
 using Managers;
 using UnityEditor;
 using UnityEngine;
@@ -17,7 +16,7 @@ namespace Games.RazorMaze.Views.Debug
             _instance.IsNotNull() ? _instance : _instance = FindObjectOfType<ScreenViewDebug>(); 
         
         private                  MazeCoordinateConverter m_Converter;
-        [SerializeField] private Vector2                   mazeSize;
+        [SerializeField] private Vector2                 mazeSize;
         
         public V2Int MazeSize
         {
@@ -61,25 +60,25 @@ namespace Games.RazorMaze.Views.Debug
             Gizmos.DrawLine(new Vector2(scrBds.min.x, offsets.w), new Vector2(scrBds.max.x, offsets.w));
         }
     }
-}
 
-[CustomEditor(typeof(ScreenViewDebug))]
-public class ScreenViewDebugEditor : Editor
-{
-    private ScreenViewDebug t;
-    private V2Int           size;
-
-    private void OnEnable()
+    [CustomEditor(typeof(ScreenViewDebug))]
+    public class ScreenViewDebugEditor : Editor
     {
-        t = target as ScreenViewDebug;
-    }
+        private ScreenViewDebug t;
+        private V2Int           size;
 
-    public override void OnInspectorGUI()
-    {
-        base.OnInspectorGUI();
-        if (GUILayout.Button("Set size"))
-            t.SetMazeSize();
+        private void OnEnable()
+        {
+            t = target as ScreenViewDebug;
+        }
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+            if (GUILayout.Button("Set size"))
+                t.SetMazeSize();
+        }
     }
-}
 
 #endif
+}

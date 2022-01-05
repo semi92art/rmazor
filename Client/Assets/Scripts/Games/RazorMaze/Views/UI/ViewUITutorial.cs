@@ -8,7 +8,6 @@ using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Factories;
 using Games.RazorMaze.Views.InputConfigurators;
-using Shapes;
 using Ticker;
 using TMPro;
 using UnityEngine;

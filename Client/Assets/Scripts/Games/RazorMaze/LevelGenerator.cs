@@ -4,7 +4,6 @@ using System.Linq;
 using Entities;
 using Games.RazorMaze.Models;
 using UnityEngine;
-using Utils;
 using Random = UnityEngine.Random;
 
 namespace Games.RazorMaze

@@ -1,7 +1,6 @@
 ﻿using Controllers;
 using DialogViewers;
 using Entities;
-using GameHelpers;
 using Games.RazorMaze;
 using Games.RazorMaze.Controllers;
 using Games.RazorMaze.Models;
@@ -20,7 +19,7 @@ using Games.RazorMaze.Views.MazeItems;
 using Games.RazorMaze.Views.MazeItems.Additional;
 using Games.RazorMaze.Views.Rotation;
 using Games.RazorMaze.Views.UI;
-using Managers;
+using Managers.Audio;
 using UI.Panels;
 using UI.Panels.ShopPanels;
 using UnityEngine;

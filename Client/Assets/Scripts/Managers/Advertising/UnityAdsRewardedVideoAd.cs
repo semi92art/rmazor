@@ -1,7 +1,6 @@
 ﻿using GameHelpers;
 using Ticker;
 using UnityEngine.Advertisements;
-using Utils;
 
 namespace Managers.Advertising
 {

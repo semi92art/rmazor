@@ -3,7 +3,6 @@ using Network.Packets;
 using UnityEngine;
 using UnityEngine.Events;
 using Utils;
-
 #if UNITY_ANDROID
 using GooglePlayGames;
 using GooglePlayGames.BasicApi;

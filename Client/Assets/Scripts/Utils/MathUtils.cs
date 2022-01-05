@@ -2,13 +2,14 @@
 using System.Linq;
 using DI.Extensions;
 using UnityEngine;
+using Random = System.Random;
 
 namespace Utils
 {
     public static class MathUtils
     {
         public const           float         Epsilon   = 1e-5f;
-        public static readonly System.Random RandomGen = new System.Random();
+        public static readonly Random RandomGen = new Random();
         
         public static int Lerp(int _A, int _B, float _T)
         {
@@ -75,7 +76,7 @@ namespace Utils
         /// </summary>
         /// <param name="_Random">Random generator</param>
         /// <returns>Random value in range of 0.0 and 1.0</returns>
-        public static float NextFloat(this System.Random _Random)
+        public static float NextFloat(this Random _Random)
         {
             return (float) _Random.NextDouble();
         }
@@ -85,7 +86,7 @@ namespace Utils
         /// </summary>
         /// <param name="_Random">Random generator</param>
         /// <returns>Random value in range of -1.0 and 1.0</returns>
-        public static float NextFloatAlt(this System.Random _Random)
+        public static float NextFloatAlt(this Random _Random)
         {
             return 2f * ((float) _Random.NextDouble() - 0.5f);
         }

@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Controllers;
 using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Models;
@@ -14,6 +13,7 @@ using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItems.Additional;
 using Games.RazorMaze.Views.MazeItems.Props;
 using Games.RazorMaze.Views.Utils;
+using Managers.Audio;
 using Shapes;
 using Ticker;
 using UnityEngine;

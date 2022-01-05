@@ -2,7 +2,6 @@
 using System.Linq;
 using Entities;
 using Games.RazorMaze.Models;
-using Utils;
 
 namespace Games.RazorMaze.Editor
 {

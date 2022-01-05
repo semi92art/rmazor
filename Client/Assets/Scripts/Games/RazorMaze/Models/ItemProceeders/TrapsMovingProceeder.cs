@@ -1,10 +1,8 @@
 ﻿using System.Collections;
-using System.Linq;
 using Entities;
 using Exceptions;
 using Games.RazorMaze.Models.ProceedInfos;
 using Ticker;
-using UnityEngine;
 using UnityEngine.Events;
 using Utils;
 

@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Linq;
 using DI.Extensions;
 using Entities;
 using Exceptions;
@@ -13,7 +12,7 @@ using UnityEngine.Audio;
 using UnityEngine.Events;
 using Utils;
 
-namespace Controllers
+namespace Managers.Audio
 {
     public enum EAudioClipType
     {

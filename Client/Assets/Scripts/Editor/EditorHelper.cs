@@ -45,7 +45,7 @@ public class EditorHelper : EditorWindow
     [MenuItem("Tools/Profiler",false, 3)]
     public static void ShowProfilerWindow()
     {
-        var tProfiler = typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.ProfilerWindow");
+        var tProfiler = typeof(Editor).Assembly.GetType("UnityEditor.ProfilerWindow");
         GetWindow(tProfiler, false);
     }
     

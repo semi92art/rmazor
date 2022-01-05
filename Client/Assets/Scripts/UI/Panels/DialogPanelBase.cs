@@ -1,9 +1,7 @@
-﻿using DI.Extensions;
-using DialogViewers;
+﻿using DialogViewers;
 using Entities;
 using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.MazeItems;
-using LeTai.Asset.TranslucentImage;
 using Ticker;
 using UnityEngine;
 

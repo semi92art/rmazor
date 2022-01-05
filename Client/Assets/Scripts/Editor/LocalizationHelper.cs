@@ -40,7 +40,7 @@ public class LocalizationHelper : EditorWindow
 
     private void OnEnable()
     {
-        Dbg.Log("OnEnable LocHelp");
+        Dbg.Log(nameof(OnEnable) + nameof(LocalizationHelper));
         LoadResources();
     }
 

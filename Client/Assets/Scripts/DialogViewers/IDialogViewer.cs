@@ -1,4 +1,4 @@
-﻿using Games.RazorMaze.Views.MazeItems;
+﻿using System;
 using UI.Panels;
 using UnityEngine;
 
@@ -8,7 +8,7 @@ namespace DialogViewers
     {
         IDialogPanel      CurrentPanel                { get; }
         RectTransform     Container                   { get; }
-        System.Func<bool> IsOtherDialogViewersShowing { get; set; }
+        Func<bool> IsOtherDialogViewersShowing { get; set; }
         void              Init(RectTransform _Parent);
     }
 }

@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Audio;
 
-namespace Controllers
+namespace Managers.Audio
 {
     public class AudioClipInfo : AudioClipArgs
     {

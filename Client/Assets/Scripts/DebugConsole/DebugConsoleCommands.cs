@@ -6,7 +6,6 @@ using Entities;
 using Games.RazorMaze;
 using Games.RazorMaze.Models;
 using Lean.Localization;
-using Managers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;

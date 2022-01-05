@@ -3,9 +3,12 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using DI.Extensions;
-using SA.iOS.UIKit;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
+using Object = UnityEngine.Object;
+using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
+using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 
 namespace Utils
 {
@@ -32,7 +35,7 @@ namespace Utils
             if (go == null || go.transform.parent != null)
                 go = new GameObject(_Name);
             _Instance = go.GetOrAddComponent<T>();
-            UnityEngine.Object.DontDestroyOnLoad(go);
+            Object.DontDestroyOnLoad(go);
             return _Instance;
         }
 
@@ -139,12 +142,12 @@ namespace Utils
             out bool _Ended)
         {
 #if ENABLE_INPUT_SYSTEM
-            var touch = UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches[_Index];
+            var touch = Touch.activeTouches[_Index];
             _ID       = touch.finger.index;
             _Position = touch.screenPosition;
             _Pressure = touch.pressure;
-            _Began    = touch.phase == UnityEngine.InputSystem.TouchPhase.Began;
-            _Ended    = touch.phase == UnityEngine.InputSystem.TouchPhase.Canceled;
+            _Began    = touch.phase == TouchPhase.Began;
+            _Ended    = touch.phase == TouchPhase.Canceled;
 #else
 			var touch = Input.GetTouch(_Index);
 			_ID       = touch.fingerId;
@@ -158,7 +161,7 @@ namespace Utils
         public static void ShowAlertDialog(string _Title, string _Text)
         {
 #if UNITY_EDITOR
-            UnityEditor.EditorUtility.DisplayDialog(_Title, _Text, "OK");
+            EditorUtility.DisplayDialog(_Title, _Text, "OK");
 #elif UNITY_ANDROID
             MTAssets.NativeAndroidToolkit.NativeAndroid.Dialogs
                 .ShowSimpleAlertDialog(_Title, _Text);

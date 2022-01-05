@@ -4,6 +4,8 @@ using Constants;
 using DI.Extensions;
 using Entities;
 using GameHelpers;
+using GooglePlayGames;
+using GooglePlayGames.BasicApi;
 using Network;
 using UnityEngine;
 using UnityEngine.Events;
@@ -226,7 +228,7 @@ namespace Managers
 
         private static void AuthenticateAndroid(UnityAction _OnFinish)
         {
-            GooglePlayGames.PlayGamesPlatform.Instance.Authenticate((_Success, _Messsage) =>
+            PlayGamesPlatform.Instance.Authenticate((_Success, _Messsage) =>
             {
                 _OnFinish?.Invoke();
                 if (_Success)
@@ -241,17 +243,17 @@ namespace Managers
         private ScoresEntity GetScoreAndroid(ushort _Id)
         {
             var scoreEntity = new ScoresEntity{Result = EEntityResult.Pending};
-            GooglePlayGames.PlayGamesPlatform.Instance.LoadScores(
+            PlayGamesPlatform.Instance.LoadScores(
                 GetScoreKey(_Id),
-                GooglePlayGames.BasicApi.LeaderboardStart.PlayerCentered,
+                LeaderboardStart.PlayerCentered,
                 1,
-                GooglePlayGames.BasicApi.LeaderboardCollection.Public,
-                GooglePlayGames.BasicApi.LeaderboardTimeSpan.AllTime,
+                LeaderboardCollection.Public,
+                LeaderboardTimeSpan.AllTime,
                 _Data =>
                 {
                     if (_Data.Valid)
                     {
-                        if (_Data.Status == GooglePlayGames.BasicApi.ResponseStatus.Success)
+                        if (_Data.Status == ResponseStatus.Success)
                         {
                             if (_Data.PlayerScore != null)
                             {
@@ -287,7 +289,7 @@ namespace Managers
                 Dbg.LogWarning($"{nameof(SetScoreAndroid)}: User is not authenticated to GooglePlayGames.");
                 return;
             }
-            GooglePlayGames.PlayGamesPlatform.Instance.ReportScore(
+            PlayGamesPlatform.Instance.ReportScore(
                 _Value,
                 GetScoreKey(_Id),
                 _Success =>
@@ -299,7 +301,7 @@ namespace Managers
         
         private static void ShowLeaderboardAndroid()
         {
-            GooglePlayGames.PlayGamesPlatform.Instance.ShowLeaderboardUI(GPGSIds.coins);
+            PlayGamesPlatform.Instance.ShowLeaderboardUI(GPGSIds.coins);
         }
 
 #elif UNITY_IPHONE || UNITY_IOS

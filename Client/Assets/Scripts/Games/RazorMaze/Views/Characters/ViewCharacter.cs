@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Constants;
-using Controllers;
 using DI.Extensions;
 using Entities;
 using Exceptions;
@@ -13,11 +12,13 @@ using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItems;
+using Games.RazorMaze.Views.Utils;
+using Managers;
+using Managers.Audio;
 using Shapes;
 using UnityEngine;
 using Utils;
 using Random = UnityEngine.Random;
-using SortingOrders = Games.RazorMaze.Views.Utils.SortingOrders;
 
 namespace Games.RazorMaze.Views.Characters
 {

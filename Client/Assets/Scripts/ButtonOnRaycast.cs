@@ -1,5 +1,6 @@
-﻿using Controllers;
+﻿using System;
 using Games.RazorMaze.Views.InputConfigurators;
+using Managers;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -18,7 +19,7 @@ public class ButtonOnRaycast : MonoBehaviour
     private bool         m_EnteredOnThisTouchSession;
     private bool         m_ExitedOnThisTimeSession;
 
-    private System.Func<ELevelStage> m_LevelStage;
+    private Func<ELevelStage> m_LevelStage;
     private ICameraProvider          m_CameraProvider;
     private IHapticsManager          m_HapticsManager;
     private IViewInputTouchProceeder m_ViewInputTouchProceeder;
@@ -26,7 +27,7 @@ public class ButtonOnRaycast : MonoBehaviour
     
     public void Init(
         UnityAction _Action,
-        System.Func<ELevelStage> _LevelStage, 
+        Func<ELevelStage> _LevelStage, 
         ICameraProvider _CameraProvider,
         IHapticsManager _HapticsManager,
         IViewInputTouchProceeder _ViewInputTouchProceeder)

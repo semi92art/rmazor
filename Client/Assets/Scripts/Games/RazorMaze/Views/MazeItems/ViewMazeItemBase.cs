@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using DI.Extensions;
 using Entities;
 using Exceptions;
-using GameHelpers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.Common;

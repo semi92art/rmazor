@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Controllers;
 using DI.Extensions;
 using Entities;
 using Exceptions;
@@ -11,6 +10,7 @@ using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.InputConfigurators;
+using Managers.Audio;
 using Shapes;
 using Ticker;
 using UnityEngine;

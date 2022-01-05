@@ -12,7 +12,6 @@ using UI.Factories;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using Utils;
 
 namespace DebugConsole
 {

@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using Entities;
 using Games.RazorMaze.Views.InputConfigurators;
-using Utils;
 
 namespace DebugConsole
 {

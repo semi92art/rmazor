@@ -3,7 +3,7 @@ using Lofelt.NiceVibrations;
 using Settings;
 using UnityEngine.Events;
 
-namespace Controllers
+namespace Managers
 {
 
     public enum EHapticsPresetType

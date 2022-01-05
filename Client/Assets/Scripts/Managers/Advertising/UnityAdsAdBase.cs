@@ -2,7 +2,6 @@
 using Ticker;
 using UnityEngine.Advertisements;
 using UnityEngine.Events;
-using Utils;
 
 namespace Managers.Advertising
 {

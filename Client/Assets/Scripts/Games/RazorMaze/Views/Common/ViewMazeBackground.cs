@@ -7,6 +7,7 @@ using Exceptions;
 using GameHelpers;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
+using Games.RazorMaze.Views.Utils;
 using Shapes;
 using SpawnPools;
 using Ticker;
@@ -15,7 +16,6 @@ using UnityEngine.Events;
 using Utils;
 using Object = UnityEngine.Object;
 using Random = System.Random;
-using SortingOrders = Games.RazorMaze.Views.Utils.SortingOrders;
 
 namespace Games.RazorMaze.Views.Common
 {

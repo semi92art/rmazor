@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Controllers;
 using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ItemProceeders;
@@ -7,6 +6,7 @@ using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeItems;
 using Games.RazorMaze.Views.Utils;
+using Managers;
 using Utils;
 
 namespace Games.RazorMaze.Views.MazeItemGroups

@@ -1,4 +1,5 @@
-﻿using Entities;
+﻿using DebugConsole;
+using Entities;
 using Games.RazorMaze.Views.InputConfigurators;
 using Settings;
 using UnityEngine.Events;
@@ -7,7 +8,7 @@ public interface IDebugManager : IInit
 {
     void EnableDebug(bool _Enable);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-    DebugConsole.IDebugConsoleController Console { get; }
+    IDebugConsoleController Console { get; }
 #endif
 }
 
@@ -16,7 +17,7 @@ public class DebugManager : IDebugManager
     #region nonpublic members
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-    public DebugConsole.IDebugConsoleController Console => DebugConsole.DebugConsoleView.Instance.Controller;
+    public IDebugConsoleController Console => DebugConsoleView.Instance.Controller;
 #endif
 
     #endregion
@@ -55,7 +56,7 @@ public class DebugManager : IDebugManager
     public void EnableDebug(bool _Enable)
     {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        DebugConsole.DebugConsoleView.Instance.enabled = _Enable;
+        DebugConsoleView.Instance.enabled = _Enable;
 #endif
     }
     
@@ -66,7 +67,7 @@ public class DebugManager : IDebugManager
     private void InitDebugConsole()
     {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        DebugConsole.DebugConsoleView.Instance.Init(CommandsProceeder, Managers);
+        DebugConsoleView.Instance.Init(CommandsProceeder, Managers);
 #endif
     }
 

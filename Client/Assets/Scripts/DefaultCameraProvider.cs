@@ -1,8 +1,6 @@
 ﻿using GameHelpers;
 using LeTai.Asset.TranslucentImage;
-using StansAssets.Foundation.Extensions;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Zenject;
 
 public interface ICameraProvider

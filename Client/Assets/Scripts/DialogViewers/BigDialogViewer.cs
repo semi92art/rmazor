@@ -18,7 +18,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using Utils;
-using Object = UnityEngine.Object;
 
 namespace DialogViewers
 {

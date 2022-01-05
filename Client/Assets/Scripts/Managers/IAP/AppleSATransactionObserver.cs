@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using SA.Foundation.Templates;
 using SA.iOS.StoreKit;
 using UnityEngine.Events;
-using Utils;
 
 namespace Managers.IAP
 {

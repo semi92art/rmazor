@@ -8,12 +8,11 @@ using Games.RazorMaze.Controllers;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.MazeItems;
-using Managers;
+using Mono_Installers;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;
-using Mono_Installers;
-using UnityEditor;
 
 namespace Games.RazorMaze
 {

@@ -4,7 +4,6 @@ using Entities;
 using GameHelpers;
 using UnityEngine;
 using UnityEngine.Events;
-using Utils;
 using Zenject;
 
 namespace Games.RazorMaze.Views.Common

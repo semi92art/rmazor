@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections;
-using System.Linq;
-using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Models.ProceedInfos;
 using Ticker;
-using UnityEngine;
 using Utils;
 
 namespace Games.RazorMaze.Models.ItemProceeders

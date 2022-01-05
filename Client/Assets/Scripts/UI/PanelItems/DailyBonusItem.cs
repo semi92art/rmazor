@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using Constants;
-using DI.Extensions;
 using Entities;
 using Lean.Localization;
-using Managers;
 using TMPro;
-using UI.Panels;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;

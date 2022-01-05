@@ -1,4 +1,4 @@
-﻿namespace Controllers
+﻿namespace Managers.Audio
 {
     public class AudioClipArgs
     {
