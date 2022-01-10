@@ -74,7 +74,9 @@ namespace DebugConsole
             OnLogChanged?.Invoke(_Args);
         }
 
-        public void Init(IViewInputCommandsProceeder _CommandsProceeder, IManagersGetter _Managers)
+        public void Init(
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IManagersGetter _Managers)
         {
             CommandsProceeder = _CommandsProceeder;
             Managers = _Managers;

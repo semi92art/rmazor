@@ -22,9 +22,10 @@ namespace Games.RazorMaze.Views.Characters
         #region nonpublic members
 
         private Triangle m_Tail;
-        private bool m_Hiding;
-        private bool m_Activated;
-        private bool m_Initialized;
+        private bool     m_Hiding;
+        private bool     m_Activated;
+        private bool     m_Initialized;
+        private bool     m_ShowTail;
         
         #endregion
         
@@ -78,8 +79,47 @@ namespace Games.RazorMaze.Views.Characters
                 m_Tail.Color = _Color;
         }
 
+        public void OnAllPathProceed(V2Int _LastPath)
+        {
+            HideTail();
+        }
+        
+        public void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            m_ShowTail = _Args.Stage == ELevelStage.StartedOrContinued;
+            switch (_Args.Stage)
+            {
+                case ELevelStage.ReadyToStart:
+                case ELevelStage.StartedOrContinued:
+                    Activated = true;
+                    HideTail();
+                    break;
+                case ELevelStage.CharacterKilled:
+                    HideTail();
+                    break;
+            }
+        }
+        
+        public void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
+        {
+            ShowTail(_Args);
+        }
+        
+        public void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args)
+        {
+            ShowTail(_Args);
+        }
+        
+        public void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
+        {
+            if (m_ShowTail)
+                HideTail(_Args);
+        }
+
         public void ShowTail(CharacterMoveEventArgsBase _Args)
         {
+            if (!m_ShowTail)
+                return;
             m_Hiding = false;
             m_Tail.enabled = true;
             var dir = (_Args.To - _Args.From).Normalized;
@@ -97,9 +137,14 @@ namespace Games.RazorMaze.Views.Characters
 
         public void HideTail(CharacterMovingFinishedEventArgs _Args = null)
         {
-            m_Tail.enabled = _Args != null;
-            if (_Args != null)                
-                Coroutines.Run(HideTailCoroutine(_Args));
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => !m_Initialized,
+                () =>
+                {
+                    m_Tail.enabled = _Args != null;
+                    if (_Args != null)                
+                        Coroutines.Run(HideTailCoroutine(_Args));
+                }));
         }
 
         #endregion
@@ -133,7 +178,7 @@ namespace Games.RazorMaze.Views.Characters
                 },
                 GameTicker,
                 (_Breaked, _Progress) => m_Tail.enabled = false,
-                () => !m_Hiding);
+                () => !m_Hiding || !m_ShowTail);
         }
 
         #endregion

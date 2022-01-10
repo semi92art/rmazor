@@ -8,7 +8,7 @@ using Managers;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Utils.Editor;
+using Utils;
 
 public class ColorsHelper : EditorWindow
 {

@@ -5,15 +5,16 @@ using Games.RazorMaze.Models;
 using Games.RazorMaze.Views.InputConfigurators;
 using Games.RazorMaze.Views.MazeItems;
 using Ticker;
+using UnityEngine;
 using Utils;
 
 namespace Games.RazorMaze.Views.UI
 {
-    public class ViewUI : ViewUIBase
+    public class ViewUI : ViewUIBase, IApplicationPause
     {
         #region inject
 
-        private IUITicker                   UITicker             { get; }
+        private IUITicker                   Ticker             { get; }
         private IBigDialogViewer            BigDialogViewer      { get; }
         private IProposalDialogViewer       ProposalDialogViewer { get; }
         private IDialogPanels               DialogPanels         { get; }
@@ -30,12 +31,12 @@ namespace Games.RazorMaze.Views.UI
             IManagersGetter             _Managers)
             : base(_GameControls)
         {
-            UITicker = _UITicker;
-            BigDialogViewer = _BigDialogViewer;
+            Ticker               = _UITicker;
+            BigDialogViewer      = _BigDialogViewer;
             ProposalDialogViewer = _ProposalDialogViewer;
-            DialogPanels = _DialogPanels;
-            CommandsProceeder = _CommandsProceeder;
-            Managers = _Managers;
+            DialogPanels         = _DialogPanels;
+            CommandsProceeder    = _CommandsProceeder;
+            Managers             = _Managers;
         }
 
         #endregion
@@ -44,7 +45,7 @@ namespace Games.RazorMaze.Views.UI
 
         public override void Init()
         {
-            UITicker.Register(this);
+            Ticker.Register(this);
             CommandsProceeder.Command += OnCommand;
             CreateCanvas();
             var parent = m_Canvas.RTransform();
@@ -81,6 +82,11 @@ namespace Games.RazorMaze.Views.UI
                     BigDialogViewer.Show(DialogPanels.ShopMoneyDialogPanel);
                     CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);
                     break;
+                case EInputCommand.RateGamePanel:
+                    DialogPanels.RateGameDialogPanel.LoadPanel();
+                    ProposalDialogViewer.Show(DialogPanels.RateGameDialogPanel, 3f);
+
+                    break;
             }
         }
 
@@ -88,6 +94,14 @@ namespace Games.RazorMaze.Views.UI
         {
             GameControls.OnLevelStageChanged(_Args);
             ShowRateGamePanel(_Args);
+        }
+        
+        public void OnApplicationPause(bool _Pause)
+        {
+            bool mustShowRateGamePanel = Random.value < 0.1f && !SaveUtils.GetValue(SaveKeys.GameWasRated);
+            if (!mustShowRateGamePanel)
+                return;
+            CommandsProceeder.RaiseCommand(EInputCommand.RateGamePanel, null);
         }
         
         #endregion
@@ -106,7 +120,7 @@ namespace Games.RazorMaze.Views.UI
                 && ratePanelShowsCount < 3;
             if (!mustShowRateGamePanel)
                 return;
-            Managers.ShopManager.RateGame();
+            CommandsProceeder.RaiseCommand(EInputCommand.RateGamePanel, null);
             SaveUtils.PutValue(SaveKeys.RatePanelShowsCount, ratePanelShowsCount + 1);
         }
 

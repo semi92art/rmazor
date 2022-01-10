@@ -20,7 +20,7 @@ MonoBehaviour:
     - item: {fileID: 8300000, guid: 0dcd568f31da68f429772a16cc5c636d, type: 3}
       name: block_sliding_down
       bundle: 0
-    - item: {fileID: 8300000, guid: 96a7318fdbedb13439f476d0f5576f04, type: 3}
+    - item: {fileID: 8300000, guid: c3733caf4e9c954499db2fac7d9fca7c, type: 3}
       name: character_death
       bundle: 0
     - item: {fileID: 8300000, guid: 5c058eb9129adda4282a972cb25452d1, type: 3}
@@ -41,7 +41,7 @@ MonoBehaviour:
     - item: {fileID: 8300000, guid: 9831bda3e00a6e048b101b83fcef75ae, type: 3}
       name: collect_point
       bundle: 0
-    - item: {fileID: 8300000, guid: e91f8be51f639d34db5bb7416ba46ffc, type: 3}
+    - item: {fileID: 8300000, guid: f66230dc8c9f9b74ba9d755cdde98d01, type: 3}
       name: level_complete
       bundle: 0
     - item: {fileID: 8300000, guid: ac2b0ad7a7351354485c822feee44e8f, type: 3}
@@ -50,7 +50,7 @@ MonoBehaviour:
     - item: {fileID: 8300000, guid: 1dca577c865adb74ea2af017eddf3daa, type: 3}
       name: mace_roll
       bundle: 0
-    - item: {fileID: 8300000, guid: ce5dda245723b3b4eaf9849dacba2a79, type: 3}
+    - item: {fileID: 8300000, guid: 091ff636bfd7e7d47909b0f9498f02e7, type: 3}
       name: main_theme
       bundle: 1
     - item: {fileID: 8300000, guid: 475d12fd67cb38646b29adbc5e55c773, type: 3}
@@ -91,4 +91,19 @@ MonoBehaviour:
       bundle: 0
     - item: {fileID: 8300000, guid: 80b66569f09c74c4bb633455893624a6, type: 3}
       name: ui_button_click
+      bundle: 0
+    - item: {fileID: 8300000, guid: fe38dc526255d784c9265952bf623e97, type: 3}
+      name: firework_1
+      bundle: 0
+    - item: {fileID: 8300000, guid: e11f375ab59d118438176b5ec943d8a8, type: 3}
+      name: firework_2
+      bundle: 0
+    - item: {fileID: 8300000, guid: d3b556c724a9f3d48b0f07d6d1ddf9aa, type: 3}
+      name: firework_3
+      bundle: 0
+    - item: {fileID: 8300000, guid: b9624e441abd53046b071d10c0790938, type: 3}
+      name: firework_4
+      bundle: 0
+    - item: {fileID: 8300000, guid: 42634862b1062c545ad8746c23502745, type: 3}
+      name: firework_5
       bundle: 0

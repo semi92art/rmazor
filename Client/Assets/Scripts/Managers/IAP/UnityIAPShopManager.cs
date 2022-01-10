@@ -4,9 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DI.Extensions;
 using Entities;
-using Google.Play.Review;
-using MTAssets.NativeAndroidToolkit;
-using MTAssets.NativeAndroidToolkit.Events;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Purchasing;
@@ -25,6 +22,7 @@ namespace Managers.IAP
     {
         public string                   Price      { get; set; }
         public string                   Currency   { get; set; }
+        public bool                     HasReceipt { get; set; }
         public Func<EShopProductResult> Result     { get; set; }
     }
     
@@ -32,17 +30,19 @@ namespace Managers.IAP
     {
         #region nonpublic members
 
-        private IStoreController   m_StoreController;
-        private IExtensionProvider m_StoreExtensionProvider;
+        protected IStoreController   m_StoreController;
+        protected IExtensionProvider m_StoreExtensionProvider;
 
-        private readonly Dictionary<int, UnityAction> m_OnPurchaseActions =
+        protected readonly Dictionary<int, UnityAction> m_OnPurchaseActions =
+            new Dictionary<int, UnityAction>();
+        protected readonly Dictionary<int, UnityAction> m_OnDeferredActions =
             new Dictionary<int, UnityAction>();
 
         #endregion
 
         #region inject
 
-        private ILocalizationManager        LocalizationManager { get; }
+        private ILocalizationManager LocalizationManager { get; }
 
         public UnityIAPShopManager(ILocalizationManager _LocalizationManager)
         {
@@ -58,11 +58,11 @@ namespace Managers.IAP
             InitializePurchasing();
         }
         
-        public void OnInitialized(IStoreController _Controller, IExtensionProvider _Extensions)
+        public virtual void OnInitialized(IStoreController _Controller, IExtensionProvider _Extensions)
         {
             m_StoreController = _Controller;
             m_StoreExtensionProvider = _Extensions;
-            Dbg.Log($"{nameof(OnInitialized)}");
+            Dbg.Log($"{nameof(UnityIAPShopManager)} {nameof(OnInitialized)}");
             base.Init();
         }
         
@@ -87,6 +87,7 @@ namespace Managers.IAP
                 return;
             }
 #endif
+            Dbg.Log(nameof(Purchase) + ": " + _Key);
             string id = GetProductId(_Key);
             BuyProductID(id);
         }
@@ -125,7 +126,7 @@ namespace Managers.IAP
 
         public override void SetDeferredAction(int _Key, UnityAction _Action)
         {
-            // do nothing
+            m_OnDeferredActions.SetSafe(_Key, _Action);
         }
 
         public override void RestorePurchases()
@@ -146,31 +147,18 @@ namespace Managers.IAP
                 Dbg.LogWarning("RestorePurchases FAIL. Not initialized.");
                 return;
             }
-            
-            if (Application.platform == RuntimePlatform.IPhonePlayer || 
-                Application.platform == RuntimePlatform.OSXPlayer)
+            foreach (var product in Products.Where(_P => _P.Type == ProductType.NonConsumable))
             {
-                // ... begin restoring purchases
-                Dbg.Log($"{nameof(UnityIAPShopManager)}: RestorePurchases started ...");
-
-                // Fetch the Apple store-specific subsystem.
-                var apple = m_StoreExtensionProvider.GetExtension<IAppleExtensions>();
-                // Begin the asynchronous process of restoring purchases. Expect a confirmation response in 
-                // the Action<bool> below, and ProcessPurchase if there are previously purchased products to restore.
-                apple.RestoreTransactions(_Result => {
-                    // The first phase of restoration. If no more responses are received on ProcessPurchase then 
-                    // no purchases are available to be restored.
-                    Dbg.Log($"{nameof(UnityIAPShopManager)}: " +
-                            $"RestorePurchases continuing: " + _Result + ". " +
-                            "If no further messages, no purchases available to restore.");
-                    if (_Result)
-                        SaveUtils.PutValue(SaveKeys.DisableAds, null);
-                });
-            }
-            else
-            {
-                Dbg.Log($"{nameof(UnityIAPShopManager)}: " +
-                        "RestorePurchases FAIL. Not supported on this platform. Current = " + Application.platform);
+                var info = GetItemInfo(product.Key);
+                Coroutines.Run(Coroutines.WaitWhile(
+                    () => info.Result() == EShopProductResult.Pending,
+                    () =>
+                    {
+                        if (info.Result() == EShopProductResult.Fail)
+                            return;
+                        if (info.HasReceipt)
+                            m_OnPurchaseActions[product.Key]?.Invoke();
+                    }));
             }
         }
 
@@ -187,7 +175,7 @@ namespace Managers.IAP
             var action = m_OnPurchaseActions.GetSafe(info.Key, out bool containsKey);
             if (!containsKey)
             {
-                Dbg.LogError($"Product with id {id} does not have puchase action");
+                Dbg.LogWarning($"Product with id {id} does not have purchase action");
                 return PurchaseProcessingResult.Complete;
             }
             action?.Invoke();
@@ -199,28 +187,27 @@ namespace Managers.IAP
         
         #region nonpublic methods
         
-        protected void InitializePurchasing() 
+        private void InitializePurchasing()
         {
-            // // If we have already connected to Purchasing ...
-            // if (IsInitialized())
-            //     return;
-            // Create a builder, first passing in a suite of Unity provided stores.
-            var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
-            // Add a product to sell / restore by way of its identifier, associating the general identifier
-            // with its store-specific identifiers.
+            var builder = GetBuilder();
             foreach (var kvp in Products)
                 builder.AddProduct(kvp.Id, kvp.Type);
-            // Kick off the remainder of the set-up with an asynchrounous call, passing the configuration 
-            // and this class' instance. Expect a response either in OnInitialized or OnInitializeFailed.
             UnityPurchasing.Initialize(this, builder);
         }
+
+        protected virtual ConfigurationBuilder GetBuilder()
+        {
+            var module = StandardPurchasingModule.Instance();
+            var builder = ConfigurationBuilder.Instance(module);
+            return builder;
+        }
         
-        protected bool IsInitialized()
+        private bool IsInitialized()
         {
             return m_StoreController != null && m_StoreExtensionProvider != null;
         }
         
-        protected void BuyProductID(string _ProductId)
+        private void BuyProductID(string _ProductId)
         {
             if (!IsInitialized())
             {
@@ -259,8 +246,22 @@ namespace Managers.IAP
                 _Args.Result = () => EShopProductResult.Fail;
                 return;
             }
+            _Args.HasReceipt = product.hasReceipt;
+            _Args.Currency = product.metadata.isoCurrencyCode;
             _Args.Price = product.metadata.localizedPriceString;
             _Args.Result = () => EShopProductResult.Success;
+        }
+        
+        protected void OnDeferredPurchase(Product _Product)
+        {
+            var key = Products.FirstOrDefault(_P => _P.Id == _Product.definition.id)?.Key;
+            if (!key.HasValue)
+            {
+                Dbg.LogError($"Purchase of {_Product.definition.id} was not deferred");
+                return;
+            }
+            m_OnDeferredActions[key.Value]?.Invoke();
+            Dbg.Log($"Purchase of {_Product.definition.id} is deferred");
         }
         
 #if UNITY_ANDROID
@@ -275,16 +276,16 @@ namespace Managers.IAP
                 string ok = LocalizationManager.GetTranslation("rate_yes");
                 string notNow = LocalizationManager.GetTranslation("rate_not_now");
                 string never = LocalizationManager.GetTranslation("rate_never");
-                NativeAndroid.Dialogs.ShowNeutralDialog(title, text, ok, notNow, never);
-                DialogsEvents.onNeutralYes = () =>
+                MTAssets.NativeAndroidToolkit.NativeAndroid.Dialogs.ShowNeutralDialog(title, text, ok, notNow, never);
+                MTAssets.NativeAndroidToolkit.Events.DialogsEvents.onNeutralYes = () =>
                 {
                     Coroutines.Run(RateGameAndroid(false));
                 };
-                DialogsEvents.onNeutralNo = () =>
+                MTAssets.NativeAndroidToolkit.Events.DialogsEvents.onNeutralNo = () =>
                 {
 
                 };
-                DialogsEvents.onNeutralNeutral = () =>
+                MTAssets.NativeAndroidToolkit.Events.DialogsEvents.onNeutralNeutral = () =>
                 {
                     SaveUtils.PutValue(SaveKeys.GameWasRated, true);
                 };
@@ -296,7 +297,7 @@ namespace Managers.IAP
                 Application.OpenURL("market://details?id=" + Application.productName);
             }
 
-            var reviewManager = new ReviewManager();
+            var reviewManager = new Google.Play.Review.ReviewManager();
             var requestFlowOperation = reviewManager.RequestReviewFlow();
             yield return requestFlowOperation;
             if (!requestFlowOperation.IsSuccessful)
@@ -305,7 +306,7 @@ namespace Managers.IAP
                 OpenAppPageInStoreDirectly();
                 yield break;
             }
-            if (requestFlowOperation.Error != ReviewErrorCode.NoError)
+            if (requestFlowOperation.Error != Google.Play.Review.ReviewErrorCode.NoError)
             {
                 Dbg.LogWarning($"Failed to load rate game panel: {requestFlowOperation.Error}");
                 OpenAppPageInStoreDirectly();
@@ -320,7 +321,7 @@ namespace Managers.IAP
                 yield break;
             }
             yield return launchFlowOperation;
-            if (launchFlowOperation.Error != ReviewErrorCode.NoError)
+            if (launchFlowOperation.Error != Google.Play.Review.ReviewErrorCode.NoError)
             {
                 Dbg.LogWarning($"Failed to launch rate game panel: {launchFlowOperation.Error}");
                 OpenAppPageInStoreDirectly();

@@ -1,8 +1,10 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Xml.Linq;
 using Entities;
 using Newtonsoft.Json;
 using UnityEngine;
+using Utils.Encryption;
 
 namespace Utils
 {
@@ -10,7 +12,9 @@ namespace Utils
     {
         public static readonly string    SavesPath  = Path.Combine(Application.persistentDataPath, "Saves.xml");
         public static          XDocument SavesDoc;
-        private const          string    PassPhrase = "f47759941904a9bf6f89736c4541d85";
+        // private const          string    PassPhrase = "f47759941904a9bf6f89736c4541d85";
+        private const          string    PassPhrase = "---";
+        private static readonly Cryptography Crypto = new Cryptography(PassPhrase);
 
         static SaveUtils()
         {
@@ -30,25 +34,29 @@ namespace Utils
             string value = GetXElementValue(_Key.Key);
             if (string.IsNullOrEmpty(value))
                 return default;
-#if !UNITY_EDITOR
-            value = StringCipher.Decrypt(value, PassPhrase);
-#endif
+            value = Crypto.Decrypt(value);
+// #if !UNITY_EDITOR
+//             value = StringCipher.Decrypt(value, PassPhrase);
+// #endif
             T result = JsonConvert.DeserializeObject<T>(value, SerializerSettings);
             _Key.CachedValue = result;
             return result;
         }
         
-        public static void PutValue<T>(SaveKey<T> _Key, T _Value)
+        public static void PutValue<T>(SaveKey<T> _Key, T _Value, bool _OnlyCache = false)
         {
             if (_Key.IsDirty)
             {
                 _Key.IsDirty = false;
                 _Key.CachedValue = _Value;
             }
+            if (_OnlyCache)
+                return;
             string value = JsonConvert.SerializeObject(_Value, SerializerSettings);
-#if !UNITY_EDITOR
-            value = StringCipher.Encrypt(value, PassPhrase);
-#endif
+            value = Crypto.Encrypt(value);
+// #if !UNITY_EDITOR
+//             value = StringCipher.Encrypt(value, PassPhrase);
+// #endif
             PutXElementValue(_Key.Key, value);
         }
 

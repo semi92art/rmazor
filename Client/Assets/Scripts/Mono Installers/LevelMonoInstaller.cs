@@ -92,14 +92,17 @@ namespace Mono_Installers
 
             Container.Bind<IViewMazeRotation>()              .To<ViewMazeRotation>()              .AsSingle();
             Container.Bind<IViewMazeBackground>()            .To<ViewMazeBackground>()            .AsSingle();
+            Container.Bind<IViewMazeBackgroundIdleItems>()   .To<ViewMazeBackgroundIdleItems>()   .AsSingle();
+            Container.Bind<IViewMazeBackgroundCongradItems>().To<ViewMazeBackgroundCongradItems2>().AsSingle();
             Container.Bind<IViewAppearTransitioner>()        .To<ViewAppearTransitioner>()        .AsSingle();
             Container.Bind<IViewLevelStageController>()      .To<ViewLevelStageController>()      .AsSingle();
             
             Container.Bind<IViewCharacter>()                 .To<ViewCharacter>()                 .AsSingle();
+            Container.Bind<IViewCharacterHead>()             .To<ViewCharacterHead>()             .AsSingle();
             Container.Bind<IViewCharacterEffector>()         .To<ViewCharacterEffectorParticles>().AsSingle();
             Container.Bind<IViewCharacterTail>()             .To<ViewCharacterTailSimple>()       .AsSingle();
             
-            Container.Bind<IViewTurretProjectileTail>()          .To<ViewTurretProjectileTailFake>()      .AsSingle();
+            Container.Bind<IViewTurretProjectileTail>()      .To<ViewTurretProjectileTailFake>()  .AsSingle();
 
             Container.Bind<IViewMazeItemPath>()              .To<ViewMazeItemPath>()              .AsSingle();
             Container.Bind<IViewMazeItemGravityBlock>()      .To<ViewMazeItemGravityBlock>()      .AsSingle();
@@ -140,6 +143,7 @@ namespace Mono_Installers
                 Container.Bind<IShopTailsDialogPanel>()      .To<ShopTailsPanel>()                .AsSingle();
                 Container.Bind<ISettingDialogPanel>()        .To<SettingsDialogPanel>()           .AsSingle();
                 Container.Bind<ICharacterDiedDialogPanel>()  .To<CharacterDiedDialogPanel>()      .AsSingle();
+                Container.Bind<IRateGameDialogPanel>()       .To<RateGameDialogPanel>()           .AsSingle();
             }
             
             Container.Bind<IViewInputCommandsProceeder>()    .To<ViewInputCommandsProceeder>()    .AsSingle();

@@ -21,7 +21,7 @@ namespace DialogViewers
     public interface IProposalDialogViewer : IDialogViewerBase
     {
         void Back(UnityAction _OnFinish = null);
-        void Show(IDialogPanel _Item);
+        void Show(IDialogPanel _Item, float _Speed = 1f);
     }
     
     public class ProposalDialogViewer : DialogViewerBase, IProposalDialogViewer
@@ -71,7 +71,7 @@ namespace DialogViewers
             }));
         }
 
-        public void Show(IDialogPanel _Item)
+        public void Show(IDialogPanel _Item, float _Speed = 1f)
         {
             if (_Item == null)
                 return;
@@ -80,6 +80,7 @@ namespace DialogViewers
                 && CurrentPanel.GetType() == _Item.GetType()
                 && CurrentPanel.AppearingState == EAppearingState.Appeared)
                 return;
+            ViewSettings.ProposalDialogAnimSpeed = _Speed;
             CameraProvider.TranslucentSource.enabled = true;
             CurrentPanel = _Item;
             var panel = CurrentPanel.PanelObject;
@@ -128,8 +129,8 @@ namespace DialogViewers
         public RectTransform   Container                   => null;
         public Func<bool>      IsOtherDialogViewersShowing { get; set; }
 
-        public void Init(RectTransform _Parent)        { }
-        public void Back(UnityAction _OnFinish = null) { }
-        public void Show(IDialogPanel _Item)           { }
+        public void Init(RectTransform _Parent)                 { }
+        public void Back(UnityAction _OnFinish = null)          { }
+        public void Show(IDialogPanel _Item, float _Speed = 1f) { }
     }
 }

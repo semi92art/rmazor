@@ -32,8 +32,8 @@ namespace Games.RazorMaze.Views.Characters
         #endregion
         
         #region api
-        
-        public          EAppearingState AppearingState { get; protected set; }
+
+        public abstract EAppearingState AppearingState { get; }
         public virtual  bool            Activated      { get; set; }
         public abstract void            OnRotationAfterFinished(MazeRotationEventArgs _Args);
         public abstract void            OnAllPathProceed(V2Int _LastPath);

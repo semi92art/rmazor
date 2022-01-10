@@ -9,11 +9,11 @@ namespace Managers.Advertising
     
     public class UnityAdsAdBase : IUnityAdsAd, IUpdateTick
     {
-        protected bool        m_DoInvokeOnShown;
-        protected bool        m_DoLoadAdWithDelay;
-        protected float       m_LoadAdDelayTimer;
-        protected string      m_UnitId;
-        protected UnityAction m_OnShown;
+        protected volatile bool        m_DoInvokeOnShown;
+        protected          bool        m_DoLoadAdWithDelay;
+        protected          float       m_LoadAdDelayTimer;
+        protected          string      m_UnitId;
+        protected          UnityAction m_OnShown;
 
         private CommonGameSettings Settings   { get; }
         private ICommonTicker      CommonTicker { get; }

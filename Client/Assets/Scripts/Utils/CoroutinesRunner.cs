@@ -1,45 +1,22 @@
-﻿using System.Collections;
-using GameHelpers;
+﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Utils
 {
-    public static partial class Coroutines
+    public class CoroutinesRunner : MonoBehaviour
     {
-        private const string RunnerName = "Coroutines Runner";
-        private static MonoBehaviour _coroutineRunner;
-        private static bool _runnerFound;
+        [HideInInspector] public volatile bool              mustRun;
+        public readonly                   List<UnityAction> actions = new List<UnityAction>();
 
-        static Coroutines() => FindRunner();
-
-        private static MonoBehaviour FindRunner()
+        private void Update()
         {
-            if (_runnerFound)
-                return _coroutineRunner;
-            
-            var go = GameObject.Find(RunnerName);
-            if (go == null)
-            {
-                go = new GameObject(RunnerName);
-                go.AddComponent<DontDestroyOnLoad>();
-            }
-
-            _coroutineRunner = go.GetComponent<DontDestroyOnLoad>();
-            _runnerFound = true;
-            return _coroutineRunner;
-        }
-        
-        public static void Run(IEnumerator _Coroutine)
-        {
-            if (_Coroutine == null)
+            if (!mustRun)
                 return;
-            FindRunner().StartCoroutine(_Coroutine);
-        }
-
-        public static void Stop(IEnumerator _Coroutine)
-        {
-            if (_Coroutine != null)
-                FindRunner().StopCoroutine(_Coroutine);
+            foreach (var action in actions)
+                action?.Invoke();
+            actions.Clear();
+            mustRun = false;
         }
     }
 }

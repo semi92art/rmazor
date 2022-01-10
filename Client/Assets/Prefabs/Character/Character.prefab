@@ -49,6 +49,7 @@ MonoBehaviour:
   scaleMode: 0
   color: {r: 0.13333334, g: 0.23137257, b: 0.32941177, a: 1}
   detailLevel: 2
+  renderQueue: -1
   zTest: 4
   zOffsetFactor: 0
   zOffsetUnits: 0
@@ -57,6 +58,24 @@ MonoBehaviour:
   stencilRefID: 0
   stencilReadMask: 255
   stencilWriteMask: 255
+  pivot: 1
+  width: 0.05
+  height: 0.1
+  type: 1
+  cornerRadiusMode: 0
+  cornerRadii: {x: 0.03, y: 0.03, z: 0.03, w: 0.03}
+  thickness: 0.1
+  thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
   fill:
     type: 0
     space: 0
@@ -67,14 +86,6 @@ MonoBehaviour:
     radialOrigin: {x: 0, y: 0, z: 0}
     radialRadius: 1
   useFill: 0
-  pivot: 1
-  width: 0.05
-  height: 0.1
-  type: 1
-  cornerRadiusMode: 0
-  cornerRadii: {x: 0.03, y: 0.03, z: 0.03, w: 0.03}
-  thickness: 0.1
-  thicknessSpace: 0
 --- !u!33 &3014867984373478654
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -98,6 +109,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -122,6 +134,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 11
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &1209280284905895391
 GameObject:
   m_ObjectHideFlags: 0
@@ -295,6 +308,7 @@ MonoBehaviour:
   scaleMode: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   detailLevel: 2
+  renderQueue: -1
   zTest: 4
   zOffsetFactor: 0
   zOffsetUnits: 0
@@ -303,6 +317,24 @@ MonoBehaviour:
   stencilRefID: 0
   stencilReadMask: 255
   stencilWriteMask: 255
+  pivot: 1
+  width: 0.9
+  height: 0.9
+  type: 1
+  cornerRadiusMode: 0
+  cornerRadii: {x: 0.5, y: 0.5, z: 0.5, w: 0.5}
+  thickness: 0.03
+  thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
   fill:
     type: 0
     space: 0
@@ -313,14 +345,6 @@ MonoBehaviour:
     radialOrigin: {x: 0, y: 0, z: 0}
     radialRadius: 1
   useFill: 0
-  pivot: 1
-  width: 0.9
-  height: 0.9
-  type: 1
-  cornerRadiusMode: 0
-  cornerRadii: {x: 0.35, y: 0.35, z: 0.35, w: 0.35}
-  thickness: 0.03
-  thicknessSpace: 0
 --- !u!33 &7863594798523661652
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -344,6 +368,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -368,6 +393,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 10
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &4212089789563415148
 GameObject:
   m_ObjectHideFlags: 0
@@ -417,6 +443,7 @@ MonoBehaviour:
   scaleMode: 0
   color: {r: 0.13333334, g: 0.23137257, b: 0.32941177, a: 1}
   detailLevel: 2
+  renderQueue: -1
   zTest: 4
   zOffsetFactor: 0
   zOffsetUnits: 0
@@ -425,6 +452,24 @@ MonoBehaviour:
   stencilRefID: 0
   stencilReadMask: 255
   stencilWriteMask: 255
+  pivot: 1
+  width: 0.05
+  height: 0.1
+  type: 1
+  cornerRadiusMode: 0
+  cornerRadii: {x: 0.03, y: 0.03, z: 0.03, w: 0.03}
+  thickness: 0.1
+  thicknessSpace: 0
+  matchDashSpacingToSize: 1
+  dashed: 0
+  dashStyle:
+    type: 0
+    space: -2
+    snap: 1
+    size: 16
+    spacing: 0.5
+    offset: 0
+    shapeModifier: 1
   fill:
     type: 0
     space: 0
@@ -435,14 +480,6 @@ MonoBehaviour:
     radialOrigin: {x: 0, y: 0, z: 0}
     radialRadius: 1
   useFill: 0
-  pivot: 1
-  width: 0.05
-  height: 0.1
-  type: 1
-  cornerRadiusMode: 0
-  cornerRadii: {x: 0.03, y: 0.03, z: 0.03, w: 0.03}
-  thickness: 0.1
-  thicknessSpace: 0
 --- !u!33 &1508442816418329533
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -466,6 +503,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -490,6 +528,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 11
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &4624351753195390276
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,8 +7,7 @@ namespace GameHelpers
     public enum EAdsProvider
     {
         GoogleAds = 1,
-        UnityAds = 2,
-        Facebook = 4
+        UnityAds = 2
     }
     
     [CreateAssetMenu(fileName = "game_settings", menuName = "Configs and Sets/Game Settings", order = 1)]
@@ -18,6 +17,8 @@ namespace GameHelpers
         [SerializeField] private float        adsLoadDelay;
         [SerializeField] private bool         srDebuggerOn;
         [SerializeField] private bool         testAds;
+        [SerializeField] private ELogLevel    logLevel;
+        [SerializeField] private bool         doNotLogOnRelease;
         
         public EAdsProvider AdsProvider
         {
@@ -34,13 +35,21 @@ namespace GameHelpers
         public bool SrDebuggerOn
         {
             get => srDebuggerOn;
-            set => srDebuggerOn = value;
         }
 
         public bool TestAds
         {
             get => testAds;
-            set => testAds = value;
+        }
+
+        public ELogLevel LogLevel
+        {
+            get => logLevel;
+        }
+
+        public bool DoNotLogOnRelease
+        {
+            get => doNotLogOnRelease;
         }
     }
 }

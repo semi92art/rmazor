@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Utils;
 
 namespace Entities
 {
@@ -34,7 +35,34 @@ namespace Entities
             new Dictionary<Tuple<int, int, ushort>, SaveKey<GameDataField>>();
         private static readonly Dictionary<string, SaveKey<uint>> BundleVersions =
             new Dictionary<string, SaveKey<uint>>();
-        
+
+        static SaveKeys()
+        {
+            SaveUtils.PutValue(DisableAds, SaveUtils.GetValue(DisableAds), true);
+            SaveUtils.PutValue(SettingSoundOn, SaveUtils.GetValue(SettingSoundOn), true);
+            SaveUtils.PutValue(SettingMusicOn, SaveUtils.GetValue(SettingMusicOn), true);
+            SaveUtils.PutValue(LastDbConnectionSuccess, SaveUtils.GetValue(LastDbConnectionSuccess), true);
+            SaveUtils.PutValue(NotFirstLaunch, SaveUtils.GetValue(NotFirstLaunch), true);
+            SaveUtils.PutValue(SettingNotificationsOn, SaveUtils.GetValue(SettingNotificationsOn), true);
+            SaveUtils.PutValue(DebugUtilsOn, SaveUtils.GetValue(DebugUtilsOn), true);
+            SaveUtils.PutValue(GoodQuality, SaveUtils.GetValue(GoodQuality), true);
+            SaveUtils.PutValue(AllLevelsPassed, SaveUtils.GetValue(AllLevelsPassed), true);
+            SaveUtils.PutValue(SettingHapticsOn, SaveUtils.GetValue(SettingHapticsOn), true);
+            SaveUtils.PutValue(GameWasRated, SaveUtils.GetValue(GameWasRated), true);
+            SaveUtils.PutValue(MovementTutorialFinished, SaveUtils.GetValue(MovementTutorialFinished), true);
+            SaveUtils.PutValue(RotationTutorialFinished, SaveUtils.GetValue(RotationTutorialFinished), true);
+            SaveUtils.PutValue(EnableRotation, SaveUtils.GetValue(EnableRotation), true);
+            SaveUtils.PutValue(PreviousAccountId, SaveUtils.GetValue(PreviousAccountId), true);
+            SaveUtils.PutValue(AccountId, SaveUtils.GetValue(AccountId), true);
+            SaveUtils.PutValue(GameId, SaveUtils.GetValue(GameId), true);
+            SaveUtils.PutValue(DailyBonusLastClickedDay, SaveUtils.GetValue(DailyBonusLastClickedDay), true);
+            SaveUtils.PutValue(RatePanelShowsCount, SaveUtils.GetValue(RatePanelShowsCount), true);
+            SaveUtils.PutValue(Login, SaveUtils.GetValue(Login), true);
+            SaveUtils.PutValue(PasswordHash, SaveUtils.GetValue(PasswordHash), true);
+            SaveUtils.PutValue(WheelOfFortuneLastDate, SaveUtils.GetValue(WheelOfFortuneLastDate), true);
+            SaveUtils.PutValue(BoughtPurchaseIds, SaveUtils.GetValue(BoughtPurchaseIds), true);
+            SaveUtils.PutValue(DailyBonusLastDate, SaveUtils.GetValue(DailyBonusLastDate), true);
+        }
         
         public static SaveKey<bool?> DisableAds               => _disableAds ??= new SaveKey<bool?>("disable_ads");
         public static SaveKey<bool>  SettingSoundOn           => _settingSoundOn ??= new SaveKey<bool>("sound_on");

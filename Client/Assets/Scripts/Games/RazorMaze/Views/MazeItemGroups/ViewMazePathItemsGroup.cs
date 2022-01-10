@@ -106,7 +106,7 @@ namespace Games.RazorMaze.Views.MazeItemGroups
                                         DataFieldIds.Money, 
                                         currentMoneyCount.Value + moneyItemsCount, false);
                                 }
-                            }));
+                            }), true);
                     }
                     break;
                 }

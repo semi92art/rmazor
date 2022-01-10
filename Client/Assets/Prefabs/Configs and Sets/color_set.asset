@@ -25,9 +25,9 @@ MonoBehaviour:
     - name: Money Item
       color: {r: 0.8018868, g: 0.67266375, b: 0.15508187, a: 1}
     - name: Character
-      color: {r: 0.86503184, g: 0.8867924, b: 0.35555357, a: 1}
+      color: {r: 1, g: 1, b: 1, a: 1}
     - name: Character Tail
-      color: {r: 0.7607768, g: 0.7924528, b: 0.25792095, a: 0.5019608}
+      color: {r: 1, g: 1, b: 1, a: 0.5019608}
     - name: Background
       color: {r: 0, g: 0, b: 0, a: 1}
     - name: Path

@@ -16,3 +16,5 @@ MonoBehaviour:
   adsLoadDelay: 3
   srDebuggerOn: 1
   testAds: 1
+  logLevel: 4
+  doNotLogOnRelease: 0

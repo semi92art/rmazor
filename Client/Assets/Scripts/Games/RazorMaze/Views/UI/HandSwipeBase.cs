@@ -11,8 +11,10 @@ using Utils;
 
 namespace Games.RazorMaze.Views.UI
 {
-    public abstract class HandSwipeBase : MonoBehaviour
+    public abstract class HandSwipeBase : MonoBehaviour, IUpdateTick
     {
+        #region types
+        
         [Serializable]
         public class PointPositions
         {
@@ -28,8 +30,16 @@ namespace Games.RazorMaze.Views.UI
             public float aTimeMiddle;
             public float aTimeEnd;
         }
-        
+
+        #endregion
+
+        #region serialized fields
+
         [SerializeField] protected SpriteRenderer hand;
+
+        #endregion
+
+        #region nonpublic members
         
         protected ITicker                  m_Ticker;
         protected ICameraProvider          m_CameraProvider;
@@ -45,6 +55,10 @@ namespace Games.RazorMaze.Views.UI
         
         protected abstract Dictionary<EMazeMoveDirection, float> m_HandAngles { get; }
 
+        #endregion
+
+        #region api
+        
         public virtual void Init(
             ITicker _Ticker,
             ICameraProvider _CameraProvider,
@@ -52,6 +66,7 @@ namespace Games.RazorMaze.Views.UI
             IColorProvider _ColorProvider,
             Vector4 _Offsets)
         {
+            _Ticker.Register(this);
             m_Ticker = _Ticker;
             m_CameraProvider = _CameraProvider;
             m_CoordinateConverter = _CoordinateConverter;
@@ -66,7 +81,11 @@ namespace Games.RazorMaze.Views.UI
             m_Direction = null;
         }
 
-        protected abstract void Update();
+        #endregion
+
+        #region nonpublic methods
+        
+        public abstract void UpdateTick();
 
         protected void AnimateHandAndTrace(EMazeMoveDirection _Direction, float _Time)
         {            
@@ -175,5 +194,7 @@ namespace Games.RazorMaze.Views.UI
                 m_Ticker,
                 _BreakPredicate: () => m_ReadyToAnimate);
         }
+
+        #endregion
     }
 }

@@ -36,7 +36,7 @@ MonoBehaviour:
         type: 3}
       name: character_died_panel
       bundle: 0
-    - item: {fileID: 8219298684319459333, guid: dc03f95562103b9488bece8533f26b73,
+    - item: {fileID: 8219298684319459333, guid: 0989ec8b26693244c84d64030c915393,
         type: 3}
       name: rate_game_panel
       bundle: 0

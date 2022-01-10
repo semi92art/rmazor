@@ -9,7 +9,7 @@ using Games.RazorMaze.Views.MazeItems.Props;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
-using Utils.Editor;
+using Utils;
 
 namespace Games.RazorMaze.Prot.Editor
 {

@@ -223,7 +223,8 @@ namespace UI.Panels.ShopPanels
             const int key = PurchaseKeys.NoAds;
             if (!m_MoneyItems.ContainsKey(key))
                 return;
-            m_MoneyItems[key].gameObject.DestroySafe();
+            if (m_MoneyItems[key].IsNotNull())
+                m_MoneyItems[key].gameObject.DestroySafe();
             m_MoneyItems.Remove(key);
         }
 
@@ -250,7 +251,7 @@ namespace UI.Panels.ShopPanels
                     string dialogTitle = Managers.LocalizationManager.GetTranslation("purchase") + ":";
                     string dialogText = _Reward + " " +
                                         Managers.LocalizationManager
-                                            .GetTranslation("coins")
+                                            .GetTranslation("coins_alt")
                                             .ToLowerInvariant();
                     CommonUtils.ShowAlertDialog(dialogTitle, dialogText);
                 }));

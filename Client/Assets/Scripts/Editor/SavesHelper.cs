@@ -39,5 +39,10 @@ public class SavesHelper : EditorWindow
             var p = new Process {StartInfo = new ProcessStartInfo {FileName = SaveUtils.SavesPath}};
             Task.Run(() => p.Start());
         });
+        EditorUtilsEx.GuiButtonAction("Open Saves File Location", () =>
+        {
+            var p = new Process {StartInfo = new ProcessStartInfo {FileName = Application.persistentDataPath}};
+            Task.Run(() => p.Start());
+        });
     }
 }

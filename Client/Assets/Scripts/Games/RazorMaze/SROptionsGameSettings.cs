@@ -3,6 +3,7 @@ using Constants;
 using Entities;
 using Games.RazorMaze.Models;
 using Games.RazorMaze.Views;
+using UnityEngine;
 using Utils;
 
 namespace Games.RazorMaze
@@ -231,6 +232,13 @@ namespace Games.RazorMaze
         {
             get => false;
             set => _view.Managers.ShopManager.RateGame();
+        }
+        
+        [Category(CategoryCommon)]
+        public bool Clear_Cache
+        {
+            get => false;
+            set => Caching.ClearCache();
         }
     
         #endregion

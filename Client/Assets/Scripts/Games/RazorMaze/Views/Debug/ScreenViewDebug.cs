@@ -80,5 +80,5 @@ namespace Games.RazorMaze.Views.Debug
         }
     }
 
-#endif
 }
+#endif

@@ -13,6 +13,8 @@ namespace Games.RazorMaze.Views.UI
 {
     public class HandSwipeMovement : HandSwipeBase
     {
+        #region types
+
         [Serializable]
         public class HandSpriteMovementTraceParams : HandSpriteTraceParamsBase
         {
@@ -22,8 +24,16 @@ namespace Games.RazorMaze.Views.UI
             public PointPositions aMoveUpPositions;
         }
         
+        #endregion
+
+        #region serialized fields
+
         [SerializeField] private LineRenderer                  trace;
         [SerializeField] private HandSpriteMovementTraceParams moveParams;
+
+        #endregion
+
+        #region nonpublic members
         
         protected override Dictionary<EMazeMoveDirection, float> m_HandAngles => 
             new Dictionary<EMazeMoveDirection, float>
@@ -33,6 +43,10 @@ namespace Games.RazorMaze.Views.UI
                 {EMazeMoveDirection.Down, 90f},
                 {EMazeMoveDirection.Up, 90f},
             };
+
+        #endregion
+
+        #region api
         
         public override void Init(
             ITicker _Ticker,
@@ -77,13 +91,17 @@ namespace Games.RazorMaze.Views.UI
             base.HidePrompt();
             trace.enabled = false;
         }
-
-        protected override void Update()
+        
+        public override void UpdateTick()
         {
             if (m_Direction.HasValue && m_ReadyToAnimate)
                 AnimateHandAndTrace(m_Direction.Value, moveParams.aTimeEnd);
         }
+        
+        #endregion
 
+        #region nonpublic methods
+        
         protected override IEnumerator AnimateTraceCoroutine(EMazeMoveDirection _Direction)
         {
             var a = _Direction switch
@@ -137,5 +155,7 @@ namespace Games.RazorMaze.Views.UI
         {
             yield return AnimateHandPositionCoroutine(_Direction, moveParams);
         }
+
+        #endregion
     }
 }

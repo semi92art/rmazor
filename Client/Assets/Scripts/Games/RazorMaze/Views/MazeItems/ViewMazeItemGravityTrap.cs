@@ -135,7 +135,7 @@ namespace Games.RazorMaze.Views.MazeItems
             m_RotateDirection = GetRotationDirection(dir);
             m_MaceTr.rotation = Quaternion.Euler(Vector3.zero);
             m_Rotate = true;
-            Managers.AudioManager.PlayClip(GetAudioClipArgsTrapRotate(_Args.Info));
+            Managers.AudioManager.PlayClip(GetAudioClipArgsTrapRotate());
             if (!MazeShaker.ShakeMaze)
                 MazeShaker.ShakeMaze = true;
         }
@@ -153,7 +153,7 @@ namespace Games.RazorMaze.Views.MazeItems
             base.OnMoveFinished(_Args);
             SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(_Args.To));
             m_Rotate = false;
-            Managers.AudioManager.StopClip(GetAudioClipArgsTrapRotate(_Args.Info));
+            Managers.AudioManager.StopClip(GetAudioClipArgsTrapRotate());
             if (MazeShaker.ShakeMaze)
                 MazeShaker.ShakeMaze = false;
         }
@@ -274,9 +274,9 @@ namespace Games.RazorMaze.Views.MazeItems
                 m_InnerDisc.Color = _Color;
         }
 
-        private AudioClipArgs GetAudioClipArgsTrapRotate(IMazeItemProceedInfo _Info)
+        private AudioClipArgs GetAudioClipArgsTrapRotate()
         {
-            return new AudioClipArgs("mace_roll", EAudioClipType.GameSound, _Loop: true, _Id: _Info.GetHashCode().ToString());
+            return new AudioClipArgs("mace_roll", EAudioClipType.GameSound, _Loop: true, _Id: GetHashCode().ToString());
         }
 
         #endregion

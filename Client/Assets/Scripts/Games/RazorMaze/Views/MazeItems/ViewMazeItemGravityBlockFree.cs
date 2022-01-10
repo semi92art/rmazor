@@ -24,7 +24,7 @@ namespace Games.RazorMaze.Views.MazeItems
         #region nonpublic members
 
         private static AudioClipArgs AudioClipArgsBlockSlidingDown => 
-            new AudioClipArgs("block_sliding_down", EAudioClipType.GameSound, 0.3f, true);
+            new AudioClipArgs("block_sliding_down", EAudioClipType.GameSound, 0.15f, true);
 
         #endregion
         

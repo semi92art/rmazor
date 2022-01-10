@@ -121,8 +121,14 @@ public abstract class SpawnPoolBase<T> : ISpawnPool<T>
 
         private void ActivateOrDeactivate(int _Index, Func<bool> _Predicate, Action _OnFinish, bool _Activate)
         {
+            if (_Predicate == null)
+            {
+                ActivateOrDeactivate(_Index, _Activate);
+                _OnFinish?.Invoke();
+                return;
+            }
             Coroutines.Run(Coroutines.WaitWhile(
-                () => _Predicate?.Invoke() ?? false,
+                _Predicate.Invoke,
                 () =>
                 {
                     ActivateOrDeactivate(_Index, _Activate);

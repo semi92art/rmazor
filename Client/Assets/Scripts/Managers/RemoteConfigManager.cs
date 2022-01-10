@@ -76,15 +76,10 @@ namespace Managers
             bool adsAdMob = CommonGameSettings.AdsProvider.HasFlag(EAdsProvider.GoogleAds);
             GetConfig(ref adsAdMob, "ads.admob");
             if (adsAdMob) provider |= EAdsProvider.GoogleAds;
-            
             bool adsUnity = CommonGameSettings.AdsProvider.HasFlag(EAdsProvider.UnityAds);
             GetConfig(ref adsAdMob, "ads.unityads");
             if (adsUnity) provider |= EAdsProvider.UnityAds;
             
-            bool adsFacebook = CommonGameSettings.AdsProvider.HasFlag(EAdsProvider.Facebook);
-            GetConfig(ref adsFacebook, "ads.facebook");
-            if (adsFacebook) provider |= EAdsProvider.Facebook;
-
             CommonGameSettings.AdsProvider = provider;
             
             GetConfig(ref ModelSettings.characterSpeed, "character.speed");

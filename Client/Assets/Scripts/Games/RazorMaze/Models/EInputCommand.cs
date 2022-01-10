@@ -21,6 +21,7 @@
         LoadRandomLevel,
         ShopMenu,
         SettingsMenu,
+        RateGamePanel,
         LoadRandomLevelWithRotation,
         ReadyToUnloadLevel,
         LoadLevelByIndex,

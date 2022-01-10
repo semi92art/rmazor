@@ -1156,19 +1156,19 @@ MonoBehaviour:
   angRadiansEnd: 2.3561945
   radius: 0.3
   radiusSpace: 0
-  thickness: 0.07
+  thickness: 0.1
   thicknessSpace: 0
   arcEndCaps: 0
   matchDashSpacingToSize: 1
   dashed: 1
   dashStyle:
-    type: 2
+    type: 1
     space: -2
     snap: 1
     size: 4
     spacing: 0.5
     offset: 0.25
-    shapeModifier: 1
+    shapeModifier: -1
 --- !u!33 &6378174720958861948
 MeshFilter:
   m_ObjectHideFlags: 0

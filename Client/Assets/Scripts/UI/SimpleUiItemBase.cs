@@ -132,7 +132,7 @@ namespace UI
             border.color = Color.Lerp(m_BorderDefaultColor, m_BorderHighlightedColor, lerpVal);
         }
 
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
             if (ColorProvider != null)
                 ColorProvider.ColorChanged -= OnColorChanged;

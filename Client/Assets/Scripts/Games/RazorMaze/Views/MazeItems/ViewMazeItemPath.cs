@@ -10,6 +10,7 @@ using Games.RazorMaze.Views.Common;
 using Games.RazorMaze.Views.ContainerGetters;
 using Games.RazorMaze.Views.Helpers;
 using Games.RazorMaze.Views.InputConfigurators;
+using Games.RazorMaze.Views.MazeItems.Props;
 using Games.RazorMaze.Views.Utils;
 using Managers.Audio;
 using Shapes;
@@ -127,6 +128,13 @@ namespace Games.RazorMaze.Views.MazeItems
         }
 
         public UnityAction MoneyItemCollected { get; set; }
+
+        public override void Init(ViewMazeItemProps _Props)
+        {
+            if (!Initialized)
+                Managers.AudioManager.InitClip(AudioClipArgsCollectMoneyItem);
+            base.Init(_Props);
+        }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {

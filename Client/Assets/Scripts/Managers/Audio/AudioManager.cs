@@ -23,6 +23,7 @@ namespace Managers.Audio
     
     public interface IAudioManager : IInit, IOnLevelStageChanged
     {
+        void InitClip(AudioClipArgs _Args);
         void PlayClip(AudioClipArgs _Args);
         void PauseClip(AudioClipArgs _Args);
         void UnPauseClip(AudioClipArgs _Args);
@@ -54,17 +55,17 @@ namespace Managers.Audio
 
         public AudioManager(
             IContainersGetter _ContainersGetter,
-            IViewGameTicker _GameTicker,
-            IUITicker _UITicker,
-            IMusicSetting _MusicSetting,
-            ISoundSetting _SoundSetting,
+            IViewGameTicker   _GameTicker,
+            IUITicker         _UITicker,
+            IMusicSetting     _MusicSetting,
+            ISoundSetting     _SoundSetting,
             IPrefabSetManager _PrefabSetManager)
         {
             ContainersGetter = _ContainersGetter;
-            GameTicker = _GameTicker;
-            UITicker = _UITicker;
-            MusicSetting = _MusicSetting;
-            SoundSetting = _SoundSetting;
+            GameTicker       = _GameTicker;
+            UITicker         = _UITicker;
+            MusicSetting     = _MusicSetting;
+            SoundSetting     = _SoundSetting;
             PrefabSetManager = _PrefabSetManager;
         }
 
@@ -74,6 +75,7 @@ namespace Managers.Audio
 
         public bool              Initialized { get; private set; }
         public event UnityAction Initialize;
+        
         public void Init()
         {
             GameTicker.Register(this);
@@ -91,36 +93,14 @@ namespace Managers.Audio
             Initialized = true;
         }
 
+        public void InitClip(AudioClipArgs _Args)
+        {
+            InitClip(_Args, false);
+        }
+
         public void PlayClip(AudioClipArgs _Args)
         {
-            var info = FindClipInfo(_Args);
-            if (info != null)
-            {
-                PlayClipCore(_Args, info);
-                return;
-            }
-            
-            var clipEntity = PrefabSetManager.GetObjectEntity<AudioClip>("sounds", _Args.ClipName);
-            Coroutines.Run(Coroutines.WaitWhile(
-                () => clipEntity.Result == EEntityResult.Pending,
-                () =>
-                {
-                    if (clipEntity.Result == EEntityResult.Fail)
-                    {
-                        Dbg.LogWarning($"Sound clip with name {_Args.ClipName} not found in prefab sets");
-                        return;
-                    }
-                    var clip = clipEntity.Value;
-                    if (clip == null)
-                        return;
-                    var go = new GameObject($"AudioClip_{_Args.ClipName}");
-                    go.SetParent(ContainersGetter.GetContainer(ContainerNames.AudioSources));
-                    var audioSource = go.AddComponent<AudioSource>();
-                    audioSource.clip = clip;
-                    info = new AudioClipInfo(audioSource, _Args);
-                    AddInfo(info);
-                    PlayClipCore(_Args, info);
-                }));
+            InitClip(_Args, true);
         }
 
         public void PauseClip(AudioClipArgs _Args)
@@ -182,7 +162,7 @@ namespace Managers.Audio
                 var info = m_ClipInfos[i];
                 if (info == null)
                     continue;
-                if (!string.IsNullOrEmpty(info.Id))
+                if (info.DestroyOnLevelChange)
                     m_ClipInfos[i] = null;
             }
         }
@@ -191,6 +171,44 @@ namespace Managers.Audio
         
         #region nonpublic methods
 
+        private void InitClip(AudioClipArgs _Args, bool _AndPlay)
+        {
+            var info = FindClipInfo(_Args);
+            if (info != null)
+            {
+                if (_AndPlay)
+                    PlayClipCore(_Args, info);
+                return;
+            }
+            
+            var clipEntity = PrefabSetManager.GetObjectEntity<AudioClip>("sounds", _Args.ClipName);
+            Coroutines.Run(Coroutines.WaitWhile(
+                () => clipEntity.Result == EEntityResult.Pending,
+                () =>
+                {
+                    if (clipEntity.Result == EEntityResult.Fail)
+                    {
+                        Dbg.LogWarning($"Sound clip with name {_Args.ClipName} not found in prefab sets");
+                        return;
+                    }
+                    var clip = clipEntity.Value;
+                    if (clip == null)
+                    {
+                        Dbg.LogWarning($"Audio Clip with name {_Args.ClipName} does not exist");
+                        return;
+                    }
+                    var go = new GameObject($"AudioClip_{_Args.ClipName}");
+                    go.SetParent(ContainersGetter.GetContainer(ContainerNames.AudioSources));
+                    var audioSource = go.AddComponent<AudioSource>();
+                    audioSource.clip = clip;
+                    info = new AudioClipInfo(audioSource, _Args);
+                    info.MixerGroup = m_MasterGroup;
+                    AddInfo(info);
+                    if (_AndPlay)
+                        PlayClipCore(_Args, info);
+                }));
+        }
+        
         private void InitAudioMixer()
         {
             m_Mixer = PrefabSetManager.GetObject<AudioMixer>("audio_mixers", "default_mixer");

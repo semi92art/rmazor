@@ -20,18 +20,19 @@ namespace DebugConsole
         {
             // When adding commands, you must add a call below to registerCommand() with its name,
             // implementation method, and description text.
-            Controller.RegisterCommand("help", Help, "Print command list.");
-            Controller.RegisterCommand("restart", Restart, "Restart game.");
-            Controller.RegisterCommand("load", Load, "Reload specified level.");
-            Controller.RegisterCommand("reload", Reload, "Reload current level.");
-            Controller.RegisterCommand("clc", ClearConsole, "Clear console.");
-            Controller.RegisterCommand("set_lang", SetLanguage,"set language");
-            Controller.RegisterCommand("target_fps", SetTargetFps, "Set target frame rate");
+            Controller.RegisterCommand("help",            Help,         "Print command list.");
+            Controller.RegisterCommand("restart",         Restart,      "Restart game.");
+            Controller.RegisterCommand("load",            Load,         "Reload specified level.");
+            Controller.RegisterCommand("reload",          Reload,       "Reload current level.");
+            Controller.RegisterCommand("clc",             ClearConsole, "Clear console.");
+            Controller.RegisterCommand("set_lang",        SetLanguage,  "set language");
+            Controller.RegisterCommand("target_fps",      SetTargetFps, "Set target frame rate");
             Controller.RegisterCommand("wof_spin_enable", EnableSpinButton, "Enable wheel of fortune spin.");
-            Controller.RegisterCommand("enable_ads", EnableAds, "Enable or disable advertising (true/false)");
-            Controller.RegisterCommand("finish_level", FinishLevel, "Finish current level");
-            Controller.RegisterCommand("load_level", LoadLevel, "Load level by index");
-            Controller.RegisterCommand("set_money", SetMoney, "Set money count");
+            Controller.RegisterCommand("enable_ads",      EnableAds,    "Enable or disable advertising (true/false)");
+            Controller.RegisterCommand("finish_level",    FinishLevel,  "Finish current level");
+            Controller.RegisterCommand("load_level",      LoadLevel,    "Load level by index");
+            Controller.RegisterCommand("set_money",       SetMoney,     "Set money count");
+            Controller.RegisterCommand("rate_game_panel", ShowRateGamePanel, "Set money count");
         }
 
         private static void Reload(string[] _Args)
@@ -188,6 +189,11 @@ namespace DebugConsole
                 return;
             }
             Controller.Managers.ScoreManager.SetScore(DataFieldIds.Money, moneyCount, false);
+        }
+        
+        private static void ShowRateGamePanel(string[] _Args)
+        {
+            Controller.CommandsProceeder.RaiseCommand(EInputCommand.RateGamePanel, null, true);
         }
     }
 }

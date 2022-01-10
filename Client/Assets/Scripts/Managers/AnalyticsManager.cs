@@ -57,7 +57,6 @@ namespace Managers
             {
                 EAdsProvider.GoogleAds => Events.AdProvider.AdMob,
                 EAdsProvider.UnityAds  => Events.AdProvider.UnityAds,
-                EAdsProvider.Facebook  => Events.AdProvider.Facebook,
                 _                      => throw new SwitchCaseNotImplementedException(_Provider)
             };
         }

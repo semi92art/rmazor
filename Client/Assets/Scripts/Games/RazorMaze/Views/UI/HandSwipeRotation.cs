@@ -12,27 +12,40 @@ namespace Games.RazorMaze.Views.UI
 {
     public class HandSwipeRotation : HandSwipeBase
     {
+        #region types
+        
         [Serializable]
         public class HandSpriteRotationTraceParams : HandSpriteTraceParamsBase
         {
             public PointPositions a1MoveLeftPositions;
             public PointPositions a1MoveRightPositions;
-            
             public PointPositions a2MoveLeftPositions;
             public PointPositions a2MoveRightPositions;
         }
-        
+
+        #endregion
+
+        #region serialized fields
+
         [SerializeField] private LineRenderer                  trace1;
         [SerializeField] private LineRenderer                  trace2;
         [SerializeField] private HandSpriteRotationTraceParams @params;
 
+        #endregion
+
+        #region nonpublic members
+        
         protected override Dictionary<EMazeMoveDirection, float> m_HandAngles => 
             new Dictionary<EMazeMoveDirection, float>
             {
                 {EMazeMoveDirection.Left, -45f},
-                {EMazeMoveDirection.Right, 45f},
+                {EMazeMoveDirection.Right, 45f}
             };
-            
+
+        #endregion
+        
+        #region api
+        
         public override void Init(
             ITicker _Ticker,
             ICameraProvider _CameraProvider,
@@ -68,12 +81,16 @@ namespace Games.RazorMaze.Views.UI
             trace2.enabled = false;
         }
         
-        protected override void Update()
+        public override void UpdateTick()
         {
             if (m_Direction.HasValue && m_ReadyToAnimate)
                 AnimateHandAndTrace(m_Direction.Value, @params.aTimeEnd);
         }
 
+        #endregion
+
+        #region nonpublic methods
+        
         protected override IEnumerator AnimateTraceCoroutine(EMazeMoveDirection _Direction)
         {
             var a1 = _Direction switch
@@ -139,5 +156,7 @@ namespace Games.RazorMaze.Views.UI
         {
             yield return AnimateHandPositionCoroutine(_Direction, @params);
         }
+
+        #endregion
     }
 }

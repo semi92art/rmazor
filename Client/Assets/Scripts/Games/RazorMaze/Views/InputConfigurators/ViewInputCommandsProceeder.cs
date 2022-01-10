@@ -7,7 +7,7 @@ using UnityEngine.Events;
 
 namespace Games.RazorMaze.Views.InputConfigurators
 {
-    public interface IViewInputCommandsProceeder
+    public interface IViewInputCommandsProceeder : IInit
     {
         event UnityAction<EInputCommand, object[]> Command; 
         event UnityAction<EInputCommand, object[]> InternalCommand; 
@@ -25,9 +25,20 @@ namespace Games.RazorMaze.Views.InputConfigurators
     {
         private readonly Dictionary<string, List<EInputCommand>> m_LockedCommands = 
             new Dictionary<string, List<EInputCommand>>();
+
+        private IEnumerable<EInputCommand> m_AllCommands;
         
         public event UnityAction<EInputCommand, object[]> Command;
         public event UnityAction<EInputCommand, object[]> InternalCommand;
+        
+        public bool              Initialized { get; private set; }
+        public event UnityAction Initialize;
+        public void Init()
+        {
+            m_AllCommands = Enum.GetValues(typeof(EInputCommand)).Cast<EInputCommand>();
+            Initialize?.Invoke();
+            Initialized = true;
+        }
         
         public void LockCommand(EInputCommand _Key, string _Group = "common")
         {
@@ -69,7 +80,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
 
         public IEnumerable<EInputCommand> GetAllCommands()
         {
-            return Enum.GetValues(typeof(EInputCommand)).Cast<EInputCommand>();
+            return m_AllCommands;
         }
 
         public void UnlockAllCommands(string _Group = "common")

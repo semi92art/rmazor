@@ -26,6 +26,7 @@ namespace Games.RazorMaze.Views.InputConfigurators
         
         public virtual void Init()
         {
+            CommandsProceeder.Init();
             TouchProceeder.Init();
             Initialize?.Invoke();
             Initialized = true;

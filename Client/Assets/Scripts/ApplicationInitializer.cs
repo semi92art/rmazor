@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Constants;
 using DI.Extensions;
 using Entities;
@@ -69,6 +70,7 @@ public class ApplicationInitializer : MonoBehaviour
     
     private void Start()
     {
+        InitLogging();
         // костыль: если на iOS стоит светлая тема, задник камеры автоматом ставится белым
         CameraProvider.MainCamera.backgroundColor = Color.black; 
         if (Settings.SrDebuggerOn)
@@ -78,10 +80,19 @@ public class ApplicationInitializer : MonoBehaviour
         InitDefaultData();
         LevelMonoInstaller.Release = true;
         SceneManager.sceneLoaded += OnSceneLoaded;
-        SceneManager.LoadScene(SceneNames.Level);
+        Coroutines.Run(LoadSceneLevel());
+    }
+
+    private static IEnumerator LoadSceneLevel()
+    {
+        var @params = new LoadSceneParameters(LoadSceneMode.Single, LocalPhysicsMode.Physics2D);
+        var op = SceneManager.LoadSceneAsync(SceneNames.Level, @params);
+        while (!op.isDone)
+            yield return null;
+        Dbg.Log("Level loaded");
     }
     
-    private void OnSceneLoaded(Scene _Scene, LoadSceneMode _)
+    private void OnSceneLoaded(Scene _Scene, LoadSceneMode _Mode)
     {
         if (_Scene.name.EqualsIgnoreCase(SceneNames.Level))
         {
@@ -184,6 +195,15 @@ public class ApplicationInitializer : MonoBehaviour
         SetDefaultLanguage();
     }
 
+    private void InitLogging()
+    {
+        Dbg.LogLevel = Settings.LogLevel;
+#if !DEVELOPMENT_BUILD && !UNITY_EDITOR
+        if (Settings.DoNotLogOnRelease)
+            Dbg.LogLevel = ELogLevel.Nothing;
+#endif
+    }
+
     private void SetDefaultLanguage()
     {
         var language = Language.English;
@@ -210,7 +230,7 @@ public class ApplicationInitializer : MonoBehaviour
 
     private static List<ProductInfo> GetProductInfos()
     {
-        string suffix = Application.platform == RuntimePlatform.IPhonePlayer ? "_2" : string.Empty;
+        string suffix = Application.platform == RuntimePlatform.Android ? string.Empty : "_2";
         return new List<ProductInfo>
         {
             new ProductInfo(PurchaseKeys.Money1, $"small_pack_of_coins{suffix}",           ProductType.Consumable),

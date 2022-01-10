@@ -73,3 +73,4 @@ rate_not_now = Later
 rate_never = Never
 purchase = Purchase
 mandatory_ads_disabled = Disable mandatory ads
+coins_alt = coins

@@ -212,7 +212,10 @@ namespace Managers
                 var scoreField = _Fields.First();
                 scoreField.SetValue(_Value).Save(true);
             });
-            OnScoresChanged?.Invoke(new ScoresEventArgs(GetScoreCached(_Id)));
+            Coroutines.RunSync(() =>
+            {
+                OnScoresChanged?.Invoke(new ScoresEventArgs(GetScoreCached(_Id)));
+            });
         }
         
         private string GetScoreKey(ushort _Id)

@@ -55,13 +55,14 @@ namespace Managers.Advertising
         public bool RewardedAdReady     => m_Providers.Any(_P => _P.RewardedAdReady);
         public bool InterstitialAdReady => m_Providers.Any(_P => _P.InterstitialAdReady);
 
-        public bool              Initialized { get; }
+        public bool              Initialized { get; private set; }
         public event UnityAction Initialize;
 
         public void Init()
         {
             InitProviders();
             Initialize?.Invoke();
+            Initialized = true;
         }
 
         public void ShowRewardedAd(UnityAction _OnShown)
@@ -142,10 +143,6 @@ namespace Managers.Advertising
                 var man = new UnityAdsProvider(intAd, rewAd, ShopManager, testMode);
                 man.Init(adsConfig);
                 m_Providers.Add(man);
-            }
-            if (adsProvider.HasFlag(EAdsProvider.Facebook))
-            {
-                // TODO
             }
         }
         

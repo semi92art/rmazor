@@ -26,51 +26,51 @@ namespace Ticker
     
     public abstract class Ticker : ITicker
     {
-        private TickerManager m_TickerManager;
+        private TickerProceeder m_TickerProceeder;
         private bool          m_TickerManagerInstantiated;
         private string        Name => GetType().Name.WithSpaces();
 
-        private TickerManager TickerManager
+        private TickerProceeder TickerProceeder
         {
             get
             {
                 if (m_TickerManagerInstantiated) 
-                    return m_TickerManager;
+                    return m_TickerProceeder;
                 m_TickerManagerInstantiated = true;
-                return CommonUtils.MonoBehSingleton(ref m_TickerManager, Name);
+                return CommonUtils.MonoBehSingleton(ref m_TickerProceeder, Name);
             }
         }
 
         protected Ticker()
         {
-            TickerManager.Paused += OnPaused;
-            TickerManager.UnPaused += OnUnPaused;
+            TickerProceeder.Paused += OnPaused;
+            TickerProceeder.UnPaused += OnUnPaused;
         }
         
         public event UnityAction Paused;
         public event UnityAction UnPaused;
-        public float             Time           => TickerManager.Time;
+        public float             Time           => TickerProceeder.Time;
         public float             DeltaTime      => UnityEngine.Time.deltaTime;
-        public float             FixedTime      => TickerManager.FixedTime;
+        public float             FixedTime      => TickerProceeder.FixedTime;
         public float             FixedDeltaTime => UnityEngine.Time.fixedDeltaTime;
 
         public bool Pause
         {
-            get => TickerManager.Pause;
-            set => TickerManager.Pause = value;
+            get => TickerProceeder.Pause;
+            set => TickerProceeder.Pause = value;
         }
 
-        public  void Reset()                    => TickerManager.Reset();
-        public  void Register(object _Object)   => TickerManager.RegisterObject(_Object);
-        public  void Unregister(object _Object) => TickerManager.UnregisterObject(_Object);
-        public  void ClearRegisteredObjects()   => TickerManager.Clear();
+        public  void Reset()                    => TickerProceeder.Reset();
+        public  void Register(object _Object)   => TickerProceeder.RegisterObject(_Object);
+        public  void Unregister(object _Object) => TickerProceeder.UnregisterObject(_Object);
+        public  void ClearRegisteredObjects()   => TickerProceeder.Clear();
         private void OnUnPaused()               => UnPaused?.Invoke();
         private void OnPaused()                 => Paused?.Invoke();
 
         ~Ticker()
         {
-            TickerManager.Paused  -= OnPaused;
-            TickerManager.UnPaused -= OnUnPaused;
+            TickerProceeder.Paused  -= OnPaused;
+            TickerProceeder.UnPaused -= OnUnPaused;
         }
     }
     

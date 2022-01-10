@@ -94,6 +94,8 @@ namespace Games.RazorMaze.Views.Common
         public void Init()
         {
             CommandsProceeder.Command += OnCommand;
+            Managers.AudioManager.InitClip(AudioClipArgsLevelStart);
+            Managers.AudioManager.InitClip(AudioClipArgsLevelComplete);
             Initialize?.Invoke();
             Initialized = true;
         }
@@ -241,7 +243,7 @@ namespace Games.RazorMaze.Views.Common
             switch (_Args.Stage)
             {
                 case ELevelStage.Loaded:
-                    audioManager.PlayClip(AudioClipArgsLevelStart);
+                    
                     if (!m_FirstTimeLevelLoaded)
                     {
                         audioManager.PlayClip(AudioClipArgsMainTheme);
@@ -255,6 +257,9 @@ namespace Games.RazorMaze.Views.Common
                     audioManager.MuteAudio(EAudioClipType.GameSound);
                     break;
                 case ELevelStage.ReadyToStart:
+                    audioManager.UnmuteAudio(EAudioClipType.GameSound);
+                    audioManager.PlayClip(AudioClipArgsLevelStart);
+                    break;
                 case ELevelStage.StartedOrContinued:
                 case ELevelStage.Finished:
                     audioManager.UnmuteAudio(EAudioClipType.GameSound);

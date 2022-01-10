@@ -8,6 +8,7 @@ using Games.RazorMaze.Models;
 using Games.RazorMaze.Models.ProceedInfos;
 using Games.RazorMaze.Views.InputConfigurators;
 using UnityEngine;
+using Utils;
 
 namespace Games.RazorMaze
 {
@@ -290,7 +291,7 @@ namespace Games.RazorMaze
             }
             return index;
         }
-        
+
         #endregion
     }
 }

@@ -36,7 +36,7 @@ public class EditorHelper : EditorWindow
     private Vector2 m_ModelSettingsScrollPos;
     private Vector2 m_ViewSettingsScrollPos;
 
-    [MenuItem("Tools/Editor Helper", false, 0)]
+    [MenuItem("Tools/\u2699 Editor Helper", false, 0)]
     public static void ShowWindow()
     {
         GetWindow<EditorHelper>("Editor Helper");

@@ -111,6 +111,7 @@ namespace Games.RazorMaze.Models.ItemProceeders
                 case ELevelStage.Finished when _Args.PreviousStage != ELevelStage.Paused:
                     ClearCoroutines();
                     break;
+                case ELevelStage.Finished:
                 case ELevelStage.ReadyToUnloadLevel: 
                 case ELevelStage.Unloaded:
                 case ELevelStage.CharacterKilled:

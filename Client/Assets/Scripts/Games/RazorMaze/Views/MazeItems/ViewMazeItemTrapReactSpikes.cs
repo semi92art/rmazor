@@ -123,7 +123,7 @@ namespace Games.RazorMaze.Views.MazeItems
                 case ItemsProceederBase.StageIdle: break;
                 case TrapsReactProceeder.StagePreReact:   coroutine = HandlePreReact(); break;
                 case TrapsReactProceeder.StageReact:
-                    Managers.AudioManager.PlayClip(GetAudioClipInfoTrapReactOut(_Args.Info));
+                    Managers.AudioManager.PlayClip(GetAudioClipInfoTrapReactOut());
                     coroutine = HandleReact(); break;
                 case TrapsReactProceeder.StageAfterReact: coroutine = HandlePostReact(); break;
                 default: throw new ArgumentOutOfRangeException(
@@ -282,9 +282,9 @@ namespace Games.RazorMaze.Views.MazeItems
             }
         }
         
-        private static AudioClipArgs GetAudioClipInfoTrapReactOut(IMazeItemProceedInfo _Info)
+        private AudioClipArgs GetAudioClipInfoTrapReactOut()
         {
-            return new AudioClipArgs("trap_react_out", EAudioClipType.GameSound, _Id: _Info.GetHashCode().ToString());
+            return new AudioClipArgs("trap_react_out", EAudioClipType.GameSound, _Id: GetHashCode().ToString());
         }
         
         #endregion

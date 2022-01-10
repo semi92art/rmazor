@@ -79,7 +79,7 @@ namespace Managers.IAP
                 }
                 else
                 {         
-                    Dbg.Log("Product was found in paymet queue");
+                    Dbg.Log($"Product was found in paymet queue: {product.ProductIdentifier}");
                     args.Price = product.LocalizedPrice;
                     args.Currency = product.PriceLocale.CurrencyCode;
                     args.Result = () => EShopProductResult.Success;
@@ -126,10 +126,13 @@ namespace Managers.IAP
                 sb.AppendLine($"result.Products.Count: {_Result.Products.Count}");
                 Dbg.Log(sb.ToString());
                 sb.Clear();
-                sb.AppendLine($"result.InvalidProductIdentifiers.Count {_Result.InvalidProductIdentifiers.Count}");
-                foreach (var invalidProductIdentifier in _Result.InvalidProductIdentifiers)
-                    sb.AppendLine($"Invalid identifier: {invalidProductIdentifier}");
-                Dbg.LogWarning(sb.ToString());
+                if (_Result.InvalidProductIdentifiers.Any())
+                {
+                    sb.AppendLine($"result.InvalidProductIdentifiers.Count {_Result.InvalidProductIdentifiers.Count}");
+                    foreach (var invalidProductIdentifier in _Result.InvalidProductIdentifiers)
+                        sb.AppendLine($"Invalid identifier: {invalidProductIdentifier}");
+                    Dbg.LogWarning(sb.ToString());
+                }
             });
         }
 

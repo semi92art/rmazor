@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using DI.Extensions;
 using Entities;
 using Games.RazorMaze.Views.Common;
@@ -35,6 +36,7 @@ namespace UI.PanelItems.Shop_Items
         protected ViewShopItemInfo m_Info;
         private   bool             m_IsBuyButtonNotNull;
         private   bool             m_IsWatchAdImageNotNull;
+        private   IEnumerator      m_StopIndicateLoadingCoroutine;
         
         public virtual void Init(
             IManagersGetter _Managers,
@@ -52,13 +54,14 @@ namespace UI.PanelItems.Shop_Items
             buyButton.onClick.AddListener(_Click);
             itemIcon.sprite = _Info.Icon;
             IndicateLoading(true, _Info.BuyForWatchingAd);
-            Coroutines.Run(Coroutines.WaitWhile(
+            m_StopIndicateLoadingCoroutine = Coroutines.WaitWhile(
                 () => !_Info.Ready,
                 () =>
                 {
                     IndicateLoading(false, _Info.BuyForWatchingAd);
                     FinishAction();
-                }));
+                });
+            Coroutines.Run(m_StopIndicateLoadingCoroutine);
         }
         
         public override void Init(
@@ -116,6 +119,12 @@ namespace UI.PanelItems.Shop_Items
             price.text = $"{m_Info.Price} {m_Info.Currency}";
             if (string.IsNullOrEmpty(price.text) || string.IsNullOrWhiteSpace(price.text))
                 price.text = Managers.LocalizationManager.GetTranslation("buy");
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            Coroutines.Stop(m_StopIndicateLoadingCoroutine);
         }
     }
 }
