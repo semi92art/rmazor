@@ -1,27 +1,26 @@
-﻿using Controllers;
-using DialogViewers;
-using Entities;
-using Games.RazorMaze;
-using Games.RazorMaze.Controllers;
-using Games.RazorMaze.Models;
-using Games.RazorMaze.Models.InputSchedulers;
-using Games.RazorMaze.Models.ItemProceeders;
-using Games.RazorMaze.Views;
-using Games.RazorMaze.Views.Characters;
-using Games.RazorMaze.Views.Common;
-using Games.RazorMaze.Views.ContainerGetters;
-using Games.RazorMaze.Views.Factories;
-using Games.RazorMaze.Views.Helpers;
-using Games.RazorMaze.Views.Helpers.MazeItemsCreators;
-using Games.RazorMaze.Views.InputConfigurators;
-using Games.RazorMaze.Views.MazeItemGroups;
-using Games.RazorMaze.Views.MazeItems;
-using Games.RazorMaze.Views.MazeItems.Additional;
-using Games.RazorMaze.Views.Rotation;
-using Games.RazorMaze.Views.UI;
+﻿using DialogViewers;
+using Managers;
 using Managers.Audio;
-using UI.Panels;
-using UI.Panels.ShopPanels;
+using RMAZOR;
+using RMAZOR.Controllers;
+using RMAZOR.Models;
+using RMAZOR.Models.InputSchedulers;
+using RMAZOR.Models.ItemProceeders;
+using RMAZOR.UI.Panels;
+using RMAZOR.UI.Panels.ShopPanels;
+using RMAZOR.Views;
+using RMAZOR.Views.Characters;
+using RMAZOR.Views.Common;
+using RMAZOR.Views.ContainerGetters;
+using RMAZOR.Views.Factories;
+using RMAZOR.Views.Helpers;
+using RMAZOR.Views.Helpers.MazeItemsCreators;
+using RMAZOR.Views.InputConfigurators;
+using RMAZOR.Views.MazeItemGroups;
+using RMAZOR.Views.MazeItems;
+using RMAZOR.Views.MazeItems.Additional;
+using RMAZOR.Views.Rotation;
+using RMAZOR.Views.UI;
 using UnityEngine;
 
 namespace Mono_Installers
@@ -161,7 +160,6 @@ namespace Mono_Installers
             #region other
 
             Container.Bind<IColorProvider>()    .FromComponentInNewPrefab(colorProvider) .AsSingle();
-            Container.Bind<ILoadingController>().To<LoadingController>()                 .AsSingle().When(_ => Release);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Container.Bind<IDebugManager>()     .To<DebugManager>()                      .AsSingle();
 #endif

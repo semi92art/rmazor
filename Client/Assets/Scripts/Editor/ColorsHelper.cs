@@ -1,135 +1,139 @@
 ﻿using System.Linq;
-using Constants;
-using DI.Extensions;
-using Entities;
+using Common.Constants;
+using Common.Entities;
+using Common.Extensions;
+using Common.Utils;
 using GameHelpers;
-using Games.RazorMaze.Views.Common;
 using Managers;
+using RMAZOR.Views.Common;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;
 
-public class ColorsHelper : EditorWindow
+namespace Editor
 {
-    private IColorProvider                        m_ColorProvider;
-    private ColorSetScriptableObject              m_ColorSetScrObj;
-    private ColorSetScriptableObject.ColorItemSet m_ColorSet;
-    private Color?                                m_UiColor;
-    private Color                                 m_UiColorCheck;
-    private bool                                  m_ChangeOnlyHueUi = true;
-    
-    [MenuItem("Tools/Colors Helper", false, 2)]
-    public static void ShowWindow()
+    public class ColorsHelper : EditorWindow
     {
-        var window = GetWindow<ColorsHelper>("Color Palette Helper");
-        window.minSize = new Vector2(500, 200);
-    }
+        private IColorProvider                        m_ColorProvider;
+        private ColorSetScriptableObject              m_ColorSetScrObj;
+        private ColorSetScriptableObject.ColorItemSet m_ColorSet;
+        private Color?                                m_UiColor;
+        private Color                                 m_UiColorCheck;
+        private bool                                  m_ChangeOnlyHueUi = true;
     
-    private void OnGUI()
-    {
-        if (m_ColorSet == null)
+        [MenuItem("Tools/Colors Helper _c", false, 2)]
+        public static void ShowWindow()
         {
-            m_ColorSetScrObj = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ColorSetScriptableObject>(
-                "views", "color_set");
-            m_ColorSet = m_ColorSetScrObj.set;
+            var window = GetWindow<ColorsHelper>("Color Palette Helper");
+            window.minSize = new Vector2(500, 200);
         }
-
-        EditorUtilsEx.GUIEnabledZone(false, () =>
+    
+        private void OnGUI()
         {
-            EditorGUILayout.ObjectField(
-                "set", m_ColorSetScrObj, typeof(ColorSetScriptableObject), false);
-        });
-        
-        DisplayColors();
-
-        if ((m_ColorProvider == null || m_ColorSetScrObj == null)
-            && Application.isPlaying
-            && SceneManager.GetActiveScene().name.Contains(SceneNames.Level))
-        {
-            m_ColorProvider = FindObjectOfType<DefaultColorProvider>();
-        }
-        
-        EditorUtilsEx.HorizontalLine(Color.gray);
-        GUILayout.Label("UI Color:");
-        if (!m_UiColor.HasValue)
-        {
-            var uiSetItem = m_ColorSet.FirstOrDefault(_Item => ColorIds.GetHash(_Item.name) == ColorIds.UI);
-            if (uiSetItem != null)
+            if (m_ColorSet == null)
             {
-                m_UiColor = EditorGUILayout.ColorField(uiSetItem.color);
-                m_UiColorCheck = uiSetItem.color;
+                m_ColorSetScrObj = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ColorSetScriptableObject>(
+                    "views", "color_set");
+                m_ColorSet = m_ColorSetScrObj.set;
             }
-        }
-        else
-        {
-            m_UiColor = EditorGUILayout.ColorField(m_UiColor.Value);
-        }
-        m_ChangeOnlyHueUi = EditorGUILayout.Toggle("Only Hue", m_ChangeOnlyHueUi);
-        if (m_UiColor.HasValue && m_UiColor != m_UiColorCheck)
-            SetUiColors(m_UiColor.Value);
-        if (m_UiColor.HasValue)
-            m_UiColorCheck = m_UiColor.Value;
 
-        EditorUtilsEx.HorizontalLine(Color.gray);
-        
-        EditorUtilsEx.GuiButtonAction("Save",
-            () =>
+            EditorUtilsEx.GUIEnabledZone(false, () =>
             {
-                m_ColorSetScrObj.set = m_ColorSet;
-                AssetDatabase.SaveAssets();
+                EditorGUILayout.ObjectField(
+                    "set", m_ColorSetScrObj, typeof(ColorSetScriptableObject), false);
             });
-    }
+        
+            DisplayColors();
 
-    private void SetUiColors(Color _Color)
-    {
-        var coloIds = new []
-        {
-            ColorIds.UI,
-            ColorIds.UiBackground,
-            ColorIds.UiBorder,
-            ColorIds.UiText,
-            ColorIds.UiDialogItemNormal,
-            ColorIds.UiDialogBackground
-        };
-        foreach (var id in coloIds)
-        {
-            var item = m_ColorSet.FirstOrDefault(_Item => ColorIds.GetHash(_Item.name) == id);
-            if (item == null) 
-                continue;
-            var col = item.color;
-            Color newColor;
-            if (m_ChangeOnlyHueUi)
+            if ((m_ColorProvider == null || m_ColorSetScrObj == null)
+                && Application.isPlaying
+                && SceneManager.GetActiveScene().name.Contains(SceneNames.Level))
             {
-                Color.RGBToHSV(_Color, out float h, out _, out _);
-                Color.RGBToHSV(col, out _, out float s, out float v);
-                newColor = Color.HSVToRGB(h, s, v).SetA(col.a);
+                m_ColorProvider = FindObjectOfType<DefaultColorProvider>();
+            }
+        
+            EditorUtilsEx.HorizontalLine(Color.gray);
+            GUILayout.Label("UI Color:");
+            if (!m_UiColor.HasValue)
+            {
+                var uiSetItem = m_ColorSet.FirstOrDefault(_Item => ColorIds.GetHash(_Item.name) == ColorIds.UI);
+                if (uiSetItem != null)
+                {
+                    m_UiColor = EditorGUILayout.ColorField(uiSetItem.color);
+                    m_UiColorCheck = uiSetItem.color;
+                }
             }
             else
             {
-                newColor = _Color.SetA(col.a);
+                m_UiColor = EditorGUILayout.ColorField(m_UiColor.Value);
             }
-            m_ColorProvider?.SetColor(id, newColor);
-            item.color = newColor;
-        }
-    }
+            m_ChangeOnlyHueUi = EditorGUILayout.Toggle("Only Hue", m_ChangeOnlyHueUi);
+            if (m_UiColor.HasValue && m_UiColor != m_UiColorCheck)
+                SetUiColors(m_UiColor.Value);
+            if (m_UiColor.HasValue)
+                m_UiColorCheck = m_UiColor.Value;
 
-    private void DisplayColors()
-    {
-        foreach (var item in m_ColorSet)
+            EditorUtilsEx.HorizontalLine(Color.gray);
+        
+            EditorUtilsEx.GuiButtonAction("Save",
+                                          () =>
+                                          {
+                                              m_ColorSetScrObj.set = m_ColorSet;
+                                              AssetDatabase.SaveAssets();
+                                          });
+        }
+
+        private void SetUiColors(Color _Color)
         {
-            EditorUtilsEx.HorizontalZone(() =>
+            var coloIds = new []
             {
-                EditorUtilsEx.GUIEnabledZone(false, () =>
+                ColorIds.UI,
+                ColorIds.UiBackground,
+                ColorIds.UiBorder,
+                ColorIds.UiText,
+                ColorIds.UiDialogItemNormal,
+                ColorIds.UiDialogBackground
+            };
+            foreach (var id in coloIds)
+            {
+                var item = m_ColorSet.FirstOrDefault(_Item => ColorIds.GetHash(_Item.name) == id);
+                if (item == null) 
+                    continue;
+                var col = item.color;
+                Color newColor;
+                if (m_ChangeOnlyHueUi)
                 {
-                    EditorGUILayout.TextField(ColorIds.GetHash(item.name).ToString(), GUILayout.Width(80));
-                    EditorGUILayout.TextField(item.name, GUILayout.Width(170));
-                });
-                var newColor = EditorGUILayout.ColorField(item.color);
-                if (newColor != item.color)
-                    m_ColorProvider?.SetColor(ColorIds.GetHash(item.name), item.color);
+                    Color.RGBToHSV(_Color, out float h, out _, out _);
+                    Color.RGBToHSV(col, out _, out float s, out float v);
+                    newColor = Color.HSVToRGB(h, s, v).SetA(col.a);
+                }
+                else
+                {
+                    newColor = _Color.SetA(col.a);
+                }
+                m_ColorProvider?.SetColor(id, newColor);
                 item.color = newColor;
-            });
+            }
+        }
+
+        private void DisplayColors()
+        {
+            foreach (var item in m_ColorSet)
+            {
+                EditorUtilsEx.HorizontalZone(() =>
+                {
+                    EditorUtilsEx.GUIEnabledZone(false, () =>
+                    {
+                        EditorGUILayout.TextField(ColorIds.GetHash(item.name).ToString(), GUILayout.Width(80));
+                        EditorGUILayout.TextField(item.name, GUILayout.Width(170));
+                    });
+                    var newColor = EditorGUILayout.ColorField(item.color);
+                    if (newColor != item.color)
+                        m_ColorProvider?.SetColor(ColorIds.GetHash(item.name), item.color);
+                    item.color = newColor;
+                });
+            }
         }
     }
 }

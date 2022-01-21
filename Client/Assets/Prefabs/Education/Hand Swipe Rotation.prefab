@@ -153,25 +153,25 @@ MonoBehaviour:
     aTimeMiddle: 0.66
     aTimeEnd: 1.33
     a1MoveLeftPositions:
-      posStart: {x: -0.079898, y: 0.49344}
-      posMiddle: {x: 1.7502, y: 2.3096}
-      posEnd: {x: -0.079898, y: 0.49344}
-      bPos: {x: -0.079898, y: 0.49344}
+      posStart: {x: -0.02834295, y: 0.545}
+      posMiddle: {x: 1.291334, y: 1.85}
+      posEnd: {x: -0.02834295, y: 0.545}
+      bPos: {x: -0.02834295, y: 0.545}
     a1MoveRightPositions:
-      posStart: {x: -0.21381, y: 0.47621}
-      posMiddle: {x: -1.6601, y: 1.9737}
-      posEnd: {x: -0.21381, y: 0.47621}
-      bPos: {x: -0.21381, y: 0.47621}
+      posStart: {x: -0.27, y: 0.52}
+      posMiddle: {x: -1.682805, y: 2}
+      posEnd: {x: -0.27, y: 0.52}
+      bPos: {x: -0.27, y: 0.52}
     a2MoveLeftPositions:
-      posStart: {x: -0.097478, y: 0.49862}
-      posMiddle: {x: 1.4974, y: 2.0783}
-      posEnd: {x: -0.097478, y: 0.49862}
-      bPos: {x: -0.097478, y: 0.49862}
+      posStart: {x: -0.02668776, y: 0.57}
+      posMiddle: {x: 1.161613, y: 1.74}
+      posEnd: {x: -0.02668776, y: 0.57}
+      bPos: {x: -0.02668776, y: 0.57}
     a2MoveRightPositions:
-      posStart: {x: -0.18974, y: 0.54011}
-      posMiddle: {x: -1.828, y: 2.1484}
-      posEnd: {x: -0.18974, y: 0.54011}
-      bPos: {x: -0.18974, y: 0.54011}
+      posStart: {x: -0.24, y: 0.59}
+      posMiddle: {x: -1.83, y: 2.15}
+      posEnd: {x: -0.24, y: 0.59}
+      bPos: {x: -0.24, y: 0.59}
 --- !u!1 &2382249750387589116
 GameObject:
   m_ObjectHideFlags: 0

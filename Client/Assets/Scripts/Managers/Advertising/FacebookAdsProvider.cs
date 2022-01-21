@@ -1,10 +1,11 @@
 ﻿// using AudienceNetwork;
 
 using System;
-using DI.Extensions;
-using Entities;
-using Games.RazorMaze.Views.ContainerGetters;
+using Common.Constants;
+using Common.Entities;
+using Common.Extensions;
 using Managers.IAP;
+using RMAZOR.Views.ContainerGetters;
 using UnityEngine;
 using UnityEngine.Events;
 

@@ -1,0 +1,17 @@
+{
+    "name": "Client.Common",
+    "rootNamespace": "",
+    "references": [
+        "GUID:d178ac4b10764814c8ae876ce6354d19",
+        "GUID:0458bb8423b4b7b4f8c3d60fd8210519"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,6 +1,6 @@
-﻿using Entities;
-using Games.RazorMaze.Views.Common;
-using Ticker;
+﻿using Common.Ticker;
+using Managers;
+using RMAZOR.Views.Common;
 using UnityEngine.Events;
 
 namespace UI.PanelItems.Shop_Items

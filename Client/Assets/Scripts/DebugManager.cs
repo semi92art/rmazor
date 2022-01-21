@@ -1,5 +1,6 @@
-﻿using Entities;
-using Games.RazorMaze.Views.InputConfigurators;
+﻿using Common;
+using Managers;
+using RMAZOR.Views.InputConfigurators;
 using Settings;
 using UnityEngine.Events;
 
@@ -29,8 +30,8 @@ public class DebugManager : IDebugManager
 
     public DebugManager(
         IViewInputCommandsProceeder _CommandsProceeder,
-        IManagersGetter _Managers,
-        IDebugSetting _DebugSetting)
+        IManagersGetter             _Managers,
+        IDebugSetting               _DebugSetting)
     {
         CommandsProceeder = _CommandsProceeder;
         Managers = _Managers;

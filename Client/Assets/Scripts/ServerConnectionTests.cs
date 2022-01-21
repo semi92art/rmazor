@@ -1,9 +1,13 @@
 ﻿using System.Collections;
 using System.Threading.Tasks;
+using Common;
+using Common.Helpers;
+using Common.Network;
+using Common.Network.Packets;
+using Common.Ticker;
+using Common.Utils;
 using GameHelpers;
 using Network;
-using Network.Packets;
-using Ticker;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Networking;
@@ -59,11 +63,11 @@ public class ServerConnectionTests
         
         //Act
         IPacket packet = new LoginUserPacket(
-            new LoginUserPacketRequestArgs
-            {
-                Name = "test_user_do_not_delete",
-                PasswordHash = ""
-            })
+                new LoginUserPacketRequestArgs
+                {
+                    Name = "test_user_do_not_delete",
+                    PasswordHash = ""
+                })
             .OnFail(() => requestSuccess = false)
             .OnSuccess(() => requestSuccess = true) as LoginUserPacket;
         gc.Initialize += () =>

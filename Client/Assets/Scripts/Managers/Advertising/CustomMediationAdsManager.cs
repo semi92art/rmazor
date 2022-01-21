@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Entities;
+using Common;
+using Common.Entities;
+using Common.Ticker;
+using Common.Utils;
 using GameHelpers;
 using Managers.IAP;
-using Ticker;
+using RMAZOR;
 using UnityEngine.Events;
 using Utils;
 
@@ -123,11 +126,7 @@ namespace Managers.Advertising
 
         private void InitProviders()
         {
-            bool testMode = true;
-#if !UNITY_EDITOR && !DEVELOPMENT_BUILD
-            testMode = false;
-#endif
-            
+            bool testMode = GameSettings.TestAds;
             var adsConfig = ResLoader.FromResources(@"configs\ads");
             var adsProvider = GameSettings.AdsProvider;
             if (adsProvider.HasFlag(EAdsProvider.GoogleAds))

@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Entities;
+using Common;
+using Common.Entities;
+using Common.Utils;
 using GameHelpers;
 using GoogleMobileAds.Api;
 using Managers.IAP;
+using UnityEngine;
 using UnityEngine.Events;
 using Utils;
 
@@ -15,15 +18,18 @@ namespace Managers.Advertising
 
         #region nonpublic members
 
-        private RewardedAd     m_RewardedAd;
-        private InterstitialAd m_InterstitialAd;
+        private          RewardedAd     m_RewardedAd;
+        private          InterstitialAd m_InterstitialAd;
 
         #endregion
 
         #region inject
         private CommonGameSettings Settings { get; }
 
-        public GoogleAdMobAdsProvider(CommonGameSettings _Settings, IShopManager _ShopManager, bool _TestMode)
+        public GoogleAdMobAdsProvider(
+            CommonGameSettings _Settings, 
+            IShopManager _ShopManager,
+            bool _TestMode)
             : base(_ShopManager, _TestMode)
         {
             Settings = _Settings;
@@ -38,7 +44,7 @@ namespace Managers.Advertising
         
         public override void ShowRewardedAd(UnityAction _OnShown, BoolEntity _ShowAds)
         {
-            Coroutines.Run(Coroutines.WaitWhile(
+            Cor.Run(Cor.WaitWhile(
                 () => _ShowAds.Result == EEntityResult.Pending,
                 () =>
                 {
@@ -62,7 +68,7 @@ namespace Managers.Advertising
         
         public override void ShowInterstitialAd(UnityAction _OnShown, BoolEntity _ShowAds)
         {
-            Coroutines.Run(Coroutines.WaitWhile(
+            Cor.Run(Cor.WaitWhile(
                 () => _ShowAds.Result == EEntityResult.Pending,
                 () =>
                 {
@@ -108,8 +114,10 @@ namespace Managers.Advertising
 
         protected override void InitRewardedAd()
         {
-            string rewardedAdId = Settings.TestAds ?
-                "ca-app-pub-3940256099942544/5224354917" : GetAdsNodeValue("admob", "reward");
+            string testId = Application.platform == RuntimePlatform.Android
+                ? "ca-app-pub-3940256099942544/5224354917"  // https://developers.google.com/admob/android/test-ads
+                : "ca-app-pub-3940256099942544/1712485313"; // https://developers.google.com/admob/ios/test-ads
+            string rewardedAdId = m_TestMode ? testId : GetAdsNodeValue("admob", "reward");
             m_RewardedAd = new RewardedAd(rewardedAdId);
             var adRequest = new AdRequest.Builder().Build();
             m_RewardedAd.LoadAd(adRequest);
@@ -123,8 +131,10 @@ namespace Managers.Advertising
 
         protected override void InitInterstitialAd()
         {
-            string interstitialAdId = Settings.TestAds ?
-                "ca-app-pub-3940256099942544/8691691433" : GetAdsNodeValue("admob", "interstitial");
+            string testId = Application.platform == RuntimePlatform.Android
+                ? "ca-app-pub-3940256099942544/8691691433"  // https://developers.google.com/admob/android/test-ads
+                : "ca-app-pub-3940256099942544/5135589807"; // https://developers.google.com/admob/ios/test-ads
+            string interstitialAdId = m_TestMode ? testId : GetAdsNodeValue("admob", "interstitial");
             m_InterstitialAd = new InterstitialAd(interstitialAdId);
             var adRequest = new AdRequest.Builder().Build();
             m_InterstitialAd.LoadAd(adRequest);

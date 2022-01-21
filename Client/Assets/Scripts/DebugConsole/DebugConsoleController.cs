@@ -2,8 +2,9 @@
 
 using System;
 using System.Collections.Generic;
-using Entities;
-using Games.RazorMaze.Views.InputConfigurators;
+using Common;
+using Managers;
+using RMAZOR.Views.InputConfigurators;
 
 namespace DebugConsole
 {
@@ -20,7 +21,9 @@ namespace DebugConsole
         public delegate void LogChangedHandler(string[] _Log);
         public event LogChangedHandler OnLogChanged;
         public delegate void VisibilityChangedHandler(bool _Visible);
+#pragma warning disable 67
         public event VisibilityChangedHandler VisibilityChanged;
+#pragma warning restore 67
 
         #endregion
 
@@ -30,6 +33,7 @@ namespace DebugConsole
 
         public class CommandRegistration
         {
+            // ReSharper disable once UnusedAutoPropertyAccessor.Global
             public string Command { get; }
             public CommandHandler Handler { get; }
             public string Description { get; }

@@ -10,7 +10,7 @@ using UnityEditor.SceneManagement;
 namespace Loqheart.Utility
 {
     [CustomEditor(typeof(RulerData))]
-    public class RulerDataEditor : Editor
+    public class RulerDataEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {

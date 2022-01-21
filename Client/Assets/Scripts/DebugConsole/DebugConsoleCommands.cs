@@ -1,14 +1,16 @@
 ﻿#if UNITY_EDITOR || DEVELOPMENT_BUILD
 using System;
 using System.Linq;
-using Constants;
-using Entities;
-using Games.RazorMaze;
-using Games.RazorMaze.Models;
+using Common;
+using Common.Constants;
+using Common.Entities;
+using Common.Enums;
+using Common.Utils;
 using Lean.Localization;
+using RMAZOR;
+using RMAZOR.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Utils;
 
 namespace DebugConsole
 {
@@ -29,7 +31,6 @@ namespace DebugConsole
             Controller.RegisterCommand("target_fps",      SetTargetFps, "Set target frame rate");
             Controller.RegisterCommand("wof_spin_enable", EnableSpinButton, "Enable wheel of fortune spin.");
             Controller.RegisterCommand("enable_ads",      EnableAds,    "Enable or disable advertising (true/false)");
-            Controller.RegisterCommand("finish_level",    FinishLevel,  "Finish current level");
             Controller.RegisterCommand("load_level",      LoadLevel,    "Load level by index");
             Controller.RegisterCommand("set_money",       SetMoney,     "Set money count");
             Controller.RegisterCommand("rate_game_panel", ShowRateGamePanel, "Set money count");
@@ -160,12 +161,6 @@ namespace DebugConsole
                 Value = _Args[0] == "true"
             };
             Controller.Managers.AdsManager.ShowAds = entity;
-        }
-
-        private static void FinishLevel(string[] _Args)
-        {
-            RazorMazeUtils.LoadNextLevelAutomatically = false;
-            Controller.CommandsProceeder.RaiseCommand(EInputCommand.FinishLevel, null, true);
         }
 
         private static void LoadLevel(string[] _Args)

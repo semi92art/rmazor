@@ -1,4 +1,5 @@
-﻿using Entities;
+﻿using Common.Entities;
+using RMAZOR;
 using UnityEngine.Events;
 
 namespace Settings

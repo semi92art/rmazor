@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Entities;
+using Common.Entities;
+using Common.Enums;
 using UnityEngine.Events;
 
 namespace Settings

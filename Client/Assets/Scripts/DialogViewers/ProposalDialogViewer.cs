@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DI.Extensions;
+using Common.CameraProviders;
+using Common.Enums;
+using Common.Extensions;
+using Common.Ticker;
+using Common.Utils;
 using GameHelpers;
-using Games.RazorMaze;
-using Games.RazorMaze.Views.MazeItems;
-using LeTai.Asset.TranslucentImage;
-using Ticker;
+using RMAZOR;
 using UI;
 using UI.Factories;
 using UI.Panels;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using Utils;
 using Object = UnityEngine.Object;
 
 namespace DialogViewers
@@ -62,12 +62,9 @@ namespace DialogViewers
                 "dialog_viewers",
                 "notification_viewer");
             
-            Coroutines.Run(Coroutines.WaitEndOfFrame(() =>
+            Cor.Run(Cor.WaitEndOfFrame(() =>
             {
                 m_DialogContainer = go.GetCompItem<RectTransform>("dialog_container");
-                Background = go.GetCompItem<TranslucentImage>("background");
-                Background.source = CameraProvider.TranslucentSource;
-                Background.enabled = false;
             }));
         }
 
@@ -81,13 +78,13 @@ namespace DialogViewers
                 && CurrentPanel.AppearingState == EAppearingState.Appeared)
                 return;
             ViewSettings.ProposalDialogAnimSpeed = _Speed;
-            CameraProvider.TranslucentSource.enabled = true;
+            CameraProvider.DofEnabled = true;
             CurrentPanel = _Item;
             var panel = CurrentPanel.PanelObject;
             m_Alphas = panel.GetComponentsInChildrenEx<Graphic>()
                 .Distinct()
                 .ToDictionary(_El => _El, _El => _El.color.a);
-            Coroutines.Run(DoTransparentTransition(
+            Cor.Run(DoTransparentTransition(
                 panel, 
                 m_Alphas,
                 0.2f,
@@ -103,7 +100,7 @@ namespace DialogViewers
         public void Back(UnityAction _OnFinish = null)
         {
             var panel = CurrentPanel;
-            Coroutines.Run(DoTransparentTransition(
+            Cor.Run(DoTransparentTransition(
                 panel.PanelObject,
                 m_Alphas,
                 0.2f,
@@ -112,7 +109,7 @@ namespace DialogViewers
                 {
                     panel.AppearingState = EAppearingState.Dissapeared;
                     if (IsOtherDialogViewersShowing == null || !IsOtherDialogViewersShowing())
-                        CameraProvider.TranslucentSource.enabled = false;
+                        CameraProvider.DofEnabled = false;
                     panel.OnDialogHide();
                     Object.Destroy(panel.PanelObject.gameObject);
                     _OnFinish?.Invoke();

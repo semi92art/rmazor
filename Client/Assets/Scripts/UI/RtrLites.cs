@@ -1,4 +1,4 @@
-﻿using UI.Entities;
+﻿using Common.Entities.UI;
 using UnityEngine;
 
 namespace UI

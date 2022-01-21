@@ -6,11 +6,7 @@
 <e text = "Utils.Dbg:Log" />
 <e text = "Utils.CommonUtils.SetGoActive[T]" />
 <e text = "Shapes.ShapeRenderer.get_Mesh" />
-<e text = "GameHelpers.PrefabUtilsEx.GetPrefabBase" />
-<e text = "GameHelpers.PrefabUtilsEx.GetPrefab" />
-<e text = "DI.Extensions.ObjectExtensions.GetCompItem[T]" />
-<e text = "PrefabContent.GetItemComponent[T]" />
-<e text = "GameHelpers.LevelsLoader.LoadLevel" />
+<e text = "Common.Dbg:Log" />
 </Entries>
 </SettingsList>
 </root>

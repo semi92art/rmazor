@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using DI.Extensions;
+using Common;
+using Common.Extensions;
 using Newtonsoft.Json;
 using SA.Foundation.Templates;
 using SA.iOS.StoreKit;

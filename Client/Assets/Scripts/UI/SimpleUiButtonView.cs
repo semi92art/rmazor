@@ -1,5 +1,5 @@
-﻿using Games.RazorMaze.Views.Common;
-using StansAssets.Foundation.Extensions;
+﻿using Common.Extensions;
+using RMAZOR.Views.Common;
 using UnityEngine;
 using UnityEngine.UI;
 

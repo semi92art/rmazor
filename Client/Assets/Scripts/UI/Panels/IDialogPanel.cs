@@ -1,4 +1,4 @@
-﻿using Games.RazorMaze.Views.MazeItems;
+﻿using Common.Enums;
 using UnityEngine;
 
 namespace UI.Panels

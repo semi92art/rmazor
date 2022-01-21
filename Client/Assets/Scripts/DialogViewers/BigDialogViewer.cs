@@ -1,23 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Constants;
-using DI.Extensions;
-using Entities;
+using Common.CameraProviders;
+using Common.Constants;
+using Common.Enums;
+using Common.Extensions;
+using Common.Ticker;
+using Common.Utils;
 using GameHelpers;
-using Games.RazorMaze.Models;
-using Games.RazorMaze.Views.Common;
-using Games.RazorMaze.Views.InputConfigurators;
-using Games.RazorMaze.Views.MazeItems;
 using Lean.Common;
-using LeTai.Asset.TranslucentImage;
-using Ticker;
+using Managers;
+using RMAZOR.Models;
+using RMAZOR.Views.Common;
+using RMAZOR.Views.InputConfigurators;
 using UI;
 using UI.Factories;
 using UI.Panels;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using Utils;
 
 namespace DialogViewers
 {
@@ -61,11 +61,11 @@ namespace DialogViewers
         
         private Button        m_CloseButton;
         private Animator      m_CloseButtonAnim;
-        private Image         m_Background;
+        // private Image         m_Background;
         private RectTransform m_DialogContainer;
         
-        private readonly Stack<IDialogPanel> PanelStack = new Stack<IDialogPanel>();
-        private readonly Dictionary<int, GraphicAlphas> GraphicsAlphas = 
+        private readonly Stack<IDialogPanel> m_PanelStack = new Stack<IDialogPanel>();
+        private readonly Dictionary<int, GraphicAlphas> m_GraphicsAlphas = 
             new Dictionary<int, GraphicAlphas>();
 
         #endregion
@@ -106,13 +106,9 @@ namespace DialogViewers
                     RtrLites.FullFill),
                 "dialog_viewers",
                 "dialog_viewer");
-            m_Background = go.GetCompItem<Image>("background");
             m_DialogContainer = go.GetCompItem<RectTransform>("dialog_container");
             m_CloseButton = go.GetCompItem<Button>("close_button");
             m_CloseButtonAnim = go.GetCompItem<Animator>("buttons_animator");
-            Background = go.GetCompItem<TranslucentImage>("background");
-            Background.source = CameraProvider.TranslucentSource;
-            Background.enabled = false;
             m_CloseButton.RTransform().anchoredPosition = new Vector2(0f, 100f);
             var borderColor = ColorProvider.GetColor(ColorIds.UiBorder);
             m_CloseButton.GetCompItem<Image>("border").color = borderColor;
@@ -126,7 +122,7 @@ namespace DialogViewers
 
         public void Show(IDialogPanel _ItemTo, bool _HidePrevious = true)
         {
-            CameraProvider.TranslucentSource.enabled = true;
+            CameraProvider.DofEnabled = true;
             CurrentPanel = _ItemTo;
             m_CloseButton.transform.SetAsLastSibling();
             ShowCore(_ItemTo, _HidePrevious, false);
@@ -134,12 +130,12 @@ namespace DialogViewers
         
         public void CloseAll()
         {
-            if (!PanelStack.Any())
+            if (!m_PanelStack.Any())
                 return;
-            var lastPanel = PanelStack.Pop();
+            var lastPanel = m_PanelStack.Pop();
             var panelsToDestroy = new List<IDialogPanel>();
-            while (PanelStack.Count > 0)
-                panelsToDestroy.Add(PanelStack.Pop());
+            while (m_PanelStack.Count > 0)
+                panelsToDestroy.Add(m_PanelStack.Pop());
             
             foreach (var pan in panelsToDestroy
                 .Where(_Panel => _Panel != null))
@@ -147,7 +143,7 @@ namespace DialogViewers
                 Object.Destroy(pan.PanelObject.gameObject);
             }
             
-            PanelStack.Push(lastPanel);
+            m_PanelStack.Push(lastPanel);
             ShowCore(null, true, true);
             CommandsProceeder.RaiseCommand(EInputCommand.UnPauseLevel, null, true);
         }
@@ -169,7 +165,7 @@ namespace DialogViewers
             bool _HidePrevious,
             bool _GoBack)
         {
-            var panelFrom = !PanelStack.Any() ? null : PanelStack.Peek();
+            var panelFrom = !m_PanelStack.Any() ? null : m_PanelStack.Peek();
             if (panelFrom == null && _PanelTo == null)
                 return;
             var panelFromObj = panelFrom?.PanelObject;
@@ -178,15 +174,15 @@ namespace DialogViewers
             {
                 panelFrom.AppearingState = EAppearingState.Dissapearing;
                 int instId = panelFromObj.GetInstanceID();
-                if (!GraphicsAlphas.ContainsKey(instId))
-                    GraphicsAlphas.Add(instId, new GraphicAlphas(panelFromObj));
-                Coroutines.Run(DoTransparentTransition(
-                    panelFromObj, GraphicsAlphas[instId].Alphas, TransitionTime,
+                if (!m_GraphicsAlphas.ContainsKey(instId))
+                    m_GraphicsAlphas.Add(instId, new GraphicAlphas(panelFromObj));
+                Cor.Run(DoTransparentTransition(
+                    panelFromObj, m_GraphicsAlphas[instId].Alphas, TransitionTime,
                     true,
                     () =>
                     {
                         if (_PanelTo == null && (IsOtherDialogViewersShowing == null || !IsOtherDialogViewersShowing()))
-                            CameraProvider.TranslucentSource.enabled = false;
+                            CameraProvider.DofEnabled = false;
                         panelFrom.AppearingState = EAppearingState.Dissapeared;
                         if (!_GoBack)
                             return;
@@ -198,15 +194,15 @@ namespace DialogViewers
                 CurrentPanel = _PanelTo;
                 _PanelTo.AppearingState = EAppearingState.Appearing;
                 int instId = panelToObj.GetInstanceID();
-                if (!GraphicsAlphas.ContainsKey(instId))
-                    GraphicsAlphas.Add(instId, new GraphicAlphas(panelToObj));
-                Coroutines.Run(DoTransparentTransition(
-                    panelToObj, GraphicsAlphas[instId].Alphas, TransitionTime,
+                if (!m_GraphicsAlphas.ContainsKey(instId))
+                    m_GraphicsAlphas.Add(instId, new GraphicAlphas(panelToObj));
+                Cor.Run(DoTransparentTransition(
+                    panelToObj, m_GraphicsAlphas[instId].Alphas, TransitionTime,
                     false, 
                     () =>
                     {
                         _PanelTo.AppearingState = EAppearingState.Appeared;
-                        m_Background.enabled = true;
+                        // m_Background.enabled = true;
                     }));
                 _PanelTo.OnDialogEnable();
             }
@@ -219,19 +215,18 @@ namespace DialogViewers
             bool _GoBack,
             RectTransform _PanelTo)
         {
-            m_Background.enabled = m_Background.raycastTarget = !(_PanelTo == null && _GoBack);
             ClearGraphicsAlphas();
         
             if (_PanelTo == null)
-                PanelStack.Clear();
+                m_PanelStack.Clear();
             else
             {
-                if (!PanelStack.Any())
-                    PanelStack.Push(_ItemFrom);
-                if (PanelStack.Any() && _GoBack)
-                    PanelStack.Pop();
+                if (!m_PanelStack.Any())
+                    m_PanelStack.Push(_ItemFrom);
+                if (m_PanelStack.Any() && _GoBack)
+                    m_PanelStack.Pop();
                 if (!_GoBack)
-                    PanelStack.Push(_ItemTo);
+                    m_PanelStack.Push(_ItemTo);
             }
             
             SetCloseButtonsState(_PanelTo == null);
@@ -239,10 +234,10 @@ namespace DialogViewers
         
         private void ClearGraphicsAlphas()
         {
-            foreach (var item in GraphicsAlphas.ToArray())
+            foreach (var item in m_GraphicsAlphas.ToArray())
             {
                 if (item.Value.Alphas.All(_A => _A.Key.IsNull()))
-                    GraphicsAlphas.Remove(item.Key);
+                    m_GraphicsAlphas.Remove(item.Key);
             }
         }
 

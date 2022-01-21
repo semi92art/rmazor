@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Common;
 using GameHelpers;
-using Games.RazorMaze;
+using RMAZOR;
 using Unity.RemoteConfig;
 using UnityEngine.Events;
 
@@ -62,7 +63,9 @@ namespace Managers
 
         private void FetchConfigs()
         {
+            ConfigManager.FetchCompleted -= OnFetchCompleted;
             ConfigManager.FetchCompleted += OnFetchCompleted;
+            ConfigManager.FetchCompleted -= OnInitialized;
             ConfigManager.FetchCompleted += OnInitialized;
             ConfigManager.FetchConfigs(new UserAttributes(), new AppAttributes());
         }

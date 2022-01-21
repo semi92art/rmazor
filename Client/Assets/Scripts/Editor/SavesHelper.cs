@@ -1,48 +1,60 @@
 ﻿using System.Diagnostics;
 using System.Threading.Tasks;
+using Common.Utils;
 using UnityEditor;
 using UnityEngine;
 using Utils;
-using Utils.Editor;
 
-public class SavesHelper : EditorWindow
+namespace Editor
 {
-    [MenuItem("Tools/Saves Helper", false)]
-    public static void ShowWindow()
+    public class SavesHelper : EditorWindow
     {
-        SaveUtils.ReloadSaves();
-        GetWindow<SavesHelper>("Saves Helper");
-    }
+        [MenuItem("Tools/Saves Helper", false)]
+        public static void ShowWindow()
+        {
+            SaveUtils.ReloadSaves();
+            GetWindow<SavesHelper>("Saves Helper");
+        }
 
-    private void OnGUI()
-    {
-        var elements = SaveUtils.SavesDoc.Root?.Elements();
-        if (elements == null)
-            return;
-        float w = position.width;
-        float nameWidth = w * 0.3f;
-        float valueWidth = w - nameWidth;
-        EditorUtilsEx.GUIEnabledZone(false, () =>
+        private void OnFocus()
         {
-            foreach (var element in elements)
+            SaveUtils.ReloadSaves();
+        }
+
+        private void OnGUI()
+        {
+            var elements = SaveUtils.SavesDoc.Root?.Elements();
+            if (elements == null)
+                return;
+            float w = position.width;
+            float nameWidth = w * 0.3f;
+            float valueWidth = w - nameWidth;
+            EditorUtilsEx.GUIEnabledZone(false, () =>
             {
-                EditorUtilsEx.HorizontalZone(() =>
+                foreach (var element in elements)
                 {
-                    GUILayout.TextField(element.Name.LocalName, GUILayout.Width(nameWidth));
-                    GUILayout.TextField(element.Value, GUILayout.Width(valueWidth));
-                });
-            }
-        });
-        EditorUtilsEx.HorizontalLine();
-        EditorUtilsEx.GuiButtonAction("Open Saves File", () =>
-        {
-            var p = new Process {StartInfo = new ProcessStartInfo {FileName = SaveUtils.SavesPath}};
-            Task.Run(() => p.Start());
-        });
-        EditorUtilsEx.GuiButtonAction("Open Saves File Location", () =>
-        {
-            var p = new Process {StartInfo = new ProcessStartInfo {FileName = Application.persistentDataPath}};
-            Task.Run(() => p.Start());
-        });
+                    EditorUtilsEx.HorizontalZone(() =>
+                    {
+                        GUILayout.TextField(element.Name.LocalName, GUILayout.Width(nameWidth));
+                        GUILayout.TextField(element.Value, GUILayout.Width(valueWidth));
+                    });
+                }
+            });
+            EditorUtilsEx.HorizontalLine();
+            EditorUtilsEx.GuiButtonAction("Open Saves File", () =>
+            {
+                var p = new Process {StartInfo = new ProcessStartInfo {FileName = SaveUtils.SavesPath}};
+                Task.Run(() => p.Start());
+            });
+            EditorUtilsEx.GuiButtonAction("Open Saves File Location", () =>
+            {
+                var p = new Process {StartInfo = new ProcessStartInfo {FileName = Application.persistentDataPath}};
+                Task.Run(() => p.Start());
+            });
+            EditorUtilsEx.GuiButtonAction("Reload Saves File", () =>
+            {
+                SaveUtils.ReloadSaves();
+            });
+        }
     }
 }

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Constants;
-using DI.Extensions;
-using Entities;
-using Games.RazorMaze.Views.Common;
-using Ticker;
+using Common.Constants;
+using Common.Extensions;
+using Common.Ticker;
+using Common.Utils;
+using Managers;
+using RMAZOR.Views.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

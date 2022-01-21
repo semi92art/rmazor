@@ -1,5 +1,6 @@
-﻿using DI.Extensions;
-using UI.Entities;
+﻿using Common.Entities.UI;
+using Common.Extensions;
+using Common.Helpers;
 using UI.Helpers;
 using UnityEngine;
 using UnityEngine.UI;
@@ -69,7 +70,7 @@ namespace UI.Factories
         )
         {
             var item = new GameObject().AddComponent<RectTransform>();
-            item.Set(_Parent, _Name, _Anchor, _AnchoredPosition, _Pivot, _SizeDelta);
+            Set(item, _Parent, _Name, _Anchor, _AnchoredPosition, _Pivot, _SizeDelta);
             
 #if UNITY_EDITOR
             item.gameObject.GetOrAddComponent<RectTransformHelper>();
@@ -77,6 +78,35 @@ namespace UI.Factories
             item.gameObject.RemoveComponentIfExist<RectTransformHelper>();
 #endif
             return item;
+        }
+        
+        private static void Set(
+            RectTransform _Item,
+            RectTransform      _Parent,
+            string             _Name,
+            UiAnchor           _Anchor,
+            Vector2            _AnchoredPosition,
+            Vector2            _Pivot,
+            Vector2            _SizeDelta)
+        {
+            _Item.SetParent(_Parent);
+            _Item.name = _Name;
+            Set(_Item, _Anchor, _AnchoredPosition, _Pivot, _SizeDelta);
+        }
+
+        private static void Set(
+            RectTransform _Item,
+            UiAnchor           _Anchor,
+            Vector2            _AnchoredPosition,
+            Vector2            _Pivot,
+            Vector2            _SizeDelta)
+        {
+            _Item.anchorMin = _Anchor.Min;
+            _Item.anchorMax = _Anchor.Max;
+            _Item.anchoredPosition = _AnchoredPosition;
+            _Item.pivot = _Pivot;
+            _Item.sizeDelta = _SizeDelta;
+            _Item.localScale = Vector3.one;
         }
         
         #endregion

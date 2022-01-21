@@ -1,8 +1,8 @@
 ﻿using System;
-using Entities;
-using Games.RazorMaze.Views.Common;
-using StansAssets.Foundation.Extensions;
-using Ticker;
+using Common.Extensions;
+using Common.Ticker;
+using Managers;
+using RMAZOR.Views.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;

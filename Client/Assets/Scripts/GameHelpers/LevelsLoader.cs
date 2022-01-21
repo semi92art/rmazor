@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Linq;
-using DI.Extensions;
-using Games.RazorMaze.Models;
+using Common;
+using Common.Extensions;
+using Common.Utils;
 using Newtonsoft.Json;
+using RMAZOR;
+using RMAZOR.Models;
+using RMAZOR.Models.MazeInfos;
 using UnityEngine;
 
 namespace GameHelpers
@@ -37,6 +41,7 @@ namespace GameHelpers
         
         public MazeInfo LoadLevel(int _GameId, int _Index)
         {
+            Dbg.Log(_Index);
             if (m_CachedSerializedLevels == null || m_GameId != _GameId)
                 CacheLevels(_GameId);
             return JsonConvert.DeserializeObject<MazeInfo>(m_CachedSerializedLevels[_Index]);
@@ -55,9 +60,13 @@ namespace GameHelpers
         
         private void CacheLevels(int _GameId)
         {
+            int heapIndex = 1;
+            #if UNITY_EDITOR
+            heapIndex = SaveUtilsInEditor.GetValue(SaveKeysInEditor.StartHeapIndex);
+            #endif
             m_GameId = _GameId;
             var asset = PrefabSetManager.GetObject<TextAsset>(PrefabSetName(_GameId),
-                LevelsAssetName(1));
+                LevelsAssetName(heapIndex));
             var t = typeof(MazeInfo);
             var firstProp = t.GetProperties()[0];
             var levelsText = asset.text;

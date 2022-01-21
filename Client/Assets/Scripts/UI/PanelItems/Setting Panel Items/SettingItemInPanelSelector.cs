@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using DI.Extensions;
+using Common.Extensions;
+using Common.Ticker;
 using DialogViewers;
-using Entities;
-using Games.RazorMaze.Views.Common;
-using Ticker;
+using Managers;
+using RMAZOR.UI.Panels;
+using RMAZOR.Views.Common;
 using TMPro;
-using UI.Panels;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;

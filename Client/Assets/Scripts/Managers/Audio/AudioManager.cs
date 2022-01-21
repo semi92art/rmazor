@@ -1,12 +1,18 @@
 ﻿using System.Collections;
-using DI.Extensions;
-using Entities;
-using Exceptions;
+using Common;
+using Common.Constants;
+using Common.Entities;
+using Common.Enums;
+using Common.Exceptions;
+using Common.Extensions;
+using Common.Ticker;
+using Common.Utils;
 using GameHelpers;
-using Games.RazorMaze.Views;
-using Games.RazorMaze.Views.ContainerGetters;
+using RMAZOR;
+using RMAZOR.Models;
+using RMAZOR.Views;
+using RMAZOR.Views.ContainerGetters;
 using Settings;
-using Ticker;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.Events;
@@ -14,13 +20,7 @@ using Utils;
 
 namespace Managers.Audio
 {
-    public enum EAudioClipType
-    {
-        GameSound,
-        UiSound,
-        Music
-    }
-    
+
     public interface IAudioManager : IInit, IOnLevelStageChanged
     {
         void InitClip(AudioClipArgs _Args);
@@ -85,9 +85,9 @@ namespace Managers.Audio
                 EnableAudio(_MusicOn, EAudioClipType.UiSound);
                 EnableAudio(_MusicOn, EAudioClipType.GameSound);
             };
-            EnableAudio(MusicSetting.Get(), EAudioClipType.Music);
-            EnableAudio(SoundSetting.Get(), EAudioClipType.UiSound);
-            EnableAudio(SoundSetting.Get(), EAudioClipType.GameSound);
+            EnableAudio(MusicSetting.Get(), EAudioClipType.Music, true);
+            EnableAudio(SoundSetting.Get(), EAudioClipType.UiSound, true);
+            EnableAudio(SoundSetting.Get(), EAudioClipType.GameSound, true);
             InitAudioMixer();
             Initialize?.Invoke();
             Initialized = true;
@@ -124,23 +124,14 @@ namespace Managers.Audio
                 return;
             info.OnPause = false;
             if (info.AttenuationSecondsOnStop > float.Epsilon)
-                Coroutines.Run(AttenuateCoroutine(info, false));
+                Cor.Run(AttenuateCoroutine(info, false));
             else
                 info.Playing = false;
         }
 
         public void EnableAudio(bool _Enable, EAudioClipType _Type)
         {
-            for (int i = 0; i < m_ClipInfos.Length; i++)
-            {
-                var info = m_ClipInfos[i];
-                if (info == null)
-                    continue;
-                if (info.Type != _Type)
-                    continue;
-                info.Volume = _Enable ? info.StartVolume : 0f;
-            }
-            SaveUtils.PutValue(GetSaveKeyByType(_Type), _Enable);
+            EnableAudio(_Enable, _Type, false);
         }
 
         public void MuteAudio(EAudioClipType _Type)
@@ -182,7 +173,7 @@ namespace Managers.Audio
             }
             
             var clipEntity = PrefabSetManager.GetObjectEntity<AudioClip>("sounds", _Args.ClipName);
-            Coroutines.Run(Coroutines.WaitWhile(
+            Cor.Run(Cor.WaitWhile(
                 () => clipEntity.Result == EEntityResult.Pending,
                 () =>
                 {
@@ -215,6 +206,21 @@ namespace Managers.Audio
             m_MasterGroup = m_Mixer.FindMatchingGroups("Master")[0];
             m_MutedGroup = m_Mixer.FindMatchingGroups("Master/Muted")[0];
         }
+        
+        private void EnableAudio(bool _Enable, EAudioClipType _Type, bool _OnStart)
+        {
+            for (int i = 0; i < m_ClipInfos.Length; i++)
+            {
+                var info = m_ClipInfos[i];
+                if (info == null)
+                    continue;
+                if (info.Type != _Type)
+                    continue;
+                info.Volume = _Enable ? info.StartVolume : 0f;
+            }
+            if (!_OnStart)
+                SaveUtils.PutValue(GetSaveKeyByType(_Type), _Enable);
+        }
 
         private void PlayClipCore(AudioClipArgs _Args, AudioClipInfo _Info)
         {
@@ -225,7 +231,7 @@ namespace Managers.Audio
             else
                 _Info.Playing = true;
             if (_Info.AttenuationSecondsOnPlay > float.Epsilon)
-                Coroutines.Run(AttenuateCoroutine(_Info, true));
+                Cor.Run(AttenuateCoroutine(_Info, true));
         }
         
         private void MuteAudio(bool _Mute, EAudioClipType _Type)
@@ -245,7 +251,7 @@ namespace Managers.Audio
         {
             float startVolume = _AttenuateUp ? 0f : _Info.Volume;
             float endVolume = !_AttenuateUp ? 0f : _Info.Volume;
-            yield return Coroutines.Lerp(
+            yield return Cor.Lerp(
                 startVolume,
                 endVolume,
                 _AttenuateUp ? _Info.AttenuationSecondsOnPlay : _Info.AttenuationSecondsOnStop,

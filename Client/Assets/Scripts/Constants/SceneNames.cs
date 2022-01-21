@@ -1,9 +1,0 @@
-﻿namespace Constants
-{
-    public static class SceneNames
-    {
-        public const string Preload = "_preload";
-        public const string Level = "Level";
-        public const string Prototyping = "Prot";
-    }
-}

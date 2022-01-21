@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Entities;
+using Common.Entities;
 using UnityEngine.Events;
 
 namespace Settings

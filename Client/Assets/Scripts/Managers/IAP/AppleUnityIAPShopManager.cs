@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using UnityEngine.Purchasing;
+﻿using UnityEngine.Purchasing;
 
 namespace Managers.IAP
 {

@@ -1,5 +1,6 @@
-﻿using GameHelpers;
-using Ticker;
+﻿using Common;
+using Common.Ticker;
+using GameHelpers;
 using UnityEngine.Advertisements;
 
 namespace Managers.Advertising

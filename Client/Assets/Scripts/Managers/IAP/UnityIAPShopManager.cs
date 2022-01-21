@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DI.Extensions;
-using Entities;
+using Common;
+using Common.Extensions;
+using Common.Utils;
+using RMAZOR;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Purchasing;
@@ -106,7 +108,7 @@ namespace Managers.IAP
 #if UNITY_EDITOR
             Dbg.Log("Rating game available only on device.");
 #elif UNITY_ANDROID
-            Coroutines.Run(RateGameAndroid(_JustSuggest));
+            Cor.Run(RateGameAndroid(_JustSuggest));
 #elif UNITY_IOS || UNITY_IPHONE
             RateGameIos();
 #endif
@@ -150,7 +152,7 @@ namespace Managers.IAP
             foreach (var product in Products.Where(_P => _P.Type == ProductType.NonConsumable))
             {
                 var info = GetItemInfo(product.Key);
-                Coroutines.Run(Coroutines.WaitWhile(
+                Cor.Run(Cor.WaitWhile(
                     () => info.Result() == EShopProductResult.Pending,
                     () =>
                     {
@@ -279,7 +281,7 @@ namespace Managers.IAP
                 MTAssets.NativeAndroidToolkit.NativeAndroid.Dialogs.ShowNeutralDialog(title, text, ok, notNow, never);
                 MTAssets.NativeAndroidToolkit.Events.DialogsEvents.onNeutralYes = () =>
                 {
-                    Coroutines.Run(RateGameAndroid(false));
+                    Cor.Run(RateGameAndroid(false));
                 };
                 MTAssets.NativeAndroidToolkit.Events.DialogsEvents.onNeutralNo = () =>
                 {

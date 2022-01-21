@@ -1,4 +1,6 @@
-﻿namespace Mono_Installers
+﻿using RMAZOR;
+
+namespace Mono_Installers
 {
     public class PreloadMonoInstaller : MonoInstallerImplBase
     {

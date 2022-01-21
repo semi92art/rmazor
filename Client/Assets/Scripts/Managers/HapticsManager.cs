@@ -1,4 +1,5 @@
-﻿using Exceptions;
+﻿using Common;
+using Common.Exceptions;
 using Lofelt.NiceVibrations;
 using Settings;
 using UnityEngine.Events;

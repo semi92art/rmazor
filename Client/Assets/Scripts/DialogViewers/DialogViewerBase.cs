@@ -2,15 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DI.Extensions;
+using Common.CameraProviders;
+using Common.Extensions;
+using Common.Ticker;
+using Common.Utils;
 using GameHelpers;
-using LeTai.Asset.TranslucentImage;
-using Ticker;
 using UI.Panels;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using Utils;
 
 namespace DialogViewers
 {
@@ -19,7 +19,6 @@ namespace DialogViewers
         protected ICameraProvider   CameraProvider   { get; }
         protected IUITicker         Ticker           { get; }
         protected IPrefabSetManager PrefabSetManager { get; }
-        protected TranslucentImage  Background       { get; set; }
             
         public          IDialogPanel  CurrentPanel                { get; protected set; }
         public abstract RectTransform Container                   { get; }
@@ -54,7 +53,7 @@ namespace DialogViewers
                 button.Key.enabled = false;
             //do transition for graphic elements
             float currTime = Ticker.Time;
-            Coroutines.Run(DoTranslucentBackgroundTransition(_Disappear, _Time));
+            Cor.Run(DoTranslucentBackgroundTransition(_Disappear, _Time));
             if (!_Disappear)
             {
                 while (Ticker.Time < currTime + _Time)
@@ -88,16 +87,16 @@ namespace DialogViewers
         {
             if (_Disappear)
             {
-                Background.enabled = false;
+                CameraProvider.DofEnabled = false;
                 yield break;
             }
-            Background.enabled = true;
+            CameraProvider.DofEnabled = true;
             float currTime = Ticker.Time;
             while (Ticker.Time < currTime + _Time)
             {
                 float timeCoeff = (currTime + _Time - Ticker.Time) / _Time;
                 float strengthCoeff = 1 - timeCoeff;
-                CameraProvider.BlurConfig.Strength = strengthCoeff * 10f;
+                CameraProvider.SetDofValue(strengthCoeff);
                 yield return new WaitForEndOfFrame();
             }
         }

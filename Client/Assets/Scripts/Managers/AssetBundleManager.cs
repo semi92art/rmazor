@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Entities;
+using Common;
+using Common.Utils;
 using Newtonsoft.Json;
+using RMAZOR;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
@@ -48,9 +50,9 @@ namespace Managers
         
         #region nonpublic members
 
-        private static readonly string[] BundleNames = {CommonBundleName, SoundsBundleName, LevelsBundleName};
-        private static readonly Dictionary<string, List<AssetInfo>> Bundles = new Dictionary<string, List<AssetInfo>>();
-        private static Dictionary<string, string> _bundleNamesDict = new Dictionary<string, string>();
+        private readonly string[] m_BundleNames = {CommonBundleName, SoundsBundleName, LevelsBundleName};
+        private readonly Dictionary<string, List<AssetInfo>> m_Bundles = new Dictionary<string, List<AssetInfo>>();
+        private Dictionary<string, string> m_BundleNamesDict = new Dictionary<string, string>();
         
         #endregion
 
@@ -62,7 +64,7 @@ namespace Managers
         
         public void Init()
         {
-            Coroutines.Run(LoadBundles());
+            Cor.Run(LoadBundles());
             Initialize?.Invoke();
             Initialized = true;
         }
@@ -75,14 +77,14 @@ namespace Managers
                 _Success = false;
                 return default;
             }
-            if (!_bundleNamesDict.ContainsKey(_AssetName))
+            if (!m_BundleNamesDict.ContainsKey(_AssetName))
             {
                 Dbg.LogError($"Bundle key \"{_AssetName}\" was not found in bundles names dictionary");
                 _Success = false;
                 return default;
             }
-            string bundleName = _bundleNamesDict[_AssetName];
-            var dict = Bundles[_PrefabSetName]
+            string bundleName = m_BundleNamesDict[_AssetName];
+            var dict = m_Bundles[_PrefabSetName]
                 .ToDictionary(
                     _Bundle => _Bundle.Name,
                     _Bundle => _Bundle.Asset);
@@ -102,10 +104,10 @@ namespace Managers
         
         private IEnumerator LoadBundles()
         {
-            foreach (var bundleName in BundleNames)
+            foreach (var bundleName in m_BundleNames)
                 yield return LoadBundle(bundleName);
             var bundleNamesRaw =
-                Bundles[CommonBundleName]
+                m_Bundles[CommonBundleName]
                     .FirstOrDefault(_Info => _Info.Name.Contains(BundleNamesListName))
                     ?.Asset as TextAsset;
             if (bundleNamesRaw == null)
@@ -113,12 +115,12 @@ namespace Managers
                 Dbg.LogError("Bundle with other bundle names was not loaded correctly.");
                 yield break;
             }
-            _bundleNamesDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(bundleNamesRaw.text);
+            m_BundleNamesDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(bundleNamesRaw.text);
             BundlesLoaded = true;
             Dbg.Log("Bundles initialized!");
         }
         
-        private static IEnumerator LoadBundle(string _BundleName)
+        private IEnumerator LoadBundle(string _BundleName)
         {
             while (!Caching.ready)
                 yield return null;
@@ -149,8 +151,8 @@ namespace Managers
                 Dbg.LogError(error);
                 yield break;
             }
-            Bundles.Add(_BundleName, new List<AssetInfo>());
-            var cachedAssets = Bundles[_BundleName];
+            m_Bundles.Add(_BundleName, new List<AssetInfo>());
+            var cachedAssets = m_Bundles[_BundleName];
             cachedAssets.AddRange(from assetName in loadedBundle.GetAllAssetNames() 
                 let asset = loadedBundle.LoadAsset(assetName) 
                 select new AssetInfo(assetName, asset));

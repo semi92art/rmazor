@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using System.Text;
+using Common;
+using Common.Utils;
 using SA.iOS.StoreKit;
 using SA.iOS.UIKit;
 using UnityEngine.Events;
@@ -62,14 +64,14 @@ namespace Managers.IAP
         public override ShopItemArgs GetItemInfo(int _Key)
         {
             var args = new ShopItemArgs {Result = () => EShopProductResult.Pending};
-            Coroutines.Run(Coroutines.Delay(
+            Cor.Run(Cor.Delay(
                 3f,
                 () =>
                 {
                     if (args.Result() == EShopProductResult.Pending)
                         args.Result = () => EShopProductResult.Fail;
                 }));
-            Coroutines.Run(Coroutines.Action(() =>
+            Cor.Run(Cor.Action(() =>
             {
                 string id = GetProductId(_Key);
                 var product = ISN_SKPaymentQueue.Products.FirstOrDefault(_P => _P.ProductIdentifier == id);

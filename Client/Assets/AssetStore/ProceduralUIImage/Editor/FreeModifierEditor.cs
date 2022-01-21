@@ -4,7 +4,7 @@ using UnityEditor;
 
 [CustomEditor(typeof(FreeModifier), true)]
 [CanEditMultipleObjects]
-public class FreeModifierEditor : Editor
+public class FreeModifierEditor : UnityEditor.Editor
 {
     protected SerializedProperty radiusX;
     protected SerializedProperty radiusY;

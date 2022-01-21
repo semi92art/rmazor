@@ -1,5 +1,6 @@
-﻿using GameHelpers;
-using Ticker;
+﻿using Common;
+using Common.Ticker;
+using GameHelpers;
 using UnityEngine.Advertisements;
 using UnityEngine.Events;
 

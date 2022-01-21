@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DI.Extensions;
-using Entities;
-using Games.RazorMaze.Views.Common;
-using Ticker;
+using Common.Extensions;
+using Common.Ticker;
+using Common.Utils;
+using Managers;
+using RMAZOR.Views.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -48,7 +49,7 @@ namespace UI.PanelItems.Setting_Panel_Items
 
             if (_IsOn)
             {
-                Coroutines.Run(Coroutines.WaitWhile(
+                Cor.Run(Cor.WaitWhile(
                     () => m_Items == null, () => Select(null)));
             }
         }

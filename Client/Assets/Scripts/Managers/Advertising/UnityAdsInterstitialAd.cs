@@ -1,5 +1,5 @@
-﻿using GameHelpers;
-using Ticker;
+﻿using Common.Ticker;
+using GameHelpers;
 
 namespace Managers.Advertising
 {

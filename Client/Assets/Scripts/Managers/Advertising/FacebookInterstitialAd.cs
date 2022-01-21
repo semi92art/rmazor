@@ -1,5 +1,7 @@
 ﻿// using AudienceNetwork;
 
+using Common;
+using Common.Utils;
 using UnityEngine;
 using UnityEngine.Events;
 using Utils;
@@ -87,7 +89,7 @@ namespace Managers.Advertising
             // m_Ad?.Dispose();
             m_DidClosed = true;
             m_OnShown?.Invoke();
-            Coroutines.Run(Coroutines.Delay(
+            Cor.Run(Cor.Delay(
                 3f,
                 LoadAd));
         }

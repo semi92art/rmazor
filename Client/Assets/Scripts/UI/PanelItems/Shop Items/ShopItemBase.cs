@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections;
-using DI.Extensions;
-using Entities;
-using Games.RazorMaze.Views.Common;
-using Ticker;
+using Common.Extensions;
+using Common.Ticker;
+using Common.Utils;
+using Managers;
+using RMAZOR.Views.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -54,14 +55,14 @@ namespace UI.PanelItems.Shop_Items
             buyButton.onClick.AddListener(_Click);
             itemIcon.sprite = _Info.Icon;
             IndicateLoading(true, _Info.BuyForWatchingAd);
-            m_StopIndicateLoadingCoroutine = Coroutines.WaitWhile(
+            m_StopIndicateLoadingCoroutine = Cor.WaitWhile(
                 () => !_Info.Ready,
                 () =>
                 {
                     IndicateLoading(false, _Info.BuyForWatchingAd);
                     FinishAction();
                 });
-            Coroutines.Run(m_StopIndicateLoadingCoroutine);
+            Cor.Run(m_StopIndicateLoadingCoroutine);
         }
         
         public override void Init(
@@ -124,7 +125,7 @@ namespace UI.PanelItems.Shop_Items
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            Coroutines.Stop(m_StopIndicateLoadingCoroutine);
+            Cor.Stop(m_StopIndicateLoadingCoroutine);
         }
     }
 }

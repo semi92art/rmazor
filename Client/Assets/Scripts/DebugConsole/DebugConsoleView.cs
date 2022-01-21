@@ -1,12 +1,14 @@
 ﻿#if UNITY_EDITOR || DEVELOPMENT_BUILD
 
-using System.Collections.Generic;
-using DI.Extensions;
-using Entities;
+using System.Linq;
+using Common;
+using Common.Extensions;
 using GameHelpers;
-using Games.RazorMaze.Views.InputConfigurators;
 using Lean.Common;
 using Managers;
+using RMAZOR;
+using RMAZOR.Models;
+using RMAZOR.Views.InputConfigurators;
 using UI;
 using UI.Factories;
 using UnityEngine;
@@ -58,12 +60,6 @@ namespace DebugConsole
         [SerializeField] private Text       logTextArea;
         [SerializeField] private InputField inputField;
         [SerializeField] private ScrollRect textScrollbar;
-        [SerializeField] private Button     enterCommand;
-        [SerializeField] private Button     exitCommand;
-        [SerializeField] private Button     downCommand;
-        [SerializeField] private Button     upCommand;
-        [SerializeField] private GameObject consoleLog;
-        [SerializeField] private GameObject consoleScrollBar;
 
         #endregion
         
@@ -79,11 +75,9 @@ namespace DebugConsole
         private Vector3 m_SwipeFirstPosition;
         private Vector3 m_SwipeLastPosition;
         private float m_SwipeDragDistance;
-        private readonly List<Vector3> m_TouchPositions = new List<Vector3>();
         private int m_CurrentCommand;
         private int m_Index;
         private bool m_IsVisible;
-        private static Swipe _swipeDirection;
  
         private Vector2 m_FirstPressPos;
         private Vector2 m_SecondPressPos;
@@ -91,7 +85,6 @@ namespace DebugConsole
         public enum Swipe { None, Up, Down, Left, Right }
 
         private IViewInputCommandsProceeder m_CommandsProceeder;
-        private IManagersGetter             m_Managers;
 
         #endregion
 
@@ -141,28 +134,17 @@ namespace DebugConsole
             
             if (LeanInput.GetTouchCount() > 0 )
             {
-                LeanInput.GetTouch(0, out _, out var pos, out _, out bool set);
+                LeanInput.GetTouch(0, out int _, out var _, out float _, out bool set);
                 var t = Touchscreen.current.touches[0];
-                
                 if (set)
-                {
                     m_FirstPressPos = t.position.ReadValue();
-                }
- 
                 if (t.press.wasReleasedThisFrame)
                 {
                     m_SecondPressPos = t.position.ReadValue();
                     m_CurrentSwipe = new Vector3(m_SecondPressPos.x - m_FirstPressPos.x, m_SecondPressPos.y - m_FirstPressPos.y);
- 
-                    // check istap
                     if (m_CurrentSwipe.magnitude < m_SwipeDragDistance)
-                    {
-                        _swipeDirection = Swipe.None;
                         return;
-                    }
- 
                     m_CurrentSwipe.Normalize();
- 
                     if (!(m_SecondPressPos == m_FirstPressPos))
                     {
                         if (Mathf.Abs(m_CurrentSwipe.x) > Mathf.Abs(m_CurrentSwipe.y))
@@ -189,10 +171,6 @@ namespace DebugConsole
                         }
                     }
                 }
-                else
-                {
-                    _swipeDirection = Swipe.None;
-                }
             }
 
             if (inputField.touchScreenKeyboard == null)
@@ -217,7 +195,6 @@ namespace DebugConsole
         public void Init(IViewInputCommandsProceeder _CommandsProceeder, IManagersGetter _Managers)
         {
             m_CommandsProceeder = _CommandsProceeder;
-            m_Managers = _Managers;
             m_Controller.Init(_CommandsProceeder, _Managers);
         }
         
@@ -273,9 +250,13 @@ namespace DebugConsole
 
         private void SetVisibility(bool _Visible)
         {
+            var commands = new[] {EInputCommand.ShopMenu, EInputCommand.SettingsMenu}
+                .Concat(RazorMazeUtils.GetMoveCommands())
+                .Concat(RazorMazeUtils.GetRotateCommands());
             if (_Visible)
-                m_CommandsProceeder.LockCommands(m_CommandsProceeder.GetAllCommands());
-            else m_CommandsProceeder.UnlockAllCommands();
+                m_CommandsProceeder.LockCommands(commands, nameof(DebugConsoleView));
+            else
+                m_CommandsProceeder.UnlockCommands(commands, nameof(DebugConsoleView));
             m_IsVisible = _Visible;
             viewContainer.SetActive(_Visible);
             if (inputField.text == "`")

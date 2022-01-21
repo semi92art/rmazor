@@ -1,11 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Constants;
-using DI.Extensions;
-using Entities;
+using Common;
+using Common.Constants;
+using Common.Entities;
+using Common.Extensions;
+using Common.Network;
+using Common.Network.DataFieldFilters;
+using Common.Ticker;
+using Common.Utils;
 using GameHelpers;
-using GooglePlayGames;
-using GooglePlayGames.BasicApi;
 using Network;
 using UnityEngine;
 using UnityEngine.Events;
@@ -33,7 +37,7 @@ namespace Managers
         void                     ShowLeaderboard();
     }
     
-    public class ScoreManager : IScoreManager
+    public class ScoreManager : IScoreManager, IApplicationPause
     {
         #region types
 
@@ -55,7 +59,7 @@ namespace Managers
 
         private readonly IReadOnlyList<ScoreArgs> m_ScoreArgsList = new List<ScoreArgs>
         {
-            new ScoreArgs(DataFieldIds.Money, Application.platform == RuntimePlatform.Android ? GPGSIds.coins : "coins"),
+            new ScoreArgs(DataFieldIds.Money, Application.platform == RuntimePlatform.Android ? "CgkI1IvonNkDEAIQAw" : "coins"),
             new ScoreArgs(DataFieldIds.Level, "level")
         };
         
@@ -67,11 +71,16 @@ namespace Managers
 
         private IGameClient          GameClient          { get; }
         private ILocalizationManager LocalizationManager { get; }
-        
-        public ScoreManager(IGameClient _GameClient, ILocalizationManager _LocalizationManager)
+        private ICommonTicker        Ticker              { get; }
+
+        public ScoreManager(
+            IGameClient          _GameClient,
+            ILocalizationManager _LocalizationManager,
+            ICommonTicker      _Ticker)
         {
             GameClient = _GameClient;
             LocalizationManager = _LocalizationManager;
+            Ticker = _Ticker;
         }
         
         #endregion
@@ -84,6 +93,7 @@ namespace Managers
         public event UnityAction Initialize;
         public void Init()
         {
+            Ticker.Register(this);
             AuthenticatePlatformGameService(() => Initialize?.Invoke());
         }
 
@@ -109,6 +119,10 @@ namespace Managers
 
         public void SetScore(ushort _Id, long _Value, bool _OnlyToCache)
         {
+            if (_Id == DataFieldIds.Level)
+            {
+                Dbg.Log(nameof(DataFieldIds.Level) + " " + _Value);
+            }
             SetScoreCache(_Id, _Value);
             if (_OnlyToCache)
                 return;
@@ -135,12 +149,19 @@ namespace Managers
                 CommonUtils.ShowAlertDialog("OOPS!!!", failedToLoadLeadText);
                 return;
             }
-#if UNITY_EDITOR
-            CommonUtils.ShowAlertDialog("Предупреждение", "Доступно только на девайсе.");
-#elif UNITY_ANDROID
+#if UNITY_ANDROID
             ShowLeaderboardAndroid();
 #elif UNITY_IPHONE || UNITY_IOS
             ShowLeaderboardIos();
+#endif
+        }
+
+        public void OnApplicationPause(bool _Pause)
+        {
+            // FIXME ебаный костыль
+#if UNITY_ANDROID
+            if (!_Pause)
+                GetScoreAndroid(DataFieldIds.Money);
 #endif
         }
 
@@ -161,15 +182,6 @@ namespace Managers
 
         private static void AuthenticatePlatformGameService(UnityAction _OnFinish)
         {
-#if UNITY_EDITOR
-            return;
-#endif
-            if (!NetworkUtils.IsInternetConnectionAvailable())
-            {
-                Dbg.LogWarning(AuthMessage(false, "No internet connection"));
-                return;
-            }
-            
 #if UNITY_ANDROID
             AuthenticateAndroid(_OnFinish);
 #elif UNITY_IPHONE || UNITY_IOS
@@ -205,16 +217,24 @@ namespace Managers
 
         private void SetScoreCache(ushort _Id, long _Value)
         {
-            var gdff = new GameDataFieldFilter(GameClient, GameClientUtils.AccountId, GameClientUtils.GameId,
+            var gdff = new GameDataFieldFilter(
+                GameClient, GameClientUtils.AccountId, 
+                GameClientUtils.GameId,
                 _Id) {OnlyLocal = true};
             gdff.Filter(_Fields =>
             {
                 var scoreField = _Fields.First();
                 scoreField.SetValue(_Value).Save(true);
-            });
-            Coroutines.RunSync(() =>
-            {
-                OnScoresChanged?.Invoke(new ScoresEventArgs(GetScoreCached(_Id)));
+                Cor.RunSync(() =>
+                {
+                    var entity = new ScoresEntity
+                    {
+                        Result = EEntityResult.Success,
+                        Value = new Dictionary<ushort, long> {{_Id, _Value}}
+                    };
+                    var args = new ScoresEventArgs(entity);
+                    OnScoresChanged?.Invoke(args);
+                });
             });
         }
         
@@ -231,32 +251,41 @@ namespace Managers
 
         private static void AuthenticateAndroid(UnityAction _OnFinish)
         {
-            PlayGamesPlatform.Instance.Authenticate((_Success, _Messsage) =>
+            var config = new GooglePlayGames.BasicApi.PlayGamesClientConfiguration.Builder()
+                .RequestEmail()
+                .Build();
+            GooglePlayGames.PlayGamesPlatform.InitializeInstance(config);
+            GooglePlayGames.PlayGamesPlatform.DebugLogEnabled = true;
+            GooglePlayGames.PlayGamesPlatform.Activate();
+            GooglePlayGames.PlayGamesPlatform.Instance.Authenticate(
+                GooglePlayGames.BasicApi.SignInInteractivity.CanPromptOnce,
+                _Status =>
             {
-                _OnFinish?.Invoke();
-                if (_Success)
+            
+                if (_Status == GooglePlayGames.BasicApi.SignInStatus.Success)
                 {
-                    Dbg.Log(AuthMessage(true, _Messsage));
+                    Dbg.Log(AuthMessage(true, string.Empty));
+                    _OnFinish?.Invoke();
                 }
-                else 
-                    Dbg.LogWarning(AuthMessage(true, _Messsage));
+                else
+                    Dbg.LogWarning(AuthMessage(false, string.Empty));
             });
         }
 
         private ScoresEntity GetScoreAndroid(ushort _Id)
         {
             var scoreEntity = new ScoresEntity{Result = EEntityResult.Pending};
-            PlayGamesPlatform.Instance.LoadScores(
+            GooglePlayGames.PlayGamesPlatform.Instance.LoadScores(
                 GetScoreKey(_Id),
-                LeaderboardStart.PlayerCentered,
+                GooglePlayGames.BasicApi.LeaderboardStart.PlayerCentered,
                 1,
-                LeaderboardCollection.Public,
-                LeaderboardTimeSpan.AllTime,
+                GooglePlayGames.BasicApi.LeaderboardCollection.Public,
+                GooglePlayGames.BasicApi.LeaderboardTimeSpan.AllTime,
                 _Data =>
                 {
                     if (_Data.Valid)
                     {
-                        if (_Data.Status == ResponseStatus.Success)
+                        if (_Data.Status == GooglePlayGames.BasicApi.ResponseStatus.Success)
                         {
                             if (_Data.PlayerScore != null)
                             {
@@ -292,7 +321,7 @@ namespace Managers
                 Dbg.LogWarning($"{nameof(SetScoreAndroid)}: User is not authenticated to GooglePlayGames.");
                 return;
             }
-            PlayGamesPlatform.Instance.ReportScore(
+            GooglePlayGames.PlayGamesPlatform.Instance.ReportScore(
                 _Value,
                 GetScoreKey(_Id),
                 _Success =>
@@ -304,7 +333,7 @@ namespace Managers
         
         private static void ShowLeaderboardAndroid()
         {
-            PlayGamesPlatform.Instance.ShowLeaderboardUI(GPGSIds.coins);
+            GooglePlayGames.PlayGamesPlatform.Instance.ShowLeaderboardUI("CgkI1IvonNkDEAIQAw");
         }
 
 #elif UNITY_IPHONE || UNITY_IOS
