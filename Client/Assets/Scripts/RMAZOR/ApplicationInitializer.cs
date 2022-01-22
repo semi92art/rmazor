@@ -81,12 +81,13 @@ namespace RMAZOR
     
         #region engine methods
     
-        private void Start()
+        private IEnumerator Start()
         {
-            SaveUtils.PutValue(SaveKeys.EnableRotation, true);
-            InitLogging();
             // костыль: если на iOS стоит светлая тема, задник камеры автоматом ставится белым
             CameraProvider.MainCamera.backgroundColor = Color.black; 
+            yield return Cor.Delay(1f, null);
+            SaveUtils.PutValue(SaveKeys.EnableRotation, true);
+            InitLogging();
             if (Settings.SrDebuggerOn)
                 CommonUtils.InitSRDebugger();
             Application.targetFrameRate = GraphicUtils.GetTargetFps();
@@ -94,7 +95,7 @@ namespace RMAZOR
             InitDefaultData();
             LevelMonoInstaller.Release = true;
             SceneManager.sceneLoaded += OnSceneLoaded;
-            Cor.Run(LoadSceneLevel());
+            yield return LoadSceneLevel();
         }
 
         private static IEnumerator LoadSceneLevel()

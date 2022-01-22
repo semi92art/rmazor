@@ -5,6 +5,7 @@ using Common.Exceptions;
 using GameHelpers;
 using Unity.Services.Analytics;
 using Unity.Services.Core;
+using UnityEngine;
 using UnityEngine.Analytics;
 using UnityEngine.Events;
 
@@ -33,8 +34,9 @@ namespace Managers
 
         public void SendAnalytic(string _AnalyticId, IDictionary<string, object> _EventData = null)
         {
-            if (_EventData == null)
-                _EventData = new Dictionary<string, object>();
+            if (Application.isEditor)
+                return;
+            _EventData ??= new Dictionary<string, object>();
             Analytics.CustomEvent(_AnalyticId, _EventData);
             try
             {
@@ -48,6 +50,8 @@ namespace Managers
 
         public void OnAdvertiseEvent(EAdsProvider _Provider, string _PlacementId, string _PlacementName, bool _Completed)
         {
+            if (Application.isEditor)
+                return;
             try
             {
                 var args = new Events.AdImpressionArgs(
@@ -61,7 +65,6 @@ namespace Managers
             {
                 Dbg.LogError(e.Message);
             }
-
         }
 
         #endregion

@@ -6,10 +6,6 @@ using GooglePlayGames.BasicApi;
 using UnityEngine;
 using UnityEngine.Events;
 
-#if UNITY_ANDROID
-
-#endif
-
 
 namespace Managers
 {
@@ -99,7 +95,7 @@ namespace Managers
                         _OnResult?.Invoke(AuthResult.FailedNoInternet);
                         break;
                     default:
-                        throw new Exceptions.SwitchCaseNotImplementedException(_Result);
+                        throw new Common.Exceptions.SwitchCaseNotImplementedException(_Result);
                 }
             });
         }

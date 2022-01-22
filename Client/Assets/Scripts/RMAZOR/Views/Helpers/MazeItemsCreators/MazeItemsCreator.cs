@@ -66,11 +66,13 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
                 {
                     IsNode = true,
                     IsStartNode = pathItemPos == _Info.PathItems[0].Position,
-                    Position = pathItemPos
+                    Position = pathItemPos,
+                    Blank = _Info.PathItems[i].Blank
                 };
                 if (moneyItemIndices.Contains(i)
                     && _Info.MazeItems.All(_Item => _Item.Position != pathItemPos)
-                    && _Info.MazeItems.All(_Item => !_Item.Path.Contains(pathItemPos)))
+                    && _Info.MazeItems.All(_Item => !_Item.Path.Contains(pathItemPos)
+                    && !props.Blank))
                 {
                     props.IsMoneyItem = true;
                 }
