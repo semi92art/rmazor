@@ -62,7 +62,7 @@ MonoBehaviour:
     - item: {fileID: 731759395191873786, guid: 50d768e49cdd15e499134ca40c255a10, type: 3}
       name: background_item_congrats_2
       bundle: 0
-    - item: {fileID: 3312965024029319640, guid: e3f56fb3a90193645a51f1109a96331f,
+    - item: {fileID: 3312965024029319640, guid: 55a9969e8ba48da449cb28699d996a79,
         type: 3}
       name: money_item
       bundle: 0

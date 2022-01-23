@@ -1251,7 +1251,7 @@ GameObject:
   - component: {fileID: 6624169739012008936}
   - component: {fileID: 6624169739012008943}
   m_Layer: 0
-  m_Name: rect  (74)
+  m_Name: rect (74)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
