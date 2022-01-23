@@ -78,8 +78,6 @@ crashlytics-build.properties
 ProjectSettings/AndroidLogcatSettings.asset
 Prototyping*
 Prototyping.meta*
-/Assets/AssetStore/Shapes/Scripts/Runtime/Components/Cone.cs.meta
-/Assets/AssetStore/Shapes/Scripts/Runtime/Components/Rectangle.cs.meta
 /Assets/MT\ Assets/_AssetsData/Editor/NatCoreLastWrite.ini
 /Assets/MT\ Assets/Native\ Android\ Toolkit/Libraries/Plugins/Extract/res/drawable/custom_small_icon.png.meta
 /Assets/MT\ Assets/Native\ Android\ Toolkit/Libraries/Plugins/Android/NAT\ Core.aar
