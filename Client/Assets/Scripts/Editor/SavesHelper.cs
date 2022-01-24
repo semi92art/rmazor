@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using Common.Utils;
 using UnityEditor;
@@ -12,12 +13,14 @@ namespace Editor
         [MenuItem("Tools/Saves Helper", false)]
         public static void ShowWindow()
         {
+            SaveUtils.CreateSavesFileIfNotExist();
             SaveUtils.ReloadSaves();
             GetWindow<SavesHelper>("Saves Helper");
         }
 
         private void OnFocus()
         {
+            SaveUtils.CreateSavesFileIfNotExist();
             SaveUtils.ReloadSaves();
         }
 
@@ -51,9 +54,11 @@ namespace Editor
                 var p = new Process {StartInfo = new ProcessStartInfo {FileName = Application.persistentDataPath}};
                 Task.Run(() => p.Start());
             });
-            EditorUtilsEx.GuiButtonAction("Reload Saves File", () =>
+            EditorUtilsEx.GuiButtonAction("Reload Saves File", SaveUtils.ReloadSaves);
+            EditorUtilsEx.GuiButtonAction("Delete Saves File", () =>
             {
-                SaveUtils.ReloadSaves();
+                if(File.Exists(SaveUtils.SavesPath))
+                    File.Delete(SaveUtils.SavesPath);
             });
         }
     }

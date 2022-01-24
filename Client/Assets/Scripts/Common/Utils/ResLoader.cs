@@ -17,15 +17,15 @@ namespace Common.Utils
 
         #region API
 
-        [RuntimeInitializeOnLoadMethod]
-        public static void ResetState()
-        {
-            
-        }
-
         public static PrefabSetScriptableObject GetPrefabSet(string _PrefabSetName)
         {
-            var set = Resources.Load<PrefabSetScriptableObject>($"{PrefabSetsLocalPath}/{_PrefabSetName}");
+            PrefabSetScriptableObject set = null;
+            // FIXME скрываем ошибку "GetCount is not allowed to be called during serialization..."
+            // https://docs.unity3d.com/Manual/script-Serialization-Errors.html
+            Dbg.LogZone(ELogLevel.Nothing, () =>
+            {
+                set = Resources.Load<PrefabSetScriptableObject>($"{PrefabSetsLocalPath}/{_PrefabSetName}");
+            });
             if (set == null)
                 Dbg.LogError($"Prefab set with name {_PrefabSetName} does not exist");
             return set;

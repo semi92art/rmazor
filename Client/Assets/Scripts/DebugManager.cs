@@ -3,12 +3,16 @@ using Managers;
 using RMAZOR.Views.InputConfigurators;
 using Settings;
 using UnityEngine.Events;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+using DebugConsole;
+#endif
 
 public interface IDebugManager : IInit
 {
     void EnableDebug(bool _Enable);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-    DebugConsole.IDebugConsoleController Console { get; }
+    IDebugConsoleController Console { get; }
+    event VisibilityChangedHandler       VisibilityChanged;
 #endif
 }
 
@@ -17,7 +21,9 @@ public class DebugManager : IDebugManager
     #region nonpublic members
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-    public DebugConsole.IDebugConsoleController Console => DebugConsole.DebugConsoleView.Instance.Controller;
+    public IDebugConsoleController Console => DebugConsoleView.Instance.Controller;
+    public event VisibilityChangedHandler       VisibilityChanged;
+
 #endif
 
     #endregion
@@ -46,6 +52,9 @@ public class DebugManager : IDebugManager
     public event UnityAction Initialize;
     public void Init()
     {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        Console.VisibilityChanged += _Value => VisibilityChanged?.Invoke(_Value);
+#endif
         DebugSetting.OnValueSet = EnableDebug;
         InitDebugConsole();
         EnableDebug(DebugSetting.Get());

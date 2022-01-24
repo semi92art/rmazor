@@ -65,7 +65,8 @@ namespace DebugConsole
         
         #region public members
 
-        public DebugConsoleController Controller => m_Controller;
+        public DebugConsoleController                                Controller => m_Controller;
+        public event VisibilityChangedHandler VisibilityChanged;
         
         #endregion
 
@@ -266,6 +267,7 @@ namespace DebugConsole
         private void OnVisibilityChanged(bool _Visible)
         {
             SetVisibility(_Visible);
+            VisibilityChanged?.Invoke(_Visible);
         }
 
         private void OnLogChanged(string[] _NewLog)

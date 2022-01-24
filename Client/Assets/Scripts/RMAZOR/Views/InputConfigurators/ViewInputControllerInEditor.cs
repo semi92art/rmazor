@@ -2,14 +2,24 @@
 using Lean.Common;
 using RMAZOR.Models;
 using UnityEngine;
+using Zenject;
 
 namespace RMAZOR.Views.InputConfigurators
 {
     public class ViewInputControllerInEditor : ViewInputController, IUpdateTick
     {
+        #region nonpublic members
+
+        private bool m_DoProceed = true;
+
+        #endregion
+        
         #region inject
         
-        private IUITicker UITicker { get; }
+#if UNITY_EDITOR
+        [Inject] private IDebugManager DebugManager { get; }
+#endif
+        private IUITicker Ticker { get; }
 
         public ViewInputControllerInEditor(
             IViewInputCommandsProceeder _CommandsProceeder,
@@ -17,7 +27,7 @@ namespace RMAZOR.Views.InputConfigurators
             IUITicker _UITicker) 
             : base(_CommandsProceeder, _TouchProceeder)
         {
-            UITicker = _UITicker;
+            Ticker = _UITicker;
         }
 
         #endregion
@@ -26,12 +36,23 @@ namespace RMAZOR.Views.InputConfigurators
 
         public override void Init()
         {
-            UITicker.Register(this);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            DebugManager.VisibilityChanged += DebugManagerOnVisibilityChanged;
+#endif
+            Ticker.Register(this);
             base.Init();
         }
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        private void DebugManagerOnVisibilityChanged(bool _Visible)
+        {
+            m_DoProceed = !_Visible;
+        }
+#endif
 
         public void UpdateTick()
         {
+            if (!m_DoProceed)
+                return;
             bool forced = false;
             EInputCommand? commandKey = null;
             ProceedMovement(ref commandKey);

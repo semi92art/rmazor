@@ -29,8 +29,8 @@ MonoBehaviour:
   pauseBetweenMoveCommands: 0.1
   leftScreenOffset: 1
   rightScreenOffset: 1
-  bottomScreenOffset: 8
-  topScreenOffset: 20
+  bottomScreenOffset: 9
+  topScreenOffset: 15
   moveSwipeThreshold: 0.1
   springboardAnimatedHighlight: 1
   afterRotationEnableMoveDelay: 0.1

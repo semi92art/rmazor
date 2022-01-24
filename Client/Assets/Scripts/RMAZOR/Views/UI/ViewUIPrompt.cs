@@ -162,7 +162,7 @@ namespace RMAZOR.Views.UI
             var screenBounds = GraphicUtils.GetVisibleBounds();
             var position = new Vector3(
                 screenBounds.center.x,
-                GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y + m_BottomOffset + 7f);
+                GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y + m_BottomOffset + 4f);
             ShowPrompt(KeyPromptSwipeToStart, position);
         }
 
@@ -171,7 +171,7 @@ namespace RMAZOR.Views.UI
             var screenBounds = GraphicUtils.GetVisibleBounds();
             var position = new Vector3(
                 screenBounds.center.x,
-                GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y + m_BottomOffset + 7f);
+                GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y + m_BottomOffset + 4f);
             ShowPrompt(KeyPromptTapToNext, position);
         }
 

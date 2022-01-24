@@ -39,7 +39,7 @@ namespace Editor
         private Vector2 m_CachedDataScrollPos;
         private Vector2 m_ViewSettingsScrollPos;
 
-        [MenuItem("Tools/\u2699 Editor Helper _h", false, 0)]
+        [MenuItem("Tools/\u2699 Editor Helper _%h", false, 0)]
         public static void ShowWindow()
         {
             GetWindow<EditorHelper>("Editor Helper");

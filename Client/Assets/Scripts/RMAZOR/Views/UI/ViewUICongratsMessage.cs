@@ -103,7 +103,7 @@ namespace RMAZOR.Views.UI
         private void InitCongratsMessage()
         {
             var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
-            float yPos = screenBounds.max.y - m_TopOffset - 4f - 3.5f;
+            float yPos = screenBounds.max.y - m_TopOffset - 5f;
             var cont = ContainersGetter.GetContainer(ContainerNames.GameUI);
             var goCongrads = Managers.PrefabSetManager.InitPrefab(
                 cont, "ui_game", "congratulations_panel");

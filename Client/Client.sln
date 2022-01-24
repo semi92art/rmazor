@@ -43,8 +43,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lofelt.NiceVibrations", "Lo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StansAssets.Plugins", "StansAssets.Plugins.csproj", "{572591ff-0ef8-e2a5-fae2-7eb402acbe09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{9cf74455-0653-9f90-c855-53d6959d5dfd}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Services.Analytics.Samples", "Unity.Services.Analytics.Samples.csproj", "{7389e611-e2c3-f1f7-647e-eb964cca63fd}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastMobileDOF", "FastMobileDOF.csproj", "{a106cb3a-901e-27ce-e879-ebd0b3b75ff3}"
@@ -62,6 +60,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StansAssets.Plugins.Editor", "StansAssets.Plugins.Editor.csproj", "{46a768cf-0c9b-596d-69cb-da65ad487ead}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StansAssets.IOS.XCode", "StansAssets.IOS.XCode.csproj", "{a0582a18-e061-4f96-98da-1b6b6149bdee}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{9cf74455-0653-9f90-c855-53d6959d5dfd}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor-firstpass", "Assembly-CSharp-Editor-firstpass.csproj", "{6c069222-a403-3357-4636-43653c20a180}"
 EndProject
@@ -177,10 +177,6 @@ Global
 		{572591ff-0ef8-e2a5-fae2-7eb402acbe09}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{572591ff-0ef8-e2a5-fae2-7eb402acbe09}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{572591ff-0ef8-e2a5-fae2-7eb402acbe09}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9cf74455-0653-9f90-c855-53d6959d5dfd}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9cf74455-0653-9f90-c855-53d6959d5dfd}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9cf74455-0653-9f90-c855-53d6959d5dfd}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9cf74455-0653-9f90-c855-53d6959d5dfd}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7389e611-e2c3-f1f7-647e-eb964cca63fd}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7389e611-e2c3-f1f7-647e-eb964cca63fd}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7389e611-e2c3-f1f7-647e-eb964cca63fd}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -217,6 +213,10 @@ Global
 		{a0582a18-e061-4f96-98da-1b6b6149bdee}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{a0582a18-e061-4f96-98da-1b6b6149bdee}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{a0582a18-e061-4f96-98da-1b6b6149bdee}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9cf74455-0653-9f90-c855-53d6959d5dfd}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9cf74455-0653-9f90-c855-53d6959d5dfd}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9cf74455-0653-9f90-c855-53d6959d5dfd}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9cf74455-0653-9f90-c855-53d6959d5dfd}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6c069222-a403-3357-4636-43653c20a180}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6c069222-a403-3357-4636-43653c20a180}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6c069222-a403-3357-4636-43653c20a180}.Release|Any CPU.ActiveCfg = Release|Any CPU

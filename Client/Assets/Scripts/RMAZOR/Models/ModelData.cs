@@ -40,7 +40,7 @@ namespace RMAZOR.Models
         private static MazeInfo CorrectInfo(MazeInfo _Info)
         {
             var info = _Info;
-            var additionalPathPositions = info.MazeItems
+            var itemsForAdditionalNodes = info.MazeItems
                 .Where(_Item =>
                     _Item.Type == EMazeItemType.Portal
                     || _Item.Type == EMazeItemType.Springboard
@@ -49,12 +49,16 @@ namespace RMAZOR.Models
                     || _Item.Type == EMazeItemType.ShredingerBlock
                     || _Item.Type == EMazeItemType.TrapMoving
                     || _Item.Type == EMazeItemType.GravityBlockFree)
-                .Select(_Item => _Item.Position)
                 .ToList();
-            foreach (var pos in additionalPathPositions
-                .Where(_Pos => !info.PathItems.Select(_PI => _PI.Position).Contains(_Pos)))
+            foreach (var item in itemsForAdditionalNodes
+                .Where(_Item => !info.PathItems.Select(_PI => _PI.Position).Contains(_Item.Position)))
             {
-                info.PathItems.Add(new PathItem {Position = pos});
+                var pathItem = new PathItem
+                {
+                    Position = item.Position,
+                    Blank = item.Blank
+                };
+                info.PathItems.Add(pathItem);
             }
             return info;
         }

@@ -67,7 +67,7 @@ namespace Common.Utils
             SavesDoc = XDocument.Load(SavesPath);
         }
 
-        private static void CreateSavesFileIfNotExist()
+        public static void CreateSavesFileIfNotExist()
         {
             if (File.Exists(SavesPath))
             {

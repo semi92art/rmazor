@@ -12,8 +12,8 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: Mazing Lab Co
-  productName: rmazor
+  companyName: Mazing Labs
+  productName: RMAZOR
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0, g: 0, b: 0, a: 1}
@@ -155,7 +155,7 @@ PlayerSettings:
   - {fileID: 0}
   - {fileID: 731759395191873786, guid: ec7fb1fdd38ccb8439dbb51307afb7fc, type: 3}
   - {fileID: 0}
-  - {fileID: 3312965024029319640, guid: e3f56fb3a90193645a51f1109a96331f, type: 3}
+  - {fileID: 0}
   - {fileID: 6624169740486630875, guid: 97f71117d3f3e9347b5f06ce6c261d65, type: 3}
   - {fileID: 8219298684319459333, guid: aada0e6c1e3f9b246bc089aa5d754518, type: 3}
   - {fileID: 8219298684319459333, guid: aada0e6c1e3f9b246bc089aa5d754518, type: 3}
@@ -195,6 +195,11 @@ PlayerSettings:
   - {fileID: 6009559761229068857, guid: f89d217feb272fb41b6df9bbb7e43091, type: 3}
   - {fileID: 6009559761229068857, guid: 176fe70dbb68ea64389c57fcca4a327f, type: 3}
   - {fileID: 4343252772721228017, guid: b9bd8eab7fc1f8d45b369504bc2b451b, type: 3}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -579,7 +584,7 @@ PlayerSettings:
   useCustomBaseGradleTemplate: 0
   useCustomGradlePropertiesTemplate: 0
   useCustomProguardFile: 0
-  AndroidTargetArchitectures: 2
+  AndroidTargetArchitectures: 1
   AndroidTargetDevices: 1
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
@@ -607,7 +612,7 @@ PlayerSettings:
   - m_BuildTarget: 
     m_Icons:
     - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: ee0e08d3e2882834895446ba2237412a, type: 3}
+      m_Icon: {fileID: 2800000, guid: 41cc7955b9565334ba77554e9c9eb82a, type: 3}
       m_Width: 128
       m_Height: 128
       m_Kind: 0
@@ -1022,7 +1027,7 @@ PlayerSettings:
   platformArchitecture:
     iPhone: 1
   scriptingBackend:
-    Android: 1
+    Android: 0
   il2cppCompilerConfiguration:
     Android: 1
   managedStrippingLevel: {}

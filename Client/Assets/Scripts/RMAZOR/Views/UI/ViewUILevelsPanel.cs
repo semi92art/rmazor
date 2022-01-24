@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Common;
 using Common.CameraProviders;
 using Common.Constants;
 using Common.Extensions;
@@ -58,12 +59,12 @@ namespace RMAZOR.Views.UI
         private IManagersGetter             Managers          { get; }
 
         public ViewUILevelsPanel(
-            IModelGame _Model,
+            IModelGame                  _Model,
             IViewInputCommandsProceeder _CommandsProceeder,
-            IContainersGetter _ContainersGetter,
-            ICameraProvider _CameraProvider,
-            IViewGameTicker _GameTicker,
-            IManagersGetter _Managers)
+            IContainersGetter           _ContainersGetter,
+            ICameraProvider             _CameraProvider,
+            IViewGameTicker             _GameTicker,
+            IManagersGetter             _Managers)
         {
             Model = _Model;
             CommandsProceeder = _CommandsProceeder;
@@ -140,7 +141,7 @@ namespace RMAZOR.Views.UI
             m_Renderers.Add(m_LevelText);
             m_LevelText.rectTransform.SetSizeWithCurrentAnchors(
                 RectTransform.Axis.Horizontal, screenBounds.size.x);
-            float yPos = screenBounds.max.y - m_TopOffset;
+            float yPos = screenBounds.max.y - m_TopOffset + 1f;
             m_LevelText.transform.SetLocalPosXY(screenBounds.center.x, yPos + StartAnimOffset);
             m_LevelPanelItemsFinishPositions.Add(m_LevelText.transform, yPos);
         }
@@ -151,7 +152,7 @@ namespace RMAZOR.Views.UI
             var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
             var goLevelCheckMark = Managers.PrefabSetManager.GetPrefab(
                 "ui_game", "level_check_mark");
-            float yPos = screenBounds.max.y - m_TopOffset - 4f;
+            float yPos = screenBounds.max.y - m_TopOffset - 3f;
             if (m_CheckMarks.Any()) 
                 return;
             for (int i = 0; i < 5; i++)
@@ -176,7 +177,7 @@ namespace RMAZOR.Views.UI
             var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
             int groupIndex = RazorMazeUtils.GetGroupIndex(Model.LevelStaging.LevelIndex);
             int levelsInGroup = RazorMazeUtils.GetLevelsInGroup(groupIndex);
-            float yPos = screenBounds.max.y - m_TopOffset - 4f;
+            float yPos = screenBounds.max.y - m_TopOffset - 3f;
             for (int i = 0; i < levelsInGroup; i++)
             {
                 var checkmark = m_CheckMarks[i];

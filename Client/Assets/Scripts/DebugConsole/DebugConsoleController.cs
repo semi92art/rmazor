@@ -8,10 +8,13 @@ using RMAZOR.Views.InputConfigurators;
 
 namespace DebugConsole
 {
+    public delegate void VisibilityChangedHandler(bool _Visible);
+    
     public interface IDebugConsoleController
     {
         void Init(IViewInputCommandsProceeder _CommandsProceeder, IManagersGetter _Managers);
         void RegisterCommand(string _Command, DebugConsoleController.CommandHandler _Handler, string _Description);
+        event VisibilityChangedHandler VisibilityChanged;
     }
     
     public class DebugConsoleController : IDebugConsoleController
@@ -20,10 +23,7 @@ namespace DebugConsole
 
         public delegate void LogChangedHandler(string[] _Log);
         public event LogChangedHandler OnLogChanged;
-        public delegate void VisibilityChangedHandler(bool _Visible);
-#pragma warning disable 67
         public event VisibilityChangedHandler VisibilityChanged;
-#pragma warning restore 67
 
         #endregion
 

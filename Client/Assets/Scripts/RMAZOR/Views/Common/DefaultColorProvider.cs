@@ -57,6 +57,8 @@ namespace RMAZOR.Views.Common
 
         public Color GetColor(int _Id)
         {
+            if (!Initialized)
+                return default;
             if (m_ColorsDict.ContainsKey(_Id)) 
                 return m_ColorsDict[_Id];
             Dbg.LogWarning($"Color \"{ColorIds.GetColorNameById(_Id)}\" with key \"{_Id}\" was not set.");
@@ -65,10 +67,8 @@ namespace RMAZOR.Views.Common
 
         public void SetColor(int _Id, Color _Color)
         {
-            if (_Id == ColorIds.Main)
-            {
-                Dbg.Log(_Color);
-            }
+            if (!Initialized)
+                return;
             m_ColorsDict.SetSafe(_Id, _Color);
             ColorChanged?.Invoke(_Id, _Color);
         }

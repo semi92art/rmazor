@@ -89,7 +89,8 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
                 Directions = _Item.Directions,
                 Pair = _Item.Pair,
                 IsNode = false,
-                IsStartNode = false
+                IsStartNode = false,
+                Blank = _Item.Blank
             };
             AddMazeItemProt(_Items, _Info.Size, props);
         }

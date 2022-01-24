@@ -34,7 +34,7 @@ namespace Editor
     
         #endregion
     
-        [MenuItem("Tools/Localization Helper _l", false, 1)]
+        [MenuItem("Tools/Localization Helper _%l", false, 1)]
         public static void ShowWindow()
         {
             var window = GetWindow<LocalizationHelper>("Localization Helper");

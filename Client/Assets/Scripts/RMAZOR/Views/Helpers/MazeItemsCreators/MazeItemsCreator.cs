@@ -93,6 +93,7 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
                     Path = mazeItem.Path,
                     Directions = mazeItem.Directions,
                     Pair = mazeItem.Pair,
+                    Blank = mazeItem.Blank,
                     IsNode = false,
                     IsStartNode = false
                 };

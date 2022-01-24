@@ -22,7 +22,7 @@ namespace Editor
         private Color                                 m_UiColorCheck;
         private bool                                  m_ChangeOnlyHueUi = true;
     
-        [MenuItem("Tools/Colors Helper _c", false, 2)]
+        [MenuItem("Tools/Colors Helper _%c", false, 2)]
         public static void ShowWindow()
         {
             var window = GetWindow<ColorsHelper>("Color Palette Helper");

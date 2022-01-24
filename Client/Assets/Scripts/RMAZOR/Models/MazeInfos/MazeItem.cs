@@ -30,6 +30,7 @@ namespace RMAZOR.Models.MazeInfos
         [JsonIgnore] [SerializeField] private List<V2Int>   path       = new List<V2Int>();
         [JsonIgnore] [SerializeField] private List<V2Int>   directions = new List<V2Int>();
         [JsonIgnore] [SerializeField] private V2Int         pair;
+        [JsonIgnore] [SerializeField] private bool          blank;
 
         [JsonProperty(PropertyName = "T")]
         public EMazeItemType Type
@@ -64,6 +65,13 @@ namespace RMAZOR.Models.MazeInfos
         {
             get => pair;
             set => pair = value;
+        }
+        
+        [JsonProperty(PropertyName = "B")]
+        public bool Blank
+        {
+            get => blank;
+            set => blank = value;
         }
 
         public override int GetHashCode()

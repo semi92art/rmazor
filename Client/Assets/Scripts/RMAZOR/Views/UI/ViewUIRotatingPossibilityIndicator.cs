@@ -48,7 +48,7 @@ namespace RMAZOR.Views.UI
             goIndicator.transform.localScale = Vector3.one * scale;
             goIndicator.transform.SetPosXY(
                 screenBounds.center.x,
-                screenBounds.min.y + 10f);
+                screenBounds.min.y + 7f);
         }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)

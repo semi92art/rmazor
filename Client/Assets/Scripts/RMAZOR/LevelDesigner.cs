@@ -90,9 +90,9 @@ namespace RMAZOR
             var mazeProtItems = maze
                 .Where(_Item => !_Item.Props.IsNode)
                 .Select(_Item => _Item.Props).ToList();
-            int maxX = mazeProtItems.Max(_Item => _Item.Position.X + 1);
+            int maxX = mazeProtItems.Any() ? mazeProtItems.Max(_Item => _Item.Position.X + 1) : 0;
             maxX = Math.Max(maxX, pathItems.Max(_Item => _Item.Position.X + 1));
-            int maxY = mazeProtItems.Max(_Item => _Item.Position.Y + 1);
+            int maxY = mazeProtItems.Any() ? mazeProtItems.Max(_Item => _Item.Position.Y + 1) : 0;
             maxY = Math.Max(maxY, pathItems.Max(_Item => _Item.Position.Y + 1));
             var mazeSize = new V2Int(maxX, maxY);
             return new MazeInfo{
@@ -111,7 +111,8 @@ namespace RMAZOR
                                 Pair = _Item.Pair,
                                 Path = _Item.Path,
                                 Type = _Item.Type,
-                                Position = _Item.Position
+                                Position = _Item.Position,
+                                Blank = _Item.Blank
                             });
                     }).ToList()
             };
