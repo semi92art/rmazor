@@ -1,11 +1,10 @@
-﻿#if UNITY_EDITOR || DEVELOPMENT_BUILD
-
-using System.Linq;
+﻿using System.Linq;
 using Common;
 using Common.Extensions;
 using GameHelpers;
 using Lean.Common;
 using Managers;
+using Managers.Advertising;
 using RMAZOR;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
@@ -17,6 +16,8 @@ using UnityEngine.UI;
 
 namespace DebugConsole
 {
+    public delegate void VisibilityChangedHandler(bool _Visible);
+    
     public class DebugConsoleView : MonoBehaviour
     {
         #region singleton
@@ -65,14 +66,13 @@ namespace DebugConsole
         
         #region public members
 
-        public DebugConsoleController                                Controller => m_Controller;
+        public IDebugConsoleController        Controller { get; } = new DebugConsoleController();
         public event VisibilityChangedHandler VisibilityChanged;
         
         #endregion
 
         #region nonpublic members
 
-        private readonly DebugConsoleController m_Controller = new DebugConsoleController();
         private Vector3 m_SwipeFirstPosition;
         private Vector3 m_SwipeLastPosition;
         private float m_SwipeDragDistance;
@@ -93,16 +93,14 @@ namespace DebugConsole
 
         private void Start()
         {
-            m_Controller.VisibilityChanged += OnVisibilityChanged;
-            m_Controller.OnLogChanged += OnLogChanged;
-            UpdateLogStr(m_Controller.Log);
+            Controller.OnLogChanged += OnLogChanged;
+            UpdateLogStr(Controller.Log);
             m_SwipeDragDistance = Screen.width * 30 * 0.01f;
         }
 
         private void OnDestroy()
         {
-            m_Controller.VisibilityChanged -= OnVisibilityChanged;
-            m_Controller.OnLogChanged -= OnLogChanged;
+            Controller.OnLogChanged -= OnLogChanged;
         }
 
         private void Update()
@@ -193,20 +191,20 @@ namespace DebugConsole
 
         #region public methods
 
-        public void Init(IViewInputCommandsProceeder _CommandsProceeder, IManagersGetter _Managers)
+        public void Init(IViewInputCommandsProceeder _CommandsProceeder, IAdsManager _AdsManager, IScoreManager _ScoreManager)
         {
             m_CommandsProceeder = _CommandsProceeder;
-            m_Controller.Init(_CommandsProceeder, _Managers);
+            Controller.Init(_CommandsProceeder, _AdsManager, _ScoreManager);
         }
         
         public void UpCommand()
         {
             m_CurrentCommand++;
-            m_Index = m_Controller.CommandHistory.Count - m_CurrentCommand;
-            if (m_Index >= 0 && m_Controller.CommandHistory.Count != 0)
-                inputField.text = m_Controller.CommandHistory[m_Index];
+            m_Index = Controller.CommandHistory.Count - m_CurrentCommand;
+            if (m_Index >= 0 && Controller.CommandHistory.Count != 0)
+                inputField.text = Controller.CommandHistory[m_Index];
             else
-                m_CurrentCommand = m_Controller.CommandHistory.Count;
+                m_CurrentCommand = Controller.CommandHistory.Count;
 
             inputField.ActivateInputField();
             inputField.Select();
@@ -215,9 +213,9 @@ namespace DebugConsole
         public void DownCommand()
         {
             m_CurrentCommand--;
-            m_Index = m_Controller.CommandHistory.Count - m_CurrentCommand;
-            if (m_Index < m_Controller.CommandHistory.Count)
-                inputField.text = m_Controller.CommandHistory[m_Index];
+            m_Index = Controller.CommandHistory.Count - m_CurrentCommand;
+            if (m_Index < Controller.CommandHistory.Count)
+                inputField.text = Controller.CommandHistory[m_Index];
             else
             {
                 inputField.text = "";
@@ -229,7 +227,7 @@ namespace DebugConsole
 
         public void RunCommand()
         {
-            m_Controller.RunCommandString(inputField.text);
+            Controller.RunCommandString(inputField.text);
             inputField.text = "";
             inputField.ActivateInputField();
             inputField.Select();
@@ -251,6 +249,7 @@ namespace DebugConsole
 
         private void SetVisibility(bool _Visible)
         {
+            VisibilityChanged?.Invoke(_Visible);
             var commands = new[] {EInputCommand.ShopMenu, EInputCommand.SettingsMenu}
                 .Concat(RazorMazeUtils.GetMoveCommands())
                 .Concat(RazorMazeUtils.GetRotateCommands());
@@ -263,13 +262,7 @@ namespace DebugConsole
             if (inputField.text == "`")
                 inputField.text = "";
         }
-
-        private void OnVisibilityChanged(bool _Visible)
-        {
-            SetVisibility(_Visible);
-            VisibilityChanged?.Invoke(_Visible);
-        }
-
+        
         private void OnLogChanged(string[] _NewLog)
         {
             UpdateLogStr(_NewLog);
@@ -283,5 +276,3 @@ namespace DebugConsole
         #endregion
     }
 }
-
-#endif

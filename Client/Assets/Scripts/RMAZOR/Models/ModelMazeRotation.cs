@@ -79,26 +79,30 @@ namespace RMAZOR.Models
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            var stage = _Args.Stage;
-            if (stage == ELevelStage.Unloaded)
+            switch (_Args.Stage)
             {
-                Data.Orientation = MazeOrientation.North;
-                var args = new MazeRotationEventArgs(
-                    default, default, Data.Orientation, true);
-                RotationStarted?.Invoke(args);
-            }
-            else if (_Args.Stage == ELevelStage.ReadyToStart && _Args.PreviousStage != ELevelStage.CharacterKilled)
-            {
-                if (Data.Orientation == MazeOrientation.North)
-                    return;
-                var rotDir = (int) Data.Orientation < 2
-                    ? EMazeRotateDirection.CounterClockwise
-                    : EMazeRotateDirection.Clockwise;
-                var currOrient = Data.Orientation;
-                Data.Orientation = MazeOrientation.North;
-                var args = new MazeRotationEventArgs(
-                    rotDir, currOrient, Data.Orientation, false);
-                RotationStarted?.Invoke(args);
+                case ELevelStage.ReadyToStart when _Args.PreviousStage != ELevelStage.CharacterKilled:
+                    if (Data.Orientation == MazeOrientation.North)
+                        return;
+                    var rotDir = (int) Data.Orientation < 2
+                        ? EMazeRotateDirection.CounterClockwise
+                        : EMazeRotateDirection.Clockwise;
+                    var currOrient = Data.Orientation;
+                    Data.Orientation = MazeOrientation.North;
+                {
+                    var args = new MazeRotationEventArgs(
+                        rotDir, currOrient, Data.Orientation, false);
+                    RotationStarted?.Invoke(args);
+                }
+                break;
+                case ELevelStage.Unloaded:
+                    Data.Orientation = MazeOrientation.North;
+                {
+                    var args = new MazeRotationEventArgs(
+                        default, default, Data.Orientation, true);
+                    RotationStarted?.Invoke(args);
+                }
+                break;
             }
         }
         

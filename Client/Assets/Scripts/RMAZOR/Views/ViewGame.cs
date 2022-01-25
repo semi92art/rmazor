@@ -73,6 +73,7 @@ namespace RMAZOR.Views
         private IMazeCoordinateConverter CoordinateConverter { get; }
         private IColorProvider           ColorProvider       { get; }
         private ICameraProvider          CameraProvider      { get; }
+        private IDebugManager            DebugManager        { get; }
 
         public ViewGame(
             ViewSettings                          _Settings,
@@ -97,7 +98,8 @@ namespace RMAZOR.Views
             IManagersGetter                       _Managers, 
             IMazeCoordinateConverter              _CoordinateConverter,
             IColorProvider                        _ColorProvider,
-            ICameraProvider                       _CameraProvider)
+            ICameraProvider                       _CameraProvider,
+            IDebugManager                         _DebugManager)
         {
             Settings               = _Settings;
             ContainersGetter       = _ContainersGetter;
@@ -122,6 +124,7 @@ namespace RMAZOR.Views
             CoordinateConverter    = _CoordinateConverter;
             ColorProvider          = _ColorProvider;
             CameraProvider         = _CameraProvider;
+            DebugManager           = _DebugManager;
         }
         
         #endregion
@@ -133,16 +136,8 @@ namespace RMAZOR.Views
         
         public void Init()
         {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            Managers.DebugManager.Init();
-#endif
-            Managers.AudioManager.Init();
-            Managers.AssetBundleManager.Init();
-            ColorProvider.Init();
-            CoordinateConverter.Init();
-            LevelStageController.RegisterProceeders(GetInterfaceOfProceeders<IOnLevelStageChanged>());
-            GetInterfaceOfProceeders<IInit>().ForEach(_InitObj => _InitObj.Init());
-            LevelStageController.Init();
+            InitManagers();
+            InitProceeders();
             Initialize?.Invoke();
             Initialized = true;
         }
@@ -176,6 +171,25 @@ namespace RMAZOR.Views
         #endregion
         
         #region nonpublic methods
+
+        private void InitManagers()
+        {
+            if (Managers.RemoteConfigManager.Initialized)
+                DebugManager.Init();
+            else
+                Managers.RemoteConfigManager.Initialize += DebugManager.Init;
+            Managers.AudioManager.Init();
+            Managers.AssetBundleManager.Init();
+        }
+
+        private void InitProceeders()
+        {
+            ColorProvider.Init();
+            CoordinateConverter.Init();
+            LevelStageController.RegisterProceeders(GetInterfaceOfProceeders<IOnLevelStageChanged>());
+            GetInterfaceOfProceeders<IInit>().ForEach(_InitObj => _InitObj.Init());
+            LevelStageController.Init();
+        }
 
         private List<T> GetInterfaceOfProceeders<T>() where T : class
         {

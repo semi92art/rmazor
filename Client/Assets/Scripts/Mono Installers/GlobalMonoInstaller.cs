@@ -36,9 +36,8 @@ namespace Mono_Installers
             Container.Bind<INotificationSetting>().To<NotificationsSetting>()               .AsSingle();
             Container.Bind<IHapticsSetting>()     .To<HapticsSetting>()                     .AsSingle();
             Container.Bind<ILanguageSetting>()    .To<LanguageSetting>()                    .AsSingle();
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
             Container.Bind<IDebugSetting>()       .To<DebugSetting>()                       .AsSingle();
-#endif
+            
             #endregion
 
             #region managers
@@ -51,7 +50,6 @@ namespace Mono_Installers
             Container.Bind<IShopManager>()        .To<AndroidUnityIAPShopManager>()         .AsSingle();
 #elif UNITY_IOS || UNITY_ANDROID
             Container.Bind<IShopManager>()        .To<AppleUnityIAPShopManager>()           .AsSingle();
-            // Container.Bind<IShopManager>()        .To<AppleSAShopManager>()              .AsSingle();
 #endif
             Container.Bind<ILocalizationManager>().To<LeanLocalizationManager>()            .AsSingle();
             Container.Bind<IScoreManager>()       .To<ScoreManager>()                       .AsSingle();

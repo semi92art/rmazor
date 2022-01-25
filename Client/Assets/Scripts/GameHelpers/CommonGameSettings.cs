@@ -16,10 +16,9 @@ namespace GameHelpers
     {
         [SerializeField] private EAdsProvider adsProvider;
         [SerializeField] private float        adsLoadDelay;
-        [SerializeField] private bool         srDebuggerOn;
+        [SerializeField] private bool         debugEnabled;
         [SerializeField] private bool         testAds;
         [SerializeField] private ELogLevel    logLevel;
-        [SerializeField] private bool         doNotLogOnRelease;
         
         public EAdsProvider AdsProvider
         {
@@ -33,24 +32,13 @@ namespace GameHelpers
             set => adsLoadDelay = value;
         }
 
-        public bool SrDebuggerOn
+        public bool      DebugEnabled
         {
-            get => srDebuggerOn;
+            get => debugEnabled;
+            set => debugEnabled = value;
         }
 
-        public bool TestAds
-        {
-            get => testAds;
-        }
-
-        public ELogLevel LogLevel
-        {
-            get => logLevel;
-        }
-
-        public bool DoNotLogOnRelease
-        {
-            get => doNotLogOnRelease;
-        }
+        public bool      TestAds      => testAds;
+        public ELogLevel LogLevel     => logLevel;
     }
 }

@@ -1,53 +1,52 @@
-﻿#if UNITY_EDITOR || DEVELOPMENT_BUILD
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Common;
 using Managers;
+using Managers.Advertising;
 using RMAZOR.Views.InputConfigurators;
 
 namespace DebugConsole
 {
-    public delegate void VisibilityChangedHandler(bool _Visible);
+    public delegate void LogChangedHandler(string[] _Log);
+    
+    public delegate void CommandHandler(string[] _Args);
+
+    public class CommandRegistration
+    {
+        // ReSharper disable once UnusedAutoPropertyAccessor.Global
+        // ReSharper disable once MemberCanBePrivate.Global
+        public string         Command     { get; }
+        public CommandHandler Handler     { get; }
+        public string         Description { get; }
+
+        public CommandRegistration(string _Command, CommandHandler _Handler, string _Description)
+        {
+            Command = _Command;
+            Handler = _Handler;
+            Description = _Description;
+        }
+    }
     
     public interface IDebugConsoleController
     {
-        void Init(IViewInputCommandsProceeder _CommandsProceeder, IManagersGetter _Managers);
-        void RegisterCommand(string _Command, DebugConsoleController.CommandHandler _Handler, string _Description);
-        event VisibilityChangedHandler VisibilityChanged;
+        event LogChangedHandler                 OnLogChanged;
+        IViewInputCommandsProceeder             CommandsProceeder { get; }
+        IAdsManager                             AdsManager        { get; }
+        IScoreManager                           ScoreManager      { get; }
+        Queue<string>                           Scrollback        { get; }
+        string[]                                Log               { get; }
+        Dictionary<string, CommandRegistration> Commands          { get; }
+        List<string>                            CommandHistory    { get; }
+        
+        void Init(IViewInputCommandsProceeder _CommandsProceeder, IAdsManager _AdsManager, IScoreManager _ScoreManager);
+        void RegisterCommand(string _Command, CommandHandler _Handler, string _Description);
+        void RunCommandString(string _CommandString);
+        void AppendLogLine(string             _Line);
+        void RaiseLogChangedEvent(string[]    _Args);
     }
     
     public class DebugConsoleController : IDebugConsoleController
     {
-        #region event declarations
-
-        public delegate void LogChangedHandler(string[] _Log);
-        public event LogChangedHandler OnLogChanged;
-        public event VisibilityChangedHandler VisibilityChanged;
-
-        #endregion
-
-        #region types
-        
-        public delegate void CommandHandler(string[] _Args);
-
-        public class CommandRegistration
-        {
-            // ReSharper disable once UnusedAutoPropertyAccessor.Global
-            public string Command { get; }
-            public CommandHandler Handler { get; }
-            public string Description { get; }
-
-            public CommandRegistration(string _Command, CommandHandler _Handler, string _Description)
-            {
-                Command = _Command;
-                Handler = _Handler;
-                Description = _Description;
-            }
-        }
-
-        #endregion
-
         #region constants
 
         private const int ScrollbackSize = 100;
@@ -66,13 +65,17 @@ namespace DebugConsole
 
         #region api
         
-        public IViewInputCommandsProceeder             CommandsProceeder { get; private set; }
-        public IManagersGetter                         Managers { get; private set; }
+        public event LogChangedHandler        OnLogChanged;
+        public IViewInputCommandsProceeder    CommandsProceeder { get; private set; }
+        public IAdsManager                    AdsManager        { get; private set; }
+        public IScoreManager                  ScoreManager      { get; private set; }
+        
         public string[]                                Log { get; private set; }
         public Queue<string>                           Scrollback { get; } = new Queue<string>(ScrollbackSize);
-        public Dictionary<string, CommandRegistration> Commands { get;} = new Dictionary<string, CommandRegistration>();
-        public List<string>                            CommandHistory { get; } = new List<string>();
+        public Dictionary<string, CommandRegistration> Commands { get; } = new Dictionary<string, CommandRegistration>();
 
+        // ReSharper disable once CollectionNeverQueried.Local
+        public List<string> CommandHistory { get; } = new List<string>();
         public void RaiseLogChangedEvent(string[] _Args)
         {
             OnLogChanged?.Invoke(_Args);
@@ -80,10 +83,12 @@ namespace DebugConsole
 
         public void Init(
             IViewInputCommandsProceeder _CommandsProceeder,
-            IManagersGetter _Managers)
+            IAdsManager                 _AdsManager,
+            IScoreManager               _ScoreManager)
         {
             CommandsProceeder = _CommandsProceeder;
-            Managers = _Managers;
+            AdsManager        = _AdsManager;
+            ScoreManager      = _ScoreManager;
         }
 
         public void RegisterCommand(string _Command, CommandHandler _Handler, string _Description)
@@ -94,11 +99,9 @@ namespace DebugConsole
         public void AppendLogLine(string _Line)
         {
             Dbg.Log(_Line);
-
             if (Scrollback.Count >= ScrollbackSize)
                 Scrollback.Dequeue();
             Scrollback.Enqueue(_Line);
-
             Log = Scrollback.ToArray();
             OnLogChanged?.Invoke(Log);
         }
@@ -106,17 +109,20 @@ namespace DebugConsole
         public void RunCommandString(string _CommandString)
         {
             AppendLogLine("$ " + _CommandString);
-
             string[] commandSplit = ParseArguments(_CommandString);
             string[] args = new string[0];
             if (commandSplit.Length <= 0)
                 return;
-
             if (commandSplit.Length >= 2)
             {
                 int numArgs = commandSplit.Length - 1;
                 args = new string[numArgs];
-                Array.Copy(commandSplit, 1, args, 0, numArgs);
+                Array.Copy(
+                    commandSplit,
+                    1, 
+                    args,
+                    0,
+                    numArgs);
             }
             RunCommand(commandSplit[0].ToLower(), args);
             CommandHistory.Add(_CommandString);
@@ -141,7 +147,7 @@ namespace DebugConsole
 
         private static string[] ParseArguments(string _CommandString)
         {
-            LinkedList<char> parmChars = new LinkedList<char>(_CommandString.ToCharArray());
+            var parmChars = new LinkedList<char>(_CommandString.ToCharArray());
             bool inQuote = false;
             var node = parmChars.First;
             while (node != null)
@@ -160,11 +166,11 @@ namespace DebugConsole
             }
             char[] parmCharsArr = new char[parmChars.Count];
             parmChars.CopyTo(parmCharsArr, 0);
-            return (new string(parmCharsArr)).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            return new string(parmCharsArr).Split(
+                new[] { ' ' },
+                StringSplitOptions.RemoveEmptyEntries);
         }
 
         #endregion
     }
 }
-
-#endif

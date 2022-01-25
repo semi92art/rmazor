@@ -116,7 +116,7 @@ namespace RMAZOR.Controllers
 
         private void DefineSrDebuggerInitialization()
         {
-            if (Settings.SrDebuggerOn)
+            if (Settings.DebugEnabled)
                 OnSrDebugInitialized();
             else if (View.InputController.TouchProceeder is ViewInputTouchProceederWithSRDebugInit proceeder)
                 proceeder.OnSrDebugInitialized = OnSrDebugInitialized;

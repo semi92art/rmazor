@@ -2,7 +2,6 @@
 using Lean.Common;
 using RMAZOR.Models;
 using UnityEngine;
-using Zenject;
 
 namespace RMAZOR.Views.InputConfigurators
 {
@@ -15,19 +14,19 @@ namespace RMAZOR.Views.InputConfigurators
         #endregion
         
         #region inject
-        
-#if UNITY_EDITOR
-        [Inject] private IDebugManager DebugManager { get; }
-#endif
-        private IUITicker Ticker { get; }
+
+        private IDebugManager DebugManager { get; }
+        private IUITicker     Ticker       { get; }
 
         public ViewInputControllerInEditor(
             IViewInputCommandsProceeder _CommandsProceeder,
-            IViewInputTouchProceeder _TouchProceeder,
-            IUITicker _UITicker) 
+            IViewInputTouchProceeder    _TouchProceeder,
+            IUITicker                   _UITicker,
+            IDebugManager               _DebugManager)
             : base(_CommandsProceeder, _TouchProceeder)
         {
-            Ticker = _UITicker;
+            Ticker       = _UITicker;
+            DebugManager = _DebugManager;
         }
 
         #endregion
@@ -36,18 +35,14 @@ namespace RMAZOR.Views.InputConfigurators
 
         public override void Init()
         {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
             DebugManager.VisibilityChanged += DebugManagerOnVisibilityChanged;
-#endif
             Ticker.Register(this);
             base.Init();
         }
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
         private void DebugManagerOnVisibilityChanged(bool _Visible)
         {
             m_DoProceed = !_Visible;
         }
-#endif
 
         public void UpdateTick()
         {

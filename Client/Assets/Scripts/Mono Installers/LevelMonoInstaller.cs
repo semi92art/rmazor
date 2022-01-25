@@ -160,9 +160,7 @@ namespace Mono_Installers
             #region other
 
             Container.Bind<IColorProvider>()    .FromComponentInNewPrefab(colorProvider) .AsSingle();
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
             Container.Bind<IDebugManager>()     .To<DebugManager>()                      .AsSingle();
-#endif
             Container.Bind<IAudioManager>()     .To<AudioManager>()                      .AsSingle();
             Container.Bind<IManagersGetter>()   .To<ManagersGetter>()                    .AsSingle();
 

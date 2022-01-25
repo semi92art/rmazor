@@ -1,4 +1,7 @@
-﻿using Common.Extensions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Common.Extensions;
 using Common.Ticker;
 using Managers;
 using RMAZOR.Models;
@@ -19,7 +22,7 @@ namespace RMAZOR.Views.MazeItems
         #region shapes
 
         protected override string ObjectName => "Gravity Block";
-        private Disc m_Joint;
+        private Rectangle m_Joint;
         
         #endregion
         
@@ -50,7 +53,7 @@ namespace RMAZOR.Views.MazeItems
         
         #region api
         
-        public override Component[] Shapes => new Component[] {m_Shape, m_Joint};
+        public override Component[] Shapes => new Component[] {m_Shape};
         
         public override object Clone() => new ViewMazeItemGravityBlock(
             ViewSettings,
@@ -71,18 +74,26 @@ namespace RMAZOR.Views.MazeItems
         protected override void InitShape()
         {
             base.InitShape();
-            var joint = Object.AddComponentOnNewChild<Disc>("Joint", out _);
-            joint.transform.SetLocalPosXY(Vector2.zero);
-            joint.Color = ColorProvider.GetColor(ColorIds.Main);
-            joint.Radius = ViewSettings.LineWidth * CoordinateConverter.Scale * 2f;
-            joint.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
-            m_Joint = joint;
+            var sh = Object.AddComponentOnNewChild<Rectangle>("Joint", out _);
+            sh.Type = Rectangle.RectangleType.RoundedSolid;
+            sh.Color = ColorProvider.GetColor(ColorIds.Main);
+            sh.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
+            m_Joint = sh;
+            // var joint = Object.AddComponentOnNewChild<Disc>("Joint", out _);
+            // joint.transform.SetLocalPosXY(Vector2.zero);
+            // joint.Color = ColorProvider.GetColor(ColorIds.Main).SetA(0.5f);
+            // joint.Radius = ViewSettings.LineWidth * CoordinateConverter.Scale;
+            // joint.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
+            // m_Joint = joint;
         }
 
         protected override void UpdateShape()
         {
             base.UpdateShape();
-            m_Joint.Radius = ViewSettings.LineWidth * CoordinateConverter.Scale * 2f;
+            // m_Joint.Radius = ViewSettings.LineWidth * CoordinateConverter.Scale;
+            m_Joint.Width = m_Joint.Height = CoordinateConverter.Scale * 0.9f;
+            m_Joint.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
+            m_Joint.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale;
         }
 
         protected override void InitWallBlockMovingPaths()
@@ -93,8 +104,18 @@ namespace RMAZOR.Views.MazeItems
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             if (_ColorId == ColorIds.Main)
-                m_Joint.Color = _Color;
+                m_Joint.Color = _Color.SetA(0.3f);
             base.OnColorChanged(_ColorId, _Color);
+        }
+
+        protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
+        {
+            return base.GetAppearSets(_Appear).Concat(new Dictionary<IEnumerable<Component>, Func<Color>>
+            {
+                {new [] {m_Joint}, () => ColorProvider.GetColor(ColorIds.Main).SetA(0.3f)}
+            }).ToDictionary(
+                _Kvp => _Kvp.Key,
+                _Kvp => _Kvp.Value);
         }
 
         #endregion

@@ -58,7 +58,7 @@ namespace RMAZOR.Views.InputConfigurators
         
         private void ProceedSRDebugInitialization(LeanFinger _Finger)
         {
-            if (CommonGameSettings.SrDebuggerOn)
+            if (CommonGameSettings.DebugEnabled)
                 return;
             if (m_SrDebuggerInitialized)
                 return;

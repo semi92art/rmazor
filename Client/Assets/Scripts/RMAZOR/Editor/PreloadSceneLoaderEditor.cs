@@ -26,7 +26,6 @@ namespace RMAZOR.Editor
             }
         }
         
-        [MenuItem("Tools/Switch Scenes _%s")]
         public static void SwitchScenes()
         {
             if (Application.isPlaying)

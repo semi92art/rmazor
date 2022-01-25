@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Common;
 using GameHelpers;
+using Newtonsoft.Json;
 using RMAZOR;
 using Unity.RemoteConfig;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace Managers
@@ -63,8 +66,11 @@ namespace Managers
 
         private void FetchConfigs()
         {
+            Dbg.Log(nameof(FetchConfigs));
+#if !UNITY_EDITOR
             ConfigManager.FetchCompleted -= OnFetchCompleted;
             ConfigManager.FetchCompleted += OnFetchCompleted;
+#endif
             ConfigManager.FetchCompleted -= OnInitialized;
             ConfigManager.FetchCompleted += OnInitialized;
             ConfigManager.FetchConfigs(new UserAttributes(), new AppAttributes());
@@ -72,9 +78,6 @@ namespace Managers
 
         private void OnFetchCompleted(ConfigResponse _Response)
         {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            //return;
-#endif
             EAdsProvider provider = default;
             bool adsAdMob = CommonGameSettings.AdsProvider.HasFlag(EAdsProvider.GoogleAds);
             GetConfig(ref adsAdMob, "ads.admob");
@@ -82,14 +85,24 @@ namespace Managers
             bool adsUnity = CommonGameSettings.AdsProvider.HasFlag(EAdsProvider.UnityAds);
             GetConfig(ref adsAdMob, "ads.unityads");
             if (adsUnity) provider |= EAdsProvider.UnityAds;
-            
             CommonGameSettings.AdsProvider = provider;
-            
             GetConfig(ref ModelSettings.characterSpeed, "character.speed");
             GetConfig(ref ModelSettings.gravityBlockSpeed, "mazeitems.gravityblock.speed");
             GetConfig(ref ModelSettings.movingItemsSpeed, "mazeitems.movingtrap.speed");
             GetConfig(ref ViewSettings.rateRequestsFrequency, "common.raterequestsfrequency");
             GetConfig(ref ViewSettings.adsRequestsFrequency, "ads.adsrequestsfrequency");
+
+#if !UNITY_EDITOR && !DEVELOPMENT_BUILD
+            string testDeviceIdsJson = string.Empty;
+            GetConfig(ref testDeviceIdsJson, "common.test_device_ids", true);
+            Dbg.Log("testDeviceIdsJson: " + testDeviceIdsJson);
+            if (testDeviceIdsJson == null)
+                return;
+            var deviceIds = JsonConvert.DeserializeObject<string[]>(testDeviceIdsJson);
+            if (deviceIds == null)
+                return;
+            CommonGameSettings.DebugEnabled = deviceIds.Contains(SystemInfo.deviceUniqueIdentifier);
+#endif
         }
 
         private void OnInitialized(ConfigResponse _Response)
@@ -99,18 +112,20 @@ namespace Managers
             Initialized = true;
         }
         
-        private static void GetConfig<T>(ref T _Parameter, string _Key)
+        private static void GetConfig<T>(ref T _Parameter, string _Key, bool _IsJson = false)
         {
             var config = ConfigManager.appConfig;
-            var @switch = new Dictionary<Type, object>
+            object result = _Parameter;
+            var result1 = result;
+            var @switch = new Dictionary<Type, Func<object>>
             {
-                {typeof(bool),   config.GetBool(  _Key, Convert.ToBoolean(_Parameter)) },
-                {typeof(float),  config.GetFloat( _Key, Convert.ToSingle(_Parameter)) },
-                {typeof(string), config.GetString(_Key, Convert.ToString(_Parameter))},
-                {typeof(int),    config.GetInt(   _Key, Convert.ToInt32(_Parameter)) },
-                {typeof(long),   config.GetLong(  _Key, Convert.ToInt64(_Parameter)) }
+                {typeof(bool),   () => config.GetBool(  _Key, Convert.ToBoolean(result1)) },
+                {typeof(float),  () => config.GetFloat( _Key, Convert.ToSingle(result1)) },
+                {typeof(string), () => config.GetString(_Key, Convert.ToString(result1))},
+                {typeof(int),    () => config.GetInt(   _Key, Convert.ToInt32(result1)) },
+                {typeof(long),   () => config.GetLong(  _Key, Convert.ToInt64(result1)) }
             };
-            var result = @switch[typeof(T)];
+            result = !_IsJson ? @switch[typeof(T)]() : config.GetJson(_Key);
             _Parameter = (T) result;
         }
 

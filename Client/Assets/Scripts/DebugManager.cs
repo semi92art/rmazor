@@ -1,72 +1,58 @@
 ﻿using Common;
+using GameHelpers;
 using Managers;
+using Managers.Advertising;
 using RMAZOR.Views.InputConfigurators;
 using Settings;
 using UnityEngine.Events;
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
 using DebugConsole;
-#endif
 
 public interface IDebugManager : IInit
 {
-    void EnableDebug(bool _Enable);
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-    IDebugConsoleController Console { get; }
-    event VisibilityChangedHandler       VisibilityChanged;
-#endif
+    event VisibilityChangedHandler VisibilityChanged;
 }
 
 public class DebugManager : IDebugManager
 {
-    #region nonpublic members
-
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-    public IDebugConsoleController Console => DebugConsoleView.Instance.Controller;
-    public event VisibilityChangedHandler       VisibilityChanged;
-
-#endif
-
-    #endregion
-
     #region inject
 
+    // ReSharper disable once UnusedAutoPropertyAccessor.Local
+    private CommonGameSettings          Settings          { get; }
     private IViewInputCommandsProceeder CommandsProceeder { get; }
-    private IManagersGetter             Managers          { get; }
     private IDebugSetting               DebugSetting      { get; }
+    private IAdsManager                 AdsManager        { get; }
+    private IScoreManager               ScoreManager      { get; }
 
     public DebugManager(
+        CommonGameSettings          _Settings,
         IViewInputCommandsProceeder _CommandsProceeder,
-        IManagersGetter             _Managers,
-        IDebugSetting               _DebugSetting)
+        IDebugSetting               _DebugSetting,
+        IAdsManager                 _AdsManager,
+        IScoreManager               _ScoreManager)
     {
+        Settings          = _Settings;
         CommandsProceeder = _CommandsProceeder;
-        Managers = _Managers;
-        DebugSetting = _DebugSetting;
+        DebugSetting      = _DebugSetting;
+        AdsManager        = _AdsManager;
+        ScoreManager      = _ScoreManager;
     }
 
     #endregion
 
     #region api
 
-    public bool              Initialized { get; private set; }
-    public event UnityAction Initialize;
+    public bool                           Initialized { get; private set; }
+    public event UnityAction              Initialize;
+    public event VisibilityChangedHandler VisibilityChanged;
+    
     public void Init()
     {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-        Console.VisibilityChanged += _Value => VisibilityChanged?.Invoke(_Value);
-#endif
+        DebugConsoleView.Instance.VisibilityChanged += _Value => VisibilityChanged?.Invoke(_Value);
         DebugSetting.OnValueSet = EnableDebug;
         InitDebugConsole();
         EnableDebug(DebugSetting.Get());
         Initialize?.Invoke();
         Initialized = true;
-    }
-
-    public void EnableDebug(bool _Enable)
-    {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-        DebugConsole.DebugConsoleView.Instance.enabled = _Enable;
-#endif
     }
     
     #endregion
@@ -76,8 +62,16 @@ public class DebugManager : IDebugManager
     private void InitDebugConsole()
     {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        DebugConsole.DebugConsoleView.Instance.Init(CommandsProceeder, Managers);
+        DebugConsoleView.Instance.Init(CommandsProceeder, AdsManager, ScoreManager);
+#else
+        if (Settings.DebugEnabled)
+            DebugConsoleView.Instance.Init(CommandsProceeder, AdsManager, ScoreManager);
 #endif
+    }
+    
+    private static void EnableDebug(bool _Enable)
+    {
+        DebugConsoleView.Instance.enabled = _Enable;
     }
 
     #endregion

@@ -1,6 +1,4 @@
-﻿using Zenject;
-
-namespace Settings
+﻿namespace Settings
 {
     public interface ISettingsGetter
     {
@@ -9,11 +7,10 @@ namespace Settings
         INotificationSetting NotificationSetting { get; }
         IHapticsSetting HapticsSetting { get; }
         ILanguageSetting LanguageSetting { get; }
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
         IDebugSetting DebugSetting { get; }
-#endif
     }
     
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class SettingsGetter : ISettingsGetter
     {
         public ISoundSetting SoundSetting { get; }
@@ -21,22 +18,22 @@ namespace Settings
         public INotificationSetting NotificationSetting { get; }
         public IHapticsSetting HapticsSetting { get; }
         public ILanguageSetting LanguageSetting { get; }
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-        [Inject] public IDebugSetting DebugSetting { get; }
-#endif
+        public IDebugSetting DebugSetting { get; }
         
         public SettingsGetter(
-            ISoundSetting _SoundSetting,
-            IMusicSetting _MusicSetting,
+            ISoundSetting        _SoundSetting,
+            IMusicSetting        _MusicSetting,
             INotificationSetting _NotificationSetting, 
-            IHapticsSetting _HapticsSetting,
-            ILanguageSetting _LanguageSetting)
+            IHapticsSetting      _HapticsSetting,
+            ILanguageSetting     _LanguageSetting,
+            IDebugSetting        _DebugSetting)
         {
             SoundSetting = _SoundSetting;
             MusicSetting = _MusicSetting;
             NotificationSetting = _NotificationSetting;
             HapticsSetting = _HapticsSetting;
             LanguageSetting = _LanguageSetting;
+            DebugSetting = _DebugSetting;
         }
     }
 }

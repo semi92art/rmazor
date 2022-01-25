@@ -162,6 +162,11 @@ namespace RMAZOR.Models
         
         private void OnMazeRotationStarted(MazeRotationEventArgs _Args)
         {
+            if (LevelStaging.LevelStage == ELevelStage.ReadyToStart 
+                && LevelStaging.PrevLevelStage == ELevelStage.Loaded)
+            {
+                LevelStaging.StartOrContinueLevel();
+            }
             InputScheduler.LockRotation(true);
             InputScheduler.LockMovement(true);
         }

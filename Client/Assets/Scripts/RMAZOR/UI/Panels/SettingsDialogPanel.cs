@@ -9,6 +9,7 @@ using Common.Exceptions;
 using Common.Extensions;
 using Common.Ticker;
 using DialogViewers;
+using GameHelpers;
 using Managers;
 using RMAZOR.Views.Common;
 using Settings;
@@ -54,21 +55,30 @@ namespace RMAZOR.UI.Panels
         #endregion
 
         #region inject
-        
-        private ISettingSelectorDialogPanel SelectorPanel { get; }
-        private ISettingsGetter SettingsGetter { get; }
+
+        // ReSharper disable once UnusedAutoPropertyAccessor.Local
+        private CommonGameSettings          GameSettings   { get; }
+        private ISettingSelectorDialogPanel SelectorPanel  { get; }
+        private ISettingsGetter             SettingsGetter { get; }
 
         public SettingsDialogPanel(
+            CommonGameSettings          _GameSettings,
             ISettingSelectorDialogPanel _SelectorPanel,
-            IBigDialogViewer _DialogViewer,
-            IManagersGetter _Managers,
-            IUITicker _UITicker,
-            ISettingsGetter _SettingsGetter,
-            ICameraProvider _CameraProvider,
-            IColorProvider _ColorProvider) 
-            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider, _ColorProvider)
+            IBigDialogViewer            _DialogViewer,
+            IManagersGetter             _Managers,
+            IUITicker                   _UITicker,
+            ISettingsGetter             _SettingsGetter,
+            ICameraProvider             _CameraProvider,
+            IColorProvider              _ColorProvider)
+            : base(
+                _Managers,
+                _UITicker,
+                _DialogViewer,
+                _CameraProvider,
+                _ColorProvider)
         {
-            SelectorPanel = _SelectorPanel;
+            GameSettings = _GameSettings;
+            SelectorPanel  = _SelectorPanel;
             SettingsGetter = _SettingsGetter;
         }
 
@@ -90,6 +100,7 @@ namespace RMAZOR.UI.Panels
             m_MiniButtonsContent.gameObject.DestroyChildrenSafe();
             m_SettingsContent.gameObject.DestroyChildrenSafe();
             InitSettingItems();
+            InitOtherButtons();
             PanelObject = sp.RTransform();
         }
 
@@ -104,11 +115,23 @@ namespace RMAZOR.UI.Panels
             InitSettingItem(SettingsGetter.LanguageSetting);
             // InitSettingItem(SettingsGetter.NotificationSetting);
             InitSettingItem(SettingsGetter.HapticsSetting);
+            InitDebugSettingItem();
+        }
+
+        private void InitOtherButtons()
+        {
             InitRateUsButton();
             InitLeaderboardsButton();
             InitRestorePurchasesButton();
+        }
+
+        private void InitDebugSettingItem()
+        {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             InitSettingItem(SettingsGetter.DebugSetting);
+#else
+            if (GameSettings.DebugEnabled)
+                InitSettingItem(SettingsGetter.DebugSetting);
 #endif
         }
         

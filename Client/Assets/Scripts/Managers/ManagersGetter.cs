@@ -2,20 +2,9 @@
 using Managers.Advertising;
 using Managers.Audio;
 using Managers.IAP;
-using Zenject;
 
 namespace Managers
 {
-    public delegate void SoundManagerHandler        (IAudioManager Manager);
-    public delegate void AdsManagerHandler          (IAdsManager Manager);
-    public delegate void AnalyticsManagerHandler    (IAnalyticsManager Manager);
-    public delegate void ShopManagerHandler         (IShopManager Manager);
-    public delegate void LocalizationManagerHandler (ILocalizationManager Manager);
-    public delegate void ScoreManagerHandler        (IScoreManager Manager);
-    public delegate void HapticsManagerHandler      (IHapticsManager Manager);
-    public delegate void PrefabSetManagerHandler    (IPrefabSetManager Manager);
-    public delegate void AssetBundleManagerHandler  (IAssetBundleManager Manager);
-    
     public interface IManagersGetter
     {
         IAudioManager        AudioManager        { get; }
@@ -27,20 +16,7 @@ namespace Managers
         IHapticsManager      HapticsManager      { get; }
         IPrefabSetManager    PrefabSetManager    { get; }
         IAssetBundleManager  AssetBundleManager  { get; }
-
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-        IDebugManager        DebugManager { get; }
-#endif
-        void Notify(
-            SoundManagerHandler        _OnSoundManager        = null,
-            AnalyticsManagerHandler    _OnAnalyticsManager    = null,
-            AdsManagerHandler          _OnAdsManager          = null,
-            ShopManagerHandler         _OnShopManager         = null,
-            LocalizationManagerHandler _OnLocalizationManager = null,
-            ScoreManagerHandler        _OnScoreManager        = null,
-            HapticsManagerHandler      _OnHapticsManager      = null,
-            PrefabSetManagerHandler    _OnPrefabSetManager    = null,
-            AssetBundleManagerHandler  _OnAssetBundleManager = null);
+        IRemoteConfigManager RemoteConfigManager { get; }
     }
 
     public class ManagersGetter : IManagersGetter
@@ -56,6 +32,7 @@ namespace Managers
         public IHapticsManager      HapticsManager      { get; }
         public IPrefabSetManager    PrefabSetManager    { get; }
         public IAssetBundleManager  AssetBundleManager  { get; }
+        public IRemoteConfigManager RemoteConfigManager { get; }
 
         public ManagersGetter(
             IAudioManager        _AudioManager,
@@ -66,7 +43,8 @@ namespace Managers
             IScoreManager        _ScoreManager,
             IHapticsManager      _HapticsManager,
             IPrefabSetManager    _PrefabSetManager,
-            IAssetBundleManager  _AssetBundleManager)
+            IAssetBundleManager  _AssetBundleManager,
+            IRemoteConfigManager _RemoteConfigManager)
         {
             AudioManager        = _AudioManager;
             AnalyticsManager    = _AnalyticsManager;
@@ -77,38 +55,13 @@ namespace Managers
             HapticsManager      = _HapticsManager;
             PrefabSetManager    = _PrefabSetManager;
             AssetBundleManager  = _AssetBundleManager;
+            RemoteConfigManager = _RemoteConfigManager;
         }
         
         #endregion
 
         #region api
         
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-
-        [Inject] public IDebugManager DebugManager { get; }
-#endif
-
-        public void Notify(
-            SoundManagerHandler           _OnSoundManager        = null,
-            AnalyticsManagerHandler       _OnAnalyticsManager    = null,
-            AdsManagerHandler             _OnAdsManager          = null,
-            ShopManagerHandler            _OnShopManager         = null,
-            LocalizationManagerHandler    _OnLocalizationManager = null,
-            ScoreManagerHandler           _OnScoreManager        = null,
-            HapticsManagerHandler         _OnHapticsManager      = null,
-            PrefabSetManagerHandler       _OnPrefabSetManager    = null,
-            AssetBundleManagerHandler     _OnAssetBundleManager  = null)
-        {
-            _OnSoundManager         ?.Invoke(AudioManager);
-            _OnAnalyticsManager     ?.Invoke(AnalyticsManager);
-            _OnAdsManager           ?.Invoke(AdsManager);
-            _OnShopManager          ?.Invoke(ShopManager);
-            _OnLocalizationManager  ?.Invoke(LocalizationManager);
-            _OnScoreManager         ?.Invoke(ScoreManager);
-            _OnHapticsManager       ?.Invoke(HapticsManager);
-            _OnPrefabSetManager     ?.Invoke(PrefabSetManager);
-            _OnAssetBundleManager   ?.Invoke(AssetBundleManager);
-        }
 
         #endregion
     }

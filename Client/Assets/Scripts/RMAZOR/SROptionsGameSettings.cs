@@ -374,6 +374,20 @@ namespace RMAZOR
             }
         }
         
+        [Category(CategoryCommon)]
+        public bool Show_Device_Id
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                Dbg.Log(SystemInfo.deviceUniqueIdentifier);
+            }
+        }
+        
+        
+        
     
         #endregion
     

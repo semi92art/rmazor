@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR || DEVELOPMENT_BUILD
-using System;
+﻿using System;
 using System.Linq;
 using Common;
 using Common.Constants;
@@ -16,7 +15,7 @@ namespace DebugConsole
 {
     public static class DebugConsoleCommands
     {
-        public static DebugConsoleController Controller;
+        public static IDebugConsoleController Controller;
         
         public static void RegisterCommands()
         {
@@ -160,7 +159,7 @@ namespace DebugConsole
                 Result = EEntityResult.Success,
                 Value = _Args[0] == "true"
             };
-            Controller.Managers.AdsManager.ShowAds = entity;
+            Controller.AdsManager.ShowAds = entity;
         }
 
         private static void LoadLevel(string[] _Args)
@@ -183,7 +182,7 @@ namespace DebugConsole
                 Controller.AppendLogLine("Wrong. Need money count!");
                 return;
             }
-            Controller.Managers.ScoreManager.SetScore(DataFieldIds.Money, moneyCount, false);
+            Controller.ScoreManager.SetScore(DataFieldIds.Money, moneyCount, false);
         }
         
         private static void ShowRateGamePanel(string[] _Args)
@@ -192,5 +191,3 @@ namespace DebugConsole
         }
     }
 }
-
-#endif

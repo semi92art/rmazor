@@ -13,12 +13,10 @@ using Managers;
 using Managers.Advertising;
 using Managers.IAP;
 using Mono_Installers;
-using Network;
 using RMAZOR.Controllers;
 using UnityEngine;
 using UnityEngine.Purchasing;
 using UnityEngine.SceneManagement;
-using Utils;
 using Zenject;
 
 namespace RMAZOR
@@ -42,7 +40,6 @@ namespace RMAZOR
         private IScoreManager        ScoreManager        { get; set; }
         private IHapticsManager      HapticsManager      { get; set; }
         private IShopManager         ShopManager         { get; set; }
-        private IPrefabSetManager    PrefabSetManager    { get; set; }
         private IRemoteConfigManager RemoteConfigManager { get; set; }
         private ICameraProvider      CameraProvider      { get; set; }
 
@@ -58,7 +55,6 @@ namespace RMAZOR
             IHapticsManager      _HapticsManager,
             IAssetBundleManager  _AssetBundleManager,
             IShopManager         _ShopManager,
-            IPrefabSetManager    _PrefabSetManager,
             IRemoteConfigManager _RemoteConfigManager,
             ICameraProvider      _CameraProvider)
         {
@@ -71,7 +67,6 @@ namespace RMAZOR
             ScoreManager        = _ScoreManager;
             HapticsManager      = _HapticsManager;
             ShopManager         = _ShopManager;
-            PrefabSetManager    = _PrefabSetManager;
             RemoteConfigManager = _RemoteConfigManager;
             CameraProvider      = _CameraProvider;
         }
@@ -83,13 +78,12 @@ namespace RMAZOR
     
         private IEnumerator Start()
         {
+            Dbg.Log("Application started");
             // костыль: если на iOS стоит светлая тема, задник камеры автоматом ставится белым
             CameraProvider.MainCamera.backgroundColor = Color.black; 
             yield return Cor.Delay(1f, null);
             SaveUtils.PutValue(SaveKeys.EnableRotation, true);
             InitLogging();
-            if (Settings.SrDebuggerOn)
-                CommonUtils.InitSRDebugger();
             Application.targetFrameRate = GraphicUtils.GetTargetFps();
             InitGameManagers();
             InitDefaultData();
@@ -123,16 +117,17 @@ namespace RMAZOR
     
         private void InitGameManagers()
         {
-            ScoreManager       .Initialize += OnScoreManagerInitialize;
+            RemoteConfigManager.Initialize += AdsManager.Init;
+            RemoteConfigManager.Initialize += InitDebugging;
+            RemoteConfigManager.Init();
             ShopManager.RegisterProductInfos(GetProductInfos());
-            RemoteConfigManager.Initialize += () => AdsManager.Init();
+            ShopManager        .Init();
+            ScoreManager       .Initialize += OnScoreManagerInitialize;
+            ScoreManager       .Init();
             GameClient         .Init();
             AnalyticsManager   .Init();
             LocalizationManager.Init();
             HapticsManager     .Init();
-            ScoreManager       .Init();
-            ShopManager        .Init();
-            RemoteConfigManager.Init();
         }
 
         private void InitGameController()
@@ -142,19 +137,19 @@ namespace RMAZOR
             {
                 var levelEntity = ScoreManager.GetScore(DataFieldIds.Level, true);
                 Cor.Run(Cor.WaitWhile(
-                                   () => levelEntity.Result == EEntityResult.Pending,
-                                   () =>
-                                   {
-                                       var levelIndex = levelEntity.GetFirstScore();
-                                       if (levelEntity.Result == EEntityResult.Fail
-                                           || !levelIndex.HasValue)
-                                       {
-                                           ScoreManager.SetScore(DataFieldIds.Level, 0, true);
-                                           LoadLevelByIndex(controller, 0);
-                                           return;
-                                       }
-                                       LoadLevelByIndex(controller, (int)levelIndex.Value);
-                                   }));
+               () => levelEntity.Result == EEntityResult.Pending,
+               () =>
+               {
+                   var levelIndex = levelEntity.GetFirstScore();
+                   if (levelEntity.Result == EEntityResult.Fail
+                       || !levelIndex.HasValue)
+                   {
+                       ScoreManager.SetScore(DataFieldIds.Level, 0, true);
+                       LoadLevelByIndex(controller, 0);
+                       return;
+                   }
+                   LoadLevelByIndex(controller, (int)levelIndex.Value);
+               }));
             };
             controller.Init();
         }
@@ -217,10 +212,14 @@ namespace RMAZOR
         private void InitLogging()
         {
             Dbg.LogLevel = Settings.LogLevel;
-#if !DEVELOPMENT_BUILD && !UNITY_EDITOR
-        if (Settings.DoNotLogOnRelease)
-            Dbg.LogLevel = ELogLevel.Nothing;
-#endif
+        }
+
+        private void InitDebugging()
+        {
+            Dbg.Log(nameof(InitDebugging));
+            if (!Settings.DebugEnabled)
+                return;
+            CommonUtils.InitSRDebugger();
         }
 
         private void SetDefaultLanguage()
@@ -243,19 +242,20 @@ namespace RMAZOR
                     LocalizationManager.SetLanguage(Language.Portugal);
                     break;
             }
-            Dbg.Log("Default language: " + language);
             LocalizationManager.SetLanguage(language);
         }
 
         private static List<ProductInfo> GetProductInfos()
         {
             string suffix = Application.platform == RuntimePlatform.Android ? string.Empty : "_2";
+            const ProductType ptCons = ProductType.Consumable;
+            const ProductType ptNonCons = ProductType.NonConsumable;
             return new List<ProductInfo>
             {
-                new ProductInfo(PurchaseKeys.Money1, $"small_pack_of_coins{suffix}",           ProductType.Consumable),
-                new ProductInfo(PurchaseKeys.Money2, $"medium_pack_of_coins{suffix}",          ProductType.Consumable),
-                new ProductInfo(PurchaseKeys.Money3, $"big_pack_of_coins{suffix}",             ProductType.Consumable),
-                new ProductInfo(PurchaseKeys.NoAds,  $"disable_mandatory_advertising{suffix}", ProductType.NonConsumable)
+                new ProductInfo(PurchaseKeys.Money1, $"small_pack_of_coins{suffix}",           ptCons),
+                new ProductInfo(PurchaseKeys.Money2, $"medium_pack_of_coins{suffix}",          ptCons),
+                new ProductInfo(PurchaseKeys.Money3, $"big_pack_of_coins{suffix}",             ptCons),
+                new ProductInfo(PurchaseKeys.NoAds,  $"disable_mandatory_advertising{suffix}", ptNonCons)
             };
         }
 

@@ -37,25 +37,21 @@ namespace RMAZOR.Views.UI
         public virtual void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
         {
             var type = _Args.Info.Type;
-            if (RazorMazeUtils.GravityItemTypes().ContainsAlt(type))
-            {
-                Dbg.Log(nameof(OnMazeItemMoveStarted) + " " + _Args.Info.Type);
-                var commands = RazorMazeUtils.GetMoveCommands()
-                    .Concat(RazorMazeUtils.GetRotateCommands());
-                CommandsProceeder.LockCommands(commands, nameof(IViewUIGameControls));
-            }
+            if (!RazorMazeUtils.GravityItemTypes().ContainsAlt(type)) 
+                return;
+            var commands = RazorMazeUtils.GetMoveCommands()
+                .Concat(RazorMazeUtils.GetRotateCommands());
+            CommandsProceeder.LockCommands(commands, nameof(IViewUIGameControls));
         }
 
         public virtual void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
         {
             var type = _Args.Info.Type;
-            if (RazorMazeUtils.GravityItemTypes().ContainsAlt(type))
-            {
-                Dbg.Log(nameof(OnMazeItemMoveStarted) + " " + _Args.Info.Type);
-                var commands = RazorMazeUtils.GetMoveCommands()
-                    .Concat(RazorMazeUtils.GetRotateCommands());
-                CommandsProceeder.UnlockCommands(commands, nameof(IViewUIGameControls));
-            }
+            if (!RazorMazeUtils.GravityItemTypes().ContainsAlt(type)) 
+                return;
+            var commands = RazorMazeUtils.GetMoveCommands()
+                .Concat(RazorMazeUtils.GetRotateCommands());
+            CommandsProceeder.UnlockCommands(commands, nameof(IViewUIGameControls));
         }
     }
 }
