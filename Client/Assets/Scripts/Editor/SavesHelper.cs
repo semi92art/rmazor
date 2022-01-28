@@ -26,6 +26,23 @@ namespace Editor
 
         private void OnGUI()
         {
+            EditorUtilsEx.GuiButtonAction("Open Saves File", () =>
+            {
+                var p = new Process {StartInfo = new ProcessStartInfo {FileName = SaveUtils.SavesPath}};
+                Task.Run(() => p.Start());
+            });
+            EditorUtilsEx.GuiButtonAction("Open Saves File Location", () =>
+            {
+                var p = new Process {StartInfo = new ProcessStartInfo {FileName = Application.persistentDataPath}};
+                Task.Run(() => p.Start());
+            });
+            EditorUtilsEx.GuiButtonAction("Reload Saves File", SaveUtils.ReloadSaves);
+            EditorUtilsEx.GuiButtonAction("Delete Saves File", () =>
+            {
+                if(File.Exists(SaveUtils.SavesPath))
+                    File.Delete(SaveUtils.SavesPath);
+            });
+            EditorUtilsEx.HorizontalLine();
             var elements = SaveUtils.SavesDoc.Root?.Elements();
             if (elements == null)
                 return;
@@ -42,23 +59,6 @@ namespace Editor
                         GUILayout.TextField(element.Value, GUILayout.Width(valueWidth));
                     });
                 }
-            });
-            EditorUtilsEx.HorizontalLine();
-            EditorUtilsEx.GuiButtonAction("Open Saves File", () =>
-            {
-                var p = new Process {StartInfo = new ProcessStartInfo {FileName = SaveUtils.SavesPath}};
-                Task.Run(() => p.Start());
-            });
-            EditorUtilsEx.GuiButtonAction("Open Saves File Location", () =>
-            {
-                var p = new Process {StartInfo = new ProcessStartInfo {FileName = Application.persistentDataPath}};
-                Task.Run(() => p.Start());
-            });
-            EditorUtilsEx.GuiButtonAction("Reload Saves File", SaveUtils.ReloadSaves);
-            EditorUtilsEx.GuiButtonAction("Delete Saves File", () =>
-            {
-                if(File.Exists(SaveUtils.SavesPath))
-                    File.Delete(SaveUtils.SavesPath);
             });
         }
     }

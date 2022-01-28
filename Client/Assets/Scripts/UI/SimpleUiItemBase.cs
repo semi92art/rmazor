@@ -9,7 +9,6 @@ using RMAZOR.Views.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Utils;
 
 namespace UI
 {
@@ -27,7 +26,7 @@ namespace UI
         #region nonpublic members
 
         protected IManagersGetter Managers      { get; private set; }
-        protected IUITicker       UITicker      { get; private set; }
+        private   IUITicker       Ticker        { get; set; }
         protected IColorProvider  ColorProvider { get; private set; }
 
         private bool   m_IsBackgroundNotNull;
@@ -49,11 +48,11 @@ namespace UI
 
         public virtual void Init(
             IManagersGetter _Managers,
-            IUITicker _UITicker,
-            IColorProvider _ColorProvider)
+            IUITicker       _UITicker,
+            IColorProvider  _ColorProvider)
         {
-            Managers = _Managers;
-            UITicker = _UITicker;
+            Managers      = _Managers;
+            Ticker        = _UITicker;
             ColorProvider = _ColorProvider;
             ColorProvider.ColorChanged += OnColorChanged;
             CheckIfSerializedItemsNotNull();
@@ -110,6 +109,10 @@ namespace UI
                 if (m_IsBackgroundNotNull)
                     background.color = _Color;
             }
+            else if (_ColorId == ColorIds.UiItemHighlighted)
+            {
+                m_BorderHighlightedColor = _Color;
+            }
         }
         
         protected void SoundOnClick()
@@ -123,13 +126,13 @@ namespace UI
 
         private void Update()
         {
-            if (UITicker.Pause)
+            if (Ticker.Pause)
                 return;
             if (!Highlighted)
                 return;
             const float amplitude = 1f;
             const float period = 1f;
-            float lerpVal = MathUtils.TriangleWave(UITicker.Time, period, amplitude) + amplitude;
+            float lerpVal = MathUtils.TriangleWave(Ticker.Time, period, amplitude) + amplitude;
             border.color = Color.Lerp(m_BorderDefaultColor, m_BorderHighlightedColor, lerpVal);
         }
 

@@ -6,8 +6,8 @@ using Common.Utils;
 using DialogViewers;
 using Managers;
 using RMAZOR.Models;
+using RMAZOR.Views.Common;
 using RMAZOR.Views.InputConfigurators;
-using RMAZOR.Views.MazeItems;
 using UnityEngine;
 
 namespace RMAZOR.Views.UI
@@ -22,7 +22,6 @@ namespace RMAZOR.Views.UI
         private IProposalDialogViewer       ProposalDialogViewer { get; }
         private IDialogPanels               DialogPanels         { get; }
         private IViewInputCommandsProceeder CommandsProceeder    { get; }
-        private IManagersGetter             Managers             { get; }
 
         public ViewUI(
             IModelGame                  _Model,
@@ -31,8 +30,7 @@ namespace RMAZOR.Views.UI
             IProposalDialogViewer       _ProposalDialogViewer,
             IDialogPanels               _DialogPanels,
             IViewUIGameControls         _GameControls,
-            IViewInputCommandsProceeder _CommandsProceeder,
-            IManagersGetter             _Managers)
+            IViewInputCommandsProceeder _CommandsProceeder)
             : base(_GameControls)
         {
             Model                = _Model;
@@ -41,7 +39,6 @@ namespace RMAZOR.Views.UI
             ProposalDialogViewer = _ProposalDialogViewer;
             DialogPanels         = _DialogPanels;
             CommandsProceeder    = _CommandsProceeder;
-            Managers             = _Managers;
         }
 
         #endregion
@@ -72,7 +69,7 @@ namespace RMAZOR.Views.UI
             DialogPanels.Init();
             RaiseInitializedEvent();
         }
-
+        
         private void OnCommand(EInputCommand _Key, object[] _Args)
         {
             switch (_Key)

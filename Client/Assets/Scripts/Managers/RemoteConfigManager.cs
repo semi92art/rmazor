@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Common;
 using GameHelpers;
-using Newtonsoft.Json;
 using RMAZOR;
 using Unity.RemoteConfig;
-using UnityEngine;
 using UnityEngine.Events;
+#if !UNITY_EDITOR && !DEVELOPMENT_BUILD
+using System.Linq;
+using Newtonsoft.Json;
+using UnityEngine;
+#endif
 
 namespace Managers
 {
@@ -79,18 +81,21 @@ namespace Managers
         private void OnFetchCompleted(ConfigResponse _Response)
         {
             EAdsProvider provider = default;
-            bool adsAdMob = CommonGameSettings.AdsProvider.HasFlag(EAdsProvider.GoogleAds);
+            bool adsAdMob = CommonGameSettings.AdsProvider.HasFlag(EAdsProvider.AdMob);
             GetConfig(ref adsAdMob, "ads.admob");
-            if (adsAdMob) provider |= EAdsProvider.GoogleAds;
+            if (adsAdMob) provider |= EAdsProvider.AdMob;
             bool adsUnity = CommonGameSettings.AdsProvider.HasFlag(EAdsProvider.UnityAds);
             GetConfig(ref adsAdMob, "ads.unityads");
             if (adsUnity) provider |= EAdsProvider.UnityAds;
             CommonGameSettings.AdsProvider = provider;
-            GetConfig(ref ModelSettings.characterSpeed, "character.speed");
-            GetConfig(ref ModelSettings.gravityBlockSpeed, "mazeitems.gravityblock.speed");
-            GetConfig(ref ModelSettings.movingItemsSpeed, "mazeitems.movingtrap.speed");
+            GetConfig(ref CommonGameSettings.admobRate,       "ads.admob.rate");
+            GetConfig(ref CommonGameSettings.unityAdsRate,    "ads.unityads.rate");
+            GetConfig(ref ModelSettings.characterSpeed,       "character.speed");
+            GetConfig(ref ModelSettings.gravityBlockSpeed,    "mazeitems.gravityblock.speed");
+            GetConfig(ref ModelSettings.movingItemsSpeed,     "mazeitems.movingtrap.speed");
             GetConfig(ref ViewSettings.rateRequestsFrequency, "common.raterequestsfrequency");
-            GetConfig(ref ViewSettings.adsRequestsFrequency, "ads.adsrequestsfrequency");
+            GetConfig(ref ViewSettings.adsRequestsFrequency,  "ads.adsrequestsfrequency");
+            GetConfig(ref ViewSettings.levelsCountMain,       "common.levels_count_main");
 
 #if !UNITY_EDITOR && !DEVELOPMENT_BUILD
             string testDeviceIdsJson = string.Empty;

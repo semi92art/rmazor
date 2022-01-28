@@ -123,6 +123,7 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
+            base.OnColorChanged(_ColorId, _Color);
             if (_ColorId == ColorIds.Main)
                 m_Shape.Color = _Color;
         }

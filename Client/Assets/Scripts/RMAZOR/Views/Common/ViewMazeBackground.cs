@@ -1,15 +1,16 @@
-﻿using System.Linq;
-using Common;
+﻿using Common;
 using Common.CameraProviders;
+using Common.Exceptions;
 using RMAZOR.Models;
+using RMAZOR.Views.Common.CongratulationItems;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace RMAZOR.Views.Common
 {
     public interface IViewMazeBackground : IInit, IOnLevelStageChanged { }
     
-    public class ViewMazeBackground : IViewMazeBackground
+    // ReSharper disable once ClassNeverInstantiated.Global
+    public class ViewMazeBackground : ViewMazeGroundBase, IViewMazeBackground
     {
         #region nonpublic members
         
@@ -23,86 +24,73 @@ namespace RMAZOR.Views.Common
         #region inject
 
         private ICameraProvider                 CameraProvider { get; }
-        private IColorProvider                  ColorProvider  { get; }
         private IViewMazeBackgroundIdleItems    IdleItems      { get; }
-        private IViewMazeBackgroundCongradItems CongradItems   { get; }
+        private IViewMazeBackgroundCongradItems CongratItems   { get; }
 
         public ViewMazeBackground(
-            ICameraProvider _CameraProvider,
-            IColorProvider _ColorProvider,
-            IViewMazeBackgroundIdleItems _IdleItems,
-            IViewMazeBackgroundCongradItems _CongradItems)
+            IModelGame                      _Model,
+            ICameraProvider                 _CameraProvider,
+            IColorProvider                  _ColorProvider,
+            IViewMazeBackgroundIdleItems    _IdleItems,
+            IViewMazeBackgroundCongradItems _CongratItems) 
+            : base(_Model, _ColorProvider)
         {
             CameraProvider = _CameraProvider;
-            ColorProvider = _ColorProvider;
-            IdleItems = _IdleItems;
-            CongradItems = _CongradItems;
+            IdleItems      = _IdleItems;
+            CongratItems   = _CongratItems;
         }
         
         #endregion
         
         #region api
 
-        public bool              Initialized { get; private set; }
-        public event UnityAction Initialize;
-
-        public void Init()
+        public override void Init()
         {
             ColorProvider.ColorChanged += OnColorChanged;
             IdleItems.Init();
-            CongradItems.Init();
-            
-            Initialize?.Invoke();
-            Initialized = true;
+            CongratItems.Init();
+            base.Init();
         }
 
-        private void OnColorChanged(int _ColorId, Color _Color)
-        {
-            if (_ColorId == ColorIds.Background)
-                BackgroundColor = _Color;
-        }
-
-        public void OnLevelStageChanged(LevelStageArgs _Args)
+        public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             IdleItems.OnLevelStageChanged(_Args);
-            CongradItems.OnLevelStageChanged(_Args);
-            if (_Args.Stage == ELevelStage.Loaded)
-            {
-                SetForegroundColors(_Args.LevelIndex);
-            }
+            CongratItems.OnLevelStageChanged(_Args);
+            base.OnLevelStageChanged(_Args);
         }
 
         #endregion
 
         #region nonpublic methods
         
-        private void SetForegroundColors(int _LevelIndex)
+        private void OnColorChanged(int _ColorId, Color _Color)
         {
-            int group = RazorMazeUtils.GetGroupIndex(_LevelIndex);
-            float h = GetHForHSV(group);
-            float s = 70f / 100f;
-            float v = 100f / 100f;
-            var newMainColor = Color.HSVToRGB(h, s, v);
-            ColorProvider.SetColor(ColorIds.Main, newMainColor);
-            ColorProvider.SetColor(ColorIds.Background, Color.HSVToRGB(h, s, 5f / 100f));
+            if (_ColorId == ColorIds.Background)
+                BackgroundColor = _Color;
         }
 
-        private static float GetHForHSV(int _Group)
+        protected override void SetColorsOnTheme(int _LevelIndex, EColorTheme _Theme)
         {
-            var values = new float[]
+            GetHSV(_LevelIndex, out float h, out float s, out float v);
+            switch (_Theme)
             {
-                30,  // 1
-                185, // 5
-                55,  // 2
-                225, // 6
-                80,  // 3
-                265, // 7
-                140, // 4
-                305, // 8
-                // 330  // 9
-            }.Select(_H => _H / 360f).ToArray();
-            int idx = _Group % values.Length;
-            return values[idx];
+                case EColorTheme.Light:
+                    ColorProvider.SetColor(ColorIds.Background, Color.HSVToRGB(h, s, v));
+                    break;
+                case EColorTheme.Dark:
+                    ColorProvider.SetColor(ColorIds.Background, Color.HSVToRGB(h, s, 5f / 100f));
+                    break;
+                default:
+                    throw new SwitchCaseNotImplementedException(_Theme);
+            }
+        }
+        
+        protected override void GetHSV(int _LevelIndex, out float _H, out float _S, out float _V)
+        {
+            int group = RazorMazeUtils.GetGroupIndex(_LevelIndex);
+            _H = GetHForHSV(group);
+            _S = 50f / 100f;
+            _V = 65f / 100f;
         }
 
         #endregion

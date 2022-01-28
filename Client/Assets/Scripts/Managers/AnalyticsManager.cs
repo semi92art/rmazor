@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Common;
 using Common.Exceptions;
+using Common.Helpers;
 using GameHelpers;
 using Unity.Services.Analytics;
 using Unity.Services.Core;
@@ -17,19 +18,15 @@ namespace Managers
         void OnAdvertiseEvent(EAdsProvider _Provider, string _PlacementId, string _PlacementName, bool _Completed);
     }
     
-    public class AnalyticsManager : IAnalyticsManager
+    public class AnalyticsManager : InitBase, IAnalyticsManager
     {
         #region api
-
-        public bool              Initialized { get; private set; }
-        public event UnityAction Initialize;
-
-        public async void Init()
+        
+        public override async void Init()
         { 
             var options = new InitializationOptions();
             await UnityServices.InitializeAsync(options);
-            Initialize?.Invoke();
-            Initialized = true;
+            base.Init();
         }
 
         public void SendAnalytic(string _AnalyticId, IDictionary<string, object> _EventData = null)
@@ -75,7 +72,7 @@ namespace Managers
         {
             return _Provider switch
             {
-                EAdsProvider.GoogleAds => Events.AdProvider.AdMob,
+                EAdsProvider.AdMob => Events.AdProvider.AdMob,
                 EAdsProvider.UnityAds  => Events.AdProvider.UnityAds,
                 _                      => throw new SwitchCaseNotImplementedException(_Provider)
             };

@@ -107,7 +107,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
             }
         }
         
-        protected void InitMoneyPanel()
+        private void InitMoneyPanel()
         {
             var obj = Managers.PrefabSetManager.InitUiPrefab(
                 UIUtils.UiRectTransform(
@@ -158,9 +158,15 @@ namespace RMAZOR.UI.Panels.ShopPanels
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             if (_ColorId == ColorIds.UI)
-                m_MoneyIcon.color = _Color;
+            {
+                if (m_MoneyIcon.IsNotNull())
+                    m_MoneyIcon.color = _Color;
+            }
             else if (_ColorId == ColorIds.UiText)
-                m_MoneyText.color = _Color;
+            {
+                if (m_MoneyText.IsNotNull())
+                    m_MoneyText.color = _Color;
+            }
         }
 
         #endregion

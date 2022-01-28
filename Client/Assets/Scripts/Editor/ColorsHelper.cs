@@ -5,22 +5,22 @@ using Common.Extensions;
 using Common.Utils;
 using GameHelpers;
 using Managers;
+using RMAZOR;
 using RMAZOR.Views.Common;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Utils;
 
 namespace Editor
 {
     public class ColorsHelper : EditorWindow
     {
-        private IColorProvider                        m_ColorProvider;
-        private ColorSetScriptableObject              m_ColorSetScrObj;
-        private ColorSetScriptableObject.ColorItemSet m_ColorSet;
-        private Color?                                m_UiColor;
-        private Color                                 m_UiColorCheck;
-        private bool                                  m_ChangeOnlyHueUi = true;
+        private IColorProvider           m_ColorProvider;
+        private ColorSetScriptableObject m_ColorSetScrObj;
+        private ColorItemSet             m_ColorSet;
+        private Color?                   m_UiColor;
+        private Color                    m_UiColorCheck;
+        private bool                     m_ChangeOnlyHueUi = true;
     
         [MenuItem("Tools/Colors Helper _%&c", false, 2)]
         public static void ShowWindow()
@@ -33,26 +33,29 @@ namespace Editor
         {
             if (m_ColorSet == null)
             {
-                m_ColorSetScrObj = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ColorSetScriptableObject>(
-                    "views", "color_set");
+                string lastSet = SaveUtilsInEditor.GetValue(SaveKeysInEditor.LastSelectedColorSet);
+                if (lastSet == default)
+                {
+                    lastSet = "color_set_light";
+                    SaveUtilsInEditor.PutValue(SaveKeysInEditor.LastSelectedColorSet, lastSet);
+                }
+                var manager = new PrefabSetManager(new AssetBundleManagerFake());
+                m_ColorSetScrObj = manager.GetObject<ColorSetScriptableObject>(
+                    "views", lastSet);
                 m_ColorSet = m_ColorSetScrObj.set;
             }
-
-            EditorUtilsEx.GUIEnabledZone(false, () =>
-            {
-                EditorGUILayout.ObjectField(
-                    "set", m_ColorSetScrObj, typeof(ColorSetScriptableObject), false);
-            });
-        
+            m_ColorSetScrObj = EditorGUILayout.ObjectField(
+                "set", 
+                m_ColorSetScrObj, 
+                typeof(ColorSetScriptableObject), 
+                false) as ColorSetScriptableObject;
             DisplayColors();
-
             if ((m_ColorProvider == null || m_ColorSetScrObj == null)
                 && Application.isPlaying
                 && SceneManager.GetActiveScene().name.Contains(SceneNames.Level))
             {
-                m_ColorProvider = FindObjectOfType<DefaultColorProvider>();
+                m_ColorProvider = FindObjectOfType<ColorProvider>();
             }
-        
             EditorUtilsEx.HorizontalLine(Color.gray);
             GUILayout.Label("UI Color:");
             if (!m_UiColor.HasValue)
@@ -73,15 +76,13 @@ namespace Editor
                 SetUiColors(m_UiColor.Value);
             if (m_UiColor.HasValue)
                 m_UiColorCheck = m_UiColor.Value;
-
             EditorUtilsEx.HorizontalLine(Color.gray);
-        
-            EditorUtilsEx.GuiButtonAction("Save",
-                                          () =>
-                                          {
-                                              m_ColorSetScrObj.set = m_ColorSet;
-                                              AssetDatabase.SaveAssets();
-                                          });
+            void Save()
+            {
+                m_ColorSetScrObj.set = m_ColorSet;
+                AssetDatabase.SaveAssets();
+            }
+            EditorUtilsEx.GuiButtonAction("Save", Save);
         }
 
         private void SetUiColors(Color _Color)
@@ -95,7 +96,7 @@ namespace Editor
                 ColorIds.UiDialogItemNormal,
                 ColorIds.UiDialogBackground
             };
-            foreach (var id in coloIds)
+            foreach (int id in coloIds)
             {
                 var item = m_ColorSet.FirstOrDefault(_Item => ColorIds.GetHash(_Item.name) == id);
                 if (item == null) 

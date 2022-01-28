@@ -5,6 +5,7 @@ using Common.Entities;
 using Common.Enums;
 using Common.Exceptions;
 using Common.Extensions;
+using Common.Helpers;
 using Common.Ticker;
 using Common.Utils;
 using GameHelpers;
@@ -15,8 +16,6 @@ using RMAZOR.Views.ContainerGetters;
 using Settings;
 using UnityEngine;
 using UnityEngine.Audio;
-using UnityEngine.Events;
-using Utils;
 
 namespace Managers.Audio
 {
@@ -33,14 +32,14 @@ namespace Managers.Audio
         void UnmuteAudio(EAudioClipType _Type);
     }
     
-    public class AudioManager : IAudioManager
+    public class AudioManager : InitBase, IAudioManager
     {
         #region nonpublic members
 
         private readonly AudioClipInfo[] m_ClipInfos = new AudioClipInfo[500];
-        private          AudioMixer          m_Mixer;
-        private          AudioMixerGroup     m_MasterGroup;
-        private          AudioMixerGroup     m_MutedGroup;
+        private          AudioMixer      m_Mixer;
+        private          AudioMixerGroup m_MasterGroup;
+        private          AudioMixerGroup m_MutedGroup;
         
         #endregion
         
@@ -48,7 +47,7 @@ namespace Managers.Audio
         
         private IContainersGetter ContainersGetter { get; }
         private IViewGameTicker   GameTicker       { get; }
-        private IUITicker         UITicker         { get; }
+        private IUITicker         Ticker         { get; }
         private IMusicSetting     MusicSetting     { get; }
         private ISoundSetting     SoundSetting     { get; }
         private IPrefabSetManager PrefabSetManager { get; }
@@ -63,7 +62,7 @@ namespace Managers.Audio
         {
             ContainersGetter = _ContainersGetter;
             GameTicker       = _GameTicker;
-            UITicker         = _UITicker;
+            Ticker         = _UITicker;
             MusicSetting     = _MusicSetting;
             SoundSetting     = _SoundSetting;
             PrefabSetManager = _PrefabSetManager;
@@ -73,10 +72,7 @@ namespace Managers.Audio
 
         #region api
 
-        public bool              Initialized { get; private set; }
-        public event UnityAction Initialize;
-        
-        public void Init()
+        public override void Init()
         {
             GameTicker.Register(this);
             MusicSetting.OnValueSet = _MusicOn => EnableAudio(_MusicOn, EAudioClipType.Music);
@@ -89,8 +85,7 @@ namespace Managers.Audio
             EnableAudio(SoundSetting.Get(), EAudioClipType.UiSound, true);
             EnableAudio(SoundSetting.Get(), EAudioClipType.GameSound, true);
             InitAudioMixer();
-            Initialize?.Invoke();
-            Initialized = true;
+            base.Init();
         }
 
         public void InitClip(AudioClipArgs _Args)
@@ -256,7 +251,7 @@ namespace Managers.Audio
                 endVolume,
                 _AttenuateUp ? _Info.AttenuationSecondsOnPlay : _Info.AttenuationSecondsOnStop,
                 _Volume => _Info.Volume = _Volume,
-                _Info.Type == EAudioClipType.UiSound ? (ITicker)UITicker : GameTicker,
+                _Info.Type == EAudioClipType.UiSound ? (ITicker)Ticker : GameTicker,
                 (_, __) =>
                 {
                     if (!_AttenuateUp)

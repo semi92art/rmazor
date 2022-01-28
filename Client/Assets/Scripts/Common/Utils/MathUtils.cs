@@ -71,6 +71,16 @@ namespace Common.Utils
             return _Val >= _Min && _Val <= _Max;
         }
         
+        public static bool IsInRange(float _Val, float _Min, float _Max)
+        {
+            return _Val >= _Min && _Val <= _Max;
+        }
+        
+        public static bool IsInRange(double _Val, double _Min, double _Max)
+        {
+            return _Val >= _Min && _Val <= _Max;
+        }
+        
         /// <summary>
         /// Generates random float value in range of 0.0 and 1.0
         /// </summary>

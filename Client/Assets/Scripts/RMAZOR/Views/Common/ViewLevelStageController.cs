@@ -8,9 +8,7 @@ using Common.Exceptions;
 using Common.Ticker;
 using Common.Utils;
 using DialogViewers;
-using GameHelpers;
 using Managers;
-using Managers.Audio;
 using Mono_Installers;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
@@ -50,6 +48,7 @@ namespace RMAZOR.Views.Common
 
         #region inject
 
+        private ViewSettings                ViewSettings         { get; }
         private IViewGameTicker             ViewGameTicker       { get; }
         private IModelGameTicker            ModelGameTicker      { get; }
         private IModelGame                  Model                { get; }
@@ -60,9 +59,9 @@ namespace RMAZOR.Views.Common
         private IMazeShaker                 MazeShaker           { get; }
         private IDialogPanels               DialogPanels         { get; }
         private IProposalDialogViewer       ProposalDialogViewer { get; }
-        private ILevelsLoader               LevelsLoader         { get; }
 
         public ViewLevelStageController(
+            ViewSettings                _ViewSettings,
             IViewGameTicker             _ViewGameTicker,
             IModelGameTicker            _ModelGameTicker,
             IModelGame                  _Model,
@@ -72,20 +71,19 @@ namespace RMAZOR.Views.Common
             IContainersGetter           _ContainersGetter,
             IMazeShaker                 _MazeShaker,
             IDialogPanels               _DialogPanels,
-            IProposalDialogViewer       _ProposalDialogViewer,
-            ILevelsLoader               _LevelsLoader)
+            IProposalDialogViewer       _ProposalDialogViewer)
         {
-            ViewGameTicker = _ViewGameTicker;
-            ModelGameTicker = _ModelGameTicker;
-            Model = _Model;
-            Managers = _Managers;
-            Character = _Character;
-            CommandsProceeder = _CommandsProceeder;
-            ContainersGetter = _ContainersGetter;
-            MazeShaker = _MazeShaker;
-            DialogPanels = _DialogPanels;
+            ViewSettings         = _ViewSettings;
+            ViewGameTicker       = _ViewGameTicker;
+            ModelGameTicker      = _ModelGameTicker;
+            Model                = _Model;
+            Managers             = _Managers;
+            Character            = _Character;
+            CommandsProceeder    = _CommandsProceeder;
+            ContainersGetter     = _ContainersGetter;
+            MazeShaker           = _MazeShaker;
+            DialogPanels         = _DialogPanels;
             ProposalDialogViewer = _ProposalDialogViewer;
-            LevelsLoader = _LevelsLoader;
         }
 
         #endregion
@@ -200,12 +198,8 @@ namespace RMAZOR.Views.Common
         private void OnLevelFinished(LevelStageArgs _Args)
         {
             bool allLevelsPassed = SaveUtils.GetValue(SaveKeys.AllLevelsPassed);
-            if (!allLevelsPassed)
-            {
-                Dbg.Log($"{_Args.LevelIndex + 1} {LevelsLoader.GetLevelsCount(GameClientUtils.GameId)}");
-                if (_Args.LevelIndex + 1 >= LevelsLoader.GetLevelsCount(GameClientUtils.GameId))
-                    SaveUtils.PutValue(SaveKeys.AllLevelsPassed, true);
-            }
+            if (!allLevelsPassed && _Args.LevelIndex + 1 >= ViewSettings.levelsCountMain)
+                SaveUtils.PutValue(SaveKeys.AllLevelsPassed, true);
             Managers.AnalyticsManager.SendAnalytic(AnalyticIds.LevelFinished, 
            new Dictionary<string, object>
            {

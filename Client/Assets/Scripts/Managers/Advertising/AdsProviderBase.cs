@@ -3,6 +3,7 @@ using System.Xml.Linq;
 using Common.Entities;
 using Common.Extensions;
 using Common.Utils;
+using GameHelpers;
 using Managers.IAP;
 using UnityEngine.Events;
 using Utils;
@@ -11,9 +12,10 @@ namespace Managers.Advertising
 {
     public interface IAdsProviderBase
     {
-        bool RewardedAdReady     { get; }
-        bool InterstitialAdReady { get; }
-
+        EAdsProvider Provider            { get; }
+        bool         RewardedAdReady     { get; }
+        bool         InterstitialAdReady { get; }
+        float        ShowRate            { get; }
     }
     
     public interface IAdsProvider : IAdsProviderBase
@@ -25,36 +27,30 @@ namespace Managers.Advertising
     
     public abstract class AdsProviderBase : IAdsProvider
     {
-        protected bool        m_TestMode;
-        protected XElement    m_AdsData;
-        protected bool        m_Initialized;
-        protected UnityAction m_OnRewardedAdShown;
-        protected UnityAction m_OnInterstitialShown;
-        
-        protected IShopManager ShopManager { get; }
+        protected readonly bool        TestMode;
+        protected          XElement    AdsData;
+        protected          UnityAction OnRewardedAdShown;
+        protected          UnityAction OnInterstitialAdShown;
 
-        protected AdsProviderBase(IShopManager _ShopManager, bool _TestMode)
+        protected AdsProviderBase(bool _TestMode, float _ShowRate)
         {
-            ShopManager = _ShopManager;
-            m_TestMode = _TestMode;
+            TestMode = _TestMode;
+            ShowRate = _ShowRate;
         }
         
-
-        public abstract bool RewardedAdReady     { get; }
-        public abstract bool InterstitialAdReady { get; }
-
-        public event UnityAction Initialized;
+        public abstract EAdsProvider Provider            { get; }
+        public abstract bool         RewardedAdReady     { get; }
+        public abstract bool         InterstitialAdReady { get; }
+        public          float        ShowRate            { get; }
 
         public virtual void Init(XElement _AdsData)
         {
-            m_AdsData = _AdsData;
+            AdsData = _AdsData;
             InitConfigs(() =>
             {
                 InitRewardedAd();
                 InitInterstitialAd();
             });
-            Initialized?.Invoke();
-            m_Initialized = true;
         }
 
         public abstract void ShowRewardedAd(UnityAction _OnShown, BoolEntity _ShowAds);
@@ -66,7 +62,7 @@ namespace Managers.Advertising
         
         protected string GetAdsNodeValue(string _Source, string _Type)
         {
-            return m_AdsData.Elements("ad")
+            return AdsData.Elements("ad")
                 .First(_El =>
                     Compare(_El.Attribute("source")?.Value, _Source)
                     && Compare(_El.Attribute("os")?.Value, CommonUtils.GetOsName())

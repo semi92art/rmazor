@@ -1,10 +1,10 @@
 ﻿using Common;
+using Common.Helpers;
 using GameHelpers;
 using Managers;
 using Managers.Advertising;
 using RMAZOR.Views.InputConfigurators;
 using Settings;
-using UnityEngine.Events;
 using DebugConsole;
 
 public interface IDebugManager : IInit
@@ -12,7 +12,7 @@ public interface IDebugManager : IInit
     event VisibilityChangedHandler VisibilityChanged;
 }
 
-public class DebugManager : IDebugManager
+public class DebugManager : InitBase, IDebugManager
 {
     #region inject
 
@@ -41,18 +41,15 @@ public class DebugManager : IDebugManager
 
     #region api
 
-    public bool                           Initialized { get; private set; }
-    public event UnityAction              Initialize;
     public event VisibilityChangedHandler VisibilityChanged;
     
-    public void Init()
+    public override void Init()
     {
         DebugConsoleView.Instance.VisibilityChanged += _Value => VisibilityChanged?.Invoke(_Value);
         DebugSetting.OnValueSet = EnableDebug;
         InitDebugConsole();
         EnableDebug(DebugSetting.Get());
-        Initialize?.Invoke();
-        Initialized = true;
+        base.Init();
     }
     
     #endregion

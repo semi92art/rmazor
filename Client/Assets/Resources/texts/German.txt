@@ -74,3 +74,5 @@ rate_never = noch nie
 purchase = Kaufen
 mandatory_ads_disabled = Deaktivieren Sie obligatorische Anzeigen
 coins_alt = Münzen
+dark_theme = [Empty]
+dark_theme_available = [Empty]

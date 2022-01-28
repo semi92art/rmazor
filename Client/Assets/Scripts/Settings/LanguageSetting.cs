@@ -27,9 +27,9 @@ namespace Settings
             return GetValue();
         }
 
-        public override void Put(Language _Language)
+        public override void Put(Language _Value)
         {
-            OnValueSet?.Invoke(_Language);
+            OnValueSet?.Invoke(_Value);
         }
     }
 }

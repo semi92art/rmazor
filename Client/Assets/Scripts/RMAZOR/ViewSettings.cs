@@ -29,6 +29,7 @@ namespace RMAZOR
         [SerializeField] private float afterRotationEnableMoveDelay;
         public                   int   rateRequestsFrequency;
         public                   int   adsRequestsFrequency;
+        public                   int   levelsCountMain;
 
         public float   LineWidth
         {

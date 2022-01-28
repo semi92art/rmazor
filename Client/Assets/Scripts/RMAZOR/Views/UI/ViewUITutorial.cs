@@ -2,14 +2,12 @@
 using Common.CameraProviders;
 using Common.Constants;
 using Common.Extensions;
-using Common.Helpers;
 using Common.Ticker;
 using Common.Utils;
 using GameHelpers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.ContainerGetters;
-using RMAZOR.Views.Factories;
 using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
@@ -50,10 +48,8 @@ namespace RMAZOR.Views.UI
         private Vector4                       m_Offsets;
         private HandSwipeMovement             m_Hsm;
         private HandSwipeRotation             m_Hsr;
-        private IRotatingPossibilityIndicator m_RotPossIndicator;
         private TextMeshPro                   m_RotPossText;
         private Animator                      m_RotPossTextAnim;
-        private AnimationTriggerer            m_RotPossTextTriggerer;
 
         #endregion
 
@@ -66,21 +62,21 @@ namespace RMAZOR.Views.UI
         private IViewInputCommandsProceeder          CommandsProceeder   { get; }
         private ICameraProvider                      CameraProvider      { get; }
         private IColorProvider                       ColorProvider       { get; }
-        private IRotatingPossibilityIndicatorFactory RotPossIndFactory   { get; }
         private ILocalizationManager                 LocalizationManager { get; }
         private IViewGameTicker                      Ticker              { get; }
+        private IRotatingPossibilityIndicator        RotationIndicator   { get; }
 
         public ViewUITutorial(
-            IModelGame _Model,
-            IPrefabSetManager _PrefabSetManager,
-            IContainersGetter _ContainersGetter,
-            IMazeCoordinateConverter _CoordinateConverter,
-            IViewInputCommandsProceeder _CommandsProceeder,
-            ICameraProvider _CameraProvider,
-            IColorProvider _ColorProvider,
-            IRotatingPossibilityIndicatorFactory _RotPossIndFactory,
-            ILocalizationManager _LocalizationManager,
-            IViewGameTicker _Ticker)
+            IModelGame                           _Model,
+            IPrefabSetManager                    _PrefabSetManager,
+            IContainersGetter                    _ContainersGetter,
+            IMazeCoordinateConverter             _CoordinateConverter,
+            IViewInputCommandsProceeder          _CommandsProceeder,
+            ICameraProvider                      _CameraProvider,
+            IColorProvider                       _ColorProvider,
+            ILocalizationManager                 _LocalizationManager,
+            IViewGameTicker                      _Ticker, 
+            IRotatingPossibilityIndicator        _RotationIndicator)
         {
             Model = _Model;
             PrefabSetManager = _PrefabSetManager;
@@ -89,9 +85,9 @@ namespace RMAZOR.Views.UI
             CommandsProceeder = _CommandsProceeder;
             CameraProvider = _CameraProvider;
             ColorProvider = _ColorProvider;
-            RotPossIndFactory = _RotPossIndFactory;
             LocalizationManager = _LocalizationManager;
             Ticker = _Ticker;
+            RotationIndicator = _RotationIndicator;
         }
 
         #endregion
@@ -107,25 +103,28 @@ namespace RMAZOR.Views.UI
             m_MovementTutorialFinished = SaveUtils.GetValue(SaveKeys.MovementTutorialFinished);
             m_RotationTutorialFinished = SaveUtils.GetValue(SaveKeys.RotationTutorialFinished);
             CommandsProceeder.Command += OnCommand;
+            ColorProvider.ColorChanged += OnColorChanged;
         }
-        
+
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            switch (_Args.Stage)
+            if (_Args.Stage != ELevelStage.Loaded)
+                return;
+            switch (Model.Data.Info.AdditionalInfo.Comment1)
             {
-                case ELevelStage.Loaded:
-                    switch (Model.Data.Info.AdditionalInfo.Comment1)
-                    {
-                        case "movement tutorial": StartMovementTutorial(); break;
-                        case "rotation tutorial": StartRotationTutorial(); break;
-                    }
-                    break;
+                case "movement tutorial": StartMovementTutorial(); break;
+                case "rotation tutorial": StartRotationTutorial(); break;
             }
         }
 
         #endregion
 
         #region nonpublic methods
+        
+        private void OnColorChanged(int _ColorId, Color _Color)
+        {
+            
+        }
         
         private void OnCommand(EInputCommand _Command, object[] _Args)
         {
@@ -261,16 +260,17 @@ namespace RMAZOR.Views.UI
         private IEnumerator RotationTutorialThirdStepCoroutine()
         {
             m_Hsr.HidePrompt();
-            m_RotPossIndicator = RotPossIndFactory.Create();
-            m_RotPossIndicator.Shape.Color = ColorProvider.GetColor(ColorIds.UI).SetA(0f);
-            m_RotPossIndicator.Animator.SetTrigger(AnimKeys.Anim);
+            RotationIndicator.Name = "Rotating Indicator Tutorial";
+            RotationIndicator.Init(m_Offsets);
+            RotationIndicator.Shape.Color = ColorProvider.GetColor(ColorIds.UI).SetA(0f);
+            RotationIndicator.Animator.SetTrigger(AnimKeys.Anim);
             var cont = ContainersGetter.GetContainer(ContainerNames.Tutorial);
             var goRotPossText = PrefabSetManager.InitPrefab(
                 cont, "tutorials", "rotation_possibility_text");
             var screenBounds = GraphicUtils.GetVisibleBounds();
             goRotPossText.transform.SetPosXY(
                 screenBounds.center.x,
-                screenBounds.min.y + 5f);
+                screenBounds.min.y + 2f);
             m_RotPossText = goRotPossText.GetCompItem<TextMeshPro>("text");
             m_RotPossText.rectTransform.sizeDelta = m_RotPossText.rectTransform.sizeDelta.SetX(
                 screenBounds.max.x - screenBounds.min.x - 3f);
@@ -278,13 +278,13 @@ namespace RMAZOR.Views.UI
             m_RotPossTextAnim = goRotPossText.GetCompItem<Animator>("animator");
             LocalizationManager.AddTextObject(m_RotPossText, "rotation_possibility_text");
             bool readyToNextStage = false;
-            m_RotPossIndicator.Triggerer.Trigger1 = () => readyToNextStage = true;
+            RotationIndicator.Triggerer.Trigger1 = () => readyToNextStage = true;
             m_RotPossTextAnim.SetTrigger(AnimKeys.Anim);
-            m_RotPossIndicator.Animator.SetTrigger(AnimKeys.Anim2);
+            RotationIndicator.Animator.SetTrigger(AnimKeys.Anim2);
             while (!readyToNextStage)
                 yield return null;
             m_RotPossTextAnim.SetTrigger(AnimKeys.Stop);
-            m_RotPossIndicator.Animator.SetTrigger(AnimKeys.Stop);
+            RotationIndicator.Animator.SetTrigger(AnimKeys.Stop);
             FinishRotationTutorial();
         }
 
@@ -296,11 +296,6 @@ namespace RMAZOR.Views.UI
             m_RotationTutorialFinished = true;
             SaveUtils.PutValue(SaveKeys.RotationTutorialFinished, true);
             TutorialFinished?.Invoke(ETutorialType.Rotation);
-        }
-
-        private Bounds GetScreenBounds()
-        {
-            return GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
         }
 
         private static string GetGroupName()

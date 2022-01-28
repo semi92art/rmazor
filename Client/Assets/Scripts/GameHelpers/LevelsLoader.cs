@@ -41,7 +41,6 @@ namespace GameHelpers
         
         public MazeInfo LoadLevel(int _GameId, int _Index)
         {
-            Dbg.Log(_Index);
             if (m_CachedSerializedLevels == null || m_GameId != _GameId)
                 CacheLevels(_GameId);
             return JsonConvert.DeserializeObject<MazeInfo>(m_CachedSerializedLevels[_Index]);

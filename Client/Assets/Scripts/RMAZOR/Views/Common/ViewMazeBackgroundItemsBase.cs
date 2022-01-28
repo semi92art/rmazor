@@ -16,16 +16,16 @@ namespace RMAZOR.Views.Common
     {
         #region constants
 
-        protected const    int           PoolSize = 100;
+        protected const int PoolSize = 100;
         
         #endregion
 
         #region nonpublic members
+
+        private readonly System.Random m_Random = new System.Random();
+        private          Bounds        m_ScreenBounds;
         
-        protected readonly System.Random m_Random = new System.Random();
-        protected          Bounds        m_ScreenBounds;
-        
-        protected readonly System.Type[] m_PossibleSourceTypes =
+        protected readonly System.Type[] PossibleSourceTypes =
         {
             typeof(Disc),
             typeof(Line),
@@ -91,7 +91,7 @@ namespace RMAZOR.Views.Common
         
         protected abstract void InitItems();
         protected abstract void ProceedItems();
-        protected abstract void OnColorChanged(int _ColorId, Color _Color);
+        protected virtual void OnColorChanged(int _ColorId, Color _Color) { }
         
         protected bool IsInsideOfScreenBounds(Vector2 _Position, Vector2 _Padding)
         {

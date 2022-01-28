@@ -17,7 +17,7 @@ namespace Settings
         string           SpriteOffKey { get; }
         string           SpriteOnKey  { get; }
         T                Get();
-        void             Put(T _VolumeOn);
+        void             Put(T _Value);
     }
 
     public enum ESettingType

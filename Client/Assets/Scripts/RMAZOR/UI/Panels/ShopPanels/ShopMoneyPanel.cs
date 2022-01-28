@@ -41,7 +41,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
         };
         
         private readonly Dictionary<int, ShopItemArgs> m_ShopItemArgsDict = new Dictionary<int, ShopItemArgs>();
-        private readonly Dictionary<int, ShopMoneyItem> m_MoneyItems = new Dictionary<int, ShopMoneyItem>();
+        private readonly Dictionary<int, ShopMoneyItem> m_Items = new Dictionary<int, ShopMoneyItem>();
 
         #endregion
         
@@ -94,6 +94,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
                     () => OnPaid(itemInSet.reward));
             }
             Managers.ShopManager.SetPurchaseAction(PurchaseKeys.NoAds, BuyHideAdsItem);
+            Managers.ShopManager.SetPurchaseAction(PurchaseKeys.DarkTheme, BuyDarkTheme);
         }
 
         private void LoadItemInfos()
@@ -119,16 +120,22 @@ namespace RMAZOR.UI.Panels.ShopPanels
                     null : Managers.ShopManager.GetItemInfo(itemInSet.purchaseKey);
                 m_ShopItemArgsDict.Add(itemInSet.purchaseKey, newArgs);
             }
-            if (m_ShopItemArgsDict.ContainsKey(PurchaseKeys.NoAds))
+            AddItemArgsToDict(PurchaseKeys.NoAds);
+            AddItemArgsToDict(PurchaseKeys.DarkTheme);
+        }
+
+        private void AddItemArgsToDict(int _PurchaseKey)
+        {
+            if (m_ShopItemArgsDict.ContainsKey(_PurchaseKey))
                 return;
-            var argsNoAds = Managers.ShopManager.GetItemInfo(PurchaseKeys.NoAds);
-            m_ShopItemArgsDict.Add(PurchaseKeys.NoAds, argsNoAds);
+            var args = Managers.ShopManager.GetItemInfo(_PurchaseKey);
+            m_ShopItemArgsDict.Add(_PurchaseKey, args);
         }
 
         protected override void InitItems()
         {
             LoadItemInfos();
-            m_MoneyItems.Clear();
+            m_Items.Clear();
             var showAdsEntity = Managers.AdsManager.ShowAds;
             Cor.Run(Cor.WaitWhile(
                 () => showAdsEntity.Result == EEntityResult.Pending,
@@ -156,26 +163,49 @@ namespace RMAZOR.UI.Panels.ShopPanels
                         var item = InitItem(args, info);
                         if (info.BuyForWatchingAd)
                             item.Highlighted = true;
-                        m_MoneyItems.Add(info.PurchaseKey, item);
+                        m_Items.Add(info.PurchaseKey, item);
                     }
-
-                    if (!showAdsEntity.Value)
-                        return;
-
-                    var argsDisableAds = m_ShopItemArgsDict[PurchaseKeys.NoAds];
-                    var infoDisableAds = new ViewShopItemInfo
-                    {
-                        PurchaseKey = PurchaseKeys.NoAds,
-                        Icon = Managers.PrefabSetManager.GetObject<Sprite>(PrefabSetName, "shop_no_ads_icon"),
-                        BuyForWatchingAd = false,
-                        Reward = 0
-                    };
-                    var itemDisableAds = InitItem(argsDisableAds, infoDisableAds, BuyHideAdsItem);
-                    m_MoneyItems.Add(PurchaseKeys.NoAds, itemDisableAds);
-                    Managers.LocalizationManager.AddTextObject(itemDisableAds.title, "no_ads");
+                    if (showAdsEntity.Value)
+                        InitBuyNoAdsItem();
+                    if (!ColorProvider.DarkThemeAvailable)
+                        InitBuyDarkThemeItem();
                 }));
         }
 
+        private void InitBuyNoAdsItem()
+        {
+            var argsDisableAds = m_ShopItemArgsDict[PurchaseKeys.NoAds];
+            var infoDisableAds = new ViewShopItemInfo
+            {
+                PurchaseKey = PurchaseKeys.NoAds,
+                Icon = Managers.PrefabSetManager.GetObject<Sprite>(
+                    PrefabSetName, 
+                    "shop_no_ads_icon"),
+                BuyForWatchingAd = false,
+                Reward = 0
+            };
+            var itemDisableAds = InitItem(argsDisableAds, infoDisableAds, BuyHideAdsItem);
+            m_Items.Add(PurchaseKeys.NoAds, itemDisableAds);
+            Managers.LocalizationManager.AddTextObject(itemDisableAds.title, "no_ads");
+        }
+
+        private void InitBuyDarkThemeItem()
+        {
+            var argsBuyDarkTheme = m_ShopItemArgsDict[PurchaseKeys.DarkTheme];
+            var infoBuyDarkTheme = new ViewShopItemInfo
+            {
+                PurchaseKey = PurchaseKeys.DarkTheme,
+                Icon = Managers.PrefabSetManager.GetObject<Sprite>(
+                    PrefabSetName, 
+                    "dark_theme_on"),
+                BuyForWatchingAd = false,
+                Reward = 0
+            };
+            var itemBuyDarkTheme = InitItem(argsBuyDarkTheme, infoBuyDarkTheme, BuyHideAdsItem);
+            m_Items.Add(PurchaseKeys.DarkTheme, itemBuyDarkTheme);
+            Managers.LocalizationManager.AddTextObject(itemBuyDarkTheme.title, "dark_theme");
+        }
+        
         private ShopMoneyItem InitItem(ShopItemArgs _Args, ViewShopItemInfo _Info, UnityAction _OnPaid = null)
         {
             void OnPaidReal()
@@ -226,12 +256,16 @@ namespace RMAZOR.UI.Panels.ShopPanels
             string dialogTitle = Managers.LocalizationManager.GetTranslation("purchase") + ":";
             string dialogText = Managers.LocalizationManager.GetTranslation("mandatory_ads_disabled");
             CommonUtils.ShowAlertDialog(dialogTitle, dialogText);
-            const int key = PurchaseKeys.NoAds;
-            if (!m_MoneyItems.ContainsKey(key))
-                return;
-            if (m_MoneyItems[key].IsNotNull())
-                m_MoneyItems[key].gameObject.DestroySafe();
-            m_MoneyItems.Remove(key);
+            RemoveItem(PurchaseKeys.NoAds);
+        }
+
+        private void BuyDarkTheme()
+        {
+            ColorProvider.DarkThemeAvailable = true;
+            string dialogTitle = Managers.LocalizationManager.GetTranslation("purchase") + ":";
+            string dialogText = Managers.LocalizationManager.GetTranslation("dark_theme_available");
+            CommonUtils.ShowAlertDialog(dialogTitle, dialogText);
+            RemoveItem(PurchaseKeys.DarkTheme);
         }
 
         private void OnPaid(long _Reward)
@@ -261,6 +295,15 @@ namespace RMAZOR.UI.Panels.ShopPanels
                                             .ToLowerInvariant();
                     CommonUtils.ShowAlertDialog(dialogTitle, dialogText);
                 }));
+        }
+
+        private void RemoveItem(int _Key)
+        {
+            if (!m_Items.ContainsKey(_Key))
+                return;
+            if (m_Items[_Key].IsNotNull())
+                m_Items[_Key].gameObject.DestroySafe();
+            m_Items.Remove(_Key);
         }
 
         #endregion

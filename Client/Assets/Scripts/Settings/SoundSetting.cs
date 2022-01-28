@@ -15,13 +15,5 @@ namespace Settings
         public override ESettingType      Type         => ESettingType.OnOff;
         public override string            SpriteOnKey  => "setting_sound_on";
         public override string            SpriteOffKey => "setting_sound_off";
-
-        public override void Put(bool _VolumeOn)
-        {
-            base.Put(_VolumeOn);
-            OnValueSet?.Invoke(_VolumeOn);
-        }
-
-        
     }
 }

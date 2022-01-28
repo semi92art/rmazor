@@ -2,11 +2,8 @@
 using Common.Constants;
 using Common.Extensions;
 using Common.Utils;
-using Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
-using RMAZOR.Views.ContainerGetters;
-using RMAZOR.Views.Factories;
 using UnityEngine;
 
 namespace RMAZOR.Views.UI
@@ -22,33 +19,20 @@ namespace RMAZOR.Views.UI
     
     public class ViewUIRotationControls : IViewUIRotationControls
     {
-        #region nonpublic members
-        
-        private float                         m_BottomOffset;
-        private IRotatingPossibilityIndicator m_RotatingPossibilityIndicator;
-
-        #endregion
-
         #region inject
 
         private IModelGame                           Model                  { get; }
         private IColorProvider                       ColorProvider          { get; }
-        private IContainersGetter                    ContainersGetter       { get; }
-        private IManagersGetter                      Managers               { get; }
-        private IRotatingPossibilityIndicatorFactory RotatingPossIndFactory { get; }
+        private IRotatingPossibilityIndicator        Indicator              { get; }
 
         public ViewUIRotationControls(
-            IModelGame _Model,
-            IColorProvider _ColorProvider,
-            IContainersGetter _ContainersGetter,
-            IManagersGetter _Managers,
-            IRotatingPossibilityIndicatorFactory _RotatingPossIndFactory)
+            IModelGame                    _Model,
+            IColorProvider                _ColorProvider,
+            IRotatingPossibilityIndicator _Indicator)
         {
-            Model = _Model;
+            Model         = _Model;
             ColorProvider = _ColorProvider;
-            ContainersGetter = _ContainersGetter;
-            Managers = _Managers;
-            RotatingPossIndFactory = _RotatingPossIndFactory;
+            Indicator     = _Indicator;
         }
 
         #endregion
@@ -57,31 +41,31 @@ namespace RMAZOR.Views.UI
         
         public void Init(Vector4 _Offsets)
         {
-            m_BottomOffset = _Offsets.z;
-            InitRotatingPossibilityIndicator();
+            Indicator.Name = "Rotating Indicator";
+            Indicator.Init(_Offsets);
         }
-        
+
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            m_RotatingPossibilityIndicator.OnLevelStageChanged(_Args);
+            Indicator.OnLevelStageChanged(_Args);
             switch (_Args.Stage)
             {
                 case ELevelStage.ReadyToStart when
                     _Args.PreviousStage != ELevelStage.Paused
                     && RazorMazeUtils.MazeContainsGravityItems(Model.GetAllProceedInfos())
                     && SaveUtils.GetValue(SaveKeys.EnableRotation):
-                    m_RotatingPossibilityIndicator.Shape.enabled = true;
-                    m_RotatingPossibilityIndicator.Shape.Color = ColorProvider.GetColor(ColorIds.UI).SetA(0f);
-                    m_RotatingPossibilityIndicator.Animator.SetTrigger(AnimKeys.Anim);
+                    Indicator.Shape.enabled = true;
+                    Indicator.Shape.Color = ColorProvider.GetColor(ColorIds.UI).SetA(0f);
+                    Indicator.Animator.SetTrigger(AnimKeys.Anim);
                     break;
                 case ELevelStage.StartedOrContinued when 
                     _Args.PreviousStage != ELevelStage.CharacterKilled
                     && RazorMazeUtils.MazeContainsGravityItems(Model.GetAllProceedInfos())
                     && SaveUtils.GetValue(SaveKeys.EnableRotation):
-                    m_RotatingPossibilityIndicator.Animator.SetTrigger(AnimKeys.Stop);
+                    Indicator.Animator.SetTrigger(AnimKeys.Stop);
                     break;
                 case ELevelStage.ReadyToUnloadLevel when _Args.PreviousStage != ELevelStage.Paused:
-                    m_RotatingPossibilityIndicator.Shape.enabled = false;
+                    Indicator.Shape.enabled = false;
                     break;
             }
         }
@@ -93,29 +77,27 @@ namespace RMAZOR.Views.UI
         
         public void OnTutorialStarted(ETutorialType _Type)
         {
-            if (_Type == ETutorialType.Rotation)
-            {
-                m_RotatingPossibilityIndicator.Animator.enabled = false;
-                m_RotatingPossibilityIndicator.Shape.enabled = false;
-            }
+            if (_Type != ETutorialType.Rotation) 
+                return;
+            Indicator.Animator.enabled = false;
+            Indicator.Shape.enabled = false;
         }
 
         public void OnTutorialFinished(ETutorialType _Type)
         {
-            if (_Type == ETutorialType.Rotation)
-            {
-                m_RotatingPossibilityIndicator.Animator.enabled = true;
-            }
+            if (_Type != ETutorialType.Rotation)
+                return;
+            Indicator.Animator.enabled = true;
         }
 
         #endregion
 
         #region nonpublic methods
 
-        private void InitRotatingPossibilityIndicator()
-        {
-            m_RotatingPossibilityIndicator = RotatingPossIndFactory.Create();
-        }
+        // private void InitRotatingPossibilityIndicator()
+        // {
+        //     m_RotatingPossibilityIndicator = RotatingPossIndFactory.Create();
+        // }
 
         #endregion
     }

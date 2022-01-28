@@ -60,8 +60,9 @@ namespace DialogViewers
         private static int AkState              => AnimKeys.State;
         
         private Button        m_CloseButton;
+        private Image         m_CloseButtonBorder;
+        private Image         m_CloseButtonIcon;
         private Animator      m_CloseButtonAnim;
-        // private Image         m_Background;
         private RectTransform m_DialogContainer;
         
         private readonly Stack<IDialogPanel> m_PanelStack = new Stack<IDialogPanel>();
@@ -77,13 +78,16 @@ namespace DialogViewers
         private IColorProvider              ColorProvider     { get; }
 
         public BigDialogViewer(
-            IManagersGetter _Managers,
-            IUITicker _Ticker,
+            IManagersGetter             _Managers,
+            IUITicker                   _Ticker,
             IViewInputCommandsProceeder _CommandsProceeder,
-            IColorProvider _ColorProvider,
-            ICameraProvider _CameraProvider,
-            IPrefabSetManager _PrefabSetManager) 
-            : base(_CameraProvider, _Ticker, _PrefabSetManager)
+            IColorProvider              _ColorProvider,
+            ICameraProvider             _CameraProvider,
+            IPrefabSetManager           _PrefabSetManager)
+            : base(
+                _CameraProvider,
+                _Ticker, 
+                _PrefabSetManager)
         {
             Managers = _Managers;
             CommandsProceeder = _CommandsProceeder;
@@ -95,8 +99,8 @@ namespace DialogViewers
 
         #region api
 
-        public override RectTransform Container                   => m_DialogContainer;
-        public          UnityAction   Action                      { get; set; }
+        public override RectTransform Container => m_DialogContainer;
+        public          UnityAction   Action    { get; set; }
 
         public override void Init(RectTransform _Parent)
         {
@@ -110,16 +114,19 @@ namespace DialogViewers
             m_CloseButton = go.GetCompItem<Button>("close_button");
             m_CloseButtonAnim = go.GetCompItem<Animator>("buttons_animator");
             m_CloseButton.RTransform().anchoredPosition = new Vector2(0f, 100f);
+            m_CloseButtonBorder = m_CloseButton.GetCompItem<Image>("border");
+            m_CloseButtonIcon = m_CloseButton.GetCompItem<Image>("icon");
             var borderColor = ColorProvider.GetColor(ColorIds.UiBorder);
-            m_CloseButton.GetCompItem<Image>("border").color = borderColor;
-            m_CloseButton.GetCompItem<Image>("icon").color = borderColor;
+            m_CloseButtonBorder.color = borderColor;
+            m_CloseButtonIcon.color = borderColor;
             m_CloseButton.SetOnClick(() =>
             {
                 Managers.AudioManager.PlayClip(CommonAudioClipArgs.UiButtonClick);
                 CloseAll();
             });
+            ColorProvider.ColorChanged += OnColorChanged;
         }
-
+        
         public void Show(IDialogPanel _ItemTo, bool _HidePrevious = true)
         {
             CameraProvider.DofEnabled = true;
@@ -136,13 +143,11 @@ namespace DialogViewers
             var panelsToDestroy = new List<IDialogPanel>();
             while (m_PanelStack.Count > 0)
                 panelsToDestroy.Add(m_PanelStack.Pop());
-            
             foreach (var pan in panelsToDestroy
                 .Where(_Panel => _Panel != null))
             {
                 Object.Destroy(pan.PanelObject.gameObject);
             }
-            
             m_PanelStack.Push(lastPanel);
             ShowCore(null, true, true);
             CommandsProceeder.RaiseCommand(EInputCommand.UnPauseLevel, null, true);
@@ -160,6 +165,14 @@ namespace DialogViewers
 
         #region nonpublic methods
 
+        private void OnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId != ColorIds.UiBorder)
+                return;
+            m_CloseButtonBorder.color = _Color;
+            m_CloseButtonIcon.color = _Color;
+        }
+        
         private void ShowCore(
             IDialogPanel _PanelTo,
             bool _HidePrevious,
@@ -202,7 +215,6 @@ namespace DialogViewers
                     () =>
                     {
                         _PanelTo.AppearingState = EAppearingState.Appeared;
-                        // m_Background.enabled = true;
                     }));
                 _PanelTo.OnDialogEnable();
             }
@@ -216,7 +228,6 @@ namespace DialogViewers
             RectTransform _PanelTo)
         {
             ClearGraphicsAlphas();
-        
             if (_PanelTo == null)
                 m_PanelStack.Clear();
             else

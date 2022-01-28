@@ -101,6 +101,7 @@ namespace RMAZOR.UI.Panels
             m_SettingsContent.gameObject.DestroyChildrenSafe();
             InitSettingItems();
             InitOtherButtons();
+            InitDebugSettingItem();
             PanelObject = sp.RTransform();
         }
 
@@ -115,7 +116,8 @@ namespace RMAZOR.UI.Panels
             InitSettingItem(SettingsGetter.LanguageSetting);
             // InitSettingItem(SettingsGetter.NotificationSetting);
             InitSettingItem(SettingsGetter.HapticsSetting);
-            InitDebugSettingItem();
+            if (ColorProvider.DarkThemeAvailable)
+                InitSettingItem(SettingsGetter.DarkThemeSetting);
         }
 
         private void InitOtherButtons()

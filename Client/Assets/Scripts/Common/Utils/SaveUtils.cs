@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Xml;
 using System.Xml.Linq;
 using Common.Entities;
 using Newtonsoft.Json;
@@ -71,8 +72,18 @@ namespace Common.Utils
         {
             if (File.Exists(SavesPath))
             {
-                SavesDoc = XDocument.Load(SavesPath);
-                return;
+                bool needToRecreateFile = false;
+                try
+                {
+                    SavesDoc = XDocument.Load(SavesPath);
+                }
+                catch (XmlException)
+                {
+                    needToRecreateFile = true;
+                    File.Delete(SavesPath);
+                }
+                if (!needToRecreateFile)
+                    return;
             }
             SavesDoc = new XDocument(
                 new XComment("This file contains encrypted game data."),

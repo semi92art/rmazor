@@ -213,7 +213,7 @@ namespace RMAZOR.Views.MazeItems
             sh.Type = Rectangle.RectangleType.RoundedBorder;
             sh.CornerRadiusMode = Rectangle.RectangleCornerRadiusMode.Uniform;
             sh.CornerRadius = CoordinateConverter.Scale * ViewSettings.CornerRadius;
-            sh.Thickness = CoordinateConverter.Scale * ViewSettings.LineWidth;
+            sh.Thickness = CoordinateConverter.Scale * ViewSettings.LineWidth * 0.5f;
             sh.Color = ColorProvider.GetColor(ColorIds.Main);
             sh.SortingOrder = SortingOrders.Path;
             sh.enabled = false;

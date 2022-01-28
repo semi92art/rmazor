@@ -36,7 +36,7 @@ namespace RMAZOR.Views.UI
 
         #region nonpublic members
         
-        protected override Dictionary<EMazeMoveDirection, float> m_HandAngles => 
+        protected override Dictionary<EMazeMoveDirection, float> HandAngles => 
             new Dictionary<EMazeMoveDirection, float>
             {
                 {EMazeMoveDirection.Left, 0f},
@@ -48,13 +48,13 @@ namespace RMAZOR.Views.UI
         #endregion
 
         #region api
-        
+
         public override void Init(
-            ITicker _Ticker,
-            ICameraProvider _CameraProvider,
+            ITicker                  _Ticker,
+            ICameraProvider          _CameraProvider,
             IMazeCoordinateConverter _CoordinateConverter,
-            IColorProvider _ColorProvider,
-            Vector4 _Offsets)
+            IColorProvider           _ColorProvider,
+            Vector4                  _Offsets)
         {
             base.Init(_Ticker, _CameraProvider, _CoordinateConverter, _ColorProvider, _Offsets);
             var uiCol = _ColorProvider.GetColor(ColorIds.UI);
@@ -65,26 +65,26 @@ namespace RMAZOR.Views.UI
 
         public void ShowMoveLeftPrompt()
         {
-            m_Direction = EMazeMoveDirection.Left;
-            m_ReadyToAnimate = true;
+            Direction = EMazeMoveDirection.Left;
+            ReadyToAnimate = true;
         }
 
         public void ShowMoveRightPrompt()
         {
-            m_Direction = EMazeMoveDirection.Right;
-            m_ReadyToAnimate = true;
+            Direction = EMazeMoveDirection.Right;
+            ReadyToAnimate = true;
         }
 
         public void ShowMoveUpPrompt()
         {
-            m_Direction = EMazeMoveDirection.Up;
-            m_ReadyToAnimate = true;
+            Direction = EMazeMoveDirection.Up;
+            ReadyToAnimate = true;
         }
 
         public void ShowMoveDownPrompt()
         {
-            m_Direction = EMazeMoveDirection.Down;
-            m_ReadyToAnimate = true;
+            Direction = EMazeMoveDirection.Down;
+            ReadyToAnimate = true;
         }
 
         public override void HidePrompt()
@@ -95,13 +95,23 @@ namespace RMAZOR.Views.UI
         
         public override void UpdateTick()
         {
-            if (m_Direction.HasValue && m_ReadyToAnimate)
-                AnimateHandAndTrace(m_Direction.Value, moveParams.aTimeEnd);
+            if (Direction.HasValue && ReadyToAnimate)
+                AnimateHandAndTrace(Direction.Value, moveParams.aTimeEnd);
         }
         
         #endregion
 
         #region nonpublic methods
+        
+        protected override void OnColorChanged(int _ColorId, Color _Color)
+        {
+            base.OnColorChanged(_ColorId, _Color);
+            if (_ColorId != ColorIds.UI)
+                return;
+            var oldCol = trace.startColor;
+            var newCol = oldCol.SetR(_Color.r).SetG(_Color.g).SetB(_Color.b);
+            trace.startColor = trace.endColor = newCol;
+        }
         
         protected override IEnumerator AnimateTraceCoroutine(EMazeMoveDirection _Direction)
         {
@@ -125,8 +135,8 @@ namespace RMAZOR.Views.UI
                     hand.color = hand.color.SetA(_Progress);
                     trace.startColor = trace.endColor = trace.startColor.SetA(_Progress * 0.5f);
                 },
-                m_Ticker,
-                _BreakPredicate: () => m_ReadyToAnimate);
+                Ticker,
+                _BreakPredicate: () => ReadyToAnimate);
             trace.enabled = true;
             yield return Cor.Lerp(
                 a.posStart,
@@ -136,8 +146,8 @@ namespace RMAZOR.Views.UI
                 {
                     trace.SetPosition(1, _Value);
                 },
-                m_Ticker,
-                _BreakPredicate: () => m_ReadyToAnimate);
+                Ticker,
+                _BreakPredicate: () => ReadyToAnimate);
             var traceCol = trace.startColor;
             yield return Cor.Lerp(
                 0f,
@@ -148,8 +158,8 @@ namespace RMAZOR.Views.UI
                     trace.SetPosition(1, Vector2.Lerp(a.posMiddle, a.posEnd, _Progress));
                     trace.startColor = trace.endColor = Color.Lerp(traceCol.SetA(0.5f), traceCol.SetA(0f), _Progress);
                 },
-                m_Ticker,
-                _BreakPredicate: () => m_ReadyToAnimate);
+                Ticker,
+                _BreakPredicate: () => ReadyToAnimate);
         }
 
         protected override IEnumerator AnimateHandPositionCoroutine(EMazeMoveDirection _Direction)

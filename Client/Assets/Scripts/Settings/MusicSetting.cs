@@ -15,12 +15,5 @@ namespace Settings
         public override ESettingType      Type         => ESettingType.OnOff;
         public override string            SpriteOnKey  => "setting_music_on";
         public override string            SpriteOffKey => "setting_music_off";
-
-        public override void Put(bool _MusicOn)
-        {
-            OnValueSet?.Invoke(_MusicOn);
-            base.Put(_MusicOn);
-        }
-
     }
 }

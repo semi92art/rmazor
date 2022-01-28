@@ -2,45 +2,42 @@
 using System.Linq;
 using Common;
 using Common.Entities;
+using Common.Helpers;
 using Common.Ticker;
 using Common.Utils;
 using GameHelpers;
-using Managers.IAP;
 using RMAZOR;
+using UnityEngine;
 using UnityEngine.Events;
-using Utils;
 
 namespace Managers.Advertising
 {
-    public interface IAdsManager : IAdsProviderBase, IInit
+    public interface IAdsManager : IInit
     {
-        BoolEntity ShowAds { get; set; }
-        void       ShowRewardedAd(UnityAction _OnShown);
+        bool       RewardedAdReady     { get; }
+        bool       InterstitialAdReady { get; }
+        BoolEntity ShowAds             { get; set; }
+        void       ShowRewardedAd(UnityAction     _OnShown);
         void       ShowInterstitialAd(UnityAction _OnShown);
     }
     
-    public class CustomMediationAdsManager : IAdsManager
+    public class CustomMediationAdsManager : InitBase, IAdsManager
     {
         #region nonpublic members
 
         private readonly List<IAdsProvider> m_Providers = new List<IAdsProvider>();
-        private          IAdsProvider       m_LastRewardedAdProvider;
-        private          IAdsProvider       m_LastInterstitialAdProvider;
         
         #endregion
 
         #region inject
 
         private CommonGameSettings GameSettings { get; }
-        private IShopManager       ShopManager  { get; }
         private ICommonTicker      Ticker       { get; }
 
         public CustomMediationAdsManager(
             CommonGameSettings _GameSettings,
-            IShopManager _ShopManager,
-            ICommonTicker _Ticker)
+            ICommonTicker      _Ticker)
         {
-            ShopManager = _ShopManager;
             GameSettings = _GameSettings;
             Ticker = _Ticker;
         }
@@ -57,15 +54,11 @@ namespace Managers.Advertising
 
         public bool RewardedAdReady     => m_Providers.Any(_P => _P.RewardedAdReady);
         public bool InterstitialAdReady => m_Providers.Any(_P => _P.InterstitialAdReady);
-
-        public bool              Initialized { get; private set; }
-        public event UnityAction Initialize;
-
-        public void Init()
+        
+        public override void Init()
         {
             InitProviders();
-            Initialize?.Invoke();
-            Initialized = true;
+            base.Init();
         }
 
         public void ShowRewardedAd(UnityAction _OnShown)
@@ -78,20 +71,7 @@ namespace Managers.Advertising
                 Dbg.LogWarning("Rewarded ad was not ready to be shown.");
                 return;
             }
-            if (readyProviders.Count == 1)
-                m_LastRewardedAdProvider = readyProviders.First();
-            else
-            {
-                int idx = readyProviders.IndexOf(m_LastRewardedAdProvider);
-                if (idx == -1)
-                    m_LastRewardedAdProvider = readyProviders.First();
-                else
-                {
-                    idx = MathUtils.ClampInverse(idx + 1, 0, readyProviders.Count - 1);
-                    m_LastRewardedAdProvider = readyProviders[idx];
-                }
-            }
-            m_LastRewardedAdProvider.ShowRewardedAd(_OnShown, ShowAds);
+            ShowAd(readyProviders, _OnShown, false);
         }
 
         public void ShowInterstitialAd(UnityAction _OnShown)
@@ -104,20 +84,7 @@ namespace Managers.Advertising
                 Dbg.LogWarning("Interstitial ad was not ready to be shown.");
                 return;
             }
-            if (readyProviders.Count == 1)
-                m_LastInterstitialAdProvider = readyProviders.First();
-            else
-            {
-                int idx = readyProviders.IndexOf(m_LastInterstitialAdProvider);
-                if (idx == -1)
-                    m_LastInterstitialAdProvider = readyProviders.First();
-                else
-                {
-                    idx = MathUtils.ClampInverse(idx + 1, 0, readyProviders.Count - 1);
-                    m_LastInterstitialAdProvider = readyProviders[idx];
-                }
-            }
-            m_LastInterstitialAdProvider.ShowInterstitialAd(_OnShown, ShowAds);
+            ShowAd(readyProviders, _OnShown, true);
         }
 
         #endregion
@@ -129,9 +96,9 @@ namespace Managers.Advertising
             bool testMode = GameSettings.TestAds;
             var adsConfig = ResLoader.FromResources(@"configs\ads");
             var adsProvider = GameSettings.AdsProvider;
-            if (adsProvider.HasFlag(EAdsProvider.GoogleAds))
+            if (adsProvider.HasFlag(EAdsProvider.AdMob))
             {
-                var man = new GoogleAdMobAdsProvider(GameSettings, ShopManager, testMode);
+                var man = new GoogleAdMobAdsProvider(testMode, GameSettings.admobRate);
                 man.Init(adsConfig);
                 m_Providers.Add(man);
             }
@@ -139,10 +106,39 @@ namespace Managers.Advertising
             {
                 var intAd = new UnityAdsInterstitialAd(GameSettings, Ticker);
                 var rewAd = new UnityAdsRewardedAd(GameSettings, Ticker);
-                var man = new UnityAdsProvider(intAd, rewAd, ShopManager, testMode);
+                var man = new UnityAdsProvider(intAd, rewAd, testMode, GameSettings.unityAdsRate);
                 man.Init(adsConfig);
                 m_Providers.Add(man);
             }
+        }
+
+        private void ShowAd(IReadOnlyCollection<IAdsProvider> _Providers, UnityAction _OnShown, bool _Interstitial)
+        {
+            IAdsProvider selectedProvider = null;
+            if (_Providers.Count == 1)
+                selectedProvider = _Providers.First();
+            else
+            {
+                float showRateSum = _Providers.Sum(_P => _P.ShowRate);
+                float randValue = Random.value;
+                float showRateSumIteration = 0f;
+                foreach (var provider in _Providers)
+                {
+                    if (MathUtils.IsInRange(
+                        randValue, 
+                        showRateSumIteration / showRateSum, 
+                        (showRateSumIteration + provider.ShowRate) / showRateSum))
+                    {
+                        selectedProvider = provider;
+                        break;
+                    }
+                    showRateSumIteration += provider.ShowRate;
+                }
+            }
+            if (_Interstitial)
+                selectedProvider?.ShowInterstitialAd(_OnShown, ShowAds);
+            else
+                selectedProvider?.ShowRewardedAd(_OnShown, ShowAds);
         }
         
         private static BoolEntity GetShowAdsCached()

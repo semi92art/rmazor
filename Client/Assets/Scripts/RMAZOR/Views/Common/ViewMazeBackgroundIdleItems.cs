@@ -46,24 +46,24 @@ namespace RMAZOR.Views.Common
         
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage == ELevelStage.Loaded)
+            switch (_Args.Stage)
             {
-                AppearBackgroundIdleItems(true);
-            }
-            else if (_Args.Stage == ELevelStage.Finished)
-            {
-                AppearBackgroundIdleItems(false);
+                case ELevelStage.Loaded:
+                    AppearBackgroundIdleItems(true);
+                    break;
+                case ELevelStage.Finished:
+                    AppearBackgroundIdleItems(false);
+                    break;
             }
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == ColorIds.BackgroundIdleItems)
-            {
-                m_BackItemsColor = _Color;
-                foreach (var rend in m_BackIdleItemsPool)
-                    rend.Color = _Color;
-            }
+            if (_ColorId != ColorIds.BackgroundIdleItems) 
+                return;
+            m_BackItemsColor = _Color;
+            foreach (var rend in m_BackIdleItemsPool)
+                rend.Color = _Color;
         }
         
         protected override void InitItems()
@@ -89,7 +89,7 @@ namespace RMAZOR.Views.Common
                 var pos = RandomPositionOnScreen();
                 newGo.transform.SetPosXY(pos);
                 Component newSourceRaw = null;
-                foreach (var possibleType in m_PossibleSourceTypes)
+                foreach (var possibleType in PossibleSourceTypes)
                 {
                     newSourceRaw = newGo.GetComponent(possibleType);
                     if (newSourceRaw != null)

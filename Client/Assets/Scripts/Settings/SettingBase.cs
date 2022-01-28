@@ -2,7 +2,6 @@
 using Common.Entities;
 using Common.Utils;
 using UnityEngine.Events;
-using Utils;
 
 namespace Settings
 {
@@ -19,6 +18,11 @@ namespace Settings
         public virtual  string           SpriteOnKey   => null;
         public virtual  string           SpriteOffKey  => null;
         public virtual  T                Get()         => SaveUtils.GetValue(Key);
-        public virtual  void             Put(T _Value) => SaveUtils.PutValue(Key, _Value);
+        
+        public virtual  void             Put(T _Value)
+        {
+            SaveUtils.PutValue(Key, _Value);
+            OnValueSet?.Invoke(_Value);
+        }
     }
 }

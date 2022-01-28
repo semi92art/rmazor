@@ -7,7 +7,6 @@ using Common.Enums;
 using Common.Extensions;
 using Common.Ticker;
 using Managers;
-using Managers.Audio;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Common;
@@ -30,16 +29,16 @@ namespace RMAZOR.Views.MazeItems
     public abstract class ViewMazeItemMovingBase : ViewMazeItemBase, IViewMazeItemMovingBlock
     {
         #region nonpublic members
-        
-        protected static AudioClipArgs AudioClipArgsBlockDrop => new AudioClipArgs("block_drop", EAudioClipType.GameSound);
+
+        private static AudioClipArgs AudioClipArgsBlockDrop => new AudioClipArgs("block_drop", EAudioClipType.GameSound);
         
         #endregion
         
         #region shapes
 
-        protected          Polyline   m_PathPolyLine;
-        protected readonly List<Line> m_PathLines = new List<Line>();
-        protected readonly List<Disc> m_PathJoints = new List<Disc>();
+        private          Polyline   m_PathPolyLine;
+        private readonly List<Line> m_PathLines  = new List<Line>();
+        private readonly List<Disc> m_PathJoints = new List<Disc>();
 
         #endregion
 
@@ -156,7 +155,6 @@ namespace RMAZOR.Views.MazeItems
             polyLineGo.transform.SetLocalPosXY(Vector2.zero);
             var polyLine = polyLineGo.AddComponent<Polyline>();
             polyLine.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale * 0.5f;
-            polyLine.Color = GetPolyLineColor();
             polyLine.SetPoints(_Points);
             polyLine.Closed = false;
             polyLine.SortingOrder = SortingOrders.PathLine;
@@ -170,7 +168,6 @@ namespace RMAZOR.Views.MazeItems
             jointGo.SetParent(_Container);
             jointGo.transform.SetLocalPosXY(_Point);
             var joint = jointGo.AddComponent<Disc>();
-            joint.Color = GetJointColor();
             joint.Radius = ViewSettings.LineWidth * CoordinateConverter.Scale * 0.5f;
             joint.Type = DiscType.Disc;
             joint.SortingOrder = SortingOrders.PathJoint;
@@ -184,7 +181,6 @@ namespace RMAZOR.Views.MazeItems
             lineGo.transform.SetLocalPosXY(Vector2.zero);
             var line = lineGo.AddComponent<Line>();
             (line.Start, line.End) = (_Start, _End);
-            line.Color = GetLineColor();
             line.Dashed = true;
             line.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale * 0.5f;
             line.DashSize = 2f;
@@ -196,11 +192,11 @@ namespace RMAZOR.Views.MazeItems
         {
             var sets = base.GetAppearSets(_Appear);
             if (m_PathPolyLine.IsNotNull())
-                sets.Add(new Component[] { m_PathPolyLine}, GetPolyLineColor);
+                sets.Add(new Component[] { m_PathPolyLine}, () => GetMainColor().SetA(0.2f));
             if (m_PathLines.Any())
-                sets.Add(m_PathLines, GetLineColor);
+                sets.Add(m_PathLines, () => GetMainColor().SetA(0.7f));
             if (m_PathJoints.Any())
-                sets.Add(m_PathJoints, GetJointColor);
+                sets.Add(m_PathJoints, GetMainColor);
             return sets;
         }
 
@@ -208,36 +204,19 @@ namespace RMAZOR.Views.MazeItems
         {
             if (_ColorId != ColorIds.Main) 
                 return;
-            m_PathPolyLine.Color = GetPolyLineColor();
-            foreach (var line in m_PathLines)
-                line.Color = GetLineColor();
-            foreach (var joint in m_PathJoints)
-                joint.Color = GetJointColor();
-        }
-
-        private Color GetPolyLineColor()
-        {
-            return GetMainColor().SetA(0.2f);
-        }
-        
-        private Color GetLineColor()
-        {
-            return GetMainColor().SetA(0.7f);
-        }
-
-        private Color GetJointColor()
-        {
-            // return ColorUtils.Empty;
-            return GetMainColor();
+            if (m_PathPolyLine.IsNotNull())
+                m_PathPolyLine.Color = _Color.SetA(0.2f);
+            foreach (var line in m_PathLines.Where(_Line => _Line.IsNotNull()))
+                line.Color = _Color.SetA(0.7f);
+            foreach (var joint in m_PathJoints.Where(_Joint => _Joint.IsNotNull()))
+                joint.Color = _Color;
         }
 
         private Color GetMainColor()
         {
             return ColorProvider.GetColor(ColorIds.Main);
         }
-
         
-
         #endregion
     }
 }

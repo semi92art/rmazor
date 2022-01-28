@@ -45,16 +45,15 @@ namespace Common
             return saveKey;
         }
         
-        public static SaveKey<bool>  LastDbConnectionSuccess  => _lastDbConnectionSuccess ??= new SaveKey<bool>("last_connection_succeeded");
-        public static SaveKey<bool>  NotFirstLaunch           => _notFirstLaunch ??= new SaveKey<bool>("not_first_launch");
-        public static SaveKey<bool>  DebugUtilsOn             => _debugUtilsOn ??= new SaveKey<bool>("debug");
-        public static SaveKey<bool>  GoodQuality              => _goodQuality ??= new SaveKey<bool>("good_quality");
-        public static SaveKey<int?> AccountId                => _accountId ??= new SaveKey<int?>("account_id");
-        public static SaveKey<int>  GameId                   => _gameId ??= new SaveKey<int>("game_id");
-        public static SaveKey<string> Login        => _login ??= new SaveKey<string>("login");
-        public static SaveKey<string> PasswordHash => _passwordHash ??= new SaveKey<string>("password_hash");
-        public static SaveKey<int?> PreviousAccountId        => _previousAccountId ??= new SaveKey<int?>("previous_account_id");
-        
-        public static SaveKey<string> ServerUrl => new SaveKey<string>("debug_server_url");
+        public static SaveKey<bool>   LastDbConnectionSuccess  => _lastDbConnectionSuccess ??= new SaveKey<bool>("last_connection_succeeded");
+        public static SaveKey<bool>   NotFirstLaunch           => _notFirstLaunch ??= new SaveKey<bool>("not_first_launch");
+        public static SaveKey<bool>   DebugUtilsOn             => _debugUtilsOn ??= new SaveKey<bool>("debug");
+        public static SaveKey<bool>   GoodQuality              => _goodQuality ??= new SaveKey<bool>("good_quality");
+        public static SaveKey<int?>   AccountId                => _accountId ??= new SaveKey<int?>("account_id");
+        public static SaveKey<int>    GameId                   => _gameId ??= new SaveKey<int>("game_id");
+        public static SaveKey<string> Login                    => _login ??= new SaveKey<string>("login");
+        public static SaveKey<string> PasswordHash             => _passwordHash ??= new SaveKey<string>("password_hash");
+        public static SaveKey<int?>   PreviousAccountId        => _previousAccountId ??= new SaveKey<int?>("previous_account_id");
+        public static SaveKey<string> ServerUrl                => new SaveKey<string>("debug_server_url");
     }
 }

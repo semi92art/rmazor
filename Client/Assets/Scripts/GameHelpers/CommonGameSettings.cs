@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Common;
+using Common.Entities;
 using UnityEngine;
 
 namespace GameHelpers
@@ -7,7 +9,7 @@ namespace GameHelpers
     [Flags]
     public enum EAdsProvider
     {
-        GoogleAds = 1,
+        AdMob = 1,
         UnityAds = 2
     }
     
@@ -19,6 +21,8 @@ namespace GameHelpers
         [SerializeField] private bool         debugEnabled;
         [SerializeField] private bool         testAds;
         [SerializeField] private ELogLevel    logLevel;
+        public                   float        admobRate;
+        public                   float        unityAdsRate;
         
         public EAdsProvider AdsProvider
         {

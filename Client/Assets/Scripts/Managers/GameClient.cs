@@ -3,19 +3,17 @@ using System.Diagnostics;
 using System.Text;
 using Common;
 using Common.Entities;
+using Common.Helpers;
 using Common.Network;
 using Common.Network.Packets;
 using Common.Ticker;
 using Common.Utils;
 using Newtonsoft.Json;
-using RMAZOR;
-using UnityEngine.Events;
 using UnityEngine.Networking;
-using Utils;
 
 namespace Network
 {
-    public class GameClient : IGameClient
+    public class GameClient : InitBase, IGameClient
     {
         #region nonpublic members
 
@@ -42,17 +40,14 @@ namespace Network
         #endregion
         
         #region api
-
-        public bool                Initialized { get; private set; }
-        public event UnityAction   Initialize;
+        
         public List<GameDataField> ExecutingGameFields { get; } = new List<GameDataField>();
         
-        public void Init()
+        public override void Init()
         {
             if (GameClientUtils.GameId == 0)
                 GameClientUtils.GameId = GameClientUtils.GetDefaultGameId();
-            Initialize?.Invoke();
-            Initialized = true;
+            base.Init();
         }
         
         public void Send(IPacket _Packet, bool _Async = true)

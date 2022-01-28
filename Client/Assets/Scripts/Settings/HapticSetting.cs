@@ -15,12 +15,5 @@ namespace Settings
         public override ESettingType      Type         => ESettingType.OnOff;
         public override string            SpriteOnKey  => "setting_haptics_on";
         public override string            SpriteOffKey => "setting_haptics_off";
-
-        public override void Put(bool _Enable)
-        {
-            base.Put(_Enable);
-            OnValueSet?.Invoke(_Enable);
-        }
-
     }
 }

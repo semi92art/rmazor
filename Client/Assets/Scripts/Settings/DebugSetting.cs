@@ -1,11 +1,12 @@
 ﻿using Common;
 using Common.Entities;
+using Common.Utils;
 using GameHelpers;
 using UnityEngine.Events;
 
 namespace Settings
 {
-    public interface IDebugSetting: ISetting<bool> { }
+    public interface IDebugSetting : ISetting<bool> { }
     
     // ReSharper disable once ClassNeverInstantiated.Global
     public class DebugSetting : SettingBase<bool>, IDebugSetting
@@ -23,14 +24,14 @@ namespace Settings
         public override ESettingLocation  Location   => ESettingLocation.Main;
         public override ESettingType      Type       => ESettingType.OnOff;
         
-        public override void Put(bool _DebugOn)
+        public override void Put(bool _Value)
         {
-            base.Put(_DebugOn);
+            SaveUtils.PutValue(Key, _Value);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            OnValueSet?.Invoke(_DebugOn);
+            OnValueSet?.Invoke(_Value);
 #else
             if (Settings.DebugEnabled)
-                OnValueSet?.Invoke(_DebugOn);
+                OnValueSet?.Invoke(_Value);
 #endif
         }
     }

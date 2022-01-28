@@ -2,28 +2,29 @@
 using Common;
 using Common.Entities;
 using Common.Utils;
-using Managers.IAP;
+using GameHelpers;
 using UnityEngine.Advertisements;
 using UnityEngine.Events;
-using Utils;
 
 namespace Managers.Advertising
 {
     public class UnityAdsProvider : AdsProviderBase, IUnityAdsInitializationListener
     {
-        private IUnityAdsInterstitialAd  InterstitialAd  { get; }
-        private IUnityAdsRewardedAd RewardedAd { get; }
+        private IUnityAdsInterstitialAd InterstitialAd { get; }
+        private IUnityAdsRewardedAd     RewardedAd     { get; }
 
         public UnityAdsProvider(
             IUnityAdsInterstitialAd _InterstitialAd,
-            IUnityAdsRewardedAd _RewardedAd,
-            IShopManager _ShopManager,
-            bool _TestMode) 
-            : base(_ShopManager, _TestMode)
+            IUnityAdsRewardedAd     _RewardedAd,
+            bool                    _TestMode,
+            float                   _ShowRate) 
+            : base(_TestMode, _ShowRate)
         {
             InterstitialAd = _InterstitialAd;
             RewardedAd = _RewardedAd;
         }
+
+        public override EAdsProvider Provider => EAdsProvider.UnityAds;
 
         public override bool RewardedAdReady
         {
@@ -60,7 +61,7 @@ namespace Managers.Advertising
                         return;
                     if (RewardedAdReady)
                     {
-                        m_OnRewardedAdShown = _OnShown;
+                        OnRewardedAdShown = _OnShown;
                         RewardedAd.ShowAd(_OnShown);
                     }
                     else
@@ -84,7 +85,7 @@ namespace Managers.Advertising
                         return;
                     if (InterstitialAdReady)
                     {
-                        m_OnInterstitialShown = _OnShown;
+                        OnInterstitialAdShown = _OnShown;
                         InterstitialAd.ShowAd(_OnShown);
                     }
                     else
@@ -98,7 +99,7 @@ namespace Managers.Advertising
         protected override void InitConfigs(UnityAction _OnSuccess)
         {
             string gameId = GetGameId();
-            Advertisement.Initialize(gameId, m_TestMode, this);
+            Advertisement.Initialize(gameId, TestMode, this);
             _OnSuccess?.Invoke();
         }
 
@@ -120,7 +121,7 @@ namespace Managers.Advertising
 #elif UNITY_IOS || UNITY_IPHONE
             os = "ios";
 #endif
-            return m_AdsData.Elements("game_id")
+            return AdsData.Elements("game_id")
                 .FirstOrDefault(_El => _El.Attribute("os")?.Value == os)
                 ?.Value;
         }

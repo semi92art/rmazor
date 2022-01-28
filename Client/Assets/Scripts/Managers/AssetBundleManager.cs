@@ -3,13 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Common;
+using Common.Helpers;
 using Common.Utils;
 using Newtonsoft.Json;
 using RMAZOR;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.Networking;
-using Utils;
 using Object = UnityEngine.Object;
 
 namespace Managers
@@ -20,7 +19,7 @@ namespace Managers
         T            GetAsset<T>(string _AssetName, string _PrefabSetName, out bool _Success) where T : Object;
     }
     
-    public class AssetBundleManager : IAssetBundleManager
+    public class AssetBundleManager : InitBase, IAssetBundleManager
     {
         #region types
 
@@ -59,14 +58,10 @@ namespace Managers
         #region api
 
         public bool              BundlesLoaded { get; private set; }
-        public bool              Initialized   { get; private set; }
-        public event UnityAction Initialize;
         
-        public void Init()
+        public override void Init()
         {
             Cor.Run(LoadBundles());
-            Initialize?.Invoke();
-            Initialized = true;
         }
 
         public T GetAsset<T>(string _AssetName, string _PrefabSetName, out bool _Success) where T : Object
@@ -104,7 +99,7 @@ namespace Managers
         
         private IEnumerator LoadBundles()
         {
-            foreach (var bundleName in m_BundleNames)
+            foreach (string bundleName in m_BundleNames)
                 yield return LoadBundle(bundleName);
             var bundleNamesRaw =
                 m_Bundles[CommonBundleName]
@@ -117,6 +112,7 @@ namespace Managers
             }
             m_BundleNamesDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(bundleNamesRaw.text);
             BundlesLoaded = true;
+            base.Init();
             Dbg.Log("Bundles initialized!");
         }
         
@@ -178,18 +174,10 @@ namespace Managers
         #endregion
     }
 
-    public class AssetBundleManagerFake : IAssetBundleManager
+    public class AssetBundleManagerFake : InitBase, IAssetBundleManager
     {
         public bool              BundlesLoaded => false;
         public List<string>      Errors        => null;
-        public bool              Initialized   { get; private set; }
-        public event UnityAction Initialize;
-        
-        public void Init()
-        {
-            Initialize?.Invoke();
-            Initialized = true;
-        }
 
         public T GetAsset<T>(string _AssetName, string _PrefabSetName, out bool _Success) where T : Object
         {

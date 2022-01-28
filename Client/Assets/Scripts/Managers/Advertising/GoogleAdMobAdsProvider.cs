@@ -6,16 +6,13 @@ using Common.Entities;
 using Common.Utils;
 using GameHelpers;
 using GoogleMobileAds.Api;
-using Managers.IAP;
 using UnityEngine;
 using UnityEngine.Events;
-using Utils;
 
 namespace Managers.Advertising
 {
     public class GoogleAdMobAdsProvider : AdsProviderBase
     {
-
         #region nonpublic members
 
         private          RewardedAd     m_RewardedAd;
@@ -24,23 +21,16 @@ namespace Managers.Advertising
         #endregion
 
         #region inject
-        private CommonGameSettings Settings { get; }
 
-        public GoogleAdMobAdsProvider(
-            CommonGameSettings _Settings, 
-            IShopManager _ShopManager,
-            bool _TestMode)
-            : base(_ShopManager, _TestMode)
-        {
-            Settings = _Settings;
-        }
+        public GoogleAdMobAdsProvider(bool _TestMode, float _ShowRate) : base(_TestMode, _ShowRate) { }
 
         #endregion
 
         #region api
-        
-        public override bool RewardedAdReady     => m_RewardedAd != null && m_RewardedAd.IsLoaded();
-        public override bool InterstitialAdReady => m_InterstitialAd != null && m_InterstitialAd.IsLoaded();
+
+        public override EAdsProvider Provider => EAdsProvider.AdMob;
+        public override bool         RewardedAdReady     => m_RewardedAd != null && m_RewardedAd.IsLoaded();
+        public override bool         InterstitialAdReady => m_InterstitialAd != null && m_InterstitialAd.IsLoaded();
         
         public override void ShowRewardedAd(UnityAction _OnShown, BoolEntity _ShowAds)
         {
@@ -54,7 +44,7 @@ namespace Managers.Advertising
                         return;
                     if (RewardedAdReady)
                     {
-                        m_OnRewardedAdShown = _OnShown;
+                        OnRewardedAdShown = _OnShown;
                         m_RewardedAd.Show();
                     }
                     else
@@ -78,7 +68,6 @@ namespace Managers.Advertising
                         return;
                     if (InterstitialAdReady)
                     {
-                        m_OnInterstitialShown = _OnShown;
                         m_InterstitialAd.Show();
                     }
                     else
@@ -117,7 +106,7 @@ namespace Managers.Advertising
             string testId = Application.platform == RuntimePlatform.Android
                 ? "ca-app-pub-3940256099942544/5224354917"  // https://developers.google.com/admob/android/test-ads
                 : "ca-app-pub-3940256099942544/1712485313"; // https://developers.google.com/admob/ios/test-ads
-            string rewardedAdId = m_TestMode ? testId : GetAdsNodeValue("admob", "reward");
+            string rewardedAdId = TestMode ? testId : GetAdsNodeValue("admob", "reward");
             m_RewardedAd = new RewardedAd(rewardedAdId);
             var adRequest = new AdRequest.Builder().Build();
             m_RewardedAd.LoadAd(adRequest);
@@ -134,7 +123,7 @@ namespace Managers.Advertising
             string testId = Application.platform == RuntimePlatform.Android
                 ? "ca-app-pub-3940256099942544/8691691433"  // https://developers.google.com/admob/android/test-ads
                 : "ca-app-pub-3940256099942544/5135589807"; // https://developers.google.com/admob/ios/test-ads
-            string interstitialAdId = m_TestMode ? testId : GetAdsNodeValue("admob", "interstitial");
+            string interstitialAdId = TestMode ? testId : GetAdsNodeValue("admob", "interstitial");
             m_InterstitialAd = new InterstitialAd(interstitialAdId);
             var adRequest = new AdRequest.Builder().Build();
             m_InterstitialAd.LoadAd(adRequest);
@@ -145,7 +134,7 @@ namespace Managers.Advertising
         
         private List<string> GetTestDeviceIds()
         {
-            return m_AdsData.Elements("test_device").Select(_El => _El.Value).ToList();
+            return AdsData.Elements("test_device").Select(_El => _El.Value).ToList();
         }
 
         #endregion
@@ -170,7 +159,7 @@ namespace Managers.Advertising
         private void OnRewardedAdClosed(object _Sender, EventArgs _E)
         {
             Dbg.Log("GoogleAds: " + nameof(OnRewardedAdClosed));
-            m_OnRewardedAdShown?.Invoke();
+            OnRewardedAdShown?.Invoke();
             var adRequest = new AdRequest.Builder().Build();
             m_RewardedAd.LoadAd(adRequest);
         }
@@ -201,6 +190,7 @@ namespace Managers.Advertising
         {
             Dbg.Log("GoogleAds: " + nameof(OnInterstitialAdClosed));
             var adRequest = new AdRequest.Builder().Build();
+            OnInterstitialAdShown?.Invoke();
             m_InterstitialAd.LoadAd(adRequest);
         }
         

@@ -6,9 +6,8 @@ namespace RMAZOR.Views.Common
     public static class ColorIds
     {
         public static readonly int Main;
-        public static readonly int Background; //!!!
+        public static readonly int Background;
         public static readonly int BackgroundIdleItems;
-        public static readonly int BackgroundCongratsItems;
         public static readonly int Character;
         public static readonly int CharacterTail;
         public static readonly int MazeItem1;
@@ -28,7 +27,6 @@ namespace RMAZOR.Views.Common
             Main                     = GetHash(nameof(Main));
             Background               = GetHash(nameof(Background));
             BackgroundIdleItems      = GetHash(nameof(BackgroundIdleItems)     .WithSpaces());
-            BackgroundCongratsItems  = GetHash(nameof(BackgroundCongratsItems) .WithSpaces());
             Character                = GetHash(nameof(Character));
             CharacterTail            = GetHash(nameof(CharacterTail)           .WithSpaces());
             MazeItem1                = GetHash(nameof(MazeItem1)               .WithSpaces());
@@ -59,7 +57,6 @@ namespace RMAZOR.Views.Common
             {Main,                     nameof(Main).WithSpaces()},
             {Background,               nameof(Background).WithSpaces()},
             {BackgroundIdleItems,      nameof(BackgroundIdleItems).WithSpaces()},
-            {BackgroundCongratsItems,  nameof(BackgroundCongratsItems).WithSpaces()},
             {Character,                nameof(Character).WithSpaces()},
             {CharacterTail,            nameof(CharacterTail).WithSpaces()},
             {MazeItem1,                nameof(MazeItem1).WithSpaces()},

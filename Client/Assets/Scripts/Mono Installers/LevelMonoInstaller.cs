@@ -11,8 +11,8 @@ using RMAZOR.UI.Panels.ShopPanels;
 using RMAZOR.Views;
 using RMAZOR.Views.Characters;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.Common.CongratulationItems;
 using RMAZOR.Views.ContainerGetters;
-using RMAZOR.Views.Factories;
 using RMAZOR.Views.Helpers;
 using RMAZOR.Views.Helpers.MazeItemsCreators;
 using RMAZOR.Views.InputConfigurators;
@@ -21,6 +21,7 @@ using RMAZOR.Views.MazeItems;
 using RMAZOR.Views.MazeItems.Additional;
 using RMAZOR.Views.Rotation;
 using RMAZOR.Views.UI;
+using RMAZOR.Views.UI.StartLogo;
 using UnityEngine;
 
 namespace Mono_Installers
@@ -76,14 +77,11 @@ namespace Mono_Installers
                 Container.Bind<IViewUIGameControls>()        .To<ViewUIGameControls>()            .AsSingle();
                 Container.Bind<IViewUIPrompt>()              .To<ViewUIPrompt>()                  .AsSingle();
                 Container.Bind<IViewUICongratsMessage>()     .To<ViewUICongratsMessage>()         .AsSingle();
-                Container.Bind<IViewUIStartLogo>()           .To<ViewUIStartLogo>()               .AsSingle();
+                Container.Bind<IViewUIStartLogo>()           .To<ViewUIStartLogoMazeBlade>()      .AsSingle();
                 Container.Bind<IViewUILevelsPanel>()         .To<ViewUILevelsPanel>()             .AsSingle();
                 Container.Bind<IViewUIRotationControls>()    .To<ViewUIRotationControls>()        .AsSingle();
                 Container.Bind<IViewUITopButtons>()          .To<ViewUITopButtons>()              .AsSingle();
                 Container.Bind<IViewUITutorial>()            .To<ViewUITutorial>()                .AsSingle();
-                Container.Bind<IRotatingPossibilityIndicatorFactory>()
-                    .To<RotatingPossibilityIndicatorFactory>()
-                    .AsSingle();
             }
             
             Container.Bind<IViewGame>()                      .To<ViewGame>()                      .AsSingle();
@@ -93,6 +91,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazeBackground>()            .To<ViewMazeBackground>()            .AsSingle();
             Container.Bind<IViewMazeBackgroundIdleItems>()   .To<ViewMazeBackgroundIdleItems>()   .AsSingle();
             Container.Bind<IViewMazeBackgroundCongradItems>().To<ViewMazeBackgroundCongradItems2>().AsSingle();
+            Container.Bind<IViewMazeForeground>()            .To<ViewMazeForeground>()            .AsSingle();
             Container.Bind<IViewAppearTransitioner>()        .To<ViewAppearTransitioner>()        .AsSingle();
             Container.Bind<IViewLevelStageController>()      .To<ViewLevelStageController>()      .AsSingle();
             
@@ -149,6 +148,7 @@ namespace Mono_Installers
             Container.Bind<IViewInputTouchProceeder>()    
                 .To<ViewInputTouchProceederWithSRDebugInit>()   
                 .AsSingle();
+            Container.Bind<IRotatingPossibilityIndicator>()  .To<RotatingPossibilityIndicator>()  .AsTransient();
 #if UNITY_EDITOR
             Container.Bind<IViewInputController>()           .To<ViewInputControllerInEditor>()   .AsSingle();
 #else

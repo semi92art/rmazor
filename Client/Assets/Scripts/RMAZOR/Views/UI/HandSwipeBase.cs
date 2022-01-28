@@ -25,6 +25,7 @@ namespace RMAZOR.Views.UI
             public Vector2 bPos;
         }
         
+        [Serializable]
         public abstract class HandSpriteTraceParamsBase
         {
             public float aTimeStart;
@@ -42,19 +43,17 @@ namespace RMAZOR.Views.UI
 
         #region nonpublic members
         
-        protected ITicker                  m_Ticker;
-        protected ICameraProvider          m_CameraProvider;
-        protected IMazeCoordinateConverter m_CoordinateConverter;
-        protected IColorProvider           m_ColorProvider;
-        protected Vector4                  m_Offsets;
+        protected ITicker                  Ticker;
+        private   ICameraProvider          m_CameraProvider;
+        private   IMazeCoordinateConverter m_CoordinateConverter;
+        private   Vector4                  m_Offsets;
+        protected bool                     ReadyToAnimate;
+        protected EMazeMoveDirection?      Direction;
+        private   IEnumerator              m_LastTraceAnimCoroutine;
+        private   IEnumerator              m_LastHandAnimCoroutine;
+        private   IEnumerator              m_LastWaitCoroutine;
         
-        protected bool                m_ReadyToAnimate;
-        protected EMazeMoveDirection? m_Direction;
-        protected IEnumerator         m_LastTraceAnimCoroutine;
-        protected IEnumerator         m_LastHandAnimCoroutine;
-        protected IEnumerator         m_LastWaitCoroutine;
-        
-        protected abstract Dictionary<EMazeMoveDirection, float> m_HandAngles { get; }
+        protected abstract Dictionary<EMazeMoveDirection, float> HandAngles { get; }
 
         #endregion
 
@@ -68,29 +67,36 @@ namespace RMAZOR.Views.UI
             Vector4 _Offsets)
         {
             _Ticker.Register(this);
-            m_Ticker = _Ticker;
+            Ticker = _Ticker;
             m_CameraProvider = _CameraProvider;
             m_CoordinateConverter = _CoordinateConverter;
-            m_ColorProvider = _ColorProvider;
             m_Offsets = _Offsets;
+            _ColorProvider.ColorChanged += OnColorChanged;
         }
 
         public virtual void HidePrompt()
         {
-            m_ReadyToAnimate = false;
+            ReadyToAnimate = false;
             hand.enabled = false;
-            m_Direction = null;
+            Direction = null;
         }
 
+        public abstract void UpdateTick();
+        
         #endregion
 
         #region nonpublic methods
-        
-        public abstract void UpdateTick();
+
+        protected virtual void OnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId != ColorIds.UI)
+                return;
+            hand.color = _Color;
+        }
 
         protected void AnimateHandAndTrace(EMazeMoveDirection _Direction, float _Time)
         {            
-            m_ReadyToAnimate = false;
+            ReadyToAnimate = false;
             Cor.Stop(m_LastTraceAnimCoroutine);
             Cor.Stop(m_LastHandAnimCoroutine);
             Cor.Stop(m_LastWaitCoroutine);
@@ -98,7 +104,7 @@ namespace RMAZOR.Views.UI
             m_LastHandAnimCoroutine = AnimateHandPositionCoroutine(_Direction);
             m_LastWaitCoroutine = Cor.Delay(
                 _Time,
-                () => m_ReadyToAnimate = true);
+                () => ReadyToAnimate = true);
             Cor.Run(m_LastTraceAnimCoroutine);
             Cor.Run(m_LastHandAnimCoroutine);
             Cor.Run(m_LastWaitCoroutine);
@@ -107,9 +113,9 @@ namespace RMAZOR.Views.UI
         
         protected abstract IEnumerator AnimateTraceCoroutine(EMazeMoveDirection _Direction);
         protected abstract IEnumerator AnimateHandPositionCoroutine(EMazeMoveDirection _Direction);
-        
-        
-        protected Dictionary<EMazeMoveDirection, Func<Vector2>> m_HandPositions =>
+
+
+        private Dictionary<EMazeMoveDirection, Func<Vector2>> HandPositions =>
             new Dictionary<EMazeMoveDirection,Func<Vector2>>
             {
                 {
@@ -147,8 +153,8 @@ namespace RMAZOR.Views.UI
             EMazeMoveDirection _Direction,
             HandSpriteTraceParamsBase _Params)
         {
-            transform.SetPosXY(m_HandPositions[_Direction].Invoke());
-            hand.transform.rotation = Quaternion.Euler(0, 0, m_HandAngles[_Direction]);
+            transform.SetPosXY(HandPositions[_Direction].Invoke());
+            hand.transform.rotation = Quaternion.Euler(0, 0, HandAngles[_Direction]);
             Vector2 posStart, posEnd;
             switch (_Direction)
             {
@@ -180,8 +186,8 @@ namespace RMAZOR.Views.UI
                     var pos = Vector2.Lerp(posStart, posEnd, _Progress);
                     hand.transform.SetLocalPosXY(pos);
                 },
-                m_Ticker,
-                _BreakPredicate: () => m_ReadyToAnimate,
+                Ticker,
+                _BreakPredicate: () => ReadyToAnimate,
                 _ProgressFormula: _P => _P);
             var handCol = hand.color;
             yield return Cor.Lerp(
@@ -192,8 +198,8 @@ namespace RMAZOR.Views.UI
                 {
                     hand.color = Color.Lerp(handCol.SetA(1f), handCol.SetA(0f), _Progress);
                 },
-                m_Ticker,
-                _BreakPredicate: () => m_ReadyToAnimate);
+                Ticker,
+                _BreakPredicate: () => ReadyToAnimate);
         }
 
         #endregion

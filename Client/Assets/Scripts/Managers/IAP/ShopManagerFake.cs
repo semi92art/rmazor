@@ -38,6 +38,12 @@ namespace Managers.IAP
                 Currency = "RUB",
                 Price = "100",
                 Result = () => Result
+            }},
+            {PurchaseKeys.DarkTheme, new ShopItemArgs
+            {
+                Currency = "RUB",
+                Price = "100",
+                Result = () => Result
             }}
         };
         

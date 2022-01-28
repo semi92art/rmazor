@@ -58,6 +58,7 @@ namespace RMAZOR.Views
         public IViewCharacter                 Character             { get; }
         public IViewMazeCommon                Common                { get; }
         public IViewMazeBackground            Background            { get; }
+        public IViewMazeForeground            Foreground            { get; }
         public IViewMazeRotation              MazeRotation          { get; }
         public IViewMazePathItemsGroup        PathItemsGroup        { get; }
         public IViewMazeMovingItemsGroup      MovingItemsGroup      { get; }
@@ -85,6 +86,7 @@ namespace RMAZOR.Views
             IViewCharacter                        _Character,
             IViewMazeCommon                       _Common,
             IViewMazeBackground                   _Background,
+            IViewMazeForeground                   _Foreground,
             IViewMazeRotation                     _MazeRotation,
             IViewMazePathItemsGroup               _PathItemsGroup,
             IViewMazeMovingItemsGroup             _MovingItemsGroup,
@@ -110,6 +112,7 @@ namespace RMAZOR.Views
             Character              = _Character;
             Common                 = _Common;
             Background             = _Background;
+            Foreground             = _Foreground;
             MazeRotation           = _MazeRotation;
             PathItemsGroup         = _PathItemsGroup;
             MovingItemsGroup       = _MovingItemsGroup;
@@ -211,7 +214,8 @@ namespace RMAZOR.Views
                     SpringboardItemsGroup,
                     GravityItemsGroup,
                     Background,
-                    CameraProvider,
+                    Foreground,
+                    CameraProvider
                 }.Where(_Proceeder => _Proceeder != null);
             return proceeders.Where(_Proceeder => _Proceeder is T).Cast<T>().ToList();
         }

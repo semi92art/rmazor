@@ -17,7 +17,7 @@ namespace DialogViewers
     public abstract class DialogViewerBase : IDialogViewerBase
     {
         protected ICameraProvider   CameraProvider   { get; }
-        protected IUITicker         Ticker           { get; }
+        private   IUITicker         Ticker           { get; }
         protected IPrefabSetManager PrefabSetManager { get; }
             
         public          IDialogPanel  CurrentPanel                { get; protected set; }

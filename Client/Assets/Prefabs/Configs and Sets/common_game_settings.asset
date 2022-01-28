@@ -17,3 +17,5 @@ MonoBehaviour:
   debugEnabled: 1
   testAds: 1
   logLevel: 1
+  admobRate: 80
+  unityAdsRate: 20

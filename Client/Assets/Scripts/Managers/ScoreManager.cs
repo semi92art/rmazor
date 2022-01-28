@@ -119,10 +119,6 @@ namespace Managers
 
         public void SetScore(ushort _Id, long _Value, bool _OnlyToCache)
         {
-            if (_Id == DataFieldIds.Level)
-            {
-                Dbg.Log(nameof(DataFieldIds.Level) + " " + _Value);
-            }
             SetScoreCache(_Id, _Value);
             if (_OnlyToCache)
                 return;

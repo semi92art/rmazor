@@ -7,6 +7,7 @@ using RMAZOR.Models;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
+using RMAZOR.Views.UI.StartLogo;
 using Shapes;
 using TMPro;
 using UnityEngine;
@@ -101,15 +102,13 @@ namespace RMAZOR.Views.UI
         private void OnTutorialStarted(ETutorialType _Type)
         {
             Prompt.OnTutorialStarted(_Type);
-            StartLogo.OnTutorialStarted(_Type);
             RotationControls.OnTutorialStarted(_Type);
         }
         
         private void OnTutorialFinished(ETutorialType _Type)
         {
             Prompt.OnTutorialFinished(_Type);
-            StartLogo.OnTutorialFinished(_Type);
-            Prompt.OnTutorialFinished(_Type);
+            RotationControls.OnTutorialFinished(_Type);
         }
 
         private void OnColorChanged(int _ColorId, Color _Color)

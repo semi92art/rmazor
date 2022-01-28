@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: Mazing Labs
-  productName: RMAZOR
+  productName: Maze Blade
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0, g: 0, b: 0, a: 1}
@@ -136,7 +136,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 0.0.3
+  bundleVersion: 0.1.3
   preloadedAssets:
   - {fileID: 1560829925993726868, guid: 2d68a274acd3438479edfdddeb2eb23a, type: 3}
   - {fileID: 1560829925993726868, guid: c2c1f5da866cb11419b2a869e97445e1, type: 3}
@@ -195,6 +195,9 @@ PlayerSettings:
   - {fileID: 6009559761229068857, guid: f89d217feb272fb41b6df9bbb7e43091, type: 3}
   - {fileID: 6009559761229068857, guid: 176fe70dbb68ea64389c57fcca4a327f, type: 3}
   - {fileID: 4343252772721228017, guid: b9bd8eab7fc1f8d45b369504bc2b451b, type: 3}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -628,7 +631,7 @@ PlayerSettings:
   - m_BuildTarget: 
     m_Icons:
     - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: 41cc7955b9565334ba77554e9c9eb82a, type: 3}
+      m_Icon: {fileID: 2800000, guid: ee0e08d3e2882834895446ba2237412a, type: 3}
       m_Width: 128
       m_Height: 128
       m_Kind: 0
@@ -1043,7 +1046,7 @@ PlayerSettings:
   platformArchitecture:
     iPhone: 1
   scriptingBackend:
-    Android: 1
+    Android: 0
   il2cppCompilerConfiguration:
     Android: 1
   managedStrippingLevel: {}
@@ -1141,7 +1144,7 @@ PlayerSettings:
   cloudProjectId: abcef6a4-92c3-4c35-894e-21fc8a854301
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: RMAZOR
+  projectName: Maze Blade
   organizationId: mgc0mob
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
