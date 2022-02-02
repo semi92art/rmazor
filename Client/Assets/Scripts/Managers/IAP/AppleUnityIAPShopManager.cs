@@ -2,7 +2,9 @@
 
 namespace Managers.IAP
 {
-    public class AppleUnityIAPShopManager : UnityIAPShopManager
+    // ReSharper disable once InconsistentNaming
+    // ReSharper disable once UnusedType.Global
+    public class AppleUnityIAPShopManager : UnityIapShopManagerBase
     {
         private IAppleExtensions m_AppleExtensions;
         
@@ -17,6 +19,16 @@ namespace Managers.IAP
             m_AppleExtensions.simulateAskToBuy = true;
 #endif
             m_AppleExtensions.RegisterPurchaseDeferredListener(OnDeferredPurchase);
+        }
+
+        public override bool RateGame(bool _JustSuggest = true)
+        {
+            if (!base.RateGame(_JustSuggest))
+                return false;
+#if UNITY_IOS || UNITY_IPHONE
+            SA.iOS.StoreKit.ISN_SKStoreReviewController.RequestReview();
+#endif
+            return true;
         }
     }
 }

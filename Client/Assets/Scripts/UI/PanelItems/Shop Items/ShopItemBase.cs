@@ -9,7 +9,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using Utils;
 
 namespace UI.PanelItems.Shop_Items
 {
@@ -17,7 +16,6 @@ namespace UI.PanelItems.Shop_Items
     {
         public int    PurchaseKey      { get; set; }
         public bool   BuyForWatchingAd { get; set; }
-        public int    UnlockingLevel   { get; set; }
         public string Price            { get; set; }
         public bool   Ready            { get; set; }
         public Sprite Icon             { get; set; }
@@ -34,10 +32,10 @@ namespace UI.PanelItems.Shop_Items
         [SerializeField] protected Image watchAdImage;
         [SerializeField] protected Animator loadingAnim;
 
-        protected ViewShopItemInfo m_Info;
-        private   bool             m_IsBuyButtonNotNull;
-        private   bool             m_IsWatchAdImageNotNull;
-        private   IEnumerator      m_StopIndicateLoadingCoroutine;
+        private ViewShopItemInfo m_Info;
+        private bool             m_IsBuyButtonNotNull;
+        private bool             m_IsWatchAdImageNotNull;
+        private IEnumerator      m_StopIndicateLoadingCoroutine;
         
         public virtual void Init(
             IManagersGetter _Managers,
@@ -117,7 +115,8 @@ namespace UI.PanelItems.Shop_Items
             price.SetGoActive(!m_Info.BuyForWatchingAd);
             if (m_Info.BuyForWatchingAd) 
                 return;
-            price.text = $"{m_Info.Price} {m_Info.Currency}";
+            // price.text = $"{m_Info.Price} {m_Info.Currency}";
+            price.text = $"{m_Info.Price}";
             if (string.IsNullOrEmpty(price.text) || string.IsNullOrWhiteSpace(price.text))
                 price.text = Managers.LocalizationManager.GetTranslation("buy");
         }

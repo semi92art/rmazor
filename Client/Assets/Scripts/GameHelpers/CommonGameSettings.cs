@@ -23,6 +23,8 @@ namespace GameHelpers
         [SerializeField] private ELogLevel    logLevel;
         public                   float        admobRate;
         public                   float        unityAdsRate;
+        public                   int          showAdsEveryLevel;
+        public                   int          firstLevelToShowAds;
         
         public EAdsProvider AdsProvider
         {

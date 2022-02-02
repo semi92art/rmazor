@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using Common;
 using GameHelpers;
 using RMAZOR;
 using Unity.RemoteConfig;
+using UnityEngine;
 using UnityEngine.Events;
 #if !UNITY_EDITOR && !DEVELOPMENT_BUILD
 using System.Linq;
@@ -88,14 +90,16 @@ namespace Managers
             GetConfig(ref adsAdMob, "ads.unityads");
             if (adsUnity) provider |= EAdsProvider.UnityAds;
             CommonGameSettings.AdsProvider = provider;
-            GetConfig(ref CommonGameSettings.admobRate,       "ads.admob.rate");
-            GetConfig(ref CommonGameSettings.unityAdsRate,    "ads.unityads.rate");
-            GetConfig(ref ModelSettings.characterSpeed,       "character.speed");
-            GetConfig(ref ModelSettings.gravityBlockSpeed,    "mazeitems.gravityblock.speed");
-            GetConfig(ref ModelSettings.movingItemsSpeed,     "mazeitems.movingtrap.speed");
-            GetConfig(ref ViewSettings.rateRequestsFrequency, "common.raterequestsfrequency");
-            GetConfig(ref ViewSettings.adsRequestsFrequency,  "ads.adsrequestsfrequency");
-            GetConfig(ref ViewSettings.levelsCountMain,       "common.levels_count_main");
+            GetConfig(ref CommonGameSettings.admobRate,           "ads.admob.rate");
+            GetConfig(ref CommonGameSettings.unityAdsRate,        "ads.unityads.rate");
+            GetConfig(ref CommonGameSettings.showAdsEveryLevel,   "ads.show_ad_every_level");
+            GetConfig(ref CommonGameSettings.firstLevelToShowAds, "ads.first_level_to_show_ads");
+            GetConfig(ref ModelSettings.characterSpeed,           "character.speed");
+            GetConfig(ref ModelSettings.gravityBlockSpeed,        "mazeitems.gravityblock.speed");
+            GetConfig(ref ModelSettings.movingItemsSpeed,         "mazeitems.movingtrap.speed");
+            GetConfig(ref ViewSettings.rateRequestsFrequency,     "common.raterequestsfrequency");
+            GetConfig(ref ViewSettings.adsRequestsFrequency,      "ads.adsrequestsfrequency");
+            GetConfig(ref ViewSettings.levelsCountMain,           "common.levels_count_main");
 
 #if !UNITY_EDITOR && !DEVELOPMENT_BUILD
             string testDeviceIdsJson = string.Empty;

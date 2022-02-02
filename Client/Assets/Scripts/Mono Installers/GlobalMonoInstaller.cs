@@ -5,6 +5,7 @@ using GameHelpers;
 using Managers;
 using Managers.Advertising;
 using Managers.IAP;
+using Managers.Scores;
 using Network;
 using RMAZOR;
 using Settings;
@@ -45,15 +46,19 @@ namespace Mono_Installers
 
             Container.Bind<IGameClient>()         .To<GameClient>()                         .AsSingle();
             Container.Bind<IAnalyticsManager>()   .To<AnalyticsManager>()                   .AsSingle();
+            
 #if UNITY_EDITOR
+            Container.Bind<IScoreManager>()       .To<ScoreManagerFake>()                   .AsSingle();
             Container.Bind<IShopManager>()        .To<ShopManagerFake>()                    .AsSingle();
 #elif UNITY_ANDROID
+            Container.Bind<IScoreManager>()       .To<AndroidScoreManager>()                .AsSingle();
             Container.Bind<IShopManager>()        .To<AndroidUnityIAPShopManager>()         .AsSingle();
 #elif UNITY_IOS || UNITY_ANDROID
+            Container.Bind<IScoreManager>()       .To<IosScoreManager>()                    .AsSingle();
             Container.Bind<IShopManager>()        .To<AppleUnityIAPShopManager>()           .AsSingle();
 #endif
+            
             Container.Bind<ILocalizationManager>().To<LeanLocalizationManager>()            .AsSingle();
-            Container.Bind<IScoreManager>()       .To<ScoreManager>()                       .AsSingle();
             Container.Bind<IHapticsManager>()     .To<HapticsManager>()                     .AsSingle();
             Container.Bind<IAdsManager>()         .To<CustomMediationAdsManager>()          .AsSingle();
             Container.Bind<IPrefabSetManager>()   .To<PrefabSetManager>()                   .AsSingle();

@@ -181,7 +181,7 @@ namespace RMAZOR.Views.UI
             goRotPrompt.transform.localScale = Vector3.one * 6f;
             m_Hsr = goRotPrompt.GetCompItem<HandSwipeRotation>("hsr");
             m_Hsr.Init(Ticker, CameraProvider, CoordinateConverter, ColorProvider, m_Offsets);
-            CommandsProceeder.LockCommands(RazorMazeUtils.GetMoveCommands(), GetGroupName());
+            CommandsProceeder.LockCommands(RazorMazeUtils.MoveCommands, GetGroupName());
             Cor.Run(RotationTutorialFirstStepCoroutine());
             m_RotationTutorialStarted = true;
         }
@@ -190,7 +190,7 @@ namespace RMAZOR.Views.UI
         private IEnumerator MovementTutorialFirstStepCoroutine()
         {
             m_Hsm.ShowMoveRightPrompt();
-            CommandsProceeder.LockCommands(RazorMazeUtils.GetMoveCommands(), GetGroupName());
+            CommandsProceeder.LockCommands(RazorMazeUtils.MoveCommands, GetGroupName());
             CommandsProceeder.UnlockCommand(EInputCommand.MoveRight, GetGroupName());
             while (!m_ReadyToSecondMovementStep)
                 yield return null;
@@ -200,7 +200,7 @@ namespace RMAZOR.Views.UI
         private IEnumerator MovementTutorialSecondStepCoroutine()
         {
             m_Hsm.ShowMoveUpPrompt();
-            CommandsProceeder.LockCommands(RazorMazeUtils.GetMoveCommands(), GetGroupName());
+            CommandsProceeder.LockCommands(RazorMazeUtils.MoveCommands, GetGroupName());
             CommandsProceeder.UnlockCommand(EInputCommand.MoveUp, GetGroupName());
             while (!m_ReadyToThirdMovementStep)
                 yield return null;
@@ -210,7 +210,7 @@ namespace RMAZOR.Views.UI
         private IEnumerator MovementTutorialThirdStepCoroutine()
         {
             m_Hsm.ShowMoveLeftPrompt();
-            CommandsProceeder.LockCommands(RazorMazeUtils.GetMoveCommands(), GetGroupName());
+            CommandsProceeder.LockCommands(RazorMazeUtils.MoveCommands, GetGroupName());
             CommandsProceeder.UnlockCommand(EInputCommand.MoveLeft, GetGroupName());
             while (!m_ReadyToFourthMovementStep)
                 yield return null;
@@ -220,7 +220,7 @@ namespace RMAZOR.Views.UI
         private IEnumerator MovementTutorialFourthStepCoroutine()
         {
             m_Hsm.ShowMoveDownPrompt();
-            CommandsProceeder.LockCommands(RazorMazeUtils.GetMoveCommands(), GetGroupName());
+            CommandsProceeder.LockCommands(RazorMazeUtils.MoveCommands, GetGroupName());
             CommandsProceeder.UnlockCommand(EInputCommand.MoveDown, GetGroupName());
             while (!m_ReadyToFinishMovementTutorial)
                 yield return null;
@@ -230,7 +230,7 @@ namespace RMAZOR.Views.UI
         private void FinishMovementTutorial()
         {
             m_Hsm.HidePrompt();
-            CommandsProceeder.UnlockCommands(RazorMazeUtils.GetMoveCommands(), GetGroupName());
+            CommandsProceeder.UnlockCommands(RazorMazeUtils.MoveCommands, GetGroupName());
             m_MovementTutorialFinished = true;
             SaveUtils.PutValue(SaveKeys.MovementTutorialFinished, true);
             TutorialFinished?.Invoke(ETutorialType.Movement);
@@ -239,8 +239,8 @@ namespace RMAZOR.Views.UI
         private IEnumerator RotationTutorialFirstStepCoroutine()
         {
             m_Hsr.ShowRotateCounterClockwisePrompt();
-            CommandsProceeder.UnlockCommands(RazorMazeUtils.GetRotateCommands(), "all");
-            CommandsProceeder.LockCommands(RazorMazeUtils.GetRotateCommands(), GetGroupName());
+            CommandsProceeder.UnlockCommands(RazorMazeUtils.RotateCommands, "all");
+            CommandsProceeder.LockCommands(RazorMazeUtils.MoveAndRotateCommands, GetGroupName());
             CommandsProceeder.UnlockCommand(EInputCommand.RotateCounterClockwise, GetGroupName());
             while (!m_ReadyToSecondRotationStep)
                 yield return null;
@@ -250,7 +250,7 @@ namespace RMAZOR.Views.UI
         private IEnumerator RotationTutorialSecondStepCoroutine()
         {
             m_Hsr.ShowRotateClockwisePrompt();
-            CommandsProceeder.LockCommands(RazorMazeUtils.GetRotateCommands(), GetGroupName());
+            CommandsProceeder.LockCommands(RazorMazeUtils.RotateCommands, GetGroupName());
             CommandsProceeder.UnlockCommand(EInputCommand.RotateClockwise, GetGroupName());
             while (!m_ReadyToFinishRotationTutorial)
                 yield return null;
@@ -259,18 +259,20 @@ namespace RMAZOR.Views.UI
 
         private IEnumerator RotationTutorialThirdStepCoroutine()
         {
+            CommandsProceeder.UnlockCommands(RazorMazeUtils.MoveCommands, GetGroupName());
             m_Hsr.HidePrompt();
             RotationIndicator.Name = "Rotating Indicator Tutorial";
+            var screenBounds = GraphicUtils.GetVisibleBounds();
             RotationIndicator.Init(m_Offsets);
+            RotationIndicator.SetPosition(new Vector2(screenBounds.center.x, screenBounds.min.y + 10f));
             RotationIndicator.Shape.Color = ColorProvider.GetColor(ColorIds.UI).SetA(0f);
             RotationIndicator.Animator.SetTrigger(AnimKeys.Anim);
             var cont = ContainersGetter.GetContainer(ContainerNames.Tutorial);
             var goRotPossText = PrefabSetManager.InitPrefab(
                 cont, "tutorials", "rotation_possibility_text");
-            var screenBounds = GraphicUtils.GetVisibleBounds();
             goRotPossText.transform.SetPosXY(
                 screenBounds.center.x,
-                screenBounds.min.y + 2f);
+                screenBounds.min.y + 5f);
             m_RotPossText = goRotPossText.GetCompItem<TextMeshPro>("text");
             m_RotPossText.rectTransform.sizeDelta = m_RotPossText.rectTransform.sizeDelta.SetX(
                 screenBounds.max.x - screenBounds.min.x - 3f);
@@ -290,9 +292,7 @@ namespace RMAZOR.Views.UI
 
         private void FinishRotationTutorial()
         {
-            CommandsProceeder.UnlockCommands(RazorMazeUtils.GetMoveCommands(), GetGroupName());
-            CommandsProceeder.UnlockCommands(RazorMazeUtils.GetRotateCommands(), GetGroupName());
-            
+            CommandsProceeder.UnlockCommands(RazorMazeUtils.MoveAndRotateCommands, GetGroupName());
             m_RotationTutorialFinished = true;
             SaveUtils.PutValue(SaveKeys.RotationTutorialFinished, true);
             TutorialFinished?.Invoke(ETutorialType.Rotation);

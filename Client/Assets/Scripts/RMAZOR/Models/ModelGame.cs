@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿// ReSharper disable ForCanBeConvertedToForeach
+// ReSharper disable ClassNeverInstantiated.Global
+using System;
 using System.Linq;
 using Common;
 using RMAZOR.Models.InputSchedulers;
@@ -29,13 +31,12 @@ namespace RMAZOR.Models
         IMazeItemProceedInfo[] GetAllProceedInfos();
     }
     
-    // ReSharper disable once ClassNeverInstantiated.Global
     public class ModelGame : IModelGame
     {
         #region nonpublic members
 
         private IMazeItemProceedInfo[] m_AllProceedInfosCached;
-        private List<object>           m_Proceeders;
+        private object[]               m_ProceedersCached;
 
         #endregion
 
@@ -100,7 +101,7 @@ namespace RMAZOR.Models
 
         public void Init()
         {
-            m_Proceeders = new List<object>
+            m_ProceedersCached = new object[]
             {
                 PathItemsProceeder,
                 Character,
@@ -125,9 +126,11 @@ namespace RMAZOR.Models
             PortalsProceeder.PortalEvent                   += Character.OnPortal;
             SpringboardProceeder.SpringboardEvent          += Character.OnSpringboard;
             ShredingerBlocksProceeder.ShredingerBlockEvent += GravityItemsProceeder.OnShredingerBlockEvent;
-            var getProceedInfosItems = GetInterfaceOfProceeders<IGetAllProceedInfos>(m_Proceeders);
-            foreach (var item in getProceedInfosItems)
+            foreach (var item in GetInterfaceOfProceeders<IGetAllProceedInfos>()
+                .Where(_P => _P != null))
+            {
                 item.GetAllProceedInfos = GetAllProceedInfos;
+            }
             Character.GetStartPosition = () => PathItemsProceeder.PathProceeds.First().Key;
             Initialize?.Invoke();
             Initialized = true;
@@ -138,8 +141,9 @@ namespace RMAZOR.Models
             if (m_AllProceedInfosCached != null)
                 return m_AllProceedInfosCached;
             var itemProceeders =
-                GetInterfaceOfProceeders<IItemsProceeder>(m_Proceeders);
+                GetInterfaceOfProceeders<IItemsProceeder>();
             var result = itemProceeders
+                .Where(_P => _P != null)
                 .SelectMany(_P => _P.ProceedInfos)
                 .ToArray();
             m_AllProceedInfosCached = result;
@@ -151,9 +155,9 @@ namespace RMAZOR.Models
             if (_Args.Stage == ELevelStage.Loaded)
                 m_AllProceedInfosCached = null;
             var proceeders =
-                GetInterfaceOfProceeders<IOnLevelStageChanged>(m_Proceeders);
-            for (int i = 0; i < proceeders.Count; i++)
-                proceeders[i].OnLevelStageChanged(_Args);
+                GetInterfaceOfProceeders<IOnLevelStageChanged>();
+            for (int i = 0; i < proceeders.Length; i++)
+                proceeders[i]?.OnLevelStageChanged(_Args);
         }
         
         #endregion
@@ -181,9 +185,9 @@ namespace RMAZOR.Models
         private void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
         {
             var proceeders = 
-                GetInterfaceOfProceeders<ICharacterMoveStarted>(m_Proceeders);
-            for (int i = 0; i < proceeders.Count; i++)
-                proceeders[i].OnCharacterMoveStarted(_Args);
+                GetInterfaceOfProceeders<ICharacterMoveStarted>();
+            for (int i = 0; i < proceeders.Length; i++)
+                proceeders[i]?.OnCharacterMoveStarted(_Args);
             InputScheduler.LockMovement(true);
             InputScheduler.LockRotation(true);
         }
@@ -191,17 +195,17 @@ namespace RMAZOR.Models
         private void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args)
         {
             var proceeders =
-                GetInterfaceOfProceeders<ICharacterMoveContinued>(m_Proceeders);
-            for (int i = 0; i < proceeders.Count; i++)
-                proceeders[i].OnCharacterMoveContinued(_Args);
+                GetInterfaceOfProceeders<ICharacterMoveContinued>();
+            for (int i = 0; i < proceeders.Length; i++)
+                proceeders[i]?.OnCharacterMoveContinued(_Args);
         }
         
         private void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
         {
             var proceeders =
-                GetInterfaceOfProceeders<ICharacterMoveFinished>(m_Proceeders);
-            for (int i = 0; i < proceeders.Count; i++)
-                proceeders[i].OnCharacterMoveFinished(_Args);
+                GetInterfaceOfProceeders<ICharacterMoveFinished>();
+            for (int i = 0; i < proceeders.Length; i++)
+                proceeders[i]?.OnCharacterMoveFinished(_Args);
             InputScheduler.LockMovement(false);
             InputScheduler.LockRotation(false);
         }
@@ -210,15 +214,9 @@ namespace RMAZOR.Models
         
         #region nonpublic methods
         
-        private static List<T> GetInterfaceOfProceeders<T>(IReadOnlyList<object> _Proceeders) where T : class
+        private T[] GetInterfaceOfProceeders<T>() where T : class
         {
-            var result = new List<T>();
-            for (int i = 0; i < _Proceeders.Count; i++)
-            {
-                if (_Proceeders[i] is T tVal)
-                    result.Add(tVal);
-            }
-            return result;
+            return Array.ConvertAll(m_ProceedersCached, _Item => _Item as T);
         }
 
         #endregion

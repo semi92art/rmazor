@@ -50,9 +50,6 @@ MonoBehaviour:
     - item: {fileID: 21300000, guid: 9e9b57a1039f2d14c940fa36dfe59f1d, type: 3}
       name: trap_react_spikes
       bundle: 0
-    - item: {fileID: 11400000, guid: 53dadda8d56021340864a4799a30f3da, type: 2}
-      name: level_blur_config
-      bundle: 0
     - item: {fileID: 11400000, guid: fcaebc104eabc2c4a9876fa77caea83d, type: 2}
       name: color_set_dark
       bundle: 0

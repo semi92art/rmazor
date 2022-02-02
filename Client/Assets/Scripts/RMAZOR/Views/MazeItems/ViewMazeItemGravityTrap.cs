@@ -7,9 +7,9 @@ using Common.Extensions;
 using Common.Ticker;
 using Common.Utils;
 using Managers;
-using Managers.Audio;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
+using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.ContainerGetters;
 using RMAZOR.Views.Helpers;
@@ -35,7 +35,6 @@ namespace RMAZOR.Views.MazeItems
         #region nonpubilc members
 
         private bool      m_Rotate;
-        private float     m_RotationSpeed;
         private Vector3   m_RotateDirection;
         private Vector3   m_Angles;
         private Vector2   m_Position;
@@ -135,12 +134,17 @@ namespace RMAZOR.Views.MazeItems
         {
             if (ProceedingStage != EProceedingStage.ActiveAndWorking)
                 return;
-            m_RotationSpeed = _Args.Speed;
             var dir = (_Args.To - _Args.From).Normalized;
             m_Angles = Vector3.zero;
             m_RotateDirection = GetRotationDirection(dir);
             m_MaceTr.rotation = Quaternion.Euler(Vector3.zero);
             m_Rotate = true;
+            if (Model.GravityItemsProceeder.ProceedInfos
+                .Where(_I => _I.Type == EMazeItemType.GravityTrap)
+                .Count(_I => _I.ProceedingStage != GravityItemsProceeder.StageDrop) != 1)
+            {
+                return;
+            }
             Managers.AudioManager.PlayClip(GetAudioClipArgsTrapRotate());
             if (!MazeShaker.ShakeMaze)
                 MazeShaker.ShakeMaze = true;
@@ -159,6 +163,12 @@ namespace RMAZOR.Views.MazeItems
             base.OnMoveFinished(_Args);
             SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(_Args.To));
             m_Rotate = false;
+            if (Model.GravityItemsProceeder.ProceedInfos
+                .Where(_I => _I.Type == EMazeItemType.GravityTrap)
+                .Any(_I => _I.ProceedingStage == GravityItemsProceeder.StageDrop))
+            {
+                return;
+            }
             Managers.AudioManager.StopClip(GetAudioClipArgsTrapRotate());
             if (MazeShaker.ShakeMaze)
                 MazeShaker.ShakeMaze = false;
@@ -280,9 +290,9 @@ namespace RMAZOR.Views.MazeItems
                 m_InnerDisc.Color = _Color;
         }
 
-        private AudioClipArgs GetAudioClipArgsTrapRotate()
+        private static AudioClipArgs GetAudioClipArgsTrapRotate()
         {
-            return new AudioClipArgs("mace_roll", EAudioClipType.GameSound, _Loop: true, _Id: GetHashCode().ToString());
+            return new AudioClipArgs("mace_roll", EAudioClipType.GameSound, _Loop: true);
         }
 
         #endregion

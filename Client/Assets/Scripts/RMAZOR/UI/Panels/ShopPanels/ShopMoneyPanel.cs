@@ -270,24 +270,24 @@ namespace RMAZOR.UI.Panels.ShopPanels
 
         private void OnPaid(long _Reward)
         {
-            var scoreEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money, true);
+            var savedGameEntity = Managers.ScoreManager.GetSavedGameProgress(
+                CommonData.SavedGameFileName,
+                true);
             Cor.Run(Cor.WaitWhile(
-                () => scoreEntity.Result == EEntityResult.Pending,
+                () => savedGameEntity.Result == EEntityResult.Pending,
                 () =>
                 {
-                    if (scoreEntity.Result == EEntityResult.Fail)
+                    if (savedGameEntity.Result == EEntityResult.Fail)
                     {
                         Dbg.LogError("Failed to load score entity");
                         return;
                     }
-                    var firstVal = scoreEntity.GetFirstScore();
-                    if (!firstVal.HasValue)
+                    var savedGame = new MoneyArgs
                     {
-                        Dbg.LogError("Money score entity does not contain first value");
-                        return;
-                    }
-                    Managers.ScoreManager
-                        .SetScore(DataFieldIds.Money, firstVal.Value + _Reward, false);
+                        FileName = CommonData.SavedGameFileName,
+                        Money = savedGameEntity.Value.CastTo<MoneyArgs>().Money + _Reward
+                    };
+                    Managers.ScoreManager.SaveGameProgress(savedGame, false);
                     string dialogTitle = Managers.LocalizationManager.GetTranslation("purchase") + ":";
                     string dialogText = _Reward + " " +
                                         Managers.LocalizationManager

@@ -113,9 +113,7 @@ namespace RMAZOR.Views.Characters
             Head.OnCharacterMoveStarted(_Args);
             Tail.OnCharacterMoveStarted(_Args);
             Effector.OnCharacterMoveStarted(_Args);
-            CommandsProceeder.LockCommands(
-                RazorMazeUtils.GetMoveCommands().Concat(RazorMazeUtils.GetRotateCommands()),
-                nameof(IViewCharacter));
+            CommandsProceeder.LockCommands(RazorMazeUtils.MoveAndRotateCommands, nameof(IViewCharacter));
         }
 
         public override void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args)
@@ -133,9 +131,7 @@ namespace RMAZOR.Views.Characters
                 return;
             if (_Args.BlockOnFinish != null && _Args.BlockOnFinish.Type == EMazeItemType.Springboard)
                 return;
-            CommandsProceeder.UnlockCommands(
-                RazorMazeUtils.GetMoveCommands().Concat(RazorMazeUtils.GetRotateCommands()),
-                nameof(IViewCharacter));
+            CommandsProceeder.UnlockCommands(RazorMazeUtils.MoveAndRotateCommands, nameof(IViewCharacter));
             Head.OnCharacterMoveFinished(_Args);
             Tail.OnCharacterMoveFinished(_Args);
             Effector.OnCharacterMoveFinished(_Args);

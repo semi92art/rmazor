@@ -4,7 +4,7 @@ using Common.Extensions;
 
 namespace Common.Entities
 {
-    public class ScoresEntity : EntityBase<Dictionary<ushort, long>>
+    public class ScoresEntity : Entity<Dictionary<ushort, long>>
     {
         public ScoresEntity()
         {

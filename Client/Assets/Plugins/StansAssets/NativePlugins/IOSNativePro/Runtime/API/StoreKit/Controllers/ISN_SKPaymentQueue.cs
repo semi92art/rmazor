@@ -9,8 +9,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.OleDb;
-using UnityEngine;
 
 namespace SA.iOS.StoreKit
 {
@@ -212,7 +210,6 @@ namespace SA.iOS.StoreKit
         /// <param name="productIdentifier">Product identifier.</param>
         public static ISN_SKProduct GetProductById(string productIdentifier)
         {
-            Debug.Log(nameof(GetProductById) + ": " + productIdentifier + "; observers count: " + s_Observers.Count);
             return s_Products[productIdentifier];
         }
 

@@ -151,14 +151,7 @@ namespace RMAZOR.UI.Panels
 
         private static IEnumerable<EInputCommand> GetCommandsToLock()
         {
-            return RazorMazeUtils.GetMoveCommands()
-                .Concat(RazorMazeUtils.GetRotateCommands())
-                .Concat(new[]
-                {
-                    EInputCommand.ReadyToUnloadLevel,
-                    EInputCommand.ShopMenu,
-                    EInputCommand.SettingsMenu
-                });
+            return RazorMazeUtils.MoveAndRotateCommands;
         }
 
         #endregion

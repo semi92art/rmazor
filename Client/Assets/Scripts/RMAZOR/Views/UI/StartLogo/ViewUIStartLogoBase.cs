@@ -22,7 +22,6 @@ namespace RMAZOR.Views.UI.StartLogo
 
         private static int AnimKeyStartLogoAppear    => AnimKeys.Anim;
         private static int AnimKeyStartLogoDisappear => AnimKeys.Stop;
-        private static int AnimKeyStartLogoHide      => AnimKeys.Stop2;
 
         protected virtual  float                     AnimationSpeed => 1f;
         protected abstract string                    PrefabName     { get; }
@@ -83,9 +82,8 @@ namespace RMAZOR.Views.UI.StartLogo
 
         private void OnCommand(EInputCommand _Command, object[] _Args)
         {
-            if (!m_OnStart ||
-                !RazorMazeUtils.GetMoveCommands().ContainsAlt(_Command) &&
-                !RazorMazeUtils.GetRotateCommands().ContainsAlt(_Command)) return;
+            if (!m_OnStart || !RazorMazeUtils.MoveAndRotateCommands.ContainsAlt(_Command)) 
+                return;
             HideStartLogo();
             m_OnStart = false;
         }
@@ -118,8 +116,6 @@ namespace RMAZOR.Views.UI.StartLogo
                 .ToDictionary(
                     _C => _C, 
                     _C => go.GetCompItem<Animator>(_C));
-            foreach (var anim in m_StartLogoCharAnims.Values)
-                anim.SetTrigger(AnimKeyStartLogoHide);
             var shapeTypes = new [] {typeof(Line), typeof(Disc), typeof(Rectangle)};
             var color = ColorProvider.GetColor(ColorIds.UiStartLogo);
             shapeTypes.SelectMany(_Type => go

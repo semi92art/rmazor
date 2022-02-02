@@ -182,7 +182,12 @@ namespace DebugConsole
                 Controller.AppendLogLine("Wrong. Need money count!");
                 return;
             }
-            Controller.ScoreManager.SetScore(DataFieldIds.Money, moneyCount, false);
+            var entity = new MoneyArgs
+            {
+                FileName = CommonData.SavedGameFileName,
+                Money = moneyCount
+            };
+            Controller.ScoreManager.SaveGameProgress(entity, false);
         }
         
         private static void ShowRateGamePanel(string[] _Args)

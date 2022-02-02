@@ -8,6 +8,7 @@ using Common.Ticker;
 using Common.Utils;
 using DialogViewers;
 using Managers;
+using Managers.Scores;
 using RMAZOR.Views.Common;
 using ScriptableObjects;
 using TMPro;
@@ -92,7 +93,6 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 {
                     BuyForWatchingAd = itemInSet.watchingAds,
                     Icon = itemInSet.icon,
-                    UnlockingLevel = itemInSet.unlockingLevel,
                     Price = itemInSet.price.ToString()
                 };
                 item.Init(
@@ -124,17 +124,19 @@ namespace RMAZOR.UI.Panels.ShopPanels
             m_MoneyIcon = obj.GetCompItem<Image>("icon");
             m_MoneyText.color = ColorProvider.GetColor(ColorIds.UiText);
             m_MoneyIcon.color = ColorProvider.GetColor(ColorIds.UI);
-            var moneyEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money, true);
+            var savedGameEntity = Managers.ScoreManager.GetSavedGameProgress(
+                CommonData.SavedGameFileName, 
+                true);
             Cor.Run(Cor.WaitWhile(
-                () => moneyEntity.Result == EEntityResult.Pending,
+                () => savedGameEntity.Result == EEntityResult.Pending,
                 () =>
                 {
-                    if (moneyEntity.Result == EEntityResult.Fail)
+                    if (savedGameEntity.Result == EEntityResult.Fail)
                     {
                         Dbg.LogError("Failed to load money entity");
                         return;
                     }
-                    m_MoneyText.text = moneyEntity.GetFirstScore().ToString();
+                    m_MoneyText.text = savedGameEntity.Value.CastTo<MoneyArgs>().Money.ToString();
                 }));
             Managers.ScoreManager.OnScoresChanged -= OnScoreChanged; 
             Managers.ScoreManager.OnScoresChanged += OnScoreChanged;

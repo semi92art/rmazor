@@ -26,17 +26,23 @@ namespace RMAZOR.Editor
             }
         }
         
-        public static void SwitchScenes()
+        private static void SwitchScenes()
         {
             if (Application.isPlaying)
                 return;
             string sceneName = SceneManager.GetActiveScene().name;
-            if (sceneName == SceneNames.Prototyping)
-                OpenPreloadScene();
-            else if (sceneName == SceneNames.Preload)
-                OpenProtScene();
-            else
-                OpenPreloadScene();
+            switch (sceneName)
+            {
+                case SceneNames.Prototyping:
+                    OpenPreloadScene();
+                    break;
+                case SceneNames.Preload:
+                    OpenProtScene();
+                    break;
+                default:
+                    OpenPreloadScene();
+                    break;
+            }
         }
 
         private static void OpenPreloadScene()

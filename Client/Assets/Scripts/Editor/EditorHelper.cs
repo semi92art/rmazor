@@ -279,10 +279,10 @@ namespace Editor
                     int ii = i;
                     packet.OnSuccess(() =>
                         {
-                            int accId = packet.Response.Id;
-                            new GameDataField(gc, 100, accId,
-                                              GameClientUtils.GameId, DataFieldIds.Money).Save();
-                            Dbg.Log("All test users were created successfully");
+                            // int accId = packet.Response.Id;
+                            // new GameDataField(gc, 100, accId,
+                            //                   GameClientUtils.GameId, DataFieldIds.Money).Save();
+                            // Dbg.Log("All test users were created successfully");
                         })
                         .OnFail(() =>
                         {
@@ -358,7 +358,6 @@ namespace Editor
                 {"Password hash", SaveUtils.GetValue(SaveKeysCommon.PasswordHash) ?? "not exist"},
                 {"Account id", GameClientUtils.AccountId.ToString()},
                 {"Game id", SaveUtils.GetValue(SaveKeysCommon.GameId).ToString()},
-                {"First curr.", GetGameFieldCached(DataFieldIds.Money)},
             };
 
         private static string GetGameFieldCached(ushort _FieldId)

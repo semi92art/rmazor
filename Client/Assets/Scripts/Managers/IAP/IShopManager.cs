@@ -9,7 +9,7 @@ namespace Managers.IAP
         void         RegisterProductInfos(List<ProductInfo> _Products);
         void         RestorePurchases();
         void         Purchase(int _Key);
-        void         RateGame(bool _JustSuggest = true);
+        bool         RateGame(bool _JustSuggest = true);
         ShopItemArgs GetItemInfo(int _Key);
         void         SetPurchaseAction(int _Key, UnityAction _Action);
         void         SetDeferredAction(int _Key, UnityAction _Action);

@@ -1,5 +1,4 @@
-﻿using RMAZOR.Models;
-using RMAZOR.Models.MazeInfos;
+﻿using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common;
 
 namespace RMAZOR.Views.MazeItemGroups

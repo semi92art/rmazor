@@ -2,6 +2,7 @@
 using Managers.Advertising;
 using Managers.Audio;
 using Managers.IAP;
+using Managers.Scores;
 
 namespace Managers
 {

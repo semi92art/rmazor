@@ -3,7 +3,10 @@ using System.Linq;
 using System.Text;
 using Common;
 using Common.Constants;
+using Common.Entities;
+using Common.Extensions;
 using Common.Utils;
+using Lean.Touch;
 using RMAZOR.Models;
 using RMAZOR.Views;
 using RMAZOR.Views.InputConfigurators;
@@ -40,8 +43,7 @@ namespace RMAZOR
         private static void OnPanelVisibilityChanged(bool _Visible)
         {
             var commands = new[] {EInputCommand.ShopMenu, EInputCommand.SettingsMenu}
-                .Concat(RazorMazeUtils.GetMoveCommands())
-                .Concat(RazorMazeUtils.GetRotateCommands());
+                .Concat(RazorMazeUtils.MoveAndRotateCommands);
             if (_Visible)
                 _view.CommandsProceeder.LockCommands(commands, nameof(SROptions));
             else
@@ -93,7 +95,12 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                _view.Managers.ScoreManager.SetScore(DataFieldIds.Money, Money, false);
+                var savedGame = new MoneyArgs
+                {
+                    FileName = CommonData.SavedGameFileName,
+                    Money = Money
+                };
+                _view.Managers.ScoreManager.SaveGameProgress(savedGame, false);
             }
         }
 
@@ -358,19 +365,38 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                _view.Managers.ScoreManager.GetScore(DataFieldIds.Money, false);
+                var entity = _view.Managers.ScoreManager.GetScoreFromLeaderboard(
+                    DataFieldIds.Level, 
+                    false);
+                Cor.Run(Cor.WaitWhile(() => entity.Result == EEntityResult.Pending,
+                    () =>
+                    {
+                        if (entity.Result == EEntityResult.Fail)
+                        {
+                            Dbg.LogError(nameof(Get_Score_Test) + ": " + entity.Result);
+                            return;
+                        }
+                        var firstScore = entity.GetFirstScore();
+                        if (firstScore.HasValue)
+                            Dbg.Log("First score: " +  firstScore.Value);
+                    }));
             }
         }
         
         [Category(CategoryCommon)]
-        public bool Set_Score_Test
+        public bool Sava_Game_Test
         {
             get => false;
             set
             {
                 if (!value)
                     return;
-                _view.Managers.ScoreManager.SetScore(DataFieldIds.Money, 10000, false);
+                var savedData = new MoneyArgs
+                {
+                    FileName = CommonData.SavedGameFileName,
+                    Money = 10000
+                };
+                _view.Managers.ScoreManager.SaveGameProgress(savedData, false);
             }
         }
         
@@ -386,9 +412,68 @@ namespace RMAZOR
             }
         }
         
+        [Category(CategoryCommon)]
+        public bool Show_Scaling_Factor_And_Dpi
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                Dbg.Log(LeanTouch.ScalingFactor);
+                Dbg.Log(Screen.dpi);
+            }
+        }
         
+        [Category(CategoryCommon)]
+        public bool Delete_Saved_Game
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                _view.Managers.ScoreManager.DeleteSavedGame(CommonData.SavedGameFileName);
+            }
+        }
         
-    
+        [Category(CategoryCommon)]
+        public bool Show_Money
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                var entity = _view.Managers.ScoreManager.GetSavedGameProgress(CommonData.SavedGameFileName, false);
+                Cor.Run(Cor.WaitWhile(
+                    () => entity.Result == EEntityResult.Pending,
+                    () =>
+                    {
+                        if (entity.Result == EEntityResult.Fail)
+                        {
+                            Dbg.LogError("Failed to load saved game");
+                            return;
+                        }
+                        long money = entity.Value.CastTo<MoneyArgs>().Money;
+                        Dbg.Log("Money server: " + money);
+                    }));
+                var entity1 = _view.Managers.ScoreManager.GetSavedGameProgress(CommonData.SavedGameFileName, true);
+                Cor.Run(Cor.WaitWhile(
+                    () => entity.Result == EEntityResult.Pending,
+                    () =>
+                    {
+                        if (entity1.Result == EEntityResult.Fail)
+                        {
+                            Dbg.LogError("Failed to load saved game");
+                            return;
+                        }
+                        long money = entity1.Value.CastTo<MoneyArgs>().Money;
+                        Dbg.Log("Money cached: " + money);
+                    }));
+            }
+        }
+
         #endregion
     
     }

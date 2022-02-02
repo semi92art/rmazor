@@ -8,10 +8,10 @@ namespace UI.PanelItems.Shop_Items
     public class ShopMoneyItem : ShopItemBase
     {
         public override void Init(
-            IManagersGetter _Managers,
-            IUITicker _UITicker,
-            IColorProvider _ColorProvider,
-            UnityAction _Click,
+            IManagersGetter  _Managers,
+            IUITicker        _UITicker,
+            IColorProvider   _ColorProvider,
+            UnityAction      _Click,
             ViewShopItemInfo _Info)
         {
             base.Init(_Managers, _UITicker, _ColorProvider, _Click, _Info);

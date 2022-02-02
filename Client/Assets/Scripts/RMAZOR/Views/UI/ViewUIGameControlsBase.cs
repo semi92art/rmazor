@@ -3,6 +3,7 @@ using Common;
 using Common.Extensions;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
+using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.InputConfigurators;
 using UnityEngine.Events;
 
@@ -17,10 +18,12 @@ namespace RMAZOR.Views.UI
     
     public abstract class ViewUIGameControlsBase : IViewUIGameControls
     {
+        protected IModelGame                  Model             { get; }
         protected IViewInputCommandsProceeder CommandsProceeder { get; }
 
-        protected ViewUIGameControlsBase(IViewInputCommandsProceeder _CommandsProceeder)
+        protected ViewUIGameControlsBase(IModelGame _Model, IViewInputCommandsProceeder _CommandsProceeder)
         {
+            Model = _Model;
             CommandsProceeder = _CommandsProceeder;
         }
 
@@ -39,9 +42,14 @@ namespace RMAZOR.Views.UI
             var type = _Args.Info.Type;
             if (!RazorMazeUtils.GravityItemTypes().ContainsAlt(type)) 
                 return;
-            var commands = RazorMazeUtils.GetMoveCommands()
-                .Concat(RazorMazeUtils.GetRotateCommands());
-            CommandsProceeder.LockCommands(commands, nameof(IViewUIGameControls));
+            if (Model.GravityItemsProceeder.ProceedInfos
+                .Count(_I => _I.ProceedingStage != GravityItemsProceeder.StageDrop) != 1)
+            {
+                return;
+            }
+            CommandsProceeder.LockCommands(
+                RazorMazeUtils.MoveAndRotateCommands, 
+                nameof(IViewUIGameControls));
         }
 
         public virtual void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
@@ -49,9 +57,14 @@ namespace RMAZOR.Views.UI
             var type = _Args.Info.Type;
             if (!RazorMazeUtils.GravityItemTypes().ContainsAlt(type)) 
                 return;
-            var commands = RazorMazeUtils.GetMoveCommands()
-                .Concat(RazorMazeUtils.GetRotateCommands());
-            CommandsProceeder.UnlockCommands(commands, nameof(IViewUIGameControls));
+            if (Model.GravityItemsProceeder.ProceedInfos
+                .Any(_I => _I.ProceedingStage == GravityItemsProceeder.StageDrop))
+            {
+                return;
+            }
+            CommandsProceeder.UnlockCommands(
+                RazorMazeUtils.MoveAndRotateCommands, 
+                nameof(IViewUIGameControls));
         }
     }
 }

@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Common;
-using Common.Constants;
 using Common.Entities;
+using Common.Extensions;
+using Common.Helpers;
 using Common.Utils;
 using Managers;
 using RMAZOR.Models;
@@ -10,7 +11,6 @@ using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Helpers.MazeItemsCreators;
 using RMAZOR.Views.MazeItems;
 using SpawnPools;
-using UnityEngine.Events;
 
 namespace RMAZOR.Views.MazeItemGroups
 {
@@ -23,7 +23,7 @@ namespace RMAZOR.Views.MazeItemGroups
         void OnPathProceed(V2Int _PathItem);
     }
     
-    public class ViewMazePathItemsGroup : IViewMazePathItemsGroup
+    public class ViewMazePathItemsGroup : InitBase, IViewMazePathItemsGroup
     {
         #region nonpublic members
         
@@ -40,32 +40,30 @@ namespace RMAZOR.Views.MazeItemGroups
         private IMazeItemsCreator MazeItemsCreator { get; }
         private IManagersGetter   Managers         { get; }
 
-        public ViewMazePathItemsGroup(ViewSettings _ViewSettings,
-            IModelData _ModelData,
+        public ViewMazePathItemsGroup(
+            ViewSettings      _ViewSettings,
+            IModelData        _ModelData,
             IMazeItemsCreator _MazeItemsCreator,
-            IManagersGetter _Managers)
+            IManagersGetter   _Managers)
         {
-            ViewSettings = _ViewSettings;
-            ModelData = _ModelData;
+            ViewSettings     = _ViewSettings;
+            ModelData        = _ModelData;
             MazeItemsCreator = _MazeItemsCreator;
-            Managers = _Managers;
+            Managers         = _Managers;
         }
         
         #endregion
         
         #region api
+        
+        public List<IViewMazeItemPath> PathItems { get; private set; }
 
-        public bool              Initialized { get; private set; }
-        public event UnityAction Initialize;
-
-        public List<IViewMazeItemPath> PathItems => m_PathsPool.Where(_Item => _Item.ActivatedInSpawnPool).ToList();
 
         public void Init()
         {
             if (m_PathsPool == null)
                 InitPoolsOnStart();
-            Initialize?.Invoke();
-            Initialized = true;
+            base.Init();
         }
 
         public void OnPathProceed(V2Int _PathItem)
@@ -82,6 +80,7 @@ namespace RMAZOR.Views.MazeItemGroups
                 {
                     DeactivateAllPaths();
                     MazeItemsCreator.InitPathItems(ModelData.Info, m_PathsPool);
+                    PathItems = m_PathsPool.Where(_Item => _Item.ActivatedInSpawnPool).ToList();
                     if (!ViewSettings.StartPathItemFilledOnStart)
                         UnfillStartPathItem();
                     break;
@@ -91,23 +90,24 @@ namespace RMAZOR.Views.MazeItemGroups
                     if (m_MoneyItemsCollectedCount > 0)
                     {
                         int moneyItemsCount = m_MoneyItemsCollectedCount;
-                        var moneyEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money, true);
+                        var savedGameEntity = Managers.ScoreManager.
+                            GetSavedGameProgress(CommonData.SavedGameFileName, true);
                         Cor.Run(Cor.WaitWhile(
-                            () => moneyEntity.Result == EEntityResult.Pending,
+                            () => savedGameEntity.Result == EEntityResult.Pending,
                             () =>
                             {
-                                if (moneyEntity.Result == EEntityResult.Fail)
+                                if (savedGameEntity.Result == EEntityResult.Fail)
                                 {
                                     Dbg.LogError("Failed to load money entity");
                                     return;
                                 }
-                                var currentMoneyCount = moneyEntity.GetFirstScore();
-                                if (currentMoneyCount.HasValue)
+                                var savedData = new MoneyArgs
                                 {
-                                    Managers.ScoreManager.SetScore(
-                                        DataFieldIds.Money, 
-                                        currentMoneyCount.Value + moneyItemsCount, false);
-                                }
+                                    FileName = CommonData.SavedGameFileName,
+                                    Money = savedGameEntity.Value.CastTo<MoneyArgs>().Money + moneyItemsCount
+                                };
+                                Managers.ScoreManager.SaveGameProgress(
+                                    savedData, false);
                             }));
                     }
                     break;

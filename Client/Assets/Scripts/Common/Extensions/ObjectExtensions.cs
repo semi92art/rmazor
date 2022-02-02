@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using Common.Helpers;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -133,6 +136,21 @@ namespace Common.Extensions
         public static void SetGoActive<T>(this T _Item, bool _Active) where T : Component
         {
             _Item.gameObject.SetActive(_Active);
+        }
+
+        public static T CastTo<T>(this object _Item)
+        {
+            string ser = JsonConvert.SerializeObject(_Item);
+            try
+            {
+                T res = JsonConvert.DeserializeObject<T>(ser);
+                return res;
+            }
+            catch (SerializationException ex)
+            {
+                Dbg.LogError(ex.Message);
+                return default;
+            }
         }
     }
 }

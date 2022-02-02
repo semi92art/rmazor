@@ -9,22 +9,6 @@ namespace Common.Utils
     /// </summary>
     public sealed class Md5 : IDisposable
     {
-        public static string GetMd5String(String _Source)
-        {
-            Md5 md = Create();
-            byte[] hash;
-
-            UTF8Encoding enc = new UTF8Encoding();
-
-            byte[] buffer = enc.GetBytes(_Source);
-            hash = md.ComputeHash(buffer);
-
-            StringBuilder sb = new StringBuilder();
-            foreach (byte b in hash)
-                sb.Append(b.ToString("x2"));
-            return sb.ToString();
-        }
-
         public static string GetMd5String(byte[] _Bytes)
         {
             Md5 md = Create();
@@ -36,7 +20,7 @@ namespace Common.Utils
             return sb.ToString();
         }
         
-		public static string GetMd5String(Stream _Stream)
+		private static string GetMd5String(Stream _Stream)
 		{
 			Md5 md = Create();
 			byte[] hash = md.ComputeHash(_Stream);
@@ -46,16 +30,7 @@ namespace Common.Utils
 				sb.Append(b.ToString("x2"));
 			return sb.ToString();
 		}     
-		
-		public static string GetMd5StringFromFile(string _FileName)
-		{
-			FileStream file = new FileStream(_FileName, FileMode.Open);
-			
-			string hash = GetMd5String(file);
-			file.Dispose();
-			
-			return hash;
-		}
+
 		
 		public static Md5 Create()
 		{

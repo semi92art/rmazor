@@ -242,7 +242,7 @@ namespace RMAZOR.UI.Panels
                 Managers,
                 Ticker,
                 ColorProvider,
-                () => Managers.ScoreManager.ShowLeaderboard());
+                () => Managers.ScoreManager.ShowLeaderboard(DataFieldIds.Level));
             Managers.LocalizationManager.AddTextObject(item.title, "show_leaderboards");
         }
 

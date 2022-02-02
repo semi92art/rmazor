@@ -150,6 +150,7 @@ namespace RMAZOR.Views.Common
             const float transitionTime = 0.5f;
             var shapes = _MazeItems
                 .SelectMany(_Item => _Item.Shapes.Where(_Shape => _Shape.IsNotNull()))
+                .Distinct()
                 .ToList();
             var finished = shapes
                 .ToDictionary(_Shape => _Shape, _Shape => false);

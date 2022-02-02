@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Common;
 using Common.CameraProviders;
 using Common.Constants;
 using Common.Extensions;
@@ -122,8 +121,7 @@ namespace RMAZOR.Views.UI
         private void OnCommand(EInputCommand _Command, object[] _Args)
         {
             if (!m_FirstMoveOrRotateCommandInvoked 
-                && (RazorMazeUtils.GetMoveCommands().ContainsAlt(_Command)
-                    || RazorMazeUtils.GetRotateCommands().ContainsAlt(_Command)))
+                && RazorMazeUtils.MoveAndRotateCommands.ContainsAlt(_Command))
             {
                 AnimateLevelsPanelAfterFirstMove();
                 m_FirstMoveOrRotateCommandInvoked = true;

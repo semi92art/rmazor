@@ -15,7 +15,7 @@ using Utils;
 
 namespace GameHelpers
 {
-    public class PrefabEntity<T> : EntityBase<T> where T : Object
+    public class PrefabEntity<T> : Entity<T> where T : Object
     {
         public T             Value  { get; set; }
         public EEntityResult Result { get; set; }

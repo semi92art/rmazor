@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿// ReSharper disable ClassNeverInstantiated.Global
+
+using System;
 using System.Linq;
 using Common;
 using Common.CameraProviders;
@@ -24,14 +26,11 @@ namespace RMAZOR.Views
         ICharacterMoveFinished
     {
         ViewSettings                   Settings              { get; }
-        IContainersGetter              ContainersGetter      { get; }
         IViewUI                        UI                    { get; }
         IViewLevelStageController      LevelStageController  { get; }
         IViewInputController           InputController       { get; }
         IViewInputCommandsProceeder    CommandsProceeder     { get; }
         IViewCharacter                 Character             { get; }
-        IViewMazeCommon                Common                { get; }
-        IViewMazeBackground            Background            { get; }
         IViewMazeRotation              MazeRotation          { get; }
         IViewMazePathItemsGroup        PathItemsGroup        { get; }
         IViewMazeMovingItemsGroup      MovingItemsGroup      { get; }
@@ -56,9 +55,6 @@ namespace RMAZOR.Views
         public IViewInputController           InputController       { get; }
         public IViewInputCommandsProceeder    CommandsProceeder     { get; }
         public IViewCharacter                 Character             { get; }
-        public IViewMazeCommon                Common                { get; }
-        public IViewMazeBackground            Background            { get; }
-        public IViewMazeForeground            Foreground            { get; }
         public IViewMazeRotation              MazeRotation          { get; }
         public IViewMazePathItemsGroup        PathItemsGroup        { get; }
         public IViewMazeMovingItemsGroup      MovingItemsGroup      { get; }
@@ -71,6 +67,9 @@ namespace RMAZOR.Views
         public IViewMazeGravityItemsGroup     GravityItemsGroup     { get; }
         public IManagersGetter                Managers              { get; }
 
+        private IViewMazeCommon          Common              { get; }
+        private IViewMazeBackground      Background          { get; }
+        private IViewMazeForeground      Foreground          { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
         private IColorProvider           ColorProvider       { get; }
         private ICameraProvider          CameraProvider      { get; }
@@ -132,6 +131,12 @@ namespace RMAZOR.Views
         
         #endregion
 
+        #region nonpublic members
+
+        private object[] m_ProceedersCached;
+
+        #endregion
+
         #region api
 
         public bool              Initialized { get; private set; }
@@ -154,21 +159,21 @@ namespace RMAZOR.Views
         {
             var proceeders = GetInterfaceOfProceeders<ICharacterMoveStarted>();
             foreach (var proceeder in proceeders)
-                proceeder.OnCharacterMoveStarted(_Args);
+                proceeder?.OnCharacterMoveStarted(_Args);
         }
 
         public void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args)
         {
             var proceeders = GetInterfaceOfProceeders<ICharacterMoveContinued>();
             foreach (var proceeder in proceeders)
-                proceeder.OnCharacterMoveContinued(_Args);
+                proceeder?.OnCharacterMoveContinued(_Args);
         }
         
         public void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
         {
             var proceeders = GetInterfaceOfProceeders<ICharacterMoveFinished>();
             foreach (var proceeder in proceeders)
-                proceeder.OnCharacterMoveFinished(_Args);
+                proceeder?.OnCharacterMoveFinished(_Args);
         }
 
         #endregion
@@ -187,37 +192,40 @@ namespace RMAZOR.Views
 
         private void InitProceeders()
         {
+            m_ProceedersCached = new object[]
+            {
+                ContainersGetter,
+                Common,
+                UI,
+                InputController,
+                Character,
+                MazeRotation,
+                PathItemsGroup,
+                MovingItemsGroup,
+                TrapsReactItemsGroup,
+                TrapsIncItemsGroup,
+                TurretsGroup,
+                PortalsGroup,
+                ShredingerBlocksGroup,
+                SpringboardItemsGroup,
+                GravityItemsGroup,
+                Background,
+                Foreground,
+                CameraProvider
+            };
             ColorProvider.Init();
             CoordinateConverter.Init();
-            LevelStageController.RegisterProceeders(GetInterfaceOfProceeders<IOnLevelStageChanged>());
-            GetInterfaceOfProceeders<IInit>().ForEach(_InitObj => _InitObj.Init());
+            LevelStageController
+                .RegisterProceeders(GetInterfaceOfProceeders<IOnLevelStageChanged>()
+                .Where(_P => _P != null));
+            foreach (var initObj in GetInterfaceOfProceeders<IInit>())
+                initObj?.Init();
             LevelStageController.Init();
         }
 
-        private List<T> GetInterfaceOfProceeders<T>() where T : class
+        private T[] GetInterfaceOfProceeders<T>() where T : class
         {
-            var proceeders = new List<object>
-                {
-                    ContainersGetter,
-                    Common,
-                    UI,                         
-                    InputController,
-                    Character,
-                    MazeRotation,
-                    PathItemsGroup,
-                    MovingItemsGroup,
-                    TrapsReactItemsGroup,
-                    TrapsIncItemsGroup,
-                    TurretsGroup,
-                    PortalsGroup,
-                    ShredingerBlocksGroup,
-                    SpringboardItemsGroup,
-                    GravityItemsGroup,
-                    Background,
-                    Foreground,
-                    CameraProvider
-                }.Where(_Proceeder => _Proceeder != null);
-            return proceeders.Where(_Proceeder => _Proceeder is T).Cast<T>().ToList();
+            return Array.ConvertAll(m_ProceedersCached, _Item => _Item as T);
         }
         
         #endregion

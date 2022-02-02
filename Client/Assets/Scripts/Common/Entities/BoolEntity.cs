@@ -1,6 +1,4 @@
 ﻿namespace Common.Entities
 {
-    public class BoolEntity : EntityBase<bool>
-    {
-    }
+    public class BoolEntity : Entity<bool> { }
 }

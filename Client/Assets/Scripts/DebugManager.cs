@@ -6,6 +6,7 @@ using Managers.Advertising;
 using RMAZOR.Views.InputConfigurators;
 using Settings;
 using DebugConsole;
+using Managers.Scores;
 
 public interface IDebugManager : IInit
 {

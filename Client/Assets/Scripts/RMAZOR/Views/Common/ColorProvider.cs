@@ -35,7 +35,9 @@ namespace RMAZOR.Views.Common
         #region nonpublic members
 
         private readonly Dictionary<int, Color> m_ColorsDict = new Dictionary<int, Color>();
-        private          ColorItemSet           m_Set;
+        private          ColorItemSet           m_CurrentSet;
+        private          ColorItemSet           m_LightThemeSet;
+        private          ColorItemSet           m_DarkThemeSet;
 
         #endregion
 
@@ -62,6 +64,10 @@ namespace RMAZOR.Views.Common
 
         public override void Init()
         {
+            m_LightThemeSet = PrefabSetManager.GetObject<ColorSetScriptableObject>(
+                "views", "color_set_light").set;
+            m_DarkThemeSet = PrefabSetManager.GetObject<ColorSetScriptableObject>(
+                "views", "color_set_dark").set;
             SetThemeCore(DarkThemeSetting.Get());
             DarkThemeSetting.OnValueSet = _Value => SetTheme(_Value ? EColorTheme.Dark : EColorTheme.Light);
             base.Init();
@@ -108,16 +114,14 @@ namespace RMAZOR.Views.Common
         
         private void SetThemeCore(bool _Dark)
         {
-            string colorSetName = _Dark ? "color_set_dark" : "color_set_light";
+            m_CurrentSet = _Dark ? m_DarkThemeSet : m_LightThemeSet;
             if (_Dark && !DarkThemeAvailable)
             {
                 Dbg.LogError("Try to set dark theme while it is not available");
-                colorSetName = "color_set_light";
+                m_CurrentSet = m_LightThemeSet;
             }
-            m_Set = PrefabSetManager.GetObject<ColorSetScriptableObject>(
-                "views", colorSetName).set;
             m_ColorsDict.Clear();
-            foreach (var item in m_Set)
+            foreach (var item in m_CurrentSet)
                 m_ColorsDict.Add(ColorIds.GetHash(item.name), item.color);
         }
 

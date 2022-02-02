@@ -36,7 +36,7 @@ namespace RMAZOR.Models.ItemProceeders
         #region nonpublic members
 
         private PortalEventArgs m_LastArgs;
-        private List<V2Int>     m_CurrentFullPath;
+        private V2Int[]     m_CurrentFullPath;
 
         #endregion
 

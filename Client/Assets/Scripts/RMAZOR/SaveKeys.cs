@@ -20,6 +20,7 @@ namespace RMAZOR
         private static SaveKey<bool>  _rotationTutorialFinished;
         private static SaveKey<bool>  _enableRotation;
         private static SaveKey<bool>  _darkThemeAvailable;
+        private static SaveKey<bool>  _moneyFromServerLoadedFirstTime;
         
         private static SaveKey<int>       _dailyBonusLastClickedDay; 
         private static SaveKey<int>       _ratePanelShowsCount;
@@ -46,12 +47,14 @@ namespace RMAZOR
             SaveUtils.PutValue(RotationTutorialFinished, SaveUtils.GetValue(RotationTutorialFinished), true);
             SaveUtils.PutValue(EnableRotation,           SaveUtils.GetValue(EnableRotation),           true);
             SaveUtils.PutValue(DarkThemeAvailable,       SaveUtils.GetValue(DarkThemeAvailable),       true);
-            SaveUtils.PutValue(DarkTheme,               SaveUtils.GetValue(_darkTheme),              true);
+            SaveUtils.PutValue(DarkTheme,                SaveUtils.GetValue(_darkTheme),               true);
             SaveUtils.PutValue(DailyBonusLastClickedDay, SaveUtils.GetValue(DailyBonusLastClickedDay), true);
             SaveUtils.PutValue(RatePanelShowsCount,      SaveUtils.GetValue(RatePanelShowsCount),      true);
             SaveUtils.PutValue(WheelOfFortuneLastDate,   SaveUtils.GetValue(WheelOfFortuneLastDate),   true);
             SaveUtils.PutValue(BoughtPurchaseIds,        SaveUtils.GetValue(BoughtPurchaseIds),        true);
             SaveUtils.PutValue(DailyBonusLastDate,       SaveUtils.GetValue(DailyBonusLastDate),       true);
+            
+            SaveUtils.PutValue(MoneyFromServerLoadedFirstTime, SaveUtils.GetValue(MoneyFromServerLoadedFirstTime), true);
         }
         
         public static SaveKey<bool?> DisableAds               => _disableAds ??= new SaveKey<bool?>("disable_ads");
@@ -66,6 +69,7 @@ namespace RMAZOR
         public static SaveKey<bool>  EnableRotation           => _enableRotation ??= new SaveKey<bool>("enable_rotation");
         public static SaveKey<bool>  DarkThemeAvailable       => _darkThemeAvailable ??= new SaveKey<bool>("dark_theme_available");
         public static SaveKey<bool>  DarkTheme                => _darkTheme ??= new SaveKey<bool>("dark_theme");
+        public static SaveKey<bool>  MoneyFromServerLoadedFirstTime => _moneyFromServerLoadedFirstTime ??= new SaveKey<bool>("money_from_Server_loaded_first_time");
 
         public static SaveKey<int>  DailyBonusLastClickedDay => _dailyBonusLastClickedDay ??= new SaveKey<int>("daily_bonus_last_day");
         public static SaveKey<int>  RatePanelShowsCount      => _ratePanelShowsCount ??= new SaveKey<int>("rate_panel_shows_count");

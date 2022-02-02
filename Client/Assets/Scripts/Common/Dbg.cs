@@ -6,17 +6,17 @@ namespace Common
 {
     public enum ELogLevel
     {
-        Info      = 1,
-        Warning   = 2,
+        Nothing   = 0,
+        Exception = 1,
+        Error     = 2,
         Assert    = 4,
-        Error     = 8,
-        Exception = 16,
-        Nothing   = 32
+        Warning   = 8,
+        Info      = 16
     }
 
     public static class Dbg
     {
-        private static readonly ILogger   Logger   = Debug.unityLogger;
+        private static readonly ILogger   Logger    = Debug.unityLogger;
         private static          ELogLevel _logLevel = ELogLevel.Error;
 
         public static ELogLevel LogLevel
@@ -24,7 +24,7 @@ namespace Common
             get => _logLevel;
             set
             {
-                Logger.logEnabled = value < ELogLevel.Nothing;
+                Logger.logEnabled = value != ELogLevel.Nothing;
                 switch (value)
                 {
                     case ELogLevel.Info:

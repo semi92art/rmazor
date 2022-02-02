@@ -27,11 +27,10 @@ namespace Common.Ticker
     
     public abstract class Ticker : ITicker
     {
-        protected static T MonoBehSingleton<T>(ref T _Instance, string _Name) where T : MonoBehaviour
+        private static T MonoBehSingleton<T>(ref T _Instance, string _Name) where T : MonoBehaviour
         {
-            if (_Instance is { } ptm && !ptm.IsNull())
+            if (!_Instance.IsNull())
                 return _Instance;
-            
             var go = GameObject.Find(_Name);
             if (go == null || go.transform.parent != null)
                 go = new GameObject(_Name);

@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Common;
 using Common.Extensions;
 using Common.Utils;
-using RMAZOR;
-using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Purchasing;
-using Utils;
 
 namespace Managers.IAP
 {
@@ -28,25 +24,25 @@ namespace Managers.IAP
         public Func<EShopProductResult> Result     { get; set; }
     }
     
-    public class UnityIAPShopManager : ShopManagerBase, IStoreListener
+    public abstract class UnityIapShopManagerBase : ShopManagerBase, IStoreListener
     {
         #region nonpublic members
 
-        protected IStoreController   m_StoreController;
-        protected IExtensionProvider m_StoreExtensionProvider;
+        private IStoreController   m_StoreController;
+        private IExtensionProvider m_StoreExtensionProvider;
 
-        protected readonly Dictionary<int, UnityAction> m_OnPurchaseActions =
+        private readonly Dictionary<int, UnityAction> m_OnPurchaseActions =
             new Dictionary<int, UnityAction>();
-        protected readonly Dictionary<int, UnityAction> m_OnDeferredActions =
+        private readonly Dictionary<int, UnityAction> m_OnDeferredActions =
             new Dictionary<int, UnityAction>();
 
         #endregion
 
         #region inject
 
-        private ILocalizationManager LocalizationManager { get; }
+        protected ILocalizationManager LocalizationManager { get; }
 
-        public UnityIAPShopManager(ILocalizationManager _LocalizationManager)
+        protected UnityIapShopManagerBase(ILocalizationManager _LocalizationManager)
         {
             LocalizationManager = _LocalizationManager;
         }
@@ -64,7 +60,7 @@ namespace Managers.IAP
         {
             m_StoreController = _Controller;
             m_StoreExtensionProvider = _Extensions;
-            Dbg.Log($"{nameof(UnityIAPShopManager)} {nameof(OnInitialized)}");
+            Dbg.Log($"{nameof(UnityIapShopManagerBase)} {nameof(OnInitialized)}");
             base.Init();
         }
         
@@ -82,36 +78,25 @@ namespace Managers.IAP
 
         public override void Purchase(int _Key)
         {
-#if !UNITY_EDITOR
             if (!NetworkUtils.IsInternetConnectionAvailable())
             {
                 CommonUtils.ShowAlertDialog("OOPS!!!", "No internet connection");
                 return;
             }
-#endif
             Dbg.Log(nameof(Purchase) + ": " + _Key);
             string id = GetProductId(_Key);
             BuyProductID(id);
         }
 
-        public override void RateGame(bool _JustSuggest = true)
+        public override bool RateGame(bool _JustSuggest = true)
         {
-            if (!NetworkUtils.IsInternetConnectionAvailable())
-            {
-                string oopsText = LocalizationManager.GetTranslation("oops");
-                string noIntConnText = LocalizationManager.GetTranslation("no_internet_connection");
-                CommonUtils.ShowAlertDialog(oopsText, noIntConnText);
-                Dbg.LogWarning("Failed to rate game: No internet connection.");
-                return;
-            }
-            
-#if UNITY_EDITOR
-            Dbg.Log("Rating game available only on device.");
-#elif UNITY_ANDROID
-            Cor.Run(RateGameAndroid(_JustSuggest));
-#elif UNITY_IOS || UNITY_IPHONE
-            RateGameIos();
-#endif
+            if (NetworkUtils.IsInternetConnectionAvailable())
+                return true;
+            string oopsText = LocalizationManager.GetTranslation("oops");
+            string noIntConnText = LocalizationManager.GetTranslation("no_internet_connection");
+            CommonUtils.ShowAlertDialog(oopsText, noIntConnText);
+            Dbg.LogWarning("Failed to rate game: No internet connection.");
+            return false;
         }
 
         public override ShopItemArgs GetItemInfo(int _Key)
@@ -226,7 +211,7 @@ namespace Managers.IAP
                                "either is not found or is not available for purchase");
                 return;
             }
-            Dbg.Log($"Purchasing product asychronously: '{product.definition.id}'");
+            Dbg.Log($"Purchasing product asynchronously: '{product.definition.id}'");
             m_StoreController.InitiatePurchase(product);
         }
 
@@ -235,7 +220,7 @@ namespace Managers.IAP
             _Args.Result = () => EShopProductResult.Pending;
             if (!IsInitialized())
             {
-                Dbg.LogWarning($"{nameof(UnityIAPShopManager)}: Get Product Item Info Failed. Not initialized.");
+                Dbg.LogWarning($"{nameof(UnityIapShopManagerBase)}: Get Product Item Info Failed. Not initialized.");
                 _Args.Result = () => EShopProductResult.Fail;
                 return;
             }
@@ -243,7 +228,7 @@ namespace Managers.IAP
             var product = m_StoreController.products.set.FirstOrDefault(_P => _P.definition.id == id);
             if (product == null)
             {
-                Dbg.LogWarning($"{nameof(UnityIAPShopManager)}: " +
+                Dbg.LogWarning($"{nameof(UnityIapShopManagerBase)}: " +
                                $"Get Product Item Info Failed. Product with id {id} does not exist");
                 _Args.Result = () => EShopProductResult.Fail;
                 return;
@@ -262,84 +247,19 @@ namespace Managers.IAP
                 Dbg.LogError($"Purchase of {_Product.definition.id} was not deferred");
                 return;
             }
-            m_OnDeferredActions[key.Value]?.Invoke();
-            Dbg.Log($"Purchase of {_Product.definition.id} is deferred");
+            var action = m_OnDeferredActions.GetSafe(key.Value, out _);
+            if (action != null)
+            {
+                action.Invoke();
+                Dbg.Log($"Purchase of {_Product.definition.id} is deferred");
+            }
+            else
+            {
+                Dbg.LogWarning("Deferred action was not set of " +
+                               $"product with id {_Product.definition.id} was not set" +
+                               ", but it's okay, let this product be free");
+            }
         }
-        
-#if UNITY_ANDROID
-
-        private IEnumerator RateGameAndroid(bool _JustSuggest)
-        {
-            if (_JustSuggest)
-            {
-                string title = LocalizationManager.GetTranslation("rate_dialog_title");
-                string text = LocalizationManager.GetTranslation("rate_dialog_text") + "\n" +
-                    "\u2B50\u2B50\u2B50\u2B50\u2B50";
-                string ok = LocalizationManager.GetTranslation("rate_yes");
-                string notNow = LocalizationManager.GetTranslation("rate_not_now");
-                string never = LocalizationManager.GetTranslation("rate_never");
-                MTAssets.NativeAndroidToolkit.NativeAndroid.Dialogs.ShowNeutralDialog(title, text, ok, notNow, never);
-                MTAssets.NativeAndroidToolkit.Events.DialogsEvents.onNeutralYes = () =>
-                {
-                    Cor.Run(RateGameAndroid(false));
-                };
-                MTAssets.NativeAndroidToolkit.Events.DialogsEvents.onNeutralNo = () =>
-                {
-
-                };
-                MTAssets.NativeAndroidToolkit.Events.DialogsEvents.onNeutralNeutral = () =>
-                {
-                    SaveUtils.PutValue(SaveKeys.GameWasRated, true);
-                };
-                yield break;
-            }
-            
-            static void OpenAppPageInStoreDirectly()
-            {
-                Application.OpenURL("market://details?id=" + Application.productName);
-            }
-
-            var reviewManager = new Google.Play.Review.ReviewManager();
-            var requestFlowOperation = reviewManager.RequestReviewFlow();
-            yield return requestFlowOperation;
-            if (!requestFlowOperation.IsSuccessful)
-            {
-                Dbg.LogWarning($"requestFlowOperation.IsSuccessful: {requestFlowOperation.IsSuccessful}");
-                OpenAppPageInStoreDirectly();
-                yield break;
-            }
-            if (requestFlowOperation.Error != Google.Play.Review.ReviewErrorCode.NoError)
-            {
-                Dbg.LogWarning($"Failed to load rate game panel: {requestFlowOperation.Error}");
-                OpenAppPageInStoreDirectly();
-                yield break;
-            }
-            var playReviewInfo = requestFlowOperation.GetResult();
-            var launchFlowOperation = reviewManager.LaunchReviewFlow(playReviewInfo);
-            if (!launchFlowOperation.IsSuccessful)
-            {
-                Dbg.LogWarning($"launchFlowOperation.IsSuccessful: {launchFlowOperation.IsSuccessful}");
-                OpenAppPageInStoreDirectly();
-                yield break;
-            }
-            yield return launchFlowOperation;
-            if (launchFlowOperation.Error != Google.Play.Review.ReviewErrorCode.NoError)
-            {
-                Dbg.LogWarning($"Failed to launch rate game panel: {launchFlowOperation.Error}");
-                OpenAppPageInStoreDirectly();
-                yield break;
-            }
-            SaveUtils.PutValue(SaveKeys.GameWasRated, true);
-        }
-        
-#elif UNITY_IPHONE || UNITY_IOS
-
-        private void RateGameIos()
-        {
-            SA.iOS.StoreKit.ISN_SKStoreReviewController.RequestReview();
-        }
-        
-#endif
 
         #endregion
     }

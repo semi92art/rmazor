@@ -22,10 +22,15 @@ namespace RMAZOR.Views.UI
         private const float TopOffset       = 5f;
 
         #endregion
+
+        #region nonpublic members
+
+        private object[] m_ProceedersCached;
+
+        #endregion
         
         #region inject
 
-        private IModelGame              Model              { get; }
         private IViewAppearTransitioner AppearTransitioner { get; }
         private IColorProvider          ColorProvider      { get; }
         private IViewUIPrompt           Prompt             { get; }
@@ -48,9 +53,8 @@ namespace RMAZOR.Views.UI
             IViewUIRotationControls _RotationControls,
             IViewUITopButtons _TopButtons,
             IViewUITutorial _Tutorial) 
-            : base(_CommandsProceeder)
+            : base(_Model, _CommandsProceeder)
         {
-            Model = _Model;
             AppearTransitioner = _AppearTransitioner;
             ColorProvider = _ColorProvider;
             Prompt = _Prompt;
@@ -68,6 +72,16 @@ namespace RMAZOR.Views.UI
 
         public override void Init()
         {
+            m_ProceedersCached = new object[]
+            {
+                CongratsMessage,
+                StartLogo,
+                RotationControls,
+                Prompt,
+                TopButtons,
+                LevelsPanel,
+                Tutorial
+            };
             InitGameUI();
             base.Init();
         }
@@ -77,7 +91,7 @@ namespace RMAZOR.Views.UI
             LockCommands(_Args);
             var allOnLevelStageChangedItems = GetInterfaceOfProceeders<IOnLevelStageChanged>();
             foreach (var uiItem in allOnLevelStageChangedItems)
-                uiItem.OnLevelStageChanged(_Args);
+                uiItem?.OnLevelStageChanged(_Args);
             switch (_Args.Stage)
             {
                 case ELevelStage.Loaded:             ShowControls(true, false);  break;
@@ -93,7 +107,7 @@ namespace RMAZOR.Views.UI
         {
             var allInitItems = GetInterfaceOfProceeders<IInitViewUIItem>();
             foreach (var uiItem in allInitItems)
-                uiItem.Init(new Vector4(0, 0, BottomOffset, TopOffset));
+                uiItem?.Init(new Vector4(0, 0, BottomOffset, TopOffset));
             ColorProvider.ColorChanged += OnColorChanged;
             Tutorial.TutorialStarted   += OnTutorialStarted;
             Tutorial.TutorialFinished  += OnTutorialFinished;
@@ -137,6 +151,7 @@ namespace RMAZOR.Views.UI
             if (_Instantly)
                 return;
             var allRenderers = GetInterfaceOfProceeders<IViewUIGetRenderers>()
+                .Where(_R => _R != null)
                 .SelectMany(_Item => _Item.GetRenderers());
             AppearTransitioner.DoAppearTransition(
                 _Show, 
@@ -178,9 +193,9 @@ namespace RMAZOR.Views.UI
                     CommandsProceeder.UnlockAllCommands(group);
                     
                     if (MazeContainsGravityItems())
-                        CommandsProceeder.UnlockCommands(RazorMazeUtils.GetRotateCommands(), group);
+                        CommandsProceeder.UnlockCommands(RazorMazeUtils.RotateCommands, group);
                     else
-                        CommandsProceeder.LockCommands(RazorMazeUtils.GetRotateCommands(), group);
+                        CommandsProceeder.LockCommands(RazorMazeUtils.RotateCommands, group);
                     break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Args.Stage);
@@ -193,21 +208,11 @@ namespace RMAZOR.Views.UI
                 .Any(_Info => RazorMazeUtils.GravityItemTypes().ContainsAlt(_Info.Type));
         }
 
-        private List<T> GetInterfaceOfProceeders<T>() where T : class
+        private T[] GetInterfaceOfProceeders<T>() where T : class
         {
-            var proceeders = new List<object>
-                {
-                    CongratsMessage, 
-                    StartLogo,
-                    RotationControls, 
-                    Prompt,
-                    TopButtons,
-                    LevelsPanel, 
-                    Tutorial
-                }.Where(_Proceeder => _Proceeder != null);
-            return proceeders.Where(_Proceeder => _Proceeder is T).Cast<T>().ToList();
+            return Array.ConvertAll(m_ProceedersCached, _Item => _Item as T);
         }
-
+        
         #endregion
     }
 }

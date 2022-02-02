@@ -52,19 +52,20 @@ namespace RMAZOR.Views.UI
         private   IEnumerator              m_LastTraceAnimCoroutine;
         private   IEnumerator              m_LastHandAnimCoroutine;
         private   IEnumerator              m_LastWaitCoroutine;
+        protected bool                     TutorialFinished;
         
         protected abstract Dictionary<EMazeMoveDirection, float> HandAngles { get; }
 
         #endregion
 
         #region api
-        
+
         public virtual void Init(
-            ITicker _Ticker,
-            ICameraProvider _CameraProvider,
+            ITicker                  _Ticker,
+            ICameraProvider          _CameraProvider,
             IMazeCoordinateConverter _CoordinateConverter,
-            IColorProvider _ColorProvider,
-            Vector4 _Offsets)
+            IColorProvider           _ColorProvider,
+            Vector4                  _Offsets)
         {
             _Ticker.Register(this);
             Ticker = _Ticker;
@@ -79,6 +80,7 @@ namespace RMAZOR.Views.UI
             ReadyToAnimate = false;
             hand.enabled = false;
             Direction = null;
+            TutorialFinished = true;
         }
 
         public abstract void UpdateTick();

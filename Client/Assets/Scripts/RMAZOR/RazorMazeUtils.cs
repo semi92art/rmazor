@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Common;
 using Common.Entities;
 using Common.Exceptions;
 using Common.Extensions;
@@ -17,6 +18,30 @@ namespace RMAZOR
 
         public static readonly int[] LevelsInGroupList          = {3, 4, 5};
         public static          bool  LoadNextLevelAutomatically = true;
+        
+        public static readonly EInputCommand[] MoveCommands =
+        {
+            EInputCommand.MoveLeft,
+            EInputCommand.MoveRight,
+            EInputCommand.MoveDown,
+            EInputCommand.MoveUp
+        };
+        
+        public static readonly EInputCommand[] RotateCommands =
+        {
+            EInputCommand.RotateClockwise,
+            EInputCommand.RotateCounterClockwise
+        };
+        
+        public static readonly EInputCommand[] MoveAndRotateCommands =
+        {
+            EInputCommand.MoveLeft,
+            EInputCommand.MoveRight,
+            EInputCommand.MoveDown,
+            EInputCommand.MoveUp,
+            EInputCommand.RotateClockwise,
+            EInputCommand.RotateCounterClockwise
+        };
 
         public static EMazeItemType[] GravityItemTypes()
         {
@@ -38,26 +63,6 @@ namespace RMAZOR
                 case MazeOrientation.West:  return V2Int.Left;
                 default: throw new SwitchCaseNotImplementedException(_Orientation);
             }
-        }
-
-        public static EInputCommand[] GetMoveCommands()
-        {
-            return new[]
-            {
-                EInputCommand.MoveLeft,
-                EInputCommand.MoveRight,
-                EInputCommand.MoveDown,
-                EInputCommand.MoveUp
-            };
-        }
-
-        public static EInputCommand[] GetRotateCommands()
-        {
-            return new[]
-            {
-                EInputCommand.RotateClockwise,
-                EInputCommand.RotateCounterClockwise
-            };
         }
         
         public static bool MazeContainsGravityItems(IEnumerable<IMazeItemProceedInfo> _Infos)
@@ -159,44 +164,53 @@ namespace RMAZOR
             throw new ArgumentException("Wrong direction vector");
         }
 
-        public static List<V2Int> GetFullPath(V2Int _From, V2Int _To)
+        public static V2Int[] GetFullPath(V2Int _From, V2Int _To)
         {
             int min, max;
-            IEnumerable<int> range;
-            IEnumerable<V2Int> result = null;
+            V2Int[] res = null;
             if (_From.X == _To.X)
             {
                 min = Math.Min(_From.Y, _To.Y);
                 max = Math.Max(_From.Y, _To.Y);
-                range = Enumerable.Range(min, max - min + 1);
-                result = range.Select(_V => new V2Int(_From.X, _V));
-                if (min == _To.Y) result = result.Reverse();
+                res = new V2Int[max - min + 1];
+                for (int i = min; i <= max; i++)
+                {
+                    int idx = min == _From.Y ? i - min : max - i;
+                    try
+                    {
+                        res[idx] = new V2Int(_From.X, i);
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        Dbg.LogError(nameof(GetFullPath) + " Length: " + res.Length + "; idx: " + idx
+                        + "; min: " + min + "max: " + max);
+                        throw;
+                    }
+                }
             }
             if (_From.Y == _To.Y)
             {
                 min = Math.Min(_From.X, _To.X);
                 max = Math.Max(_From.X, _To.X);
-                range = Enumerable.Range(min, max - min + 1);
-                result = range.Select(_V => new V2Int(_V, _From.Y));
-                if (min == _To.X) result = result.Reverse();
+                res = new V2Int[max - min + 1];
+                for (int i = min; i <= max; i++)
+                {
+                    int idx = min == _From.X ? i - min : max - i;
+                    try
+                    {
+                        res[idx] = new V2Int(i, _From.Y);
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        Dbg.LogError(nameof(GetFullPath) + " Length: " + res.Length + "; idx: " + idx
+                                     + "; min: " + min + "max: " + max);
+                        throw;
+                    }
+                }
             }
-            if (result == null)
+            if (res == null)
                 throw new ArgumentException($"Cannot build direct path from {_From} to {_To}");
-            return result.ToList();
-        }
-
-        /// <summary>
-        /// returns -1 if _A less than _B, 0 if _A equals _B, 1 if _A greater than _B
-        /// </summary>
-        /// <param name="_From">start path element</param>
-        /// <param name="_To">end path element</param>
-        /// <param name="_A">first path item</param>
-        /// <param name="_B">second path item</param>
-        /// <returns></returns>
-        public static int CompareItemsOnPath(V2Int _From, V2Int _To, V2Int _A, V2Int _B)
-        {
-            var fullPath = GetFullPath(_From, _To);
-            return CompareItemsOnPath(fullPath, _A, _B);
+            return res;
         }
 
         /// <summary>
@@ -206,7 +220,7 @@ namespace RMAZOR
         /// <param name="_A">first path item</param>
         /// <param name="_B">second path item</param>
         /// <returns></returns>
-        public static int CompareItemsOnPath(List<V2Int> _Path, V2Int _A, V2Int _B)
+        public static int CompareItemsOnPath(V2Int[] _Path, V2Int _A, V2Int _B)
         {
             if (!_Path.Contains(_A))
                 throw new ArgumentException($"Path from {_Path.First()} to" +

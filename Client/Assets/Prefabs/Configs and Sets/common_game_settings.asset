@@ -16,6 +16,8 @@ MonoBehaviour:
   adsLoadDelay: 3
   debugEnabled: 1
   testAds: 1
-  logLevel: 1
+  logLevel: 16
   admobRate: 80
   unityAdsRate: 20
+  showAdsEveryLevel: 3
+  firstLevelToShowAds: 10

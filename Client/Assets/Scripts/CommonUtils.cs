@@ -1,10 +1,15 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Net;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using Common;
 using Common.Extensions;
 using Common.Utils;
+using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
@@ -14,17 +19,9 @@ using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 
 public static class CommonUtils
 {
-    public static T MonoBehSingleton<T>(ref T _Instance, string _Name) where T : MonoBehaviour
+    public static bool IsRunningOnDevice()
     {
-        if (_Instance is T ptm && !ptm.IsNull())
-            return _Instance;
-            
-        var go = GameObject.Find(_Name);
-        if (go == null || go.transform.parent != null)
-            go = new GameObject(_Name);
-        _Instance = go.GetOrAddComponent<T>();
-        Object.DontDestroyOnLoad(go);
-        return _Instance;
+        return new[] {RuntimePlatform.Android, RuntimePlatform.IPhonePlayer}.Contains(Application.platform);
     }
 
     public static string GetOsName()
@@ -84,29 +81,7 @@ public static class CommonUtils
                           + "-" + $"{MathUtils.RandomGen.Next(1000000000):X}"; //random number
         return uniqueId;
     }
-        
 
-
-    public static string GetMd5Hash(string _StrToEncrypt)
-    {
-        UTF8Encoding ue = new UTF8Encoding();
-        return GetMd5Hash(ue.GetBytes(_StrToEncrypt));
-    }
-
-    public static string GetMd5Hash(byte[] _Bytes)
-    {
-        return Md5.GetMd5String(_Bytes);
-    }
-    
-    public static bool IsEmailAddressValid(string _Mail)
-    {
-        int atInd = _Mail.IndexOf("@", StringComparison.Ordinal);
-        if (atInd <= 0)
-            return false;
-        int dotInd = _Mail.IndexOf(".", atInd, StringComparison.Ordinal);
-        return dotInd - atInd > 1 && dotInd < _Mail.Length - 1;
-    }
-        
     public static GameObject FindOrCreateGameObject(string _Name, out bool _WasFound)
     {
         var go = GameObject.Find(_Name);
@@ -158,9 +133,28 @@ public static class CommonUtils
 #endif
     }
 
-    public static void InitSRDebugger()
+    public static byte[] ToByteArray<T>(T _Obj)
     {
-        Dbg.Log("SRDebug.Init");
-        SRDebug.Init();
+        if(_Obj == null)
+            return null;
+        string str = JsonConvert.SerializeObject(_Obj);
+        byte[] bytes = Encoding.ASCII.GetBytes(str);
+        return bytes;
+    }
+
+    public static T FromByteArray<T>(byte[] _Data)
+    {
+        if(_Data == null)
+            return default;
+        string str = Encoding.ASCII.GetString(_Data);
+        var res = JsonConvert.DeserializeObject<T>(str);        
+        return res;
+    }
+
+    public static int StringToHash(string _S)
+    {
+        var hasher = MD5.Create();
+        var hashed = hasher.ComputeHash(Encoding.UTF8.GetBytes(_S));
+        return BitConverter.ToInt32(hashed, 0);
     }
 }

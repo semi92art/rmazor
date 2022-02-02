@@ -36,3 +36,4 @@ MonoBehaviour:
   afterRotationEnableMoveDelay: 0.1
   rateRequestsFrequency: 20
   adsRequestsFrequency: 5
+  levelsCountMain: 360

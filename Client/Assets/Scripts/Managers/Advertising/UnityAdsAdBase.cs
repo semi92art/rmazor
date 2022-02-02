@@ -97,20 +97,17 @@ namespace Managers.Advertising
         {
             if (m_DoInvokeOnShown)
             {
-                Dbg.Log("m_OnShown?.Invoke()");
                 m_OnShown?.Invoke();
                 m_DoInvokeOnShown = false;
             }
-
-            if (m_DoLoadAdWithDelay)
-            {
-                m_LoadAdDelayTimer += CommonTicker.DeltaTime;
-                if (!(m_LoadAdDelayTimer > Settings.AdsLoadDelay)) 
-                    return;
-                LoadAd();
-                m_LoadAdDelayTimer = 0f;
-                m_DoLoadAdWithDelay = false;
-            }
+            if (!m_DoLoadAdWithDelay)
+                return;
+            m_LoadAdDelayTimer += CommonTicker.DeltaTime;
+            if (!(m_LoadAdDelayTimer > Settings.AdsLoadDelay)) 
+                return;
+            LoadAd();
+            m_LoadAdDelayTimer = 0f;
+            m_DoLoadAdWithDelay = false;
         }
     }
 }

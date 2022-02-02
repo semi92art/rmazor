@@ -14,7 +14,6 @@ namespace ScriptableObjects
             public Sprite icon;
             public int    price;
             public bool   watchingAds;
-            public int    unlockingLevel = -1;
         }
         
         [Serializable]

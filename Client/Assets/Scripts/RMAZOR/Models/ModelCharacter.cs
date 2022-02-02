@@ -1,7 +1,8 @@
-﻿using System;
+﻿// ReSharper disable ForCanBeConvertedToForeach
+// ReSharper disable LoopCanBeConvertedToQuery
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Common.Entities;
 using Common.Ticker;
 using Common.Utils;
@@ -123,10 +124,9 @@ namespace RMAZOR.Models
             var nextPos = Position;
             var infos = GetAllProceedInfos();
             var dirVector = RazorMazeUtils.GetDirectionVector(_Direction, Data.Orientation);
-            var pathItems = Data.Info.PathItems.Select(_PI => _PI.Position).ToList();
             while (IsNextPositionValid(
                 infos,
-                pathItems,
+                Data.PathItems,
                 _From,
                 nextPos,
                 nextPos + dirVector,
@@ -138,15 +138,14 @@ namespace RMAZOR.Models
         }
 
         private static bool IsNextPositionValid(
-            IMazeItemProceedInfo[] _ProceedInfos,
-            IReadOnlyList<V2Int> _PathItems,
-            V2Int _From,
-            V2Int _CurrentPosition,
-            V2Int _NextPosition, 
-            out V2Int? _ShredingerBlockPosWhoStopped)
+            IReadOnlyList<IMazeItemProceedInfo> _ProceedInfos,
+            IReadOnlyList<V2Int>                _PathItems,
+            V2Int                               _From,
+            V2Int                               _CurrentPosition,
+            V2Int                               _NextPosition,
+            out V2Int?                          _ShredingerBlockPosWhoStopped)
         {
             _ShredingerBlockPosWhoStopped = null;
-
             bool isNode = false;
             for (int i = 0; i < _PathItems.Count; i++)
             {
@@ -155,10 +154,9 @@ namespace RMAZOR.Models
                 isNode = true;
                 break;
             }
-
             if (!isNode)
             {
-                for (int i = 0; i < _ProceedInfos.Length; i++)
+                for (int i = 0; i < _ProceedInfos.Count; i++)
                 {
                     var info = _ProceedInfos[i];
                     if (info.CurrentPosition != _NextPosition)
@@ -169,9 +167,8 @@ namespace RMAZOR.Models
                 }
                 return false;
             }
-
             IMazeItemProceedInfo shredinger = null;
-            for (int i = 0; i < _ProceedInfos.Length; i++)
+            for (int i = 0; i < _ProceedInfos.Count; i++)
             {
                 var info = _ProceedInfos[i];
                 if (info.Type != EMazeItemType.ShredingerBlock)
@@ -181,15 +178,13 @@ namespace RMAZOR.Models
                 shredinger = info;
                 break;
             }
-
             if (shredinger != null)
             {
                 _ShredingerBlockPosWhoStopped = _NextPosition;
                 return shredinger.ProceedingStage == ItemsProceederBase.StageIdle;
             }
-
             bool isMazeItem = false;
-            for (int i = 0; i < _ProceedInfos.Length; i++)
+            for (int i = 0; i < _ProceedInfos.Count; i++)
             {
                 var info = _ProceedInfos[i];
                 if (info.CurrentPosition != _NextPosition)
@@ -201,12 +196,10 @@ namespace RMAZOR.Models
                 isMazeItem = true;
                 break;
             }
-
             if (isMazeItem)
                 return false;
-
             bool isBuzyMazeItem = false;
-            for (int i = 0; i < _ProceedInfos.Length; i++)
+            for (int i = 0; i < _ProceedInfos.Count; i++)
             {
                 var info = _ProceedInfos[i];
                 if (info.Type != EMazeItemType.GravityBlock && info.Type != EMazeItemType.GravityBlockFree)
@@ -224,14 +217,12 @@ namespace RMAZOR.Models
                 isBuzyMazeItem = true;
                 break;
             }
-
             if (isBuzyMazeItem)
                 return false;
-            
             bool isPrevSpringboard = false;
             if (_CurrentPosition != _From)
             {
-                for (int i = 0; i < _ProceedInfos.Length; i++)
+                for (int i = 0; i < _ProceedInfos.Count; i++)
                 {
                     var info = _ProceedInfos[i];
                     if (info.CurrentPosition != _CurrentPosition)
@@ -244,9 +235,8 @@ namespace RMAZOR.Models
             }
             if (isPrevSpringboard)
                 return false;
-            
             bool isPrevPortal = false;
-            for (int i = 0; i < _ProceedInfos.Length; i++)
+            for (int i = 0; i < _ProceedInfos.Count; i++)
             {
                 var info = _ProceedInfos[i];
                 if (info.CurrentPosition != _CurrentPosition)
@@ -256,9 +246,8 @@ namespace RMAZOR.Models
                 isPrevPortal = true;
                 break;
             }
-
             bool isStartFromPortal = false;
-            for (int i = 0; i < _ProceedInfos.Length; i++)
+            for (int i = 0; i < _ProceedInfos.Count; i++)
             {
                 var info = _ProceedInfos[i];
                 if (info.CurrentPosition != _From)
@@ -268,10 +257,7 @@ namespace RMAZOR.Models
                 isStartFromPortal = true;
                 break;
             }
-
-            if (isPrevPortal && !isStartFromPortal)
-                return false;
-            return true;
+            return !isPrevPortal || isStartFromPortal;
         }
         
         private IEnumerator MoveCharacterCore(

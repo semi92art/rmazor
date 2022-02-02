@@ -9,6 +9,7 @@ using Utils;
 
 namespace Managers.IAP
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class ShopManagerFake : ShopManagerBase
     {
         private const EShopProductResult Result = EShopProductResult.Fail;
@@ -60,9 +61,9 @@ namespace Managers.IAP
             m_PurchaseActions[_Key]?.Invoke();
         }
 
-        public override void RateGame(bool _JustSuggest = true)
+        public override bool RateGame(bool _JustSuggest = true)
         {
-            // do nothing
+            return false;
         }
 
         public override ShopItemArgs GetItemInfo(int _Key)

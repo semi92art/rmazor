@@ -13,7 +13,7 @@
         EEntityResult Result { get; }
     }
     
-    public abstract class EntityBase<T>
+    public class Entity<T> : IEntity<T>
     {
         public T             Value  { get; set; }
         public EEntityResult Result { get; set; }

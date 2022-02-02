@@ -5,6 +5,7 @@ using GameHelpers;
 using Lean.Common;
 using Managers;
 using Managers.Advertising;
+using Managers.Scores;
 using RMAZOR;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
@@ -251,8 +252,7 @@ namespace DebugConsole
         {
             VisibilityChanged?.Invoke(_Visible);
             var commands = new[] {EInputCommand.ShopMenu, EInputCommand.SettingsMenu}
-                .Concat(RazorMazeUtils.GetMoveCommands())
-                .Concat(RazorMazeUtils.GetRotateCommands());
+                .Concat(RazorMazeUtils.MoveAndRotateCommands);
             if (_Visible)
                 m_CommandsProceeder.LockCommands(commands, nameof(DebugConsoleView));
             else

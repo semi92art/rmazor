@@ -190,5 +190,10 @@ namespace Common.Utils
             float a = _Amplitude;
             return Mathf.Abs((_V - 4 * p) % p - p * 0.5f) * 4f * a / p - a;
         }
+
+        public static float SantimetersToInches(float _V)
+        {
+            return _V * 0.39370f;
+        }
     }
 }

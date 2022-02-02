@@ -26,6 +26,13 @@ namespace RMAZOR.Views.InputConfigurators
     
     public class ViewInputTouchProceeder : IViewInputTouchProceeder
     {
+        #region constants
+
+        private const float SwipeThresholdSeconds    = 0.1f;
+        private const float SwipeThresholdCentimeters = 0.05f;
+
+        #endregion
+        
         #region nonpublic members
 
         private          LeanFingerTap         m_LeanFingerTap;
@@ -36,8 +43,6 @@ namespace RMAZOR.Views.InputConfigurators
         private          EMazeRotateDirection? m_PrevRotateDirection;
         private          bool                  m_EnableRotation = true;
         private          bool                  m_FingerOnScreen;
-        
-
         
         #endregion
 
@@ -95,20 +100,19 @@ namespace RMAZOR.Views.InputConfigurators
                 m_LeanFingerTap.OnFinger.RemoveListener(MoveNext);
             else if (_Args.PreviousStage == ELevelStage.Paused)
                 m_LeanFingerTap.OnFinger.AddListener(MoveNext);
-            if (_Args.Stage == ELevelStage.ReadyToStart && _Args.PreviousStage == ELevelStage.Loaded)
+            if (_Args.Stage != ELevelStage.ReadyToStart || _Args.PreviousStage != ELevelStage.Loaded) 
+                return;
+            if (RazorMazeUtils.MazeContainsGravityItems(Model.GetAllProceedInfos()))
             {
-                if (RazorMazeUtils.MazeContainsGravityItems(Model.GetAllProceedInfos()))
-                {
-                    CommandsProceeder.UnlockCommands(
-                        RazorMazeUtils.GetRotateCommands(), 
-                        nameof(IViewInputTouchProceeder));
-                }
-                else
-                {
-                    CommandsProceeder.LockCommands(
-                        RazorMazeUtils.GetRotateCommands(), 
-                        nameof(IViewInputTouchProceeder));
-                }
+                CommandsProceeder.UnlockCommands(
+                    RazorMazeUtils.RotateCommands, 
+                    nameof(IViewInputTouchProceeder));
+            }
+            else
+            {
+                CommandsProceeder.LockCommands(
+                    RazorMazeUtils.RotateCommands, 
+                    nameof(IViewInputTouchProceeder));
             }
         }
 
@@ -164,6 +168,7 @@ namespace RMAZOR.Views.InputConfigurators
             var goLeanMultiUpdate = new GameObject("Lean Multi Update");
             goLeanMultiUpdate.SetParent(GetContainer());
             var lmu = goLeanMultiUpdate.AddComponent<LeanMultiUpdate>();
+            lmu.Coordinate = LeanMultiUpdate.CoordinateType.ScreenPixels;
             lmu.OnFingers.AddListener(OnLeanMultiUpdateFingers);
             LeanTouch.OnFingerUp -= OnFingerUp;
             LeanTouch.OnFingerUp += OnFingerUp;
@@ -204,7 +209,7 @@ namespace RMAZOR.Views.InputConfigurators
         
         private void ProceedTouchForMove(LeanFinger _Finger)
         {
-            if (m_TouchForMoveTimer > ViewSettings.MoveSwipeThreshold && m_TouchForMoveTimer != 0f)
+            if (m_TouchForMoveTimer > SwipeThresholdSeconds && m_TouchForMoveTimer != 0f)
             {
                 m_TouchForMoveTimer = 0;
                 m_TouchPositionsQueue.Clear();
@@ -286,30 +291,42 @@ namespace RMAZOR.Views.InputConfigurators
         
         private static EMazeMoveDirection? GetMoveDirection(Vector2 _Delta)
         {
-            const float angThreshold = 30f * Mathf.Deg2Rad;
-            const float distThreshold = 0.02f;
+            _Delta *= LeanTouch.ScalingFactor;
+            const float angThresholdRadians = 30f * Mathf.Deg2Rad;
             EMazeMoveDirection? res = null;
             float absDx = Mathf.Abs(_Delta.x);
             float absDy = Mathf.Abs(_Delta.y);
-            float absNormDx = Mathf.Abs( _Delta.x / GraphicUtils.ScreenSize.x);
-            float absNormDy = Mathf.Abs(_Delta.y / GraphicUtils.ScreenSize.y);
-            if (absDx > absDy && absDy / absDx < Mathf.Tan(angThreshold) && absNormDx > distThreshold)
+            float absReadDx = absDx / Screen.dpi * 2.54f;
+            float absReadDy = absDy / Screen.dpi * 2.54f;
+            if (absDx > absDy
+                && absDy / absDx < Mathf.Tan(angThresholdRadians)
+                && absReadDx > SwipeThresholdCentimeters)
+            {
                 res = _Delta.x < 0 ? EMazeMoveDirection.Left : EMazeMoveDirection.Right;
-            else if (absDx < absDy && absDx / absDy < Mathf.Tan(angThreshold) && absNormDy > distThreshold)
+            }
+            else if (absDx < absDy
+                     && absDx / absDy < Mathf.Tan(angThresholdRadians)
+                     && absReadDy > SwipeThresholdCentimeters)
+            {
                 res = _Delta.y < 0 ? EMazeMoveDirection.Down : EMazeMoveDirection.Up;
+            }
             return res;
         }
 
         private static EMazeRotateDirection? GetRotateDirection(Vector2 _Delta)
         {
+            _Delta *= LeanTouch.ScalingFactor;
             const float angThreshold = 30f * Mathf.Deg2Rad;
-            const float distThreshold = 0.15f;
             EMazeRotateDirection? res = null;
             float absDx = Mathf.Abs(_Delta.x);
             float absDy = Mathf.Abs(_Delta.y);
-            float absNormDx = Mathf.Abs( _Delta.x / GraphicUtils.ScreenSize.x);
-            if (absDx > absDy && absDy / absDx < Mathf.Tan(angThreshold) && absNormDx > distThreshold)
+            float absReadDx = absDx / Screen.dpi * 2.54f;
+            if (absDx > absDy
+                && absDy / absDx < Mathf.Tan(angThreshold)
+                && absReadDx > SwipeThresholdCentimeters)
+            {
                 res = _Delta.x > 0 ? EMazeRotateDirection.CounterClockwise : EMazeRotateDirection.Clockwise;
+            }
             return res;
         }
 
@@ -362,14 +379,12 @@ namespace RMAZOR.Views.InputConfigurators
         
         private void LockCommandsOnRotationStarted()
         {
-            CommandsProceeder.LockCommands(RazorMazeUtils.GetMoveCommands(), GetGroupName());
-            CommandsProceeder.LockCommands(RazorMazeUtils.GetRotateCommands(), GetGroupName());
+            CommandsProceeder.LockCommands(RazorMazeUtils.MoveAndRotateCommands, GetGroupName());
         }
 
         private void UnlockCommandsOnRotationFinished()
         {
-            CommandsProceeder.UnlockCommands(RazorMazeUtils.GetMoveCommands(), GetGroupName());
-            CommandsProceeder.UnlockCommands(RazorMazeUtils.GetRotateCommands(), GetGroupName());
+            CommandsProceeder.UnlockCommands(RazorMazeUtils.MoveAndRotateCommands, GetGroupName());
         }
 
         private static string GetGroupName()

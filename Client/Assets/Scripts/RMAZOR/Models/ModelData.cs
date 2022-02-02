@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Common.Entities;
 using RMAZOR.Models.MazeInfos;
 
 namespace RMAZOR.Models
@@ -8,9 +9,10 @@ namespace RMAZOR.Models
     
     public interface IModelData
     {
-        MazeInfo Info { get; set; }
-        MazeOrientation Orientation { get; set; }
-        bool ProceedingControls { get; set; }
+        public V2Int[]  PathItems          { get; }
+        MazeInfo        Info               { get; set; }
+        MazeOrientation Orientation        { get; set; }
+        bool            ProceedingControls { get; set; }
     }
     
     // ReSharper disable once ClassNeverInstantiated.Global
@@ -27,10 +29,16 @@ namespace RMAZOR.Models
         public MazeOrientation Orientation { get; set; } = MazeOrientation.North;
         public bool ProceedingControls { get; set; } = true;
 
+        public V2Int[] PathItems { get; private set; }
+
         public MazeInfo Info
         {
             get => m_Info;
-            set => m_Info = CorrectInfo(value);
+            set
+            {
+                m_Info = CorrectInfo(value);
+                PathItems = m_Info.PathItems.Select(_PI => _PI.Position).ToArray();
+            }
         }
 
         #endregion

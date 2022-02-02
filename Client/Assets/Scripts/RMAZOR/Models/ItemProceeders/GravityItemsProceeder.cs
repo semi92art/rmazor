@@ -93,14 +93,12 @@ namespace RMAZOR.Models.ItemProceeders
             Dictionary<IMazeItemProceedInfo, bool> _InfosMoved)
         {
             var copyOfDict = _InfosMoved.ToList();
-
             foreach (var kvp in copyOfDict
                 .Where(_Kvp => !_Kvp.Value))
             {
                 var info = kvp.Key;
                 TryMoveBlock(info, _DropDirection, _CharacterPoint, _InfosMoved);
             }
-            
             foreach (var info in copyOfDict.Select(_Kvp => _Kvp.Key))
             {
                 info.NextPosition = -V2Int.Right;
@@ -339,9 +337,9 @@ namespace RMAZOR.Models.ItemProceeders
                 {
                     var to = !_Stopped ? _To : _Info.BusyPositions[0];  
                     _Info.CurrentPosition = to;
+                    _Info.ProceedingStage = StageIdle;
                     InvokeMoveFinished(new MazeItemMoveEventArgs(
                         _Info, from, to, speed, _Progress));
-                    _Info.ProceedingStage = StageIdle;
                     busyPositions.Clear();
                     busyPositions.Add(to);
                 });

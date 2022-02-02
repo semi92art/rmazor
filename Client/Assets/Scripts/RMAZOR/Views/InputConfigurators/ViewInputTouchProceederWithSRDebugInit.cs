@@ -74,7 +74,7 @@ namespace RMAZOR.Views.InputConfigurators
             if (m_SRDebugCurrentSequence.Count != m_SRDebugInitCombination.Length) 
                 return;
             
-            CommonUtils.InitSRDebugger();
+            SRDebug.Init();
             OnSrDebugInitialized?.Invoke();
             m_SrDebuggerInitialized = true;
         }

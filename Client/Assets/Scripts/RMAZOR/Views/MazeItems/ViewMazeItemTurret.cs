@@ -9,7 +9,6 @@ using Common.Extensions;
 using Common.Ticker;
 using Common.Utils;
 using Managers;
-using Managers.Audio;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Common;
@@ -225,11 +224,11 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void UpdateShape()
         {
-            var scale = CoordinateConverter.Scale;
+            float scale = CoordinateConverter.Scale;
             m_Body.Radius = CoordinateConverter.Scale * 0.5f;
             m_Body.Thickness = ViewSettings.LineWidth * scale;
-            var ProjectileScale = Vector3.one * scale * ProjectileContainerRadius * 0.9f;
-            m_ProjectileTr.transform.localScale = m_ProjectileFakeTr.transform.localScale = ProjectileScale;
+            var projectileScale = Vector3.one * scale * ProjectileContainerRadius * 0.9f;
+            m_ProjectileTr.transform.localScale = m_ProjectileFakeTr.transform.localScale = projectileScale;
             m_ProjectileTr.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             m_ProjectileFakeTr.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             var maskScale = scale * Vector3.one;
@@ -363,20 +362,23 @@ namespace RMAZOR.Views.MazeItems
 
         private IEnumerator HighlightBarrel(bool _Open, bool _Instantly = false, bool _Forced = false)
         {
-            var defCol = ColorProvider.GetColor(ColorIds.Main);
+            Color DefCol() => ColorProvider.GetColor(ColorIds.Main);
             var highlightCol = ColorProvider.GetColor(ColorIds.MazeItem1);
-            var startCol = _Open ? defCol : highlightCol;
-            var endCol = !_Open ? defCol : highlightCol;
+            Color StartCol() => _Open ? DefCol() : highlightCol;
+            Color EndCol() => !_Open ? DefCol() : highlightCol;
             if (_Instantly && (_Forced || Model.LevelStaging.LevelStage != ELevelStage.Finished))
             {
-                m_Body.Color = endCol;
+                m_Body.Color = EndCol();
                 yield break;
             }
             yield return Cor.Lerp(
-                startCol,
-                endCol,
+                0f,
+                1f,
                 0.1f,
-                _Color => m_Body.Color = _Color,
+                _P =>
+                {
+                    m_Body.Color = Color.Lerp(StartCol(), EndCol(), _P);
+                },
                 GameTicker,
                 _BreakPredicate: () => AppearingState != EAppearingState.Appeared
                                        || Model.LevelStaging.LevelStage == ELevelStage.Finished);
@@ -519,13 +521,13 @@ namespace RMAZOR.Views.MazeItems
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
-            var ProjectileRenderers = new Component[] {m_ProjectileRenderer, m_ProjectileFakeRenderer};
-            var ProjectileRenderersCol = _Appear ? ColorProvider.GetColor(ColorIds.MazeItem1) : m_ProjectileFakeRenderer.color;
+            var projectileRenderers = new Component[] {m_ProjectileRenderer, m_ProjectileFakeRenderer};
+            var projectileRenderersCol = _Appear ? ColorProvider.GetColor(ColorIds.MazeItem1) : m_ProjectileFakeRenderer.color;
             return new Dictionary<IEnumerable<Component>, Func<Color>>
             {
                 {new [] {m_ProjectileHolderBorder}, () => ColorProvider.GetColor(ColorIds.MazeItem1)},
                 {new [] {m_Body}, () => ColorProvider.GetColor(ColorIds.Main)},
-                {ProjectileRenderers, () => ProjectileRenderersCol}
+                {projectileRenderers, () => projectileRenderersCol}
             };
         }
 
@@ -577,9 +579,7 @@ namespace RMAZOR.Views.MazeItems
                 return false;
             if (Model.LevelStaging.LevelStage == ELevelStage.Finished)
                 return false;
-            if (Model.PathItemsProceeder.AllPathsProceeded)
-                return false;
-            return true;
+            return !Model.PathItemsProceeder.AllPathsProceeded;
         }
 
         #endregion

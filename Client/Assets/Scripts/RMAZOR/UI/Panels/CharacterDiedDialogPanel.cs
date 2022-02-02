@@ -150,23 +150,22 @@ namespace RMAZOR.UI.Panels
                 () => IndicateAdsLoading(false),
                 () => !m_PanelShowing));
 
-            var moneyCountEntity = Managers.ScoreManager.GetScore(DataFieldIds.Money, true);
+            var savedGameEntity = Managers.ScoreManager.GetSavedGameProgress(
+                CommonData.SavedGameFileName, 
+                true);
             IndicateMoneyCountLoading(true);
             Cor.Run(Cor.WaitWhile(
-                () => moneyCountEntity.Result == EEntityResult.Pending,
+                () => savedGameEntity.Result == EEntityResult.Pending,
                 () =>
                 {
-                    if (moneyCountEntity.Result == EEntityResult.Fail)
+                    if (savedGameEntity.Result == EEntityResult.Fail)
                     {
                         Dbg.LogError("Failed to load money count entity");
                         return;
                     }
-                    var moneyCount = moneyCountEntity.GetFirstScore();
-                    if (!moneyCount.HasValue)
-                        return;
-                    m_MoneyCount = moneyCount.Value;
-                    m_TextMoneyCount.text = moneyCount.Value.ToString();
-                    IndicateMoneyCountLoading(false, moneyCount.Value >= PayToContinueMoneyCount);
+                    m_MoneyCount = savedGameEntity.Value.CastTo<MoneyArgs>().Money;
+                    m_TextMoneyCount.text = m_MoneyCount.ToString();
+                    IndicateMoneyCountLoading(false, m_MoneyCount >= PayToContinueMoneyCount);
                 }));
         }
 
@@ -175,9 +174,7 @@ namespace RMAZOR.UI.Panels
             m_PanelShowing = true;
             CommandsProceeder.UnlockCommand(EInputCommand.ShopMenu, nameof(ICharacterDiedDialogPanel));
             CommandsProceeder.UnlockCommand(EInputCommand.SettingsMenu, nameof(ICharacterDiedDialogPanel));
-            CommandsProceeder.UnlockCommands(
-                RazorMazeUtils.GetMoveCommands().Concat(RazorMazeUtils.GetRotateCommands()), 
-                "all");
+            CommandsProceeder.UnlockCommands(RazorMazeUtils.MoveAndRotateCommands, "all");
         }
 
         #endregion
@@ -220,7 +217,12 @@ namespace RMAZOR.UI.Panels
 
         private void OnPayMoneyButtonClick()
         {
-            Managers.ScoreManager.SetScore(DataFieldIds.Money, m_MoneyCount - PayToContinueMoneyCount, false);
+            var savedGame = new MoneyArgs
+            {
+                FileName = CommonData.SavedGameFileName,
+                Money = m_MoneyCount - PayToContinueMoneyCount
+            };
+            Managers.ScoreManager.SaveGameProgress(savedGame, false);
             m_MoneyPayed = true;
         }
 

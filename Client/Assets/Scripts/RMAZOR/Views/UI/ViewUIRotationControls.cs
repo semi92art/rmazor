@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Common.CameraProviders;
 using Common.Constants;
 using Common.Extensions;
 using Common.Utils;
@@ -21,18 +22,21 @@ namespace RMAZOR.Views.UI
     {
         #region inject
 
-        private IModelGame                           Model                  { get; }
-        private IColorProvider                       ColorProvider          { get; }
-        private IRotatingPossibilityIndicator        Indicator              { get; }
+        private IModelGame                    Model          { get; }
+        private IColorProvider                ColorProvider  { get; }
+        private IRotatingPossibilityIndicator Indicator      { get; }
+        private ICameraProvider               CameraProvider { get; }
 
         public ViewUIRotationControls(
             IModelGame                    _Model,
             IColorProvider                _ColorProvider,
-            IRotatingPossibilityIndicator _Indicator)
+            IRotatingPossibilityIndicator _Indicator,
+            ICameraProvider               _CameraProvider)
         {
             Model         = _Model;
             ColorProvider = _ColorProvider;
             Indicator     = _Indicator;
+            CameraProvider = _CameraProvider;
         }
 
         #endregion
@@ -43,6 +47,8 @@ namespace RMAZOR.Views.UI
         {
             Indicator.Name = "Rotating Indicator";
             Indicator.Init(_Offsets);
+            var bounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
+            Indicator.SetPosition(new Vector2(bounds.center.x, bounds.min.y + 8f));
         }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
@@ -87,17 +93,10 @@ namespace RMAZOR.Views.UI
         {
             if (_Type != ETutorialType.Rotation)
                 return;
-            Indicator.Animator.enabled = true;
+            Cor.Run(Cor.WaitWhile(
+                () => Model.LevelStaging.LevelStage != ELevelStage.Loaded,
+                () => Indicator.Animator.enabled = true));
         }
-
-        #endregion
-
-        #region nonpublic methods
-
-        // private void InitRotatingPossibilityIndicator()
-        // {
-        //     m_RotatingPossibilityIndicator = RotatingPossIndFactory.Create();
-        // }
 
         #endregion
     }

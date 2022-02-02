@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using System.Linq;
+using Common;
 using Common.CameraProviders;
 using Common.Exceptions;
 using RMAZOR.Models;
@@ -90,9 +91,9 @@ namespace RMAZOR.Views.Common
             int group = RazorMazeUtils.GetGroupIndex(_LevelIndex);
             _H = GetHForHSV(group);
             _S = 50f / 100f;
-            _V = 65f / 100f;
+            _V = 50f / 100f;
         }
-
+        
         #endregion
     }
 }

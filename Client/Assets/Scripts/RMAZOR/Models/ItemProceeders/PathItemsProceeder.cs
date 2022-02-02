@@ -24,7 +24,7 @@ namespace RMAZOR.Models.ItemProceeders
     {
         #region nonpublic members
 
-        private List<V2Int> m_CurrentFullPath;
+        private V2Int[] m_CurrentFullPath;
         private bool        m_AllPathItemsNotInPathProceeded;
 
         #endregion
@@ -67,7 +67,7 @@ namespace RMAZOR.Models.ItemProceeders
         public void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args)
         {
             var path = RazorMazeUtils.GetFullPath(_Args.From, _Args.Position);
-            for (int i = 0; i < path.Count; i++)
+            for (int i = 0; i < path.Length; i++)
                 ProceedPathItem(path[i]);
         }
         
@@ -94,7 +94,7 @@ namespace RMAZOR.Models.ItemProceeders
             PathProceedEvent?.Invoke(_PathItem);
             if (!m_AllPathItemsNotInPathProceeded)
                 return;
-            for (int i = 0; i < m_CurrentFullPath.Count; i++)
+            for (int i = 0; i < m_CurrentFullPath.Length; i++)
             {
                 if (!PathProceeds[m_CurrentFullPath[i]])
                     return;

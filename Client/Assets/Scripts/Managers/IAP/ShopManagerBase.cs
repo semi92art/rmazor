@@ -24,7 +24,7 @@ namespace Managers.IAP
     {
         #region nonpublic members
         
-        protected List<ProductInfo> Products { get; set; }
+        protected List<ProductInfo> Products { get; private set; }
 
         #endregion
 
@@ -45,9 +45,9 @@ namespace Managers.IAP
         }
 
         public abstract void         RestorePurchases();
-        public abstract void         Purchase(int _Key);
-        public abstract void         RateGame(bool _JustSuggest = true);
-        public abstract ShopItemArgs GetItemInfo(int _Key);
+        public abstract void         Purchase(int          _Key);
+        public abstract bool         RateGame(bool         _JustSuggest = true);
+        public abstract ShopItemArgs GetItemInfo(int       _Key);
         public abstract void         SetPurchaseAction(int _Key, UnityAction _Action);
         public abstract void         SetDeferredAction(int _Key, UnityAction _Action);
 
@@ -60,7 +60,7 @@ namespace Managers.IAP
             var product = Products.FirstOrDefault(_P => _P.Key == _Key);
             if (product != null) 
                 return product.Id;
-            Dbg.LogError($"{nameof(UnityIAPShopManager)}: " +
+            Dbg.LogError($"{nameof(UnityIapShopManagerBase)}: " +
                          $"Get Product Id failed. Product with key {_Key} does not exist");
             return string.Empty;
         }

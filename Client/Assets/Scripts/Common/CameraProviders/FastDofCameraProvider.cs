@@ -23,7 +23,6 @@ namespace Common.CameraProviders
 
         private void Awake()
         {
-            DontDestroyOnLoad(gameObject);
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
 

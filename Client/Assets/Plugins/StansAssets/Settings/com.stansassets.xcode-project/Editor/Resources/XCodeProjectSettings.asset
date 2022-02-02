@@ -584,7 +584,7 @@ MonoBehaviour:
       Enabled: 0
       Merchants: []
     InAppPurchase:
-      Enabled: 1
+      Enabled: 0
     Maps:
       Enabled: 0
       Options: 

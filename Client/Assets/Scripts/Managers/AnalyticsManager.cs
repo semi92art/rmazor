@@ -31,7 +31,7 @@ namespace Managers
 
         public void SendAnalytic(string _AnalyticId, IDictionary<string, object> _EventData = null)
         {
-            if (Application.isEditor)
+            if (!CommonUtils.IsRunningOnDevice())
                 return;
             _EventData ??= new Dictionary<string, object>();
             Analytics.CustomEvent(_AnalyticId, _EventData);

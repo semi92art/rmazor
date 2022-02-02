@@ -13,14 +13,21 @@ namespace RMAZOR.Views.UI
 {
     public interface IRotatingPossibilityIndicator : IOnLevelStageChanged, IInitViewUIItem
     {
-        string             Name      { get; set; }
+        string             Name      { set; }
         Animator           Animator  { get; }
         Rectangle          Shape     { get; }
         AnimationTriggerer Triggerer { get; }
+        void               SetPosition(Vector2 _Position);
     }
     
     public class RotatingPossibilityIndicator : IRotatingPossibilityIndicator
     {
+        #region nonpublic members
+
+        private Transform m_Transform;
+
+        #endregion
+        
         #region inject
 
         private IContainersGetter ContainersGetter { get; }
@@ -45,6 +52,11 @@ namespace RMAZOR.Views.UI
         public Animator           Animator  { get; private set; }
         public Rectangle          Shape     { get; private set; }
         public AnimationTriggerer Triggerer { get; private set; }
+        
+        public void SetPosition(Vector2 _Position)
+        {
+            m_Transform.SetPosXY(_Position);
+        }
 
         public void Init(Vector4 _Offsets)
         {
@@ -79,10 +91,9 @@ namespace RMAZOR.Views.UI
             Shape     = goIndicator.GetCompItem<Rectangle>("indicator");
             Animator  = goIndicator.GetCompItem<Animator>("animator");
             Triggerer = goIndicator.GetCompItem<AnimationTriggerer>("triggerer");
-            goIndicator.transform.localScale = Vector3.one * scale;
-            goIndicator.transform.SetPosXY(
-                screenBounds.center.x,
-                screenBounds.min.y + 7f);
+            m_Transform = goIndicator.transform;
+            m_Transform.localScale = Vector3.one * scale;
+
         }
 
         #endregion

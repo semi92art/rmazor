@@ -20,30 +20,32 @@ namespace RMAZOR.Views.Common
             ColorProvider.ColorThemeChanged += OnColorThemeChanged;
             base.Init();
         }
-
-        protected static float GetHForHSV(int _Group)
-        {
-            var values = new float[]
-            {
-                30,  // 1
-                185, // 5
-                55,  // 2
-                225, // 6
-                80,  // 3
-                265, // 7
-                140, // 4
-                305, // 8
-                // 330  // 9
-            }.Select(_H => _H / 360f).ToArray();
-            int idx = _Group % values.Length;
-            return values[idx];
-        }
-
+        
         public virtual void OnLevelStageChanged(LevelStageArgs _Args)
         {
             if (_Args.Stage != ELevelStage.Loaded)
                 return;
             SetColorsOnTheme(_Args.LevelIndex, ColorProvider.CurrentTheme);
+        }
+        
+        protected static float GetHForHSV(int _Group)
+        {
+            var values = new float[]
+            {
+                0,
+                // 30,
+                185,
+                // 55,
+                225,
+                80,
+                265,
+                140,
+                305,
+                220
+                // 330 
+            }.Select(_H => _H / 360f).ToArray();
+            int idx = (_Group - 1) % values.Length;
+            return values[idx];
         }
 
         private void OnColorThemeChanged(EColorTheme _Theme)

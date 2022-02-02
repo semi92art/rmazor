@@ -5,9 +5,11 @@ using Common.Constants;
 using Common.Entities;
 using Common.Enums;
 using Common.Exceptions;
+using Common.Helpers;
 using Common.Ticker;
 using Common.Utils;
 using DialogViewers;
+using GameHelpers;
 using Managers;
 using Mono_Installers;
 using RMAZOR.Models;
@@ -18,7 +20,7 @@ using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.MazeItems;
 using RMAZOR.Views.UI;
-using UnityEngine.Events;
+using UnityEngine;
 
 namespace RMAZOR.Views.Common
 {
@@ -28,7 +30,7 @@ namespace RMAZOR.Views.Common
         void OnAllPathProceed(V2Int _LastPath);
     }
 
-    public class ViewLevelStageController : IViewLevelStageController
+    public class ViewLevelStageController : InitBase, IViewLevelStageController
     {
         #region nonpublic members
         
@@ -41,13 +43,15 @@ namespace RMAZOR.Views.Common
 
         private readonly List<IOnLevelStageChanged> m_Proceeders = new List<IOnLevelStageChanged>();
 
-        private bool m_NextLevelMustBeFirstInGroup;
-        private bool m_FirstTimeLevelLoaded;
+        private bool                m_NextLevelMustBeFirstInGroup;
+        private bool                m_FirstTimeLevelLoaded;
+        private List<IViewMazeItem> m_MazeItemsCached;
 
         #endregion
 
         #region inject
 
+        private CommonGameSettings          GameSettings         { get; }
         private ViewSettings                ViewSettings         { get; }
         private IViewGameTicker             ViewGameTicker       { get; }
         private IModelGameTicker            ModelGameTicker      { get; }
@@ -59,8 +63,10 @@ namespace RMAZOR.Views.Common
         private IMazeShaker                 MazeShaker           { get; }
         private IDialogPanels               DialogPanels         { get; }
         private IProposalDialogViewer       ProposalDialogViewer { get; }
+        private IViewMazePathItemsGroup     PathItemsGroup       { get; }
 
         public ViewLevelStageController(
+            CommonGameSettings          _GameSettings,
             ViewSettings                _ViewSettings,
             IViewGameTicker             _ViewGameTicker,
             IModelGameTicker            _ModelGameTicker,
@@ -71,8 +77,10 @@ namespace RMAZOR.Views.Common
             IContainersGetter           _ContainersGetter,
             IMazeShaker                 _MazeShaker,
             IDialogPanels               _DialogPanels,
-            IProposalDialogViewer       _ProposalDialogViewer)
+            IProposalDialogViewer       _ProposalDialogViewer,
+            IViewMazePathItemsGroup     _PathItemsGroup)
         {
+            GameSettings         = _GameSettings;
             ViewSettings         = _ViewSettings;
             ViewGameTicker       = _ViewGameTicker;
             ModelGameTicker      = _ModelGameTicker;
@@ -84,22 +92,19 @@ namespace RMAZOR.Views.Common
             MazeShaker           = _MazeShaker;
             DialogPanels         = _DialogPanels;
             ProposalDialogViewer = _ProposalDialogViewer;
+            PathItemsGroup       = _PathItemsGroup;
         }
 
         #endregion
 
         #region api
 
-        public bool              Initialized { get; private set; }
-        public event UnityAction Initialize;
-        
-        public void Init()
+        public override void Init()
         {
             CommandsProceeder.Command += OnCommand;
             Managers.AudioManager.InitClip(AudioClipArgsLevelStart);
             Managers.AudioManager.InitClip(AudioClipArgsLevelComplete);
-            Initialize?.Invoke();
-            Initialized = true;
+            base.Init();
         }
 
         public void RegisterProceeders(IEnumerable<IOnLevelStageChanged> _Proceeders)
@@ -139,14 +144,19 @@ namespace RMAZOR.Views.Common
         
         private void ProceedMazeItemGroups(LevelStageArgs _Args)
         {
-            var mazeItems = GetMazeItems(m_Proceeders);
-            var pathItemsGroup = GetPathItemsGroup(m_Proceeders);
-            if (pathItemsGroup != null)
-                mazeItems.AddRange(pathItemsGroup.PathItems);
             switch (_Args.Stage)
             {
-                case ELevelStage.Loaded:             OnLevelLoaded(_Args, mazeItems, pathItemsGroup); break;
-                case ELevelStage.ReadyToStart:                                                        break; 
+                case ELevelStage.ReadyToStart:
+                case ELevelStage.StartedOrContinued:
+                case ELevelStage.Paused:
+                    return;
+            }
+            var mazeItems = _Args.Stage == ELevelStage.Loaded ? 
+                m_MazeItemsCached = GetMazeAndPathItems(m_Proceeders) : m_MazeItemsCached;
+            mazeItems.AddRange(PathItemsGroup.PathItems);
+            switch (_Args.Stage)
+            {
+                case ELevelStage.Loaded:             OnLevelLoaded(_Args, mazeItems, PathItemsGroup); break;
                 case ELevelStage.Finished:           OnLevelFinished(_Args);                          break;
                 case ELevelStage.ReadyToUnloadLevel: OnReadyToUnloadLevel(_Args, mazeItems);          break;
                 case ELevelStage.Unloaded:           OnLevelUnloaded(_Args);                          break;
@@ -154,7 +164,7 @@ namespace RMAZOR.Views.Common
             }
         }
 
-        private static List<IViewMazeItem> GetMazeItems(IEnumerable<object> _Proceeders)
+        private List<IViewMazeItem> GetMazeAndPathItems(IEnumerable<object> _Proceeders)
         {
             var mazeItems = new List<IViewMazeItem>();
             var mazeItemGroups = _Proceeders
@@ -162,14 +172,8 @@ namespace RMAZOR.Views.Common
                 .Where(_P => _P != null);
             foreach (var group in mazeItemGroups)
                 mazeItems.AddRange(group.GetActiveItems());
+            mazeItems.AddRange(PathItemsGroup.PathItems);
             return mazeItems;
-        }
-        
-        private static IViewMazePathItemsGroup GetPathItemsGroup(IEnumerable<object> _Proceeders)
-        {
-            return _Proceeders?
-                .Select(_P => _P as IViewMazePathItemsGroup)
-                .First(_P => _P != null);
         }
 
         private void OnLevelLoaded(
@@ -177,7 +181,12 @@ namespace RMAZOR.Views.Common
             IReadOnlyCollection<IViewMazeItem> _MazeItems,
             IViewMazePathItemsGroup            _PathItemsGroup)
         {
-            Managers.ScoreManager.SetScore(DataFieldIds.Level, _Args.LevelIndex, true);
+            var levelArgs = new LevelArgs
+            {
+                FileName = nameof(DataFieldIds.Level),
+                Level = _Args.LevelIndex
+            };
+            Managers.ScoreManager.SaveGameProgress(levelArgs, true);
             m_NextLevelMustBeFirstInGroup = false;
             Character.Appear(true);
             foreach (var pathItem in _PathItemsGroup.PathItems)
@@ -211,8 +220,11 @@ namespace RMAZOR.Views.Common
 
         private void OnReadyToUnloadLevel(LevelStageArgs _Args, IReadOnlyCollection<IViewMazeItem> _MazeItems)
         {
-            if ((_Args.LevelIndex + 1) % 3 == 0)
+            if (_Args.LevelIndex >= GameSettings.firstLevelToShowAds
+                && _Args.LevelIndex % GameSettings.showAdsEveryLevel == 0)
+            {
                 Managers.AdsManager.ShowInterstitialAd(null);
+            }
             foreach (var mazeItem in _MazeItems)
                 mazeItem.Appear(false);
             Cor.Run(Cor.WaitWhile(() =>
@@ -227,9 +239,48 @@ namespace RMAZOR.Views.Common
 
         private void OnLevelUnloaded(LevelStageArgs _Args)
         {
-            Managers.ScoreManager.SetScore(DataFieldIds.Level, _Args.LevelIndex + 1, true);
-            if (SaveUtils.GetValue(SaveKeys.AllLevelsPassed ) && (_Args.LevelIndex - 2) % 3 == 0)
-                CommandsProceeder.RaiseCommand(EInputCommand.LoadFirstLevelFromRandomGroup, null, true);
+            // FIXME временно, для тестирования
+            // var scoreEntity = Managers.ScoreManager.GetScoreFromLeaderboard(DataFieldIds.Level, false);
+            // float time = ViewGameTicker.Time;
+            // Cor.Run(Cor.WaitWhile(
+            //     () => scoreEntity.Result == EEntityResult.Pending || time + 3f > ViewGameTicker.Time,
+            //     () =>
+            //     {
+            //         switch (scoreEntity.Result)
+            //         {
+            //             case EEntityResult.Pending:
+            //                 Dbg.LogWarning("Timeout when getting score from leaderboard");
+            //                 return;
+            //             case EEntityResult.Fail:
+            //                 Dbg.LogError("Failed to get score from leaderboard");
+            //                 return;
+            //             case EEntityResult.Success:
+            //             {
+            //                 var score = scoreEntity.GetFirstScore();
+            //                 if (!score.HasValue)
+            //                 {
+            //                     Dbg.LogError("Failed to get score from leaderboard");
+            //                     return;
+            //                 }
+            //                 Managers.ScoreManager.SetScoreToLeaderboard(
+            //                     DataFieldIds.Level, 
+            //                     score.Value + 1, 
+            //                     false);
+            //                 break;
+            //             }
+            //             default:
+            //                 throw new SwitchCaseNotImplementedException(scoreEntity.Result);
+            //         }
+            //     }));
+            if (SaveUtils.GetValue(SaveKeys.AllLevelsPassed))
+            {
+                int group = RazorMazeUtils.GetGroupIndex(_Args.LevelIndex);
+                int firstLevelInGroup = RazorMazeUtils.GetFirstLevelInGroup(group);
+                int levelsInGroup = RazorMazeUtils.GetLevelsInGroup(group);
+                bool isLastLevelInGroup = _Args.LevelIndex == firstLevelInGroup + levelsInGroup - 1;
+                if (isLastLevelInGroup)
+                    CommandsProceeder.RaiseCommand(EInputCommand.LoadFirstLevelFromRandomGroup, null, true);
+            }
             else if (m_NextLevelMustBeFirstInGroup)
                 CommandsProceeder.RaiseCommand(EInputCommand.LoadFirstLevelFromCurrentGroup, null, true);
             else if (RazorMazeUtils.LoadNextLevelAutomatically)

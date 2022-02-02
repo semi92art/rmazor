@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Common;
 using Managers;
 using Managers.Advertising;
+using Managers.Scores;
 using RMAZOR.Views.InputConfigurators;
 
 namespace DebugConsole
