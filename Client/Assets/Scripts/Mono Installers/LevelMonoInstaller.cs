@@ -143,11 +143,8 @@ namespace Mono_Installers
                 Container.Bind<ICharacterDiedDialogPanel>()  .To<CharacterDiedDialogPanel>()      .AsSingle();
                 Container.Bind<IRateGameDialogPanel>()       .To<RateGameDialogPanel>()           .AsSingle();
             }
-            
             Container.Bind<IViewInputCommandsProceeder>()    .To<ViewInputCommandsProceeder>()    .AsSingle();
-            Container.Bind<IViewInputTouchProceeder>()    
-                .To<ViewInputTouchProceederWithSRDebugInit>()   
-                .AsSingle();
+            Container.Bind<IViewInputTouchProceeder>()       .To<ViewInputTouchProceeder>()       .AsSingle();
             Container.Bind<IRotatingPossibilityIndicator>()  .To<RotatingPossibilityIndicator>()  .AsTransient();
 #if UNITY_EDITOR
             Container.Bind<IViewInputController>()           .To<ViewInputControllerInEditor>()   .AsSingle();

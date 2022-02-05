@@ -52,8 +52,8 @@ namespace RMAZOR.Models.ItemProceeders
         #endregion
         
         #region api
-        
-        public override EMazeItemType[] Types => new[] {EMazeItemType.Portal};
+
+        protected override EMazeItemType[] Types => new[] {EMazeItemType.Portal};
         public event PortalEventHandler PortalEvent;
         
         public void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)

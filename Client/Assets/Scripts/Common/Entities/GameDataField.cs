@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Common.Network;
 using Common.Network.Packets;
 using Common.Utils;
@@ -10,23 +9,6 @@ namespace Common.Entities
     public class GameDataField : DataFieldBase
     {
         [JsonIgnore] public  int  GameId { get; set; }
-        [JsonIgnore] private bool m_IsSaving;
-
-        [JsonIgnore]
-        public override bool IsSaving
-        {
-            get => m_IsSaving;
-            protected set
-            {
-                m_IsSaving = value;
-                if (value)
-                    GameClient.ExecutingGameFields.Add(this);
-                else GameClient.ExecutingGameFields.Remove(this);
-            }
-        }
-
-
-        public GameDataField() { }
         
         public GameDataField(IGameClient _GameClient, GameFieldDto _Args) 
             : base(_GameClient, _Args.AccountId, _Args.FieldId, _Args.Value, _Args.LastUpdate)
@@ -34,6 +16,10 @@ namespace Common.Entities
             GameId = _Args.GameId;
         }
 
+        // ReSharper disable once UnusedMember.Global
+        public GameDataField() { }
+
+        // ReSharper disable once MemberCanBePrivate.Global
         public GameDataField(
             IGameClient _GameClient,
             object _Value, 
@@ -62,38 +48,23 @@ namespace Common.Entities
 
         public void Save(bool _OnlyLocal = false)
         {
+            LastUpdate = DateTime.Now;
             SaveUtils.PutValue(SaveKeysCommon.GameDataFieldValue(AccountId, GameId, FieldId), this);
             if (_OnlyLocal)
                 return;
-            Cor.Run(Cor.WaitWhile(() =>
+            var packetArgs = new[]
             {
-                var execFields = GameClient.ExecutingGameFields;
-                return execFields.Any(_F => _F.AccountId == AccountId
-                                            && _F.FieldId == FieldId && _F.IsSaving);
-            }, () =>
-            {
-                var newLastUpdate = DateTime.Now;
-                var packetArgs = new[]
+                new GameFieldDto
                 {
-                    new GameFieldDto
-                    {
-                        Value = Value,
-                        AccountId = AccountId,
-                        FieldId = FieldId,
-                        GameId = GameId,
-                        LastUpdate = newLastUpdate
-                    }
-                };
-                var packet = new GameDataFieldsSetPacket(packetArgs);
-                packet.OnSuccess(() =>
-                    {
-                        IsSaving = false;
-                        LastUpdate = newLastUpdate;
-                    })
-                    .OnFail(() => IsSaving = false);
-                IsSaving = true;
-                GameClient.Send(packet);
-            }));
+                    Value = Value,
+                    AccountId = AccountId,
+                    FieldId = FieldId,
+                    GameId = GameId,
+                    LastUpdate = LastUpdate
+                }
+            };
+            var packet = new GameDataFieldsSetPacket(packetArgs);
+            GameClient.Send(packet);
         }
     }
 }

@@ -12,86 +12,94 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c24fdb3bd6431b92cc1465bd9166b, type: 3}
   m_Name: RemoteConfigDataStoreAsset
   m_EditorClassIdentifier: 
-  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"c9a5b307-44cd-4aff-8232-b983c5d530ea\"\r\n   
+  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"246c3542-c7a3-44a1-afb5-0cec4b0f72e6\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"ads.admob\",\r\n      \"type\": \"bool\",\r\n     
     \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"fb8b5324-38e9-4be5-ba0a-b515171e1291\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"fa101447-74e9-4479-8547-37c602dddf17\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"ads.unityads\",\r\n      \"type\": \"bool\",\r\n      \"value\": true\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"de23cbfa-ebcd-452a-865e-0c3cfc4bb4db\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"63029c64-aa43-481c-acdf-ba8e503cf5eb\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"character.speed\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 40.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"11e5ce08-7223-4fb5-b134-070d747c5d1c\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"00635fd6-8ffc-436e-b252-1a5d249d5120\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"mazeitems.movingtrap.speed\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 6.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"47d4a7a7-6cc7-49cc-8792-378d58846951\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"ad53b7f4-7f69-45d8-b1df-4d7eb205e422\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"mazeitems.gravityblock.speed\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 15.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"f56808b4-6f1b-4252-9558-8ea2c89e388c\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"53996ffe-28e2-415e-97e5-4f522fb35707\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"common.raterequestsfrequency\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 20\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"1e60c569-d34b-4f1a-9905-1dbb271d9f69\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"a206bdc8-47b9-4a01-b554-2af0248669cc\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"ads.adsrequestsfrequency\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"5\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"e938724e-a23d-44d5-8a12-b059c5e36658\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"fa37ca79-41e4-453e-a960-80e2ca977be7\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"common.iosgameid\",\r\n      \"type\": \"string\",\r\n     
     \"value\": \"[Empty]\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"f552c27b-f2c5-4247-bb4f-8fc87e392514\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"99856c9e-7fea-4402-b41d-f605be36161d\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"common.test_device_ids\",\r\n      \"type\": \"json\",\r\n     
-    \"schemaId\": null,\r\n      \"value\": [\r\n        \"16db30d44d674b09110966e0648e783d\"\r\n     
-    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"66d0cb58-fbc5-4214-8433-7d902caed11a\"\r\n   
+    \"schemaId\": null,\r\n      \"value\": [\r\n        \"16db30d44d674b09110966e0648e783d\",\r\n       
+    \"197157ec88710048e20f5b3f6b0892fc\",\r\n        \"7d516587810fd383626b5c782fb4078a\"\r\n     
+    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"0143cae8-eeae-4752-a73b-b935f69dac1b\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"ads.admob.rate\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 90.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"bb77aaee-e329-4aa7-868b-8a4cfc7dd3d3\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"8301ed46-d524-4fd6-861d-a29775f9a311\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"ads.unityads.rate\",\r\n      \"type\": \"string\",\r\n     
     \"value\": \"10\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"76463758-0f64-4e0e-8684-3ec49842098f\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"8e234432-6d4c-4521-971e-04b0a658b3d3\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.levels_count_main\",\r\n      \"type\": \"int\",\r\n      \"value\":
-    360\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"a853930a-3760-46e8-9aa4-72f52a46e3f8\"\r\n   
+    360\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"28d1e85c-ba8b-4b3b-8e5e-851442904015\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"ads.show_ad_every_level\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 3\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"c432c16b-fcf5-437e-ab7b-bd0de2e82ea7\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"88630068-5d2c-40c3-9d72-cf325dac2b16\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"ads.first_level_to_show_ads\",\r\n      \"type\": \"int\",\r\n     
-    \"value\": 10\r\n    }\r\n  }\r\n]"
-  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"c9a5b307-44cd-4aff-8232-b983c5d530ea\"\r\n   
+    \"value\": 10\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
+    \"e0b37398-336c-404a-a96f-158ec5bd073b\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"key\": \"common.first_level_to_rate_game\",\r\n      \"type\": \"int\",\r\n     
+    \"value\": 20\r\n    }\r\n  }\r\n]"
+  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"246c3542-c7a3-44a1-afb5-0cec4b0f72e6\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"ads.admob\",\r\n      \"type\": \"bool\",\r\n     
     \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"fb8b5324-38e9-4be5-ba0a-b515171e1291\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"fa101447-74e9-4479-8547-37c602dddf17\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"ads.unityads\",\r\n      \"type\": \"bool\",\r\n      \"value\": true\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"de23cbfa-ebcd-452a-865e-0c3cfc4bb4db\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"63029c64-aa43-481c-acdf-ba8e503cf5eb\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"character.speed\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 40.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"11e5ce08-7223-4fb5-b134-070d747c5d1c\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"00635fd6-8ffc-436e-b252-1a5d249d5120\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"mazeitems.movingtrap.speed\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 6.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"47d4a7a7-6cc7-49cc-8792-378d58846951\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"ad53b7f4-7f69-45d8-b1df-4d7eb205e422\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"mazeitems.gravityblock.speed\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 15.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"f56808b4-6f1b-4252-9558-8ea2c89e388c\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"53996ffe-28e2-415e-97e5-4f522fb35707\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"common.raterequestsfrequency\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 20\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"1e60c569-d34b-4f1a-9905-1dbb271d9f69\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"a206bdc8-47b9-4a01-b554-2af0248669cc\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"ads.adsrequestsfrequency\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"5\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"e938724e-a23d-44d5-8a12-b059c5e36658\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"fa37ca79-41e4-453e-a960-80e2ca977be7\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"common.iosgameid\",\r\n      \"type\": \"string\",\r\n     
     \"value\": \"[Empty]\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"f552c27b-f2c5-4247-bb4f-8fc87e392514\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"99856c9e-7fea-4402-b41d-f605be36161d\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"common.test_device_ids\",\r\n      \"type\": \"json\",\r\n     
-    \"schemaId\": null,\r\n      \"value\": [\r\n        \"16db30d44d674b09110966e0648e783d\"\r\n     
-    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"66d0cb58-fbc5-4214-8433-7d902caed11a\"\r\n   
+    \"schemaId\": null,\r\n      \"value\": [\r\n        \"16db30d44d674b09110966e0648e783d\",\r\n       
+    \"197157ec88710048e20f5b3f6b0892fc\",\r\n        \"7d516587810fd383626b5c782fb4078a\"\r\n     
+    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"0143cae8-eeae-4752-a73b-b935f69dac1b\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"ads.admob.rate\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 90.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"bb77aaee-e329-4aa7-868b-8a4cfc7dd3d3\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"8301ed46-d524-4fd6-861d-a29775f9a311\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"ads.unityads.rate\",\r\n      \"type\": \"string\",\r\n     
     \"value\": \"10\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"76463758-0f64-4e0e-8684-3ec49842098f\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"8e234432-6d4c-4521-971e-04b0a658b3d3\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.levels_count_main\",\r\n      \"type\": \"int\",\r\n      \"value\":
-    360\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"a853930a-3760-46e8-9aa4-72f52a46e3f8\"\r\n   
+    360\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"28d1e85c-ba8b-4b3b-8e5e-851442904015\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"ads.show_ad_every_level\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 3\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"c432c16b-fcf5-437e-ab7b-bd0de2e82ea7\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"88630068-5d2c-40c3-9d72-cf325dac2b16\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"ads.first_level_to_show_ads\",\r\n      \"type\": \"int\",\r\n     
-    \"value\": 10\r\n    }\r\n  }\r\n]"
+    \"value\": 10\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
+    \"e0b37398-336c-404a-a96f-158ec5bd073b\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"key\": \"common.first_level_to_rate_game\",\r\n      \"type\": \"int\",\r\n     
+    \"value\": 20\r\n    }\r\n  }\r\n]"
   _environments: "[\r\n  {\r\n    \"projectId\": \"abcef6a4-92c3-4c35-894e-21fc8a854301\",\r\n   
     \"name\": \"production\",\r\n    \"id\": \"1d652336-ffe1-4303-b76b-bf9a581cf50a\",\r\n   
     \"isDefault\": true,\r\n    \"createdAt\": \"2021-08-16T21:54:30Z\",\r\n    \"updatedAt\":

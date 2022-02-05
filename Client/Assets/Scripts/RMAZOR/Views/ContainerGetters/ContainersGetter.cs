@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Common;
 using Common.Constants;
 using Common.Extensions;
 using Common.Utils;
@@ -39,18 +40,21 @@ namespace RMAZOR.Views.ContainerGetters
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage == ELevelStage.Loaded)
-            {
-                CoordinateConverter.MazeSize = Model.Data.Info.Size;
-                var mazeItemsCont = GetContainer(ContainerNames.MazeItems);
-                mazeItemsCont.SetLocalPosXY(Vector2.zero);
-                mazeItemsCont.PlusLocalPosY(CoordinateConverter.Scale * 0.5f);
-            }
+            if (_Args.Stage != ELevelStage.Loaded) 
+                return;
+            Dbg.Log(Model.Data.MazeSize);
+            CoordinateConverter.MazeSize = Model.Data.Info.Size;
+            Dbg.Log(CoordinateConverter.Scale);
+            var mazeHolderCont = GetContainer(ContainerNames.MazeHolder);
+            mazeHolderCont.SetLocalPosXY(CoordinateConverter.GetMazeCenter());
+            var mazeItemsCont = GetContainer(ContainerNames.MazeItems);
+            mazeItemsCont.SetLocalPosXY(Vector2.zero);
+            mazeItemsCont.PlusLocalPosY(CoordinateConverter.Scale * 0.5f);
         }
 
         public Transform GetContainer(string _Name)
         {
-            bool isMazeHolder = _Name == ContainerNames.MazeHolder;
+            // bool isMazeHolder = _Name == ContainerNames.MazeHolder;
             bool isMaze = _Name == ContainerNames.Maze;
             bool inMaze = _Name == ContainerNames.MazeItems || _Name == ContainerNames.Character;
             if (!m_Initialized.ContainsKey(_Name))
@@ -62,9 +66,9 @@ namespace RMAZOR.Views.ContainerGetters
                 return m_Containers[_Name];
             var cont = CommonUtils.FindOrCreateGameObject(_Name, out _).transform;
             cont.SetParent(inMaze ? GetContainer(ContainerNames.Maze) : null);
-            if (isMazeHolder)
-                cont.SetLocalPosXY(CoordinateConverter.GetMazeCenter());
-            else if (isMaze)
+            // if (isMazeHolder)
+            //     cont.SetLocalPosXY(CoordinateConverter.GetMazeCenter());
+            if (isMaze)
             {
                 cont.SetParent(GetContainer(ContainerNames.MazeHolder));
                 cont.SetLocalPosXY(Vector2.zero);

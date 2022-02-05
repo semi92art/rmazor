@@ -12,8 +12,8 @@ namespace Common.Network.DataFieldFilters
     {
         #region nonpublic members
 
-        private readonly int m_GameId;
-        private List<GameDataField> m_Fields;
+        private readonly int                 m_GameId;
+        private          List<GameDataField> m_Fields;
         
         #endregion
         
@@ -77,17 +77,14 @@ namespace Common.Network.DataFieldFilters
         
         private IReadOnlyList<GameDataField> FilterGameFieldsAlt(bool _ForceRefresh)
         {
-            Dbg.Log("FilterGameFieldsAlt");
             if (WasFiltered(m_Fields, _ForceRefresh))
                 return m_Fields;
-            
             if (AccountId == GameClientUtils.AccountId || OnlyLocal)
                 m_Fields = GetCachedFields();
             else
             {
                 var packet = CreatePacket();
                 GameClient.Send(packet, false);
-
                 var dataFieldValues = GetFromDtos(packet.Response.ToList());
                 m_Fields = dataFieldValues;
                 m_Fields.ForEach(_Field => _Field.Save(true));
@@ -101,18 +98,13 @@ namespace Common.Network.DataFieldFilters
                 .Select(_FieldId =>
                 {
                     var gdfv = SaveUtils.GetValue(
-                        SaveKeysCommon.GameDataFieldValue(AccountId, m_GameId, _FieldId));
-                    if (gdfv == null)
-                        gdfv = new GameDataField(GameClient, default, AccountId, m_GameId, _FieldId);
+                        SaveKeysCommon.GameDataFieldValue(AccountId, m_GameId, _FieldId)) 
+                               ?? new GameDataField(GameClient, default, AccountId, m_GameId, _FieldId);
+                    gdfv.AccountId = AccountId;
+                    gdfv.GameId = m_GameId;
                     return gdfv;
-                })
-                .ToList();
-            foreach (var field in fields.Where(_F => _F != null))
-            {
-                field.AccountId = AccountId;
-                field.GameId = m_GameId;
-            }
-            return fields;
+                });
+            return fields.ToList();
         }
 
         private List<GameDataField> GetFromDtos(IEnumerable<GameFieldDto> _Dtos)

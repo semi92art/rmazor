@@ -7,6 +7,7 @@ using Common.Extensions;
 using Common.Utils;
 using RMAZOR.Views.ContainerGetters;
 using UnityEngine;
+using Zenject;
 
 namespace RMAZOR
 {
@@ -27,16 +28,22 @@ namespace RMAZOR
     [Serializable]
     public class MazeCoordinateConverter : IMazeCoordinateConverter
     {
+        #region serialized fields
+
+        [SerializeField] private Transform mazeItemFake;
+
+        #endregion
+        
         #region nonpublic members
 
         private float m_LeftOffset, m_RightOffset, m_BottomOffset, m_TopOffset;
 
-        private V2Int     m_MazeSize;
-        private float     m_Scale;
-        private Vector2   m_Center;
-        private bool      m_Initialized;
-        private bool      m_MazeSizeSet;
-        [SerializeField] private Transform m_MazeItemFake;
+        private                  V2Int     m_MazeSize;
+        private                  float     m_Scale;
+        private                  Vector2   m_Center;
+        private                  bool      m_Initialized;
+        private                  bool      m_MazeSizeSet;
+        private                  bool      m_Debug;
 
         #endregion
 
@@ -45,10 +52,21 @@ namespace RMAZOR
         private ViewSettings    ViewSettings   { get; }
         private ICameraProvider CameraProvider { get; }
 
+        [Inject]
         public MazeCoordinateConverter(ViewSettings _ViewSettings, ICameraProvider _CameraProvider)
         {
             ViewSettings = _ViewSettings;
             CameraProvider = _CameraProvider;
+        }
+
+        #endregion
+
+        #region constructor
+
+        public MazeCoordinateConverter(ViewSettings _ViewSettings, ICameraProvider _CameraProvider, bool _Debug) 
+            : this(_ViewSettings, _CameraProvider)
+        {
+            m_Debug = _Debug;
         }
 
         #endregion
@@ -91,8 +109,10 @@ namespace RMAZOR
             (m_BottomOffset, m_TopOffset) = (vs.BottomScreenOffset, vs.TopScreenOffset);
             SetCenterPoint();
             m_Initialized = true;
-            m_MazeItemFake = CommonUtils.FindOrCreateGameObject("Maze Item Fake", out _).transform;
-            m_MazeItemFake.SetParent(GetContainer(ContainerNames.MazeItems));
+            if (m_Debug)
+                return;
+            mazeItemFake = CommonUtils.FindOrCreateGameObject("Maze Item Fake", out _).transform;
+            mazeItemFake.SetParent(GetContainer(ContainerNames.MazeItems));
         }
 
         public Vector2 GetMazeCenter()
@@ -109,8 +129,8 @@ namespace RMAZOR
 
         public Vector2 ToGlobalMazeItemPosition(Vector2 _Point)
         {
-            m_MazeItemFake.SetLocalPosXY(ToLocalMazeItemPosition(_Point));
-            return m_MazeItemFake.position;
+            mazeItemFake.SetLocalPosXY(ToLocalMazeItemPosition(_Point));
+            return mazeItemFake.position;
         }
 
         public Vector2 ToLocalMazeItemPosition(Vector2 _Point)

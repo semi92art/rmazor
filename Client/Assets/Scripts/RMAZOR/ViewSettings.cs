@@ -30,6 +30,7 @@ namespace RMAZOR
         public                   int   rateRequestsFrequency;
         public                   int   adsRequestsFrequency;
         public                   int   levelsCountMain;
+        public                   int   firstLevelToRateGame;
 
         public float   LineWidth
         {

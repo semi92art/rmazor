@@ -1,23 +1,21 @@
 ﻿using Common;
+using Common.Helpers;
 using Common.Utils;
 using GameHelpers;
+using Managers;
 using RMAZOR.Models;
 using RMAZOR.Views;
 using RMAZOR.Views.InputConfigurators;
-using UnityEngine;
-using UnityEngine.Events;
-using Utils;
-using Zenject;
 
 namespace RMAZOR.Controllers
 {
     public interface IGameController : IInit
     {
         IModelGame Model { get; }
-        IViewGame View { get; }
+        IViewGame  View  { get; }
     }
     
-    public class GameController : MonoBehaviour, IGameController
+    public class GameController : MonoBehInitBase, IGameController
     {
         #region factory
         
@@ -33,31 +31,31 @@ namespace RMAZOR.Controllers
 
         #region inject
         
-        public  IModelGame         Model    { get; private set; }
-        public  IViewGame          View     { get; private set; }
-        private CommonGameSettings Settings { get; set; }
+        public  IModelGame           Model               { get; private set; }
+        public  IViewGame            View                { get; private set; }
+        private IRemoteConfigManager RemoteConfigManager { get; set; }
+        private CommonGameSettings   Settings            { get; set; }
 
-        [Inject]
+        [Zenject.Inject]
         public void Inject(
-            IModelGame _Model,
-            IViewGame _View,
-            CommonGameSettings _Settings)
+            IModelGame           _Model,
+            IViewGame            _View,
+            IRemoteConfigManager _RemoteConfigManager,
+            CommonGameSettings   _Settings)
         {
-            Model = _Model;
-            View = _View;
-            Settings = _Settings;
+            Model               = _Model;
+            View                = _View;
+            RemoteConfigManager = _RemoteConfigManager;
+            Settings            = _Settings;
         }
 
         #endregion
         
         #region api
-
-        public bool              Initialized { get; private set; }
-        public event UnityAction Initialize;
         
-        public void Init()
+        public override void Init()
         {
-            DefineSrDebuggerInitialization();
+            InitDebugging();
             
             bool modelInitialized = false;
             bool viewInitialized = false;
@@ -103,28 +101,29 @@ namespace RMAZOR.Controllers
             
             Cor.Run(Cor.WaitWhile(
                 () => !modelInitialized || !viewInitialized,
-                () =>
-                {
-                    Initialize?.Invoke();
-                    Initialized = true;
-                }));
+                () => base.Init()));
         }
 
         #endregion
 
         #region nonpublic members
 
-        private void DefineSrDebuggerInitialization()
+        private void InitDebugging()
         {
-            if (Settings.DebugEnabled)
-                OnSrDebugInitialized();
-            else if (View.InputController.TouchProceeder is ViewInputTouchProceederWithSRDebugInit proceeder)
-                proceeder.OnSrDebugInitialized = OnSrDebugInitialized;
+            if (RemoteConfigManager.Initialized)
+                OnRemoteConfigManagerInitialized();
+            else 
+                RemoteConfigManager.Initialize += OnRemoteConfigManagerInitialized;
+            // if (View.InputController.TouchProceeder is ViewInputTouchProceederWithSRDebugInit proceeder)
+            //     proceeder.OnSrDebugInitialized = OnRemoteConfigManagerInitialized;
         }
 
-        private void OnSrDebugInitialized()
+        private void OnRemoteConfigManagerInitialized()
         {
+            if (!Settings.DebugEnabled)
+                return;
             SROptions.Init(Model, View);
+            SRDebug.Init();
         }
 
         #endregion

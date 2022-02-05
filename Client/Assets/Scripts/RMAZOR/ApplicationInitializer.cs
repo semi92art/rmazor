@@ -74,15 +74,11 @@ namespace RMAZOR
         private IEnumerator Start()
         {
             Dbg.Log("Application started, platform: " + Application.platform);
-            // костыль: если на iOS стоит светлая тема, задник камеры автоматом ставится белым
-            CameraProvider.MainCamera.backgroundColor = Color.black; 
-            yield return Cor.Delay(1f, null);
-            SaveUtils.PutValue(SaveKeys.EnableRotation, true);
+            InitStartData();
             InitLogging();
-            Application.targetFrameRate = GraphicUtils.GetTargetFps();
+            yield return Cor.Delay(1f, null);
             InitGameManagers();
             InitDefaultData();
-            LevelMonoInstaller.Release = true;
             SceneManager.sceneLoaded += OnSceneLoaded;
             yield return LoadSceneLevel();
         }
@@ -93,7 +89,6 @@ namespace RMAZOR
             var op = SceneManager.LoadSceneAsync(SceneNames.Level, @params);
             while (!op.isDone)
                 yield return null;
-            Dbg.Log("Level loaded");
         }
     
         private void OnSceneLoaded(Scene _Scene, LoadSceneMode _Mode)
@@ -113,7 +108,6 @@ namespace RMAZOR
         private void InitGameManagers()
         {
             RemoteConfigManager.Initialize += AdsManager.Init;
-            RemoteConfigManager.Initialize += InitDebugging;
             RemoteConfigManager.Init();
             ShopManager.RegisterProductInfos(GetProductInfos());
             ShopManager        .Init();
@@ -262,16 +256,18 @@ namespace RMAZOR
             SetDefaultLanguage();
         }
 
+        private void InitStartData()
+        {
+            // FIXME костыль: если на iOS стоит светлая тема, задник камеры автоматом ставится белым
+            CameraProvider.MainCamera.backgroundColor = Color.black; 
+            SaveUtils.PutValue(SaveKeysCommon.AppVersion, Application.version);
+            Application.targetFrameRate = GraphicUtils.GetTargetFps();
+            LevelMonoInstaller.Release = true;
+        }
+
         private void InitLogging()
         {
             Dbg.LogLevel = Settings.LogLevel;
-        }
-
-        private void InitDebugging()
-        {
-            if (!Settings.DebugEnabled)
-                return;
-            SRDebug.Init();
         }
 
         private void SetDefaultLanguage()

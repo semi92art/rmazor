@@ -14,7 +14,6 @@ namespace RMAZOR.Models.ItemProceeders
     public interface IItemsProceeder : IOnLevelStageChanged
     {
         IMazeItemProceedInfo[] ProceedInfos { get; }
-        EMazeItemType[]        Types        { get; }
     }
 
     public abstract class ItemsProceederBase : IItemsProceeder
@@ -23,8 +22,8 @@ namespace RMAZOR.Models.ItemProceeders
 
         private class ViewMazeItemCoroutines
         {
-            public IEnumerator[] Coroutines { get; private set; }
-            public int           Count      { get; private set; }
+            public  IEnumerator[] Coroutines { get; private set; }
+            private int           m_Count;
 
             public ViewMazeItemCoroutines()
             {
@@ -33,13 +32,14 @@ namespace RMAZOR.Models.ItemProceeders
 
             public void AddCoroutine(IEnumerator _Coroutine)
             {
-                Coroutines[Count++] = _Coroutine;
+                m_Count = MathUtils.ClampInverse(m_Count + 1, 0, 499);
+                Coroutines[m_Count] = _Coroutine;
             }
 
             public void ClearArray()
             {
                 Coroutines = new IEnumerator[500];
-                Count = 0;
+                m_Count = 0;
             }
         }
 
@@ -83,8 +83,8 @@ namespace RMAZOR.Models.ItemProceeders
         #endregion
 
         #region api
-        
-        public abstract EMazeItemType[] Types { get; }
+
+        protected abstract EMazeItemType[] Types { get; }
         public IMazeItemProceedInfo[] ProceedInfos { get; private set; } = new IMazeItemProceedInfo[0];
 
         public virtual void OnLevelStageChanged(LevelStageArgs _Args)

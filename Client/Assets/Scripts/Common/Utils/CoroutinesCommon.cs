@@ -37,18 +37,29 @@ namespace Common.Utils
         public static IEnumerator WaitWhile(
             Func<bool> _Predicate,
             UnityAction _Action,
-            Func<bool> _OnBreak = null)
+            Func<bool> _OnBreak = null,
+            float? _Seconds = null,
+            ITicker _Ticker = null)
         {
             if (_Action == null || _Predicate == null)
                 yield break;
-            while (_Predicate())
+            if (_Seconds.HasValue && _Ticker == null || !_Seconds.HasValue && _Ticker != null)
             {
+                Dbg.LogError($"Arguments {nameof(_Seconds)} and {_Ticker} must be not null.");
+                yield break;
+            }
+            float time = _Seconds.HasValue ? _Ticker.Time : default;
+            bool IsTimeValid()
+            {
+                // ReSharper disable once PossibleNullReferenceException
+                return _Seconds.HasValue && time + _Seconds.Value > _Ticker.Time;
+            }
+            while (_Predicate() || IsTimeValid())
+            {
+                yield return new WaitForEndOfFrame();
                 if (_OnBreak != null && _OnBreak())
                     yield break;
-                yield return new WaitForEndOfFrame();
             }
-            if (_OnBreak != null && _OnBreak())
-                yield break;
             _Action();
         }
         
@@ -63,7 +74,6 @@ namespace Common.Utils
         {
             if (_Action == null || _Predicate == null)
                 yield break;
-
             while (_Predicate.Invoke())
             {
                 if (_Pause != null && _Pause())
@@ -74,7 +84,6 @@ namespace Common.Utils
                 float dt = _FixedUpdate ? _Ticker.FixedDeltaTime : _Ticker.DeltaTime;
                 yield return new WaitForSecondsRealtime(dt);
             }
-        
             _FinishAction?.Invoke();
         }
 
@@ -92,28 +101,6 @@ namespace Common.Utils
             float startTime = _Ticker.Time;
             
             while (_Ticker.Time - startTime < _RepeatTime 
-                   && (_DoStop == null || !_DoStop()))
-            {
-                _Action();
-                yield return new WaitForSeconds(_RepeatDelta);
-            }
-            
-            _OnFinish?.Invoke();
-        }
-        
-        public static IEnumerator Repeat(
-            UnityAction _Action,
-            float _RepeatDelta,
-            long _RepeatCount,
-            ITicker _Ticker,
-            Func<bool> _DoStop = null,
-            UnityAction _OnFinish = null)
-        {
-            if (_Action == null)
-                yield break;
-            float repeatTime = _RepeatDelta * _RepeatCount;
-            float startTime = _Ticker.Time;
-            while (_Ticker.Time - startTime < repeatTime 
                    && (_DoStop == null || !_DoStop()))
             {
                 _Action();

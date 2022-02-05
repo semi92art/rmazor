@@ -1,7 +1,8 @@
-﻿using System.Linq;
+﻿// ReSharper disable UnusedMember.Global
+using System.Linq;
 using Common;
+using Common.Entities;
 using Common.Extensions;
-using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 
 namespace RMAZOR.Editor
@@ -215,23 +216,22 @@ namespace RMAZOR.Editor
             LevelsList.Save();
         }
         
-        // [FixUtil(FixUtilColor.Green)]
-        // public void ChangeDataFormat()
-        // {
-        //     var levels = LevelsList.levels.ToList();
-        //     foreach (var level in levels)
-        //     {
-        //         level.PathItems = level.Path
-        //             .Select(_P => new PathItem {Position = _P})
-        //             .ToList();
-        //         level.AdditionalInfo = new AdditionalInfo
-        //         {
-        //             Comment1 = level.Comment,
-        //             Comment2 = level.Comment2
-        //         };
-        //     }
-        //     LevelsList.levels = HeapReorderableList.LevelsCached = levels;
-        //     LevelsList.Save();
-        // }
+        [FixUtil(FixUtilColor.Blue)]
+        public void FixMazeSizes()
+        {
+            var levels = LevelsList.levels;
+            foreach (var level in levels)
+            {
+                var mazeItems = level.MazeItems.ToList();
+                var pathItems = level.PathItems;
+                int maxX = mazeItems.Any() ? mazeItems.Max(_Item => _Item.Position.X + 1) : 0;
+                maxX = System.Math.Max(maxX, pathItems.Max(_Item => _Item.Position.X + 1));
+                int maxY = mazeItems.Any() ? mazeItems.Max(_Item => _Item.Position.Y + 1) : 0;
+                maxY = System.Math.Max(maxY, pathItems.Max(_Item => _Item.Position.Y + 1));
+                level.Size = new V2Int(maxX, maxY);
+            }
+            LevelsList.levels = HeapReorderableList.LevelsCached = levels;
+            LevelsList.Save();
+        }
     }
 }

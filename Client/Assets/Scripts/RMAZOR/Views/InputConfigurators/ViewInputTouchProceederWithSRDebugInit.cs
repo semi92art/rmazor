@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable InconsistentNaming
+using System.Collections.Generic;
 using Common.CameraProviders;
 using Common.Ticker;
 using Common.Utils;
@@ -10,43 +12,36 @@ using UnityEngine.Events;
 
 namespace RMAZOR.Views.InputConfigurators
 {
-    public interface IViewInputTouchProceederWithSRDebugInit : IViewInputTouchProceeder
-    {
-        UnityAction OnSrDebugInitialized { get; set; }
-    }
-    
     public class ViewInputTouchProceederWithSRDebugInit : ViewInputTouchProceeder
     {
         private readonly List<bool> m_SRDebugCurrentSequence = new List<bool>();
         private readonly bool[] m_SRDebugInitCombination = 
         {
-            true, true, true,
-            false, false,
-            true,
-            false, false, false, false,
-            true, true, true
+            true, true,
+            false, false, false,
+            true, true, true, true,
+            false, false
         };
         private bool m_SrDebuggerInitialized;
-        
+
         public ViewInputTouchProceederWithSRDebugInit(
-            CommonGameSettings _CommonGameSettings,
-            ViewSettings _ViewSettings, 
-            IModelGame _Model, 
-            IContainersGetter _ContainersGetter,
+            CommonGameSettings          _CommonGameSettings,
+            ViewSettings                _ViewSettings,
+            IModelGame                  _Model,
+            IContainersGetter           _ContainersGetter,
             IViewInputCommandsProceeder _CommandsProceeder,
-            IViewGameTicker _GameTicker, 
-            ICameraProvider _CameraProvider,
-            IPrefabSetManager _PrefabSetManager) 
+            IViewGameTicker             _GameTicker,
+            ICameraProvider             _CameraProvider,
+            IPrefabSetManager           _PrefabSetManager)
             : base(
-                _CommonGameSettings, 
-                _ViewSettings, 
-                _Model, 
-                _ContainersGetter, 
+                _CommonGameSettings,
+                _ViewSettings,
+                _Model,
+                _ContainersGetter,
                 _CommandsProceeder,
                 _GameTicker,
                 _CameraProvider,
                 _PrefabSetManager) { }
-        
         
         public UnityAction OnSrDebugInitialized { get; set; }
 
@@ -73,8 +68,6 @@ namespace RMAZOR.Views.InputConfigurators
             }
             if (m_SRDebugCurrentSequence.Count != m_SRDebugInitCombination.Length) 
                 return;
-            
-            SRDebug.Init();
             OnSrDebugInitialized?.Invoke();
             m_SrDebuggerInitialized = true;
         }

@@ -28,7 +28,8 @@ namespace RMAZOR
         private static SaveKey<bool>      _darkTheme;
         private static SaveKey<DateTime>  _wheelOfFortuneLastDate; 
         private static SaveKey<List<int>> _boughtPurchaseIds;      
-        private static SaveKey<DateTime>  _dailyBonusLastDate;     
+        private static SaveKey<DateTime>  _dailyBonusLastDate;
+        private static SaveKey<DateTime>  _timeSinceLastIapReviewDialogShown;
         
         private static readonly Dictionary<string, SaveKey<uint>> BundleVersions =
             new Dictionary<string, SaveKey<uint>>();
@@ -53,7 +54,7 @@ namespace RMAZOR
             SaveUtils.PutValue(WheelOfFortuneLastDate,   SaveUtils.GetValue(WheelOfFortuneLastDate),   true);
             SaveUtils.PutValue(BoughtPurchaseIds,        SaveUtils.GetValue(BoughtPurchaseIds),        true);
             SaveUtils.PutValue(DailyBonusLastDate,       SaveUtils.GetValue(DailyBonusLastDate),       true);
-            
+            SaveUtils.PutValue(TimeSinceLastIapReviewDialogShown, SaveUtils.GetValue(TimeSinceLastIapReviewDialogShown),  true);
             SaveUtils.PutValue(MoneyFromServerLoadedFirstTime, SaveUtils.GetValue(MoneyFromServerLoadedFirstTime), true);
         }
         
@@ -77,6 +78,7 @@ namespace RMAZOR
         public static SaveKey<DateTime>     WheelOfFortuneLastDate => _wheelOfFortuneLastDate ??= new SaveKey<DateTime>("wof_last_date");
         public static SaveKey<List<int>>    BoughtPurchaseIds      => _boughtPurchaseIds ??= new SaveKey<List<int>>("bought_purchase_ids");
         public static SaveKey<DateTime>     DailyBonusLastDate     => _dailyBonusLastDate ??= new SaveKey<DateTime>("daily_bonus_last_date");
+        public static SaveKey<DateTime> TimeSinceLastIapReviewDialogShown => _timeSinceLastIapReviewDialogShown ??= new SaveKey<DateTime>("time_since_last_iap_review_dlg_shown");
         
 
         public static SaveKey<uint> BundleVersion(string _BundleName)

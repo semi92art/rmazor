@@ -66,8 +66,8 @@ namespace RMAZOR.Models.ItemProceeders
         #endregion
         
         #region api
-        
-        public override EMazeItemType[]     Types => new[] {EMazeItemType.Turret};
+
+        protected override EMazeItemType[]     Types => new[] {EMazeItemType.Turret};
         public event TurretShotEventHandler TurretShoot;
         public Func<IMazeItemProceedInfo[]> GetAllProceedInfos { private get; set; }
         

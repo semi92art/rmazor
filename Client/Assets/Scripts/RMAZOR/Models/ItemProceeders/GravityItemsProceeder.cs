@@ -48,7 +48,7 @@ namespace RMAZOR.Models.ItemProceeders
         
         #region api
 
-        public override EMazeItemType[] Types => RazorMazeUtils.GravityItemTypes();
+        protected override EMazeItemType[] Types => RazorMazeUtils.GravityItemTypes();
 
         public Func<IMazeItemProceedInfo[]> GetAllProceedInfos { private get; set; }
 

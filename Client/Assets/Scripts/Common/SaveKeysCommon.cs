@@ -25,14 +25,14 @@ namespace Common
         public static void ResetState()
         {
             SaveUtils.PutValue(LastDbConnectionSuccess, SaveUtils.GetValue(LastDbConnectionSuccess), true);
-            SaveUtils.PutValue(NotFirstLaunch, SaveUtils.GetValue(NotFirstLaunch), true);
-            SaveUtils.PutValue(DebugUtilsOn, SaveUtils.GetValue(DebugUtilsOn), true);
-            SaveUtils.PutValue(GoodQuality, SaveUtils.GetValue(GoodQuality), true);
-            SaveUtils.PutValue(AccountId, SaveUtils.GetValue(AccountId), true);
-            SaveUtils.PutValue(GameId, SaveUtils.GetValue(GameId), true);
-            SaveUtils.PutValue(Login, SaveUtils.GetValue(Login), true);
-            SaveUtils.PutValue(PasswordHash, SaveUtils.GetValue(PasswordHash), true);
-            SaveUtils.PutValue(PreviousAccountId, SaveUtils.GetValue(PreviousAccountId), true);
+            SaveUtils.PutValue(NotFirstLaunch,          SaveUtils.GetValue(NotFirstLaunch),          true);
+            SaveUtils.PutValue(DebugUtilsOn,            SaveUtils.GetValue(DebugUtilsOn),            true);
+            SaveUtils.PutValue(GoodQuality,             SaveUtils.GetValue(GoodQuality),             true);
+            SaveUtils.PutValue(AccountId,               SaveUtils.GetValue(AccountId),               true);
+            SaveUtils.PutValue(GameId,                  SaveUtils.GetValue(GameId),                  true);
+            SaveUtils.PutValue(Login,                   SaveUtils.GetValue(Login),                   true);
+            SaveUtils.PutValue(PasswordHash,            SaveUtils.GetValue(PasswordHash),            true);
+            SaveUtils.PutValue(PreviousAccountId,       SaveUtils.GetValue(PreviousAccountId),       true);
         }
 
         public static SaveKey<GameDataField> GameDataFieldValue(int _AccountId, int _GameId, ushort _FieldId)
@@ -55,5 +55,6 @@ namespace Common
         public static SaveKey<string> PasswordHash             => _passwordHash ??= new SaveKey<string>("password_hash");
         public static SaveKey<int?>   PreviousAccountId        => _previousAccountId ??= new SaveKey<int?>("previous_account_id");
         public static SaveKey<string> ServerUrl                => new SaveKey<string>("debug_server_url");
+        public static SaveKey<string> AppVersion               => new SaveKey<string>("app_version");
     }
 }

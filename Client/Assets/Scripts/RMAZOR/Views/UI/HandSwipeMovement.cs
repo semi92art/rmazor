@@ -126,6 +126,8 @@ namespace RMAZOR.Views.UI
             trace.enabled = false;
             trace.SetPosition(0, a.bPos);
             trace.SetPosition(1, a.posStart);
+            if (TutorialFinished)
+                yield break;
             yield return Cor.Lerp(
                 0f,
                 1f,
@@ -136,7 +138,9 @@ namespace RMAZOR.Views.UI
                     trace.startColor = trace.endColor = trace.startColor.SetA(_Progress * 0.5f);
                 },
                 Ticker,
-                _BreakPredicate: () => ReadyToAnimate);
+                _BreakPredicate: () => ReadyToAnimate || TutorialFinished);
+            if (TutorialFinished)
+                yield break;
             trace.enabled = true;
             yield return Cor.Lerp(
                 a.posStart,
@@ -147,7 +151,9 @@ namespace RMAZOR.Views.UI
                     trace.SetPosition(1, _Value);
                 },
                 Ticker,
-                _BreakPredicate: () => ReadyToAnimate);
+                _BreakPredicate: () => ReadyToAnimate || TutorialFinished);
+            if (TutorialFinished)
+                yield break;
             var traceCol = trace.startColor;
             yield return Cor.Lerp(
                 0f,
@@ -159,7 +165,7 @@ namespace RMAZOR.Views.UI
                     trace.startColor = trace.endColor = Color.Lerp(traceCol.SetA(0.5f), traceCol.SetA(0f), _Progress);
                 },
                 Ticker,
-                _BreakPredicate: () => ReadyToAnimate);
+                _BreakPredicate: () => ReadyToAnimate || TutorialFinished);
         }
 
         protected override IEnumerator AnimateHandPositionCoroutine(EMazeMoveDirection _Direction)

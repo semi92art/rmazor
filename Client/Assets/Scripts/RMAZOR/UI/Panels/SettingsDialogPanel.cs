@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Common;
 using Common.CameraProviders;
 using Common.Constants;
+using Common.Entities;
 using Common.Entities.UI;
 using Common.Enums;
 using Common.Exceptions;
 using Common.Extensions;
 using Common.Ticker;
+using Common.Utils;
 using DialogViewers;
 using GameHelpers;
 using Managers;
@@ -230,7 +233,7 @@ namespace RMAZOR.UI.Panels
                 Managers,
                 Ticker,
                 ColorProvider,
-                () => Managers.ShopManager.RateGame());
+                () => Managers.ShopManager.RateGame(false));
             Managers.LocalizationManager.AddTextObject(item.title, "rate_game");
             item.Highlighted = true;
         }
@@ -242,7 +245,43 @@ namespace RMAZOR.UI.Panels
                 Managers,
                 Ticker,
                 ColorProvider,
-                () => Managers.ScoreManager.ShowLeaderboard(DataFieldIds.Level));
+                () =>
+                {
+                    var scoreEntity = Managers.ScoreManager.GetScoreFromLeaderboard(DataFieldIds.Level, false);
+                    Cor.Run(Cor.WaitWhile(
+                        () => scoreEntity.Result == EEntityResult.Pending,
+                        () =>
+                        {
+                            switch (scoreEntity.Result)
+                            {
+                                case EEntityResult.Pending:
+                                    Dbg.LogWarning("Timeout when getting score from leaderboard");
+                                    return;
+                                case EEntityResult.Fail:
+                                    Dbg.LogError("Failed to get score from leaderboard");
+                                    return;
+                                case EEntityResult.Success:
+                                {
+                                    var score = scoreEntity.GetFirstScore();
+                                    if (!score.HasValue)
+                                    {
+                                        Dbg.LogError("Failed to get score from leaderboard");
+                                        return;
+                                    }
+                                    Managers.ScoreManager.SetScoreToLeaderboard(
+                                        DataFieldIds.Level, 
+                                        score.Value + 1, 
+                                        false);
+                                    break;
+                                }
+                                default:
+                                    throw new SwitchCaseNotImplementedException(scoreEntity.Result);
+                            }
+                        },
+                        _Seconds: 3f,
+                        _Ticker: Ticker));
+                    Managers.ScoreManager.ShowLeaderboard(DataFieldIds.Level);
+                });
             Managers.LocalizationManager.AddTextObject(item.title, "show_leaderboards");
         }
 

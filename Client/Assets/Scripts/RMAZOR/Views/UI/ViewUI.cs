@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using System;
 using Common.Enums;
 using Common.Extensions;
 using Common.Ticker;
@@ -6,9 +6,8 @@ using Common.Utils;
 using DialogViewers;
 using Managers;
 using RMAZOR.Models;
-using RMAZOR.Views.Common;
 using RMAZOR.Views.InputConfigurators;
-using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace RMAZOR.Views.UI
 {
@@ -16,29 +15,35 @@ namespace RMAZOR.Views.UI
     {
         #region inject
 
+        private ViewSettings                ViewSettings         { get; }
         private IModelGame                  Model                { get; }
         private IUITicker                   Ticker               { get; }
         private IBigDialogViewer            BigDialogViewer      { get; }
         private IProposalDialogViewer       ProposalDialogViewer { get; }
         private IDialogPanels               DialogPanels         { get; }
         private IViewInputCommandsProceeder CommandsProceeder    { get; }
+        private IManagersGetter             Managers             { get; }
 
         public ViewUI(
+            ViewSettings                _ViewSettings,
             IModelGame                  _Model,
             IUITicker                   _UITicker,
             IBigDialogViewer            _BigDialogViewer,
             IProposalDialogViewer       _ProposalDialogViewer,
             IDialogPanels               _DialogPanels,
             IViewUIGameControls         _GameControls,
-            IViewInputCommandsProceeder _CommandsProceeder)
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IManagersGetter             _Managers)
             : base(_GameControls)
         {
+            ViewSettings         = _ViewSettings;
             Model                = _Model;
             Ticker               = _UITicker;
             BigDialogViewer      = _BigDialogViewer;
             ProposalDialogViewer = _ProposalDialogViewer;
             DialogPanels         = _DialogPanels;
             CommandsProceeder    = _CommandsProceeder;
+            Managers             = _Managers;
         }
 
         #endregion
@@ -85,8 +90,19 @@ namespace RMAZOR.Views.UI
                     CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);
                     break;
                 case EInputCommand.RateGamePanel:
-                    DialogPanels.RateGameDialogPanel.LoadPanel();
-                    ProposalDialogViewer.Show(DialogPanels.RateGameDialogPanel, 3f);
+                    var lastTimeShown = SaveUtils.GetValue(SaveKeys.TimeSinceLastIapReviewDialogShown);
+                    var span = DateTime.Now - lastTimeShown;
+                    if (span.Days > 31)
+                    {
+                        Managers.ShopManager.RateGame(true);
+                    }
+                    else
+                    {
+                        DialogPanels.RateGameDialogPanel.LoadPanel();
+                        ProposalDialogViewer.Show(DialogPanels.RateGameDialogPanel, 3f);
+                    }
+                    int ratePanelShowsCount = SaveUtils.GetValue(SaveKeys.RatePanelShowsCount);
+                    SaveUtils.PutValue(SaveKeys.RatePanelShowsCount, ratePanelShowsCount + 1);
                     break;
             }
         }
@@ -100,17 +116,16 @@ namespace RMAZOR.Views.UI
         {
             if (_Pause)
                 return;
-            Dbg.Log(nameof(OnApplicationPause));
             int ratePanelShowsCount = SaveUtils.GetValue(SaveKeys.RatePanelShowsCount);
             bool mustShowRateGamePanel =
                 Random.value < 0.05f
                 && !SaveUtils.GetValue(SaveKeys.GameWasRated)
-                && ratePanelShowsCount < 3
-                && Model.LevelStaging.LevelIndex > 20;
+                && ratePanelShowsCount > 10
+                && Model.LevelStaging.LevelIndex > ViewSettings.firstLevelToRateGame;
             if (!mustShowRateGamePanel)
                 return;
             CommandsProceeder.RaiseCommand(EInputCommand.RateGamePanel, null);
-            SaveUtils.PutValue(SaveKeys.RatePanelShowsCount, ratePanelShowsCount + 1);
+            
         }
         
         #endregion

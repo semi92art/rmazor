@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿// ReSharper disable ClassNeverInstantiated.Global
+using System.Collections.Generic;
 using System.Linq;
 using Common;
 using Common.Constants;
@@ -20,7 +21,6 @@ using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.MazeItems;
 using RMAZOR.Views.UI;
-using UnityEngine;
 
 namespace RMAZOR.Views.Common
 {
@@ -239,39 +239,39 @@ namespace RMAZOR.Views.Common
 
         private void OnLevelUnloaded(LevelStageArgs _Args)
         {
-            // FIXME временно, для тестирования
-            // var scoreEntity = Managers.ScoreManager.GetScoreFromLeaderboard(DataFieldIds.Level, false);
-            // float time = ViewGameTicker.Time;
-            // Cor.Run(Cor.WaitWhile(
-            //     () => scoreEntity.Result == EEntityResult.Pending || time + 3f > ViewGameTicker.Time,
-            //     () =>
-            //     {
-            //         switch (scoreEntity.Result)
-            //         {
-            //             case EEntityResult.Pending:
-            //                 Dbg.LogWarning("Timeout when getting score from leaderboard");
-            //                 return;
-            //             case EEntityResult.Fail:
-            //                 Dbg.LogError("Failed to get score from leaderboard");
-            //                 return;
-            //             case EEntityResult.Success:
-            //             {
-            //                 var score = scoreEntity.GetFirstScore();
-            //                 if (!score.HasValue)
-            //                 {
-            //                     Dbg.LogError("Failed to get score from leaderboard");
-            //                     return;
-            //                 }
-            //                 Managers.ScoreManager.SetScoreToLeaderboard(
-            //                     DataFieldIds.Level, 
-            //                     score.Value + 1, 
-            //                     false);
-            //                 break;
-            //             }
-            //             default:
-            //                 throw new SwitchCaseNotImplementedException(scoreEntity.Result);
-            //         }
-            //     }));
+            var scoreEntity = Managers.ScoreManager.GetScoreFromLeaderboard(DataFieldIds.Level, false);
+            Cor.Run(Cor.WaitWhile(
+                () => scoreEntity.Result == EEntityResult.Pending,
+                () =>
+                {
+                    switch (scoreEntity.Result)
+                    {
+                        case EEntityResult.Pending:
+                            Dbg.LogWarning("Timeout when getting score from leaderboard");
+                            return;
+                        case EEntityResult.Fail:
+                            Dbg.LogError("Failed to get score from leaderboard");
+                            return;
+                        case EEntityResult.Success:
+                        {
+                            var score = scoreEntity.GetFirstScore();
+                            if (!score.HasValue)
+                            {
+                                Dbg.LogError("Failed to get score from leaderboard");
+                                return;
+                            }
+                            Managers.ScoreManager.SetScoreToLeaderboard(
+                                DataFieldIds.Level, 
+                                score.Value + 1, 
+                                false);
+                            break;
+                        }
+                        default:
+                            throw new SwitchCaseNotImplementedException(scoreEntity.Result);
+                    }
+                },
+                _Seconds: 3f,
+                _Ticker: ViewGameTicker));
             if (SaveUtils.GetValue(SaveKeys.AllLevelsPassed))
             {
                 int group = RazorMazeUtils.GetGroupIndex(_Args.LevelIndex);
@@ -329,12 +329,6 @@ namespace RMAZOR.Views.Common
             switch (_Args.Stage)
             {
                 case ELevelStage.Loaded:
-                    
-                    if (!m_FirstTimeLevelLoaded)
-                    {
-                        audioManager.PlayClip(AudioClipArgsMainTheme);
-                        m_FirstTimeLevelLoaded = true;
-                    }
                     break;
                 case ELevelStage.Finished when _Args.PreviousStage != ELevelStage.Paused:
                     audioManager.PlayClip(AudioClipArgsLevelComplete);
@@ -344,9 +338,16 @@ namespace RMAZOR.Views.Common
                     break;
                 case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.Loaded:
                     audioManager.PlayClip(AudioClipArgsLevelStart);
+                    if (!m_FirstTimeLevelLoaded)
+                    {
+                        audioManager.PlayClip(AudioClipArgsMainTheme);
+                        m_FirstTimeLevelLoaded = true;
+                    }
                     audioManager.UnmuteAudio(EAudioClipType.GameSound);
                     break;
                 case ELevelStage.ReadyToStart:
+                    audioManager.UnmuteAudio(EAudioClipType.GameSound);
+                    break;
                 case ELevelStage.StartedOrContinued:
                 case ELevelStage.Finished:
                     audioManager.UnmuteAudio(EAudioClipType.GameSound);

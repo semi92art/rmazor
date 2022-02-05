@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using Common;
 using GameHelpers;
 using RMAZOR;
 using Unity.RemoteConfig;
-using UnityEngine;
 using UnityEngine.Events;
 #if !UNITY_EDITOR && !DEVELOPMENT_BUILD
 using System.Linq;
@@ -99,8 +97,8 @@ namespace Managers
             GetConfig(ref ModelSettings.movingItemsSpeed,         "mazeitems.movingtrap.speed");
             GetConfig(ref ViewSettings.rateRequestsFrequency,     "common.raterequestsfrequency");
             GetConfig(ref ViewSettings.adsRequestsFrequency,      "ads.adsrequestsfrequency");
-            GetConfig(ref ViewSettings.levelsCountMain,           "common.levels_count_main");
-
+            // GetConfig(ref ViewSettings.levelsCountMain,           "common.levels_count_main");
+            GetConfig(ref ViewSettings.firstLevelToRateGame,      "common.first_level_to_rate_game");
 #if !UNITY_EDITOR && !DEVELOPMENT_BUILD
             string testDeviceIdsJson = string.Empty;
             GetConfig(ref testDeviceIdsJson, "common.test_device_ids", true);

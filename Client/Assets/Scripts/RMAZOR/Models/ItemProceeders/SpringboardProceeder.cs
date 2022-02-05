@@ -45,8 +45,8 @@ namespace RMAZOR.Models.ItemProceeders
         #endregion
         
         #region api
-        
-        public override EMazeItemType[] Types => new[] {EMazeItemType.Springboard};
+
+        protected override EMazeItemType[] Types => new[] {EMazeItemType.Springboard};
         public event SpringboardEventHandler SpringboardEvent;
 
         #endregion

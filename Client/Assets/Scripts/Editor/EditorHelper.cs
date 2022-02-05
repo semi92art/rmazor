@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using Common;
 using Common.Constants;
-using Common.Entities;
 using Common.Exceptions;
 using Common.Extensions;
 using Common.Network;
@@ -51,20 +50,6 @@ namespace Editor
             var tProfiler = typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.ProfilerWindow");
             GetWindow(tProfiler, false);
         }
-    
-        //FIXME временно
-        // #if UNITY_ANDROID
-        //     
-        //     [MenuItem("Tools/Android Logcat",false, 4)]
-        //     public static void ShowAndroidLogcatWindow()
-        //     {
-        //         var tLogcat = typeof(Unity.Android.Logcat.ColumnData).Assembly.GetType("Unity.Android.Logcat.AndroidLogcatConsoleWindow");
-        //         var mInfoShow = tLogcat?.GetMethod("ShowWindow",
-        //             BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
-        //         mInfoShow?.Invoke(null, null);
-        //     }
-        //     
-        // #endif
 
         private void OnEnable()
         {
@@ -359,24 +344,5 @@ namespace Editor
                 {"Account id", GameClientUtils.AccountId.ToString()},
                 {"Game id", SaveUtils.GetValue(SaveKeysCommon.GameId).ToString()},
             };
-
-        private static string GetGameFieldCached(ushort _FieldId)
-        {
-            int? accountId = SaveUtils.GetValue(SaveKeysCommon.AccountId);
-            int gameId = SaveUtils.GetValue(SaveKeysCommon.GameId);
-            var field = SaveUtils.GetValue(
-                SaveKeysCommon.GameDataFieldValue(accountId ?? GameClientUtils.DefaultAccountId, gameId, _FieldId));
-            return DataFieldValueString(field);
-        }
-
-        private static string DataFieldValueString(DataFieldBase _DataField)
-        {
-            if (_DataField == null)
-                return "not exist";
-            string value = _DataField.ToString();
-            if (string.IsNullOrEmpty(value) || string.IsNullOrWhiteSpace(value))
-                return "empty";
-            return value;
-        }
     }
 }

@@ -17,7 +17,10 @@ namespace RMAZOR.Views.Debug
             _instance.IsNotNull() ? _instance : _instance = FindObjectOfType<ScreenViewDebug>(); 
         
         private                  MazeCoordinateConverter m_Converter;
+        private                  ViewSettings            m_Settings;
         [SerializeField] private Vector2                 mazeSize;
+        public                   bool                    drawMazeBounds;
+        public                   bool                    drawScreenOffsets;
         
         public V2Int MazeSize
         {
@@ -35,9 +38,9 @@ namespace RMAZOR.Views.Debug
                 Dbg.LogError("Maze size incorrect.");
                 return;
             }
-            var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ViewSettings>(
+            m_Settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ViewSettings>(
                 "model_settings", "view_settings");
-            m_Converter = new MazeCoordinateConverter(settings, null);
+            m_Converter = new MazeCoordinateConverter(m_Settings, null, true);
             m_Converter.Init();
             m_Converter.MazeSize = (V2Int)mazeSize;
         }
@@ -48,36 +51,50 @@ namespace RMAZOR.Views.Debug
                 return;
             if (!m_Converter.InitializedAndMazeSizeSet())
                 return;
-            var mazeBounds = m_Converter.GetMazeBounds();
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireCube(mazeBounds.center, mazeBounds.size);
-            var bds = m_Converter.GetMazeBounds();
-            var offsets = new Vector4(bds.min.x, bds.max.x, bds.min.y, bds.max.y);
-            var scrBds = GraphicUtils.GetVisibleBounds();
             Gizmos.color = Color.red;
-            Gizmos.DrawLine(new Vector2(offsets.x, scrBds.min.y), new Vector2(offsets.x, scrBds.max.y));
-            Gizmos.DrawLine(new Vector2(offsets.y, scrBds.min.y), new Vector2(offsets.y, scrBds.max.y));
-            Gizmos.DrawLine(new Vector2(scrBds.min.x, offsets.z), new Vector2(scrBds.max.x, offsets.z));
-            Gizmos.DrawLine(new Vector2(scrBds.min.x, offsets.w), new Vector2(scrBds.max.x, offsets.w));
+            var mazeBds = m_Converter.GetMazeBounds();
+            var scrBds = GraphicUtils.GetVisibleBounds();
+            
+            if (drawMazeBounds)
+            {
+                Gizmos.color = Color.red;
+                Gizmos.DrawWireCube(mazeBds.center, mazeBds.size);
+                // Gizmos.DrawLine(new Vector2(mazeBds.min.x, scrBds.min.y), new Vector2(mazeBds.min.x, scrBds.max.y));
+                // Gizmos.DrawLine(new Vector2(mazeBds.max.x, scrBds.min.y), new Vector2(mazeBds.max.x, scrBds.max.y));
+                // Gizmos.DrawLine(new Vector2(scrBds.min.x, mazeBds.min.y), new Vector2(scrBds.max.x, mazeBds.min.y));
+                // Gizmos.DrawLine(new Vector2(scrBds.min.x, mazeBds.min.y), new Vector2(scrBds.max.x, mazeBds.min.y));
+                Gizmos.DrawCube(mazeBds.center, Vector3.one);
+            }
+            if (drawScreenOffsets)
+            {
+                Gizmos.color = Color.green;
+                float a = scrBds.min.x + m_Settings.LeftScreenOffset;
+                Gizmos.DrawLine(new Vector2(a, scrBds.min.y), new Vector2(a, scrBds.max.y));
+                a = scrBds.max.x - m_Settings.RightScreenOffset;
+                Gizmos.DrawLine(new Vector2(a, scrBds.min.y), new Vector2(a, scrBds.max.y));
+                a = scrBds.min.y + m_Settings.BottomScreenOffset;
+                Gizmos.DrawLine(new Vector2(scrBds.min.x, a), new Vector2(scrBds.max.x, a));
+                a = scrBds.max.y - m_Settings.TopScreenOffset;
+                Gizmos.DrawLine(new Vector2(scrBds.min.x, a), new Vector2(scrBds.max.x, a));
+            }
         }
     }
 
     [CustomEditor(typeof(ScreenViewDebug))]
-    public class ScreenViewDebugEditor : UnityEditor.Editor
+    public class ScreenViewDebugEditor : Editor
     {
-        private ScreenViewDebug t;
-        private V2Int           size;
+        private ScreenViewDebug m_T;
 
         private void OnEnable()
         {
-            t = target as ScreenViewDebug;
+            m_T = target as ScreenViewDebug;
         }
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
             if (GUILayout.Button("Set size"))
-                t.SetMazeSize();
+                m_T.SetMazeSize();
         }
     }
 

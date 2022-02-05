@@ -51,8 +51,8 @@ namespace RMAZOR.Models.ItemProceeders
         #endregion
         
         #region api
-        
-        public override EMazeItemType[]     Types => new[] {EMazeItemType.ShredingerBlock};
+
+        protected override EMazeItemType[]     Types => new[] {EMazeItemType.ShredingerBlock};
         public event ShredingerBlockHandler ShredingerBlockEvent;
         public Func<IMazeItemProceedInfo[]> GetAllProceedInfos { get; set; }
 

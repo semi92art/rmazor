@@ -33,8 +33,8 @@ namespace RMAZOR.Models.ItemProceeders
         #endregion
         
         #region api
-        
-        public override EMazeItemType[] Types => new[] {EMazeItemType.TrapMoving};
+
+        protected override EMazeItemType[] Types => new[] {EMazeItemType.TrapMoving};
 
         public void UpdateTick()
         {

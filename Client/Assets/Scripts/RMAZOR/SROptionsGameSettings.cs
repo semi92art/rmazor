@@ -1,4 +1,9 @@
-﻿using System.ComponentModel;
+﻿// ReSharper disable InconsistentNaming
+// ReSharper disable UnusedMember.Global
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable PartialTypeWithSinglePart
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Common;
@@ -36,7 +41,6 @@ namespace RMAZOR
             _view = _View;
             _modelSettings = _Model.Settings;
             _viewSettings = _View.Settings;
-
             SRDebug.Instance.PanelVisibilityChanged += OnPanelVisibilityChanged;
         }
 
@@ -297,7 +301,7 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                _view.Managers.ShopManager.RateGame();
+                _view.Managers.ShopManager.RateGame(true);
             }
         }
 
@@ -329,8 +333,9 @@ namespace RMAZOR
                     .Select(_Kvp => _Kvp.Key).ToList();
                 var sb = new StringBuilder();
                 sb.Append(nameof(Show_Locked_Groups_With_Rotation) + "\n");
-                foreach (var gName in groupNames)
-                    sb.Append(gName + "\n");
+                if (groupNames != null)
+                    foreach (string gName in groupNames)
+                        sb.Append(gName + "\n");
                 Dbg.Log(sb.ToString());
             }
         }
@@ -351,8 +356,9 @@ namespace RMAZOR
                     .Select(_Kvp => _Kvp.Key).ToList();
                 var sb = new StringBuilder();
                 sb.Append(nameof(Show_Locked_Groups_With_Rotation) + "\n");
-                foreach (var gName in groupNames)
-                    sb.Append(gName + "\n");
+                if (groupNames != null)
+                    foreach (string gName in groupNames)
+                        sb.Append(gName + "\n");
                 Dbg.Log(sb.ToString());
             }
         }

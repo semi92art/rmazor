@@ -50,8 +50,8 @@ namespace RMAZOR.Models.ItemProceeders
         #endregion
         
         #region api
-        
-        public override    EMazeItemType[]         Types                    => new[] {EMazeItemType.TrapReact};
+
+        protected override    EMazeItemType[]         Types                    => new[] {EMazeItemType.TrapReact};
         protected override bool                    StopProceedOnLevelFinish => false;
         public event MazeItemTrapReactEventHandler TrapReactStageChanged;
 

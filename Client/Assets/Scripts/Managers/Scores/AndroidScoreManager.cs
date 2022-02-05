@@ -180,10 +180,12 @@ namespace Managers.Scores
         {
             var config = new PlayGamesClientConfiguration.Builder()
                 .EnableSavedGames()
-                .RequestEmail()
+                // .RequestServerAuthCode(false)
+                // .RequestIdToken()
+                // .RequestEmail()
                 .Build();
             PlayGamesPlatform.InitializeInstance(config);
-            PlayGamesPlatform.DebugLogEnabled = true;
+            // PlayGamesPlatform.DebugLogEnabled = true;
             PlayGamesPlatform.Activate();
             PlayGamesPlatform.Instance.Authenticate(
                 SignInInteractivity.CanPromptOnce,

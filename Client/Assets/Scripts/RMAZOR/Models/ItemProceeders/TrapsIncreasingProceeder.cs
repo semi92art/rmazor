@@ -47,7 +47,7 @@ namespace RMAZOR.Models.ItemProceeders
         
         #region api
 
-        public override EMazeItemType[] Types => new[] {EMazeItemType.TrapIncreasing};
+        protected override EMazeItemType[] Types => new[] {EMazeItemType.TrapIncreasing};
         public event MazeItemTrapIncreasingEventHandler TrapIncreasingStageChanged;
 
         public void UpdateTick()

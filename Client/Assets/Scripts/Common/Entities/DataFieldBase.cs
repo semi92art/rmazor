@@ -6,13 +6,12 @@ namespace Common.Entities
 {
     public abstract class DataFieldBase
     {
-        [JsonProperty] protected      object      Value          { get; set; }
-        [JsonProperty] public         ushort      FieldId        { get; set; }
-        [JsonProperty] public         DateTime    LastUpdateTime => LastUpdate;
-        [JsonIgnore]   public virtual bool        IsSaving       { get; protected set; }
-        [JsonIgnore]   public         int         AccountId      { get; set; }
-        [JsonIgnore]   protected      DateTime    LastUpdate;
-        [JsonIgnore]   protected      IGameClient GameClient;
+        [JsonProperty] protected          object      Value          { get; set; }
+        [JsonProperty] public             ushort      FieldId        { get; set; }
+        [JsonProperty] public             DateTime    LastUpdateTime => LastUpdate;
+        [JsonIgnore]   public             int         AccountId      { get; set; }
+        [JsonIgnore]   protected          DateTime    LastUpdate;
+        [JsonIgnore]   protected readonly IGameClient GameClient;
 
         public object             GetValue()    => Value;
         public bool               ToBool()      => Convert.ToBoolean(Value);
