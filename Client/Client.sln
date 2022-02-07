@@ -29,8 +29,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StansAssets.Foundation", "S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA.Foundation", "SA.Foundation.csproj", "{603797c3-be06-50b9-a839-369f4cb8af60}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Google.PlayGames", "Google.PlayGames.csproj", "{d60e4bed-010c-3702-5d54-fcbbf188141b}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeanTouch", "LeanTouch.csproj", "{fabab6fd-ce5d-b8e9-c7f1-00dab331447b}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Google.Play.Core", "Google.Play.Core.csproj", "{439f6e8d-ddd9-0c75-4094-f29800865212}"
@@ -120,8 +118,6 @@ Global
 		{3ffcb80e-567a-2c91-0b86-7c366c8047e2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{603797c3-be06-50b9-a839-369f4cb8af60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{603797c3-be06-50b9-a839-369f4cb8af60}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{d60e4bed-010c-3702-5d54-fcbbf188141b}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{d60e4bed-010c-3702-5d54-fcbbf188141b}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{fabab6fd-ce5d-b8e9-c7f1-00dab331447b}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{fabab6fd-ce5d-b8e9-c7f1-00dab331447b}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{439f6e8d-ddd9-0c75-4094-f29800865212}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

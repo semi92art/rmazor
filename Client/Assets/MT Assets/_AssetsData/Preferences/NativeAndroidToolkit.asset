@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51bd2a3573793a941abf109d84f067d3, type: 3}
   m_Name: NativeAndroidToolkit
   m_EditorClassIdentifier: 
-  projectName: rmazor
+  projectName: Maze Blade
   natInstalledInFirstScene: 1
   modifyAndroidManifest: 0
   declareUnityPlayerActivity: 1
@@ -29,7 +29,7 @@ MonoBehaviour:
   internetPermission: 0
   modifyAudioPermission: 0
   keepDeviceEnabled: 0
-  enableAccurateNotify: 1
+  enableAccurateNotify: 0
   warningOnChangeDate: 0
   titleOfWarningOnChangeDate: Time Changed
   textOfWarningOnChangeDate: Time has changed on your device. This may affect the

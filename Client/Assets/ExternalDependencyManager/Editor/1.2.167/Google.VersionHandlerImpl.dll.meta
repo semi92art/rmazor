@@ -1,30 +1,29 @@
 fileFormatVersion: 2
 guid: 6b34dbfb498f4c79b77494066d57610b
 labels:
+- gvh_v0.10.14
 - gvh
-- gvh_version-6.1.2
+- gvh_version-1.2.167
 - gvhp_exportpath-ExternalDependencyManager/Editor/1.2.167/Google.VersionHandlerImpl.dll
 - gvhp_targets-editor
+timeCreated: 1480838400
 PluginImporter:
   externalObjects: {}
   serializedVersion: 2
   iconMap: {}
   executionOrder: {}
-  defineConstraints: []
   isPreloaded: 0
   isOverridable: 0
-  isExplicitlyReferenced: 0
-  validateReferences: 1
   platformData:
   - first:
-      Any: 
+      Any:
     second:
       enabled: 0
       settings: {}
   - first:
       Editor: Editor
     second:
-      enabled: 1
+      enabled: 0
       settings:
         DefaultValueInitialized: true
   - first:
@@ -33,6 +32,6 @@ PluginImporter:
       enabled: 0
       settings:
         CPU: AnyCPU
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+  userData:
+  assetBundleName:
+  assetBundleVariant:
