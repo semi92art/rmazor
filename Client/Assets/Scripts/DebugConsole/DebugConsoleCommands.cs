@@ -33,6 +33,7 @@ namespace DebugConsole
             Controller.RegisterCommand("load_level",      LoadLevel,    "Load level by index");
             Controller.RegisterCommand("set_money",       SetMoney,     "Set money count");
             Controller.RegisterCommand("rate_game_panel", ShowRateGamePanel, "Set money count");
+            Controller.RegisterCommand("int_conn",        InternetConnectionAvailable, "Check if internet connection available");
         }
 
         private static void Reload(string[] _Args)
@@ -193,6 +194,12 @@ namespace DebugConsole
         private static void ShowRateGamePanel(string[] _Args)
         {
             Controller.CommandsProceeder.RaiseCommand(EInputCommand.RateGamePanel, null, true);
+        }
+
+        private static void InternetConnectionAvailable(string[] _Args)
+        {
+            bool res = NetworkUtils.IsInternetConnectionAvailable();
+            Dbg.Log("Internet connection available: " + res);
         }
     }
 }

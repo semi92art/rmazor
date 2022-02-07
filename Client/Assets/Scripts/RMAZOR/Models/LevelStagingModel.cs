@@ -1,8 +1,8 @@
 ﻿using System;
 using Common;
+using Common.Helpers;
 using Common.Ticker;
 using RMAZOR.Models.MazeInfos;
-using UnityEngine.Events;
 
 namespace RMAZOR.Models
 {
@@ -60,7 +60,7 @@ namespace RMAZOR.Models
         void                    UnloadLevel();
     }
 
-    public class ModelLevelStaging : IModelLevelStaging, IInit, IUpdateTick
+    public class ModelLevelStaging : InitBase, IModelLevelStaging,IUpdateTick
     {
         #region nonpublic members
 
@@ -90,16 +90,8 @@ namespace RMAZOR.Models
         public ELevelStage             LevelStage         { get; private set; } = ELevelStage.Unloaded;
         public ELevelStage             PrevLevelStage     { get; private set; } = ELevelStage.Unloaded;
         public ELevelStage             PrevPrevLevelStage { get; private set; } = ELevelStage.Unloaded;
-        public bool                    Initialized        { get; private set; }
         public event LevelStageHandler LevelStageChanged;
-        public event UnityAction       Initialize;
-    
-        public void Init()
-        {
-            Initialize?.Invoke();
-            Initialized = true;
-        }
-    
+
         public void UpdateTick()
         {
             if (m_DoUpdateLevelTime)

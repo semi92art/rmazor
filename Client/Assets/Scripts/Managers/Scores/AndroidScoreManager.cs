@@ -150,9 +150,9 @@ namespace Managers.Scores
                         operation.SavedGame.Entity.Result = EEntityResult.Fail;
                     operation.Finished = true;
                 }
-                OpenSavedGame(operation.FileName);
-                Cor.Run(Cor.Delay(10f, OnDelay));
                 operation.Started = true;
+                Cor.Run(Cor.Delay(10f, OnDelay));
+                OpenSavedGame(operation.FileName);
                 return;
             }
             if (!operation.Finished)
@@ -191,14 +191,13 @@ namespace Managers.Scores
                 SignInInteractivity.CanPromptOnce,
                 _Status =>
                 {
-            
                     if (_Status == SignInStatus.Success)
                     {
                         Dbg.Log(AuthMessage(true, string.Empty));
                         _OnFinish?.Invoke();
                     }
                     else
-                        Dbg.LogWarning(AuthMessage(false, string.Empty));
+                        Dbg.LogWarning(AuthMessage(false, _Status.ToString()));
                 });
         }
 
@@ -270,7 +269,17 @@ namespace Managers.Scores
         
         private void OpenSavedGame(string _Filename)
         {
+            if (!PlayGamesPlatform.Instance.IsAuthenticated())
+            {
+                Dbg.LogWarning("Not authenticated to PlayGames");
+                return;
+            }
             ISavedGameClient savedGameClient = PlayGamesPlatform.Instance.SavedGame;
+            if (savedGameClient == null)
+            {
+                Dbg.LogWarning(nameof(savedGameClient) + " is null");
+                return;
+            }
             savedGameClient.OpenWithAutomaticConflictResolution(_Filename, DataSource.ReadCacheOrNetwork,
                 ConflictResolutionStrategy.UseLongestPlaytime, OnSavedGameOpened);
         }

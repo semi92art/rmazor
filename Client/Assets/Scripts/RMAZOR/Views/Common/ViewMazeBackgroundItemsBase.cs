@@ -1,6 +1,7 @@
 ﻿using Common;
 using Common.CameraProviders;
 using Common.Exceptions;
+using Common.Helpers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
@@ -12,7 +13,7 @@ using UnityEngine.Events;
 
 namespace RMAZOR.Views.Common
 {
-    public abstract class ViewMazeBackgroundItemsBase : IInit, IOnLevelStageChanged, IUpdateTick
+    public abstract class ViewMazeBackgroundItemsBase : InitBase, IOnLevelStageChanged, IUpdateTick
     {
         #region constants
 
@@ -62,18 +63,14 @@ namespace RMAZOR.Views.Common
         #endregion
 
         #region api
-        
-        public bool              Initialized { get; private set; }
-        public event UnityAction Initialize;
-       
-        public virtual void Init()
+
+        public override void Init()
         {
             GameTicker.Register(this);
             m_ScreenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
             ColorProvider.ColorChanged += OnColorChanged;
             InitItems();
-            Initialize?.Invoke();
-            Initialized = true;
+            base.Init();
         }
         
         public virtual void UpdateTick()

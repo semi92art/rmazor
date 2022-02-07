@@ -1,5 +1,7 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Net;
+using UnityEngine;
 
 namespace Common.Utils
 {
@@ -12,6 +14,7 @@ namespace Common.Utils
 
         public static bool IsInternetConnectionAvailable(int _TimeoutMs = 10000, string _Url = null)
         {
+            return Application.internetReachability != NetworkReachability.NotReachable;
             try
             {
                 _Url ??= CultureInfo.InstalledUICulture switch
@@ -29,8 +32,9 @@ namespace Common.Utils
                 using ((HttpWebResponse)request.GetResponse()) 
                     return true;
             }
-            catch
+            catch (Exception ex)
             {
+                Dbg.Log(ex.GetType().Name + " " + ex.Message);
                 return false;
             }
         }

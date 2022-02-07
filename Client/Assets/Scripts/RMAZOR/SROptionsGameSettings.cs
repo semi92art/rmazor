@@ -419,19 +419,6 @@ namespace RMAZOR
         }
         
         [Category(CategoryCommon)]
-        public bool Show_Scaling_Factor_And_Dpi
-        {
-            get => false;
-            set
-            {
-                if (!value)
-                    return;
-                Dbg.Log(LeanTouch.ScalingFactor);
-                Dbg.Log(Screen.dpi);
-            }
-        }
-        
-        [Category(CategoryCommon)]
         public bool Delete_Saved_Game
         {
             get => false;
@@ -477,6 +464,19 @@ namespace RMAZOR
                         long money = entity1.Value.CastTo<MoneyArgs>().Money;
                         Dbg.Log("Money cached: " + money);
                     }));
+            }
+        }
+        
+        [Category(CategoryCommon)]
+        public bool Internet_Connection_Available
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                bool res = NetworkUtils.IsInternetConnectionAvailable();
+                Dbg.Log("Internet connection available: " + res + " " + Application.internetReachability);
             }
         }
 
