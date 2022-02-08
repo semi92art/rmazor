@@ -135,7 +135,7 @@ namespace RMAZOR.Views.Helpers
         private float GetDelay(bool _Appear, EAppearTransitionType _Type, V2Int? _Position = null)
         {
             const float coeff = 0.05f;
-            var mazeSize = Model.Data.MazeSize;
+            var mazeSize = Model.Data.Info.Size;
             switch (_Type)
             {
                 case EAppearTransitionType.Circled:

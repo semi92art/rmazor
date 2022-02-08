@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Common.Entities;
 using RMAZOR.Models.MazeInfos;
 
@@ -10,7 +9,6 @@ namespace RMAZOR.Models
     
     public interface IModelData
     {
-        public V2Int    MazeSize           { get; }
         public V2Int[]  PathItems          { get; }
         MazeInfo        Info               { get; set; }
         MazeOrientation Orientation        { get; set; }
@@ -30,22 +28,6 @@ namespace RMAZOR.Models
         
         public MazeOrientation Orientation { get; set; } = MazeOrientation.North;
         public bool ProceedingControls { get; set; } = true;
-
-        public V2Int MazeSize
-        {
-            get
-            {
-                var mazeItems = m_Info.MazeItems
-                    .Where(_Item => _Item.Type != EMazeItemType.Block)
-                    .ToList();
-                var pathItems = m_Info.PathItems;
-                int maxX = mazeItems.Any() ? mazeItems.Max(_Item => _Item.Position.X + 1) : 0;
-                maxX = Math.Max(maxX, pathItems.Max(_Item => _Item.Position.X + 1));
-                int maxY = mazeItems.Any() ? mazeItems.Max(_Item => _Item.Position.Y + 1) : 0;
-                maxY = Math.Max(maxY, pathItems.Max(_Item => _Item.Position.Y + 1));
-                return new V2Int(maxX, maxY);
-            }
-        }
 
         public V2Int[] PathItems { get; private set; }
 
