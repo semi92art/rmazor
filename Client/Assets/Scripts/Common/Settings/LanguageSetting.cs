@@ -5,7 +5,7 @@ using Common.Entities;
 using Common.Enums;
 using UnityEngine.Events;
 
-namespace Settings
+namespace Common.Settings
 {
     public interface ILanguageSetting : ISetting<Language>
     {

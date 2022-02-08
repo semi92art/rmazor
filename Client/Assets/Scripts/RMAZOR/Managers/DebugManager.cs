@@ -1,12 +1,13 @@
 ﻿using Common;
 using Common.Helpers;
+using Common.Managers.Advertising;
+using Common.Managers.Scores;
+using Common.Settings;
 using GameHelpers;
 using Managers;
-using Managers.Advertising;
 using RMAZOR.Views.InputConfigurators;
 using Settings;
 using DebugConsole;
-using Managers.Scores;
 
 public interface IDebugManager : IInit
 {

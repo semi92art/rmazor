@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Common;
 using Common.Helpers;
 using Common.Utils;
 using Newtonsoft.Json;
@@ -10,7 +9,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using Object = UnityEngine.Object;
 
-namespace Managers
+namespace Common.Managers
 {
     public interface IAssetBundleManager : IInit
     {

@@ -1,8 +1,7 @@
-﻿using Common;
-using Common.Entities;
+﻿using Common.Entities;
 using UnityEngine.Events;
 
-namespace Settings
+namespace Common.Settings
 {
     public interface ISoundSetting : ISetting<bool> { }
     

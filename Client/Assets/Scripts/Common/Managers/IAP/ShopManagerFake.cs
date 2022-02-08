@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using Common;
 using Common.Constants;
 using Common.Extensions;
 using Common.Utils;
 using UnityEngine.Events;
 
-namespace Managers.IAP
+namespace Common.Managers.IAP
 {
     // ReSharper disable once ClassNeverInstantiated.Global
     public class ShopManagerFake : ShopManagerBase

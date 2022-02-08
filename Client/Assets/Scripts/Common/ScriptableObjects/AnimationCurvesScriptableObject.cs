@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
-using Malee.List;
+using Common.Helpers;
+using Common.Helpers.Attributes;
 using UnityEngine;
 
-namespace ScriptableObjects
+namespace Common.ScriptableObjects
 {
     [Serializable]
     public class AnimCurveObj

@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Common;
 using Common.Extensions;
 using Common.Utils;
 using UnityEngine.Events;
 using UnityEngine.Purchasing;
 
-namespace Managers.IAP
+namespace Common.Managers.IAP
 {
     public enum EShopProductResult
     {

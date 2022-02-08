@@ -1,10 +1,9 @@
-﻿using Common;
-using Common.Exceptions;
+﻿using Common.Exceptions;
+using Common.Settings;
 using Lofelt.NiceVibrations;
-using Settings;
 using UnityEngine.Events;
 
-namespace Managers
+namespace Common.Managers
 {
 
     public enum EHapticsPresetType

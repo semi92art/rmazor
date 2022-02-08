@@ -8,98 +8,99 @@ using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
-using MathUtils = Common.Utils.MathUtils;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 
-public static class CommonUtils
+namespace Common.Utils
 {
-    public static bool IsRunningOnDevice()
+    public static class CommonUtils
     {
-        return new[] {RuntimePlatform.Android, RuntimePlatform.IPhonePlayer}.Contains(Application.platform);
-    }
+        public static bool IsRunningOnDevice()
+        {
+            return new[] {RuntimePlatform.Android, RuntimePlatform.IPhonePlayer}.Contains(Application.platform);
+        }
 
-    public static string GetOsName()
-    {
+        public static string GetOsName()
+        {
 #if UNITY_ANDROID
-        return "Android";
+            return "Android";
 #elif UNITY_IPHONE || UNITY_IOS
             return "iOS";
 #endif
-        return null;
-    }
-
-    public static bool CheckForInternetConnection()
-    {
-        return CheckForConnection("http://google.com/generate_204");
-    }
-
-    private static bool CheckForConnection(string _Url)
-    {
-        int tryCount = 0;
-        while (tryCount < 3)
-        {
-            try
-            {
-                using (var client = new WebClient())
-                using (client.OpenRead(_Url)) 
-                    return true; 
-            }
-            catch
-            {
-                tryCount++;
-            }
+            return null;
         }
-        return false;
-    }
 
-    public static UnityAction WaitForSecs(float _Seconds, Action _OnFinish)
-    {
-        return () =>
+        public static bool CheckForInternetConnection()
         {
-            int millisecs = Mathf.RoundToInt(_Seconds * 1000);
-            Thread.Sleep(millisecs);
-            _OnFinish?.Invoke();
-        };
-    }
-        
-    //https://answers.unity.com/questions/246116/how-can-i-generate-a-guid-or-a-uuid-from-within-un.html
-    public static string GetUniqueId()
-    {
-        var epochStart = new DateTime(1970, 1, 1, 8, 0, 0, DateTimeKind.Utc);
-        double timestamp = (DateTime.UtcNow - epochStart).TotalSeconds;
-         
-        string uniqueId = Application.systemLanguage                           //Language
-                          + "-" + Application.platform                         //Device    
-                          + "-" + $"{Convert.ToInt32(timestamp):X}"            //Time
-                          + "-" + $"{Convert.ToInt32(Time.time * 1000000):X}"  //Time in game
-                          + "-" + $"{MathUtils.RandomGen.Next(1000000000):X}"; //random number
-        return uniqueId;
-    }
+            return CheckForConnection("http://google.com/generate_204");
+        }
 
-    public static GameObject FindOrCreateGameObject(string _Name, out bool _WasFound)
-    {
-        var go = GameObject.Find(_Name);
-        _WasFound = go != null;
-        if (go == null)
-            go = new GameObject(_Name);
-        return go;
-    }
+        private static bool CheckForConnection(string _Url)
+        {
+            int tryCount = 0;
+            while (tryCount < 3)
+            {
+                try
+                {
+                    using (var client = new WebClient())
+                    using (client.OpenRead(_Url)) 
+                        return true; 
+                }
+                catch
+                {
+                    tryCount++;
+                }
+            }
+            return false;
+        }
+
+        public static UnityAction WaitForSecs(float _Seconds, Action _OnFinish)
+        {
+            return () =>
+            {
+                int millisecs = Mathf.RoundToInt(_Seconds * 1000);
+                Thread.Sleep(millisecs);
+                _OnFinish?.Invoke();
+            };
+        }
         
-    public static void GetTouch(
-        int         _Index,
-        out int     _ID,
-        out Vector2 _Position,
-        out float   _Pressure,
-        out bool    _Began, 
-        out bool    _Ended)
-    {
+        //https://answers.unity.com/questions/246116/how-can-i-generate-a-guid-or-a-uuid-from-within-un.html
+        public static string GetUniqueId()
+        {
+            var epochStart = new DateTime(1970, 1, 1, 8, 0, 0, DateTimeKind.Utc);
+            double timestamp = (DateTime.UtcNow - epochStart).TotalSeconds;
+         
+            string uniqueId = Application.systemLanguage                           //Language
+                              + "-" + Application.platform                         //Device    
+                              + "-" + $"{Convert.ToInt32(timestamp):X}"            //Time
+                              + "-" + $"{Convert.ToInt32(Time.time * 1000000):X}"  //Time in game
+                              + "-" + $"{MathUtils.RandomGen.Next(1000000000):X}"; //random number
+            return uniqueId;
+        }
+
+        public static GameObject FindOrCreateGameObject(string _Name, out bool _WasFound)
+        {
+            var go = GameObject.Find(_Name);
+            _WasFound = go != null;
+            if (go == null)
+                go = new GameObject(_Name);
+            return go;
+        }
+        
+        public static void GetTouch(
+            int         _Index,
+            out int     _ID,
+            out Vector2 _Position,
+            out float   _Pressure,
+            out bool    _Began, 
+            out bool    _Ended)
+        {
 #if ENABLE_INPUT_SYSTEM
-        var touch = Touch.activeTouches[_Index];
-        _ID       = touch.finger.index;
-        _Position = touch.screenPosition;
-        _Pressure = touch.pressure;
-        _Began    = touch.phase == UnityEngine.InputSystem.TouchPhase.Began;
-        _Ended    = touch.phase == UnityEngine.InputSystem.TouchPhase.Canceled;
+            var touch = Touch.activeTouches[_Index];
+            _ID       = touch.finger.index;
+            _Position = touch.screenPosition;
+            _Pressure = touch.pressure;
+            _Began    = touch.phase == UnityEngine.InputSystem.TouchPhase.Began;
+            _Ended    = touch.phase == UnityEngine.InputSystem.TouchPhase.Canceled;
 #else
 			var touch = Input.GetTouch(_Index);
 			_ID       = touch.fingerId;
@@ -108,12 +109,12 @@ public static class CommonUtils
             _Began    = touch.phase == TouchPhase.Began;
             _Ended    = touch.phase == TouchPhase.Ended;
 #endif
-    }
+        }
 
-    public static void ShowAlertDialog(string _Title, string _Text)
-    {
+        public static void ShowAlertDialog(string _Title, string _Text)
+        {
 #if UNITY_EDITOR
-        EditorUtility.DisplayDialog(_Title, _Text, "OK");
+            EditorUtility.DisplayDialog(_Title, _Text, "OK");
 #elif UNITY_ANDROID
             MTAssets.NativeAndroidToolkit.NativeAndroid.Dialogs
                 .ShowSimpleAlertDialog(_Title, _Text);
@@ -125,30 +126,31 @@ public static class CommonUtils
             alert.AddAction(action);
             alert.Present();
 #endif
-    }
+        }
 
-    public static byte[] ToByteArray<T>(T _Obj)
-    {
-        if(_Obj == null)
-            return null;
-        string str = JsonConvert.SerializeObject(_Obj);
-        byte[] bytes = Encoding.ASCII.GetBytes(str);
-        return bytes;
-    }
+        public static byte[] ToByteArray<T>(T _Obj)
+        {
+            if(_Obj == null)
+                return null;
+            string str = JsonConvert.SerializeObject(_Obj);
+            byte[] bytes = Encoding.ASCII.GetBytes(str);
+            return bytes;
+        }
 
-    public static T FromByteArray<T>(byte[] _Data)
-    {
-        if(_Data == null)
-            return default;
-        string str = Encoding.ASCII.GetString(_Data);
-        var res = JsonConvert.DeserializeObject<T>(str);        
-        return res;
-    }
+        public static T FromByteArray<T>(byte[] _Data)
+        {
+            if(_Data == null)
+                return default;
+            string str = Encoding.ASCII.GetString(_Data);
+            var res = JsonConvert.DeserializeObject<T>(str);        
+            return res;
+        }
 
-    public static int StringToHash(string _S)
-    {
-        var hasher = MD5.Create();
-        var hashed = hasher.ComputeHash(Encoding.UTF8.GetBytes(_S));
-        return BitConverter.ToInt32(hashed, 0);
+        public static int StringToHash(string _S)
+        {
+            var hasher = MD5.Create();
+            var hashed = hasher.ComputeHash(Encoding.UTF8.GetBytes(_S));
+            return BitConverter.ToInt32(hashed, 0);
+        }
     }
 }

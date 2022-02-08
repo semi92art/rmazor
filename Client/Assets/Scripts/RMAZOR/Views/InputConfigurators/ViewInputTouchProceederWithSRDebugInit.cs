@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using Common.CameraProviders;
 using Common.Helpers;
+using Common.Managers;
 using Common.Ticker;
 using Common.Utils;
 using GameHelpers;

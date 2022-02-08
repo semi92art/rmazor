@@ -1,6 +1,6 @@
 ﻿using UnityEngine.Purchasing;
 
-namespace Managers.IAP
+namespace Common.Managers.IAP
 {
     // ReSharper disable once InconsistentNaming
     // ReSharper disable once UnusedType.Global

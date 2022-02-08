@@ -2,7 +2,7 @@
 using Common.Entities;
 using UnityEngine.Events;
 
-namespace Settings
+namespace Common.Settings
 {
     public interface ISetting<T>
     {

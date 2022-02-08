@@ -1,8 +1,8 @@
 ﻿using System;
+using Common.SpawnPools;
 using RMAZOR.Models.ProceedInfos;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.MazeItems.Props;
-using SpawnPools;
 using UnityEngine;
 
 namespace RMAZOR.Views.MazeItems

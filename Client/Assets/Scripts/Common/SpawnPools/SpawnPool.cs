@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace SpawnPools
+namespace Common.SpawnPools
 {
     public class SpawnPool<T> : SpawnPoolBase<T> where T : class, ISpawnPoolItem
     {

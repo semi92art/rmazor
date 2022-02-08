@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Common;
+using Common.Helpers;
+using Common.Managers.Advertising;
 using GameHelpers;
-using Managers.Advertising;
 using RMAZOR;
 using Unity.RemoteConfig;
 using UnityEngine.Events;

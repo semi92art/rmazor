@@ -3,9 +3,10 @@ using System.Linq;
 using System.Xml.Linq;
 using Common.Entities;
 using Common.Extensions;
+using Common.Utils;
 using UnityEngine.Events;
 
-namespace Managers.Advertising
+namespace Common.Managers.Advertising
 {
     [Flags]
     public enum EAdsProvider

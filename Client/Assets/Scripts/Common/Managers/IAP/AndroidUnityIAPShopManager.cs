@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections;
-using Common;
 using Common.Utils;
 using UnityEngine;
 using UnityEngine.Purchasing;
 
-namespace Managers.IAP
+namespace Common.Managers.IAP
 {
     // ReSharper disable once InconsistentNaming
     // ReSharper disable once UnusedType.Global

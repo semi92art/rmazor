@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR
 using System.Collections.Generic;
 using System.IO;
+using Common.Managers;
 using Common.Utils;
 using Newtonsoft.Json;
 using RMAZOR;

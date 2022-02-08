@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UI
+namespace Common.UI
 {
     [Flags]
     public enum EUiCategory

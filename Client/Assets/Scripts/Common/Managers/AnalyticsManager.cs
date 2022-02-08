@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using Common;
 using Common.Exceptions;
 using Common.Helpers;
-using GameHelpers;
-using Managers.Advertising;
+using Common.Managers.Advertising;
+using Common.Utils;
 using Unity.Services.Analytics;
 using Unity.Services.Core;
 using UnityEngine;
 using UnityEngine.Analytics;
-using UnityEngine.Events;
 
-namespace Managers
+namespace Common.Managers
 {
     public interface IAnalyticsManager : IInit
     {

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Malee.List {
+namespace Common.Helpers.Attributes {
 
 	public class ReorderableAttribute : PropertyAttribute {
 

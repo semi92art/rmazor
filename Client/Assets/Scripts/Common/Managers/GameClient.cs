@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using Common;
 using Common.Entities;
 using Common.Helpers;
 using Common.Network;
@@ -11,7 +10,7 @@ using Common.Utils;
 using Newtonsoft.Json;
 using UnityEngine.Networking;
 
-namespace Network
+namespace Common.Managers
 {
     public class GameClient : InitBase, IGameClient
     {

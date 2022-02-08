@@ -4,7 +4,7 @@ using Common.Helpers;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI.Factories
+namespace Common.Utils
 {
     public static class UIUtils
     {

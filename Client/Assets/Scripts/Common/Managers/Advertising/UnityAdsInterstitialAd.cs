@@ -1,7 +1,7 @@
-﻿using Common.Ticker;
-using GameHelpers;
+﻿using Common.Helpers;
+using Common.Ticker;
 
-namespace Managers.Advertising
+namespace Common.Managers.Advertising
 {
     public interface IUnityAdsInterstitialAd : IUnityAdsAd { }
     

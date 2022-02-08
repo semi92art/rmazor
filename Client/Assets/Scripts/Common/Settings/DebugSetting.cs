@@ -1,10 +1,9 @@
-﻿using Common;
-using Common.Entities;
+﻿using Common.Entities;
+using Common.Helpers;
 using Common.Utils;
-using GameHelpers;
 using UnityEngine.Events;
 
-namespace Settings
+namespace Common.Settings
 {
     public interface IDebugSetting : ISetting<bool> { }
     

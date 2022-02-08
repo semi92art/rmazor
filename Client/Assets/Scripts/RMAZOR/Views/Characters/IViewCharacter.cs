@@ -1,8 +1,8 @@
 ﻿using Common.Entities;
+using Common.SpawnPools;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Common;
-using SpawnPools;
 
 namespace RMAZOR.Views.Characters
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Common.Extensions;
 using Common.Providers;
 using Common.Ticker;
-using DialogViewers;
+using Common.UI;
 using Managers;
 using RMAZOR.UI.Panels;
 using RMAZOR.Views.Common;

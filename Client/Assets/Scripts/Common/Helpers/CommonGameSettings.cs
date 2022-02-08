@@ -1,8 +1,7 @@
-﻿using Common;
-using Managers.Advertising;
+﻿using Common.Managers.Advertising;
 using UnityEngine;
 
-namespace GameHelpers
+namespace Common.Helpers
 {
 
     

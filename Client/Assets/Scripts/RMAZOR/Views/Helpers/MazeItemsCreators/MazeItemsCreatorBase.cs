@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Common.Entities;
 using Common.Exceptions;
+using Common.SpawnPools;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.MazeItems;
-using SpawnPools;
 
 namespace RMAZOR.Views.Helpers.MazeItemsCreators
 {

@@ -2,12 +2,11 @@
 using Common.Entities.UI;
 using Common.Providers;
 using Common.Ticker;
-using DialogViewers;
+using Common.UI;
 using Managers;
 using RMAZOR.Views.Common;
 using UI;
 using UI.PanelItems.Shop_Items;
-using UI.Panels;
 using UnityEngine;
 
 namespace RMAZOR.UI.Panels.ShopPanels

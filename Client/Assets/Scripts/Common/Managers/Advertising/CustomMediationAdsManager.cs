@@ -1,15 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Common;
 using Common.Entities;
 using Common.Helpers;
 using Common.Ticker;
 using Common.Utils;
-using GameHelpers;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Managers.Advertising
+namespace Common.Managers.Advertising
 {
     public interface IAdsManager : IInit
     {

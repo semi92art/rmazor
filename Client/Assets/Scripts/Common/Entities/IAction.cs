@@ -1,6 +1,6 @@
 ﻿using UnityEngine.Events;
 
-namespace UI
+namespace Common.Entities
 {
     public interface IAction
     { 

@@ -6,7 +6,7 @@ using Common;
 using Common.CameraProviders;
 using Common.Helpers;
 using Common.Providers;
-using DialogViewers;
+using Common.UI;
 using Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;

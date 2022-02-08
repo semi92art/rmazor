@@ -9,18 +9,18 @@ using Common.Entities.UI;
 using Common.Enums;
 using Common.Exceptions;
 using Common.Extensions;
+using Common.Helpers;
 using Common.Providers;
+using Common.Settings;
 using Common.Ticker;
+using Common.UI;
 using Common.Utils;
-using DialogViewers;
 using GameHelpers;
 using Managers;
 using RMAZOR.Views.Common;
 using Settings;
 using UI;
-using UI.Factories;
 using UI.PanelItems.Setting_Panel_Items;
-using UI.Panels;
 using UnityEngine;
 
 namespace RMAZOR.UI.Panels

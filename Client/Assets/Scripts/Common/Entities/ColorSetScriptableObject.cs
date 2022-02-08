@@ -1,5 +1,6 @@
 ﻿using System;
-using Malee.List;
+using Common.Helpers;
+using Common.Helpers.Attributes;
 using UnityEngine;
 
 namespace Common.Entities

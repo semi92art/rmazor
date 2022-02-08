@@ -1,5 +1,6 @@
 ﻿using System;
 using Common.CameraProviders;
+using Common.Managers;
 using Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;

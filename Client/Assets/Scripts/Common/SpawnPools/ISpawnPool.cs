@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SpawnPools
+namespace Common.SpawnPools
 {
     public interface ISpawnPool<T> : IList<T>
     {

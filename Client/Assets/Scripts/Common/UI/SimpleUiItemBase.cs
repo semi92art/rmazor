@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Common;
 using Common.Constants;
 using Common.Extensions;
 using Common.Managers;
@@ -11,7 +10,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI
+namespace Common.UI
 {
     public abstract class SimpleUiItemBase : MonoBehaviour
     {

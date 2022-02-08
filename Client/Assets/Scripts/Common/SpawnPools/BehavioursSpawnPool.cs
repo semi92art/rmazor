@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using UnityEngine;
 
-namespace SpawnPools
+namespace Common.SpawnPools
 {
     /// <summary>
     /// Spawn pool for Behaviour objects

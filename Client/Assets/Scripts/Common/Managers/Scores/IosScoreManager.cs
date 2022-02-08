@@ -1,11 +1,10 @@
-﻿using Common;
-using Common.Constants;
+﻿using Common.Constants;
 using Common.Entities;
 using Common.Network;
 using Common.Ticker;
 using UnityEngine.Events;
 
-namespace Managers.Scores
+namespace Common.Managers.Scores
 {
     public class IosScoreManager : ScoreManagerBase
     {

@@ -1,8 +1,9 @@
 ﻿using System;
-using Malee.List;
+using Common.Helpers;
+using Common.Helpers.Attributes;
 using UnityEngine;
 
-namespace ScriptableObjects
+namespace Common.ScriptableObjects
 {
     [CreateAssetMenu(fileName = "shop_items_set", menuName = "Configs and Sets/Shop Items Set")]
     public class ShopItemsScriptableObject : ScriptableObject

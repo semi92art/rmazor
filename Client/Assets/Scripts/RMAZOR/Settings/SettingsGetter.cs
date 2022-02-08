@@ -1,4 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+
+using Common.Settings;
+
 namespace Settings
 {
     public interface ISettingsGetter

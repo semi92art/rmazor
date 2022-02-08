@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Common.Utils;
 
-namespace SpawnPools
+namespace Common.SpawnPools
 {
 public abstract class SpawnPoolBase<T> : ISpawnPool<T>
     {

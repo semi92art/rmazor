@@ -2,12 +2,11 @@
 using Common.Enums;
 using Common.Providers;
 using Common.Ticker;
-using DialogViewers;
+using Common.UI;
 using Managers;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.MazeItems;
 using UI;
-using UI.Panels;
 using UnityEngine;
 
 namespace RMAZOR.UI.Panels

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Common.Constants;
 using Common.Entities;
+using Common.SpawnPools;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.MazeItems;
 using RMAZOR.Views.MazeItems.Props;
-using SpawnPools;
 using UnityEngine;
 using Zenject;
 

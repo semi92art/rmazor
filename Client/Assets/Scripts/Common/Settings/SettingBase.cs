@@ -3,7 +3,7 @@ using Common.Entities;
 using Common.Utils;
 using UnityEngine.Events;
 
-namespace Settings
+namespace Common.Settings
 {
     public abstract class SettingBase<T> : ISetting<T>
     {

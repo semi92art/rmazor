@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using Common;
 using UnityEngine.Events;
 
-namespace Managers.IAP
+namespace Common.Managers.IAP
 {
     public interface IShopManager : IInit
     {

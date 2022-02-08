@@ -1,12 +1,10 @@
 ﻿using System.Linq;
-using Common;
 using Common.Entities;
 using Common.Utils;
-using GameHelpers;
 using UnityEngine.Advertisements;
 using UnityEngine.Events;
 
-namespace Managers.Advertising
+namespace Common.Managers.Advertising
 {
     public class UnityAdsProvider : AdsProviderBase, IUnityAdsInitializationListener
     {

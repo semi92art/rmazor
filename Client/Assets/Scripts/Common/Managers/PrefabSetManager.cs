@@ -1,16 +1,14 @@
 ﻿using System.Linq;
-using Common;
 using Common.Entities;
 using Common.Extensions;
 using Common.Utils;
-using Managers;
-using UnityEngine;
-
-#if UNITY_EDITOR
 using UnityEditor;
+using UnityEngine;
+#if UNITY_EDITOR
+
 #endif
 
-namespace GameHelpers
+namespace Common.Managers
 {
     public class PrefabEntity<T> : Entity<T> where T : Object
     {

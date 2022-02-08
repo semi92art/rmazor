@@ -1,4 +1,4 @@
-﻿namespace SpawnPools
+﻿namespace Common.SpawnPools
 {
     public interface IActivated
     {

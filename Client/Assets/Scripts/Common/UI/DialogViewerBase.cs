@@ -4,15 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Common.CameraProviders;
 using Common.Extensions;
+using Common.Managers;
 using Common.Ticker;
 using Common.Utils;
-using GameHelpers;
-using UI.Panels;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace DialogViewers
+namespace Common.UI
 {
     public abstract class DialogViewerBase : IDialogViewerBase
     {

@@ -1,9 +1,8 @@
-﻿using Common;
+﻿using Common.Helpers;
 using Common.Ticker;
-using GameHelpers;
 using UnityEngine.Advertisements;
 
-namespace Managers.Advertising
+namespace Common.Managers.Advertising
 {
     public interface IUnityAdsRewardedAd : IUnityAdsAd { }
     

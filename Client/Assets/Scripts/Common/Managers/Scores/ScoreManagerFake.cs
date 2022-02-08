@@ -1,10 +1,9 @@
-﻿using Common;
-using Common.Entities;
+﻿using Common.Entities;
 using Common.Network;
 using Common.Ticker;
 using UnityEngine.Events;
 
-namespace Managers.Scores
+namespace Common.Managers.Scores
 {
     public class ScoreManagerFake : ScoreManagerBase
 

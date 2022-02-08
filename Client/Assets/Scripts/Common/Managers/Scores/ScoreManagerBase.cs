@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Common;
 using Common.Entities;
 using Common.Helpers;
 using Common.Network;
@@ -11,7 +10,7 @@ using Common.Utils;
 using Newtonsoft.Json;
 using UnityEngine.Events;
 
-namespace Managers.Scores
+namespace Common.Managers.Scores
 {
     public delegate void ScoresEventHandler(ScoresEventArgs _Args);
 

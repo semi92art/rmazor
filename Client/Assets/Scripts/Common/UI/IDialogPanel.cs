@@ -1,7 +1,7 @@
 ﻿using Common.Enums;
 using UnityEngine;
 
-namespace UI.Panels
+namespace Common.UI
 {
     public interface IDialogPanel
     {

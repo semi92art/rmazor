@@ -1,4 +1,4 @@
-﻿namespace UI
+﻿namespace Common.UI
 {
     public class SimpleUiDialogPanelView : SimpleUiItemBase { }
 }

@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Common;
 using UnityEngine.Events;
 using UnityEngine.Purchasing;
 
-namespace Managers.IAP
+namespace Common.Managers.IAP
 {
     public class ProductInfo
     {

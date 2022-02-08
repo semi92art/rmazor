@@ -1,6 +1,6 @@
 ﻿using UnityEngine.Events;
 
-namespace Managers.Advertising
+namespace Common.Managers.Advertising
 {
     public interface IAdBase
     {

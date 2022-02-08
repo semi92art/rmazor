@@ -1,10 +1,9 @@
-﻿using Common;
+﻿using Common.Helpers;
 using Common.Ticker;
-using GameHelpers;
 using UnityEngine.Advertisements;
 using UnityEngine.Events;
 
-namespace Managers.Advertising
+namespace Common.Managers.Advertising
 {
     public interface IUnityAdsAd : IAdBase, IUnityAdsLoadListener, IUnityAdsShowListener { }
     

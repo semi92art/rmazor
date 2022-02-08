@@ -1,9 +1,8 @@
-﻿using Common;
-using Common.Extensions;
+﻿using Common.Extensions;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI
+namespace Common.UI
 {
     public class SimpleUiButtonView : SimpleUiItemBase
     {

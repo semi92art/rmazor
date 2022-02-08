@@ -2,10 +2,10 @@
 using Common;
 using Common.Helpers;
 using Common.Managers;
+using Common.Managers.Advertising;
+using Common.Managers.IAP;
+using Common.Managers.Scores;
 using GameHelpers;
-using Managers.Advertising;
-using Managers.IAP;
-using Managers.Scores;
 using RMAZOR.Models;
 using RMAZOR.Views;
 

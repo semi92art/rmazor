@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Common;
 using Common.CameraProviders;
 using Common.Constants;
+using Common.Entities;
 using Common.Entities.UI;
 using Common.Enums;
 using Common.Extensions;
@@ -10,16 +10,12 @@ using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
-using GameHelpers;
 using Lean.Common;
-using UI;
-using UI.Factories;
-using UI.Panels;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace DialogViewers
+namespace Common.UI
 {
     public interface IBigDialogViewer : IDialogViewerBase
     {

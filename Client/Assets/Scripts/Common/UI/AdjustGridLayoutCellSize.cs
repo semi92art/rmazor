@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 //https://forum.unity.com/threads/solved-how-to-make-grid-layout-group-cell-size-x-auto-expand.448534/
-namespace UI
+namespace Common.UI
 {
     [ExecuteInEditMode]
     [RequireComponent(typeof(GridLayoutGroup))]

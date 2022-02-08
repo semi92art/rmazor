@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Common;
+using Common.Managers.Advertising;
+using Common.Managers.Scores;
 using Managers;
-using Managers.Advertising;
-using Managers.Scores;
 using RMAZOR.Views.InputConfigurators;
 
 namespace DebugConsole

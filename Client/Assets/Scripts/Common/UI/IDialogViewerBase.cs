@@ -1,8 +1,7 @@
 ﻿using System;
-using UI.Panels;
 using UnityEngine;
 
-namespace DialogViewers
+namespace Common.UI
 {
     public interface IDialogViewerBase
     {

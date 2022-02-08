@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Common;
 using Common.Entities;
 using Common.Utils;
-using GameHelpers;
 using GoogleMobileAds.Api;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Managers.Advertising
+namespace Common.Managers.Advertising
 {
     public class GoogleAdMobAdsProvider : AdsProviderBase
     {
