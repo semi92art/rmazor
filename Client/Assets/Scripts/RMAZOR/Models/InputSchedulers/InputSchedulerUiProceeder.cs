@@ -2,11 +2,10 @@
 using System.Linq;
 using Common;
 using Common.Utils;
-using GameHelpers;
+using RMAZOR.GameHelpers;
 using RMAZOR.Models.MazeInfos;
 using UnityEngine;
 using UnityEngine.Events;
-using Utils;
 using Random = UnityEngine.Random;
 
 namespace RMAZOR.Models.InputSchedulers

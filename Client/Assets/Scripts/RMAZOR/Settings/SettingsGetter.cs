@@ -2,7 +2,7 @@
 
 using Common.Settings;
 
-namespace Settings
+namespace RMAZOR.Settings
 {
     public interface ISettingsGetter
     {

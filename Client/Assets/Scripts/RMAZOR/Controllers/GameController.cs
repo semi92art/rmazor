@@ -1,8 +1,7 @@
 ﻿using Common;
 using Common.Helpers;
 using Common.Utils;
-using GameHelpers;
-using Managers;
+using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views;
 using RMAZOR.Views.InputConfigurators;

@@ -1,13 +1,11 @@
 ﻿using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
-using Managers;
-using RMAZOR.Views.Common;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace UI.PanelItems.Shop_Items
+namespace RMAZOR.UI.PanelItems.Shop_Items
 {
     public class ShopMainItem : ShopItemBase
     {

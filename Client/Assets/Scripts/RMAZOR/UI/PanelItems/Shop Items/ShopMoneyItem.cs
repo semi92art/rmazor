@@ -3,7 +3,7 @@ using Common.Providers;
 using Common.Ticker;
 using UnityEngine.Events;
 
-namespace UI.PanelItems.Shop_Items
+namespace RMAZOR.UI.PanelItems.Shop_Items
 {
     public class ShopMoneyItem : ShopItemBase
     {

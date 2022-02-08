@@ -15,12 +15,11 @@ using Common.Settings;
 using Common.Ticker;
 using Common.UI;
 using Common.Utils;
-using GameHelpers;
-using Managers;
+using RMAZOR.Managers;
+using RMAZOR.Settings;
+using RMAZOR.UI.PanelItems.Setting_Panel_Items;
 using RMAZOR.Views.Common;
-using Settings;
 using UI;
-using UI.PanelItems.Setting_Panel_Items;
 using UnityEngine;
 
 namespace RMAZOR.UI.Panels

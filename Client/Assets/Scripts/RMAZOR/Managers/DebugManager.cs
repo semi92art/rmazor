@@ -3,75 +3,74 @@ using Common.Helpers;
 using Common.Managers.Advertising;
 using Common.Managers.Scores;
 using Common.Settings;
-using GameHelpers;
-using Managers;
 using RMAZOR.Views.InputConfigurators;
-using Settings;
-using DebugConsole;
 
-public interface IDebugManager : IInit
+namespace RMAZOR.Managers
 {
-    event VisibilityChangedHandler VisibilityChanged;
-}
-
-public class DebugManager : InitBase, IDebugManager
-{
-    #region inject
-
-    // ReSharper disable once UnusedAutoPropertyAccessor.Local
-    private CommonGameSettings          Settings          { get; }
-    private IViewInputCommandsProceeder CommandsProceeder { get; }
-    private IDebugSetting               DebugSetting      { get; }
-    private IAdsManager                 AdsManager        { get; }
-    private IScoreManager               ScoreManager      { get; }
-
-    public DebugManager(
-        CommonGameSettings          _Settings,
-        IViewInputCommandsProceeder _CommandsProceeder,
-        IDebugSetting               _DebugSetting,
-        IAdsManager                 _AdsManager,
-        IScoreManager               _ScoreManager)
+    public interface IDebugManager : IInit
     {
-        Settings          = _Settings;
-        CommandsProceeder = _CommandsProceeder;
-        DebugSetting      = _DebugSetting;
-        AdsManager        = _AdsManager;
-        ScoreManager      = _ScoreManager;
+        event VisibilityChangedHandler VisibilityChanged;
     }
 
-    #endregion
-
-    #region api
-
-    public event VisibilityChangedHandler VisibilityChanged;
-    
-    public override void Init()
+    public class DebugManager : InitBase, IDebugManager
     {
-        DebugConsoleView.Instance.VisibilityChanged += _Value => VisibilityChanged?.Invoke(_Value);
-        DebugSetting.OnValueSet = EnableDebug;
-        InitDebugConsole();
-        EnableDebug(DebugSetting.Get());
-        base.Init();
-    }
+        #region inject
+
+        // ReSharper disable once UnusedAutoPropertyAccessor.Local
+        private CommonGameSettings          Settings          { get; }
+        private IViewInputCommandsProceeder CommandsProceeder { get; }
+        private IDebugSetting               DebugSetting      { get; }
+        private IAdsManager                 AdsManager        { get; }
+        private IScoreManager               ScoreManager      { get; }
+
+        public DebugManager(
+            CommonGameSettings          _Settings,
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IDebugSetting               _DebugSetting,
+            IAdsManager                 _AdsManager,
+            IScoreManager               _ScoreManager)
+        {
+            Settings          = _Settings;
+            CommandsProceeder = _CommandsProceeder;
+            DebugSetting      = _DebugSetting;
+            AdsManager        = _AdsManager;
+            ScoreManager      = _ScoreManager;
+        }
+
+        #endregion
+
+        #region api
+
+        public event VisibilityChangedHandler VisibilityChanged;
     
-    #endregion
+        public override void Init()
+        {
+            DebugConsoleView.Instance.VisibilityChanged += _Value => VisibilityChanged?.Invoke(_Value);
+            DebugSetting.OnValueSet = EnableDebug;
+            InitDebugConsole();
+            EnableDebug(DebugSetting.Get());
+            base.Init();
+        }
+    
+        #endregion
 
-    #region nonpublic methods
+        #region nonpublic methods
 
-    private void InitDebugConsole()
-    {
+        private void InitDebugConsole()
+        {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        DebugConsoleView.Instance.Init(CommandsProceeder, AdsManager, ScoreManager);
+            DebugConsoleView.Instance.Init(CommandsProceeder, AdsManager, ScoreManager);
 #else
         if (Settings.DebugEnabled)
             DebugConsoleView.Instance.Init(CommandsProceeder, AdsManager, ScoreManager);
 #endif
-    }
+        }
     
-    private static void EnableDebug(bool _Enable)
-    {
-        DebugConsoleView.Instance.enabled = _Enable;
-    }
+        private static void EnableDebug(bool _Enable)
+        {
+            DebugConsoleView.Instance.enabled = _Enable;
+        }
 
-    #endregion
+        #endregion
+    }
 }

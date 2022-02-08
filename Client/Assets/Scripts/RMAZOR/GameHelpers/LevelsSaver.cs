@@ -4,14 +4,11 @@ using System.IO;
 using Common.Managers;
 using Common.Utils;
 using Newtonsoft.Json;
-using RMAZOR;
-using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using UnityEditor;
 using UnityEngine;
-using Utils;
 
-namespace GameHelpers
+namespace RMAZOR.GameHelpers
 {
     public class LevelsSaver : LevelsLoader
     {

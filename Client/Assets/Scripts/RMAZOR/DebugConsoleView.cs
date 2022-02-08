@@ -6,17 +6,15 @@ using Common.Managers;
 using Common.Managers.Advertising;
 using Common.Managers.Scores;
 using Common.Utils;
-using GameHelpers;
 using Lean.Common;
-using Managers;
-using RMAZOR;
+using RMAZOR.DebugConsole;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-namespace DebugConsole
+namespace RMAZOR
 {
     public delegate void VisibilityChangedHandler(bool _Visible);
     

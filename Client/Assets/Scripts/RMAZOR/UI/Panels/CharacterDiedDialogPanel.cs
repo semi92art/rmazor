@@ -10,7 +10,7 @@ using Common.Providers;
 using Common.Ticker;
 using Common.UI;
 using Common.Utils;
-using Managers;
+using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
 using TMPro;

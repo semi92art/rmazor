@@ -3,12 +3,10 @@ using Common.Helpers;
 using Common.Managers;
 using Common.Settings;
 using Common.Ticker;
-using GameHelpers;
 using RMAZOR.Models;
 using RMAZOR.Views;
-using Settings;
 
-namespace Managers.Audio
+namespace RMAZOR.Managers
 {
     public interface IAudioManagerRmazor : IAudioManager, IOnLevelStageChanged { }
     

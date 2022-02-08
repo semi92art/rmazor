@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace GameHelpers
+namespace RMAZOR.GameHelpers
 {
     public class AnimationEventCounter : MonoBehaviour
     {

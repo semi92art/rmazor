@@ -1,13 +1,12 @@
 ﻿using System;
 using Common.CameraProviders;
 using Common.Managers;
-using Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace GameHelpers
+namespace RMAZOR.GameHelpers
 {
     public class ButtonOnRaycast : MonoBehaviour
     {

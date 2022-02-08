@@ -1,9 +1,8 @@
 ﻿using Common;
-using RMAZOR.UI.Panels;
 using RMAZOR.UI.Panels.ShopPanels;
 using UnityEngine.Events;
 
-namespace RMAZOR.Views.UI
+namespace RMAZOR.UI.Panels
 {
     public interface IDialogPanels : IInit
     {

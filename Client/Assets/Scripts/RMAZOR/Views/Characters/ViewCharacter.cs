@@ -4,7 +4,7 @@ using Common.Enums;
 using Common.Helpers;
 using Common.Managers;
 using Common.Utils;
-using Managers;
+using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common;

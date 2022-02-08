@@ -6,7 +6,7 @@ using Common.Extensions;
 using Common.Helpers;
 using Common.SpawnPools;
 using Common.Utils;
-using Managers;
+using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Helpers.MazeItemsCreators;

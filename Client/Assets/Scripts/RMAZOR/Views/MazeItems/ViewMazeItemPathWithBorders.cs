@@ -1,7 +1,7 @@
 ﻿using Common.Helpers;
 using Common.Providers;
 using Common.Ticker;
-using Managers;
+using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.ContainerGetters;

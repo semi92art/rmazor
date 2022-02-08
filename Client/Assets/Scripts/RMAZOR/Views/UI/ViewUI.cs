@@ -5,8 +5,9 @@ using Common.Extensions;
 using Common.Ticker;
 using Common.UI;
 using Common.Utils;
-using Managers;
+using RMAZOR.Managers;
 using RMAZOR.Models;
+using RMAZOR.UI.Panels;
 using RMAZOR.Views.InputConfigurators;
 using Random = UnityEngine.Random;
 

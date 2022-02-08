@@ -6,12 +6,11 @@ using Common.Entities;
 using Common.Enums;
 using Common.Utils;
 using Lean.Localization;
-using RMAZOR;
 using RMAZOR.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace DebugConsole
+namespace RMAZOR.DebugConsole
 {
     public static class DebugConsoleCommands
     {

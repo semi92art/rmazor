@@ -4,15 +4,14 @@ using Common.Extensions;
 using Common.Providers;
 using Common.Ticker;
 using Common.UI;
-using Managers;
+using RMAZOR.Managers;
 using RMAZOR.UI.Panels;
-using RMAZOR.Views.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace UI.PanelItems.Setting_Panel_Items
+namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
 {
     public class SettingItemInPanelSelector : SimpleUiDialogItemView
     {

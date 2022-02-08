@@ -5,9 +5,8 @@ using Common.Extensions;
 using Common.Utils;
 using Shapes;
 using UnityEngine;
-using Utils;
 
-namespace GameHelpers
+namespace RMAZOR.GameHelpers
 {
     public class GameHelper : MonoBehaviour
     {

@@ -3,10 +3,10 @@ using Common.Entities.UI;
 using Common.Providers;
 using Common.Ticker;
 using Common.UI;
-using Managers;
+using RMAZOR.Managers;
+using RMAZOR.UI.PanelItems.Shop_Items;
 using RMAZOR.Views.Common;
 using UI;
-using UI.PanelItems.Shop_Items;
 using UnityEngine;
 
 namespace RMAZOR.UI.Panels.ShopPanels

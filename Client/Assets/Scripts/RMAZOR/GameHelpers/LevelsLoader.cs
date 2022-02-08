@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Linq;
-using Common;
 using Common.Extensions;
 using Common.Managers;
 using Common.Utils;
 using Newtonsoft.Json;
-using RMAZOR;
-using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using UnityEngine;
 
-namespace GameHelpers
+namespace RMAZOR.GameHelpers
 {
     public interface ILevelsLoader
     {

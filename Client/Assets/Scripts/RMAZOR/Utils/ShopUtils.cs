@@ -7,13 +7,10 @@ using Common.Managers;
 using Common.Managers.Scores;
 using Common.ScriptableObjects;
 using Common.Utils;
-using GameHelpers;
-using Managers;
-using RMAZOR;
 using RMAZOR.UI.Panels.ShopPanels;
 using TMPro;
 
-namespace Utils
+namespace RMAZOR.Utils
 {
     public static class ShopUtils
     {

@@ -7,10 +7,10 @@ using Common.Managers.Scores;
 using Common.Network;
 using Common.Settings;
 using Common.Ticker;
-using GameHelpers;
-using Managers;
 using RMAZOR;
-using Settings;
+using RMAZOR.GameHelpers;
+using RMAZOR.Managers;
+using RMAZOR.Settings;
 using UnityEngine;
 using Zenject;
 

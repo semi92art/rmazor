@@ -3,7 +3,7 @@ using Common.Enums;
 using Common.Providers;
 using Common.Ticker;
 using Common.UI;
-using Managers;
+using RMAZOR.Managers;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.MazeItems;
 using UI;

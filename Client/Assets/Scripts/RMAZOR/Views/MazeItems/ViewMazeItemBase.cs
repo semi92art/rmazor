@@ -8,7 +8,7 @@ using Common.Helpers;
 using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
-using Managers;
+using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ProceedInfos;
 using RMAZOR.Views.Common;
@@ -18,7 +18,6 @@ using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItems.Props;
 using Shapes;
 using UnityEngine;
-using Utils;
 
 namespace RMAZOR.Views.MazeItems
 {

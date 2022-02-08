@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using Common;
 using Common.Managers.Advertising;
 using Common.Managers.Scores;
-using Managers;
 using RMAZOR.Views.InputConfigurators;
 
-namespace DebugConsole
+namespace RMAZOR.DebugConsole
 {
     public delegate void LogChangedHandler(string[] _Log);
     

@@ -8,15 +8,13 @@ using Common.Providers;
 using Common.Ticker;
 using Common.UI;
 using Common.Utils;
-using Managers;
-using RMAZOR.Views.Common;
+using RMAZOR.Managers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
-using Utils;
 
-namespace UI.PanelItems.Setting_Panel_Items
+namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
 {
     public class SettingSelectorItem : SimpleUiDialogItemView
     {

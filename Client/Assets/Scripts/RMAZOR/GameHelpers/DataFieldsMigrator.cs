@@ -3,7 +3,7 @@ using Common.Entities;
 using Common.Network;
 using Common.Utils;
 
-namespace GameHelpers
+namespace RMAZOR.GameHelpers
 {
     public static class DataFieldsMigrator
     {

@@ -5,11 +5,10 @@ using Common.Managers;
 using Common.Managers.Advertising;
 using Common.Managers.IAP;
 using Common.Managers.Scores;
-using GameHelpers;
 using RMAZOR.Models;
 using RMAZOR.Views;
 
-namespace Managers
+namespace RMAZOR.Managers
 {
     public interface IManagersGetter : IOnLevelStageChanged, IInit
     {

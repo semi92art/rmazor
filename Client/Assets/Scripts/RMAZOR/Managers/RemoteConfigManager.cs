@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using Common;
 using Common.Helpers;
 using Common.Managers.Advertising;
-using GameHelpers;
-using RMAZOR;
 using Unity.RemoteConfig;
 using UnityEngine.Events;
+
 #if !UNITY_EDITOR && !DEVELOPMENT_BUILD
 using System.Linq;
 using Newtonsoft.Json;
 using UnityEngine;
 #endif
 
-namespace Managers
+namespace RMAZOR.Managers
 {
     public interface IRemoteConfigManager : IInit
     {

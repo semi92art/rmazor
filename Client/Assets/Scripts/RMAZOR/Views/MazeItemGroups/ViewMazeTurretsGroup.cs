@@ -2,7 +2,7 @@
 using Common;
 using Common.Managers;
 using Common.Utils;
-using Managers;
+using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.MazeInfos;

@@ -7,14 +7,12 @@ using Common.Providers;
 using Common.Ticker;
 using Common.UI;
 using Common.Utils;
-using Managers;
-using RMAZOR.Views.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace UI.PanelItems.Shop_Items
+namespace RMAZOR.UI.PanelItems.Shop_Items
 {
     public class ViewShopItemInfo
     {

@@ -11,8 +11,7 @@ using Common.Providers;
 using Common.Ticker;
 using Common.UI;
 using Common.Utils;
-using GameHelpers;
-using Managers;
+using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.InputConfigurators;
@@ -20,7 +19,6 @@ using TMPro;
 using UI;
 using UnityEngine;
 using UnityEngine.UI;
-using Utils;
 
 namespace RMAZOR.UI.Panels
 {
