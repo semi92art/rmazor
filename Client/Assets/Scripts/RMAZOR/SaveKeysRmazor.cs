@@ -38,7 +38,7 @@ namespace RMAZOR
             
             SaveUtils.PutValue(DailyBonusLastDate,       SaveUtils.GetValue(DailyBonusLastDate),       true);
             
-            SaveUtils.PutValue(MoneyFromServerLoadedFirstTime, SaveUtils.GetValue(MoneyFromServerLoadedFirstTime), true);
+            SaveUtils.PutValue(SavedGameFromServerLoadedAtLeastOnce, SaveUtils.GetValue(SavedGameFromServerLoadedAtLeastOnce), true);
         }
  
         public static SaveKey<bool>  AllLevelsPassed          =>
@@ -51,8 +51,8 @@ namespace RMAZOR
             _enableRotation ??= new SaveKey<bool>(nameof(EnableRotation));
         public static SaveKey<bool>  DarkThemeAvailable       => 
             _darkThemeAvailable ??= new SaveKey<bool>(nameof(DarkThemeAvailable));
-        public static SaveKey<bool>  MoneyFromServerLoadedFirstTime =>
-            _moneyFromServerLoadedFirstTime ??= new SaveKey<bool>(nameof(MoneyFromServerLoadedFirstTime));
+        public static SaveKey<bool>  SavedGameFromServerLoadedAtLeastOnce =>
+            _moneyFromServerLoadedFirstTime ??= new SaveKey<bool>(nameof(SavedGameFromServerLoadedAtLeastOnce));
         public static SaveKey<int>  DailyBonusLastClickedDay =>
             _dailyBonusLastClickedDay ??= new SaveKey<int>(nameof(DailyBonusLastClickedDay));
         public static SaveKey<int>  RatePanelShowsCount      =>

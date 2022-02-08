@@ -127,30 +127,43 @@ namespace RMAZOR
             var controller = GameController.CreateInstance();
             controller.Initialize += () =>
             {
-                var levelEntity = ScoreManager.GetSavedGameProgress(nameof(DataFieldIds.Level), true);
+                var levelEntity = ScoreManager.GetSavedGameProgress(CommonData.SavedGameFileName, false);
                 Cor.Run(Cor.WaitWhile(
                () => levelEntity.Result == EEntityResult.Pending,
                () =>
                {
                    if (levelEntity.Result == EEntityResult.Fail || levelEntity.Value == null)
                    {
-                       var levelArgs = new LevelArgs
-                       {
-                           FileName = nameof(DataFieldIds.Level),
-                           Level = 0
-                       };
-                       ScoreManager.SaveGameProgress(levelArgs, true);
-                       LoadLevelByIndex(controller, 0);
+                       levelEntity = ScoreManager.GetSavedGameProgress(CommonData.SavedGameFileName, true);
+                       Cor.Run(Cor.WaitWhile(
+                           () => levelEntity.Result == EEntityResult.Pending,
+                           () =>
+                           {
+                               if (levelEntity.Result == EEntityResult.Fail || levelEntity.Value == null)
+                               {
+                                   var savedGame = new SavedGame
+                                   {
+                                       FileName = nameof(CommonData.SavedGameFileName),
+                                       Level = 0,
+                                       Money = 100
+                                   };
+                                   ScoreManager.SaveGameProgress(savedGame, true);
+                                   LoadLevelByIndex(controller, 0);
+                                   return;
+                               }
+                               long idx = levelEntity.Value.CastTo<SavedGame>().Level;
+                               LoadLevelByIndex(controller, idx);
+                           }));
                        return;
                    }
-                   int levelIndex = levelEntity.Value.CastTo<LevelArgs>().Level;
+                   long levelIndex = levelEntity.Value.CastTo<SavedGame>().Level;
                    LoadLevelByIndex(controller, levelIndex);
                }));
             };
             controller.Init();
         }
 
-        private void LoadLevelByIndex(IGameController _Controller, int _LevelIndex)
+        private void LoadLevelByIndex(IGameController _Controller, long _LevelIndex)
         {
             var info = LevelsLoader.LoadLevel(1, _LevelIndex);
             _Controller.Model.LevelStaging.LoadLevel(info, _LevelIndex);
@@ -158,99 +171,99 @@ namespace RMAZOR
         
         private void OnScoreManagerInitialize()
         {
-            if (SaveUtils.GetValue(SaveKeysRmazor.MoneyFromServerLoadedFirstTime))
-                OnScoreManagerInitializeNotFirstLaunch();
-            else 
+            if (!SaveUtils.GetValue(SaveKeysRmazor.SavedGameFromServerLoadedAtLeastOnce))
                 OnScoreManagerInitializeFirstLaunch();
         }
 
         private void OnScoreManagerInitializeFirstLaunch()
         {
-            Dbg.Log(nameof(OnScoreManagerInitializeFirstLaunch) + " " + 1);
-            var savedGameCache = ScoreManager.GetSavedGameProgress(
+            var savedGameCachedEntity = ScoreManager.GetSavedGameProgress(
                 CommonData.SavedGameFileName, 
                 true);
-            var savedGameServer = ScoreManager.GetSavedGameProgress(
+            var savedGameServerEntity = ScoreManager.GetSavedGameProgress(
                 CommonData.SavedGameFileName, 
                 false);
-            Dbg.Log(nameof(OnScoreManagerInitializeFirstLaunch) + " " + 2);
             Cor.Run(Cor.WaitWhile(
                 () =>
-                    savedGameCache.Result == EEntityResult.Pending,
+                    savedGameCachedEntity.Result == EEntityResult.Pending,
                 () =>
                 {
-                    Dbg.Log(nameof(OnScoreManagerInitializeFirstLaunch) + " " + 3);
-                    Cor.Run(Cor.WaitWhile(() => savedGameServer.Result == EEntityResult.Pending,
+                    Cor.Run(Cor.WaitWhile(() => savedGameServerEntity.Result == EEntityResult.Pending,
                         () =>
                         {
-                            Dbg.Log(nameof(OnScoreManagerInitializeFirstLaunch) + " " + 4);
-                            long moneyServer = savedGameServer.Value.CastTo<MoneyArgs>().Money;
-                            if (savedGameServer.Result == EEntityResult.Fail)
+       
+                            if (savedGameServerEntity.Result == EEntityResult.Fail)
                             {
                                 Dbg.LogWarning("Failed to load money from server");
                                 return;
                             }
-                            long moneyCache = savedGameCache.Value.CastTo<MoneyArgs>().Money;
-                            if (savedGameCache.Result == EEntityResult.Fail)
+                            var savedGameServer = savedGameServerEntity.Value.CastTo<SavedGame>();
+                            long moneyServer = savedGameServer.Money;
+                            long levelServer = savedGameServer.Level;
+                            if (savedGameCachedEntity.Result == EEntityResult.Fail)
                             {
                                 Dbg.LogWarning("Failed to load money from cache");
                                 return;
                             }
-                            if (moneyServer > moneyCache)
+                            var savedGameCached = savedGameCachedEntity.Value.CastTo<SavedGame>();
+                            long moneyCached = savedGameCached.Money;
+                            long levelCached = savedGameCached.Money;
+                            if (moneyServer > moneyCached)
                             {
                                 Dbg.Log("getting money from server");
-                                var newSavedGame = new MoneyArgs
+                                var newSavedGame = new SavedGame
                                 {
                                     FileName = CommonData.SavedGameFileName,
-                                    Money = moneyServer
+                                    Money = moneyServer,
+                                    Level = levelServer
                                 };
                                 ScoreManager.SaveGameProgress(newSavedGame, true);
                             }
                             else
                             {
                                 Dbg.Log("getting money from cache");
-                                var newSavedGame = new MoneyArgs
+                                var newSavedGame = new SavedGame
                                 {
                                     FileName = CommonData.SavedGameFileName,
-                                    Money = moneyCache
+                                    Money = moneyCached,
+                                    Level = levelCached
                                 };
                                 ScoreManager.SaveGameProgress(newSavedGame, false);
                             }
-                            SaveUtils.PutValue(SaveKeysRmazor.MoneyFromServerLoadedFirstTime, true);
+                            SaveUtils.PutValue(SaveKeysRmazor.SavedGameFromServerLoadedAtLeastOnce, true);
                         }));
                 }));
         }
         
-        private void OnScoreManagerInitializeNotFirstLaunch()
-        {
-            var savedGameCache = ScoreManager.GetSavedGameProgress(
-                CommonData.SavedGameFileName, 
-                true);
-            Cor.Run(Cor.WaitWhile(
-                () => savedGameCache.Result == EEntityResult.Pending,
-                () =>
-                {
-                    long moneyCache = savedGameCache.Value.CastTo<MoneyArgs>().Money;
-                    if (savedGameCache.Result == EEntityResult.Fail)
-                    {
-                        Dbg.LogWarning("Failed to load money from cache");
-                        return;
-                    }
-                    var newSavedGame = new MoneyArgs
-                    {
-                        FileName = CommonData.SavedGameFileName,
-                        Money = moneyCache
-                    };
-                    ScoreManager.SaveGameProgress(newSavedGame, false);
-                }));
-        }
+        // private void OnScoreManagerInitializeNotFirstLaunch()
+        // {
+        //     var savedGameCache = ScoreManager.GetSavedGameProgress(
+        //         CommonData.SavedGameFileName, 
+        //         true);
+        //     Cor.Run(Cor.WaitWhile(
+        //         () => savedGameCache.Result == EEntityResult.Pending,
+        //         () =>
+        //         {
+        //             long moneyCache = savedGameCache.Value.CastTo<SavedGame>().Money;
+        //             if (savedGameCache.Result == EEntityResult.Fail)
+        //             {
+        //                 Dbg.LogWarning("Failed to load money from cache");
+        //                 return;
+        //             }
+        //             var newSavedGame = new SavedGame
+        //             {
+        //                 FileName = CommonData.SavedGameFileName,
+        //                 Money = moneyCache
+        //             };
+        //             ScoreManager.SaveGameProgress(newSavedGame, false);
+        //         }));
+        // }
 
         private void InitDefaultData()
         {
             if (SaveUtils.GetValue(SaveKeysCommon.NotFirstLaunch))
                 return;
             Dbg.Log(nameof(InitDefaultData));
-            DataFieldsMigrator.InitDefaultDataFieldValues(GameClient);
             SaveUtils.PutValue(SaveKeysCommon.SettingSoundOn, true);
             SaveUtils.PutValue(SaveKeysCommon.SettingMusicOn, true);
             SaveUtils.PutValue(SaveKeysCommon.SettingHapticsOn, true);
@@ -313,12 +326,29 @@ namespace RMAZOR
         private static List<LeaderBoardIdKeyPair> GetLeaderBoardIdKeyPairs()
         {
             string levelLbKey = Application.platform == RuntimePlatform.Android ?
-                "CgkI1IvonNkDEAIQBg" : "levels";
+                "CgkI1IvonNkDEAIQBg" : "level";
             return new List<LeaderBoardIdKeyPair>
             {
                 new LeaderBoardIdKeyPair(DataFieldIds.Level, levelLbKey)
             };
         }
+        
+        // private void InitDefaultDataFieldValues()
+        // {
+        //     var savedGame = new SavedGame
+        //     {
+        //         FileName = CommonData.SavedGameFileName,
+        //         Money = 100
+        //     };
+        //     const int accId = GameClientUtils.DefaultAccountId;
+        //     var df = new GameDataField(
+        //         GameClient,
+        //         savedGame,
+        //         accId,
+        //         1,
+        //         (ushort) CommonUtils.StringToHash(CommonData.SavedGameFileName));
+        //     df.Save(true);
+        // }
 
         #endregion
     }

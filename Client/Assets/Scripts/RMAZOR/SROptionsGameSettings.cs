@@ -99,10 +99,11 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                var savedGame = new MoneyArgs
+                var savedGame = new SavedGame
                 {
                     FileName = CommonData.SavedGameFileName,
-                    Money = Money
+                    Money = Money,
+                    Level = _model.LevelStaging.LevelIndex
                 };
                 _view.Managers.ScoreManager.SaveGameProgress(savedGame, false);
             }
@@ -150,7 +151,7 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                int levelIndex = _model.LevelStaging.LevelIndex;
+                long levelIndex = _model.LevelStaging.LevelIndex;
                 _view.CommandsProceeder.RaiseCommand(
                     EInputCommand.LoadLevelByIndex, 
                     new object[] { levelIndex - 1 },
@@ -397,10 +398,11 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                var savedData = new MoneyArgs
+                var savedData = new SavedGame
                 {
                     FileName = CommonData.SavedGameFileName,
-                    Money = 10000
+                    Money = 10000,
+                    Level = _model.LevelStaging.LevelIndex
                 };
                 _view.Managers.ScoreManager.SaveGameProgress(savedData, false);
             }
@@ -448,7 +450,7 @@ namespace RMAZOR
                             Dbg.LogError("Failed to load saved game");
                             return;
                         }
-                        long money = entity.Value.CastTo<MoneyArgs>().Money;
+                        long money = entity.Value.CastTo<SavedGame>().Money;
                         Dbg.Log("Money server: " + money);
                     }));
                 var entity1 = _view.Managers.ScoreManager.GetSavedGameProgress(CommonData.SavedGameFileName, true);
@@ -461,7 +463,7 @@ namespace RMAZOR
                             Dbg.LogError("Failed to load saved game");
                             return;
                         }
-                        long money = entity1.Value.CastTo<MoneyArgs>().Money;
+                        long money = entity1.Value.CastTo<SavedGame>().Money;
                         Dbg.Log("Money cached: " + money);
                     }));
             }

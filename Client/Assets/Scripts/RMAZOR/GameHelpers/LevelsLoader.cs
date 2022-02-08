@@ -11,8 +11,8 @@ namespace RMAZOR.GameHelpers
 {
     public interface ILevelsLoader
     {
-        MazeInfo LoadLevel(int _GameId, int _Index);
-        int GetLevelsCount(int _GameId);
+        MazeInfo LoadLevel(int      _GameId, long _Index);
+        int      GetLevelsCount(int _GameId);
     }
     
     public class LevelsLoader : ILevelsLoader
@@ -37,7 +37,7 @@ namespace RMAZOR.GameHelpers
 
         #region api
         
-        public MazeInfo LoadLevel(int _GameId, int _Index)
+        public MazeInfo LoadLevel(int _GameId, long _Index)
         {
             if (m_CachedSerializedLevels == null || m_GameId != _GameId)
                 CacheLevels(_GameId);

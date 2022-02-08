@@ -21,7 +21,7 @@ namespace RMAZOR.Views.Common
         
         #region nonpublic methods
 
-        protected override void SetColorsOnTheme(int _LevelIndex, EColorTheme _Theme)
+        protected override void SetColorsOnTheme(long _LevelIndex, EColorTheme _Theme)
         {
             GetHSV(_LevelIndex, out float h, out float s, out float v);
             switch (_Theme)
@@ -39,7 +39,7 @@ namespace RMAZOR.Views.Common
 
         #endregion
         
-        protected override void GetHSV(int _LevelIndex, out float _H, out float _S, out float _V)
+        protected override void GetHSV(long _LevelIndex, out float _H, out float _S, out float _V)
         {     
             int group = RazorMazeUtils.GetGroupIndex(_LevelIndex);
             _H = GetHForHSV(group);

@@ -54,7 +54,8 @@ namespace RMAZOR.Views.Common
             SetColorsOnTheme(m_Model.LevelStaging.LevelIndex, _Theme);
         }
         
-        protected abstract void GetHSV(int _LevelIndex, out float _H, out float _S, out float _V);
-        protected abstract void SetColorsOnTheme(int _LevelIndex, EColorTheme _Theme);
+        // ReSharper disable once UnusedMemberInSuper.Global
+        protected abstract void GetHSV(long _LevelIndex, out float   _H, out float _S, out float _V);
+        protected abstract void SetColorsOnTheme(long _LevelIndex, EColorTheme _Theme);
     }
 }

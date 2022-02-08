@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Common;
 using Common.Managers.Advertising;
 using Common.Managers.Scores;
+using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
 
 namespace RMAZOR.DebugConsole
@@ -33,12 +34,17 @@ namespace RMAZOR.DebugConsole
         IViewInputCommandsProceeder             CommandsProceeder { get; }
         IAdsManager                             AdsManager        { get; }
         IScoreManager                           ScoreManager      { get; }
+        IModelGame                              Model             { get; }
         Queue<string>                           Scrollback        { get; }
         string[]                                Log               { get; }
         Dictionary<string, CommandRegistration> Commands          { get; }
         List<string>                            CommandHistory    { get; }
         
-        void Init(IViewInputCommandsProceeder _CommandsProceeder, IAdsManager _AdsManager, IScoreManager _ScoreManager);
+        void Init(
+            IModelGame                  _Model,
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IAdsManager                 _AdsManager, 
+            IScoreManager               _ScoreManager);
         void RegisterCommand(string _Command, CommandHandler _Handler, string _Description);
         void RunCommandString(string _CommandString);
         void AppendLogLine(string             _Line);
@@ -65,11 +71,12 @@ namespace RMAZOR.DebugConsole
 
         #region api
         
-        public event LogChangedHandler        OnLogChanged;
-        public IViewInputCommandsProceeder    CommandsProceeder { get; private set; }
-        public IAdsManager                    AdsManager        { get; private set; }
-        public IScoreManager                  ScoreManager      { get; private set; }
-        
+        public event LogChangedHandler     OnLogChanged;
+        public IViewInputCommandsProceeder CommandsProceeder { get; private set; }
+        public IAdsManager                 AdsManager        { get; private set; }
+        public IScoreManager               ScoreManager      { get; private set; }
+        public IModelGame                  Model             { get; private set; }
+
         public string[]                                Log { get; private set; }
         public Queue<string>                           Scrollback { get; } = new Queue<string>(ScrollbackSize);
         public Dictionary<string, CommandRegistration> Commands { get; } = new Dictionary<string, CommandRegistration>();
@@ -82,6 +89,7 @@ namespace RMAZOR.DebugConsole
         }
 
         public void Init(
+            IModelGame                  _Model,
             IViewInputCommandsProceeder _CommandsProceeder,
             IAdsManager                 _AdsManager,
             IScoreManager               _ScoreManager)
@@ -89,6 +97,7 @@ namespace RMAZOR.DebugConsole
             CommandsProceeder = _CommandsProceeder;
             AdsManager        = _AdsManager;
             ScoreManager      = _ScoreManager;
+            Model             = _Model;
         }
 
         public void RegisterCommand(string _Command, CommandHandler _Handler, string _Description)

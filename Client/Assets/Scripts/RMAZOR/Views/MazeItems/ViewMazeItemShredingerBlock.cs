@@ -287,7 +287,7 @@ namespace RMAZOR.Views.MazeItems
                  || m_IsOpenCoroutineRunning && !_Close)
                 && _Immediately == m_IsCloseOrOpenImmediately)
                 yield break;
-            int levelIndex = Model.LevelStaging.LevelIndex;
+            long levelIndex = Model.LevelStaging.LevelIndex;
             m_IsCloseOrOpenImmediately = _Immediately;
             if (_Immediately)
                 CloseBlockImmediately(_Close);

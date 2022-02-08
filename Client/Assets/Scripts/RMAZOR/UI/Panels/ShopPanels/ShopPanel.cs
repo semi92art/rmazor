@@ -19,7 +19,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
     {
         #region nonpublic members
 
-        protected override Vector2 StartContentPos => m_Content.anchoredPosition.SetY(m_Content.rect.height * 0.5f);
+        protected override Vector2 StartContentPos => Content.anchoredPosition.SetY(Content.rect.height * 0.5f);
         protected override string ItemSetName => null;
         protected override string PanelPrefabName => "shop_panel";
         protected override string PanelItemPrefabName => "shop_main_item";

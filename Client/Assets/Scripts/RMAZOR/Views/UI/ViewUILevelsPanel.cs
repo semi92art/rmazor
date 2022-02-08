@@ -203,7 +203,7 @@ namespace RMAZOR.Views.UI
             }
         }
         
-        private void SetLevelCheckMarks(int _LevelIndex, bool _Passed)
+        private void SetLevelCheckMarks(long _LevelIndex, bool _Passed)
         {
             int levelIndexInGroup = RazorMazeUtils.GetIndexInGroup(_LevelIndex);
             for (int i = 0; i < levelIndexInGroup; i++)

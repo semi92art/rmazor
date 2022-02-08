@@ -3,8 +3,9 @@
 namespace Common.Entities
 {
     [Serializable]
-    public class MoneyArgs : FileNameArgs
+    public class SavedGame : FileNameArgs
     {
+        public long  Level { get; set; }
         public long Money { get; set; }
     }
 }

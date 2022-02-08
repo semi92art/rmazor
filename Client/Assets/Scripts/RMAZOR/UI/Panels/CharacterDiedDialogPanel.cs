@@ -57,10 +57,12 @@ namespace RMAZOR.UI.Panels
 
         #region inject
 
+        private IModelGame                  Model                { get; }
         private IProposalDialogViewer       ProposalDialogViewer { get; }
         private IViewInputCommandsProceeder CommandsProceeder    { get; }
 
         public CharacterDiedDialogPanel(
+            IModelGame _Model,
             IBigDialogViewer            _DialogViewer,
             IManagersGetter             _Managers,
             IUITicker                   _UITicker,
@@ -70,6 +72,7 @@ namespace RMAZOR.UI.Panels
             IViewInputCommandsProceeder _CommandsProceeder)
             : base(_Managers, _UITicker, _DialogViewer, _CameraProvider, _ColorProvider)
         {
+            Model = _Model;
             ProposalDialogViewer = _ProposalDialogViewer;
             CommandsProceeder = _CommandsProceeder;
         }
@@ -155,7 +158,7 @@ namespace RMAZOR.UI.Panels
                         Dbg.LogError("Failed to load money count entity");
                         return;
                     }
-                    m_MoneyCount = savedGameEntity.Value.CastTo<MoneyArgs>().Money;
+                    m_MoneyCount = savedGameEntity.Value.CastTo<SavedGame>().Money;
                     m_TextMoneyCount.text = m_MoneyCount.ToString();
                     IndicateMoneyCountLoading(false, m_MoneyCount >= PayToContinueMoneyCount);
                 }));
@@ -209,10 +212,11 @@ namespace RMAZOR.UI.Panels
 
         private void OnPayMoneyButtonClick()
         {
-            var savedGame = new MoneyArgs
+            var savedGame = new SavedGame
             {
                 FileName = CommonData.SavedGameFileName,
-                Money = m_MoneyCount - PayToContinueMoneyCount
+                Money = m_MoneyCount - PayToContinueMoneyCount,
+                Level = Model.LevelStaging.LevelIndex
             };
             Managers.ScoreManager.SaveGameProgress(savedGame, false);
             m_MoneyPayed = true;

@@ -70,7 +70,7 @@ namespace RMAZOR.Models.InputSchedulers
         private void OnUiCommand(EInputCommand _Command, object[] _Args)
         {
             MazeInfo info;
-            int levelIndex;
+            long levelIndex;
             int gameId = GameClientUtils.GameId;
             switch (_Command)
             {

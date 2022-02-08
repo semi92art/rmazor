@@ -12,6 +12,7 @@ using Common.Ticker;
 using Common.UI;
 using Common.Utils;
 using RMAZOR.Managers;
+using RMAZOR.Models;
 using RMAZOR.UI.PanelItems.Shop_Items;
 using UnityEngine;
 using UnityEngine.Events;
@@ -24,7 +25,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
     {
         #region nonpublic members
 
-        protected override Vector2 StartContentPos => m_Content.anchoredPosition.SetY(m_Content.rect.height * 0.5f);
+        protected override Vector2 StartContentPos => Content.anchoredPosition.SetY(Content.rect.height * 0.5f);
         protected override string ItemSetName => "shop_money_items_set";
         protected override string PanelPrefabName => "shop_money_panel";
         protected override string PanelItemPrefabName => "shop_money_item";
@@ -44,14 +45,19 @@ namespace RMAZOR.UI.Panels.ShopPanels
         
         #region inject
         
+        private IModelGame Model { get; }
+
         public ShopMoneyPanel(
-            IManagersGetter _Managers,
-            IUITicker _UITicker,
+            IModelGame       _Model,
+            IManagersGetter  _Managers,
+            IUITicker        _UITicker,
             IBigDialogViewer _DialogViewer,
-            ICameraProvider _CameraProvider,
-            IColorProvider _ColorProvider)
+            ICameraProvider  _CameraProvider,
+            IColorProvider   _ColorProvider)
             : base(_Managers, _UITicker, _DialogViewer, _CameraProvider, _ColorProvider)
-        { }
+        {
+            Model = _Model;
+        }
         
         #endregion
 
@@ -281,10 +287,11 @@ namespace RMAZOR.UI.Panels.ShopPanels
                         Dbg.LogError("Failed to load score entity");
                         return;
                     }
-                    var savedGame = new MoneyArgs
+                    var savedGame = new SavedGame
                     {
                         FileName = CommonData.SavedGameFileName,
-                        Money = savedGameEntity.Value.CastTo<MoneyArgs>().Money + _Reward
+                        Money = savedGameEntity.Value.CastTo<SavedGame>().Money + _Reward,
+                        Level = Model.LevelStaging.LevelIndex
                     };
                     Managers.ScoreManager.SaveGameProgress(savedGame, false);
                     string dialogTitle = Managers.LocalizationManager.GetTranslation("purchase") + ":";

@@ -154,11 +154,11 @@ namespace RMAZOR.Views.Common
             mazeItems.AddRange(PathItemsGroup.PathItems);
             switch (_Args.Stage)
             {
-                case ELevelStage.Loaded:             OnLevelLoaded(_Args, mazeItems, PathItemsGroup); break;
-                case ELevelStage.Finished:           OnLevelFinished(_Args);                          break;
-                case ELevelStage.ReadyToUnloadLevel: OnReadyToUnloadLevel(_Args, mazeItems);          break;
-                case ELevelStage.Unloaded:           OnLevelUnloaded(_Args);                          break;
-                case ELevelStage.CharacterKilled:    OnCharacterKilled(mazeItems);                    break;
+                case ELevelStage.Loaded:             OnLevelLoaded(mazeItems, PathItemsGroup); break;
+                case ELevelStage.Finished:           OnLevelFinished(_Args);                   break;
+                case ELevelStage.ReadyToUnloadLevel: OnReadyToUnloadLevel(_Args, mazeItems);   break;
+                case ELevelStage.Unloaded:           OnLevelUnloaded(_Args);                   break;
+                case ELevelStage.CharacterKilled:    OnCharacterKilled(mazeItems);             break;
             }
         }
 
@@ -175,16 +175,9 @@ namespace RMAZOR.Views.Common
         }
 
         private void OnLevelLoaded(
-            LevelStageArgs                     _Args,
             IReadOnlyCollection<IViewMazeItem> _MazeItems,
             IViewMazePathItemsGroup            _PathItemsGroup)
         {
-            var levelArgs = new LevelArgs
-            {
-                FileName = nameof(DataFieldIds.Level),
-                Level = _Args.LevelIndex
-            };
-            Managers.ScoreManager.SaveGameProgress(levelArgs, true);
             m_NextLevelMustBeFirstInGroup = false;
             Character.Appear(true);
             foreach (var pathItem in _PathItemsGroup.PathItems)

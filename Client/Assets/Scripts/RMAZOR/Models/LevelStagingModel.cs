@@ -20,13 +20,13 @@ namespace RMAZOR.Models
 
     public class LevelStageArgs : EventArgs
     {
-        public int         LevelIndex       { get; }
+        public long        LevelIndex       { get; }
         public ELevelStage Stage            { get; }
         public ELevelStage PreviousStage    { get; }
         public ELevelStage PrePreviousStage { get; }
 
         public LevelStageArgs(
-            int         _LevelIndex,
+            long        _LevelIndex,
             ELevelStage _LevelStage,
             ELevelStage _PreviousStage,
             ELevelStage _PrePreviousStage)
@@ -42,14 +42,14 @@ namespace RMAZOR.Models
 
     public interface IModelLevelStaging
     {
-        int                     LevelIndex         { get; set; }
+        long                    LevelIndex         { get; set; }
         float                   LevelTime          { get; }
         int                     DiesCount          { get; }
         ELevelStage             LevelStage         { get; }
         ELevelStage             PrevLevelStage     { get; }
         ELevelStage             PrevPrevLevelStage { get; }
         event LevelStageHandler LevelStageChanged;
-        void                    LoadLevel(MazeInfo _Info, int _LevelIndex);
+        void                    LoadLevel(MazeInfo _Info, long _LevelIndex);
         void                    ReadyToStartLevel();
         void                    StartOrContinueLevel();
         void                    PauseLevel();
@@ -84,7 +84,7 @@ namespace RMAZOR.Models
     
         #region api
 
-        public int                     LevelIndex         { get; set; }
+        public long                     LevelIndex         { get; set; }
         public float                   LevelTime          { get; private set; }
         public int                     DiesCount          { get; private set; }
         public ELevelStage             LevelStage         { get; private set; } = ELevelStage.Unloaded;
@@ -98,7 +98,7 @@ namespace RMAZOR.Models
                 LevelTime += GameTicker.DeltaTime;
         }
     
-        public virtual void LoadLevel(MazeInfo _Info, int _LevelIndex)
+        public virtual void LoadLevel(MazeInfo _Info, long _LevelIndex)
         {
             (Data.Info, LevelIndex) = (_Info, _LevelIndex);
             InvokeLevelStageChanged(ELevelStage.Loaded);

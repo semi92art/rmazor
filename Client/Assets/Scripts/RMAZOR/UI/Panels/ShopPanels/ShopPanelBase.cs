@@ -34,11 +34,11 @@ namespace RMAZOR.UI.Panels.ShopPanels
         protected abstract string            PanelPrefabName     { get; }
         protected abstract string            PanelItemPrefabName { get; }
         protected abstract RectTransformLite ShopItemRectLite    { get; }
-        
-        protected          RectTransform     m_Panel;
-        protected          RectTransform     m_Content;
-        protected          TextMeshProUGUI   m_MoneyText;
-        protected          Image             m_MoneyIcon;
+
+        protected RectTransform   Content;
+        private   RectTransform   m_Panel;
+        private   TextMeshProUGUI m_MoneyText;
+        private   Image           m_MoneyIcon;
 
         #endregion
 
@@ -67,13 +67,13 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 CommonPrefabSetNames.DialogPanels,
                 PanelPrefabName);
             m_Panel = sp.GetCompItem<RectTransform>("panel");
-            m_Content = sp.GetCompItem<RectTransform>("content");
+            Content = sp.GetCompItem<RectTransform>("content");
             PanelObject = sp.RTransform();
-            m_Content.gameObject.DestroyChildrenSafe();
+            Content.gameObject.DestroyChildrenSafe();
             InitItems();
             InitMoneyPanel();
             Cor.Run(Cor.WaitEndOfFrame(
-                () => m_Content.anchoredPosition = StartContentPos));
+                () => Content.anchoredPosition = StartContentPos));
         }
 
         #endregion
@@ -135,7 +135,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
                         Dbg.LogError("Failed to load money entity");
                         return;
                     }
-                    m_MoneyText.text = savedGameEntity.Value.CastTo<MoneyArgs>().Money.ToString();
+                    m_MoneyText.text = savedGameEntity.Value.CastTo<SavedGame>().Money.ToString();
                 }));
             Managers.ScoreManager.OnScoresChanged -= OnScoreChanged; 
             Managers.ScoreManager.OnScoresChanged += OnScoreChanged;
@@ -150,7 +150,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
         {
             var obj = Managers.PrefabSetManager.InitUiPrefab(
                 UIUtils.UiRectTransform(
-                    m_Content,
+                    Content,
                     ShopItemRectLite),
                 PrefabSetName, PanelItemPrefabName);
             return obj.GetComponent<T>();

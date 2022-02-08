@@ -36,18 +36,18 @@ namespace RMAZOR.Views.MazeItemGroups
         #region inject
         
         private ViewSettings      ViewSettings     { get; }
-        private IModelData        ModelData        { get; }
+        private IModelGame        Model            { get; }
         private IMazeItemsCreator MazeItemsCreator { get; }
         private IManagersGetter   Managers         { get; }
 
         public ViewMazePathItemsGroup(
             ViewSettings      _ViewSettings,
-            IModelData        _ModelData,
+            IModelGame        _Model,
             IMazeItemsCreator _MazeItemsCreator,
             IManagersGetter   _Managers)
         {
             ViewSettings     = _ViewSettings;
-            ModelData        = _ModelData;
+            Model            = _Model;
             MazeItemsCreator = _MazeItemsCreator;
             Managers         = _Managers;
         }
@@ -59,7 +59,7 @@ namespace RMAZOR.Views.MazeItemGroups
         public List<IViewMazeItemPath> PathItems { get; private set; }
 
 
-        public void Init()
+        public override void Init()
         {
             if (m_PathsPool == null)
                 InitPoolsOnStart();
@@ -79,7 +79,7 @@ namespace RMAZOR.Views.MazeItemGroups
                 case ELevelStage.Loaded:
                 {
                     DeactivateAllPaths();
-                    MazeItemsCreator.InitPathItems(ModelData.Info, m_PathsPool);
+                    MazeItemsCreator.InitPathItems(Model.Data.Info, m_PathsPool);
                     PathItems = m_PathsPool.Where(_Item => _Item.ActivatedInSpawnPool).ToList();
                     if (!ViewSettings.StartPathItemFilledOnStart)
                         UnfillStartPathItem();
@@ -96,15 +96,16 @@ namespace RMAZOR.Views.MazeItemGroups
                             () => savedGameEntity.Result == EEntityResult.Pending,
                             () =>
                             {
-                                if (savedGameEntity.Result == EEntityResult.Fail)
+                                if (savedGameEntity.Result == EEntityResult.Fail || savedGameEntity.Value == null)
                                 {
                                     Dbg.LogError("Failed to load money entity");
                                     return;
                                 }
-                                var savedData = new MoneyArgs
+                                var savedData = new SavedGame
                                 {
                                     FileName = CommonData.SavedGameFileName,
-                                    Money = savedGameEntity.Value.CastTo<MoneyArgs>().Money + moneyItemsCount
+                                    Money = savedGameEntity.Value.CastTo<SavedGame>().Money + moneyItemsCount,
+                                    Level = Model.LevelStaging.LevelIndex
                                 };
                                 Managers.ScoreManager.SaveGameProgress(
                                     savedData, false);

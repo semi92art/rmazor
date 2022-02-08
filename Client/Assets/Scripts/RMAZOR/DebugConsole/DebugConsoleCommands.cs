@@ -182,10 +182,11 @@ namespace RMAZOR.DebugConsole
                 Controller.AppendLogLine("Wrong. Need money count!");
                 return;
             }
-            var entity = new MoneyArgs
+            var entity = new SavedGame
             {
                 FileName = CommonData.SavedGameFileName,
-                Money = moneyCount
+                Money = moneyCount,
+                Level = Controller.Model.LevelStaging.LevelIndex
             };
             Controller.ScoreManager.SaveGameProgress(entity, false);
         }

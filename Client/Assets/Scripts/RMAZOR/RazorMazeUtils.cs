@@ -235,9 +235,9 @@ namespace RMAZOR
             return distA < distB ? -1 : 1;
         }
 
-        public static int GetGroupIndex(int _LevelIndex)
+        public static int GetGroupIndex(long _LevelIndex)
         {
-            int levelIndexTemp = 0;
+            long levelIndexTemp = 0;
             int groupIndexInList = 0;
             int groupIndex = 0;
             while (levelIndexTemp <= _LevelIndex)
@@ -257,11 +257,11 @@ namespace RMAZOR
             return LevelsInGroupList[groupIndexInList];
         }
 
-        public static int GetIndexInGroup(int _LevelIndex)
+        public static int GetIndexInGroup(long _LevelIndex)
         {
             int groupIndex = GetGroupIndex(_LevelIndex);
             int groupIndexInList = 0;
-            int levelsCount = 0;
+            long levelsCount = 0;
             for (int i = 0; i < groupIndex - 1; i++)
             {
                 levelsCount += LevelsInGroupList[groupIndexInList];
@@ -269,7 +269,7 @@ namespace RMAZOR
                 if (groupIndexInList >= LevelsInGroupList.Length)
                     groupIndexInList = 0;
             }
-            return _LevelIndex - levelsCount;
+            return (int)(_LevelIndex - levelsCount);
         }
 
         public static int GetFirstLevelInGroup(int _GroupIndex)

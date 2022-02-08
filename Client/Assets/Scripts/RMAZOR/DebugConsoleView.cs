@@ -191,10 +191,14 @@ namespace RMAZOR
 
         #region public methods
 
-        public void Init(IViewInputCommandsProceeder _CommandsProceeder, IAdsManager _AdsManager, IScoreManager _ScoreManager)
+        public void Init(
+            IModelGame                  _Model,
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IAdsManager                 _AdsManager,
+            IScoreManager               _ScoreManager)
         {
             m_CommandsProceeder = _CommandsProceeder;
-            Controller.Init(_CommandsProceeder, _AdsManager, _ScoreManager);
+            Controller.Init(_Model, _CommandsProceeder, _AdsManager, _ScoreManager);
         }
         
         public void UpCommand()
