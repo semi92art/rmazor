@@ -8,11 +8,8 @@ using Common.Entities;
 using Common.Exceptions;
 using Common.Extensions;
 using Common.Utils;
-using Mono_Installers;
 using RMAZOR.Controllers;
-using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
-using RMAZOR.Views.ContainerGetters;
 using RMAZOR.Views.MazeItems;
 using UnityEditor;
 using UnityEngine;
@@ -149,7 +146,7 @@ namespace RMAZOR
                 case PlayModeStateChange.EnteredPlayMode:
                     MazeInfo = Instance.GetLevelInfoFromScene();
                     GameClientUtils.GameId = 1;
-                    LevelMonoInstaller.Release = false;
+                    CommonData.Release = false;
                     SceneManager.sceneLoaded -= OnSceneLoaded;
                     SceneManager.sceneLoaded += OnSceneLoaded;
                     SceneManager.LoadScene(SceneNames.Level);

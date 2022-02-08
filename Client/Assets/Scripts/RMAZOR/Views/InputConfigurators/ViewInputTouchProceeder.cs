@@ -4,6 +4,7 @@ using Common.CameraProviders;
 using Common.Constants;
 using Common.Exceptions;
 using Common.Extensions;
+using Common.Helpers;
 using Common.Ticker;
 using Common.Utils;
 using GameHelpers;
@@ -237,7 +238,7 @@ namespace RMAZOR.Views.InputConfigurators
         {
             if (!m_EnableRotation)
                 return;
-            if (!SaveUtils.GetValue(SaveKeys.EnableRotation))
+            if (!SaveUtils.GetValue(SaveKeysRmazor.EnableRotation))
                 return;
             var pos = _Finger.ScreenPosition;
             for (int i = m_TouchPositionsQueue2.Count - 1; i >= 0; i--)

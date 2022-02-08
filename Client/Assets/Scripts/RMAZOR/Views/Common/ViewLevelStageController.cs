@@ -12,11 +12,9 @@ using Common.Utils;
 using DialogViewers;
 using GameHelpers;
 using Managers;
-using Mono_Installers;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Characters;
-using RMAZOR.Views.ContainerGetters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.MazeItems;
@@ -115,7 +113,7 @@ namespace RMAZOR.Views.Common
 
         public void OnAllPathProceed(V2Int _LastPath)
         {
-            if (LevelMonoInstaller.Release)
+            if (CommonData.Release)
                 Model.LevelStaging.FinishLevel();
         }
 
@@ -206,9 +204,9 @@ namespace RMAZOR.Views.Common
 
         private void OnLevelFinished(LevelStageArgs _Args)
         {
-            bool allLevelsPassed = SaveUtils.GetValue(SaveKeys.AllLevelsPassed);
+            bool allLevelsPassed = SaveUtils.GetValue(SaveKeysRmazor.AllLevelsPassed);
             if (!allLevelsPassed && _Args.LevelIndex + 1 >= ViewSettings.levelsCountMain)
-                SaveUtils.PutValue(SaveKeys.AllLevelsPassed, true);
+                SaveUtils.PutValue(SaveKeysRmazor.AllLevelsPassed, true);
             Managers.AnalyticsManager.SendAnalytic(AnalyticIds.LevelFinished, 
            new Dictionary<string, object>
            {
@@ -272,7 +270,7 @@ namespace RMAZOR.Views.Common
                 },
                 _Seconds: 3f,
                 _Ticker: ViewGameTicker));
-            if (SaveUtils.GetValue(SaveKeys.AllLevelsPassed))
+            if (SaveUtils.GetValue(SaveKeysRmazor.AllLevelsPassed))
             {
                 int group = RazorMazeUtils.GetGroupIndex(_Args.LevelIndex);
                 int firstLevelInGroup = RazorMazeUtils.GetFirstLevelInGroup(group);
@@ -294,7 +292,7 @@ namespace RMAZOR.Views.Common
                 _MazeItems,
                 () =>
                 {
-                    if (!LevelMonoInstaller.Release)
+                    if (!CommonData.Release)
                         return;
                     var gravityTraps = Model.GetAllProceedInfos()
                         .Where(_Info => _Info.Type == EMazeItemType.GravityTrap);

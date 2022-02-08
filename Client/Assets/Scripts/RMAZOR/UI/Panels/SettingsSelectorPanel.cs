@@ -3,6 +3,7 @@ using Common.CameraProviders;
 using Common.Constants;
 using Common.Entities.UI;
 using Common.Extensions;
+using Common.Providers;
 using Common.Ticker;
 using DialogViewers;
 using Managers;
@@ -67,7 +68,7 @@ namespace RMAZOR.UI.Panels
             var sp = Managers.PrefabSetManager.InitUiPrefab(
                 UIUtils.UiRectTransform(
                     DialogViewer.Container,
-                    RtrLites.FullFill),
+                    RectTransformLite.FullFill),
                 CommonPrefabSetNames.DialogPanels, "settings_selector_panel");
             m_ToggleGroup = sp.AddComponent<ToggleGroup>();
             m_Content = sp.GetCompItem<RectTransform>("content");

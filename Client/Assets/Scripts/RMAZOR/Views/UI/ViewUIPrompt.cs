@@ -1,8 +1,11 @@
 ﻿using System.Collections;
+using Common;
 using Common.CameraProviders;
 using Common.Constants;
 using Common.Exceptions;
 using Common.Extensions;
+using Common.Helpers;
+using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using GameHelpers;
@@ -191,7 +194,7 @@ namespace RMAZOR.Views.UI
             m_PromptObject.transform.position = _Position;
             LocalizationManager.AddTextObject(m_PromptText, _Key);
             m_PromptText.enabled = true;
-            m_PromptText.color = ColorProvider.GetColor(ColorIds.UI).SetA(0f);
+            m_PromptText.color = ColorProvider.GetColor(ColorIdsCommon.UI).SetA(0f);
             var screenBounds = GraphicUtils.GetVisibleBounds();
             m_PromptText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, screenBounds.size.x);
             if (m_CurrentPromptInfo != null && m_CurrentPromptInfo.PromptGo != null)
@@ -225,7 +228,7 @@ namespace RMAZOR.Views.UI
                 loopTime * 2f,
                 _Progress =>
                 {
-                    var firstColor = ColorProvider.GetColor(ColorIds.UI);
+                    var firstColor = ColorProvider.GetColor(ColorIdsCommon.UI);
                     m_CurrentPromptInfo.PromptText.color = Color.Lerp(firstColor, secondColor, _Progress);
                 },
                 GameTicker,

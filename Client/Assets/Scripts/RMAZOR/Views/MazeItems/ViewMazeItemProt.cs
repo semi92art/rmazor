@@ -5,6 +5,7 @@ using Common.Entities;
 using Common.Enums;
 using Common.Exceptions;
 using Common.Extensions;
+using Common.Helpers;
 using GameHelpers;
 using Managers;
 using RMAZOR.Models;
@@ -45,7 +46,7 @@ namespace RMAZOR.Views.MazeItems
                     var settings = m_PrefabSetManager.GetObject<ViewSettings>(
                         "model_settings", "view_settings");
                     m_Converter = new MazeCoordinateConverter(settings, null);
-                    m_ContainersGetter = new ContainersGetter(null, m_Converter);
+                    m_ContainersGetter = new ContainersGetterRmazor(null, m_Converter);
                     m_Converter.GetContainer = m_ContainersGetter.GetContainer;
                     m_Converter.Init();
                     m_Converter.MazeSize = mazeSize;

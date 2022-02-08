@@ -11,7 +11,6 @@ using Common.Constants;
 using Common.Entities;
 using Common.Extensions;
 using Common.Utils;
-using Lean.Touch;
 using RMAZOR.Models;
 using RMAZOR.Views;
 using RMAZOR.Views.InputConfigurators;
@@ -232,15 +231,15 @@ namespace RMAZOR
         {
             get
             {
-                var res = SaveUtils.GetValue(SaveKeys.DisableAds);
+                var res = SaveUtils.GetValue(SaveKeysCommon.DisableAds);
                 if (res.HasValue) return 
                     res.Value;
-                SaveUtils.PutValue(SaveKeys.DisableAds, false);
+                SaveUtils.PutValue(SaveKeysCommon.DisableAds, false);
                 return false;
             }
             set
             {
-                SaveUtils.PutValue(SaveKeys.DisableAds, !value);
+                SaveUtils.PutValue(SaveKeysCommon.DisableAds, !value);
                 Dbg.Log($"Ads enabled: {value}.");
             }
         }

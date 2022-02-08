@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Common.CameraProviders;
 using Common.Entities.UI;
 using Common.Extensions;
+using Common.Providers;
 using Common.Ticker;
 using DialogViewers;
 using Managers;
@@ -87,7 +88,8 @@ namespace RMAZOR.UI.Panels.ShopPanels
                     Icon = Managers.PrefabSetManager.GetObject<Sprite>(PrefabSetName, kvp.Key)
                 };
                 item.Init(
-                    Managers,
+                    Managers.AudioManager,
+                    Managers.LocalizationManager,
                     Ticker,
                     ColorProvider,
                     kvp.Value.Item2,

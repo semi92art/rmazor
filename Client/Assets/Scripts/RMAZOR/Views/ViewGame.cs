@@ -4,12 +4,14 @@ using System;
 using System.Linq;
 using Common;
 using Common.CameraProviders;
+using Common.Helpers;
+using Common.Providers;
+using DialogViewers;
 using Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Characters;
 using RMAZOR.Views.Common;
-using RMAZOR.Views.ContainerGetters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.Rotation;
@@ -74,6 +76,7 @@ namespace RMAZOR.Views
         private IColorProvider           ColorProvider       { get; }
         private ICameraProvider          CameraProvider      { get; }
         private IDebugManager            DebugManager        { get; }
+        private IBigDialogViewer         BigDialogViewer     { get; }
 
         public ViewGame(
             ViewSettings                          _Settings,
@@ -100,7 +103,8 @@ namespace RMAZOR.Views
             IMazeCoordinateConverter              _CoordinateConverter,
             IColorProvider                        _ColorProvider,
             ICameraProvider                       _CameraProvider,
-            IDebugManager                         _DebugManager)
+            IDebugManager                         _DebugManager,
+            IBigDialogViewer _BigDialogViewer)
         {
             Settings               = _Settings;
             ContainersGetter       = _ContainersGetter;
@@ -127,6 +131,7 @@ namespace RMAZOR.Views
             ColorProvider          = _ColorProvider;
             CameraProvider         = _CameraProvider;
             DebugManager           = _DebugManager;
+            BigDialogViewer = _BigDialogViewer;
         }
         
         #endregion
@@ -144,7 +149,7 @@ namespace RMAZOR.Views
         
         public void Init()
         {
-            InitManagers();
+            InitDebugManager();
             InitProceeders();
             Initialize?.Invoke();
             Initialized = true;
@@ -180,14 +185,12 @@ namespace RMAZOR.Views
         
         #region nonpublic methods
 
-        private void InitManagers()
+        private void InitDebugManager()
         {
             if (Managers.RemoteConfigManager.Initialized)
                 DebugManager.Init();
             else
                 Managers.RemoteConfigManager.Initialize += DebugManager.Init;
-            Managers.AudioManager.Init();
-            Managers.AssetBundleManager.Init();
         }
 
         private void InitProceeders()
@@ -211,7 +214,8 @@ namespace RMAZOR.Views
                 GravityItemsGroup,
                 Background,
                 Foreground,
-                CameraProvider
+                CameraProvider,
+                Managers
             };
             ColorProvider.Init();
             CoordinateConverter.Init();
@@ -221,6 +225,10 @@ namespace RMAZOR.Views
             foreach (var initObj in GetInterfaceOfProceeders<IInit>())
                 initObj?.Init();
             LevelStageController.Init();
+            BigDialogViewer.OnClosed = () =>
+            {
+                CommandsProceeder.RaiseCommand(EInputCommand.UnPauseLevel, null, true);
+            };
         }
 
         private T[] GetInterfaceOfProceeders<T>() where T : class

@@ -1,4 +1,5 @@
 ﻿using System;
+using Common;
 using Common.Enums;
 using Common.Extensions;
 using Common.Ticker;
@@ -90,7 +91,7 @@ namespace RMAZOR.Views.UI
                     CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);
                     break;
                 case EInputCommand.RateGamePanel:
-                    var lastTimeShown = SaveUtils.GetValue(SaveKeys.TimeSinceLastIapReviewDialogShown);
+                    var lastTimeShown = SaveUtils.GetValue(SaveKeysCommon.TimeSinceLastIapReviewDialogShown);
                     var span = DateTime.Now - lastTimeShown;
                     if (span.Days > 31)
                     {
@@ -101,8 +102,8 @@ namespace RMAZOR.Views.UI
                         DialogPanels.RateGameDialogPanel.LoadPanel();
                         ProposalDialogViewer.Show(DialogPanels.RateGameDialogPanel, 3f);
                     }
-                    int ratePanelShowsCount = SaveUtils.GetValue(SaveKeys.RatePanelShowsCount);
-                    SaveUtils.PutValue(SaveKeys.RatePanelShowsCount, ratePanelShowsCount + 1);
+                    int ratePanelShowsCount = SaveUtils.GetValue(SaveKeysRmazor.RatePanelShowsCount);
+                    SaveUtils.PutValue(SaveKeysRmazor.RatePanelShowsCount, ratePanelShowsCount + 1);
                     break;
             }
         }
@@ -116,10 +117,10 @@ namespace RMAZOR.Views.UI
         {
             if (_Pause)
                 return;
-            int ratePanelShowsCount = SaveUtils.GetValue(SaveKeys.RatePanelShowsCount);
+            int ratePanelShowsCount = SaveUtils.GetValue(SaveKeysRmazor.RatePanelShowsCount);
             bool mustShowRateGamePanel =
                 Random.value < 0.05f
-                && !SaveUtils.GetValue(SaveKeys.GameWasRated)
+                && !SaveUtils.GetValue(SaveKeysCommon.GameWasRated)
                 && ratePanelShowsCount > 10
                 && Model.LevelStaging.LevelIndex > ViewSettings.firstLevelToRateGame;
             if (!mustShowRateGamePanel)

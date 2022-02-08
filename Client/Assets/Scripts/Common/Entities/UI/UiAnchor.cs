@@ -2,7 +2,7 @@
 
 namespace Common.Entities.UI
 {
-    public struct UiAnchor
+    public readonly struct UiAnchor
     {
         #region factory
         

@@ -2,6 +2,7 @@
 using Common;
 using Common.CameraProviders;
 using Common.Exceptions;
+using Common.Providers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common.CongratulationItems;
 using UnityEngine;

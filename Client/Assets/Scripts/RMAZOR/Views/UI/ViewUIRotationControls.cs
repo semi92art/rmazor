@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using Common;
 using Common.CameraProviders;
 using Common.Constants;
 using Common.Extensions;
+using Common.Providers;
 using Common.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
@@ -59,15 +61,15 @@ namespace RMAZOR.Views.UI
                 case ELevelStage.ReadyToStart when
                     _Args.PreviousStage != ELevelStage.Paused
                     && RazorMazeUtils.MazeContainsGravityItems(Model.GetAllProceedInfos())
-                    && SaveUtils.GetValue(SaveKeys.EnableRotation):
+                    && SaveUtils.GetValue(SaveKeysRmazor.EnableRotation):
                     Indicator.Shape.enabled = true;
-                    Indicator.Shape.Color = ColorProvider.GetColor(ColorIds.UI).SetA(0f);
+                    Indicator.Shape.Color = ColorProvider.GetColor(ColorIdsCommon.UI).SetA(0f);
                     Indicator.Animator.SetTrigger(AnimKeys.Anim);
                     break;
                 case ELevelStage.StartedOrContinued when 
                     _Args.PreviousStage != ELevelStage.CharacterKilled
                     && RazorMazeUtils.MazeContainsGravityItems(Model.GetAllProceedInfos())
-                    && SaveUtils.GetValue(SaveKeys.EnableRotation):
+                    && SaveUtils.GetValue(SaveKeysRmazor.EnableRotation):
                     Indicator.Animator.SetTrigger(AnimKeys.Stop);
                     break;
                 case ELevelStage.ReadyToUnloadLevel when _Args.PreviousStage != ELevelStage.Paused:

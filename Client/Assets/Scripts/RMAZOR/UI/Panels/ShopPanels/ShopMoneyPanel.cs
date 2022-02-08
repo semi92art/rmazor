@@ -5,6 +5,7 @@ using Common.Constants;
 using Common.Entities;
 using Common.Entities.UI;
 using Common.Extensions;
+using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using DialogViewers;
@@ -216,7 +217,9 @@ namespace RMAZOR.UI.Panels.ShopPanels
                     OnPaid(_Info.Reward);
             }
             var item = CreateItem();
-            item.Init(Managers,
+            item.Init(
+                Managers.AudioManager,
+                Managers.LocalizationManager,
                 Ticker,
                 ColorProvider,
                 () =>

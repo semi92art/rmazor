@@ -1,4 +1,8 @@
-﻿using DialogViewers;
+﻿using Common;
+using Common.Helpers;
+using Common.Managers;
+using Common.Providers;
+using DialogViewers;
 using Managers;
 using Managers.Audio;
 using RMAZOR;
@@ -28,8 +32,6 @@ namespace Mono_Installers
 {
     public class LevelMonoInstaller : MonoInstallerImplBase
     {
-        public static bool Release;
-        
         public GameObject colorProvider;
 
         public override void InstallBindings()
@@ -63,10 +65,10 @@ namespace Mono_Installers
             
             Container.Bind<IMazeShaker>()                    .To<MazeShaker>()                    .AsSingle();
             Container.Bind<IMazeCoordinateConverter>()       .To<MazeCoordinateConverter>()       .AsSingle();
-            Container.Bind<IContainersGetter>()              .To<ContainersGetter>()              .AsSingle();
+            Container.Bind<IContainersGetter>()              .To<ContainersGetterRmazor>()        .AsSingle();
             Container.Bind<IMazeItemsCreator>()              .To<MazeItemsCreator>()              .AsSingle();
 
-            if (!Release)
+            if (!CommonData.Release)
             {
                 Container.Bind<IViewUI>()                    .To<ViewUIProt>()                    .AsSingle();
                 Container.Bind<IViewUIGameControls>()        .To<ViewUIGameControlsProt>()        .AsSingle();
@@ -124,7 +126,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazeTrapsIncItemsGroup>()    .To<ViewMazeTrapsIncItemsGroup>()    .AsSingle();
             Container.Bind<IViewMazeGravityItemsGroup>()     .To<ViewMazeGravityItemsGroup>()     .AsSingle();
 
-            if (!Release)
+            if (!CommonData.Release)
             {
                 Container.Bind<IProposalDialogViewer>()      .To<ProposalDialogViewerFake>()      .AsSingle();
                 Container.Bind<IDialogPanels>()              .To<DialogPanelsFake>()              .AsSingle();
@@ -156,10 +158,13 @@ namespace Mono_Installers
 
             #region other
 
-            Container.Bind<IColorProvider>()    .FromComponentInNewPrefab(colorProvider) .AsSingle();
-            Container.Bind<IDebugManager>()     .To<DebugManager>()                      .AsSingle();
-            Container.Bind<IAudioManager>()     .To<AudioManager>()                      .AsSingle();
-            Container.Bind<IManagersGetter>()   .To<ManagersGetter>()                    .AsSingle();
+            Container.Bind<IColorProvider>()     .FromComponentInNewPrefab(colorProvider) .AsSingle();
+            Container.Bind<IDebugManager>()      .To<DebugManager>()                      .AsSingle();
+            // Container.Bind<IAudioManagerRmazor>().To<AudioManagerRmazor>()                .AsSingle();
+            Container.Bind<IManagersGetter>()    .To<ManagersGetter>()                    .AsSingle();
+            Container.Bind(typeof(IAudioManagerRmazor), typeof(IAudioManager))
+                .To<AudioManagerRmazor>()
+                .AsSingle();
 
             #endregion
         }

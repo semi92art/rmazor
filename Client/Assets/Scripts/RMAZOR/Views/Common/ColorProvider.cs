@@ -4,6 +4,7 @@ using Common;
 using Common.Entities;
 using Common.Extensions;
 using Common.Helpers;
+using Common.Providers;
 using Common.Utils;
 using GameHelpers;
 using Settings;
@@ -13,23 +14,6 @@ using Zenject;
 
 namespace RMAZOR.Views.Common
 {
-    public enum EColorTheme
-    {
-        Light = 0,
-        Dark = 1
-    }
-    
-    public interface IColorProvider : IInit
-    {
-        event UnityAction<int, Color>  ColorChanged;
-        event UnityAction<EColorTheme> ColorThemeChanged;
-        bool                           DarkThemeAvailable { get; set; }
-        EColorTheme                    CurrentTheme       { get; }
-        Color                          GetColor(int         _Id);
-        void                           SetColor(int         _Id, Color _Color);
-        void                           SetTheme(EColorTheme _Theme);
-    }
-    
     public class ColorProvider : MonoBehInitBase, IColorProvider
     {
         #region nonpublic members
@@ -75,8 +59,8 @@ namespace RMAZOR.Views.Common
 
         public bool DarkThemeAvailable
         {
-            get => SaveUtils.GetValue(SaveKeys.DarkThemeAvailable);
-            set => SaveUtils.PutValue(SaveKeys.DarkThemeAvailable, value);
+            get => SaveUtils.GetValue(SaveKeysRmazor.DarkThemeAvailable);
+            set => SaveUtils.PutValue(SaveKeysRmazor.DarkThemeAvailable, value);
         }
 
         public EColorTheme CurrentTheme => DarkThemeSetting.Get() ? EColorTheme.Dark : EColorTheme.Light;
@@ -101,7 +85,7 @@ namespace RMAZOR.Views.Common
         
         public void SetTheme(EColorTheme _Theme)
         {
-            SaveUtils.PutValue(SaveKeys.DarkTheme, _Theme == EColorTheme.Dark);
+            SaveUtils.PutValue(SaveKeysCommon.DarkTheme, _Theme == EColorTheme.Dark);
             SetThemeCore(_Theme == EColorTheme.Dark);
             foreach (int id in m_ColorsDict.Keys.ToList().Except(new [] {ColorIds.Main, ColorIds.Background}))
                 SetColor(id, m_ColorsDict[id]);
@@ -122,7 +106,7 @@ namespace RMAZOR.Views.Common
             }
             m_ColorsDict.Clear();
             foreach (var item in m_CurrentSet)
-                m_ColorsDict.Add(ColorIds.GetHash(item.name), item.color);
+                m_ColorsDict.Add(ColorIdsCommon.GetHash(item.name), item.color);
         }
 
         #endregion

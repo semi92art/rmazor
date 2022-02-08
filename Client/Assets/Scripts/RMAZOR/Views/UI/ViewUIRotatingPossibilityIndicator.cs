@@ -1,6 +1,8 @@
-﻿using Common.Constants;
+﻿using Common;
+using Common.Constants;
 using Common.Extensions;
 using Common.Helpers;
+using Common.Providers;
 using Common.Utils;
 using Managers;
 using RMAZOR.Models;
@@ -75,7 +77,7 @@ namespace RMAZOR.Views.UI
         
         private void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId != ColorIds.UI)
+            if (_ColorId != ColorIdsCommon.UI)
                 return;
             Shape.Color = _Color;
         }
@@ -83,7 +85,6 @@ namespace RMAZOR.Views.UI
         private void InitShape()
         {
             const float scale = 3f;
-            var screenBounds = GraphicUtils.GetVisibleBounds();
             var cont = ContainersGetter.GetContainer(ContainerNames.GameUI);
             var goIndicator = Managers.PrefabSetManager.InitPrefab(
                 cont, "ui_game", "rotating_possibility_indicator");

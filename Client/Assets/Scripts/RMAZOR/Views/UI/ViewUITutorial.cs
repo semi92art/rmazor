@@ -1,7 +1,10 @@
 ﻿using System.Collections;
+using Common;
 using Common.CameraProviders;
 using Common.Constants;
 using Common.Extensions;
+using Common.Helpers;
+using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using GameHelpers;
@@ -100,8 +103,8 @@ namespace RMAZOR.Views.UI
         public void Init(Vector4 _Offsets)
         {
             m_Offsets = _Offsets;
-            m_MovementTutorialFinished = SaveUtils.GetValue(SaveKeys.MovementTutorialFinished);
-            m_RotationTutorialFinished = SaveUtils.GetValue(SaveKeys.RotationTutorialFinished);
+            m_MovementTutorialFinished = SaveUtils.GetValue(SaveKeysRmazor.MovementTutorialFinished);
+            m_RotationTutorialFinished = SaveUtils.GetValue(SaveKeysRmazor.RotationTutorialFinished);
             CommandsProceeder.Command += OnCommand;
             ColorProvider.ColorChanged += OnColorChanged;
         }
@@ -173,7 +176,7 @@ namespace RMAZOR.Views.UI
         {
             if (m_RotationTutorialStarted || m_RotationTutorialFinished)
                 return;
-            SaveUtils.PutValue(SaveKeys.EnableRotation, true);
+            SaveUtils.PutValue(SaveKeysRmazor.EnableRotation, true);
             TutorialStarted?.Invoke(ETutorialType.Rotation);
             var cont = ContainersGetter.GetContainer(ContainerNames.Tutorial);
             var goRotPrompt = PrefabSetManager.InitPrefab(
@@ -232,7 +235,7 @@ namespace RMAZOR.Views.UI
             m_Hsm.HidePrompt();
             CommandsProceeder.UnlockCommands(RazorMazeUtils.MoveCommands, GetGroupName());
             m_MovementTutorialFinished = true;
-            SaveUtils.PutValue(SaveKeys.MovementTutorialFinished, true);
+            SaveUtils.PutValue(SaveKeysRmazor.MovementTutorialFinished, true);
             TutorialFinished?.Invoke(ETutorialType.Movement);
         }
         
@@ -265,7 +268,7 @@ namespace RMAZOR.Views.UI
             var screenBounds = GraphicUtils.GetVisibleBounds();
             RotationIndicator.Init(m_Offsets);
             RotationIndicator.SetPosition(new Vector2(screenBounds.center.x, screenBounds.min.y + 10f));
-            RotationIndicator.Shape.Color = ColorProvider.GetColor(ColorIds.UI).SetA(0f);
+            RotationIndicator.Shape.Color = ColorProvider.GetColor(ColorIdsCommon.UI).SetA(0f);
             RotationIndicator.Animator.SetTrigger(AnimKeys.Anim);
             var cont = ContainersGetter.GetContainer(ContainerNames.Tutorial);
             var goRotPossText = PrefabSetManager.InitPrefab(
@@ -276,7 +279,7 @@ namespace RMAZOR.Views.UI
             m_RotPossText = goRotPossText.GetCompItem<TextMeshPro>("text");
             m_RotPossText.rectTransform.sizeDelta = m_RotPossText.rectTransform.sizeDelta.SetX(
                 screenBounds.max.x - screenBounds.min.x - 3f);
-            m_RotPossText.color = ColorProvider.GetColor(ColorIds.UI).SetA(0f);
+            m_RotPossText.color = ColorProvider.GetColor(ColorIdsCommon.UI).SetA(0f);
             m_RotPossTextAnim = goRotPossText.GetCompItem<Animator>("animator");
             LocalizationManager.AddTextObject(m_RotPossText, "rotation_possibility_text");
             bool readyToNextStage = false;
@@ -294,7 +297,7 @@ namespace RMAZOR.Views.UI
         {
             CommandsProceeder.UnlockCommands(RazorMazeUtils.MoveAndRotateCommands, GetGroupName());
             m_RotationTutorialFinished = true;
-            SaveUtils.PutValue(SaveKeys.RotationTutorialFinished, true);
+            SaveUtils.PutValue(SaveKeysRmazor.RotationTutorialFinished, true);
             TutorialFinished?.Invoke(ETutorialType.Rotation);
         }
 

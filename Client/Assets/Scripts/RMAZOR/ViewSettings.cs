@@ -17,7 +17,6 @@ namespace RMAZOR
         [SerializeField] private float mazeRotationSpeed;
         [SerializeField] private float finishTimeExcellent;
         [SerializeField] private float finishTimeGood;
-        [SerializeField] private float proposalDialogAnimSpeed;
         [SerializeField] private float gravityTrapRotationSpeed;
         [SerializeField] private float pauseBetweenMoveCommands;
         [SerializeField] private float leftScreenOffset;
@@ -102,12 +101,6 @@ namespace RMAZOR
         {
             get => finishTimeGood * 0.1f;
             set => finishTimeGood = value / 0.1f;
-        }
-
-        public float   ProposalDialogAnimSpeed
-        {
-            get => proposalDialogAnimSpeed;
-            set => proposalDialogAnimSpeed = value;
         }
 
         public float GravityTrapRotationSpeed

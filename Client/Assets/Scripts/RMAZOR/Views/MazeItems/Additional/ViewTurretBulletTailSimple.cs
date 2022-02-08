@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Common.Constants;
 using Common.Entities;
 using Common.Extensions;
+using Common.Helpers;
+using Common.Providers;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.ContainerGetters;

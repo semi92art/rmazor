@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Common.Helpers;
+using Common.Providers;
 using RMAZOR.Models;
 
 namespace RMAZOR.Views.Common

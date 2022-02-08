@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Common;
 using Common.Exceptions;
 using Common.Extensions;
+using Common.Providers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.Helpers;
@@ -127,7 +129,7 @@ namespace RMAZOR.Views.UI
 
         private void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId != ColorIds.UI) 
+            if (_ColorId != ColorIdsCommon.UI) 
                 return;
             var allRenderers = 
                 CongratsMessage.GetRenderers()
@@ -157,7 +159,7 @@ namespace RMAZOR.Views.UI
                 _Show, 
                 new Dictionary<IEnumerable<Component>, Func<Color>>
                 {
-                    {allRenderers, () => ColorProvider.GetColor(ColorIds.UI)}
+                    {allRenderers, () => ColorProvider.GetColor(ColorIdsCommon.UI)}
                 },
                 _Type: EAppearTransitionType.WithoutDelay);
         }

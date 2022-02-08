@@ -13,7 +13,6 @@ using Managers;
 using Managers.Advertising;
 using Managers.IAP;
 using Managers.Scores;
-using Mono_Installers;
 using RMAZOR.Controllers;
 using UnityEngine;
 using UnityEngine.Purchasing;
@@ -71,16 +70,17 @@ namespace RMAZOR
     
         #region engine methods
     
-        private IEnumerator Start()
+        private void Start()
         {
             Dbg.Log("Application started, platform: " + Application.platform);
             InitStartData();
             InitLogging();
-            yield return Cor.Delay(1f, null);
+            // yield return Cor.Delay(1f, null);
             InitGameManagers();
             InitDefaultData();
             SceneManager.sceneLoaded += OnSceneLoaded;
-            yield return LoadSceneLevel();
+            Cor.Run(LoadSceneLevel());
+            // yield return LoadSceneLevel();
         }
 
         private static IEnumerator LoadSceneLevel()
@@ -156,7 +156,7 @@ namespace RMAZOR
         
         private void OnScoreManagerInitialize()
         {
-            if (SaveUtils.GetValue(SaveKeys.MoneyFromServerLoadedFirstTime))
+            if (SaveUtils.GetValue(SaveKeysRmazor.MoneyFromServerLoadedFirstTime))
                 OnScoreManagerInitializeNotFirstLaunch();
             else 
                 OnScoreManagerInitializeFirstLaunch();
@@ -214,7 +214,7 @@ namespace RMAZOR
                                 };
                                 ScoreManager.SaveGameProgress(newSavedGame, false);
                             }
-                            SaveUtils.PutValue(SaveKeys.MoneyFromServerLoadedFirstTime, true);
+                            SaveUtils.PutValue(SaveKeysRmazor.MoneyFromServerLoadedFirstTime, true);
                         }));
                 }));
         }
@@ -249,9 +249,9 @@ namespace RMAZOR
                 return;
             Dbg.Log(nameof(InitDefaultData));
             DataFieldsMigrator.InitDefaultDataFieldValues(GameClient);
-            SaveUtils.PutValue(SaveKeys.SettingSoundOn, true);
-            SaveUtils.PutValue(SaveKeys.SettingMusicOn, true);
-            SaveUtils.PutValue(SaveKeys.SettingHapticsOn, true);
+            SaveUtils.PutValue(SaveKeysCommon.SettingSoundOn, true);
+            SaveUtils.PutValue(SaveKeysCommon.SettingMusicOn, true);
+            SaveUtils.PutValue(SaveKeysCommon.SettingHapticsOn, true);
             SaveUtils.PutValue(SaveKeysCommon.NotFirstLaunch, true);
             SetDefaultLanguage();
         }
@@ -262,7 +262,7 @@ namespace RMAZOR
             CameraProvider.MainCamera.backgroundColor = Color.black; 
             SaveUtils.PutValue(SaveKeysCommon.AppVersion, Application.version);
             Application.targetFrameRate = GraphicUtils.GetTargetFps();
-            LevelMonoInstaller.Release = true;
+            CommonData.Release = true;
         }
 
         private void InitLogging()

@@ -1,7 +1,9 @@
 ﻿using System.Linq;
+using Common;
 using Common.Constants;
 using Common.Entities;
 using Common.Extensions;
+using Common.Providers;
 using Common.Utils;
 using GameHelpers;
 using Managers;
@@ -60,7 +62,8 @@ namespace Editor
             GUILayout.Label("UI Color:");
             if (!m_UiColor.HasValue)
             {
-                var uiSetItem = m_ColorSet.FirstOrDefault(_Item => ColorIds.GetHash(_Item.name) == ColorIds.UI);
+                var uiSetItem = m_ColorSet.FirstOrDefault(
+                    _Item => ColorIdsCommon.GetHash(_Item.name) == ColorIdsCommon.UI);
                 if (uiSetItem != null)
                 {
                     m_UiColor = EditorGUILayout.ColorField(uiSetItem.color);
@@ -89,16 +92,16 @@ namespace Editor
         {
             var coloIds = new []
             {
-                ColorIds.UI,
-                ColorIds.UiBackground,
-                ColorIds.UiBorder,
-                ColorIds.UiText,
-                ColorIds.UiDialogItemNormal,
-                ColorIds.UiDialogBackground
+                ColorIdsCommon.UI,
+                ColorIdsCommon.UiBackground,
+                ColorIdsCommon.UiBorder,
+                ColorIdsCommon.UiText,
+                ColorIdsCommon.UiDialogItemNormal,
+                ColorIdsCommon.UiDialogBackground
             };
             foreach (int id in coloIds)
             {
-                var item = m_ColorSet.FirstOrDefault(_Item => ColorIds.GetHash(_Item.name) == id);
+                var item = m_ColorSet.FirstOrDefault(_Item => ColorIdsCommon.GetHash(_Item.name) == id);
                 if (item == null) 
                     continue;
                 var col = item.color;
@@ -126,12 +129,12 @@ namespace Editor
                 {
                     EditorUtilsEx.GUIEnabledZone(false, () =>
                     {
-                        EditorGUILayout.TextField(ColorIds.GetHash(item.name).ToString(), GUILayout.Width(80));
+                        EditorGUILayout.TextField(ColorIdsCommon.GetHash(item.name).ToString(), GUILayout.Width(80));
                         EditorGUILayout.TextField(item.name, GUILayout.Width(170));
                     });
                     var newColor = EditorGUILayout.ColorField(item.color);
                     if (newColor != item.color)
-                        m_ColorProvider?.SetColor(ColorIds.GetHash(item.name), item.color);
+                        m_ColorProvider?.SetColor(ColorIdsCommon.GetHash(item.name), item.color);
                     item.color = newColor;
                 });
             }

@@ -9,6 +9,7 @@ using Common.Entities.UI;
 using Common.Enums;
 using Common.Exceptions;
 using Common.Extensions;
+using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using DialogViewers;
@@ -96,7 +97,7 @@ namespace RMAZOR.UI.Panels
         {
             base.LoadPanel();
             var sp = Managers.PrefabSetManager.InitUiPrefab(
-                UIUtils.UiRectTransform(DialogViewer.Container, RtrLites.FullFill),
+                UIUtils.UiRectTransform(DialogViewer.Container, RectTransformLite.FullFill),
                 CommonPrefabSetNames.DialogPanels, "settings_panel");
             m_MiniButtonsContent = sp.GetCompItem<RectTransform>("mini_buttons_content");
             m_SettingsContent = sp.GetCompItem<RectTransform>("settings_content");

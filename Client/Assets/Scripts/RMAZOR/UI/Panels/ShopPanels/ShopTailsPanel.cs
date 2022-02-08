@@ -1,5 +1,6 @@
 ﻿using Common.CameraProviders;
 using Common.Entities.UI;
+using Common.Providers;
 using Common.Ticker;
 using DialogViewers;
 using Managers;

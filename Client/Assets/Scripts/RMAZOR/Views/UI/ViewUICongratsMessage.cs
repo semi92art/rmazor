@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Common;
 using Common.CameraProviders;
 using Common.Constants;
 using Common.Extensions;
+using Common.Helpers;
+using Common.Providers;
 using Common.Utils;
 using Managers;
 using RMAZOR.Models;
@@ -157,7 +160,7 @@ namespace RMAZOR.Views.UI
         
         private void ShowCongratsPanel(bool _Show)
         {
-            var col = ColorProvider.GetColor(ColorIds.UI);
+            var col = ColorProvider.GetColor(ColorIdsCommon.UI);
             if (!_Show)
                 col = col.SetA(0f);
             m_CompletedText.color = m_CongratsText.color = m_CongratsLine.Color = col;

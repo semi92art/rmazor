@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Common;
 using Common.CameraProviders;
 using Common.Constants;
+using Common.Entities.UI;
 using Common.Extensions;
 using Common.Helpers;
+using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using DialogViewers;
@@ -42,7 +45,6 @@ namespace RMAZOR.UI.Panels
         
         private IProposalDialogViewer       ProposalDialogViewer { get; }
         private IViewInputCommandsProceeder CommandsProceeder    { get; }
-        private ViewSettings                ViewSettings         { get; }
 
         public RateGameDialogPanel(
             IManagersGetter _Managers,
@@ -51,13 +53,11 @@ namespace RMAZOR.UI.Panels
             ICameraProvider _CameraProvider,
             IColorProvider _ColorProvider,
             IProposalDialogViewer _ProposalDialogViewer,
-            IViewInputCommandsProceeder _CommandsProceeder,
-            ViewSettings _ViewSettings)
+            IViewInputCommandsProceeder _CommandsProceeder)
             : base( _Managers, _Ticker, _DialogViewer, _CameraProvider, _ColorProvider)
         {
             ProposalDialogViewer = _ProposalDialogViewer;
             CommandsProceeder = _CommandsProceeder;
-            ViewSettings = _ViewSettings;
         }
 
         #endregion
@@ -73,7 +73,7 @@ namespace RMAZOR.UI.Panels
             var go = Managers.PrefabSetManager.InitUiPrefab(
                 UIUtils.UiRectTransform(
                     ProposalDialogViewer.Container,
-                    RtrLites.FullFill),
+                    RectTransformLite.FullFill),
                 CommonPrefabSetNames.DialogPanels, "rate_game_panel");
             PanelObject = go.RTransform();
             go.SetActive(false);
@@ -85,14 +85,14 @@ namespace RMAZOR.UI.Panels
             m_Stars           = go.GetCompItem<Image>("stars");
             m_Triggerer.Trigger1 = () => Cor.Run(OnPanelStartAnimationFinished());
             var panel = go.GetCompItem<SimpleUiDialogPanelView>("panel");
-            panel.Init(Managers, Ticker, ColorProvider);
+            panel.Init(Managers.AudioManager, Ticker, ColorProvider);
             var button = go.GetCompItem<SimpleUiButtonView>("rate_game_button");
-            button.Init(Managers, Ticker, ColorProvider);
+            button.Init(Managers.AudioManager, Ticker, ColorProvider);
             button.Highlighted = true;
             m_ButtonClose.onClick.AddListener(OnCloseButtonClick);
             m_ButtonRateGame.onClick.AddListener(OnRateGameButtonClick);
             m_TextRateGame.text = Managers.LocalizationManager.GetTranslation("rate_game");
-            m_Stars.color = ColorProvider.GetColor(ColorIds.UI);
+            m_Stars.color = ColorProvider.GetColor(ColorIdsCommon.UI);
             var closeButtonAnimator = m_ButtonClose.GetComponent<Animator>();
             if (closeButtonAnimator.IsNotNull())
                 closeButtonAnimator.enabled = false;
@@ -104,7 +104,7 @@ namespace RMAZOR.UI.Panels
             {
                 CommandsProceeder.LockCommands(GetCommandsToLock(), nameof(IRateGameDialogPanel));
             }));
-            m_Animator.speed = ViewSettings.ProposalDialogAnimSpeed;
+            m_Animator.speed = ProposalDialogViewer.AnimationSpeed;
             m_Animator.SetTrigger(AnimKeys.Anim);
             m_ButtonClose.SetGoActive(false);
         }
@@ -121,7 +121,7 @@ namespace RMAZOR.UI.Panels
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             base.OnColorChanged(_ColorId, _Color);
-            if (_ColorId == ColorIds.UI)
+            if (_ColorId == ColorIdsCommon.UI)
             {
                 m_Stars.color = _Color;
             }
@@ -139,7 +139,7 @@ namespace RMAZOR.UI.Panels
         private void OnRateGameButtonClick()
         {
             Managers.ShopManager.RateGame(false);
-            SaveUtils.PutValue(SaveKeys.GameWasRated, true);
+            SaveUtils.PutValue(SaveKeysCommon.GameWasRated, true);
             ProposalDialogViewer.Back();
             
         }

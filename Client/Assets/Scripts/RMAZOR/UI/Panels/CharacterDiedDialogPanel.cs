@@ -1,18 +1,17 @@
 ﻿using System.Collections;
-using System.Linq;
 using Common;
 using Common.CameraProviders;
 using Common.Constants;
 using Common.Entities;
+using Common.Entities.UI;
 using Common.Extensions;
 using Common.Helpers;
+using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using DialogViewers;
-using GameHelpers;
 using Managers;
 using RMAZOR.Models;
-using RMAZOR.Views.Common;
 using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UI;
@@ -22,7 +21,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using UnityEngine.UI.ProceduralImage;
-using Utils;
 
 namespace RMAZOR.UI.Panels
 {
@@ -62,22 +60,19 @@ namespace RMAZOR.UI.Panels
 
         #region inject
 
-        private ViewSettings                ViewSettings         { get; }
         private IProposalDialogViewer       ProposalDialogViewer { get; }
         private IViewInputCommandsProceeder CommandsProceeder    { get; }
 
         public CharacterDiedDialogPanel(
-            IBigDialogViewer _DialogViewer,
-            IManagersGetter _Managers,
-            IUITicker _UITicker,
-            ICameraProvider _CameraProvider,
-            IColorProvider _ColorProvider,
-            ViewSettings _ViewSettings,
-            IProposalDialogViewer _ProposalDialogViewer,
-            IViewInputCommandsProceeder _CommandsProceeder) 
+            IBigDialogViewer            _DialogViewer,
+            IManagersGetter             _Managers,
+            IUITicker                   _UITicker,
+            ICameraProvider             _CameraProvider,
+            IColorProvider              _ColorProvider,
+            IProposalDialogViewer       _ProposalDialogViewer,
+            IViewInputCommandsProceeder _CommandsProceeder)
             : base(_Managers, _UITicker, _DialogViewer, _CameraProvider, _ColorProvider)
         {
-            ViewSettings = _ViewSettings;
             ProposalDialogViewer = _ProposalDialogViewer;
             CommandsProceeder = _CommandsProceeder;
         }
@@ -95,7 +90,7 @@ namespace RMAZOR.UI.Panels
             var go = Managers.PrefabSetManager.InitUiPrefab(
                 UIUtils.UiRectTransform(
                     ProposalDialogViewer.Container,
-                    RtrLites.FullFill),
+                    RectTransformLite.FullFill),
                 CommonPrefabSetNames.DialogPanels, "character_died_panel");
             PanelObject = go.RTransform();
             go.SetActive(false);
@@ -126,9 +121,9 @@ namespace RMAZOR.UI.Panels
             m_ButtonWatchAds.onClick.AddListener(OnWatchAdsButtonClick);
             m_ButtonPayMoney.onClick.AddListener(OnPayMoneyButtonClick);
             
-            go.GetCompItem<SimpleUiButtonView>("watch_ads_button").Init(Managers, Ticker, ColorProvider);
-            go.GetCompItem<SimpleUiButtonView>("pay_money_button").Init(Managers, Ticker, ColorProvider);
-            go.GetCompItem<SimpleUiDialogPanelView>("dialog_panel_view").Init(Managers, Ticker, ColorProvider);
+            go.GetCompItem<SimpleUiButtonView>("watch_ads_button").Init(Managers.AudioManager, Ticker, ColorProvider);
+            go.GetCompItem<SimpleUiButtonView>("pay_money_button").Init(Managers.AudioManager, Ticker, ColorProvider);
+            go.GetCompItem<SimpleUiDialogPanelView>("dialog_panel_view").Init(Managers.AudioManager, Ticker, ColorProvider);
 
             m_AdsWatched = false;
             m_MoneyPayed = false;
@@ -142,7 +137,7 @@ namespace RMAZOR.UI.Panels
                 CommandsProceeder.LockCommand(EInputCommand.ShopMenu, nameof(ICharacterDiedDialogPanel));
                 CommandsProceeder.LockCommand(EInputCommand.SettingsMenu, nameof(ICharacterDiedDialogPanel));    
             }));
-            m_Animator.speed = ViewSettings.ProposalDialogAnimSpeed;
+            m_Animator.speed = ProposalDialogViewer.AnimationSpeed;
             m_Animator.SetTrigger(AnimKeys.Anim);
             IndicateAdsLoading(true);
             Cor.Run(Cor.WaitWhile(

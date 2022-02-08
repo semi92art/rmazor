@@ -241,8 +241,8 @@ namespace Editor
 
         private void EnableDailyBonus()
         {
-            SaveUtils.PutValue(SaveKeys.DailyBonusLastDate, DateTime.Now.Date.AddDays(-1));
-            SaveUtils.PutValue(SaveKeys.DailyBonusLastClickedDay, m_DailyBonusIndex);
+            SaveUtils.PutValue(SaveKeysRmazor.DailyBonusLastDate, DateTime.Now.Date.AddDays(-1));
+            SaveUtils.PutValue(SaveKeysRmazor.DailyBonusLastClickedDay, m_DailyBonusIndex);
         }
 
         private void CreateTestUsers(int _Count)

@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Common;
 using Common.CameraProviders;
 using Common.Exceptions;
 using Common.Extensions;
+using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
-using RMAZOR.Views.Common;
 using UnityEngine;
 
 namespace RMAZOR.Views.UI
@@ -91,7 +92,7 @@ namespace RMAZOR.Views.UI
 
         protected virtual void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId != ColorIds.UI)
+            if (_ColorId != ColorIdsCommon.UI)
                 return;
             hand.color = _Color;
         }

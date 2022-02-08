@@ -4,6 +4,7 @@ using Common.Constants;
 using Common.Entities;
 using Common.Entities.UI;
 using Common.Extensions;
+using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using DialogViewers;
@@ -65,7 +66,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
             var sp = Managers.PrefabSetManager.InitUiPrefab(
                 UIUtils.UiRectTransform(
                     DialogViewer.Container,
-                    RtrLites.FullFill),
+                    RectTransformLite.FullFill),
                 CommonPrefabSetNames.DialogPanels,
                 PanelPrefabName);
             m_Panel = sp.GetCompItem<RectTransform>("panel");
@@ -96,7 +97,8 @@ namespace RMAZOR.UI.Panels.ShopPanels
                     Price = itemInSet.price.ToString()
                 };
                 item.Init(
-                    Managers,
+                    Managers.AudioManager,
+                    Managers.LocalizationManager,
                     Ticker,
                     ColorProvider,
                     () =>
@@ -122,8 +124,8 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 "ui_game", "money_mini_panel");
             m_MoneyText = obj.GetCompItem<TextMeshProUGUI>("money");
             m_MoneyIcon = obj.GetCompItem<Image>("icon");
-            m_MoneyText.color = ColorProvider.GetColor(ColorIds.UiText);
-            m_MoneyIcon.color = ColorProvider.GetColor(ColorIds.UI);
+            m_MoneyText.color = ColorProvider.GetColor(ColorIdsCommon.UiText);
+            m_MoneyIcon.color = ColorProvider.GetColor(ColorIdsCommon.UI);
             var savedGameEntity = Managers.ScoreManager.GetSavedGameProgress(
                 CommonData.SavedGameFileName, 
                 true);
@@ -159,12 +161,12 @@ namespace RMAZOR.UI.Panels.ShopPanels
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == ColorIds.UI)
+            if (_ColorId == ColorIdsCommon.UI)
             {
                 if (m_MoneyIcon.IsNotNull())
                     m_MoneyIcon.color = _Color;
             }
-            else if (_ColorId == ColorIds.UiText)
+            else if (_ColorId == ColorIdsCommon.UiText)
             {
                 if (m_MoneyText.IsNotNull())
                     m_MoneyText.color = _Color;

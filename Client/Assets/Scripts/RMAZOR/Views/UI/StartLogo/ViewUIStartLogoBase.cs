@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Common;
 using Common.CameraProviders;
 using Common.Constants;
 using Common.Extensions;
+using Common.Helpers;
+using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using GameHelpers;
@@ -119,7 +122,7 @@ namespace RMAZOR.Views.UI.StartLogo
                     _C => _C, 
                     _C => go.GetCompItem<Animator>(_C));
             var shapeTypes = new [] {typeof(Line), typeof(Disc), typeof(Rectangle)};
-            var color = ColorProvider.GetColor(ColorIds.UiStartLogo);
+            var color = ColorProvider.GetColor(ColorIdsCommon.UiStartLogo);
             shapeTypes.SelectMany(_Type => go
                     .GetComponentsInChildren(_Type, true))
                 .Cast<ShapeRenderer>()
