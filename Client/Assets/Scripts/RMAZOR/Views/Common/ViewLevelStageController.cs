@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+
 using System.Collections.Generic;
 using System.Linq;
 using Common;
@@ -18,7 +19,6 @@ using RMAZOR.Views.Characters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.MazeItems;
-using RMAZOR.Views.UI;
 
 namespace RMAZOR.Views.Common
 {

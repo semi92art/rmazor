@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using System;
 using Common.CameraProviders;
 using Common.Exceptions;
 using Common.Helpers;
@@ -6,11 +6,10 @@ using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
-using RMAZOR.Views.ContainerGetters;
 using RMAZOR.Views.Helpers;
 using Shapes;
 using UnityEngine;
-using UnityEngine.Events;
+using Random = System.Random;
 
 namespace RMAZOR.Views.Common
 {
@@ -24,10 +23,10 @@ namespace RMAZOR.Views.Common
 
         #region nonpublic members
 
-        private readonly System.Random m_Random = new System.Random();
+        private readonly Random m_Random = new Random();
         private          Bounds        m_ScreenBounds;
         
-        protected readonly System.Type[] PossibleSourceTypes =
+        protected readonly Type[] PossibleSourceTypes =
         {
             typeof(Disc),
             typeof(Line),

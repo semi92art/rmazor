@@ -9,11 +9,12 @@ using Common.Providers;
 using Common.SpawnPools;
 using Common.Ticker;
 using RMAZOR.Models;
-using RMAZOR.Views.ContainerGetters;
 using RMAZOR.Views.Helpers;
 using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
+using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 namespace RMAZOR.Views.Common
 {
@@ -84,9 +85,9 @@ namespace RMAZOR.Views.Common
             }
             for (int i = 0; i < PoolSize; i++)
             {
-                int randIdx = Mathf.FloorToInt(UnityEngine.Random.value * sources.Count);
+                int randIdx = Mathf.FloorToInt(Random.value * sources.Count);
                 var source = sources[randIdx];
-                var newGo = UnityEngine.Object.Instantiate(source.gameObject);
+                var newGo = Object.Instantiate(source.gameObject);
                 newGo.SetParent(ContainersGetter.GetContainer(ContainerNames.Background));
                 var pos = RandomPositionOnScreen();
                 newGo.transform.SetPosXY(pos);

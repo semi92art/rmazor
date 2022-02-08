@@ -5,8 +5,6 @@ using Common.Ticker;
 using Common.UI;
 using RMAZOR.Managers;
 using RMAZOR.UI.PanelItems.Shop_Items;
-using RMAZOR.Views.Common;
-using UI;
 using UnityEngine;
 
 namespace RMAZOR.UI.Panels.ShopPanels

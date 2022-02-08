@@ -4,7 +4,7 @@ using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views;
-using RMAZOR.Views.InputConfigurators;
+using Zenject;
 
 namespace RMAZOR.Controllers
 {
@@ -35,7 +35,7 @@ namespace RMAZOR.Controllers
         private IRemoteConfigManager RemoteConfigManager { get; set; }
         private CommonGameSettings   Settings            { get; set; }
 
-        [Zenject.Inject]
+        [Inject]
         public void Inject(
             IModelGame           _Model,
             IViewGame            _View,

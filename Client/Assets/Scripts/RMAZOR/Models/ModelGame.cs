@@ -1,5 +1,6 @@
 ﻿// ReSharper disable ForCanBeConvertedToForeach
 // ReSharper disable ClassNeverInstantiated.Global
+
 using System;
 using System.Linq;
 using Common;

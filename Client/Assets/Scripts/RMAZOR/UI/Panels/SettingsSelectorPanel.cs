@@ -9,8 +9,6 @@ using Common.UI;
 using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.UI.PanelItems.Setting_Panel_Items;
-using RMAZOR.Views.Common;
-using UI;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;

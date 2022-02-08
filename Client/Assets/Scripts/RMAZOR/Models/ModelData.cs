@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Common.Entities;
 using RMAZOR.Models.MazeInfos;
 
@@ -39,9 +40,9 @@ namespace RMAZOR.Models
                     .ToList();
                 var pathItems = m_Info.PathItems;
                 int maxX = mazeItems.Any() ? mazeItems.Max(_Item => _Item.Position.X + 1) : 0;
-                maxX = System.Math.Max(maxX, pathItems.Max(_Item => _Item.Position.X + 1));
+                maxX = Math.Max(maxX, pathItems.Max(_Item => _Item.Position.X + 1));
                 int maxY = mazeItems.Any() ? mazeItems.Max(_Item => _Item.Position.Y + 1) : 0;
-                maxY = System.Math.Max(maxY, pathItems.Max(_Item => _Item.Position.Y + 1));
+                maxY = Math.Max(maxY, pathItems.Max(_Item => _Item.Position.Y + 1));
                 return new V2Int(maxX, maxY);
             }
         }

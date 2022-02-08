@@ -9,8 +9,6 @@ using Common.Providers;
 using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
-using RMAZOR.Views.Common;
-using RMAZOR.Views.ContainerGetters;
 using Shapes;
 using TMPro;
 using UnityEngine;

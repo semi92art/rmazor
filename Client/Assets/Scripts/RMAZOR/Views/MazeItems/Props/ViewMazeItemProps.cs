@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Common.Entities;
-using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
 

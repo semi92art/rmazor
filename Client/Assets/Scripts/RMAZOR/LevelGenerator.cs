@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Common;
 using Common.Entities;
-using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using UnityEngine;
 using Random = UnityEngine.Random;

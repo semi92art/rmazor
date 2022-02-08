@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Common;
+﻿using Common;
 using Common.CameraProviders;
 using Common.Exceptions;
 using Common.Providers;

@@ -3,6 +3,7 @@
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable PartialTypeWithSinglePart
+
 using System.ComponentModel;
 using System.Linq;
 using System.Text;

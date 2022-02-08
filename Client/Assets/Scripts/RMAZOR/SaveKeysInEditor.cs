@@ -1,5 +1,4 @@
 ﻿using Common.Entities;
-using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 
 namespace RMAZOR

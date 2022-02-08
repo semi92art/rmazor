@@ -8,7 +8,6 @@ using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
-using RMAZOR.Views.Common;
 using UnityEngine;
 
 namespace RMAZOR.Views.UI

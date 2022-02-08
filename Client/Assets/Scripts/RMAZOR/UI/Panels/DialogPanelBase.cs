@@ -4,9 +4,6 @@ using Common.Providers;
 using Common.Ticker;
 using Common.UI;
 using RMAZOR.Managers;
-using RMAZOR.Views.Common;
-using RMAZOR.Views.MazeItems;
-using UI;
 using UnityEngine;
 
 namespace RMAZOR.UI.Panels

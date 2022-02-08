@@ -13,9 +13,7 @@ using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.UI.PanelItems.Shop_Items;
 using RMAZOR.Utils;
-using RMAZOR.Views.Common;
 using TMPro;
-using UI;
 using UnityEngine;
 using UnityEngine.UI;
 

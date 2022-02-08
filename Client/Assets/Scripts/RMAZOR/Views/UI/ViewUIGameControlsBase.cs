@@ -3,7 +3,6 @@ using Common;
 using Common.Extensions;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
-using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.InputConfigurators;
 using UnityEngine.Events;
 

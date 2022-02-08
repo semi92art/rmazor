@@ -7,7 +7,6 @@ using Common.Helpers;
 using Common.Providers;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Common;
-using RMAZOR.Views.ContainerGetters;
 using Shapes;
 using UnityEngine;
 using UnityEngine.Rendering;

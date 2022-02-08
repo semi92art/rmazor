@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Common.SpawnPools;
-using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.MazeItems;
 

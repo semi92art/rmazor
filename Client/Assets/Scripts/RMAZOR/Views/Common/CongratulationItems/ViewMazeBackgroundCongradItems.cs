@@ -10,12 +10,9 @@ using Common.SpawnPools;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
-using RMAZOR.Views.ContainerGetters;
 using RMAZOR.Views.Helpers;
 using Shapes;
 using UnityEngine;
-using Object = UnityEngine.Object;
-using Random = UnityEngine.Random;
 
 namespace RMAZOR.Views.Common.CongratulationItems
 {

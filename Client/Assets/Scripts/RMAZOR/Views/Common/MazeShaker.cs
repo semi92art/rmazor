@@ -8,7 +8,6 @@ using Common.Helpers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
-using RMAZOR.Views.ContainerGetters;
 using RMAZOR.Views.MazeItems;
 using UnityEngine;
 using UnityEngine.Events;

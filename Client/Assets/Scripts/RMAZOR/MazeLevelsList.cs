@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 
 namespace RMAZOR

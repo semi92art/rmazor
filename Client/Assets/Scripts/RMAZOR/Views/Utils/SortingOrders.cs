@@ -1,5 +1,4 @@
 ﻿using Common.Exceptions;
-using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 
 namespace RMAZOR.Views.Utils

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Common.Entities;
 using Common.Exceptions;
 using Common.SpawnPools;
 using RMAZOR.Models.MazeInfos;

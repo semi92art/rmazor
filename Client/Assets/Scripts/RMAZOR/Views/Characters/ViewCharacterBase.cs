@@ -4,8 +4,6 @@ using Common.Enums;
 using Common.Helpers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
-using RMAZOR.Views.ContainerGetters;
-using RMAZOR.Views.MazeItems;
 using UnityEngine;
 
 namespace RMAZOR.Views.Characters

@@ -12,7 +12,6 @@ using Common.Utils;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common;
-using RMAZOR.Views.ContainerGetters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
 using Shapes;

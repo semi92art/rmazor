@@ -1,5 +1,4 @@
 ﻿using Common;
-using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common;

@@ -9,9 +9,7 @@ using Common.Utils;
 using RMAZOR.GameHelpers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
-using RMAZOR.Views.ContainerGetters;
 using RMAZOR.Views.InputConfigurators;
-using RMAZOR.Views.MazeItems;
 using UnityEngine;
 
 namespace RMAZOR.Views.UI

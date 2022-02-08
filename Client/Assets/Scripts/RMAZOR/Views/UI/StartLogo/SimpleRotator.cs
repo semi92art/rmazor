@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using Common.Ticker;
+﻿using Common.Ticker;
 using UnityEngine;
 
 namespace RMAZOR.Views.UI.StartLogo

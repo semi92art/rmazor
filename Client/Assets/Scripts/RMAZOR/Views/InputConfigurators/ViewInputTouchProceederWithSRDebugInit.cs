@@ -1,5 +1,6 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable InconsistentNaming
+
 using System.Collections.Generic;
 using Common.CameraProviders;
 using Common.Helpers;
@@ -8,7 +9,6 @@ using Common.Ticker;
 using Common.Utils;
 using Lean.Touch;
 using RMAZOR.Models;
-using RMAZOR.Views.ContainerGetters;
 using UnityEngine.Events;
 
 namespace RMAZOR.Views.InputConfigurators

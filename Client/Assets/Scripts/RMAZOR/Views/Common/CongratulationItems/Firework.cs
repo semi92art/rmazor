@@ -7,7 +7,6 @@ using Common.Utils;
 using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace RMAZOR.Views.Common.CongratulationItems
 {

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Common;
 using Common.CameraProviders;
@@ -11,8 +10,6 @@ using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
-using RMAZOR.Views.Common;
-using RMAZOR.Views.ContainerGetters;
 using RMAZOR.Views.InputConfigurators;
 using Shapes;
 using UnityEngine;

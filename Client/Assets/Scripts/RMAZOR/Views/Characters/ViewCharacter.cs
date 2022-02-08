@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Common.Entities;
+﻿using Common.Entities;
 using Common.Enums;
 using Common.Helpers;
 using Common.Managers;
@@ -8,10 +7,8 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common;
-using RMAZOR.Views.ContainerGetters;
 using RMAZOR.Views.InputConfigurators;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace RMAZOR.Views.Characters
 {
