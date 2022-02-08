@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Common.Utils;
+using Google.Play.Review;
 using UnityEngine;
 using UnityEngine.Purchasing;
 
@@ -36,10 +37,10 @@ namespace Common.Managers.IAP
         {
             if (_JustSuggest)
             {
-                var reviewManager = new Google.Play.Review.ReviewManager();
+                var reviewManager = new ReviewManager();
                 var requestFlowOperation = reviewManager.RequestReviewFlow();
                 yield return requestFlowOperation;
-                if (requestFlowOperation.Error != Google.Play.Review.ReviewErrorCode.NoError)
+                if (requestFlowOperation.Error != ReviewErrorCode.NoError)
                 {
                     Dbg.LogWarning($"Failed to load rate game panel: {requestFlowOperation.Error}");
                     yield break;
@@ -47,7 +48,7 @@ namespace Common.Managers.IAP
                 var playReviewInfo = requestFlowOperation.GetResult();
                 var launchFlowOperation = reviewManager.LaunchReviewFlow(playReviewInfo);
                 yield return launchFlowOperation;
-                if (launchFlowOperation.Error != Google.Play.Review.ReviewErrorCode.NoError)
+                if (launchFlowOperation.Error != ReviewErrorCode.NoError)
                 {
                     Dbg.LogWarning($"Failed to launch rate game panel: {launchFlowOperation.Error}");
                     yield break;

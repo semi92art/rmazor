@@ -3,6 +3,7 @@ using System.Xml;
 using System.Xml.Linq;
 using Common.Entities;
 using Newtonsoft.Json;
+using UnityEditor;
 using UnityEngine;
 
 namespace Common.Utils
@@ -13,7 +14,7 @@ namespace Common.Utils
         public static          XDocument SavesDoc;
         
 #if UNITY_EDITOR
-        [UnityEditor.InitializeOnLoadMethod]
+        [InitializeOnLoadMethod]
 #endif
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void ResetState()

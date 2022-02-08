@@ -1,6 +1,8 @@
-﻿namespace Common.Entities
+﻿using System;
+
+namespace Common.Entities
 {
-    [System.Serializable]
+    [Serializable]
     public class MoneyArgs : FileNameArgs
     {
         public long Money { get; set; }

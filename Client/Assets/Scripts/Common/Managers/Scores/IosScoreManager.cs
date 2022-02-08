@@ -1,7 +1,11 @@
-﻿using Common.Constants;
+﻿using System;
+using System.Text;
+using Common.Constants;
 using Common.Entities;
 using Common.Network;
 using Common.Ticker;
+using SA.iOS.Foundation;
+using SA.iOS.GameKit;
 using UnityEngine.Events;
 
 namespace Common.Managers.Scores
@@ -37,22 +41,22 @@ namespace Common.Managers.Scores
 
         public override void DeleteSavedGame(string _FileName)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public override Entity<object> GetSavedGameProgress(string _FileName, bool _FromCache)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public override void SaveGameProgress<T>(T _Data, bool _OnlyToCache)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         protected override bool IsAuthenticatedInPlatformGameService()
         {
-            return SA.iOS.GameKit.ISN_GKLocalPlayer.LocalPlayer.Authenticated;
+            return ISN_GKLocalPlayer.LocalPlayer.Authenticated;
         }
 
         protected override void AuthenticatePlatformGameService(UnityAction _OnFinish)
@@ -62,12 +66,12 @@ namespace Common.Managers.Scores
 
         private static void AuthenticateIos(UnityAction _OnFinish)
         {
-            SA.iOS.GameKit.ISN_GKLocalPlayer.SetAuthenticateHandler(_Result =>
+            ISN_GKLocalPlayer.SetAuthenticateHandler(_Result =>
             {
                 if (_Result.IsSucceeded)
                 {
-                    var player = SA.iOS.GameKit.ISN_GKLocalPlayer.LocalPlayer;
-                    var sb = new System.Text.StringBuilder();
+                    var player = ISN_GKLocalPlayer.LocalPlayer;
+                    var sb = new StringBuilder();
                     sb.AppendLine($"player game id: {player.GamePlayerId}");
                     sb.AppendLine($"player team id: {player.TeamPlayerId}");
                     sb.AppendLine($"player Alias: {player.Alias}");
@@ -110,7 +114,7 @@ namespace Common.Managers.Scores
                         return;
                     }
             
-                    var scoreReporter = new SA.iOS.GameKit.ISN_GKScore(GetScoreKey(_Id))
+                    var scoreReporter = new ISN_GKScore(GetScoreKey(_Id))
                     {
                         Value = _Value
                     };
@@ -130,12 +134,12 @@ namespace Common.Managers.Scores
         private ScoresEntity GetScoreIos(ushort _Id)
         {
             var scoreEntity = new ScoresEntity{Result = EEntityResult.Pending};
-            var leaderboardRequest = new SA.iOS.GameKit.ISN_GKLeaderboard
+            var leaderboardRequest = new ISN_GKLeaderboard
             {
                 Identifier = GetScoreKey(_Id),
-                PlayerScope = SA.iOS.GameKit.ISN_GKLeaderboardPlayerScope.Global,
-                TimeScope = SA.iOS.GameKit.ISN_GKLeaderboardTimeScope.AllTime,
-                Range = new SA.iOS.Foundation.ISN_NSRange(1, 25)
+                PlayerScope = ISN_GKLeaderboardPlayerScope.Global,
+                TimeScope = ISN_GKLeaderboardTimeScope.AllTime,
+                Range = new ISN_NSRange(1, 25)
             };
             leaderboardRequest.LoadScores(_Result => 
             {
@@ -156,9 +160,9 @@ namespace Common.Managers.Scores
         
         private void ShowLeaderboardIos(ushort _Id)
         {
-            var viewController = new SA.iOS.GameKit.ISN_GKGameCenterViewController
+            var viewController = new ISN_GKGameCenterViewController
             {
-                ViewState = SA.iOS.GameKit.ISN_GKGameCenterViewControllerState.Leaderboards,
+                ViewState = ISN_GKGameCenterViewControllerState.Leaderboards,
                 LeaderboardIdentifier = GetScoreKey(_Id)
             };
             viewController.Show();

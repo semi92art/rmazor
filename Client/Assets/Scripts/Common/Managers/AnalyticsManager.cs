@@ -71,9 +71,9 @@ namespace Common.Managers
         {
             return _Provider switch
             {
-                EAdsProvider.AdMob => Events.AdProvider.AdMob,
-                EAdsProvider.UnityAds  => Events.AdProvider.UnityAds,
-                _                      => throw new SwitchCaseNotImplementedException(_Provider)
+                EAdsProvider.AdMob    => Events.AdProvider.AdMob,
+                EAdsProvider.UnityAds => Events.AdProvider.UnityAds,
+                _                     => throw new SwitchCaseNotImplementedException(_Provider)
             };
         }
 

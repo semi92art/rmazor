@@ -9,6 +9,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
+using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 
 namespace Common.Utils
 {
@@ -99,8 +100,8 @@ namespace Common.Utils
             _ID       = touch.finger.index;
             _Position = touch.screenPosition;
             _Pressure = touch.pressure;
-            _Began    = touch.phase == UnityEngine.InputSystem.TouchPhase.Began;
-            _Ended    = touch.phase == UnityEngine.InputSystem.TouchPhase.Canceled;
+            _Began    = touch.phase == TouchPhase.Began;
+            _Ended    = touch.phase == TouchPhase.Canceled;
 #else
 			var touch = Input.GetTouch(_Index);
 			_ID       = touch.fingerId;

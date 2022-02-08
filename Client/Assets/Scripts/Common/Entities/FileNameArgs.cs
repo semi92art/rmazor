@@ -1,6 +1,8 @@
-﻿namespace Common.Entities
+﻿using System;
+
+namespace Common.Entities
 {
-    [System.Serializable]
+    [Serializable]
     public class FileNameArgs
     {
         public string FileName { get; set; }

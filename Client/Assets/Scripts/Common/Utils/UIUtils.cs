@@ -11,17 +11,17 @@ namespace Common.Utils
         #region public methods
 
         public static Canvas UiCanvas(
-            string _Name,
-            RenderMode _RenderMode,
-            bool _PixelPerfect,
-            int _SortOrder,
-            AdditionalCanvasShaderChannels _AdditionalCanvasShaderChannels,
-            CanvasScaler.ScaleMode _ScaleMode,
-            Vector2Int _ReferenceResolution,
-            CanvasScaler.ScreenMatchMode _ScreenMatchMode,
-            float _Match,
-            float _ReferencePixelsPerUnit,
-            bool _IgnoreReversedGraphics,
+            string                           _Name,
+            RenderMode                       _RenderMode,
+            bool                             _PixelPerfect,
+            int                              _SortOrder,
+            AdditionalCanvasShaderChannels   _AdditionalCanvasShaderChannels,
+            CanvasScaler.ScaleMode           _ScaleMode,
+            Vector2Int                       _ReferenceResolution,
+            CanvasScaler.ScreenMatchMode     _ScreenMatchMode,
+            float                            _Match,
+            float                            _ReferencePixelsPerUnit,
+            bool                             _IgnoreReversedGraphics,
             GraphicRaycaster.BlockingObjects _BlockingObjects
         )
         {

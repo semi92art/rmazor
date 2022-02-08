@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Threading;
 using UnityEngine;
@@ -28,7 +29,7 @@ namespace Common.Helpers.Thread_Ninja
         public void Reset()
         {
             // Reset method not supported by iterator;
-            throw new System.NotSupportedException(
+            throw new NotSupportedException(
                 "Not support calling Reset() on iterator.");
         }
         #endregion
@@ -239,7 +240,7 @@ namespace Common.Helpers.Thread_Ninja
                     GotoState(RunningState.Done);
                 }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 // exception handling, save & log it;
                 Debug.LogError($"{ex.Message}\n{ex.StackTrace}");
