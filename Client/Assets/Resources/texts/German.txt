@@ -74,5 +74,5 @@ rate_never = noch nie
 purchase = Kaufen
 mandatory_ads_disabled = Deaktivieren Sie obligatorische Anzeigen
 coins_alt = Münzen
-dark_theme = [Empty]
-dark_theme_available = [Empty]
+dark_theme = Dunkles Thema
+dark_theme_available = Super! Das dunkle Thema ist jetzt verfügbar. Sie können es im Menü Einstellungen auswählen.
