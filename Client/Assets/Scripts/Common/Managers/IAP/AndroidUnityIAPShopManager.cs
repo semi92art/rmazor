@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_ANDROID
+using System;
 using System.Collections;
 using Common.Utils;
 using Google.Play.Review;
@@ -25,13 +26,11 @@ namespace Common.Managers.IAP
         {
             if (!base.RateGame(_JustSuggest))
                 return false;
-#if UNITY_ANDROID
+
             Cor.Run(RateGameAndroid(_JustSuggest));
-#endif
+
             return true;
         }
-        
-#if UNITY_ANDROID
 
         private IEnumerator RateGameAndroid(bool _JustSuggest)
         {
@@ -61,6 +60,6 @@ namespace Common.Managers.IAP
             Application.OpenURL("market://details?id=" + Application.productName);
             SaveUtils.PutValue(SaveKeysCommon.GameWasRated, true);
         }
-#endif
     }
 }
+#endif

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Common;
 using Common.Constants;
 using Common.Extensions;
 using Common.Helpers;
@@ -50,7 +49,6 @@ namespace RMAZOR.Views.ContainerGetters
 
         public Transform GetContainer(string _Name)
         {
-            // bool isMazeHolder = _Name == ContainerNames.MazeHolder;
             bool isMaze = _Name == ContainerNames.Maze;
             bool inMaze = _Name == ContainerNames.MazeItems || _Name == ContainerNames.Character;
             if (!m_Initialized.ContainsKey(_Name))
@@ -62,8 +60,6 @@ namespace RMAZOR.Views.ContainerGetters
                 return m_Containers[_Name];
             var cont = CommonUtils.FindOrCreateGameObject(_Name, out _).transform;
             cont.SetParent(inMaze ? GetContainer(ContainerNames.Maze) : null);
-            // if (isMazeHolder)
-            //     cont.SetLocalPosXY(CoordinateConverter.GetMazeCenter());
             if (isMaze)
             {
                 cont.SetParent(GetContainer(ContainerNames.MazeHolder));

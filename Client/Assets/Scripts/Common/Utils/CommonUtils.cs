@@ -129,24 +129,6 @@ namespace Common.Utils
 #endif
         }
 
-        public static byte[] ToByteArray<T>(T _Obj)
-        {
-            if(_Obj == null)
-                return null;
-            string str = JsonConvert.SerializeObject(_Obj);
-            byte[] bytes = Encoding.ASCII.GetBytes(str);
-            return bytes;
-        }
-
-        public static T FromByteArray<T>(byte[] _Data)
-        {
-            if(_Data == null)
-                return default;
-            string str = Encoding.ASCII.GetString(_Data);
-            var res = JsonConvert.DeserializeObject<T>(str);        
-            return res;
-        }
-
         public static int StringToHash(string _S)
         {
             var hasher = MD5.Create();

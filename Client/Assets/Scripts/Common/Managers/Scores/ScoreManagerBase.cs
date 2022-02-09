@@ -246,6 +246,24 @@ namespace Common.Managers.Scores
             });
             return entity;
         }
+        
+        protected static byte[] ToByteArray<T>(T _Obj)
+        {
+            if(_Obj == null)
+                return null;
+            string str = JsonConvert.SerializeObject(_Obj);
+            byte[] bytes = System.Text.Encoding.ASCII.GetBytes(str);
+            return bytes;
+        }
+
+        protected static T FromByteArray<T>(byte[] _Data)
+        {
+            if(_Data == null)
+                return default;
+            string str = System.Text.Encoding.ASCII.GetString(_Data);
+            var res = JsonConvert.DeserializeObject<T>(str);        
+            return res;
+        }
 
         #endregion
     }

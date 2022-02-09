@@ -1,4 +1,6 @@
-﻿using System;
+﻿// ReSharper disable UnusedType.Global
+#if UNITY_ANDROID
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -91,7 +93,7 @@ namespace Common.Managers.Scores
                 return;
             var info = new SavedGameInfo
             {
-                Data = CommonUtils.ToByteArray(_Data)
+                Data = ToByteArray(_Data)
             };
             m_OperationInfosQueue.Enqueue(new SaveGameOperationInfo
             {
@@ -314,7 +316,7 @@ namespace Common.Managers.Scores
         
         private void SaveGame(ISavedGameMetadata _Game, byte[] _SavedData, TimeSpan _TotalPlaytime)
         {
-            var data = CommonUtils.FromByteArray<object>(_SavedData);
+            var data = FromByteArray<object>(_SavedData);
             SaveGameProgressToCache(data);
             ISavedGameClient savedGameClient = PlayGamesPlatform.Instance.SavedGame;
             SavedGameMetadataUpdate.Builder builder = new SavedGameMetadataUpdate.Builder();
@@ -356,7 +358,7 @@ namespace Common.Managers.Scores
                 FileNameArgs fileNameData = null;
                 try
                 {
-                    fileNameData = CommonUtils.FromByteArray<FileNameArgs>(_Data);
+                    fileNameData = FromByteArray<FileNameArgs>(_Data);
                 }
                 catch (SerializationException e)
                 {
@@ -372,13 +374,13 @@ namespace Common.Managers.Scores
                 {
                     info.Entity = new Entity<object>
                     {
-                        Value = CommonUtils.FromByteArray<object>(_Data),
+                        Value = FromByteArray<object>(_Data),
                         Result = EEntityResult.Success
                     };
                 }
                 else
                 {
-                    info.Entity.Value = CommonUtils.FromByteArray<object>(_Data);
+                    info.Entity.Value = FromByteArray<object>(_Data);
                     info.Entity.Result = EEntityResult.Success;
                 }
                 Dbg.Log($"Saved game with file name {fileNameData.FileName} was successfully written.");
@@ -387,7 +389,7 @@ namespace Common.Managers.Scores
             {
                 info.Entity = new Entity<object>
                 {
-                    Value = CommonUtils.FromByteArray<object>(_Data),
+                    Value = FromByteArray<object>(_Data),
                     Result = EEntityResult.Fail
                 };
                 Dbg.LogError($"Failed to read saved game, code: {_Status}");
@@ -443,3 +445,4 @@ namespace Common.Managers.Scores
         #endregion
     }
 }
+#endif
