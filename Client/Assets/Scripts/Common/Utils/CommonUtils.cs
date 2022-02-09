@@ -4,7 +4,6 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
-using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
@@ -117,8 +116,13 @@ namespace Common.Utils
 #if UNITY_EDITOR
             EditorUtility.DisplayDialog(_Title, _Text, "OK");
 #elif UNITY_ANDROID
-            MTAssets.NativeAndroidToolkit.NativeAndroid.Dialogs
-                .ShowSimpleAlertDialog(_Title, _Text);
+            var message = new SA.Android.App.AN_AlertDialog(SA.Android.App.AN_DialogTheme.Material)
+            {
+                Title = _Title,
+                Message = _Text
+            };
+            message.SetPositiveButton("Ok", () => { });
+            message.Show();
 #elif UNITY_IPHONE || UNITY_IOS
             var alert = new SA.iOS.UIKit.ISN_UIAlertController(
                 _Title, _Text, SA.iOS.UIKit.ISN_UIAlertControllerStyle.Alert);

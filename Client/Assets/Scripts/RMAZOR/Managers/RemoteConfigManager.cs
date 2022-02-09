@@ -109,7 +109,9 @@ namespace RMAZOR.Managers
             var deviceIds = JsonConvert.DeserializeObject<string[]>(testDeviceIdsJson);
             if (deviceIds == null)
                 return;
-            CommonGameSettings.DebugEnabled = deviceIds.Contains(SystemInfo.deviceUniqueIdentifier);
+            bool isThisDeviceForTesting = deviceIds.Contains(SystemInfo.deviceUniqueIdentifier);
+            CommonGameSettings.DebugEnabled = isThisDeviceForTesting;
+            CommonGameSettings.testAds = isThisDeviceForTesting;
 #endif
         }
 

@@ -90,7 +90,7 @@ namespace Common.Managers.Advertising
 
         private void InitProviders()
         {
-            bool testMode = GameSettings.TestAds;
+            bool testMode = GameSettings.testAds;
             var adsConfig = ResLoader.FromResources(@"configs\ads");
             var adsProvider = GameSettings.AdsProvider;
             if (adsProvider.HasFlag(EAdsProvider.AdMob))

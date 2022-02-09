@@ -32,7 +32,7 @@ namespace Common.Managers.IAP
             return true;
         }
 
-        private IEnumerator RateGameAndroid(bool _JustSuggest)
+        private static IEnumerator RateGameAndroid(bool _JustSuggest)
         {
             if (_JustSuggest)
             {

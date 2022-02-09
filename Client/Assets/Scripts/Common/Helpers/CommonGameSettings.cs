@@ -3,15 +3,13 @@ using UnityEngine;
 
 namespace Common.Helpers
 {
-
-    
     [CreateAssetMenu(fileName = "game_settings", menuName = "Configs and Sets/Game Settings", order = 1)]
     public class CommonGameSettings : ScriptableObject
     {
         [SerializeField] private EAdsProvider adsProvider;
         [SerializeField] private float        adsLoadDelay;
         [SerializeField] private bool         debugEnabled;
-        [SerializeField] private bool         testAds;
+        public                   bool         testAds;
         [SerializeField] private ELogLevel    logLevel;
         public                   float        admobRate;
         public                   float        unityAdsRate;
@@ -35,8 +33,7 @@ namespace Common.Helpers
             get => debugEnabled;
             set => debugEnabled = value;
         }
-
-        public bool      TestAds      => testAds;
+        
         public ELogLevel LogLevel     => logLevel;
     }
 }
