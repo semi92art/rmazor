@@ -14,4 +14,16 @@ namespace Common.UI
         void            OnDialogHide();
         void            OnDialogEnable();
     }
+    
+    public class DialogPanelFake : IDialogPanel
+    {
+        public EUiCategory     Category         => EUiCategory.Fake;
+        public bool            AllowMultiple    => false;
+        public EAppearingState AppearingState   { get; set; } = EAppearingState.Dissapeared;
+        public RectTransform   PanelObject      => null;
+        public void            LoadPanel()      { }
+        public void            OnDialogShow()   { }
+        public void            OnDialogHide()   { }
+        public void            OnDialogEnable() { }
+    }
 }

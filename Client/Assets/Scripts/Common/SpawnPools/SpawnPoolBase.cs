@@ -6,7 +6,7 @@ using Common.Utils;
 
 namespace Common.SpawnPools
 {
-public abstract class SpawnPoolBase<T> : ISpawnPool<T>
+public abstract class SpawnPoolBase<T> : ISpawnPool<T> where T : class
     {
         #region nonpublic members
 
@@ -97,12 +97,18 @@ public abstract class SpawnPoolBase<T> : ISpawnPool<T>
 
         public virtual void Activate(T _Item, Func<bool> _Predicate = null, Action _OnFinish = null)
         {
-            Activate(IndexOf(_Item), _Predicate, _OnFinish);
+            int index = IndexOf(_Item);
+            if (index == -1)
+                return;
+            Activate(index, _Predicate, _OnFinish);
         }
 
         public virtual void Deactivate(T _Item, Func<bool> _Predicate = null, Action _OnFinish = null)
         {
-            Deactivate(IndexOf(_Item), _Predicate, _OnFinish);
+            int index = IndexOf(_Item);
+            if (index == -1)
+                return;
+            Deactivate(index, _Predicate, _OnFinish);
         }
 
         #endregion

@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Exceptions;
+using Common.Helpers;
 using Common.Utils;
 using RMAZOR.Views;
 using UnityEngine.Events;
@@ -38,7 +39,7 @@ namespace RMAZOR.Models
         void OnRotationFinished(MazeRotationEventArgs _Args);
     }
     
-    public class ModelMazeRotation : IModelMazeRotation 
+    public class ModelMazeRotation : InitBase, IModelMazeRotation 
     {
 
         private IModelData Data { get; }
@@ -50,15 +51,7 @@ namespace RMAZOR.Models
 
         public event MazeOrientationHandler RotationStarted;
         public event MazeOrientationHandler RotationFinished;
-        public bool                         Initialized { get; private set; }
-        public event UnityAction            Initialize;
-        
-        public void Init()
-        {
-            Initialize?.Invoke();
-            Initialized = true;
-        }
-        
+
         public void StartRotation(
             EMazeRotateDirection _Direction, 
             MazeOrientation? _NextOrientation = null)

@@ -74,12 +74,11 @@ namespace RMAZOR.Views.UI
         
         public void ShowControls(bool _Show, bool _Instantly)
         {
-            if (_Instantly && !_Show || _Show)
+            if (_Show || _Instantly)
             {
                 m_ShopButton.SetGoActive(_Show);
                 m_SettingsButton.SetGoActive(_Show);
             }
-            
             m_ShopButton.enabled = _Show;
             m_SettingsButton.enabled = _Show;
         }

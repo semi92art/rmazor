@@ -23,14 +23,6 @@ namespace RMAZOR.Views.MazeItemGroups
         #endregion
 
         public override EMazeItemType[] Types       => new[] {EMazeItemType.TrapIncreasing};
-        public          bool            Initialized { get; private set; }
-        public event UnityAction        Initialize;
-        
-        public void Init()
-        {
-            Initialize?.Invoke();
-            Initialized = true;
-        }
 
         public void OnMazeTrapIncreasingStageChanged(MazeItemTrapIncreasingEventArgs _Args)
         {

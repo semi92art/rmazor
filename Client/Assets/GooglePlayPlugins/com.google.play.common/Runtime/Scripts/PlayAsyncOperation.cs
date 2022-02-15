@@ -81,7 +81,7 @@ namespace Google.Play.Common
         /// </summary>
         protected void InvokeCompletedEvent()
         {
-            Completed.Invoke(this);
+            Completed?.Invoke(this);
         }
 
         /// <summary>

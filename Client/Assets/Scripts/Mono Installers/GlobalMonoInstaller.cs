@@ -19,17 +19,19 @@ namespace Mono_Installers
     public class GlobalMonoInstaller : MonoInstaller
     {
         public GameObject         cameraProvider;
+        public GameObject         companyLogo;
         public CommonGameSettings commonGameSettings;
         public ModelSettings      modelSettings;
         public ViewSettings       viewSettings;
         
         public override void InstallBindings()
         {
-            Container.Bind<CommonGameSettings>()  .FromScriptableObject(commonGameSettings).AsSingle();
-            Container.Bind<ModelSettings>()       .FromScriptableObject(modelSettings)     .AsSingle();
-            Container.Bind<ViewSettings>()        .FromScriptableObject(viewSettings)      .AsSingle();
-            Container.Bind<IRemoteConfigManager>().To<RemoteConfigManager>()               .AsSingle();
-            Container.Bind<ICameraProvider>()     .FromComponentInNewPrefab(cameraProvider).AsSingle();
+            Container.Bind<CommonGameSettings>()  .FromScriptableObject(commonGameSettings) .AsSingle();
+            Container.Bind<ModelSettings>()       .FromScriptableObject(modelSettings)      .AsSingle();
+            Container.Bind<ViewSettings>()        .FromScriptableObject(viewSettings)       .AsSingle();
+            Container.Bind<IRemoteConfigManager>().To<RemoteConfigManager>()                .AsSingle();
+            Container.Bind<ICameraProvider>()     .FromComponentInNewPrefab(cameraProvider) .AsSingle();
+            Container.Bind<CompanyLogo>()         .FromComponentInNewPrefab(companyLogo)    .AsSingle();
 
             #region settings
 

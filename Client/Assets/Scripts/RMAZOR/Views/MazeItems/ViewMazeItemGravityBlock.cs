@@ -80,18 +80,11 @@ namespace RMAZOR.Views.MazeItems
             sh.Color = ColorProvider.GetColor(ColorIds.Main);
             sh.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
             m_Joint = sh;
-            // var joint = Object.AddComponentOnNewChild<Disc>("Joint", out _);
-            // joint.transform.SetLocalPosXY(Vector2.zero);
-            // joint.Color = ColorProvider.GetColor(ColorIds.Main).SetA(0.5f);
-            // joint.Radius = ViewSettings.LineWidth * CoordinateConverter.Scale;
-            // joint.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
-            // m_Joint = joint;
         }
 
         protected override void UpdateShape()
         {
             base.UpdateShape();
-            // m_Joint.Radius = ViewSettings.LineWidth * CoordinateConverter.Scale;
             m_Joint.Width = m_Joint.Height = CoordinateConverter.Scale * 0.9f;
             m_Joint.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
             m_Joint.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale;

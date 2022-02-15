@@ -1,4 +1,5 @@
 ﻿using Common.Exceptions;
+using Common.Helpers;
 using Common.Settings;
 using Lofelt.NiceVibrations;
 using UnityEngine.Events;
@@ -26,7 +27,7 @@ namespace Common.Managers
         void Play(float _Amplitude, float _Frequency, float _Duration);
     }
     
-    public class HapticsManager : IHapticsManager
+    public class HapticsManager : InitBase, IHapticsManager
     {
         #region inject
         
@@ -40,16 +41,13 @@ namespace Common.Managers
         #endregion
         
         #region api
-
-        public bool              Initialized { get; private set; }
-        public event UnityAction Initialize;
-        public void Init()
+        
+        public override void Init()
         {
             HapticController.Init();
             Setting.OnValueSet = EnableHaptics;
             EnableHaptics(Setting.Get());
-            Initialize?.Invoke();
-            Initialized = true;
+            base.Init();
         }
         
         public void PlayPreset(EHapticsPresetType _Preset)

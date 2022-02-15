@@ -3,29 +3,22 @@ using System.Collections;
 
 public static class EmptySprite
 {
-    static Sprite instance;
+    private static Sprite _instance;
 
     ///<summary>
-    /// Returns the instance of a (1 x 1) white Spprite
+    /// Returns the instance of a (1 x 1) white Sprite
     /// </summary>	
     public static Sprite Get()
     {
-        if (instance == null)
+        if (_instance == null)
         {
-            instance = Resources.Load<Sprite>("procedural_ui_image_default_sprite");
+            _instance = Resources.Load<Sprite>("procedural_ui_image_default_sprite");
         }
-        return instance;
+        return _instance;
     }
 
-    public static bool IsEmptySprite(Sprite s)
+    public static bool IsEmptySprite(Sprite _S)
     {
-        if (Get() == s)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return Get() == _S;
     }
 }

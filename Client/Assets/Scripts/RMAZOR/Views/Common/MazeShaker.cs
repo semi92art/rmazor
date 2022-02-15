@@ -25,7 +25,7 @@ namespace RMAZOR.Views.Common
             UnityAction         _OnFinish);
     }
     
-    public class MazeShaker : IMazeShaker, IUpdateTick
+    public class MazeShaker : InitBase, IMazeShaker, IUpdateTick
     {
         #region nonpublic members
 
@@ -67,14 +67,10 @@ namespace RMAZOR.Views.Common
             }
         }
 
-        public bool              Initialized { get; private set; }
-        public event UnityAction Initialize;
-        
-        public void Init()
+        public override void Init()
         {
             m_MazeContainer = ContainersGetter.GetContainer(ContainerNames.Maze);
-            Initialize?.Invoke();
-            Initialized = true;
+            base.Init();
         }
         
         public void OnLevelStageChanged(LevelStageArgs _Args)

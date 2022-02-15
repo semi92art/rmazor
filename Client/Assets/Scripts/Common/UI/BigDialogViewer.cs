@@ -158,14 +158,14 @@ namespace Common.UI
             bool _GoBack)
         {
             var panelFrom = !m_PanelStack.Any() ? null : m_PanelStack.Peek();
-            if (panelFrom == null && _PanelTo == null)
+            if (panelFrom == null && _PanelTo == FakePanel)
                 return;
             var panelFromObj = panelFrom?.PanelObject;
-            var panelToObj = _PanelTo?.PanelObject;
-            if (panelFrom != null && panelFromObj != null && _HidePrevious)
+            var panelToObj = _PanelTo == FakePanel ? null : _PanelTo.PanelObject;
+            if (panelFrom != null && panelFromObj.IsNotNull() && _HidePrevious)
             {
                 panelFrom.AppearingState = EAppearingState.Dissapearing;
-                int instId = panelFromObj.GetInstanceID();
+                int instId = panelFromObj.GetInstanceID(); //-V3105
                 if (!m_GraphicsAlphas.ContainsKey(instId))
                     m_GraphicsAlphas.Add(instId, new GraphicAlphas(panelFromObj));
                 Cor.Run(DoTransparentTransition(
@@ -173,7 +173,7 @@ namespace Common.UI
                     true,
                     () =>
                     {
-                        if (_PanelTo == null && (IsOtherDialogViewersShowing == null || !IsOtherDialogViewersShowing()))
+                        if (_PanelTo == FakePanel && (IsOtherDialogViewersShowing == null || !IsOtherDialogViewersShowing()))
                             CameraProvider.DofEnabled = false;
                         panelFrom.AppearingState = EAppearingState.Dissapeared;
                         if (!_GoBack)
@@ -181,10 +181,11 @@ namespace Common.UI
                         Object.Destroy(panelFromObj.gameObject);
                     }));
             }
-            if (panelToObj != null)
+            if (panelToObj.IsNotNull())
             {
                 CurrentPanel = _PanelTo;
                 _PanelTo.AppearingState = EAppearingState.Appearing;
+                // ReSharper disable once PossibleNullReferenceException
                 int instId = panelToObj.GetInstanceID();
                 if (!m_GraphicsAlphas.ContainsKey(instId))
                     m_GraphicsAlphas.Add(instId, new GraphicAlphas(panelToObj));
@@ -207,7 +208,7 @@ namespace Common.UI
             RectTransform _PanelTo)
         {
             ClearGraphicsAlphas();
-            if (_PanelTo == null)
+            if (_PanelTo.IsNull())
                 m_PanelStack.Clear();
             else
             {
@@ -236,7 +237,7 @@ namespace Common.UI
                 Object.Destroy(pan.PanelObject.gameObject);
             }
             m_PanelStack.Push(lastPanel);
-            ShowCore(null, true, true);
+            ShowCore(FakePanel, true, true);
             OnClosed?.Invoke();
         }
         

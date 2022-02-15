@@ -197,6 +197,7 @@ namespace Common.Managers.Scores
 
         protected void SaveGameProgressToCache(object _Data)
         {
+            Dbg.Log(nameof(SaveGameProgressToCache));
             FileNameArgs fileNameData;
             try
             {
@@ -208,7 +209,6 @@ namespace Common.Managers.Scores
                 Dbg.Log(nameof(SaveGameProgressToCache) + ": " + JsonConvert.SerializeObject(_Data));
                 throw;
             }
-            
             var gdff = new GameDataFieldFilter(GameClient, GameClientUtils.AccountId, GameClientUtils.GameId,
                 (ushort)CommonUtils.StringToHash(fileNameData.FileName)) {OnlyLocal = true};
             gdff.Filter(_Fields =>
@@ -220,6 +220,7 @@ namespace Common.Managers.Scores
                 }
                 else
                 {
+                    Dbg.Log($"Successfully save game with file name {fileNameData.FileName} to cache.");
                     field.SetValue(_Data).Save(true);
                 }
             });
@@ -247,7 +248,7 @@ namespace Common.Managers.Scores
             return entity;
         }
         
-        protected static byte[] ToByteArray<T>(T _Obj)
+        protected static byte[] ToByteArray<T>(T _Obj) where T : class
         {
             if(_Obj == null)
                 return null;
@@ -256,7 +257,7 @@ namespace Common.Managers.Scores
             return bytes;
         }
 
-        protected static T FromByteArray<T>(byte[] _Data)
+        protected static T FromByteArray<T>(byte[] _Data) where T : class
         {
             if(_Data == null)
                 return default;

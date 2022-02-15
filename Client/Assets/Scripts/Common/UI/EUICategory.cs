@@ -5,7 +5,7 @@ namespace Common.UI
     [Flags]
     public enum EUiCategory
     {
-        Loading = 1,
+        Fake = 1,
         DailyBonus = 2,
         WheelOfFortune = 4,
         Shop = 8,

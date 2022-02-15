@@ -12,31 +12,9 @@ namespace Common.Utils
             return MathUtils.IsInRange(_ResponseCode, 200, 299);
         }
 
-        public static bool IsInternetConnectionAvailable(int _TimeoutMs = 10000, string _Url = null)
+        public static bool IsInternetConnectionAvailable()
         {
             return Application.internetReachability != NetworkReachability.NotReachable;
-            try
-            {
-                _Url ??= CultureInfo.InstalledUICulture switch
-                {
-                    { Name: var n } when n.StartsWith("fa") => // Iran
-                        "http://www.aparat.com",
-                    { Name: var n } when n.StartsWith("zh") => // China
-                        "http://www.baidu.com",
-                    _ =>
-                        "http://www.gstatic.com/generate_204"
-                };
-                var request = (HttpWebRequest)WebRequest.Create(_Url);
-                request.KeepAlive = false;
-                request.Timeout = _TimeoutMs;
-                using ((HttpWebResponse)request.GetResponse()) 
-                    return true;
-            }
-            catch (Exception ex)
-            {
-                Dbg.Log(ex.GetType().Name + " " + ex.Message);
-                return false;
-            }
         }
     }
 }

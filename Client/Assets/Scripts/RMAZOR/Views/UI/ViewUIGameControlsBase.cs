@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Common;
 using Common.Extensions;
+using Common.Helpers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.InputConfigurators;
@@ -15,7 +16,7 @@ namespace RMAZOR.Views.UI
 
     }
     
-    public abstract class ViewUIGameControlsBase : IViewUIGameControls
+    public abstract class ViewUIGameControlsBase : InitBase, IViewUIGameControls
     {
         protected IModelGame                  Model             { get; }
         protected IViewInputCommandsProceeder CommandsProceeder { get; }
@@ -26,14 +27,6 @@ namespace RMAZOR.Views.UI
             CommandsProceeder = _CommandsProceeder;
         }
 
-        public bool              Initialized { get; private set; }
-        public event UnityAction Initialize;
-        public virtual void Init()
-        {
-            Initialize?.Invoke();
-            Initialized = true;
-        }
-
         public abstract void OnLevelStageChanged(LevelStageArgs _Args);
 
         public virtual void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
@@ -41,6 +34,7 @@ namespace RMAZOR.Views.UI
             var type = _Args.Info.Type;
             if (!RazorMazeUtils.GravityItemTypes().ContainsAlt(type)) 
                 return;
+            //FIXME говняный алгоритм, нужно переработать
             if (Model.GravityItemsProceeder.ProceedInfos
                 .Count(_I => _I.ProceedingStage != GravityItemsProceeder.StageDrop) != 1)
             {

@@ -24,7 +24,7 @@ namespace RMAZOR.Views.InputConfigurators
         void                 OnRotationFinished(MazeRotationEventArgs _Args);
     }
     
-    public class ViewInputTouchProceeder : IViewInputTouchProceeder
+    public class ViewInputTouchProceeder : InitBase, IViewInputTouchProceeder
     {
         #region constants
 
@@ -80,18 +80,15 @@ namespace RMAZOR.Views.InputConfigurators
         #endregion
 
         #region api
-
-        public bool                 Initialized { get; private set; }
-        public event UnityAction    Initialize;
+        
         public UnityAction<Vector2> OnTap { get; set; }
 
-        public virtual void Init()
+        public override void Init()
         {
             InitLeanTouch();
             InitLeanTouchForMoveAndRotate();
             InitLeanTouchForTapToNext();
-            Initialize?.Invoke();
-            Initialized = true;
+            base.Init();
         }
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
@@ -209,7 +206,7 @@ namespace RMAZOR.Views.InputConfigurators
         
         private void ProceedTouchForMove(LeanFinger _Finger)
         {
-            if (m_TouchForMoveTimer > SwipeThresholdSeconds && m_TouchForMoveTimer != 0f)
+            if (m_TouchForMoveTimer > SwipeThresholdSeconds && Mathf.Abs(m_TouchForMoveTimer) > MathUtils.Epsilon)
             {
                 m_TouchForMoveTimer = 0;
                 m_TouchPositionsQueue.Clear();

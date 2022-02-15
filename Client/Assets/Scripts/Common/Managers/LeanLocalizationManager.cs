@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Common.Enums;
 using Common.Extensions;
+using Common.Helpers;
 using Common.Settings;
 using Lean.Localization;
 using TMPro;
@@ -20,7 +21,7 @@ namespace Common.Managers
         void     AddTextObject(Component _TextObject, string _LocalizationKey, Func<string, string> _TextFormula = null);
     }
 
-    public class LeanLocalizationManager : ILocalizationManager
+    public class LeanLocalizationManager : InitBase, ILocalizationManager
     {
         #region types
 
@@ -52,11 +53,8 @@ namespace Common.Managers
         #endregion
 
         #region api
-
-        public bool              Initialized { get; private set; }
-        public event UnityAction Initialize;
-
-        public void Init()
+        
+        public override void Init()
         {
             LanguageSetting.OnValueSet = SetLanguage;
             LanguageSetting.GetValue = GetCurrentLanguage;
@@ -84,8 +82,7 @@ namespace Common.Managers
                 leanCsv.Language = kvp.Key.ToString();    
             }
             m_Localization.DefaultLanguage = "English";
-            Initialize?.Invoke();
-            Initialized = true;
+            base.Init();
         }
 
         public string GetTranslation(string _Key)

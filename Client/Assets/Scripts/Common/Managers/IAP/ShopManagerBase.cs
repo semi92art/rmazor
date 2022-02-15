@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Common.Helpers;
 using UnityEngine.Events;
 using UnityEngine.Purchasing;
 
@@ -19,7 +20,7 @@ namespace Common.Managers.IAP
         }
     }
     
-    public abstract class ShopManagerBase : IShopManager
+    public abstract class ShopManagerBase : InitBase, IShopManager
     {
         #region nonpublic members
         
@@ -28,16 +29,7 @@ namespace Common.Managers.IAP
         #endregion
 
         #region api
-        
-        public bool              Initialized { get; private set; }
-        public event UnityAction Initialize;
-        
-        public virtual void Init()
-        {
-            Initialize?.Invoke();
-            Initialized = true;
-        }
-
+ 
         public void RegisterProductInfos(List<ProductInfo> _Products)
         {
             Products = _Products;

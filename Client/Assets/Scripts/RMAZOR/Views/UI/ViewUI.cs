@@ -57,7 +57,7 @@ namespace RMAZOR.Views.UI
             Ticker.Register(this);
             CommandsProceeder.Command += OnCommand;
             CreateCanvas();
-            var parent = m_Canvas.RTransform();
+            var parent = Canvas.RTransform();
             BigDialogViewer.Init(parent);
             ProposalDialogViewer.Init(parent);
             BigDialogViewer.IsOtherDialogViewersShowing = () =>
@@ -74,7 +74,7 @@ namespace RMAZOR.Views.UI
             };
             GameControls.Init();
             DialogPanels.Init();
-            RaiseInitializedEvent();
+            base.Init();
         }
         
         private void OnCommand(EInputCommand _Key, object[] _Args)

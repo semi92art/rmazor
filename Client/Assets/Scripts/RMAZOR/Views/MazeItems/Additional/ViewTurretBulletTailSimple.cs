@@ -74,7 +74,7 @@ namespace RMAZOR.Views.MazeItems.Additional
             }
             m_Tail.enabled = true;
             var dir = (_Args.To - _Args.From).Normalized;
-            var orth = new Vector2(dir.y, dir.x);
+            var orth = new Vector2(dir.y, dir.x); //-V3066
             var b = _ProjectilePosition - dir * 0.2f + orth * 0.3f;
             var c = _ProjectilePosition - dir * 0.2f - orth * 0.3f;
             var d = (b + c) * 0.5f;
@@ -134,7 +134,7 @@ namespace RMAZOR.Views.MazeItems.Additional
         private void UpdateMaskShape(V2Int _To, V2Int _Direction)
         {
             const float width = 3f;
-            var orth = new V2Int(_Direction.Y, _Direction.X);
+            var orth = new V2Int(_Direction.Y, _Direction.X); //-V3066
             var a = (Vector2)_To + 0.5f * _Direction + 0.5f * orth;
             var b = (Vector2)_To + 0.5f * _Direction - 0.5f * orth;
             var c = b + width * _Direction;

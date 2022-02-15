@@ -105,7 +105,8 @@ namespace Common.Utils
         public static float MinDistanceBetweenPointAndSegment(Vector2 _SegStart, Vector2 _SegEnd, Vector2 _Point)
         {
             float l2 = DistanceSquared(_SegStart, _SegEnd);
-            if (l2 == 0.0) return Vector2.Distance(_Point, _SegStart);
+            if (Mathf.Abs(l2) < Epsilon)
+                return Vector2.Distance(_Point, _SegStart);
             float t = Mathf.Max(
                 0, Mathf.Min(1, 
                     Vector2.Dot(_Point - _SegStart, _SegEnd - _SegStart) / l2));

@@ -52,7 +52,8 @@ namespace RMAZOR
             IAssetBundleManager  _AssetBundleManager,
             IShopManager         _ShopManager,
             IRemoteConfigManager _RemoteConfigManager,
-            ICameraProvider      _CameraProvider)
+            ICameraProvider      _CameraProvider,
+            CompanyLogo          _CompanyLogo)
         {
             Settings            = _Settings;
             GameClient          = _GameClient;
@@ -72,23 +73,21 @@ namespace RMAZOR
     
         #region engine methods
     
-        private void Start()
+        private IEnumerator Start()
         {
             Dbg.Log("Application started, platform: " + Application.platform);
             InitStartData();
             InitLogging();
-            // yield return Cor.Delay(1f, null);
             InitGameManagers();
             InitDefaultData();
             SceneManager.sceneLoaded += OnSceneLoaded;
-            Cor.Run(LoadSceneLevel());
-            // yield return LoadSceneLevel();
+            yield return LoadSceneLevel();
         }
 
         private static IEnumerator LoadSceneLevel()
         {
             var @params = new LoadSceneParameters(LoadSceneMode.Single, LocalPhysicsMode.Physics2D);
-            var op = SceneManager.LoadSceneAsync(SceneNames.Level, @params);
+            var op =  SceneManager.LoadSceneAsync(SceneNames.Level, @params);
             while (!op.isDone)
                 yield return null;
         }
@@ -127,23 +126,25 @@ namespace RMAZOR
             var controller = GameController.CreateInstance();
             controller.Initialize += () =>
             {
-                var levelEntity = ScoreManager.GetSavedGameProgress(CommonData.SavedGameFileName, false);
+                var savedGameEntityServer = ScoreManager.GetSavedGameProgress(CommonData.SavedGameFileName, false);
                 Cor.Run(Cor.WaitWhile(
-               () => levelEntity.Result == EEntityResult.Pending,
+               () => savedGameEntityServer.Result == EEntityResult.Pending,
                () =>
                {
-                   if (levelEntity.Result == EEntityResult.Fail || levelEntity.Value == null)
+                   if (savedGameEntityServer.Result != EEntityResult.Success || savedGameEntityServer.Value == null)
                    {
-                       levelEntity = ScoreManager.GetSavedGameProgress(CommonData.SavedGameFileName, true);
+                       var savedGameEntityCache = ScoreManager.GetSavedGameProgress(CommonData.SavedGameFileName, true);
                        Cor.Run(Cor.WaitWhile(
-                           () => levelEntity.Result == EEntityResult.Pending,
+                           () => savedGameEntityCache.Result == EEntityResult.Pending,
                            () =>
                            {
-                               if (levelEntity.Result == EEntityResult.Fail || levelEntity.Value == null)
+                               Dbg.Log(nameof(InitGameController) + " " + 1);
+                               if (savedGameEntityCache.Result !=  EEntityResult.Success || savedGameEntityCache.Value == null)
                                {
+                                   Dbg.Log(nameof(InitGameController) + " " + 2);
                                    var savedGame = new SavedGame
                                    {
-                                       FileName = nameof(CommonData.SavedGameFileName),
+                                       FileName = CommonData.SavedGameFileName,
                                        Level = 0,
                                        Money = 100
                                    };
@@ -151,14 +152,15 @@ namespace RMAZOR
                                    LoadLevelByIndex(controller, 0);
                                    return;
                                }
-                               long idx = levelEntity.Value.CastTo<SavedGame>().Level;
+                               long idx = savedGameEntityCache.Value.CastTo<SavedGame>().Level;
                                LoadLevelByIndex(controller, idx);
-                           }));
+                           },
+                           _Seconds: 1f));
                        return;
                    }
-                   long levelIndex = levelEntity.Value.CastTo<SavedGame>().Level;
+                   long levelIndex = savedGameEntityServer.Value.CastTo<SavedGame>().Level;
                    LoadLevelByIndex(controller, levelIndex);
-               }));
+               }, _Seconds: 1f));
             };
             controller.Init();
         }
@@ -171,93 +173,34 @@ namespace RMAZOR
         
         private void OnScoreManagerInitialize()
         {
-            if (!SaveUtils.GetValue(SaveKeysRmazor.SavedGameFromServerLoadedAtLeastOnce))
-                OnScoreManagerInitializeFirstLaunch();
-        }
-
-        private void OnScoreManagerInitializeFirstLaunch()
-        {
-            var savedGameCachedEntity = ScoreManager.GetSavedGameProgress(
-                CommonData.SavedGameFileName, 
-                true);
             var savedGameServerEntity = ScoreManager.GetSavedGameProgress(
                 CommonData.SavedGameFileName, 
                 false);
             Cor.Run(Cor.WaitWhile(
-                () =>
-                    savedGameCachedEntity.Result == EEntityResult.Pending,
+                () => savedGameServerEntity.Result == EEntityResult.Pending,
                 () =>
                 {
-                    Cor.Run(Cor.WaitWhile(() => savedGameServerEntity.Result == EEntityResult.Pending,
-                        () =>
-                        {
-       
-                            if (savedGameServerEntity.Result == EEntityResult.Fail)
-                            {
-                                Dbg.LogWarning("Failed to load money from server");
-                                return;
-                            }
-                            var savedGameServer = savedGameServerEntity.Value.CastTo<SavedGame>();
-                            long moneyServer = savedGameServer.Money;
-                            long levelServer = savedGameServer.Level;
-                            if (savedGameCachedEntity.Result == EEntityResult.Fail)
-                            {
-                                Dbg.LogWarning("Failed to load money from cache");
-                                return;
-                            }
-                            var savedGameCached = savedGameCachedEntity.Value.CastTo<SavedGame>();
-                            long moneyCached = savedGameCached.Money;
-                            long levelCached = savedGameCached.Money;
-                            if (moneyServer > moneyCached)
-                            {
-                                Dbg.Log("getting money from server");
-                                var newSavedGame = new SavedGame
-                                {
-                                    FileName = CommonData.SavedGameFileName,
-                                    Money = moneyServer,
-                                    Level = levelServer
-                                };
-                                ScoreManager.SaveGameProgress(newSavedGame, true);
-                            }
-                            else
-                            {
-                                Dbg.Log("getting money from cache");
-                                var newSavedGame = new SavedGame
-                                {
-                                    FileName = CommonData.SavedGameFileName,
-                                    Money = moneyCached,
-                                    Level = levelCached
-                                };
-                                ScoreManager.SaveGameProgress(newSavedGame, false);
-                            }
-                            SaveUtils.PutValue(SaveKeysRmazor.SavedGameFromServerLoadedAtLeastOnce, true);
-                        }));
+                    if (savedGameServerEntity.Result == EEntityResult.Fail)
+                    {
+                        Dbg.LogWarning("Failed to load money from server");
+                        return;
+                    }
+                    var savedGameServer = savedGameServerEntity.Value.CastTo<SavedGame>();
+                    if (savedGameServer == null)
+                    {
+                        Dbg.LogWarning("Saved game from server is null");
+                        return;
+                    }
+                    Dbg.Log("getting saved game from server");
+                    var newSavedGame = new SavedGame
+                    {
+                        FileName = CommonData.SavedGameFileName,
+                        Money = savedGameServer.Money,
+                        Level = savedGameServer.Level
+                    };
+                    ScoreManager.SaveGameProgress(newSavedGame, true);
                 }));
         }
-        
-        // private void OnScoreManagerInitializeNotFirstLaunch()
-        // {
-        //     var savedGameCache = ScoreManager.GetSavedGameProgress(
-        //         CommonData.SavedGameFileName, 
-        //         true);
-        //     Cor.Run(Cor.WaitWhile(
-        //         () => savedGameCache.Result == EEntityResult.Pending,
-        //         () =>
-        //         {
-        //             long moneyCache = savedGameCache.Value.CastTo<SavedGame>().Money;
-        //             if (savedGameCache.Result == EEntityResult.Fail)
-        //             {
-        //                 Dbg.LogWarning("Failed to load money from cache");
-        //                 return;
-        //             }
-        //             var newSavedGame = new SavedGame
-        //             {
-        //                 FileName = CommonData.SavedGameFileName,
-        //                 Money = moneyCache
-        //             };
-        //             ScoreManager.SaveGameProgress(newSavedGame, false);
-        //         }));
-        // }
 
         private void InitDefaultData()
         {
@@ -274,7 +217,8 @@ namespace RMAZOR
         private void InitStartData()
         {
             // FIXME костыль: если на iOS стоит светлая тема, задник камеры автоматом ставится белым
-            CameraProvider.MainCamera.backgroundColor = Color.black; 
+            if (Application.platform == RuntimePlatform.IPhonePlayer)
+                CameraProvider.MainCamera.backgroundColor = Color.black; 
             SaveUtils.PutValue(SaveKeysCommon.AppVersion, Application.version);
             Application.targetFrameRate = GraphicUtils.GetTargetFps();
             CommonData.Release = true;
@@ -332,23 +276,6 @@ namespace RMAZOR
                 new LeaderBoardIdKeyPair(DataFieldIds.Level, levelLbKey)
             };
         }
-        
-        // private void InitDefaultDataFieldValues()
-        // {
-        //     var savedGame = new SavedGame
-        //     {
-        //         FileName = CommonData.SavedGameFileName,
-        //         Money = 100
-        //     };
-        //     const int accId = GameClientUtils.DefaultAccountId;
-        //     var df = new GameDataField(
-        //         GameClient,
-        //         savedGame,
-        //         accId,
-        //         1,
-        //         (ushort) CommonUtils.StringToHash(CommonData.SavedGameFileName));
-        //     df.Save(true);
-        // }
 
         #endregion
     }

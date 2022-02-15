@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Common;
 using Common.Extensions;
+using Common.Helpers;
 using RMAZOR.Models;
 using UnityEngine.Events;
 
@@ -23,11 +24,11 @@ namespace RMAZOR.Views.InputConfigurators
         bool                       IsCommandLocked(EInputCommand _Key);
     }
     
-    public class ViewInputCommandsProceeder : IViewInputCommandsProceeder
+    public class ViewInputCommandsProceeder : InitBase, IViewInputCommandsProceeder
     {
         #region nonpublic members
 
-        public readonly Dictionary<string, List<EInputCommand>> m_LockedCommands = 
+        public readonly Dictionary<string, List<EInputCommand>> LockedCommands = 
             new Dictionary<string, List<EInputCommand>>();
 
         private IEnumerable<EInputCommand> m_AllCommands;
@@ -36,23 +37,20 @@ namespace RMAZOR.Views.InputConfigurators
 
         #region api
 
-         public event UnityAction<EInputCommand, object[]> Command;
+        public event UnityAction<EInputCommand, object[]> Command;
         public event UnityAction<EInputCommand, object[]> InternalCommand;
         
-        public bool              Initialized { get; private set; }
-        public event UnityAction Initialize;
-        public void Init()
+        public override void Init()
         {
             m_AllCommands = Enum.GetValues(typeof(EInputCommand)).Cast<EInputCommand>();
-            Initialize?.Invoke();
-            Initialized = true;
+            base.Init();
         }
         
         public void LockCommand(EInputCommand _Key, string _Group)
         {
-            if (!m_LockedCommands.ContainsKey(_Group))
-                m_LockedCommands.Add(_Group, new List<EInputCommand>());
-            var commandsGroup = m_LockedCommands[_Group];
+            if (!LockedCommands.ContainsKey(_Group))
+                LockedCommands.Add(_Group, new List<EInputCommand>());
+            var commandsGroup = LockedCommands[_Group];
             if (!commandsGroup.Contains(_Key))
                 commandsGroup.Add(_Key);
         }
@@ -61,13 +59,13 @@ namespace RMAZOR.Views.InputConfigurators
         {
             if (_Group.EqualsIgnoreCase("all"))
             {
-                foreach (var commands in m_LockedCommands.Values)
+                foreach (var commands in LockedCommands.Values)
                     commands.Clear();
                 return;
             }
-            if (!m_LockedCommands.ContainsKey(_Group))
+            if (!LockedCommands.ContainsKey(_Group))
                 return;
-            var commandsGroup = m_LockedCommands[_Group];
+            var commandsGroup = LockedCommands[_Group];
             if (commandsGroup == null)
                 return;
             if (commandsGroup.Contains(_Key))
@@ -105,14 +103,14 @@ namespace RMAZOR.Views.InputConfigurators
                 Command?.Invoke(_Key, _Args);
                 return;
             }
-            if (m_LockedCommands.Values.Any(_Group => _Group.Contains(_Key)))
+            if (LockedCommands.Values.Any(_Group => _Group.Contains(_Key)))
                 return;
             Command?.Invoke(_Key, _Args);
         }
 
         public bool IsCommandLocked(EInputCommand _Key)
         {
-            return m_LockedCommands.Values.Any(_Group => _Group.Contains(_Key));
+            return LockedCommands.Values.Any(_Group => _Group.Contains(_Key));
         }
 
         #endregion

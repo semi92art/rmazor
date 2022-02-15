@@ -43,16 +43,12 @@ namespace Common.Utils
         {
             if (_Action == null || _Predicate == null)
                 yield break;
-            if (_Seconds.HasValue && _Ticker == null || !_Seconds.HasValue && _Ticker != null)
-            {
-                Dbg.LogError($"Arguments {nameof(_Seconds)} and {_Ticker} must be not null.");
-                yield break;
-            }
-            float time = _Seconds.HasValue ? _Ticker.Time : default;
+            bool tickerExist = _Ticker != null;
+            float time = _Seconds.HasValue ? (tickerExist ? _Ticker.Time : Time.time) : default;
             bool IsTimeValid()
             {
                 // ReSharper disable once PossibleNullReferenceException
-                return _Seconds.HasValue && time + _Seconds.Value > _Ticker.Time;
+                return _Seconds.HasValue && time + _Seconds.Value > (tickerExist ? _Ticker.Time : Time.time);
             }
             while (_Predicate() || IsTimeValid())
             {

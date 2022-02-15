@@ -113,8 +113,6 @@ namespace RMAZOR.Controllers
                 OnRemoteConfigManagerInitialized();
             else 
                 RemoteConfigManager.Initialize += OnRemoteConfigManagerInitialized;
-            // if (View.InputController.TouchProceeder is ViewInputTouchProceederWithSRDebugInit proceeder)
-            //     proceeder.OnSrDebugInitialized = OnRemoteConfigManagerInitialized;
         }
 
         private void OnRemoteConfigManagerInitialized()

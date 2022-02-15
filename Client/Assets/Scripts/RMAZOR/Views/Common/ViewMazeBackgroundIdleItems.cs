@@ -26,8 +26,7 @@ namespace RMAZOR.Views.Common
         private readonly List<Vector2> m_BackIdleItemSpeeds = new List<Vector2>(PoolSize);
         private readonly BehavioursSpawnPool<ShapeRenderer> m_BackIdleItemsPool = 
             new BehavioursSpawnPool<ShapeRenderer>();
-
-
+        
         public ViewMazeBackgroundIdleItems(
             IColorProvider _ColorProvider, 
             IViewAppearTransitioner _Transitioner,
@@ -49,15 +48,15 @@ namespace RMAZOR.Views.Common
         
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            switch (_Args.Stage)
-            {
-                case ELevelStage.Loaded:
-                    AppearBackgroundIdleItems(true);
-                    break;
-                case ELevelStage.Finished:
-                    AppearBackgroundIdleItems(false);
-                    break;
-            }
+            // switch (_Args.Stage)
+            // {
+            //     case ELevelStage.Loaded:
+            //         AppearBackgroundIdleItems(true);
+            //         break;
+            //     case ELevelStage.Finished:
+            //         AppearBackgroundIdleItems(false);
+            //         break;
+            // }
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
@@ -100,24 +99,26 @@ namespace RMAZOR.Views.Common
                 }
                 if (newSourceRaw == null)
                     return;
-                var newSource = (ShapeRenderer)newSourceRaw;
-                if (newSource == null)
+                var newSource = newSourceRaw as ShapeRenderer;
+                if (newSource.IsNull())
                     return;
-                newSource.enabled = true;
+                // ReSharper disable once PossibleNullReferenceException
+                newSource.enabled = true; //-V3149
+                newSource.Color = m_BackItemsColor;
                 m_BackIdleItemsPool.Add(newSource);
                 m_BackIdleItemSpeeds.Add(RandomSpeed());
             }
         }
 
-        private void AppearBackgroundIdleItems(bool _Appear)
-        {
-            Transitioner.DoAppearTransition(_Appear,
-                new Dictionary<IEnumerable<Component>, Func<Color>>
-                {
-                    {m_BackIdleItemsPool, () => m_BackItemsColor}
-                },
-                _Type: EAppearTransitionType.WithoutDelay);
-        }
+        // private void AppearBackgroundIdleItems(bool _Appear)
+        // {
+        //     Transitioner.DoAppearTransition(_Appear,
+        //         new Dictionary<IEnumerable<Component>, Func<Color>>
+        //         {
+        //             {m_BackIdleItemsPool, () => m_BackItemsColor}
+        //         },
+        //         _Type: EAppearTransitionType.WithoutDelay);
+        // }
         
         protected override void ProceedItems()
         {

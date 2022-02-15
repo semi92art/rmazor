@@ -98,7 +98,8 @@ namespace RMAZOR.Views.MazeItemGroups
                             {
                                 if (savedGameEntity.Result == EEntityResult.Fail || savedGameEntity.Value == null)
                                 {
-                                    Dbg.LogError("Failed to load money entity");
+                                    Dbg.LogWarning("Failed to load money entity: " +
+                                                   $"_Result: {savedGameEntity.Result}; _Value: {savedGameEntity.Value}");
                                     return;
                                 }
                                 var savedData = new SavedGame

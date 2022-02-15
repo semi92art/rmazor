@@ -1,9 +1,9 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
-
 using System;
 using System.Linq;
 using Common;
 using Common.CameraProviders;
+using Common.Extensions;
 using Common.Helpers;
 using Common.Providers;
 using Common.UI;
@@ -16,7 +16,8 @@ using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.Rotation;
 using RMAZOR.Views.UI;
-using UnityEngine.Events;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace RMAZOR.Views
 {
@@ -46,7 +47,7 @@ namespace RMAZOR.Views
         IManagersGetter                Managers              { get; }
     }
     
-    public class ViewGame : IViewGame
+    public class ViewGame : InitBase, IViewGame
     {
         #region inject
 
@@ -144,15 +145,11 @@ namespace RMAZOR.Views
 
         #region api
 
-        public bool              Initialized { get; private set; }
-        public event UnityAction Initialize;
-        
-        public void Init()
+        public override void Init()
         {
             InitDebugManager();
             InitProceeders();
-            Initialize?.Invoke();
-            Initialized = true;
+            base.Init();
         }
         
         public void OnLevelStageChanged(LevelStageArgs _Args)

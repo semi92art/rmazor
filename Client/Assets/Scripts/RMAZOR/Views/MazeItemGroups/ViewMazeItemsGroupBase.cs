@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Common.Helpers;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common;
@@ -7,7 +8,7 @@ using RMAZOR.Views.MazeItems;
 
 namespace RMAZOR.Views.MazeItemGroups
 {
-    public abstract class ViewMazeItemsGroupBase : IViewMazeItemGroup
+    public abstract class ViewMazeItemsGroupBase : InitBase, IViewMazeItemGroup
     {
         #region nonpublic members
 

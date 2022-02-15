@@ -1,87 +1,63 @@
-using UnityEngine;
-using UnityEngine.UI;
-using System.Collections.Generic;
-using System;
-
-/* Author: Josh H.
- * Procedural UI Image
- * assetstore.joshh@gmail.com for feedback or questions
- */
-
 namespace UnityEngine.UI.ProceduralImage
 {
-
     [ExecuteInEditMode]
     [AddComponentMenu("UI/Procedural Image")]
     public class ProceduralImage : Image
     {
         [SerializeField] private float borderWidth;
-        private ProceduralImageModifier modifier;
-        private static Material materialInstance;
+        private ProceduralImageModifier m_Modifier;
+        private static Material _materialInstance;
         private static Material DefaultProceduralImageMaterial
         {
             get
             {
-                if (materialInstance == null)
+                if (_materialInstance == null)
                 {
-                    materialInstance = new Material(Shader.Find("UI/Procedural UI Image"));
+                    _materialInstance = new Material(Shader.Find("UI/Procedural UI Image"));
                 }
-                return materialInstance;
+                return _materialInstance;
             }
-            set
-            {
-                materialInstance = value;
-            }
+            set => _materialInstance = value;
         }
         [SerializeField] private float falloffDistance = 1;
 
         public float BorderWidth
         {
-            get
-            {
-                return borderWidth;
-            }
+            get => borderWidth;
             set
             {
                 borderWidth = value;
-                this.SetVerticesDirty();
+                SetVerticesDirty();
             }
         }
 
         public float FalloffDistance
         {
-            get
-            {
-                return falloffDistance;
-            }
+            get => falloffDistance;
             set
             {
                 falloffDistance = value;
-                this.SetVerticesDirty();
+                SetVerticesDirty();
             }
         }
 
-        protected ProceduralImageModifier Modifier
+        private ProceduralImageModifier Modifier
         {
             get
             {
-                if (modifier == null)
+                if (m_Modifier != null)
+                    return m_Modifier;
+                //try to get the modifier on the object.
+                m_Modifier = GetComponent<ProceduralImageModifier>();
+                //if we did not find any modifier
+                if (m_Modifier == null)
                 {
-                    //try to get the modifier on the object.
-                    modifier = this.GetComponent<ProceduralImageModifier>();
-                    //if we did not find any modifier
-                    if (modifier == null)
-                    {
-                        //Add free modifier
-                        ModifierType = typeof(FreeModifier);
-                    }
+                    //Add free modifier
+                    ModifierType = typeof(FreeModifier);
                 }
-                return modifier;
+                return m_Modifier;
             }
-            set
-            {
-                modifier = value;
-            }
+            set => m_Modifier = value;
         }
 
         /// <summary>
@@ -90,78 +66,77 @@ namespace UnityEngine.UI.ProceduralImage
         /// <value>The type of the modifier.</value>
         public System.Type ModifierType
         {
-            get
-            {
-                return Modifier.GetType();
-            }
+            get => Modifier.GetType();
             set
             {
-                if (modifier != null && modifier.GetType() != value)
+                if (m_Modifier != null && m_Modifier.GetType() != value)
                 {
-                    if (this.GetComponent<ProceduralImageModifier>() != null)
+                    if (GetComponent<ProceduralImageModifier>() != null)
                     {
-                        DestroyImmediate(this.GetComponent<ProceduralImageModifier>());
+                        DestroyImmediate(GetComponent<ProceduralImageModifier>());
                     }
-                    this.gameObject.AddComponent(value);
-                    Modifier = this.GetComponent<ProceduralImageModifier>();
-                    this.SetAllDirty();
+                    gameObject.AddComponent(value);
+                    Modifier = GetComponent<ProceduralImageModifier>();
+                    SetAllDirty();
                 }
-                else if (modifier == null)
+                else if (m_Modifier == null)
                 {
-                    this.gameObject.AddComponent(value);
-                    Modifier = this.GetComponent<ProceduralImageModifier>();
-                    this.SetAllDirty();
+                    gameObject.AddComponent(value);
+                    Modifier = GetComponent<ProceduralImageModifier>();
+                    SetAllDirty();
                 }
             }
         }
 
-        override protected void OnEnable()
+        protected override void OnEnable()
         {
             base.OnEnable();
-            this.Init();
+            Init();
         }
 
-        override protected void OnDisable()
+        protected override void OnDisable()
         {
             base.OnDisable();
-            this.m_OnDirtyVertsCallback -= OnVerticesDirty;
+            m_OnDirtyVertsCallback -= OnVerticesDirty;
         }
 
         /// <summary>
         /// Initializes this instance.
         /// </summary>
-        void Init()
+        private void Init()
         {
             FixTexCoordsInCanvas();
-            this.m_OnDirtyVertsCallback += OnVerticesDirty;
-            this.preserveAspect = false;
-            this.material = null;
-            if (this.sprite == null)
+            m_OnDirtyVertsCallback += OnVerticesDirty;
+            preserveAspect = false;
+            material = null;
+            if (sprite == null)
             {
-                this.sprite = EmptySprite.Get();
+                sprite = EmptySprite.Get();
             }
         }
 
-        protected void OnVerticesDirty()
+        private void OnVerticesDirty()
         {
-            if (this.sprite == null)
+            if (sprite == null)
             {
-                this.sprite = EmptySprite.Get();
+                sprite = EmptySprite.Get();
             }
         }
 
-        protected void FixTexCoordsInCanvas()
+        private void FixTexCoordsInCanvas()
         {
-            Canvas c = this.GetComponentInParent<Canvas>();
+            Canvas c = GetComponentInParent<Canvas>();
             if (c != null)
             {
                 FixTexCoordsInCanvas(c);
             }
         }
 
-        protected void FixTexCoordsInCanvas(Canvas c)
+        private static void FixTexCoordsInCanvas(Canvas _C)
         {
-            c.additionalShaderChannels |= AdditionalCanvasShaderChannels.TexCoord1 | AdditionalCanvasShaderChannels.TexCoord2 | AdditionalCanvasShaderChannels.TexCoord3;
+            _C.additionalShaderChannels |= AdditionalCanvasShaderChannels.TexCoord1
+                                          | AdditionalCanvasShaderChannels.TexCoord2
+                                          | AdditionalCanvasShaderChannels.TexCoord3;
         }
 
 #if UNITY_EDITOR
@@ -169,7 +144,7 @@ namespace UnityEngine.UI.ProceduralImage
         {
             if (!Application.isPlaying)
             {
-                this.UpdateGeometry();
+                UpdateGeometry();
             }
         }
 #endif
@@ -178,17 +153,17 @@ namespace UnityEngine.UI.ProceduralImage
         /// Prevents radius to get bigger than rect size
         /// </summary>
         /// <returns>The fixed radius.</returns>
-        /// <param name="vec">border-radius as Vector4 (starting upper-left, clockwise)</param>
-        private Vector4 FixRadius(Vector4 vec)
+        /// <param name="_Vec">border-radius as Vector4 (starting upper-left, clockwise)</param>
+        private Vector4 FixRadius(Vector4 _Vec)
         {
-            Rect r = this.rectTransform.rect;
-            vec = new Vector4(Mathf.Max(vec.x, 0), Mathf.Max(vec.y, 0), Mathf.Max(vec.z, 0), Mathf.Max(vec.w, 0));
+            Rect r = rectTransform.rect;
+            _Vec = new Vector4(Mathf.Max(_Vec.x, 0), Mathf.Max(_Vec.y, 0), Mathf.Max(_Vec.z, 0), Mathf.Max(_Vec.w, 0));
 
             //Allocates mem
             //float scaleFactor = Mathf.Min(r.width / (vec.x + vec.y), r.width / (vec.z + vec.w), r.height / (vec.x + vec.w), r.height / (vec.z + vec.y), 1);
             //Allocation free:
-            float scaleFactor = Mathf.Min (Mathf.Min (Mathf.Min (Mathf.Min (r.width / (vec.x + vec.y), r.width / (vec.z + vec.w)), r.height / (vec.x + vec.w)), r.height / (vec.z + vec.y)), 1f);
-            return vec * scaleFactor;
+            float scaleFactor = Mathf.Min (Mathf.Min (Mathf.Min (Mathf.Min (r.width / (_Vec.x + _Vec.y), r.width / (_Vec.z + _Vec.w)), r.height / (_Vec.x + _Vec.w)), r.height / (_Vec.z + _Vec.y)), 1f);
+            return _Vec * scaleFactor;
         }
 
         protected override void OnPopulateMesh(VertexHelper toFill)
@@ -203,7 +178,7 @@ namespace UnityEngine.UI.ProceduralImage
             FixTexCoordsInCanvas();
         }
 
-        ProceduralImageInfo CalculateInfo()
+        private ProceduralImageInfo CalculateInfo()
         {
             var r = GetPixelAdjustedRect();
             float pixelSize = 1f / Mathf.Max(0, falloffDistance);
@@ -217,7 +192,7 @@ namespace UnityEngine.UI.ProceduralImage
             return info;
         }
 
-        void EncodeAllInfoIntoVertices(VertexHelper vh, ProceduralImageInfo info)
+        private void EncodeAllInfoIntoVertices(VertexHelper vh, ProceduralImageInfo info)
         {
             UIVertex vert = new UIVertex();
 
@@ -245,7 +220,7 @@ namespace UnityEngine.UI.ProceduralImage
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        float EncodeFloats_0_1_16_16(float a, float b)
+        private static float EncodeFloats_0_1_16_16(float a, float b)
         {
             Vector2 kDecodeDot = new Vector2(1.0f, 1f / 65535.0f);
             return Vector2.Dot(new Vector2(Mathf.Floor(a * 65534) / 65535f, Mathf.Floor(b * 65534) / 65535f), kDecodeDot);
@@ -253,22 +228,9 @@ namespace UnityEngine.UI.ProceduralImage
 
         public override Material material
         {
-            get
-            {
-                if (base.m_Material == null)
-                {
-                    return DefaultProceduralImageMaterial;
-                }
-                else
-                {
-                    return base.material;
-                }
-            }
+            get => m_Material == null ? DefaultProceduralImageMaterial : base.material;
 
-            set
-            {
-                base.material = value;
-            }
+            set => base.material = value;
         }
 
 #if UNITY_EDITOR
@@ -307,14 +269,14 @@ namespace UnityEngine.UI.ProceduralImage
         public float borderWidth;
         public float pixelSize;
 
-        public ProceduralImageInfo(float width, float height, float fallOffDistance, float pixelSize, Vector4 radius, float borderWidth)
+        public ProceduralImageInfo(float _Width, float _Height, float _FallOffDistance, float _PixelSize, Vector4 _Radius, float _BorderWidth)
         {
-            this.width = Mathf.Abs(width);
-            this.height = Mathf.Abs(height);
-            this.fallOffDistance = Mathf.Max(0, fallOffDistance);
-            this.radius = radius;
-            this.borderWidth = Mathf.Max(borderWidth, 0);
-            this.pixelSize = Mathf.Max(0, pixelSize);
+            this.width = Mathf.Abs(_Width);
+            this.height = Mathf.Abs(_Height);
+            this.fallOffDistance = Mathf.Max(0, _FallOffDistance);
+            this.radius = _Radius;
+            this.borderWidth = Mathf.Max(_BorderWidth, 0);
+            this.pixelSize = Mathf.Max(0, _PixelSize);
         }
     }
 }

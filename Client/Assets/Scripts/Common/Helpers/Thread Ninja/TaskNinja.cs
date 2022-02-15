@@ -8,8 +8,10 @@ namespace Common.Helpers.Thread_Ninja
     /// <summary>
     /// Represents an async task.
     /// </summary>
-    public class Task : IEnumerator
+    public class TaskNinja : IEnumerator
     {
+        private object locker = new object();
+        
         // implements IEnumerator to make it usable by StartCoroutine;
         #region IEnumerator Interface
         /// <summary>
@@ -81,7 +83,7 @@ namespace Common.Helpers.Thread_Ninja
             }
         }
 
-        public Task(IEnumerator _Routine)
+        public TaskNinja(IEnumerator _Routine)
         {
             m_InnerRoutine = _Routine;
             // runs into background first;
@@ -113,7 +115,7 @@ namespace Common.Helpers.Thread_Ninja
         {
             if (m_State == _State) return;
 
-            lock (this)
+            lock (locker)
             {
                 // maintainance the previous state;
                 m_PreviousState = m_State;
@@ -124,7 +126,7 @@ namespace Common.Helpers.Thread_Ninja
         // thread safely save yield returned value;
         private void SetPendingCurrentObject(object _Current)
         {
-            lock (this)
+            lock (locker)
             {
                 m_PendingCurrent = _Current;
             }

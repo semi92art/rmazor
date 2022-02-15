@@ -90,17 +90,10 @@ namespace RMAZOR.Views.Common.CongratulationItems
         
         protected override void InitItems()
         {
-            var sourceGos = new List<GameObject>();
-            for (int i = 0; i < 1; i++)
-            {
-                var sourceGo = PrefabSetManager.GetPrefab(
-                    "views", $"background_item_congrats_alt_{i + 1}");
-                sourceGos.Add(sourceGo);
-            }
+            var sourceGo = PrefabSetManager.GetPrefab(
+                "views", "background_item_congrats_alt_1");
             for (int i = 0; i < PoolSize; i++)
             {
-                int randIdx = Mathf.FloorToInt(Random.value * sourceGos.Count);
-                var sourceGo = sourceGos[randIdx];
                 var newGo = Object.Instantiate(sourceGo);
                 newGo.SetParent(ContainersGetter.GetContainer(ContainerNames.Background));
                 var firework = newGo.GetCompItem<Firework>("firework");
@@ -115,8 +108,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
             }
             foreach (var item in m_BackCongratsItemsPool)
                 m_BackCongratsItemsPool.Deactivate(item);
-            foreach (var go in sourceGos)
-                go.DestroySafe();
+            sourceGo.DestroySafe();
         }
 
         protected override void ProceedItems()

@@ -48,8 +48,8 @@ namespace RMAZOR.Views.Rotation
 
         #region api
         
-        public override event UnityAction<float> RotationContinued;
-        public override event MazeOrientationHandler RotationFinished;
+        public sealed override event  UnityAction<float>     RotationContinued;
+        public sealed override event MazeOrientationHandler RotationFinished;
 
         public override void Init()
         {

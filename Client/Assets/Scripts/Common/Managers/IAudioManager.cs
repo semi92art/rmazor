@@ -15,6 +15,7 @@ namespace Common.Managers
 {
     public interface IAudioManager : IInit
     {
+        bool IsPlaying(AudioClipArgs    _Args);
         void InitClip(AudioClipArgs     _Args);
         void PlayClip(AudioClipArgs     _Args);
         void PauseClip(AudioClipArgs    _Args);
@@ -79,6 +80,12 @@ namespace Common.Managers
             EnableAudio(SoundSetting.Get(), EAudioClipType.GameSound, true);
             InitAudioMixer();
             base.Init();
+        }
+
+        public bool IsPlaying(AudioClipArgs _Args)
+        {
+            var info = FindClipInfo(_Args);
+            return info != null && info.Playing;
         }
 
         public void InitClip(AudioClipArgs _Args)

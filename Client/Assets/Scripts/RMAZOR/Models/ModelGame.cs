@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using Common;
+using Common.Helpers;
 using RMAZOR.Models.InputSchedulers;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.ProceedInfos;
@@ -32,7 +33,7 @@ namespace RMAZOR.Models
         IMazeItemProceedInfo[] GetAllProceedInfos();
     }
     
-    public class ModelGame : IModelGame
+    public class ModelGame : InitBase, IModelGame
     {
         #region nonpublic members
 
@@ -96,11 +97,8 @@ namespace RMAZOR.Models
         #endregion
         
         #region api
-
-        public bool              Initialized { get; private set; }
-        public event UnityAction Initialize;
-
-        public void Init()
+        
+        public override void Init()
         {
             m_ProceedersCached = new object[]
             {
@@ -133,8 +131,7 @@ namespace RMAZOR.Models
                 item.GetAllProceedInfos = GetAllProceedInfos;
             }
             Character.GetStartPosition = () => PathItemsProceeder.PathProceeds.First().Key;
-            Initialize?.Invoke();
-            Initialized = true;
+            base.Init();
         }
         
         public IMazeItemProceedInfo[] GetAllProceedInfos()

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LastVersionCode: 
   Contacts: 0
-  CloudKit: 0
+  CloudKit: 1
   Photos: 0
   ReplayKit: 0
   Social: 0
@@ -29,7 +29,7 @@ MonoBehaviour:
   EventKit: 0
   InAppProducts: []
   Achievements: []
-  SavingAGame: 0
+  SavingAGame: 1
   ShortcutItems: []
   UrlTypes: []
   ApplicationQueriesSchemes: []

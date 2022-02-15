@@ -2,7 +2,8 @@
 using UnityEngine.XR;
 
 [ExecuteInEditMode]
-public class FastDOF : MonoBehaviour {
+public class FastDOF : MonoBehaviour
+{
     public enum DepthMethod
     {
         CustomMaterials,
@@ -34,13 +35,13 @@ public class FastDOF : MonoBehaviour {
         cam.depthTextureMode = DepthTextureMode.None;
     }
 
-    void  OnRenderImage (RenderTexture source ,   RenderTexture destination){
-        if (BlurAmount == 0)
+    private void OnRenderImage (RenderTexture source , RenderTexture destination)
+    {
+        if (Mathf.Abs(BlurAmount) < float.Epsilon)
         {
             Graphics.Blit(source, destination);
             return;
         }
-
         if (DepthCalculationMetod == DepthMethod.Depth && cam.depthTextureMode != DepthTextureMode.Depth)
         {
             cam.depthTextureMode = DepthTextureMode.Depth;
@@ -51,7 +52,6 @@ public class FastDOF : MonoBehaviour {
             cam.depthTextureMode = DepthTextureMode.None;
             material.DisableKeyword(isDepthKeyword);
         }
-
         if (XRSettings.enabled)
         {
             half = XRSettings.eyeTextureDesc;
@@ -61,7 +61,8 @@ public class FastDOF : MonoBehaviour {
             eighths = XRSettings.eyeTextureDesc;
             eighths.height /= 8; eighths.width /= 8;
             sixths = XRSettings.eyeTextureDesc;
-            sixths.height /= XRSettings.stereoRenderingMode == XRSettings.StereoRenderingMode.SinglePass ? 8 : 16; sixths.width /= XRSettings.stereoRenderingMode == XRSettings.StereoRenderingMode.SinglePass ? 8 : 16;
+            sixths.height /= XRSettings.stereoRenderingMode == XRSettings.StereoRenderingMode.SinglePass ? 
+                8 : 16; sixths.width /= XRSettings.stereoRenderingMode == XRSettings.StereoRenderingMode.SinglePass ? 8 : 16;
         }
         else
         {
@@ -78,54 +79,57 @@ public class FastDOF : MonoBehaviour {
         Shader.SetGlobalFloat(focusAmountString, Focus);
 		Shader.SetGlobalFloat(apertureAmountString, Aperture);
         numberOfPasses = Mathf.Max(Mathf.CeilToInt(BlurAmount * 4), 1);
-        material.SetFloat(blurAmountString, numberOfPasses > 1 ? (BlurAmount * 4 - Mathf.FloorToInt(BlurAmount * 4 - 0.001f)) * 0.5f + 0.5f : BlurAmount * 4);
-
+        material.SetFloat(blurAmountString, numberOfPasses > 1 ? 
+            (BlurAmount * 4 - Mathf.FloorToInt(BlurAmount * 4 - 0.001f)) * 0.5f + 0.5f : BlurAmount * 4);
         RenderTexture blurTex = null;
-
-        if (numberOfPasses == 1)
+        switch (numberOfPasses)
         {
-            blurTex = RenderTexture.GetTemporary(half);
-            blurTex.filterMode = FilterMode.Bilinear;
-            Graphics.Blit(source, blurTex, material, 0);
+            case 1:
+                blurTex = RenderTexture.GetTemporary(half);
+                blurTex.filterMode = FilterMode.Bilinear;
+                Graphics.Blit(source, blurTex, material, 0);
+                break;
+            case 2:
+            {
+                blurTex = RenderTexture.GetTemporary(half);
+                var temp1 = RenderTexture.GetTemporary(quarter);
+                blurTex.filterMode = FilterMode.Bilinear;
+                temp1.filterMode = FilterMode.Bilinear;
+                Graphics.Blit(source, temp1, material, 0);
+                Graphics.Blit(temp1, blurTex, material, 0);
+                RenderTexture.ReleaseTemporary(temp1);
+                break;
+            }
+            case 3:
+            {
+                blurTex = RenderTexture.GetTemporary(quarter);
+                var temp1 = RenderTexture.GetTemporary(eighths);
+                blurTex.filterMode = FilterMode.Bilinear;
+                temp1.filterMode = FilterMode.Bilinear;
+                Graphics.Blit(source, blurTex, material, 0);
+                Graphics.Blit(blurTex, temp1, material, 0);
+                Graphics.Blit(temp1, blurTex, material, 0);
+                RenderTexture.ReleaseTemporary(temp1);
+                break;
+            }
+            case 4:
+            {
+                blurTex = RenderTexture.GetTemporary(quarter);
+                var temp1 = RenderTexture.GetTemporary(eighths);
+                var temp2 = RenderTexture.GetTemporary(sixths);
+                blurTex.filterMode = FilterMode.Bilinear;
+                temp1.filterMode = FilterMode.Bilinear;
+                temp2.filterMode = FilterMode.Bilinear;
+                Graphics.Blit(source, blurTex, material, 0);
+                Graphics.Blit(blurTex, temp1, material, 0);
+                Graphics.Blit(temp1, temp2, material, 0);
+                Graphics.Blit(temp2, temp1, material, 0);
+                Graphics.Blit(temp1, blurTex, material, 0);
+                RenderTexture.ReleaseTemporary(temp1);
+                RenderTexture.ReleaseTemporary(temp2);
+                break;
+            }
         }
-        else if (numberOfPasses == 2)
-        {
-            blurTex = RenderTexture.GetTemporary(half);
-            var temp1 = RenderTexture.GetTemporary(quarter);
-            blurTex.filterMode = FilterMode.Bilinear;
-            temp1.filterMode = FilterMode.Bilinear;
-            Graphics.Blit(source, temp1, material, 0);
-            Graphics.Blit(temp1, blurTex, material, 0);
-            RenderTexture.ReleaseTemporary(temp1);
-        }
-        else if (numberOfPasses == 3)
-        {
-            blurTex = RenderTexture.GetTemporary(quarter);
-            var temp1 = RenderTexture.GetTemporary(eighths);
-            blurTex.filterMode = FilterMode.Bilinear;
-            temp1.filterMode = FilterMode.Bilinear;
-            Graphics.Blit(source, blurTex, material, 0);
-            Graphics.Blit(blurTex, temp1, material, 0);
-            Graphics.Blit(temp1, blurTex, material, 0);
-            RenderTexture.ReleaseTemporary(temp1);
-        }
-        else if (numberOfPasses == 4)
-        {
-            blurTex = RenderTexture.GetTemporary(quarter);
-            var temp1 = RenderTexture.GetTemporary(eighths);
-            var temp2 = RenderTexture.GetTemporary(sixths);
-            blurTex.filterMode = FilterMode.Bilinear;
-            temp1.filterMode = FilterMode.Bilinear;
-            temp2.filterMode = FilterMode.Bilinear;
-            Graphics.Blit(source, blurTex, material, 0);
-            Graphics.Blit(blurTex, temp1, material, 0);
-            Graphics.Blit(temp1, temp2, material, 0);
-            Graphics.Blit(temp2, temp1, material, 0);
-            Graphics.Blit(temp1, blurTex, material, 0);
-            RenderTexture.ReleaseTemporary(temp1);
-            RenderTexture.ReleaseTemporary(temp2);
-        }
-
         material.SetTexture(blurTexString, blurTex);
         RenderTexture.ReleaseTemporary(blurTex);
         Graphics.Blit(source, destination, material, 1);

@@ -140,12 +140,8 @@ namespace RMAZOR.Views.MazeItems
             m_RotateDirection = GetRotationDirection(dir);
             m_MaceTr.rotation = Quaternion.Euler(Vector3.zero);
             m_Rotate = true;
-            if (Model.GravityItemsProceeder.ProceedInfos
-                .Where(_I => _I.Type == EMazeItemType.GravityTrap)
-                .Count(_I => _I.ProceedingStage != GravityItemsProceeder.StageDrop) != 1)
-            {
+            if (Managers.AudioManager.IsPlaying(GetAudioClipArgsTrapRotate()))
                 return;
-            }
             Managers.AudioManager.PlayClip(GetAudioClipArgsTrapRotate());
             if (!MazeShaker.ShakeMaze)
                 MazeShaker.ShakeMaze = true;

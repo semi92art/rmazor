@@ -1,4 +1,5 @@
 ﻿using Common;
+using Common.Helpers;
 using RMAZOR.Models;
 using UnityEngine.Events;
 
@@ -10,7 +11,7 @@ namespace RMAZOR.Views.InputConfigurators
         IViewInputTouchProceeder    TouchProceeder    { get; }
     }
     
-    public class ViewInputController : IViewInputController
+    public class ViewInputController : InitBase, IViewInputController
     {
         public IViewInputCommandsProceeder CommandsProceeder { get; }
         public IViewInputTouchProceeder    TouchProceeder    { get; }
@@ -23,15 +24,11 @@ namespace RMAZOR.Views.InputConfigurators
             TouchProceeder = _TouchProceeder;
         }
 
-        public bool              Initialized { get; private set; }
-        public event UnityAction Initialize;
-        
         public virtual void Init()
         {
             CommandsProceeder.Init();
             TouchProceeder.Init();
-            Initialize?.Invoke();
-            Initialized = true;
+            base.Init();
         }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)

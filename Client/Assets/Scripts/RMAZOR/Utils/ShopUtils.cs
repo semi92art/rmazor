@@ -40,8 +40,10 @@ namespace RMAZOR.Utils
                 return 0;
             static ShopItemsScriptableObject.ShopItemSet GetSet(string _Key)
             {
-                return new PrefabSetManager(new AssetBundleManagerFake())
-                    .GetObject<ShopItemsScriptableObject>("shop_items", _Key).set;
+                var abm = new AssetBundleManagerFake();
+                var psm = new PrefabSetManager(abm);
+                return psm
+                    .GetObject<ShopItemsScriptableObject>("shop_items", _Key)?.set;
             }
             var sets = new List<ShopItemsScriptableObject.ShopItemSet>
             {

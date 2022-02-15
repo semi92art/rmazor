@@ -91,8 +91,6 @@ namespace Common.Ticker
                 return;
             }
             Time = UnityEngine.Time.time - m_Delta;
-            if (Pause)
-                return;
             for (int i = 0; i < m_UpdateInfoDict.Count; i++)
                 m_UpdateInfoDict[i]?.UpdateTick();
         }

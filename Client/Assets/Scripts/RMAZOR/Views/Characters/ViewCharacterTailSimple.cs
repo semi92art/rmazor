@@ -125,7 +125,7 @@ namespace RMAZOR.Views.Characters
             m_Hiding = false;
             m_Tail.enabled = true;
             var dir = (Vector2)(_Args.To - _Args.From).NormalizedOrth;
-            var orth = new Vector2(dir.y, dir.x);
+            var orth = new Vector2(dir.y, dir.x); //-V3066
             var currPos = Vector2.Lerp(_Args.From, _Args.To, _Args.Progress);
             var b = currPos - dir * 0.2f + orth * 0.3f;
             var c = currPos - dir * 0.2f - orth * 0.3f;

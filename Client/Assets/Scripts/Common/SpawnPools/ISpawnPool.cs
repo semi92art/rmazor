@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Common.SpawnPools
 {
-    public interface ISpawnPool<T> : IList<T>
+    public interface ISpawnPool<T> : IList<T> where T : class
     {
         int CountActivated { get; }
         int CountDeactivated { get; }

@@ -1,5 +1,6 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Common;
@@ -7,6 +8,7 @@ using Common.Constants;
 using Common.Entities;
 using Common.Enums;
 using Common.Exceptions;
+using Common.Extensions;
 using Common.Helpers;
 using Common.Ticker;
 using Common.UI;
@@ -19,6 +21,7 @@ using RMAZOR.Views.Characters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.MazeItems;
+using UnityEngine;
 
 namespace RMAZOR.Views.Common
 {
@@ -44,6 +47,7 @@ namespace RMAZOR.Views.Common
         private bool                m_NextLevelMustBeFirstInGroup;
         private bool                m_FirstTimeLevelLoaded;
         private List<IViewMazeItem> m_MazeItemsCached;
+        private bool                m_StartLogoShowing = true;
 
         #endregion
 
@@ -62,6 +66,7 @@ namespace RMAZOR.Views.Common
         private IDialogPanels               DialogPanels         { get; }
         private IProposalDialogViewer       ProposalDialogViewer { get; }
         private IViewMazePathItemsGroup     PathItemsGroup       { get; }
+        private CompanyLogo                 CompanyLogo          { get; }
 
         public ViewLevelStageController(
             CommonGameSettings          _GameSettings,
@@ -76,7 +81,8 @@ namespace RMAZOR.Views.Common
             IMazeShaker                 _MazeShaker,
             IDialogPanels               _DialogPanels,
             IProposalDialogViewer       _ProposalDialogViewer,
-            IViewMazePathItemsGroup     _PathItemsGroup)
+            IViewMazePathItemsGroup     _PathItemsGroup,
+            CompanyLogo                 _CompanyLogo)
         {
             GameSettings         = _GameSettings;
             ViewSettings         = _ViewSettings;
@@ -91,6 +97,7 @@ namespace RMAZOR.Views.Common
             DialogPanels         = _DialogPanels;
             ProposalDialogViewer = _ProposalDialogViewer;
             PathItemsGroup       = _PathItemsGroup;
+            CompanyLogo          = _CompanyLogo;
         }
 
         #endregion
@@ -148,6 +155,14 @@ namespace RMAZOR.Views.Common
                 case ELevelStage.StartedOrContinued:
                 case ELevelStage.Paused:
                     return;
+                case ELevelStage.Loaded:
+                case ELevelStage.Finished:
+                case ELevelStage.ReadyToUnloadLevel:
+                case ELevelStage.Unloaded:
+                case ELevelStage.CharacterKilled:
+                    break;
+                default:
+                    throw new SwitchCaseNotImplementedException(_Args.Stage);
             }
             var mazeItems = _Args.Stage == ELevelStage.Loaded ? 
                 m_MazeItemsCached = GetMazeAndPathItems(m_Proceeders) : m_MazeItemsCached;
@@ -159,6 +174,12 @@ namespace RMAZOR.Views.Common
                 case ELevelStage.ReadyToUnloadLevel: OnReadyToUnloadLevel(_Args, mazeItems);   break;
                 case ELevelStage.Unloaded:           OnLevelUnloaded(_Args);                   break;
                 case ELevelStage.CharacterKilled:    OnCharacterKilled(mazeItems);             break;
+                case ELevelStage.ReadyToStart:
+                case ELevelStage.StartedOrContinued:
+                case ELevelStage.Paused:
+                    break;
+                default:
+                    throw new SwitchCaseNotImplementedException(_Args.Stage);
             }
         }
 
@@ -178,6 +199,11 @@ namespace RMAZOR.Views.Common
             IReadOnlyCollection<IViewMazeItem> _MazeItems,
             IViewMazePathItemsGroup            _PathItemsGroup)
         {
+            if (m_StartLogoShowing)
+            {
+                CompanyLogo.HideLogo();
+                m_StartLogoShowing = false;
+            }
             m_NextLevelMustBeFirstInGroup = false;
             Character.Appear(true);
             foreach (var pathItem in _PathItemsGroup.PathItems)
@@ -251,6 +277,7 @@ namespace RMAZOR.Views.Common
                                 Dbg.LogError("Failed to get score from leaderboard");
                                 return;
                             }
+                            Dbg.Log("Level score from server leaderboard: " + score.Value);
                             Managers.ScoreManager.SetScoreToLeaderboard(
                                 DataFieldIds.Level, 
                                 score.Value + 1, 
@@ -337,8 +364,6 @@ namespace RMAZOR.Views.Common
                     audioManager.UnmuteAudio(EAudioClipType.GameSound);
                     break;
                 case ELevelStage.ReadyToStart:
-                    audioManager.UnmuteAudio(EAudioClipType.GameSound);
-                    break;
                 case ELevelStage.StartedOrContinued:
                 case ELevelStage.Finished:
                     audioManager.UnmuteAudio(EAudioClipType.GameSound);

@@ -101,19 +101,18 @@ namespace RMAZOR.Views.UI.StartLogo
         protected virtual void InitStartLogo()
         {
             var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
-            bool isBigAspect = GraphicUtils.AspectRatio > 0.5f;
-            float additionalOffset = !isBigAspect ? 3f : 3f;
-            string prefabName = PrefabName + (!isBigAspect ? string.Empty : "_2");
+            bool isLowAspect = GraphicUtils.AspectRatio < 0.6f;
+            const float additionalOffset = 3f;
             var go = PrefabSetManager.InitPrefab(
                 ContainersGetter.GetContainer(ContainerNames.GameUI),
                 "ui_game",
-                prefabName);
+                PrefabName);
             StartLogoObj = go;
             float yPos = screenBounds.max.y - m_TopOffset - additionalOffset;
             go.transform.SetLocalPosXY(
                 screenBounds.center.x,
                 yPos);
-            go.transform.localScale = Vector3.one * GraphicUtils.AspectRatio * (!isBigAspect ? 7f : 5f);
+            go.transform.localScale = Vector3.one * GraphicUtils.AspectRatio * (isLowAspect ? 7f : 5f);
             m_StartLogoCharAnims = KeysAndDelays.Keys
                 .ToDictionary(
                     _C => _C, 

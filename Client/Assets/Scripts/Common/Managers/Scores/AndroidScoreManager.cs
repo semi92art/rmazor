@@ -181,12 +181,8 @@ namespace Common.Managers.Scores
         {
             var config = new PlayGamesClientConfiguration.Builder()
                 .EnableSavedGames()
-                // .RequestServerAuthCode(false)
-                // .RequestIdToken()
-                // .RequestEmail()
                 .Build();
             PlayGamesPlatform.InitializeInstance(config);
-            // PlayGamesPlatform.DebugLogEnabled = true;
             PlayGamesPlatform.Activate();
             PlayGamesPlatform.Instance.Authenticate(
                 SignInInteractivity.CanPromptOnce,
@@ -355,7 +351,7 @@ namespace Common.Managers.Scores
             var info = operation.SavedGame;
             if (_Status == SavedGameRequestStatus.Success)
             {
-                FileNameArgs fileNameData = null;
+                FileNameArgs fileNameData;
                 try
                 {
                     fileNameData = FromByteArray<FileNameArgs>(_Data);
@@ -363,10 +359,29 @@ namespace Common.Managers.Scores
                 catch (SerializationException e)
                 {
                     Dbg.Log(e.Message);
+                    info.Entity = new Entity<object>
+                    {
+                        Value = null,
+                        Result = EEntityResult.Fail
+                    };
+                    return;
                 }
                 if (fileNameData?.FileName == null)
                 {
-                    Dbg.LogError($"Failed to read saved game, code: {_Status}");
+                    Dbg.LogWarning("Failed to read saved game, fileNameData is null");
+                    if (info.Entity == null)
+                    {
+                        info.Entity = new Entity<object>
+                        {
+                            Value = null,
+                            Result = EEntityResult.Fail
+                        };
+                    }
+                    else
+                    {
+                        info.Entity.Value = null;
+                        info.Entity.Result = EEntityResult.Fail;
+                    }
                     return;
                 }
                 info.Data = _Data;

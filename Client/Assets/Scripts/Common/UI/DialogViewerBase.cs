@@ -15,14 +15,12 @@ namespace Common.UI
 {
     public abstract class DialogViewerBase : IDialogViewerBase
     {
+        protected IDialogPanel FakePanel = new DialogPanelFake();
+        
         protected ICameraProvider   CameraProvider   { get; }
         private   IUITicker         Ticker           { get; }
         protected IPrefabSetManager PrefabSetManager { get; }
-            
-        public          IDialogPanel  CurrentPanel                { get; protected set; }
-        public abstract RectTransform Container                   { get; }
-        public          Func<bool>    IsOtherDialogViewersShowing { get; set; }
-
+        
         protected DialogViewerBase(
             ICameraProvider _CameraProvider,
             IUITicker _Ticker,
@@ -32,6 +30,10 @@ namespace Common.UI
             Ticker = _Ticker;
             PrefabSetManager = _PrefabSetManager;
         }
+        
+        public          IDialogPanel  CurrentPanel                { get; protected set; }
+        public abstract RectTransform Container                   { get; }
+        public          Func<bool>    IsOtherDialogViewersShowing { get; set; }
         
         public abstract void Init(RectTransform _Parent);
         

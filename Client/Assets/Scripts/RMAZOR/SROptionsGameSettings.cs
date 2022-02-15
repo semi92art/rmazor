@@ -327,7 +327,7 @@ namespace RMAZOR
                 if (!value)
                     return;
                 var groupNames = (_view.CommandsProceeder as ViewInputCommandsProceeder)?
-                    .m_LockedCommands
+                    .LockedCommands
                     .Where(_Kvp => _Kvp.Value.Contains(
                                        EInputCommand.RotateClockwise)
                                    || _Kvp.Value.Contains(EInputCommand.RotateCounterClockwise))
@@ -350,7 +350,7 @@ namespace RMAZOR
                 if (!value)
                     return;
                 var groupNames = (_view.CommandsProceeder as ViewInputCommandsProceeder)?
-                    .m_LockedCommands
+                    .LockedCommands
                     .Where(_Kvp => _Kvp.Value.Contains(
                                        EInputCommand.RotateClockwise)
                                    || _Kvp.Value.Contains(EInputCommand.MoveRight))
@@ -445,12 +445,13 @@ namespace RMAZOR
                     () => entity.Result == EEntityResult.Pending,
                     () =>
                     {
-                        if (entity.Result == EEntityResult.Fail)
+                        var moneyValue = entity.Value.CastTo<SavedGame>();
+                        if (entity.Result == EEntityResult.Fail || moneyValue == null)
                         {
                             Dbg.LogError("Failed to load saved game");
                             return;
                         }
-                        long money = entity.Value.CastTo<SavedGame>().Money;
+                        long money = moneyValue.Money;
                         Dbg.Log("Money server: " + money);
                     }));
                 var entity1 = _view.Managers.ScoreManager.GetSavedGameProgress(CommonData.SavedGameFileName, true);
@@ -458,12 +459,13 @@ namespace RMAZOR
                     () => entity.Result == EEntityResult.Pending,
                     () =>
                     {
-                        if (entity1.Result == EEntityResult.Fail)
+                        var moneyValue = entity1.Value.CastTo<SavedGame>();
+                        if (entity1.Result == EEntityResult.Fail || moneyValue == null)
                         {
                             Dbg.LogError("Failed to load saved game");
                             return;
                         }
-                        long money = entity1.Value.CastTo<SavedGame>().Money;
+                        long money = moneyValue.Money;
                         Dbg.Log("Money cached: " + money);
                     }));
             }

@@ -74,7 +74,6 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
             IViewMazeItem item;
             switch (_Type)
             {
-                case EMazeItemType.Block:            item = null;            break;
                 case EMazeItemType.GravityBlock:     item = GravityBlock;    break;
                 case EMazeItemType.ShredingerBlock:  item = ShredingerBlock; break;
                 case EMazeItemType.Portal:           item = Portal;          break;
@@ -85,7 +84,9 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
                 case EMazeItemType.Turret:           item = Turret;          break;
                 case EMazeItemType.GravityBlockFree: item = GravityBlockFree;break;
                 case EMazeItemType.Springboard:      item = Springboard;     break;
-                case EMazeItemType.MovingBlockFree:  item = null;            break;
+                case EMazeItemType.Block:                       
+                case EMazeItemType.MovingBlockFree: 
+                    item = null; break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Type);
             }

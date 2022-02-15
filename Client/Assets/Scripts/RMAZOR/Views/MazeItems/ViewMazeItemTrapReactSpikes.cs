@@ -237,13 +237,13 @@ namespace RMAZOR.Views.MazeItems
         private Tuple<Vector2, Vector2> GetTrapPosRotAndLineEdges()
         {
             Vector2 dir = Props.Directions.First();
-            var dirOrth = new Vector2(dir.y, dir.x);
-            var A = dir * 0.35f;
-            var B = A + dirOrth * 0.45f;
-            var C = A - dirOrth * 0.45f;
-            B *= CoordinateConverter.Scale;
-            C *= CoordinateConverter.Scale;
-            return new Tuple<Vector2, Vector2>(B, C);
+            var dirOrth = new Vector2(dir.y, dir.x); //-V3066
+            var a = dir * 0.35f;
+            var b = a + dirOrth * 0.45f;
+            var c = a - dirOrth * 0.45f;
+            b *= CoordinateConverter.Scale;
+            c *= CoordinateConverter.Scale;
+            return new Tuple<Vector2, Vector2>(b, c);
         }
 
         private void SetReactProgress(Vector2 _Direction, float _Scale, float _Progress)

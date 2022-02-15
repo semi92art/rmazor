@@ -11,11 +11,7 @@ using UnityEngine;
 
 namespace Common.Managers
 {
-    public class PrefabEntity<T> : Entity<T> where T : Object
-    {
-        public T             Value  { get; set; }
-        public EEntityResult Result { get; set; }
-    }
+    public class PrefabEntity<T> : Entity<T> where T : Object { }
     
     public interface IPrefabSetManager
     {
@@ -94,9 +90,10 @@ namespace Common.Managers
             string _PrefabName)
         {
             var instance = GetPrefabBase(_PrefabSetName, _PrefabName);
+            if (instance == null)
+                return instance;
             if (_Parent != null)
                 instance.transform.SetParent(_Parent);
-            
             instance.transform.localScale = Vector3.one;
             return instance;
         }

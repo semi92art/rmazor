@@ -16,7 +16,7 @@ namespace Common.Utils.Encryption
         public Cryptography(string _Key)
         {
             m_Encryptor = Aes.Create();
-            var pdb = new Rfc2898DeriveBytes(_Key, new byte[]
+            using var pdb = new Rfc2898DeriveBytes(_Key, new byte[]
             {
                 0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d, 0x65, 0x64, 0x76, 0x65, 0x64, 0x65, 0x76
             });

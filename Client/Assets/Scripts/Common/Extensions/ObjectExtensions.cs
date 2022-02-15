@@ -15,7 +15,7 @@ namespace Common.Extensions
             var res = _Object.GetComponent<T>();
             if (res.IsNull())
                 res = _Object.AddComponent<T>();
-            return res;
+            return res == null ? default : res;
         }
 
         public static void RemoveComponentIfExist<T>(this GameObject _Object) where T : Component
@@ -112,8 +112,8 @@ namespace Common.Extensions
         public static bool IsNull<T>(this T _Item) where T : Component
         {
             if (_Item is UIBehaviour beh)
-                return beh == null || beh.ToString() == "null" || beh.IsDestroyed();
-            return _Item == null || _Item.ToString() == "null";
+                return beh.IsDestroyed();
+            return _Item == null;
         }
 
         public static bool IsNotNull<T>(this T _Item) where T : Component => !IsNull(_Item);

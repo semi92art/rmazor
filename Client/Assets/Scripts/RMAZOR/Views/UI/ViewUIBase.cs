@@ -1,8 +1,8 @@
 ﻿using Common;
+using Common.Helpers;
 using Common.Utils;
 using RMAZOR.Models;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace RMAZOR.Views.UI
@@ -12,11 +12,11 @@ namespace RMAZOR.Views.UI
         IViewUIGameControls GameControls { get; }
     }
     
-    public abstract class ViewUIBase : IViewUI
+    public abstract class ViewUIBase : InitBase, IViewUI
     {
         #region nonpublic members
         
-        protected Canvas m_Canvas;
+        protected Canvas Canvas;
         
         #endregion
 
@@ -33,16 +33,6 @@ namespace RMAZOR.Views.UI
         
         #region api
 
-        public bool              Initialized { get; private set; }
-        public event UnityAction Initialize;
-        
-        public virtual void Init()
-        {
-            CreateCanvas();
-            Initialize?.Invoke();
-            Initialized = true;
-        }
-        
         public abstract void OnLevelStageChanged(LevelStageArgs _Args);
 
         #endregion
@@ -51,7 +41,7 @@ namespace RMAZOR.Views.UI
         
         protected void CreateCanvas()
         {
-            m_Canvas = UIUtils.UiCanvas(
+            Canvas = UIUtils.UiCanvas(
                 GetType().Name + " Canvas",
                 RenderMode.ScreenSpaceOverlay,
                 false,
@@ -64,11 +54,6 @@ namespace RMAZOR.Views.UI
                 100,
                 true,
                 GraphicRaycaster.BlockingObjects.None);
-        }
-
-        protected void RaiseInitializedEvent()
-        {
-            Initialize?.Invoke();
         }
 
         #endregion

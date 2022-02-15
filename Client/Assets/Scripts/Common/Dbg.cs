@@ -1,4 +1,5 @@
-﻿using Common.Exceptions;
+﻿using System;
+using Common.Exceptions;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -6,12 +7,12 @@ namespace Common
 {
     public enum ELogLevel
     {
-        Nothing   = 0,
-        Exception = 1,
-        Error     = 2,
-        Assert    = 4,
-        Warning   = 8,
-        Info      = 16
+        Nothing,
+        Exception,
+        Error,
+        Assert,
+        Warning,
+        Info
     }
 
     public static class Dbg

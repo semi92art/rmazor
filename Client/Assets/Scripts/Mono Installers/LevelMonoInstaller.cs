@@ -141,7 +141,11 @@ namespace Mono_Installers
                 Container.Bind<IShopHeadsDialogPanel>()      .To<ShopHeadsPanel>()                .AsSingle();
                 Container.Bind<IShopTailsDialogPanel>()      .To<ShopTailsPanel>()                .AsSingle();
                 Container.Bind<ISettingDialogPanel>()        .To<SettingsDialogPanel>()           .AsSingle();
-                Container.Bind<ICharacterDiedDialogPanel>()  .To<CharacterDiedDialogPanel>()      .AsSingle();
+#if UNITY_ANDROID
+                Container.Bind<ICharacterDiedDialogPanel>()  .To<CharacterDiedDialogPanel2>()     .AsSingle();
+#elif UNITY_IOS
+                Container.Bind<ICharacterDiedDialogPanel>()  .To<CharacterDiedDialogPanel>()     .AsSingle();
+#endif
                 Container.Bind<IRateGameDialogPanel>()       .To<RateGameDialogPanel>()           .AsSingle();
             }
             Container.Bind<IViewInputCommandsProceeder>()    .To<ViewInputCommandsProceeder>()    .AsSingle();

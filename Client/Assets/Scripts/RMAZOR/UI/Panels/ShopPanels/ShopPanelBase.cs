@@ -10,6 +10,7 @@ using Common.ScriptableObjects;
 using Common.Ticker;
 using Common.UI;
 using Common.Utils;
+using Newtonsoft.Json;
 using RMAZOR.Managers;
 using RMAZOR.UI.PanelItems.Shop_Items;
 using RMAZOR.Utils;
@@ -130,12 +131,15 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 () => savedGameEntity.Result == EEntityResult.Pending,
                 () =>
                 {
-                    if (savedGameEntity.Result == EEntityResult.Fail)
+                    Dbg.Log(JsonConvert.SerializeObject(savedGameEntity.Value));
+                    var savedGameValue = savedGameEntity.Value.CastTo<SavedGame>();
+                    if (savedGameEntity.Result == EEntityResult.Fail || savedGameValue == null)
                     {
-                        Dbg.LogError("Failed to load money entity");
+                        Dbg.LogWarning("Failed to load money entity: " +
+                                       $"_Result: {savedGameEntity.Result}; _Value: {savedGameEntity.Value}");
                         return;
                     }
-                    m_MoneyText.text = savedGameEntity.Value.CastTo<SavedGame>().Money.ToString();
+                    m_MoneyText.text = savedGameValue.Money.ToString();
                 }));
             Managers.ScoreManager.OnScoresChanged -= OnScoreChanged; 
             Managers.ScoreManager.OnScoresChanged += OnScoreChanged;

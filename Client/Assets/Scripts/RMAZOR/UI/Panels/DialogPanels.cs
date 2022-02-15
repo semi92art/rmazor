@@ -1,4 +1,5 @@
 ﻿using Common;
+using Common.Helpers;
 using RMAZOR.UI.Panels.ShopPanels;
 using UnityEngine.Events;
 
@@ -14,7 +15,7 @@ namespace RMAZOR.UI.Panels
         IRateGameDialogPanel        RateGameDialogPanel        { get; }
     }
 
-    public class DialogPanels : IDialogPanels
+    public class DialogPanels : InitBase, IDialogPanels
     {
         public ISettingDialogPanel         SettingDialogPanel         { get; }
         public ISettingSelectorDialogPanel SettingSelectorDialogPanel { get; }
@@ -39,14 +40,10 @@ namespace RMAZOR.UI.Panels
             RateGameDialogPanel         = _RateGameDialogPanel;
         }
 
-        public bool              Initialized { get; private set; }
-        public event UnityAction Initialize;
-        
-        public void Init()
+        public override void Init()
         {
             ShopMoneyDialogPanel.Init();
-            Initialize?.Invoke();
-            Initialized = true;
+            base.Init();
         }
     }
 

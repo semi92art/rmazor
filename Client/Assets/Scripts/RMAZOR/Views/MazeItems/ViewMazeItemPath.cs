@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Common;
 using Common.Constants;
 using Common.Entities;
 using Common.Enums;
@@ -159,6 +160,12 @@ namespace RMAZOR.Views.MazeItems
                 case ELevelStage.Finished:
                     m_MoneyItemAnimator.speed = 1f;
                     break;
+                case ELevelStage.ReadyToUnloadLevel:
+                case ELevelStage.Unloaded:
+                case ELevelStage.CharacterKilled:
+                    break;
+                default:
+                    throw new SwitchCaseNotImplementedException(_Args.Stage);
             }
         }
 
@@ -519,7 +526,8 @@ namespace RMAZOR.Views.MazeItems
                 corner = m_TopRightCorner;
             if (corner.IsNull())
                 corner = Object.AddComponentOnNewChild<Disc>("Corner", out _);
-            corner.transform.position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
+            // ReSharper disable once PossibleNullReferenceException
+            corner.transform.position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position; //-V3080
             corner.transform.PlusLocalPosXY(GetCornerCenter(_Right, _Up, _Inner));
             corner.Type = DiscType.Arc;
             corner.ArcEndCaps = ArcEndCap.Round;
@@ -689,7 +697,11 @@ namespace RMAZOR.Views.MazeItems
 
         private V2Int SpringboardDirection(V2Int _Position)
         {
-            return GetItemInfo(_Position, EMazeItemType.Springboard).Direction;
+            var info = GetItemInfo(_Position, EMazeItemType.Springboard);
+            if (info != null) 
+                return info.Direction;
+            Dbg.LogError("Info cannot be null");
+            return default;
         }
 
         private bool TrapIncreasingExist(V2Int _Position)
@@ -699,7 +711,7 @@ namespace RMAZOR.Views.MazeItems
 
         private IMazeItemProceedInfo GetItemInfo(V2Int _Position, EMazeItemType _Type)
         {
-            return Model.GetAllProceedInfos()
+            return Model.GetAllProceedInfos()?
                 .FirstOrDefault(_Item => _Item.CurrentPosition == _Position
                                 && _Item.Type == _Type); 
         }

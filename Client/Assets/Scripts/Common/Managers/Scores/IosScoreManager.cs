@@ -49,8 +49,8 @@ namespace Common.Managers.Scores
 
         public override bool SetScoreToLeaderboard(ushort _Id, long _Value, bool _OnlyToCache)
         {
-            if (!base.SetScoreToLeaderboard(_Id, _Value, _OnlyToCache))
-                SetScoreIos(_Id, _Value);
+            base.SetScoreToLeaderboard(_Id, _Value, _OnlyToCache);
+            SetScoreIos(_Id, _Value);
             return true;
         }
 
@@ -114,6 +114,11 @@ namespace Common.Managers.Scores
             if (_OnlyToCache)
                 return;
             var data = ToByteArray(_Data);
+            if (data == null)
+            {
+                Dbg.LogError("Saved data cannot be null");
+                return;
+            }
             ISN_GKLocalPlayer.SavedGame(
                 _Data.FileName,
                 data,

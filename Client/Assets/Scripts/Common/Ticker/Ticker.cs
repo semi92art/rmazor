@@ -56,7 +56,7 @@ namespace Common.Ticker
 
         protected Ticker()
         {
-            TickerProceeder.Paused += OnPaused;
+            TickerProceeder.Paused += OnPaused; //-V3080
             TickerProceeder.UnPaused += OnUnPaused;
         }
         
@@ -74,15 +74,17 @@ namespace Common.Ticker
             set => TickerProceeder.Pause = value;
         }
 
-        public  void Reset()                    => TickerProceeder.Reset();
-        public  void Register(object _Object)   => TickerProceeder.RegisterObject(_Object);
-        public  void Unregister(object _Object) => TickerProceeder.UnregisterObject(_Object);
-        public  void ClearRegisteredObjects()   => TickerProceeder.Clear();
+        public  void Reset()                    => TickerProceeder.Reset(); //-V3080
+        public  void Register(object _Object)   => TickerProceeder.RegisterObject(_Object); //-V3080
+        public  void Unregister(object _Object) => TickerProceeder.UnregisterObject(_Object); //-V3080
+        public  void ClearRegisteredObjects()   => TickerProceeder.Clear(); //-V3080
         private void OnUnPaused()               => UnPaused?.Invoke();
         private void OnPaused()                 => Paused?.Invoke();
 
         ~Ticker()
         {
+            if (TickerProceeder == null)
+                return;
             TickerProceeder.Paused  -= OnPaused;
             TickerProceeder.UnPaused -= OnUnPaused;
         }

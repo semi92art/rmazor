@@ -115,7 +115,7 @@ namespace RMAZOR
                 return true;
             try
             {
-                _ = List.count;
+                _ = List.count; //-V3125
             }
             catch
             {
@@ -163,9 +163,14 @@ namespace RMAZOR
         public void Delete(int _Index)
         {
             var lvls = levels ?? LevelsCached;
+            if (lvls == null)
+            {
+                Dbg.LogError("Failed to delete level");
+                return;
+            }
             if (_Index < 0 || _Index >= lvls.Count)
                 return;
-            lvls?.RemoveAt(_Index);
+            lvls.RemoveAt(_Index);
             ReloadList();
             Save();
         }

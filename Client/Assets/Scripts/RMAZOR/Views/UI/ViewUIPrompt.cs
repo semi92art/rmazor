@@ -119,8 +119,7 @@ namespace RMAZOR.Views.UI
                     break;
                 case ELevelStage.ReadyToUnloadLevel:
                     if (_Args.PreviousStage != ELevelStage.Paused 
-                        || _Args.PreviousStage == ELevelStage.Paused 
-                        && _Args.PrePreviousStage == ELevelStage.ReadyToUnloadLevel)
+                        || _Args.PrePreviousStage == ELevelStage.ReadyToUnloadLevel)
                         HidePrompt();
                     break;
                 case ELevelStage.Loaded:

@@ -10,18 +10,17 @@ using RMAZOR.Views.InputConfigurators;
 
 namespace RMAZOR.UI.Panels
 {
-    public class CharacterDiedDialogPanel : CharacterDiedDialogPanelBase
+    public class CharacterDiedDialogPanel2 : CharacterDiedDialogPanelBase
     {
         #region nonpublic members
+        protected override string             PrefabName => "character_died_panel_2";
         
-        protected override string PrefabName => "character_died_panel";
-
         #endregion
 
         #region inject
 
-        public CharacterDiedDialogPanel(
-            IModelGame                  _Model,
+        public CharacterDiedDialogPanel2(
+            IModelGame _Model,
             IBigDialogViewer            _DialogViewer,
             IManagersGetter             _Managers,
             IUITicker                   _UITicker,

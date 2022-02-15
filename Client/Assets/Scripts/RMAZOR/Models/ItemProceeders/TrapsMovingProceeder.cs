@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Common;
 using Common.Entities;
 using Common.Exceptions;
 using Common.Ticker;
@@ -91,6 +92,11 @@ namespace RMAZOR.Models.ItemProceeders
                     }
                     else
                         idx--;
+                    if (idx < 0)
+                    {
+                        Dbg.LogError("Index must be greater than zero");
+                        return;
+                    }
                     to = path[idx];
                     break;
                 default: throw new SwitchCaseNotImplementedException(_Info.MoveByPathDirection);

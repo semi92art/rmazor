@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: XCodeProjectSettings
   m_EditorClassIdentifier: 
   Frameworks:
+  - FrameworkName: 15
   - FrameworkName: 38
   - FrameworkName: 85
   EmbededFrameworks: []
@@ -700,6 +701,96 @@ MonoBehaviour:
       BooleanValue: 1
       ChildrenIds: []
     uniqueIdKey: f6YvwFs2pquB9DjkXlGs
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: qP3IYBghriBsqJgotBcs
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: OtUgh4CbUNPLCOTLas3r
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: RkJ9kYnw0vBkbo2fKYRL
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: s8DqUmVjkmbhmCKSLhAK
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: mWvVctUwcc2dF1ntgWva
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: hqQA0XDKEe9hvWsklEHl
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: tV6T7sCHMOSGjgng1ewr
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: 8cBg8awp33ovheFmSSuO
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: hmgIjE7QB3F7SVxEJDZV
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: ra6M9N6cxkADQSeubXfb
   Languages: []
   ShellScripts: []
   m_BuildProperties:
@@ -725,8 +816,8 @@ MonoBehaviour:
     - NO
   Capability:
     iCloud:
-      Enabled: 0
-      KeyValueStorage: 0
+      Enabled: 1
+      KeyValueStorage: 1
       iCloudDocument: 1
       CustomContainers: []
     PushNotifications:

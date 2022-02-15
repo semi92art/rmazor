@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Common.Helpers;
 using Common.SpawnPools;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
 using RMAZOR.Views.Helpers.MazeItemsCreators;
 using RMAZOR.Views.MazeItems;
-using UnityEngine.Events;
 
 namespace RMAZOR.Views.Common
 {
-    public class ViewMazeCommon : IViewMazeCommon
+    public class ViewMazeCommon : InitBase, IViewMazeCommon
     {
         #region nonpublic members
 
@@ -43,14 +43,11 @@ namespace RMAZOR.Views.Common
         
         #region api
         
-        public bool              Initialized { get; private set; }
-        public event UnityAction Initialize;
 
-        public void Init()
+        public override void Init()
         {
             InitBlockPools();
-            Initialize?.Invoke();
-            Initialized = true;
+            base.Init();
         }
 
         public IViewMazeItem GetItem(IMazeItemProceedInfo _Info)

@@ -49,7 +49,7 @@ namespace RMAZOR
 
             return new PrefabSetManager(new AssetBundleManagerFake()).InitUiPrefab(
                 UIUtils.UiRectTransform(canvas.RTransform(), RectTransformLite.FullFill),
-                "debug_console", "console").GetComponent<DebugConsoleView>();
+                "debug_console", "console")?.GetComponent<DebugConsoleView>();
         }
 
         #endregion

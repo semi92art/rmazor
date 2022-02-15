@@ -19,7 +19,7 @@ namespace RMAZOR.Managers
         T GetConfig<T>(string _Key);
     }
     
-    public class RemoteConfigManager : IRemoteConfigManager
+    public class RemoteConfigManager : InitBase, IRemoteConfigManager
     {
         #region types
 
@@ -48,10 +48,7 @@ namespace RMAZOR.Managers
 
         #region api
 
-        public bool              Initialized { get; private set; }
-        public event UnityAction Initialize;
-
-        public void Init()
+        public override void Init()
         {
             FetchConfigs();
         }
@@ -118,8 +115,7 @@ namespace RMAZOR.Managers
         private void OnInitialized(ConfigResponse _Response)
         {
             Dbg.Log("Remote Config Initialized with status: " + _Response.status);
-            Initialize?.Invoke();
-            Initialized = true;
+            base.Init();
         }
         
         private static void GetConfig<T>(ref T _Parameter, string _Key, bool _IsJson = false)
