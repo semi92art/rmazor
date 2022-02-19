@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using Common.Entities;
+using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
@@ -139,5 +143,69 @@ namespace Common.Utils
             var hashed = hasher.ComputeHash(Encoding.UTF8.GetBytes(_S));
             return BitConverter.ToInt32(hashed, 0);
         }
+        
+        public static void CopyToClipboard(string _Text)
+        {
+            var te = new TextEditor {text = _Text};
+            te.SelectAll();
+            te.Copy();
+        }
+
+        public static Entity<string> GetIdfa()
+        {
+            var result = new Entity<string>();
+#if UNITY_IOS
+            try
+            {
+                result.Value = SA.iOS.AdSupport.ISN_ASIdentifierManager.SharedManager.AdvertisingIdentifier;
+                result.Result = EEntityResult.Success;
+            }
+            catch
+            {
+                result.Value = "[Empty]";
+                result.Result = EEntityResult.Fail;
+            }
+#elif UNITY_ANDROID
+                Application.RequestAdvertisingIdentifierAsync(
+                (_AdvertisingId, _Success, _Error) =>
+                {
+                    if (_Success)
+                    {
+                        result.Value = _AdvertisingId;
+                        result.Result = EEntityResult.Success;
+                    }
+                    else
+                    {
+                        result.Value = "[Empty]";
+                        result.Result = EEntityResult.Fail;
+                    }
+                }
+            );
+#endif
+            return result;
+        }
+
+        // public static bool CastTo<T>(object _Item, out T _Result) where T : class
+        // {
+        //     _Result = null;
+        //     string s = null;
+        //     try
+        //     {
+        //         s = JsonConvert.SerializeObject(_Item);
+        //         _Result = JsonConvert.DeserializeObject<T>(s);
+        //         if (_Result == null)
+        //         {
+        //             Dbg.LogWarning(s);
+        //             return false;
+        //         }
+        //     }
+        //     catch (SerializationException ex)
+        //     {
+        //         Dbg.LogError(ex.Message);
+        //         Dbg.LogError(s);
+        //         return false;
+        //     }
+        //     return true;
+        // }
     }
 }

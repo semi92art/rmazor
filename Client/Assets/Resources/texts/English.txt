@@ -76,3 +76,4 @@ mandatory_ads_disabled = Disable mandatory ads
 coins_alt = coins
 dark_theme = Dark Theme
 dark_theme_available = Super! Dark theme is available now. You can choose it in settings menu.
+smth_went_wrong = Something went wrong

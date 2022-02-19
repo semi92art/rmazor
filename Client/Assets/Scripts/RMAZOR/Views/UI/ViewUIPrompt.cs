@@ -210,7 +210,7 @@ namespace RMAZOR.Views.UI
         {
             m_RunShowPromptCoroutine = false;
             const float loopTime = 1f;
-            var secondColor = Color.red;
+            
             if (m_CurrentPromptInfo != null 
                 && m_CurrentPromptInfo.NeedToHide 
                 && m_CurrentPromptInfo.PromptText.IsNotNull())
@@ -226,6 +226,8 @@ namespace RMAZOR.Views.UI
                 _Progress =>
                 {
                     var firstColor = ColorProvider.GetColor(ColorIdsCommon.UI);
+                    var secondColor = ColorProvider.CurrentTheme == EColorTheme.Dark ?
+                        Color.red : new Color(1f, 0.54f, 0.55f);
                     m_CurrentPromptInfo.PromptText.color = Color.Lerp(firstColor, secondColor, _Progress);
                 },
                 GameTicker,

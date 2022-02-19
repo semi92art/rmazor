@@ -117,8 +117,8 @@ namespace RMAZOR.Controllers
 
         private void OnRemoteConfigManagerInitialized()
         {
-            // if (!Settings.DebugEnabled)
-            //     return;
+            if (!Settings.DebugEnabled)
+                return;
             SROptions.Init(Model, View);
             SRDebug.Init();
         }

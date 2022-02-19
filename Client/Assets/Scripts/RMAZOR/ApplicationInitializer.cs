@@ -13,6 +13,7 @@ using Common.Managers.IAP;
 using Common.Managers.Scores;
 using Common.Network;
 using Common.Utils;
+using Newtonsoft.Json;
 using RMAZOR.Controllers;
 using RMAZOR.GameHelpers;
 using RMAZOR.Managers;
@@ -126,25 +127,30 @@ namespace RMAZOR
             var controller = GameController.CreateInstance();
             controller.Initialize += () =>
             {
-                var savedGameEntityServer = ScoreManager.GetSavedGameProgress(CommonData.SavedGameFileName, false);
+                const string fName = CommonData.SavedGameFileName;
+                var sgEntityRemote = ScoreManager.GetSavedGameProgress(fName, false);
+                var sgEntityCache = ScoreManager.GetSavedGameProgress(fName, true);
                 Cor.Run(Cor.WaitWhile(
-               () => savedGameEntityServer.Result == EEntityResult.Pending,
+               () => sgEntityRemote.Result == EEntityResult.Pending,
                () =>
                {
-                   if (savedGameEntityServer.Result != EEntityResult.Success || savedGameEntityServer.Value == null)
+                   bool castSgRemoteSuccess = sgEntityRemote.Value.CastTo(out SavedGame sgRemote);
+                   if (sgEntityRemote.Result != EEntityResult.Success || !castSgRemoteSuccess)
                    {
-                       var savedGameEntityCache = ScoreManager.GetSavedGameProgress(CommonData.SavedGameFileName, true);
                        Cor.Run(Cor.WaitWhile(
-                           () => savedGameEntityCache.Result == EEntityResult.Pending,
+                           () => sgEntityCache.Result == EEntityResult.Pending,
                            () =>
                            {
-                               Dbg.Log(nameof(InitGameController) + " " + 1);
-                               if (savedGameEntityCache.Result !=  EEntityResult.Success || savedGameEntityCache.Value == null)
+                               bool castSgCacheSuccess = sgEntityCache.Value.CastTo(out SavedGame sgCache);
+                               if (sgEntityCache.Result != EEntityResult.Success || !castSgCacheSuccess)
                                {
-                                   Dbg.Log(nameof(InitGameController) + " " + 2);
+                                   Dbg.LogWarning("Failed to load saved game entity: " +
+                                                  $"_Result: {sgEntityCache.Result}," +
+                                                  $" castSuccess: {castSgCacheSuccess}," +
+                                                  $" _Value: {JsonConvert.SerializeObject(sgEntityCache.Value)}");
                                    var savedGame = new SavedGame
                                    {
-                                       FileName = CommonData.SavedGameFileName,
+                                       FileName = fName,
                                        Level = 0,
                                        Money = 100
                                    };
@@ -152,14 +158,12 @@ namespace RMAZOR
                                    LoadLevelByIndex(controller, 0);
                                    return;
                                }
-                               long idx = savedGameEntityCache.Value.CastTo<SavedGame>().Level;
-                               LoadLevelByIndex(controller, idx);
+                               LoadLevelByIndex(controller, sgCache.Level);
                            },
                            _Seconds: 1f));
                        return;
                    }
-                   long levelIndex = savedGameEntityServer.Value.CastTo<SavedGame>().Level;
-                   LoadLevelByIndex(controller, levelIndex);
+                   LoadLevelByIndex(controller, sgRemote.Level);
                }, _Seconds: 1f));
             };
             controller.Init();
@@ -180,13 +184,8 @@ namespace RMAZOR
                 () => savedGameServerEntity.Result == EEntityResult.Pending,
                 () =>
                 {
-                    if (savedGameServerEntity.Result == EEntityResult.Fail)
-                    {
-                        Dbg.LogWarning("Failed to load money from server");
-                        return;
-                    }
-                    var savedGameServer = savedGameServerEntity.Value.CastTo<SavedGame>();
-                    if (savedGameServer == null)
+                    bool castSuccess = savedGameServerEntity.Value.CastTo(out SavedGame savedGameServer);
+                    if (savedGameServerEntity.Result == EEntityResult.Fail || !castSuccess)
                     {
                         Dbg.LogWarning("Saved game from server is null");
                         return;
@@ -200,6 +199,7 @@ namespace RMAZOR
                     };
                     ScoreManager.SaveGameProgress(newSavedGame, true);
                 }));
+            
         }
 
         private void InitDefaultData()
@@ -214,11 +214,8 @@ namespace RMAZOR
             SetDefaultLanguage();
         }
 
-        private void InitStartData()
+        private static void InitStartData()
         {
-            // FIXME костыль: если на iOS стоит светлая тема, задник камеры автоматом ставится белым
-            if (Application.platform == RuntimePlatform.IPhonePlayer)
-                CameraProvider.MainCamera.backgroundColor = Color.black; 
             SaveUtils.PutValue(SaveKeysCommon.AppVersion, Application.version);
             Application.targetFrameRate = GraphicUtils.GetTargetFps();
             CommonData.Release = true;

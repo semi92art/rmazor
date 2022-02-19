@@ -1,6 +1,4 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
-
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Common;
@@ -21,7 +19,6 @@ using RMAZOR.Views.Characters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.MazeItems;
-using UnityEngine;
 
 namespace RMAZOR.Views.Common
 {
@@ -169,11 +166,11 @@ namespace RMAZOR.Views.Common
             mazeItems.AddRange(PathItemsGroup.PathItems);
             switch (_Args.Stage)
             {
-                case ELevelStage.Loaded:             OnLevelLoaded(mazeItems, PathItemsGroup); break;
-                case ELevelStage.Finished:           OnLevelFinished(_Args);                   break;
-                case ELevelStage.ReadyToUnloadLevel: OnReadyToUnloadLevel(_Args, mazeItems);   break;
-                case ELevelStage.Unloaded:           OnLevelUnloaded(_Args);                   break;
-                case ELevelStage.CharacterKilled:    OnCharacterKilled(mazeItems);             break;
+                case ELevelStage.Loaded:             OnLevelLoaded(_Args, mazeItems, PathItemsGroup); break;
+                case ELevelStage.Finished:           OnLevelFinished(_Args);                          break;
+                case ELevelStage.ReadyToUnloadLevel: OnReadyToUnloadLevel(_Args, mazeItems);          break;
+                case ELevelStage.Unloaded:           OnLevelUnloaded(_Args);                          break;
+                case ELevelStage.CharacterKilled:    OnCharacterKilled(mazeItems);                    break;
                 case ELevelStage.ReadyToStart:
                 case ELevelStage.StartedOrContinued:
                 case ELevelStage.Paused:
@@ -196,9 +193,34 @@ namespace RMAZOR.Views.Common
         }
 
         private void OnLevelLoaded(
+            LevelStageArgs                     _Args,
             IReadOnlyCollection<IViewMazeItem> _MazeItems,
             IViewMazePathItemsGroup            _PathItemsGroup)
         {
+            var savedGameEntity = Managers.ScoreManager.
+                GetSavedGameProgress(CommonData.SavedGameFileName, true);
+            Cor.Run(Cor.WaitWhile(
+                () => savedGameEntity.Result == EEntityResult.Pending,
+                () =>
+                {
+                    bool castSuccess = savedGameEntity.Value.CastTo(out SavedGame savedGame);
+                    if (savedGameEntity.Result == EEntityResult.Fail || !castSuccess)
+                    {
+                        Dbg.LogWarning("Failed to load saved game: " +
+                                       $"_Result: {savedGameEntity.Result}," +
+                                       $" castSuccess: {castSuccess}," +
+                                       $" _Value: {savedGameEntity.Value}");
+                        return;
+                    }
+                    var newSavedGame = new SavedGame
+                    {
+                        FileName = CommonData.SavedGameFileName,
+                        Money = savedGame.Money,
+                        Level = _Args.LevelIndex
+                    };
+                    Managers.ScoreManager.SaveGameProgress(
+                        newSavedGame, false);
+                }));
             if (m_StartLogoShowing)
             {
                 CompanyLogo.HideLogo();
@@ -223,16 +245,44 @@ namespace RMAZOR.Views.Common
 
         private void OnLevelFinished(LevelStageArgs _Args)
         {
+            if (_Args.PreviousStage == ELevelStage.Paused)
+                return;
             bool allLevelsPassed = SaveUtils.GetValue(SaveKeysRmazor.AllLevelsPassed);
             if (!allLevelsPassed && _Args.LevelIndex + 1 >= ViewSettings.levelsCountMain)
                 SaveUtils.PutValue(SaveKeysRmazor.AllLevelsPassed, true);
             Managers.AnalyticsManager.SendAnalytic(AnalyticIds.LevelFinished, 
-           new Dictionary<string, object>
-           {
-               {"level_index", _Args.LevelIndex},
-               {"level_time", Model.LevelStaging.LevelTime},
-               {"dies_count", Model.LevelStaging.DiesCount}
-           });
+                new Dictionary<string, object>
+                {
+                    {"level_index", _Args.LevelIndex},
+                    {"level_time", Model.LevelStaging.LevelTime},
+                    {"dies_count", Model.LevelStaging.DiesCount}
+                });
+            if (PathItemsGroup.MoneyItemsCollectedCount <= 0)
+                return;
+            var savedGameEntity = Managers.ScoreManager.
+                GetSavedGameProgress(CommonData.SavedGameFileName, true);
+            Cor.Run(Cor.WaitWhile(
+                () => savedGameEntity.Result == EEntityResult.Pending,
+                () =>
+                {
+                    bool castSuccess = savedGameEntity.Value.CastTo(out SavedGame savedGame);
+                    if (savedGameEntity.Result == EEntityResult.Fail || !castSuccess)
+                    {
+                        Dbg.LogWarning("Failed to load saved game: " +
+                                       $"_Result: {savedGameEntity.Result}," +
+                                       $" castSuccess: {castSuccess}," +
+                                       $" _Value: {savedGameEntity.Value}");
+                        return;
+                    }
+                    var newSavedGame = new SavedGame
+                    {
+                        FileName = CommonData.SavedGameFileName,
+                        Money = savedGame.Money + PathItemsGroup.MoneyItemsCollectedCount,
+                        Level = _Args.LevelIndex
+                    };
+                    Managers.ScoreManager.SaveGameProgress(
+                        newSavedGame, false);
+                }));
         }
 
         private void OnReadyToUnloadLevel(LevelStageArgs _Args, IReadOnlyCollection<IViewMazeItem> _MazeItems)

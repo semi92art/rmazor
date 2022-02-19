@@ -164,8 +164,7 @@ namespace RMAZOR.Models.ItemProceeders
             _GravityItemsMovedDict[_Info] = true;
             return true;
         }
-
-        // FIXME копипаста из MoveGravityTrap
+        
         private bool MoveGravityBlockFree(
             IMazeItemProceedInfo _Info,
             V2Int _DropDirection,

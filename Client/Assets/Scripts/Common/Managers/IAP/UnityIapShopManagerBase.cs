@@ -79,7 +79,9 @@ namespace Common.Managers.IAP
         {
             if (!NetworkUtils.IsInternetConnectionAvailable())
             {
-                CommonUtils.ShowAlertDialog("OOPS!!!", "No internet connection");
+                string oopsText = LocalizationManager.GetTranslation("oops");
+                string noIntConnText = LocalizationManager.GetTranslation("no_internet_connection");
+                CommonUtils.ShowAlertDialog(oopsText, noIntConnText);
                 return;
             }
             Dbg.Log(nameof(Purchase) + ": " + _Key);

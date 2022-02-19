@@ -23,7 +23,7 @@ namespace RMAZOR.Views.MazeItems
         #region shapes
 
         protected override string ObjectName => "Gravity Block";
-        private Rectangle m_Joint;
+        private Rectangle m_FilledShape;
         
         #endregion
         
@@ -54,7 +54,7 @@ namespace RMAZOR.Views.MazeItems
         
         #region api
         
-        public override Component[] Shapes => new Component[] {m_Shape};
+        public override Component[] Shapes => base.Shapes.Concat(new [] {m_FilledShape}).ToArray();
         
         public override object Clone() => new ViewMazeItemGravityBlock(
             ViewSettings,
@@ -79,15 +79,15 @@ namespace RMAZOR.Views.MazeItems
             sh.Type = Rectangle.RectangleType.RoundedSolid;
             sh.Color = ColorProvider.GetColor(ColorIds.Main);
             sh.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
-            m_Joint = sh;
+            m_FilledShape = sh;
         }
 
         protected override void UpdateShape()
         {
             base.UpdateShape();
-            m_Joint.Width = m_Joint.Height = CoordinateConverter.Scale * 0.9f;
-            m_Joint.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
-            m_Joint.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale;
+            m_FilledShape.Width = m_FilledShape.Height = CoordinateConverter.Scale * 0.9f;
+            m_FilledShape.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
+            m_FilledShape.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale;
         }
 
         protected override void InitWallBlockMovingPaths()
@@ -98,7 +98,7 @@ namespace RMAZOR.Views.MazeItems
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             if (_ColorId == ColorIds.Main)
-                m_Joint.Color = _Color.SetA(0.3f);
+                m_FilledShape.Color = _Color.SetA(0.3f);
             base.OnColorChanged(_ColorId, _Color);
         }
 
@@ -106,7 +106,7 @@ namespace RMAZOR.Views.MazeItems
         {
             return base.GetAppearSets(_Appear).Concat(new Dictionary<IEnumerable<Component>, Func<Color>>
             {
-                {new [] {m_Joint}, () => ColorProvider.GetColor(ColorIds.Main).SetA(0.3f)}
+                {new [] {m_FilledShape}, () => ColorProvider.GetColor(ColorIds.Main).SetA(0.3f)}
             }).ToDictionary(
                 _Kvp => _Kvp.Key,
                 _Kvp => _Kvp.Value);

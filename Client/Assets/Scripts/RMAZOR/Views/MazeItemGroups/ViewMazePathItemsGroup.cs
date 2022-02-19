@@ -2,7 +2,6 @@
 using System.Linq;
 using Common;
 using Common.Entities;
-using Common.Extensions;
 using Common.Helpers;
 using Common.SpawnPools;
 using Common.Utils;
@@ -19,8 +18,9 @@ namespace RMAZOR.Views.MazeItemGroups
         IOnLevelStageChanged,
         ICharacterMoveStarted
     {
-        List<IViewMazeItemPath> PathItems { get; }
-        void OnPathProceed(V2Int _PathItem);
+        int                     MoneyItemsCollectedCount { get; }
+        List<IViewMazeItemPath> PathItems                { get; }
+        void                    OnPathProceed(V2Int _PathItem);
     }
     
     public class ViewMazePathItemsGroup : InitBase, IViewMazePathItemsGroup
@@ -29,7 +29,6 @@ namespace RMAZOR.Views.MazeItemGroups
         
         private SpawnPool<IViewMazeItemPath> m_PathsPool;
         private bool                         m_FirstMoveDone;
-        private int                          m_MoneyItemsCollectedCount;
         
         #endregion
 
@@ -55,8 +54,9 @@ namespace RMAZOR.Views.MazeItemGroups
         #endregion
         
         #region api
-        
-        public List<IViewMazeItemPath> PathItems { get; private set; }
+
+        public int                     MoneyItemsCollectedCount { get; private set; }
+        public List<IViewMazeItemPath> PathItems                { get; private set; }
 
 
         public override void Init()
@@ -85,37 +85,8 @@ namespace RMAZOR.Views.MazeItemGroups
                         UnfillStartPathItem();
                     break;
                 }
-                case ELevelStage.Finished when _Args.PreviousStage != ELevelStage.Paused:
-                {
-                    if (m_MoneyItemsCollectedCount > 0)
-                    {
-                        int moneyItemsCount = m_MoneyItemsCollectedCount;
-                        var savedGameEntity = Managers.ScoreManager.
-                            GetSavedGameProgress(CommonData.SavedGameFileName, true);
-                        Cor.Run(Cor.WaitWhile(
-                            () => savedGameEntity.Result == EEntityResult.Pending,
-                            () =>
-                            {
-                                if (savedGameEntity.Result == EEntityResult.Fail || savedGameEntity.Value == null)
-                                {
-                                    Dbg.LogWarning("Failed to load money entity: " +
-                                                   $"_Result: {savedGameEntity.Result}; _Value: {savedGameEntity.Value}");
-                                    return;
-                                }
-                                var savedData = new SavedGame
-                                {
-                                    FileName = CommonData.SavedGameFileName,
-                                    Money = savedGameEntity.Value.CastTo<SavedGame>().Money + moneyItemsCount,
-                                    Level = Model.LevelStaging.LevelIndex
-                                };
-                                Managers.ScoreManager.SaveGameProgress(
-                                    savedData, false);
-                            }));
-                    }
-                    break;
-                }
                 case ELevelStage.ReadyToUnloadLevel:
-                    m_MoneyItemsCollectedCount = 0;
+                    MoneyItemsCollectedCount = 0;
                     break;
             }
             foreach (var item in PathItems)
@@ -166,7 +137,7 @@ namespace RMAZOR.Views.MazeItemGroups
 
         private void OnMoneyItemCollected()
         {
-            m_MoneyItemsCollectedCount++;
+            MoneyItemsCollectedCount++;
         }
         
         #endregion

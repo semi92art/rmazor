@@ -67,6 +67,7 @@ namespace RMAZOR.Views.UI.StartLogo
         public void Init(Vector4 _Offsets)
         {
             CommandsProceeder.Command += OnCommand;
+            ColorProvider.ColorChanged += OnColorChanged;
             m_TopOffset = _Offsets.w;
             InitStartLogo();
         }
@@ -88,6 +89,13 @@ namespace RMAZOR.Views.UI.StartLogo
             m_OnStart = false;
         }
         
+        private void OnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId != ColorIdsCommon.UI)
+                return;
+            SetColors(_Color);
+        }
+        
         private void ShowStartLogo(LevelStageArgs _Args)
         {
             if (_Args.Stage == ELevelStage.ReadyToStart
@@ -96,6 +104,17 @@ namespace RMAZOR.Views.UI.StartLogo
             {
                 ShowStartLogo();
             }
+        }
+
+        protected virtual void SetColors(Color _Color)
+        {
+            var shapeTypes = new [] {typeof(Line), typeof(Disc), typeof(Rectangle)};
+            shapeTypes.SelectMany(_Type => StartLogoObj
+                    .GetComponentsInChildren(_Type, true))
+                .Cast<ShapeRenderer>()
+                .Except(GetExceptedLogoColorObjects())
+                .ToList()
+                .ForEach(_Shape => _Shape.Color = _Color.SetA(_Shape.Color.a));
         }
 
         protected virtual void InitStartLogo()
@@ -117,14 +136,7 @@ namespace RMAZOR.Views.UI.StartLogo
                 .ToDictionary(
                     _C => _C, 
                     _C => go.GetCompItem<Animator>(_C));
-            var shapeTypes = new [] {typeof(Line), typeof(Disc), typeof(Rectangle)};
-            var color = ColorProvider.GetColor(ColorIdsCommon.UiStartLogo);
-            shapeTypes.SelectMany(_Type => go
-                    .GetComponentsInChildren(_Type, true))
-                .Cast<ShapeRenderer>()
-                .Except(GetExceptedLogoColorObjects())
-                .ToList()
-                .ForEach(_Shape => _Shape.Color = color.SetA(_Shape.Color.a));
+            SetColors(ColorProvider.GetColor(ColorIdsCommon.UI));
         }
         
 
@@ -135,10 +147,10 @@ namespace RMAZOR.Views.UI.StartLogo
 
         private void ShowStartLogo()
         {
-            foreach (var kvp in m_StartLogoCharAnims)
+            foreach ((string key, var value) in m_StartLogoCharAnims)
             {
-                ShowStartLogoItem(kvp.Key, KeysAndDelays[kvp.Key]);
-                kvp.Value.speed = AnimationSpeed;
+                ShowStartLogoItem(key, KeysAndDelays[key]);
+                value.speed = AnimationSpeed;
             }
         }
 

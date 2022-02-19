@@ -154,12 +154,13 @@ namespace RMAZOR.UI.Panels
                 () => savedGameEntity.Result == EEntityResult.Pending,
                 () =>
                 {
-                    if (savedGameEntity.Result == EEntityResult.Fail)
+                    bool castSuccess = savedGameEntity.Value.CastTo(out SavedGame savedGame);
+                    if (savedGameEntity.Result == EEntityResult.Fail || !castSuccess)
                     {
                         Dbg.LogError("Failed to load money count entity");
                         return;
                     }
-                    m_MoneyCount = savedGameEntity.Value.CastTo<SavedGame>().Money;
+                    m_MoneyCount = savedGame.Money;
                     m_TextMoneyCount.text = m_MoneyCount.ToString();
                     IndicateMoneyCountLoading(false, m_MoneyCount >= PayToContinueMoneyCount);
                 }));

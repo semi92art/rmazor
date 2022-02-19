@@ -4,10 +4,10 @@ using Common;
 using Common.Helpers;
 using Common.Managers.Advertising;
 using Unity.RemoteConfig;
-using UnityEngine.Events;
-
+using Common.Utils;
 #if !UNITY_EDITOR && !DEVELOPMENT_BUILD
 using System.Linq;
+using Common.Entities;
 using Newtonsoft.Json;
 using UnityEngine;
 #endif
@@ -21,6 +21,12 @@ namespace RMAZOR.Managers
     
     public class RemoteConfigManager : InitBase, IRemoteConfigManager
     {
+        #region nonpublic members
+
+        private bool m_FetchCompletedActionDone;
+
+        #endregion
+        
         #region types
 
         private struct UserAttributes { }
@@ -33,15 +39,15 @@ namespace RMAZOR.Managers
         private CommonGameSettings CommonGameSettings { get; }
         private ModelSettings      ModelSettings      { get; }
         private ViewSettings       ViewSettings       { get; }
-        
+
         public RemoteConfigManager(
             CommonGameSettings _CommonGameSettings,
-            ModelSettings _ModelSettings,
-            ViewSettings _ViewSettings)
+            ModelSettings      _ModelSettings,
+            ViewSettings       _ViewSettings)
         {
             CommonGameSettings = _CommonGameSettings;
-            ModelSettings = _ModelSettings;
-            ViewSettings = _ViewSettings;
+            ModelSettings      = _ModelSettings;
+            ViewSettings       = _ViewSettings;
         }
 
         #endregion
@@ -90,32 +96,52 @@ namespace RMAZOR.Managers
             GetConfig(ref CommonGameSettings.unityAdsRate,        "ads.unityads.rate");
             GetConfig(ref CommonGameSettings.showAdsEveryLevel,   "ads.show_ad_every_level");
             GetConfig(ref CommonGameSettings.firstLevelToShowAds, "ads.first_level_to_show_ads");
+            GetConfig(ref CommonGameSettings.iOsGameId, "common.iosgameid");
             GetConfig(ref ModelSettings.characterSpeed,           "character.speed");
             GetConfig(ref ModelSettings.gravityBlockSpeed,        "mazeitems.gravityblock.speed");
             GetConfig(ref ModelSettings.movingItemsSpeed,         "mazeitems.movingtrap.speed");
             GetConfig(ref ViewSettings.rateRequestsFrequency,     "common.raterequestsfrequency");
             GetConfig(ref ViewSettings.adsRequestsFrequency,      "ads.adsrequestsfrequency");
-            // GetConfig(ref ViewSettings.levelsCountMain,           "common.levels_count_main");
             GetConfig(ref ViewSettings.firstLevelToRateGame,      "common.first_level_to_rate_game");
 #if !UNITY_EDITOR && !DEVELOPMENT_BUILD
-            string testDeviceIdsJson = string.Empty;
-            GetConfig(ref testDeviceIdsJson, "common.test_device_ids", true);
-            Dbg.Log("testDeviceIdsJson: " + testDeviceIdsJson);
-            if (testDeviceIdsJson == null)
+            string testDeviceIdfasJson = string.Empty;
+            GetConfig(ref testDeviceIdfasJson, "common.test_device_ids", true);
+            if (testDeviceIdfasJson == null)
+            {
+                m_FetchCompletedActionDone = true;
                 return;
-            var deviceIds = JsonConvert.DeserializeObject<string[]>(testDeviceIdsJson);
+            }
+            var deviceIds = JsonConvert.DeserializeObject<string[]>(testDeviceIdfasJson);
             if (deviceIds == null)
+            {
+                m_FetchCompletedActionDone = true;
                 return;
-            bool isThisDeviceForTesting = deviceIds.Contains(SystemInfo.deviceUniqueIdentifier);
-            CommonGameSettings.DebugEnabled = isThisDeviceForTesting;
-            CommonGameSettings.testAds = isThisDeviceForTesting;
+            }
+            var idfaEntity = CommonUtils.GetIdfa();
+            Cor.Run(Cor.WaitWhile(() => idfaEntity.Result == EEntityResult.Pending,
+                () =>
+                {
+                    bool isThisDeviceForTesting = deviceIds.Contains(idfaEntity.Value);
+                    CommonGameSettings.DebugEnabled = isThisDeviceForTesting;
+                    CommonGameSettings.testAds = isThisDeviceForTesting;
+                    m_FetchCompletedActionDone = true;
+                }));
+#else
+            m_FetchCompletedActionDone = true;
 #endif
         }
 
         private void OnInitialized(ConfigResponse _Response)
         {
-            Dbg.Log("Remote Config Initialized with status: " + _Response.status);
-            base.Init();
+            #if UNITY_EDITOR
+            m_FetchCompletedActionDone = true;
+            #endif
+            Cor.Run(Cor.WaitWhile(() => !m_FetchCompletedActionDone,
+                () =>
+                {
+                    base.Init();
+                    Dbg.Log("Remote Config Initialized with status: " + _Response.status);
+                }));
         }
         
         private static void GetConfig<T>(ref T _Parameter, string _Key, bool _IsJson = false)

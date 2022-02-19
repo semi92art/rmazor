@@ -135,20 +135,28 @@ namespace Common.Extensions
         {
             _Item.gameObject.SetActive(_Active);
         }
-
-        public static T CastTo<T>(this object _Item)
+        
+        public static bool CastTo<T>(this object _Item, out T _Result) where T : class
         {
-            string ser = JsonConvert.SerializeObject(_Item);
+            _Result = null;
+            string s = null;
             try
             {
-                T res = JsonConvert.DeserializeObject<T>(ser);
-                return res;
+                s = JsonConvert.SerializeObject(_Item);
+                _Result = JsonConvert.DeserializeObject<T>(s);
+                if (_Result == null)
+                {
+                    Dbg.LogWarning(s);
+                    return false;
+                }
             }
             catch (SerializationException ex)
             {
                 Dbg.LogError(ex.Message);
-                return default;
+                Dbg.LogError(s);
+                return false;
             }
+            return true;
         }
     }
 }

@@ -4,6 +4,7 @@ using Common;
 using Common.Constants;
 using Common.Entities;
 using Common.Enums;
+using Common.Extensions;
 using Common.Utils;
 using Lean.Localization;
 using RMAZOR.Models;
@@ -33,6 +34,7 @@ namespace RMAZOR.DebugConsole
             Controller.RegisterCommand("set_money",       SetMoney,     "Set money count");
             Controller.RegisterCommand("rate_game_panel", ShowRateGamePanel, "Set money count");
             Controller.RegisterCommand("int_conn",        InternetConnectionAvailable, "Check if internet connection available");
+            Controller.RegisterCommand("show_money",      ShowMoney, "Show money");
         }
 
         private static void Reload(string[] _Args)
@@ -200,6 +202,30 @@ namespace RMAZOR.DebugConsole
         {
             bool res = NetworkUtils.IsInternetConnectionAvailable();
             Dbg.Log("Internet connection available: " + res);
+        }
+
+        private static void ShowMoney(string[] _Args)
+        {
+            static void DisplaySavedGameMoney(bool _FromCache)
+            {
+                var entity =
+                    Controller.ScoreManager.GetSavedGameProgress(CommonData.SavedGameFileName, _FromCache);
+                Cor.Run(Cor.WaitWhile(
+                    () => entity.Result == EEntityResult.Pending,
+                    () =>
+                    {
+                        bool castSuccess = entity.Value.CastTo(out SavedGame savedGame);
+                        if (entity.Result == EEntityResult.Fail || !castSuccess)
+                        {
+                            Dbg.LogWarning($"Failed to load saved game, entity value: {entity.Value}");
+                            return;
+                        }
+                        long money = savedGame.Money;
+                        Dbg.Log($"Money {(_FromCache ? "server" : "cache")}: " + money);
+                    }));
+            }
+            DisplaySavedGameMoney(false);
+            DisplaySavedGameMoney(true);
         }
     }
 }

@@ -76,3 +76,4 @@ mandatory_ads_disabled = Deaktivieren Sie obligatorische Anzeigen
 coins_alt = Münzen
 dark_theme = Dunkles Thema
 dark_theme_available = Super! Das dunkle Thema ist jetzt verfügbar. Sie können es im Menü Einstellungen auswählen.
+smth_went_wrong = Etwas ist schief gelaufen

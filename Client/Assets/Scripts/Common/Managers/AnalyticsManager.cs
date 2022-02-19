@@ -20,16 +20,11 @@ namespace Common.Managers
     public class AnalyticsManager : InitBase, IAnalyticsManager
     {
         #region api
-        
-        public override async void Init()
-        { 
-            var options = new InitializationOptions();
-            await UnityServices.InitializeAsync(options);
-            base.Init();
-        }
 
         public void SendAnalytic(string _AnalyticId, IDictionary<string, object> _EventData = null)
         {
+            if (UnityServices.State != ServicesInitializationState.Initialized)
+                return;
             if (!CommonUtils.IsRunningOnDevice())
                 return;
             _EventData ??= new Dictionary<string, object>();
@@ -46,6 +41,8 @@ namespace Common.Managers
 
         public void OnAdvertiseEvent(EAdsProvider _Provider, string _PlacementId, string _PlacementName, bool _Completed)
         {
+            if (UnityServices.State != ServicesInitializationState.Initialized)
+                return;
             if (Application.isEditor)
                 return;
             try

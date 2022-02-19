@@ -12,8 +12,6 @@ using UnityEngine.Events;
 
 namespace Common.Managers.Scores
 {
-    public delegate void ScoresEventHandler(ScoresEventArgs _Args);
-
     public class ScoresEventArgs
     {
         public ScoresEntity ScoresEntity { get; }
@@ -24,6 +22,18 @@ namespace Common.Managers.Scores
         }
     }
     
+    public class SavedGameEventArgs
+    {
+        public object SavedGame { get; }
+
+        public SavedGameEventArgs(object _SavedGame)
+        {
+            SavedGame = _SavedGame;
+        }
+    }
+
+    public delegate void ScoresEventHandler(ScoresEventArgs _Args);
+
     public class LeaderBoardIdKeyPair
     {
         public ushort Id  { get; }
@@ -36,9 +46,10 @@ namespace Common.Managers.Scores
         }
     }
 
-    public interface IScoreManager : IInit
+    public interface IScoreManager: IInit
     {
-        event ScoresEventHandler OnScoresChanged;
+        event ScoresEventHandler ScoresChanged;
+        event UnityAction<SavedGameEventArgs> GameSaved;
         void                     RegisterLeaderboards(List<LeaderBoardIdKeyPair> _Args);
         ScoresEntity             GetScoreFromLeaderboard(ushort _Id, bool _FromCache);
         bool                     SetScoreToLeaderboard(ushort _Id, long _Value, bool _OnlyToCache);
@@ -52,7 +63,8 @@ namespace Common.Managers.Scores
     {
         #region nonpublic members
 
-        private            IReadOnlyList<LeaderBoardIdKeyPair> m_ScoreArgsList    = new List<LeaderBoardIdKeyPair>();
+        protected IRemoteSavedGameProvider            RemoteSavedGameProvider { get; }
+        private   IReadOnlyList<LeaderBoardIdKeyPair> m_ScoreArgsList = new List<LeaderBoardIdKeyPair>();
 
         #endregion
         
@@ -63,21 +75,24 @@ namespace Common.Managers.Scores
         private ICommonTicker        Ticker              { get; }
 
         protected ScoreManagerBase(
-            IGameClient          _GameClient,
-            ILocalizationManager _LocalizationManager,
-            ICommonTicker        _Ticker)
+            IGameClient              _GameClient,
+            ILocalizationManager     _LocalizationManager,
+            ICommonTicker            _Ticker,
+            IRemoteSavedGameProvider _RemoteSavedGameProvider)
         {
-            GameClient = _GameClient;
-            LocalizationManager = _LocalizationManager;
-            Ticker = _Ticker;
+            GameClient              = _GameClient;
+            LocalizationManager     = _LocalizationManager;
+            Ticker                  = _Ticker;
+            RemoteSavedGameProvider = _RemoteSavedGameProvider;
         }
         
         #endregion
         
         #region api
 
-        public event ScoresEventHandler OnScoresChanged;
-        
+        public event ScoresEventHandler              ScoresChanged;
+        public event UnityAction<SavedGameEventArgs> GameSaved;
+
         public override void Init()
         {
             Ticker.Register(this);
@@ -93,7 +108,7 @@ namespace Common.Managers.Scores
         {
             if (_FromCache)
                 return GetScoreCached(_Id);
-            var scoreEntity = new ScoresEntity{Result = EEntityResult.Pending};
+            var scoreEntity = new ScoresEntity();
             if (IsAuthenticatedInPlatformGameService())
                 return null;
             Dbg.LogWarning($"{nameof(GetScoreFromLeaderboard)}: User is not authenticated");
@@ -139,7 +154,7 @@ namespace Common.Managers.Scores
         
         protected ScoresEntity GetScoreCached(ushort _Id, ScoresEntity _Entity = null)
         {
-            var entity = _Entity ?? new ScoresEntity{Result = EEntityResult.Pending};
+            var entity = _Entity ?? new ScoresEntity();
             var gdff = new GameDataFieldFilter(GameClient, GameClientUtils.AccountId, GameClientUtils.GameId,
                 _Id) {OnlyLocal = true};
             gdff.Filter(_Fields =>
@@ -176,7 +191,7 @@ namespace Common.Managers.Scores
                         Value = new Dictionary<ushort, long> {{_Id, _Value}}
                     };
                     var args = new ScoresEventArgs(entity);
-                    OnScoresChanged?.Invoke(args);
+                    ScoresChanged?.Invoke(args);
                 });
             });
         }
@@ -202,6 +217,7 @@ namespace Common.Managers.Scores
             try
             {
                 string ser = JsonConvert.SerializeObject(_Data);
+                Dbg.Log(ser);
                 fileNameData = JsonConvert.DeserializeObject<FileNameArgs>(ser);
             }
             catch (InvalidCastException)
@@ -222,13 +238,14 @@ namespace Common.Managers.Scores
                 {
                     Dbg.Log($"Successfully save game with file name {fileNameData.FileName} to cache.");
                     field.SetValue(_Data).Save(true);
+                    GameSaved?.Invoke(new SavedGameEventArgs(_Data));
                 }
             });
         }
 
         protected Entity<object> GetSavedGameProgressFromCache(string _FileName)
         {
-            var entity = new Entity<object>{Result = EEntityResult.Pending};
+            var entity = new Entity<object>();
             var gdff = new GameDataFieldFilter(GameClient, GameClientUtils.AccountId, GameClientUtils.GameId,
                 (ushort)CommonUtils.StringToHash(_FileName)) {OnlyLocal = true};
             gdff.Filter(_Fields =>
@@ -248,23 +265,7 @@ namespace Common.Managers.Scores
             return entity;
         }
         
-        protected static byte[] ToByteArray<T>(T _Obj) where T : class
-        {
-            if(_Obj == null)
-                return null;
-            string str = JsonConvert.SerializeObject(_Obj);
-            byte[] bytes = System.Text.Encoding.ASCII.GetBytes(str);
-            return bytes;
-        }
 
-        protected static T FromByteArray<T>(byte[] _Data) where T : class
-        {
-            if(_Data == null)
-                return default;
-            string str = System.Text.Encoding.ASCII.GetString(_Data);
-            var res = JsonConvert.DeserializeObject<T>(str);        
-            return res;
-        }
 
         #endregion
     }

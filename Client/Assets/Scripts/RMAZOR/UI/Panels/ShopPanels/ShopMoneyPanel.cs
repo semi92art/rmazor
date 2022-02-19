@@ -282,18 +282,19 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 () => savedGameEntity.Result == EEntityResult.Pending,
                 () =>
                 {
-                    if (savedGameEntity.Result == EEntityResult.Fail)
+                    bool castSuccess = savedGameEntity.Value.CastTo(out SavedGame savedGame);
+                    if (savedGameEntity.Result == EEntityResult.Fail || !castSuccess)
                     {
-                        Dbg.LogError("Failed to load score entity");
+                        Dbg.LogWarning("Failed to save new game data");
                         return;
                     }
-                    var savedGame = new SavedGame
+                    var newSavedGame = new SavedGame
                     {
                         FileName = CommonData.SavedGameFileName,
-                        Money = savedGameEntity.Value.CastTo<SavedGame>().Money + _Reward,
+                        Money = savedGame.Money + _Reward,
                         Level = Model.LevelStaging.LevelIndex
                     };
-                    Managers.ScoreManager.SaveGameProgress(savedGame, false);
+                    Managers.ScoreManager.SaveGameProgress(newSavedGame, false);
                     string dialogTitle = Managers.LocalizationManager.GetTranslation("purchase") + ":";
                     string dialogText = _Reward + " " +
                                         Managers.LocalizationManager

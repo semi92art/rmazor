@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Common.Extensions;
+using Common.Utils;
 using UnityEditor;
 using UnityEngine;
 
@@ -67,7 +68,7 @@ namespace Common.Helpers
                 sb.AppendLine($"Pivot: {rTr.pivot},");
                 sb.AppendLine($"SizeDelta: {rTr.sizeDelta})");
             
-                CopyToClipboard(sb.ToString());
+                CommonUtils.CopyToClipboard(sb.ToString());
             }
 
             GUILayout.Space(5);
@@ -75,13 +76,6 @@ namespace Common.Helpers
             GUILayout.Space(5);
             GUILayout.Label("Position:", m_Bold);
             GUILayout.Label(rTr.position.ToString(), m_Bold);
-        }
-        
-        private static void CopyToClipboard(string _Text)
-        {
-            var te = new TextEditor {text = _Text};
-            te.SelectAll();
-            te.Copy();
         }
     }
 #endif

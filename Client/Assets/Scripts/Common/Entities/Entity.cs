@@ -16,6 +16,6 @@
     public class Entity<T> : IEntity<T>
     {
         public T             Value  { get; set; }
-        public EEntityResult Result { get; set; }
+        public EEntityResult Result { get; set; } = EEntityResult.Pending;
     }
 }

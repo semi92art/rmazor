@@ -14,25 +14,6 @@ namespace RMAZOR.Utils
 {
     public static class ShopUtils
     {
-        public static void OnScoreChanged(ScoresEventArgs _Args, TMP_Text _Text)
-        {
-            Cor.Run(Cor.WaitWhile(
-                () => _Args.ScoresEntity.Result == EEntityResult.Pending,
-                () =>
-                {
-                    if (_Args.ScoresEntity.Result == EEntityResult.Fail)
-                    {
-                        Dbg.LogWarning("Failed to load score");
-                        return;
-                    }
-                    var score = _Args.ScoresEntity.GetFirstScore();
-                    if (!score.HasValue || _Text.IsNull())
-                        return;
-                    int moneySpentOnPurchases = GetMoneySpentOnPurchases();
-                    _Text.text = (score.Value - moneySpentOnPurchases).ToString();
-                }));
-        }
-
         private static int GetMoneySpentOnPurchases()
         {
             var boughtPurchaseIds = SaveUtils.GetValue(SaveKeysCommon.BoughtPurchaseIds);

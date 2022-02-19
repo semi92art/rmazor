@@ -14,22 +14,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LastVersionCode: 
   Contacts: 0
-  CloudKit: 1
+  CloudKit: 0
   Photos: 0
   ReplayKit: 0
   Social: 0
-  AdSupport: 0
+  AdSupport: 1
   AppTrackingTransparency: 0
   AVKit: 0
   CoreLocation: 0
   AssetsLibrary: 0
   AppDelegate: 1
-  UserNotifications: 1
+  UserNotifications: 0
   MediaPlayer: 0
   EventKit: 0
   InAppProducts: []
   Achievements: []
-  SavingAGame: 1
+  SavingAGame: 0
   ShortcutItems: []
   UrlTypes: []
   ApplicationQueriesSchemes: []

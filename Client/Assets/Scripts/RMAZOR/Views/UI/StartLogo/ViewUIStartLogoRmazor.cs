@@ -19,7 +19,7 @@ namespace RMAZOR.Views.UI.StartLogo
         #region nonpublic members
 
         protected override float  AnimationSpeed => 1.5f;
-        protected override string PrefabName     => "start_logo_rmazor" + (GraphicUtils.AspectRatio > 0.5f ? string.Empty : "_2");
+        protected override string PrefabName     => "start_logo_rmazor";
 
         protected override Dictionary<string, float> KeysAndDelays => new Dictionary<string, float>
         {

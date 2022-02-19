@@ -33,7 +33,7 @@ namespace RMAZOR.Views.MazeItems
         #region shapes
 
         protected override string ObjectName => "Gravity Block Free";
-        protected Rectangle m_Shape;
+        private Rectangle m_Shape;
         
         #endregion
         

@@ -10,10 +10,8 @@ using Common.ScriptableObjects;
 using Common.Ticker;
 using Common.UI;
 using Common.Utils;
-using Newtonsoft.Json;
 using RMAZOR.Managers;
 using RMAZOR.UI.PanelItems.Shop_Items;
-using RMAZOR.Utils;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -131,23 +129,28 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 () => savedGameEntity.Result == EEntityResult.Pending,
                 () =>
                 {
-                    Dbg.Log(JsonConvert.SerializeObject(savedGameEntity.Value));
-                    var savedGameValue = savedGameEntity.Value.CastTo<SavedGame>();
-                    if (savedGameEntity.Result == EEntityResult.Fail || savedGameValue == null)
+                    bool castSuccess = savedGameEntity.Value.CastTo(out SavedGame savedGame);
+                    if (savedGameEntity.Result == EEntityResult.Fail || !castSuccess)
                     {
                         Dbg.LogWarning("Failed to load money entity: " +
-                                       $"_Result: {savedGameEntity.Result}; _Value: {savedGameEntity.Value}");
+                                       $"_Result: {savedGameEntity.Result}," +
+                                       $" castSuccess: {castSuccess}," +
+                                       $" _Value: {savedGameEntity.Value}");
                         return;
                     }
-                    m_MoneyText.text = savedGameValue.Money.ToString();
+                    m_MoneyText.text = savedGame.Money.ToString();
                 }));
-            Managers.ScoreManager.OnScoresChanged -= OnScoreChanged; 
-            Managers.ScoreManager.OnScoresChanged += OnScoreChanged;
+            Managers.ScoreManager.GameSaved -= OnGameSaved; 
+            Managers.ScoreManager.GameSaved += OnGameSaved;
         }
         
-        private void OnScoreChanged(ScoresEventArgs _Args)
+        private void OnGameSaved(SavedGameEventArgs _Args)
         {
-            ShopUtils.OnScoreChanged(_Args, m_MoneyText);
+            bool castSuccess = _Args.SavedGame.CastTo(out SavedGame result);
+            if (!castSuccess)
+                return;
+            long score = result.Money;
+            m_MoneyText.text = score.ToString();
         }
         
         protected T CreateItem()

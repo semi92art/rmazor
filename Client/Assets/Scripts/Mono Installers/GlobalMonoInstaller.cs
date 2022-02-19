@@ -29,7 +29,6 @@ namespace Mono_Installers
             Container.Bind<CommonGameSettings>()  .FromScriptableObject(commonGameSettings) .AsSingle();
             Container.Bind<ModelSettings>()       .FromScriptableObject(modelSettings)      .AsSingle();
             Container.Bind<ViewSettings>()        .FromScriptableObject(viewSettings)       .AsSingle();
-            Container.Bind<IRemoteConfigManager>().To<RemoteConfigManager>()                .AsSingle();
             Container.Bind<ICameraProvider>()     .FromComponentInNewPrefab(cameraProvider) .AsSingle();
             Container.Bind<CompanyLogo>()         .FromComponentInNewPrefab(companyLogo)    .AsSingle();
 
@@ -48,18 +47,22 @@ namespace Mono_Installers
 
             #region managers
 
-            Container.Bind<IGameClient>()         .To<GameClient>()                         .AsSingle();
+            Container.Bind<IRemoteConfigManager>().To<RemoteConfigManager>()                .AsSingle();
             Container.Bind<IAnalyticsManager>()   .To<AnalyticsManager>()                   .AsSingle();
+            Container.Bind<IGameClient>()         .To<GameClient>()                         .AsSingle();
             
 #if UNITY_EDITOR
             Container.Bind<IScoreManager>()       .To<ScoreManagerFake>()                   .AsSingle();
             Container.Bind<IShopManager>()        .To<ShopManagerFake>()                    .AsSingle();
+            Container.Bind<IRemoteSavedGameProvider>().To<FakeRemoteSavedGameProvider>()    .AsSingle();
 #elif UNITY_ANDROID
             Container.Bind<IScoreManager>()       .To<AndroidScoreManager>()                .AsSingle();
             Container.Bind<IShopManager>()        .To<AndroidUnityIAPShopManager>()         .AsSingle();
-#elif UNITY_IOS || UNITY_ANDROID
+            Container.Bind<IRemoteSavedGameProvider>().To<FakeRemoteSavedGameProvider>()    .AsSingle();
+#elif UNITY_IOS || UNITY_IPHONE
             Container.Bind<IScoreManager>()       .To<IosScoreManager>()                    .AsSingle();
             Container.Bind<IShopManager>()        .To<AppleUnityIAPShopManager>()           .AsSingle();
+            Container.Bind<IRemoteSavedGameProvider>().To<FakeRemoteSavedGameProvider>()    .AsSingle();
 #endif
             
             Container.Bind<ILocalizationManager>().To<LeanLocalizationManager>()            .AsSingle();

@@ -127,7 +127,7 @@ namespace Common.Managers
 
         public PrefabEntity<T> GetObjectEntity<T>(string _PrefabSetName, string _ObjectName) where T : Object
         {
-            var entity = new PrefabEntity<T> {Result = EEntityResult.Pending};
+            var entity = new PrefabEntity<T>();
             var set = ResLoader.GetPrefabSet(_PrefabSetName);
             if (set == null)
             {

@@ -409,14 +409,20 @@ namespace RMAZOR
         }
         
         [Category(CategoryCommon)]
-        public bool Show_Device_Id
+        public bool Show_Advertising_Id
         {
             get => false;
             set
             {
                 if (!value)
                     return;
-                Dbg.Log(SystemInfo.deviceUniqueIdentifier);
+                var idfaEntity = CommonUtils.GetIdfa();
+                Cor.Run(Cor.WaitWhile(() => idfaEntity.Result == EEntityResult.Pending,
+                    () =>
+                    {
+                        Dbg.Log(idfaEntity.Value);
+                        CommonUtils.CopyToClipboard(idfaEntity.Value);
+                    }));
             }
         }
         
@@ -431,7 +437,7 @@ namespace RMAZOR
                 _view.Managers.ScoreManager.DeleteSavedGame(CommonData.SavedGameFileName);
             }
         }
-        
+
         [Category(CategoryCommon)]
         public bool Show_Money
         {
@@ -440,37 +446,29 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                var entity = _view.Managers.ScoreManager.GetSavedGameProgress(CommonData.SavedGameFileName, false);
-                Cor.Run(Cor.WaitWhile(
-                    () => entity.Result == EEntityResult.Pending,
-                    () =>
-                    {
-                        var moneyValue = entity.Value.CastTo<SavedGame>();
-                        if (entity.Result == EEntityResult.Fail || moneyValue == null)
+                static void DisplaySavedGameMoney(bool _FromCache)
+                {
+                    string str = _FromCache ? "server" : "cache";
+                    var entity =
+                        _view.Managers.ScoreManager.GetSavedGameProgress(CommonData.SavedGameFileName, _FromCache);
+                    Cor.Run(Cor.WaitWhile(
+                        () => entity.Result == EEntityResult.Pending,
+                        () =>
                         {
-                            Dbg.LogError("Failed to load saved game");
-                            return;
-                        }
-                        long money = moneyValue.Money;
-                        Dbg.Log("Money server: " + money);
-                    }));
-                var entity1 = _view.Managers.ScoreManager.GetSavedGameProgress(CommonData.SavedGameFileName, true);
-                Cor.Run(Cor.WaitWhile(
-                    () => entity.Result == EEntityResult.Pending,
-                    () =>
-                    {
-                        var moneyValue = entity1.Value.CastTo<SavedGame>();
-                        if (entity1.Result == EEntityResult.Fail || moneyValue == null)
-                        {
-                            Dbg.LogError("Failed to load saved game");
-                            return;
-                        }
-                        long money = moneyValue.Money;
-                        Dbg.Log("Money cached: " + money);
-                    }));
+                            bool castSuccess = entity.Value.CastTo(out SavedGame savedGame);
+                            if (entity.Result == EEntityResult.Fail || !castSuccess)
+                            {
+                                Dbg.LogWarning($"Failed to load saved game from {str}, entity value: {entity.Value}");
+                                return;
+                            }
+                            Dbg.Log($"{str}: Money: {savedGame.Money}, Level: {savedGame.Level}");
+                        }));
+                }
+                DisplaySavedGameMoney(false);
+                DisplaySavedGameMoney(true);
             }
         }
-        
+
         [Category(CategoryCommon)]
         public bool Internet_Connection_Available
         {
@@ -481,6 +479,19 @@ namespace RMAZOR
                     return;
                 bool res = NetworkUtils.IsInternetConnectionAvailable();
                 Dbg.Log("Internet connection available: " + res + " " + Application.internetReachability);
+            }
+        }
+
+        [Category(CategoryCommon)]
+        public bool ClearSaves
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                if(System.IO.File.Exists(SaveUtils.SavesPath))
+                    System.IO.File.Delete(SaveUtils.SavesPath);
             }
         }
 

@@ -2,17 +2,22 @@
 using Common.Network;
 using Common.Ticker;
 using UnityEngine.Events;
+// ReSharper disable ClassNeverInstantiated.Global
 
 namespace Common.Managers.Scores
 {
     public class ScoreManagerFake : ScoreManagerBase
-
     {
         public ScoreManagerFake(
-            IGameClient _GameClient, 
-            ILocalizationManager _LocalizationManager, 
-            ICommonTicker _Ticker) 
-            : base(_GameClient, _LocalizationManager, _Ticker) { }
+            IGameClient              _GameClient,
+            ILocalizationManager     _LocalizationManager,
+            ICommonTicker            _Ticker,
+            IRemoteSavedGameProvider _RemoteSavedGameProvider)
+            : base(
+                _GameClient,
+                _LocalizationManager,
+                _Ticker,
+                _RemoteSavedGameProvider) { }
 
         public override ScoresEntity GetScoreFromLeaderboard(ushort _Id, bool _FromCache)
         {

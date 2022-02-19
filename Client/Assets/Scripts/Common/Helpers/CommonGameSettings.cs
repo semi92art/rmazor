@@ -15,6 +15,7 @@ namespace Common.Helpers
         public                   float        unityAdsRate;
         public                   int          showAdsEveryLevel;
         public                   int          firstLevelToShowAds;
+        public                   string       iOsGameId;
         
         public EAdsProvider AdsProvider
         {
