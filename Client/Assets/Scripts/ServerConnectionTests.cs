@@ -12,6 +12,7 @@ public class ServerConnectionTests
 {
     private static void InitGameObjects()
     {
+        
         var coroutinesRunnerObj = GameObject.Find("CoroutinesRunner");
         if (coroutinesRunnerObj != null) 
             return;

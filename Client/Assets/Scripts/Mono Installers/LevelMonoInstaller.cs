@@ -128,6 +128,7 @@ namespace Mono_Installers
             if (!CommonData.Release)
             {
                 Container.Bind<IProposalDialogViewer>()      .To<ProposalDialogViewerFake>()      .AsSingle();
+                Container.Bind<IBigDialogViewer>()           .To<BigDialogViewerFake>()           .AsSingle();
                 Container.Bind<IDialogPanels>()              .To<DialogPanelsFake>()              .AsSingle();
             }
             else

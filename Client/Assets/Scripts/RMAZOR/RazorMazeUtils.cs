@@ -43,15 +43,12 @@ namespace RMAZOR
             EInputCommand.RotateCounterClockwise
         };
 
-        public static EMazeItemType[] GravityItemTypes()
+        public static readonly EMazeItemType[] GravityItemTypes =
         {
-            return new[]
-            {
-                EMazeItemType.GravityBlock,
-                EMazeItemType.GravityBlockFree,
-                EMazeItemType.GravityTrap
-            };
-        }
+            EMazeItemType.GravityBlock,
+            EMazeItemType.GravityBlockFree,
+            EMazeItemType.GravityTrap
+        };
         
         public static V2Int GetDropDirection(MazeOrientation _Orientation)
         {
@@ -68,7 +65,7 @@ namespace RMAZOR
         public static bool MazeContainsGravityItems(IEnumerable<IMazeItemProceedInfo> _Infos)
         {
             return _Infos
-                .Any(_Info => GravityItemTypes().ContainsAlt(_Info.Type));
+                .Any(_Info => GravityItemTypes.ContainsAlt(_Info.Type));
         }
         
         public static V2Int GetDirectionVector(EMazeMoveDirection _Direction, MazeOrientation _Orientation)

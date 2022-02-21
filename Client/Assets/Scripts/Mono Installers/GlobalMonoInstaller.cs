@@ -8,7 +8,7 @@ using Common.Network;
 using Common.Settings;
 using Common.Ticker;
 using RMAZOR;
-using RMAZOR.GameHelpers;
+using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using RMAZOR.Settings;
 using UnityEngine;
@@ -55,7 +55,9 @@ namespace Mono_Installers
             Container.Bind<IScoreManager>()       .To<ScoreManagerFake>()                   .AsSingle();
             Container.Bind<IShopManager>()        .To<ShopManagerFake>()                    .AsSingle();
             Container.Bind<IRemoteSavedGameProvider>().To<FakeRemoteSavedGameProvider>()    .AsSingle();
+            Container.Bind<IPermissionsRequester>().To<FakePermissionsRequester>().AsSingle();
 #elif UNITY_ANDROID
+            Container.Bind<IPermissionsRequester>().To<FakePermissionsRequester>().AsSingle();
             Container.Bind<IScoreManager>()       .To<AndroidScoreManager>()                .AsSingle();
             Container.Bind<IShopManager>()        .To<AndroidUnityIAPShopManager>()         .AsSingle();
             Container.Bind<IRemoteSavedGameProvider>().To<FakeRemoteSavedGameProvider>()    .AsSingle();
@@ -63,6 +65,7 @@ namespace Mono_Installers
             Container.Bind<IScoreManager>()       .To<IosScoreManager>()                    .AsSingle();
             Container.Bind<IShopManager>()        .To<AppleUnityIAPShopManager>()           .AsSingle();
             Container.Bind<IRemoteSavedGameProvider>().To<FakeRemoteSavedGameProvider>()    .AsSingle();
+            Container.Bind<IPermissionsRequester>().To<IosPermissonsRequester>().AsSingle();
 #endif
             
             Container.Bind<ILocalizationManager>().To<LeanLocalizationManager>()            .AsSingle();

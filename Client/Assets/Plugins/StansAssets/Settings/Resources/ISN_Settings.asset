@@ -19,7 +19,7 @@ MonoBehaviour:
   ReplayKit: 0
   Social: 0
   AdSupport: 1
-  AppTrackingTransparency: 0
+  AppTrackingTransparency: 1
   AVKit: 0
   CoreLocation: 0
   AssetsLibrary: 0
@@ -46,5 +46,11 @@ MonoBehaviour:
     with IOS Native Core Location Editor Settings
   NsCalendarsUsageDescription: This app is require access your Calendar
   NsRemindersUsageDescription: This app is require access to your Reminder
-  UserTrackingUsageDescription: Please change 'UserTrackingUsageDescription' with
-    IOS Native App Tracking Transparency Editor Settings
+  UserTrackingUsageDescription: 'Check out our privacy policy to know our partners
+    and what data they process. You can withdraw your consent later in your device
+    and App settings.
+
+    
+
+    Tap "Allow" to let our ad partners reach you with
+    more relevant ads.'

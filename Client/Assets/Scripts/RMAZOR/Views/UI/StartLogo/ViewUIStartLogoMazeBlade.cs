@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Common;
 using Common.CameraProviders;
 using Common.Extensions;
 using Common.Helpers;
@@ -12,7 +11,6 @@ using UnityEngine;
 
 namespace RMAZOR.Views.UI.StartLogo
 {
-    // ReSharper disable once ClassNeverInstantiated.Global
     public class ViewUIStartLogoMazeBlade : ViewUIStartLogoBase
     {
         #region nonpublic members

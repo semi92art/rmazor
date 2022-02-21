@@ -40,11 +40,11 @@ namespace RMAZOR.Views.Characters
         private IColorProvider           ColorProvider       { get; }
 
         public ViewCharacterTailSimple(
-            ModelSettings _ModelSettings,
+            ModelSettings            _ModelSettings,
             IMazeCoordinateConverter _CoordinateConverter,
-            IContainersGetter _ContainersGetter,
-            IViewGameTicker _GameTicker,
-            IColorProvider _ColorProvider)
+            IContainersGetter        _ContainersGetter,
+            IViewGameTicker          _GameTicker,
+            IColorProvider           _ColorProvider)
         {
             ModelSettings = _ModelSettings;
             CoordinateConverter = _CoordinateConverter;
@@ -91,6 +91,9 @@ namespace RMAZOR.Views.Characters
             m_ShowTail = _Args.Stage == ELevelStage.StartedOrContinued;
             switch (_Args.Stage)
             {
+                case ELevelStage.Loaded:
+                    HideTail();
+                    break;
                 case ELevelStage.ReadyToStart:
                 case ELevelStage.StartedOrContinued:
                     Activated = true;
@@ -123,7 +126,7 @@ namespace RMAZOR.Views.Characters
             if (!m_ShowTail)
                 return;
             m_Hiding = false;
-            m_Tail.enabled = true;
+            m_Tail.Color = ColorProvider.GetColor(ColorIds.CharacterTail);
             var dir = (Vector2)(_Args.To - _Args.From).NormalizedOrth;
             var orth = new Vector2(dir.y, dir.x); //-V3066
             var currPos = Vector2.Lerp(_Args.From, _Args.To, _Args.Progress);
@@ -139,14 +142,12 @@ namespace RMAZOR.Views.Characters
 
         public void HideTail(CharacterMovingFinishedEventArgs _Args = null)
         {
-            Cor.Run(Cor.WaitWhile(
-                        () => !m_Initialized,
-                        () =>
-                        {
-                            m_Tail.enabled = _Args != null;
-                            if (_Args != null)                
-                                Cor.Run(HideTailCoroutine(_Args));
-                        }));
+            if (!m_Initialized)
+                return;
+            if (_Args == null)
+                m_Tail.Color = Color.white.SetA(0f);
+            else
+                Cor.Run(HideTailCoroutine(_Args));
         }
 
         #endregion
@@ -160,7 +161,6 @@ namespace RMAZOR.Views.Characters
             m_Tail = go.AddComponent<Triangle>();
             m_Tail.Color = ColorProvider.GetColor(ColorIds.CharacterTail);
             m_Tail.Roundness = 0.4f;
-            m_Tail.enabled = false;
         }
 
         private IEnumerator HideTailCoroutine(CharacterMovingFinishedEventArgs _Args)
@@ -179,7 +179,7 @@ namespace RMAZOR.Views.Characters
                     m_Tail.A = Vector2.Lerp(startA, finishA, _Progress);
                 },
                 GameTicker,
-                (_Breaked, _Progress) => m_Tail.enabled = false,
+                (_Broken, _Progress) => m_Tail.Color = Color.white.SetA(0f),
                 () => !m_Hiding || !m_ShowTail);
         }
 

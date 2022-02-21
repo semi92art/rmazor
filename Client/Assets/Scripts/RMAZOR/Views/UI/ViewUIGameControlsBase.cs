@@ -32,7 +32,7 @@ namespace RMAZOR.Views.UI
         public virtual void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
         {
             var type = _Args.Info.Type;
-            if (!RazorMazeUtils.GravityItemTypes().ContainsAlt(type)) 
+            if (!RazorMazeUtils.GravityItemTypes.ContainsAlt(type)) 
                 return;
             //FIXME говняный алгоритм, нужно переработать
             if (Model.GravityItemsProceeder.ProceedInfos
@@ -48,7 +48,7 @@ namespace RMAZOR.Views.UI
         public virtual void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
         {
             var type = _Args.Info.Type;
-            if (!RazorMazeUtils.GravityItemTypes().ContainsAlt(type)) 
+            if (!RazorMazeUtils.GravityItemTypes.ContainsAlt(type)) 
                 return;
             if (Model.GravityItemsProceeder.ProceedInfos
                 .Any(_I => _I.ProceedingStage == GravityItemsProceeder.StageDrop))

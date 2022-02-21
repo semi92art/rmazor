@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   adsProvider: -1
   adsLoadDelay: 3
-  debugEnabled: 0
+  debugEnabled: 1
   testAds: 0
   logLevel: 5
   admobRate: 80

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Common.CameraProviders;
 using Common.Constants;
@@ -14,6 +15,7 @@ using Lean.Common;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace Common.UI
 {
@@ -21,6 +23,16 @@ namespace Common.UI
     {
         void        Show(IDialogPanel _ItemTo, bool _HidePrevious = true);
         UnityAction OnClosed { get; set; }
+    }
+
+    public class BigDialogViewerFake : IBigDialogViewer
+    {
+        public IDialogPanel  CurrentPanel => null;
+        public RectTransform Container                                              => null;
+        public Func<bool>    IsOtherDialogViewersShowing                            { get; set; }
+        public void          Init(RectTransform _Parent)                            { }
+        public void          Show(IDialogPanel  _ItemTo, bool _HidePrevious = true) { }
+        public UnityAction   OnClosed { get; set; }
     }
     
     public class BigDialogViewer : DialogViewerBase, IBigDialogViewer, IAction, IUpdateTick

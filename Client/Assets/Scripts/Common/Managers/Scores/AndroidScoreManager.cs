@@ -11,13 +11,6 @@ using UnityEngine.Events;
 
 namespace Common.Managers.Scores
 {
-    public class SavedGameInfo
-    {
-        public byte[]             Data     { get; set; }
-        public ISavedGameMetadata MetaData { get; set; }
-        public Entity<object>     Entity   { get; set; }
-    }
-    
     public class AndroidScoreManager : ScoreManagerBase, IApplicationPause
     {
         #region inject
@@ -81,7 +74,8 @@ namespace Common.Managers.Scores
 
         public void OnApplicationPause(bool _Pause)
         {
-            // FIXME ебаный костыль
+            // обращаемся к Google Play Services чтобы popup приветствия
+            // появился именно на UnPause, а не в любой другой момент
             if (!_Pause)
                 GetScoreAndroid(DataFieldIds.Level);
         }

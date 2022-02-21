@@ -5,7 +5,7 @@ using System.Linq;
 using Common;
 using Common.Entities;
 using Common.Managers;
-using RMAZOR.GameHelpers;
+using RMAZOR.Helpers;
 using RMAZOR.Models.MazeInfos;
 using UnityEditor;
 using UnityEditorInternal;

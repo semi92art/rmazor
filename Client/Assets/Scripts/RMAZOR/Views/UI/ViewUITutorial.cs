@@ -104,7 +104,6 @@ namespace RMAZOR.Views.UI
             m_MovementTutorialFinished = SaveUtils.GetValue(SaveKeysRmazor.MovementTutorialFinished);
             m_RotationTutorialFinished = SaveUtils.GetValue(SaveKeysRmazor.RotationTutorialFinished);
             CommandsProceeder.Command += OnCommand;
-            ColorProvider.ColorChanged += OnColorChanged;
         }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
@@ -121,12 +120,7 @@ namespace RMAZOR.Views.UI
         #endregion
 
         #region nonpublic methods
-        
-        private void OnColorChanged(int _ColorId, Color _Color)
-        {
-            
-        }
-        
+
         private void OnCommand(EInputCommand _Command, object[] _Args)
         {
             if (m_MovementTutorialStarted && !m_MovementTutorialFinished)

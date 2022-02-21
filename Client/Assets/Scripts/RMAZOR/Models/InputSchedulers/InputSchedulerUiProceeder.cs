@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Common;
-using RMAZOR.GameHelpers;
+using RMAZOR.Helpers;
 using RMAZOR.Models.MazeInfos;
 using UnityEngine;
 using UnityEngine.Events;

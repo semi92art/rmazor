@@ -15,7 +15,7 @@ using Common.Network;
 using Common.Utils;
 using Newtonsoft.Json;
 using RMAZOR.Controllers;
-using RMAZOR.GameHelpers;
+using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using UnityEngine;
 using UnityEngine.Purchasing;
@@ -28,17 +28,18 @@ namespace RMAZOR
     {
         #region inject
     
-        private CommonGameSettings   Settings            { get; set; }
-        private IGameClient          GameClient          { get; set; }
-        private IAdsManager          AdsManager          { get; set; }
-        private IAnalyticsManager    AnalyticsManager    { get; set; }
-        private ILocalizationManager LocalizationManager { get; set; }
-        private ILevelsLoader        LevelsLoader        { get; set; }
-        private IScoreManager        ScoreManager        { get; set; }
-        private IHapticsManager      HapticsManager      { get; set; }
-        private IShopManager         ShopManager         { get; set; }
-        private IRemoteConfigManager RemoteConfigManager { get; set; }
-        private ICameraProvider      CameraProvider      { get; set; }
+        private CommonGameSettings    Settings             { get; set; }
+        private IGameClient           GameClient           { get; set; }
+        private IAdsManager           AdsManager           { get; set; }
+        private IAnalyticsManager     AnalyticsManager     { get; set; }
+        private ILocalizationManager  LocalizationManager  { get; set; }
+        private ILevelsLoader         LevelsLoader         { get; set; }
+        private IScoreManager         ScoreManager         { get; set; }
+        private IHapticsManager       HapticsManager       { get; set; }
+        private IShopManager          ShopManager          { get; set; }
+        private IRemoteConfigManager  RemoteConfigManager  { get; set; }
+        private ICameraProvider       CameraProvider       { get; set; }
+        private IPermissionsRequester PermissionsRequester { get; set; }
 
         [Inject] 
         public void Inject(
@@ -54,6 +55,7 @@ namespace RMAZOR
             IShopManager         _ShopManager,
             IRemoteConfigManager _RemoteConfigManager,
             ICameraProvider      _CameraProvider,
+            IPermissionsRequester _PermissionsRequester,
             CompanyLogo          _CompanyLogo)
         {
             Settings            = _Settings;
@@ -67,6 +69,7 @@ namespace RMAZOR
             ShopManager         = _ShopManager;
             RemoteConfigManager = _RemoteConfigManager;
             CameraProvider      = _CameraProvider;
+            PermissionsRequester = _PermissionsRequester;
         }
 
 
@@ -77,6 +80,9 @@ namespace RMAZOR
         private IEnumerator Start()
         {
             Dbg.Log("Application started, platform: " + Application.platform);
+            var permissionsEntity = PermissionsRequester.RequestPermissions();
+            while (permissionsEntity.Result == EEntityResult.Pending)
+                yield return null;
             InitStartData();
             InitLogging();
             InitGameManagers();

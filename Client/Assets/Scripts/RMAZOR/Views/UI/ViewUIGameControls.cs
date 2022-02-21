@@ -206,7 +206,7 @@ namespace RMAZOR.Views.UI
         private bool MazeContainsGravityItems()
         {
             return Model.GetAllProceedInfos()
-                .Any(_Info => RazorMazeUtils.GravityItemTypes().ContainsAlt(_Info.Type));
+                .Any(_Info => RazorMazeUtils.GravityItemTypes.ContainsAlt(_Info.Type));
         }
 
         private T[] GetInterfaceOfProceeders<T>() where T : class

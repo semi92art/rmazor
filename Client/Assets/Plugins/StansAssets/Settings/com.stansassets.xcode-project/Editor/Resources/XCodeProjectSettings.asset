@@ -15,6 +15,7 @@ MonoBehaviour:
   Frameworks:
   - FrameworkName: 5
   - FrameworkName: 38
+  - FrameworkName: 6
   EmbededFrameworks: []
   Libraries: []
   Flags: []
@@ -47,6 +48,13 @@ MonoBehaviour:
     Type: 0
     StringValue: Please change 'Microphone Usage Description' with IOS Native UI
       Kit Editor Settings
+    IntegerValue: 0
+    FloatValue: 0
+    BooleanValue: 1
+    ChildrenIds: []
+  - Name: NSUserTrackingUsageDescription
+    Type: 0
+    StringValue: Your data will be safely used to deliver personalized ads for you.
     IntegerValue: 0
     FloatValue: 0
     BooleanValue: 1
@@ -1294,6 +1302,150 @@ MonoBehaviour:
       BooleanValue: 1
       ChildrenIds: []
     uniqueIdKey: XOxjCDnDv6r9ocb3YJ6A
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: QZTLDIUEc2RfkNYFdbsd
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: tUF8dVL1UFLKpfcxx03W
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: asujORh2XDKCcpXKSedE
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: k5wNviLQiaSGHU6TsrTC
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: X9fwfdpA3PrF5pWnVV2M
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: WXKAUU82GeGPusxi4iFC
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: n6QihPV7UGb3PTHlMced
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: 0VS6Hqg7CTTB93AompXW
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: lWr5AYZhtOOSqo2j0ikO
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: wOp4iTXvIeJ3LH17Ddan
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: jqEgKLHK3SMpH533buEp
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: lFVh2thmxckCXd3tJ0Ml
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: d5XuuA8XPUO74iiMUl37
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: emcmY2YTUlbaZAGrpeTK
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: Cp9bC5fFRHJ54aTKs3Eh
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: lXXj1NruiPbQTO6Ug0Pj
   Languages: []
   ShellScripts: []
   m_BuildProperties:

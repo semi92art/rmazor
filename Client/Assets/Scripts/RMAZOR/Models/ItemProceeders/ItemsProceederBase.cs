@@ -123,7 +123,7 @@ namespace RMAZOR.Models.ItemProceeders
         
         #region nonpublic methods
         
-        private void CollectItems(MazeInfo _Info)
+        protected virtual void CollectItems(MazeInfo _Info)
         {
             var infos = new List<IMazeItemProceedInfo>();
 

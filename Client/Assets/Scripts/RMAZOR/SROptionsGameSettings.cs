@@ -4,6 +4,7 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable PartialTypeWithSinglePart
 
+using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -418,11 +419,7 @@ namespace RMAZOR
                     return;
                 var idfaEntity = CommonUtils.GetIdfa();
                 Cor.Run(Cor.WaitWhile(() => idfaEntity.Result == EEntityResult.Pending,
-                    () =>
-                    {
-                        Dbg.Log(idfaEntity.Value);
-                        CommonUtils.CopyToClipboard(idfaEntity.Value);
-                    }));
+                    () => Dbg.Log(idfaEntity.Value)));
             }
         }
         
@@ -492,6 +489,18 @@ namespace RMAZOR
                     return;
                 if(System.IO.File.Exists(SaveUtils.SavesPath))
                     System.IO.File.Delete(SaveUtils.SavesPath);
+            }
+        }
+        
+        [Category(CategoryCommon)]
+        public bool GC_Collect
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                GC.Collect();
             }
         }
 

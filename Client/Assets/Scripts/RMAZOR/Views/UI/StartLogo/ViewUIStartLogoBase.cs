@@ -137,8 +137,8 @@ namespace RMAZOR.Views.UI.StartLogo
                     _C => _C, 
                     _C => go.GetCompItem<Animator>(_C));
             SetColors(ColorProvider.GetColor(ColorIdsCommon.UI));
+            go.GetCompItem<AnimationTriggerer>("triggerer").Trigger1 = () => go.SetActive(false);
         }
-        
 
         protected virtual IEnumerable<ShapeRenderer> GetExceptedLogoColorObjects()
         {

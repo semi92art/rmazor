@@ -96,7 +96,6 @@ namespace RMAZOR.Managers
             GetConfig(ref CommonGameSettings.unityAdsRate,        "ads.unityads.rate");
             GetConfig(ref CommonGameSettings.showAdsEveryLevel,   "ads.show_ad_every_level");
             GetConfig(ref CommonGameSettings.firstLevelToShowAds, "ads.first_level_to_show_ads");
-            GetConfig(ref CommonGameSettings.iOsGameId, "common.iosgameid");
             GetConfig(ref ModelSettings.characterSpeed,           "character.speed");
             GetConfig(ref ModelSettings.gravityBlockSpeed,        "mazeitems.gravityblock.speed");
             GetConfig(ref ModelSettings.movingItemsSpeed,         "mazeitems.movingtrap.speed");
@@ -121,7 +120,10 @@ namespace RMAZOR.Managers
             Cor.Run(Cor.WaitWhile(() => idfaEntity.Result == EEntityResult.Pending,
                 () =>
                 {
-                    bool isThisDeviceForTesting = deviceIds.Contains(idfaEntity.Value);
+                    bool isThisDeviceForTesting = deviceIds.Any(
+                        _Idfa => _Idfa.Equals(
+                            idfaEntity.Value,
+                            StringComparison.InvariantCultureIgnoreCase));
                     CommonGameSettings.DebugEnabled = isThisDeviceForTesting;
                     CommonGameSettings.testAds = isThisDeviceForTesting;
                     m_FetchCompletedActionDone = true;

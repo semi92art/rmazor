@@ -83,7 +83,7 @@ namespace RMAZOR.Models.ItemProceeders
                 () =>
                 {
                     var gravityItems = GetAllProceedInfos()
-                        .Where(_Inf => RazorMazeUtils.GravityItemTypes().ContainsAlt(_Inf.Type))
+                        .Where(_Inf => RazorMazeUtils.GravityItemTypes.ContainsAlt(_Inf.Type))
                         .ToList();
                     if (gravityItems.Any())
                     {

@@ -17,6 +17,7 @@ using RMAZOR.Views.Helpers;
 using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
+// ReSharper disable ArgumentsStyleStringLiteral
 
 namespace RMAZOR.Views.Characters
 {
@@ -64,12 +65,12 @@ namespace RMAZOR.Views.Characters
         private IViewAppearTransitioner  AppearTransitioner  { get; }
 
         public ViewCharacterHead(
-            IModelGame _Model,
-            IColorProvider _ColorProvider,
-            IContainersGetter _ContainersGetter,
-            IPrefabSetManager _PrefabSetManager,
+            IModelGame               _Model,
+            IColorProvider           _ColorProvider,
+            IContainersGetter        _ContainersGetter,
+            IPrefabSetManager        _PrefabSetManager,
             IMazeCoordinateConverter _CoordinateConverter,
-            IViewAppearTransitioner _AppearTransitioner)
+            IViewAppearTransitioner  _AppearTransitioner)
         {
             Model = _Model;
             ColorProvider = _ColorProvider;
@@ -178,7 +179,10 @@ namespace RMAZOR.Views.Characters
         private void InitPrefab()
         {
             var go = ContainersGetter.GetContainer(ContainerNames.Character).gameObject;
-            var prefab = PrefabSetManager.InitPrefab(go.transform, CommonPrefabSetNames.Views, "character");
+            var prefab = PrefabSetManager.InitPrefab(
+                go.transform, 
+                CommonPrefabSetNames.Views,
+                _PrefabName: "character");
             prefab.transform.SetLocalPosXY(Vector2.zero);
             m_Head = prefab.GetContentItem("head");
             m_Animator = prefab.GetCompItem<Animator>("animator");

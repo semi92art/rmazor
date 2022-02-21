@@ -9,6 +9,7 @@ using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
+// ReSharper disable ClassNeverInstantiated.Global
 
 namespace RMAZOR.Models.ItemProceeders
 {
@@ -28,18 +29,18 @@ namespace RMAZOR.Models.ItemProceeders
         public const int StageDrop = 1;
         
         #endregion
-        
+
         #region inject
         
         private IPathItemsProceeder PathItemsProceeder { get; }
-        
+
         public GravityItemsProceeder(
-            ModelSettings _Settings,
-            IModelData _Data, 
-            IModelCharacter _Character,
-            IModelGameTicker _GameTicker,
-            IPathItemsProceeder _PathItemsProceeder) 
-            : base (_Settings, _Data, _Character, _GameTicker)
+            ModelSettings       _Settings,
+            IModelData          _Data,
+            IModelCharacter     _Character,
+            IModelGameTicker    _GameTicker,
+            IPathItemsProceeder _PathItemsProceeder)
+            : base(_Settings, _Data, _Character, _GameTicker)
         {
             PathItemsProceeder = _PathItemsProceeder;
         }
@@ -48,9 +49,8 @@ namespace RMAZOR.Models.ItemProceeders
         
         #region api
 
-        protected override EMazeItemType[] Types => RazorMazeUtils.GravityItemTypes();
-
-        public Func<IMazeItemProceedInfo[]> GetAllProceedInfos { private get; set; }
+        protected override EMazeItemType[]              Types              => RazorMazeUtils.GravityItemTypes;
+        public             Func<IMazeItemProceedInfo[]> GetAllProceedInfos { private get; set; }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
@@ -77,7 +77,7 @@ namespace RMAZOR.Models.ItemProceeders
         #endregion
 
         #region nonpublic methods
-        
+
         private void MoveMazeItemsGravity(MazeOrientation _Orientation, V2Int _CharacterPoint)
         {
             var dropDirection = RazorMazeUtils.GetDropDirection(_Orientation);
@@ -88,21 +88,20 @@ namespace RMAZOR.Models.ItemProceeders
         }
 
         private void TryMoveMazeItemsGravityCore(
-            V2Int _DropDirection,
-            V2Int _CharacterPoint,
+            V2Int                                  _DropDirection,
+            V2Int                                  _CharacterPoint,
             Dictionary<IMazeItemProceedInfo, bool> _InfosMoved)
         {
-            var copyOfDict = _InfosMoved.ToList();
-            foreach (var kvp in copyOfDict
-                .Where(_Kvp => !_Kvp.Value))
+            var copyOfDict = _InfosMoved.ToArray();
+            foreach (var kvp in copyOfDict)
             {
+                if (kvp.Value)
+                    continue;
                 var info = kvp.Key;
                 TryMoveBlock(info, _DropDirection, _CharacterPoint, _InfosMoved);
             }
-            foreach (var info in copyOfDict.Select(_Kvp => _Kvp.Key))
-            {
-                info.NextPosition = -V2Int.Right;
-            }
+            foreach (var kvp in copyOfDict)
+                kvp.Key.NextPosition = -V2Int.Right;
         }
 
         private bool TryMoveBlock(IMazeItemProceedInfo _Info,
@@ -220,7 +219,7 @@ namespace RMAZOR.Models.ItemProceeders
                 return true;
             var to = _Info.CurrentPosition;
             IMazeItemProceedInfo gravityBlockItemInfo;
-            var infos = GetAllProceedInfos().ToList();
+            var infos = GetAllProceedInfos();
             while (IsValidPositionForMove(to + _DropDirection, infos, false, out gravityBlockItemInfo))
                 to += _DropDirection;
             // если для гравитационного блок/ловушка, на который наткнулась ловушка еще определено конечное положение,
@@ -256,7 +255,7 @@ namespace RMAZOR.Models.ItemProceeders
             var path = _Info.Path;
             int currPathIdx = path.IndexOf(_Info.CurrentPosition);
             V2Int? altPos = null;
-            var infos = GetAllProceedInfos().ToList();
+            var infos = GetAllProceedInfos();
             while (IsValidPositionForMove(pos + _DropDirection, infos, _CheckNextPos, out _GravityBlockItemInfo))
             {
                 pos += _DropDirection;
@@ -346,7 +345,7 @@ namespace RMAZOR.Models.ItemProceeders
 
         private bool IsValidPositionForMove(
             V2Int _Position,
-            IEnumerable<IMazeItemProceedInfo> _Infos,
+            IMazeItemProceedInfo[] _Infos,
             bool _CheckNextPos,
             out IMazeItemProceedInfo _GravityBlockItemInfo)
         {
@@ -361,9 +360,17 @@ namespace RMAZOR.Models.ItemProceeders
                     return true;
                 return _N.Type != EMazeItemType.ShredingerBlock;
             });
-            _GravityBlockItemInfo = _Infos.FirstOrDefault(_Inf => 
-                RazorMazeUtils.GravityItemTypes().ContainsAlt(_Inf.Type) 
-                && _Position == (_CheckNextPos ? _Inf.NextPosition : _Inf.CurrentPosition));
+            _GravityBlockItemInfo = null;
+            for (int i = 0; i < _Infos.Length; i++)
+            {
+                var info = _Infos[i];
+                if (!Types.ContainsAlt(info.Type))
+                    continue;
+                if (_Position != (_CheckNextPos ? info.NextPosition : info.CurrentPosition))
+                    continue;
+                _GravityBlockItemInfo = info;
+                break;
+            }
             bool result = isOnNode && !isOnStaticBlockItem && _GravityBlockItemInfo == null;
             return result;
         }

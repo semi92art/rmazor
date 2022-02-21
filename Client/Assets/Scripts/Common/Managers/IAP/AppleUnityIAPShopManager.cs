@@ -36,19 +36,7 @@ namespace Common.Managers.IAP
             if (_JustSuggest)
                 SA.iOS.StoreKit.ISN_SKStoreReviewController.RequestReview();
             else
-            {
-                if (string.IsNullOrEmpty(Settings.iOsGameId) || Settings.iOsGameId == "[Empty]")
-                {
-                    Dbg.LogWarning("Message for testers: This function will be available after app appears in store.");
-                    string title = LocalizationManager.GetTranslation("oops");
-                    string text = LocalizationManager.GetTranslation("smth_went_wrong");
-                    CommonUtils.ShowAlertDialog(title, text);
-                }
-                else
-                {
-                    Application.OpenURL("itms-apps://itunes.apple.com/app/id" + Settings.iOsGameId);
-                }
-            }
+                Application.OpenURL("itms-apps://itunes.apple.com/app/id1601083190");
             return true;
         }
     }

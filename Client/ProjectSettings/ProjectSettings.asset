@@ -204,6 +204,8 @@ PlayerSettings:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -341,7 +343,7 @@ PlayerSettings:
   - m_BuildTarget: 
     m_Icons:
     - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: c8b67ad9201943b4097c8625e300f43a, type: 3}
+      m_Icon: {fileID: 2800000, guid: f63989d59f8e7b744bc1c6eeba0f4b5e, type: 3}
       m_Width: 128
       m_Height: 128
       m_Kind: 0
@@ -858,7 +860,7 @@ PlayerSettings:
     WebGL: UNITY_POST_PROCESSING_STACK_V2
     Windows Store Apps: UNITY_POST_PROCESSING_STACK_V2
     XboxOne: UNITY_POST_PROCESSING_STACK_V2
-    iPhone: UNITY_POST_PROCESSING_STACK_V2;LETAI_TRUESHADOW;APP_DELEGATE_ENABLED;GAME_KIT_API_ENABLED;MTAssets_IonicZip_Available;AS_SUPPORT_API_ENABLED
+    iPhone: UNITY_POST_PROCESSING_STACK_V2;LETAI_TRUESHADOW;APP_DELEGATE_ENABLED;GAME_KIT_API_ENABLED;MTAssets_IonicZip_Available;AS_SUPPORT_API_ENABLED;AT_SUPPORT_API_ENABLED
     tvOS: UNITY_POST_PROCESSING_STACK_V2
   additionalCompilerArguments: {}
   platformArchitecture:
