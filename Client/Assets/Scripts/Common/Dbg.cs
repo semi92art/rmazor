@@ -18,7 +18,7 @@ namespace Common
     public static class Dbg
     {
         private static readonly ILogger   Logger    = Debug.unityLogger;
-        private static          ELogLevel _logLevel = ELogLevel.Error;
+        private static          ELogLevel _logLevel = ELogLevel.Info;
 
         public static ELogLevel LogLevel
         {

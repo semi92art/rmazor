@@ -38,7 +38,7 @@ namespace RMAZOR.Views.Debug
                 return;
             }
             m_Settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ViewSettings>(
-                "model_settings", "view_settings");
+                "configs", "view_settings");
             m_Converter = new MazeCoordinateConverter(m_Settings, null, true);
             m_Converter.Init();
             m_Converter.MazeSize = (V2Int)mazeSize;

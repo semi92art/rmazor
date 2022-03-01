@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: view_settings
   m_EditorClassIdentifier: 
   lineWidth: 10
-  cornerWidth: 20
+  cornerWidth: 10
   cornerRadius: 20
   movingTrapRotationSpeed: 800
   shredingerLineOffsetSpeed: 200
@@ -24,7 +24,6 @@ MonoBehaviour:
   mazeRotationSpeed: 5
   finishTimeExcellent: 3
   finishTimeGood: 5
-  proposalDialogAnimSpeed: 1
   gravityTrapRotationSpeed: 1000
   pauseBetweenMoveCommands: 0.1
   leftScreenOffset: 1
@@ -38,3 +37,4 @@ MonoBehaviour:
   adsRequestsFrequency: 5
   levelsCountMain: 360
   firstLevelToRateGame: 20
+  mazeItemTransitionTime: 0.3

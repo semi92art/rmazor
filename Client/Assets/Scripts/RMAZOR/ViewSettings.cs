@@ -7,31 +7,32 @@ namespace RMAZOR
     [CreateAssetMenu(fileName = "view_settings", menuName = "Configs and Sets/View Settings", order = 1)]
     public class ViewSettings : ScriptableObject
     {
-        [SerializeField] private float lineWidth;
-        [SerializeField] private float cornerWidth;
-        [SerializeField] private float cornerRadius;
-        [SerializeField] private float movingTrapRotationSpeed;
-        [SerializeField] private float shredingerLineOffsetSpeed;
-        [SerializeField] private float turretProjectileRotationSpeed;
-        [SerializeField] private int   blockItemsCount;
-        [SerializeField] private int   pathItemsCount;
-        [SerializeField] private bool  startPathItemFilledOnStart;
-        [SerializeField] private float mazeRotationSpeed;
-        [SerializeField] private float finishTimeExcellent;
-        [SerializeField] private float finishTimeGood;
-        [SerializeField] private float gravityTrapRotationSpeed;
-        [SerializeField] private float pauseBetweenMoveCommands;
-        [SerializeField] private float leftScreenOffset;
-        [SerializeField] private float rightScreenOffset;
-        [SerializeField] private float bottomScreenOffset;
-        [SerializeField] private float topScreenOffset;
-        [SerializeField] private float moveSwipeThreshold;
-        [SerializeField] private bool  springboardAnimatedHighlight;
-        [SerializeField] private float afterRotationEnableMoveDelay;
-        public                   int   rateRequestsFrequency;
-        public                   int   adsRequestsFrequency;
-        public                   int   levelsCountMain;
-        public                   int   firstLevelToRateGame;
+        public float lineWidth;
+        public float cornerWidth;
+        public float cornerRadius;
+        public float movingTrapRotationSpeed;
+        public float shredingerLineOffsetSpeed;
+        public float turretProjectileRotationSpeed;
+        public int   blockItemsCount;
+        public int   pathItemsCount;
+        public bool  startPathItemFilledOnStart;
+        public float mazeRotationSpeed;
+        public float finishTimeExcellent;
+        public float finishTimeGood;
+        public float gravityTrapRotationSpeed;
+        public float pauseBetweenMoveCommands;
+        public float leftScreenOffset;
+        public float rightScreenOffset;
+        public float bottomScreenOffset;
+        public float topScreenOffset;
+        public float moveSwipeThreshold;
+        public bool  springboardAnimatedHighlight;
+        public float afterRotationEnableMoveDelay;
+        public int   rateRequestsFrequency;
+        public int   adsRequestsFrequency;
+        public int   levelsCountMain;
+        public int   firstLevelToRateGame;
+        public float mazeItemTransitionTime;
 
         public float   LineWidth
         {

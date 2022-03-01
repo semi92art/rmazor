@@ -10,14 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c1600272214c7aa418cb76f5cc38aecb, type: 3}
-  m_Name: model_settings
+  m_Name: configs
   m_EditorClassIdentifier: 
-  bundles: 0
   prefabs:
     array:
     - item: {fileID: 11400000, guid: 243986dd30cfcce4abbf025e950c2262, type: 2}
       name: model_settings
+      bundle: 0
     - item: {fileID: 11400000, guid: 95742306892dcc5439babdbcfba0b157, type: 2}
       name: view_settings
+      bundle: 0
     - item: {fileID: 11400000, guid: 7b4a7ac8dabe081468d40370feba620a, type: 2}
       name: common_game_settings
+      bundle: 0
+    - item: {fileID: 11400000, guid: 89c941049acc92743a16fdbbed6b35a3, type: 2}
+      name: lines_texture_set
+      bundle: 0
+    - item: {fileID: 11400000, guid: 49c0476fabd0de94d8857888fe8b4ec0, type: 2}
+      name: circles_texture_set_1
+      bundle: 0
+    - item: {fileID: 11400000, guid: 2de8af91effea6e4a922391ec979affb, type: 2}
+      name: circles_texture_set_2
+      bundle: 0

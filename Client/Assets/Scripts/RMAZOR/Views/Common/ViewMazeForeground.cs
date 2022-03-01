@@ -21,30 +21,30 @@ namespace RMAZOR.Views.Common
         
         #region nonpublic methods
 
-        protected override void SetColorsOnTheme(long _LevelIndex, EColorTheme _Theme)
+        protected override void SetColorsOnNewLevelOrNewTheme(long _LevelIndex, EColorTheme _Theme)
         {
-            GetHSV(_LevelIndex, out float h, out float s, out float v);
-            switch (_Theme)
-            {
-                case EColorTheme.Light:
-                    ColorProvider.SetColor(ColorIds.Main, Color.white);
-                    break;
-                case EColorTheme.Dark:
-                    ColorProvider.SetColor(ColorIds.Main, Color.HSVToRGB(h, s, v));
-                    break;
-                default:
-                    throw new SwitchCaseNotImplementedException(_Theme);
-            }
+            GetHSV(_LevelIndex, _Theme, out float h, out float s, out float v);
+            ColorProvider.SetColor(ColorIds.Main, Color.HSVToRGB(h, s, v));
         }
 
         #endregion
         
-        protected override void GetHSV(long _LevelIndex, out float _H, out float _S, out float _V)
+        private static void GetHSV(
+            long _LevelIndex,
+            EColorTheme _Theme,
+            out float _H,
+            out float _S,
+            out float _V)
         {     
             int group = RazorMazeUtils.GetGroupIndex(_LevelIndex);
-            _H = GetHForHSV(group);
-            _S = 70f / 100f;
+            _H = ViewMazeBackgroundUtils.GetHForHSV(group);
             _V = 100f / 100f;
+            _S = _Theme switch
+            {
+                EColorTheme.Light => 0f,
+                EColorTheme.Dark  => 70f / 100f,
+                _                 => throw new SwitchCaseNotImplementedException(_Theme)
+            };
         }
     }
 }

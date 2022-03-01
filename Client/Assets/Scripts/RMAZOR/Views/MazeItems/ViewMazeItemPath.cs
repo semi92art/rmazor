@@ -68,13 +68,14 @@ namespace RMAZOR.Views.MazeItems
         
         #region inject
         
+        // ReSharper disable once MemberCanBeProtected.Global
         public ViewMazeItemPath(
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
             IMazeCoordinateConverter    _CoordinateConverter,
             IContainersGetter           _ContainersGetter,
             IViewGameTicker             _GameTicker,
-            IViewAppearTransitioner     _Transitioner,
+            IViewBetweenLevelMazeTransitioner     _Transitioner,
             IManagersGetter             _Managers,
             IColorProvider              _ColorProvider,
             IViewInputCommandsProceeder _CommandsProceeder)
@@ -789,7 +790,7 @@ namespace RMAZOR.Views.MazeItems
             return sets;
         }
 
-        private static Color MainColorToBorderColor(Color _Color)
+        protected virtual Color MainColorToBorderColor(Color _Color)
         {
             return _Color.SetA(0.5f);
         }

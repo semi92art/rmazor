@@ -62,7 +62,7 @@ namespace RMAZOR.Views.Characters
         private IContainersGetter        ContainersGetter    { get; }
         private IPrefabSetManager        PrefabSetManager    { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IViewAppearTransitioner  AppearTransitioner  { get; }
+        private IViewBetweenLevelMazeTransitioner  BetweenLevelMazeTransitioner  { get; }
 
         public ViewCharacterHead(
             IModelGame               _Model,
@@ -70,14 +70,14 @@ namespace RMAZOR.Views.Characters
             IContainersGetter        _ContainersGetter,
             IPrefabSetManager        _PrefabSetManager,
             IMazeCoordinateConverter _CoordinateConverter,
-            IViewAppearTransitioner  _AppearTransitioner)
+            IViewBetweenLevelMazeTransitioner  _BetweenLevelMazeTransitioner)
         {
             Model = _Model;
             ColorProvider = _ColorProvider;
             ContainersGetter = _ContainersGetter;
             PrefabSetManager = _PrefabSetManager;
             CoordinateConverter = _CoordinateConverter;
-            AppearTransitioner = _AppearTransitioner;
+            BetweenLevelMazeTransitioner = _BetweenLevelMazeTransitioner;
         }
         
         #endregion
@@ -150,12 +150,12 @@ namespace RMAZOR.Views.Characters
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
             if (_Appear)
                 m_Animator.SetTrigger(AnimKeyStartJumping);
-            AppearTransitioner.DoAppearTransition(
+            BetweenLevelMazeTransitioner.DoAppearTransition(
                 _Appear,
                 new Dictionary<IEnumerable<Component>, Func<Color>>
                 {
                     {new Component[] {m_HeadShape}, () => ColorProvider.GetColor(ColorIds.Character)},
-                    {new Component[] {m_Eye1Shape, m_Eye2Shape}, () => ColorProvider.GetColor(ColorIds.Background)}
+                    {new Component[] {m_Eye1Shape, m_Eye2Shape}, () => ColorProvider.GetColor(ColorIds.Background1)}
                 },
                 Model.Character.Position,
                 () =>
@@ -172,7 +172,7 @@ namespace RMAZOR.Views.Characters
         {
             if (_ColorId == ColorIds.Character)
                 m_HeadShape.Color = _Color;
-            else if (_ColorId == ColorIds.Background)
+            else if (_ColorId == ColorIds.Background1)
                 m_Eye1Shape.Color = m_Eye2Shape.Color = _Color;
         }
         

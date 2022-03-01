@@ -43,7 +43,7 @@ namespace RMAZOR.Views.MazeItems
                 {
                     m_PrefabSetManager = new PrefabSetManager(new AssetBundleManagerFake());
                     var settings = m_PrefabSetManager.GetObject<ViewSettings>(
-                        "model_settings", "view_settings");
+                        "configs", "view_settings");
                     m_Converter = new MazeCoordinateConverter(settings, null);
                     m_ContainersGetter = new ContainersGetterRmazor(null, m_Converter);
                     m_Converter.GetContainer = m_ContainersGetter.GetContainer;

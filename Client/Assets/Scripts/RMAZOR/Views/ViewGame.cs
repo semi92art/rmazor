@@ -12,6 +12,7 @@ using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Characters;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.Rotation;
@@ -70,14 +71,15 @@ namespace RMAZOR.Views
         public IViewMazeGravityItemsGroup     GravityItemsGroup     { get; }
         public IManagersGetter                Managers              { get; }
 
-        private IViewMazeCommon          Common              { get; }
-        private IViewMazeBackground      Background          { get; }
-        private IViewMazeForeground      Foreground          { get; }
-        private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IColorProvider           ColorProvider       { get; }
-        private ICameraProvider          CameraProvider      { get; }
-        private IDebugManager            DebugManager        { get; }
-        private IBigDialogViewer         BigDialogViewer     { get; }
+        private IViewMazeCommon                   Common                       { get; }
+        private IViewMazeBackground               Background                   { get; }
+        private IViewMazeForeground               Foreground                   { get; }
+        private IMazeCoordinateConverter          CoordinateConverter          { get; }
+        private IColorProvider                    ColorProvider                { get; }
+        private ICameraProvider                   CameraProvider               { get; }
+        private IDebugManager                     DebugManager                 { get; }
+        private IBigDialogViewer                  BigDialogViewer              { get; }
+        private IViewBetweenLevelMazeTransitioner BetweenLevelMazeTransitioner { get; }
 
         public ViewGame(
             ViewSettings                          _Settings,
@@ -105,34 +107,36 @@ namespace RMAZOR.Views
             IColorProvider                        _ColorProvider,
             ICameraProvider                       _CameraProvider,
             IDebugManager                         _DebugManager,
-            IBigDialogViewer _BigDialogViewer)
+            IBigDialogViewer                      _BigDialogViewer,
+            IViewBetweenLevelMazeTransitioner     _BetweenLevelMazeTransitioner)
         {
-            Settings               = _Settings;
-            ContainersGetter       = _ContainersGetter;
-            UI                     = _UI;
-            InputController        = _InputController;
-            LevelStageController   = _LevelStageController;
-            CommandsProceeder      = _CommandsProceeder;
-            Character              = _Character;
-            Common                 = _Common;
-            Background             = _Background;
-            Foreground             = _Foreground;
-            MazeRotation           = _MazeRotation;
-            PathItemsGroup         = _PathItemsGroup;
-            MovingItemsGroup       = _MovingItemsGroup;
-            TrapsReactItemsGroup   = _TrapsReactItemsGroup;
-            TrapsIncItemsGroup     = _TrapsIncItemsGroup;
-            TurretsGroup           = _TurretsGroup;
-            PortalsGroup           = _PortalsGroup;
-            ShredingerBlocksGroup  = _ShredingerBlocksGroup;
-            SpringboardItemsGroup  = _SpringboardItemsGroup;
-            GravityItemsGroup      = _GravityItemsGroup;
-            Managers               = _Managers;
-            CoordinateConverter    = _CoordinateConverter;
-            ColorProvider          = _ColorProvider;
-            CameraProvider         = _CameraProvider;
-            DebugManager           = _DebugManager;
-            BigDialogViewer = _BigDialogViewer;
+            Settings                     = _Settings;
+            ContainersGetter             = _ContainersGetter;
+            UI                           = _UI;
+            InputController              = _InputController;
+            LevelStageController         = _LevelStageController;
+            CommandsProceeder            = _CommandsProceeder;
+            Character                    = _Character;
+            Common                       = _Common;
+            Background                   = _Background;
+            Foreground                   = _Foreground;
+            MazeRotation                 = _MazeRotation;
+            PathItemsGroup               = _PathItemsGroup;
+            MovingItemsGroup             = _MovingItemsGroup;
+            TrapsReactItemsGroup         = _TrapsReactItemsGroup;
+            TrapsIncItemsGroup           = _TrapsIncItemsGroup;
+            TurretsGroup                 = _TurretsGroup;
+            PortalsGroup                 = _PortalsGroup;
+            ShredingerBlocksGroup        = _ShredingerBlocksGroup;
+            SpringboardItemsGroup        = _SpringboardItemsGroup;
+            GravityItemsGroup            = _GravityItemsGroup;
+            Managers                     = _Managers;
+            CoordinateConverter          = _CoordinateConverter;
+            ColorProvider                = _ColorProvider;
+            CameraProvider               = _CameraProvider;
+            DebugManager                 = _DebugManager;
+            BigDialogViewer              = _BigDialogViewer;
+            BetweenLevelMazeTransitioner = _BetweenLevelMazeTransitioner;
         }
         
         #endregion
@@ -209,6 +213,7 @@ namespace RMAZOR.Views
                 ShredingerBlocksGroup,
                 SpringboardItemsGroup,
                 GravityItemsGroup,
+                BetweenLevelMazeTransitioner,
                 Background,
                 Foreground,
                 CameraProvider,

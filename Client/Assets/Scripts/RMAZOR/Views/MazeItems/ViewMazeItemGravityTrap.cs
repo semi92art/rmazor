@@ -62,7 +62,7 @@ namespace RMAZOR.Views.MazeItems
             IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IViewGameTicker _GameTicker,
-            IViewAppearTransitioner _Transitioner,
+            IViewBetweenLevelMazeTransitioner _Transitioner,
             IManagersGetter _Managers,
             IMazeShaker _MazeShaker,
             IColorProvider _ColorProvider,
@@ -283,7 +283,7 @@ namespace RMAZOR.Views.MazeItems
                 foreach (var cone in m_Cones)
                     cone.Color = _Color;
             }
-            else if (_ColorId == ColorIds.Background)
+            else if (_ColorId == ColorIds.Background1)
                 m_InnerDisc.Color = _Color;
         }
 

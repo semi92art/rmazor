@@ -21,7 +21,7 @@ namespace Common.Extensions
         public static Vector3 SetZ  (this Vector3 _V, float _Z) => new Vector3(_V.x, _V.y, _Z);
         public static Vector3 PlusX (this Vector3 _V, float _X) => _V.SetX(_V.x + _X);
         public static Vector3 PlusY (this Vector3 _V, float _Y) => _V.SetY(_V.y + _Y);
-        public static Vector3 PlusZ (this Vector3 _V, float _Z) => _V.SetY(_V.z + _Z);
+        public static Vector3 PlusZ (this Vector3 _V, float _Z) => _V.SetZ(_V.z + _Z);
         public static Vector3 MinusX(this Vector3 _V, float _X) => _V.SetX(_V.x - _X);
         public static Vector3 MinusY(this Vector3 _V, float _Y) => _V.SetY(_V.y - _Y);
         public static Vector3 MinusZ(this Vector3 _V, float _Z) => _V.SetY(_V.z - _Z);

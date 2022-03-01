@@ -1,0 +1,79 @@
+Shader "Unlit/Background/Liness"
+{
+    Properties {
+		_Color1 ("Color 1", Color) = (0,0,0,1)
+		_Color2 ("Color 2", Color) = (1,1,1,1)
+		_Tiling ("Tiling", Range(1, 500)) = 10
+		_Direction ("Direction", Range(0, 1)) = 0
+		_WarpScale ("Warp Scale", Range(0, 1)) = 0
+		_WarpTiling ("Warp Tiling", Range(1, 10)) = 1
+	}
+
+	SubShader
+	{
+
+		Pass
+		{
+			CGPROGRAM
+			#pragma vertex vert
+			#pragma fragment frag
+
+			#include "UnityCG.cginc"
+
+			fixed4 _Color1;
+			fixed4 _Color2;
+			int _Tiling;
+			float _Direction;
+			float _WarpScale;
+			float _WarpTiling;
+
+			struct appdata
+			{
+				float4 vertex : POSITION;
+				float2 uv : TEXCOORD0;
+			};
+
+			struct v2f
+			{
+				float2 uv : TEXCOORD0;
+				float4 vertex : SV_POSITION;
+			};
+
+			v2f vert (appdata v)
+			{
+				v2f o;
+				o.vertex = UnityObjectToClipPos(v.vertex);
+				o.uv = v.uv;
+				return o;
+			}
+
+			inline fixed color_selector_anti_aliasing(float2 pos, float indent)
+			{
+				return floor(frac(pos.x + indent) + 0.5);
+			}
+			
+			inline fixed color_selector(float2 pos)
+			{
+				fixed v1 = color_selector_anti_aliasing(pos, 0);
+				fixed v2 = color_selector_anti_aliasing(pos, 0.005);
+				fixed v3 = color_selector_anti_aliasing(pos, -0.005);
+				fixed v4 = color_selector_anti_aliasing(pos, 0.0025);
+				fixed v5 = color_selector_anti_aliasing(pos, -0.0025);
+				return (v1 + v2 + v3 + v4 + v5) / 5;
+			}
+
+			fixed4 frag (v2f i) : SV_Target
+			{
+				const float PI = 3.14159;
+				float2 pos;
+				pos.x = lerp(i.uv.x, i.uv.y, _Direction);
+				pos.y = lerp(i.uv.y, 1 - i.uv.x, _Direction);
+				pos.x += sin(pos.y * _WarpTiling * PI * 2) * _WarpScale;
+				pos.x *= _Tiling;
+				fixed lerp_coeff = color_selector(pos);
+				return lerp(_Color1, _Color2, lerp_coeff);
+			}
+			ENDCG
+		}
+	}
+}

@@ -402,7 +402,7 @@ namespace RMAZOR.Editor
             m_AssetBundleManager = new AssetBundleManagerFake();
             m_PrefabSetManager = new PrefabSetManager(m_AssetBundleManager);
             m_ViewSettings = m_PrefabSetManager.GetObject<ViewSettings>(
-                "model_settings", "view_settings");
+                "configs", "view_settings");
             m_CoordinateConverter = new MazeCoordinateConverter(m_ViewSettings, null);
             m_ContainersGetter = new ContainersGetterRmazor(null, m_CoordinateConverter);
             m_CoordinateConverter.GetContainer = m_ContainersGetter.GetContainer;

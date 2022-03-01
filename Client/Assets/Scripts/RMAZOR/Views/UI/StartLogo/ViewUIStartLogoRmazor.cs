@@ -56,7 +56,7 @@ namespace RMAZOR.Views.UI.StartLogo
             trigerrer.Trigger1 += () => LogoShowingAnimationPassed = true;
             var eye1 = StartLogoObj.GetCompItem<Rectangle>("eye_1");
             var eye2 = StartLogoObj.GetCompItem<Rectangle>("eye_2");
-            eye1.Color = eye2.Color = ColorProvider.GetColor(ColorIds.Background);
+            eye1.Color = eye2.Color = ColorProvider.GetColor(ColorIds.Background1);
         }
 
         protected override IEnumerable<ShapeRenderer> GetExceptedLogoColorObjects()

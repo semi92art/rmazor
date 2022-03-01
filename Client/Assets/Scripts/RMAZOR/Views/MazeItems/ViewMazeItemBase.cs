@@ -44,32 +44,32 @@ namespace RMAZOR.Views.MazeItems
         protected IMazeCoordinateConverter    CoordinateConverter { get; }
         protected IContainersGetter           ContainersGetter    { get; }
         protected IViewGameTicker             GameTicker          { get; }
-        protected IViewAppearTransitioner     Transitioner        { get; }
+        protected IViewBetweenLevelMazeTransitioner     Transitioner        { get; }
         protected IManagersGetter             Managers            { get; }
         protected IColorProvider              ColorProvider       { get; }
         protected IViewInputCommandsProceeder CommandsProceeder   { get; }
 
 
-        protected ViewMazeItemBase (
-            ViewSettings _ViewSettings,
-            IModelGame _Model,
-            IMazeCoordinateConverter _CoordinateConverter,
-            IContainersGetter _ContainersGetter,
-            IViewGameTicker _GameTicker,
-            IViewAppearTransitioner _Transitioner,
-            IManagersGetter _Managers,
-            IColorProvider _ColorProvider,
+        protected ViewMazeItemBase(
+            ViewSettings                _ViewSettings,
+            IModelGame                  _Model,
+            IMazeCoordinateConverter    _CoordinateConverter,
+            IContainersGetter           _ContainersGetter,
+            IViewGameTicker             _GameTicker,
+            IViewBetweenLevelMazeTransitioner     _Transitioner,
+            IManagersGetter             _Managers,
+            IColorProvider              _ColorProvider,
             IViewInputCommandsProceeder _CommandsProceeder)
         {
-            ViewSettings = _ViewSettings;
-            Model = _Model;
+            ViewSettings        = _ViewSettings;
+            Model               = _Model;
             CoordinateConverter = _CoordinateConverter;
-            ContainersGetter = _ContainersGetter;
-            GameTicker = _GameTicker;
-            Transitioner = _Transitioner;
-            Managers = _Managers;
-            ColorProvider = _ColorProvider;
-            CommandsProceeder = _CommandsProceeder;
+            ContainersGetter    = _ContainersGetter;
+            GameTicker          = _GameTicker;
+            Transitioner        = _Transitioner;
+            Managers            = _Managers;
+            ColorProvider       = _ColorProvider;
+            CommandsProceeder   = _CommandsProceeder;
         }
 
         #endregion

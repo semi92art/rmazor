@@ -23,8 +23,9 @@ namespace RMAZOR.Views.Helpers
         WithoutDelay
     }
     
-    public interface IViewAppearTransitioner
+    public interface IViewBetweenLevelMazeTransitioner
     {
+        float FullTransitionTime { get; }
         void DoAppearTransition(
             bool _Appear,
             Dictionary<IEnumerable<Component>, Func<Color>> _Sets,
@@ -33,27 +34,29 @@ namespace RMAZOR.Views.Helpers
             EAppearTransitionType _Type = EAppearTransitionType.Circled);
     }
 
-    public class ViewAppearTransitioner : IViewAppearTransitioner
+    public class ViewBetweenLevelMazeTransitioner : IViewBetweenLevelMazeTransitioner, IOnLevelStageChanged
     {
         #region inject
         
-        private IModelGame               Model               { get; }
-        private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IViewGameTicker          GameTicker          { get; }
+        private IModelGame      Model        { get; }
+        private IViewGameTicker GameTicker   { get; }
+        private ViewSettings    ViewSettings { get; }
 
-        public ViewAppearTransitioner(
-            IModelGame _Model, 
-            IMazeCoordinateConverter _CoordinateConverter, 
-            IViewGameTicker _GameTicker)
+        public ViewBetweenLevelMazeTransitioner(
+            IModelGame      _Model, 
+            IViewGameTicker _GameTicker,
+            ViewSettings    _ViewSettings)
         {
-            Model = _Model;
-            CoordinateConverter = _CoordinateConverter;
-            GameTicker = _GameTicker;
+            Model        = _Model;
+            GameTicker   = _GameTicker;
+            ViewSettings = _ViewSettings;
         }
 
         #endregion
 
         #region api
+
+        public float FullTransitionTime { get; private set; }
 
         public void DoAppearTransition(
             bool _Appear,
@@ -62,31 +65,31 @@ namespace RMAZOR.Views.Helpers
             UnityAction _OnFinish = null,
             EAppearTransitionType _Type = EAppearTransitionType.Circled)
         {
-            const float transitionTime = 0.3f;
             float delay = GetDelay(_Appear, _Type, _ItemPosition);
-            
             foreach (var set in _Sets)
             {
                 Color ToAlpha0() => set.Value().SetA(0f);
-
                 var startCol = _Appear ? ToAlpha0 : set.Value;
                 var endCol = !_Appear ? ToAlpha0 : set.Value;
                 var shapes = set.Key.Where(_Shape => _Shape.IsNotNull()).ToList();
-                
                 foreach (var shape in shapes)
                 {
-                    if (shape is ShapeRenderer shapeRenderer)        shapeRenderer.Color  = startCol();
-                    else if (shape is SpriteRenderer spriteRenderer) spriteRenderer.color = startCol();
-                    else if (shape is TextMeshPro textMeshPro)       textMeshPro.color    = startCol();
+                    switch (shape)
+                    {
+                        case ShapeRenderer shapeRenderer: shapeRenderer.Color    = startCol(); break;
+                        case SpriteRenderer spriteRenderer: spriteRenderer.color = startCol(); break;
+                        case TextMeshPro textMeshPro: textMeshPro.color          = startCol(); break;
+                    }
                 }
-                
                 if (_Appear)
                     foreach (var shape in shapes)
                     {
-                        if (shape is Behaviour beh) beh.enabled = true;
-                        else if (shape is Renderer rend) rend.enabled = true;
+                        switch (shape)
+                        {
+                            case Behaviour beh: beh.enabled = true; break;
+                            case Renderer rend: rend.enabled = true; break;
+                        }
                     }
-
                 Cor.Run(Cor.Delay(
                     delay,
                     () =>
@@ -94,15 +97,18 @@ namespace RMAZOR.Views.Helpers
                         Cor.Run(Cor.Lerp(
                             0f,
                             1f,
-                            transitionTime,
+                            ViewSettings.mazeItemTransitionTime,
                             _Progress =>
                             {
                                 var col = Color.Lerp(startCol(), endCol(), _Progress);
                                 foreach (var shape in shapes)
                                 {
-                                    if (shape is ShapeRenderer shapeRenderer)        shapeRenderer.Color  = col;
-                                    else if (shape is SpriteRenderer spriteRenderer) spriteRenderer.color = col;
-                                    else if (shape is TextMeshPro textMeshPro)       textMeshPro.color    = col;
+                                    switch (shape)
+                                    {
+                                        case ShapeRenderer shapeRenderer:   shapeRenderer.Color  = col; break;
+                                        case SpriteRenderer spriteRenderer: spriteRenderer.color = col; break;
+                                        case TextMeshPro textMeshPro:       textMeshPro.color    = col; break;
+                                    }
                                 }
                             },
                             GameTicker,
@@ -110,19 +116,21 @@ namespace RMAZOR.Views.Helpers
                             {
                                 foreach (var shape in shapes)
                                 {
-                                    if (shape is ShapeRenderer shapeRenderer)
-                                        shapeRenderer.Color = endCol();
-                                    else if (shape is SpriteRenderer spriteRenderer)
-                                        spriteRenderer.color = endCol();
-                                    else if (shape is TextMeshPro textMeshPro)
-                                        textMeshPro.color = endCol();
+                                    switch (shape)
+                                    {
+                                        case ShapeRenderer shapeRenderer:   shapeRenderer.Color  = endCol(); break;
+                                        case SpriteRenderer spriteRenderer: spriteRenderer.color = endCol(); break;
+                                        case TextMeshPro textMeshPro:       textMeshPro.color    = endCol(); break;
+                                    }
                                 }
-                                
                                 if (!_Appear)
                                     foreach (var shape in shapes)
                                     {
-                                        if (shape is Behaviour beh)      beh.enabled  = false;
-                                        else if (shape is Renderer rend) rend.enabled = false;
+                                        switch (shape)
+                                        {
+                                            case Behaviour beh: beh.enabled  = false; break;
+                                            case Renderer rend: rend.enabled = false; break;
+                                        }
                                     }
                                 _OnFinish?.Invoke();
                             }));
@@ -147,7 +155,7 @@ namespace RMAZOR.Views.Helpers
                 case EAppearTransitionType.TopToBottom:
                     if (!_Position.HasValue)
                         return 0f;
-                    return (_Appear ? _Position.Value.Y : mazeSize.Y -_Position.Value.Y) * coeff;
+                    return (_Appear ? _Position.Value.Y : mazeSize.Y - _Position.Value.Y) * coeff;
                 case EAppearTransitionType.Random:
                     return Random.value * 10f * coeff;
                 case EAppearTransitionType.WithoutDelay:
@@ -155,6 +163,30 @@ namespace RMAZOR.Views.Helpers
                 default:
                     throw new SwitchCaseNotImplementedException(_Type);
             }
+        }
+
+        public void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            if (_Args.Stage != ELevelStage.Loaded)
+                return;
+            var blockPositions = Model.GetAllProceedInfos().Select(_Info => _Info.StartPosition);
+            var pathPositions = Model.PathItemsProceeder.PathProceeds.Keys;
+            var allPositions = blockPositions.Concat(pathPositions).Distinct();
+            float maxSqrDistanceFromCenter = 0f;
+            V2Int positionWithMaxDistance = default;
+            var mazeSize = Model.Data.Info.Size;
+            var center = new Vector2(mazeSize.X * 0.5f, mazeSize.Y * 0.5f);
+            foreach (var pos in allPositions)
+            {
+                float dX = pos.X - center.x;
+                float dY = pos.Y - center.y;
+                float sqrDist = dX * dX + dY * dY;
+                if (sqrDist < maxSqrDistanceFromCenter)
+                    continue;
+                maxSqrDistanceFromCenter = sqrDist;
+                positionWithMaxDistance = pos;
+            }
+            FullTransitionTime = GetDelay(true, EAppearTransitionType.Circled, positionWithMaxDistance);
         }
     }
 }

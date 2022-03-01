@@ -28,7 +28,9 @@ MonoBehaviour:
       color: {r: 1, g: 1, b: 1, a: 1}
     - name: Character Tail
       color: {r: 1, g: 1, b: 1, a: 0.5019608}
-    - name: Background
+    - name: Background 1
+      color: {r: 0, g: 0, b: 0, a: 1}
+    - name: Background 2
       color: {r: 0, g: 0, b: 0, a: 1}
     - name: Path
       color: {r: 0.6981132, g: 0.61519694, b: 0.2206301, a: 1}

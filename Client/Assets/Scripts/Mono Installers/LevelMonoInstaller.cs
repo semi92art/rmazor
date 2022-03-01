@@ -15,6 +15,7 @@ using RMAZOR.Views;
 using RMAZOR.Views.Characters;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.Common.CongratulationItems;
+using RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders;
 using RMAZOR.Views.ContainerGetters;
 using RMAZOR.Views.Helpers;
 using RMAZOR.Views.Helpers.MazeItemsCreators;
@@ -93,7 +94,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazeBackgroundIdleItems>()   .To<ViewMazeBackgroundIdleItems>()   .AsSingle();
             Container.Bind<IViewMazeBackgroundCongradItems>().To<ViewMazeBackgroundCongradItems2>().AsSingle();
             Container.Bind<IViewMazeForeground>()            .To<ViewMazeForeground>()            .AsSingle();
-            Container.Bind<IViewAppearTransitioner>()        .To<ViewAppearTransitioner>()        .AsSingle();
+            Container.Bind<IViewBetweenLevelMazeTransitioner>()        .To<ViewBetweenLevelMazeTransitioner>()        .AsSingle();
             Container.Bind<IViewLevelStageController>()      .To<ViewLevelStageController>()      .AsSingle();
             
             Container.Bind<IViewCharacter>()                 .To<ViewCharacter>()                 .AsSingle();
@@ -124,6 +125,11 @@ namespace Mono_Installers
             Container.Bind<IViewMazeTrapsReactItemsGroup>()  .To<ViewMazeTrapsReactItemGroup>()   .AsSingle();
             Container.Bind<IViewMazeTrapsIncItemsGroup>()    .To<ViewMazeTrapsIncItemsGroup>()    .AsSingle();
             Container.Bind<IViewMazeGravityItemsGroup>()     .To<ViewMazeGravityItemsGroup>()     .AsSingle();
+
+            Container.Bind<IViewMazeBackgroundTextureController>() .To<ViewMazeBackgroundTextureController>() .AsSingle();
+            Container.Bind<IViewMazeBackgroundSolidTextureProvider>() .To<ViewMazeBackgroundSolidTextureProvider>() .AsSingle();
+            Container.Bind<IViewMazeBackgroundLinesTextureProvider>() .To<ViewMazeBackgroundLinesTextureProvider>() .AsSingle();
+            Container.Bind<IViewMazeBackgroundCircleTextureProvider>().To<ViewMazeBackgroundCircleTextureProvider>().AsSingle();
 
             if (!CommonData.Release)
             {

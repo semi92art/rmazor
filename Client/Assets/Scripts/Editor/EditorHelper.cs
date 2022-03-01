@@ -174,21 +174,21 @@ namespace Editor
         private void ModelSettingsTabPage()
         {
             var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ModelSettings>(
-                "model_settings", "model_settings");
+                "configs", "model_settings");
             SettingsTabPageCore(settings, typeof(ModelSettings));
         }
     
         private void ViewSettingsTabPage()
         {
             var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ViewSettings>(
-                "model_settings", "view_settings");
+                "configs", "view_settings");
             SettingsTabPageCore(settings, typeof(ViewSettings));
         }
 
         private void ViewCommonGameSettingsTabPage()
         {
             var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<CommonGameSettings>(
-                "model_settings", "common_game_settings");
+                "configs", "common_game_settings");
             SettingsTabPageCore(settings, typeof(CommonGameSettings));
         }
 

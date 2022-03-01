@@ -87,7 +87,7 @@ namespace RMAZOR.Views.Common
         {
             SaveUtils.PutValue(SaveKeysCommon.DarkTheme, _Theme == EColorTheme.Dark);
             SetThemeCore(_Theme == EColorTheme.Dark);
-            foreach (int id in m_ColorsDict.Keys.ToList().Except(new [] {ColorIds.Main, ColorIds.Background}))
+            foreach (int id in m_ColorsDict.Keys.ToList().Except(new [] {ColorIds.Main, ColorIds.Background1, ColorIds.Background2}))
                 SetColor(id, m_ColorsDict[id]);
             ColorThemeChanged?.Invoke(_Theme);
         }
