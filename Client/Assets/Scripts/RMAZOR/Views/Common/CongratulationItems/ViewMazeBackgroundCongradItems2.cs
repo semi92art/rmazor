@@ -37,7 +37,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
 
         public ViewMazeBackgroundCongradItems2(
             IColorProvider          _ColorProvider,
-            IViewBetweenLevelMazeTransitioner _Transitioner,
+            IViewBetweenLevelTransitioner _Transitioner,
             IContainersGetter       _ContainersGetter,
             IViewGameTicker         _GameTicker,
             ICameraProvider         _CameraProvider,

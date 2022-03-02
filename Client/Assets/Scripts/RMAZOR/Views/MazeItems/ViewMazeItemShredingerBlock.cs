@@ -57,7 +57,7 @@ namespace RMAZOR.Views.MazeItems
             IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter _ContainersGetter,
             IViewGameTicker _GameTicker,
-            IViewBetweenLevelMazeTransitioner _Transitioner,
+            IViewBetweenLevelTransitioner _Transitioner,
             IManagersGetter _Managers,
             IColorProvider _ColorProvider,
             IViewInputCommandsProceeder _CommandsProceeder)

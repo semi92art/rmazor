@@ -92,16 +92,19 @@ namespace RMAZOR.Managers
             GetConfig(ref adsAdMob, "ads.unityads");
             if (adsUnity) provider |= EAdsProvider.UnityAds;
             CommonGameSettings.AdsProvider = provider;
-            GetConfig(ref CommonGameSettings.admobRate,           "ads.admob.rate");
-            GetConfig(ref CommonGameSettings.unityAdsRate,        "ads.unityads.rate");
-            GetConfig(ref CommonGameSettings.showAdsEveryLevel,   "ads.show_ad_every_level");
-            GetConfig(ref CommonGameSettings.firstLevelToShowAds, "ads.first_level_to_show_ads");
-            GetConfig(ref ModelSettings.characterSpeed,           "character.speed");
-            GetConfig(ref ModelSettings.gravityBlockSpeed,        "mazeitems.gravityblock.speed");
-            GetConfig(ref ModelSettings.movingItemsSpeed,         "mazeitems.movingtrap.speed");
-            GetConfig(ref ViewSettings.rateRequestsFrequency,     "common.raterequestsfrequency");
-            GetConfig(ref ViewSettings.adsRequestsFrequency,      "ads.adsrequestsfrequency");
-            GetConfig(ref ViewSettings.firstLevelToRateGame,      "common.first_level_to_rate_game");
+            GetConfig(ref CommonGameSettings.admobRate,                    "ads.admob.rate");
+            GetConfig(ref CommonGameSettings.unityAdsRate,                 "ads.unityads.rate");
+            GetConfig(ref CommonGameSettings.showAdsEveryLevel,            "ads.show_ad_every_level");
+            GetConfig(ref CommonGameSettings.firstLevelToShowAds,          "ads.first_level_to_show_ads");
+            GetConfig(ref ModelSettings.characterSpeed,                    "character.speed");
+            GetConfig(ref ModelSettings.gravityBlockSpeed,                 "mazeitems.gravityblock.speed");
+            GetConfig(ref ModelSettings.movingItemsSpeed,                  "mazeitems.movingtrap.speed");
+            GetConfig(ref ViewSettings.rateRequestsFrequency,              "common.raterequestsfrequency");
+            GetConfig(ref ViewSettings.adsRequestsFrequency,               "ads.adsrequestsfrequency");
+            GetConfig(ref ViewSettings.firstLevelToRateGame,               "common.first_level_to_rate_game");
+            GetConfig(ref ViewSettings.mazeItemTransitionTime,             "common.maze_item_transition_time");
+            GetConfig(ref ViewSettings.mazeItemTransitionDelayCoefficient, "common.maze_item_transition_coefficient");
+            
 #if !UNITY_EDITOR && !DEVELOPMENT_BUILD
             string testDeviceIdfasJson = string.Empty;
             GetConfig(ref testDeviceIdfasJson, "common.test_device_ids", true);

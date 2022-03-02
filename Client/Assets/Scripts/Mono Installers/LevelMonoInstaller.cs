@@ -16,6 +16,7 @@ using RMAZOR.Views.Characters;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.Common.CongratulationItems;
 using RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders;
+using RMAZOR.Views.Common.ViewMazeMoneyItems;
 using RMAZOR.Views.ContainerGetters;
 using RMAZOR.Views.Helpers;
 using RMAZOR.Views.Helpers.MazeItemsCreators;
@@ -94,7 +95,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazeBackgroundIdleItems>()   .To<ViewMazeBackgroundIdleItems>()   .AsSingle();
             Container.Bind<IViewMazeBackgroundCongradItems>().To<ViewMazeBackgroundCongradItems2>().AsSingle();
             Container.Bind<IViewMazeForeground>()            .To<ViewMazeForeground>()            .AsSingle();
-            Container.Bind<IViewBetweenLevelMazeTransitioner>()        .To<ViewBetweenLevelMazeTransitioner>()        .AsSingle();
+            Container.Bind<IViewBetweenLevelTransitioner>()  .To<ViewBetweenLevelTransitioner>()  .AsSingle();
             Container.Bind<IViewLevelStageController>()      .To<ViewLevelStageController>()      .AsSingle();
             
             Container.Bind<IViewCharacter>()                 .To<ViewCharacter>()                 .AsSingle();
@@ -104,7 +105,8 @@ namespace Mono_Installers
             
             Container.Bind<IViewTurretProjectileTail>()      .To<ViewTurretProjectileTailFake>()  .AsSingle();
 
-            Container.Bind<IViewMazeItemPath>()              .To<ViewMazeItemPath>()              .AsSingle();
+            Container.Bind<IViewMazeMoneyItem>()             .To<ViewMazeMoneyItemHexagon>()      .AsSingle();
+            Container.Bind<IViewMazeItemPath>()              .To<ViewMazeItemPathFilled>()        .AsSingle();
             Container.Bind<IViewMazeItemGravityBlock>()      .To<ViewMazeItemGravityBlock>()      .AsSingle();
             Container.Bind<IViewMazeItemMovingTrap>()        .To<ViewMazeItemMovingTrap>()        .AsSingle();
             Container.Bind<IViewMazeItemShredingerBlock>()   .To<ViewMazeItemShredingerBlock>()   .AsSingle();

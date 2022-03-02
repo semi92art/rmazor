@@ -23,7 +23,7 @@ namespace RMAZOR.Views.Helpers
         WithoutDelay
     }
     
-    public interface IViewBetweenLevelMazeTransitioner
+    public interface IViewBetweenLevelTransitioner
     {
         float FullTransitionTime { get; }
         void DoAppearTransition(
@@ -34,7 +34,7 @@ namespace RMAZOR.Views.Helpers
             EAppearTransitionType _Type = EAppearTransitionType.Circled);
     }
 
-    public class ViewBetweenLevelMazeTransitioner : IViewBetweenLevelMazeTransitioner, IOnLevelStageChanged
+    public class ViewBetweenLevelTransitioner : IViewBetweenLevelTransitioner, IOnLevelStageChanged
     {
         #region inject
         
@@ -42,7 +42,7 @@ namespace RMAZOR.Views.Helpers
         private IViewGameTicker GameTicker   { get; }
         private ViewSettings    ViewSettings { get; }
 
-        public ViewBetweenLevelMazeTransitioner(
+        public ViewBetweenLevelTransitioner(
             IModelGame      _Model, 
             IViewGameTicker _GameTicker,
             ViewSettings    _ViewSettings)
@@ -142,7 +142,7 @@ namespace RMAZOR.Views.Helpers
         
         private float GetDelay(bool _Appear, EAppearTransitionType _Type, V2Int? _Position = null)
         {
-            const float coeff = 0.05f;
+            float coeff = ViewSettings.mazeItemTransitionDelayCoefficient;
             var mazeSize = Model.Data.Info.Size;
             switch (_Type)
             {

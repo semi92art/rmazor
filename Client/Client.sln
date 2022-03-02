@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RMAZOR", "RMAZOR.csproj", "{92a482b9-d6ff-fdc6-3a70-65826a212f32}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA.Android", "SA.Android.csproj", "{7575140c-e7c7-05a5-f0e3-c8d1990a3b39}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject", "Zenject.csproj", "{1cfb9808-d979-347d-fc5a-21903b2631da}"
@@ -8,8 +10,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Google.Play.Review", "Google.Play.Review.csproj", "{8eebbc9d-bf54-3248-e9dc-3185bc8288a6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA.iOS", "SA.iOS.csproj", "{9084c752-ba18-93d1-6e93-3428648c682d}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RMAZOR", "RMAZOR.csproj", "{92a482b9-d6ff-fdc6-3a70-65826a212f32}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lean.Localization", "Lean.Localization.csproj", "{9effb9b0-5df2-d59f-eaf7-6f13fd62e218}"
 EndProject
@@ -104,6 +104,8 @@ Global
 		Debug|Any CPU = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{92a482b9-d6ff-fdc6-3a70-65826a212f32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92a482b9-d6ff-fdc6-3a70-65826a212f32}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7575140c-e7c7-05a5-f0e3-c8d1990a3b39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7575140c-e7c7-05a5-f0e3-c8d1990a3b39}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1cfb9808-d979-347d-fc5a-21903b2631da}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -112,8 +114,6 @@ Global
 		{8eebbc9d-bf54-3248-e9dc-3185bc8288a6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9084c752-ba18-93d1-6e93-3428648c682d}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9084c752-ba18-93d1-6e93-3428648c682d}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{92a482b9-d6ff-fdc6-3a70-65826a212f32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{92a482b9-d6ff-fdc6-3a70-65826a212f32}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9effb9b0-5df2-d59f-eaf7-6f13fd62e218}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9effb9b0-5df2-d59f-eaf7-6f13fd62e218}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{dbc59b87-3b94-d785-128c-d2a350190458}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

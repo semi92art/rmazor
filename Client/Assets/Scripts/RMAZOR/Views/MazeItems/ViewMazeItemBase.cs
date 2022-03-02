@@ -33,6 +33,7 @@ namespace RMAZOR.Views.MazeItems
         
         protected abstract string ObjectName { get; }
         protected bool Initialized { get; set; }
+        // ReSharper disable once InconsistentNaming
         protected bool m_ActivatedInSpawnPool;
 
         #endregion
@@ -44,22 +45,22 @@ namespace RMAZOR.Views.MazeItems
         protected IMazeCoordinateConverter    CoordinateConverter { get; }
         protected IContainersGetter           ContainersGetter    { get; }
         protected IViewGameTicker             GameTicker          { get; }
-        protected IViewBetweenLevelMazeTransitioner     Transitioner        { get; }
+        protected IViewBetweenLevelTransitioner     Transitioner        { get; }
         protected IManagersGetter             Managers            { get; }
         protected IColorProvider              ColorProvider       { get; }
         protected IViewInputCommandsProceeder CommandsProceeder   { get; }
 
 
         protected ViewMazeItemBase(
-            ViewSettings                _ViewSettings,
-            IModelGame                  _Model,
-            IMazeCoordinateConverter    _CoordinateConverter,
-            IContainersGetter           _ContainersGetter,
-            IViewGameTicker             _GameTicker,
-            IViewBetweenLevelMazeTransitioner     _Transitioner,
-            IManagersGetter             _Managers,
-            IColorProvider              _ColorProvider,
-            IViewInputCommandsProceeder _CommandsProceeder)
+            ViewSettings                      _ViewSettings,
+            IModelGame                        _Model,
+            IMazeCoordinateConverter          _CoordinateConverter,
+            IContainersGetter                 _ContainersGetter,
+            IViewGameTicker                   _GameTicker,
+            IViewBetweenLevelTransitioner _Transitioner,
+            IManagersGetter                   _Managers,
+            IColorProvider                    _ColorProvider,
+            IViewInputCommandsProceeder       _CommandsProceeder)
         {
             ViewSettings        = _ViewSettings;
             Model               = _Model;

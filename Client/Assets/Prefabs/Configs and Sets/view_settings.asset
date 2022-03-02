@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edbe76a02fa3404f9e04b54b4caf98f8, type: 3}
   m_Name: view_settings
   m_EditorClassIdentifier: 
-  lineWidth: 10
-  cornerWidth: 10
+  lineWidth: 12
+  cornerWidth: 12
   cornerRadius: 20
   movingTrapRotationSpeed: 800
   shredingerLineOffsetSpeed: 200
@@ -37,4 +37,5 @@ MonoBehaviour:
   adsRequestsFrequency: 5
   levelsCountMain: 360
   firstLevelToRateGame: 20
-  mazeItemTransitionTime: 0.3
+  mazeItemTransitionTime: 0.01
+  mazeItemTransitionDelayCoefficient: 0.1

@@ -77,7 +77,7 @@ namespace RMAZOR.Views.MazeItems
             IViewGameTicker _GameTicker,
             IViewTurretProjectileTail _ProjectileTail,
             IViewMazeBackground _Background,
-            IViewBetweenLevelMazeTransitioner _Transitioner,
+            IViewBetweenLevelTransitioner _Transitioner,
             IManagersGetter _Managers,
             IColorProvider _ColorProvider,
             IViewInputCommandsProceeder _CommandsProceeder)

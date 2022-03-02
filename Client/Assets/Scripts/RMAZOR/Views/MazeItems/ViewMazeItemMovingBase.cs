@@ -31,13 +31,13 @@ namespace RMAZOR.Views.MazeItems
     {
         #region nonpublic members
 
-        private static AudioClipArgs AudioClipArgsBlockDrop => new AudioClipArgs("block_drop", EAudioClipType.GameSound);
+        private static AudioClipArgs AudioClipArgsBlockDrop =>
+            new AudioClipArgs("block_drop", EAudioClipType.GameSound);
         
         #endregion
         
         #region shapes
 
-        private          Polyline   m_PathPolyLine;
         private readonly List<Line> m_PathLines  = new List<Line>();
         private readonly List<Disc> m_PathJoints = new List<Disc>();
 
@@ -46,17 +46,17 @@ namespace RMAZOR.Views.MazeItems
         #region constructor
 
         protected ViewMazeItemMovingBase(
-            ViewSettings _ViewSettings,
-            IModelGame _Model,
-            IMazeCoordinateConverter _CoordinateConverter,
-            IContainersGetter _ContainersGetter,
-            IViewGameTicker _GameTicker,
-            IViewBetweenLevelMazeTransitioner _Transitioner,
-            IManagersGetter _Managers,
-            IColorProvider _ColorProvider,
-            IViewInputCommandsProceeder _CommandsProceeder) 
+            ViewSettings                  _ViewSettings,
+            IModelGame                    _Model,
+            IMazeCoordinateConverter      _CoordinateConverter,
+            IContainersGetter             _ContainersGetter,
+            IViewGameTicker               _GameTicker,
+            IViewBetweenLevelTransitioner _Transitioner,
+            IManagersGetter               _Managers,
+            IColorProvider                _ColorProvider,
+            IViewInputCommandsProceeder   _CommandsProceeder)
             : base(
-                _ViewSettings, 
+                _ViewSettings,
                 _Model,
                 _CoordinateConverter,
                 _ContainersGetter,
@@ -75,8 +75,6 @@ namespace RMAZOR.Views.MazeItems
             get => base.ActivatedInSpawnPool;
             set
             {
-                if (m_PathPolyLine.IsNotNull())
-                    m_PathPolyLine.enabled = false;
                 foreach (var pathJoint in m_PathJoints)
                     pathJoint.enabled = false;
                 foreach (var pathLine in m_PathLines)
@@ -122,8 +120,6 @@ namespace RMAZOR.Views.MazeItems
 
         protected void InitWallBlockMovingPathsCore()
         {
-            if (m_PathPolyLine.IsNotNull())
-                m_PathPolyLine.gameObject.DestroySafe();
             foreach (var line in m_PathLines)
                 line.gameObject.DestroySafe();
             m_PathLines.Clear();
@@ -134,7 +130,6 @@ namespace RMAZOR.Views.MazeItems
                 .Select(_P => CoordinateConverter.ToLocalMazeItemPosition(_P))
                 .ToList();
             var containier = ContainersGetter.GetContainer(ContainerNames.MazeItems);
-            m_PathPolyLine = CreatePolyline(points, containier);
             for (int i = 0; i < points.Count; i++)
             {
                 m_PathJoints.Add( CreateJoint(points[i], containier));
@@ -142,25 +137,10 @@ namespace RMAZOR.Views.MazeItems
                     continue;
                 m_PathLines.Add(CreateLine(points[i], points[i + 1], containier));
             }
-            m_PathPolyLine.enabled = false;
             foreach (var pathLine in m_PathLines)
                 pathLine.enabled = false;
             foreach (var joint in m_PathJoints)
                 joint.enabled = false;
-        }
-
-        private Polyline CreatePolyline(IReadOnlyCollection<Vector2> _Points, Transform _Container)
-        {
-            var polyLineGo = new GameObject(ObjectName + " PolyLine");
-            polyLineGo.SetParent(_Container);
-            polyLineGo.transform.SetLocalPosXY(Vector2.zero);
-            var polyLine = polyLineGo.AddComponent<Polyline>();
-            polyLine.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale * 0.5f;
-            polyLine.SetPoints(_Points);
-            polyLine.Closed = false;
-            polyLine.SortingOrder = SortingOrders.PathLine;
-            polyLine.Joins = PolylineJoins.Round;
-            return polyLine;
         }
 
         private Disc CreateJoint(Vector2 _Point, Transform _Container)
@@ -184,7 +164,8 @@ namespace RMAZOR.Views.MazeItems
             (line.Start, line.End) = (_Start, _End);
             line.Dashed = true;
             line.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale * 0.5f;
-            line.DashSize = 2f;
+            line.DashSize = 1f;
+            line.DashSpacing = line.DashSize * 2f;
             line.DashType = DashType.Rounded;
             return line;
         }
@@ -192,12 +173,11 @@ namespace RMAZOR.Views.MazeItems
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
             var sets = base.GetAppearSets(_Appear);
-            if (m_PathPolyLine.IsNotNull())
-                sets.Add(new Component[] { m_PathPolyLine}, () => GetMainColor().SetA(0.2f));
+            var col = ColorProvider.GetColor(ColorIds.Main);
             if (m_PathLines.Any())
-                sets.Add(m_PathLines, () => GetMainColor().SetA(0.7f));
+                sets.Add(m_PathLines, () => col);
             if (m_PathJoints.Any())
-                sets.Add(m_PathJoints, GetMainColor);
+                sets.Add(m_PathJoints, () => col);
             return sets;
         }
 
@@ -205,19 +185,12 @@ namespace RMAZOR.Views.MazeItems
         {
             if (_ColorId != ColorIds.Main) 
                 return;
-            if (m_PathPolyLine.IsNotNull())
-                m_PathPolyLine.Color = _Color.SetA(0.2f);
             foreach (var line in m_PathLines.Where(_Line => _Line.IsNotNull()))
                 line.Color = _Color.SetA(0.7f);
             foreach (var joint in m_PathJoints.Where(_Joint => _Joint.IsNotNull()))
                 joint.Color = _Color;
         }
 
-        private Color GetMainColor()
-        {
-            return ColorProvider.GetColor(ColorIds.Main);
-        }
-        
         #endregion
     }
 }

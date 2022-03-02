@@ -33,6 +33,7 @@ namespace RMAZOR
         public int   levelsCountMain;
         public int   firstLevelToRateGame;
         public float mazeItemTransitionTime;
+        public float mazeItemTransitionDelayCoefficient;
 
         public float   LineWidth
         {

@@ -57,10 +57,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Amplitude: 0.145
+    - _Amplitude: 0.5
     - _BumpScale: 1
-    - _CenterX: 0
-    - _CenterY: 0
+    - _CenterX: 0.5
+    - _CenterY: 0.46875
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _Direction: 1
@@ -73,7 +73,7 @@ Material:
     - _N: 10.86
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Radius: 0.019
+    - _Radius: 0.0171
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -86,7 +86,7 @@ Material:
     - _isToggled: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Color1: {r: 0.25, g: 0.5, b: 0.33333337, a: 1}
-    - _Color2: {r: 0.35, g: 0.7, b: 0.46666673, a: 1}
+    - _Color1: {r: 0.41666666, g: 0.5, b: 0.25, a: 1}
+    - _Color2: {r: 0.5833333, g: 0.7, b: 0.35, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []

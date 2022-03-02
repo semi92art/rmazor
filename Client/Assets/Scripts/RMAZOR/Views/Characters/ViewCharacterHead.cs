@@ -62,7 +62,7 @@ namespace RMAZOR.Views.Characters
         private IContainersGetter        ContainersGetter    { get; }
         private IPrefabSetManager        PrefabSetManager    { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IViewBetweenLevelMazeTransitioner  BetweenLevelMazeTransitioner  { get; }
+        private IViewBetweenLevelTransitioner  BetweenLevelTransitioner  { get; }
 
         public ViewCharacterHead(
             IModelGame               _Model,
@@ -70,14 +70,14 @@ namespace RMAZOR.Views.Characters
             IContainersGetter        _ContainersGetter,
             IPrefabSetManager        _PrefabSetManager,
             IMazeCoordinateConverter _CoordinateConverter,
-            IViewBetweenLevelMazeTransitioner  _BetweenLevelMazeTransitioner)
+            IViewBetweenLevelTransitioner  _BetweenLevelTransitioner)
         {
             Model = _Model;
             ColorProvider = _ColorProvider;
             ContainersGetter = _ContainersGetter;
             PrefabSetManager = _PrefabSetManager;
             CoordinateConverter = _CoordinateConverter;
-            BetweenLevelMazeTransitioner = _BetweenLevelMazeTransitioner;
+            BetweenLevelTransitioner = _BetweenLevelTransitioner;
         }
         
         #endregion
@@ -150,7 +150,7 @@ namespace RMAZOR.Views.Characters
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
             if (_Appear)
                 m_Animator.SetTrigger(AnimKeyStartJumping);
-            BetweenLevelMazeTransitioner.DoAppearTransition(
+            BetweenLevelTransitioner.DoAppearTransition(
                 _Appear,
                 new Dictionary<IEnumerable<Component>, Func<Color>>
                 {

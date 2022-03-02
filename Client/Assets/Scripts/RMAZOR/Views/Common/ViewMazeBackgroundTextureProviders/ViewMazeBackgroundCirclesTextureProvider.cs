@@ -73,7 +73,6 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
 
         public void SetProperties(CirclesTextureSetItem _Item)
         {
-            Dbg.Log(JsonConvert.SerializeObject(_Item));
             Material.SetFloat(RadiusId, _Item.radius);
             Material.SetInt(WavesCountId, _Item.wavesCount);
             Material.SetFloat(AmplitudeId, _Item.amplitude);

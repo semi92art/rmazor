@@ -79,7 +79,7 @@ namespace RMAZOR.Views
         private ICameraProvider                   CameraProvider               { get; }
         private IDebugManager                     DebugManager                 { get; }
         private IBigDialogViewer                  BigDialogViewer              { get; }
-        private IViewBetweenLevelMazeTransitioner BetweenLevelMazeTransitioner { get; }
+        private IViewBetweenLevelTransitioner BetweenLevelTransitioner { get; }
 
         public ViewGame(
             ViewSettings                          _Settings,
@@ -108,7 +108,7 @@ namespace RMAZOR.Views
             ICameraProvider                       _CameraProvider,
             IDebugManager                         _DebugManager,
             IBigDialogViewer                      _BigDialogViewer,
-            IViewBetweenLevelMazeTransitioner     _BetweenLevelMazeTransitioner)
+            IViewBetweenLevelTransitioner     _BetweenLevelTransitioner)
         {
             Settings                     = _Settings;
             ContainersGetter             = _ContainersGetter;
@@ -136,7 +136,7 @@ namespace RMAZOR.Views
             CameraProvider               = _CameraProvider;
             DebugManager                 = _DebugManager;
             BigDialogViewer              = _BigDialogViewer;
-            BetweenLevelMazeTransitioner = _BetweenLevelMazeTransitioner;
+            BetweenLevelTransitioner = _BetweenLevelTransitioner;
         }
         
         #endregion
@@ -213,7 +213,7 @@ namespace RMAZOR.Views
                 ShredingerBlocksGroup,
                 SpringboardItemsGroup,
                 GravityItemsGroup,
-                BetweenLevelMazeTransitioner,
+                BetweenLevelTransitioner,
                 Background,
                 Foreground,
                 CameraProvider,

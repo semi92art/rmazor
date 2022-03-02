@@ -23,7 +23,7 @@ MonoBehaviour:
     - name: Maze Item 2
       color: {r: 0, g: 0.92168856, b: 1, a: 1}
     - name: Money Item
-      color: {r: 1, g: 0.92559814, b: 0.5990566, a: 1}
+      color: {r: 1, g: 0.8855696, b: 0.3820755, a: 1}
     - name: Character
       color: {r: 1, g: 1, b: 1, a: 1}
     - name: Character Tail

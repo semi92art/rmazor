@@ -13,7 +13,16 @@ using UnityEngine;
 
 namespace RMAZOR.Views.Common
 {
-    public interface IViewMazeBackgroundTextureController : IInit, IOnLevelStageChanged { }
+    public interface IViewMazeBackgroundTextureController : IInit, IOnLevelStageChanged
+    {
+        public void GetBackgroundColors(
+            out Color _Current1, 
+            out Color _Current2, 
+            out Color _Previous1,
+            out Color _Previous2,
+            out Color _Next1,
+            out Color _Next2);
+    }
     
     public class ViewMazeBackgroundTextureController : InitBase, IViewMazeBackgroundTextureController
     {
@@ -39,7 +48,7 @@ namespace RMAZOR.Views.Common
         private IPrefabSetManager                        PrefabSetManager      { get; }
         private IColorProvider                           ColorProvider         { get; }
         private IModelGame                               Model                 { get; }
-        private IViewBetweenLevelMazeTransitioner        Transitioner          { get; }
+        private IViewBetweenLevelTransitioner        Transitioner          { get; }
 
         public ViewMazeBackgroundTextureController(
             IViewMazeBackgroundLinesTextureProvider  _LinesTextureProvider,
@@ -47,7 +56,7 @@ namespace RMAZOR.Views.Common
             IPrefabSetManager                        _PrefabSetManager,
             IColorProvider                           _ColorProvider,
             IModelGame                               _Model,
-            IViewBetweenLevelMazeTransitioner        _Transitioner)
+            IViewBetweenLevelTransitioner            _Transitioner)
         {
             LinesTextureProvider  = _LinesTextureProvider;
             CircleTextureProvider = _CircleTextureProvider;
@@ -79,7 +88,23 @@ namespace RMAZOR.Views.Common
                 case ELevelStage.ReadyToUnloadLevel: OnReadyToUnloadLevel(_Args); break;
             }
         }
-        
+
+        public void GetBackgroundColors(
+            out Color _Current1,
+            out Color _Current2, 
+            out Color _Previous1,
+            out Color _Previous2,
+            out Color _Next1,   
+            out Color _Next2)
+        {
+            _Current1  = m_BackCol1Current;
+            _Current2  = m_BackCol2Current;
+            _Previous1 = m_BackCol1Prev;
+            _Previous2 = m_BackCol2Prev;
+            _Next1     = m_BackCol1Next;
+            _Next2     = m_BackCol2Next;
+        }
+
         #endregion
         
         #region nonpublic methods

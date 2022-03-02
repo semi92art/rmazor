@@ -29,7 +29,7 @@ namespace RMAZOR.Views.Common
         
         public ViewMazeBackgroundIdleItems(
             IColorProvider _ColorProvider, 
-            IViewBetweenLevelMazeTransitioner _Transitioner,
+            IViewBetweenLevelTransitioner _Transitioner,
             IContainersGetter _ContainersGetter,
             IViewGameTicker _GameTicker,
             ICameraProvider _CameraProvider)

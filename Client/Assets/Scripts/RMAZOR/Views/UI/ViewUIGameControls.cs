@@ -32,7 +32,7 @@ namespace RMAZOR.Views.UI
         
         #region inject
 
-        private IViewBetweenLevelMazeTransitioner BetweenLevelMazeTransitioner { get; }
+        private IViewBetweenLevelTransitioner BetweenLevelTransitioner { get; }
         private IColorProvider          ColorProvider      { get; }
         private IViewUIPrompt           Prompt             { get; }
         private IViewUICongratsMessage  CongratsMessage    { get; }
@@ -45,7 +45,7 @@ namespace RMAZOR.Views.UI
         public ViewUIGameControls(
             IModelGame _Model,
             IViewInputCommandsProceeder _CommandsProceeder,
-            IViewBetweenLevelMazeTransitioner _BetweenLevelMazeTransitioner,
+            IViewBetweenLevelTransitioner _BetweenLevelTransitioner,
             IColorProvider _ColorProvider,
             IViewUIPrompt _Prompt,
             IViewUICongratsMessage _CongratsMessage,
@@ -56,7 +56,7 @@ namespace RMAZOR.Views.UI
             IViewUITutorial _Tutorial) 
             : base(_Model, _CommandsProceeder)
         {
-            BetweenLevelMazeTransitioner = _BetweenLevelMazeTransitioner;
+            BetweenLevelTransitioner = _BetweenLevelTransitioner;
             ColorProvider = _ColorProvider;
             Prompt = _Prompt;
             CongratsMessage = _CongratsMessage;
@@ -154,7 +154,7 @@ namespace RMAZOR.Views.UI
             var allRenderers = GetInterfaceOfProceeders<IViewUIGetRenderers>()
                 .Where(_R => _R != null)
                 .SelectMany(_Item => _Item.GetRenderers());
-            BetweenLevelMazeTransitioner.DoAppearTransition(
+            BetweenLevelTransitioner.DoAppearTransition(
                 _Show, 
                 new Dictionary<IEnumerable<Component>, Func<Color>>
                 {
