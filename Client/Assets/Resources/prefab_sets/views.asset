@@ -73,6 +73,10 @@ MonoBehaviour:
         type: 3}
       name: circles_texture
       bundle: 0
+    - item: {fileID: 1225428523439597807, guid: dd8b05ca8f8bcbb4bb2915acedb28e5d,
+        type: 3}
+      name: circles_texture_2
+      bundle: 0
     - item: {fileID: 211485202164666203, guid: 02a98cec8c6b3914f9753f66a2c10ae5, type: 3}
       name: lines_texture
       bundle: 0

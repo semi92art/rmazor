@@ -80,9 +80,10 @@ namespace RMAZOR.Views.Common
         public override void Init()
         {
             LoadSets();
-            LinesTextureProvider    .Init();
+            LinesTextureProvider     .Init();
             CirclesTextureProvider   .Init();
-            TrianglesTextureProvider.Init();
+            Circles2TextureProvider  .Init();
+            TrianglesTextureProvider .Init();
             base.Init();
         }
 

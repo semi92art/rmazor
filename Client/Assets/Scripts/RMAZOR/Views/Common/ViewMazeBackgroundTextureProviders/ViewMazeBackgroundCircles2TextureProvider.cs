@@ -50,7 +50,7 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
         #region api
 
         protected override int    SortingOrder      => SortingOrders.BackgroundTexture;
-        protected override string TexturePrefabName => "circles_texture";
+        protected override string TexturePrefabName => "circles_texture_2";
 
         public void SetProperties(Circles2TextureSetItem _Item)
         {
