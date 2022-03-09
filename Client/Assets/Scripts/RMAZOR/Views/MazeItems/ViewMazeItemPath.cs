@@ -228,7 +228,6 @@ namespace RMAZOR.Views.MazeItems
                 if (MoneyItem.Renderers.Any(_R => _R.IsNull()))
                     MoneyItem.Init(Object.transform);
                 MoneyItem.Active = true;
-                Dbg.Log("m_PathItem.enabled = false");
                 m_PathItem.enabled = false;
             }
             else
@@ -509,7 +508,7 @@ namespace RMAZOR.Views.MazeItems
             corner.transform.position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position; //-V3080
             corner.transform.PlusLocalPosXY(GetCornerCenter(_Right, _Up, _Inner));
             corner.Type = DiscType.Arc;
-            corner.ArcEndCaps = ArcEndCap.Round;
+            corner.ArcEndCaps = ArcEndCap.None;
             corner.Radius = ViewSettings.CornerRadius * CoordinateConverter.Scale;
             corner.Thickness = ViewSettings.CornerWidth * CoordinateConverter.Scale;
             var angles = GetCornerAngles(_Right, _Up, _Inner);
@@ -590,7 +589,7 @@ namespace RMAZOR.Views.MazeItems
         {
             Vector2 start, end;
             Vector2 pos = Props.Position;
-            var cr = ViewSettings.CornerRadius;
+            float cr = ViewSettings.CornerRadius;
             switch (_Side)
             {
                 case EMazeMoveDirection.Up:
@@ -630,11 +629,13 @@ namespace RMAZOR.Views.MazeItems
             bool _Inner)
         {
             Vector2 pos = Props.Position;
-            var cr = ViewSettings.CornerRadius;
+            float cr = ViewSettings.CornerRadius;
             float xIndent = (_Right ? 1f : -1f) * (_Inner ? -1f : 1f);
             float yIndent = (_Up ? 1f : -1f) * (_Inner ? -1f : 1f);
             var crVec = cr * new Vector2(xIndent, yIndent);
-            var center = pos + ((_Right ? Vector2.right : Vector2.left) + (_Up ? Vector2.up : Vector2.down)) * 0.5f + crVec;
+            var center = pos
+                         + ((_Right ? Vector2.right : Vector2.left)
+                            + (_Up ? Vector2.up : Vector2.down)) * 0.5f + crVec;
             return CoordinateConverter.ToLocalMazeItemPosition(center);
         }
 
@@ -722,7 +723,6 @@ namespace RMAZOR.Views.MazeItems
             {
                 if (Props.IsMoneyItem)
                     MoneyItem.Active = false;
-                Dbg.Log("m_PathItem.enabled = false");
                 m_PathItem.enabled = false;
             }
             return result;

@@ -68,8 +68,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
                     break;
                 case ELevelStage.Unloaded:
                 {
-                    foreach (var item in m_BackCongratsItemsPool)
-                        m_BackCongratsItemsPool.Deactivate(item);
+                    m_BackCongratsItemsPool.DeactivateAll();
                     break;
                 }
             }
@@ -106,8 +105,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
                 m_AudioClipIndices.Add(firework, randAudioIdx);
                 AudioManager.InitClip(GetAudioClipArgs(firework));
             }
-            foreach (var item in m_BackCongratsItemsPool)
-                m_BackCongratsItemsPool.Deactivate(item);
+            m_BackCongratsItemsPool.DeactivateAll();
             sourceGo.DestroySafe();
         }
 

@@ -23,5 +23,10 @@ public class TestBackgroundCreatorEditor : UnityEditor.Editor
         {
             m_O.GetUV();
         }
+        
+        if (GUILayout.Button("Set Stencil Ref"))
+        {
+            m_O.SetStencilRef();
+        }
     }
 }

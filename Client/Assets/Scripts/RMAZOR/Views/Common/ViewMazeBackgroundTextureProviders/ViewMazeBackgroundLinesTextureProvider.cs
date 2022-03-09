@@ -20,12 +20,9 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
         IViewMazeBackgroundLinesTextureProvider
     {
         #region nonpublic members
-
-        private static readonly int          
-            TilingId     = Shader.PropertyToID("_Tiling"),
-            DirectionId  = Shader.PropertyToID("_Direction"),
-            WrapScaleId  = Shader.PropertyToID("_WrapScale"),
-            WrapTilingId = Shader.PropertyToID("_WarpTiling");
+        
+        protected override int    SortingOrder      => SortingOrders.BackgroundTexture;
+        protected override string TexturePrefabName => "lines_texture";
 
         #endregion
 
@@ -47,10 +44,7 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
         #endregion
 
         #region api
-
-        protected override int    SortingOrder      => SortingOrders.BackgroundTexture;
-        protected override string TexturePrefabName => "lines_texture";
-
+        
         public void SetProperties(LinesTextureSetItem _Item)
         {
             Material.SetInteger(TilingId, _Item.tiling);

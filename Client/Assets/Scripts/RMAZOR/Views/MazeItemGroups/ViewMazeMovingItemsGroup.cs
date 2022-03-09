@@ -54,7 +54,7 @@ namespace RMAZOR.Views.MazeItemGroups
         
         #region api
 
-        public override EMazeItemType[] Types => new[] {EMazeItemType.TrapMoving};
+        public override IEnumerable<EMazeItemType> Types => new[] {EMazeItemType.TrapMoving};
 
         public void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
         {

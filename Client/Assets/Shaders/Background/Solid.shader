@@ -1,7 +1,8 @@
-﻿Shader "Unlit/Background/Solid"
+﻿Shader "RMAZOR/Background/Solid"
 {
 	Properties
 	{
+		_MainTex ("Texture", 2D) = "white" {}
 		_Color ("Tint", Color) = (1,1,1,1)
 	}
 
@@ -10,7 +11,6 @@
 		Tags
 		{ 
 			"Queue"="Transparent" 
-			"IgnoreProjector"="True" 
 			"RenderType"="Transparent" 
 			"PreviewType"="Plane"
 		}
@@ -32,16 +32,17 @@
 			{
 				float4 vertex   : POSITION;
 				float4 color    : COLOR;
-				float2 texcoord : TEXCOORD0;
+				float2 uv : TEXCOORD0;
 			};
 
 			struct v2f
 			{
 				float4 vertex   : SV_POSITION;
 				fixed4 color    : COLOR;
-				float2 texcoord  : TEXCOORD0;
+				float2 uv  : TEXCOORD0;
 			};
-			
+
+		    sampler2D _MainTex;
 			fixed4 _Color;
 
 			v2f vert(appdata_t IN)
@@ -51,9 +52,10 @@
 				return OUT;
 			}
 
-			fixed4 frag(v2f _) : SV_Target
+			fixed4 frag(v2f vec) : SV_Target
 			{
-				fixed4 c = _Color;
+				fixed4 c = tex2D(_MainTex, vec.uv);
+				// fixed4 c = _Color;
 				c.rgb *= c.a;
 				return c;
 			}

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.MazeInfos;
@@ -18,7 +19,7 @@ namespace RMAZOR.Views.MazeItemGroups
     {
         public ViewMazeShredingerBlocksGroup(IViewMazeCommon _Common) : base(_Common) { }
         
-        public override EMazeItemType[] Types => new[] {EMazeItemType.ShredingerBlock};
+        public override IEnumerable<EMazeItemType> Types => new[] {EMazeItemType.ShredingerBlock};
         
         public void OnShredingerBlockEvent(ShredingerBlockArgs _Args)
         {

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common;
@@ -21,7 +22,7 @@ namespace RMAZOR.Views.MazeItemGroups
         
         #region api
         
-        public override EMazeItemType[] Types => new[] {EMazeItemType.Portal};
+        public override IEnumerable<EMazeItemType> Types => new[] {EMazeItemType.Portal};
 
         public void OnPortalEvent(PortalEventArgs _Args)
         {

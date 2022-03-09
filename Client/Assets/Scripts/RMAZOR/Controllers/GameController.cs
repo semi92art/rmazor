@@ -70,24 +70,24 @@ namespace RMAZOR.Controllers
             Model.MazeRotation.RotationFinished                       += View.MazeRotation.OnRotationFinished;
             Model.MazeRotation.RotationFinished                       += View.InputController.TouchProceeder.OnRotationFinished;
             
-            Model.GravityItemsProceeder.MazeItemMoveStarted           += View.GravityItemsGroup.OnMazeItemMoveStarted;
+            Model.GravityItemsProceeder.MazeItemMoveStarted           += View.MazeItemsGroupSet.GravityItemsGroup.OnMazeItemMoveStarted;
             Model.GravityItemsProceeder.MazeItemMoveStarted           += View.UI.GameControls.OnMazeItemMoveStarted;
-            Model.GravityItemsProceeder.MazeItemMoveContinued         += View.GravityItemsGroup.OnMazeItemMoveContinued;
-            Model.GravityItemsProceeder.MazeItemMoveFinished          += View.GravityItemsGroup.OnMazeItemMoveFinished;
+            Model.GravityItemsProceeder.MazeItemMoveContinued         += View.MazeItemsGroupSet.GravityItemsGroup.OnMazeItemMoveContinued;
+            Model.GravityItemsProceeder.MazeItemMoveFinished          += View.MazeItemsGroupSet.GravityItemsGroup.OnMazeItemMoveFinished;
             Model.GravityItemsProceeder.MazeItemMoveFinished          += View.UI.GameControls.OnMazeItemMoveFinished;
             
-            Model.TrapsMovingProceeder.MazeItemMoveStarted            += View.MovingItemsGroup.OnMazeItemMoveStarted;
+            Model.TrapsMovingProceeder.MazeItemMoveStarted            += View.MazeItemsGroupSet.MovingItemsGroup.OnMazeItemMoveStarted;
             Model.TrapsMovingProceeder.MazeItemMoveStarted            += View.UI.GameControls.OnMazeItemMoveStarted;
-            Model.TrapsMovingProceeder.MazeItemMoveContinued          += View.MovingItemsGroup.OnMazeItemMoveContinued;
-            Model.TrapsMovingProceeder.MazeItemMoveFinished           += View.MovingItemsGroup.OnMazeItemMoveFinished;
+            Model.TrapsMovingProceeder.MazeItemMoveContinued          += View.MazeItemsGroupSet.MovingItemsGroup.OnMazeItemMoveContinued;
+            Model.TrapsMovingProceeder.MazeItemMoveFinished           += View.MazeItemsGroupSet.MovingItemsGroup.OnMazeItemMoveFinished;
             Model.TrapsMovingProceeder.MazeItemMoveFinished           += View.UI.GameControls.OnMazeItemMoveFinished;
             
-            Model.TrapsReactProceeder.TrapReactStageChanged           += View.TrapsReactItemsGroup.OnMazeTrapReactStageChanged;
-            Model.TrapsIncreasingProceeder.TrapIncreasingStageChanged += View.TrapsIncItemsGroup.OnMazeTrapIncreasingStageChanged;
-            Model.TurretsProceeder.TurretShoot                        += View.TurretsGroup.OnTurretShoot;
-            Model.PortalsProceeder.PortalEvent                        += View.PortalsGroup.OnPortalEvent;
-            Model.ShredingerBlocksProceeder.ShredingerBlockEvent      += View.ShredingerBlocksGroup.OnShredingerBlockEvent;
-            Model.SpringboardProceeder.SpringboardEvent               += View.SpringboardItemsGroup.OnSpringboardEvent;
+            Model.TrapsReactProceeder.TrapReactStageChanged           += View.MazeItemsGroupSet.TrapsReactItemsGroup.OnMazeTrapReactStageChanged;
+            Model.TrapsIncreasingProceeder.TrapIncreasingStageChanged += View.MazeItemsGroupSet.TrapsIncItemsGroup.OnMazeTrapIncreasingStageChanged;
+            Model.TurretsProceeder.TurretShoot                        += View.MazeItemsGroupSet.TurretsGroup.OnTurretShoot;
+            Model.PortalsProceeder.PortalEvent                        += View.MazeItemsGroupSet.PortalsGroup.OnPortalEvent;
+            Model.ShredingerBlocksProceeder.ShredingerBlockEvent      += View.MazeItemsGroupSet.ShredingerBlocksGroup.OnShredingerBlockEvent;
+            Model.SpringboardProceeder.SpringboardEvent               += View.MazeItemsGroupSet.SpringboardItemsGroup.OnSpringboardEvent;
             Model.Character.CharacterMoveStarted                      += View.OnCharacterMoveStarted;
             Model.Character.CharacterMoveContinued                    += View.OnCharacterMoveContinued;
             Model.Character.CharacterMoveFinished                     += View.OnCharacterMoveFinished;
@@ -137,24 +137,24 @@ namespace RMAZOR.Controllers
             Model.MazeRotation.RotationStarted                        -= View.MazeRotation.OnRotationStarted;
             Model.MazeRotation.RotationFinished                       += View.MazeRotation.OnRotationFinished;
             
-            Model.GravityItemsProceeder.MazeItemMoveStarted           -= View.MovingItemsGroup.OnMazeItemMoveStarted;
+            Model.GravityItemsProceeder.MazeItemMoveStarted           -= View.MazeItemsGroupSet.MovingItemsGroup.OnMazeItemMoveStarted;
             Model.GravityItemsProceeder.MazeItemMoveStarted           -= View.UI.GameControls.OnMazeItemMoveStarted;
-            Model.GravityItemsProceeder.MazeItemMoveContinued         -= View.MovingItemsGroup.OnMazeItemMoveContinued;
-            Model.GravityItemsProceeder.MazeItemMoveFinished          -= View.MovingItemsGroup.OnMazeItemMoveFinished;
+            Model.GravityItemsProceeder.MazeItemMoveContinued         -= View.MazeItemsGroupSet.MovingItemsGroup.OnMazeItemMoveContinued;
+            Model.GravityItemsProceeder.MazeItemMoveFinished          -= View.MazeItemsGroupSet.MovingItemsGroup.OnMazeItemMoveFinished;
             Model.GravityItemsProceeder.MazeItemMoveFinished          -= View.UI.GameControls.OnMazeItemMoveFinished;
             
-            Model.TrapsMovingProceeder.MazeItemMoveStarted            -= View.MovingItemsGroup.OnMazeItemMoveStarted;
+            Model.TrapsMovingProceeder.MazeItemMoveStarted            -= View.MazeItemsGroupSet.MovingItemsGroup.OnMazeItemMoveStarted;
             Model.TrapsMovingProceeder.MazeItemMoveStarted            -= View.UI.GameControls.OnMazeItemMoveStarted;
-            Model.TrapsMovingProceeder.MazeItemMoveContinued          -= View.MovingItemsGroup.OnMazeItemMoveContinued;
-            Model.TrapsMovingProceeder.MazeItemMoveFinished           -= View.MovingItemsGroup.OnMazeItemMoveFinished;
+            Model.TrapsMovingProceeder.MazeItemMoveContinued          -= View.MazeItemsGroupSet.MovingItemsGroup.OnMazeItemMoveContinued;
+            Model.TrapsMovingProceeder.MazeItemMoveFinished           -= View.MazeItemsGroupSet.MovingItemsGroup.OnMazeItemMoveFinished;
             Model.TrapsMovingProceeder.MazeItemMoveFinished           -= View.UI.GameControls.OnMazeItemMoveFinished;
             
-            Model.TrapsReactProceeder.TrapReactStageChanged           -= View.TrapsReactItemsGroup.OnMazeTrapReactStageChanged;
-            Model.TrapsIncreasingProceeder.TrapIncreasingStageChanged -= View.TrapsIncItemsGroup.OnMazeTrapIncreasingStageChanged;
-            Model.TurretsProceeder.TurretShoot                        -= View.TurretsGroup.OnTurretShoot;
-            Model.PortalsProceeder.PortalEvent                        -= View.PortalsGroup.OnPortalEvent;
-            Model.ShredingerBlocksProceeder.ShredingerBlockEvent      -= View.ShredingerBlocksGroup.OnShredingerBlockEvent;
-            Model.SpringboardProceeder.SpringboardEvent               -= View.SpringboardItemsGroup.OnSpringboardEvent;
+            Model.TrapsReactProceeder.TrapReactStageChanged           -= View.MazeItemsGroupSet.TrapsReactItemsGroup.OnMazeTrapReactStageChanged;
+            Model.TrapsIncreasingProceeder.TrapIncreasingStageChanged -= View.MazeItemsGroupSet.TrapsIncItemsGroup.OnMazeTrapIncreasingStageChanged;
+            Model.TurretsProceeder.TurretShoot                        -= View.MazeItemsGroupSet.TurretsGroup.OnTurretShoot;
+            Model.PortalsProceeder.PortalEvent                        -= View.MazeItemsGroupSet.PortalsGroup.OnPortalEvent;
+            Model.ShredingerBlocksProceeder.ShredingerBlockEvent      -= View.MazeItemsGroupSet.ShredingerBlocksGroup.OnShredingerBlockEvent;
+            Model.SpringboardProceeder.SpringboardEvent               -= View.MazeItemsGroupSet.SpringboardItemsGroup.OnSpringboardEvent;
             Model.Character.CharacterMoveStarted                      -= View.OnCharacterMoveStarted;
             Model.Character.CharacterMoveContinued                    -= View.OnCharacterMoveContinued;
             Model.Character.CharacterMoveFinished                     -= View.OnCharacterMoveFinished;

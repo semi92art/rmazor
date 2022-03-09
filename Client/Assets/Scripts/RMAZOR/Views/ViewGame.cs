@@ -1,9 +1,7 @@
-﻿// ReSharper disable ClassNeverInstantiated.Global
-using System;
+﻿using System;
 using System.Linq;
 using Common;
 using Common.CameraProviders;
-using Common.Extensions;
 using Common.Helpers;
 using Common.Providers;
 using Common.UI;
@@ -17,8 +15,6 @@ using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.Rotation;
 using RMAZOR.Views.UI;
-using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace RMAZOR.Views
 {
@@ -29,86 +25,67 @@ namespace RMAZOR.Views
         ICharacterMoveContinued,
         ICharacterMoveFinished
     {
-        ViewSettings                   Settings              { get; }
-        IViewUI                        UI                    { get; }
-        IViewLevelStageController      LevelStageController  { get; }
-        IViewInputController           InputController       { get; }
-        IViewInputCommandsProceeder    CommandsProceeder     { get; }
-        IViewCharacter                 Character             { get; }
-        IViewMazeRotation              MazeRotation          { get; }
-        IViewMazePathItemsGroup        PathItemsGroup        { get; }
-        IViewMazeMovingItemsGroup      MovingItemsGroup      { get; }
-        IViewMazeTrapsReactItemsGroup  TrapsReactItemsGroup  { get; }
-        IViewMazeTrapsIncItemsGroup    TrapsIncItemsGroup    { get; }
-        IViewMazeTurretsGroup          TurretsGroup          { get; }
-        IViewMazePortalsGroup          PortalsGroup          { get; }
-        IViewMazeShredingerBlocksGroup ShredingerBlocksGroup { get; }
-        IViewMazeSpringboardItemsGroup SpringboardItemsGroup { get; }
-        IViewMazeGravityItemsGroup     GravityItemsGroup     { get; }
-        IManagersGetter                Managers              { get; }
+        ViewSettings                Settings             { get; }
+        IViewUI                     UI                   { get; }
+        IViewLevelStageController   LevelStageController { get; }
+        IViewInputController        InputController      { get; }
+        IViewInputCommandsProceeder CommandsProceeder    { get; }
+        IViewCharacter              Character            { get; }
+        IViewMazeRotation           MazeRotation         { get; }
+        IViewMazeItemsGroupSet      MazeItemsGroupSet    { get; }
+        IViewMazePathItemsGroup     PathItemsGroup       { get; }
+        IManagersGetter             Managers             { get; }
     }
     
     public class ViewGame : InitBase, IViewGame
     {
         #region inject
 
-        public ViewSettings                   Settings              { get; }
-        public IContainersGetter              ContainersGetter      { get; }
-        public IViewUI                        UI                    { get; }
-        public IViewLevelStageController      LevelStageController  { get; }
-        public IViewInputController           InputController       { get; }
-        public IViewInputCommandsProceeder    CommandsProceeder     { get; }
-        public IViewCharacter                 Character             { get; }
-        public IViewMazeRotation              MazeRotation          { get; }
-        public IViewMazePathItemsGroup        PathItemsGroup        { get; }
-        public IViewMazeMovingItemsGroup      MovingItemsGroup      { get; }
-        public IViewMazeTrapsReactItemsGroup  TrapsReactItemsGroup  { get; }
-        public IViewMazeTrapsIncItemsGroup    TrapsIncItemsGroup    { get; }
-        public IViewMazeTurretsGroup          TurretsGroup          { get; }
-        public IViewMazePortalsGroup          PortalsGroup          { get; }
-        public IViewMazeShredingerBlocksGroup ShredingerBlocksGroup { get; }
-        public IViewMazeSpringboardItemsGroup SpringboardItemsGroup { get; }
-        public IViewMazeGravityItemsGroup     GravityItemsGroup     { get; }
-        public IManagersGetter                Managers              { get; }
-
-        private IViewMazeCommon                   Common                       { get; }
-        private IViewMazeBackground               Background                   { get; }
-        private IViewMazeForeground               Foreground                   { get; }
-        private IMazeCoordinateConverter          CoordinateConverter          { get; }
-        private IColorProvider                    ColorProvider                { get; }
-        private ICameraProvider                   CameraProvider               { get; }
-        private IDebugManager                     DebugManager                 { get; }
-        private IBigDialogViewer                  BigDialogViewer              { get; }
+        public  ViewSettings                  Settings                 { get; }
+        public  IContainersGetter             ContainersGetter         { get; }
+        public  IViewUI                       UI                       { get; }
+        public  IViewLevelStageController     LevelStageController     { get; }
+        public  IViewInputController          InputController          { get; }
+        public  IViewInputCommandsProceeder   CommandsProceeder        { get; }
+        public  IViewCharacter                Character                { get; }
+        public  IViewMazeRotation             MazeRotation             { get; }
+        public  IViewMazeItemsGroupSet        MazeItemsGroupSet        { get; }
+        public  IViewMazePathItemsGroup       PathItemsGroup           { get; }
+        public  IManagersGetter               Managers                 { get; }
+        
+        private IViewMazeCommon               Common                   { get; }
+        private IViewBackground               Background               { get; }
+        private IViewMazeForeground           Foreground               { get; }
+        private IMazeCoordinateConverter      CoordinateConverter      { get; }
+        private IColorProvider                ColorProvider            { get; }
+        private ICameraProvider               CameraProvider           { get; }
+        private IDebugManager                 DebugManager             { get; }
+        private IBigDialogViewer              BigDialogViewer          { get; }
         private IViewBetweenLevelTransitioner BetweenLevelTransitioner { get; }
+        private IViewMazeAdditionalBackground AdditionalBackground     { get; }
 
         public ViewGame(
-            ViewSettings                          _Settings,
-            IContainersGetter                     _ContainersGetter,
-            IViewUI                               _UI,
-            IViewLevelStageController             _LevelStageController,
-            IViewInputController                  _InputController,
-            IViewInputCommandsProceeder           _CommandsProceeder,
-            IViewCharacter                        _Character,
-            IViewMazeCommon                       _Common,
-            IViewMazeBackground                   _Background,
-            IViewMazeForeground                   _Foreground,
-            IViewMazeRotation                     _MazeRotation,
-            IViewMazePathItemsGroup               _PathItemsGroup,
-            IViewMazeMovingItemsGroup             _MovingItemsGroup,
-            IViewMazeTrapsReactItemsGroup         _TrapsReactItemsGroup,
-            IViewMazeTrapsIncItemsGroup           _TrapsIncItemsGroup,
-            IViewMazeTurretsGroup                 _TurretsGroup,
-            IViewMazePortalsGroup                 _PortalsGroup,
-            IViewMazeShredingerBlocksGroup        _ShredingerBlocksGroup,
-            IViewMazeSpringboardItemsGroup        _SpringboardItemsGroup,
-            IViewMazeGravityItemsGroup            _GravityItemsGroup,
-            IManagersGetter                       _Managers, 
-            IMazeCoordinateConverter              _CoordinateConverter,
-            IColorProvider                        _ColorProvider,
-            ICameraProvider                       _CameraProvider,
-            IDebugManager                         _DebugManager,
-            IBigDialogViewer                      _BigDialogViewer,
-            IViewBetweenLevelTransitioner     _BetweenLevelTransitioner)
+            ViewSettings                  _Settings,
+            IContainersGetter             _ContainersGetter,
+            IViewUI                       _UI,
+            IViewLevelStageController     _LevelStageController,
+            IViewInputController          _InputController,
+            IViewInputCommandsProceeder   _CommandsProceeder,
+            IViewCharacter                _Character,
+            IViewMazeCommon               _Common,
+            IViewBackground               _Background,
+            IViewMazeForeground           _Foreground,
+            IViewMazeRotation             _MazeRotation,
+            IViewMazeItemsGroupSet        _MazeItemsGroupSet, 
+            IViewMazePathItemsGroup       _PathItemsGroup,
+            IManagersGetter               _Managers, 
+            IMazeCoordinateConverter      _CoordinateConverter,
+            IColorProvider                _ColorProvider,
+            ICameraProvider               _CameraProvider,
+            IDebugManager                 _DebugManager,
+            IBigDialogViewer              _BigDialogViewer,
+            IViewBetweenLevelTransitioner _BetweenLevelTransitioner,
+            IViewMazeAdditionalBackground _AdditionalBackground)
         {
             Settings                     = _Settings;
             ContainersGetter             = _ContainersGetter;
@@ -121,22 +98,16 @@ namespace RMAZOR.Views
             Background                   = _Background;
             Foreground                   = _Foreground;
             MazeRotation                 = _MazeRotation;
+            MazeItemsGroupSet            = _MazeItemsGroupSet;
             PathItemsGroup               = _PathItemsGroup;
-            MovingItemsGroup             = _MovingItemsGroup;
-            TrapsReactItemsGroup         = _TrapsReactItemsGroup;
-            TrapsIncItemsGroup           = _TrapsIncItemsGroup;
-            TurretsGroup                 = _TurretsGroup;
-            PortalsGroup                 = _PortalsGroup;
-            ShredingerBlocksGroup        = _ShredingerBlocksGroup;
-            SpringboardItemsGroup        = _SpringboardItemsGroup;
-            GravityItemsGroup            = _GravityItemsGroup;
             Managers                     = _Managers;
             CoordinateConverter          = _CoordinateConverter;
             ColorProvider                = _ColorProvider;
             CameraProvider               = _CameraProvider;
             DebugManager                 = _DebugManager;
             BigDialogViewer              = _BigDialogViewer;
-            BetweenLevelTransitioner = _BetweenLevelTransitioner;
+            BetweenLevelTransitioner     = _BetweenLevelTransitioner;
+            AdditionalBackground         = _AdditionalBackground;
         }
         
         #endregion
@@ -196,7 +167,8 @@ namespace RMAZOR.Views
 
         private void InitProceeders()
         {
-            m_ProceedersCached = new object[]
+            CoordinateConverter.Init();
+            var proceedersToExecuteOnLevelStageChangedBeforeGroups = new object[]
             {
                 ContainersGetter,
                 Common,
@@ -205,25 +177,29 @@ namespace RMAZOR.Views
                 Character,
                 MazeRotation,
                 PathItemsGroup,
-                MovingItemsGroup,
-                TrapsReactItemsGroup,
-                TrapsIncItemsGroup,
-                TurretsGroup,
-                PortalsGroup,
-                ShredingerBlocksGroup,
-                SpringboardItemsGroup,
-                GravityItemsGroup,
+                MazeItemsGroupSet,
+                AdditionalBackground
+            };
+            var proceedersToExecuteOnLevelStageChangedAfretGroups = new object[]
+            {
                 BetweenLevelTransitioner,
                 Background,
                 Foreground,
                 CameraProvider,
                 Managers
             };
-            ColorProvider.Init();
-            CoordinateConverter.Init();
+            m_ProceedersCached = proceedersToExecuteOnLevelStageChangedBeforeGroups
+                .Concat(proceedersToExecuteOnLevelStageChangedAfretGroups)
+                .ToArray();
             LevelStageController
-                .RegisterProceeders(GetInterfaceOfProceeders<IOnLevelStageChanged>()
-                .Where(_P => _P != null));
+                .RegisterProceeders(GetInterfaceOfProceeders<IOnLevelStageChanged>(
+                        proceedersToExecuteOnLevelStageChangedBeforeGroups)
+                .Where(_P => _P != null).ToList(), -1);
+            LevelStageController
+                .RegisterProceeders(GetInterfaceOfProceeders<IOnLevelStageChanged>(
+                        proceedersToExecuteOnLevelStageChangedAfretGroups)
+                    .Where(_P => _P != null).ToList(), 2);
+            ColorProvider.Init();
             foreach (var initObj in GetInterfaceOfProceeders<IInit>())
                 initObj?.Init();
             LevelStageController.Init();
@@ -233,9 +209,9 @@ namespace RMAZOR.Views
             };
         }
 
-        private T[] GetInterfaceOfProceeders<T>() where T : class
+        private T[] GetInterfaceOfProceeders<T>(object[] _Proceeders = null) where T : class
         {
-            return Array.ConvertAll(m_ProceedersCached, _Item => _Item as T);
+            return Array.ConvertAll(_Proceeders ?? m_ProceedersCached, _Item => _Item as T);
         }
         
         #endregion

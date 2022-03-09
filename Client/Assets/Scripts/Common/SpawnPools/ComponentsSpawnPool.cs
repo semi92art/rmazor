@@ -47,16 +47,11 @@ namespace Common.SpawnPools
             _Item.gameObject.SetActive(_Active);
         }
 
-        protected override T GetFirstOrLastActiveOrInactive(bool _First, bool _Active)
+        protected override bool IsActive(T _Item)
         {
-            var collection = _First ? Collection : Collection.ToArray().Reverse();
-            return collection.FirstOrDefault(_Item =>
-            {
-                var go = _Item.gameObject;
-                return _Active ? go.activeSelf : !go.activeSelf;
-            });
+            return _Item.gameObject.activeSelf;
         }
-    
+
         #endregion
     }
 }

@@ -15,18 +15,18 @@ namespace Common.Extensions
         public static Vector4 SetZ (this Vector4 _V, float _Z) => new Vector4(_V.x, _V.y, _Z, _V.w);
         public static Vector4 SetW (this Vector4 _V, float _W) => new Vector4(_V.x, _V.y, _V.z, _W);
         
-        public static Vector2 XY    (this Vector3 _V) => new Vector2(_V.x, _V.y);
-        public static Vector3 SetX  (this Vector3 _V, float _X) => new Vector3(_X, _V.y, _V.z);
-        public static Vector3 SetY  (this Vector3 _V, float _Y) => new Vector3(_V.x, _Y, _V.z);
-        public static Vector3 SetZ  (this Vector3 _V, float _Z) => new Vector3(_V.x, _V.y, _Z);
-        public static Vector3 PlusX (this Vector3 _V, float _X) => _V.SetX(_V.x + _X);
-        public static Vector3 PlusY (this Vector3 _V, float _Y) => _V.SetY(_V.y + _Y);
-        public static Vector3 PlusZ (this Vector3 _V, float _Z) => _V.SetZ(_V.z + _Z);
-        public static Vector3 MinusX(this Vector3 _V, float _X) => _V.SetX(_V.x - _X);
-        public static Vector3 MinusY(this Vector3 _V, float _Y) => _V.SetY(_V.y - _Y);
-        public static Vector3 MinusZ(this Vector3 _V, float _Z) => _V.SetY(_V.z - _Z);
-        public static Vector3 SetXY (this Vector3 _V, Vector2 _XY) => new Vector3(_XY.x, _XY.y, _V.z);
-        public static Vector3 SetXY (this Vector3 _V, float _X, float _Y) => new Vector3(_X, _Y, _V.z);
+        public static Vector2 XY    (this Vector3 _V)                       => new Vector2(_V.x, _V.y);
+        public static Vector3 SetX  (this Vector3 _V, float   _X)           => new Vector3(_X, _V.y, _V.z);
+        public static Vector3 SetY  (this Vector3 _V, float   _Y)           => new Vector3(_V.x, _Y, _V.z);
+        public static Vector3 SetZ  (this Vector3 _V, float   _Z)           => new Vector3(_V.x, _V.y, _Z);
+        public static Vector3 PlusX (this Vector3 _V, float   _X)           => _V.SetX(_V.x + _X);
+        public static Vector3 PlusY (this Vector3 _V, float   _Y)           => _V.SetY(_V.y + _Y);
+        public static Vector3 PlusZ (this Vector3 _V, float   _Z)           => _V.SetZ(_V.z + _Z);
+        public static Vector3 MinusX(this Vector3 _V, float   _X)           => _V.SetX(_V.x - _X);
+        public static Vector3 MinusY(this Vector3 _V, float   _Y)           => _V.SetY(_V.y - _Y);
+        public static Vector3 MinusZ(this Vector3 _V, float   _Z)           => _V.SetZ(_V.z - _Z);
+        public static Vector3 SetXY (this Vector3 _V, Vector2 _XY)          => new Vector3(_XY.x, _XY.y, _V.z);
+        public static Vector3 SetXY (this Vector3 _V, float   _X, float _Y) => new Vector3(_X, _Y, _V.z);
         
         public static Vector2 SetX  (this Vector2 _V, float _X) => new Vector2(_X, _V.y);
         public static Vector2 SetY  (this Vector2 _V, float _Y) => new Vector2(_V.x, _Y);

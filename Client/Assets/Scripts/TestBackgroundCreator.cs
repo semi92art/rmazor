@@ -215,8 +215,10 @@ using UnityEngine;
 
 public class TestBackgroundCreator : MonoBehaviour
 {
-    public GameObject   obj;
-    public MeshRenderer rend;
+    public  GameObject     obj;
+    public  MeshRenderer   rend;
+    public  SpriteRenderer rend2;
+    public int            stencilRef;
 
     public void SetBounds()
     {
@@ -235,5 +237,10 @@ public class TestBackgroundCreator : MonoBehaviour
         var mat = rend.sharedMaterial;
         mat.SetFloat("_CenterX", uv2.x);
         mat.SetFloat("_CenterY", uv2.y);
+    }
+
+    public void SetStencilRef()
+    {
+        rend2.sharedMaterial.SetFloat("_StencilRef", stencilRef);
     }
 }

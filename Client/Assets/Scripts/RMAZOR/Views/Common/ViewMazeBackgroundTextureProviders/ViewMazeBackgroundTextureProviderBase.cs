@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Runtime.CompilerServices;
 using Common;
 using Common.CameraProviders;
 using Common.Constants;
@@ -16,7 +15,6 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
     public interface IViewMazeBackgroundTextureProvider : IInit
     {
         void Activate(bool   _Active);
-        void SetColors(Color _Color1, Color _Color2);
         void Show(float _Time, Color _ColorFrom1, Color _ColorFrom2, Color _ColorTo1, Color _ColorTo2);
     }
 
@@ -25,14 +23,20 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
     {
         #region nonpublic members
 
-        protected static readonly int
+        private static readonly int
             Color1Id = Shader.PropertyToID("_Color1"),
             Color2Id = Shader.PropertyToID("_Color2");
+        protected static readonly int          
+            TilingId     = Shader.PropertyToID("_Tiling"),
+            DirectionId  = Shader.PropertyToID("_Direction"),
+            WrapScaleId  = Shader.PropertyToID("_WrapScale"),
+            WrapTilingId = Shader.PropertyToID("_WarpTiling");
 
         protected abstract int          SortingOrder      { get; }
         protected abstract string       TexturePrefabName { get; }
-        private            MeshRenderer m_Renderer;
+        
         protected          Material     Material;
+        private            MeshRenderer m_Renderer;
         private            IEnumerator  m_LastCoroutine;
 
         #endregion
@@ -54,9 +58,9 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
         {
             PrefabSetManager = _PrefabSetManager;
             ContainersGetter = _ContainersGetter;
-            CameraProvider = _CameraProvider;
-            Ticker = _Ticker;
-            ColorProvider = _ColorProvider;
+            CameraProvider   = _CameraProvider;
+            Ticker           = _Ticker;
+            ColorProvider    = _ColorProvider;
         }
 
         #endregion
@@ -65,19 +69,22 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
 
         public override void Init()
         {
+            ColorProvider.ColorChanged += OnColorChanged;
             InitTexture();
             base.Init();
+        }
+
+        private void OnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId == ColorIds.Background1)
+                Material.SetColor(Color1Id, _Color);
+            else if (_ColorId == ColorIds.Background2)
+                Material.SetColor(Color2Id, _Color);
         }
 
         public void Activate(bool _Active)
         {
             m_Renderer.enabled = _Active;
-        }
-
-        public virtual void SetColors(Color _Color1, Color _Color2)
-        {
-            Material.SetColor(Color1Id, _Color1);
-            Material.SetColor(Color2Id, _Color2);
         }
 
         public void Show(float _Time, Color _ColorFrom1, Color _ColorFrom2, Color _ColorTo1, Color _ColorTo2)
@@ -110,7 +117,7 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
             var tr = _Renderer.transform;
             tr.position = camera.transform.position.PlusZ(20f);
             var bds = GraphicUtils.GetVisibleBounds();
-            tr.localScale = new Vector3(bds.size.x * 0.1f, 1f, bds.size.y * 0.1f);
+            tr.localScale = new Vector3(bds.size.x, 1f, bds.size.y) * 0.1f;
         }
 
         private IEnumerator ShowTexture(

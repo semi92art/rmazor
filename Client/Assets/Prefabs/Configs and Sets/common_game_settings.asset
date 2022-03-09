@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5abb6e1eb81450f917a8931519f989c, type: 3}
   m_Name: common_game_settings
   m_EditorClassIdentifier: 
-  adsProvider: -1
+  adsProvider: 1
   adsLoadDelay: 3
   debugEnabled: 1
   testAds: 0
@@ -21,4 +21,3 @@ MonoBehaviour:
   unityAdsRate: 20
   showAdsEveryLevel: 3
   firstLevelToShowAds: 10
-  iOsGameId: 

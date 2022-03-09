@@ -91,7 +91,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazeCommon>()                .To<ViewMazeCommon>()                .AsSingle();
 
             Container.Bind<IViewMazeRotation>()              .To<ViewMazeRotation>()              .AsSingle();
-            Container.Bind<IViewMazeBackground>()            .To<ViewMazeBackground>()            .AsSingle();
+            Container.Bind<IViewBackground>()            .To<ViewBackground>()            .AsSingle();
             Container.Bind<IViewMazeBackgroundIdleItems>()   .To<ViewMazeBackgroundIdleItems>()   .AsSingle();
             Container.Bind<IViewMazeBackgroundCongradItems>().To<ViewMazeBackgroundCongradItems2>().AsSingle();
             Container.Bind<IViewMazeForeground>()            .To<ViewMazeForeground>()            .AsSingle();
@@ -128,10 +128,16 @@ namespace Mono_Installers
             Container.Bind<IViewMazeTrapsIncItemsGroup>()    .To<ViewMazeTrapsIncItemsGroup>()    .AsSingle();
             Container.Bind<IViewMazeGravityItemsGroup>()     .To<ViewMazeGravityItemsGroup>()     .AsSingle();
 
-            Container.Bind<IViewMazeBackgroundTextureController>() .To<ViewMazeBackgroundTextureController>() .AsSingle();
-            Container.Bind<IViewMazeBackgroundSolidTextureProvider>() .To<ViewMazeBackgroundSolidTextureProvider>() .AsSingle();
-            Container.Bind<IViewMazeBackgroundLinesTextureProvider>() .To<ViewMazeBackgroundLinesTextureProvider>() .AsSingle();
-            Container.Bind<IViewMazeBackgroundCircleTextureProvider>().To<ViewMazeBackgroundCircleTextureProvider>().AsSingle();
+            Container.Bind<IViewMazeItemsGroupSet>()         .To<ViewMazeItemsGroupSet>()         .AsSingle();
+            Container.Bind<IViewMazeAdditionalBackground>()  .To<ViewMazeAdditionalBackground>()  .AsSingle();
+            
+            Container.Bind<IViewMazeAdditionalBackgroundGeometryInitializer>().To<ViewMazeAdditionalBackgroundGeometryInitializer>().AsSingle();
+            Container.Bind<IViewMazeAdditionalBackgroundDrawer>()             .To<ViewMazeAdditionalBackgroundDrawerSimple>()       .AsSingle();
+            Container.Bind<IViewMazeBackgroundTextureController>()            .To<ViewMazeBackgroundTextureController>()            .AsSingle();
+            Container.Bind<IViewMazeBackgroundLinesTextureProvider>()         .To<ViewMazeBackgroundLinesTextureProvider>()         .AsSingle();
+            Container.Bind<IViewMazeBackgroundCirclesTextureProvider>()       .To<ViewMazeBackgroundCirclesTextureProvider>()       .AsSingle();
+            Container.Bind<IViewMazeBackgroundCircles2TextureProvider>()      .To<ViewMazeBackgroundCircles2TextureProvider>()      .AsSingle();
+            Container.Bind<IViewMazeBackgroundTrianglesTextureProvider>()     .To<ViewMazeBackgroundTrianglesTextureProvider>()     .AsSingle();
 
             if (!CommonData.Release)
             {
@@ -172,7 +178,6 @@ namespace Mono_Installers
 
             Container.Bind<IColorProvider>()     .FromComponentInNewPrefab(colorProvider) .AsSingle();
             Container.Bind<IDebugManager>()      .To<DebugManager>()                      .AsSingle();
-            // Container.Bind<IAudioManagerRmazor>().To<AudioManagerRmazor>()                .AsSingle();
             Container.Bind<IManagersGetter>()    .To<ManagersGetter>()                    .AsSingle();
             Container.Bind(typeof(IAudioManagerRmazor), typeof(IAudioManager))
                 .To<AudioManagerRmazor>()

@@ -1,5 +1,6 @@
 ﻿using System;
 using Common.CameraProviders;
+using Common.Constants;
 using Common.Exceptions;
 using Common.Helpers;
 using Common.Providers;
@@ -23,8 +24,9 @@ namespace RMAZOR.Views.Common
 
         #region nonpublic members
 
-        private readonly Random m_Random = new Random();
-        private          Bounds        m_ScreenBounds;
+        protected        Transform Container => ContainersGetter.GetContainer(ContainerNames.MazeItems);
+        private readonly Random    m_Random = new Random();
+        private          Bounds    m_ScreenBounds;
         
         protected readonly Type[] PossibleSourceTypes =
         {

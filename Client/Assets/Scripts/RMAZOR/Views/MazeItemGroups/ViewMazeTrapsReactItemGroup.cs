@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using System.Collections.Generic;
+using Common;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common;
@@ -24,7 +25,7 @@ namespace RMAZOR.Views.MazeItemGroups
         
         #region api
 
-        public override EMazeItemType[] Types       => new[] {EMazeItemType.TrapReact};
+        public override IEnumerable<EMazeItemType> Types => new[] {EMazeItemType.TrapReact};
 
         public void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args)
         {

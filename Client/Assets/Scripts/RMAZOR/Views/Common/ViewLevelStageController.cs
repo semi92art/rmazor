@@ -24,8 +24,8 @@ namespace RMAZOR.Views.Common
 {
     public interface IViewLevelStageController : IOnLevelStageChanged, IInit
     {
-        void RegisterProceeders(IEnumerable<IOnLevelStageChanged> _Proceeders);
-        void OnAllPathProceed(V2Int _LastPath);
+        void RegisterProceeders(List<IOnLevelStageChanged> _Proceeder, int _ExecuteOrder);
+        void OnAllPathProceed(V2Int                        _LastPath);
     }
 
     public class ViewLevelStageController : InitBase, IViewLevelStageController
@@ -39,7 +39,10 @@ namespace RMAZOR.Views.Common
         private static AudioClipArgs AudioClipArgsMainTheme =>
             new AudioClipArgs("main_theme", EAudioClipType.Music, _Loop: true);
 
-        private readonly List<IOnLevelStageChanged> m_Proceeders = new List<IOnLevelStageChanged>();
+        private readonly SortedDictionary<int, List<IOnLevelStageChanged>> m_ProceedersToExecuteBeforeGroups      
+            = new SortedDictionary<int, List<IOnLevelStageChanged>>();
+        private readonly SortedDictionary<int, List<IOnLevelStageChanged>> m_ProceedersToExecuteAfterGroups      
+            = new SortedDictionary<int, List<IOnLevelStageChanged>>();
 
         private bool                m_NextLevelMustBeFirstInGroup;
         private bool                m_FirstTimeLevelLoaded;
@@ -62,6 +65,7 @@ namespace RMAZOR.Views.Common
         private IMazeShaker                 MazeShaker           { get; }
         private IDialogPanels               DialogPanels         { get; }
         private IProposalDialogViewer       ProposalDialogViewer { get; }
+        private IViewMazeItemsGroupSet      MazeItemsGroupSet    { get; }
         private IViewMazePathItemsGroup     PathItemsGroup       { get; }
         private CompanyLogo                 CompanyLogo          { get; }
 
@@ -78,6 +82,7 @@ namespace RMAZOR.Views.Common
             IMazeShaker                 _MazeShaker,
             IDialogPanels               _DialogPanels,
             IProposalDialogViewer       _ProposalDialogViewer,
+            IViewMazeItemsGroupSet      _MazeItemsGroupSet,
             IViewMazePathItemsGroup     _PathItemsGroup,
             CompanyLogo                 _CompanyLogo)
         {
@@ -93,6 +98,7 @@ namespace RMAZOR.Views.Common
             MazeShaker           = _MazeShaker;
             DialogPanels         = _DialogPanels;
             ProposalDialogViewer = _ProposalDialogViewer;
+            MazeItemsGroupSet    = _MazeItemsGroupSet;
             PathItemsGroup       = _PathItemsGroup;
             CompanyLogo          = _CompanyLogo;
         }
@@ -109,10 +115,14 @@ namespace RMAZOR.Views.Common
             base.Init();
         }
 
-        public void RegisterProceeders(IEnumerable<IOnLevelStageChanged> _Proceeders)
+        public void RegisterProceeders(List<IOnLevelStageChanged> _Proceeders, int _ExecuteOrder)
         {
-            m_Proceeders.Clear();
-            m_Proceeders.AddRange(_Proceeders);
+            var dict = _ExecuteOrder < 0 ?
+                m_ProceedersToExecuteBeforeGroups : m_ProceedersToExecuteAfterGroups;
+            if (!dict.ContainsKey(_ExecuteOrder))
+                dict.Add(_ExecuteOrder, _Proceeders);
+            else 
+                dict[_ExecuteOrder] = _Proceeders;
         }
 
         public void OnAllPathProceed(V2Int _LastPath)
@@ -124,8 +134,11 @@ namespace RMAZOR.Views.Common
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             ProceedTime(_Args);
-            foreach (var proceeder in m_Proceeders)
-                proceeder.OnLevelStageChanged(_Args);
+            foreach (var proceeder in m_ProceedersToExecuteBeforeGroups)
+                proceeder.Value.ForEach(_P => _P.OnLevelStageChanged(_Args));
+            MazeItemsGroupSet.OnLevelStageChanged(_Args);
+            foreach (var proceeder in m_ProceedersToExecuteAfterGroups)
+                proceeder.Value.ForEach(_P => _P.OnLevelStageChanged(_Args));
             ProceedMazeItemGroups(_Args);
             ProceedSounds(_Args);
         }
@@ -162,11 +175,11 @@ namespace RMAZOR.Views.Common
                     throw new SwitchCaseNotImplementedException(_Args.Stage);
             }
             var mazeItems = _Args.Stage == ELevelStage.Loaded ? 
-                m_MazeItemsCached = GetMazeAndPathItems(m_Proceeders) : m_MazeItemsCached;
+                m_MazeItemsCached = GetMazeAndPathItems() : m_MazeItemsCached;
             mazeItems.AddRange(PathItemsGroup.PathItems);
             switch (_Args.Stage)
             {
-                case ELevelStage.Loaded:             OnLevelLoaded(_Args, mazeItems, PathItemsGroup); break;
+                case ELevelStage.Loaded:             OnLevelLoaded(_Args, mazeItems); break;
                 case ELevelStage.Finished:           OnLevelFinished(_Args);                          break;
                 case ELevelStage.ReadyToUnloadLevel: OnReadyToUnloadLevel(_Args, mazeItems);          break;
                 case ELevelStage.Unloaded:           OnLevelUnloaded(_Args);                          break;
@@ -180,11 +193,10 @@ namespace RMAZOR.Views.Common
             }
         }
 
-        private List<IViewMazeItem> GetMazeAndPathItems(IEnumerable<object> _Proceeders)
+        private List<IViewMazeItem> GetMazeAndPathItems()
         {
             var mazeItems = new List<IViewMazeItem>();
-            var mazeItemGroups = _Proceeders
-                .Select(_P => _P as IViewMazeItemGroup)
+            var mazeItemGroups = MazeItemsGroupSet.GetGroups()
                 .Where(_P => _P != null);
             foreach (var group in mazeItemGroups)
                 mazeItems.AddRange(group.GetActiveItems());
@@ -194,8 +206,7 @@ namespace RMAZOR.Views.Common
 
         private void OnLevelLoaded(
             LevelStageArgs                     _Args,
-            IReadOnlyCollection<IViewMazeItem> _MazeItems,
-            IViewMazePathItemsGroup            _PathItemsGroup)
+            IReadOnlyCollection<IViewMazeItem> _MazeItems)
         {
             var savedGameEntity = Managers.ScoreManager.
                 GetSavedGameProgress(CommonData.SavedGameFileName, true);
@@ -228,7 +239,7 @@ namespace RMAZOR.Views.Common
             }
             m_NextLevelMustBeFirstInGroup = false;
             Character.Appear(true);
-            foreach (var pathItem in _PathItemsGroup.PathItems)
+            foreach (var pathItem in PathItemsGroup.PathItems)
             {
                 bool collect = Model.PathItemsProceeder.PathProceeds[pathItem.Props.Position];
                 pathItem.Collected = collect;

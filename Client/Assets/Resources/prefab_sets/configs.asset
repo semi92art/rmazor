@@ -29,6 +29,9 @@ MonoBehaviour:
     - item: {fileID: 11400000, guid: 49c0476fabd0de94d8857888fe8b4ec0, type: 2}
       name: circles_texture_set_1
       bundle: 0
-    - item: {fileID: 11400000, guid: 2de8af91effea6e4a922391ec979affb, type: 2}
-      name: circles_texture_set_2
+    - item: {fileID: 11400000, guid: 11f57dde74a677f41a82337d2189bb22, type: 2}
+      name: circles2_texture_set
+      bundle: 0
+    - item: {fileID: 11400000, guid: 3f7ee430962a6224aac784e5ddc40db9, type: 2}
+      name: triangles_texture_set
       bundle: 0

@@ -25,12 +25,11 @@ namespace Common.SpawnPools
             _Item.enabled = _Active;
         }
 
-        protected override T GetFirstOrLastActiveOrInactive(bool _First, bool _Active)
+        protected override bool IsActive(T _Item)
         {
-            var collection = _First ? Collection : Collection.ToArray().Reverse();
-            return collection.FirstOrDefault(_Item => _Active ? _Item.enabled : !_Item.enabled);
+            return _Item.enabled;
         }
-    
+
         #endregion
     }
 }

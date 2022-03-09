@@ -27,23 +27,9 @@ namespace RMAZOR.Views.MazeItemGroups
 
         #region api
         
-        public abstract EMazeItemType[] Types { get; }
-        
-        public List<IViewMazeItem> GetItems()
-        {
-            var result = new List<IViewMazeItem>();
-            var items = Common.GetItems(false);
-            for (int i = 0; i < items.Count; i++)
-            {
-                var item = items[i];
-                if (!Types.Contains(item.Props.Type))
-                    continue;
-                result.Add(item);
-            }
-            return result;
-        }
-        
-        public List<IViewMazeItem> GetActiveItems()
+        public abstract IEnumerable<EMazeItemType> Types { get; }
+
+        public IEnumerable<IViewMazeItem> GetActiveItems()
         {
             var result = new List<IViewMazeItem>();
             var items = Common.GetItems();
@@ -65,6 +51,24 @@ namespace RMAZOR.Views.MazeItemGroups
                 var item = items[i];
                 item.OnLevelStageChanged(_Args);
             }
+        }
+
+        #endregion
+
+        #region nonpublic methods
+
+        protected List<IViewMazeItem> GetItems()
+        {
+            var result = new List<IViewMazeItem>();
+            var items = Common.GetItems(false);
+            for (int i = 0; i < items.Count; i++)
+            {
+                var item = items[i];
+                if (!Types.Contains(item.Props.Type))
+                    continue;
+                result.Add(item);
+            }
+            return result;
         }
 
         #endregion

@@ -111,6 +111,28 @@ public abstract class SpawnPoolBase<T> : ISpawnPool<T> where T : class
             Deactivate(index, _Predicate, _OnFinish);
         }
 
+        public List<T> GetAllActiveItems()
+        {
+            return Collection.Where(IsActive).ToList();
+        }
+
+        public List<T> GetAllInactiveItems()
+        {
+            return Collection.Where(_Item => !IsActive(_Item)).ToList();
+        }
+
+        public void ActivateAll()
+        {
+            for (int idx = 0; idx < Count; idx++)
+                Activate(idx);
+        }
+
+        public void DeactivateAll()
+        {
+            for (int idx = 0; idx < Count; idx++)
+                Deactivate(idx);
+        }
+
         #endregion
     
         #region nonpublic methods
@@ -147,11 +169,22 @@ public abstract class SpawnPoolBase<T> : ISpawnPool<T> where T : class
             if (!MathUtils.IsInRange(_Index, 0, Collection.Count - 1))
                 return;
             var item = Collection[_Index];
+            if (item == null)
+                return;
+            bool isActive = IsActive(item);
+            if (isActive == _Activate)
+                return;
             Activate(item, _Activate);
         }
 
+        private T GetFirstOrLastActiveOrInactive(bool _First, bool _Active)
+        {
+            var collection = _First ? Collection : Collection.ToArray().Reverse();
+            return collection.FirstOrDefault(_Item => _Active ? IsActive(_Item) : !IsActive(_Item));
+        }
+        
         protected abstract void Activate(T _Item, bool _Active);
-        protected abstract T GetFirstOrLastActiveOrInactive(bool _First, bool _Active);
+        protected abstract bool IsActive(T _Item);
 
         #endregion
     }

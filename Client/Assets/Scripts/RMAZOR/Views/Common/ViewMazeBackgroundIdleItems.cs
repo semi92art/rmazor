@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Common;
 using Common.CameraProviders;
-using Common.Constants;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Providers;
@@ -74,7 +72,7 @@ namespace RMAZOR.Views.Common
             for (int i = 0; i < 3; i++)
             {
                 var sourceGo = new GameObject("Background Item");
-                sourceGo.SetParent(ContainersGetter.GetContainer(ContainerNames.Background));
+                sourceGo.SetParent(Container);
                 var source = sourceGo.AddComponent<Disc>();
                 source.Color = m_BackItemsColor;
                 source.Radius = 0.25f * i;
@@ -87,7 +85,7 @@ namespace RMAZOR.Views.Common
                 int randIdx = Mathf.FloorToInt(Random.value * sources.Count);
                 var source = sources[randIdx];
                 var newGo = Object.Instantiate(source.gameObject);
-                newGo.SetParent(ContainersGetter.GetContainer(ContainerNames.Background));
+                newGo.SetParent(Container);
                 var pos = RandomPositionOnScreen();
                 newGo.transform.SetPosXY(pos);
                 Component newSourceRaw = null;
@@ -110,16 +108,6 @@ namespace RMAZOR.Views.Common
             }
         }
 
-        // private void AppearBackgroundIdleItems(bool _Appear)
-        // {
-        //     Transitioner.DoAppearTransition(_Appear,
-        //         new Dictionary<IEnumerable<Component>, Func<Color>>
-        //         {
-        //             {m_BackIdleItemsPool, () => m_BackItemsColor}
-        //         },
-        //         _Type: EAppearTransitionType.WithoutDelay);
-        // }
-        
         protected override void ProceedItems()
         {
             for (int i = 0; i < m_BackIdleItemsPool.Count; i++)
@@ -132,7 +120,5 @@ namespace RMAZOR.Views.Common
                 shape.transform.SetPosXY(RandomPositionOnScreen(false, Vector2.one));
             }
         }
-
-
     }
 }

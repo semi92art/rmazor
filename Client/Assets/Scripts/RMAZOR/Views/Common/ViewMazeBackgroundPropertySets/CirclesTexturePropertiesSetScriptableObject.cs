@@ -7,7 +7,7 @@ using UnityEngine;
 namespace RMAZOR.Views.Common.ViewMazeBackgroundPropertySets
 {
     [Serializable]
-    public class CirclesTextureSetItem
+    public class CirclesTextureSetItem : LinesTextureSetItem
     {
         [Range(0, 0.2f)] public float                           radius;
         [Range(0, 20)]   public int                             wavesCount;
@@ -18,7 +18,7 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundPropertySets
     [Serializable]
     public class CirclesTextureSet : ReorderableArray<CirclesTextureSetItem> { }
     
-    [CreateAssetMenu(fileName = "circles_texture_set", menuName = "Configs and Sets/Circles Texture Set", order = 0)]
+    [CreateAssetMenu(fileName = "circles_texture_set", menuName = "Configs and Sets/Circles Texture Set")]
     public class CirclesTexturePropertiesSetScriptableObject : ScriptableObject
     {
         [Header("Set"), Reorderable(paginate = true, pageSize = 50)]

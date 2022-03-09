@@ -57,13 +57,13 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Amplitude: 0.5
+    - _Amplitude: 0.145
     - _BumpScale: 1
-    - _CenterX: 0.5
-    - _CenterY: 0.46875
+    - _CenterX: 0
+    - _CenterY: 0
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _Direction: 1
+    - _Direction: 0.694
     - _DstBlend: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
@@ -73,11 +73,11 @@ Material:
     - _N: 10.86
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Radius: 0.0171
+    - _Radius: 0.019
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _Tiling: 25
+    - _Tiling: 1
     - _UVSec: 0
     - _WarpScale: 0
     - _WarpTiling: 1

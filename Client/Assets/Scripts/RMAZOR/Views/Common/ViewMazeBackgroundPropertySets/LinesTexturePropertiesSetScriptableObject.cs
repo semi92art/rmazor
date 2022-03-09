@@ -17,7 +17,7 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundPropertySets
     [Serializable]
     public class LinesTextureSet : ReorderableArray<LinesTextureSetItem> { }
     
-    [CreateAssetMenu(fileName = "lines_texture_set", menuName = "Configs and Sets/Lines Texture Set", order = 0)]
+    [CreateAssetMenu(fileName = "lines_texture_set", menuName = "Configs and Sets/Lines Texture Set")]
     public class LinesTexturePropertiesSetScriptableObject : ScriptableObject
     {
         [Header("Set"), Reorderable(paginate = true, pageSize = 50)]

@@ -1,4 +1,5 @@
-﻿using RMAZOR.Models.ItemProceeders;
+﻿using System.Collections.Generic;
+using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.MazeItems;
@@ -14,7 +15,7 @@ namespace RMAZOR.Views.MazeItemGroups
     {
         public ViewMazeSpringboardItemsGroup(IViewMazeCommon _Common) : base(_Common) { }
         
-        public override EMazeItemType[] Types => new[] {EMazeItemType.Springboard};
+        public override IEnumerable<EMazeItemType> Types => new[] {EMazeItemType.Springboard};
         
         public void OnSpringboardEvent(SpringboardEventArgs _Args)
         {

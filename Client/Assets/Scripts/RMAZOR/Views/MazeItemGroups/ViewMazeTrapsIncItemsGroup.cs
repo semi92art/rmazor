@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using System.Collections.Generic;
+using Common;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common;
@@ -22,7 +23,7 @@ namespace RMAZOR.Views.MazeItemGroups
         
         #endregion
 
-        public override EMazeItemType[] Types       => new[] {EMazeItemType.TrapIncreasing};
+        public override IEnumerable<EMazeItemType> Types => new[] {EMazeItemType.TrapIncreasing};
 
         public void OnMazeTrapIncreasingStageChanged(MazeItemTrapIncreasingEventArgs _Args)
         {

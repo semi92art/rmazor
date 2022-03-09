@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Common;
 using Common.Managers;
 using Common.Utils;
@@ -45,7 +46,7 @@ namespace RMAZOR.Views.MazeItemGroups
         
         #region api
         
-        public override EMazeItemType[] Types       => new[] {EMazeItemType.Turret};
+        public override IEnumerable<EMazeItemType> Types => new[] {EMazeItemType.Turret};
 
         public void OnTurretShoot(TurretShotEventArgs _Args)
         {

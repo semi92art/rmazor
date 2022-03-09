@@ -5,9 +5,11 @@ namespace RMAZOR.Views.Utils
 {
     public static class SortingOrders
     {
-        public const int BackgroundTexture           = Path - 4;
-        public const int BackgroundTransitionTexture = Path - 3;
-        public const int BackgroundItem              = Path - 2;
+        public const int BackgroundTexture           = Path - 6;
+        public const int BackgroundItem              = Path - 5;
+        public const int AdditionalBackgroundPolygon = Path - 4;
+        public const int AdditionalBackgroundBorder  = Path - 3;
+        public const int AdditionalBackgroundCorner  = Path - 2;
         public const int PathBackground              = Path - 1;
         public const int Path                        = -1;
         public const int PathLine                    = Path + 1;
@@ -31,10 +33,10 @@ namespace RMAZOR.Views.Utils
                 case EMazeItemType.ShredingerBlock:
                 case EMazeItemType.Springboard:
                     return Path + 5;
+                case EMazeItemType.Turret:
+                    return Path + 100;
                 case EMazeItemType.TrapReact:
                     return Path + 200;
-                case EMazeItemType.Turret:
-                    return Path + 300;
                 default: throw new SwitchCaseNotImplementedException(_Type);
             }
         }

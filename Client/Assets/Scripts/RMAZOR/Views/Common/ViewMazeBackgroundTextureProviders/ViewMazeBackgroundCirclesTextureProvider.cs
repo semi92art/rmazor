@@ -1,15 +1,13 @@
 ﻿using System.Runtime.CompilerServices;
-using Common;
 using Common.CameraProviders;
 using Common.Constants;
 using Common.Helpers;
 using Common.Managers;
-using Common.Providers;
 using Common.Ticker;
-using Newtonsoft.Json;
 using RMAZOR.Views.Common.ViewMazeBackgroundPropertySets;
 using RMAZOR.Views.Utils;
 using UnityEngine;
+using Common.Providers;
 
 namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
 {
@@ -22,15 +20,15 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
         Center
     }
     
-    public interface IViewMazeBackgroundCircleTextureProvider 
+    public interface IViewMazeBackgroundCirclesTextureProvider 
         : IViewMazeBackgroundTextureProvider
     {
         void SetProperties(CirclesTextureSetItem _Item);
     }
     
-    public class ViewMazeBackgroundCircleTextureProvider : 
+    public class ViewMazeBackgroundCirclesTextureProvider : 
         ViewMazeBackgroundTextureProviderBase,
-        IViewMazeBackgroundCircleTextureProvider
+        IViewMazeBackgroundCirclesTextureProvider
     {
         #region nonpublic members
         
@@ -45,7 +43,7 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
 
         #region inject
 
-        public ViewMazeBackgroundCircleTextureProvider(
+        public ViewMazeBackgroundCirclesTextureProvider(
             IPrefabSetManager _PrefabSetManager,
             IContainersGetter _ContainersGetter,
             ICameraProvider   _CameraProvider,
@@ -64,12 +62,6 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
 
         protected override int    SortingOrder      => SortingOrders.BackgroundTexture;
         protected override string TexturePrefabName => "circles_texture";
-
-        public override void SetColors(Color _Color1, Color _Color2)
-        {
-            Material.SetColor(Color1Id, _Color1);
-            Material.SetColor(Color2Id, _Color2);
-        }
 
         public void SetProperties(CirclesTextureSetItem _Item)
         {

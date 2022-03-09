@@ -125,11 +125,7 @@ namespace RMAZOR.Views.Common
         private void DeactivateAllBlocks()
         {
             foreach (var pool in m_ItemPools.Values)
-            {
-                IViewMazeItem activeItem;
-                while ((activeItem = pool.FirstActive) != null)
-                    pool.Deactivate(activeItem);
-            }
+                pool.DeactivateAll();
         }
         
         #endregion

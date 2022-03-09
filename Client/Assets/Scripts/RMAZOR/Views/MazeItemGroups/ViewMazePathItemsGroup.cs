@@ -4,7 +4,6 @@ using Common;
 using Common.Entities;
 using Common.Helpers;
 using Common.SpawnPools;
-using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
@@ -118,9 +117,7 @@ namespace RMAZOR.Views.MazeItemGroups
         
         private void DeactivateAllPaths()
         {
-            IViewMazeItemPath activePathItem;
-            while ((activePathItem = m_PathsPool.FirstActive) != null)
-                m_PathsPool.Deactivate(activePathItem);
+            m_PathsPool.DeactivateAll();
         }
         
         private void UnfillStartPathItem()

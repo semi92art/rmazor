@@ -100,8 +100,7 @@ namespace RMAZOR.Views.MazeItems
             get => base.ActivatedInSpawnPool;
             set
             {
-                foreach (var item in m_GravityItems)
-                    m_GravityItems.Deactivate(item);
+                m_GravityItems.DeactivateAll();
                 base.ActivatedInSpawnPool = value;
             }
         }

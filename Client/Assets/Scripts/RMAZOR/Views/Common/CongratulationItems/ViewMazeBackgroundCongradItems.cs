@@ -88,8 +88,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
                     break;
                 case ELevelStage.Unloaded:
                 {
-                    foreach (var item in m_BackCongratsItemsPool)
-                        m_BackCongratsItemsPool.Deactivate(item);
+                    m_BackCongratsItemsPool.DeactivateAll();
                     break;
                 }
             }
@@ -164,8 +163,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
                 m_BackCongratsItemsPool.Add(sourceAnim);
                 m_BackCongratsItemsDict.Add(sourceAnim, shapes);
             }
-            foreach (var item in m_BackCongratsItemsPool)
-                m_BackCongratsItemsPool.Deactivate(item);
+            m_BackCongratsItemsPool.DeactivateAll();
         }
 
         protected override void ProceedItems()

@@ -6,8 +6,7 @@ namespace RMAZOR.Views.MazeItemGroups
 {
     public interface IViewMazeItemGroup : IOnLevelStageChanged
     {
-        EMazeItemType[]     Types { get; }
-        List<IViewMazeItem> GetItems();
-        List<IViewMazeItem> GetActiveItems();
+        IEnumerable<EMazeItemType> Types { get; }
+        IEnumerable<IViewMazeItem> GetActiveItems();
     }
 }
