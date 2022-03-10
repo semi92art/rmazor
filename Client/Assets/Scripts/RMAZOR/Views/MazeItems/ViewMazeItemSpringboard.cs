@@ -41,34 +41,31 @@ namespace RMAZOR.Views.MazeItems
         #region nonpublic members
 
         protected override string ObjectName => "Springboard Block";
-        private static AudioClipArgs _audioClipArgsSpringboardJump => 
+        private static AudioClipArgs AudioClipArgsSpringboardJump => 
             new AudioClipArgs("springboard_jump", EAudioClipType.GameSound);
         
         private Vector2 m_Edge1Start, m_Edge2Start;
-        private Color   m_NonHighlightColor;
-        private Color   m_HighlightColor;
-        private float   m_HighlightTimer;
-        private Line    m_Springboard;
-        private Line    m_Pillar;
-        private bool    m_IsAnimatedHighlight;
+        
+        protected Line Springboard;
+        protected Line Pillar;
         
         #endregion
         
         #region inject
-        
+
         public ViewMazeItemSpringboard(
-            ViewSettings                _ViewSettings,
-            IModelGame                  _Model,
-            IMazeCoordinateConverter    _CoordinateConverter, 
-            IContainersGetter           _ContainersGetter,
-            IViewGameTicker             _GameTicker,
-            IViewBetweenLevelTransitioner     _Transitioner,
-            IManagersGetter             _Managers,
-            IColorProvider              _ColorProvider,
-            IViewInputCommandsProceeder _CommandsProceeder) 
+            ViewSettings                  _ViewSettings,
+            IModelGame                    _Model,
+            IMazeCoordinateConverter      _CoordinateConverter,
+            IContainersGetter             _ContainersGetter,
+            IViewGameTicker               _GameTicker,
+            IViewBetweenLevelTransitioner _Transitioner,
+            IManagersGetter               _Managers,
+            IColorProvider                _ColorProvider,
+            IViewInputCommandsProceeder   _CommandsProceeder)
             : base(
                 _ViewSettings,
-                _Model, 
+                _Model,
                 _CoordinateConverter,
                 _ContainersGetter,
                 _GameTicker,
@@ -76,12 +73,12 @@ namespace RMAZOR.Views.MazeItems
                 _Managers,
                 _ColorProvider,
                 _CommandsProceeder) { }
-        
+
         #endregion
 
         #region api
         
-        public override Component[] Shapes => new Component[] {m_Springboard, m_Pillar};
+        public override Component[] Shapes => new Component[] {Springboard, Pillar};
         
         public override object Clone() => new ViewMazeItemSpringboard(
             ViewSettings, 
@@ -96,25 +93,11 @@ namespace RMAZOR.Views.MazeItems
 
         public void MakeJump(SpringboardEventArgs _Args)
         {
-            Managers.AudioManager.PlayClip(_audioClipArgsSpringboardJump);
+            Managers.AudioManager.PlayClip(AudioClipArgsSpringboardJump);
             Cor.Run(JumpCoroutine());
         }
         
-        public void UpdateTick()
-        {
-            m_HighlightTimer = GameTicker.TimeUnscaled;
-            if (!m_IsAnimatedHighlight)
-                return;
-            if (!ActivatedInSpawnPool)
-                return;
-            if (AppearingState != EAppearingState.Appeared)
-                return;
-            if (Model.LevelStaging.LevelStage == ELevelStage.Finished)
-                return;
-            float coeff = Mathf.Cos(m_HighlightTimer * 10f) * 0.5f + 0.5f;
-            var color = Color.Lerp(m_NonHighlightColor, m_HighlightColor, coeff);
-            m_Springboard.Color = m_Pillar.Color = color;
-        }
+        public virtual void UpdateTick() { }
 
         #endregion
 
@@ -122,54 +105,34 @@ namespace RMAZOR.Views.MazeItems
         
         protected override void InitShape()
         {
-            m_Pillar = Object.AddComponentOnNewChild<Line>("Springboard Item", out _);
-            m_Pillar.SortingOrder = SortingOrders.PathLine;
-            m_Springboard = Object.AddComponentOnNewChild<Line>("Springboard", out _);
-            m_Springboard.SortingOrder = SortingOrders.GetBlockSortingOrder(EMazeItemType.Springboard);
-            m_Pillar.EndCaps = m_Springboard.EndCaps = LineEndCap.Round;
-            m_IsAnimatedHighlight = ViewSettings.SpringboardAnimatedHighlight;
-            m_NonHighlightColor  = m_Pillar.Color = m_Springboard.Color =
-                ColorProvider.GetColor(m_IsAnimatedHighlight ? ColorIds.Main : ColorIds.MazeItem2);
-            m_HighlightColor = ColorProvider.GetColor(ColorIds.MazeItem2);
+            Pillar = Object.AddComponentOnNewChild<Line>("Springboard Item", out _);
+            Pillar.SortingOrder = SortingOrders.PathLine;
+            Springboard = Object.AddComponentOnNewChild<Line>("Springboard", out _);
+            Springboard.SortingOrder = SortingOrders.GetBlockSortingOrder(EMazeItemType.Springboard);
+            Pillar.EndCaps = Springboard.EndCaps = LineEndCap.Round;
         }
 
         protected override void UpdateShape()
         {
-            m_Pillar.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
-            m_Springboard.Thickness = m_Pillar.Thickness * 2f;
-            (m_Pillar.Start, m_Pillar.End, m_Springboard.Start, m_Springboard.End) =
+            Pillar.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
+            Springboard.Thickness = Pillar.Thickness * 2f;
+            (Pillar.Start, Pillar.End, Springboard.Start, Springboard.End) =
                 GetSpringboardAndPillarEdges();
-            m_Edge1Start = m_Springboard.Start;
-            m_Edge2Start = m_Springboard.End;
+            m_Edge1Start = Springboard.Start;
+            m_Edge2Start = Springboard.End;
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == ColorIds.Main)
-            {
-                if (m_IsAnimatedHighlight)
-                    m_NonHighlightColor = _Color;
-                else
-                {
-                    m_Pillar.Color = _Color;
-                    m_Springboard.Color = _Color;
-                }
-            }
-            else if (_ColorId == ColorIds.MazeItem2)
-            {
-                if (m_IsAnimatedHighlight)
-                    m_HighlightColor = _Color;
-                else
-                {
-                    m_Pillar.Color = _Color;
-                    m_Springboard.Color = _Color;
-                }
-            }
+            if (_ColorId != ColorIds.Main)
+                return;
+            Pillar.Color = _Color;
+            Springboard.Color = _Color;
         }
 
         private IEnumerator JumpCoroutine()
         {
-            UnityAction<float> doOnProgress = _Progress => (m_Springboard.Start, m_Springboard.End, m_Pillar.End) =
+            UnityAction<float> doOnProgress = _Progress => (Springboard.Start, Springboard.End, Pillar.End) =
                 GetSpringboardEdgesOnJump(_Progress); 
 
             yield return Cor.Lerp(
@@ -215,10 +178,8 @@ namespace RMAZOR.Views.MazeItems
         
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
-            return new Dictionary<IEnumerable<Component>, Func<Color>>
-            {
-                {Shapes, () => m_NonHighlightColor}
-            };
+            var col = ColorProvider.GetColor(ColorIds.Main);
+            return new Dictionary<IEnumerable<Component>, Func<Color>> {{Shapes, () => col}};
         }
         
         #endregion

@@ -62,7 +62,6 @@ namespace RMAZOR.Views
         private IDebugManager                 DebugManager             { get; }
         private IBigDialogViewer              BigDialogViewer          { get; }
         private IViewBetweenLevelTransitioner BetweenLevelTransitioner { get; }
-        private IViewMazeAdditionalBackground AdditionalBackground     { get; }
 
         public ViewGame(
             ViewSettings                  _Settings,
@@ -84,8 +83,7 @@ namespace RMAZOR.Views
             ICameraProvider               _CameraProvider,
             IDebugManager                 _DebugManager,
             IBigDialogViewer              _BigDialogViewer,
-            IViewBetweenLevelTransitioner _BetweenLevelTransitioner,
-            IViewMazeAdditionalBackground _AdditionalBackground)
+            IViewBetweenLevelTransitioner _BetweenLevelTransitioner)
         {
             Settings                     = _Settings;
             ContainersGetter             = _ContainersGetter;
@@ -107,7 +105,6 @@ namespace RMAZOR.Views
             DebugManager                 = _DebugManager;
             BigDialogViewer              = _BigDialogViewer;
             BetweenLevelTransitioner     = _BetweenLevelTransitioner;
-            AdditionalBackground         = _AdditionalBackground;
         }
         
         #endregion
@@ -178,13 +175,12 @@ namespace RMAZOR.Views
                 MazeRotation,
                 PathItemsGroup,
                 MazeItemsGroupSet,
-                AdditionalBackground
+                BetweenLevelTransitioner,
+                Background,
+                Foreground
             };
             var proceedersToExecuteOnLevelStageChangedAfretGroups = new object[]
             {
-                BetweenLevelTransitioner,
-                Background,
-                Foreground,
                 CameraProvider,
                 Managers
             };

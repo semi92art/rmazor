@@ -13,7 +13,7 @@ namespace RMAZOR.Views.Common
         int                   GetGroupIndexByPoint(V2Int _Point);
     }
     
-    public class ViewMazeAdditionalBackgroundGeometryInitializer 
+    public class ViewMazeAdditionalBackgroundGeometryInitializerSimple 
         : InitBase, IViewMazeAdditionalBackgroundGeometryInitializer
     {
         #region nonpublic members
@@ -32,8 +32,8 @@ namespace RMAZOR.Views.Common
             m_GroupsCached = groups
                 .Select(_G =>
                 {
-                    Dbg.Log(_G.Count);
-                    var holes = GetGroupHoles(_G);
+                    // var holes = GetGroupHoles(_G);
+                    var holes = new List<List<V2Int>>();
                     return new PointsGroupArgs(_G, holes, ++idx);
                 })
                 .ToList();
@@ -68,14 +68,14 @@ namespace RMAZOR.Views.Common
         private static List<List<V2Int>> GetPointGroups(IEnumerable<V2Int> _Points)
         {
             var points = _Points.OrderBy(_P => _P.X).ToList();
-            var groups = new List<List<V2Int>>();
-            while (points.Any())
-            {
-                int minX = points.First().X;
-                int minY = points.Where(_P => _P.X == minX).Min(_P => _P.Y);
-                var group = GetNeighboringPoints(points, new V2Int(minX, minY), false);
-                groups.Add(group);
-            }
+            var groups = new List<List<V2Int>>{points};
+            // while (points.Any())
+            // {
+            //     int minX = points.First().X;
+            //     int minY = points.Where(_P => _P.X == minX).Min(_P => _P.Y);
+            //     var group = GetNeighboringPoints(points, new V2Int(minX, minY), false);
+            //     groups.Add(group);
+            // }
             return groups;
         }
 

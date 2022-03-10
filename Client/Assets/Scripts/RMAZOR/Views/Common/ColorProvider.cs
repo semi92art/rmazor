@@ -22,6 +22,7 @@ namespace RMAZOR.Views.Common
         private          ColorItemSet           m_CurrentSet;
         private          ColorItemSet           m_LightThemeSet;
         private          ColorItemSet           m_DarkThemeSet;
+        private readonly List<int>              m_IgnorableForThemeSwitchColorIds = new List<int>();
 
         #endregion
 
@@ -64,6 +65,16 @@ namespace RMAZOR.Views.Common
         }
 
         public EColorTheme CurrentTheme => DarkThemeSetting.Get() ? EColorTheme.Dark : EColorTheme.Light;
+        
+        public void AddIgnorableForThemeSwitchColor(int    _ColorId)
+        {
+            m_IgnorableForThemeSwitchColorIds.Add(_ColorId);
+        }
+
+        public void RemoveIgnorableForThemeSwitchColor(int _ColorId)
+        {
+            m_IgnorableForThemeSwitchColorIds.Remove(_ColorId);
+        }
 
         public Color GetColor(int _Id)
         {
@@ -83,11 +94,11 @@ namespace RMAZOR.Views.Common
             ColorChanged?.Invoke(_Id, _Color);
         }
         
-        public void SetTheme(EColorTheme _Theme)
+        public virtual void SetTheme(EColorTheme _Theme)
         {
             SaveUtils.PutValue(SaveKeysCommon.DarkTheme, _Theme == EColorTheme.Dark);
             SetThemeCore(_Theme == EColorTheme.Dark);
-            foreach (int id in m_ColorsDict.Keys.ToList().Except(new [] {ColorIds.Main, ColorIds.Background1, ColorIds.Background2}))
+            foreach (int id in m_ColorsDict.Keys.ToList().Except(m_IgnorableForThemeSwitchColorIds))
                 SetColor(id, m_ColorsDict[id]);
             ColorThemeChanged?.Invoke(_Theme);
         }

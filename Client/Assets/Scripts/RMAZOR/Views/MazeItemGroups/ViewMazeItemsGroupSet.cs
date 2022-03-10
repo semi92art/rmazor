@@ -1,4 +1,6 @@
-﻿using RMAZOR.Models;
+﻿using Common;
+using Common.Helpers;
+using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Common;
 
@@ -8,7 +10,8 @@ namespace RMAZOR.Views.MazeItemGroups
         IOnLevelStageChanged,
         ICharacterMoveStarted, 
         ICharacterMoveContinued,
-        ICharacterMoveFinished
+        ICharacterMoveFinished,
+        IInit
     {
         IViewMazeMovingItemsGroup      MovingItemsGroup      { get; }
         IViewMazeTrapsReactItemsGroup  TrapsReactItemsGroup  { get; }
@@ -22,7 +25,7 @@ namespace RMAZOR.Views.MazeItemGroups
         IViewMazeItemGroup[] GetGroups();
     }
 
-    public class ViewMazeItemsGroupSet : IViewMazeItemsGroupSet
+    public class ViewMazeItemsGroupSet : InitBase, IViewMazeItemsGroupSet
     {
         #region nonpublic members
 
@@ -77,6 +80,14 @@ namespace RMAZOR.Views.MazeItemGroups
             return m_GroupsCached;
         }
 
+        public override void Init()
+        {
+            var proceeders = GetInterfaceOfProceeders<IInit>();
+            foreach (var proceeder in proceeders)
+                proceeder?.Init();
+            base.Init();
+        }
+
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             var groups = GetGroups();
@@ -107,7 +118,7 @@ namespace RMAZOR.Views.MazeItemGroups
         
         private T[] GetInterfaceOfProceeders<T>() where T : class
         {
-            return System.Array.ConvertAll(m_GroupsCached, _Item => _Item as T);
+            return System.Array.ConvertAll(GetGroups(), _Item => _Item as T);
         }
     }
 }

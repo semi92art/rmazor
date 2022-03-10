@@ -16,8 +16,6 @@ MonoBehaviour:
     array:
     - name: Main
       color: {r: 0.5283019, g: 0.027411893, b: 0.027411893, a: 1}
-    - name: Border
-      color: {r: 0.8117648, g: 0.227451, b: 0.227451, a: 0.46666667}
     - name: Maze Item 1
       color: {r: 1, g: 1, b: 1, a: 1}
     - name: Maze Item 2
@@ -32,8 +30,6 @@ MonoBehaviour:
       color: {r: 0, g: 0, b: 0, a: 1}
     - name: Background 2
       color: {r: 0, g: 0, b: 0, a: 1}
-    - name: Path
-      color: {r: 0.6981132, g: 0.61519694, b: 0.2206301, a: 1}
     - name: Background Idle Items
       color: {r: 1, g: 1, b: 1, a: 0.043137256}
     - name: UI

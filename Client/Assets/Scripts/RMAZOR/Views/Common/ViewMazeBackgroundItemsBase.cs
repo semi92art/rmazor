@@ -41,18 +41,18 @@ namespace RMAZOR.Views.Common
 
         #region inject
         
-        protected IColorProvider          ColorProvider    { get; }
+        protected IColorProvider                ColorProvider    { get; }
         protected IViewBetweenLevelTransitioner Transitioner     { get; }
-        protected IContainersGetter       ContainersGetter { get; }
-        protected IViewGameTicker         GameTicker       { get; }
-        protected ICameraProvider         CameraProvider   { get; }
+        protected IContainersGetter             ContainersGetter { get; }
+        protected IViewGameTicker               GameTicker       { get; }
+        protected ICameraProvider               CameraProvider   { get; }
 
         protected ViewMazeBackgroundItemsBase(
-            IColorProvider _ColorProvider, 
+            IColorProvider                _ColorProvider,
             IViewBetweenLevelTransitioner _Transitioner,
-            IContainersGetter _ContainersGetter,
-            IViewGameTicker _GameTicker,
-            ICameraProvider _CameraProvider)
+            IContainersGetter             _ContainersGetter,
+            IViewGameTicker               _GameTicker,
+            ICameraProvider               _CameraProvider)
         {
             ColorProvider = _ColorProvider;
             Transitioner = _Transitioner;
@@ -60,8 +60,7 @@ namespace RMAZOR.Views.Common
             GameTicker = _GameTicker;
             CameraProvider = _CameraProvider;
         }
-
-
+        
         #endregion
 
         #region api

@@ -15,7 +15,7 @@ namespace RMAZOR.Views.Utils
         public const int PathLine                    = Path + 1;
         public const int PathJoint                   = Path + 2;
         public const int MoneyItem                   = Path + 3;
-        public const int Character                   = Path + 400;
+        public const int Character                   = Path + 200;
         
         public static int GetBlockSortingOrder(EMazeItemType _Type)
         {
@@ -36,7 +36,7 @@ namespace RMAZOR.Views.Utils
                 case EMazeItemType.Turret:
                     return Path + 100;
                 case EMazeItemType.TrapReact:
-                    return Path + 200;
+                    return Path + 150;
                 default: throw new SwitchCaseNotImplementedException(_Type);
             }
         }

@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Common;
 using Common.Constants;
 using Common.Entities;
 using Common.Enums;
@@ -58,7 +57,8 @@ namespace RMAZOR.Views.MazeItems
         private Disc           m_ProjHolderBorder;
         private SpriteRenderer m_ProjRenderer;
         private SpriteRenderer m_ProjFakeRenderer;
-        private Rectangle     m_Mask1, m_Mask2;
+        private Rectangle      m_Mask1, m_Mask2;
+        private Disc           m_Mask3;
 
         #endregion
         
@@ -160,6 +160,7 @@ namespace RMAZOR.Views.MazeItems
         public void SetProjectileSortingOrder(int _Order)
         {
             m_ProjRenderer.sortingOrder = _Order;
+            m_ProjFakeRenderer.sortingOrder = _Order;
             ProjectileTail.SetSortingOrder(_Order);
         }
 
@@ -228,11 +229,29 @@ namespace RMAZOR.Views.MazeItems
             mask1.StencilComp   = mask2.StencilComp   = CompareFunction.Greater;
             mask1.StencilOpPass = mask2.StencilOpPass = StencilOp.Replace;
             mask1.enabled       = mask2.enabled       = false;
-            mask1.Color         = mask2.Color         = new Color(0f, 0f, 0f, 100f / 255f);
+            mask1.Color         = mask2.Color         = new Color(0f, 0f, 0f, 1f / 255f);
             mask1.transform.SetPosZ(-0.1f);
             mask2.transform.SetPosZ(-0.1f);
+            
+            var mask3 = Object.AddComponentOnNewChild<Disc>("Mask 3", out GameObject _);
+            mask3.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type - 1);
+            mask3.Color = Color.Lerp(
+                ColorProvider.GetColor(ColorIds.Background1), 
+                ColorProvider.GetColor(ColorIds.Background2),
+                0.5f);
+            // mask3.transform.SetLocalPosXY(Vector2.zero);
+            // mask3.BlendMode = ShapesBlendMode.Subtractive;
+            // mask3.RenderQueue = -1;
+            // mask3.SortingOrder = SortingOrders.AdditionalBackgroundPolygon;
+            // mask3.ZTest = CompareFunction.Less;
+            // mask3.StencilComp = CompareFunction.Greater;
+            // mask3.StencilOpPass = StencilOp.Replace;
+            // mask3.enabled = true;
+            mask3.Color = new Color(0f, 0f, 0f, 1f / 255f);
+            
+            
             AdditionalBackground.GroupsCollected += SetStencilRefValues;
-            (m_Body, m_ProjHolderBorder, m_Mask1, m_Mask2) = (body, bhb, mask1, mask2);
+            (m_Body, m_ProjHolderBorder, m_Mask1, m_Mask2, m_Mask3) = (body, bhb, mask1, mask2, mask3);
         }
 
         protected override void UpdateShape()
@@ -247,6 +266,11 @@ namespace RMAZOR.Views.MazeItems
             m_ProjFakeContainerTr.SetLocalPosXY(pos);
             m_Mask1.Width = m_Mask1.Height = scale;
             m_Mask2.Width = m_Mask2.Height = scale;
+            m_Mask3.Radius = CoordinateConverter.Scale * 0.5f;
+            m_Mask3.Color = Color.Lerp(
+                ColorProvider.GetColor(ColorIds.Background1), 
+                ColorProvider.GetColor(ColorIds.Background2),
+                0.5f);
             m_ProjHolderBorder.Radius = scale * ProjectileContainerRadius * 0.9f;
             m_ProjHolderBorder.Thickness = ViewSettings.LineWidth * scale * 0.5f;
         }
@@ -266,7 +290,6 @@ namespace RMAZOR.Views.MazeItems
             }
             
             int stencilRef = GetGroupIndexByPoint();
-            Dbg.Log("stencilRef: " + stencilRef);
             if (stencilRef < 0)
                 return;
             m_Mask1.StencilRefID = m_Mask2.StencilRefID = Convert.ToByte(stencilRef + 1);
@@ -285,6 +308,20 @@ namespace RMAZOR.Views.MazeItems
             else if (_ColorId == ColorIds.Main)
             {
                 m_Body.Color = _Color;
+            }
+            else if (_ColorId == ColorIds.Background1)
+            {
+                m_Mask3.Color = Color.Lerp(
+                    _Color, 
+                    ColorProvider.GetColor(ColorIds.Background2),
+                    0.5f);
+            }
+            else if (_ColorId == ColorIds.Background2)
+            {
+                m_Mask3.Color = Color.Lerp(
+                    ColorProvider.GetColor(ColorIds.Background1), 
+                    _Color,
+                    0.5f);
             }
         }
 

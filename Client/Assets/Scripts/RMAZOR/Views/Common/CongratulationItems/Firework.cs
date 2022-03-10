@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Common;
 using Common.Extensions;
 using Common.Providers;
 using Common.SpawnPools;
@@ -72,7 +73,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
             {
                 m_Bodies[i].MovePosition(transform.position);
                 m_Bodies[i].constraints = RigidbodyConstraints.FreezeAll;
-                m_Discs[i].Color = m_Discs[i].Color.SetA(1f);
+                m_Discs[i].Color = m_Discs[i].Color.SetA(0f);
                 m_Discs[i].SortingOrder = SortingOrders.BackgroundItem;
             }
         }

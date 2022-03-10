@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace Common.Providers
@@ -15,8 +16,10 @@ namespace Common.Providers
         event UnityAction<EColorTheme> ColorThemeChanged;
         bool                           DarkThemeAvailable { get; set; }
         EColorTheme                    CurrentTheme       { get; }
-        Color                          GetColor(int         _Id);
-        void                           SetColor(int         _Id, Color _Color);
-        void                           SetTheme(EColorTheme _Theme);
+        void                           AddIgnorableForThemeSwitchColor(int    _ColorId);
+        void                           RemoveIgnorableForThemeSwitchColor(int _ColorId);
+        Color                          GetColor(int                           _Id);
+        void                           SetColor(int                           _Id, Color _Color);
+        void                           SetTheme(EColorTheme                   _Theme);
     }
 }

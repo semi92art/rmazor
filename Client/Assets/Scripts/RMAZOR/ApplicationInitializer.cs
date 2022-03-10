@@ -266,7 +266,7 @@ namespace RMAZOR
                 new ProductInfo(PurchaseKeys.Money2,    $"medium_pack_of_coins{suffix}",          ptCons),
                 new ProductInfo(PurchaseKeys.Money3,    $"big_pack_of_coins{suffix}",             ptCons),
                 new ProductInfo(PurchaseKeys.NoAds,     $"disable_mandatory_advertising{suffix}", ptNonCons),
-                new ProductInfo(PurchaseKeys.DarkTheme, $"dark_theme{suffix}",                    ptNonCons)
+                // new ProductInfo(PurchaseKeys.DarkTheme, $"dark_theme{suffix}",                    ptNonCons)
             };
         }
 

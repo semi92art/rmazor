@@ -4,7 +4,6 @@ using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.MazeItems;
-using UnityEngine.Events;
 
 namespace RMAZOR.Views.MazeItemGroups
 {
@@ -15,18 +14,18 @@ namespace RMAZOR.Views.MazeItemGroups
         void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args);
     }
     
-    public class ViewMazeTrapsReactItemGroup : ViewMazeItemsGroupBase, IViewMazeTrapsReactItemsGroup
+    public class ViewMazeTrapsReactSpikesItemGroup : ViewMazeItemsGroupBase, IViewMazeTrapsReactItemsGroup
     {
         #region inject
         
-        public ViewMazeTrapsReactItemGroup(IViewMazeCommon _Common) : base (_Common) { }
+        public ViewMazeTrapsReactSpikesItemGroup(IViewMazeCommon _Common) : base (_Common) { }
         
         #endregion
         
         #region api
 
         public override IEnumerable<EMazeItemType> Types => new[] {EMazeItemType.TrapReact};
-
+        
         public void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args)
         {
             Common.GetItem<IViewMazeItemTrapReact>(_Args.Info).OnTrapReact(_Args);

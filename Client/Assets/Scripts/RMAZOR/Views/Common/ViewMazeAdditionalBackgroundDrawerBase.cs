@@ -32,7 +32,7 @@ namespace RMAZOR.Views.Common
 
         private const float AdditionalScale       = 1.005f;
         private const int   BordersPoolCount      = 100;
-        private const int   CornersPoolCount      = 4;
+        private const int   CornersPoolCount      = 20;
         private const int   MasksPoolCount        = 10;
         private const int   TextureTypesCount     = 3;
         private const int   TextureRenderersCount = 3;
@@ -135,7 +135,7 @@ namespace RMAZOR.Views.Common
         {
             if (_ColorId != ColorIds.Main)
                 return;
-            m_TextureRenderers.GetAllActiveItems().ForEach(_R => _R.color = _Color);
+            m_TextureRenderers.GetAllActiveItems().ForEach(_R => _R.color = _Color.SetA(0.3f));
             var activeBorders = m_Borders.GetAllActiveItems();
             foreach (var border in activeBorders)
                 border.Color = _Color;
@@ -163,8 +163,8 @@ namespace RMAZOR.Views.Common
                 border.DashType = DashType.Rounded;
                 border.EndCaps = LineEndCap.None;
                 m_Borders.Add(border);
-                m_Borders.Deactivate(border);
             }
+            m_Borders.DeactivateAll(true);
         }
 
         private void InitCornersPool()
@@ -178,8 +178,8 @@ namespace RMAZOR.Views.Common
                 corner.Type = DiscType.Arc;
                 corner.ArcEndCaps = ArcEndCap.Round;
                 m_Corners.Add(corner);
-                m_Corners.Deactivate(corner);
             }
+            m_Corners.DeactivateAll(true);
         }
 
         private void InitTextures()

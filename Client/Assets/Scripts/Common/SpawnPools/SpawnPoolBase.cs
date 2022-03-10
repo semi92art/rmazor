@@ -95,7 +95,11 @@ public abstract class SpawnPoolBase<T> : ISpawnPool<T> where T : class
         public T LastActive => GetFirstOrLastActiveOrInactive(false, true);
         public T LastInactive => GetFirstOrLastActiveOrInactive(false, false);
 
-        public virtual void Activate(T _Item, Func<bool> _Predicate = null, Action _OnFinish = null)
+        public virtual void Activate(
+            T _Item,
+            Func<bool> _Predicate = null,
+            Action _OnFinish = null, 
+            bool _Forced = false)
         {
             int index = IndexOf(_Item);
             if (index == -1)
@@ -103,7 +107,11 @@ public abstract class SpawnPoolBase<T> : ISpawnPool<T> where T : class
             Activate(index, _Predicate, _OnFinish);
         }
 
-        public virtual void Deactivate(T _Item, Func<bool> _Predicate = null, Action _OnFinish = null)
+        public virtual void Deactivate(
+            T _Item,
+            Func<bool> _Predicate = null,
+            Action _OnFinish = null,
+            bool _Forced = false)
         {
             int index = IndexOf(_Item);
             if (index == -1)
@@ -121,37 +129,42 @@ public abstract class SpawnPoolBase<T> : ISpawnPool<T> where T : class
             return Collection.Where(_Item => !IsActive(_Item)).ToList();
         }
 
-        public void ActivateAll()
+        public void ActivateAll(bool _Forced = false)
         {
             for (int idx = 0; idx < Count; idx++)
-                Activate(idx);
+                Activate(idx, _Forced : _Forced);
         }
 
-        public void DeactivateAll()
+        public void DeactivateAll(bool _Forced = false)
         {
             for (int idx = 0; idx < Count; idx++)
-                Deactivate(idx);
+                Deactivate(idx, _Forced : _Forced);
         }
 
         #endregion
     
         #region nonpublic methods
     
-        private void Activate(int _Index, Func<bool> _Predicate = null, Action _OnFinish = null)
+        private void Activate(int _Index, Func<bool> _Predicate = null, Action _OnFinish = null, bool _Forced = false)
         {
-            ActivateOrDeactivate(_Index, _Predicate, _OnFinish, true);
+            ActivateOrDeactivate(_Index, _Predicate, _OnFinish, true, _Forced);
         }
     
-        private void Deactivate(int _Index, Func<bool> _Predicate = null, Action _OnFinish = null)
+        private void Deactivate(int _Index, Func<bool> _Predicate = null, Action _OnFinish = null, bool _Forced = false)
         {
-            ActivateOrDeactivate(_Index, _Predicate, _OnFinish, false);
+            ActivateOrDeactivate(_Index, _Predicate, _OnFinish, false, _Forced);
         }
 
-        private void ActivateOrDeactivate(int _Index, Func<bool> _Predicate, Action _OnFinish, bool _Activate)
+        private void ActivateOrDeactivate(
+            int _Index,
+            Func<bool> _Predicate, 
+            Action _OnFinish, 
+            bool _Activate, 
+            bool _Forced)
         {
             if (_Predicate == null)
             {
-                ActivateOrDeactivate(_Index, _Activate);
+                ActivateOrDeactivate(_Index, _Activate, _Forced);
                 _OnFinish?.Invoke();
                 return;
             }
@@ -159,12 +172,12 @@ public abstract class SpawnPoolBase<T> : ISpawnPool<T> where T : class
                 _Predicate.Invoke,
                 () =>
                 {
-                    ActivateOrDeactivate(_Index, _Activate);
+                    ActivateOrDeactivate(_Index, _Activate, _Forced);
                     _OnFinish?.Invoke();
                 }));
         }
     
-        private void ActivateOrDeactivate(int _Index, bool _Activate)
+        private void ActivateOrDeactivate(int _Index, bool _Activate, bool _Forced)
         {
             if (!MathUtils.IsInRange(_Index, 0, Collection.Count - 1))
                 return;
@@ -172,7 +185,7 @@ public abstract class SpawnPoolBase<T> : ISpawnPool<T> where T : class
             if (item == null)
                 return;
             bool isActive = IsActive(item);
-            if (isActive == _Activate)
+            if (isActive == _Activate && !_Forced)
                 return;
             Activate(item, _Activate);
         }

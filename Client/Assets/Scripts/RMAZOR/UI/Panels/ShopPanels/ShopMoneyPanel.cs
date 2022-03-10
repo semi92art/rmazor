@@ -86,7 +86,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
 
         private void InitPurchaseActions()
         {
-            var set = Managers.PrefabSetManager.GetObject<ShopMoneyItemsScriptableObject>(
+            var set = Managers.PrefabSetManager.GetObject<ShopPanelMoneyItemsScriptableObject>(
                 PrefabSetName, ItemSetName).set;
             foreach (var itemInSet in set)
             {
@@ -97,12 +97,12 @@ namespace RMAZOR.UI.Panels.ShopPanels
                     () => OnPaid(itemInSet.reward));
             }
             Managers.ShopManager.SetPurchaseAction(PurchaseKeys.NoAds, BuyHideAdsItem);
-            Managers.ShopManager.SetPurchaseAction(PurchaseKeys.DarkTheme, BuyDarkTheme);
+            // Managers.ShopManager.SetPurchaseAction(PurchaseKeys.DarkTheme, BuyDarkTheme);
         }
 
         private void LoadItemInfos()
         {
-            var set = Managers.PrefabSetManager.GetObject<ShopMoneyItemsScriptableObject>(
+            var set = Managers.PrefabSetManager.GetObject<ShopPanelMoneyItemsScriptableObject>(
                 PrefabSetName, ItemSetName).set;
             foreach (var itemInSet in set)
             {
@@ -124,7 +124,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 m_ShopItemArgsDict.Add(itemInSet.purchaseKey, newArgs);
             }
             AddItemArgsToDict(PurchaseKeys.NoAds);
-            AddItemArgsToDict(PurchaseKeys.DarkTheme);
+            // AddItemArgsToDict(PurchaseKeys.DarkTheme);
         }
 
         private void AddItemArgsToDict(int _PurchaseKey)
@@ -149,7 +149,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
                         Dbg.LogError("showAdsEntity.Result Fail");
                         return;
                     }
-                    var set = Managers.PrefabSetManager.GetObject<ShopMoneyItemsScriptableObject>(
+                    var set = Managers.PrefabSetManager.GetObject<ShopPanelMoneyItemsScriptableObject>(
                         PrefabSetName, ItemSetName).set;
                     var moneyIcon = Managers.PrefabSetManager.GetObject<Sprite>(
                         "shop_items", "shop_money_icon");
@@ -170,8 +170,8 @@ namespace RMAZOR.UI.Panels.ShopPanels
                     }
                     if (showAdsEntity.Value)
                         InitBuyNoAdsItem();
-                    if (!ColorProvider.DarkThemeAvailable)
-                        InitBuyDarkThemeItem();
+                    // if (!ColorProvider.DarkThemeAvailable)
+                    //     InitBuyDarkThemeItem();
                 }));
         }
 
@@ -192,22 +192,22 @@ namespace RMAZOR.UI.Panels.ShopPanels
             Managers.LocalizationManager.AddTextObject(itemDisableAds.title, "no_ads");
         }
 
-        private void InitBuyDarkThemeItem()
-        {
-            var argsBuyDarkTheme = m_ShopItemArgsDict[PurchaseKeys.DarkTheme];
-            var infoBuyDarkTheme = new ViewShopItemInfo
-            {
-                PurchaseKey = PurchaseKeys.DarkTheme,
-                Icon = Managers.PrefabSetManager.GetObject<Sprite>(
-                    PrefabSetName, 
-                    "dark_theme_on"),
-                BuyForWatchingAd = false,
-                Reward = 0
-            };
-            var itemBuyDarkTheme = InitItem(argsBuyDarkTheme, infoBuyDarkTheme, BuyHideAdsItem);
-            m_Items.Add(PurchaseKeys.DarkTheme, itemBuyDarkTheme);
-            Managers.LocalizationManager.AddTextObject(itemBuyDarkTheme.title, "dark_theme");
-        }
+        // private void InitBuyDarkThemeItem()
+        // {
+        //     var argsBuyDarkTheme = m_ShopItemArgsDict[PurchaseKeys.DarkTheme];
+        //     var infoBuyDarkTheme = new ViewShopItemInfo
+        //     {
+        //         PurchaseKey = PurchaseKeys.DarkTheme,
+        //         Icon = Managers.PrefabSetManager.GetObject<Sprite>(
+        //             PrefabSetName, 
+        //             "dark_theme_on"),
+        //         BuyForWatchingAd = false,
+        //         Reward = 0
+        //     };
+        //     var itemBuyDarkTheme = InitItem(argsBuyDarkTheme, infoBuyDarkTheme, BuyHideAdsItem);
+        //     m_Items.Add(PurchaseKeys.DarkTheme, itemBuyDarkTheme);
+        //     Managers.LocalizationManager.AddTextObject(itemBuyDarkTheme.title, "dark_theme");
+        // }
         
         private ShopMoneyItem InitItem(ShopItemArgs _Args, ViewShopItemInfo _Info, UnityAction _OnPaid = null)
         {
@@ -264,14 +264,14 @@ namespace RMAZOR.UI.Panels.ShopPanels
             RemoveItem(PurchaseKeys.NoAds);
         }
 
-        private void BuyDarkTheme()
-        {
-            ColorProvider.DarkThemeAvailable = true;
-            string dialogTitle = Managers.LocalizationManager.GetTranslation("purchase") + ":";
-            string dialogText = Managers.LocalizationManager.GetTranslation("dark_theme_available");
-            CommonUtils.ShowAlertDialog(dialogTitle, dialogText);
-            RemoveItem(PurchaseKeys.DarkTheme);
-        }
+        // private void BuyDarkTheme()
+        // {
+        //     ColorProvider.DarkThemeAvailable = true;
+        //     string dialogTitle = Managers.LocalizationManager.GetTranslation("purchase") + ":";
+        //     string dialogText = Managers.LocalizationManager.GetTranslation("dark_theme_available");
+        //     CommonUtils.ShowAlertDialog(dialogTitle, dialogText);
+        //     RemoveItem(PurchaseKeys.DarkTheme);
+        // }
 
         private void OnPaid(long _Reward)
         {

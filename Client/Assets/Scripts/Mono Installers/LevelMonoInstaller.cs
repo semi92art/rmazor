@@ -124,14 +124,14 @@ namespace Mono_Installers
             Container.Bind<IViewMazeTurretsGroup>()          .To<ViewMazeTurretsGroup>()          .AsSingle();
             Container.Bind<IViewMazeSpringboardItemsGroup>() .To<ViewMazeSpringboardItemsGroup>() .AsSingle();
             Container.Bind<IViewMazePortalsGroup>()          .To<ViewMazePortalsGroup>()          .AsSingle();
-            Container.Bind<IViewMazeTrapsReactItemsGroup>()  .To<ViewMazeTrapsReactItemGroup>()   .AsSingle();
+            Container.Bind<IViewMazeTrapsReactItemsGroup>()  .To<ViewMazeTrapsReactSpikesItemGroup>()   .AsSingle();
             Container.Bind<IViewMazeTrapsIncItemsGroup>()    .To<ViewMazeTrapsIncItemsGroup>()    .AsSingle();
             Container.Bind<IViewMazeGravityItemsGroup>()     .To<ViewMazeGravityItemsGroup>()     .AsSingle();
 
             Container.Bind<IViewMazeItemsGroupSet>()         .To<ViewMazeItemsGroupSet>()         .AsSingle();
             Container.Bind<IViewMazeAdditionalBackground>()  .To<ViewMazeAdditionalBackground>()  .AsSingle();
             
-            Container.Bind<IViewMazeAdditionalBackgroundGeometryInitializer>().To<ViewMazeAdditionalBackgroundGeometryInitializer>().AsSingle();
+            Container.Bind<IViewMazeAdditionalBackgroundGeometryInitializer>().To<ViewMazeAdditionalBackgroundGeometryInitializerSimple>().AsSingle();
             Container.Bind<IViewMazeAdditionalBackgroundDrawer>()             .To<ViewMazeAdditionalBackgroundDrawerSimple>()       .AsSingle();
             Container.Bind<IViewMazeBackgroundTextureController>()            .To<ViewMazeBackgroundTextureController>()            .AsSingle();
             Container.Bind<IViewMazeBackgroundLinesTextureProvider>()         .To<ViewMazeBackgroundLinesTextureProvider>()         .AsSingle();

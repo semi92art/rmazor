@@ -14,7 +14,7 @@ namespace RMAZOR.Views.Common
         private IViewMazeBackgroundIdleItems         IdleItems            { get; }
         private IViewMazeBackgroundCongradItems      CongratItems         { get; }
         private IViewMazeBackgroundTextureController TextureController    { get; }
-        // private IViewMazeAdditionalBackground        AdditionalBackground { get; }
+        private IViewMazeAdditionalBackground        AdditionalBackground { get; }
 
         public ViewBackground(
             IModelGame                           _Model,
@@ -28,7 +28,7 @@ namespace RMAZOR.Views.Common
             IdleItems            = _IdleItems;
             CongratItems         = _CongratItems;
             TextureController    = _TextureController;
-            // AdditionalBackground = _AdditionalBackground;
+            AdditionalBackground = _AdditionalBackground;
         }
         
         #endregion
@@ -37,10 +37,12 @@ namespace RMAZOR.Views.Common
 
         public override void Init()
         {
+            ColorProvider.AddIgnorableForThemeSwitchColor(ColorIds.Background1);
+            ColorProvider.AddIgnorableForThemeSwitchColor(ColorIds.Background2);
             IdleItems           .Init();
             CongratItems        .Init();
             TextureController   .Init();
-            // AdditionalBackground.Init();
+            AdditionalBackground.Init();
             base.Init();
         }
 
@@ -49,7 +51,7 @@ namespace RMAZOR.Views.Common
             IdleItems           .OnLevelStageChanged(_Args);
             CongratItems        .OnLevelStageChanged(_Args);
             TextureController   .OnLevelStageChanged(_Args);
-            // AdditionalBackground.OnLevelStageChanged(_Args);
+            AdditionalBackground.OnLevelStageChanged(_Args);
         }
 
         #endregion

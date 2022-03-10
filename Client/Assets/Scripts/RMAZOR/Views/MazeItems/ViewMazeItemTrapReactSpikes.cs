@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Common.Entities;
 using Common.Enums;
@@ -17,6 +18,7 @@ using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace RMAZOR.Views.MazeItems
 {
@@ -37,34 +39,35 @@ namespace RMAZOR.Views.MazeItems
         
         #region nonpublic members
         
-        private float m_Progress;
+        private static readonly Dictionary<V2Int, Rectangle> Masks        = new Dictionary<V2Int, Rectangle>();
+        private static readonly int                          StencilRefId = Shader.PropertyToID("_StencilRef");
         
-        #endregion
-        
-        #region shapes
+        protected override      string ObjectName => "Trap React Spikes Block";
 
-        protected override string ObjectName => "Trap React Spikes Block";
-        private Line m_Line;
+        private float          m_Progress;
+        private Line           m_Line;
         private SpriteRenderer m_Trap;
-        private SpriteMask m_Mask;
+        private Rectangle      m_Mask;
         
         #endregion
         
         #region inject
 
-        private ModelSettings     ModelSettings    { get; }
+        private ModelSettings                 ModelSettings        { get; }
+        private IViewMazeAdditionalBackground AdditionalBackground { get; }
 
         public ViewMazeItemTrapReactSpikes(
-            ViewSettings _ViewSettings,
-            ModelSettings _ModelSettings,
-            IModelGame _Model,
-            IMazeCoordinateConverter _CoordinateConverter,
-            IContainersGetter _ContainersGetter,
-            IViewGameTicker _GameTicker,
+            ViewSettings                  _ViewSettings,
+            ModelSettings                 _ModelSettings,
+            IModelGame                    _Model,
+            IMazeCoordinateConverter      _CoordinateConverter,
+            IContainersGetter             _ContainersGetter,
+            IViewGameTicker               _GameTicker,
             IViewBetweenLevelTransitioner _Transitioner,
-            IManagersGetter _Managers,
-            IColorProvider _ColorProvider,
-            IViewInputCommandsProceeder _CommandsProceeder)
+            IManagersGetter               _Managers,
+            IColorProvider                _ColorProvider,
+            IViewInputCommandsProceeder   _CommandsProceeder,
+            IViewMazeAdditionalBackground _AdditionalBackground)
             : base(
                 _ViewSettings,
                 _Model,
@@ -76,14 +79,15 @@ namespace RMAZOR.Views.MazeItems
                 _ColorProvider,
                 _CommandsProceeder)
         {
-            ModelSettings = _ModelSettings;
+            ModelSettings        = _ModelSettings;
+            AdditionalBackground = _AdditionalBackground;
         }
         
         #endregion
         
         #region api
         
-        public override Component[] Shapes => new Component[] {m_Line, m_Trap, m_Mask};
+        public override Component[] Shapes => new Component[] {m_Line, m_Trap};
 
         public override bool ActivatedInSpawnPool
         {
@@ -105,7 +109,8 @@ namespace RMAZOR.Views.MazeItems
             Transitioner,
             Managers,
             ColorProvider,
-            CommandsProceeder);
+            CommandsProceeder,
+            AdditionalBackground);
         
         public void UpdateTick()
         {
@@ -115,6 +120,8 @@ namespace RMAZOR.Views.MazeItems
                 return;
             CheckForCharacterDeath();
         }
+
+
 
         public void OnTrapReact(MazeItemTrapReactEventArgs _Args)
         {
@@ -136,28 +143,69 @@ namespace RMAZOR.Views.MazeItems
         #endregion
 
         #region nonpublic methods
+
+        private Rectangle GetMask()
+        {
+            return Masks.GetSafe(Props.Position, out bool _);
+        }
+
+        private void SetMask(Rectangle _Mask)
+        {
+            Masks.SetSafe(Props.Position, _Mask);
+        }
         
         protected override void InitShape()
         {
+            var col = ColorProvider.GetColor(ColorIds.MazeItem1);
             var line = Object.gameObject.AddComponentOnNewChild<Line>("Trap React Item", out _);
-            line.Color = ColorProvider.GetColor(ColorIds.MazeItem1);
             line.EndCaps = LineEndCap.Round;
             var trap = Object.AddComponentOnNewChild<SpriteRenderer>("Trap Sprite", out _);
+            line.Color = col;
             trap.sprite = Managers.PrefabSetManager.GetObject<Sprite>(
-                "views", "trap_react_spikes");
+                "views", "trap_react_spikes_sprite");
+            trap.material = Managers.PrefabSetManager.GetObject<Material>(
+                "views", "trap_react_spikes_material");
             trap.sortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
-            trap.color = ColorProvider.GetColor(ColorIds.MazeItem1);
-            trap.maskInteraction = SpriteMaskInteraction.VisibleOutsideMask;
-            var maskGo = Managers.PrefabSetManager.InitPrefab(
-                Object.transform, "views", "turret_bullet_mask");
-            maskGo.name = "Trap React Mask";
-            var mask = maskGo.GetCompItem<SpriteMask>("mask");
-            maskGo.SetParent(Object);
-            maskGo.transform.SetLocalPosXY(Vector2.zero);
-            mask.enabled = true;
-            mask.isCustomRangeActive = true;
-            mask.frontSortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
+            trap.color = col;
+            trap.maskInteraction = SpriteMaskInteraction.None;
+            AdditionalBackground.GroupsCollected += SetStencilRefValues;
+            var mask = GetMask();
+            if (mask.IsNull())
+            {
+                mask = Object.transform.gameObject.AddComponentOnNewChild<Rectangle>("Mask 1", out GameObject _);
+                mask.BlendMode     = ShapesBlendMode.Subtractive;
+                mask.RenderQueue   = -1;
+                mask.SortingOrder  = SortingOrders.AdditionalBackgroundPolygon;
+                mask.ZTest         = CompareFunction.Less;
+                mask.StencilComp   = CompareFunction.Greater;
+                mask.StencilOpPass = StencilOp.Replace;
+                mask.enabled       = false;
+                mask.Color         = new Color(0f, 0f, 0f, 100f / 255f);
+                mask.transform.SetPosZ(-0.1f);
+                SetMask(mask);
+            }
             (m_Trap, m_Line, m_Mask) = (trap, line, mask);
+        }
+        
+        private void SetStencilRefValues(List<PointsGroupArgs> _Groups)
+        {
+            int GetGroupIndexByPoint()
+            {
+                if (_Groups == null)
+                    return -2;
+                foreach (var group in _Groups)
+                {
+                    if (group.Points.Contains(Props.Position))
+                        return group.GroupIndex;
+                }
+                return -1;
+            }
+            
+            int stencilRef = GetGroupIndexByPoint();
+            if (stencilRef < 0)
+                return;
+            m_Mask.StencilRefID = Convert.ToByte(stencilRef + 1);
+            m_Trap.sharedMaterial.SetFloat(StencilRefId, stencilRef);
         }
 
         protected override void UpdateShape()
@@ -170,7 +218,8 @@ namespace RMAZOR.Views.MazeItems
             trapTr.SetLocalPosXY(dir * scale * StartPos);
             trapTr.localScale = Vector3.one * scale * 0.95f;
             m_Line.Thickness = ViewSettings.LineWidth * scale;
-            m_Mask.transform.localScale = Vector3.one * scale * 0.8f;
+            // m_Mask.transform.localScale = Vector3.one * scale * 0.8f;
+            m_Mask.Width = m_Mask.Height = scale * 0.8f;
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)

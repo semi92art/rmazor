@@ -108,7 +108,6 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         {
             if (!_Collect || !Active)
                 return;
-            Dbg.Log(nameof(Collect) + ": " + _Collect);
             Collected?.Invoke();
             AudioManager.PlayClip(AudioClipArgsCollectMoneyItem);
             Active = false;
@@ -126,20 +125,21 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
                 return;
             switch (_Args.Stage)
             {
-                case ELevelStage.Loaded:
-                    m_MoneyItemAnimator.ResetTrigger(AnimKeys.Anim);
+                case ELevelStage.ReadyToStart:
                     m_MoneyItemAnimator.SetTrigger(AnimKeys.Anim);
                     break;
                 case ELevelStage.Paused:
                     m_MoneyItemAnimator.speed = 0f;
                     break;
-                case ELevelStage.ReadyToStart:
                 case ELevelStage.StartedOrContinued:
                 case ELevelStage.Finished:
                     m_MoneyItemAnimator.speed = 1f;
                     break;
-                case ELevelStage.ReadyToUnloadLevel:
                 case ELevelStage.Unloaded:
+                    m_MoneyItemAnimator.SetTrigger(AnimKeys.Stop);
+                    break;
+                case ELevelStage.Loaded:
+                case ELevelStage.ReadyToUnloadLevel:
                 case ELevelStage.CharacterKilled:
                     break;
                 default:

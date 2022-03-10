@@ -95,10 +95,11 @@ namespace RMAZOR.Views.MazeItems
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             base.OnColorChanged(_ColorId, _Color);
-            if (_ColorId == ColorIds.Background1)
-            {
-                m_PathBackground.Color = _Color;
-            }
+            if (_ColorId != ColorIds.Background1) 
+                return;
+            m_PathBackground.Color = _Color;
+            // var color2 = ColorProvider.GetColor(ColorIds.Background2);
+            // m_PathBackground.Color = Color.Lerp(_Color, color2, 0.5f);
         }
 
         private void InitBackgroundShape()

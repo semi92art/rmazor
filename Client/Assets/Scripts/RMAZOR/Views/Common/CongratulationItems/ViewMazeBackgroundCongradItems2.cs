@@ -105,7 +105,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
                 m_AudioClipIndices.Add(firework, randAudioIdx);
                 AudioManager.InitClip(GetAudioClipArgs(firework));
             }
-            m_BackCongratsItemsPool.DeactivateAll();
+            m_BackCongratsItemsPool.DeactivateAll(true);
             sourceGo.DestroySafe();
         }
 

@@ -59,6 +59,8 @@ namespace RMAZOR.Views.MazeItemGroups
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
+            if (_Args.Stage != ELevelStage.Loaded)
+                return;
             foreach (var item in GetItems().Cast<IViewMazeItemTurret>())
             {
                 int sortingOrder = SortingOrders.GetBlockSortingOrder(EMazeItemType.Turret) + m_BulletCounter++;

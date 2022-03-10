@@ -19,7 +19,7 @@ namespace RMAZOR.Views.Common
         static ColorIds()
         {
             Main                     = ColorIdsCommon.GetHash(nameof(Main));
-            Background1               = ColorIdsCommon.GetHash(nameof(Background1).WithSpaces());
+            Background1               = ColorIdsCommon.GetHash(nameof(Background1)       .WithSpaces());
             Background2              = ColorIdsCommon.GetHash(nameof(Background2)        .WithSpaces());
             BackgroundIdleItems      = ColorIdsCommon.GetHash(nameof(BackgroundIdleItems).WithSpaces());
             Character                = ColorIdsCommon.GetHash(nameof(Character));
@@ -37,8 +37,8 @@ namespace RMAZOR.Views.Common
         private static Dictionary<int, string> ColorNamesDict => new Dictionary<int, string>
         {
             {Main,                     nameof(Main)},
-            {Background1,               nameof(Background1).WithSpaces()},
-            {Background2,               nameof(Background2)       .WithSpaces()},
+            {Background1,              nameof(Background1)        .WithSpaces()},
+            {Background2,              nameof(Background2)        .WithSpaces()},
             {BackgroundIdleItems,      nameof(BackgroundIdleItems).WithSpaces()},
             {Character,                nameof(Character)},
             {CharacterTail,            nameof(CharacterTail)      .WithSpaces()},

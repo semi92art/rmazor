@@ -73,15 +73,7 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
             InitTexture();
             base.Init();
         }
-
-        private void OnColorChanged(int _ColorId, Color _Color)
-        {
-            if (_ColorId == ColorIds.Background1)
-                Material.SetColor(Color1Id, _Color);
-            else if (_ColorId == ColorIds.Background2)
-                Material.SetColor(Color2Id, _Color);
-        }
-
+        
         public void Activate(bool _Active)
         {
             m_Renderer.enabled = _Active;
@@ -97,6 +89,14 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
         #endregion
 
         #region nonpublic methods
+        
+        private void OnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId == ColorIds.Background1)
+                Material.SetColor(Color1Id, _Color);
+            else if (_ColorId == ColorIds.Background2)
+                Material.SetColor(Color2Id, _Color);
+        }
 
         private void InitTexture()
         {

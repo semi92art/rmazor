@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using Common;
 using Common.Exceptions;
 using Common.Helpers;
@@ -28,17 +27,20 @@ namespace RMAZOR.Views.Common
     {
         #region nonpublic members
 
-        private IList<LinesTextureSetItem>     m_LinesTextureSetItems;
-        private IList<CirclesTextureSetItem>   m_CirclesTextureSetItems1;
-        private IList<Circles2TextureSetItem>  m_Circles2TextureSetItems;
-        private IList<TrianglesTextureSetItem> m_TrianglesTextureSetItems;
-        private Color                          m_BackCol1Current;
-        private Color                          m_BackCol2Current;
-        private Color                          m_BackCol1Prev;
-        private Color                          m_BackCol2Prev;
-        private Color                          m_BackCol1Next;
-        private Color                          m_BackCol2Next;
-        private bool                           m_IsFirstLoad = true;
+        private IList<LinesTextureSetItem>       m_LinesTextureSetItems;
+        private IList<CirclesTextureSetItem>     m_CirclesTextureSetItems1;
+        private IList<Circles2TextureSetItem>    m_Circles2TextureSetItems;
+        private IList<TrianglesTextureSetItem>   m_TrianglesTextureSetItems;
+        private IList<BackAndFrontColorsSetItem> m_BackAndFrontColorsSetItemsLight;
+        private IList<BackAndFrontColorsSetItem> m_BackAndFrontColorsSetItemsDark;
+        private Color                            m_BackCol1Current;
+        private Color                            m_BackCol2Current;
+        private Color                            m_BackCol1Prev;
+        private Color                            m_BackCol2Prev;
+        private Color                            m_BackCol1Next;
+        private Color                            m_BackCol2Next;
+        private bool                             m_IsFirstLoad = true;
+        
 
         #endregion
         
@@ -79,6 +81,7 @@ namespace RMAZOR.Views.Common
 
         public override void Init()
         {
+            ColorProvider.ColorThemeChanged += OnColorThemeChanged;
             LoadSets();
             LinesTextureProvider     .Init();
             CirclesTextureProvider   .Init();
@@ -89,7 +92,6 @@ namespace RMAZOR.Views.Common
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            
             // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
             switch (_Args.Stage)
             {
@@ -118,6 +120,11 @@ namespace RMAZOR.Views.Common
         
         #region nonpublic methods
 
+        private void OnColorThemeChanged(EColorTheme _Theme)
+        {
+            SetColorsOnNewLevelOrNewTheme(Model.LevelStaging.LevelIndex, _Theme);
+        }
+        
         private void LoadSets()
         {
             const string set = "configs";
@@ -133,6 +140,12 @@ namespace RMAZOR.Views.Common
             var trianglesTextureSet = PrefabSetManager.GetObject<TrianglesTexturePropertiesSetScriptableObject>
                 (set, "triangles_texture_set");
             m_TrianglesTextureSetItems = trianglesTextureSet.set;
+            var backgroundColorsSetLight = PrefabSetManager.GetObject<BackAndFrontColorsSetScriptableObject>
+                (set, "back_and_front_colors_set_light");
+            m_BackAndFrontColorsSetItemsLight = backgroundColorsSetLight.set;
+            var backgroundColorsSetDark = PrefabSetManager.GetObject<BackAndFrontColorsSetScriptableObject>
+                (set, "back_and_front_colors_set_dark");
+            m_BackAndFrontColorsSetItemsDark = backgroundColorsSetDark.set;
         }
 
         private void OnLevelLoaded(LevelStageArgs _Args)
@@ -224,38 +237,29 @@ namespace RMAZOR.Views.Common
             long _LevelIndex,
             EColorTheme _Theme)
         {
-            GetHSV(_LevelIndex, _Theme, true, out float h1, out float s1, out float v1);
-            GetHSV(_LevelIndex, _Theme, false, out float h2, out float s2, out float v2);
-            GetHSV(_LevelIndex - 1, _Theme, true, out float h3, out float s3, out float v3);
-            GetHSV(_LevelIndex - 1, _Theme, false, out float h4, out float s4, out float v4);
-            GetHSV(_LevelIndex + 1, _Theme, true, out float h5, out float s5, out float v5);
-            GetHSV(_LevelIndex + 1, _Theme, false, out float h6, out float s6, out float v6);
-            m_BackCol1Current = Color.HSVToRGB(h1, s1, v1);
-            m_BackCol2Current = Color.HSVToRGB(h2, s2, v2);
-            m_BackCol1Prev = Color.HSVToRGB(h3, s3, v3);
-            m_BackCol2Prev = Color.HSVToRGB(h4, s4, v4);
-            m_BackCol1Next = Color.HSVToRGB(h5, s5, v5);
-            m_BackCol2Next = Color.HSVToRGB(h6, s6, v6);
+            int idx1 = ColorIds.Background1;
+            int idx2 = ColorIds.Background2;
+            m_BackCol1Current = GetBackgroundColor(idx1, _LevelIndex, _Theme);
+            m_BackCol2Current = GetBackgroundColor(idx2, _LevelIndex, _Theme);
+            m_BackCol1Prev    = GetBackgroundColor(idx1, _LevelIndex - 1, _Theme);
+            m_BackCol2Prev    = GetBackgroundColor(idx2, _LevelIndex - 1, _Theme);
+            m_BackCol1Next    = GetBackgroundColor(idx1, _LevelIndex + 1, _Theme);
+            m_BackCol2Next    = GetBackgroundColor(idx2, _LevelIndex + 1, _Theme);
             ColorProvider.SetColor(ColorIds.Background1, m_BackCol1Current);
             ColorProvider.SetColor(ColorIds.Background2, m_BackCol2Current);
         }
 
-        private static void GetHSV(
-            long        _LevelIndex,
-            EColorTheme _Theme,
-            bool        _IsMainColor,
-            out float   _H,
-            out float   _S,
-            out float   _V)
+        private Color GetBackgroundColor(int _ColorId, long _LevelIndex, EColorTheme _Theme)
         {
-            _H = ViewMazeBackgroundUtils.GetHForHSV(_LevelIndex);
-            _S = 50f / 100f;
-            _V = _Theme switch
-            {
-                EColorTheme.Light => (_IsMainColor ? 50f : 70f) / 100f,
-                EColorTheme.Dark  => (_IsMainColor ? 5f : 10f) / 100f,
-                _                 => throw new SwitchExpressionException(_Theme)
-            };
+            var colorsSet = _Theme == EColorTheme.Light
+                ? m_BackAndFrontColorsSetItemsLight
+                : m_BackAndFrontColorsSetItemsDark;
+            int group = RazorMazeUtils.GetGroupIndex(_LevelIndex);
+            int setItemIdx = group % colorsSet.Count;
+            var setItem = colorsSet[setItemIdx];
+            if (_ColorId == ColorIds.Background1)
+                return setItem.bacground1;
+            return _ColorId == ColorIds.Background2 ? setItem.bacground2 : Color.magenta;
         }
         
         #endregion

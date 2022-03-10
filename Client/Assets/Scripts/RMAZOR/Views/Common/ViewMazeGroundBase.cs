@@ -21,7 +21,10 @@ namespace RMAZOR.Views.Common
             base.Init();
         }
 
-        public virtual void OnLevelStageChanged(LevelStageArgs _Args) { }
+        public virtual void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            SetColorsOnNewLevelOrNewTheme(_Args.LevelIndex, ColorProvider.CurrentTheme);
+        }
         
         private void OnColorThemeChanged(EColorTheme _Theme)
         {

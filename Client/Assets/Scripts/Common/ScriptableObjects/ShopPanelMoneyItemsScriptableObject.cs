@@ -6,10 +6,10 @@ using UnityEngine;
 namespace Common.ScriptableObjects
 {
     [CreateAssetMenu(fileName = "shop_money_items_set", menuName = "Configs and Sets/Shop Money Items Set")]
-    public class ShopMoneyItemsScriptableObject : ScriptableObject
+    public class ShopPanelMoneyItemsScriptableObject : ScriptableObject
     {
         [Serializable]
-        public class MoneyItem
+        public class ShopMoneyItem
         {
             public int    purchaseKey;
             public int    reward;
@@ -17,9 +17,9 @@ namespace Common.ScriptableObjects
         }
         
         [Serializable]
-        public class MoneyItemsSet : ReorderableArray<MoneyItem> { }
+        public class ShopMoneyItemSet : ReorderableArray<ShopMoneyItem> { }
 
         [Header("Set"), Reorderable(paginate = true, pageSize = 10)]
-        public MoneyItemsSet set;
+        public ShopMoneyItemSet set;
     }
 }
