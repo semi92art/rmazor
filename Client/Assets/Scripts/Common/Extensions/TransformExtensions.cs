@@ -152,6 +152,12 @@ namespace Common.Extensions
             return _T;
         }
 
+        public static Transform SetLocalScaleXY(this Transform _T, Vector2 _XY)
+        {
+            _T.localScale = (Vector3)_XY + Vector3.forward;
+            return _T;
+        }
+
         public static Transform PlusLocalPosXY (this Transform _T, float _X, float _Y)
         {
             _T.localPosition = _T.localPosition.PlusX(_X).PlusY(_Y);

@@ -55,18 +55,18 @@ namespace RMAZOR.Views.MazeItems
         #region inject
         
         private IMazeShaker MazeShaker { get; }
-        
+
         public ViewMazeItemGravityTrap(
-            ViewSettings _ViewSettings,
-            IModelGame _Model,
-            IMazeCoordinateConverter _CoordinateConverter,
-            IContainersGetter _ContainersGetter,
-            IViewGameTicker _GameTicker,
+            ViewSettings                  _ViewSettings,
+            IModelGame                    _Model,
+            IMazeCoordinateConverter      _CoordinateConverter,
+            IContainersGetter             _ContainersGetter,
+            IViewGameTicker               _GameTicker,
             IViewBetweenLevelTransitioner _Transitioner,
-            IManagersGetter _Managers,
-            IMazeShaker _MazeShaker,
-            IColorProvider _ColorProvider,
-            IViewInputCommandsProceeder _CommandsProceeder)
+            IManagersGetter               _Managers,
+            IMazeShaker                   _MazeShaker,
+            IColorProvider                _ColorProvider,
+            IViewInputCommandsProceeder   _CommandsProceeder)
             : base(
                 _ViewSettings,
                 _Model,
@@ -188,8 +188,8 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void UpdateShape()
         {
-            Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
-            Object.transform.localScale = Vector3.one * CoordinateConverter.Scale * ShapeScale;
+            Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position))
+                .SetLocalScaleXY(Vector2.one * CoordinateConverter.Scale * ShapeScale);
             base.UpdateShape();
         }
 
@@ -197,21 +197,21 @@ namespace RMAZOR.Views.MazeItems
         {
             if (!m_Rotate)
                 return;
-            m_Angles += m_RotateDirection * GameTicker.DeltaTime * ViewSettings.GravityTrapRotationSpeed;
+            m_Angles += m_RotateDirection * (GameTicker.DeltaTime * ViewSettings.GravityTrapRotationSpeed);
             m_Angles = ClampAngles(m_Angles);
             m_MaceTr.rotation = Quaternion.Euler(m_Angles);
         }
         
         private Vector3 GetRotationDirection(Vector2 _DropDirection)
         {
-            switch (Model.Data.Orientation)
+            return Model.Data.Orientation switch
             {
-                case MazeOrientation.North: return new Vector3(_DropDirection.y, _DropDirection.x);
-                case MazeOrientation.South: return new Vector3(-_DropDirection.y, -_DropDirection.x);
-                case MazeOrientation.East: return -_DropDirection;
-                case MazeOrientation.West: return _DropDirection;
-                default: throw new SwitchCaseNotImplementedException(Model.Data.Orientation);
-            }
+                MazeOrientation.North => new Vector3(_DropDirection.y, _DropDirection.x),
+                MazeOrientation.South => new Vector3(-_DropDirection.y, -_DropDirection.x),
+                MazeOrientation.East  => -_DropDirection,
+                MazeOrientation.West  => _DropDirection,
+                _                     => throw new SwitchCaseNotImplementedException(Model.Data.Orientation)
+            };
         }
 
         private Vector3 ClampAngles(Vector3 _Angles)
@@ -223,10 +223,8 @@ namespace RMAZOR.Views.MazeItems
 
         private float ClampAngle(float _Angle)
         {
-            while (_Angle < 0)
-                _Angle += 360f;
-            while (_Angle > 360f)
-                _Angle -= 360f;
+            while (_Angle < 0)    _Angle += 360f;
+            while (_Angle > 360f) _Angle -= 360f;
             return _Angle;
         }
         
@@ -252,7 +250,7 @@ namespace RMAZOR.Views.MazeItems
             }
             else
             {
-                Vector2 cPos = Model.Character.Position;
+                var cPos = Model.Character.Position;
                 if (Vector2.Distance(cPos, m_Position) + MathUtils.Epsilon > 0.9f)
                     return;
                 CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, null);
