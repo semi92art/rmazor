@@ -120,9 +120,7 @@ namespace RMAZOR.Views.MazeItems
                 return;
             CheckForCharacterDeath();
         }
-
-
-
+        
         public void OnTrapReact(MazeItemTrapReactEventArgs _Args)
         {
             IEnumerator coroutine = null;
@@ -172,15 +170,16 @@ namespace RMAZOR.Views.MazeItems
             var mask = GetMask();
             if (mask.IsNull())
             {
-                mask = Object.transform.gameObject.AddComponentOnNewChild<Rectangle>("Mask 1", out GameObject _);
-                mask.BlendMode     = ShapesBlendMode.Subtractive;
-                mask.RenderQueue   = -1;
-                mask.SortingOrder  = SortingOrders.AdditionalBackgroundPolygon;
-                mask.ZTest         = CompareFunction.Less;
-                mask.StencilComp   = CompareFunction.Greater;
-                mask.StencilOpPass = StencilOp.Replace;
+                mask = Object.transform.gameObject
+                    .AddComponentOnNewChild<Rectangle>("Mask 1", out GameObject _)
+                    .SetBlendMode(ShapesBlendMode.Subtractive)
+                    .SetRenderQueue(-1)
+                    .SetSortingOrder(SortingOrders.AdditionalBackgroundPolygon)
+                    .SetZTest(CompareFunction.Less)
+                    .SetStencilComp(CompareFunction.Greater)
+                    .SetStencilOpPass(StencilOp.Replace)
+                    .SetColor(new Color(0f, 0f, 0f, 100f / 255f));
                 mask.enabled       = false;
-                mask.Color         = new Color(0f, 0f, 0f, 100f / 255f);
                 mask.transform.SetPosZ(-0.1f);
                 SetMask(mask);
             }
@@ -193,14 +192,13 @@ namespace RMAZOR.Views.MazeItems
             {
                 if (_Groups == null)
                     return -2;
-                foreach (var group in _Groups)
+                foreach (var group in _Groups
+                    .Where(_Group => _Group.Points.Contains(Props.Position)))
                 {
-                    if (group.Points.Contains(Props.Position))
-                        return group.GroupIndex;
+                    return group.GroupIndex;
                 }
                 return -1;
             }
-            
             int stencilRef = GetGroupIndexByPoint();
             if (stencilRef < 0)
                 return;
@@ -211,24 +209,22 @@ namespace RMAZOR.Views.MazeItems
         protected override void UpdateShape()
         {
             (m_Line.Start, m_Line.End) = GetTrapPosRotAndLineEdges();
-            var scale = CoordinateConverter.Scale;
+            float scale = CoordinateConverter.Scale;
             Vector2 dir = Props.Directions.First();
             var trapTr = m_Trap.transform;
             trapTr.localRotation = Quaternion.Euler(0f, 0f, GetTrapAngle(Props.Directions.First()));
             trapTr.SetLocalPosXY(dir * scale * StartPos);
             trapTr.localScale = Vector3.one * scale * 0.95f;
             m_Line.Thickness = ViewSettings.LineWidth * scale;
-            // m_Mask.transform.localScale = Vector3.one * scale * 0.8f;
             m_Mask.Width = m_Mask.Height = scale * 0.8f;
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == ColorIds.MazeItem1)
-            {
-                m_Line.Color = _Color;
-                m_Trap.color = _Color;
-            }
+            if (_ColorId != ColorIds.MazeItem1) 
+                return;
+            m_Line.Color = _Color;
+            m_Trap.color = _Color;
         }
 
         private float GetTrapAngle(V2Int _Direction)
@@ -246,7 +242,7 @@ namespace RMAZOR.Views.MazeItems
 
         private IEnumerator HandlePreReact()
         {
-            var scale = CoordinateConverter.Scale;
+            float scale = CoordinateConverter.Scale;
             Vector2 dir = Props.Directions.First();
             yield return Cor.Lerp(
                 StartPos,
@@ -259,7 +255,7 @@ namespace RMAZOR.Views.MazeItems
 
         private IEnumerator HandleReact()
         {
-            var scale = CoordinateConverter.Scale;
+            float scale = CoordinateConverter.Scale;
             Vector2 dir = Props.Directions.First();
             yield return Cor.Lerp(
                 MiddlePos,
@@ -272,7 +268,7 @@ namespace RMAZOR.Views.MazeItems
 
         private IEnumerator HandlePostReact()
         {
-            var scale = CoordinateConverter.Scale;
+            float scale = CoordinateConverter.Scale;
             Vector2 dir = Props.Directions.First();
             yield return Cor.Lerp(
                 FinalPos,
@@ -315,7 +311,6 @@ namespace RMAZOR.Views.MazeItems
             var pos = Props.Position;
             var itemPos = dir + pos;
             var character = Model.Character;
-
             if (character.IsMoving)
             {
                 var charInfo = Model.Character.MovingInfo;
@@ -325,10 +320,9 @@ namespace RMAZOR.Views.MazeItems
                     CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, 
                         new object[] { CoordinateConverter.ToLocalMazeItemPosition(itemPos) });
             }
-            else
+            else if (itemPos == character.Position) 
             {
-                if (itemPos == character.Position) 
-                    CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, null);
+                CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, null);
             }
         }
         

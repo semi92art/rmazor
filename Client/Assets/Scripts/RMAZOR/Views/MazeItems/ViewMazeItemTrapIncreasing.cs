@@ -29,6 +29,8 @@ namespace RMAZOR.Views.MazeItems
     {
         #region nonpublic members
 
+        protected override string ObjectName => "Trap Increasing Block";
+        
         private static AudioClipArgs AudioClipArgsTrapIncreasingOpen =>
             new AudioClipArgs("sword_open", EAudioClipType.GameSound);
         private static AudioClipArgs AudioClipArgsTrapIncreasingRotate => 
@@ -39,37 +41,31 @@ namespace RMAZOR.Views.MazeItems
         private static int AnimKeyOpen => AnimKeys.Anim;
         private static int AnimKeyClose => AnimKeys.Stop;
         
-        private Animator           m_Animator;
-        private bool?              m_TrapOpened;
-        private bool               m_ReadyToKill;
-        private AnimationTriggerer m_Triggerer;
-        private List<Vector2>      m_DeathZone;
-        private bool               m_DoPlaySwordSpinningSound = true;
-        private int                m_LevelsLoadCount;
-
-        #endregion
-
-        #region shapes
-
-        protected override string ObjectName => "Trap Increasing Block";
-        private readonly List<Line> m_BladeContainers = new List<Line>();
-        private readonly List<SpriteRenderer> m_Blades = new List<SpriteRenderer>();
-        private Disc m_Center, m_Center2;
+        private          Animator             m_Animator;
+        private          bool?                m_TrapOpened;
+        private          bool                 m_ReadyToKill;
+        private          AnimationTriggerer   m_Triggerer;
+        private          List<Vector2>        m_DeathZone;
+        private          bool                 m_DoPlaySwordSpinningSound = true;
+        private          int                  m_LevelsLoadCount;
+        private readonly List<Line>           m_BladeContainers = new List<Line>();
+        private readonly List<SpriteRenderer> m_Blades          = new List<SpriteRenderer>();
+        private          Disc                 m_Center, m_Center2;
 
         #endregion
 
         #region inject
-        
+
         public ViewMazeItemTrapIncreasing(
-            ViewSettings _ViewSettings,
-            IModelGame _Model,
-            IMazeCoordinateConverter _CoordinateConverter,
-            IContainersGetter _ContainersGetter,
-            IViewGameTicker _GameTicker,
+            ViewSettings                  _ViewSettings,
+            IModelGame                    _Model,
+            IMazeCoordinateConverter      _CoordinateConverter,
+            IContainersGetter             _ContainersGetter,
+            IViewGameTicker               _GameTicker,
             IViewBetweenLevelTransitioner _Transitioner,
-            IManagersGetter _Managers,
-            IColorProvider _ColorProvider,
-            IViewInputCommandsProceeder _CommandsProceeder)
+            IManagersGetter               _Managers,
+            IColorProvider                _ColorProvider,
+            IViewInputCommandsProceeder   _CommandsProceeder)
             : base(
                 _ViewSettings,
                 _Model,
@@ -219,15 +215,14 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == ColorIds.MazeItem1)
-            {
-                m_Center.Color = _Color;
-                m_Center2.Color = _Color;
-                foreach (var item in m_Blades)
-                    item.color = _Color;
-                foreach (var item in m_BladeContainers)
-                    item.Color = _Color.SetA(0.5f);
-            }
+            if (_ColorId != ColorIds.MazeItem1)
+                return;
+            m_Center.Color = _Color;
+            m_Center2.Color = _Color;
+            foreach (var item in m_Blades)
+                item.color = _Color;
+            foreach (var item in m_BladeContainers)
+                item.Color = _Color.SetA(0.5f);
         }
 
         private void OpenTrap()
