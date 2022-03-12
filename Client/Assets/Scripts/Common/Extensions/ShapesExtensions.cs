@@ -71,6 +71,18 @@ namespace Common.Extensions
             _Shape.DashSpacing = _DashSpacing;
             return _Shape;
         }
+        
+        public static T SetDashSpace<T>(this T _Shape, DashSpace _DashSpace) where T : ShapeRenderer, IDashable
+        {
+            _Shape.DashSpace = _DashSpace;
+            return _Shape;
+        }
+        
+        public static T SetDashSnap<T>(this T _Shape, DashSnapping _Snap) where T : ShapeRenderer, IDashable
+        {
+            _Shape.DashSnap = _Snap;
+            return _Shape;
+        }
 
         public static Disc SetType(this Disc _Disc, DiscType _DiscType)
         {
@@ -93,6 +105,18 @@ namespace Common.Extensions
         public static Disc SetRadius(this Disc _Disc, float _Radius)
         {
             _Disc.Radius = _Radius;
+            return _Disc;
+        }
+
+        public static Disc SetAngRadiansStart(this Disc _Disc, float _Angle)
+        {
+            _Disc.AngRadiansStart = _Angle;
+            return _Disc;
+        }
+
+        public static Disc SetAngRadiansEnd(this Disc _Disc, float _Angle)
+        {
+            _Disc.AngRadiansEnd = _Angle;
             return _Disc;
         }
 
@@ -131,6 +155,12 @@ namespace Common.Extensions
             return _Rectangle;
         }
 
+        public static Rectangle SetCornerRadiusMode(this Rectangle _R, Rectangle.RectangleCornerRadiusMode _Mode)
+        {
+            _R.CornerRadiusMode = _Mode;
+            return _R;
+        }
+
         public static Line SetThickness(this Line _Line, float _Thickness)
         {
             _Line.Thickness = _Thickness;
@@ -146,6 +176,12 @@ namespace Common.Extensions
         public static Line SetEnd(this Line _Line, Vector3 _End)
         {
             _Line.End = _End;
+            return _Line;
+        }
+
+        public static Line SetEndCaps(this Line _Line, LineEndCap _EndCaps)
+        {
+            _Line.EndCaps = _EndCaps;
             return _Line;
         }
     }

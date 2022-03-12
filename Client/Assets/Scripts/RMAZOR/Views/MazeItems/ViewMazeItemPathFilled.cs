@@ -95,20 +95,29 @@ namespace RMAZOR.Views.MazeItems
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             base.OnColorChanged(_ColorId, _Color);
-            if (_ColorId != ColorIds.Background1) 
-                return;
-            m_PathBackground.Color = _Color;
-            // var color2 = ColorProvider.GetColor(ColorIds.Background2);
-            // m_PathBackground.Color = Color.Lerp(_Color, color2, 0.5f);
+            if (_ColorId == ColorIds.Background1)
+            {
+                m_PathBackground.SetColor(Color.Lerp(
+                    _Color,
+                ColorProvider.GetColor(ColorIds.Background2),
+                0.5f));
+            }
+            else if (_ColorId == ColorIds.Background2)
+            {
+                m_PathBackground.SetColor(Color.Lerp(
+                    ColorProvider.GetColor(ColorIds.Background1), 
+                    _Color,
+                    0.5f));
+            }
         }
 
         private void InitBackgroundShape()
         {
-            var sh              = Object.AddComponentOnNewChild<Rectangle>("Path Item", out _);
-            sh.Type             = Rectangle.RectangleType.RoundedSolid;
-            sh.CornerRadiusMode = Rectangle.RectangleCornerRadiusMode.PerCorner;
-            sh.SortingOrder     = SortingOrders.PathBackground;
-            sh.enabled          = false;
+            var sh = Object.AddComponentOnNewChild<Rectangle>("Path Item", out _)
+                .SetType(Rectangle.RectangleType.RoundedSolid)
+                .SetCornerRadiusMode(Rectangle.RectangleCornerRadiusMode.PerCorner)
+                .SetSortingOrder(SortingOrders.PathBackground);
+            sh.enabled = false;
             m_PathBackground    = sh;
         }
 

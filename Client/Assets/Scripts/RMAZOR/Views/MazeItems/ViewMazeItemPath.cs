@@ -157,6 +157,7 @@ namespace RMAZOR.Views.MazeItems
         {
             if (!Initialized)
                 Managers.AudioManager.InitClip(AudioClipArgsCollectMoneyItem);
+            MoneyItem.Collected += () => MoneyItemCollected?.Invoke();
             base.Init(_Props);
         }
 
@@ -209,16 +210,14 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void InitShape()
         {
-            MoneyItem.Collected += () => MoneyItemCollected?.Invoke();
-            var sh              = Object.AddComponentOnNewChild<Rectangle>("Path Item", out _);
-            sh.Type             = Rectangle.RectangleType.RoundedBorder;
-            sh.CornerRadiusMode = Rectangle.RectangleCornerRadiusMode.Uniform;
-            sh.CornerRadius     = CoordinateConverter.Scale * ViewSettings.CornerRadius;
-            sh.Thickness        = CoordinateConverter.Scale * ViewSettings.LineWidth * 0.5f;
-            sh.Color            = ColorProvider.GetColor(ColorIds.Main);
-            sh.SortingOrder     = SortingOrders.Path;
-            sh.enabled          = false;
-            m_PathItem          = sh;
+            m_PathItem = Object.AddComponentOnNewChild<Rectangle>("Path Item", out _)
+                .SetType(Rectangle.RectangleType.RoundedBorder)
+                .SetCornerRadiusMode(Rectangle.RectangleCornerRadiusMode.Uniform)
+                .SetCornerRadius(CoordinateConverter.Scale * ViewSettings.CornerRadius)
+                .SetThickness(CoordinateConverter.Scale * ViewSettings.LineWidth * 0.5f)
+                .SetColor(ColorProvider.GetColor(ColorIds.Main))
+                .SetSortingOrder(SortingOrders.Path);
+            m_PathItem.enabled = false;
         }
 
         protected override void UpdateShape()
@@ -456,28 +455,26 @@ namespace RMAZOR.Views.MazeItems
         
         private void InitBorder(EMazeMoveDirection _Side)
         {
-            Line border;
-            switch (_Side)
+            Line border = _Side switch
             {
-                case EMazeMoveDirection.Up:
-                    border = m_TopBorder; break;
-                case EMazeMoveDirection.Right:border = m_RightBorder; break;
-                case EMazeMoveDirection.Down: border = m_BottomBorder; break;
-                case EMazeMoveDirection.Left: border = m_LeftBorder; break;
-                default: throw new SwitchCaseNotImplementedException(_Side);
-            }
+                EMazeMoveDirection.Up    => m_TopBorder,
+                EMazeMoveDirection.Right => m_RightBorder,
+                EMazeMoveDirection.Down  => m_BottomBorder,
+                EMazeMoveDirection.Left  => m_LeftBorder,
+                _                        => throw new SwitchCaseNotImplementedException(_Side)
+            };
             if (border.IsNull())
                 border = Object.AddComponentOnNewChild<Line>("Border", out _);
-            border.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
-            border.EndCaps = LineEndCap.None;
-            border.Color = MainColorToBorderColor(ColorProvider.GetColor(ColorIds.Main));
-            border.SortingOrder = SortingOrders.PathLine;
+            border.SetThickness(ViewSettings.LineWidth * CoordinateConverter.Scale)
+                .SetEndCaps(LineEndCap.None)
+                .SetColor(MainColorToBorderColor(ColorProvider.GetColor(ColorIds.Main)))
+                .SetSortingOrder(SortingOrders.PathLine)
+                .SetDashType(DashType.Rounded)
+                .SetDashSnap(DashSnapping.Off)
+                .SetDashSpace(DashSpace.FixedCount);
             (border.Start, border.End, border.Dashed) = GetBorderPointsAndDashed(_Side, false, false);
             border.transform.position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
             border.enabled = false;
-            border.DashSpace = DashSpace.FixedCount;
-            border.DashSnap = DashSnapping.Off;
-            border.DashType = DashType.Rounded;
             switch (_Side)
             {
                 case EMazeMoveDirection.Up: m_TopBorder = border; m_TopBorderInited = true; break;
@@ -504,22 +501,20 @@ namespace RMAZOR.Views.MazeItems
                 corner = m_TopRightCorner;
             if (corner.IsNull())
                 corner = Object.AddComponentOnNewChild<Disc>("Corner", out _);
+            var angles = GetCornerAngles(_Right, _Up, _Inner);
+            corner.SetType(DiscType.Arc)
+                .SetArcEndCaps(ArcEndCap.None)
+                .SetRadius(ViewSettings.CornerRadius * CoordinateConverter.Scale)
+                .SetThickness(ViewSettings.CornerWidth * CoordinateConverter.Scale)
+                .SetAngRadiansStart(Mathf.Deg2Rad * angles.x)
+                .SetAngRadiansEnd(Mathf.Deg2Rad * angles.y)
+                .SetColor(ColorProvider.GetColor(ColorIds.Main))
+                .SetSortingOrder(SortingOrders.PathJoint);
             // ReSharper disable once PossibleNullReferenceException
             corner.transform.position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position; //-V3080
             corner.transform.PlusLocalPosXY(GetCornerCenter(_Right, _Up, _Inner));
-            corner.Type = DiscType.Arc;
-            corner.ArcEndCaps = ArcEndCap.None;
-            corner.Radius = ViewSettings.CornerRadius * CoordinateConverter.Scale;
-            corner.Thickness = ViewSettings.CornerWidth * CoordinateConverter.Scale;
-            var angles = GetCornerAngles(_Right, _Up, _Inner);
-            corner.AngRadiansStart = Mathf.Deg2Rad * angles.x;
-            corner.AngRadiansEnd = Mathf.Deg2Rad * angles.y;
-            bool isOuterAndNearTrapIncreasing = IsCornerOuterAndNearTrapIncreasing(_Right, _Up, _Inner);
-            var col = ColorProvider.GetColor(ColorIds.Main);
-            corner.Color = col;
-            corner.SortingOrder = SortingOrders.PathJoint;
             corner.enabled = false;
-            
+            bool isOuterAndNearTrapIncreasing = IsCornerOuterAndNearTrapIncreasing(_Right, _Up, _Inner);
             if (!_Right && !_Up)
             {
                 m_BottomLeftCorner = corner;
