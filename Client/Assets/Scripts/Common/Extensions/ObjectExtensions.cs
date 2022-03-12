@@ -18,10 +18,11 @@ namespace Common.Extensions
             return res == null ? default : res;
         }
 
-        public static void RemoveComponentIfExist<T>(this GameObject _Object) where T : Component
+        public static GameObject RemoveComponentIfExist<T>(this GameObject _Object) where T : Component
         {
             var component = _Object.GetComponent<T>();
             component.DestroySafe();
+            return _Object;
         }
         
         //https://answers.unity.com/questions/530178/how-to-get-a-component-from-an-object-and-add-it-t.html?_ga=2.165477879.911525322.1599381767-2044961467.1583736117
@@ -31,14 +32,16 @@ namespace Common.Extensions
             return JsonConvert.DeserializeObject<T>(serialized);
         }
 
-        public static void SetParent(this GameObject _Object, GameObject _Parent)
+        public static GameObject SetParent(this GameObject _Object, GameObject _Parent)
         {
             _Object.transform.SetParent(_Parent.transform);
+            return _Object;
         }
 
-        public static void SetParent(this GameObject _Object, Transform _Parent)
+        public static GameObject SetParent(this GameObject _Object, Transform _Parent)
         {
             _Object.transform.SetParent(_Parent);
+            return _Object;
         }
         
         public static GameObject GetContentItem(this GameObject _Prefab, string _ItemName)
@@ -140,9 +143,10 @@ namespace Common.Extensions
             return _Parent.transform.AddComponentOnNewChild<T>(_Name, out _Child, _LocalPosition);
         }
         
-        public static void SetGoActive<T>(this T _Item, bool _Active) where T : Component
+        public static T SetGoActive<T>(this T _Item, bool _Active) where T : Component
         {
             _Item.gameObject.SetActive(_Active);
+            return _Item;
         }
         
         public static bool CastTo<T>(this object _Item, out T _Result) where T : class

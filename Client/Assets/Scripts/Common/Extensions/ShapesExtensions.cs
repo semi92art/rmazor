@@ -66,6 +66,12 @@ namespace Common.Extensions
             return _Shape;
         }
 
+        public static T SetDashSpacing<T>(this T _Shape, float _DashSpacing) where T : ShapeRenderer, IDashable
+        {
+            _Shape.DashSpacing = _DashSpacing;
+            return _Shape;
+        }
+
         public static Disc SetType(this Disc _Disc, DiscType _DiscType)
         {
             _Disc.Type = _DiscType;
@@ -123,6 +129,24 @@ namespace Common.Extensions
         {
             _Rectangle.CornerRadius = _CornerRadius;
             return _Rectangle;
+        }
+
+        public static Line SetThickness(this Line _Line, float _Thickness)
+        {
+            _Line.Thickness = _Thickness;
+            return _Line;
+        }
+
+        public static Line SetStart(this Line _Line, Vector3 _Start)
+        {
+            _Line.Start = _Start;
+            return _Line;
+        }
+
+        public static Line SetEnd(this Line _Line, Vector3 _End)
+        {
+            _Line.End = _End;
+            return _Line;
         }
     }
 }

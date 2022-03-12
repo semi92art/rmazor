@@ -86,6 +86,7 @@ namespace RMAZOR.Views.MazeItems
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
+            // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
             switch (_Args.Stage)
             {
                 case ELevelStage.Loaded:
@@ -145,29 +146,29 @@ namespace RMAZOR.Views.MazeItems
 
         private Disc CreateJoint(Vector2 _Point, Transform _Container)
         {
-            var jointGo = new GameObject(ObjectName +  " Joint");
-            jointGo.SetParent(_Container);
-            jointGo.transform.SetLocalPosXY(_Point);
-            var joint = jointGo.AddComponent<Disc>();
-            joint.Radius = ViewSettings.LineWidth * CoordinateConverter.Scale * 0.5f;
-            joint.Type = DiscType.Disc;
-            joint.SortingOrder = SortingOrders.PathJoint;
-            return joint;
+            return new GameObject(ObjectName + " Joint")
+                .SetParent(_Container)
+                .transform.SetLocalPosXY(_Point)
+                .gameObject.AddComponent<Disc>()
+                .SetSortingOrder(SortingOrders.PathJoint)
+                .SetType(DiscType.Disc)
+                .SetRadius(ViewSettings.LineWidth * CoordinateConverter.Scale * 0.5f);
         }
 
         private Line CreateLine(Vector2 _Start, Vector2 _End, Transform _Container)
         {
-            var lineGo = new GameObject(ObjectName + " Line");
-            lineGo.SetParent(_Container);
-            lineGo.transform.SetLocalPosXY(Vector2.zero);
-            var line = lineGo.AddComponent<Line>();
-            (line.Start, line.End) = (_Start, _End);
-            line.Dashed = true;
-            line.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale * 0.5f;
-            line.DashSize = 1f;
-            line.DashSpacing = line.DashSize * 2f;
-            line.DashType = DashType.Rounded;
-            return line;
+            return new GameObject(ObjectName + " Line")
+                .SetParent(_Container)
+                .transform.SetLocalPosXY(Vector2.zero)
+                .gameObject.AddComponent<Line>()
+                .SetSortingOrder(SortingOrders.PathLine)
+                .SetStart(_Start)
+                .SetEnd(_End)
+                .SetThickness(ViewSettings.LineWidth * CoordinateConverter.Scale * 0.5f)
+                .SetDashed(true)
+                .SetDashType(DashType.Rounded)
+                .SetDashSize(1f)
+                .SetDashSpacing(2f);
         }
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
