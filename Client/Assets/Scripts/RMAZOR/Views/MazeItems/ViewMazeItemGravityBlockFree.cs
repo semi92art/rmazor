@@ -38,17 +38,17 @@ namespace RMAZOR.Views.MazeItems
         #endregion
         
         #region inject
-        
+
         public ViewMazeItemGravityBlockFree(
-            ViewSettings _ViewSettings,
-            IModelGame _Model,
-            IMazeCoordinateConverter _CoordinateConverter,
-            IContainersGetter _ContainersGetter,
-            IViewGameTicker _GameTicker,
+            ViewSettings                  _ViewSettings,
+            IModelGame                    _Model,
+            IMazeCoordinateConverter      _CoordinateConverter,
+            IContainersGetter             _ContainersGetter,
+            IViewGameTicker               _GameTicker,
             IViewBetweenLevelTransitioner _Transitioner,
-            IManagersGetter _Managers,
-            IColorProvider _ColorProvider,
-            IViewInputCommandsProceeder _CommandsProceeder)
+            IManagersGetter               _Managers,
+            IColorProvider                _ColorProvider,
+            IViewInputCommandsProceeder   _CommandsProceeder)
             : base(
                 _ViewSettings,
                 _Model,
@@ -59,7 +59,7 @@ namespace RMAZOR.Views.MazeItems
                 _Managers,
                 _ColorProvider,
                 _CommandsProceeder) { }
-        
+
         #endregion
         
         #region api
@@ -104,19 +104,19 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void InitShape()
         {
-            var sh = Object.AddComponentOnNewChild<Rectangle>("Block", out _);
-            sh.Type = Rectangle.RectangleType.RoundedBorder;
-            sh.Color = ColorProvider.GetColor(ColorIds.Main);
-            sh.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
-            m_Shape = sh;
+            m_Shape = Object.AddComponentOnNewChild<Rectangle>("Block", out _)
+                .SetSortingOrder(SortingOrders.GetBlockSortingOrder(Props.Type))
+                .SetType(Rectangle.RectangleType.RoundedBorder)
+                .SetColor(ColorProvider.GetColor(ColorIds.Main));
         }
 
         protected override void UpdateShape()
         {
             base.UpdateShape();
-            m_Shape.Width = m_Shape.Height = CoordinateConverter.Scale * 0.9f;
-            m_Shape.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
-            m_Shape.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale;
+            float scale = CoordinateConverter.Scale;
+            m_Shape.SetSize(scale * 0.9f)
+                .SetThickness(ViewSettings.LineWidth * scale)
+                .SetCornerRadius(ViewSettings.CornerRadius * scale);
         }
 
         protected override void InitWallBlockMovingPaths() { }
@@ -130,11 +130,9 @@ namespace RMAZOR.Views.MazeItems
         
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
-            return base.GetAppearSets(_Appear).Concat(new Dictionary<IEnumerable<Component>, Func<Color>>
-            {
-                {Shapes, () => ColorProvider.GetColor(ColorIds.Main)}
-            }).ToDictionary(_Kvp => _Kvp.Key,
-                _Kvp => _Kvp.Value);
+            var sets = base.GetAppearSets(_Appear);
+            sets.Add(Shapes, () => ColorProvider.GetColor(ColorIds.Main));
+            return sets;
         }
 
         #endregion

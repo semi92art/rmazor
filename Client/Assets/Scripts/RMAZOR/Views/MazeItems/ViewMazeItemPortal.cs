@@ -147,12 +147,12 @@ namespace RMAZOR.Views.MazeItems
         protected override void InitShape()
         {
             m_Center = Object.AddComponentOnNewChild<Disc>("Portal Item", out _)
-                .SetDiscType(DiscType.Disc)
+                .SetType(DiscType.Disc)
                 .SetColor(GetMainColor());
             for (int i = 0; i < OrbitsCount; i++)
             {
                 var orbit = Object.AddComponentOnNewChild<Disc>($"Orbit {i + 1}", out _, Vector2.zero)
-                    .SetDiscType(DiscType.Arc)
+                    .SetType(DiscType.Arc)
                     .SetColor(GetMainColor())
                     .SetThickness(ViewSettings.LineWidth * CoordinateConverter.Scale * 0.5f);
                 m_Orbits.Add(orbit);
@@ -211,7 +211,7 @@ namespace RMAZOR.Views.MazeItems
             for (int i = 0; i < GravityItemsCount; i++)
             {
                 var gItem = Object.AddComponentOnNewChild<Disc>("Gravity Item", out _, Vector2.zero)
-                    .SetDiscType(DiscType.Disc)
+                    .SetType(DiscType.Disc)
                     .SetColor(GetMainColor())
                     .SetRadius(0.025f * CoordinateConverter.Scale);
                 m_GravityItems.Add(gItem);

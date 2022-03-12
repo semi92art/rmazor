@@ -66,7 +66,7 @@ namespace Common.Extensions
             return _Shape;
         }
 
-        public static Disc SetDiscType(this Disc _Disc, DiscType _DiscType)
+        public static Disc SetType(this Disc _Disc, DiscType _DiscType)
         {
             _Disc.Type = _DiscType;
             return _Disc;
@@ -88,6 +88,41 @@ namespace Common.Extensions
         {
             _Disc.Radius = _Radius;
             return _Disc;
+        }
+
+        public static Rectangle SetType(this Rectangle _Rectangle, Rectangle.RectangleType _RectangleType)
+        {
+            _Rectangle.Type = _RectangleType;
+            return _Rectangle;
+        }
+
+        public static Rectangle SetWidth(this Rectangle _Rectangle, float _Width)
+        {
+            _Rectangle.Width = _Width;
+            return _Rectangle;
+        }
+
+        public static Rectangle SetHeight(this Rectangle _Rectangle, float _Height)
+        {
+            _Rectangle.Height = _Height;
+            return _Rectangle;
+        }
+        
+        public static Rectangle SetSize(this Rectangle _Rectangle, float _Size)
+        {
+            return _Rectangle.SetWidth(_Size).SetHeight(_Size);
+        }
+
+        public static Rectangle SetThickness(this Rectangle _Rectangle, float _Thickness)
+        {
+            _Rectangle.Thickness = _Thickness;
+            return _Rectangle;
+        }
+        
+        public static Rectangle SetCornerRadius(this Rectangle _Rectangle, float _CornerRadius)
+        {
+            _Rectangle.CornerRadius = _CornerRadius;
+            return _Rectangle;
         }
     }
 }

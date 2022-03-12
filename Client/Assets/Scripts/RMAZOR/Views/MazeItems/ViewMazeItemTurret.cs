@@ -187,12 +187,12 @@ namespace RMAZOR.Views.MazeItems
             m_Body = Object.gameObject.AddComponentOnNewChild<Disc>("Turret", out _)
                 .SetColor(ColorProvider.GetColor(ColorIds.Main))
                 .SetSortingOrder(SortingOrders.GetBlockSortingOrder(Props.Type))
-                .SetDiscType(DiscType.Arc)
+                .SetType(DiscType.Arc)
                 .SetArcEndCaps(ArcEndCap.Round);
             m_ProjHolderBorder = Object.gameObject.AddComponentOnNewChild<Disc>("Border", out _)
                 .SetColor(ColorProvider.GetColor(ColorIds.MazeItem1))
                 .SetSortingOrder(SortingOrders.GetBlockSortingOrder(Props.Type) + 1)
-                .SetDiscType(DiscType.Ring)
+                .SetType(DiscType.Ring)
                 .SetDashed(true)
                 .SetDashType(DashType.Rounded)
                 .SetDashSize(2f);
