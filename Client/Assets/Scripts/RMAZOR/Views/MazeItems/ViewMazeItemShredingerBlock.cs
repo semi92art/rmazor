@@ -50,28 +50,28 @@ namespace RMAZOR.Views.MazeItems
         #endregion
 
         #region inject
-        
+
         public ViewMazeItemShredingerBlock(
-            ViewSettings _ViewSettings,
-            IModelGame _Model,
-            IMazeCoordinateConverter _CoordinateConverter,
-            IContainersGetter _ContainersGetter,
-            IViewGameTicker _GameTicker,
+            ViewSettings                  _ViewSettings,
+            IModelGame                    _Model,
+            IMazeCoordinateConverter      _CoordinateConverter,
+            IContainersGetter             _ContainersGetter,
+            IViewGameTicker               _GameTicker,
             IViewBetweenLevelTransitioner _Transitioner,
-            IManagersGetter _Managers,
-            IColorProvider _ColorProvider,
-            IViewInputCommandsProceeder _CommandsProceeder)
+            IManagersGetter               _Managers,
+            IColorProvider                _ColorProvider,
+            IViewInputCommandsProceeder   _CommandsProceeder)
             : base(
-                _ViewSettings, 
+                _ViewSettings,
                 _Model,
-                _CoordinateConverter, 
-                _ContainersGetter, 
+                _CoordinateConverter,
+                _ContainersGetter,
                 _GameTicker,
                 _Transitioner,
                 _Managers,
                 _ColorProvider,
                 _CommandsProceeder) { }
-        
+
         #endregion
         
         #region api
@@ -154,11 +154,10 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void InitShape()
         {
-            var closedBlock = Object.AddComponentOnNewChild<Rectangle>("Shredinger Block", out _);
-            closedBlock.Type = Rectangle.RectangleType.RoundedBorder;
-            closedBlock.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
-            m_ClosedBlock = closedBlock;
-            
+            m_ClosedBlock = Object.AddComponentOnNewChild<Rectangle>("Shredinger Block", out _)
+                .SetType(Rectangle.RectangleType.RoundedBorder)
+                .SetSortingOrder(SortingOrders.GetBlockSortingOrder(Props.Type));
+            var lp = GetLineStartEndPositions();
             var lLeft    = Object.AddComponentOnNewChild<Line>("Left Line",     out _);
             var lRight   = Object.AddComponentOnNewChild<Line>("Right Line",    out _);
             var lBottom1 = Object.AddComponentOnNewChild<Line>("Bottom Line 1", out _);
@@ -167,32 +166,24 @@ namespace RMAZOR.Views.MazeItems
             var lTop2    = Object.AddComponentOnNewChild<Line>("Top Line 2",    out _);
             var lCenter1 = Object.AddComponentOnNewChild<Line>("Center Line 1", out _);
             var lCenter2 = Object.AddComponentOnNewChild<Line>("Center Line 2", out _);
-
-            var lp = GetLineStartEndPositions();
-            (lBottom1.Start, lBottom1.End) = (lp[0], lp[1]);
-            (lLeft.Start, lLeft.End)       = (lp[2], lp[3]);
-            (lTop1.Start, lTop1.End)       = (lp[4], lp[5]);
-            (lCenter1.Start, lCenter1.End) = (lp[6], lp[7]);
-            (lBottom2.Start, lBottom2.End) = (lp[8], lp[9]);
-            (lRight.Start, lRight.End)     = (lp[10], lp[11]);
-            (lTop2.Start, lTop2.End)       = (lp[12], lp[13]);
-            (lCenter2.Start, lCenter2.End) = (lp[14], lp[15]);
-            
+            lBottom1.SetStartEnd(lp[0], lp[1]);
+            lLeft   .SetStartEnd(lp[2], lp[3]);
+            lTop1   .SetStartEnd(lp[4], lp[5]);
+            lCenter1.SetStartEnd(lp[6], lp[7]);
+            lBottom2.SetStartEnd(lp[8], lp[9]);
+            lRight  .SetStartEnd(lp[10], lp[11]);
+            lTop2   .SetStartEnd(lp[12], lp[13]);
+            lCenter2.SetStartEnd(lp[14], lp[15]);
             m_OpenedLines.AddRange(new []
             {
                 lLeft, lRight, lBottom1, lBottom2, lTop1, lTop2, lCenter1, lCenter2
             });
-            foreach (var line in m_OpenedLines)
-            {
-                line.Dashed = true;
-                line.DashSize = 2f;
-                line.DashType = DashType.Rounded;
-                line.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
-            }
-
+            m_OpenedLines.ForEach(_Line => _Line.SetDashed(true)
+                .SetDashSize(2f)
+                .SetDashType(DashType.Rounded)
+                .SetSortingOrder(SortingOrders.GetBlockSortingOrder(Props.Type)));
             List<Vector2> cPoss, cAngs;
             (cPoss, cAngs) = GetCornerCenterPositionsAndAngles();
-
             var cBL  = Object.AddComponentOnNewChild<Disc>("Bottom Left Corner",     out _);
             var cTL  = Object.AddComponentOnNewChild<Disc>("Top Left Corner",        out _);
             var cBR  = Object.AddComponentOnNewChild<Disc>("Bottom Right Corner",    out _);
@@ -201,7 +192,6 @@ namespace RMAZOR.Views.MazeItems
             var cBC2 = Object.AddComponentOnNewChild<Disc>("Bottom Center Corner 2", out _);
             var cTC1 = Object.AddComponentOnNewChild<Disc>("Top Center Corner 1",    out _);
             var cTC2 = Object.AddComponentOnNewChild<Disc>("Top Center Corner 2",    out _);
-
             (cBL.transform.localPosition, cBL.AngRadiansStart, cBL.AngRadiansEnd)    = (cPoss[0], cAngs[0].x, cAngs[0].y);
             (cTL.transform.localPosition, cTL.AngRadiansStart, cTL.AngRadiansEnd)    = (cPoss[1], cAngs[1].x, cAngs[1].y);
             (cBR.transform.localPosition, cBR.AngRadiansStart, cBR.AngRadiansEnd)    = (cPoss[2], cAngs[2].x, cAngs[2].y);
@@ -210,31 +200,26 @@ namespace RMAZOR.Views.MazeItems
             (cBC2.transform.localPosition, cBC2.AngRadiansStart, cBC2.AngRadiansEnd) = (cPoss[5], cAngs[5].x, cAngs[5].y);
             (cTC1.transform.localPosition, cTC1.AngRadiansStart, cTC1.AngRadiansEnd) = (cPoss[6], cAngs[6].x, cAngs[6].y);
             (cTC2.transform.localPosition, cTC2.AngRadiansStart, cTC2.AngRadiansEnd) = (cPoss[7], cAngs[7].x, cAngs[7].y);
-            
             m_OpenedCorners.AddRange(new []
             {
                 cBL, cTL, cBR, cTR, cBC1, cBC2, cTC1, cTC2
             });
-
-            foreach (var corner in m_OpenedCorners)
-            {
-                corner.Type = DiscType.Arc;
-                corner.SortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
-                corner.ArcEndCaps = ArcEndCap.Round;
-            }
+            m_OpenedCorners.ForEach(_Corner => _Corner.SetType(DiscType.Arc)
+                .SetArcEndCaps(ArcEndCap.Round)
+                .SetSortingOrder(SortingOrders.GetBlockSortingOrder(Props.Type)));
         }
 
         protected override void UpdateShape()
         {
             Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             float scale = CoordinateConverter.Scale;
-            m_ClosedBlock.Width = m_ClosedBlock.Height = scale * 0.9f;
-            m_ClosedBlock.CornerRadius = ViewSettings.CornerRadius * scale;
-            m_ClosedBlock.Thickness = ViewSettings.LineWidth * scale;
+            m_ClosedBlock.SetSize(scale * 0.9f)
+                .SetCornerRadius(ViewSettings.CornerRadius * scale)
+                .SetThickness(ViewSettings.LineWidth * scale);
             foreach (var corner in m_OpenedCorners)
             {
-                corner.Radius = GetCornerRadius();
-                corner.Thickness = ViewSettings.LineWidth * scale;
+                corner.SetRadius(GetCornerRadius())
+                    .SetThickness(ViewSettings.LineWidth * scale);
             }
             foreach (var line in m_OpenedLines)
                 line.Thickness = ViewSettings.LineWidth * scale;
@@ -290,12 +275,13 @@ namespace RMAZOR.Views.MazeItems
                 yield break;
             }
             var levelStage = Model.LevelStaging.LevelStage;
-            if (levelStage == ELevelStage.ReadyToUnloadLevel
-                || levelStage == ELevelStage.Unloaded
-                || levelIndex != Model.LevelStaging.LevelIndex)
+            // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
+            switch (levelStage)
             {
-                IndicateCoroutineStage(false, _Close);
-                yield break;
+                case ELevelStage.ReadyToUnloadLevel:
+                case ELevelStage.Unloaded when levelIndex != Model.LevelStaging.LevelIndex:
+                    IndicateCoroutineStage(false, _Close);
+                    yield break;
             }
             yield return CloseBlockCoroutineCore(_Close);
         }
@@ -363,10 +349,10 @@ namespace RMAZOR.Views.MazeItems
                     m_ClosedBlock.Color = partsClosedColor;
                 },
                 GameTicker,
-                (_Breaked, _Progress) =>
+                (_Broken, _Progress) =>
                 {
                     IndicateCoroutineStage(false, _Close);
-                    if (_Breaked)
+                    if (_Broken)
                         return;
                     if (_Close)
                         shapesOpen.ForEach(_Shape => _Shape.enabled = false);

@@ -179,6 +179,11 @@ namespace Common.Extensions
             return _Line;
         }
 
+        public static Line SetStartEnd(this Line _Line, Vector3 _Start, Vector3 _End)
+        {
+            return _Line.SetStart(_Start).SetEnd(_End);
+        }
+
         public static Line SetEndCaps(this Line _Line, LineEndCap _EndCaps)
         {
             _Line.EndCaps = _EndCaps;
