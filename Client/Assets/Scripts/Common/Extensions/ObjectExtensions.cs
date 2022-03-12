@@ -119,16 +119,25 @@ namespace Common.Extensions
         public static bool IsNotNull<T>(this T _Item) where T : Component => !IsNull(_Item);
         
         public static T AddComponentOnNewChild<T>(
-            this GameObject _Parent,
-            string _Name,
-            out GameObject _Child,
-            Vector2? _LocalPosition = null) where T : Component
+            this Transform  _Parent,
+            string          _Name,
+            out GameObject  _Child,
+            Vector2?        _LocalPosition = null) where T : Component
         {
             var go = new GameObject(_Name);
             go.SetParent(_Parent);
             go.transform.SetLocalPosXY(_LocalPosition ?? Vector2.zero);
             _Child = go;
             return go.GetOrAddComponent<T>();
+        }
+        
+        public static T AddComponentOnNewChild<T>(
+            this GameObject _Parent,
+            string          _Name,
+            out GameObject  _Child,
+            Vector2?        _LocalPosition = null) where T : Component
+        {
+            return _Parent.transform.AddComponentOnNewChild<T>(_Name, out _Child, _LocalPosition);
         }
         
         public static void SetGoActive<T>(this T _Item, bool _Active) where T : Component
