@@ -47,19 +47,7 @@ namespace Common.Extensions
             _Shape.SortingOrder = _SortingOrder;
             return _Shape;
         }
-
-        public static Disc SetDiscType(this Disc _Disc, DiscType _DiscType)
-        {
-            _Disc.Type = _DiscType;
-            return _Disc;
-        }
-
-        public static Disc SetArcEndCaps(this Disc _Disc, ArcEndCap _ArcEndCap)
-        {
-            _Disc.ArcEndCaps = _ArcEndCap;
-            return _Disc;
-        }
-
+        
         public static T SetDashed<T>(this T _Shape, bool _Dashed) where T : ShapeRenderer, IDashable
         {
             _Shape.Dashed = _Dashed;
@@ -76,6 +64,30 @@ namespace Common.Extensions
         {
             _Shape.DashSize = _DashSize;
             return _Shape;
+        }
+
+        public static Disc SetDiscType(this Disc _Disc, DiscType _DiscType)
+        {
+            _Disc.Type = _DiscType;
+            return _Disc;
+        }
+
+        public static Disc SetArcEndCaps(this Disc _Disc, ArcEndCap _ArcEndCap)
+        {
+            _Disc.ArcEndCaps = _ArcEndCap;
+            return _Disc;
+        }
+
+        public static Disc SetThickness(this Disc _Disc, float _Thickness)
+        {
+            _Disc.Thickness = _Thickness;
+            return _Disc;
+        }
+
+        public static Disc SetRadius(this Disc _Disc, float _Radius)
+        {
+            _Disc.Radius = _Radius;
+            return _Disc;
         }
     }
 }

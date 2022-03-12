@@ -58,15 +58,15 @@ namespace RMAZOR.Views.MazeItems
         #region inject
 
         public ViewMazeItemPortal(
-            ViewSettings _ViewSettings,
-            IModelGame _Model,
-            IMazeCoordinateConverter _CoordinateConverter, 
-            IContainersGetter _ContainersGetter,
-            IViewGameTicker _GameTicker,
+            ViewSettings                  _ViewSettings,
+            IModelGame                    _Model,
+            IMazeCoordinateConverter      _CoordinateConverter,
+            IContainersGetter             _ContainersGetter,
+            IViewGameTicker               _GameTicker,
             IViewBetweenLevelTransitioner _Transitioner,
-            IManagersGetter _Managers,
-            IColorProvider _ColorProvider,
-            IViewInputCommandsProceeder _CommandsProceeder)
+            IManagersGetter               _Managers,
+            IColorProvider                _ColorProvider,
+            IViewInputCommandsProceeder   _CommandsProceeder)
             : base(
                 _ViewSettings,
                 _Model,
@@ -77,7 +77,7 @@ namespace RMAZOR.Views.MazeItems
                 _Managers,
                 _ColorProvider,
                 _CommandsProceeder) { }
-        
+
         #endregion
 
         #region api
@@ -129,13 +129,13 @@ namespace RMAZOR.Views.MazeItems
                 0.07f,
                 _Progress => m_Center.Radius = CoordinateConverter.Scale * 0.2f * _Progress,
                 GameTicker,
-                (_, __) =>
+                (_Broken, _Progress) =>
                 {
                     Cor.Run(Cor.Lerp(
                         3f,
                         1f,
                         0.07f,
-                        _Progress => m_Center.Radius = CoordinateConverter.Scale * 0.2f * _Progress,
+                        _P => m_Center.Radius = CoordinateConverter.Scale * 0.2f * _P,
                         GameTicker));
                 }));
         }
@@ -146,59 +146,46 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void InitShape()
         {
-            var center = Object.AddComponentOnNewChild<Disc>("Portal Item", out _);
-            center.Type = DiscType.Disc;
-            center.Color = ColorProvider.GetColor(ColorIds.Main);
-            m_Center = center;
-
-            var scale = CoordinateConverter.Scale;
+            m_Center = Object.AddComponentOnNewChild<Disc>("Portal Item", out _)
+                .SetDiscType(DiscType.Disc)
+                .SetColor(GetMainColor());
             for (int i = 0; i < OrbitsCount; i++)
             {
-                var orbit = Object.AddComponentOnNewChild<Disc>($"Orbit {i + 1}", out _, Vector2.zero);
-                orbit.Thickness = ViewSettings.LineWidth * scale * 0.5f;
-                orbit.Type = DiscType.Arc;
-                orbit.Color = ColorProvider.GetColor(ColorIds.Main);
+                var orbit = Object.AddComponentOnNewChild<Disc>($"Orbit {i + 1}", out _, Vector2.zero)
+                    .SetDiscType(DiscType.Arc)
+                    .SetColor(GetMainColor())
+                    .SetThickness(ViewSettings.LineWidth * CoordinateConverter.Scale * 0.5f);
                 m_Orbits.Add(orbit);
             }
-
-            m_Orbits[0].Radius = m_Orbits[1].Radius = m_Orbits[2].Radius = m_Orbits[3].Radius = scale * 0.45f;
-            m_Orbits[4].Radius = m_Orbits[5].Radius = m_Orbits[6].Radius = scale * 0.4f;
-            m_Orbits[7].Radius = m_Orbits[8].Radius = m_Orbits[9].Radius = m_Orbits[10].Radius = scale * 0.35f;
-            m_Orbits[11].Radius = m_Orbits[12].Radius = m_Orbits[13].Radius = scale * 0.3f;
-
-            const float deg2rad = Mathf.Deg2Rad;
-            m_Orbits[0].AngRadiansStart = 0f;
-            m_Orbits[0].AngRadiansEnd = 60f * deg2rad;
-            m_Orbits[1].AngRadiansStart = 90f * deg2rad;
-            m_Orbits[1].AngRadiansEnd = 100f * deg2rad;
-            m_Orbits[2].AngRadiansStart = 130f * deg2rad;
-            m_Orbits[2].AngRadiansEnd = 180f * deg2rad;
-            m_Orbits[3].AngRadiansStart = 270f * deg2rad;
-            m_Orbits[3].AngRadiansEnd = 350f * deg2rad;
-            
-            m_Orbits[4].AngRadiansStart = 10f * deg2rad;
-            m_Orbits[4].AngRadiansEnd = 70f * deg2rad;
-            m_Orbits[5].AngRadiansStart = 140f * deg2rad;
-            m_Orbits[5].AngRadiansEnd = 210f * deg2rad;
-            m_Orbits[6].AngRadiansStart = 230f * deg2rad;
-            m_Orbits[6].AngRadiansEnd = 280f * deg2rad;
-
-            m_Orbits[7].AngRadiansStart = 5f * deg2rad;
-            m_Orbits[7].AngRadiansEnd = 45f * deg2rad;
-            m_Orbits[8].AngRadiansStart = 115f * deg2rad;
-            m_Orbits[8].AngRadiansEnd = 135f * deg2rad;
-            m_Orbits[9].AngRadiansStart = 165f * deg2rad;
-            m_Orbits[9].AngRadiansEnd = 190f * deg2rad;
-            m_Orbits[10].AngRadiansStart = 220f * deg2rad;
-            m_Orbits[10].AngRadiansEnd = 275f * deg2rad;
-            
-            m_Orbits[11].AngRadiansStart = 75f * deg2rad;
-            m_Orbits[11].AngRadiansEnd = 115f * deg2rad;
-            m_Orbits[12].AngRadiansStart = 145f * deg2rad;
-            m_Orbits[12].AngRadiansEnd = 205f * deg2rad;
-            m_Orbits[13].AngRadiansStart = 270f * deg2rad;
-            m_Orbits[13].AngRadiansEnd = 325f * deg2rad;
-            
+            void SetRadius(float _Radius, params int[] _OrbitIndices)
+            {
+                foreach (int idx in _OrbitIndices)
+                    m_Orbits[idx].Radius = _Radius * CoordinateConverter.Scale;
+            }
+            SetRadius(0.45f, 0, 1, 2, 3);
+            SetRadius(0.4f, 4, 5, 6);
+            SetRadius(0.35f, 7, 8, 9, 10);
+            SetRadius(0.3f, 11, 12, 13);
+            void SetOrbitAngles(int _OrbitIndex, float _StartAngle, float _EndAngle)
+            {
+                const float deg2Rad = Mathf.Deg2Rad;
+                m_Orbits[_OrbitIndex].AngRadiansStart = _StartAngle * deg2Rad;
+                m_Orbits[_OrbitIndex].AngRadiansEnd = _EndAngle * deg2Rad;
+            }
+            SetOrbitAngles(0, 0f, 60f);
+            SetOrbitAngles(1, 90f, 100f);
+            SetOrbitAngles(2, 130f, 180f);
+            SetOrbitAngles(3, 270f, 350f);
+            SetOrbitAngles(4, 10f, 700f);
+            SetOrbitAngles(5, 140f, 210f);
+            SetOrbitAngles(6, 230f, 280f);
+            SetOrbitAngles(7, 5f, 45f);
+            SetOrbitAngles(8, 115f, 135f);
+            SetOrbitAngles(9, 165f, 190f);
+            SetOrbitAngles(10, 220f, 275f);
+            SetOrbitAngles(11, 75f, 115f);
+            SetOrbitAngles(12, 145f, 205f);
+            SetOrbitAngles(13, 270f, 325f);
             InitGravitySpawnPool();
         }
 
@@ -210,24 +197,23 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == ColorIds.Main)
-            {
-                m_Center.Color = _Color;
-                foreach (var item in m_Orbits)
-                    item.Color = _Color;
-                foreach (var item in m_GravityItems)
-                    item.Color = new Color(_Color.r, _Color.g, _Color.b, item.Color.a);
-            }
+            if (_ColorId != ColorIds.Main)
+                return;
+            m_Center.Color = _Color;
+            foreach (var item in m_Orbits)
+                item.Color = _Color;
+            foreach (var item in m_GravityItems)
+                item.Color = _Color.SetA(item.Color.a);
         }
 
         private void InitGravitySpawnPool()
         {
             for (int i = 0; i < GravityItemsCount; i++)
             {
-                var gItem = Object.AddComponentOnNewChild<Disc>("Gravity Item", out _, Vector2.zero);
-                gItem.Radius = 0.025f * CoordinateConverter.Scale;
-                gItem.Color = ColorProvider.GetColor(ColorIds.Main);
-                gItem.Type = DiscType.Disc;
+                var gItem = Object.AddComponentOnNewChild<Disc>("Gravity Item", out _, Vector2.zero)
+                    .SetDiscType(DiscType.Disc)
+                    .SetColor(GetMainColor())
+                    .SetRadius(0.025f * CoordinateConverter.Scale);
                 m_GravityItems.Add(gItem);
                 m_GravityItems.Deactivate(gItem);
             }
@@ -250,14 +236,13 @@ namespace RMAZOR.Views.MazeItems
                 0.5f,
                 _Progress => item.Color = item.Color.SetA(_Progress * 0.7f),
                 GameTicker));
-            
             Cor.Run(Cor.Lerp(
                 1f,
                 0f,
                 dist * GravityItemsSpeed,
                 _Progress => item.transform.SetLocalPosXY(v * dist * _Progress),
                 GameTicker,
-                (_Breaked, _Progress) =>
+                (_Broken, _Progress) =>
                 {
                     item.Color = item.Color.SetA(0f);
                     m_GravityItems.Deactivate(item);
@@ -267,11 +252,17 @@ namespace RMAZOR.Views.MazeItems
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
+            var col = GetMainColor();
             return new Dictionary<IEnumerable<Component>, Func<Color>>
             {
-                {new[] {m_Center}, () => ColorProvider.GetColor(ColorIds.Main)},
-                {m_Orbits, () => ColorProvider.GetColor(ColorIds.Main)}
+                {new[] {m_Center}, () => col},
+                {m_Orbits,         () => col}
             };
+        }
+
+        private Color GetMainColor()
+        {
+            return ColorProvider.GetColor(ColorIds.Main);
         }
 
         #endregion
