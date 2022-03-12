@@ -19,7 +19,6 @@ using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace RMAZOR.Views.MazeItems
 {
@@ -105,21 +104,20 @@ namespace RMAZOR.Views.MazeItems
         
         protected override void InitShape()
         {
-            Pillar = Object.AddComponentOnNewChild<Line>("Springboard Item", out _);
-            Pillar.SortingOrder = SortingOrders.PathLine;
-            Springboard = Object.AddComponentOnNewChild<Line>("Springboard", out _);
-            Springboard.SortingOrder = SortingOrders.GetBlockSortingOrder(EMazeItemType.Springboard);
-            Pillar.EndCaps = Springboard.EndCaps = LineEndCap.Round;
+            Pillar = Object.AddComponentOnNewChild<Line>("Springboard Item", out _)
+                .SetSortingOrder(SortingOrders.PathLine)
+                .SetEndCaps(LineEndCap.Round);
+            Springboard = Object.AddComponentOnNewChild<Line>("Springboard", out _)
+                .SetSortingOrder(SortingOrders.GetBlockSortingOrder(EMazeItemType.Springboard))
+                .SetEndCaps(LineEndCap.Round);
         }
 
         protected override void UpdateShape()
         {
-            Pillar.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale;
-            Springboard.Thickness = Pillar.Thickness * 2f;
-            (Pillar.Start, Pillar.End, Springboard.Start, Springboard.End) =
-                GetSpringboardAndPillarEdges();
-            m_Edge1Start = Springboard.Start;
-            m_Edge2Start = Springboard.End;
+            Pillar.SetThickness(ViewSettings.LineWidth * CoordinateConverter.Scale);
+            Springboard.SetThickness(Pillar.Thickness * 2f);
+            (Pillar.Start, Pillar.End, Springboard.Start, Springboard.End) = GetSpringboardAndPillarEdges();
+            (m_Edge1Start, m_Edge2Start) = (Springboard.Start, Springboard.End);
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
@@ -132,24 +130,18 @@ namespace RMAZOR.Views.MazeItems
 
         private IEnumerator JumpCoroutine()
         {
-            UnityAction<float> doOnProgress = _Progress => (Springboard.Start, Springboard.End, Pillar.End) =
-                GetSpringboardEdgesOnJump(_Progress); 
-
+            void DoOnProgress(float _Progress)
+            {
+                (Springboard.Start, Springboard.End, Pillar.End) =
+                    GetSpringboardEdgesOnJump(_Progress * JumpCoefficient);
+            }
             yield return Cor.Lerp(
                 0,
-                JumpCoefficient,
-                0.05f,
-                _Progress => doOnProgress(_Progress),
+                1f,
+                0.1f,
+                DoOnProgress,
                 GameTicker,
-                (_, __) =>
-                {
-                    Cor.Run(Cor.Lerp(
-                        JumpCoefficient,
-                        0,
-                        0.05f,
-                        _Progress => doOnProgress(_Progress),
-                        GameTicker));
-                });
+                _ProgressFormula: _P => _P < 0.5f ? 2f * _P : 2f * (1f - _P));
         }
         
         private Tuple<Vector2, Vector2, Vector2, Vector2> GetSpringboardAndPillarEdges()
@@ -160,10 +152,11 @@ namespace RMAZOR.Views.MazeItems
             var d = a + v * SpringboardHeight;
             var b = d - vOrth * SpringboardWidth * 0.5f;
             var c = d + vOrth * SpringboardWidth * 0.5f;
-            a *= CoordinateConverter.Scale;
-            b *= CoordinateConverter.Scale;
-            c *= CoordinateConverter.Scale;
-            d *= CoordinateConverter.Scale;
+            float scale = CoordinateConverter.Scale;
+            a *= scale;
+            b *= scale;
+            c *= scale;
+            d *= scale;
             return new Tuple<Vector2, Vector2, Vector2, Vector2>(a, d, b, c);
         }
 

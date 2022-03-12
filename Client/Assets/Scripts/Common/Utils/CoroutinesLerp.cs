@@ -49,7 +49,10 @@ namespace Common.Utils
             if (_Ticker.Pause)
                 yield return PauseCoroutine(_FixedUpdate);
             if (!breaked)
-                _OnProgress(_To);
+            {
+                progress = _ProgressFormula?.Invoke(_To) ?? _To;
+                _OnProgress(progress);
+            }
             if (_Ticker.Pause)
                 yield return PauseCoroutine(_FixedUpdate);
             _OnFinish?.Invoke(breaked, breaked ? progress : _To);
@@ -100,7 +103,10 @@ namespace Common.Utils
             if (_Ticker.Pause)
                 yield return PauseCoroutine(_FixedUpdate);
             if (!breaked)
-                _OnProgress(_To);
+            {
+                progress = _ProgressFormula?.Invoke(_To) ?? _To;
+                _OnProgress(progress);
+            }
             if (_Ticker.Pause)
                 yield return PauseCoroutine(_FixedUpdate);
             _OnFinish?.Invoke(breaked, breaked ? progress : _To);
@@ -147,7 +153,10 @@ namespace Common.Utils
             if (_Ticker.Pause)
                 yield return PauseCoroutine(_FixedUpdate);
             if (!breaked)
-                _OnProgress(_To);
+            {
+                progress = _ProgressFormula?.Invoke(_To) ?? _To;
+                _OnProgress(progress);
+            }
             if (_Ticker.Pause)
                 yield return PauseCoroutine(_FixedUpdate);
             _OnFinish?.Invoke(breaked, breaked ? progress : _To);
