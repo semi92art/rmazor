@@ -38,8 +38,8 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
                 _PrefabSetManager,
                 _ContainersGetter,
                 _CameraProvider,
-                _Ticker,
-                _ColorProvider) { }
+                _ColorProvider,
+                _Ticker) { }
 
         #endregion
 

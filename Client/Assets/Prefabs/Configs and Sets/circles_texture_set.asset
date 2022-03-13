@@ -14,7 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   set:
     array:
-    - radius: 0.019
+    - tiling: 0
+      direction: 0
+      wrapScale: 0
+      wrapTiling: 0
+      radius: 0.019
       wavesCount: 11
       amplitude: 0.145
       center: 2

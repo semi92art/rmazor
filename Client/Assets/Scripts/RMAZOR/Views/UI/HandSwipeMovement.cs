@@ -144,12 +144,13 @@ namespace RMAZOR.Views.UI
                 yield break;
             trace.enabled = true;
             yield return Cor.Lerp(
-                a.posStart,
-                a.posMiddle,
+                0f,
+                1f,
                 moveParams.aTimeMiddle - moveParams.aTimeStart, 
-                _Value =>
+                _P =>
                 {
-                    trace.SetPosition(1, _Value);
+                    var vec = Vector2.Lerp(a.posStart, a.posMiddle, _P);
+                    trace.SetPosition(1, vec);
                 },
                 Ticker,
                 _BreakPredicate: () => ReadyToAnimate || TutorialFinished);

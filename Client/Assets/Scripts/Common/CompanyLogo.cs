@@ -1,5 +1,4 @@
-﻿using Common;
-using Common.Extensions;
+﻿using Common.Extensions;
 using UnityEngine;
 
 public class CompanyLogo : MonoBehaviour
@@ -13,7 +12,6 @@ public class CompanyLogo : MonoBehaviour
     
     public void HideLogo()
     {
-        Dbg.Log(nameof(HideLogo));
         logoRend.enabled = false;
         gameObject.DestroySafe();
     }

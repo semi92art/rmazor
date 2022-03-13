@@ -18,10 +18,10 @@ namespace RMAZOR.Views.InputConfigurators
 {
     public interface IViewInputTouchProceeder : IInit, IOnLevelStageChanged
     {
-        UnityAction<Vector2> OnTap { get; set; }
-        bool                 AreFingersOnScreen(int _Count);
-        Vector2              GetFingerPosition(int _Index);
-        void                 OnRotationFinished(MazeRotationEventArgs _Args);
+        event UnityAction<Vector2> OnTap;
+        bool                       AreFingersOnScreen(int                   _Count);
+        Vector2                    GetFingerPosition(int                    _Index);
+        void                       OnRotationFinished(MazeRotationEventArgs _Args);
     }
     
     public class ViewInputTouchProceeder : InitBase, IViewInputTouchProceeder
@@ -80,8 +80,8 @@ namespace RMAZOR.Views.InputConfigurators
         #endregion
 
         #region api
-        
-        public UnityAction<Vector2> OnTap { get; set; }
+
+        public event UnityAction<Vector2> OnTap;
 
         public override void Init()
         {

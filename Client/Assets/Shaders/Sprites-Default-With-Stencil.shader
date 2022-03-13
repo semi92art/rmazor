@@ -37,28 +37,28 @@
 			#pragma multi_compile _ PIXELSNAP_ON
 			#include "UnityCG.cginc"
 			
-			struct appdata_t
+			struct appdata
 			{
-				float4 vertex   : POSITION;
-				float4 color    : COLOR;
-				float2 texcoord : TEXCOORD0;
+				float4 vertex : POSITION;
+				float4 color  : COLOR;
+				float2 uv     : TEXCOORD0;
 			};
 
 			struct v2f
 			{
-				float4 vertex   : SV_POSITION;
-				fixed4 color    : COLOR;
-				float2 texcoord  : TEXCOORD0;
+				float4 vertex : SV_POSITION;
+				fixed4 color  : COLOR;
+				float2 uv     : TEXCOORD0;
 			};
 			
 			fixed4 _Color;
 
-			v2f vert(appdata_t IN)
+			v2f vert(appdata v)
 			{
 				v2f OUT;
-				OUT.vertex = UnityObjectToClipPos(IN.vertex);
-				OUT.texcoord = IN.texcoord;
-				OUT.color = IN.color * _Color;
+				OUT.vertex = UnityObjectToClipPos(v.vertex);
+				OUT.uv = v.uv;
+				OUT.color = v.color * _Color;
 				#ifdef PIXELSNAP_ON
 				OUT.vertex = UnityPixelSnap (OUT.vertex);
 				#endif
@@ -82,9 +82,9 @@
 				return color;
 			}
 
-			fixed4 frag(v2f IN) : SV_Target
+			fixed4 frag(v2f i) : SV_Target
 			{
-				fixed4 c = SampleSpriteTexture (IN.texcoord) * IN.color;
+				fixed4 c = SampleSpriteTexture (i.uv) * i.color;
 				c.rgb *= c.a;
 				return c;
 			}

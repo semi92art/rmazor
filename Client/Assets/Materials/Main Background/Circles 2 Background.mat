@@ -75,12 +75,12 @@ Material:
     - _N: 10.86
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Radius: 0.05
+    - _Radius: 0.095
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _StepX: 0.172
-    - _StepY: 0.073
+    - _StepX: 0.14
+    - _StepY: 0.125
     - _Tiling: 1
     - _UVSec: 0
     - _WarpScale: 0.138
@@ -90,7 +90,7 @@ Material:
     - _isToggled: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Color1: {r: 0.23529413, g: 0.1254902, b: 0.1254902, a: 1}
-    - _Color2: {r: 0.18039216, g: 0.16470589, b: 0.16470589, a: 1}
+    - _Color1: {r: 0.6509804, g: 0.32156864, b: 0.57254905, a: 1}
+    - _Color2: {r: 0.38431376, g: 0.23137257, b: 0.4156863, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []

@@ -212,7 +212,6 @@ namespace Common.Managers.Scores
 
         protected void SaveGameProgressToCache(object _Data)
         {
-            Dbg.Log(nameof(SaveGameProgressToCache));
             FileNameArgs fileNameData;
             try
             {

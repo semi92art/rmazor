@@ -28,7 +28,7 @@ namespace RMAZOR.Views.Common
         {
             var points = GetPointsOfPathItemsAndMazeItems(_Info);
             var groups = GetPointGroups(points);
-            int idx = 0;
+            int idx = 10;
             m_GroupsCached = groups
                 .Select(_G =>
                 {

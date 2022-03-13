@@ -260,10 +260,10 @@ namespace RMAZOR.Views.MazeItems
             {
                 if (_Groups == null)
                     return -2;
-                foreach (var group in _Groups)
+                foreach (var group in _Groups
+                    .Where(_Group => _Group.Points.Contains(Props.Position)))
                 {
-                    if (group.Points.Contains(Props.Position))
-                        return group.GroupIndex;
+                    return group.GroupIndex;
                 }
                 return -1;
             }

@@ -19,6 +19,7 @@ using RMAZOR.Views.Characters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.MazeItems;
+using RMAZOR.Views.UI.Game_Logo;
 
 namespace RMAZOR.Views.Common
 {
@@ -68,6 +69,7 @@ namespace RMAZOR.Views.Common
         private IViewMazeItemsGroupSet      MazeItemsGroupSet    { get; }
         private IViewMazePathItemsGroup     PathItemsGroup       { get; }
         private CompanyLogo                 CompanyLogo          { get; }
+        private IViewUIGameLogo             GameLogo             { get; }
 
         public ViewLevelStageController(
             CommonGameSettings          _GameSettings,
@@ -84,7 +86,8 @@ namespace RMAZOR.Views.Common
             IProposalDialogViewer       _ProposalDialogViewer,
             IViewMazeItemsGroupSet      _MazeItemsGroupSet,
             IViewMazePathItemsGroup     _PathItemsGroup,
-            CompanyLogo                 _CompanyLogo)
+            CompanyLogo                 _CompanyLogo,
+            IViewUIGameLogo             _GameLogo)
         {
             GameSettings         = _GameSettings;
             ViewSettings         = _ViewSettings;
@@ -101,6 +104,7 @@ namespace RMAZOR.Views.Common
             MazeItemsGroupSet    = _MazeItemsGroupSet;
             PathItemsGroup       = _PathItemsGroup;
             CompanyLogo          = _CompanyLogo;
+            GameLogo = _GameLogo;
         }
 
         #endregion
@@ -235,6 +239,7 @@ namespace RMAZOR.Views.Common
             if (m_StartLogoShowing)
             {
                 CompanyLogo.HideLogo();
+                GameLogo.Show();
                 m_StartLogoShowing = false;
             }
             m_NextLevelMustBeFirstInGroup = false;

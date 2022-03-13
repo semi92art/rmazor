@@ -8,7 +8,7 @@ using Common.Providers;
 using RMAZOR.Models;
 using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
-using RMAZOR.Views.UI.StartLogo;
+using RMAZOR.Views.UI.Game_Logo;
 using Shapes;
 using TMPro;
 using UnityEngine;
@@ -33,34 +33,34 @@ namespace RMAZOR.Views.UI
         #region inject
 
         private IViewBetweenLevelTransitioner BetweenLevelTransitioner { get; }
-        private IColorProvider          ColorProvider      { get; }
-        private IViewUIPrompt           Prompt             { get; }
-        private IViewUICongratsMessage  CongratsMessage    { get; }
-        private IViewUIStartLogo        StartLogo          { get; }
-        private IViewUILevelsPanel      LevelsPanel        { get; }
-        private IViewUIRotationControls RotationControls   { get; }
-        private IViewUITopButtons       TopButtons         { get; }
-        private IViewUITutorial         Tutorial           { get; }
+        private IColorProvider                ColorProvider            { get; }
+        private IViewUIPrompt                 Prompt                   { get; }
+        private IViewUICongratsMessage        CongratsMessage          { get; }
+        private IViewUIGameLogo              GameLogo                { get; }
+        private IViewUILevelsPanel            LevelsPanel              { get; }
+        private IViewUIRotationControls       RotationControls         { get; }
+        private IViewUITopButtons             TopButtons               { get; }
+        private IViewUITutorial               Tutorial                 { get; }
 
         public ViewUIGameControls(
-            IModelGame _Model,
-            IViewInputCommandsProceeder _CommandsProceeder,
+            IModelGame                    _Model,
+            IViewInputCommandsProceeder   _CommandsProceeder,
             IViewBetweenLevelTransitioner _BetweenLevelTransitioner,
-            IColorProvider _ColorProvider,
-            IViewUIPrompt _Prompt,
-            IViewUICongratsMessage _CongratsMessage,
-            IViewUIStartLogo _StartLogo,
-            IViewUILevelsPanel _LevelsPanel,
-            IViewUIRotationControls _RotationControls,
-            IViewUITopButtons _TopButtons,
-            IViewUITutorial _Tutorial) 
+            IColorProvider                _ColorProvider,
+            IViewUIPrompt                 _Prompt,
+            IViewUICongratsMessage        _CongratsMessage,
+            IViewUIGameLogo              _GameLogo,
+            IViewUILevelsPanel            _LevelsPanel,
+            IViewUIRotationControls       _RotationControls,
+            IViewUITopButtons             _TopButtons,
+            IViewUITutorial               _Tutorial)
             : base(_Model, _CommandsProceeder)
         {
             BetweenLevelTransitioner = _BetweenLevelTransitioner;
             ColorProvider = _ColorProvider;
             Prompt = _Prompt;
             CongratsMessage = _CongratsMessage;
-            StartLogo = _StartLogo;
+            GameLogo = _GameLogo;
             LevelsPanel = _LevelsPanel;
             RotationControls = _RotationControls;
             TopButtons = _TopButtons;
@@ -76,7 +76,7 @@ namespace RMAZOR.Views.UI
             m_ProceedersCached = new object[]
             {
                 CongratsMessage,
-                StartLogo,
+                GameLogo,
                 RotationControls,
                 Prompt,
                 TopButtons,

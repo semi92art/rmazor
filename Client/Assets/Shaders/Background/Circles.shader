@@ -13,10 +13,21 @@
 		_WarpTiling ("Warp Tiling", Range(1, 10)) = 1
 	}
 	SubShader {
+				Tags { 
+			"Queue"="Transparent" 
+			"RenderType"="Transparent" 
+			"PreviewType"="Plane"
+		}
+
+		Cull Off
+		Lighting Off
+		ZWrite Off
+		Blend One OneMinusSrcAlpha
 		Pass {
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
+			#pragma multi_compile _ PIXELSNAP_ON
 			#pragma target 2.0
 
 			#include "UnityCG.cginc"
@@ -76,7 +87,9 @@
 				if (d2 < epsilon)
 					return _Color1;
                 fixed lerp_coeff = color_selector(d1, d2);
-                return lerp(_Color1, _Color2, lerp_coeff);
+                fixed4 col = lerp(_Color1, _Color2, lerp_coeff);
+				col.rgb *= col.a;
+				return col;
 			}
 			ENDCG
 		}

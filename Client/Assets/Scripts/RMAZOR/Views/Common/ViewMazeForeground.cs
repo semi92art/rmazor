@@ -20,16 +20,16 @@ namespace RMAZOR.Views.Common
         #endregion
         
         #region inject
-        
-        private IPrefabSetManager PrefabSetManager { get; }
-        
+
+        private IPrefabSetManager                PrefabSetManager        { get; }
+
         public ViewMazeForeground(
-            IModelGame        _Model,
-            IColorProvider    _ColorProvider,
-            IPrefabSetManager _PrefabSetManager) 
+            IModelGame                              _Model,
+            IColorProvider                          _ColorProvider,
+            IPrefabSetManager                       _PrefabSetManager)
             : base(_Model, _ColorProvider)
         {
-            PrefabSetManager = _PrefabSetManager;
+            PrefabSetManager        = _PrefabSetManager;
         }
         
         #endregion
@@ -73,6 +73,8 @@ namespace RMAZOR.Views.Common
             int setItemIdx = group % colorsSet.Count;
             return colorsSet[setItemIdx].main;
         }
+        
+        
 
         #endregion
     }
