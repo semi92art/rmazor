@@ -123,7 +123,7 @@ namespace RMAZOR.Views.MazeItems
             var saw = Object.AddComponentOnNewChild<SpriteRenderer>("Moving Trap", out _);
             saw.sprite = Managers.PrefabSetManager.GetObject<Sprite>("views", "moving_trap");
             saw.color = Color.white;
-            saw.sortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
+            saw.sortingOrder = GetSortingOrder();
             saw.enabled = false;
             var coll = Object.AddComponent<CircleCollider2D>();
             coll.radius = 0.5f;

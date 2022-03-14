@@ -42,7 +42,7 @@ namespace RMAZOR.Views.MazeItems
         
         #region nonpublic members
 
-        protected override string         ObjectName => "Turret Block";
+        protected override string ObjectName => "Turret Block";
         
         private static readonly int StencilRefId = Shader.PropertyToID("_StencilRef");
         private static AudioClipArgs AudioClipArgsShurikenFly =>
@@ -127,7 +127,7 @@ namespace RMAZOR.Views.MazeItems
             get => base.ActivatedInSpawnPool;
             set
             {
-                m_Mask1.enabled = m_Mask2.enabled = false;
+                m_Mask1.enabled = m_Mask2.enabled = m_Mask3.enabled = false;
                 base.ActivatedInSpawnPool = value;
             }
         }
@@ -184,14 +184,15 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void InitShape()
         {
+            int sortingOrder = GetSortingOrder();
             m_Body = Object.gameObject.AddComponentOnNewChild<Disc>("Turret", out _)
                 .SetColor(ColorProvider.GetColor(ColorIds.Main))
-                .SetSortingOrder(SortingOrders.GetBlockSortingOrder(Props.Type))
+                .SetSortingOrder(sortingOrder)
                 .SetType(DiscType.Arc)
                 .SetArcEndCaps(ArcEndCap.Round);
             m_ProjHolderBorder = Object.gameObject.AddComponentOnNewChild<Disc>("Border", out _)
                 .SetColor(ColorProvider.GetColor(ColorIds.MazeItem1))
-                .SetSortingOrder(SortingOrders.GetBlockSortingOrder(Props.Type) + 1)
+                .SetSortingOrder(sortingOrder + 1)
                 .SetType(DiscType.Ring)
                 .SetDashed(true)
                 .SetDashType(DashType.Rounded)
@@ -225,7 +226,7 @@ namespace RMAZOR.Views.MazeItems
             SetProjectileMaskProperties(m_Mask1);
             SetProjectileMaskProperties(m_Mask2);
             m_Mask3 = Object.AddComponentOnNewChild<Disc>("Mask 3", out GameObject _)
-                .SetSortingOrder(SortingOrders.GetBlockSortingOrder(Props.Type - 1))
+                .SetSortingOrder(sortingOrder - 1)
                 .SetColor(Color.Lerp(
                     ColorProvider.GetColor(ColorIds.Background1),
                     ColorProvider.GetColor(ColorIds.Background2),
@@ -552,8 +553,7 @@ namespace RMAZOR.Views.MazeItems
             if (_Appear)
             {
                 m_ProjRend.SetGoActive(true);
-                m_Mask1.enabled = true;
-                m_Mask2.enabled = true;
+                m_Mask1.enabled = m_Mask2.enabled = m_Mask3.enabled = true;
                 m_ProjRotating = false;
                 m_ProjFakeContTr.SetGoActive(false);
                 Cor.Run(AnimateFakeProjectileBeforeShoot());
@@ -565,11 +565,7 @@ namespace RMAZOR.Views.MazeItems
         protected override void OnAppearFinish(bool _Appear)
         {
             if (!_Appear)
-            {
-                m_Mask1.enabled = false;
-                m_Mask2.enabled = false;
-                m_ProjRotating = false;
-            }
+                m_ProjRotating = m_Mask1.enabled = m_Mask2.enabled =  m_Mask3.enabled = false;
             base.OnAppearFinish(_Appear);
         }
 

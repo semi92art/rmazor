@@ -8,7 +8,6 @@ using Common.Helpers;
 using Common.Managers;
 using Common.Utils;
 using Editor;
-using GameHelpers;
 using ModestTree;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.ContainerGetters;
@@ -141,7 +140,7 @@ namespace RMAZOR.Editor
 
         public void FocusCamera(V2Int _Size)
         {
-            m_CoordinateConverter.MazeSize = _Size;
+            m_CoordinateConverter.SetMazeSize(_Size);
             var bounds = new Bounds(
                 m_CoordinateConverter.GetMazeCenter(), 
                 m_CoordinateConverter.GetMazeBounds().size);
@@ -403,7 +402,7 @@ namespace RMAZOR.Editor
             m_PrefabSetManager = new PrefabSetManager(m_AssetBundleManager);
             m_ViewSettings = m_PrefabSetManager.GetObject<ViewSettings>(
                 "configs", "view_settings");
-            m_CoordinateConverter = new MazeCoordinateConverter(m_ViewSettings, null);
+            m_CoordinateConverter = new MazeCoordinateConverter(m_ViewSettings, null, false);
             m_ContainersGetter = new ContainersGetterRmazor(null, m_CoordinateConverter);
             m_CoordinateConverter.GetContainer = m_ContainersGetter.GetContainer;
             m_CoordinateConverter.Init();
@@ -416,7 +415,7 @@ namespace RMAZOR.Editor
             {
                 var container = CommonUtils.FindOrCreateGameObject(ContainerNames.MazeHolder, out _).transform;
                 container.gameObject.DestroyChildrenSafe();
-                m_CoordinateConverter.MazeSize = _Info.Size;
+                m_CoordinateConverter.SetMazeSize(_Info.Size);
                 Des.maze = m_MazeItemsCreator.CreateMazeItems(_Info)
                     .Cast<ViewMazeItemProt>()
                     .ToList();

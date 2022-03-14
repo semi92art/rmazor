@@ -180,9 +180,13 @@ namespace RMAZOR.Views.MazeItems
             var go = Managers.PrefabSetManager.InitPrefab(
                 Object.transform, "views", "gravity_trap");
             m_MaceTr = go.GetCompItem<Transform>("container");
-            m_OuterDisc = go.GetCompItem<Disc>("outer disc");
             m_InnerDisc = go.GetCompItem<Disc>("inner disc");
+            m_OuterDisc = go.GetCompItem<Disc>("outer disc");
             m_Cones = go.GetContentItem("cones").GetComponentsInChildren<Cone>().ToList();
+            int sortingOrder = GetSortingOrder();
+            m_InnerDisc.SetSortingOrder(sortingOrder);
+            m_OuterDisc.SetSortingOrder(sortingOrder + 1);
+            m_Cones.ForEach(_Cone => _Cone.SetSortingOrder(sortingOrder));
             go.transform.SetLocalPosXY(Vector2.zero);
         }
 

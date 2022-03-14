@@ -24,7 +24,7 @@ namespace RMAZOR.Views.Common
 
         #region nonpublic members
 
-        protected        Transform Container => ContainersGetter.GetContainer(ContainerNames.MazeItems);
+        protected        Transform Container => ContainersGetter.GetContainer(ContainerNames.Background);
         private readonly Random    m_Random = new Random();
         private          Bounds    m_ScreenBounds;
         

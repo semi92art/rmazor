@@ -32,7 +32,6 @@ namespace RMAZOR.Views.Common
         private IList<Circles2TextureSetItem>    m_Circles2TextureSetItems;
         private IList<TrianglesTextureSetItem>   m_TrianglesTextureSetItems;
         private IList<BackAndFrontColorsSetItem> m_BackAndFrontColorsSetItemsLight;
-        private IList<BackAndFrontColorsSetItem> m_BackAndFrontColorsSetItemsDark;
         private Color                            m_BackCol1Current;
         private Color                            m_BackCol2Current;
         private Color                            m_BackCol1Prev;
@@ -45,7 +44,8 @@ namespace RMAZOR.Views.Common
         #endregion
         
         #region inject
-        
+
+        private ViewSettings                                ViewSettings             { get; }
         private IViewMazeBackgroundLinesTextureProvider     LinesTextureProvider     { get; }
         private IViewMazeBackgroundCirclesTextureProvider   CirclesTextureProvider   { get; }
         private IViewMazeBackgroundCircles2TextureProvider  Circles2TextureProvider  { get; }
@@ -56,6 +56,7 @@ namespace RMAZOR.Views.Common
         private IViewBetweenLevelTransitioner               Transitioner             { get; }
 
         public ViewMazeBackgroundTextureController(
+            ViewSettings                                  _ViewSettings,
             IViewMazeBackgroundLinesTextureProvider       _LinesTextureProvider,
             IViewMazeBackgroundCirclesTextureProvider     _CirclesTextureProvider,
             IViewMazeBackgroundCircles2TextureProvider    _Circles2TextureProvider,
@@ -65,6 +66,7 @@ namespace RMAZOR.Views.Common
             IModelGame                                    _Model,
             IViewBetweenLevelTransitioner                 _Transitioner)
         {
+            ViewSettings             = _ViewSettings;
             LinesTextureProvider     = _LinesTextureProvider;
             CirclesTextureProvider   = _CirclesTextureProvider;
             Circles2TextureProvider  = _Circles2TextureProvider;
@@ -140,12 +142,15 @@ namespace RMAZOR.Views.Common
             var trianglesTextureSet = PrefabSetManager.GetObject<TrianglesTexturePropertiesSetScriptableObject>
                 (set, "triangles_texture_set");
             m_TrianglesTextureSetItems = trianglesTextureSet.set;
-            var backgroundColorsSetLight = PrefabSetManager.GetObject<BackAndFrontColorsSetScriptableObject>
-                (set, "back_and_front_colors_set_light");
-            m_BackAndFrontColorsSetItemsLight = backgroundColorsSetLight.set;
-            var backgroundColorsSetDark = PrefabSetManager.GetObject<BackAndFrontColorsSetScriptableObject>
-                (set, "back_and_front_colors_set_dark");
-            m_BackAndFrontColorsSetItemsDark = backgroundColorsSetDark.set;
+
+            m_BackAndFrontColorsSetItemsLight = ViewSettings.BackAndFrontColorsSet;
+            if (m_BackAndFrontColorsSetItemsLight == null)
+            {
+                Dbg.Log("remote m_BackAndFrontColorsSetItemsLight is null");
+                var backgroundColorsSetLight = PrefabSetManager.GetObject<BackAndFrontColorsSetScriptableObject>
+                    (set, "back_and_front_colors_set_light");
+                m_BackAndFrontColorsSetItemsLight = backgroundColorsSetLight.set;
+            }
         }
 
         private void OnLevelLoaded(LevelStageArgs _Args)
@@ -251,9 +256,7 @@ namespace RMAZOR.Views.Common
 
         private Color GetBackgroundColor(int _ColorId, long _LevelIndex, EColorTheme _Theme)
         {
-            var colorsSet = _Theme == EColorTheme.Light
-                ? m_BackAndFrontColorsSetItemsLight
-                : m_BackAndFrontColorsSetItemsDark;
+            var colorsSet = m_BackAndFrontColorsSetItemsLight;
             int group = RazorMazeUtils.GetGroupIndex(_LevelIndex);
             int setItemIdx = group % colorsSet.Count;
             var setItem = colorsSet[setItemIdx];

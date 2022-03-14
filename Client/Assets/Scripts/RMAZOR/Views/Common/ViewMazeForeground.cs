@@ -11,25 +11,26 @@ namespace RMAZOR.Views.Common
     
     public class ViewMazeForeground : ViewMazeGroundBase, IViewMazeForeground
     {
-
         #region nonpublic members
 
         private IList<BackAndFrontColorsSetItem> m_BackAndFrontColorsSetItemsLight;
-        private IList<BackAndFrontColorsSetItem> m_BackAndFrontColorsSetItemsDark;
 
         #endregion
         
         #region inject
 
-        private IPrefabSetManager                PrefabSetManager        { get; }
+        private ViewSettings      ViewSettings     { get; }
+        private IPrefabSetManager PrefabSetManager { get; }
 
         public ViewMazeForeground(
-            IModelGame                              _Model,
-            IColorProvider                          _ColorProvider,
-            IPrefabSetManager                       _PrefabSetManager)
+            ViewSettings      _ViewSettings,
+            IModelGame        _Model,
+            IColorProvider    _ColorProvider,
+            IPrefabSetManager _PrefabSetManager)
             : base(_Model, _ColorProvider)
         {
-            PrefabSetManager        = _PrefabSetManager;
+            ViewSettings     = _ViewSettings;
+            PrefabSetManager = _PrefabSetManager;
         }
         
         #endregion
@@ -50,12 +51,13 @@ namespace RMAZOR.Views.Common
         private void LoadSets()
         {
             const string set = "configs";
-            var backgroundColorsSetLight = PrefabSetManager.GetObject<BackAndFrontColorsSetScriptableObject>
-                (set, "back_and_front_colors_set_light");
-            m_BackAndFrontColorsSetItemsLight = backgroundColorsSetLight.set;
-            var backgroundColorsSetDark = PrefabSetManager.GetObject<BackAndFrontColorsSetScriptableObject>
-                (set, "back_and_front_colors_set_dark");
-            m_BackAndFrontColorsSetItemsDark = backgroundColorsSetDark.set;
+            m_BackAndFrontColorsSetItemsLight = ViewSettings.BackAndFrontColorsSet;
+            if (m_BackAndFrontColorsSetItemsLight == null)
+            {
+                var backgroundColorsSetLight = PrefabSetManager.GetObject<BackAndFrontColorsSetScriptableObject>
+                    (set, "back_and_front_colors_set_light");
+                m_BackAndFrontColorsSetItemsLight = backgroundColorsSetLight.set;
+            }
         }
         
         protected override void SetColorsOnNewLevelOrNewTheme(long _LevelIndex, EColorTheme _Theme)
@@ -66,9 +68,7 @@ namespace RMAZOR.Views.Common
 
         private Color GetMainColor(long _LevelIndex, EColorTheme _Theme)
         {
-            var colorsSet = _Theme == EColorTheme.Light
-                ? m_BackAndFrontColorsSetItemsLight
-                : m_BackAndFrontColorsSetItemsDark;
+            var colorsSet = m_BackAndFrontColorsSetItemsLight;
             int group = RazorMazeUtils.GetGroupIndex(_LevelIndex);
             int setItemIdx = group % colorsSet.Count;
             return colorsSet[setItemIdx].main;

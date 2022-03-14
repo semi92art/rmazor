@@ -15,6 +15,7 @@ using RMAZOR.Views.Common;
 using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItems.Props;
+using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
 
@@ -195,15 +196,23 @@ namespace RMAZOR.Views.MazeItems
             AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared;
         }
 
-        protected void ActivateShapes(bool _Activate)
+        private void ActivateShapes(bool _Activate)
         {
             foreach (var shape in Shapes)
             {
-                if (shape is ShapeRenderer shapeRenderer && !shapeRenderer.IsNull())
-                    shapeRenderer.enabled = _Activate;
-                else if (shape is SpriteRenderer spriteRenderer && !spriteRenderer.IsNull())
-                    spriteRenderer.enabled = _Activate;
+                switch (shape)
+                {
+                    case ShapeRenderer shapeRenderer when !shapeRenderer.IsNull():
+                        shapeRenderer.enabled = _Activate; break;
+                    case SpriteRenderer spriteRenderer when !spriteRenderer.IsNull():
+                        spriteRenderer.enabled = _Activate; break;
+                }
             }
+        }
+
+        protected int GetSortingOrder()
+        {
+            return SortingOrders.GetBlockSortingOrder(Props.Type);
         }
 
         #endregion

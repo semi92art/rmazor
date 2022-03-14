@@ -108,7 +108,7 @@ namespace RMAZOR.Views.MazeItems
                 .SetSortingOrder(SortingOrders.PathLine)
                 .SetEndCaps(LineEndCap.Round);
             Springboard = Object.AddComponentOnNewChild<Line>("Springboard", out _)
-                .SetSortingOrder(SortingOrders.GetBlockSortingOrder(EMazeItemType.Springboard))
+                .SetSortingOrder(GetSortingOrder())
                 .SetEndCaps(LineEndCap.Round);
         }
 

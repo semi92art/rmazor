@@ -13,15 +13,15 @@ namespace RMAZOR
     public interface IMazeCoordinateConverter
     {
         Func<string, Transform> GetContainer { get; set; }
-        bool            InitializedAndMazeSizeSet();
-        V2Int           MazeSize { get; set; }
-        float           Scale    { get; }
-        void            Init();
-        Vector2         GetMazeCenter();
-        Bounds          GetMazeBounds();
-        Vector2         ToGlobalMazeItemPosition(Vector2 _Point);
-        Vector2         ToLocalMazeItemPosition(Vector2 _Point);
-        Vector2         ToLocalCharacterPosition(Vector2 _Point);
+        bool                    InitializedAndMazeSizeSet();
+        void                    SetMazeSize(V2Int _Size);
+        float                   Scale { get; }
+        void                    Init();
+        Vector2                 GetMazeCenter();
+        Bounds                  GetMazeBounds();
+        Vector2                 ToGlobalMazeItemPosition(Vector2 _Point);
+        Vector2                 ToLocalMazeItemPosition(Vector2  _Point);
+        Vector2                 ToLocalCharacterPosition(Vector2 _Point);
     }
     
     [Serializable]
@@ -35,7 +35,11 @@ namespace RMAZOR
         
         #region nonpublic members
 
-        private float m_LeftOffset, m_RightOffset, m_BottomOffset, m_TopOffset;
+        private float
+            m_LeftOffset,
+            m_RightOffset,
+            m_BottomOffset,
+            m_TopOffset;
 
         private                  V2Int     m_MazeSize;
         private                  float     m_Scale;
@@ -52,23 +56,30 @@ namespace RMAZOR
         private ICameraProvider CameraProvider { get; }
 
         [Inject]
-        public MazeCoordinateConverter(ViewSettings _ViewSettings, ICameraProvider _CameraProvider)
+        public MazeCoordinateConverter(
+            ViewSettings    _ViewSettings,
+            ICameraProvider _CameraProvider,
+            bool            _Debug)
         {
-            ViewSettings = _ViewSettings;
+            ViewSettings   = _ViewSettings;
             CameraProvider = _CameraProvider;
-        }
-
-        #endregion
-
-        #region constructor
-
-        public MazeCoordinateConverter(ViewSettings _ViewSettings, ICameraProvider _CameraProvider, bool _Debug) 
-            : this(_ViewSettings, _CameraProvider)
-        {
             m_Debug = _Debug;
         }
 
         #endregion
+
+        // #region constructor
+        //
+        // public MazeCoordinateConverter(
+        //     ViewSettings    _ViewSettings,
+        //     ICameraProvider _CameraProvider,
+        //     bool            _Debug) 
+        //     : this(_ViewSettings, _CameraProvider)
+        // {
+        //     m_Debug = _Debug;
+        // }
+        //
+        // #endregion
         
         #region api
 
@@ -79,28 +90,16 @@ namespace RMAZOR
             return m_Initialized && m_MazeSizeSet;
         }
 
-        public V2Int MazeSize
+        public void SetMazeSize(V2Int _Size)
         {
-            get => m_MazeSize;
-            set
-            {
-                m_MazeSize = value;
-                m_MazeSizeSet = true;
-                if (!CheckForErrors())
-                    SetScale();
-            }
+            m_MazeSize = _Size;
+            m_MazeSizeSet = true;
+            if (!CheckForErrors())
+                SetScale();
         }
 
-        public float Scale
-        {
-            get
-            {
-                if (CheckForErrors())
-                    return 0f;
-                return m_Scale;
-            }
-        }
-        
+        public float Scale => CheckForErrors() ? 0f : m_Scale;
+
         public void Init()
         {
             var vs = ViewSettings;

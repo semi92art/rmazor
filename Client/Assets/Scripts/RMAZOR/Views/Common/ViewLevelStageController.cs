@@ -183,11 +183,11 @@ namespace RMAZOR.Views.Common
             mazeItems.AddRange(PathItemsGroup.PathItems);
             switch (_Args.Stage)
             {
-                case ELevelStage.Loaded:             OnLevelLoaded(_Args, mazeItems); break;
-                case ELevelStage.Finished:           OnLevelFinished(_Args);                          break;
-                case ELevelStage.ReadyToUnloadLevel: OnReadyToUnloadLevel(_Args, mazeItems);          break;
-                case ELevelStage.Unloaded:           OnLevelUnloaded(_Args);                          break;
-                case ELevelStage.CharacterKilled:    OnCharacterKilled(mazeItems);                    break;
+                case ELevelStage.Loaded:             OnLevelLoaded(_Args, mazeItems);        break;
+                case ELevelStage.Finished:           OnLevelFinished(_Args);                 break;
+                case ELevelStage.ReadyToUnloadLevel: OnReadyToUnloadLevel(_Args, mazeItems); break;
+                case ELevelStage.Unloaded:           OnLevelUnloaded(_Args);                 break;
+                case ELevelStage.CharacterKilled:    OnCharacterKilled(mazeItems);           break;
                 case ELevelStage.ReadyToStart:
                 case ELevelStage.StartedOrContinued:
                 case ELevelStage.Paused:
@@ -212,6 +212,7 @@ namespace RMAZOR.Views.Common
             LevelStageArgs                     _Args,
             IReadOnlyCollection<IViewMazeItem> _MazeItems)
         {
+            Dbg.Log(nameof(OnLevelLoaded));
             var savedGameEntity = Managers.ScoreManager.
                 GetSavedGameProgress(CommonData.SavedGameFileName, true);
             Cor.Run(Cor.WaitWhile(

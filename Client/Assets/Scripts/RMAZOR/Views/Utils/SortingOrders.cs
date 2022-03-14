@@ -26,20 +26,21 @@ namespace RMAZOR.Views.Utils
             {
                 case EMazeItemType.GravityBlock:
                 case EMazeItemType.GravityTrap:
-                    return Path + 3;
-                case EMazeItemType.Block:
                     return Path + 4;
+                case EMazeItemType.Block:
+                    return Path + 5;
                 case EMazeItemType.Portal:
                 case EMazeItemType.TrapIncreasing:
                 case EMazeItemType.TrapMoving:
                 case EMazeItemType.GravityBlockFree:
                 case EMazeItemType.ShredingerBlock:
                 case EMazeItemType.Springboard:
-                    return Path + 5;
+                    return Path + 6;
                 case EMazeItemType.Turret:
                     return Path + 100;
                 case EMazeItemType.TrapReact:
                     return Path + 150;
+                case EMazeItemType.MovingBlockFree:
                 default: throw new SwitchCaseNotImplementedException(_Type);
             }
         }

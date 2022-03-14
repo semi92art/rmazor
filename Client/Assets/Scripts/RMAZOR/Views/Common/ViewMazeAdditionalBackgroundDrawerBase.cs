@@ -135,13 +135,13 @@ namespace RMAZOR.Views.Common
         {
             if (_ColorId != ColorIds.Main)
                 return;
-            m_TextureRenderers.GetAllActiveItems().ForEach(_R => _R.color = _Color.SetA(0.3f));
+            m_TextureRenderers.GetAllActiveItems().ForEach(_R => _R.color = _Color.SetA(_R.color.a));
             var activeBorders = m_Borders.GetAllActiveItems();
             foreach (var border in activeBorders)
-                border.Color = _Color;
+                border.Color = _Color.SetA(border.Color.a);
             var activeCorners = m_Corners.GetAllActiveItems();
             foreach (var corner in activeCorners)
-                corner.Color = _Color;
+                corner.Color = _Color.SetA(corner.Color.a);
         }
         
         private void InitPools()

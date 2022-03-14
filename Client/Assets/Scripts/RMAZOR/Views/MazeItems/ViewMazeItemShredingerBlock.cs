@@ -156,7 +156,7 @@ namespace RMAZOR.Views.MazeItems
         {
             m_ClosedBlock = Object.AddComponentOnNewChild<Rectangle>("Shredinger Block", out _)
                 .SetType(Rectangle.RectangleType.RoundedBorder)
-                .SetSortingOrder(SortingOrders.GetBlockSortingOrder(Props.Type));
+                .SetSortingOrder(GetSortingOrder());
             var lp = GetLineStartEndPositions();
             var lLeft    = Object.AddComponentOnNewChild<Line>("Left Line",     out _);
             var lRight   = Object.AddComponentOnNewChild<Line>("Right Line",    out _);
@@ -181,7 +181,7 @@ namespace RMAZOR.Views.MazeItems
             m_OpenedLines.ForEach(_Line => _Line.SetDashed(true)
                 .SetDashSize(2f)
                 .SetDashType(DashType.Rounded)
-                .SetSortingOrder(SortingOrders.GetBlockSortingOrder(Props.Type)));
+                .SetSortingOrder(GetSortingOrder()));
             List<Vector2> cPoss, cAngs;
             (cPoss, cAngs) = GetCornerCenterPositionsAndAngles();
             var cBL  = Object.AddComponentOnNewChild<Disc>("Bottom Left Corner",     out _);
@@ -206,7 +206,7 @@ namespace RMAZOR.Views.MazeItems
             });
             m_OpenedCorners.ForEach(_Corner => _Corner.SetType(DiscType.Arc)
                 .SetArcEndCaps(ArcEndCap.Round)
-                .SetSortingOrder(SortingOrders.GetBlockSortingOrder(Props.Type)));
+                .SetSortingOrder(GetSortingOrder()));
         }
 
         protected override void UpdateShape()

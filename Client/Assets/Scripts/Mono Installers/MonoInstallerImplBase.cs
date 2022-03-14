@@ -6,7 +6,7 @@ namespace Mono_Installers
     {
         public override void InstallBindings()
         {
-
+            Container.BindInstance(false);
         }
     }
 }

@@ -10,7 +10,6 @@ namespace RMAZOR.Views.Common
     public interface IViewMazeAdditionalBackgroundGeometryInitializer : IInit
     {
         List<PointsGroupArgs> GetGroups(MazeInfo         _Info);
-        int                   GetGroupIndexByPoint(V2Int _Point);
     }
     
     public class ViewMazeAdditionalBackgroundGeometryInitializerSimple 
@@ -40,18 +39,6 @@ namespace RMAZOR.Views.Common
             return m_GroupsCached;
         }
 
-        public int GetGroupIndexByPoint(V2Int _Point)
-        {
-            if (m_GroupsCached == null)
-                return -2;
-            foreach (var group in m_GroupsCached)
-            {
-                if (group.Points.Contains(_Point))
-                    return group.GroupIndex;
-            }
-            return -1;
-        }
-
         #endregion
 
         #region nonpublic methods
@@ -69,13 +56,6 @@ namespace RMAZOR.Views.Common
         {
             var points = _Points.OrderBy(_P => _P.X).ToList();
             var groups = new List<List<V2Int>>{points};
-            // while (points.Any())
-            // {
-            //     int minX = points.First().X;
-            //     int minY = points.Where(_P => _P.X == minX).Min(_P => _P.Y);
-            //     var group = GetNeighboringPoints(points, new V2Int(minX, minY), false);
-            //     groups.Add(group);
-            // }
             return groups;
         }
 

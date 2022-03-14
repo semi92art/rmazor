@@ -3,9 +3,7 @@ using Common;
 using Common.Entities;
 using Common.Helpers;
 using RMAZOR.Models;
-using UnityEngine;
 using UnityEngine.Events;
-using Vector2 = System.Numerics.Vector2;
 
 namespace RMAZOR.Views.Common
 {

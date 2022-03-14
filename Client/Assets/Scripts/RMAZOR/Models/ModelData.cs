@@ -18,9 +18,21 @@ namespace RMAZOR.Models
     // ReSharper disable once ClassNeverInstantiated.Global
     public class ModelData : IModelData
     {
+
         #region nonpublic members
         
         private MazeInfo m_Info;
+
+        #endregion
+
+        #region inject
+        
+        private IModelMazeInfoCorrector MazeInfoCorrector { get; }
+
+        public ModelData(IModelMazeInfoCorrector _MazeInfoCorrector)
+        {
+            MazeInfoCorrector = _MazeInfoCorrector;
+        }
 
         #endregion
 
@@ -36,39 +48,9 @@ namespace RMAZOR.Models
             get => m_Info;
             set
             {
-                m_Info = CorrectInfo(value);
+                m_Info = MazeInfoCorrector.GetCorrectedMazeInfo(value);
                 PathItems = m_Info.PathItems.Select(_PI => _PI.Position).ToArray();
             }
-        }
-
-        #endregion
-
-        #region nonpublic methods
-
-        private static MazeInfo CorrectInfo(MazeInfo _Info)
-        {
-            var info = _Info;
-            var itemsForAdditionalNodes = info.MazeItems
-                .Where(_Item =>
-                    _Item.Type == EMazeItemType.Portal
-                    || _Item.Type == EMazeItemType.Springboard
-                    || _Item.Type == EMazeItemType.GravityBlock
-                    || _Item.Type == EMazeItemType.GravityTrap
-                    || _Item.Type == EMazeItemType.ShredingerBlock
-                    || _Item.Type == EMazeItemType.TrapMoving
-                    || _Item.Type == EMazeItemType.GravityBlockFree)
-                .ToList();
-            foreach (var item in itemsForAdditionalNodes
-                .Where(_Item => !info.PathItems.Select(_PI => _PI.Position).Contains(_Item.Position)))
-            {
-                var pathItem = new PathItem
-                {
-                    Position = item.Position,
-                    Blank = item.Blank
-                };
-                info.PathItems.Add(pathItem);
-            }
-            return info;
         }
 
         #endregion

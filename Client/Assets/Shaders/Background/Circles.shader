@@ -72,7 +72,6 @@
 
 			fixed4 frag (v2f i) : SV_Target {
 				float2 pos = wrap_pos(i.uv, _Tiling, _Direction, _WarpScale, _WarpTiling);
-				const float epsilon = 0.00001;
 				float ratio = _ScreenParams.x / _ScreenParams.y;
 				float x = (pos.x - _CenterX) * ratio;
 				float y = pos.y - _CenterY;
@@ -82,9 +81,7 @@
 				float x2 = c * cos(ang);
 				float y2 = c * sin(ang);
 				float d2 = sqrt(x2 * x2 + y2 * y2);
-				if (_Radius < epsilon)
-					return _Color1;
-				if (d2 < epsilon)
+				if (_Radius < EPS || d2 < EPS)
 					return _Color1;
                 fixed lerp_coeff = color_selector(d1, d2);
                 fixed4 col = lerp(_Color1, _Color2, lerp_coeff);

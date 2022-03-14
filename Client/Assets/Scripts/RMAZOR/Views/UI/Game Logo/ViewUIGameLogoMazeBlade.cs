@@ -45,7 +45,10 @@ namespace RMAZOR.Views.UI.Game_Logo
         private static readonly int StencilRefId = Shader.PropertyToID("_StencilRef");
 
         private static Dictionary<string, float> KeysAndDelays => new Dictionary<string, float>
-        {{"M", 0}, {"A1", 0}, {"Z", 0}, {"E1", 0}, {"B", 0}, {"L", 0}, {"A2", 0}, {"D", 0}, {"E2", 0}};
+        {
+            {"M", 0}, {"A1", 0.1f}, {"Z", 0.2f}, {"E1", 0.3f},
+            {"B", 0}, {"L", 0.1f}, {"A2", 0.2f}, {"D", 0.3f}, {"E2", 0.4f}
+        };
 
         private GameObject                   m_GameLogoObj;
         private bool                         m_LogoShowingAnimationPassed;
@@ -99,7 +102,7 @@ namespace RMAZOR.Views.UI.Game_Logo
             m_TopOffset = _Offsets.w;
             InitGameLogo();
             SetColors(ColorProvider.GetColor(ColorIdsCommon.UI));
-            TouchProceeder.OnTap += OnTap;
+            // TouchProceeder.OnTap += OnTap;
         }
         
         public void Show()
@@ -160,10 +163,24 @@ namespace RMAZOR.Views.UI.Game_Logo
                     _C => go.GetCompItem<Animator>(_C));
             LogoTextureProvider.Init();
             var trigerrer = go.GetCompItem<AnimationTriggerer>("trigerrer");
-            trigerrer.Trigger1 += () => m_LogoShowingAnimationPassed = true;
+            trigerrer.Trigger1 += () =>
+            {
+                m_LogoShowingAnimationPassed = true;
+                Cor.Run(Cor.Delay(0.5f, () =>
+                {
+                    Cor.Run(HideBackgroundAndDecreaseGameLogoCoroutine());
+                }));
+            };
             var rotator = go.GetCompItem<SimpleRotator>("rotator");
             rotator.Init(GameTicker, -2f);
             m_GameLogoObj = go;
+        }
+        
+        private void GetStartGameLogoTransform(out Vector2 _Position, out float _Scale)
+        {
+            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
+            _Position = screenBounds.center;
+            _Scale = GraphicUtils.AspectRatio * (IsLowAspect() ? 10f : 6.5f);
         }
         
         private void GetFinalGameLogoTransform(out Vector2 _Position, out float _Scale)
@@ -172,7 +189,7 @@ namespace RMAZOR.Views.UI.Game_Logo
             const float additionalOffset = 3f;
             float yPos = screenBounds.max.y - m_TopOffset - additionalOffset;
             _Position = new Vector3(screenBounds.center.x, yPos);
-            _Scale = GraphicUtils.AspectRatio * (IsLowAspect() ? 7f : 5f);
+            _Scale = GraphicUtils.AspectRatio * (IsLowAspect() ? 7f : 4.5f);
         }
 
         private void SetColors(Color _Color)
@@ -221,14 +238,7 @@ namespace RMAZOR.Views.UI.Game_Logo
                 maskOrder++;
             }
         }
-        
-        private void GetStartGameLogoTransform(out Vector2 _Position, out float _Scale)
-        {
-            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
-            _Position = screenBounds.center;
-            _Scale = GraphicUtils.AspectRatio * (IsLowAspect() ? 10f : 8f);
-        }
-        
+
         private IEnumerator ShowGameLogoCoroutine()
         {
             LockGameplayAndUiCommands(true);
@@ -258,6 +268,17 @@ namespace RMAZOR.Views.UI.Game_Logo
             GetStartGameLogoTransform(out Vector2 startPos, out float startScale);
             GetFinalGameLogoTransform(out Vector2 finalPos, out float finalScale);
             var logoBackCol = ColorProvider.GetColor(ColorIds.Background1);
+            Cor.Run(Cor.Lerp(
+                0f,
+                1f,
+                HideBackgroundTime * 0.5f,
+                _P =>
+                {
+                    var pos = Vector2.Lerp(startPos, finalPos, _P);
+                    float scale = Mathf.Lerp(startScale, finalScale, _P);
+                    SetGameLogoTransform(pos, scale);
+                },
+                GameTicker));
             yield return Cor.Lerp(
                 0f,
                 1f,
@@ -266,9 +287,6 @@ namespace RMAZOR.Views.UI.Game_Logo
                 {
                     float alpha = Mathf.Lerp(1f, 0f, _P);
                     LogoTextureProvider.SetColor(logoBackCol.SetA(alpha));
-                    var pos = Vector2.Lerp(startPos, finalPos, _P);
-                    float scale = Mathf.Lerp(startScale, finalScale, _P);
-                    SetGameLogoTransform(pos, scale);
                 }, 
                 GameTicker,
                 (_Broken, _Progress) =>

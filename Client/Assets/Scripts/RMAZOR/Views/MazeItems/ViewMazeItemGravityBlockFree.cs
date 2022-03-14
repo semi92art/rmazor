@@ -105,7 +105,7 @@ namespace RMAZOR.Views.MazeItems
         protected override void InitShape()
         {
             m_Shape = Object.AddComponentOnNewChild<Rectangle>("Block", out _)
-                .SetSortingOrder(SortingOrders.GetBlockSortingOrder(Props.Type))
+                .SetSortingOrder(GetSortingOrder())
                 .SetType(Rectangle.RectangleType.RoundedBorder)
                 .SetColor(ColorProvider.GetColor(ColorIds.Main));
         }

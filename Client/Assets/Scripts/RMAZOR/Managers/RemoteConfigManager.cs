@@ -5,6 +5,8 @@ using Common.Helpers;
 using Common.Managers.Advertising;
 using Unity.RemoteConfig;
 using Common.Utils;
+using Newtonsoft.Json;
+
 #if !UNITY_EDITOR && !DEVELOPMENT_BUILD
 using System.Linq;
 using Common.Entities;
@@ -104,6 +106,12 @@ namespace RMAZOR.Managers
             GetConfig(ref ViewSettings.firstLevelToRateGame,               "common.first_level_to_rate_game");
             GetConfig(ref ViewSettings.mazeItemTransitionTime,             "common.maze_item_transition_time");
             GetConfig(ref ViewSettings.mazeItemTransitionDelayCoefficient, "common.maze_item_transition_coefficient");
+            
+            string backAndFrontColorConfigsJson = string.Empty;
+            GetConfig(ref backAndFrontColorConfigsJson, "common.back_and_front_color_configs", true);
+            var converter = new BackAndFrontColorsSetConverter();
+            ViewSettings.BackAndFrontColorsSet = JsonConvert.DeserializeObject<IList<BackAndFrontColorsSetItem>>(
+                backAndFrontColorConfigsJson, converter);
             
 #if !UNITY_EDITOR && !DEVELOPMENT_BUILD
             string testDeviceIdfasJson = string.Empty;

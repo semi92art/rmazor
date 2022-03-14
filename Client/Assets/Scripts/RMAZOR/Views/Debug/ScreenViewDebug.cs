@@ -41,7 +41,7 @@ namespace RMAZOR.Views.Debug
                 "configs", "view_settings");
             m_Converter = new MazeCoordinateConverter(m_Settings, null, true);
             m_Converter.Init();
-            m_Converter.MazeSize = (V2Int)mazeSize;
+            m_Converter.SetMazeSize((V2Int)mazeSize);
         }
 
         private void OnDrawGizmos()

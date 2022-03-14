@@ -77,7 +77,7 @@ namespace RMAZOR.Views.MazeItems
         {
             base.InitShape();
             m_FilledShape = Object.AddComponentOnNewChild<Rectangle>("Joint", out _)
-                .SetSortingOrder(SortingOrders.GetBlockSortingOrder(Props.Type))
+                .SetSortingOrder(GetSortingOrder())
                 .SetType(Rectangle.RectangleType.RoundedSolid)
                 .SetColor(ColorProvider.GetColor(ColorIds.Main));
         }

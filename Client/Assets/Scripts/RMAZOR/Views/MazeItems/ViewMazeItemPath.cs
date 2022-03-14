@@ -143,9 +143,11 @@ namespace RMAZOR.Views.MazeItems
         
         public bool Collected
         {
-            get => MoneyItem.IsCollected;
+            get => !Props.Blank && MoneyItem.IsCollected;
             set
             {
+                if (Props.Blank)
+                    return;
                 MoneyItem.IsCollected = value;
                 Collect(value);
             }
@@ -217,7 +219,6 @@ namespace RMAZOR.Views.MazeItems
                 .SetThickness(CoordinateConverter.Scale * ViewSettings.LineWidth * 0.5f)
                 .SetColor(ColorProvider.GetColor(ColorIds.Main))
                 .SetSortingOrder(SortingOrders.Path);
-            m_PathItem.enabled = false;
         }
 
         protected override void UpdateShape()
@@ -236,7 +237,7 @@ namespace RMAZOR.Views.MazeItems
                 m_PathItem.Width = m_PathItem.Height = CoordinateConverter.Scale * 0.4f;
                 m_PathItem.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale * 2f;
             }
-            if (Model.PathItemsProceeder.PathProceeds[Props.Position])
+            if (Props.Blank || Model.PathItemsProceeder.PathProceeds[Props.Position])
                 Collect(true);
             SetBordersAndCorners();
         }
@@ -438,9 +439,9 @@ namespace RMAZOR.Views.MazeItems
 
         protected virtual void EnableInitializedShapes(bool _Enable)
         {
-            if (m_PathItem.IsNotNull() && !Props.IsMoneyItem)   
+            if (m_PathItem.IsNotNull() && !Props.IsMoneyItem && !Props.Blank)   
                 m_PathItem.enabled = _Enable;
-            if (MoneyItem.Renderers.All(_R => _R.IsNotNull()) && Props.IsMoneyItem)
+            if (MoneyItem.Renderers.All(_R => _R.IsNotNull()) && Props.IsMoneyItem && !Props.Blank)
                 MoneyItem.Active = _Enable;
             if (m_LeftBorderInited)        m_LeftBorder.enabled        = _Enable;
             if (m_RightBorderInited)       m_RightBorder.enabled       = _Enable;
@@ -651,15 +652,9 @@ namespace RMAZOR.Views.MazeItems
         {
             if (_Inner)
                 return false;
-            if (!_Right && !_Up)
-                return TrapIncreasingExist(Props.Position + V2Int.Down + V2Int.Left);
-            if (_Right && !_Up)
-                return TrapIncreasingExist(Props.Position + V2Int.Down + V2Int.Right);
-            if (!_Right && _Up)
-                return TrapIncreasingExist(Props.Position + V2Int.Up + V2Int.Left);
-            if (_Right && _Up)
-                return TrapIncreasingExist(Props.Position + V2Int.Up + V2Int.Right);
-            return false;
+            return _Right ? 
+                TrapIncreasingExist(Props.Position + V2Int.Right + (_Up ? V2Int.Up : V2Int.Down)) 
+                : TrapIncreasingExist(Props.Position + V2Int.Left + (_Up ? V2Int.Up : V2Int.Down));
         }
 
         private bool PathExist(V2Int _Position) => Model.PathItemsProceeder.PathProceeds.Keys.Contains(_Position);
@@ -707,7 +702,7 @@ namespace RMAZOR.Views.MazeItems
             var borderSets = GetBorderAppearSets();
             var cornerSets = GetCornerAppearSets();
             var result = borderSets.ConcatWithDictionary(cornerSets);
-            if (_Appear && !Props.IsStartNode || !_Appear && !Collected)
+            if (!Props.Blank && (_Appear && !Props.IsStartNode) || (!_Appear && !Collected))
             {
                 if (Props.IsMoneyItem)
                     result.Add(MoneyItem.Renderers, () => ColorProvider.GetColor(ColorIds.MoneyItem));

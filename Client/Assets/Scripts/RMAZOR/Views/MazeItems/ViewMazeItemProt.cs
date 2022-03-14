@@ -44,11 +44,11 @@ namespace RMAZOR.Views.MazeItems
                     m_PrefabSetManager = new PrefabSetManager(new AssetBundleManagerFake());
                     var settings = m_PrefabSetManager.GetObject<ViewSettings>(
                         "configs", "view_settings");
-                    m_Converter = new MazeCoordinateConverter(settings, null);
+                    m_Converter = new MazeCoordinateConverter(settings, null, false);
                     m_ContainersGetter = new ContainersGetterRmazor(null, m_Converter);
                     m_Converter.GetContainer = m_ContainersGetter.GetContainer;
                     m_Converter.Init();
-                    m_Converter.MazeSize = mazeSize;
+                    m_Converter.SetMazeSize(mazeSize);
                 }
                 return m_Converter;
             }
@@ -203,6 +203,7 @@ namespace RMAZOR.Views.MazeItems
                     return new Color(0.99f, 0.14f, 0.7f);
                 case EMazeItemType.Springboard:
                     return new Color(0.41f, 1f, 0.79f);
+                case EMazeItemType.MovingBlockFree:
                 default: throw new SwitchCaseNotImplementedException(_Type);
             }
         }

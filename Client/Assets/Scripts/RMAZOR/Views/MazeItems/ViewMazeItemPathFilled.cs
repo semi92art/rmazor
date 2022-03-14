@@ -29,7 +29,6 @@ namespace RMAZOR.Views.MazeItems
         
         private IViewMazeBackgroundTextureController TextureController { get; }
         
-        // ReSharper disable once MemberCanBePrivate.Global
         public ViewMazeItemPathFilled(
             ViewSettings                         _ViewSettings,
             IModelGame                           _Model,
@@ -148,16 +147,9 @@ namespace RMAZOR.Views.MazeItems
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
             TextureController.GetBackgroundColors(
-                out Color current1,
-                out Color current2,
-                out Color _,
-                out Color _,
-                out Color next1,
-                out Color next2);
-            var averageCol = Color.Lerp(
-                _Appear ? current1 : next1,
-                _Appear ? current2 : next2,
-                0.5f);
+                out Color current1, out Color current2,
+                out _, out _, out _, out _);
+            var averageCol = Color.Lerp(current1,current2,0.5f);
             var result = base.GetAppearSets(_Appear);
             result.Add(new [] {m_PathBackground}, () => averageCol);
             return result;

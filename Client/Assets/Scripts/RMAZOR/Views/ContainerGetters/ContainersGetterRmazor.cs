@@ -39,7 +39,8 @@ namespace RMAZOR.Views.ContainerGetters
         {
             if (_Args.Stage != ELevelStage.Loaded) 
                 return;
-            CoordinateConverter.MazeSize = Model.Data.Info.Size;
+            
+            CoordinateConverter.SetMazeSize(Model.Data.Info.Size);
             var mazeHolderCont = GetContainer(ContainerNames.MazeHolder);
             mazeHolderCont.SetLocalPosXY(CoordinateConverter.GetMazeCenter());
             var mazeItemsCont = GetContainer(ContainerNames.MazeItems);

@@ -33,17 +33,17 @@ MonoBehaviour:
     - name: Background Idle Items
       color: {r: 1, g: 1, b: 1, a: 0.12156863}
     - name: UI
-      color: {r: 1, g: 1, b: 1, a: 1}
+      color: {r: 1, g: 0.8527537, b: 0.504717, a: 1}
     - name: Ui Dialog Item Normal
-      color: {r: 1, g: 1, b: 1, a: 0.29803923}
+      color: {r: 1, g: 0.8527537, b: 0.504717, a: 0.29803923}
     - name: Ui Dialog Background
-      color: {r: 1, g: 1, b: 1, a: 0.23529412}
+      color: {r: 1, g: 0.8527537, b: 0.504717, a: 0.23529412}
     - name: Ui Border
-      color: {r: 1, g: 1, b: 1, a: 1}
+      color: {r: 1, g: 0.8527537, b: 0.504717, a: 1}
     - name: Ui Text
-      color: {r: 1, g: 1, b: 1, a: 1}
+      color: {r: 1, g: 0.92660695, b: 0.759434, a: 1}
     - name: Ui Background
-      color: {r: 1, g: 1, b: 1, a: 1}
+      color: {r: 1, g: 0.8527537, b: 0.504717, a: 1}
     - name: Ui Item Highlighted
       color: {r: 0.8679245, g: 0.24670237, b: 0.20879315, a: 1}
     - name: Ui Start Logo

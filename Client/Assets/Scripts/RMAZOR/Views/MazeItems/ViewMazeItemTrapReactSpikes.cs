@@ -163,7 +163,7 @@ namespace RMAZOR.Views.MazeItems
                 "views", "trap_react_spikes_sprite");
             trap.material = Managers.PrefabSetManager.GetObject<Material>(
                 "views", "trap_react_spikes_material");
-            trap.sortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
+            trap.sortingOrder = GetSortingOrder();
             trap.color = col;
             trap.maskInteraction = SpriteMaskInteraction.None;
             AdditionalBackground.GroupsCollected += SetStencilRefValues;

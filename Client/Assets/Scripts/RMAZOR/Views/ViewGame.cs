@@ -176,8 +176,8 @@ namespace RMAZOR.Views
                 PathItemsGroup,
                 MazeItemsGroupSet,
                 BetweenLevelTransitioner,
-                Background,
-                Foreground
+                Foreground,
+                Background
             };
             var proceedersToExecuteOnLevelStageChangedAfretGroups = new object[]
             {
