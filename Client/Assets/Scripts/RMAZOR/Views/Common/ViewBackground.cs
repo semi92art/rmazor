@@ -1,6 +1,7 @@
 ﻿using Common;
 using Common.Providers;
 using RMAZOR.Models;
+using RMAZOR.Views.Common.BackgroundIdleItems;
 using RMAZOR.Views.Common.CongratulationItems;
 
 namespace RMAZOR.Views.Common
@@ -48,7 +49,6 @@ namespace RMAZOR.Views.Common
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            IdleItems           .OnLevelStageChanged(_Args);
             CongratItems        .OnLevelStageChanged(_Args);
             TextureController   .OnLevelStageChanged(_Args);
             AdditionalBackground.OnLevelStageChanged(_Args);

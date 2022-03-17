@@ -37,5 +37,5 @@ MonoBehaviour:
   adsRequestsFrequency: 5
   levelsCountMain: 360
   firstLevelToRateGame: 20
-  mazeItemTransitionTime: 2
+  mazeItemTransitionTime: 0.6
   mazeItemTransitionDelayCoefficient: 0

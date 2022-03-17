@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Common.Entities;
+using RMAZOR.Views.Common.ViewMazeBackgroundPropertySets;
 using UnityEngine;
 
 namespace RMAZOR
@@ -35,14 +37,6 @@ namespace RMAZOR
         public int   firstLevelToRateGame;
         public float mazeItemTransitionTime;
         public float mazeItemTransitionDelayCoefficient;
-
-        private IList<BackAndFrontColorsSetItem> m_BackAndFrontColorsSet;
-
-        public IList<BackAndFrontColorsSetItem> BackAndFrontColorsSet
-        {
-            get => m_BackAndFrontColorsSet;
-            set => m_BackAndFrontColorsSet = value;
-        }
 
         public float   LineWidth
         {

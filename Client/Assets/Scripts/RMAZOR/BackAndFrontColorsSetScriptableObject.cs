@@ -1,6 +1,7 @@
 ﻿using System;
 using Common.Helpers;
 using Common.Helpers.Attributes;
+using Unity.Plastic.Newtonsoft.Json;
 using UnityEngine;
 
 namespace RMAZOR
@@ -8,9 +9,9 @@ namespace RMAZOR
     [Serializable]
     public class BackAndFrontColorsSetItem
     {
-        public Color main;
-        public Color bacground1;
-        public Color bacground2;
+        [JsonProperty(PropertyName = "M")] public Color main;
+        [JsonProperty(PropertyName = "B1")] public Color bacground1;
+        [JsonProperty(PropertyName = "B2")] public Color bacground2;
     }
     
     [Serializable]

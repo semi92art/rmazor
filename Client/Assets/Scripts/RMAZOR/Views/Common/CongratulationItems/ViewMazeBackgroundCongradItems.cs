@@ -78,7 +78,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
             ColorProvider.ColorThemeChanged += OnColorThemeChanged;
         }
         
-        public override void OnLevelStageChanged(LevelStageArgs _Args)
+        public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             m_DoAnimateCongrats = false;
             switch (_Args.Stage)
@@ -126,7 +126,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
             }
             for (int i = 0; i < PoolSize; i++)
             {
-                int randIdx = Mathf.FloorToInt(Random.value * sourceGos.Count);
+                int randIdx = Mathf.FloorToInt(UnityEngine.Random.value * sourceGos.Count);
                 var sourceGo = sourceGos[randIdx];
                 var newGo = Object.Instantiate(sourceGo);
                 newGo.SetParent(ContainersGetter.GetContainer(ContainerNames.Background));
@@ -138,7 +138,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
                     .SelectMany(_T => content.GetComponentsInChildren(_T))
                     .Cast<ShapeRenderer>()
                     .ToArray();
-                int colIdx = Mathf.FloorToInt(Random.value * CongradColorSet.Length);
+                int colIdx = Mathf.FloorToInt(UnityEngine.Random.value * CongradColorSet.Length);
                 var col = CongradColorSet[colIdx];
                 triggerer.Trigger1 = () =>
                 {
@@ -171,13 +171,13 @@ namespace RMAZOR.Views.Common.CongratulationItems
             if (!(GameTicker.Time > m_NextRandomCongratsItemAnimInterval + m_LastCongratsItemAnimTime)) 
                 return;
             m_LastCongratsItemAnimTime = GameTicker.Time;
-            m_NextRandomCongratsItemAnimInterval = 0.05f + Random.value * 0.15f;
+            m_NextRandomCongratsItemAnimInterval = 0.05f + UnityEngine.Random.value * 0.15f;
             var item = m_BackCongratsItemsPool.FirstInactive;
             if (item.IsNull())
                 return;
             var tr = item.transform;
             tr.position = RandomPositionOnScreen();
-            tr.localScale = Vector3.one * (0.5f + 2f * Random.value);
+            tr.localScale = Vector3.one * (0.5f + 2f * UnityEngine.Random.value);
             m_BackCongratsItemsPool.Activate(item);
             item.SetTrigger(AnimKeys.Anim);
         }

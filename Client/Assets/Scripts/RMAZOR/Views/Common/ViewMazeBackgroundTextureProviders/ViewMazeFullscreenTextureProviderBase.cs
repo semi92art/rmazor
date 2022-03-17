@@ -15,7 +15,7 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
         protected abstract string TexturePrefabName { get; }
         
         protected Material          Material;
-        protected MeshRenderer      Renderer;
+        
         
         protected IPrefabSetManager PrefabSetManager { get; }
         protected IContainersGetter ContainersGetter { get; }
@@ -33,6 +33,8 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
             CameraProvider   = _CameraProvider;
             ColorProvider    = _ColorProvider;
         }
+        
+        public MeshRenderer Renderer { get; private set; }
 
         public override void Init()
         {

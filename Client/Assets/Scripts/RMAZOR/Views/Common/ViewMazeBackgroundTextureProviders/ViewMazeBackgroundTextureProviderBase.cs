@@ -13,8 +13,9 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
 {
     public interface IViewMazeBackgroundTextureProvider : IInit
     {
-        void Activate(bool   _Active);
-        void Show(float _Time, Color _ColorFrom1, Color _ColorFrom2, Color _ColorTo1, Color _ColorTo2);
+        MeshRenderer Renderer { get; }
+        void         Activate(bool _Active);
+        void         Show(float    _Time, Color _ColorFrom1, Color _ColorFrom2, Color _ColorTo1, Color _ColorTo2);
     }
 
     public abstract class ViewMazeBackgroundTextureProviderBase :

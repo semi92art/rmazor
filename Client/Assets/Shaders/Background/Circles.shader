@@ -11,9 +11,10 @@
 		_Direction ("Direction", Range(0, 1)) = 0
 		_WarpScale ("Warp Scale", Range(0, 1)) = 0
 		_WarpTiling ("Warp Tiling", Range(1, 10)) = 1
+    	_Indent("Indent", Range(0, 1)) = 0
 	}
 	SubShader {
-				Tags { 
+		Tags { 
 			"Queue"="Transparent" 
 			"RenderType"="Transparent" 
 			"PreviewType"="Plane"
@@ -40,6 +41,7 @@
 			float  _Direction;
 			float  _WarpScale;
 			float  _WarpTiling;
+			float _Indent;
 
 			struct appdata {
 				float4 vertex : POSITION;

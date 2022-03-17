@@ -96,9 +96,23 @@ namespace Common.Managers.Advertising
 
         protected override void InitConfigs(UnityAction _OnSuccess)
         {
+            SetMetadata();
             string gameId = GetGameId();
             Advertisement.Initialize(gameId, TestMode, this);
             _OnSuccess?.Invoke();
+        }
+
+        private void SetMetadata()
+        {
+            // Starting April 1, 2022, the Google Families Policy will no longer allow Device IDs
+            // to leave users’ devices from apps where one of the target audiences is children
+            // https://docs.unity.com/ads/GoogleFamiliesCompliance.html
+            MetaData metaData = new MetaData("privacy");
+            metaData.Set("mode", "mixed"); // This is a mixed audience game.
+            Advertisement.SetMetaData(metaData);
+            metaData = new MetaData("user");
+            metaData.Set("nonbehavioral", "true"); // This user will NOT receive personalized ads.
+            Advertisement.SetMetaData(metaData);
         }
 
         protected override void InitRewardedAd()

@@ -2,50 +2,37 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Common;
+using Common.Entities;
 using Newtonsoft.Json;
-using UnityEngine;
 
 namespace RMAZOR
 {
     public class BackAndFrontColorsSetConverter : JsonConverter<IList<BackAndFrontColorsSetItem>>
     {
-        [Serializable]
-        private class ColorHex
-        {
-            public string? Hex { get; set; }
-
-            public static ColorHex FromUnityToHexColor(Color _Color)
-            {
-                string hex = ColorUtility.ToHtmlStringRGBA(_Color);
-                var col = new ColorHex {Hex = hex};
-                return col;
-            }
-
-            public static Color FromHexToUnityColor(ColorHex _ColorHex)
-            {
-                Dbg.Log(_ColorHex.Hex);
-                ColorUtility.TryParseHtmlString("#" + _ColorHex.Hex, out Color color);
-                return color;
-            }
-        }
+        #region types
         
         [Serializable]
         private class BackAndFrontColorsHexSetItem
         {
-            public ColorHex? Main        { get; set; }
-            public ColorHex? Background1 { get; set; }
-            public ColorHex? Background2 { get; set; }
+            [JsonProperty("M")]  public ColorHex? Main        { get; set; }
+            [JsonProperty("B1")] public ColorHex? Background1 { get; set; }
+            [JsonProperty("B2")] public ColorHex? Background2 { get; set; }
         }
 
+        #endregion
+
+        #region api
+
+        public override bool CanRead => true;
+
         public override void WriteJson(
-            JsonWriter _Writer,
+            JsonWriter                        _Writer,
             IList<BackAndFrontColorsSetItem>? _Value,
-            JsonSerializer _Serializer)
+            JsonSerializer                    _Serializer)
         {
             IList<BackAndFrontColorsHexSetItem> hexSet = _Value!.Select(_Item => new BackAndFrontColorsHexSetItem
             {
-                Main = ColorHex.FromUnityToHexColor(_Item.main),
+                Main        = ColorHex.FromUnityToHexColor(_Item.main),
                 Background1 = ColorHex.FromUnityToHexColor(_Item.bacground1),
                 Background2 = ColorHex.FromUnityToHexColor(_Item.bacground2)
             }).ToList();
@@ -64,13 +51,13 @@ namespace RMAZOR
             var hexSet = JsonConvert.DeserializeObject<IList<BackAndFrontColorsHexSetItem>>(hexSetRaw);
             IList<BackAndFrontColorsSetItem> set = hexSet.Select(_Item => new BackAndFrontColorsSetItem
             {
-                main = ColorHex.FromHexToUnityColor(_Item.Main!),
+                main       = ColorHex.FromHexToUnityColor(_Item.Main!),
                 bacground1 = ColorHex.FromHexToUnityColor(_Item.Background1!),
                 bacground2 = ColorHex.FromHexToUnityColor(_Item.Background2!)
             }).ToList();
             return set;
         }
 
-        public override bool CanRead => true;
+        #endregion
     }
 }

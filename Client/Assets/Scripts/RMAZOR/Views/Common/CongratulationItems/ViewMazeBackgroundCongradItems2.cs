@@ -58,7 +58,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
 
         #region api
         
-        public override void OnLevelStageChanged(LevelStageArgs _Args)
+        public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             m_DoAnimateCongrats = false;
             switch (_Args.Stage)
@@ -101,7 +101,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
                 var bodies = content.GetComponentsInChildren<Rigidbody>().ToArray();
                 firework.InitFirework(discs, bodies, GameTicker, ColorProvider);
                 m_BackCongratsItemsPool.Add(firework);
-                int randAudioIdx = Mathf.FloorToInt(1 + Random.value * 4.9f);
+                int randAudioIdx = Mathf.FloorToInt(1 + UnityEngine.Random.value * 4.9f);
                 m_AudioClipIndices.Add(firework, randAudioIdx);
                 AudioManager.InitClip(GetAudioClipArgs(firework));
             }
@@ -114,16 +114,16 @@ namespace RMAZOR.Views.Common.CongratulationItems
             if (!(GameTicker.Time > m_NextRandomCongratsItemAnimInterval + m_LastCongratsItemAnimTime)) 
                 return;
             m_LastCongratsItemAnimTime = GameTicker.Time;
-            m_NextRandomCongratsItemAnimInterval = 0.05f + Random.value * 0.15f;
+            m_NextRandomCongratsItemAnimInterval = 0.05f + UnityEngine.Random.value * 0.15f;
             var firework = m_BackCongratsItemsPool.FirstInactive;
             if (firework.IsNull())
                 return;
             var tr = firework.transform;
             tr.position = RandomPositionOnScreen();
-            tr.localScale = Vector3.one * (0.5f + 1.5f * Random.value);
+            tr.localScale = Vector3.one * (0.5f + 1.5f * UnityEngine.Random.value);
             m_BackCongratsItemsPool.Activate(firework);
             firework.LaunchFirework();
-            if (Random.value < 0.3f)
+            if (UnityEngine.Random.value < 0.3f)
                 AudioManager.PlayClip(GetAudioClipArgs(firework));
         }
 

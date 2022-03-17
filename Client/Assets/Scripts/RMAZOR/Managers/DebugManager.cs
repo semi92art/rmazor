@@ -1,16 +1,19 @@
-﻿using Common;
+﻿using System;
+using Common;
 using Common.Helpers;
 using Common.Managers.Advertising;
 using Common.Managers.Scores;
 using Common.Settings;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
+using UnityEngine;
 
 namespace RMAZOR.Managers
 {
     public interface IDebugManager : IInit
     {
         event VisibilityChangedHandler VisibilityChanged;
+        void                           Monitor(string _Name, bool _Enable, Func<object> _Value);
     }
 
     public class DebugManager : InitBase, IDebugManager
@@ -46,7 +49,12 @@ namespace RMAZOR.Managers
         #region api
 
         public event VisibilityChangedHandler VisibilityChanged;
-    
+        
+        public void Monitor(string _Name, bool _Enable, Func<object> _Value)
+        {
+            DebugConsoleView.Instance.Monitor(_Name, _Enable, _Value);
+        }
+
         public override void Init()
         {
             DebugConsoleView.Instance.VisibilityChanged += _Value => VisibilityChanged?.Invoke(_Value);
@@ -62,12 +70,8 @@ namespace RMAZOR.Managers
 
         private void InitDebugConsole()
         {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            DebugConsoleView.Instance.Init(Model, CommandsProceeder, AdsManager, ScoreManager);
-#else
-        if (Settings.DebugEnabled)
-            DebugConsoleView.Instance.Init(Model, CommandsProceeder, AdsManager, ScoreManager);
-#endif
+            if (Application.platform == RuntimePlatform.WindowsPlayer || Settings.DebugEnabled)
+                DebugConsoleView.Instance.Init(Model, CommandsProceeder, AdsManager, ScoreManager);
         }
     
         private static void EnableDebug(bool _Enable)

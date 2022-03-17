@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Common;
 using Common.Entities.UI;
 using Common.Extensions;
@@ -10,6 +12,7 @@ using Lean.Common;
 using RMAZOR.DebugConsole;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -57,18 +60,12 @@ namespace RMAZOR
         #region serialized fields
 
         // Container for console view, should be a child of this GameObject
-        [SerializeField] private GameObject viewContainer; 
-        [SerializeField] private Text       logTextArea;
-        [SerializeField] private InputField inputField;
-        [SerializeField] private ScrollRect textScrollbar;
+        [SerializeField] private GameObject      viewContainer; 
+        [SerializeField] private Text            logTextArea;
+        [SerializeField] private InputField      inputField;
+        [SerializeField] private ScrollRect      textScrollbar;
+        [SerializeField] private TextMeshProUGUI monitoringValuesArea;
 
-        #endregion
-        
-        #region public members
-
-        public IDebugConsoleController        Controller { get; } = new DebugConsoleController();
-        public event VisibilityChangedHandler VisibilityChanged;
-        
         #endregion
 
         #region nonpublic members
@@ -86,7 +83,28 @@ namespace RMAZOR
         public enum Swipe { None, Up, Down, Left, Right }
 
         private IViewInputCommandsProceeder m_CommandsProceeder;
+        
+        private readonly Dictionary<string, System.Func<object>> m_MonitoringValuesDict = 
+            new Dictionary<string, System.Func<object>>();
 
+        #endregion
+        
+        #region api
+
+        public IDebugConsoleController        Controller { get; } = new DebugConsoleController();
+        public event VisibilityChangedHandler VisibilityChanged;
+
+        public void Monitor(string _Name, bool _Enable, System.Func<object> _Value)
+        {
+            if (_Enable)
+                m_MonitoringValuesDict.Add(_Name, _Value);
+            else
+                m_MonitoringValuesDict.RemoveSafe(_Name, out _);
+            var textParent = monitoringValuesArea.rectTransform.parent.gameObject.RTransform();
+            textParent.SetGoActive(m_MonitoringValuesDict.Any());
+            textParent.sizeDelta = new Vector2(textParent.sizeDelta.x, 20f * m_MonitoringValuesDict.Count);
+        }
+        
         #endregion
 
         #region engine methods
@@ -170,6 +188,14 @@ namespace RMAZOR
                         }
                     }
                 }
+            }
+
+            if (m_IsVisible)
+            {
+                var sb = new StringBuilder();
+                foreach ((string key, var value) in m_MonitoringValuesDict)
+                    sb.AppendLine(key + " " + value);
+                monitoringValuesArea.text = sb.ToString();
             }
 
             if (inputField.touchScreenKeyboard == null)

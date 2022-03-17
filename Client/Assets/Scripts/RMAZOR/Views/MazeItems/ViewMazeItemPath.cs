@@ -511,8 +511,7 @@ namespace RMAZOR.Views.MazeItems
                 .SetAngRadiansEnd(Mathf.Deg2Rad * angles.y)
                 .SetColor(ColorProvider.GetColor(ColorIds.Main))
                 .SetSortingOrder(SortingOrders.PathJoint);
-            // ReSharper disable once PossibleNullReferenceException
-            corner.transform.position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position; //-V3080
+            corner!.transform.position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
             corner.transform.PlusLocalPosXY(GetCornerCenter(_Right, _Up, _Inner));
             corner.enabled = false;
             bool isOuterAndNearTrapIncreasing = IsCornerOuterAndNearTrapIncreasing(_Right, _Up, _Inner);

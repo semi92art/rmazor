@@ -12,7 +12,6 @@ using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
-using RMAZOR.Views.Common;
 using RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
@@ -24,23 +23,21 @@ namespace RMAZOR.Views.UI.Game_Logo
     public interface IViewUIGameLogo : IInitViewUIItem
     {
         void Show();
-        void Hide();
+        bool Shown { get; }
     }
     
     public class ViewUIGameLogoMazeBlade : IViewUIGameLogo
     {
         #region constants
 
-        private const float ShowTime    = 1f;
-        private const float HideBackgroundTime = 1f;
-        private const float HideGameLogoTime = 0.3f;
+        private const float ShowTime    = 1.5f;
+        private const float HideBackgroundTime = 1.5f;
 
         #endregion
 
         #region nonpublic members
         
         private static int AnimKeyGameLogoAppear    => AnimKeys.Anim;
-        private static int AnimKeyGameLogoDisappear => AnimKeys.Stop;
 
         private static readonly int StencilRefId = Shader.PropertyToID("_StencilRef");
 
@@ -69,7 +66,6 @@ namespace RMAZOR.Views.UI.Game_Logo
         private IViewGameTicker                  GameTicker          { get; }
         private IPrefabSetManager                PrefabSetManager    { get; }
         private IViewMazeGameLogoTextureProvider LogoTextureProvider { get; }
-        private IViewInputTouchProceeder         TouchProceeder      { get; }
 
         public ViewUIGameLogoMazeBlade(
             ICameraProvider                  _CameraProvider,
@@ -78,8 +74,7 @@ namespace RMAZOR.Views.UI.Game_Logo
             IColorProvider                   _ColorProvider,
             IViewGameTicker                  _GameTicker,
             IPrefabSetManager                _PrefabSetManager,
-            IViewMazeGameLogoTextureProvider _LogoTextureProvider,
-            IViewInputTouchProceeder         _TouchProceeder)
+            IViewMazeGameLogoTextureProvider _LogoTextureProvider)
         {
             CameraProvider      = _CameraProvider;
             ContainersGetter    = _ContainersGetter;
@@ -88,13 +83,14 @@ namespace RMAZOR.Views.UI.Game_Logo
             GameTicker          = _GameTicker;
             PrefabSetManager    = _PrefabSetManager;
             LogoTextureProvider = _LogoTextureProvider;
-            TouchProceeder      = _TouchProceeder;
         }
 
         #endregion
 
         #region api
 
+        public bool Shown { get; private set; }
+        
         public void Init(Vector4 _Offsets)
         {
             CommandsProceeder.Command  += OnCommand;
@@ -102,7 +98,6 @@ namespace RMAZOR.Views.UI.Game_Logo
             m_TopOffset = _Offsets.w;
             InitGameLogo();
             SetColors(ColorProvider.GetColor(ColorIdsCommon.UI));
-            // TouchProceeder.OnTap += OnTap;
         }
         
         public void Show()
@@ -113,12 +108,6 @@ namespace RMAZOR.Views.UI.Game_Logo
             Cor.Run(ShowGameLogoCoroutine());
         }
 
-        public void Hide()
-        {
-            if (!m_GameLogoAppeared || m_GameLogoDisappeared)
-                return;
-            Cor.Run(HideBackgroundAndDecreaseGameLogoCoroutine());
-        }
 
         #endregion
 
@@ -128,7 +117,7 @@ namespace RMAZOR.Views.UI.Game_Logo
         {
             if (!m_OnStart || !RazorMazeUtils.MoveAndRotateCommands.ContainsAlt(_Command)) 
                 return;
-            HideGameLogo(HideGameLogoTime);
+            HideGameLogo();
             m_OnStart = false;
         }
         
@@ -139,14 +128,6 @@ namespace RMAZOR.Views.UI.Game_Logo
             if (!m_GameLogoObj.activeSelf)
                 return;
             SetColors(_Color);
-        }
-        
-        private void OnTap(Vector2 _)
-        {
-            if (!m_GameLogoAppeared || m_GameLogoDisappeared)
-                return;
-            TouchProceeder.OnTap -= OnTap;
-            Cor.Run(HideBackgroundAndDecreaseGameLogoCoroutine());
         }
 
         private void InitGameLogo()
@@ -246,28 +227,15 @@ namespace RMAZOR.Views.UI.Game_Logo
             SetGameLogoTransform(position, scale);
             LogoTextureProvider.Activate(true);
             ShowGameLogo(ShowTime);
-            var logoBackCol = ColorProvider.GetColor(ColorIds.Background1);
-            yield return Cor.Lerp(
-                0f,
-                1f,
-                ShowTime,
-                _P =>
-                {
-                    var logoBackTextureColor = Color.Lerp(
-                        CommonData.CompanyLogoBackgroundColor, 
-                        logoBackCol,
-                        _P);
-                    LogoTextureProvider.SetColor(logoBackTextureColor);
-                }, 
-                GameTicker,
-                (_Broken, _Progress) => m_GameLogoAppeared = true);
+            LogoTextureProvider.SetColor(CommonData.CompanyLogoBackgroundColor);
+            LogoTextureProvider.SetTransitionValue(0f);
+            yield return Cor.Delay(ShowTime, () => m_GameLogoAppeared = true);
         }
 
         private IEnumerator HideBackgroundAndDecreaseGameLogoCoroutine()
         {
             GetStartGameLogoTransform(out Vector2 startPos, out float startScale);
             GetFinalGameLogoTransform(out Vector2 finalPos, out float finalScale);
-            var logoBackCol = ColorProvider.GetColor(ColorIds.Background1);
             Cor.Run(Cor.Lerp(
                 0f,
                 1f,
@@ -285,8 +253,9 @@ namespace RMAZOR.Views.UI.Game_Logo
                 HideBackgroundTime,
                 _P =>
                 {
-                    float alpha = Mathf.Lerp(1f, 0f, _P);
-                    LogoTextureProvider.SetColor(logoBackCol.SetA(alpha));
+                    if (_P > 0.5f)
+                        Shown = true;
+                    LogoTextureProvider.SetTransitionValue(_P);
                 }, 
                 GameTicker,
                 (_Broken, _Progress) =>
@@ -317,20 +286,9 @@ namespace RMAZOR.Views.UI.Game_Logo
             }
         }
 
-        private void HideGameLogo(float _Time)
+        private void HideGameLogo()
         {
             m_GameLogoObj.SetActive(false);
-            
-            // if (!m_LogoShowingAnimationPassed)
-            // {
-            //     m_GameLogoObj.SetActive(false);
-            //     return;
-            // }
-            // foreach (var anim in m_GameLogoCharAnims.Values)
-            // {
-            //     anim.speed = 1f / _Time;
-            //     anim.SetTrigger(AnimKeyGameLogoDisappear);
-            // }
         }
 
         private void ShowGameLogoItem(string _Key, float _Delay)

@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 
@@ -163,6 +164,15 @@ namespace Common.Utils
                 }
             );
             return result;
+        }
+
+        public static Vector3 GetAcceleration()
+        {
+#if ENABLE_INPUT_SYSTEM
+            return Accelerometer.current.acceleration.ReadValue();
+#else
+            return Input.acceleration;
+#endif
         }
     }
 }

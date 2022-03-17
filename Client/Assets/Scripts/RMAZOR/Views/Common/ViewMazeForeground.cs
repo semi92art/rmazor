@@ -19,17 +19,17 @@ namespace RMAZOR.Views.Common
         
         #region inject
 
-        private ViewSettings      ViewSettings     { get; }
+        private RemoteProperties  RemoteProperties { get; }
         private IPrefabSetManager PrefabSetManager { get; }
 
         public ViewMazeForeground(
-            ViewSettings      _ViewSettings,
+            RemoteProperties _RemoteProperties,
             IModelGame        _Model,
             IColorProvider    _ColorProvider,
             IPrefabSetManager _PrefabSetManager)
             : base(_Model, _ColorProvider)
         {
-            ViewSettings     = _ViewSettings;
+            RemoteProperties = _RemoteProperties;
             PrefabSetManager = _PrefabSetManager;
         }
         
@@ -51,7 +51,7 @@ namespace RMAZOR.Views.Common
         private void LoadSets()
         {
             const string set = "configs";
-            m_BackAndFrontColorsSetItemsLight = ViewSettings.BackAndFrontColorsSet;
+            m_BackAndFrontColorsSetItemsLight = RemoteProperties.BackAndFrontColorsSet;
             if (m_BackAndFrontColorsSetItemsLight == null)
             {
                 var backgroundColorsSetLight = PrefabSetManager.GetObject<BackAndFrontColorsSetScriptableObject>

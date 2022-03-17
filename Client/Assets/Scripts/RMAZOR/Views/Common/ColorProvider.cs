@@ -18,24 +18,27 @@ namespace RMAZOR.Views.Common
     {
         #region nonpublic members
 
-        private readonly Dictionary<int, Color> m_ColorsDict = new Dictionary<int, Color>();
-        private          ColorItemSet           m_CurrentSet;
-        private          ColorItemSet           m_LightThemeSet;
-        private          ColorItemSet           m_DarkThemeSet;
-        private readonly List<int>              m_IgnorableForThemeSwitchColorIds = new List<int>();
+        private readonly Dictionary<int, Color>   m_ColorsDict = new Dictionary<int, Color>();
+        private          IList<MainColorsSetItem> m_CurrentSet;
+        private          IList<MainColorsSetItem> m_LightThemeSet;
+        private          IList<MainColorsSetItem> m_DarkThemeSet;
+        private readonly List<int>                m_IgnorableForThemeSwitchColorIds = new List<int>();
 
         #endregion
 
         #region inject
         
+        private RemoteProperties  RemoteProperties { get; set; }
         private IPrefabSetManager PrefabSetManager { get; set; }
         private IDarkThemeSetting DarkThemeSetting { get; set; }
 
         [Inject]
         public void Inject(
+            RemoteProperties  _RemoteProperties,
             IPrefabSetManager _PrefabSetManager,
             IDarkThemeSetting _DarkThemeSetting)
         {
+            RemoteProperties = _RemoteProperties;
             PrefabSetManager = _PrefabSetManager;
             DarkThemeSetting = _DarkThemeSetting;
         }
@@ -49,9 +52,13 @@ namespace RMAZOR.Views.Common
 
         public override void Init()
         {
-            m_LightThemeSet = PrefabSetManager.GetObject<ColorSetScriptableObject>(
-                "views", "color_set_light").set;
-            m_DarkThemeSet = PrefabSetManager.GetObject<ColorSetScriptableObject>(
+            m_LightThemeSet = RemoteProperties.MainColorsSet;
+            if (m_LightThemeSet == null)
+            {
+                m_LightThemeSet = PrefabSetManager.GetObject<MainColorsSetScriptableObject>(
+                    "views", "color_set_light").set;
+            }
+            m_DarkThemeSet = PrefabSetManager.GetObject<MainColorsSetScriptableObject>(
                 "views", "color_set_dark").set;
             SetThemeCore(DarkThemeSetting.Get());
             DarkThemeSetting.OnValueSet = _Value => SetTheme(_Value ? EColorTheme.Dark : EColorTheme.Light);

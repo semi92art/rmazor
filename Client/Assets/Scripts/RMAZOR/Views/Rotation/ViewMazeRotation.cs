@@ -56,7 +56,7 @@ namespace RMAZOR.Views.Rotation
             var cont = ContainersGetter.GetContainer(ContainerNames.MazeHolder);
             m_Rb = cont.gameObject.AddComponent<Rigidbody2D>();
             m_Rb.gravityScale = 0;
-            m_Rb.constraints = RigidbodyConstraints2D.FreezePosition;
+            m_Rb.constraints = RigidbodyConstraints2D.FreezeAll;
             base.Init();
         }
 
@@ -66,11 +66,12 @@ namespace RMAZOR.Views.Rotation
                 m_Rb.transform.eulerAngles = Vector3.zero;
             else
                 Cor.Run(RotationCoroutine(_Args));
+            m_Rb.constraints = RigidbodyConstraints2D.FreezeAll;
         }
 
         public override void OnRotationFinished(MazeRotationEventArgs _Args)
         {
-            // do nothing
+            m_Rb.constraints = RigidbodyConstraints2D.FreezePosition;
         }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)

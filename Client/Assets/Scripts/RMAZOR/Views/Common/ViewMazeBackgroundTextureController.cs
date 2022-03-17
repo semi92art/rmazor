@@ -4,6 +4,7 @@ using Common.Exceptions;
 using Common.Helpers;
 using Common.Managers;
 using Common.Providers;
+using Common.Ticker;
 using RMAZOR.Models;
 using RMAZOR.Views.Common.ViewMazeBackgroundPropertySets;
 using RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders;
@@ -23,12 +24,12 @@ namespace RMAZOR.Views.Common
             out Color _Next2);
     }
     
-    public class ViewMazeBackgroundTextureController : InitBase, IViewMazeBackgroundTextureController
+    public class ViewMazeBackgroundTextureController : InitBase, IViewMazeBackgroundTextureController, IUpdateTick
     {
         #region nonpublic members
 
         private IList<LinesTextureSetItem>       m_LinesTextureSetItems;
-        private IList<CirclesTextureSetItem>     m_CirclesTextureSetItems1;
+        private IList<CirclesTextureSetItem>     m_CirclesTextureSetItems;
         private IList<Circles2TextureSetItem>    m_Circles2TextureSetItems;
         private IList<TrianglesTextureSetItem>   m_TrianglesTextureSetItems;
         private IList<BackAndFrontColorsSetItem> m_BackAndFrontColorsSetItemsLight;
@@ -45,7 +46,7 @@ namespace RMAZOR.Views.Common
         
         #region inject
 
-        private ViewSettings                                ViewSettings             { get; }
+        private RemoteProperties                            RemoteProperties         { get; }
         private IViewMazeBackgroundLinesTextureProvider     LinesTextureProvider     { get; }
         private IViewMazeBackgroundCirclesTextureProvider   CirclesTextureProvider   { get; }
         private IViewMazeBackgroundCircles2TextureProvider  Circles2TextureProvider  { get; }
@@ -54,19 +55,21 @@ namespace RMAZOR.Views.Common
         private IColorProvider                              ColorProvider            { get; }
         private IModelGame                                  Model                    { get; }
         private IViewBetweenLevelTransitioner               Transitioner             { get; }
+        private IViewGameTicker                             Ticker                   { get; }
 
         public ViewMazeBackgroundTextureController(
-            ViewSettings                                  _ViewSettings,
-            IViewMazeBackgroundLinesTextureProvider       _LinesTextureProvider,
-            IViewMazeBackgroundCirclesTextureProvider     _CirclesTextureProvider,
-            IViewMazeBackgroundCircles2TextureProvider    _Circles2TextureProvider,
-            IViewMazeBackgroundTrianglesTextureProvider   _TrianglesTextureProvider,
-            IPrefabSetManager                             _PrefabSetManager,
-            IColorProvider                                _ColorProvider,
-            IModelGame                                    _Model,
-            IViewBetweenLevelTransitioner                 _Transitioner)
+            RemoteProperties                            _RemoteProperties,
+            IViewMazeBackgroundLinesTextureProvider     _LinesTextureProvider,
+            IViewMazeBackgroundCirclesTextureProvider   _CirclesTextureProvider,
+            IViewMazeBackgroundCircles2TextureProvider  _Circles2TextureProvider,
+            IViewMazeBackgroundTrianglesTextureProvider _TrianglesTextureProvider,
+            IPrefabSetManager                           _PrefabSetManager,
+            IColorProvider                              _ColorProvider,
+            IModelGame                                  _Model,
+            IViewBetweenLevelTransitioner               _Transitioner,
+            IViewGameTicker                             _Ticker)
         {
-            ViewSettings             = _ViewSettings;
+            RemoteProperties         = _RemoteProperties;
             LinesTextureProvider     = _LinesTextureProvider;
             CirclesTextureProvider   = _CirclesTextureProvider;
             Circles2TextureProvider  = _Circles2TextureProvider;
@@ -74,6 +77,7 @@ namespace RMAZOR.Views.Common
             ColorProvider            = _ColorProvider;
             Model                    = _Model;
             Transitioner             = _Transitioner;
+            Ticker                   = _Ticker;
             TrianglesTextureProvider = _TrianglesTextureProvider;
         }
 
@@ -83,6 +87,7 @@ namespace RMAZOR.Views.Common
 
         public override void Init()
         {
+            Ticker.Register(this);
             ColorProvider.ColorThemeChanged += OnColorThemeChanged;
             LoadSets();
             LinesTextureProvider     .Init();
@@ -117,6 +122,11 @@ namespace RMAZOR.Views.Common
             _Next1     = m_BackCol1Next;
             _Next2     = m_BackCol2Next;
         }
+        
+        public void UpdateTick()
+        {
+            // TODO acceleration
+        }
 
         #endregion
         
@@ -130,20 +140,35 @@ namespace RMAZOR.Views.Common
         private void LoadSets()
         {
             const string set = "configs";
-            var linesTextureSet = PrefabSetManager.GetObject<LinesTexturePropertiesSetScriptableObject>
-                (set, "lines_texture_set");
-            m_LinesTextureSetItems = linesTextureSet.set;
-            var circlesTextureSet1 = PrefabSetManager.GetObject<CirclesTexturePropertiesSetScriptableObject>
-                (set, "circles_texture_set");
-            m_CirclesTextureSetItems1 = circlesTextureSet1.set;
-            var circles2TextureSet = PrefabSetManager.GetObject<Circles2TexturePropertiesSetScriptableObject>
-                (set, "circles2_texture_set");
-            m_Circles2TextureSetItems = circles2TextureSet.set;
-            var trianglesTextureSet = PrefabSetManager.GetObject<TrianglesTexturePropertiesSetScriptableObject>
-                (set, "triangles_texture_set");
-            m_TrianglesTextureSetItems = trianglesTextureSet.set;
-
-            m_BackAndFrontColorsSetItemsLight = ViewSettings.BackAndFrontColorsSet;
+            m_LinesTextureSetItems = RemoteProperties.LinesTextureSet;
+            if (m_LinesTextureSetItems == null)
+            {
+                var linesTextureSet = PrefabSetManager.GetObject<LinesTexturePropertiesSetScriptableObject>
+                    (set, "lines_texture_set");
+                m_LinesTextureSetItems = linesTextureSet.set;
+            }
+            m_CirclesTextureSetItems = RemoteProperties.CirclesTextureSet;
+            if (m_CirclesTextureSetItems == null)
+            {
+                var circlesTextureSet = PrefabSetManager.GetObject<CirclesTexturePropertiesSetScriptableObject>
+                    (set, "circles_texture_set");
+                m_CirclesTextureSetItems = circlesTextureSet.set;
+            }
+            m_Circles2TextureSetItems = RemoteProperties.Circles2TextureSet;
+            if (m_Circles2TextureSetItems == null)
+            {
+                var circles2TextureSet = PrefabSetManager.GetObject<Circles2TexturePropertiesSetScriptableObject>
+                    (set, "circles2_texture_set");
+                m_Circles2TextureSetItems = circles2TextureSet.set;
+            }
+            m_TrianglesTextureSetItems = RemoteProperties.TrianglesTextureSet;
+            if (m_TrianglesTextureSetItems == null)
+            {
+                var trianglesTextureSet = PrefabSetManager.GetObject<TrianglesTexturePropertiesSetScriptableObject>
+                    (set, "triangles_texture_set");
+                m_TrianglesTextureSetItems = trianglesTextureSet.set;
+            }
+            m_BackAndFrontColorsSetItemsLight = RemoteProperties.BackAndFrontColorsSet;
             if (m_BackAndFrontColorsSetItemsLight == null)
             {
                 Dbg.Log("remote m_BackAndFrontColorsSetItemsLight is null");
@@ -212,7 +237,7 @@ namespace RMAZOR.Views.Common
                     LinesTextureProvider.SetProperties(set1);
                     break;
                 case 2:
-                    var set2 = m_CirclesTextureSetItems1[levelIndexInt % m_CirclesTextureSetItems1.Count];
+                    var set2 = m_CirclesTextureSetItems[levelIndexInt % m_CirclesTextureSetItems.Count];
                     CirclesTextureProvider.SetProperties(set2);
                     break;
                 case 3:

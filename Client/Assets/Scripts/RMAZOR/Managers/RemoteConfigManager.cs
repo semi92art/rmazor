@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using Common;
+using Common.Entities;
 using Common.Helpers;
 using Common.Managers.Advertising;
 using Unity.RemoteConfig;
 using Common.Utils;
 using Newtonsoft.Json;
+using RMAZOR.Views.Common.ViewMazeBackgroundPropertySets;
 
 #if !UNITY_EDITOR && !DEVELOPMENT_BUILD
 using System.Linq;
@@ -41,15 +43,18 @@ namespace RMAZOR.Managers
         private CommonGameSettings CommonGameSettings { get; }
         private ModelSettings      ModelSettings      { get; }
         private ViewSettings       ViewSettings       { get; }
+        private RemoteProperties   RemoteProperties   { get; }
 
         public RemoteConfigManager(
             CommonGameSettings _CommonGameSettings,
             ModelSettings      _ModelSettings,
-            ViewSettings       _ViewSettings)
+            ViewSettings       _ViewSettings,
+            RemoteProperties   _RemoteProperties)
         {
             CommonGameSettings = _CommonGameSettings;
             ModelSettings      = _ModelSettings;
             ViewSettings       = _ViewSettings;
+            RemoteProperties   = _RemoteProperties;
         }
 
         #endregion
@@ -107,11 +112,33 @@ namespace RMAZOR.Managers
             GetConfig(ref ViewSettings.mazeItemTransitionTime,             "common.maze_item_transition_time");
             GetConfig(ref ViewSettings.mazeItemTransitionDelayCoefficient, "common.maze_item_transition_coefficient");
             
-            string backAndFrontColorConfigsJson = string.Empty;
-            GetConfig(ref backAndFrontColorConfigsJson, "common.back_and_front_color_configs", true);
-            var converter = new BackAndFrontColorsSetConverter();
-            ViewSettings.BackAndFrontColorsSet = JsonConvert.DeserializeObject<IList<BackAndFrontColorsSetItem>>(
-                backAndFrontColorConfigsJson, converter);
+            string mainColorSetsRaw = string.Empty;
+            GetConfig(ref mainColorSetsRaw, "common.main_color_sets", true);
+            var converter1 = new BackAndFrontColorsSetConverter();
+            RemoteProperties.MainColorsSet = JsonConvert.DeserializeObject<IList<MainColorsSetItem>>(
+                mainColorSetsRaw, converter1);
+            string backAndFrontColrSetsRaw = string.Empty;
+            GetConfig(ref mainColorSetsRaw, "common.back_and_front_color_sets", true);
+            var converter2 = new BackAndFrontColorsSetConverter();
+            RemoteProperties.BackAndFrontColorsSet = JsonConvert.DeserializeObject<IList<BackAndFrontColorsSetItem>>(
+                backAndFrontColrSetsRaw, converter2);
+            string linesTexturePropsSetRaw = string.Empty;
+            GetConfig(ref linesTexturePropsSetRaw, "common.background_texture_lines_props_set", true);
+            RemoteProperties.LinesTextureSet = JsonConvert.DeserializeObject<IList<LinesTextureSetItem>>(
+                linesTexturePropsSetRaw);
+            string circlesTexturePropsSetRaw = string.Empty;
+            GetConfig(ref linesTexturePropsSetRaw, "common.background_texture_circles_props_set", true);
+            RemoteProperties.CirclesTextureSet = JsonConvert.DeserializeObject<IList<CirclesTextureSetItem>>(
+                circlesTexturePropsSetRaw);
+            string circles2TexturePropsSetRaw = string.Empty;
+            GetConfig(ref linesTexturePropsSetRaw, "common.background_texture_circles2_props_set", true);
+            RemoteProperties.Circles2TextureSet = JsonConvert.DeserializeObject<IList<Circles2TextureSetItem>>(
+                circles2TexturePropsSetRaw);
+            string trianglesTexturePropsSetRaw = string.Empty;
+            GetConfig(ref linesTexturePropsSetRaw, "common.background_texture_triangles_props_set", true);
+            RemoteProperties.TrianglesTextureSet = JsonConvert.DeserializeObject<IList<TrianglesTextureSetItem>>(
+                trianglesTexturePropsSetRaw);
+            
             
 #if !UNITY_EDITOR && !DEVELOPMENT_BUILD
             string testDeviceIdfasJson = string.Empty;

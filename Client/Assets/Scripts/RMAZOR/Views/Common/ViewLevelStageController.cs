@@ -422,13 +422,18 @@ namespace RMAZOR.Views.Common
                     audioManager.MuteAudio(EAudioClipType.GameSound);
                     break;
                 case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.Loaded:
-                    audioManager.PlayClip(AudioClipArgsLevelStart);
-                    if (!m_FirstTimeLevelLoaded)
-                    {
-                        audioManager.PlayClip(AudioClipArgsMainTheme);
-                        m_FirstTimeLevelLoaded = true;
-                    }
-                    audioManager.UnmuteAudio(EAudioClipType.GameSound);
+                    Cor.Run(Cor.WaitWhile(
+                        () => !GameLogo.Shown,
+                        () =>
+                        {
+                            audioManager.PlayClip(AudioClipArgsLevelStart);
+                            if (!m_FirstTimeLevelLoaded)
+                            {
+                                audioManager.PlayClip(AudioClipArgsMainTheme);
+                                m_FirstTimeLevelLoaded = true;
+                            }
+                            audioManager.UnmuteAudio(EAudioClipType.GameSound);
+                        }));
                     break;
                 case ELevelStage.ReadyToStart:
                 case ELevelStage.StartedOrContinued:

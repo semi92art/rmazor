@@ -197,8 +197,7 @@ namespace Common.UI
             {
                 CurrentPanel = _PanelTo;
                 _PanelTo.AppearingState = EAppearingState.Appearing;
-                // ReSharper disable once PossibleNullReferenceException
-                int instId = panelToObj.GetInstanceID();
+                int instId = panelToObj!.GetInstanceID();
                 if (!m_GraphicsAlphas.ContainsKey(instId))
                     m_GraphicsAlphas.Add(instId, new GraphicAlphas(panelToObj));
                 Cor.Run(DoTransparentTransition(

@@ -22,6 +22,7 @@ namespace RMAZOR.Managers
         IPrefabSetManager    PrefabSetManager    { get; }
         IAssetBundleManager  AssetBundleManager  { get; }
         IRemoteConfigManager RemoteConfigManager { get; }
+        IDebugManager        DebugManager        { get; }
     }
 
     public class ManagersGetter : InitBase, IManagersGetter
@@ -44,6 +45,7 @@ namespace RMAZOR.Managers
         public IPrefabSetManager    PrefabSetManager    { get; }
         public IAssetBundleManager  AssetBundleManager  { get; }
         public IRemoteConfigManager RemoteConfigManager { get; }
+        public IDebugManager        DebugManager        { get; }
 
         public ManagersGetter(
             IAudioManager        _AudioManager,
@@ -55,7 +57,8 @@ namespace RMAZOR.Managers
             IHapticsManager      _HapticsManager,
             IPrefabSetManager    _PrefabSetManager,
             IAssetBundleManager  _AssetBundleManager,
-            IRemoteConfigManager _RemoteConfigManager)
+            IRemoteConfigManager _RemoteConfigManager, 
+            IDebugManager        _DebugManager)
         {
             AudioManager        = _AudioManager;
             AnalyticsManager    = _AnalyticsManager;
@@ -67,6 +70,7 @@ namespace RMAZOR.Managers
             PrefabSetManager    = _PrefabSetManager;
             AssetBundleManager  = _AssetBundleManager;
             RemoteConfigManager = _RemoteConfigManager;
+            DebugManager        = _DebugManager;
         }
         
         #endregion

@@ -323,8 +323,7 @@ namespace RMAZOR.Views.Common
             bool _Inner)
         {
             var corner = m_Corners.FirstInactive;
-            // ReSharper disable once PossibleNullReferenceException
-            corner.transform.position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position; //-V3080
+            corner.transform.position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
             corner.transform.PlusLocalPosXY(GetCornerCenter(_Position, _Right, _Up));
             corner.Radius = ViewSettings.CornerRadius * CoordinateConverter.Scale;
             corner.Thickness = ViewSettings.CornerWidth * CoordinateConverter.Scale;

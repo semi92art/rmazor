@@ -6,7 +6,6 @@ using Common.Helpers;
 using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
-using RMAZOR.Models;
 using RMAZOR.Views.Helpers;
 using Shapes;
 using UnityEngine;
@@ -14,19 +13,14 @@ using Random = System.Random;
 
 namespace RMAZOR.Views.Common
 {
-    public abstract class ViewMazeBackgroundItemsBase : InitBase, IOnLevelStageChanged, IUpdateTick
+    public abstract class ViewMazeBackgroundItemsBase : InitBase, IUpdateTick
     {
-        #region constants
-
-        protected const int PoolSize = 100;
-        
-        #endregion
-
         #region nonpublic members
 
-        protected        Transform Container => ContainersGetter.GetContainer(ContainerNames.Background);
-        private readonly Random    m_Random = new Random();
-        private          Bounds    m_ScreenBounds;
+        protected virtual int PoolSize => 100;
+        protected          Transform Container => ContainersGetter.GetContainer(ContainerNames.Background);
+        protected readonly Random    RandomGen = new Random();
+        private            Bounds    m_ScreenBounds;
         
         protected readonly Type[] PossibleSourceTypes =
         {
@@ -80,9 +74,7 @@ namespace RMAZOR.Views.Common
                 return;
             ProceedItems();
         }
-
-        public abstract void OnLevelStageChanged(LevelStageArgs _Args);
-
+        
         #endregion
 
         #region nonpublic methods
@@ -101,9 +93,9 @@ namespace RMAZOR.Views.Common
                    && _Position.y < max.y + _Padding.y;
         }
         
-        protected Vector2 RandomSpeed()
+        protected virtual Vector2 RandomVelocity()
         {
-            return new Vector2(m_Random.NextFloatAlt(), m_Random.NextFloatAlt());
+            return new Vector2(RandomGen.NextFloatAlt(), RandomGen.NextFloatAlt());
         }
         
         protected Vector2 RandomPositionOnScreen(
@@ -116,29 +108,29 @@ namespace RMAZOR.Views.Common
             float xDelta, yDelta;
             if (_Inside)
             {
-                xDelta = m_Random.NextFloatAlt() * m_ScreenBounds.size.x * 0.5f;
-                yDelta = m_Random.NextFloatAlt() * m_ScreenBounds.size.y * 0.5f;
+                xDelta = RandomGen.NextFloatAlt() * m_ScreenBounds.size.x * 0.5f;
+                yDelta = RandomGen.NextFloatAlt() * m_ScreenBounds.size.y * 0.5f;
             }
             else
             {
-                int posCase = m_Random.Next(1, 4);
+                int posCase = RandomGen.Next(1, 4);
 
                 switch (posCase)
                 {
                     case 1: // right
                         xDelta = m_ScreenBounds.size.x * 0.5f + _Padding.Value.x;
-                        yDelta = m_ScreenBounds.size.y * 0.5f * m_Random.NextFloatAlt();
+                        yDelta = m_ScreenBounds.size.y * 0.5f * RandomGen.NextFloatAlt();
                         break;
                     case 2: // left
                         xDelta = -m_ScreenBounds.size.x * 0.5f - _Padding.Value.x;
-                        yDelta = m_ScreenBounds.size.y * 0.5f * m_Random.NextFloatAlt();
+                        yDelta = m_ScreenBounds.size.y * 0.5f * RandomGen.NextFloatAlt();
                         break;
                     case 3: // top
-                        xDelta = m_ScreenBounds.size.x * 0.5f * m_Random.NextFloatAlt();
+                        xDelta = m_ScreenBounds.size.x * 0.5f * RandomGen.NextFloatAlt();
                         yDelta = m_ScreenBounds.size.y * 0.5f + _Padding.Value.y;
                         break;
                     case 4: // bottom
-                        xDelta = m_ScreenBounds.size.x * 0.5f * m_Random.NextFloatAlt();
+                        xDelta = m_ScreenBounds.size.x * 0.5f * RandomGen.NextFloatAlt();
                         yDelta = -m_ScreenBounds.size.y * 0.5f - _Padding.Value.y;
                         break;
                     default:

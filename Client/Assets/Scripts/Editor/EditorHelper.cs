@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Common;
 using Common.Constants;
+using Common.Entities;
 using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
@@ -12,8 +13,9 @@ using Common.Network;
 using Common.Network.Packets;
 using Common.Ticker;
 using Common.Utils;
-using GameHelpers;
+using Newtonsoft.Json;
 using RMAZOR;
+using RMAZOR.Views.Common.ViewMazeBackgroundPropertySets;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -34,9 +36,10 @@ namespace Editor
         private int     m_Quality = -1;
         private int     m_QualityCheck;
         private int     m_TabPage;
+        private int     m_TabPageSettings;
         private Vector2 m_CommonScrollPos;
         private Vector2 m_CachedDataScrollPos;
-        private Vector2 m_ViewSettingsScrollPos;
+        private Vector2 m_SettingsScrollPos;
 
         [MenuItem("Tools/\u2699 Editor Helper _%h", false, 0)]
         public static void ShowWindow()
@@ -62,14 +65,13 @@ namespace Editor
         {
             m_TabPage = GUILayout.Toolbar (
                 m_TabPage, 
-                new [] {"Common", "Cached Data", "Model Settings", "View Settings", "Common Settings"});
+                new [] {"Common", "Cached Data", "Settings", "Remote"});
             switch (m_TabPage) 
             {
-                case 0:  CommonTabPage();                 break;
-                case 1:  CachedDataTabPage();             break;
-                case 2:  ModelSettingsTabPage();          break;
-                case 3:  ViewSettingsTabPage();           break;
-                case 4:  ViewCommonGameSettingsTabPage(); break;
+                case 0:  CommonTabPage();     break;
+                case 1:  CachedDataTabPage(); break;
+                case 2:  SettingsTabPage();   break;
+                case 3:  RemoteTabPage();     break;
                 default: throw new SwitchCaseNotImplementedException(m_TabPage);
             }
         }
@@ -160,14 +162,85 @@ namespace Editor
                     GUILayout.BeginHorizontal();
                     GUILayout.Label(skVal.Key, GUILayout.Width(200));
                     Color defCol = GUI.contentColor;
-                    if (skVal.Value == "empty")
-                        GUI.contentColor = Color.yellow;
-                    if (skVal.Value == "not exist")
-                        GUI.contentColor = Color.red;
+                    GUI.contentColor = skVal.Value switch
+                    {
+                        "empty"     => Color.yellow,
+                        "not exist" => Color.red,
+                        _           => GUI.contentColor
+                    };
                     GUILayout.Label(skVal.Value);
                     GUI.contentColor = defCol;
                     GUILayout.EndHorizontal();
                 }
+            });
+        }
+
+        private void SettingsTabPage()
+        {
+            m_TabPageSettings = GUILayout.Toolbar (
+                m_TabPageSettings, 
+                new [] {"Model Settings", "View Settings", "Common Settings"});
+            switch (m_TabPageSettings) 
+            {
+                case 0:  ModelSettingsTabPage();          break;
+                case 1:  ViewSettingsTabPage();           break;
+                case 2:  ViewCommonGameSettingsTabPage(); break;
+                default: throw new SwitchCaseNotImplementedException(m_TabPageSettings);
+            }
+        }
+
+        private static void RemoteTabPage()
+        {
+            const string setName = "configs";
+            static IPrefabSetManager GetPrefLoader() => new PrefabSetManager(new AssetBundleManagerFake());
+            GUILayout.Label("Copy to clipboard:");
+            EditorUtilsEx.GuiButtonAction("Main Colors Set", () =>
+            {
+                var mainColorsSetScrObj = GetPrefLoader().GetObject<MainColorsSetScriptableObject>(
+                    "views", "color_set_light");
+                var converter = new MainColorItemsSetConverter();
+                string json = JsonConvert.SerializeObject(
+                    mainColorsSetScrObj.set,
+                    converter);
+                CommonUtils.CopyToClipboard(json);
+            });
+            EditorUtilsEx.GuiButtonAction("Back and Front Colors Set", () =>
+            {
+                var backAndFrontColorsSetScrObj = GetPrefLoader().GetObject<BackAndFrontColorsSetScriptableObject>(
+                    "configs", "back_and_front_colors_set_light");
+                var converter = new BackAndFrontColorsSetConverter();
+                string json = JsonConvert.SerializeObject(
+                    backAndFrontColorsSetScrObj.set,
+                    converter);
+                CommonUtils.CopyToClipboard(json);
+            });
+            EditorUtilsEx.GuiButtonAction("Background Lines Texture Parameters Set", () =>
+            {
+                var set = GetPrefLoader().GetObject<LinesTexturePropertiesSetScriptableObject>
+                    (setName, "lines_texture_set");
+                string json = JsonConvert.SerializeObject(set.set);
+                CommonUtils.CopyToClipboard(json);
+            });
+            EditorUtilsEx.GuiButtonAction("Background Circles Texture Parameters Set", () =>
+            {
+                var set = GetPrefLoader().GetObject<CirclesTexturePropertiesSetScriptableObject>
+                    (setName, "circles_texture_set");
+                string json = JsonConvert.SerializeObject(set.set);
+                CommonUtils.CopyToClipboard(json);
+            });
+            EditorUtilsEx.GuiButtonAction("Background Circles2 Texture Parameters Set", () =>
+            {
+                var set = GetPrefLoader().GetObject<Circles2TexturePropertiesSetScriptableObject>
+                    (setName, "circles2_texture_set");
+                string json = JsonConvert.SerializeObject(set.set);
+                CommonUtils.CopyToClipboard(json);
+            });
+            EditorUtilsEx.GuiButtonAction("Background Triangles Texture Parameters Set", () =>
+            {
+                var set = GetPrefLoader().GetObject<TrianglesTexturePropertiesSetScriptableObject>
+                    (setName, "triangles_texture_set");
+                string json = JsonConvert.SerializeObject(set.set);
+                CommonUtils.CopyToClipboard(json);
             });
         }
 
@@ -196,7 +269,7 @@ namespace Editor
         {
             var fieldInfos = _Type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             var serObj = new SerializedObject(_Settings);
-            EditorUtilsEx.ScrollViewZone(ref m_ViewSettingsScrollPos, () =>
+            EditorUtilsEx.ScrollViewZone(ref m_SettingsScrollPos, () =>
             {
                 foreach (var fieldInfo in fieldInfos)
                 {
@@ -209,7 +282,7 @@ namespace Editor
                 EditorUtility.SetDirty(_Settings);
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
-            });
+            }, false, true);
         }
 
         private void UpdateTestUrl(bool _Forced = false)
@@ -245,7 +318,7 @@ namespace Editor
             SaveUtils.PutValue(SaveKeysRmazor.DailyBonusLastClickedDay, m_DailyBonusIndex);
         }
 
-        private void CreateTestUsers(int _Count)
+        private static void CreateTestUsers(int _Count)
         {
             CommonData.Testing = true;
             var gc = new GameClient(new CommonTicker());

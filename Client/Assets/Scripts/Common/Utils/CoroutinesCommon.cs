@@ -47,8 +47,7 @@ namespace Common.Utils
             float time = _Seconds.HasValue ? (tickerExist ? _Ticker.Time : Time.time) : default;
             bool IsTimeValid()
             {
-                // ReSharper disable once PossibleNullReferenceException
-                return _Seconds.HasValue && time + _Seconds.Value > (tickerExist ? _Ticker.Time : Time.time);
+                return _Seconds.HasValue && time + _Seconds.Value > (tickerExist ? _Ticker!.Time : Time.time);
             }
             while (_Predicate() || IsTimeValid())
             {

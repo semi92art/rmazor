@@ -28,6 +28,7 @@ namespace RMAZOR
         private const string CategoryLoadLevels = "Load Levels";
         private const string CategoryHaptics    = "Haptics";
         private const string CategoryAds        = "Ads";
+        private const string CategoryMonitor    = "Monitor";
 
         private static IModelGame    _model;
         private static IViewGame     _view;
@@ -501,6 +502,23 @@ namespace RMAZOR
                 if (!value)
                     return;
                 GC.Collect();
+            }
+        }
+
+        #endregion
+
+        #region monitor
+        
+        [Category(CategoryMonitor)]
+        public bool Acceleration
+        {
+            get => false;
+            set
+            {
+                _view.Managers.DebugManager.Monitor(
+                    "Acceleration", 
+                    value, 
+                    () => CommonUtils.GetAcceleration());
             }
         }
 

@@ -18,10 +18,10 @@ namespace Editor
     public class ColorsHelper : EditorWindow
     {
         private IColorProvider                        m_ColorProvider;
-        private ColorSetScriptableObject              m_ColorSetScrObj;
+        private MainColorsSetScriptableObject              m_MainColorsSetScrObj;
         private BackAndFrontColorsSetScriptableObject m_BackAndFrontColorsSetScrObj;
         private BackAndFrontColorsSet                 m_BackAndFrontColorsSet;
-        private ColorItemSet                          m_ColorSet;
+        private MainColorsItemSet                          m_MainColorsSet;
         private Color?                                m_UiColor;
         private Color                                 m_UiColorCheck;
         private bool                                  m_ChangeOnlyHueUi = true;
@@ -35,12 +35,13 @@ namespace Editor
     
         private void OnGUI()
         {
-            if (m_ColorSet == null || m_BackAndFrontColorsSet == null)
+            if (m_MainColorsSet == null || m_BackAndFrontColorsSet == null)
                 LoadSets();
             DisplayColorSetObjectFields();
+            EditorUtilsEx.GuiButtonAction(CopyMainColorsToClipboard);
             EditorUtilsEx.GuiButtonAction(CopyBackAndFrontColorsToClipboard);
             DisplayColors();
-            if ((m_ColorProvider == null || m_ColorSetScrObj == null)
+            if ((m_ColorProvider == null || m_MainColorsSetScrObj == null)
                 && Application.isPlaying
                 && SceneManager.GetActiveScene().name.Contains(SceneNames.Level))
             {
@@ -50,7 +51,7 @@ namespace Editor
             GUILayout.Label("UI Color:");
             if (!m_UiColor.HasValue)
             {
-                var uiSetItem = m_ColorSet.FirstOrDefault(
+                var uiSetItem = m_MainColorsSet.FirstOrDefault(
                     _Item => ColorIdsCommon.GetHash(_Item.name) == ColorIdsCommon.UI);
                 if (uiSetItem != null)
                 {
@@ -73,9 +74,9 @@ namespace Editor
         private void LoadSets()
         {
             var manager = new PrefabSetManager(new AssetBundleManagerFake());
-            m_ColorSetScrObj = manager.GetObject<ColorSetScriptableObject>(
+            m_MainColorsSetScrObj = manager.GetObject<MainColorsSetScriptableObject>(
                 "views", "color_set_light");
-            m_ColorSet = m_ColorSetScrObj.set;
+            m_MainColorsSet = m_MainColorsSetScrObj.set;
             m_BackAndFrontColorsSetScrObj = manager.GetObject<BackAndFrontColorsSetScriptableObject>(
                 "configs", "back_and_front_colors_set_light");
             m_BackAndFrontColorsSet = m_BackAndFrontColorsSetScrObj.set;
@@ -83,11 +84,11 @@ namespace Editor
 
         private void DisplayColorSetObjectFields()
         {
-            m_ColorSetScrObj = EditorGUILayout.ObjectField(
+            m_MainColorsSetScrObj = EditorGUILayout.ObjectField(
                 "main set", 
-                m_ColorSetScrObj, 
-                typeof(ColorSetScriptableObject), 
-                false) as ColorSetScriptableObject;
+                m_MainColorsSetScrObj, 
+                typeof(MainColorsSetScriptableObject), 
+                false) as MainColorsSetScriptableObject;
             m_BackAndFrontColorsSetScrObj = EditorGUILayout.ObjectField(
                 "back and front set",
                 m_BackAndFrontColorsSetScrObj,
@@ -108,7 +109,7 @@ namespace Editor
             };
             foreach (int id in coloIds)
             {
-                var item = m_ColorSet.FirstOrDefault(_Item => ColorIdsCommon.GetHash(_Item.name) == id);
+                var item = m_MainColorsSet.FirstOrDefault(_Item => ColorIdsCommon.GetHash(_Item.name) == id);
                 if (item == null) 
                     continue;
                 var col = item.color;
@@ -130,7 +131,7 @@ namespace Editor
 
         private void DisplayColors()
         {
-            foreach (var item in m_ColorSet)
+            foreach (var item in m_MainColorsSet)
             {
                 EditorUtilsEx.HorizontalZone(() =>
                 {
@@ -145,6 +146,15 @@ namespace Editor
                     item.color = newColor;
                 });
             }
+        }
+        
+        private void CopyMainColorsToClipboard()
+        {
+            var converter = new MainColorItemsSetConverter();
+            string json = JsonConvert.SerializeObject(
+                m_MainColorsSet,
+                converter);
+            CommonUtils.CopyToClipboard(json);
         }
 
         private void CopyBackAndFrontColorsToClipboard()

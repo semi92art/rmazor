@@ -9,28 +9,20 @@ namespace Common.Extensions
         {
             if (_CheckForNull && _GameObject == null)
                 return;
-#if UNITY_EDITOR
-            if (Application.isPlaying)
-                Object.Destroy(_GameObject);
-            else
+            if (Application.isEditor)
                 Object.DestroyImmediate(_GameObject);
-#else
-            Object.Destroy(_GameObject);
-#endif
+            else
+                Object.Destroy(_GameObject);
         }
         
         public static void DestroySafe(this Component _Component, bool _CheckForNull = true)
         {
             if (_CheckForNull && _Component == null)
                 return;
-#if UNITY_EDITOR
-            if (Application.isPlaying)
-                Object.Destroy(_Component);
-            else
+            if (Application.isEditor)
                 Object.DestroyImmediate(_Component);
-#else
-            Object.Destroy(_Component);
-#endif
+            else
+                Object.Destroy(_Component);
         }
 
         public static void DestroyChildrenSafe(this GameObject _GameObject, bool _CheckForNull = true)

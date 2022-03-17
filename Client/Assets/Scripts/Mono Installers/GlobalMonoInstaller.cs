@@ -26,6 +26,7 @@ namespace Mono_Installers
         
         public override void InstallBindings()
         {
+            Container.BindInstance(new RemoteProperties());
             Container.Bind<CommonGameSettings>()  .FromScriptableObject(commonGameSettings) .AsSingle();
             Container.Bind<ModelSettings>()       .FromScriptableObject(modelSettings)      .AsSingle();
             Container.Bind<ViewSettings>()        .FromScriptableObject(viewSettings)       .AsSingle();

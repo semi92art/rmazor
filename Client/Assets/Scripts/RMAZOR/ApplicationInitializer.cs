@@ -93,7 +93,7 @@ namespace RMAZOR
 
         private static IEnumerator LoadSceneLevel()
         {
-            var @params = new LoadSceneParameters(LoadSceneMode.Single, LocalPhysicsMode.Physics2D);
+            var @params = new LoadSceneParameters(LoadSceneMode.Single);
             var op =  SceneManager.LoadSceneAsync(SceneNames.Level, @params);
             while (!op.isDone)
                 yield return null;
