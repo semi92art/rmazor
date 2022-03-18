@@ -174,7 +174,7 @@ namespace RMAZOR.Views.MazeItems
                     .AddComponentOnNewChild<Rectangle>("Mask 1", out GameObject _)
                     .SetBlendMode(ShapesBlendMode.Subtractive)
                     .SetRenderQueue(-1)
-                    .SetSortingOrder(SortingOrders.AdditionalBackgroundPolygon)
+                    .SetSortingOrder(SortingOrders.AdditionalBackgroundTexture)
                     .SetZTest(CompareFunction.Less)
                     .SetStencilComp(CompareFunction.Greater)
                     .SetStencilOpPass(StencilOp.Replace)

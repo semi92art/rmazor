@@ -1,8 +1,10 @@
 fileFormatVersion: 2
-guid: 1d8226fd26aaab1439680cab4f1e5e97
+guid: e0bb675264cda134b9773c02ae8d78fb
+labels:
+- Africa
 NativeFormatImporter:
   externalObjects: {}
-  mainObjectFileID: 2100000
+  mainObjectFileID: 11400000
   userData: 
   assetBundleName: 
   assetBundleVariant: 

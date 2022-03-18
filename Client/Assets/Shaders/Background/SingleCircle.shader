@@ -23,26 +23,13 @@
 			#pragma target 2.0
 
 			#include "UnityCG.cginc"
-			#include "BackgroundCommon.cginc"
+			#include "Common.cginc"
 
 			fixed4 _Color1, _Color2;
 			float _Radius;
 
-			struct appdata {
-				float4 vertex : POSITION;
-				float2 uv : TEXCOORD0;
-			};
-			
-			struct v2f {
-				float2 uv : TEXCOORD0;
-				float4 vertex : SV_POSITION;
-			};
-
 			v2f vert (appdata v) {
-				v2f o;
-				o.vertex = UnityObjectToClipPos(v.vertex);
-				o.uv = v.uv;
-				return o;
+				return vert_default(v);
 			}
 
 			inline fixed color_selector(float d1, float d2) {
@@ -52,7 +39,7 @@
                 return d1 > d2 * _Radius ? 0 : 1;
             }
 
-			fixed4 circle(float2 uv, float2 pos, float rad, float3 color) {
+			inline fixed4 circle(float2 uv, float2 pos, float rad, float3 color) {
 				float d = length(pos - uv) - rad;
 				float t = d >rad ? 1.0 : 0.0;
 				return fixed4(color, t);

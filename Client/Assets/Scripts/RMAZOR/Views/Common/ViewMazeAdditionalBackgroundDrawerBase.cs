@@ -48,11 +48,12 @@ namespace RMAZOR.Views.Common
         private Transform Container => ContainersGetter.GetContainer(ContainerNames.MazeItems);
 
         private readonly RendererSpawnPool<SpriteRenderer> m_TextureRenderers = new RendererSpawnPool<SpriteRenderer>();
-        private readonly List<Sprite>                      m_TextureSprites   = new List<Sprite>();
-
         private readonly BehavioursSpawnPool<Line>      m_Borders              = new BehavioursSpawnPool<Line>();
         private readonly BehavioursSpawnPool<Disc>      m_Corners              = new BehavioursSpawnPool<Disc>();
         private readonly BehavioursSpawnPool<Rectangle> m_TextureRendererMasks = new BehavioursSpawnPool<Rectangle>();
+
+        private readonly List<Sprite>   m_TextureSprites = new List<Sprite>();
+        private          SpriteRenderer m_TextureRendererBack;
 
         #endregion
         
@@ -114,12 +115,14 @@ namespace RMAZOR.Views.Common
         public void Appear(bool _Appear)
         {
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
-            var color = ColorProvider.GetColor(ColorIds.Main);
+            var mainCol = ColorProvider.GetColor(ColorIds.Main);
+            var back1Col = ColorProvider.GetColor(ColorIds.Background1);
             var dict = new Dictionary<IEnumerable<Component>, Func<Color>>
             {
-                {m_Borders.GetAllActiveItems(), () => color},
-                {m_Corners.GetAllActiveItems(), () => color},
-                {m_TextureRenderers.GetAllActiveItems(), () => color.SetA(0.3f)}
+                {m_Borders.GetAllActiveItems(), () => back1Col},
+                {m_Corners.GetAllActiveItems(), () => back1Col},
+                {m_TextureRenderers.GetAllActiveItems(), () => back1Col.SetA(0.3f)},
+                {new[] {m_TextureRendererBack}, () => back1Col}
             };
             Transitioner.DoAppearTransition(_Appear, dict, _OnFinish: () =>
             {
@@ -133,6 +136,8 @@ namespace RMAZOR.Views.Common
         
         private void OnColorChanged(int _ColorId, Color _Color)
         {
+            if (_ColorId == ColorIds.Background1)
+                m_TextureRendererBack.color = _Color;
             if (_ColorId != ColorIds.Main)
                 return;
             m_TextureRenderers.GetAllActiveItems().ForEach(_R => _R.color = _Color.SetA(_R.color.a));
@@ -157,11 +162,8 @@ namespace RMAZOR.Views.Common
                 var go = new GameObject("Additional Background Border");
                 go.SetParent(Container);
                 var border = go.AddComponent<Line>();
-                border.SortingOrder = SortingOrders.AdditionalBackgroundBorder;
-                border.DashSpace = DashSpace.FixedCount;
-                border.DashSnap = DashSnapping.Off;
-                border.DashType = DashType.Rounded;
-                border.EndCaps = LineEndCap.None;
+                border.SetSortingOrder(SortingOrders.AdditionalBackgroundBorder)
+                    .SetEndCaps(LineEndCap.None);
                 m_Borders.Add(border);
             }
             m_Borders.DeactivateAll(true);
@@ -174,9 +176,9 @@ namespace RMAZOR.Views.Common
                 var go = new GameObject("Additional Background Corner");
                 go.SetParent(Container);
                 var corner = go.AddComponent<Disc>();
-                corner.SortingOrder = SortingOrders.AdditionalBackgroundCorner;
-                corner.Type = DiscType.Arc;
-                corner.ArcEndCaps = ArcEndCap.Round;
+                corner.SetSortingOrder(SortingOrders.AdditionalBackgroundCorner)
+                    .SetType(DiscType.Arc)
+                    .SetArcEndCaps(ArcEndCap.Round);
                 m_Corners.Add(corner);
             }
             m_Corners.DeactivateAll(true);
@@ -184,6 +186,15 @@ namespace RMAZOR.Views.Common
 
         private void InitTextures()
         {
+            var rendBack = Container.AddComponentOnNewChild<SpriteRenderer>(
+                "Additional Background Back", out _);
+            rendBack.sprite = PrefabSetManager.GetObject<Sprite>(
+                "icons", "icon_square_100x100");
+            rendBack.material = PrefabSetManager.GetObject<Material>(
+                "materials", "additional_background_back");
+            rendBack.sortingOrder = SortingOrders.AdditionalBackgroundTexture2;
+            m_TextureRendererBack = rendBack;
+            
             var go = PrefabSetManager.InitPrefab(
                 Container,
                 "views",
@@ -191,7 +202,9 @@ namespace RMAZOR.Views.Common
             for (int i = 0; i < TextureRenderersCount; i++)
             {
                 var renderer = go.GetCompItem<SpriteRenderer>("renderer");
-                renderer.sortingOrder = SortingOrders.AdditionalBackgroundPolygon;
+                renderer.sortingOrder = SortingOrders.AdditionalBackgroundTexture;
+                renderer.drawMode = SpriteDrawMode.Tiled;
+                renderer.tileMode = SpriteTileMode.Continuous;
                 m_TextureRenderers.Add(renderer);
             }
             for (int i = 1; i <= TextureTypesCount; i++)
@@ -206,15 +219,15 @@ namespace RMAZOR.Views.Common
                 var mask = Container.gameObject.AddComponentOnNewChild<Rectangle>(
                     "Additional Texture Mask", 
                     out GameObject _);
-                mask.enabled = false;
-                mask.BlendMode = ShapesBlendMode.Subtractive;
-                mask.RenderQueue = -1;
-                mask.SortingOrder = SortingOrders.AdditionalBackgroundPolygon;
-                mask.ZTest = CompareFunction.Less;
-                mask.StencilComp = CompareFunction.Greater;
-                mask.StencilOpPass = StencilOp.Replace;
-                mask.Color = new Color(0f, 0f, 0f, 1f / 255f);
-                mask.Type = Rectangle.RectangleType.RoundedSolid;
+                mask.SetBlendMode(ShapesBlendMode.Subtractive)
+                    .SetRenderQueue(0)
+                    .SetSortingOrder(SortingOrders.AdditionalBackgroundTexture)
+                    .SetZTest(CompareFunction.Less)
+                    .SetStencilComp(CompareFunction.Greater)
+                    .SetStencilOpPass(StencilOp.Replace)
+                    .SetColor(new Color(0f, 0f, 0f, 1f / 255f))
+                    .SetType(Rectangle.RectangleType.RoundedSolid)
+                    .enabled = false;
                 m_TextureRendererMasks.Add(mask);
             }
         }
@@ -285,23 +298,29 @@ namespace RMAZOR.Views.Common
             int maxX = _Group.Points.Max(_P => _P.X);
             int maxY = _Group.Points.Max(_P => _P.Y);
             float scale = CoordinateConverter.Scale;
+            float width = scale * (maxX - minX + 2f * (0.5f + BorderRelativeIndent));
+            float height = scale * (maxY - minY + 2f * (0.5f + BorderRelativeIndent));
             int group = RazorMazeUtils.GetGroupIndex(Model.LevelStaging.LevelIndex);
             int textureTypeIdx = group % TextureTypesCount;
             var renderer = m_TextureRenderers.FirstInactive;
             m_TextureRenderers.Activate(renderer);
             renderer.sprite = m_TextureSprites[textureTypeIdx];
-            renderer.transform.localScale = Vector3.one * scale * 0.5f;
+            renderer.transform.localScale = Vector3.one;
             var centerRaw = new Vector2(minX + (maxX - minX) * 0.5f, minY + (maxY - minY) * 0.5f);
             var center = CoordinateConverter.ToLocalMazeItemPosition(centerRaw);
             renderer.transform.SetLocalPosXY(center);
             renderer.sharedMaterial.SetFloat(StencilRefId, _Group.GroupIndex);
+            renderer.size = new Vector2(width, height);
+            m_TextureRendererBack.transform.SetLocalPosXY(center)
+                .SetLocalScaleXY(new Vector2(width, height));
+            m_TextureRendererBack.color = ColorProvider.GetColor(ColorIds.Background1);
             var mask = m_TextureRendererMasks.FirstInactive;
+            mask.SetWidth(width)
+                .SetHeight(height)
+                .SetStencilRefId(Convert.ToByte(_Group.GroupIndex))
+                .SetCornerRadius(ViewSettings.CornerRadius * scale)
+                .transform.SetLocalPosXY(center);
             m_TextureRendererMasks.Activate(mask);
-            mask.transform.SetLocalPosXY(center);
-            mask.Width = (maxX - minX) * scale + 2f * scale * (0.5f + BorderRelativeIndent);
-            mask.Height = (maxY - minY) * scale + 2f * scale * (0.5f + BorderRelativeIndent);
-            mask.StencilRefID = Convert.ToByte(_Group.GroupIndex);
-            mask.CornerRadius = ViewSettings.CornerRadius * scale;
         }
 
         protected abstract void DrawHolesForGroup(PointsGroupArgs _Group);
@@ -309,10 +328,11 @@ namespace RMAZOR.Views.Common
         private void DrawBorder(V2Int _Position, EMazeMoveDirection _Side, bool _StartLimit, bool _EndLimit)
         {
             var border = m_Borders.FirstInactive;
-            border.Thickness = ViewSettings.LineWidth * CoordinateConverter.Scale * 0.5f;
+            var borderPos = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
+            border.SetThickness(ViewSettings.LineWidth * CoordinateConverter.Scale * 0.5f)
+                .transform.SetPosXY(borderPos)
+                .gameObject.name = _Side + " " + "border";
             (border.Start, border.End) = GetBorderPointsAndDashed(_Position, _Side, _StartLimit, _EndLimit);
-            border.transform.position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
-            border.name = _Side + " " + "border";
             m_Borders.Activate(border);
         }
         
@@ -322,14 +342,15 @@ namespace RMAZOR.Views.Common
             bool _Up,
             bool _Inner)
         {
+            var angles = Mathf.Deg2Rad * GetCornerAngles(_Right, _Up, _Inner);
             var corner = m_Corners.FirstInactive;
-            corner.transform.position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
-            corner.transform.PlusLocalPosXY(GetCornerCenter(_Position, _Right, _Up));
-            corner.Radius = ViewSettings.CornerRadius * CoordinateConverter.Scale;
-            corner.Thickness = ViewSettings.CornerWidth * CoordinateConverter.Scale;
-            var angles = GetCornerAngles(_Right, _Up, _Inner);
-            corner.AngRadiansStart = Mathf.Deg2Rad * angles.x;
-            corner.AngRadiansEnd = Mathf.Deg2Rad * angles.y;
+            var cornerPos = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
+            corner.SetRadius(ViewSettings.CornerRadius * CoordinateConverter.Scale)
+                .SetThickness(ViewSettings.CornerWidth * CoordinateConverter.Scale)
+                .SetAngRadiansStart(angles.x)
+                .SetAngRadiansEnd(angles.y)
+                .transform.SetPosXY(cornerPos)
+                .PlusLocalPosXY(GetCornerCenter(_Position, _Right, _Up));
             m_Corners.Activate(corner);
         }
         

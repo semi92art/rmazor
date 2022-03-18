@@ -22,25 +22,12 @@
 			#pragma fragment frag
 			#pragma multi_compile _ PIXELSNAP_ON
 			#include "UnityCG.cginc"
-			
-			struct appdata {
-				float4 vertex : POSITION;
-				float4 color  : COLOR;
-				float2 uv     : TEXCOORD0;
-			};
-
-			struct v2f {
-				float4 vertex : SV_POSITION;
-				fixed4 color  : COLOR;
-				float2 uv     : TEXCOORD0;
-			};
-
+			#include "Common.cginc"
+		
 			fixed4 _Color;
 
-			v2f vert(appdata vec) {
-				v2f OUT;
-				OUT.vertex = UnityObjectToClipPos(vec.vertex);
-				return OUT;
+			v2f vert(appdata v) {
+				return vert_default(v);
 			}
 
 			fixed4 frag(v2f _) : SV_Target {

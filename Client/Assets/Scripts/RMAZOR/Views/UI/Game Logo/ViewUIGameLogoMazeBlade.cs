@@ -175,7 +175,7 @@ namespace RMAZOR.Views.UI.Game_Logo
 
         private void SetColors(Color _Color)
         {
-            var shapeTypes = new [] {typeof(Line), typeof(Disc), typeof(Rectangle)};
+            var shapeTypes = new [] {typeof(Line), typeof(Disc)};
             shapeTypes.SelectMany(_Type => m_GameLogoObj
                     .GetComponentsInChildren(_Type, true))
                 .Cast<ShapeRenderer>()

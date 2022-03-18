@@ -74,6 +74,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 4d2b838604b669146bc164b33de3d98d, type: 3}
   - {fileID: 21300000, guid: 7fe552b69a36a2548a37a14657a4551d, type: 3}
   - {fileID: 21300000, guid: 9577c428d7714d741bff2986f7030699, type: 3}
+  - {fileID: 21300000, guid: 9a904a687ee585e4186a5da154c76196, type: 3}
   - {fileID: 21300000, guid: 1f4e95e85e185ef4f8fc3fde12cc6cca, type: 3}
   - {fileID: 21300000, guid: d619c25973fd54c45bcfd45feabe464a, type: 3}
   - {fileID: 21300000, guid: cabe37a9abc3133448c33e4875d74d02, type: 3}
@@ -120,6 +121,7 @@ SpriteAtlas:
   - icon_sound_off
   - icon_haptics_on
   - spikes_custom
+  - icon-square
   - icon_dark_theme_on
   - icon_music_off
   - turret_projectile_mask

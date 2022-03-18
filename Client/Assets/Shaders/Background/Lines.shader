@@ -16,7 +16,7 @@ Shader "RMAZOR/Background/Liness"
 			#pragma fragment frag
 
 			#include "UnityCG.cginc"
-			#include "BackgroundCommon.cginc"
+			#include "Common.cginc"
 
 			fixed4 _Color1;
 			fixed4 _Color2;
@@ -24,16 +24,6 @@ Shader "RMAZOR/Background/Liness"
 			float  _Direction;
 			float  _WarpScale;
 			float  _WarpTiling;
-
-			struct appdata {
-				float4 vertex : POSITION;
-				float2 uv     : TEXCOORD0;
-			};
-
-			struct v2f {
-				float2 uv     : TEXCOORD0;
-				float4 vertex : SV_POSITION;
-			};
 
 			inline fixed color_selector_anti_aliasing(float2 pos, float indent) {
 				return floor(frac(pos.x + indent) + 0.5);
@@ -46,10 +36,7 @@ Shader "RMAZOR/Background/Liness"
 			}
 
 			v2f vert (appdata v) {
-				v2f o;
-				o.vertex = UnityObjectToClipPos(v.vertex);
-				o.uv = v.uv;
-				return o;
+				return vert_default(v);
 			}
 
 			fixed4 frag (v2f i) : SV_Target {

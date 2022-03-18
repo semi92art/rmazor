@@ -171,7 +171,6 @@ namespace RMAZOR.Views.Common
             m_BackAndFrontColorsSetItemsLight = RemoteProperties.BackAndFrontColorsSet;
             if (m_BackAndFrontColorsSetItemsLight == null)
             {
-                Dbg.Log("remote m_BackAndFrontColorsSetItemsLight is null");
                 var backgroundColorsSetLight = PrefabSetManager.GetObject<BackAndFrontColorsSetScriptableObject>
                     (set, "back_and_front_colors_set_light");
                 m_BackAndFrontColorsSetItemsLight = backgroundColorsSetLight.set;

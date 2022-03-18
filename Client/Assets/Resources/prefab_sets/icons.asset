@@ -12,10 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1600272214c7aa418cb76f5cc38aecb, type: 3}
   m_Name: icons
   m_EditorClassIdentifier: 
-  bundles: 0
   prefabs:
     array:
     - item: {fileID: 2800000, guid: 25c48be3a87ea0f489a6d41c9c9a2194, type: 3}
       name: finger_texture
+      bundle: 0
     - item: {fileID: 21300000, guid: 79aa76a1610e52348a314d2db03133fe, type: 3}
       name: icon_no_ads
+      bundle: 0
+    - item: {fileID: 21300000, guid: 9a904a687ee585e4186a5da154c76196, type: 3}
+      name: icon_square_100x100
+      bundle: 0

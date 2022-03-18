@@ -12,18 +12,28 @@
 		_WarpScale ("Warp Scale", Range(0, 1)) = 0
 		_WarpTiling ("Warp Tiling", Range(1, 10)) = 1
     	_Indent("Indent", Range(0, 1)) = 0
+    	[IntRange] _StencilRef ("Stencil Reference Value", Range(0,255)) = 0
 	}
 	SubShader {
-		Tags { 
+		Tags
+		{ 
 			"Queue"="Transparent" 
+			"IgnoreProjector"="True" 
 			"RenderType"="Transparent" 
 			"PreviewType"="Plane"
+			"CanUseSpriteAtlas"="True"
 		}
 
 		Cull Off
 		Lighting Off
 		ZWrite Off
 		Blend One OneMinusSrcAlpha
+		
+//		Stencil {
+//			Ref [_StencilRef]
+//			Comp Equal
+//		}
+
 		Pass {
 			CGPROGRAM
 			#pragma vertex vert
@@ -32,7 +42,7 @@
 			#pragma target 2.0
 
 			#include "UnityCG.cginc"
-			#include "BackgroundCommon.cginc"
+			#include "Common.cginc"
 
 			fixed4 _Color1, _Color2;
 			float _Radius, _CenterX, _CenterY, _Amplitude;
@@ -42,23 +52,11 @@
 			float  _WarpScale;
 			float  _WarpTiling;
 			float _Indent;
-
-			struct appdata {
-				float4 vertex : POSITION;
-				float2 uv : TEXCOORD0;
-			};
 			
-			struct v2f {
-				float2 uv : TEXCOORD0;
-				float4 vertex : SV_POSITION;
-			};
-
 			v2f vert (appdata v) {
-				v2f o;
-				o.vertex = UnityObjectToClipPos(v.vertex);
-				o.uv = v.uv;
-				return o;
+				return vert_default(v);
 			}
+			
             inline fixed color_selector_anti_aliasing(float d1, float d2, float indent) {
                 int k = 0;
                 while (d1 > (d2 + indent) * _Radius * k && k < 100)

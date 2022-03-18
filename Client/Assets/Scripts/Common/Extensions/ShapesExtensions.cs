@@ -36,6 +36,12 @@ namespace Common.Extensions
             return _Shape;
         }
         
+        public static T SetStencilRefId<T>(this T _Shape, byte _StencilRefId) where T : ShapeRenderer
+        {
+            _Shape.StencilRefID = _StencilRefId;
+            return _Shape;
+        }
+        
         public static T SetColor<T>(this T _Shape, Color _Color) where T : ShapeRenderer
         {
             _Shape.Color = _Color;
@@ -152,6 +158,12 @@ namespace Common.Extensions
         public static Rectangle SetCornerRadius(this Rectangle _Rectangle, float _CornerRadius)
         {
             _Rectangle.CornerRadius = _CornerRadius;
+            return _Rectangle;
+        }
+        
+        public static Rectangle SetCornerRadii(this Rectangle _Rectangle, Vector4 _CornerRadii)
+        {
+            _Rectangle.CornerRadii = _CornerRadii;
             return _Rectangle;
         }
 

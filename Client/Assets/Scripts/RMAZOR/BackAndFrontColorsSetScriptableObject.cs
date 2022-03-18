@@ -1,7 +1,7 @@
 ﻿using System;
 using Common.Helpers;
 using Common.Helpers.Attributes;
-using Unity.Plastic.Newtonsoft.Json;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace RMAZOR

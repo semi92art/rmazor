@@ -22,7 +22,7 @@ Shader "RMAZOR/Background/Triangles" {
             #pragma vertex vert
             #pragma fragment frag
             #include "UnityCG.cginc"
-            #include "BackgroundCommon.cginc"
+            #include "Common.cginc"
             
             fixed4 _Color1, _Color2;
             float _Size, _Ratio, _A, _B;
@@ -31,23 +31,11 @@ Shader "RMAZOR/Background/Triangles" {
 			float  _WarpScale;
 			float  _WarpTiling;
 
-            struct appdata {
-                float4 vertex  : POSITION;
-                float2 uv      : TEXCOORD0;
-                float4 tangent : TANGENT;
-                float3 normal  : NORMAL;
-            };
-
-            struct v2f {
-                float4 vertex : SV_POSITION;
-                float2 uv     : TEXCOORD0;
-            };
-
-            float rand(float2 co) {
+            inline float rand(float2 co) {
                 return frac(dot(co, float2(_A, _B)));
             }
 
-            float2 getTriangleCoords(float2 uv) {
+            inline float2 getTriangleCoords(float2 uv) {
                 uv.y *= _Ratio;
                 float2 coords = floor(uv);
                 coords.x *= 2.0;
@@ -61,10 +49,7 @@ Shader "RMAZOR/Background/Triangles" {
             }
 
             v2f vert(appdata v) {
-                v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = v.uv;
-                return o;
+                return vert_default(v);
             }
 
             fixed4 frag(v2f i) : SV_Target {

@@ -212,7 +212,6 @@ namespace RMAZOR.Views.Common
             LevelStageArgs                     _Args,
             IReadOnlyCollection<IViewMazeItem> _MazeItems)
         {
-            Dbg.Log(nameof(OnLevelLoaded));
             var savedGameEntity = Managers.ScoreManager.
                 GetSavedGameProgress(CommonData.SavedGameFileName, true);
             Cor.Run(Cor.WaitWhile(

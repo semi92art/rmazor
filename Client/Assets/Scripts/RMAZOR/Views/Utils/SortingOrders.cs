@@ -6,19 +6,20 @@ namespace RMAZOR.Views.Utils
     public static class SortingOrders
     {
         public const int
-            BackgroundTexture           = Path - 6,
-            BackgroundItem              = Path - 5,
-            AdditionalBackgroundPolygon = Path - 4,
-            AdditionalBackgroundBorder  = Path - 3,
-            AdditionalBackgroundCorner  = Path - 2,
-            PathBackground              = Path - 1,
-            Path                        = -1,
-            PathLine                    = Path + 1,
-            PathJoint                   = Path + 2,
-            MoneyItem                   = Path + 3,
-            Character                   = Path + 200,
-            GameLogoBackground          = Path + 300,
-            GameLogoForeground          = Path + 301;
+            BackgroundTexture            = Path - 7,
+            BackgroundItem               = Path - 6,
+            AdditionalBackgroundTexture2 = Path - 5,
+            AdditionalBackgroundTexture  = Path - 4,
+            AdditionalBackgroundBorder   = Path - 3,
+            AdditionalBackgroundCorner   = Path - 2,
+            PathBackground               = Path - 1,
+            Path                         = -1,
+            PathLine                     = Path + 50,
+            PathJoint                    = Path + 100,
+            MoneyItem                    = Path + 150,
+            Character                    = Path + 200,
+            GameLogoBackground           = Path + 300,
+            GameLogoForeground           = Path + 301;
 
         public static int GetBlockSortingOrder(EMazeItemType _Type)
         {

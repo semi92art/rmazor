@@ -11,11 +11,11 @@ Shader "RMAZOR/Background/Additional Background" {
 	{
 		Tags
 		{ 
-			"Queue"="Transparent" 
-			"IgnoreProjector"="True" 
-			"RenderType"="Transparent" 
-			"PreviewType"="Plane"
-			"CanUseSpriteAtlas"="True"
+			"Queue"             = "Transparent" 
+			"IgnoreProjector"   = "True" 
+			"RenderType"        = "Transparent" 
+			"PreviewType"       = "Plane"
+			"CanUseSpriteAtlas" = "True"
 		}
 
 		Cull Off
@@ -31,59 +31,33 @@ Shader "RMAZOR/Background/Additional Background" {
 		Pass
 		{
 		CGPROGRAM
-			#pragma vertex vert
+			#pragma vertex   vert
 			#pragma fragment frag
 			#pragma multi_compile _ PIXELSNAP_ON
 			#include "UnityCG.cginc"
-			
-			struct appdata_t
-			{
-				float4 vertex   : POSITION;
-				float4 color    : COLOR;
-				float2 uv : TEXCOORD0;
-			};
-
-			struct v2f
-			{
-				float4 vertex   : SV_POSITION;
-				fixed4 color    : COLOR;
-				float2 uv  : TEXCOORD0;
-			};
-			
-			fixed4 _Color;
-
-			v2f vert(appdata_t IN)
-			{
-				v2f OUT;
-				OUT.vertex = UnityObjectToClipPos(IN.vertex);
-				OUT.uv = IN.uv;
-				OUT.color = IN.color * _Color;
-				#ifdef PIXELSNAP_ON
-				OUT.vertex = UnityPixelSnap (OUT.vertex);
-				#endif
-
-				return OUT;
+			#include "../Common.cginc"
+		
+			v2f vert(appdata v) {
+				return vert_default(v);
 			}
 
+	     	fixed4    _Color;
 			sampler2D _MainTex;
-			sampler2D _AlphaTex;
-			float _AlphaSplitEnabled;
+			float     _AlphaSplitEnabled;
 
-			fixed4 SampleSpriteTexture (float2 uv)
+			inline fixed4 sample_sprite_texture (float2 uv)
 			{
 				fixed4 color = tex2D (_MainTex, uv);
-
 #if UNITY_TEXTURE_ALPHASPLIT_ALLOWED
 				if (_AlphaSplitEnabled)
 					color.a = tex2D (_AlphaTex, uv).r;
 #endif
-
 				return color;
 			}
 
 			fixed4 frag(v2f IN) : SV_Target
 			{
-				fixed4 c = SampleSpriteTexture (IN.uv) * IN.color;
+				fixed4 c = sample_sprite_texture (IN.uv) * IN.color;
 				c.rgb *= c.a;
 				return c;
 			}

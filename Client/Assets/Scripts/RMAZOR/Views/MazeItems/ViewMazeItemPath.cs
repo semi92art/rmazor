@@ -66,10 +66,6 @@ namespace RMAZOR.Views.MazeItems
             IsBottomRightCornerInner,
             IsTopLeftCornerInner,
             IsTopRightCornerInner;
-        private bool m_BottomLeftCornerIsOuterAndNearTrapIncreasing;
-        private bool m_BottomRightCornerIsOuterAndNearTrapIncreasing;
-        private bool m_TopLeftCornerIsOuterAndNearTrapIncreasing;
-        private bool m_TopRightCornerIsOuterAndNearTrapIncreasing;
         private bool m_IsLeftBorderInverseOffset;
         private bool m_IsRightBorderInverseOffset;
         private bool m_IsBottomBorderInverseOffset;
@@ -246,18 +242,16 @@ namespace RMAZOR.Views.MazeItems
         {
             if (_ColorId != ColorIds.Main) 
                 return;
-            if (BottomLeftCornerInited && !m_BottomLeftCornerIsOuterAndNearTrapIncreasing)
+            if (BottomLeftCornerInited)
                 m_BottomLeftCorner.Color = _Color;
-            if (BottomRightCornerInited && !m_BottomRightCornerIsOuterAndNearTrapIncreasing)
+            if (BottomRightCornerInited)
                 m_BottomRightCorner.Color = _Color;
-            if (TopLeftCornerInited && !m_TopLeftCornerIsOuterAndNearTrapIncreasing)
+            if (TopLeftCornerInited)
                 m_TopLeftCorner.Color = _Color;
-            if (TopRightCornerInited && !m_TopRightCornerIsOuterAndNearTrapIncreasing)
+            if (TopRightCornerInited)
                 m_TopRightCorner.Color = _Color;
-            
             if (!Collected || Props.Blank || Props.IsMoneyItem)
                 m_PathItem.Color = _Color;
-
             var borderCol = MainColorToBorderColor(_Color);
             if (m_LeftBorderInited)
                 m_LeftBorder.Color = borderCol;
@@ -267,14 +261,6 @@ namespace RMAZOR.Views.MazeItems
                 m_BottomBorder.Color = borderCol;
             if (m_TopBorderInited)
                 m_TopBorder.Color = borderCol;
-            if (BottomLeftCornerInited && m_BottomLeftCornerIsOuterAndNearTrapIncreasing)
-                m_BottomLeftCorner.Color = borderCol;
-            if (BottomRightCornerInited && m_BottomRightCornerIsOuterAndNearTrapIncreasing)
-                m_BottomRightCorner.Color = borderCol;
-            if (TopLeftCornerInited && m_TopLeftCornerIsOuterAndNearTrapIncreasing)
-                m_TopLeftCorner.Color = borderCol;
-            if (TopRightCornerInited && m_TopRightCornerIsOuterAndNearTrapIncreasing)
-                m_TopRightCorner.Color = borderCol;
         }
 
         private void SetBordersAndCorners()
@@ -503,22 +489,22 @@ namespace RMAZOR.Views.MazeItems
             if (corner.IsNull())
                 corner = Object.AddComponentOnNewChild<Disc>("Corner", out _);
             var angles = GetCornerAngles(_Right, _Up, _Inner);
+            bool isOuterAndNearTrapIncreasing = IsCornerOuterAndNearTurret(_Right, _Up, _Inner);
+            var pos = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
             corner.SetType(DiscType.Arc)
-                .SetArcEndCaps(ArcEndCap.None)
+                .SetArcEndCaps(isOuterAndNearTrapIncreasing ? ArcEndCap.Round : ArcEndCap.None)
                 .SetRadius(ViewSettings.CornerRadius * CoordinateConverter.Scale)
                 .SetThickness(ViewSettings.CornerWidth * CoordinateConverter.Scale)
                 .SetAngRadiansStart(Mathf.Deg2Rad * angles.x)
                 .SetAngRadiansEnd(Mathf.Deg2Rad * angles.y)
                 .SetColor(ColorProvider.GetColor(ColorIds.Main))
-                .SetSortingOrder(SortingOrders.PathJoint);
-            corner!.transform.position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
-            corner.transform.PlusLocalPosXY(GetCornerCenter(_Right, _Up, _Inner));
-            corner.enabled = false;
-            bool isOuterAndNearTrapIncreasing = IsCornerOuterAndNearTrapIncreasing(_Right, _Up, _Inner);
+                .SetSortingOrder(SortingOrders.PathJoint)
+                .transform.SetPosXY(pos)
+                .PlusLocalPosXY(GetCornerCenter(_Right, _Up, _Inner));
+            corner!.enabled = false;
             if (!_Right && !_Up)
             {
                 m_BottomLeftCorner = corner;
-                m_BottomLeftCornerIsOuterAndNearTrapIncreasing = isOuterAndNearTrapIncreasing;
                 BottomLeftCornerInited = true;
                 IsBottomLeftCornerInner = _Inner;
                 if (!_Inner) return;
@@ -530,7 +516,6 @@ namespace RMAZOR.Views.MazeItems
             else if (_Right && !_Up)
             {
                 m_BottomRightCorner = corner;
-                m_BottomRightCornerIsOuterAndNearTrapIncreasing = isOuterAndNearTrapIncreasing;
                 BottomRightCornerInited = true;
                 IsBottomRightCornerInner = _Inner;
                 if (!_Inner) return;
@@ -542,7 +527,6 @@ namespace RMAZOR.Views.MazeItems
             else if (!_Right)
             {
                 m_TopLeftCorner = corner;
-                m_TopLeftCornerIsOuterAndNearTrapIncreasing = isOuterAndNearTrapIncreasing;
                 TopLeftCornerInited = true;
                 IsTopLeftCornerInner = _Inner;
                 if (!_Inner) return;
@@ -554,7 +538,6 @@ namespace RMAZOR.Views.MazeItems
             else
             {
                 m_TopRightCorner = corner;
-                m_TopRightCornerIsOuterAndNearTrapIncreasing = isOuterAndNearTrapIncreasing;
                 TopRightCornerInited = true;
                 IsTopRightCornerInner = _Inner;
                 if (!_Inner) return;
@@ -647,13 +630,15 @@ namespace RMAZOR.Views.MazeItems
             return _Inner ? new Vector2(180, 270) : new Vector2(0, 90);
         }
 
-        private bool IsCornerOuterAndNearTrapIncreasing(bool _Right, bool _Up, bool _Inner)
+        private bool IsCornerOuterAndNearTurret(bool _Right, bool _Up, bool _Inner)
         {
             if (_Inner)
                 return false;
-            return _Right ? 
-                TrapIncreasingExist(Props.Position + V2Int.Right + (_Up ? V2Int.Up : V2Int.Down)) 
-                : TrapIncreasingExist(Props.Position + V2Int.Left + (_Up ? V2Int.Up : V2Int.Down));
+            bool result = TurretExist(Props.Position + (_Right ? V2Int.Right : V2Int.Left))
+                          || TurretExist(Props.Position + (_Up ? V2Int.Up : V2Int.Down));
+            if (result)
+                Dbg.Log("IsCornerOuterAndNearTurret");
+            return result;
         }
 
         private bool PathExist(V2Int _Position) => Model.PathItemsProceeder.PathProceeds.Keys.Contains(_Position);
@@ -675,11 +660,6 @@ namespace RMAZOR.Views.MazeItems
                 return info.Direction;
             Dbg.LogError("Info cannot be null");
             return default;
-        }
-
-        private bool TrapIncreasingExist(V2Int _Position)
-        {
-            return GetItemInfo(_Position, EMazeItemType.TrapIncreasing) != null;
         }
 
         private IMazeItemProceedInfo GetItemInfo(V2Int _Position, EMazeItemType _Type)
@@ -739,22 +719,15 @@ namespace RMAZOR.Views.MazeItems
         {
             var setsRaw = new Dictionary<Color, List<Component>>();
             var defCornerCol = ColorProvider.GetColor(ColorIds.Main);
-            var altCornerCol = ColorProvider.GetColor(ColorIds.Main);
             setsRaw.Add(defCornerCol, new List<Component>());
-            if (altCornerCol != defCornerCol)
-                setsRaw.Add(altCornerCol, new List<Component>());
             if (BottomLeftCornerInited)
-                setsRaw[m_BottomLeftCornerIsOuterAndNearTrapIncreasing ? altCornerCol : defCornerCol]
-                    .Add(m_BottomLeftCorner);
+                setsRaw[defCornerCol].Add(m_BottomLeftCorner);
             if (BottomRightCornerInited)
-                setsRaw[m_BottomRightCornerIsOuterAndNearTrapIncreasing ? altCornerCol : defCornerCol]
-                    .Add(m_BottomRightCorner);
+                setsRaw[defCornerCol].Add(m_BottomRightCorner);
             if (TopLeftCornerInited)
-                setsRaw[m_TopLeftCornerIsOuterAndNearTrapIncreasing ? altCornerCol : defCornerCol]
-                    .Add(m_TopLeftCorner);
+                setsRaw[defCornerCol].Add(m_TopLeftCorner);
             if (TopRightCornerInited)
-                setsRaw[m_TopRightCornerIsOuterAndNearTrapIncreasing ? altCornerCol : defCornerCol]
-                    .Add(m_TopRightCorner);
+                setsRaw[defCornerCol].Add(m_TopRightCorner);
             var sets = setsRaw.
                 ToDictionary(
                     _Kvp => (IEnumerable<Component>)_Kvp.Value,

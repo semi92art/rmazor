@@ -57,7 +57,7 @@ namespace RMAZOR.Views.MazeItems
         private SpriteRenderer m_ProjRend;
         private SpriteRenderer m_ProjFakeRend;
         private Rectangle      m_Mask1, m_Mask2;
-        private Disc           m_Mask3;
+        private Rectangle      m_Mask3;
 
         #endregion
         
@@ -215,7 +215,7 @@ namespace RMAZOR.Views.MazeItems
                     .SetRenderQueue(-1)
                     .SetZTest(CompareFunction.Less)
                     .SetColor(new Color(0f, 0f, 0f, 1f / 255f))
-                    .SetSortingOrder(SortingOrders.AdditionalBackgroundPolygon)
+                    .SetSortingOrder(SortingOrders.AdditionalBackgroundTexture)
                     .SetStencilComp(CompareFunction.Greater)
                     .SetStencilOpPass(StencilOp.Replace);
                 _Mask.transform.SetPosZ(-0.1f);
@@ -225,34 +225,39 @@ namespace RMAZOR.Views.MazeItems
             m_Mask2 = projParent.AddComponentOnNewChild<Rectangle>("Mask 2", out GameObject _);
             SetProjectileMaskProperties(m_Mask1);
             SetProjectileMaskProperties(m_Mask2);
-            m_Mask3 = Object.AddComponentOnNewChild<Disc>("Mask 3", out GameObject _)
-                .SetSortingOrder(sortingOrder - 1)
+            m_Mask3 = Object.AddComponentOnNewChild<Rectangle>("Mask 3", out GameObject _)
+                .SetSortingOrder(SortingOrders.PathLine - 1)
                 .SetColor(Color.Lerp(
                     ColorProvider.GetColor(ColorIds.Background1),
                     ColorProvider.GetColor(ColorIds.Background2),
-                    0.5f));
+                    0.5f))
+                .SetType(Rectangle.RectangleType.RoundedSolid)
+                .SetCornerRadiusMode(Rectangle.RectangleCornerRadiusMode.PerCorner)
+                .SetCornerRadii(GetMaskCornerRadii());
             AdditionalBackground.GroupsCollected += SetStencilRefValues;
         }
 
         protected override void UpdateShape()
         {
             float scale = CoordinateConverter.Scale;
-            m_Body.Radius = CoordinateConverter.Scale * 0.5f;
-            m_Body.Thickness = ViewSettings.LineWidth * scale;
-            var projectileScale = Vector3.one * scale * ProjectileContainerRadius * 0.9f;
-            m_ProjContTr.localScale = m_ProjFakeContTr.localScale = projectileScale;
+            m_Body.SetRadius(CoordinateConverter.Scale * 0.5f)
+                .SetThickness(ViewSettings.LineWidth * scale);
+            var projectileScale = Vector2.one * scale * ProjectileContainerRadius * 0.9f;
+            m_ProjContTr.SetLocalScaleXY(projectileScale);
+            m_ProjFakeContTr.SetLocalScaleXY(projectileScale);
             var pos = CoordinateConverter.ToLocalMazeItemPosition(Props.Position);
             m_ProjContTr.SetLocalPosXY(pos);
             m_ProjFakeContTr.SetLocalPosXY(pos);
-            m_Mask1.Width = m_Mask1.Height = scale;
-            m_Mask2.Width = m_Mask2.Height = scale;
-            m_Mask3.Radius = CoordinateConverter.Scale * 0.5f;
-            m_Mask3.Color = Color.Lerp(
-                ColorProvider.GetColor(ColorIds.Background1), 
-                ColorProvider.GetColor(ColorIds.Background2),
-                0.5f);
-            m_ProjHolderBorder.Radius = scale * ProjectileContainerRadius * 0.9f;
-            m_ProjHolderBorder.Thickness = ViewSettings.LineWidth * scale * 0.5f;
+            m_Mask1.SetWidth(scale).SetHeight(scale);
+            m_Mask2.SetWidth(scale).SetHeight(scale);
+            m_Mask3.SetWidth(scale).SetHeight(scale);
+            m_Mask3.SetCornerRadii(GetMaskCornerRadii())
+                .SetColor(Color.Lerp(
+                    ColorProvider.GetColor(ColorIds.Background1),
+                    ColorProvider.GetColor(ColorIds.Background2),
+                    0.5f));
+            m_ProjHolderBorder.SetRadius(scale * ProjectileContainerRadius * 0.9f)
+                .SetThickness(ViewSettings.LineWidth * scale * 0.5f);
         }
 
         private void SetStencilRefValues(List<PointsGroupArgs> _Groups)
@@ -630,6 +635,21 @@ namespace RMAZOR.Views.MazeItems
             if (Model.LevelStaging.LevelStage == ELevelStage.Finished)
                 return false;
             return !Model.PathItemsProceeder.AllPathsProceeded;
+        }
+
+        private Vector4 GetMaskCornerRadii()
+        {
+            float radius = CoordinateConverter.Scale * 0.5f;
+            float bottomLeftR  = IsPathItem(Props.Position + V2Int.Down + V2Int.Left)  ? 0f : radius;
+            float topLeftR     = IsPathItem(Props.Position + V2Int.Up + V2Int.Left)    ? 0f : radius;
+            float topRightR    = IsPathItem(Props.Position + V2Int.Up + V2Int.Right)   ? 0f : radius;
+            float bottomRightR = IsPathItem(Props.Position + V2Int.Down + V2Int.Right) ? 0f : radius;
+            return new Vector4(bottomLeftR, topLeftR, topRightR, bottomRightR);
+        }
+
+        private bool IsPathItem(V2Int _Point)
+        {
+            return Model.PathItemsProceeder.PathProceeds.Keys.Contains(_Point);
         }
 
         #endregion

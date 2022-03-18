@@ -79,7 +79,6 @@ namespace RMAZOR.Managers
 
         private void FetchConfigs()
         {
-            Dbg.Log(nameof(FetchConfigs));
 #if !UNITY_EDITOR
             ConfigManager.FetchCompleted -= OnFetchCompleted;
             ConfigManager.FetchCompleted += OnFetchCompleted;
