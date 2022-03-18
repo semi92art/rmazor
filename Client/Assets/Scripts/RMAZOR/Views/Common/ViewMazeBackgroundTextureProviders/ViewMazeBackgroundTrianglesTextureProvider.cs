@@ -22,7 +22,7 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
         #region nonpublic members
 
         protected override int    SortingOrder      => SortingOrders.BackgroundTexture;
-        protected override string TexturePrefabName => "triangles_texture";
+        protected override string MaterialAssetName => "triangles_background";
 
         private static readonly int
             SizeId  = Shader.PropertyToID("_Size"),

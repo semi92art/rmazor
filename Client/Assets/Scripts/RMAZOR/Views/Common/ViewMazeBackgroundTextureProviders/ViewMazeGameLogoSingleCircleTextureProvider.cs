@@ -22,7 +22,7 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
         #region nonpublic members
 
         protected override int    SortingOrder      => SortingOrders.GameLogoBackground;
-        protected override string TexturePrefabName => "single_circle_texture";
+        protected override string MaterialAssetName => "single_circle_background";
 
         private static readonly int Color1Id = Shader.PropertyToID("_Color1");
         private static readonly int Color2Id = Shader.PropertyToID("_Color2");

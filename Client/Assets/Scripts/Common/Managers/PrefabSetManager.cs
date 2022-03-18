@@ -19,11 +19,11 @@ namespace Common.Managers
 #if UNITY_EDITOR
         void SetPrefab(string _PrefabSetName, string _PrefabName, Object _Prefab);
 #endif
-        GameObject InitPrefab(Transform _Parent, string _PrefabSetName, string _PrefabName);
-        GameObject InitUiPrefab(RectTransform _RectTransform, string _PrefabSetName, string _PrefabName);
-
-        T               GetObject<T>(string _PrefabSetName, string _ObjectName) where T : Object;
-        PrefabEntity<T> GetObjectEntity<T>(string _PrefabSetName, string _ObjectName) where T : Object;
+        GameObject      InitPrefab(Transform       _Parent,        string _PrefabSetName, string _PrefabName);
+        GameObject      InitUiPrefab(RectTransform _RectTransform, string _PrefabSetName, string _PrefabName);
+        T               GetObject<T>(string        _PrefabSetName, string _ObjectName) where T : Object;
+        T               InitObject<T>(string       _PrefabSetName, string _ObjectName) where T : Object;
+        PrefabEntity<T> GetObjectEntity<T>(string  _PrefabSetName, string _ObjectName) where T : Object;
     }
     
     public class PrefabSetManager : IPrefabSetManager
@@ -123,6 +123,14 @@ namespace Common.Managers
                              $"with name \"{_ObjectName}\" was not set, bundles: {prefab.bundle}");
             }
             return content;
+        }
+
+        public T InitObject<T>(
+            string _PrefabSetName,
+            string _ObjectName) where T : Object
+        {
+            var @object = GetObject<T>(_PrefabSetName, _ObjectName);
+            return Object.Instantiate(@object);
         }
 
         public PrefabEntity<T> GetObjectEntity<T>(string _PrefabSetName, string _ObjectName) where T : Object

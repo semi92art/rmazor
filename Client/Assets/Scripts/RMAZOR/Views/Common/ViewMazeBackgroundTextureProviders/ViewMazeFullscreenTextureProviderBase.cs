@@ -11,10 +11,10 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
 {
     public abstract class ViewMazeFullscreenTextureProviderBase : InitBase
     {
-        protected abstract int    SortingOrder      { get; }
-        protected abstract string TexturePrefabName { get; }
-        
-        protected Material          Material;
+        protected abstract int      SortingOrder      { get; }
+        protected abstract string   MaterialAssetName { get; }
+
+        protected Material Material;
         
         
         protected IPrefabSetManager PrefabSetManager { get; }
@@ -58,10 +58,10 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
         {
             var parent = ContainersGetter.GetContainer(ContainerNames.Background);
             var go = PrefabSetManager.InitPrefab(
-                parent,
-                "views",
-                TexturePrefabName);
+                parent, "views", "background_texture");
             Renderer = go.GetCompItem<MeshRenderer>("renderer");
+            Renderer.material = PrefabSetManager.InitObject<Material>(
+                "materials", MaterialAssetName);
             ScaleTextureToViewport(Renderer);
             Renderer.sortingOrder = SortingOrder;
             Material = Renderer.sharedMaterial;

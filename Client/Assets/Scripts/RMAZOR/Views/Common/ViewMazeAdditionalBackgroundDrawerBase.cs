@@ -189,7 +189,7 @@ namespace RMAZOR.Views.Common
                 "Additional Background Back", out _);
             rendBack.sprite = PrefabSetManager.GetObject<Sprite>(
                 "icons", "icon_square_100x100");
-            rendBack.material = PrefabSetManager.GetObject<Material>(
+            rendBack.material = PrefabSetManager.InitObject<Material>(
                 "materials", "additional_background_back");
             rendBack.sortingOrder = SortingOrders.AdditionalBackgroundTexture2;
             m_TextureRendererBack = rendBack;

@@ -22,7 +22,7 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
         #region nonpublic members
         
         protected override int    SortingOrder      => SortingOrders.BackgroundTexture;
-        protected override string TexturePrefabName => "lines_texture";
+        protected override string MaterialAssetName => "lines_background";
 
         #endregion
 
