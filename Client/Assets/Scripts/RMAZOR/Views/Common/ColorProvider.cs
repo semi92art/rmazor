@@ -53,7 +53,7 @@ namespace RMAZOR.Views.Common
         public override void Init()
         {
             m_LightThemeSet = RemoteProperties.MainColorsSet;
-            if (m_LightThemeSet == null)
+            if (m_LightThemeSet.NullOrEmpty())
             {
                 m_LightThemeSet = PrefabSetManager.GetObject<MainColorsSetScriptableObject>(
                     "views", "color_set_light").set;

@@ -20,7 +20,6 @@ namespace RMAZOR.Managers
     {
         #region inject
 
-        // ReSharper disable once UnusedAutoPropertyAccessor.Local
         private CommonGameSettings          Settings          { get; }
         private IModelGame                  Model             { get; }
         private IViewInputCommandsProceeder CommandsProceeder { get; }

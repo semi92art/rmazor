@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Common;
 using Common.Entities.UI;
+using Common.Exceptions;
 using Common.Extensions;
 using Common.Managers;
 using Common.Managers.Advertising;
@@ -72,7 +74,7 @@ namespace RMAZOR
 
         private Vector3 m_SwipeFirstPosition;
         private Vector3 m_SwipeLastPosition;
-        private float m_SwipeDragDistance;
+        private float m_SwipeDragThreshold;
         private int m_CurrentCommand;
         private int m_Index;
         private bool m_IsVisible;
@@ -113,7 +115,7 @@ namespace RMAZOR
         {
             Controller.OnLogChanged += OnLogChanged;
             UpdateLogStr(Controller.Log);
-            m_SwipeDragDistance = Screen.width * 30 * 0.01f;
+            m_SwipeDragThreshold = GraphicUtils.ScreenSize.x * 0.2f;
         }
 
         private void OnDestroy()
@@ -127,69 +129,49 @@ namespace RMAZOR
                 ToggleVisibility();
             if (LeanInput.GetDown(KeyCode.Return))
                 RunCommand();
-            //Toggle visibility when tilde key pressed
             if (LeanInput.GetDown(KeyCode.KeypadDivide))
                 ToggleVisibility();
-
             //Arrow up in history
             if (LeanInput.GetDown(KeyCode.UpArrow))
                 UpCommand();
             if (LeanInput.GetDown(KeyCode.DownArrow))
                 DownCommand();
-
             //Visibility on mouse swipe
             if (LeanInput.GetMouseDown(0))
                 m_SwipeFirstPosition = Mouse.current.position.ReadValue();
             else if (LeanInput.GetMouseUp(0))
             {
                 m_SwipeLastPosition = Mouse.current.position.ReadValue();
-                if ((m_SwipeFirstPosition.x - m_SwipeLastPosition.x > m_SwipeDragDistance) && !m_IsVisible)
+                if ((m_SwipeFirstPosition.x - m_SwipeLastPosition.x > m_SwipeDragThreshold) && !m_IsVisible)
                     ToggleVisibility();
-                if ((m_SwipeLastPosition.x - m_SwipeFirstPosition.x > m_SwipeDragDistance) && m_IsVisible)
+                if ((m_SwipeLastPosition.x - m_SwipeFirstPosition.x > m_SwipeDragThreshold) && m_IsVisible)
                     ToggleVisibility();
             }
-            
-            if (LeanInput.GetTouchCount() > 0 )
+            if (LeanInput.GetTouchCount() > 0)
             {
-                LeanInput.GetTouch(0, out int _, out var _, out float _, out bool set);
-                var t = Touchscreen.current.touches[0];
-                if (set)
-                    m_FirstPressPos = t.position.ReadValue();
-                if (t.press.wasReleasedThisFrame)
+                CommonUtils.GetTouch(0, out _, out Vector2 pos, out _, out bool began, out bool ended);
+                if (began)
+                    m_FirstPressPos = pos;
+                else if (ended)
                 {
-                    m_SecondPressPos = t.position.ReadValue();
-                    m_CurrentSwipe = new Vector3(m_SecondPressPos.x - m_FirstPressPos.x, m_SecondPressPos.y - m_FirstPressPos.y);
-                    if (m_CurrentSwipe.magnitude < m_SwipeDragDistance)
-                        return;
-                    m_CurrentSwipe.Normalize();
-                    if (!(m_SecondPressPos == m_FirstPressPos))
+                    m_SecondPressPos = pos;
+                    m_CurrentSwipe = new Vector2(
+                        m_SecondPressPos.x - m_FirstPressPos.x, 
+                        m_SecondPressPos.y - m_FirstPressPos.y);
+                    if (m_CurrentSwipe.magnitude < m_SwipeDragThreshold)
                     {
-                        if (Mathf.Abs(m_CurrentSwipe.x) > Mathf.Abs(m_CurrentSwipe.y))
-                        {
-                            if (m_CurrentSwipe.x < 0 && !m_IsVisible)
-                            {
-                                ToggleVisibility();
-                            }
-                            else if (m_CurrentSwipe.x > 0 && m_IsVisible)
-                            {
-                                ToggleVisibility();
-                            }
-                        }
-                        else
-                        {
-                            if (m_CurrentSwipe.y < 0)
-                            {
-                                Dbg.Log("down");
-                            }
-                            else
-                            {
-                                Dbg.Log("up");
-                            }
-                        }
+                        Dbg.Log("m_CurrentSwipe.magnitude: " + m_CurrentSwipe.magnitude + ", m_SwipeDragThreshold: " + m_SwipeDragThreshold);
+                        return;
+                    }
+                    m_CurrentSwipe.Normalize();
+                    if (Mathf.Abs(m_CurrentSwipe.x) > Mathf.Abs(m_CurrentSwipe.y)
+                        && m_CurrentSwipe.x < 0
+                        && !m_IsVisible)
+                    {
+                        ToggleVisibility();
                     }
                 }
             }
-
             if (m_IsVisible)
             {
                 var sb = new StringBuilder();
@@ -197,7 +179,6 @@ namespace RMAZOR
                     sb.AppendLine(key + " " + value);
                 monitoringValuesArea.text = sb.ToString();
             }
-
             if (inputField.touchScreenKeyboard == null)
                 return;
             switch (inputField.touchScreenKeyboard.status)
@@ -210,6 +191,8 @@ namespace RMAZOR
                 case TouchScreenKeyboard.Status.Canceled:
                 case TouchScreenKeyboard.Status.LostFocus:
                     break;
+                default:
+                    throw new SwitchCaseNotImplementedException(inputField.touchScreenKeyboard.status);
             }
         }
 

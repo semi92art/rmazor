@@ -105,16 +105,6 @@ namespace RMAZOR.Controllers
 
         private void InitDebugging()
         {
-            if (View.Managers.RemoteConfigManager.Initialized)
-                OnRemoteConfigManagerInitialized();
-            else
-                View.Managers.RemoteConfigManager.Initialize += OnRemoteConfigManagerInitialized;
-        }
-
-        private void OnRemoteConfigManagerInitialized()
-        {
-            if (!Settings.DebugEnabled)
-                return;
             SRDebug.Init();
             SROptions.Init(Model.Settings, View.Settings, Model.LevelStaging, View.Managers, View.CommandsProceeder);
             Dbg.Log("SR Debugger Initialized");

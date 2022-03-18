@@ -84,5 +84,10 @@ namespace Common.Extensions
             }
             return false;
         }
+
+        public static bool NullOrEmpty<T>(this IEnumerable<T> _Collection)
+        {
+            return _Collection == null || !_Collection.Any();
+        }
     }
 }

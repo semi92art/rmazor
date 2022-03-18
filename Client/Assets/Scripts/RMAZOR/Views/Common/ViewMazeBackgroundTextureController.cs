@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Common;
 using Common.Exceptions;
+using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
 using Common.Providers;
@@ -141,35 +143,35 @@ namespace RMAZOR.Views.Common
         {
             const string set = "configs";
             m_LinesTextureSetItems = RemoteProperties.LinesTextureSet;
-            if (m_LinesTextureSetItems == null)
+            if (m_LinesTextureSetItems.NullOrEmpty())
             {
                 var linesTextureSet = PrefabSetManager.GetObject<LinesTexturePropertiesSetScriptableObject>
                     (set, "lines_texture_set");
                 m_LinesTextureSetItems = linesTextureSet.set;
             }
             m_CirclesTextureSetItems = RemoteProperties.CirclesTextureSet;
-            if (m_CirclesTextureSetItems == null)
+            if (m_CirclesTextureSetItems.NullOrEmpty())
             {
                 var circlesTextureSet = PrefabSetManager.GetObject<CirclesTexturePropertiesSetScriptableObject>
                     (set, "circles_texture_set");
                 m_CirclesTextureSetItems = circlesTextureSet.set;
             }
             m_Circles2TextureSetItems = RemoteProperties.Circles2TextureSet;
-            if (m_Circles2TextureSetItems == null)
+            if (m_Circles2TextureSetItems.NullOrEmpty())
             {
                 var circles2TextureSet = PrefabSetManager.GetObject<Circles2TexturePropertiesSetScriptableObject>
                     (set, "circles2_texture_set");
                 m_Circles2TextureSetItems = circles2TextureSet.set;
             }
             m_TrianglesTextureSetItems = RemoteProperties.TrianglesTextureSet;
-            if (m_TrianglesTextureSetItems == null)
+            if (m_TrianglesTextureSetItems.NullOrEmpty())
             {
                 var trianglesTextureSet = PrefabSetManager.GetObject<TrianglesTexturePropertiesSetScriptableObject>
                     (set, "triangles_texture_set");
                 m_TrianglesTextureSetItems = trianglesTextureSet.set;
             }
             m_BackAndFrontColorsSetItemsLight = RemoteProperties.BackAndFrontColorsSet;
-            if (m_BackAndFrontColorsSetItemsLight == null)
+            if (m_BackAndFrontColorsSetItemsLight.NullOrEmpty())
             {
                 var backgroundColorsSetLight = PrefabSetManager.GetObject<BackAndFrontColorsSetScriptableObject>
                     (set, "back_and_front_colors_set_light");
