@@ -1,7 +1,6 @@
 ﻿using Common;
 using Common.Helpers;
 using Common.Utils;
-using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views;
 using Zenject;
@@ -32,19 +31,16 @@ namespace RMAZOR.Controllers
         
         public  IModelGame           Model               { get; private set; }
         public  IViewGame            View                { get; private set; }
-        private IRemoteConfigManager RemoteConfigManager { get; set; }
         private CommonGameSettings   Settings            { get; set; }
 
         [Inject]
         public void Inject(
             IModelGame           _Model,
             IViewGame            _View,
-            IRemoteConfigManager _RemoteConfigManager,
             CommonGameSettings   _Settings)
         {
             Model               = _Model;
             View                = _View;
-            RemoteConfigManager = _RemoteConfigManager;
             Settings            = _Settings;
         }
 
@@ -109,18 +105,21 @@ namespace RMAZOR.Controllers
 
         private void InitDebugging()
         {
-            if (RemoteConfigManager.Initialized)
+            if (View.Managers.RemoteConfigManager.Initialized)
                 OnRemoteConfigManagerInitialized();
-            else 
-                RemoteConfigManager.Initialize += OnRemoteConfigManagerInitialized;
+            else
+                View.Managers.RemoteConfigManager.Initialize += OnRemoteConfigManagerInitialized;
         }
 
         private void OnRemoteConfigManagerInitialized()
         {
             if (!Settings.DebugEnabled)
                 return;
-            SROptions.Init(Model, View);
             SRDebug.Init();
+            SROptions.Init(Model.Settings, View.Settings, Model.LevelStaging, View.Managers, View.CommandsProceeder);
+            Dbg.Log("SR Debugger Initialized");
+            View.Managers.DebugManager.Init();
+            Dbg.Log("Debug Manager Initialized");
         }
 
         #endregion

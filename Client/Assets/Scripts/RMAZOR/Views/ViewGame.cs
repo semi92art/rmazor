@@ -122,7 +122,6 @@ namespace RMAZOR.Views
 
         public override void Init()
         {
-            InitDebugManager();
             InitProceeders();
             base.Init();
         }
@@ -156,14 +155,6 @@ namespace RMAZOR.Views
         #endregion
         
         #region nonpublic methods
-
-        private void InitDebugManager()
-        {
-            if (Managers.RemoteConfigManager.Initialized)
-                DebugManager.Init();
-            else
-                Managers.RemoteConfigManager.Initialize += DebugManager.Init;
-        }
 
         private void InitProceeders()
         {

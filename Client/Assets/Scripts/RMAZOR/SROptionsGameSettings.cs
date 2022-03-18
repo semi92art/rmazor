@@ -13,8 +13,8 @@ using Common.Constants;
 using Common.Entities;
 using Common.Extensions;
 using Common.Utils;
+using RMAZOR.Managers;
 using RMAZOR.Models;
-using RMAZOR.Views;
 using RMAZOR.Views.InputConfigurators;
 using UnityEngine;
 
@@ -30,19 +30,24 @@ namespace RMAZOR
         private const string CategoryAds        = "Ads";
         private const string CategoryMonitor    = "Monitor";
 
-        private static IModelGame    _model;
-        private static IViewGame     _view;
-        private static ModelSettings _modelSettings;
-        private static ViewSettings  _viewSettings;
+        private static ModelSettings               _modelSettings;
+        private static ViewSettings                _viewSettings;
+        private static IModelLevelStaging          _levelStaging;
+        private static IManagersGetter             _managers;
+        private static IViewInputCommandsProceeder _commandsProceeder;
     
         public static void Init(
-            IModelGame _Model,
-            IViewGame _View)
+            ModelSettings               _ModelSettings,
+            ViewSettings                _ViewSettings,
+            IModelLevelStaging          _LevelStaging,
+            IManagersGetter             _Managers,
+            IViewInputCommandsProceeder _CommandsProceeder)
         {
-            _model = _Model;
-            _view = _View;
-            _modelSettings = _Model.Settings;
-            _viewSettings = _View.Settings;
+            _modelSettings     = _ModelSettings;
+            _viewSettings      = _ViewSettings;
+            _levelStaging      = _LevelStaging;
+            _managers          = _Managers;
+            _commandsProceeder = _CommandsProceeder;
             SRDebug.Instance.PanelVisibilityChanged += OnPanelVisibilityChanged;
         }
 
@@ -51,9 +56,9 @@ namespace RMAZOR
             var commands = new[] {EInputCommand.ShopMenu, EInputCommand.SettingsMenu}
                 .Concat(RazorMazeUtils.MoveAndRotateCommands);
             if (_Visible)
-                _view.CommandsProceeder.LockCommands(commands, nameof(SROptions));
+                _commandsProceeder.LockCommands(commands, nameof(SROptions));
             else
-                _view.CommandsProceeder.UnlockCommands(commands, nameof(SROptions));
+                _commandsProceeder.UnlockCommands(commands, nameof(SROptions));
         }
 
         #region model settings
@@ -105,9 +110,9 @@ namespace RMAZOR
                 {
                     FileName = CommonData.SavedGameFileName,
                     Money = Money,
-                    Level = _model.LevelStaging.LevelIndex
+                    Level = _levelStaging.LevelIndex
                 };
-                _view.Managers.ScoreManager.SaveGameProgress(savedGame, false);
+                _managers.ScoreManager.SaveGameProgress(savedGame, false);
             }
         }
 
@@ -126,7 +131,7 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                _view.CommandsProceeder.RaiseCommand(
+                _commandsProceeder.RaiseCommand(
                     EInputCommand.LoadLevelByIndex, 
                     new object[] { Level_Index - 1 },
                     true);
@@ -141,7 +146,7 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                _view.CommandsProceeder.RaiseCommand(EInputCommand.LoadNextLevel, null, true);
+                _commandsProceeder.RaiseCommand(EInputCommand.LoadNextLevel, null, true);
             }
         }
 
@@ -153,8 +158,8 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                long levelIndex = _model.LevelStaging.LevelIndex;
-                _view.CommandsProceeder.RaiseCommand(
+                long levelIndex = _levelStaging.LevelIndex;
+                _commandsProceeder.RaiseCommand(
                     EInputCommand.LoadLevelByIndex, 
                     new object[] { levelIndex - 1 },
                     true);
@@ -169,7 +174,7 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                _view.CommandsProceeder.RaiseCommand(EInputCommand.LoadCurrentLevel, null, true);
+                _commandsProceeder.RaiseCommand(EInputCommand.LoadCurrentLevel, null, true);
             }
         }
 
@@ -181,7 +186,7 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                _view.CommandsProceeder.RaiseCommand(EInputCommand.LoadRandomLevel, null, true);
+                _commandsProceeder.RaiseCommand(EInputCommand.LoadRandomLevel, null, true);
             }
         }
 
@@ -193,7 +198,7 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                _view.CommandsProceeder.RaiseCommand(EInputCommand.LoadRandomLevelWithRotation, null, true);
+                _commandsProceeder.RaiseCommand(EInputCommand.LoadRandomLevelWithRotation, null, true);
             }
         }
 
@@ -205,7 +210,7 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                _view.CommandsProceeder.RaiseCommand(EInputCommand.FinishLevel, null, true);
+                _commandsProceeder.RaiseCommand(EInputCommand.FinishLevel, null, true);
             }
         }
 
@@ -226,7 +231,7 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                _view.Managers.HapticsManager.Play(Amplitude, Frequency, Duration);
+                _managers.HapticsManager.Play(Amplitude, Frequency, Duration);
             }
         }
 
@@ -256,7 +261,7 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                Dbg.Log($"Rewarded ad ready state: {_view.Managers.AdsManager.RewardedAdReady}.");
+                Dbg.Log($"Rewarded ad ready state: {_managers.AdsManager.RewardedAdReady}.");
             }
         }
 
@@ -268,7 +273,7 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                Dbg.Log($"Interstitial ad ready state: {_view.Managers.AdsManager.InterstitialAdReady}.");
+                Dbg.Log($"Interstitial ad ready state: {_managers.AdsManager.InterstitialAdReady}.");
             }
         }
 
@@ -280,7 +285,7 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                _view.Managers.AdsManager.ShowRewardedAd(() => Dbg.Log("Rewarded ad was shown."));
+                _managers.AdsManager.ShowRewardedAd(() => Dbg.Log("Rewarded ad was shown."));
             }
         }
 
@@ -292,7 +297,7 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                _view.Managers.AdsManager.ShowInterstitialAd(() => Dbg.Log("Interstitial ad was shown."));
+                _managers.AdsManager.ShowInterstitialAd(() => Dbg.Log("Interstitial ad was shown."));
             }
         }
 
@@ -304,7 +309,7 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                _view.Managers.ShopManager.RateGame(true);
+                _managers.ShopManager.RateGame(true);
             }
         }
 
@@ -328,7 +333,7 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                var groupNames = (_view.CommandsProceeder as ViewInputCommandsProceeder)?
+                var groupNames = (_commandsProceeder as ViewInputCommandsProceeder)?
                     .LockedCommands
                     .Where(_Kvp => _Kvp.Value.Contains(
                                        EInputCommand.RotateClockwise)
@@ -351,7 +356,7 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                var groupNames = (_view.CommandsProceeder as ViewInputCommandsProceeder)?
+                var groupNames = (_commandsProceeder as ViewInputCommandsProceeder)?
                     .LockedCommands
                     .Where(_Kvp => _Kvp.Value.Contains(
                                        EInputCommand.RotateClockwise)
@@ -374,7 +379,7 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                var entity = _view.Managers.ScoreManager.GetScoreFromLeaderboard(
+                var entity = _managers.ScoreManager.GetScoreFromLeaderboard(
                     DataFieldIds.Level, 
                     false);
                 Cor.Run(Cor.WaitWhile(() => entity.Result == EEntityResult.Pending,
@@ -404,9 +409,9 @@ namespace RMAZOR
                 {
                     FileName = CommonData.SavedGameFileName,
                     Money = 10000,
-                    Level = _model.LevelStaging.LevelIndex
+                    Level = _levelStaging.LevelIndex
                 };
-                _view.Managers.ScoreManager.SaveGameProgress(savedData, false);
+                _managers.ScoreManager.SaveGameProgress(savedData, false);
             }
         }
         
@@ -432,7 +437,7 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                _view.Managers.ScoreManager.DeleteSavedGame(CommonData.SavedGameFileName);
+                _managers.ScoreManager.DeleteSavedGame(CommonData.SavedGameFileName);
             }
         }
 
@@ -448,7 +453,7 @@ namespace RMAZOR
                 {
                     string str = _FromCache ? "server" : "cache";
                     var entity =
-                        _view.Managers.ScoreManager.GetSavedGameProgress(CommonData.SavedGameFileName, _FromCache);
+                        _managers.ScoreManager.GetSavedGameProgress(CommonData.SavedGameFileName, _FromCache);
                     Cor.Run(Cor.WaitWhile(
                         () => entity.Result == EEntityResult.Pending,
                         () =>
@@ -515,7 +520,7 @@ namespace RMAZOR
             get => false;
             set
             {
-                _view.Managers.DebugManager.Monitor(
+                _managers.DebugManager.Monitor(
                     "Acceleration", 
                     value, 
                     () => CommonUtils.GetAcceleration());
