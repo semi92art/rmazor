@@ -46,7 +46,7 @@ namespace RMAZOR.Views.Common
         private static IEnumerable<V2Int> GetPointsOfPathItemsAndMazeItems(MazeInfo _Info)
         {
             return _Info.MazeItems
-                .Where(_I => _I.Type != EMazeItemType.Block)
+                .Where(_I => _I.Type != EMazeItemType.Block && _I.Type != EMazeItemType.TrapReact)
                 .Select(_I => _I.Position)
                 .Concat(_Info.PathItems.Select(_I => _I.Position))
                 .Distinct();

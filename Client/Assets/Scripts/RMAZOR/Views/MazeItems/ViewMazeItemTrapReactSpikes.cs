@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Common;
 using Common.Entities;
 using Common.Enums;
 using Common.Extensions;
@@ -162,7 +163,7 @@ namespace RMAZOR.Views.MazeItems
             trap.sprite = Managers.PrefabSetManager.GetObject<Sprite>(
                 "views", "trap_react_spikes_sprite");
             trap.material = Managers.PrefabSetManager.GetObject<Material>(
-                "views", "trap_react_spikes_material");
+                "materials", "trap_react_spikes_material");
             trap.sortingOrder = GetSortingOrder();
             trap.color = col;
             trap.maskInteraction = SpriteMaskInteraction.None;
@@ -193,7 +194,7 @@ namespace RMAZOR.Views.MazeItems
                 if (_Groups == null)
                     return -2;
                 foreach (var group in _Groups
-                    .Where(_Group => _Group.Points.Contains(Props.Position)))
+                    .Where(_Group => _Group.Points.Contains(Props.Position + Props.Directions.First())))
                 {
                     return group.GroupIndex;
                 }

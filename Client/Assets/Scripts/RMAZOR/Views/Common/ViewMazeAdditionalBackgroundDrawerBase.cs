@@ -115,7 +115,6 @@ namespace RMAZOR.Views.Common
         public void Appear(bool _Appear)
         {
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
-            var mainCol = ColorProvider.GetColor(ColorIds.Main);
             var back1Col = ColorProvider.GetColor(ColorIds.Background1);
             var dict = new Dictionary<IEnumerable<Component>, Func<Color>>
             {
