@@ -43,32 +43,32 @@ namespace RMAZOR
 
         [Inject] 
         public void Inject(
-            CommonGameSettings   _Settings,
-            IGameClient          _GameClient,
-            IAdsManager          _AdsManager,
-            IAnalyticsManager    _AnalyticsManager,
-            ILocalizationManager _LocalizationManager,
-            ILevelsLoader        _LevelsLoader,
-            IScoreManager        _ScoreManager,
-            IHapticsManager      _HapticsManager,
-            IAssetBundleManager  _AssetBundleManager,
-            IShopManager         _ShopManager,
-            IRemoteConfigManager _RemoteConfigManager,
-            ICameraProvider      _CameraProvider,
+            CommonGameSettings    _Settings,
+            IGameClient           _GameClient,
+            IAdsManager           _AdsManager,
+            IAnalyticsManager     _AnalyticsManager,
+            ILocalizationManager  _LocalizationManager,
+            ILevelsLoader         _LevelsLoader,
+            IScoreManager         _ScoreManager,
+            IHapticsManager       _HapticsManager,
+            IAssetBundleManager   _AssetBundleManager,
+            IShopManager          _ShopManager,
+            IRemoteConfigManager  _RemoteConfigManager,
+            ICameraProvider       _CameraProvider,
             IPermissionsRequester _PermissionsRequester,
-            CompanyLogo          _CompanyLogo)
+            CompanyLogo           _CompanyLogo)
         {
-            Settings            = _Settings;
-            GameClient          = _GameClient;
-            AdsManager          = _AdsManager;
-            AnalyticsManager    = _AnalyticsManager;
-            LocalizationManager = _LocalizationManager;
-            LevelsLoader        = _LevelsLoader;
-            ScoreManager        = _ScoreManager;
-            HapticsManager      = _HapticsManager;
-            ShopManager         = _ShopManager;
-            RemoteConfigManager = _RemoteConfigManager;
-            CameraProvider      = _CameraProvider;
+            Settings             = _Settings;
+            GameClient           = _GameClient;
+            AdsManager           = _AdsManager;
+            AnalyticsManager     = _AnalyticsManager;
+            LocalizationManager  = _LocalizationManager;
+            LevelsLoader         = _LevelsLoader;
+            ScoreManager         = _ScoreManager;
+            HapticsManager       = _HapticsManager;
+            ShopManager          = _ShopManager;
+            RemoteConfigManager  = _RemoteConfigManager;
+            CameraProvider       = _CameraProvider;
             PermissionsRequester = _PermissionsRequester;
         }
 
