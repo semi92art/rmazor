@@ -6,16 +6,23 @@ Shader "RMAZOR/Background/Triangles" {
         _Ratio("Ratio", Range(1, 2)) = 1.224744
         _A("A", Float) = 0
         _B("B", Float) = 0
-        _Tiling ("Tiling", Range(1, 500)) = 10
+        _Tiling ("Tiling", Range(1, 10)) = 1
 		_Direction ("Direction", Range(0, 1)) = 0
 		_WarpScale ("Warp Scale", Range(0, 1)) = 0
 		_WarpTiling ("Warp Tiling", Range(1, 10)) = 1
     }
     SubShader {
-        Tags {
-            "RenderType" = "Transparent"
-            "Queue" = "Transparent"
-        }
+		Tags { 
+			"Queue"="Transparent" 
+			"IgnoreProjector"="True" 
+			"RenderType"="Opaque" 
+			"PreviewType"="Plane"
+			"CanUseSpriteAtlas"="False"
+		}
+		Cull Off
+		Lighting Off
+		ZWrite Off
+		Blend One OneMinusSrcAlpha
         Pass {
             CGPROGRAM
             
@@ -56,7 +63,6 @@ Shader "RMAZOR/Background/Triangles" {
                 float2 pos = wrap_pos(i.uv, _Tiling, _Direction, _WarpScale, _WarpTiling);
                 pos /= _Size * 0.02f;
                 float2 triang = getTriangleCoords(pos);
-
                 return rand(triang) < 0.5 ? _Color1 : _Color2;
             }
             

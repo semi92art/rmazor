@@ -509,6 +509,19 @@ namespace RMAZOR
                 GC.Collect();
             }
         }
+        
+                
+        [Category(CategoryCommon)]
+        public bool Running_Coroutines_Count
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                Dbg.Log("Running coroutines count: " + Cor.GetRunningCoroutinesCount());
+            }
+        }
 
         #endregion
 

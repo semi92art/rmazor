@@ -15,6 +15,7 @@ using Common.Ticker;
 using Common.Utils;
 using Newtonsoft.Json;
 using RMAZOR;
+using RMAZOR.Managers;
 using RMAZOR.Views.Common.ViewMazeBackgroundPropertySets;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -198,9 +199,10 @@ namespace Editor
             {
                 var mainColorsSetScrObj = GetPrefLoader().GetObject<MainColorsSetScriptableObject>(
                     "views", "color_set_light");
-                var converter = new MainColorItemsSetConverter();
+                var converter = new ColorJsonConverter();
                 string json = JsonConvert.SerializeObject(
                     mainColorsSetScrObj.set,
+                    Formatting.None,
                     converter);
                 CommonUtils.CopyToClipboard(json);
             });
@@ -208,9 +210,10 @@ namespace Editor
             {
                 var backAndFrontColorsSetScrObj = GetPrefLoader().GetObject<BackAndFrontColorsSetScriptableObject>(
                     "configs", "back_and_front_colors_set_light");
-                var converter = new BackAndFrontColorsSetConverter();
+                var converter = new ColorJsonConverter();
                 string json = JsonConvert.SerializeObject(
                     backAndFrontColorsSetScrObj.set,
+                    Formatting.None,
                     converter);
                 CommonUtils.CopyToClipboard(json);
             });

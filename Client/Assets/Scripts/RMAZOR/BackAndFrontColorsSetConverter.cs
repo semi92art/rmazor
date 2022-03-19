@@ -47,7 +47,7 @@ namespace RMAZOR
             bool                              _HasExistingValue,
             JsonSerializer                    _Serializer)
         {
-            string hexSetRaw = (string)_Reader.Value!;
+            string hexSetRaw = _Reader.ReadAsString()!;
             var hexSet = JsonConvert.DeserializeObject<IList<BackAndFrontColorsHexSetItem>>(hexSetRaw);
             IList<BackAndFrontColorsSetItem> set = hexSet.Select(_Item => new BackAndFrontColorsSetItem
             {

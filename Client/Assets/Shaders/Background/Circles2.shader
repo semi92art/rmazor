@@ -6,12 +6,23 @@
     	_StepX  ("Step X", Range(0.05, 0.5)) = 0.2
     	_StepY  ("Step Y", Range(0.05, 0.5)) = 0.2
     	[Toggle]  _AlternateX("Alternate X", Float) = 0
-    	_Tiling ("Tiling", Range(1, 500)) = 10
+    	_Tiling ("Tiling", Range(1, 10)) = 1
 		_Direction ("Direction", Range(0, 1)) = 0
 		_WarpScale ("Warp Scale", Range(0, 1)) = 0
 		_WarpTiling ("Warp Tiling", Range(1, 10)) = 1
     }
     SubShader {
+    	Tags { 
+			"Queue"="Transparent" 
+			"IgnoreProjector"="True" 
+			"RenderType"="Opaque" 
+			"PreviewType"="Plane"
+			"CanUseSpriteAtlas"="False"
+		}
+		Cull Off
+		Lighting Off
+		ZWrite Off
+		Blend One OneMinusSrcAlpha
         Pass {
             CGPROGRAM
 			#pragma vertex vert

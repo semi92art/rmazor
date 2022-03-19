@@ -1,7 +1,6 @@
 ﻿using System;
 using Common.Helpers;
 using Common.Helpers.Attributes;
-using Newtonsoft.Json;
 using UnityEngine;
 
 namespace Common.Entities
@@ -9,8 +8,8 @@ namespace Common.Entities
     [Serializable]
     public class MainColorsSetItem
     {
-        [JsonProperty(PropertyName = "N")] public string name;
-        [JsonProperty(PropertyName = "C")] public Color  color;
+        public string name;
+        public Color  color;
     }
         
     [Serializable]

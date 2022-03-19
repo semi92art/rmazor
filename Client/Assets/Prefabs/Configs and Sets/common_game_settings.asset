@@ -21,3 +21,4 @@ MonoBehaviour:
   unityAdsRate: 20
   showAdsEveryLevel: 3
   firstLevelToShowAds: 10
+  rewriteSettingsByRemoteConfigInEditor: 1

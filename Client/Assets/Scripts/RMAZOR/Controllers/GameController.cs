@@ -3,6 +3,7 @@ using Common.Helpers;
 using Common.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views;
+using UnityEngine;
 using Zenject;
 
 namespace RMAZOR.Controllers
@@ -105,6 +106,8 @@ namespace RMAZOR.Controllers
 
         private void InitDebugging()
         {
+            if (!Settings.debugEnabled && Application.platform != RuntimePlatform.WindowsEditor)
+                return;
             SRDebug.Init();
             SROptions.Init(Model.Settings, View.Settings, Model.LevelStaging, View.Managers, View.CommandsProceeder);
             Dbg.Log("SR Debugger Initialized");

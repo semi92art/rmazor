@@ -7,7 +7,7 @@
     	_CenterY ("Center Y", Range(0, 1)) = 0
     	_WavesCount ("Waves Count", Range(0, 20)) = 4
     	_Amplitude("Waves Amplitude", Range(0, 1)) = 0.5
-    	_Tiling ("Tiling", Range(1, 500)) = 10
+    	_Tiling ("Tiling", Range(1, 10)) = 1
 		_Direction ("Direction", Range(0, 1)) = 0
 		_WarpScale ("Warp Scale", Range(0, 1)) = 0
 		_WarpTiling ("Warp Tiling", Range(1, 10)) = 1
@@ -15,25 +15,17 @@
     	[IntRange] _StencilRef ("Stencil Reference Value", Range(0,255)) = 0
 	}
 	SubShader {
-		Tags
-		{ 
+		Tags { 
 			"Queue"="Transparent" 
 			"IgnoreProjector"="True" 
-			"RenderType"="Transparent" 
+			"RenderType"="Opaque" 
 			"PreviewType"="Plane"
-			"CanUseSpriteAtlas"="True"
+			"CanUseSpriteAtlas"="False"
 		}
-
 		Cull Off
 		Lighting Off
 		ZWrite Off
 		Blend One OneMinusSrcAlpha
-		
-//		Stencil {
-//			Ref [_StencilRef]
-//			Comp Equal
-//		}
-
 		Pass {
 			CGPROGRAM
 			#pragma vertex vert
@@ -84,9 +76,7 @@
 				if (_Radius < EPS || d2 < EPS)
 					return _Color1;
                 fixed lerp_coeff = color_selector(d1, d2);
-                fixed4 col = lerp(_Color1, _Color2, lerp_coeff);
-				col.rgb *= col.a;
-				return col;
+                return lerp(_Color1, _Color2, lerp_coeff);
 			}
 			ENDCG
 		}

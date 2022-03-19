@@ -8,13 +8,8 @@ using Unity.RemoteConfig;
 using Common.Utils;
 using Newtonsoft.Json;
 using RMAZOR.Views.Common.ViewMazeBackgroundPropertySets;
-
-#if !UNITY_EDITOR && !DEVELOPMENT_BUILD
-using System.Linq;
-using Common.Entities;
-using Newtonsoft.Json;
 using UnityEngine;
-#endif
+using System.Linq;
 
 namespace RMAZOR.Managers
 {
@@ -27,7 +22,8 @@ namespace RMAZOR.Managers
     {
         #region nonpublic members
 
-        private bool m_FetchCompletedActionDone;
+        private static bool _fetchCompletedActionDone;
+        private static bool _failedToInit;
 
         #endregion
         
@@ -40,10 +36,11 @@ namespace RMAZOR.Managers
 
         #region inject
 
-        private CommonGameSettings CommonGameSettings { get; }
-        private ModelSettings      ModelSettings      { get; }
-        private ViewSettings       ViewSettings       { get; }
-        private RemoteProperties   RemoteProperties   { get; }
+        private static CommonGameSettings  CommonGameSettings { get; set; }
+        private static ModelSettings       ModelSettings      { get; set; }
+        private static ViewSettings        ViewSettings       { get; set; }
+        private static RemoteProperties    RemoteProperties   { get; set; }
+        private static RemoteConfigManager Manager            { get; set; }
 
         public RemoteConfigManager(
             CommonGameSettings _CommonGameSettings,
@@ -55,11 +52,18 @@ namespace RMAZOR.Managers
             ModelSettings      = _ModelSettings;
             ViewSettings       = _ViewSettings;
             RemoteProperties   = _RemoteProperties;
+            Manager = this;
         }
 
         #endregion
 
         #region api
+        
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        public static void ResetState()
+        {
+            ConfigManager.FetchCompleted -= OnInitialized;
+        }
 
         public override void Init()
         {
@@ -77,27 +81,46 @@ namespace RMAZOR.Managers
 
         #region nonpblic methods
 
-        private void FetchConfigs()
+        private void InitBase()
         {
-#if !UNITY_EDITOR
-            ConfigManager.FetchCompleted -= OnFetchCompleted;
-            ConfigManager.FetchCompleted += OnFetchCompleted;
-#endif
+            base.Init();
+        }
+        
+        private static void FetchConfigs()
+        {
             ConfigManager.FetchCompleted -= OnInitialized;
             ConfigManager.FetchCompleted += OnInitialized;
+            if (Application.platform != RuntimePlatform.WindowsEditor
+                || CommonGameSettings.rewriteSettingsByRemoteConfigInEditor)
+            {
+                ConfigManager.FetchCompleted -= OnFetchCompleted;
+                ConfigManager.FetchCompleted += OnFetchCompleted;
+            }
+            
+            Cor.Run(Cor.Delay(3f,
+                () =>
+                {
+                    if (_fetchCompletedActionDone)
+                        return;
+                    _failedToInit = true;
+                    Dbg.Log("Failed to initialize remote config");
+                    Manager.InitBase();
+                }));
+            
             ConfigManager.FetchConfigs(new UserAttributes(), new AppAttributes());
         }
 
-        private void OnFetchCompleted(ConfigResponse _Response)
+        private static void OnFetchCompleted(ConfigResponse _Response)
         {
+            Dbg.Log("OnFetchCompleted");
             EAdsProvider provider = default;
-            bool adsAdMob = CommonGameSettings.AdsProvider.HasFlag(EAdsProvider.AdMob);
+            bool adsAdMob = CommonGameSettings.adsProvider.HasFlag(EAdsProvider.AdMob);
             GetConfig(ref adsAdMob, "ads.admob");
             if (adsAdMob) provider |= EAdsProvider.AdMob;
-            bool adsUnity = CommonGameSettings.AdsProvider.HasFlag(EAdsProvider.UnityAds);
+            bool adsUnity = CommonGameSettings.adsProvider.HasFlag(EAdsProvider.UnityAds);
             GetConfig(ref adsAdMob, "ads.unityads");
             if (adsUnity) provider |= EAdsProvider.UnityAds;
-            CommonGameSettings.AdsProvider = provider;
+            CommonGameSettings.adsProvider = provider;
             GetConfig(ref CommonGameSettings.admobRate,                    "ads.admob.rate");
             GetConfig(ref CommonGameSettings.unityAdsRate,                 "ads.unityads.rate");
             GetConfig(ref CommonGameSettings.showAdsEveryLevel,            "ads.show_ad_every_level");
@@ -113,12 +136,12 @@ namespace RMAZOR.Managers
             
             string mainColorSetsRaw = string.Empty;
             GetConfig(ref mainColorSetsRaw, "common.main_color_sets", true);
-            var converter1 = new BackAndFrontColorsSetConverter();
+            var converter1 = new ColorJsonConverter();
             RemoteProperties.MainColorsSet = JsonConvert.DeserializeObject<IList<MainColorsSetItem>>(
                 mainColorSetsRaw, converter1);
             string backAndFrontColrSetsRaw = string.Empty;
-            GetConfig(ref mainColorSetsRaw, "common.back_and_front_color_sets", true);
-            var converter2 = new BackAndFrontColorsSetConverter();
+            GetConfig(ref backAndFrontColrSetsRaw, "common.back_and_front_color_sets", true);
+            var converter2 = new ColorJsonConverter();
             RemoteProperties.BackAndFrontColorsSet = JsonConvert.DeserializeObject<IList<BackAndFrontColorsSetItem>>(
                 backAndFrontColrSetsRaw, converter2);
             string linesTexturePropsSetRaw = string.Empty;
@@ -138,19 +161,19 @@ namespace RMAZOR.Managers
             RemoteProperties.TrianglesTextureSet = JsonConvert.DeserializeObject<IList<TrianglesTextureSetItem>>(
                 trianglesTexturePropsSetRaw);
             
-            
-#if !UNITY_EDITOR && !DEVELOPMENT_BUILD
-            string testDeviceIdfasJson = string.Empty;
-            GetConfig(ref testDeviceIdfasJson, "common.test_device_ids", true);
-            if (testDeviceIdfasJson == null)
+            if (Application.platform == RuntimePlatform.WindowsEditor
+                && !CommonGameSettings.rewriteSettingsByRemoteConfigInEditor)
             {
-                m_FetchCompletedActionDone = true;
+                _fetchCompletedActionDone = true;
                 return;
             }
-            var deviceIds = JsonConvert.DeserializeObject<string[]>(testDeviceIdfasJson);
-            if (deviceIds == null)
+            string testDeviceIdfasJson = string.Empty;
+            GetConfig(ref testDeviceIdfasJson, "common.test_device_ids", true);
+            string[] deviceIds;
+            if (testDeviceIdfasJson == null 
+                || (deviceIds = JsonConvert.DeserializeObject<string[]>(testDeviceIdfasJson)) == null)
             {
-                m_FetchCompletedActionDone = true;
+                _fetchCompletedActionDone = true;
                 return;
             }
             var idfaEntity = CommonUtils.GetIdfa();
@@ -161,29 +184,31 @@ namespace RMAZOR.Managers
                         _Idfa => _Idfa.Equals(
                             idfaEntity.Value,
                             StringComparison.InvariantCultureIgnoreCase));
-                    CommonGameSettings.DebugEnabled = isThisDeviceForTesting;
+                    CommonGameSettings.debugEnabled = isThisDeviceForTesting;
                     CommonGameSettings.testAds = isThisDeviceForTesting;
-                    m_FetchCompletedActionDone = true;
-                }));
-#else
-            m_FetchCompletedActionDone = true;
-#endif
+                    _fetchCompletedActionDone = true;
+                },
+                _Seconds: 3f));
         }
 
-        private void OnInitialized(ConfigResponse _Response)
+        private static void OnInitialized(ConfigResponse _Response)
         {
-            #if UNITY_EDITOR
-            m_FetchCompletedActionDone = true;
-            #endif
-            Cor.Run(Cor.WaitWhile(() => !m_FetchCompletedActionDone,
+            Cor.Run(Cor.WaitWhile(() => !_fetchCompletedActionDone,
                 () =>
                 {
-                    base.Init();
+                    if (_failedToInit)
+                        return;
                     Dbg.Log("Remote Config Initialized with status: " + _Response.status);
+                    Manager.InitBase();
                 }));
+            if (Application.platform == RuntimePlatform.WindowsEditor
+                && !CommonGameSettings.rewriteSettingsByRemoteConfigInEditor)
+            {
+                _fetchCompletedActionDone = true;
+            }
         }
         
-        private static void GetConfig<T>(ref T _Parameter, string _Key, bool _IsJson = false)
+        public static void GetConfig<T>(ref T _Parameter, string _Key, bool _IsJson = false)
         {
             var config = ConfigManager.appConfig;
             object result = _Parameter;

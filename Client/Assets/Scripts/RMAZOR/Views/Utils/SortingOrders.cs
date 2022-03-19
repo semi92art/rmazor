@@ -17,9 +17,9 @@ namespace RMAZOR.Views.Utils
             PathLine                     = Path + 50,
             PathJoint                    = Path + 100,
             MoneyItem                    = Path + 150,
-            Character                    = Path + 200,
-            GameLogoBackground           = Path + 300,
-            GameLogoForeground           = Path + 301;
+            Character                    = Path + 500,
+            GameLogoBackground           = Path + 550,
+            GameLogoForeground           = Path + 600;
 
         public static int GetBlockSortingOrder(EMazeItemType _Type)
         {
@@ -27,20 +27,20 @@ namespace RMAZOR.Views.Utils
             {
                 case EMazeItemType.GravityBlock:
                 case EMazeItemType.GravityTrap:
-                    return Path + 4;
+                    return Path + 151;
                 case EMazeItemType.Block:
-                    return Path + 5;
+                    return Path + 152;
                 case EMazeItemType.Portal:
                 case EMazeItemType.TrapIncreasing:
                 case EMazeItemType.TrapMoving:
                 case EMazeItemType.GravityBlockFree:
                 case EMazeItemType.ShredingerBlock:
                 case EMazeItemType.Springboard:
-                    return Path + 6;
+                    return Path + 153;
                 case EMazeItemType.Turret:
-                    return Path + 100;
+                    return Path + 200;
                 case EMazeItemType.TrapReact:
-                    return Path + 150;
+                    return Path + 300;
                 case EMazeItemType.MovingBlockFree:
                 default: throw new SwitchCaseNotImplementedException(_Type);
             }

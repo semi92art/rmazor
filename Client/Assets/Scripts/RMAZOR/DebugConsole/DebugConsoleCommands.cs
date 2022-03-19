@@ -19,22 +19,21 @@ namespace RMAZOR.DebugConsole
         
         public static void RegisterCommands()
         {
-            // When adding commands, you must add a call below to registerCommand() with its name,
-            // implementation method, and description text.
-            Controller.RegisterCommand("help",            Help,         "Print command list.");
-            Controller.RegisterCommand("restart",         Restart,      "Restart game.");
-            Controller.RegisterCommand("load",            Load,         "Reload specified level.");
-            Controller.RegisterCommand("reload",          Reload,       "Reload current level.");
-            Controller.RegisterCommand("clc",             ClearConsole, "Clear console.");
-            Controller.RegisterCommand("set_lang",        SetLanguage,  "set language");
-            Controller.RegisterCommand("target_fps",      SetTargetFps, "Set target frame rate");
-            Controller.RegisterCommand("wof_spin_enable", EnableSpinButton, "Enable wheel of fortune spin.");
-            Controller.RegisterCommand("enable_ads",      EnableAds,    "Enable or disable advertising (true/false)");
-            Controller.RegisterCommand("load_level",      LoadLevel,    "Load level by index");
-            Controller.RegisterCommand("set_money",       SetMoney,     "Set money count");
-            Controller.RegisterCommand("rate_game_panel", ShowRateGamePanel, "Set money count");
+            Controller.RegisterCommand("help",            Help,                        "Print command list.");
+            Controller.RegisterCommand("restart",         Restart,                     "Restart game.");
+            Controller.RegisterCommand("load",            Load,                        "Reload specified level.");
+            Controller.RegisterCommand("reload",          Reload,                      "Reload current level.");
+            Controller.RegisterCommand("clc",             ClearConsole,                "Clear console.");
+            Controller.RegisterCommand("set_lang",        SetLanguage,                 "set language");
+            Controller.RegisterCommand("target_fps",      SetTargetFps,                "Set target frame rate");
+            Controller.RegisterCommand("wof_spin_enable", EnableSpinButton,            "Enable wheel of fortune spin.");
+            Controller.RegisterCommand("enable_ads",      EnableAds,                   "Enable or disable advertising (true/false)");
+            Controller.RegisterCommand("load_level",      LoadLevel,                   "Load level by index");
+            Controller.RegisterCommand("set_money",       SetMoney,                    "Set money count");
+            Controller.RegisterCommand("rate_game_panel", ShowRateGamePanel,           "Set money count");
             Controller.RegisterCommand("int_conn",        InternetConnectionAvailable, "Check if internet connection available");
-            Controller.RegisterCommand("show_money",      ShowMoney, "Show money");
+            Controller.RegisterCommand("show_money",      ShowMoney,                   "Show money");
+            Controller.RegisterCommand("run_cor",         GetRunningCoroutinesCount,   "Show running coroutines count");
         }
 
         private static void Reload(string[] _Args)
@@ -208,8 +207,8 @@ namespace RMAZOR.DebugConsole
         {
             static void DisplaySavedGameMoney(bool _FromCache)
             {
-                var entity =
-                    Controller.ScoreManager.GetSavedGameProgress(CommonData.SavedGameFileName, _FromCache);
+                var entity = Controller.ScoreManager.GetSavedGameProgress(
+                    CommonData.SavedGameFileName, _FromCache);
                 Cor.Run(Cor.WaitWhile(
                     () => entity.Result == EEntityResult.Pending,
                     () =>
@@ -226,6 +225,11 @@ namespace RMAZOR.DebugConsole
             }
             DisplaySavedGameMoney(false);
             DisplaySavedGameMoney(true);
+        }
+        
+        private static void GetRunningCoroutinesCount(string[] _Args)
+        {
+            Dbg.Log("Running coroutines count: " + Cor.GetRunningCoroutinesCount());
         }
     }
 }

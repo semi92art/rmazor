@@ -18,10 +18,10 @@ namespace Editor
     public class ColorsHelper : EditorWindow
     {
         private IColorProvider                        m_ColorProvider;
-        private MainColorsSetScriptableObject              m_MainColorsSetScrObj;
+        private MainColorsSetScriptableObject         m_MainColorsSetScrObj;
         private BackAndFrontColorsSetScriptableObject m_BackAndFrontColorsSetScrObj;
         private BackAndFrontColorsSet                 m_BackAndFrontColorsSet;
-        private MainColorsItemSet                          m_MainColorsSet;
+        private MainColorsItemSet                     m_MainColorsSet;
         private Color?                                m_UiColor;
         private Color                                 m_UiColorCheck;
         private bool                                  m_ChangeOnlyHueUi = true;
@@ -131,6 +131,7 @@ namespace Editor
 
         private void DisplayColors()
         {
+            GUILayout.Label("Main Colors Set:");
             foreach (var item in m_MainColorsSet)
             {
                 EditorUtilsEx.HorizontalZone(() =>

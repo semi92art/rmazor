@@ -58,26 +58,26 @@ namespace RMAZOR.Views.Characters
 
         #region inject
 
-        private IModelGame               Model               { get; }
-        private IColorProvider           ColorProvider       { get; }
-        private IContainersGetter        ContainersGetter    { get; }
-        private IPrefabSetManager        PrefabSetManager    { get; }
-        private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IViewBetweenLevelTransitioner  BetweenLevelTransitioner  { get; }
+        private IModelGame                    Model                    { get; }
+        private IColorProvider                ColorProvider            { get; }
+        private IContainersGetter             ContainersGetter         { get; }
+        private IPrefabSetManager             PrefabSetManager         { get; }
+        private IMazeCoordinateConverter      CoordinateConverter      { get; }
+        private IViewBetweenLevelTransitioner BetweenLevelTransitioner { get; }
 
         public ViewCharacterHead(
-            IModelGame               _Model,
-            IColorProvider           _ColorProvider,
-            IContainersGetter        _ContainersGetter,
-            IPrefabSetManager        _PrefabSetManager,
-            IMazeCoordinateConverter _CoordinateConverter,
-            IViewBetweenLevelTransitioner  _BetweenLevelTransitioner)
+            IModelGame                    _Model,
+            IColorProvider                _ColorProvider,
+            IContainersGetter             _ContainersGetter,
+            IPrefabSetManager             _PrefabSetManager,
+            IMazeCoordinateConverter      _CoordinateConverter,
+            IViewBetweenLevelTransitioner _BetweenLevelTransitioner)
         {
-            Model = _Model;
-            ColorProvider = _ColorProvider;
-            ContainersGetter = _ContainersGetter;
-            PrefabSetManager = _PrefabSetManager;
-            CoordinateConverter = _CoordinateConverter;
+            Model                    = _Model;
+            ColorProvider            = _ColorProvider;
+            ContainersGetter         = _ContainersGetter;
+            PrefabSetManager         = _PrefabSetManager;
+            CoordinateConverter      = _CoordinateConverter;
             BetweenLevelTransitioner = _BetweenLevelTransitioner;
         }
         
@@ -151,12 +151,14 @@ namespace RMAZOR.Views.Characters
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
             if (_Appear)
                 m_Animator.SetTrigger(AnimKeyStartJumping);
+            var charCol = ColorProvider.GetColor(ColorIds.Character);
+            var eyesCol = GetEyesColor();
             BetweenLevelTransitioner.DoAppearTransition(
                 _Appear,
                 new Dictionary<IEnumerable<Component>, Func<Color>>
                 {
-                    {new Component[] {m_HeadShape}, () => ColorProvider.GetColor(ColorIds.Character)},
-                    {new Component[] {m_Eye1Shape, m_Eye2Shape}, () => ColorProvider.GetColor(ColorIds.Background1)}
+                    {new Component[] {m_HeadShape}, () => charCol},
+                    {new Component[] {m_Eye1Shape, m_Eye2Shape}, () => eyesCol}
                 },
                 Model.Character.Position,
                 () =>
@@ -173,8 +175,10 @@ namespace RMAZOR.Views.Characters
         {
             if (_ColorId == ColorIds.Character)
                 m_HeadShape.Color = _Color;
-            else if (_ColorId == ColorIds.Background1)
-                m_Eye1Shape.Color = m_Eye2Shape.Color = _Color;
+            else if (_ColorId == ColorIds.Background1 || _ColorId == ColorIds.Background2)
+            {
+                m_Eye1Shape.Color = m_Eye2Shape.Color = GetEyesColor();
+            }
         }
         
         private void InitPrefab()
@@ -270,6 +274,14 @@ namespace RMAZOR.Views.Characters
                         m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = true;
                     m_Animator.SetTrigger(AnimKeyStartJumping);
                 }));
+        }
+        
+        private Color GetEyesColor()
+        {
+            return Color.Lerp(
+                ColorProvider.GetColor(ColorIds.Background1), 
+                ColorProvider.GetColor(ColorIds.Background2),
+                0.5f);
         }
 
         #endregion

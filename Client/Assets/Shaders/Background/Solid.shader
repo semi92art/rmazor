@@ -2,21 +2,17 @@
 	Properties {
 		_Color ("Tint", Color) = (1,1,1,1)
 	}
-
 	SubShader {
 		Tags { 
 			"Queue"="Transparent" 
 			"RenderType"="Transparent" 
 			"PreviewType"="Plane"
 		}
-
 		Cull Off
 		Lighting Off
 		ZWrite Off
 		Blend One OneMinusSrcAlpha
-
 		Pass {
-			
 		CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
@@ -35,7 +31,6 @@
 				c.rgb *= c.a;
 				return c;
 			}
-		
 		ENDCG
 		}
 	}

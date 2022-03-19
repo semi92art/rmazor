@@ -29,7 +29,7 @@ namespace Common.Settings
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             OnValueSet?.Invoke(_Value);
 #else
-            if (Settings.DebugEnabled)
+            if (Settings.debugEnabled)
                 OnValueSet?.Invoke(_Value);
 #endif
         }

@@ -41,27 +41,27 @@ namespace RMAZOR.Views.MazeItems
 
         #region inject
 
-        protected ViewSettings                ViewSettings        { get; }
-        protected IModelGame                  Model               { get; }
-        protected IMazeCoordinateConverter    CoordinateConverter { get; }
-        protected IContainersGetter           ContainersGetter    { get; }
-        protected IViewGameTicker             GameTicker          { get; }
-        protected IViewBetweenLevelTransitioner     Transitioner        { get; }
-        protected IManagersGetter             Managers            { get; }
-        protected IColorProvider              ColorProvider       { get; }
-        protected IViewInputCommandsProceeder CommandsProceeder   { get; }
+        protected ViewSettings                  ViewSettings        { get; }
+        protected IModelGame                    Model               { get; }
+        protected IMazeCoordinateConverter      CoordinateConverter { get; }
+        protected IContainersGetter             ContainersGetter    { get; }
+        protected IViewGameTicker               GameTicker          { get; }
+        protected IViewBetweenLevelTransitioner Transitioner        { get; }
+        protected IManagersGetter               Managers            { get; }
+        protected IColorProvider                ColorProvider       { get; }
+        protected IViewInputCommandsProceeder   CommandsProceeder   { get; }
 
 
         protected ViewMazeItemBase(
-            ViewSettings                      _ViewSettings,
-            IModelGame                        _Model,
-            IMazeCoordinateConverter          _CoordinateConverter,
-            IContainersGetter                 _ContainersGetter,
-            IViewGameTicker                   _GameTicker,
+            ViewSettings                  _ViewSettings,
+            IModelGame                    _Model,
+            IMazeCoordinateConverter      _CoordinateConverter,
+            IContainersGetter             _ContainersGetter,
+            IViewGameTicker               _GameTicker,
             IViewBetweenLevelTransitioner _Transitioner,
-            IManagersGetter                   _Managers,
-            IColorProvider                    _ColorProvider,
-            IViewInputCommandsProceeder       _CommandsProceeder)
+            IManagersGetter               _Managers,
+            IColorProvider                _ColorProvider,
+            IViewInputCommandsProceeder   _CommandsProceeder)
         {
             ViewSettings        = _ViewSettings;
             Model               = _Model;

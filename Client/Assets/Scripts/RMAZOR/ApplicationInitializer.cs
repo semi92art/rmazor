@@ -101,12 +101,16 @@ namespace RMAZOR
     
         private void OnSceneLoaded(Scene _Scene, LoadSceneMode _Mode)
         {
-            if (_Scene.name.EqualsIgnoreCase(SceneNames.Level))
-            {
-                GameClientUtils.GameId = 1; // если игра будет только одна, то и париться с GameId нет смысла
-                InitGameController();
-            }
             SceneManager.sceneLoaded -= OnSceneLoaded;
+            if (!_Scene.name.EqualsIgnoreCase(SceneNames.Level)) 
+                return;
+            Cor.Run(Cor.WaitWhile(
+                () => !RemoteConfigManager.Initialized,
+                () =>
+                {
+                    GameClientUtils.GameId = 1; // если игра будет только одна, то и париться с GameId нет смысла
+                    InitGameController();
+                }));
         }
 
         #endregion
@@ -229,7 +233,7 @@ namespace RMAZOR
 
         private void InitLogging()
         {
-            Dbg.LogLevel = Settings.LogLevel;
+            Dbg.LogLevel = Settings.logLevel;
         }
 
         private void SetDefaultLanguage()

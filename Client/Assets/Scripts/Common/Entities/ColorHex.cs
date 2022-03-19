@@ -18,7 +18,6 @@ namespace Common.Entities
 
         public static Color FromHexToUnityColor(ColorHex _ColorHex)
         {
-            Dbg.Log(_ColorHex.Hex);
             ColorUtility.TryParseHtmlString("#" + _ColorHex.Hex, out Color color);
             return color;
         }

@@ -11,7 +11,7 @@ namespace Common.Entities
         #region types
 
         [Serializable]
-        private class ColorsHexSetItem
+        private class MainColorsHexSetItem
         {
             [JsonProperty("N")] public string?   Name  { get; set; }
             [JsonProperty("C")] public ColorHex? Color { get; set; }
@@ -28,7 +28,7 @@ namespace Common.Entities
             IList<MainColorsSetItem>? _Value,
             JsonSerializer            _Serializer)
         {
-            IList<ColorsHexSetItem> hexSet = _Value!.Select(_Item => new ColorsHexSetItem
+            IList<MainColorsHexSetItem> hexSet = _Value!.Select(_Item => new MainColorsHexSetItem
             {
                 Color = ColorHex.FromUnityToHexColor(_Item.color),
                 Name  = _Item.name
@@ -44,8 +44,8 @@ namespace Common.Entities
             bool                      _HasExistingValue,
             JsonSerializer            _Serializer)
         {
-            string hexSetRaw = (string)_Reader.Value!;
-            var hexSet = JsonConvert.DeserializeObject<IList<ColorsHexSetItem>>(hexSetRaw);
+            string hexSetRaw = _Reader.ReadAsString()!;
+            var hexSet = JsonConvert.DeserializeObject<IList<MainColorsHexSetItem>>(hexSetRaw);
             IList<MainColorsSetItem> set = hexSet.Select(_Item => new MainColorsSetItem
             {
                 color = ColorHex.FromHexToUnityColor(_Item.Color!),

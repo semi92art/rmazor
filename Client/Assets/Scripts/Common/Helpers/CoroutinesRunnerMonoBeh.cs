@@ -2,9 +2,9 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Common.Utils
+namespace Common.Helpers
 {
-    public class CoroutinesRunner : MonoBehaviour
+    public class CoroutinesRunnerMonoBeh : MonoBehaviour
     {
         [HideInInspector] public volatile bool              mustRun;
         public readonly                   List<UnityAction> Actions = new List<UnityAction>();

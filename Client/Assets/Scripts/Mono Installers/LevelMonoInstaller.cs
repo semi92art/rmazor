@@ -205,6 +205,7 @@ namespace Mono_Installers
 
         private void BindTextureProviders()
         {
+            // Container.Bind<IViewMazeBackgroundTextureController>()        .To<ViewMazeBackgroundTextureControllerFake>()   .AsSingle();
             Container.Bind<IViewMazeBackgroundTextureController>()        .To<ViewMazeBackgroundTextureController>()       .AsSingle();
             Container.Bind<IViewMazeBackgroundLinesTextureProvider>()     .To<ViewMazeBackgroundLinesTextureProvider>()    .AsSingle();
             Container.Bind<IViewMazeBackgroundCirclesTextureProvider>()   .To<ViewMazeBackgroundCirclesTextureProvider>()  .AsSingle();

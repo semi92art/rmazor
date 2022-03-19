@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Common;
+using Common.Constants;
 using Common.Entities;
 using Common.Enums;
 using Common.Extensions;
@@ -48,8 +48,16 @@ namespace RMAZOR.Views.MazeItems
         private float          m_Progress;
         private Line           m_Line;
         private SpriteRenderer m_Trap;
-        private Rectangle      m_Mask;
         
+        #endregion
+
+        #region static ctor
+
+        static ViewMazeItemTrapReactSpikes()
+        {
+            Masks.Clear();
+        }
+
         #endregion
         
         #region inject
@@ -96,7 +104,7 @@ namespace RMAZOR.Views.MazeItems
             set
             {
                 base.ActivatedInSpawnPool = value;
-                m_Mask.enabled = value;
+                GetMask().enabled = value;
             }
         }
 
@@ -168,11 +176,18 @@ namespace RMAZOR.Views.MazeItems
             trap.color = col;
             trap.maskInteraction = SpriteMaskInteraction.None;
             AdditionalBackground.GroupsCollected += SetStencilRefValues;
+
+
+            (m_Trap, m_Line) = (trap, line);
+        }
+        
+        protected override void UpdateShape()
+        {
             var mask = GetMask();
             if (mask.IsNull())
             {
-                mask = Object.transform.gameObject
-                    .AddComponentOnNewChild<Rectangle>("Mask 1", out GameObject _)
+                mask = ContainersGetter.GetContainer(ContainerNames.MazeItems)
+                    .AddComponentOnNewChild<Rectangle>("Trap React Mask", out GameObject _)
                     .SetBlendMode(ShapesBlendMode.Subtractive)
                     .SetRenderQueue(-1)
                     .SetSortingOrder(SortingOrders.AdditionalBackgroundTexture)
@@ -180,11 +195,29 @@ namespace RMAZOR.Views.MazeItems
                     .SetStencilComp(CompareFunction.Greater)
                     .SetStencilOpPass(StencilOp.Replace)
                     .SetColor(new Color(0f, 0f, 0f, 100f / 255f));
-                mask.enabled       = false;
-                mask.transform.SetPosZ(-0.1f);
+                mask.enabled = false;
                 SetMask(mask);
             }
-            (m_Trap, m_Line, m_Mask) = (trap, line, mask);
+            mask.transform
+                .SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position))
+                .SetPosZ(-0.1f);
+            (m_Line.Start, m_Line.End) = GetTrapPosRotAndLineEdges();
+            float scale = CoordinateConverter.Scale;
+            Vector2 dir = Props.Directions.First();
+            var trapTr = m_Trap.transform;
+            trapTr.localRotation = Quaternion.Euler(0f, 0f, GetTrapAngle(Props.Directions.First()));
+            trapTr.SetLocalPosXY(dir * scale * StartPos);
+            trapTr.localScale = Vector3.one * scale * 0.95f;
+            m_Line.Thickness = ViewSettings.LineWidth * scale;
+            mask.Width = mask.Height = scale * 0.8f;
+        }
+
+        protected override void OnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId != ColorIds.MazeItem1) 
+                return;
+            m_Line.Color = _Color;
+            m_Trap.color = _Color;
         }
         
         private void SetStencilRefValues(List<PointsGroupArgs> _Groups)
@@ -203,32 +236,11 @@ namespace RMAZOR.Views.MazeItems
             int stencilRef = GetGroupIndexByPoint();
             if (stencilRef < 0)
                 return;
-            m_Mask.StencilRefID = Convert.ToByte(stencilRef + 1);
+            GetMask().StencilRefID = Convert.ToByte(stencilRef + 1);
             m_Trap.sharedMaterial.SetFloat(StencilRefId, stencilRef);
         }
 
-        protected override void UpdateShape()
-        {
-            (m_Line.Start, m_Line.End) = GetTrapPosRotAndLineEdges();
-            float scale = CoordinateConverter.Scale;
-            Vector2 dir = Props.Directions.First();
-            var trapTr = m_Trap.transform;
-            trapTr.localRotation = Quaternion.Euler(0f, 0f, GetTrapAngle(Props.Directions.First()));
-            trapTr.SetLocalPosXY(dir * scale * StartPos);
-            trapTr.localScale = Vector3.one * scale * 0.95f;
-            m_Line.Thickness = ViewSettings.LineWidth * scale;
-            m_Mask.Width = m_Mask.Height = scale * 0.8f;
-        }
-
-        protected override void OnColorChanged(int _ColorId, Color _Color)
-        {
-            if (_ColorId != ColorIds.MazeItem1) 
-                return;
-            m_Line.Color = _Color;
-            m_Trap.color = _Color;
-        }
-
-        private float GetTrapAngle(V2Int _Direction)
+        private static  float GetTrapAngle(V2Int _Direction)
         {
             if (_Direction == V2Int.Left)
                 return 90f;
@@ -236,9 +248,7 @@ namespace RMAZOR.Views.MazeItems
                 return 0f;
             if (_Direction == V2Int.Right)
                 return 270f;
-            if (_Direction == V2Int.Down)
-                return 180f;
-            return 0f;
+            return _Direction == V2Int.Down ? 180f : 0f;
         }
 
         private IEnumerator HandlePreReact()

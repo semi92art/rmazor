@@ -10,7 +10,6 @@
 			"RenderType"="Transparent" 
 			"PreviewType"="Plane"
 		}
-
 		Cull Off
 		Lighting Off
 		ZWrite Off

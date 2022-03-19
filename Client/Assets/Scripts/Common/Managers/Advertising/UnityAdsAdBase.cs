@@ -102,7 +102,7 @@ namespace Common.Managers.Advertising
             if (!m_DoLoadAdWithDelay)
                 return;
             m_LoadAdDelayTimer += CommonTicker.DeltaTime;
-            if (!(m_LoadAdDelayTimer > Settings.AdsLoadDelay)) 
+            if (!(m_LoadAdDelayTimer > Settings.adsLoadDelay)) 
                 return;
             LoadAd();
             m_LoadAdDelayTimer = 0f;

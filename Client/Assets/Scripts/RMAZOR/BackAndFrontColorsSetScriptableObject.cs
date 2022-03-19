@@ -9,9 +9,9 @@ namespace RMAZOR
     [Serializable]
     public class BackAndFrontColorsSetItem
     {
-        [JsonProperty(PropertyName = "M")] public Color main;
-        [JsonProperty(PropertyName = "B1")] public Color bacground1;
-        [JsonProperty(PropertyName = "B2")] public Color bacground2;
+        public Color main;
+        public Color bacground1;
+        public Color bacground2;
     }
     
     [Serializable]

@@ -14,7 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   set:
     array:
-    - size: 1.38
+    - tiling: 1
+      direction: 0.3
+      wrapScale: 0
+      wrapTiling: 1
+      size: 3.57
       ratio: 1.289
-      a: 0.25
+      a: 0.2
       b: 0.25

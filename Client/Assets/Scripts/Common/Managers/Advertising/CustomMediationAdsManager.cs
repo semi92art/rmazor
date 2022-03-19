@@ -92,7 +92,7 @@ namespace Common.Managers.Advertising
         {
             bool testMode = GameSettings.testAds;
             var adsConfig = ResLoader.FromResources(@"configs\ads");
-            var adsProvider = GameSettings.AdsProvider;
+            var adsProvider = GameSettings.adsProvider;
             if (adsProvider.HasFlag(EAdsProvider.AdMob))
             {
                 var man = new GoogleAdMobAdsProvider(testMode, GameSettings.admobRate);

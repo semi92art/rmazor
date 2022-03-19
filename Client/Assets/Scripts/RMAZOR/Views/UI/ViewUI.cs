@@ -2,6 +2,7 @@
 using Common;
 using Common.Enums;
 using Common.Extensions;
+using Common.Helpers;
 using Common.Ticker;
 using Common.UI;
 using Common.Utils;
@@ -17,6 +18,7 @@ namespace RMAZOR.Views.UI
     {
         #region inject
 
+        private CommonGameSettings          CommonGameSettings   { get; }
         private ViewSettings                ViewSettings         { get; }
         private IModelGame                  Model                { get; }
         private IUITicker                   Ticker               { get; }
@@ -27,6 +29,7 @@ namespace RMAZOR.Views.UI
         private IManagersGetter             Managers             { get; }
 
         public ViewUI(
+            CommonGameSettings          _CommonGameSettings,
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
             IUITicker                   _UITicker,
@@ -38,6 +41,7 @@ namespace RMAZOR.Views.UI
             IManagersGetter             _Managers)
             : base(_GameControls)
         {
+            CommonGameSettings   = _CommonGameSettings;
             ViewSettings         = _ViewSettings;
             Model                = _Model;
             Ticker               = _UITicker;
@@ -119,15 +123,17 @@ namespace RMAZOR.Views.UI
             if (_Pause)
                 return;
             int ratePanelShowsCount = SaveUtils.GetValue(SaveKeysRmazor.RatePanelShowsCount);
-            bool mustShowRateGamePanel =
-                Random.value < 0.05f
-                && !SaveUtils.GetValue(SaveKeysCommon.GameWasRated)
-                && ratePanelShowsCount > 10
-                && Model.LevelStaging.LevelIndex > ViewSettings.firstLevelToRateGame;
-            if (!mustShowRateGamePanel)
-                return;
-            CommandsProceeder.RaiseCommand(EInputCommand.RateGamePanel, null);
-            
+            bool MustShowRateGamePanel()
+            {
+                return Random.value < 0.5f
+                       && !SaveUtils.GetValue(SaveKeysCommon.GameWasRated)
+                       && ratePanelShowsCount > 10
+                       && Model.LevelStaging.LevelIndex > ViewSettings.firstLevelToRateGame;
+            }
+            if (MustShowRateGamePanel())
+                CommandsProceeder.RaiseCommand(EInputCommand.RateGamePanel, null);
+            else if (Model.LevelStaging.LevelIndex > CommonGameSettings.firstLevelToShowAds)
+                Managers.AdsManager.ShowInterstitialAd(null);
         }
         
         #endregion

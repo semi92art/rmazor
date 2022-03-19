@@ -69,7 +69,7 @@ namespace RMAZOR.Managers
 
         private void InitDebugConsole()
         {
-            if (Application.platform == RuntimePlatform.WindowsPlayer || Settings.DebugEnabled)
+            if (Application.platform == RuntimePlatform.WindowsEditor || Settings.debugEnabled)
                 DebugConsoleView.Instance.Init(Model, CommandsProceeder, AdsManager, ScoreManager);
         }
     

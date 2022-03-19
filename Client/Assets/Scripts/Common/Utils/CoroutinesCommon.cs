@@ -43,13 +43,16 @@ namespace Common.Utils
         {
             if (_Action == null || _Predicate == null)
                 yield break;
-            bool tickerExist = _Ticker != null;
-            float time = _Seconds.HasValue ? (tickerExist ? _Ticker.Time : Time.time) : default;
+            float time = _Ticker?.Time ?? Time.time;
             bool IsTimeValid()
             {
-                return _Seconds.HasValue && time + _Seconds.Value > (tickerExist ? _Ticker!.Time : Time.time);
+                return time + _Seconds.Value > (_Ticker?.Time ?? Time.time);
             }
-            while (_Predicate() || IsTimeValid())
+            bool FinalPredicate()
+            {
+                return _Seconds.HasValue ? _Predicate() && IsTimeValid() : _Predicate();
+            }
+            while (FinalPredicate())
             {
                 yield return new WaitForEndOfFrame();
                 if (_OnBreak != null && _OnBreak())
@@ -103,6 +106,64 @@ namespace Common.Utils
             }
             
             _OnFinish?.Invoke();
+        }
+        
+         public static IEnumerator Lerp(
+            float                    _From,
+            float                    _To,
+            float                    _Time,
+            UnityAction<float>       _OnProgress,
+            ITicker                  _Ticker,
+            UnityAction<bool, float> _OnFinish        = null,
+            Func<bool>               _BreakPredicate  = null,
+            Func<float, float>       _ProgressFormula = null,
+            bool                     _FixedUpdate     = false)
+        {
+            if (_OnProgress == null)
+                yield break;
+            float GetTime() => _FixedUpdate ? _Ticker.FixedTime : _Ticker.Time;
+            float currTime = GetTime();
+            float progress = _From;
+            bool breaked = false;
+            while (GetTime() < currTime + _Time)
+            {
+                if (_BreakPredicate != null && _BreakPredicate())
+                {
+                    breaked = true;
+                    break;
+                }
+                if (_Ticker.Pause)
+                {
+                    yield return PauseCoroutine(_FixedUpdate);
+                    continue;
+                }
+                float timeCoeff = 1 - (currTime + _Time - GetTime()) / _Time;
+                progress = Mathf.Lerp(_From, _To, timeCoeff);
+                if (_ProgressFormula != null)
+                    progress = _ProgressFormula(progress);
+                _OnProgress(progress);
+                yield return new WaitForEndOfFrame();
+            }
+            if (_BreakPredicate != null && _BreakPredicate())
+                breaked = true;
+            if (_Ticker.Pause)
+                yield return PauseCoroutine(_FixedUpdate);
+            if (!breaked)
+            {
+                progress = _ProgressFormula?.Invoke(_To) ?? _To;
+                _OnProgress(progress);
+            }
+            if (_Ticker.Pause)
+                yield return PauseCoroutine(_FixedUpdate);
+            _OnFinish?.Invoke(breaked, breaked ? progress : _To);
+        }
+
+        private static IEnumerator PauseCoroutine(bool _FixedUpdate)
+        {
+            if (_FixedUpdate)
+                yield return new WaitForFixedUpdate();
+            else 
+                yield return new WaitForEndOfFrame();
         }
     }
 }

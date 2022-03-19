@@ -105,7 +105,8 @@ namespace RMAZOR.Views.MazeItems
             m_Body,
             m_ProjHolderBorder,
             m_ProjRend,
-            m_ProjFakeRend
+            m_ProjFakeRend,
+            m_Mask3
         };
         
         public override object Clone() => new ViewMazeItemTurret(
@@ -365,8 +366,12 @@ namespace RMAZOR.Views.MazeItems
         private void EnableProjectileMasksAndSetPositions(Vector2 _Mask1Pos, Vector2 _Mask2Pos)
         {
             m_Mask1.enabled = m_Mask2.enabled = true;
-            m_Mask1.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(_Mask1Pos)).SetPosZ(-0.1f);
-            m_Mask2.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(_Mask2Pos)).SetPosZ(-0.1f);
+            m_Mask1.transform
+                .SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(_Mask1Pos))
+                .SetPosZ(-0.1f);
+            m_Mask2.transform
+                .SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(_Mask2Pos))
+                .SetPosZ(-0.1f);
         }
         
         private IEnumerator AnimateFakeProjectileBeforeShoot()
@@ -577,12 +582,19 @@ namespace RMAZOR.Views.MazeItems
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
             var projectileRenderers = new Component[] {m_ProjRend, m_ProjFakeRend};
-            var projectileRenderersCol = _Appear ? ColorProvider.GetColor(ColorIds.MazeItem1) : m_ProjFakeRend.color;
+            var projectileRenderersCol = _Appear ? 
+                ColorProvider.GetColor(ColorIds.MazeItem1) 
+                : m_ProjFakeRend.color;
+            var mask3Col = Color.Lerp(
+                ColorProvider.GetColor(ColorIds.Background1), 
+                ColorProvider.GetColor(ColorIds.Background2),
+                0.5f);
             return new Dictionary<IEnumerable<Component>, Func<Color>>
             {
                 {new [] {m_ProjHolderBorder}, () => ColorProvider.GetColor(ColorIds.MazeItem1)},
-                {new [] {m_Body}, () => ColorProvider.GetColor(ColorIds.Main)},
-                {projectileRenderers, () => projectileRenderersCol}
+                {new [] {m_Body},             () => ColorProvider.GetColor(ColorIds.Main)},
+                {projectileRenderers,         () => projectileRenderersCol},
+                {new [] {m_Mask3},            () => mask3Col}
             };
         }
 

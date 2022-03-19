@@ -133,7 +133,7 @@ namespace RMAZOR.UI.Panels
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             InitSettingItem(SettingsGetter.DebugSetting);
 #else
-            if (GameSettings.DebugEnabled)
+            if (GameSettings.debugEnabled)
                 InitSettingItem(SettingsGetter.DebugSetting);
 #endif
         }

@@ -9,11 +9,11 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundPropertySets
     [Serializable]
     public class LinesTextureSetItem
     {
-        [Range(1, 500), JsonProperty(PropertyName = "L1")]
+        [Range(1, 10), JsonProperty(PropertyName = "L1")]
         public int tiling;
         [Range(0, 1), JsonProperty(PropertyName = "L2")]
         public float direction;
-        [Range(0, 1), JsonProperty(PropertyName = "L3")]
+        [Range(-1, 2), JsonProperty(PropertyName = "L3")]
         public float wrapScale;
         [Range(1, 10), JsonProperty(PropertyName = "L4")]
         public float wrapTiling;
