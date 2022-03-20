@@ -270,7 +270,7 @@ namespace Editor
 
         private void SettingsTabPageCore(Object _Settings, Type _Type)
         {
-            var fieldInfos = _Type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var fieldInfos = _Type.GetFields(BindingFlags.Public | BindingFlags.Instance);
             var serObj = new SerializedObject(_Settings);
             EditorUtilsEx.ScrollViewZone(ref m_SettingsScrollPos, () =>
             {
