@@ -18,3 +18,19 @@ MonoBehaviour:
       direction: 0.82
       wrapScale: 0.012
       wrapTiling: 3.69
+    - tiling: 7
+      direction: 1
+      wrapScale: 0.078
+      wrapTiling: 3.25
+    - tiling: 8
+      direction: 0.05
+      wrapScale: 0.065
+      wrapTiling: 3.22
+    - tiling: 5
+      direction: 0
+      wrapScale: 1
+      wrapTiling: 1
+    - tiling: 10
+      direction: 1
+      wrapScale: 1
+      wrapTiling: 1

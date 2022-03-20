@@ -22,3 +22,43 @@ MonoBehaviour:
       stepX: 0.14
       stepY: 0.125
       alternateX: 0
+    - tiling: 1
+      direction: 0.264
+      wrapScale: 0.138
+      wrapTiling: 10
+      radius: 0.212
+      stepX: 0.156
+      stepY: 0.162
+      alternateX: 0
+    - tiling: 1
+      direction: 0.264
+      wrapScale: 0.138
+      wrapTiling: 10
+      radius: 0.212
+      stepX: 0.156
+      stepY: 0.162
+      alternateX: 0
+    - tiling: 1
+      direction: 0
+      wrapScale: 0.145
+      wrapTiling: 10
+      radius: 0.212
+      stepX: 0.335
+      stepY: 0.104
+      alternateX: 0
+    - tiling: 1
+      direction: 0.28
+      wrapScale: 0.002
+      wrapTiling: 10
+      radius: 0.423
+      stepX: 0.251
+      stepY: 0.104
+      alternateX: 0
+    - tiling: 1
+      direction: 1
+      wrapScale: 0.042
+      wrapTiling: 10
+      radius: 0.119
+      stepX: 0.147
+      stepY: 0.095
+      alternateX: 0
