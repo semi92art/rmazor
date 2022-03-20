@@ -10,20 +10,20 @@ using Newtonsoft.Json;
 using RMAZOR.Views.Common.ViewMazeBackgroundPropertySets;
 using UnityEngine;
 using System.Linq;
+using Common.Network;
+using Common.Network.DataFieldFilters;
+using UnityEngine.Events;
 
 namespace RMAZOR.Managers
 {
-    public interface IRemoteConfigManager : IInit
-    {
-        T GetConfig<T>(string _Key);
-    }
+    public interface IRemoteConfigManager : IInit { }
     
     public class RemoteConfigManager : InitBase, IRemoteConfigManager
     {
         #region nonpublic members
 
-        private static bool _fetchCompletedActionDone;
-        private static bool _failedToInit;
+        private bool m_FetchCompletedActionDone;
+        private bool m_FailedToInit;
 
         #endregion
         
@@ -36,18 +36,21 @@ namespace RMAZOR.Managers
 
         #region inject
 
-        private static CommonGameSettings  CommonGameSettings { get; set; }
-        private static ModelSettings       ModelSettings      { get; set; }
-        private static ViewSettings        ViewSettings       { get; set; }
-        private static RemoteProperties    RemoteProperties   { get; set; }
+        private        IGameClient         GameClient         { get; }
+        private        CommonGameSettings  CommonGameSettings { get; }
+        private        ModelSettings       ModelSettings      { get; }
+        private        ViewSettings        ViewSettings       { get; }
+        private        RemoteProperties    RemoteProperties   { get; }
         private static RemoteConfigManager Manager            { get; set; }
 
         public RemoteConfigManager(
+            IGameClient        _GameClient,
             CommonGameSettings _CommonGameSettings,
             ModelSettings      _ModelSettings,
             ViewSettings       _ViewSettings,
             RemoteProperties   _RemoteProperties)
         {
+            GameClient         = _GameClient;
             CommonGameSettings = _CommonGameSettings;
             ModelSettings      = _ModelSettings;
             ViewSettings       = _ViewSettings;
@@ -67,14 +70,7 @@ namespace RMAZOR.Managers
 
         public override void Init()
         {
-            FetchConfigs();
-        }
-
-        public T GetConfig<T>(string _Key)
-        {
-            T result = default;
-            GetConfig(ref result, _Key);
-            return result;
+            LoadPropertiesFromCache(FetchConfigs);
         }
 
         #endregion
@@ -85,8 +81,47 @@ namespace RMAZOR.Managers
         {
             base.Init();
         }
+
+        private void LoadPropertiesFromCache(UnityAction _OnFinish)
+        {
+            var filter = GetDataFieldFilterForRemoteFieldIds();
+            filter.Filter(_Fields =>
+            {
+                GetPropertiesFromCachedDataFields(_Fields);
+                _OnFinish?.Invoke();
+            });
+        }
+
+        private void GetPropertiesFromCachedDataFields(IReadOnlyList<GameDataField> _Fields)
+        {
+            object value;
+            if ((value = GetField(_Fields, nameof(CommonGameSettings.adsProvider))?.GetValue()) != null)
+                CommonGameSettings.adsProvider = (EAdsProvider) value;
+            if ((value = GetField(_Fields, nameof(CommonGameSettings.unityAdsRate))?.GetValue()) != null)
+                CommonGameSettings.unityAdsRate = Convert.ToSingle(value);
+            if ((value = GetField(_Fields, nameof(CommonGameSettings.showAdsEveryLevel))?.GetValue()) != null)
+                CommonGameSettings.showAdsEveryLevel = Convert.ToInt32(value);
+            if ((value = GetField(_Fields, nameof(CommonGameSettings.firstLevelToShowAds))?.GetValue()) != null)
+                CommonGameSettings.firstLevelToShowAds = Convert.ToInt32(value);
+            if ((value = GetField(_Fields, nameof(ModelSettings.characterSpeed))?.GetValue()) != null)
+                ModelSettings.characterSpeed = Convert.ToSingle(value);
+            if ((value = GetField(_Fields, nameof(ModelSettings.gravityBlockSpeed))?.GetValue()) != null)
+                ModelSettings.gravityBlockSpeed = Convert.ToSingle(value);
+            if ((value = GetField(_Fields, nameof(ModelSettings.movingItemsSpeed))?.GetValue()) != null)
+                ModelSettings.movingItemsSpeed = Convert.ToSingle(value);
+            if ((value = GetField(_Fields, nameof(ViewSettings.rateRequestsFrequency))?.GetValue()) != null)
+                ViewSettings.rateRequestsFrequency = Convert.ToInt32(value);
+            if ((value = GetField(_Fields, nameof(ViewSettings.adsRequestsFrequency))?.GetValue()) != null)
+                ViewSettings.adsRequestsFrequency = Convert.ToInt32(value);
+            if ((value = GetField(_Fields, nameof(ViewSettings.firstLevelToRateGame))?.GetValue()) != null)
+                ViewSettings.firstLevelToRateGame = Convert.ToInt32(value);
+            if ((value = GetField(_Fields, nameof(ViewSettings.mazeItemTransitionTime))?.GetValue()) != null)
+                ViewSettings.mazeItemTransitionTime = Convert.ToSingle(value);
+            if ((value = GetField(_Fields, nameof(ViewSettings.mazeItemTransitionDelayCoefficient))?.GetValue()) != null)
+                ViewSettings.mazeItemTransitionDelayCoefficient = Convert.ToSingle(value);
+        }
         
-        private static void FetchConfigs()
+        private void FetchConfigs()
         {
             ConfigManager.FetchCompleted -= OnInitialized;
             ConfigManager.FetchCompleted += OnInitialized;
@@ -100,9 +135,9 @@ namespace RMAZOR.Managers
             Cor.Run(Cor.Delay(3f,
                 () =>
                 {
-                    if (_fetchCompletedActionDone)
+                    if (m_FetchCompletedActionDone)
                         return;
-                    _failedToInit = true;
+                    m_FailedToInit = true;
                     Dbg.Log("Failed to initialize remote config");
                     Manager.InitBase();
                 }));
@@ -110,7 +145,7 @@ namespace RMAZOR.Managers
             ConfigManager.FetchConfigs(new UserAttributes(), new AppAttributes());
         }
 
-        private static void OnFetchCompleted(ConfigResponse _Response)
+        private void OnFetchCompleted(ConfigResponse _Response)
         {
             Dbg.Log("OnFetchCompleted");
             EAdsProvider provider = default;
@@ -160,11 +195,38 @@ namespace RMAZOR.Managers
             GetConfig(ref linesTexturePropsSetRaw, "common.background_texture_triangles_props_set", true);
             RemoteProperties.TrianglesTextureSet = JsonConvert.DeserializeObject<IList<TrianglesTextureSetItem>>(
                 trianglesTexturePropsSetRaw);
-            
+            var filter = GetDataFieldFilterForRemoteFieldIds();
+            filter.Filter(_Fields =>
+            {
+                GetField(_Fields, nameof(CommonGameSettings.adsProvider))
+                    ?.SetValue(CommonGameSettings.adsProvider);
+                GetField(_Fields, nameof(CommonGameSettings.unityAdsRate))
+                    ?.SetValue(CommonGameSettings.unityAdsRate);
+                GetField(_Fields, nameof(CommonGameSettings.showAdsEveryLevel))
+                    ?.SetValue(CommonGameSettings.showAdsEveryLevel);
+                GetField(_Fields, nameof(CommonGameSettings.firstLevelToShowAds))
+                    ?.SetValue(CommonGameSettings.firstLevelToShowAds);
+                GetField(_Fields, nameof(ModelSettings.characterSpeed))
+                    ?.SetValue(ModelSettings.characterSpeed);
+                GetField(_Fields, nameof(ModelSettings.gravityBlockSpeed))
+                    ?.SetValue(ModelSettings.gravityBlockSpeed);
+                GetField(_Fields, nameof(ModelSettings.movingItemsSpeed))
+                    ?.SetValue(ModelSettings.movingItemsSpeed);
+                GetField(_Fields, nameof(ViewSettings.rateRequestsFrequency))
+                    ?.SetValue(ViewSettings.rateRequestsFrequency);
+                GetField(_Fields, nameof(ViewSettings.adsRequestsFrequency))
+                    ?.SetValue(ViewSettings.adsRequestsFrequency);
+                GetField(_Fields, nameof(ViewSettings.firstLevelToRateGame))
+                    ?.SetValue(ViewSettings.firstLevelToRateGame);
+                GetField(_Fields, nameof(ViewSettings.mazeItemTransitionTime))
+                    ?.SetValue(ViewSettings.mazeItemTransitionTime);
+                GetField(_Fields, nameof(ViewSettings.mazeItemTransitionDelayCoefficient))
+                    ?.SetValue(ViewSettings.mazeItemTransitionDelayCoefficient);
+            });
             if (Application.platform == RuntimePlatform.WindowsEditor
                 && !CommonGameSettings.rewriteSettingsByRemoteConfigInEditor)
             {
-                _fetchCompletedActionDone = true;
+                m_FetchCompletedActionDone = true;
                 return;
             }
             string testDeviceIdfasJson = string.Empty;
@@ -173,7 +235,7 @@ namespace RMAZOR.Managers
             if (testDeviceIdfasJson == null 
                 || (deviceIds = JsonConvert.DeserializeObject<string[]>(testDeviceIdfasJson)) == null)
             {
-                _fetchCompletedActionDone = true;
+                m_FetchCompletedActionDone = true;
                 return;
             }
             var idfaEntity = CommonUtils.GetIdfa();
@@ -186,29 +248,29 @@ namespace RMAZOR.Managers
                             StringComparison.InvariantCultureIgnoreCase));
                     CommonGameSettings.debugEnabled = isThisDeviceForTesting;
                     CommonGameSettings.testAds = isThisDeviceForTesting;
-                    _fetchCompletedActionDone = true;
+                    m_FetchCompletedActionDone = true;
                 },
                 _Seconds: 3f));
         }
 
         private static void OnInitialized(ConfigResponse _Response)
         {
-            Cor.Run(Cor.WaitWhile(() => !_fetchCompletedActionDone,
+            Cor.Run(Cor.WaitWhile(() => !Manager.m_FetchCompletedActionDone,
                 () =>
                 {
-                    if (_failedToInit)
+                    if (Manager.m_FailedToInit)
                         return;
                     Dbg.Log("Remote Config Initialized with status: " + _Response.status);
                     Manager.InitBase();
                 }));
             if (Application.platform == RuntimePlatform.WindowsEditor
-                && !CommonGameSettings.rewriteSettingsByRemoteConfigInEditor)
+                && !Manager.CommonGameSettings.rewriteSettingsByRemoteConfigInEditor)
             {
-                _fetchCompletedActionDone = true;
+                Manager.m_FetchCompletedActionDone = true;
             }
         }
         
-        public static void GetConfig<T>(ref T _Parameter, string _Key, bool _IsJson = false)
+        private static void GetConfig<T>(ref T _Parameter, string _Key, bool _IsJson = false)
         {
             var config = ConfigManager.appConfig;
             object result = _Parameter;
@@ -223,6 +285,39 @@ namespace RMAZOR.Managers
             };
             result = !_IsJson ? @switch[typeof(T)]() : config.GetJson(_Key);
             _Parameter = (T) result;
+        }
+
+        private GameDataFieldFilter GetDataFieldFilterForRemoteFieldIds()
+        {
+            var fildIds = new []
+                {
+                    CommonUtils.StringToHash(nameof(CommonGameSettings.adsProvider)),
+                    CommonUtils.StringToHash(nameof(CommonGameSettings.admobRate)),
+                    CommonUtils.StringToHash(nameof(CommonGameSettings.unityAdsRate)),
+                    CommonUtils.StringToHash(nameof(CommonGameSettings.showAdsEveryLevel)),
+                    CommonUtils.StringToHash(nameof(CommonGameSettings.firstLevelToShowAds)),
+                    CommonUtils.StringToHash(nameof(ModelSettings.characterSpeed)),
+                    CommonUtils.StringToHash(nameof(ModelSettings.gravityBlockSpeed)),
+                    CommonUtils.StringToHash(nameof(ModelSettings.movingItemsSpeed)),
+                    CommonUtils.StringToHash(nameof(ViewSettings.rateRequestsFrequency)),
+                    CommonUtils.StringToHash(nameof(ViewSettings.adsRequestsFrequency)),
+                    CommonUtils.StringToHash(nameof(ViewSettings.firstLevelToRateGame)),
+                    CommonUtils.StringToHash(nameof(ViewSettings.mazeItemTransitionTime)),
+                    CommonUtils.StringToHash(nameof(ViewSettings.mazeItemTransitionDelayCoefficient))
+                }.Select(_Id => (ushort)_Id)
+                .ToArray();
+            return new GameDataFieldFilter(
+                    GameClient, 
+                    GameClientUtils.AccountId, 
+                    GameClientUtils.GameId,
+                    fildIds) 
+                {OnlyLocal = true};
+        }
+        
+        private static GameDataField GetField(IEnumerable<GameDataField> _Fields, string _FieldName)
+        {
+            ushort id = (ushort)CommonUtils.StringToHash(_FieldName);
+            return _Fields.FirstOrDefault(_F => _F.FieldId == id);
         }
 
         ~RemoteConfigManager()

@@ -94,16 +94,15 @@ namespace Common.Network.DataFieldFilters
 
         private List<GameDataField> GetCachedFields()
         {
-            var fields = FieldIds
-                .Select(_FieldId =>
-                {
-                    var gdfv = SaveUtils.GetValue(
-                        SaveKeysCommon.GameDataFieldValue(AccountId, m_GameId, _FieldId)) 
-                               ?? new GameDataField(GameClient, default, AccountId, m_GameId, _FieldId);
-                    gdfv.AccountId = AccountId;
-                    gdfv.GameId = m_GameId;
-                    return gdfv;
-                });
+            var fields = new List<GameDataField>();
+            foreach (ushort fId in FieldIds)
+            {
+                var field = SaveUtils.GetValue(SaveKeysCommon.GameDataFieldValue(AccountId, m_GameId, fId)) ?? 
+                            new GameDataField(GameClient, default, AccountId, m_GameId, fId);
+                field.AccountId = AccountId;
+                field.GameId = m_GameId;
+                fields.Add(field);
+            }
             return fields.ToList();
         }
 

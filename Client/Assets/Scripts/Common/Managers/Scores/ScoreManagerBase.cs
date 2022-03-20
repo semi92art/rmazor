@@ -155,8 +155,12 @@ namespace Common.Managers.Scores
         protected ScoresEntity GetScoreCached(ushort _Id, ScoresEntity _Entity = null)
         {
             var entity = _Entity ?? new ScoresEntity();
-            var gdff = new GameDataFieldFilter(GameClient, GameClientUtils.AccountId, GameClientUtils.GameId,
-                _Id) {OnlyLocal = true};
+            var gdff = new GameDataFieldFilter(
+                GameClient,
+                GameClientUtils.AccountId, 
+                GameClientUtils.GameId,
+                _Id)
+                {OnlyLocal = true};
             gdff.Filter(_Fields =>
             {
                 var scoreField = _Fields.FirstOrDefault();
@@ -224,8 +228,12 @@ namespace Common.Managers.Scores
                 Dbg.Log(nameof(SaveGameProgressToCache) + ": " + JsonConvert.SerializeObject(_Data));
                 throw;
             }
-            var gdff = new GameDataFieldFilter(GameClient, GameClientUtils.AccountId, GameClientUtils.GameId,
-                (ushort)CommonUtils.StringToHash(fileNameData.FileName)) {OnlyLocal = true};
+            var gdff = new GameDataFieldFilter(
+                GameClient, 
+                GameClientUtils.AccountId, 
+                GameClientUtils.GameId,
+                (ushort)CommonUtils.StringToHash(fileNameData.FileName)) 
+                {OnlyLocal = true};
             gdff.Filter(_Fields =>
             {
                 var field = _Fields.FirstOrDefault();
@@ -245,8 +253,12 @@ namespace Common.Managers.Scores
         protected Entity<object> GetSavedGameProgressFromCache(string _FileName)
         {
             var entity = new Entity<object>();
-            var gdff = new GameDataFieldFilter(GameClient, GameClientUtils.AccountId, GameClientUtils.GameId,
-                (ushort)CommonUtils.StringToHash(_FileName)) {OnlyLocal = true};
+            var gdff = new GameDataFieldFilter(
+                GameClient,
+                GameClientUtils.AccountId, 
+                GameClientUtils.GameId,
+                (ushort)CommonUtils.StringToHash(_FileName))
+                {OnlyLocal = true};
             gdff.Filter(_Fields =>
             {
                 var field = _Fields.FirstOrDefault();
