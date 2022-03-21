@@ -57,15 +57,6 @@ namespace RMAZOR.Views.UI
             Indicator.OnLevelStageChanged(_Args);
             switch (_Args.Stage)
             {
-                case ELevelStage.Loaded:
-                    // FIXME это говно нужно будет отрефакторить
-                    if (_Args.LevelIndex > 1)
-                    {
-                        SaveUtils.PutValue(SaveKeysRmazor.EnableRotation, true);
-                        SaveUtils.PutValue(SaveKeysRmazor.MovementTutorialFinished, true);
-                        SaveUtils.PutValue(SaveKeysRmazor.RotationTutorialFinished, true);
-                    }
-                    break;
                 case ELevelStage.ReadyToStart when
                     _Args.PreviousStage != ELevelStage.Paused
                     && RazorMazeUtils.MazeContainsGravityItems(Model.GetAllProceedInfos())

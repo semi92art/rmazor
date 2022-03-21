@@ -17,10 +17,10 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
         protected Material Material;
         
         
-        protected IPrefabSetManager PrefabSetManager { get; }
+        private   IPrefabSetManager PrefabSetManager { get; }
         protected IContainersGetter ContainersGetter { get; }
         protected ICameraProvider   CameraProvider   { get; }
-        protected IColorProvider    ColorProvider    { get; }
+        private   IColorProvider    ColorProvider    { get; }
 
         protected ViewMazeFullscreenTextureProviderBase(
             IPrefabSetManager _PrefabSetManager,
@@ -45,7 +45,7 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
 
         protected virtual void OnColorChanged(int _ColorId, Color _Color) { }
 
-        protected void ScaleTextureToViewport(Component _Renderer)
+        private void ScaleTextureToViewport(Component _Renderer)
         {
             var camera = CameraProvider.MainCamera;
             var tr = _Renderer.transform;
@@ -54,11 +54,11 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
             tr.localScale = new Vector3(bds.size.x, 1f, bds.size.y) * 0.1f;
         }
         
-        protected void InitTexture()
+        private void InitTexture()
         {
             var parent = ContainersGetter.GetContainer(ContainerNames.Background);
             var go = PrefabSetManager.InitPrefab(
-                parent, "views", "background_texture");
+                parent, "background", "background_texture");
             Renderer = go.GetCompItem<MeshRenderer>("renderer");
             Renderer.material = PrefabSetManager.InitObject<Material>(
                 "materials", MaterialAssetName);

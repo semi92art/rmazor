@@ -17,6 +17,7 @@ namespace RMAZOR
 
         private static SaveKey<int> _dailyBonusLastClickedDay; 
         private static SaveKey<int> _ratePanelShowsCount;
+        private static SaveKey<int?> _lastTutorialLevelIndex;
         
         private static SaveKey<DateTime>  _wheelOfFortuneLastDate; 
             
@@ -35,6 +36,7 @@ namespace RMAZOR
             SaveUtils.PutValue(DailyBonusLastClickedDay, SaveUtils.GetValue(DailyBonusLastClickedDay), true);
             SaveUtils.PutValue(RatePanelShowsCount,      SaveUtils.GetValue(RatePanelShowsCount),      true);
             SaveUtils.PutValue(WheelOfFortuneLastDate,   SaveUtils.GetValue(WheelOfFortuneLastDate),   true);
+            SaveUtils.PutValue(LastTutorialLevelIndex,   SaveUtils.GetValue(LastTutorialLevelIndex),   true);
             
             SaveUtils.PutValue(DailyBonusLastDate,       SaveUtils.GetValue(DailyBonusLastDate),       true);
             
@@ -57,6 +59,8 @@ namespace RMAZOR
             _dailyBonusLastClickedDay ??= new SaveKey<int>(nameof(DailyBonusLastClickedDay));
         public static SaveKey<int>  RatePanelShowsCount      =>
             _ratePanelShowsCount ??= new SaveKey<int>(nameof(RatePanelShowsCount));
+        public static SaveKey<int?> LastTutorialLevelIndex =>
+            _lastTutorialLevelIndex ??= new SaveKey<int?>(nameof(LastTutorialLevelIndex));
         public static SaveKey<DateTime>     WheelOfFortuneLastDate =>
             _wheelOfFortuneLastDate ??= new SaveKey<DateTime>(nameof(WheelOfFortuneLastDate));
         public static SaveKey<DateTime>     DailyBonusLastDate     => 

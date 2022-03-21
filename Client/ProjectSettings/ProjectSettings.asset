@@ -152,7 +152,7 @@ PlayerSettings:
   - {fileID: 3637443925060811094, guid: fec643d02fe70da4cb94c3c55c147a1b, type: 3}
   - {fileID: 5801256520906685625, guid: c93dbf76a6376f148b36a1c337a4924c, type: 3}
   - {fileID: 731759395191873786, guid: ec7fb1fdd38ccb8439dbb51307afb7fc, type: 3}
-  - {fileID: 6624169740486630875, guid: 97f71117d3f3e9347b5f06ce6c261d65, type: 3}
+  - {fileID: 0}
   - {fileID: 8219298684319459333, guid: aada0e6c1e3f9b246bc089aa5d754518, type: 3}
   - {fileID: 432638780763177933, guid: 9e00b2062e325984c8c051e07412d92a, type: 3}
   - {fileID: 432638780763177933, guid: 622fc568ecbde9f448197a9bf5ef69dc, type: 3}
@@ -187,13 +187,14 @@ PlayerSettings:
   - {fileID: 6009559761229068857, guid: 176fe70dbb68ea64389c57fcca4a327f, type: 3}
   - {fileID: 4343252772721228017, guid: b9bd8eab7fc1f8d45b369504bc2b451b, type: 3}
   - {fileID: 6624169740486630875, guid: 5b0a6bed4109d2144b0279826ee42655, type: 3}
-  - {fileID: 6624169740486630875, guid: ed4b68a94fc51a6428200ec386f2644b, type: 3}
+  - {fileID: 0}
   - {fileID: 731759395191873786, guid: 283a7a893927ea84f9c61e3367221a46, type: 3}
   - {fileID: 3312965024029319640, guid: 55a9969e8ba48da449cb28699d996a79, type: 3}
   - {fileID: 5545151479159213484, guid: 7c7d299c1edab1947b9c8f4530fa3ad0, type: 3}
   - {fileID: 5801256520906685625, guid: c93dbf76a6376f148b36a1c337a4924c, type: 3}
   - {fileID: 6739011661087431237, guid: 302b725af59c27942abb2cc52411cb24, type: 3}
   - {fileID: 8945480434963055887, guid: a857730524c9ebc4ab26e948698a179a, type: 3}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -343,7 +344,7 @@ PlayerSettings:
   - m_BuildTarget: 
     m_Icons:
     - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: f63989d59f8e7b744bc1c6eeba0f4b5e, type: 3}
+      m_Icon: {fileID: 2800000, guid: b7eef8136dab9db4da1be6232911673f, type: 3}
       m_Width: 128
       m_Height: 128
       m_Kind: 0
@@ -912,6 +913,7 @@ PlayerSettings:
   metroFTAName: 
   metroFTAFileTypes: []
   metroProtocolName: 
+  vcxProjDefaultLanguage: 
   XboxOneProductId: 
   XboxOneUpdateKey: 
   XboxOneSandboxId: 

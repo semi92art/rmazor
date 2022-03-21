@@ -57,30 +57,18 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            // if (_ColorId != ColorIds.Background1 
-            //     && _ColorId != ColorIds.Background2) 
-            //     return;
-            // var col = Color.Lerp(
-            //     ColorProvider.GetColor(ColorIds.Background1),
-            //     ColorProvider.GetColor(ColorIds.Background2),
-            //     0.5f);
-            // m_BackItemsColor = col;
-            // foreach (var item in m_BackIdleItemsPool)
-            //     item.SetColor(col);
-
-            if (_ColorId == ColorIds.Main)
-            {
-                m_BackItemsColor = _Color;
-                foreach (var item in m_BackIdleItemsPool)
-                    item.SetColor(_Color);
-            }
+            if (_ColorId != ColorIds.Main)
+                return;
+            m_BackItemsColor = _Color;
+            foreach (var item in m_BackIdleItemsPool)
+                item.SetColor(_Color);
         }
         
         protected override void InitItems()
         {
             const float scaleCoeff = 0.5f;
             var physicsMaterial = PrefabSetManager.GetObject<PhysicsMaterial2D>(
-                "views",
+                "background",
                 "background_idle_items_physics_material");
             for (int i = 0; i < PoolSize; i++)
             {

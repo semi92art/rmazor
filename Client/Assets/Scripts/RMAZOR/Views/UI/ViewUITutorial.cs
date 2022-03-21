@@ -8,6 +8,7 @@ using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
+using RMAZOR.Helpers;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
 using TMPro;
@@ -30,42 +31,40 @@ namespace RMAZOR.Views.UI
     
     public class ViewUITutorial : IViewUITutorial
     {
-        #region constants
-
-        #endregion
-
         #region nonpublic members
 
-        private bool                          m_MovementTutorialStarted;
-        private bool                          m_RotationTutorialStarted;
-        private bool                          m_MovementTutorialFinished;
-        private bool                          m_RotationTutorialFinished;
-        private bool                          m_ReadyToSecondMovementStep;
-        private bool                          m_ReadyToThirdMovementStep;
-        private bool                          m_ReadyToFourthMovementStep;
-        private bool                          m_ReadyToFinishMovementTutorial;
-        private bool                          m_ReadyToSecondRotationStep;
-        private bool                          m_ReadyToFinishRotationTutorial;
-        private Vector4                       m_Offsets;
-        private HandSwipeMovement             m_Hsm;
-        private HandSwipeRotation             m_Hsr;
-        private TextMeshPro                   m_RotPossText;
-        private Animator                      m_RotPossTextAnim;
+        private bool              m_MovementTutorialStarted;
+        private bool              m_RotationTutorialStarted;
+        private bool              m_MovementTutorialFinished;
+        private bool              m_RotationTutorialFinished;
+        private bool              m_ReadyToSecondMovementStep;
+        private bool              m_ReadyToThirdMovementStep;
+        private bool              m_ReadyToFourthMovementStep;
+        private bool              m_ReadyToFinishMovementTutorial;
+        private bool              m_ReadyToSecondRotationStep;
+        private bool              m_ReadyToFinishRotationTutorial;
+        private Vector4           m_Offsets;
+        private HandSwipeMovement m_Hsm;
+        private HandSwipeRotation m_Hsr;
+        private TextMeshPro       m_RotPossText;
+        private Animator          m_RotPossTextAnim;
+        private int               m_LastTutorialLevelIndex = -1;
 
         #endregion
 
         #region inject
 
-        private IModelGame                           Model               { get; }
-        private IPrefabSetManager                    PrefabSetManager    { get; }
-        private IContainersGetter                    ContainersGetter    { get; }
-        private IMazeCoordinateConverter             CoordinateConverter { get; }
-        private IViewInputCommandsProceeder          CommandsProceeder   { get; }
-        private ICameraProvider                      CameraProvider      { get; }
-        private IColorProvider                       ColorProvider       { get; }
-        private ILocalizationManager                 LocalizationManager { get; }
-        private IViewGameTicker                      Ticker              { get; }
-        private IRotatingPossibilityIndicator        RotationIndicator   { get; }
+        private IModelGame                    Model               { get; }
+        private IPrefabSetManager             PrefabSetManager    { get; }
+        private IContainersGetter             ContainersGetter    { get; }
+        private IMazeCoordinateConverter      CoordinateConverter { get; }
+        private IViewInputCommandsProceeder   CommandsProceeder   { get; }
+        private ICameraProvider               CameraProvider      { get; }
+        private IColorProvider                ColorProvider       { get; }
+        private ILocalizationManager          LocalizationManager { get; }
+        private IViewGameTicker               Ticker              { get; }
+        private IRotatingPossibilityIndicator RotationIndicator   { get; }
+        private ILevelsLoader                 LevelsLoader        { get; }
 
         public ViewUITutorial(
             IModelGame                           _Model,
@@ -77,18 +76,20 @@ namespace RMAZOR.Views.UI
             IColorProvider                       _ColorProvider,
             ILocalizationManager                 _LocalizationManager,
             IViewGameTicker                      _Ticker, 
-            IRotatingPossibilityIndicator        _RotationIndicator)
+            IRotatingPossibilityIndicator        _RotationIndicator,
+            ILevelsLoader                        _LevelsLoader)
         {
-            Model = _Model;
-            PrefabSetManager = _PrefabSetManager;
-            ContainersGetter = _ContainersGetter;
+            Model               = _Model;
+            PrefabSetManager    = _PrefabSetManager;
+            ContainersGetter    = _ContainersGetter;
             CoordinateConverter = _CoordinateConverter;
-            CommandsProceeder = _CommandsProceeder;
-            CameraProvider = _CameraProvider;
-            ColorProvider = _ColorProvider;
+            CommandsProceeder   = _CommandsProceeder;
+            CameraProvider      = _CameraProvider;
+            ColorProvider       = _ColorProvider;
             LocalizationManager = _LocalizationManager;
-            Ticker = _Ticker;
-            RotationIndicator = _RotationIndicator;
+            Ticker              = _Ticker;
+            RotationIndicator   = _RotationIndicator;
+            LevelsLoader = _LevelsLoader;
         }
 
         #endregion
@@ -100,6 +101,7 @@ namespace RMAZOR.Views.UI
         
         public void Init(Vector4 _Offsets)
         {
+            GetLastTutorialLevelIndex();
             m_Offsets = _Offsets;
             m_MovementTutorialFinished = SaveUtils.GetValue(SaveKeysRmazor.MovementTutorialFinished);
             m_RotationTutorialFinished = SaveUtils.GetValue(SaveKeysRmazor.RotationTutorialFinished);
@@ -110,6 +112,7 @@ namespace RMAZOR.Views.UI
         {
             if (_Args.Stage != ELevelStage.Loaded)
                 return;
+            AdditionalCheckForTutorialFinishing(_Args);
             switch (Model.Data.Info.AdditionalInfo.Comment1)
             {
                 case "movement tutorial": StartMovementTutorial(); break;
@@ -120,6 +123,8 @@ namespace RMAZOR.Views.UI
         #endregion
 
         #region nonpublic methods
+
+
 
         private void OnCommand(EInputCommand _Command, object[] _Args)
         {
@@ -147,6 +152,37 @@ namespace RMAZOR.Views.UI
                 case EInputCommand.RotateCounterClockwise: m_ReadyToSecondRotationStep     = true; break;
                 case EInputCommand.RotateClockwise:        m_ReadyToFinishRotationTutorial = true; break;
             }   
+        }
+        
+        private void GetLastTutorialLevelIndex()
+        {
+            int? lastIdx = SaveUtils.GetValue(SaveKeysRmazor.LastTutorialLevelIndex);
+            if (lastIdx.HasValue)
+            {
+                m_LastTutorialLevelIndex = lastIdx.Value;
+                return;
+            }
+
+            int levelsCount = LevelsLoader.GetLevelsCount(GameClientUtils.GameId);
+            for (int i = 0; i < levelsCount; i++)
+            {
+                var info = LevelsLoader.LoadLevel(GameClientUtils.GameId, i);
+                if (info.AdditionalInfo.Comment1 != "rotation tutorial")
+                    continue;
+                lastIdx = i;
+                break;
+            }
+            if (lastIdx.HasValue)
+                m_LastTutorialLevelIndex = lastIdx.Value;
+        }
+
+        private void AdditionalCheckForTutorialFinishing(LevelStageArgs _Args)
+        {
+            if (m_LastTutorialLevelIndex == -1 || _Args.LevelIndex <= m_LastTutorialLevelIndex)
+                return;
+            SaveUtils.PutValue(SaveKeysRmazor.EnableRotation, true);
+            SaveUtils.PutValue(SaveKeysRmazor.MovementTutorialFinished, true);
+            SaveUtils.PutValue(SaveKeysRmazor.RotationTutorialFinished, true);
         }
 
         private void StartMovementTutorial()

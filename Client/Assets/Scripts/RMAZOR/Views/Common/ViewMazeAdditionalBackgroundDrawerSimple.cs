@@ -33,7 +33,7 @@ namespace RMAZOR.Views.Common
         private const int   BordersPoolCount      = 100;
         private const int   CornersPoolCount      = 20;
         private const int   MasksPoolCount        = 10;
-        private const int   TextureTypesCount     = 3;
+        private const int   TextureTypesCount     = 7;
         private const int   TextureRenderersCount = 3;
         private const float BorderRelativeIndent  = 0.5f;
 
@@ -88,7 +88,7 @@ namespace RMAZOR.Views.Common
 
         #endregion
 
-#region api
+        #region api
         
         public EAppearingState AppearingState { get; private set; }
 
@@ -196,7 +196,7 @@ namespace RMAZOR.Views.Common
             
             var go = PrefabSetManager.InitPrefab(
                 Container,
-                "views",
+                "background",
                 "additional_background");
             for (int i = 0; i < TextureRenderersCount; i++)
             {
@@ -209,7 +209,7 @@ namespace RMAZOR.Views.Common
             for (int i = 1; i <= TextureTypesCount; i++)
             {
                 var textureSprite = PrefabSetManager.GetObject<Sprite>(
-                    "views", 
+                    "background", 
                     $"additional_background_texture_{i}");
                 m_TextureSprites.Add(textureSprite);
             }

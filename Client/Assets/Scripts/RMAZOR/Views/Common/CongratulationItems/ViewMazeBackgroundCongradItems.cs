@@ -121,12 +121,12 @@ namespace RMAZOR.Views.Common.CongratulationItems
             for (int i = 0; i < 2; i++)
             {
                 var sourceGo = PrefabSetManager.GetPrefab(
-                    "views", $"background_item_congrats_{i + 1}");
+                    "background", $"background_item_congrats_{i + 1}");
                 sourceGos.Add(sourceGo);
             }
             for (int i = 0; i < PoolSize; i++)
             {
-                int randIdx = Mathf.FloorToInt(UnityEngine.Random.value * sourceGos.Count);
+                int randIdx = Mathf.FloorToInt(Random.value * sourceGos.Count);
                 var sourceGo = sourceGos[randIdx];
                 var newGo = Object.Instantiate(sourceGo);
                 newGo.SetParent(ContainersGetter.GetContainer(ContainerNames.Background));
@@ -171,13 +171,13 @@ namespace RMAZOR.Views.Common.CongratulationItems
             if (!(GameTicker.Time > m_NextRandomCongratsItemAnimInterval + m_LastCongratsItemAnimTime)) 
                 return;
             m_LastCongratsItemAnimTime = GameTicker.Time;
-            m_NextRandomCongratsItemAnimInterval = 0.05f + UnityEngine.Random.value * 0.15f;
+            m_NextRandomCongratsItemAnimInterval = 0.05f + Random.value * 0.15f;
             var item = m_BackCongratsItemsPool.FirstInactive;
             if (item.IsNull())
                 return;
             var tr = item.transform;
             tr.position = RandomPositionOnScreen();
-            tr.localScale = Vector3.one * (0.5f + 2f * UnityEngine.Random.value);
+            tr.localScale = Vector3.one * (0.5f + 2f * Random.value);
             m_BackCongratsItemsPool.Activate(item);
             item.SetTrigger(AnimKeys.Anim);
         }

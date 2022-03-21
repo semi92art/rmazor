@@ -90,7 +90,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
         protected override void InitItems()
         {
             var sourceGo = PrefabSetManager.GetPrefab(
-                "views", "background_item_congrats_alt_1");
+                "background", "background_item_congrats_alt_1");
             for (int i = 0; i < PoolSize; i++)
             {
                 var newGo = Object.Instantiate(sourceGo);
