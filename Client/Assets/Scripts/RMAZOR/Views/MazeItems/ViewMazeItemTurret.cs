@@ -56,7 +56,7 @@ namespace RMAZOR.Views.MazeItems
         private Disc           m_ProjHolderBorder;
         private SpriteRenderer m_ProjRend;
         private SpriteRenderer m_ProjFakeRend;
-        private Rectangle      m_Mask1, m_Mask2;
+        private Rectangle      m_Mask1;
         private Rectangle      m_Mask3;
 
         #endregion
@@ -128,7 +128,7 @@ namespace RMAZOR.Views.MazeItems
             get => base.ActivatedInSpawnPool;
             set
             {
-                m_Mask1.enabled = m_Mask2.enabled = m_Mask3.enabled = false;
+                m_Mask1.enabled = m_Mask3.enabled = false;
                 base.ActivatedInSpawnPool = value;
             }
         }
@@ -223,9 +223,7 @@ namespace RMAZOR.Views.MazeItems
                 _Mask.enabled = false;
             }
             m_Mask1 = projParent.AddComponentOnNewChild<Rectangle>("Mask 1", out GameObject _);
-            m_Mask2 = projParent.AddComponentOnNewChild<Rectangle>("Mask 2", out GameObject _);
             SetProjectileMaskProperties(m_Mask1);
-            SetProjectileMaskProperties(m_Mask2);
             m_Mask3 = Object.AddComponentOnNewChild<Rectangle>("Mask 3", out GameObject _)
                 .SetSortingOrder(SortingOrders.PathLine - 1)
                 .SetColor(Color.Lerp(
@@ -250,7 +248,6 @@ namespace RMAZOR.Views.MazeItems
             m_ProjContTr.SetLocalPosXY(pos);
             m_ProjFakeContTr.SetLocalPosXY(pos);
             m_Mask1.SetWidth(scale).SetHeight(scale);
-            m_Mask2.SetWidth(scale).SetHeight(scale);
             m_Mask3.SetWidth(scale).SetHeight(scale);
             m_Mask3.SetCornerRadii(GetMaskCornerRadii())
                 .SetColor(Color.Lerp(
@@ -278,7 +275,7 @@ namespace RMAZOR.Views.MazeItems
             int stencilRef = GetGroupIndexByPoint();
             if (stencilRef < 0)
                 return;
-            m_Mask1.StencilRefID = m_Mask2.StencilRefID = Convert.ToByte(stencilRef + 1);
+            m_Mask1.StencilRefID = Convert.ToByte(stencilRef + 1);
             m_ProjFakeRend.sharedMaterial.SetFloat(StencilRefId, stencilRef);
             m_ProjRend.sharedMaterial.SetFloat(StencilRefId, stencilRef);
         }
@@ -321,8 +318,7 @@ namespace RMAZOR.Views.MazeItems
         {
             Vector2 toPos = _Args.To;
             EnableProjectileMasksAndSetPositions(
-                _Args.Direction + toPos, 
-                toPos + _Args.Direction + 0.9f * _Args.Direction);
+                _Args.Direction + toPos);
             Cor.Run(AnimateFakeProjectileAndCloseBarrel(0.2f));
             yield return DoShoot(_Args);
         }
@@ -363,14 +359,11 @@ namespace RMAZOR.Views.MazeItems
                 });
         }
 
-        private void EnableProjectileMasksAndSetPositions(Vector2 _Mask1Pos, Vector2 _Mask2Pos)
+        private void EnableProjectileMasksAndSetPositions(Vector2 _Mask1Pos)
         {
-            m_Mask1.enabled = m_Mask2.enabled = true;
+            m_Mask1.enabled = true;
             m_Mask1.transform
                 .SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(_Mask1Pos))
-                .SetPosZ(-0.1f);
-            m_Mask2.transform
-                .SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(_Mask2Pos))
                 .SetPosZ(-0.1f);
         }
         
@@ -457,7 +450,6 @@ namespace RMAZOR.Views.MazeItems
             m_ProjRotating = true;
             m_RotatingSpeed = ViewSettings.TurretProjectileRotationSpeed;
             var fullPath = RazorMazeUtils.GetFullPath(_Args.From, _Args.To);
-
             bool Predicate()
             {
                 return ProjectileMovingPredicate(
@@ -475,7 +467,7 @@ namespace RMAZOR.Views.MazeItems
                     m_ProjContTr.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(projectilePos));
                     point = V2Int.Round(projectilePos);
                     ProjectileTail.ShowTail(_Args, projectilePos);
-                    if (point == _Args.To + 2 * _Args.Direction)
+                    if (point == _Args.To + _Args.Direction)
                         movedToTheEnd = true;
                 }, () =>
                 {
@@ -563,7 +555,7 @@ namespace RMAZOR.Views.MazeItems
             if (_Appear)
             {
                 m_ProjRend.SetGoActive(true);
-                m_Mask1.enabled = m_Mask2.enabled = m_Mask3.enabled = true;
+                m_Mask1.enabled = m_Mask3.enabled = true;
                 m_ProjRotating = false;
                 m_ProjFakeContTr.SetGoActive(false);
                 Cor.Run(AnimateFakeProjectileBeforeShoot());
@@ -575,7 +567,7 @@ namespace RMAZOR.Views.MazeItems
         protected override void OnAppearFinish(bool _Appear)
         {
             if (!_Appear)
-                m_ProjRotating = m_Mask1.enabled = m_Mask2.enabled =  m_Mask3.enabled = false;
+                m_ProjRotating = m_Mask1.enabled = m_Mask3.enabled = false;
             base.OnAppearFinish(_Appear);
         }
 

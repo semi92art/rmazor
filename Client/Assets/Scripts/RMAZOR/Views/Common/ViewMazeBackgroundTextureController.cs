@@ -24,7 +24,6 @@ namespace RMAZOR.Views.Common
         #endregion
         
         #region inject
-
         
         private IViewMazeBackgroundLinesTextureProvider     LinesTextureProvider     { get; }
         private IViewMazeBackgroundCirclesTextureProvider   CirclesTextureProvider   { get; }
@@ -155,21 +154,21 @@ namespace RMAZOR.Views.Common
             return (group % 3) switch { 0 => 1, 1 => 2, 2 => 3, _ => 1 };
         }
 
-        private void ActivateTexturePropertiesSet(int _ProviderIndex, long _LeveIndex)
+        private void ActivateTexturePropertiesSet(int _ProviderIndex, long _LevelIndex)
         {
-            int levelIndexInt = (int) _LeveIndex;
+            int group = RazorMazeUtils.GetGroupIndex(_LevelIndex);
             switch (_ProviderIndex)
             {
                 case 1:
-                    var set1 = m_LinesTextureSetItems[levelIndexInt % m_LinesTextureSetItems.Count];
+                    var set1 = m_LinesTextureSetItems[group % m_LinesTextureSetItems.Count];
                     LinesTextureProvider.SetProperties(set1);
                     break;
                 case 2:
-                    var set2 = m_CirclesTextureSetItems[levelIndexInt % m_CirclesTextureSetItems.Count];
+                    var set2 = m_CirclesTextureSetItems[group % m_CirclesTextureSetItems.Count];
                     CirclesTextureProvider.SetProperties(set2);
                     break;
                 case 3:
-                    var set4 = m_TrianglesTextureSetItems[levelIndexInt % m_TrianglesTextureSetItems.Count];
+                    var set4 = m_TrianglesTextureSetItems[group % m_TrianglesTextureSetItems.Count];
                     TrianglesTextureProvider.SetProperties(set4);
                     break;
                 default: throw new SwitchCaseNotImplementedException(_ProviderIndex);

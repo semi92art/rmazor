@@ -5,13 +5,12 @@
 		_Radius ("Radius", Range(0, 0.1)) = 0
     	_CenterX ("Center X", Range(0, 1)) = 0
     	_CenterY ("Center Y", Range(0, 1)) = 0
-    	_WavesCount ("Waves Count", Range(0, 20)) = 4
+    	[IntRange]_WavesCount ("Waves Count", Range(0, 20)) = 4
     	_Amplitude("Waves Amplitude", Range(0, 1)) = 0.5
-    	_Tiling ("Tiling", Range(1, 10)) = 1
+    	[IntRange]_Tiling ("Tiling", Range(1, 10)) = 1
 		_Direction ("Direction", Range(0, 1)) = 0
 		_WarpScale ("Warp Scale", Range(0, 1)) = 0
 		_WarpTiling ("Warp Tiling", Range(1, 10)) = 1
-    	_Indent("Indent", Range(0, 1)) = 0
     	[IntRange] _StencilRef ("Stencil Reference Value", Range(0,255)) = 0
 	}
 	SubShader {
@@ -43,7 +42,6 @@
 			float  _Direction;
 			float  _WarpScale;
 			float  _WarpTiling;
-			float _Indent;
 			
 			v2f vert (appdata v) {
 				return vert_default(v);

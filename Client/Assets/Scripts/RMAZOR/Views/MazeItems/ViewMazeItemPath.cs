@@ -636,8 +636,6 @@ namespace RMAZOR.Views.MazeItems
                 return false;
             bool result = TurretExist(Props.Position + (_Right ? V2Int.Right : V2Int.Left))
                           || TurretExist(Props.Position + (_Up ? V2Int.Up : V2Int.Down));
-            if (result)
-                Dbg.Log("IsCornerOuterAndNearTurret");
             return result;
         }
 

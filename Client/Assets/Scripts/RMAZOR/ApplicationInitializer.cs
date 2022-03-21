@@ -38,7 +38,6 @@ namespace RMAZOR
         private IHapticsManager       HapticsManager       { get; set; }
         private IShopManager          ShopManager          { get; set; }
         private IRemoteConfigManager  RemoteConfigManager  { get; set; }
-        private ICameraProvider       CameraProvider       { get; set; }
         private IPermissionsRequester PermissionsRequester { get; set; }
 
         [Inject] 
@@ -68,7 +67,6 @@ namespace RMAZOR
             HapticsManager       = _HapticsManager;
             ShopManager          = _ShopManager;
             RemoteConfigManager  = _RemoteConfigManager;
-            CameraProvider       = _CameraProvider;
             PermissionsRequester = _PermissionsRequester;
         }
 
@@ -80,6 +78,7 @@ namespace RMAZOR
         private IEnumerator Start()
         {
             Dbg.Log("Application started, platform: " + Application.platform);
+            yield return Cor.Delay(0.5f, null); // для более плавной загрузки логотипа компании
             var permissionsEntity = PermissionsRequester.RequestPermissions();
             while (permissionsEntity.Result == EEntityResult.Pending)
                 yield return null;
