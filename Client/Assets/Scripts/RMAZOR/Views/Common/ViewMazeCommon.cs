@@ -115,7 +115,7 @@ namespace RMAZOR.Views.Common
                 var pool = new SpawnPool<IViewMazeItem>();
                 m_ItemPools.Add(type, pool);
                 var blockItems = Enumerable
-                    .Range(0, ViewSettings.BlockItemsCount)
+                    .Range(0, ViewSettings.blockItemsCount)
                     .Select(_ => MazeItemsCreator.CloneDefaultBlock(type))
                     .ToList();
                 pool.AddRange(blockItems);

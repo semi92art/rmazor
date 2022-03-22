@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Common;
@@ -16,7 +15,6 @@ using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace RMAZOR
@@ -61,7 +59,6 @@ namespace RMAZOR
         
         #region serialized fields
 
-        // Container for console view, should be a child of this GameObject
         [SerializeField] private GameObject      viewContainer; 
         [SerializeField] private Text            logTextArea;
         [SerializeField] private InputField      inputField;
@@ -82,7 +79,6 @@ namespace RMAZOR
         private Vector2 m_FirstPressPos;
         private Vector2 m_SecondPressPos;
         private Vector2 m_CurrentSwipe;
-        public enum Swipe { None, Up, Down, Left, Right }
 
         private IViewInputCommandsProceeder m_CommandsProceeder;
         
@@ -129,6 +125,7 @@ namespace RMAZOR
                 ToggleVisibility();
             if (LeanInput.GetDown(KeyCode.Return))
                 RunCommand();
+            // хз где у линтача тильда
             if (LeanInput.GetDown(KeyCode.KeypadDivide))
                 ToggleVisibility();
             //Arrow up in history
@@ -136,17 +133,7 @@ namespace RMAZOR
                 UpCommand();
             if (LeanInput.GetDown(KeyCode.DownArrow))
                 DownCommand();
-            //Visibility on mouse swipe
-            if (LeanInput.GetMouseDown(0))
-                m_SwipeFirstPosition = Mouse.current.position.ReadValue();
-            else if (LeanInput.GetMouseUp(0))
-            {
-                m_SwipeLastPosition = Mouse.current.position.ReadValue();
-                if ((m_SwipeFirstPosition.x - m_SwipeLastPosition.x > m_SwipeDragThreshold) && !m_IsVisible)
-                    ToggleVisibility();
-                if ((m_SwipeLastPosition.x - m_SwipeFirstPosition.x > m_SwipeDragThreshold) && m_IsVisible)
-                    ToggleVisibility();
-            }
+
             if (LeanInput.GetTouchCount() > 0)
             {
                 CommonUtils.GetTouch(0, out _, out Vector2 pos, out _, out bool began, out bool ended);

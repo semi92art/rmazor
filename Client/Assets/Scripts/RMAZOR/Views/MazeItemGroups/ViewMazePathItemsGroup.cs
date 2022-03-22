@@ -80,7 +80,7 @@ namespace RMAZOR.Views.MazeItemGroups
                     DeactivateAllPaths();
                     MazeItemsCreator.InitPathItems(Model.Data.Info, m_PathsPool);
                     PathItems = m_PathsPool.Where(_Item => _Item.ActivatedInSpawnPool).ToList();
-                    if (!ViewSettings.StartPathItemFilledOnStart)
+                    if (!ViewSettings.startPathItemFilledOnStart)
                         UnfillStartPathItem();
                     break;
                 }
@@ -94,7 +94,7 @@ namespace RMAZOR.Views.MazeItemGroups
         
         public void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
         {
-            if (!m_FirstMoveDone && ViewSettings.StartPathItemFilledOnStart)
+            if (!m_FirstMoveDone && ViewSettings.startPathItemFilledOnStart)
                 UnfillStartPathItem();
             m_FirstMoveDone = true;
         }
@@ -107,7 +107,7 @@ namespace RMAZOR.Views.MazeItemGroups
         {
             m_PathsPool = new SpawnPool<IViewMazeItemPath>();
             var pathItems = Enumerable
-                .Range(0, ViewSettings.PathItemsCount)
+                .Range(0, ViewSettings.pathItemsCount)
                 .Select(_ => MazeItemsCreator.CloneDefaultPath())
                 .ToList();
             foreach (var item in pathItems)

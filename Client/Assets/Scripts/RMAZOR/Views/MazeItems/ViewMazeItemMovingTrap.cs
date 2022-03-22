@@ -141,7 +141,7 @@ namespace RMAZOR.Views.MazeItems
         {
             if (!m_Rotating)
                 return;
-            float rotSpeed = ViewSettings.MovingTrapRotationSpeed * GameTicker.DeltaTime; 
+            float rotSpeed = ViewSettings.movingTrapRotationSpeed * GameTicker.DeltaTime; 
             m_Saw.transform.Rotate(Vector3.forward * rotSpeed);
         }
 

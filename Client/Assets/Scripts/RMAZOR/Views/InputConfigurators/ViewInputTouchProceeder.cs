@@ -271,18 +271,16 @@ namespace RMAZOR.Views.InputConfigurators
         
         public Vector2 GetFingerPosition(int _Index)
         {
-#if UNITY_EDITOR
-            return LeanInput.GetMousePosition();
-#else
+            if (Application.platform == RuntimePlatform.WindowsEditor)
+                return LeanInput.GetMousePosition();
             CommonUtils.GetTouch(_Index, out _, out var pos, out _, out _, out _);
             return pos;
-#endif
         }
 
         public void OnRotationFinished(MazeRotationEventArgs _Args)
         {
             Cor.Run(Cor.Delay(
-                ViewSettings.AfterRotationEnableMoveDelay,
+                ViewSettings.afterRotationEnableMoveDelay,
                 UnlockCommandsOnRotationFinished));
         }
         

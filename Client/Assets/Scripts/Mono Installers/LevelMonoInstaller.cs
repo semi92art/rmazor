@@ -97,7 +97,8 @@ namespace Mono_Installers
             Container.Bind<IViewMazeForeground>()              .To<ViewMazeForeground>()               .AsSingle();
             Container.Bind<IViewBetweenLevelTransitioner>()    .To<ViewBetweenLevelTransitioner>()     .AsSingle();
             Container.Bind<IViewLevelStageController>()        .To<ViewLevelStageController>()         .AsSingle();
-            Container.Bind<IViewTurretProjectileTail>()        .To<ViewTurretProjectileTailFake>()     .AsSingle();
+            Container.Bind<IViewTurretProjectile>()            .To<ViewTurretProjectileShuriken>()     .AsSingle();
+            Container.Bind<IViewTurretProjectileTail>()        .To<ViewTurretProjectileTail>()         .AsSingle();
             
             Container.Bind<IViewMazeAdditionalBackgroundGeometryInitializer>()
                 .To<ViewMazeAdditionalBackgroundGeometryInitializerSimple>()

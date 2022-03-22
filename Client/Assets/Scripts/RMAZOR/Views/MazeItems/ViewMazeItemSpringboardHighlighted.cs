@@ -60,7 +60,7 @@ namespace RMAZOR.Views.MazeItems
         protected override void InitShape()
         {
             base.InitShape();
-            m_IsAnimatedHighlight = ViewSettings.SpringboardAnimatedHighlight;
+            m_IsAnimatedHighlight = ViewSettings.springboardAnimatedHighlight;
             m_NonHighlightColor  = Pillar.Color = Springboard.Color =
                 ColorProvider.GetColor(m_IsAnimatedHighlight ? ColorIds.Main : ColorIds.MazeItem2);
             m_HighlightColor = ColorProvider.GetColor(ColorIds.MazeItem2);

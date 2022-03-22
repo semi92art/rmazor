@@ -1,12 +1,11 @@
 ﻿using Common.CameraProviders;
+using Common.Helpers;
 using Common.Providers;
 using Common.Ticker;
 using Common.UI;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
-// ReSharper disable UnusedType.Global
-// ReSharper disable ClassNeverInstantiated.Global
 
 namespace RMAZOR.UI.Panels
 {
@@ -21,6 +20,7 @@ namespace RMAZOR.UI.Panels
         #region inject
 
         public CharacterDiedDialogPanel(
+            CommonGameSettings          _CommonGameSettings,
             IModelGame                  _Model,
             IBigDialogViewer            _DialogViewer,
             IManagersGetter             _Managers,
@@ -30,6 +30,7 @@ namespace RMAZOR.UI.Panels
             IProposalDialogViewer       _ProposalDialogViewer,
             IViewInputCommandsProceeder _CommandsProceeder)
             : base(
+                _CommonGameSettings,
                 _Model,
                 _DialogViewer,
                 _Managers, 

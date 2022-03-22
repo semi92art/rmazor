@@ -67,13 +67,13 @@ namespace RMAZOR.Views.Debug
             if (drawScreenOffsets)
             {
                 Gizmos.color = Color.green;
-                float a = scrBds.min.x + m_Settings.LeftScreenOffset;
+                float a = scrBds.min.x + m_Settings.leftScreenOffset;
                 Gizmos.DrawLine(new Vector2(a, scrBds.min.y), new Vector2(a, scrBds.max.y));
-                a = scrBds.max.x - m_Settings.RightScreenOffset;
+                a = scrBds.max.x - m_Settings.rightScreenOffset;
                 Gizmos.DrawLine(new Vector2(a, scrBds.min.y), new Vector2(a, scrBds.max.y));
-                a = scrBds.min.y + m_Settings.BottomScreenOffset;
+                a = scrBds.min.y + m_Settings.bottomScreenOffset;
                 Gizmos.DrawLine(new Vector2(scrBds.min.x, a), new Vector2(scrBds.max.x, a));
-                a = scrBds.max.y - m_Settings.TopScreenOffset;
+                a = scrBds.max.y - m_Settings.topScreenOffset;
                 Gizmos.DrawLine(new Vector2(scrBds.min.x, a), new Vector2(scrBds.max.x, a));
             }
         }

@@ -22,3 +22,4 @@ MonoBehaviour:
   showAdsEveryLevel: 3
   firstLevelToShowAds: 10
   rewriteSettingsByRemoteConfigInEditor: 1
+  payToContinueMoneyCount: 100

@@ -16,5 +16,6 @@ namespace Common.Helpers
         public int          showAdsEveryLevel;
         public int          firstLevelToShowAds;
         public bool         rewriteSettingsByRemoteConfigInEditor;
+        public int          payToContinueMoneyCount;
     }
 }

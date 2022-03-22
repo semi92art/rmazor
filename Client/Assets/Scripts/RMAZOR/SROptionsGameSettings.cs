@@ -73,8 +73,8 @@ namespace RMAZOR
         [Category(CategoryCharacter)]
         public float MoveThreshold
         {
-            get => _viewSettings.MoveSwipeThreshold;
-            set => _viewSettings.MoveSwipeThreshold = value;
+            get => _viewSettings.moveSwipeThreshold;
+            set => _viewSettings.moveSwipeThreshold = value;
         }
 
         [Category(CategoryMazeItems)]
@@ -91,8 +91,8 @@ namespace RMAZOR
         [Category(CategoryCommon)]
         public float Maze_Rotation_Speed
         {
-            get => _viewSettings.MazeRotationSpeed;
-            set => _viewSettings.MazeRotationSpeed = value;
+            get => _viewSettings.mazeRotationSpeed;
+            set => _viewSettings.mazeRotationSpeed = value;
         }
 
         [Category(CategoryCommon)]

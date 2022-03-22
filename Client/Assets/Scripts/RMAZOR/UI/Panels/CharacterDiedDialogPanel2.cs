@@ -1,4 +1,5 @@
 ﻿using Common.CameraProviders;
+using Common.Helpers;
 using Common.Providers;
 using Common.Ticker;
 using Common.UI;
@@ -20,7 +21,8 @@ namespace RMAZOR.UI.Panels
         #region inject
 
         public CharacterDiedDialogPanel2(
-            IModelGame _Model,
+            CommonGameSettings          _CommonGameSettings,
+            IModelGame                  _Model,
             IBigDialogViewer            _DialogViewer,
             IManagersGetter             _Managers,
             IUITicker                   _UITicker,
@@ -29,6 +31,7 @@ namespace RMAZOR.UI.Panels
             IProposalDialogViewer       _ProposalDialogViewer,
             IViewInputCommandsProceeder _CommandsProceeder)
             : base(
+                _CommonGameSettings,
                 _Model,
                 _DialogViewer,
                 _Managers, 

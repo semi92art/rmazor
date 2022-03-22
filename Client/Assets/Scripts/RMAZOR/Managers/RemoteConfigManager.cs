@@ -160,6 +160,7 @@ namespace RMAZOR.Managers
             GetConfig(ref CommonGameSettings.unityAdsRate,                 "ads.unityads.rate");
             GetConfig(ref CommonGameSettings.showAdsEveryLevel,            "ads.show_ad_every_level");
             GetConfig(ref CommonGameSettings.firstLevelToShowAds,          "ads.first_level_to_show_ads");
+            GetConfig(ref CommonGameSettings.payToContinueMoneyCount,      "common.pay_to_continue_money_count");
             GetConfig(ref ModelSettings.characterSpeed,                    "character.speed");
             GetConfig(ref ModelSettings.gravityBlockSpeed,                 "mazeitems.gravityblock.speed");
             GetConfig(ref ModelSettings.movingItemsSpeed,                  "mazeitems.movingtrap.speed");

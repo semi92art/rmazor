@@ -27,7 +27,6 @@ namespace RMAZOR.UI.Panels
         #region constants
         
         private const float  CountdownTime              = 5f;
-        private const int    PayToContinueMoneyCount    = 50;
 
         #endregion
         
@@ -58,12 +57,14 @@ namespace RMAZOR.UI.Panels
 
         #region inject
 
+        private CommonGameSettings          CommonGameSettings   { get; }
         private IModelGame                  Model                { get; }
         private IProposalDialogViewer       ProposalDialogViewer { get; }
         private IViewInputCommandsProceeder CommandsProceeder    { get; }
 
         protected CharacterDiedDialogPanelBase(
-            IModelGame _Model,
+            CommonGameSettings          _CommonGameSettings,
+            IModelGame                  _Model,
             IBigDialogViewer            _DialogViewer,
             IManagersGetter             _Managers,
             IUITicker                   _UITicker,
@@ -73,9 +74,10 @@ namespace RMAZOR.UI.Panels
             IViewInputCommandsProceeder _CommandsProceeder)
             : base(_Managers, _UITicker, _DialogViewer, _CameraProvider, _ColorProvider)
         {
-            Model = _Model;
+            CommonGameSettings   = _CommonGameSettings;
+            Model                = _Model;
             ProposalDialogViewer = _ProposalDialogViewer;
-            CommandsProceeder = _CommandsProceeder;
+            CommandsProceeder    = _CommandsProceeder;
         }
         
         #endregion
@@ -111,7 +113,7 @@ namespace RMAZOR.UI.Panels
             m_IconWatchAds            = go.GetCompItem<Image>("watch_ads_icon");
             m_RoundFilledBorder       = go.GetCompItem<Image>("round_filled_border");
             m_Triggerer.Trigger1      = () => Cor.Run(StartCountdown());
-            m_TextPayMoneyCount.text  = PayToContinueMoneyCount.ToString();
+            m_TextPayMoneyCount.text  = CommonGameSettings.payToContinueMoneyCount.ToString();
             m_TextYouHaveMoney.text   = Managers.LocalizationManager.GetTranslation("you_have") + ":";
             m_TextContinue.text       = Managers.LocalizationManager.GetTranslation("continue");
             m_TextNotEnoughMoney.text = Managers.LocalizationManager.GetTranslation("not_enough_money");
@@ -162,7 +164,9 @@ namespace RMAZOR.UI.Panels
                     }
                     m_MoneyCount = savedGame.Money;
                     m_TextMoneyCount.text = m_MoneyCount.ToString();
-                    IndicateMoneyCountLoading(false, m_MoneyCount >= PayToContinueMoneyCount);
+                    IndicateMoneyCountLoading(
+                        false,
+                        m_MoneyCount >= CommonGameSettings.payToContinueMoneyCount);
                 }));
         }
 
@@ -217,7 +221,7 @@ namespace RMAZOR.UI.Panels
             var savedGame = new SavedGame
             {
                 FileName = CommonData.SavedGameFileName,
-                Money = m_MoneyCount - PayToContinueMoneyCount,
+                Money = m_MoneyCount - CommonGameSettings.payToContinueMoneyCount,
                 Level = Model.LevelStaging.LevelIndex
             };
             Managers.ScoreManager.SaveGameProgress(savedGame, false);

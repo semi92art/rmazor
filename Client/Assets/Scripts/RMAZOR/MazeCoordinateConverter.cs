@@ -103,8 +103,8 @@ namespace RMAZOR
         public void Init()
         {
             var vs = ViewSettings;
-            (m_LeftOffset, m_RightOffset) = (vs.LeftScreenOffset, vs.RightScreenOffset);
-            (m_BottomOffset, m_TopOffset) = (vs.BottomScreenOffset, vs.TopScreenOffset);
+            (m_LeftOffset, m_RightOffset) = (vs.leftScreenOffset, vs.rightScreenOffset);
+            (m_BottomOffset, m_TopOffset) = (vs.bottomScreenOffset, vs.topScreenOffset);
             SetCenterPoint();
             m_Initialized = true;
             if (m_Debug)
