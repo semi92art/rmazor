@@ -119,7 +119,7 @@ namespace Mono_Installers
 
         private void BindMazeItemBlocksAndGroups()
         {
-            Container.Bind<IViewMazeMoneyItem>()             .To<ViewMazeMoneyItemHexagon>()         .AsSingle();
+            Container.Bind<IViewMazeMoneyItem>()             .To<ViewMazeMoneyItemCrypto>()         .AsSingle();
             Container.Bind<IViewMazeItemPath>()              .To<ViewMazeItemPathFilled>()           .AsSingle();
             Container.Bind<IViewMazeItemGravityBlock>()      .To<ViewMazeItemGravityBlock>()         .AsSingle();
             Container.Bind<IViewMazeItemMovingTrap>()        .To<ViewMazeItemMovingTrap>()           .AsSingle();

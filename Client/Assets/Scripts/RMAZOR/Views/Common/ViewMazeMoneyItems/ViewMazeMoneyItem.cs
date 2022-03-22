@@ -1,5 +1,5 @@
 ﻿using System;
-using Common;
+using System.Collections.Generic;
 using Common.Constants;
 using Common.Entities;
 using Common.Enums;
@@ -9,7 +9,6 @@ using Common.Managers;
 using Common.Providers;
 using RMAZOR.Models;
 using RMAZOR.Views.Utils;
-using Shapes;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -17,25 +16,23 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
 {
     public interface IViewMazeMoneyItem : IOnLevelStageChanged, ICloneable
     {
-        event UnityAction Collected;
-        bool              IsCollected { get; set; }
-        bool              Active      { get; set; }
-        void              Collect(bool   _Collect);
-        void              Init(Transform _Parent);
-        void              UpdateShape();
-        GameObject        Object    { get; }
-        ShapeRenderer[]   Renderers { get; }
+        event UnityAction      Collected;
+        bool                   IsCollected { get; set; }
+        bool                   Active      { get; set; }
+        void                   Collect(bool   _Collect);
+        void                   Init(Transform _Parent);
+        void                   UpdateShape();
+        IEnumerable<Component> Renderers { get; }
     }
 
-    public class ViewMazeMoneyItemHexagon : IViewMazeMoneyItem
+    public class ViewMazeMoneyItemCrypto : IViewMazeMoneyItem
     {
         #region nonpublic members
 
         private static AudioClipArgs AudioClipArgsCollectMoneyItem => 
             new AudioClipArgs("collect_point", EAudioClipType.GameSound);
         
-        private RegularPolygon m_Renderer1;
-        private Disc           m_Renderer2;
+        private SpriteRenderer m_Renderer;
         private Animator       m_MoneyItemAnimator;
         private bool           m_Active;
 
@@ -49,7 +46,7 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         private IMazeCoordinateConverter CoordinateConverter { get; }
         private IAudioManager            AudioManager        { get; }
 
-        public ViewMazeMoneyItemHexagon(
+        public ViewMazeMoneyItemCrypto(
             ViewSettings             _ViewSettings,
             IPrefabSetManager        _PrefabSetManager,
             IColorProvider           _ColorProvider,
@@ -68,7 +65,7 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         #region api
         
         public object Clone() => 
-            new ViewMazeMoneyItemHexagon(
+            new ViewMazeMoneyItemCrypto(
                 ViewSettings, 
                 PrefabSetManager,
                 ColorProvider, 
@@ -78,16 +75,13 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         public void UpdateShape()
         {
             const float commonScaleCoeff = 0.3f;
-            if (m_Renderer1.IsNull() || m_Renderer2.IsNull())
+            if (m_Renderer.IsNull())
                 return;
             float scale = CoordinateConverter.Scale;
-            m_Renderer1.Radius = scale * commonScaleCoeff;
-            m_Renderer1.Thickness = scale * ViewSettings.LineWidth;
-            m_Renderer2.Radius = scale * 0.3f * commonScaleCoeff;
+            m_Renderer.transform.localScale = Vector3.one * scale * commonScaleCoeff;
         }
 
-        public GameObject      Object    { get; private set; }
-        public ShapeRenderer[] Renderers => new ShapeRenderer[] {m_Renderer1, m_Renderer2};
+        public IEnumerable<Component> Renderers => new Component[] {m_Renderer};
 
         public event UnityAction Collected;
         public bool              IsCollected { get; set; }
@@ -98,9 +92,9 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
             set
             {
                 m_Active = value;
-                if (m_Renderer1.IsNull() || m_Renderer2.IsNull())
+                if (m_Renderer.IsNull())
                     return;
-                m_Renderer1.enabled = m_Renderer2.enabled = value;
+                m_Renderer.enabled = value;
             }
         }
 
@@ -123,22 +117,19 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         {
             if (!Active)
                 return;
+            m_MoneyItemAnimator.speed = _Args.Stage == ELevelStage.Paused ? 0f : 1f;
             switch (_Args.Stage)
             {
                 case ELevelStage.ReadyToStart:
                     m_MoneyItemAnimator.SetTrigger(AnimKeys.Anim);
                     break;
-                case ELevelStage.Paused:
-                    m_MoneyItemAnimator.speed = 0f;
-                    break;
-                case ELevelStage.StartedOrContinued:
-                case ELevelStage.Finished:
-                    m_MoneyItemAnimator.speed = 1f;
-                    break;
                 case ELevelStage.Unloaded:
                     m_MoneyItemAnimator.SetTrigger(AnimKeys.Stop);
                     break;
                 case ELevelStage.Loaded:
+                case ELevelStage.StartedOrContinued:
+                case ELevelStage.Paused:
+                case ELevelStage.Finished:
                 case ELevelStage.ReadyToUnloadLevel:
                 case ELevelStage.CharacterKilled:
                     break;
@@ -153,15 +144,14 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
 
         private void InitShape(Transform _Parent)
         {
-            Object = PrefabSetManager.InitPrefab(
+            var go = PrefabSetManager.InitPrefab(
                 _Parent, "views", "money_item");
-            m_Renderer1 = Object.GetCompItem<RegularPolygon>("renderer_1");
-            m_Renderer2 = Object.GetCompItem<Disc>("renderer_2");
-            m_MoneyItemAnimator = Object.GetCompItem<Animator>("animator");
+            m_Renderer = go.GetCompItem<SpriteRenderer>("renderer_1");
+            m_MoneyItemAnimator = go.GetCompItem<Animator>("animator");
             var col = ColorProvider.GetColor(ColorIds.MoneyItem);
-            m_Renderer1.Color = m_Renderer2.Color = col;
-            m_Renderer1.SortingOrder = m_Renderer2.SortingOrder = SortingOrders.MoneyItem;
-            Object.transform.SetLocalPosXY(Vector2.zero);
+            m_Renderer.color = col;
+            m_Renderer.sortingOrder = SortingOrders.MoneyItem;
+            go.transform.SetLocalPosXY(Vector2.zero);
             UpdateShape();
         }
         
@@ -169,7 +159,7 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         {
             if (_ColorId != ColorIds.MoneyItem || !Active || IsCollected)
                 return;
-            m_Renderer1.Color = m_Renderer2.Color = _Color;
+            m_Renderer.color = _Color;
         }
 
         #endregion
