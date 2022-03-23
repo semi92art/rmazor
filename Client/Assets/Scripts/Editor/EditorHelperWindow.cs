@@ -26,7 +26,7 @@ using Object = UnityEngine.Object;
 
 namespace Editor
 {
-    public class EditorHelper : EditorWindow
+    public class EditorHelperWindow : EditorWindow
     {
         private int     m_DailyBonusIndex;
         private int     m_TestUsersCount = 3;
@@ -45,7 +45,7 @@ namespace Editor
         [MenuItem("Tools/\u2699 Editor Helper _%h", false, 0)]
         public static void ShowWindow()
         {
-            GetWindow<EditorHelper>("Editor Helper");
+            GetWindow<EditorHelperWindow>("Editor Helper");
         }
     
         [MenuItem("Tools/Profiler",false, 3)]
@@ -59,7 +59,6 @@ namespace Editor
         {
             UpdateTestUrl();
             UpdateGameId();
-            UpdateQuality();
         }
 
         private void OnGUI()
@@ -83,26 +82,6 @@ namespace Editor
             {
                 if (Application.isPlaying)
                     GUILayout.Label($"Target FPS: {Application.targetFrameRate}");
-                GUI.enabled = Application.isPlaying;
-                if (!GUI.enabled)
-                    GUILayout.Label("Available only in play mode:");
-                if (GUI.enabled)
-                    GUILayout.Space(10);
-                EditorUtilsEx.HorizontalZone(() =>
-                {
-                    EditorUtilsEx.GuiButtonAction("Enable Daily Bonus", EnableDailyBonus);
-                    GUILayout.Label("Day:");
-                    m_DailyBonusIndex = EditorGUILayout.Popup(
-                        m_DailyBonusIndex, new[] { "1", "2", "3", "4", "5", "6", "7" });
-                });
-                EditorUtilsEx.HorizontalZone(() =>
-                {
-                    if (GUILayout.Button("Set Game Id:"))
-                        SaveUtils.PutValue(SaveKeysCommon.GameId, m_GameId);
-                    m_GameId = EditorGUILayout.IntField(m_GameId);
-                });
-                EditorUtilsEx.HorizontalLine(Color.gray);
-                GUI.enabled = true;
                 EditorUtilsEx.HorizontalZone(() =>
                 {
                     EditorUtilsEx.GuiButtonAction(CreateTestUsers, m_TestUsersCount);
@@ -118,8 +97,6 @@ namespace Editor
                         m_DebugServerUrl = m_DebugServerUrl.Remove(m_DebugServerUrl.Length - 1);
                 });
                 EditorUtilsEx.GuiButtonAction("Set default api url", SetDefaultApiUrl);
-                EditorUtilsEx.GuiButtonAction("Delete all settings", DeleteAllSettings);
-                EditorUtilsEx.GuiButtonAction("Get ready to commit", GetReadyToCommit);
                 EditorUtilsEx.HorizontalZone(() =>
                 {
                     GUILayout.Label("Quality:");
@@ -138,7 +115,7 @@ namespace Editor
                 var sceneGuids = AssetDatabase.FindAssets(
                     "l:Scene t:Scene", 
                     new[] {SceneNames.GetScenesPath()});
-                foreach (var scenePath in sceneGuids.Select(AssetDatabase.GUIDToAssetPath))
+                foreach (string scenePath in sceneGuids.Select(AssetDatabase.GUIDToAssetPath))
                 {
                     EditorUtilsEx.GuiButtonAction(
                         scenePath.Replace("Assets/Scenes/",
@@ -150,7 +127,6 @@ namespace Editor
             });
             UpdateTestUrl();
             UpdateGameId();
-            UpdateQuality();
         }
 
         private void CachedDataTabPage()
@@ -306,21 +282,6 @@ namespace Editor
             m_GameIdCheck = m_GameId;
         }
 
-        private void UpdateQuality()
-        {
-            if (m_Quality == -1)
-                m_Quality = SaveUtils.GetValue(SaveKeysCommon.GoodQuality) ? 1 : 0;
-            if (m_Quality != m_QualityCheck)
-                SaveUtils.PutValue(SaveKeysCommon.GoodQuality, m_Quality != 0);
-            m_QualityCheck = m_Quality;
-        }
-
-        private void EnableDailyBonus()
-        {
-            SaveUtils.PutValue(SaveKeysRmazor.DailyBonusLastDate, DateTime.Now.Date.AddDays(-1));
-            SaveUtils.PutValue(SaveKeysRmazor.DailyBonusLastClickedDay, m_DailyBonusIndex);
-        }
-
         private static void CreateTestUsers(int _Count)
         {
             CommonData.Testing = true;
@@ -374,23 +335,6 @@ namespace Editor
             gc.Init();
         }
 
-        private static void GetReadyToCommit()
-        {
-            string[] files =
-            {
-                @"Assets\Materials\CircleTransparentTransition.mat",
-                @"Assets\Materials\MainMenuBackground.mat"
-            };
-            foreach (var file in files)
-            {
-                GitUtils.RunGitCommand($"reset -- {file}");
-                GitUtils.RunGitCommand($"checkout -- {file}");
-            }
-            AssetDatabase.SaveAssets();
-        
-            BuildSettingsUtils.AddDefaultScenesToBuild();
-        }
-
         public static void LoadScene(string _Name)
         {
             if (Application.isPlaying)
@@ -402,12 +346,6 @@ namespace Editor
         private void SetDefaultApiUrl()
         {
             m_DebugServerUrl = @"http://77.37.152.15:7000";
-            UpdateTestUrl(true);
-        }
-
-        private void DeleteAllSettings()
-        {
-            PlayerPrefs.DeleteAll();
             UpdateTestUrl(true);
         }
 

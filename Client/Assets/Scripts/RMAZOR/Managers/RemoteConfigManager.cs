@@ -125,8 +125,7 @@ namespace RMAZOR.Managers
         {
             ConfigManager.FetchCompleted -= OnInitialized;
             ConfigManager.FetchCompleted += OnInitialized;
-            if (Application.platform != RuntimePlatform.WindowsEditor
-                || CommonGameSettings.rewriteSettingsByRemoteConfigInEditor)
+            if (!Application.isEditor || CommonGameSettings.rewriteSettingsByRemoteConfigInEditor)
             {
                 ConfigManager.FetchCompleted -= OnFetchCompleted;
                 ConfigManager.FetchCompleted += OnFetchCompleted;
@@ -224,8 +223,7 @@ namespace RMAZOR.Managers
                 GetField(_Fields, nameof(ViewSettings.mazeItemTransitionDelayCoefficient))
                     ?.SetValue(ViewSettings.mazeItemTransitionDelayCoefficient);
             });
-            if (Application.platform == RuntimePlatform.WindowsEditor
-                && !CommonGameSettings.rewriteSettingsByRemoteConfigInEditor)
+            if (Application.isEditor && !CommonGameSettings.rewriteSettingsByRemoteConfigInEditor)
             {
                 m_FetchCompletedActionDone = true;
                 return;
@@ -264,8 +262,7 @@ namespace RMAZOR.Managers
                     Dbg.Log("Remote Config Initialized with status: " + _Response.status);
                     Manager.InitBase();
                 }));
-            if (Application.platform == RuntimePlatform.WindowsEditor
-                && !Manager.CommonGameSettings.rewriteSettingsByRemoteConfigInEditor)
+            if (Application.isEditor && !Manager.CommonGameSettings.rewriteSettingsByRemoteConfigInEditor)
             {
                 Manager.m_FetchCompletedActionDone = true;
             }

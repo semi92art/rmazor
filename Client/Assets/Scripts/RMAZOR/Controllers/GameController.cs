@@ -106,13 +106,16 @@ namespace RMAZOR.Controllers
 
         private void InitDebugging()
         {
-            if (!Settings.debugEnabled && Application.platform != RuntimePlatform.WindowsEditor)
+            if (!Settings.debugEnabled && !Application.isEditor)
                 return;
             SRDebug.Init();
-            SROptions.Init(Model.Settings, View.Settings, Model.LevelStaging, View.Managers, View.CommandsProceeder);
-            Dbg.Log("SR Debugger Initialized");
+            SROptions.Init(
+                Model.Settings, 
+                View.Settings, 
+                Model.LevelStaging,
+                View.Managers, 
+                View.CommandsProceeder);
             View.Managers.DebugManager.Init();
-            Dbg.Log("Debug Manager Initialized");
         }
 
         #endregion

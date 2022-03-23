@@ -130,7 +130,7 @@ namespace RMAZOR.Editor
                     .FindAssets("l:Scene t:Scene", new[] {"Assets\\Scenes"})
                     .Select(AssetDatabase.GUIDToAssetPath)
                     .FirstOrDefault(_SceneName => _SceneName.Contains(SceneNames.Prototyping));
-                EditorHelper.LoadScene(sceneName);
+                EditorHelperWindow.LoadScene(sceneName);
             });
         }
         

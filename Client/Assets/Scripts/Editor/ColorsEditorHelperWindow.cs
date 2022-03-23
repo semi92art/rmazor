@@ -12,10 +12,11 @@ using RMAZOR.Views.Common;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using MathUtils = Common.Utils.MathUtils;
 
 namespace Editor
 {
-    public class ColorsHelper : EditorWindow
+    public class ColorsEditorHelperWindow : EditorWindow
     {
         private IColorProvider                        m_ColorProvider;
         private MainColorsSetScriptableObject         m_MainColorsSetScrObj;
@@ -25,11 +26,12 @@ namespace Editor
         private Color?                                m_UiColor;
         private Color                                 m_UiColorCheck;
         private bool                                  m_ChangeOnlyHueUi = true;
+        private int                                   m_CurrSetIdx;
     
         [MenuItem("Tools/Colors Helper _%&c", false, 2)]
         public static void ShowWindow()
         {
-            var window = GetWindow<ColorsHelper>("Color Palette Helper");
+            var window = GetWindow<ColorsEditorHelperWindow>("Color Palette Helper");
             window.minSize = new Vector2(500, 200);
         }
     
@@ -40,6 +42,7 @@ namespace Editor
             DisplayColorSetObjectFields();
             EditorUtilsEx.GuiButtonAction(CopyMainColorsToClipboard);
             EditorUtilsEx.GuiButtonAction(CopyBackAndFrontColorsToClipboard);
+            EditorUtilsEx.GuiButtonAction("Next color set", SetNextBackAndFrontColorSet);
             DisplayColors();
             if ((m_ColorProvider == null || m_MainColorsSetScrObj == null)
                 && Application.isPlaying
@@ -127,6 +130,26 @@ namespace Editor
                 m_ColorProvider?.SetColor(id, newColor);
                 item.color = newColor;
             }
+        }
+
+        private void SetNextBackAndFrontColorSet()
+        {
+            if (!Application.isPlaying)
+            {
+                Dbg.LogWarning("This option is available only in play mode");
+                return;
+            }
+            if (m_ColorProvider == null)
+            {
+                Dbg.LogError("Color provider is null");
+                return;
+            }
+            var set = m_BackAndFrontColorsSet[m_CurrSetIdx];
+            m_ColorProvider.SetColor(ColorIds.Background1, set.bacground1);
+            m_ColorProvider.SetColor(ColorIds.Main, set.main);
+            m_ColorProvider.SetColor(ColorIds.Background2, set.bacground2);
+            m_CurrSetIdx = MathUtils.ClampInverse(
+                m_CurrSetIdx + 1, 0, m_BackAndFrontColorsSet.Count - 1);
         }
 
         private void DisplayColors()

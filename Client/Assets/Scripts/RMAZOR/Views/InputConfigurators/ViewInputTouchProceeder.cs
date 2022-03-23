@@ -271,7 +271,7 @@ namespace RMAZOR.Views.InputConfigurators
         
         public Vector2 GetFingerPosition(int _Index)
         {
-            if (Application.platform == RuntimePlatform.WindowsEditor)
+            if (Application.isEditor)
                 return LeanInput.GetMousePosition();
             CommonUtils.GetTouch(_Index, out _, out var pos, out _, out _, out _);
             return pos;

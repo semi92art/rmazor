@@ -17,7 +17,6 @@ namespace Common
         private static SaveKey<bool>      _lastDbConnectionSuccess;
         private static SaveKey<bool>      _notFirstLaunch;
         private static SaveKey<bool>      _debugUtilsOn;
-        private static SaveKey<bool>      _goodQuality;
         private static SaveKey<bool>      _darkTheme;
         private static SaveKey<int?>      _accountId;               
         private static SaveKey<int>       _gameId;
@@ -44,7 +43,6 @@ namespace Common
             SaveUtils.PutValue(LastDbConnectionSuccess, SaveUtils.GetValue(LastDbConnectionSuccess), true);
             SaveUtils.PutValue(NotFirstLaunch,          SaveUtils.GetValue(NotFirstLaunch),          true);
             SaveUtils.PutValue(DebugUtilsOn,            SaveUtils.GetValue(DebugUtilsOn),            true);
-            SaveUtils.PutValue(GoodQuality,             SaveUtils.GetValue(GoodQuality),             true);
             SaveUtils.PutValue(DarkTheme,                SaveUtils.GetValue(DarkTheme),               true);
             SaveUtils.PutValue(AccountId,               SaveUtils.GetValue(AccountId),               true);
             SaveUtils.PutValue(GameId,                  SaveUtils.GetValue(GameId),                  true);
@@ -85,8 +83,6 @@ namespace Common
             _darkTheme ??= new SaveKey<bool>(nameof(DarkTheme));
         public static SaveKey<bool>   DebugUtilsOn             => 
             _debugUtilsOn ??= new SaveKey<bool>(nameof(DebugUtilsOn));
-        public static SaveKey<bool>   GoodQuality              =>
-            _goodQuality ??= new SaveKey<bool>(nameof(GoodQuality));
         public static SaveKey<int?>   AccountId                =>
             _accountId ??= new SaveKey<int?>(nameof(AccountId));
         public static SaveKey<int>    GameId                   => 

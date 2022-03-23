@@ -25,44 +25,45 @@ namespace RMAZOR.Views
         ICharacterMoveContinued,
         ICharacterMoveFinished
     {
-        ViewSettings                Settings             { get; }
-        IViewUI                     UI                   { get; }
-        IViewLevelStageController   LevelStageController { get; }
-        IViewInputController        InputController      { get; }
-        IViewInputCommandsProceeder CommandsProceeder    { get; }
-        IViewCharacter              Character            { get; }
-        IViewMazeRotation           MazeRotation         { get; }
-        IViewMazeItemsGroupSet      MazeItemsGroupSet    { get; }
-        IViewMazePathItemsGroup     PathItemsGroup       { get; }
-        IManagersGetter             Managers             { get; }
+        ViewSettings                  Settings             { get; }
+        IViewUI                       UI                   { get; }
+        IViewLevelStageController     LevelStageController { get; }
+        IViewInputController          InputController      { get; }
+        IViewInputCommandsProceeder   CommandsProceeder    { get; }
+        IViewCharacter                Character            { get; }
+        IViewMazeRotation             MazeRotation         { get; }
+        IViewMazeItemsGroupSet        MazeItemsGroupSet    { get; }
+        IViewMazePathItemsGroup       PathItemsGroup       { get; }
+        IManagersGetter               Managers             { get; }
+        IViewBackground               Background           { get; }
+        IViewMazeAdditionalBackground AdditionalBackground { get; }
     }
     
     public class ViewGame : InitBase, IViewGame
     {
         #region inject
 
-        public  ViewSettings                  Settings                 { get; }
-        public  IContainersGetter             ContainersGetter         { get; }
-        public  IViewUI                       UI                       { get; }
-        public  IViewLevelStageController     LevelStageController     { get; }
-        public  IViewInputController          InputController          { get; }
-        public  IViewInputCommandsProceeder   CommandsProceeder        { get; }
-        public  IViewCharacter                Character                { get; }
-        public  IViewMazeRotation             MazeRotation             { get; }
-        public  IViewMazeItemsGroupSet        MazeItemsGroupSet        { get; }
-        public  IViewMazePathItemsGroup       PathItemsGroup           { get; }
-        public  IManagersGetter               Managers                 { get; }
+        public ViewSettings                  Settings             { get; }
+        public IContainersGetter             ContainersGetter     { get; }
+        public IViewUI                       UI                   { get; }
+        public IViewLevelStageController     LevelStageController { get; }
+        public IViewInputController          InputController      { get; }
+        public IViewInputCommandsProceeder   CommandsProceeder    { get; }
+        public IViewCharacter                Character            { get; }
+        public IViewMazeRotation             MazeRotation         { get; }
+        public IViewMazeItemsGroupSet        MazeItemsGroupSet    { get; }
+        public IViewMazePathItemsGroup       PathItemsGroup       { get; }
+        public IManagersGetter               Managers             { get; }
+        public IViewBackground               Background           { get; }
+        public IViewMazeAdditionalBackground AdditionalBackground { get; }
         
         private IViewMazeCommon               Common                   { get; }
-        private IViewBackground               Background               { get; }
         private IViewMazeForeground           Foreground               { get; }
         private IMazeCoordinateConverter      CoordinateConverter      { get; }
         private IColorProvider                ColorProvider            { get; }
         private ICameraProvider               CameraProvider           { get; }
-        private IDebugManager                 DebugManager             { get; }
         private IBigDialogViewer              BigDialogViewer          { get; }
         private IViewBetweenLevelTransitioner BetweenLevelTransitioner { get; }
-        private IViewMazeAdditionalBackground AdditionalBackground     { get; }
 
         public ViewGame(
             ViewSettings                  _Settings,
@@ -82,7 +83,6 @@ namespace RMAZOR.Views
             IMazeCoordinateConverter      _CoordinateConverter,
             IColorProvider                _ColorProvider,
             ICameraProvider               _CameraProvider,
-            IDebugManager                 _DebugManager,
             IBigDialogViewer              _BigDialogViewer,
             IViewBetweenLevelTransitioner _BetweenLevelTransitioner,
             IViewMazeAdditionalBackground _AdditionalBackground)
@@ -104,7 +104,6 @@ namespace RMAZOR.Views
             CoordinateConverter          = _CoordinateConverter;
             ColorProvider                = _ColorProvider;
             CameraProvider               = _CameraProvider;
-            DebugManager                 = _DebugManager;
             BigDialogViewer              = _BigDialogViewer;
             BetweenLevelTransitioner     = _BetweenLevelTransitioner;
             AdditionalBackground         = _AdditionalBackground;

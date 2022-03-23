@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Common;
 using Common.CameraProviders;
 using Common.Extensions;
@@ -21,7 +22,8 @@ namespace RMAZOR.Views.Common
             out Color _Next2);
     }
 
-    public abstract class ViewMazeBackgroundTextureControllerBase : InitBase, IViewMazeBackgroundTextureController
+    public abstract class ViewMazeBackgroundTextureControllerBase 
+        : InitBase, IViewMazeBackgroundTextureController
     {
         #region nonpublic members
         
@@ -66,6 +68,8 @@ namespace RMAZOR.Views.Common
         public virtual void OnLevelStageChanged(LevelStageArgs _Args)
         {
             if (_Args.Stage != ELevelStage.Loaded)
+                return;
+            if (_Args.Args.Contains("set_back_editor"))
                 return;
             SetColorsOnNewLevelOrNewTheme(
                 _Args.LevelIndex,

@@ -9,22 +9,9 @@ namespace Common.Utils
     public static class GraphicUtils
     {
 
-        public static bool IsGoodQuality()
-        {
-#if UNITY_EDITOR
-            return SaveUtils.GetValue(SaveKeysCommon.GoodQuality);
-#elif UNITY_ANDROID
-            using var version = new AndroidJavaClass("android.os.Build$VERSION");
-            return version.GetStatic<int>("SDK_INT") >= 27; // Android 8.1 (API level 27)
-#elif UNITY_IPHONE || UNITY_IOS
-            // TODO
-            return true;
-#endif
-        }
-
         public static int GetTargetFps()
         {
-            return IsGoodQuality() ? 120 : 60;
+            return 120;
         }
 
         public static Vector2 ScreenSize

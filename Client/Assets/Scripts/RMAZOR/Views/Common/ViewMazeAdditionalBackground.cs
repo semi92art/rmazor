@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Common;
 using Common.Entities;
 using Common.Helpers;
@@ -66,7 +67,7 @@ namespace RMAZOR.Views.Common
             // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
             switch (_Args.Stage)
             {
-                case ELevelStage.Loaded:             OnLevelLoaded();        break;
+                case ELevelStage.Loaded:             OnLevelLoaded(_Args);   break;
                 case ELevelStage.ReadyToUnloadLevel: OnLevelReadyToUnload(); break;
             }
         }
@@ -75,12 +76,14 @@ namespace RMAZOR.Views.Common
 
         #region nonpublic methods
         
-        private void OnLevelLoaded()
+        private void OnLevelLoaded(LevelStageArgs _Args)
         {
             var info = Model.Data.Info;
             var groups = GeometryInitializer.GetGroups(info);
             GroupsCollected?.Invoke(groups);
-            Drawer.Draw(groups);
+            Drawer.Draw(groups, _Args.LevelIndex);
+            if (_Args.Args.Contains("set_back_editor"))
+                return;
             Drawer.Appear(true);
         }
 

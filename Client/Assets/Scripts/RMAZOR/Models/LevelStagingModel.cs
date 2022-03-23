@@ -18,7 +18,7 @@ namespace RMAZOR.Models
         CharacterKilled
     }
 
-    public class LevelStageArgs : EventArgs
+    public class LevelStageArgs : EventArgsEx
     {
         public long        LevelIndex       { get; }
         public ELevelStage Stage            { get; }

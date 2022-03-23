@@ -22,7 +22,7 @@ namespace RMAZOR.Views.Common
 {
     public interface IViewMazeAdditionalBackgroundDrawer : IInit, IAppear
     {
-        void Draw(List<PointsGroupArgs> _Groups);
+        void Draw(List<PointsGroupArgs> _Groups, long _LevelIndex);
     }
     
     public class ViewMazeAdditionalBackgroundDrawerSimple : InitBase, IViewMazeAdditionalBackgroundDrawer
@@ -41,7 +41,6 @@ namespace RMAZOR.Views.Common
         
         #region nonpublic members
 
-        private static readonly int ColorId      = Shader.PropertyToID("_Color");
         private static readonly int StencilRefId = Shader.PropertyToID("_StencilRef");
 
         private Transform Container => ContainersGetter.GetContainer(ContainerNames.MazeItems);
@@ -56,12 +55,9 @@ namespace RMAZOR.Views.Common
 
         #endregion
 
-        
-
         #region inject
 
         private ViewSettings                  ViewSettings        { get; }
-        private IModelGame                    Model               { get; }
         private IColorProvider                ColorProvider       { get; }
         private IContainersGetter             ContainersGetter    { get; }
         private IMazeCoordinateConverter      CoordinateConverter { get; }
@@ -70,14 +66,12 @@ namespace RMAZOR.Views.Common
         
         public ViewMazeAdditionalBackgroundDrawerSimple(
             ViewSettings                  _ViewSettings,
-            IModelGame                    _Model,
             IColorProvider                _ColorProvider,
             IContainersGetter             _ContainersGetter,
             IMazeCoordinateConverter      _CoordinateConverter,
             IPrefabSetManager             _PrefabSetManager,
             IViewBetweenLevelTransitioner _Transitioner)
         {
-            Model               = _Model;
             ViewSettings        = _ViewSettings;
             ColorProvider       = _ColorProvider;
             ContainersGetter    = _ContainersGetter;
@@ -100,7 +94,7 @@ namespace RMAZOR.Views.Common
             base.Init();
         }
         
-        public void Draw(List<PointsGroupArgs> _Groups)
+        public void Draw(List<PointsGroupArgs> _Groups, long _LevelIndex)
         {
             DeactivateAll();
             foreach (var group in _Groups)
@@ -108,7 +102,7 @@ namespace RMAZOR.Views.Common
             foreach (var group in _Groups)
                 DrawCornersForGroup(group);
             foreach (var group in _Groups)
-                DrawTextureForGroup(group);
+                DrawTextureForGroup(group, _LevelIndex);
         }
 
         public void Appear(bool _Appear)
@@ -290,7 +284,7 @@ namespace RMAZOR.Views.Common
             DrawCorner(pos, true, false, true);
         }
 
-        private void DrawTextureForGroup(PointsGroupArgs _Group)
+        private void DrawTextureForGroup(PointsGroupArgs _Group, long _LevelIndex)
         {
             int minX = _Group.Points.Min(_P => _P.X);
             int minY = _Group.Points.Min(_P => _P.Y);
@@ -299,7 +293,7 @@ namespace RMAZOR.Views.Common
             float scale = CoordinateConverter.Scale;
             float width = scale * (maxX - minX + 2f * (0.5f + BorderRelativeIndent));
             float height = scale * (maxY - minY + 2f * (0.5f + BorderRelativeIndent));
-            int group = RazorMazeUtils.GetGroupIndex(Model.LevelStaging.LevelIndex);
+            int group = RazorMazeUtils.GetGroupIndex(_LevelIndex);
             int textureTypeIdx = group % TextureTypesCount;
             var renderer = m_TextureRenderers.FirstInactive;
             m_TextureRenderers.Activate(renderer);
