@@ -213,7 +213,9 @@ namespace RMAZOR.UI.Panels
 
         private void OnWatchAdsButtonClick()
         {
-            Managers.AdsManager.ShowRewardedAd(() => m_AdsWatched = true);
+            Managers.AdsManager.ShowRewardedAd(
+                () => CommonData.PausedByAdvertising = true, 
+                () => m_AdsWatched = true);
         }
 
         private void OnPayMoneyButtonClick()

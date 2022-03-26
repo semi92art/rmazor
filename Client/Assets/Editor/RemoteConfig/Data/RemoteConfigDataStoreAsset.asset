@@ -12,60 +12,55 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c24fdb3bd6431b92cc1465bd9166b, type: 3}
   m_Name: RemoteConfigDataStoreAsset
   m_EditorClassIdentifier: 
-  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"aae511c0-c8cc-4b84-a99e-1aca9f00b0f0\"\r\n   
-    },\r\n    \"rs\": {\r\n      \"key\": \"ads.admob\",\r\n      \"type\": \"bool\",\r\n     
-    \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"7cee9736-2a8c-462a-a319-aa84471af76f\"\r\n    },\r\n    \"rs\": {\r\n     
-    \"key\": \"ads.unityads\",\r\n      \"type\": \"bool\",\r\n      \"value\": true\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"32e816e2-6a0e-452f-a7bd-72ce4093569e\"\r\n   
+  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"aec85b4e-71b1-4408-9935-14bc8a3f21db\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"character.speed\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 40.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"380b58fa-9f45-4ecf-a3f9-5e732a9e4b49\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"8ec206a4-794a-4121-8e15-d863446b47e8\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"mazeitems.movingtrap.speed\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 6.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"483d2d5c-07af-4f86-9bfe-57db2a1750bb\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"529b7284-a238-439f-9e4a-db46c93e9cda\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"mazeitems.gravityblock.speed\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 15.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"f4d15525-cc6c-4303-a5c1-0c2f0c72b246\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"3c8936bc-1269-425a-bfdb-302830065091\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"common.raterequestsfrequency\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 20\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"cc67e279-6832-4d9f-bb76-ec3222e0e8f7\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"5a4daef1-af69-4c97-b704-d1636068a634\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"ads.adsrequestsfrequency\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"5\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"ec876815-b766-4eb3-9075-d3b523febbf6\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"a3824d13-2621-4b24-a288-b83ba5d979b7\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"common.iosgameid\",\r\n      \"type\": \"string\",\r\n     
     \"value\": \"1601083190\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"56b19e92-bd52-4193-9f19-194e7c0a0d7f\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"e2e9da36-6327-4c2f-bb3c-94423f843c03\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"common.test_device_ids\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": [\r\n        \"4dd10f5b-e3ee-4691-9579-25d5d1ea144c\",\r\n       
     \"0955E1DE-1A7E-49A5-8355-687EA36E0A38\",\r\n        \"10806D1C-07BC-41FA-B3B6-F881F0FF2FA7\",\r\n       
     \"c241d505-f4c4-4b96-b6ff-4f750511e6c9\",\r\n        \"7c70beec-8b2d-4d94-9138-5541bbe15fc2\",\r\n       
     \"bcccedd5-56b0-403f-ad71-8ce181092336\",\r\n        \"c0c77237-a97d-41f6-924f-9a5f82310cee\",\r\n       
     \"95c56191-0873-4a4d-84ba-4f6b85d81096\",\r\n        \"70fd3de8-4462-4320-a2e9-116f6b31b002\"\r\n     
-    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"42aa6e51-e530-493e-a7d1-ec3ff88ab2a2\"\r\n   
+    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"d83a7ff1-725f-4faa-b1f8-9d64cfdc6cd4\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"ads.admob.rate\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 90.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"5d1e712c-1fda-41b5-8a2c-95baf3ace2e8\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"196033ca-00ec-4d94-ad93-1e9dc0daf4c8\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"ads.unityads.rate\",\r\n      \"type\": \"string\",\r\n     
     \"value\": \"10\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"76e1f469-caab-4f2c-b7a1-a6299b3a7144\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"9365838d-83b0-4db3-b05d-40af93e4b2a7\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.levels_count_main\",\r\n      \"type\": \"int\",\r\n      \"value\":
-    360\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"fa29a1cc-833e-40da-8345-a15abcaa8ead\"\r\n   
+    360\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"a6717c74-6e71-4836-92aa-2194c75dadbc\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"ads.show_ad_every_level\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 3\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"59f00ceb-80bf-45f0-8a5f-7bcb97c9aa0f\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"85e3fb35-b602-480c-8881-38507e8efb05\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"ads.first_level_to_show_ads\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 10\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"7465d97e-e318-4936-8275-2658f839a6a5\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"00ca3ea8-6327-4e1d-9c80-e7de0ee01c74\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.first_level_to_rate_game\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 20\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"429eaa78-543b-4c2b-a010-047172d8c3f5\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"10a508b3-3e1b-4fda-84ab-0f5564bb0403\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.maze_item_transition_time\",\r\n      \"type\": \"float\",\r\n     
-    \"value\": 0.4\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"2905af6c-4b48-47da-bd63-19462d6f227f\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"value\": 0.6\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
+    \"d3076cc4-cec6-4c1f-8e79-17fe39ca7f3a\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.maze_item_transition_coefficient\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 0.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"257114b5-95c0-4c35-ba41-8f2eff2bbce0\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"f1ad6fab-0bab-446b-b627-a666b09f7a8e\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.back_and_front_color_sets\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": [\r\n        {\r\n          \"main\":
     \"{\\\"Hex\\\":\\\"A43737FF\\\"}\",\r\n          \"bacground1\": \"{\\\"Hex\\\":\\\"80A652FF\\\"}\",\r\n         
@@ -96,7 +91,7 @@ MonoBehaviour:
     \"bacground2\": \"{\\\"Hex\\\":\\\"2E2A2AFF\\\"}\"\r\n        },\r\n        {\r\n         
     \"main\": \"{\\\"Hex\\\":\\\"E7FF61FF\\\"}\",\r\n          \"bacground1\": \"{\\\"Hex\\\":\\\"5B6F2AFF\\\"}\",\r\n         
     \"bacground2\": \"{\\\"Hex\\\":\\\"3B4616FF\\\"}\"\r\n        }\r\n      ]\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"c7138036-48c3-4eff-a7e3-8202a0e8ed89\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"88e9bfc9-c78b-47c0-83a1-d10325e965bd\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"common.main_color_sets\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n        {\r\n         
     \"name\": \"Main\",\r\n          \"color\": \"{\\\"Hex\\\":\\\"FFFFFFFF\\\"}\"\r\n       
@@ -124,7 +119,7 @@ MonoBehaviour:
     \"Ui Item Highlighted\",\r\n          \"color\": \"{\\\"Hex\\\":\\\"DD3F35FF\\\"}\"\r\n       
     },\r\n        {\r\n          \"name\": \"Ui Start Logo\",\r\n          \"color\":
     \"{\\\"Hex\\\":\\\"FFFFFFFF\\\"}\"\r\n        }\r\n      ]\r\n    }\r\n  },\r\n 
-    {\r\n    \"metadata\": {\r\n      \"entityId\": \"686ccd7e-75bd-418f-a796-9d3d82f18a47\"\r\n   
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"2b7d2e73-d580-4803-aa15-21a6e8defafa\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"common.background_texture_lines_props_set\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n       
     {\r\n          \"L1\": 6,\r\n          \"L2\": 0.82,\r\n          \"L3\": 0.012,\r\n         
@@ -135,7 +130,7 @@ MonoBehaviour:
     \"L1\": 5,\r\n          \"L2\": 0.0,\r\n          \"L3\": 1.0,\r\n          \"L4\":
     1.0\r\n        },\r\n        {\r\n          \"L1\": 10,\r\n          \"L2\":
     1.0,\r\n          \"L3\": 1.0,\r\n          \"L4\": 1.0\r\n        }\r\n     
-    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"76345cf8-03af-4913-80df-6751c9cca6ae\"\r\n   
+    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"1f828af5-173d-4c1c-a4f9-5295a0493580\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"common.background_texture_circles_props_set\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n       
     {\r\n          \"C1\": 0.019,\r\n          \"C2\": 11,\r\n          \"C3\": 0.145,\r\n         
@@ -155,7 +150,7 @@ MonoBehaviour:
     0.1,\r\n          \"C2\": 20,\r\n          \"C3\": 0.3,\r\n          \"C4\":
     2,\r\n          \"L1\": 4,\r\n          \"L2\": 0.4,\r\n          \"L3\": 0.2,\r\n         
     \"L4\": 4.8\r\n        }\r\n      ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"0aefb9ed-37b2-462b-82ae-d124029f439b\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"445f036d-b35d-412e-a3eb-ba93695a324f\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"common.background_texture_circles2_props_set\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n       
     {\r\n          \"C2_1\": 0.095,\r\n          \"C2_2\": 0.14,\r\n          \"C2_3\":
@@ -176,7 +171,7 @@ MonoBehaviour:
     {\r\n          \"C2_1\": 0.119,\r\n          \"C2_2\": 0.147,\r\n          \"C2_3\":
     0.095,\r\n          \"C2_4\": false,\r\n          \"L1\": 1,\r\n          \"L2\":
     1.0,\r\n          \"L3\": 0.042,\r\n          \"L4\": 10.0\r\n        }\r\n     
-    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"1a2f5eb6-0f4c-4f5d-80a4-e3a63487abd9\"\r\n   
+    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"8cc8ee8d-34e5-4e6f-81ee-d97cbd298a0a\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"common.background_texture_triangles_props_set\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n       
     {\r\n          \"T1\": 3.57,\r\n          \"T2\": 1.289,\r\n          \"T3\":
@@ -211,63 +206,58 @@ MonoBehaviour:
     {\r\n          \"T1\": 10.0,\r\n          \"T2\": 1.0,\r\n          \"T3\": 0.38,\r\n         
     \"T4\": 0.66,\r\n          \"L1\": 1,\r\n          \"L2\": 0.0,\r\n         
     \"L3\": 1.0,\r\n          \"L4\": 1.0\r\n        }\r\n      ]\r\n    }\r\n  },\r\n 
-    {\r\n    \"metadata\": {\r\n      \"entityId\": \"c8f45514-fd45-4c57-851a-4383b63cfb23\"\r\n   
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"ff183826-8858-47c9-8f90-7a6441eff467\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"common.pay_to_continue_money_count\",\r\n     
-    \"value\": 100,\r\n      \"type\": \"int\"\r\n    }\r\n  }\r\n]"
-  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"aae511c0-c8cc-4b84-a99e-1aca9f00b0f0\"\r\n   
-    },\r\n    \"rs\": {\r\n      \"key\": \"ads.admob\",\r\n      \"type\": \"bool\",\r\n     
-    \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"7cee9736-2a8c-462a-a319-aa84471af76f\"\r\n    },\r\n    \"rs\": {\r\n     
-    \"key\": \"ads.unityads\",\r\n      \"type\": \"bool\",\r\n      \"value\": true\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"32e816e2-6a0e-452f-a7bd-72ce4093569e\"\r\n   
+    \"type\": \"int\",\r\n      \"value\": 100\r\n    }\r\n  }\r\n]"
+  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"aec85b4e-71b1-4408-9935-14bc8a3f21db\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"character.speed\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 40.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"380b58fa-9f45-4ecf-a3f9-5e732a9e4b49\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"8ec206a4-794a-4121-8e15-d863446b47e8\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"mazeitems.movingtrap.speed\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 6.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"483d2d5c-07af-4f86-9bfe-57db2a1750bb\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"529b7284-a238-439f-9e4a-db46c93e9cda\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"mazeitems.gravityblock.speed\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 15.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"f4d15525-cc6c-4303-a5c1-0c2f0c72b246\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"3c8936bc-1269-425a-bfdb-302830065091\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"common.raterequestsfrequency\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 20\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"cc67e279-6832-4d9f-bb76-ec3222e0e8f7\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"5a4daef1-af69-4c97-b704-d1636068a634\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"ads.adsrequestsfrequency\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"5\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"ec876815-b766-4eb3-9075-d3b523febbf6\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"a3824d13-2621-4b24-a288-b83ba5d979b7\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"common.iosgameid\",\r\n      \"type\": \"string\",\r\n     
     \"value\": \"1601083190\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"56b19e92-bd52-4193-9f19-194e7c0a0d7f\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"e2e9da36-6327-4c2f-bb3c-94423f843c03\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"common.test_device_ids\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": [\r\n        \"4dd10f5b-e3ee-4691-9579-25d5d1ea144c\",\r\n       
     \"0955E1DE-1A7E-49A5-8355-687EA36E0A38\",\r\n        \"10806D1C-07BC-41FA-B3B6-F881F0FF2FA7\",\r\n       
     \"c241d505-f4c4-4b96-b6ff-4f750511e6c9\",\r\n        \"7c70beec-8b2d-4d94-9138-5541bbe15fc2\",\r\n       
     \"bcccedd5-56b0-403f-ad71-8ce181092336\",\r\n        \"c0c77237-a97d-41f6-924f-9a5f82310cee\",\r\n       
     \"95c56191-0873-4a4d-84ba-4f6b85d81096\",\r\n        \"70fd3de8-4462-4320-a2e9-116f6b31b002\"\r\n     
-    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"42aa6e51-e530-493e-a7d1-ec3ff88ab2a2\"\r\n   
+    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"d83a7ff1-725f-4faa-b1f8-9d64cfdc6cd4\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"ads.admob.rate\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 90.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"5d1e712c-1fda-41b5-8a2c-95baf3ace2e8\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"196033ca-00ec-4d94-ad93-1e9dc0daf4c8\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"ads.unityads.rate\",\r\n      \"type\": \"string\",\r\n     
     \"value\": \"10\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"76e1f469-caab-4f2c-b7a1-a6299b3a7144\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"9365838d-83b0-4db3-b05d-40af93e4b2a7\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.levels_count_main\",\r\n      \"type\": \"int\",\r\n      \"value\":
-    360\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"fa29a1cc-833e-40da-8345-a15abcaa8ead\"\r\n   
+    360\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"a6717c74-6e71-4836-92aa-2194c75dadbc\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"ads.show_ad_every_level\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 3\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"59f00ceb-80bf-45f0-8a5f-7bcb97c9aa0f\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"85e3fb35-b602-480c-8881-38507e8efb05\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"ads.first_level_to_show_ads\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 10\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"7465d97e-e318-4936-8275-2658f839a6a5\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"00ca3ea8-6327-4e1d-9c80-e7de0ee01c74\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.first_level_to_rate_game\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 20\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"429eaa78-543b-4c2b-a010-047172d8c3f5\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"10a508b3-3e1b-4fda-84ab-0f5564bb0403\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.maze_item_transition_time\",\r\n      \"type\": \"float\",\r\n     
-    \"value\": 0.4\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"2905af6c-4b48-47da-bd63-19462d6f227f\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"value\": 0.6\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
+    \"d3076cc4-cec6-4c1f-8e79-17fe39ca7f3a\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.maze_item_transition_coefficient\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 0.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"257114b5-95c0-4c35-ba41-8f2eff2bbce0\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"f1ad6fab-0bab-446b-b627-a666b09f7a8e\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.back_and_front_color_sets\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": [\r\n        {\r\n          \"main\":
     \"{\\\"Hex\\\":\\\"A43737FF\\\"}\",\r\n          \"bacground1\": \"{\\\"Hex\\\":\\\"80A652FF\\\"}\",\r\n         
@@ -298,7 +288,7 @@ MonoBehaviour:
     \"bacground2\": \"{\\\"Hex\\\":\\\"2E2A2AFF\\\"}\"\r\n        },\r\n        {\r\n         
     \"main\": \"{\\\"Hex\\\":\\\"E7FF61FF\\\"}\",\r\n          \"bacground1\": \"{\\\"Hex\\\":\\\"5B6F2AFF\\\"}\",\r\n         
     \"bacground2\": \"{\\\"Hex\\\":\\\"3B4616FF\\\"}\"\r\n        }\r\n      ]\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"c7138036-48c3-4eff-a7e3-8202a0e8ed89\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"88e9bfc9-c78b-47c0-83a1-d10325e965bd\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"common.main_color_sets\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n        {\r\n         
     \"name\": \"Main\",\r\n          \"color\": \"{\\\"Hex\\\":\\\"FFFFFFFF\\\"}\"\r\n       
@@ -326,7 +316,7 @@ MonoBehaviour:
     \"Ui Item Highlighted\",\r\n          \"color\": \"{\\\"Hex\\\":\\\"DD3F35FF\\\"}\"\r\n       
     },\r\n        {\r\n          \"name\": \"Ui Start Logo\",\r\n          \"color\":
     \"{\\\"Hex\\\":\\\"FFFFFFFF\\\"}\"\r\n        }\r\n      ]\r\n    }\r\n  },\r\n 
-    {\r\n    \"metadata\": {\r\n      \"entityId\": \"686ccd7e-75bd-418f-a796-9d3d82f18a47\"\r\n   
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"2b7d2e73-d580-4803-aa15-21a6e8defafa\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"common.background_texture_lines_props_set\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n       
     {\r\n          \"L1\": 6,\r\n          \"L2\": 0.82,\r\n          \"L3\": 0.012,\r\n         
@@ -337,7 +327,7 @@ MonoBehaviour:
     \"L1\": 5,\r\n          \"L2\": 0.0,\r\n          \"L3\": 1.0,\r\n          \"L4\":
     1.0\r\n        },\r\n        {\r\n          \"L1\": 10,\r\n          \"L2\":
     1.0,\r\n          \"L3\": 1.0,\r\n          \"L4\": 1.0\r\n        }\r\n     
-    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"76345cf8-03af-4913-80df-6751c9cca6ae\"\r\n   
+    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"1f828af5-173d-4c1c-a4f9-5295a0493580\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"common.background_texture_circles_props_set\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n       
     {\r\n          \"C1\": 0.019,\r\n          \"C2\": 11,\r\n          \"C3\": 0.145,\r\n         
@@ -357,7 +347,7 @@ MonoBehaviour:
     0.1,\r\n          \"C2\": 20,\r\n          \"C3\": 0.3,\r\n          \"C4\":
     2,\r\n          \"L1\": 4,\r\n          \"L2\": 0.4,\r\n          \"L3\": 0.2,\r\n         
     \"L4\": 4.8\r\n        }\r\n      ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"0aefb9ed-37b2-462b-82ae-d124029f439b\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"445f036d-b35d-412e-a3eb-ba93695a324f\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"common.background_texture_circles2_props_set\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n       
     {\r\n          \"C2_1\": 0.095,\r\n          \"C2_2\": 0.14,\r\n          \"C2_3\":
@@ -378,7 +368,7 @@ MonoBehaviour:
     {\r\n          \"C2_1\": 0.119,\r\n          \"C2_2\": 0.147,\r\n          \"C2_3\":
     0.095,\r\n          \"C2_4\": false,\r\n          \"L1\": 1,\r\n          \"L2\":
     1.0,\r\n          \"L3\": 0.042,\r\n          \"L4\": 10.0\r\n        }\r\n     
-    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"1a2f5eb6-0f4c-4f5d-80a4-e3a63487abd9\"\r\n   
+    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"8cc8ee8d-34e5-4e6f-81ee-d97cbd298a0a\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"common.background_texture_triangles_props_set\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n       
     {\r\n          \"T1\": 3.57,\r\n          \"T2\": 1.289,\r\n          \"T3\":
@@ -413,9 +403,9 @@ MonoBehaviour:
     {\r\n          \"T1\": 10.0,\r\n          \"T2\": 1.0,\r\n          \"T3\": 0.38,\r\n         
     \"T4\": 0.66,\r\n          \"L1\": 1,\r\n          \"L2\": 0.0,\r\n         
     \"L3\": 1.0,\r\n          \"L4\": 1.0\r\n        }\r\n      ]\r\n    }\r\n  },\r\n 
-    {\r\n    \"metadata\": {\r\n      \"entityId\": \"c8f45514-fd45-4c57-851a-4383b63cfb23\"\r\n   
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"ff183826-8858-47c9-8f90-7a6441eff467\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"common.pay_to_continue_money_count\",\r\n     
-    \"value\": 100,\r\n      \"type\": \"int\"\r\n    }\r\n  }\r\n]"
+    \"type\": \"int\",\r\n      \"value\": 100\r\n    }\r\n  }\r\n]"
   _environments: "[\r\n  {\r\n    \"projectId\": \"abcef6a4-92c3-4c35-894e-21fc8a854301\",\r\n   
     \"name\": \"production\",\r\n    \"id\": \"1d652336-ffe1-4303-b76b-bf9a581cf50a\",\r\n   
     \"isDefault\": true,\r\n    \"createdAt\": \"2021-08-16T21:54:30Z\",\r\n    \"updatedAt\":

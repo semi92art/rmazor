@@ -3,6 +3,7 @@ using Common;
 using Common.Helpers;
 using Common.Managers;
 using Common.Managers.Advertising;
+using Common.Managers.Analytics;
 using Common.Managers.IAP;
 using Common.Managers.Scores;
 using RMAZOR.Models;

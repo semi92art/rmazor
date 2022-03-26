@@ -20,6 +20,7 @@ using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.MazeItems;
 using RMAZOR.Views.UI.Game_Logo;
+using UnityEngine.Events;
 
 namespace RMAZOR.Views.Common
 {
@@ -266,13 +267,7 @@ namespace RMAZOR.Views.Common
             bool allLevelsPassed = SaveUtils.GetValue(SaveKeysRmazor.AllLevelsPassed);
             if (!allLevelsPassed && _Args.LevelIndex + 1 >= ViewSettings.levelsCountMain)
                 SaveUtils.PutValue(SaveKeysRmazor.AllLevelsPassed, true);
-            Managers.AnalyticsManager.SendAnalytic(AnalyticIds.LevelFinished, 
-                new Dictionary<string, object>
-                {
-                    {"level_index", _Args.LevelIndex},
-                    {"level_time", Model.LevelStaging.LevelTime},
-                    {"dies_count", Model.LevelStaging.DiesCount}
-                });
+            SendConcreteAnalyticsLevelFinished(_Args.LevelIndex);
             if (PathItemsGroup.MoneyItemsCollectedCount <= 0)
                 return;
             var savedGameEntity = Managers.ScoreManager.
@@ -306,7 +301,10 @@ namespace RMAZOR.Views.Common
             if (_Args.LevelIndex >= GameSettings.firstLevelToShowAds
                 && _Args.LevelIndex % GameSettings.showAdsEveryLevel == 0)
             {
-                Managers.AdsManager.ShowInterstitialAd(null);
+                UnityAction<UnityAction, UnityAction> act = Managers.AdsManager.ShowRewardedAd;
+                if (GameSettings.showRewardedInsteadOfInterstitialOnUnpause)
+                    act = Managers.AdsManager.ShowInterstitialAd;
+                act(() => CommonData.PausedByAdvertising = true, null);
             }
             foreach (var mazeItem in _MazeItems)
                 mazeItem.Appear(false);
@@ -446,6 +444,36 @@ namespace RMAZOR.Views.Common
                 default:
                     throw new SwitchCaseNotImplementedException(_Args.Stage);
             }
+        }
+
+        private void SendConcreteAnalyticsLevelFinished(long _LevelIndex)
+        {
+            string anId = _LevelIndex switch
+            {
+                5   => AnalyticIds.Level5Finished,
+                10  => AnalyticIds.Level10Finished,
+                20  => AnalyticIds.Level20Finished,
+                50  => AnalyticIds.Level50Finished,
+                100 => AnalyticIds.Level100Finished,
+                _   => AnalyticIds.LevelFinished
+            };
+            if (anId != AnalyticIds.LevelFinished)
+            {
+                Managers.AnalyticsManager.SendAnalytic(AnalyticIds.LevelFinished, 
+                    new Dictionary<string, object>
+                    {
+                        {"level_index", _LevelIndex},
+                        {"level_time", Model.LevelStaging.LevelTime},
+                        {"dies_count", Model.LevelStaging.DiesCount}
+                    });
+            }
+            Managers.AnalyticsManager.SendAnalytic(anId, 
+                new Dictionary<string, object>
+                {
+                    {"level_index", _LevelIndex},
+                    {"level_time", Model.LevelStaging.LevelTime},
+                    {"dies_count", Model.LevelStaging.DiesCount}
+                });
         }
         
         #endregion

@@ -8,45 +8,27 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:619485590991:android:5f9aa6928c50db18484eba",
+        "mobilesdk_app_id": "1:619485590991:ios:6870bb62ba6c9e7e484eba",
         "android_client_info": {
-          "package_name": "com.MinigamesCo.MinigamesCollection"
+          "package_name": "com.MazingLabCo.MazesForever"
         }
       },
       "oauth_client": [
         {
-          "client_id": "619485590991-hnalms8sv72ivaec2bisb8t4a8dqvj5c.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.MinigamesCo.MinigamesCollection",
-            "certificate_hash": "abf1fcc2b5265d41747ce22ced7f4c7a195ebbdb"
-          }
-        },
-        {
-          "client_id": "619485590991-nq6hj3duurrbero3b4q80tbqtvr6d4f6.apps.googleusercontent.com",
-          "client_type": 3
+          "client_id": "619485590991-i5ucih45s7t837fieqn6tqvu873jrpek.apps.googleusercontent.com"
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBi6VcUQXYJcQCqvFkQNkx6m23bHXhK4m4"
+          "current_key": "AIzaSyA85TThGWvcinmagTWAoife-X9Ml3sV0rk"
         }
       ],
       "services": {
+        "analytics_service": {
+          "status": 0
+        },
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "619485590991-nq6hj3duurrbero3b4q80tbqtvr6d4f6.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "619485590991-2anb25ok2ma99somrllnjs9ur4c11i08.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.MinigamesCo.MinigamesCollection"
-              }
-            }
-          ]
+          "status": 1
         }
       }
     }

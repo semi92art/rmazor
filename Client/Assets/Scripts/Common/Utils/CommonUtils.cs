@@ -174,5 +174,13 @@ namespace Common.Utils
             return Input.acceleration;
 #endif
         }
+
+        public static void DoOnInitializedEx<T>(T _InitObject, UnityAction _Action) where T : IInit
+        {
+            if (_InitObject.Initialized)
+                _Action?.Invoke();
+            else
+                _InitObject.Initialize += _Action;
+        }
     }
 }

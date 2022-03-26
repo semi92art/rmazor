@@ -13,9 +13,13 @@ namespace Common.Helpers
         public ELogLevel    logLevel;
         public float        admobRate;
         public float        unityAdsRate;
+        public float        ironSourceRate;
         public int          showAdsEveryLevel;
         public int          firstLevelToShowAds;
         public bool         rewriteSettingsByRemoteConfigInEditor;
         public int          payToContinueMoneyCount;
+        public bool         showRewardedInsteadOfInterstitialOnUnpause;
+        public string       ironSourceAppKeyAndroid;
+        public string       ironSourceAppKeyIos;
     }
 }

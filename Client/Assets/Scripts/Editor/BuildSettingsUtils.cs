@@ -44,18 +44,38 @@ namespace Utils.Editor
             var xDoc = XDocument.Load(infoPlistPath);
             var infoPlistXel = xDoc.Element("plist");
             var dictEls = infoPlistXel?.Elements("dict").ToList() ?? new List<XElement>();
-            var first = dictEls.FirstOrDefault();
-            if (first == null)
+            var dict = dictEls.FirstOrDefault();
+            if (dict == null)
             {
                 Dbg.LogWarning($"Element \"dict\" not found in {infoPlistFileName}");
                 return;
             }
-            var keyElements = first.Elements("key");
+            AddAdMobElementsToPlist(dict);
+            AddIronSourceElementsToPlist(dict);
+            xDoc.Save(infoPlistPath);
+        }
+
+        private static void AddAdMobElementsToPlist(XContainer _Dict)
+        {
+            var keyElements = _Dict.Elements("key");
             if (keyElements.Any(_El => _El.Value == "GADIsAdManagerApp"))
                 return;
-            first.Add(new XElement("key", "GADIsAdManagerApp"));
-            first.Add(new XElement("true"));
-            xDoc.Save(infoPlistPath);
+            _Dict.Add(new XElement("key", "GADIsAdManagerApp"));
+            _Dict.Add(new XElement("true"));
+        }
+
+        private static void AddIronSourceElementsToPlist(XContainer _Dict)
+        {
+            var keyElements = _Dict.Elements("key");
+            if (keyElements.Any(_El => _El.Value == "SKAdNetworkItems"))
+                return;
+            _Dict.Add(new XElement("key", "SKAdNetworkItems"));
+            var arrayEl = new XElement("array");
+            var dictEl =  new XElement("dict");
+            var stringEl = new XElement("string", "su67r6k2v3.skadnetwork");
+            dictEl.Add(stringEl);
+            arrayEl.Add(dictEl);
+            _Dict.Add(arrayEl);
         }
     }
 }

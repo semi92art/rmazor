@@ -28,7 +28,6 @@ Shader "RMAZOR/Background/Triangles" {
             
             #pragma vertex vert
             #pragma fragment frag
-            #include "UnityCG.cginc"
             #include "Common.cginc"
             
             fixed4 _Color1, _Color2;
@@ -36,13 +35,13 @@ Shader "RMAZOR/Background/Triangles" {
             int    _Tiling;
 			float  _Direction;
 			float  _WarpScale;
-			float  _WarpTiling;
+			float  _WrapTiling;
 
             inline float rand(float2 co) {
                 return frac(dot(co, float2(_A, _B)));
             }
 
-            inline float2 getTriangleCoords(float2 uv) {
+            inline float2 get_triangle_coords(float2 uv) {
                 uv.y *= _Ratio;
                 float2 coords = floor(uv);
                 coords.x *= 2.0;
@@ -60,9 +59,11 @@ Shader "RMAZOR/Background/Triangles" {
             }
 
             fixed4 frag(v2f i) : SV_Target {
-                float2 pos = wrap_pos(i.uv, _Tiling, _Direction, _WarpScale, _WarpTiling);
+            	if (all(_Color1 == _Color2))
+					return _Color1;
+                float2 pos = wrap_pos(i.uv, _Tiling, _Direction, _WarpScale, _WrapTiling);
                 pos /= _Size * 0.02f;
-                float2 triang = getTriangleCoords(pos);
+                float2 triang = get_triangle_coords(pos);
                 return rand(triang) < 0.5 ? _Color1 : _Color2;
             }
             

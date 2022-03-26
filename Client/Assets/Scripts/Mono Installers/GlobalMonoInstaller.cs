@@ -3,6 +3,7 @@ using Common.CameraProviders;
 using Common.Helpers;
 using Common.Managers;
 using Common.Managers.Advertising;
+using Common.Managers.Analytics;
 using Common.Managers.IAP;
 using Common.Managers.Scores;
 using Common.Network;
@@ -50,6 +51,8 @@ namespace Mono_Installers
             #region managers
 
             Container.Bind<IRemoteConfigManager>().To<RemoteConfigManager>()                .AsSingle();
+            Container.Bind<IUnityAnalyticsProvider>().To<UnityAnalyticsProvider>()          .AsSingle();
+            Container.Bind<IFirebaseAnalyticsProvider>().To<FirebaseAnalyticsProvider>()    .AsSingle();
             Container.Bind<IAnalyticsManager>()   .To<AnalyticsManager>()                   .AsSingle();
             Container.Bind<IGameClient>()         .To<GameClient>()                         .AsSingle();
             

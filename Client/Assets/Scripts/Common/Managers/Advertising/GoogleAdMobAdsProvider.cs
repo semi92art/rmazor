@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Common.Entities;
-using Common.Utils;
 using GoogleMobileAds.Api;
 using UnityEngine;
 using UnityEngine.Events;
@@ -13,14 +11,15 @@ namespace Common.Managers.Advertising
     {
         #region nonpublic members
 
-        private          RewardedAd     m_RewardedAd;
-        private          InterstitialAd m_InterstitialAd;
+        private RewardedAd     m_RewardedAd;
+        private InterstitialAd m_InterstitialAd;
 
         #endregion
 
         #region inject
 
-        public GoogleAdMobAdsProvider(bool _TestMode, float _ShowRate) : base(_TestMode, _ShowRate) { }
+        public GoogleAdMobAdsProvider(bool _TestMode, float _ShowRate)
+            : base(_TestMode, _ShowRate) { }
 
         #endregion
 
@@ -29,54 +28,7 @@ namespace Common.Managers.Advertising
         public override EAdsProvider Provider => EAdsProvider.AdMob;
         public override bool         RewardedAdReady     => m_RewardedAd != null && m_RewardedAd.IsLoaded();
         public override bool         InterstitialAdReady => m_InterstitialAd != null && m_InterstitialAd.IsLoaded();
-        
-        public override void ShowRewardedAd(UnityAction _OnShown, BoolEntity _ShowAds)
-        {
-            Cor.Run(Cor.WaitWhile(
-                () => _ShowAds.Result == EEntityResult.Pending,
-                () =>
-                {
-                    if (_ShowAds.Result != EEntityResult.Success)
-                        return;
-                    if (!_ShowAds.Value)
-                        return;
-                    if (RewardedAdReady)
-                    {
-                        OnRewardedAdShown = _OnShown;
-                        m_RewardedAd.Show();
-                    }
-                    else
-                    {
-                        Dbg.Log("Rewarded ad is not ready.");
-                        var adRequest = new AdRequest.Builder().Build();
-                        m_RewardedAd.LoadAd(adRequest);
-                    }
-                }));
-        }
-        
-        public override void ShowInterstitialAd(UnityAction _OnShown, BoolEntity _ShowAds)
-        {
-            Cor.Run(Cor.WaitWhile(
-                () => _ShowAds.Result == EEntityResult.Pending,
-                () =>
-                {
-                    if (_ShowAds.Result != EEntityResult.Success)
-                        return;
-                    if (!_ShowAds.Value)
-                        return;
-                    if (InterstitialAdReady)
-                    {
-                        m_InterstitialAd.Show();
-                    }
-                    else
-                    {
-                        Dbg.Log("Interstitial ad is not ready.");
-                        var adRequest = new AdRequest.Builder().Build();
-                        m_InterstitialAd.LoadAd(adRequest);
-                    }
-                }));
-        }
-        
+
         #endregion
 
         #region nonpublic methods
@@ -129,7 +81,37 @@ namespace Common.Managers.Advertising
             m_InterstitialAd.OnAdFailedToLoad += OnInterstitialAdFailedToLoad;
             m_InterstitialAd.OnAdClosed       += OnInterstitialAdClosed;
         }
-        
+
+        protected override void ShowRewardedAdCore(UnityAction _OnShown)
+        {
+            if (RewardedAdReady)
+            {
+                OnRewardedAdShown = _OnShown;
+                m_RewardedAd.Show();
+            }
+            else
+            {
+                Dbg.Log("Rewarded ad is not ready.");
+                var adRequest = new AdRequest.Builder().Build();
+                m_RewardedAd.LoadAd(adRequest);
+            }
+        }
+
+        protected override void ShowInterstitialAdCore(UnityAction _OnShown)
+        {
+            if (InterstitialAdReady)
+            {
+                OnInterstitialAdShown = _OnShown;
+                m_InterstitialAd.Show();
+            }
+            else
+            {
+                Dbg.Log("Interstitial ad is not ready.");
+                var adRequest = new AdRequest.Builder().Build();
+                m_InterstitialAd.LoadAd(adRequest);
+            }
+        }
+
         private List<string> GetTestDeviceIds()
         {
             return AdsData.Elements("test_device").Select(_El => _El.Value).ToList();

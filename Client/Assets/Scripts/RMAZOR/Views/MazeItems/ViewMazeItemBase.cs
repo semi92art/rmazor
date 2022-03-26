@@ -161,7 +161,6 @@ namespace RMAZOR.Views.MazeItems
                     Transitioner.DoAppearTransition(
                         _Appear,
                         GetAppearSets(_Appear),
-                        Props.Position,
                         () => OnAppearFinish(_Appear));
                 }));
         }

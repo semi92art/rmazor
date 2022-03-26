@@ -12,7 +12,8 @@ namespace Common.Managers.Advertising
     public enum EAdsProvider
     {
         AdMob    = 1,
-        UnityAds = 2
+        UnityAds = 2,
+        IronSource = 3
     }
     
     public interface IAdsProviderBase
@@ -58,8 +59,33 @@ namespace Common.Managers.Advertising
             });
         }
 
-        public abstract void ShowRewardedAd(UnityAction _OnShown, BoolEntity _ShowAds);
-        public abstract void ShowInterstitialAd(UnityAction _OnShown, BoolEntity _ShowAds);
+        public void ShowRewardedAd(UnityAction _OnShown, BoolEntity _ShowAds)
+        {
+            Cor.Run(Cor.WaitWhile(
+                () => _ShowAds.Result == EEntityResult.Pending,
+                () =>
+                {
+                    if (_ShowAds.Result != EEntityResult.Success)
+                        return;
+                    if (!_ShowAds.Value)
+                        return;
+                    ShowRewardedAdCore(_OnShown);
+                }));
+        }
+
+        public void ShowInterstitialAd(UnityAction _OnShown, BoolEntity _ShowAds)
+        {
+            Cor.Run(Cor.WaitWhile(
+                () => _ShowAds.Result == EEntityResult.Pending,
+                () =>
+                {
+                    if (_ShowAds.Result != EEntityResult.Success)
+                        return;
+                    if (!_ShowAds.Value)
+                        return;
+                    ShowInterstitialAdCore(_OnShown);
+                }));
+        }
 
         protected abstract void InitConfigs(UnityAction _OnSuccess);
         protected abstract void InitRewardedAd();
@@ -78,5 +104,8 @@ namespace Common.Managers.Advertising
         {
             return _S1.EqualsIgnoreCase(_S2);
         }
+
+        protected abstract void ShowRewardedAdCore(UnityAction _OnShown);
+        protected abstract void ShowInterstitialAdCore(UnityAction _OnShown);
     }
 }

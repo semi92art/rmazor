@@ -68,19 +68,6 @@ namespace RMAZOR
 
         #endregion
 
-        // #region constructor
-        //
-        // public MazeCoordinateConverter(
-        //     ViewSettings    _ViewSettings,
-        //     ICameraProvider _CameraProvider,
-        //     bool            _Debug) 
-        //     : this(_ViewSettings, _CameraProvider)
-        // {
-        //     m_Debug = _Debug;
-        // }
-        //
-        // #endregion
-        
         #region api
 
         public Func<string, Transform> GetContainer { get; set; }

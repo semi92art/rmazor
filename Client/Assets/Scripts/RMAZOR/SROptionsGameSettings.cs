@@ -285,7 +285,9 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                _managers.AdsManager.ShowRewardedAd(() => Dbg.Log("Rewarded ad was shown."));
+                _managers.AdsManager.ShowRewardedAd(
+                    () => CommonData.PausedByAdvertising = true, 
+                    () => Dbg.Log("Rewarded ad was shown."));
             }
         }
 
@@ -297,7 +299,9 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
-                _managers.AdsManager.ShowInterstitialAd(() => Dbg.Log("Interstitial ad was shown."));
+                _managers.AdsManager.ShowInterstitialAd(
+                    () => CommonData.PausedByAdvertising = true, 
+                    () => Dbg.Log("Interstitial ad was shown."));
             }
         }
 

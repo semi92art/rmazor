@@ -36,7 +36,7 @@
             float  _StepX, _StepY, _Radius;
             float _AlternateX, _AlternateY;
             int    _Tiling;
-			float  _Direction, _WarpScale, _WarpTiling;
+			float  _Direction, _WarpScale, _WrapTiling;
 
             v2f vert(appdata v) {
                 return vert_default(v);
@@ -68,7 +68,10 @@
             }
 
             fixed4 frag(v2f i) : SV_Target {
-            	float2 pos = wrap_pos(i.uv, _Tiling, _Direction, _WarpScale, _WarpTiling);
+            	if (all(_Color1 == _Color2))
+					return _Color1;
+            	float2 pos = i.uv;
+            	pos = wrap_pos(i.uv, _Tiling, _Direction, _WarpScale, _WrapTiling);
                 float3 col12 = lerp(_Color1, _Color2, 0.5);
                 float4 final_col = float4(col12, 1.0);
             	if (_StepX < 0.05 || _StepY < 0.05 || _Radius < EPS)

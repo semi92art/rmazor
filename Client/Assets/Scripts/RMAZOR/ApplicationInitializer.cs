@@ -31,7 +31,6 @@ namespace RMAZOR
         private CommonGameSettings    Settings             { get; set; }
         private IGameClient           GameClient           { get; set; }
         private IAdsManager           AdsManager           { get; set; }
-        private IAnalyticsManager     AnalyticsManager     { get; set; }
         private ILocalizationManager  LocalizationManager  { get; set; }
         private ILevelsLoader         LevelsLoader         { get; set; }
         private IScoreManager         ScoreManager         { get; set; }
@@ -45,7 +44,6 @@ namespace RMAZOR
             CommonGameSettings    _Settings,
             IGameClient           _GameClient,
             IAdsManager           _AdsManager,
-            IAnalyticsManager     _AnalyticsManager,
             ILocalizationManager  _LocalizationManager,
             ILevelsLoader         _LevelsLoader,
             IScoreManager         _ScoreManager,
@@ -60,7 +58,6 @@ namespace RMAZOR
             Settings             = _Settings;
             GameClient           = _GameClient;
             AdsManager           = _AdsManager;
-            AnalyticsManager     = _AnalyticsManager;
             LocalizationManager  = _LocalizationManager;
             LevelsLoader         = _LevelsLoader;
             ScoreManager         = _ScoreManager;
@@ -126,7 +123,6 @@ namespace RMAZOR
             ScoreManager       .Initialize += OnScoreManagerInitialize;
             ScoreManager       .Init();
             GameClient         .Init();
-            AnalyticsManager   .Init();
             LocalizationManager.Init();
             HapticsManager     .Init();
         }

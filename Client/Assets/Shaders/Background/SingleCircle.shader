@@ -40,11 +40,13 @@
 
 			inline fixed4 circle(float2 uv, float2 pos, float rad, float3 color) {
 				float d = length(pos - uv) - rad;
-				float t = d >rad ? 1.0 : 0.0;
+				float t = d > rad ? 1 : 0;
 				return fixed4(color, t);
 			}
 
 			fixed4 frag (v2f i) : SV_Target {
+				if (all(_Color1 == _Color2))
+					return _Color1;
 				if (_Radius < EPS)
 					return _Color1;
 				float2 uv = i.uv;

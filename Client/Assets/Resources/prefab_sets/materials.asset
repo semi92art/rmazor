@@ -44,3 +44,6 @@ MonoBehaviour:
     - item: {fileID: 2100000, guid: c0a423367bef21246963430fe0e63562, type: 2}
       name: single_circle_background
       bundle: 0
+    - item: {fileID: 2100000, guid: 9e967ce894f65c64fbeaa36bc18aa7f8, type: 2}
+      name: between_level_texture_material
+      bundle: 0

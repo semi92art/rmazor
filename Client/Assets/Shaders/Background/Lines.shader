@@ -1,4 +1,4 @@
-Shader "RMAZOR/Background/Liness"
+Shader "RMAZOR/Background/Lines"
 {
     Properties {
 		_Color1 ("Color 1", Color) = (0,0,0,1)
@@ -26,7 +26,6 @@ Shader "RMAZOR/Background/Liness"
 			#pragma vertex vert
 			#pragma fragment frag
 
-			#include "UnityCG.cginc"
 			#include "Common.cginc"
 
 			fixed4 _Color1;
@@ -34,26 +33,17 @@ Shader "RMAZOR/Background/Liness"
 			int    _Tiling;
 			float  _Direction;
 			float  _WarpScale;
-			float  _WarpTiling;
-
-			inline fixed color_selector_anti_aliasing(float2 pos, float indent) {
-				return floor(frac(pos.x + indent) + 0.5);
-			}
-
-			inline fixed color_selector(float2 pos) {
-				fixed c1 =  floor(frac(pos.x + 0.0) + 0.5);
-				fixed c2 =  floor(frac(pos.x + 0.005) + 0.5);
-				fixed c3 =  floor(frac(pos.x - 0.005) + 0.5);
-				return (c1 + c2 + c3) / 3.0;
-			}
+			float  _WrapTiling;
 
 			v2f vert (appdata v) {
 				return vert_default(v);
 			}
 
 			fixed4 frag (v2f i) : SV_Target {
-				float2 pos = wrap_pos(i.uv, _Tiling, _Direction, _WarpScale, _WarpTiling);
-				fixed lerp_coeff = color_selector(pos);
+				if (all(_Color1 == _Color2))
+					return _Color1;
+				float2 pos = wrap_pos(i.uv, _Tiling, _Direction, _WarpScale, _WrapTiling);
+				fixed lerp_coeff = floor(frac(pos.x) + 0.5);
 				return lerp(_Color1, _Color2, lerp_coeff);
 			}
 			ENDCG

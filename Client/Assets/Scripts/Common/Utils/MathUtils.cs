@@ -40,6 +40,11 @@ namespace Common.Utils
         {
             return Math.Min(Math.Max(_X, _Min), _Max);
         }
+        
+        public static float Clamp(float _X, float _Min, float _Max)
+        {
+            return Math.Min(Math.Max(_X, _Min), _Max);
+        }
 
         public static double Fraction(double _Value)
         {

@@ -140,7 +140,6 @@ namespace RMAZOR.Views.UI
             if (BigDialogViewer.CurrentPanel != null
                 && BigDialogViewer.CurrentPanel.AppearingState != EAppearingState.Dissapeared)
                 return;
-            Managers.AnalyticsManager.SendAnalytic(AnalyticIds.ShopButtonPressed);
             CommandsProceeder.RaiseCommand(EInputCommand.ShopMenu, null);
         }
 
@@ -149,7 +148,6 @@ namespace RMAZOR.Views.UI
             if (BigDialogViewer.CurrentPanel != null
                 && BigDialogViewer.CurrentPanel.AppearingState != EAppearingState.Dissapeared)
                 return;
-            Managers.AnalyticsManager.SendAnalytic(AnalyticIds.SettingsButtonPressed);
             CommandsProceeder.RaiseCommand(EInputCommand.SettingsMenu, null);
         }
 

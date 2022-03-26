@@ -5,6 +5,7 @@ using Common.CameraProviders;
 using Common.Helpers;
 using Common.Providers;
 using Common.UI;
+using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
@@ -158,6 +159,9 @@ namespace RMAZOR.Views
         private void InitProceeders()
         {
             CoordinateConverter.Init();
+            CommonUtils.DoOnInitializedEx(
+                Managers.RemoteConfigManager, 
+                () => Managers.AnalyticsManager.Init());
             var proceedersToExecuteOnLevelStageChangedBeforeGroups = new object[]
             {
                 ContainersGetter,

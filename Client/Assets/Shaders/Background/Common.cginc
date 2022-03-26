@@ -1,6 +1,7 @@
 ﻿#define PI 3.14159265359
 #define EPS 0.001
 #include <HLSLSupport.cginc>
+#include <UnityCG.cginc>
 
 struct appdata
 {
@@ -23,11 +24,16 @@ inline float2 wrap_pos(
     float wrap_scale,
     float wrap_tiling)
 {
-    float2 pos;
-    pos.x = lerp(uv.x, uv.y, direction);
-    pos.y = lerp(uv.y, 1 - uv.x, direction);
-    pos.x += sin(pos.y * wrap_tiling * PI * 2) * wrap_scale;
-    pos.x *= tiling;
+    float2 pos = uv;
+    if (abs(direction) > EPS)
+    {
+        pos.x = lerp(uv.x, uv.y, direction);
+        pos.y = lerp(uv.y, 1 - uv.x, direction);
+    }
+    if (abs(wrap_tiling) > EPS && abs(wrap_scale) > EPS)
+        pos.x += sin(pos.y * wrap_tiling * PI * 2) * wrap_scale;
+    if (tiling > 1)
+        pos.x *= tiling;
     return pos;
 }
 
@@ -43,8 +49,7 @@ inline v2f vert_default(appdata IN){
     OUT.uv = IN.uv;
     OUT.color = IN.color;
     #ifdef PIXELSNAP_ON
-    OUT.vertex = UnityPixelSnap (OUT.vertex);
+    OUT.vertex = UnityPixelSnap(OUT.vertex);
     #endif
-
     return OUT;
 }

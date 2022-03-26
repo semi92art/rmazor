@@ -213,6 +213,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazeBackgroundCircles2TextureProvider>()  .To<ViewMazeBackgroundCircles2TextureProvider>() .AsSingle();
             Container.Bind<IViewMazeBackgroundTrianglesTextureProvider>() .To<ViewMazeBackgroundTrianglesTextureProvider>().AsSingle();
             Container.Bind<IViewMazeGameLogoTextureProvider>()            .To<ViewMazeGameLogoSingleCircleTextureProvider>()           .AsSingle();
+            Container.Bind<IBetweenLevelTextureProvider>()                .To<BetweenLevelLinesTextureProvider>()               .AsSingle();
         }
 
         private void BindOther()

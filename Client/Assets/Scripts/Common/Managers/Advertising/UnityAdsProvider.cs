@@ -1,12 +1,13 @@
 ﻿using System.Linq;
 using Common.Entities;
 using Common.Utils;
+using UnityEngine;
 using UnityEngine.Advertisements;
 using UnityEngine.Events;
 
 namespace Common.Managers.Advertising
 {
-    public class UnityAdsProvider : AdsProviderBase, IUnityAdsInitializationListener
+    public class UnityAdsProvider : AdsProviderCommonBase, IUnityAdsInitializationListener
     {
         private IUnityAdsInterstitialAd InterstitialAd { get; }
         private IUnityAdsRewardedAd     RewardedAd     { get; }
@@ -16,7 +17,11 @@ namespace Common.Managers.Advertising
             IUnityAdsRewardedAd     _RewardedAd,
             bool                    _TestMode,
             float                   _ShowRate) 
-            : base(_TestMode, _ShowRate)
+            : base(
+                _InterstitialAd,
+                _RewardedAd,
+                _TestMode,
+                _ShowRate)
         {
             InterstitialAd = _InterstitialAd;
             RewardedAd = _RewardedAd;
@@ -28,9 +33,8 @@ namespace Common.Managers.Advertising
         {
             get
             {
-#if UNITY_EDITOR
-                return true;
-#endif
+                if (Application.isEditor)
+                    return true;
                 return RewardedAd != null && RewardedAd.Ready;
             }
         }
@@ -39,59 +43,10 @@ namespace Common.Managers.Advertising
         {
             get
             {
-#if UNITY_EDITOR
-                return true;
-#endif
+                if (Application.isEditor)
+                    return true;
                 return InterstitialAd != null && InterstitialAd.Ready;
             }
-        }
-
-        public override void ShowRewardedAd(UnityAction _OnShown, BoolEntity _ShowAds)
-        {
-            Dbg.Log("Start showing UnityAds Rewarded Ad");
-            Cor.Run(Cor.WaitWhile(
-                () => _ShowAds.Result == EEntityResult.Pending,
-                () =>
-                {
-                    if (_ShowAds.Result != EEntityResult.Success)
-                        return;
-                    if (!_ShowAds.Value)
-                        return;
-                    if (RewardedAdReady)
-                    {
-                        OnRewardedAdShown = _OnShown;
-                        RewardedAd.ShowAd(_OnShown);
-                    }
-                    else
-                    {
-                        Dbg.Log("Rewarded ad is not ready.");
-                        RewardedAd.LoadAd();
-                    }
-                }));
-        }
-
-        public override void ShowInterstitialAd(UnityAction _OnShown, BoolEntity _ShowAds)
-        {
-            Dbg.Log("Start showing UnityAds Interstitial Ad");
-            Cor.Run(Cor.WaitWhile(
-                () => _ShowAds.Result == EEntityResult.Pending,
-                () =>
-                {
-                    if (_ShowAds.Result != EEntityResult.Success)
-                        return;
-                    if (!_ShowAds.Value)
-                        return;
-                    if (InterstitialAdReady)
-                    {
-                        OnInterstitialAdShown = _OnShown;
-                        InterstitialAd.ShowAd(_OnShown);
-                    }
-                    else
-                    {
-                        Dbg.Log("Interstitial ad is not ready.");
-                        InterstitialAd.LoadAd();
-                    }
-                }));
         }
 
         protected override void InitConfigs(UnityAction _OnSuccess)
@@ -102,7 +57,7 @@ namespace Common.Managers.Advertising
             _OnSuccess?.Invoke();
         }
 
-        private void SetMetadata()
+        private static void SetMetadata()
         {
             // Starting April 1, 2022, the Google Families Policy will no longer allow Device IDs
             // to leave users’ devices from apps where one of the target audiences is children
@@ -123,6 +78,34 @@ namespace Common.Managers.Advertising
         protected override void InitInterstitialAd()
         {
             InterstitialAd.Init(GetAdsNodeValue("unity_ads", "interstitial"));
+        }
+
+        protected override void ShowRewardedAdCore(UnityAction _OnShown)
+        {
+            if (RewardedAdReady)
+            {
+                OnRewardedAdShown = _OnShown;
+                RewardedAd.ShowAd(_OnShown);
+            }
+            else
+            {
+                Dbg.Log("Rewarded ad is not ready.");
+                RewardedAd.LoadAd();
+            }
+        }
+
+        protected override void ShowInterstitialAdCore(UnityAction _OnShown)
+        {
+            if (InterstitialAdReady)
+            {
+                OnInterstitialAdShown = _OnShown;
+                InterstitialAd.ShowAd(_OnShown);
+            }
+            else
+            {
+                Dbg.Log("Interstitial ad is not ready.");
+                InterstitialAd.LoadAd();
+            }
         }
 
         private string GetGameId()

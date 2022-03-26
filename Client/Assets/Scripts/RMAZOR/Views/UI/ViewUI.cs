@@ -10,6 +10,7 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.UI.Panels;
 using RMAZOR.Views.InputConfigurators;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace RMAZOR.Views.UI
@@ -122,20 +123,41 @@ namespace RMAZOR.Views.UI
         {
             if (_Pause)
                 return;
-            int ratePanelShowsCount = SaveUtils.GetValue(SaveKeysRmazor.RatePanelShowsCount);
-            bool MustShowRateGamePanel()
+            if (CommonData.PausedByAdvertising)
             {
-                return Random.value < 0.5f
-                       && !SaveUtils.GetValue(SaveKeysCommon.GameWasRated)
-                       && ratePanelShowsCount > 10
-                       && Model.LevelStaging.LevelIndex > ViewSettings.firstLevelToRateGame;
+                CommonData.PausedByAdvertising = false;
+                return;
             }
             if (MustShowRateGamePanel())
                 CommandsProceeder.RaiseCommand(EInputCommand.RateGamePanel, null);
-            else if (Model.LevelStaging.LevelIndex > CommonGameSettings.firstLevelToShowAds)
-                Managers.AdsManager.ShowInterstitialAd(null);
+            else if (MustShowAdvertising())
+            {
+                if (CommonGameSettings.showRewardedInsteadOfInterstitialOnUnpause)
+                    Managers.AdsManager.ShowRewardedAd(null, null);
+                else
+                    Managers.AdsManager.ShowInterstitialAd(null, null);
+            }
         }
         
+        #endregion
+
+        #region nonpublic methods
+        
+        private bool MustShowRateGamePanel()
+        {
+            int ratePanelShowsCount = SaveUtils.GetValue(SaveKeysRmazor.RatePanelShowsCount);
+            return !SaveUtils.GetValue(SaveKeysCommon.GameWasRated)
+                   && ratePanelShowsCount < 10
+                   && Random.value < 0.5f
+                   && Model.LevelStaging.LevelIndex > ViewSettings.firstLevelToRateGame;
+        }
+
+        private bool MustShowAdvertising()
+        {
+            return Model.LevelStaging.LevelIndex > CommonGameSettings.firstLevelToShowAds
+                   && !Application.isEditor;
+        }
+
         #endregion
     }
 }

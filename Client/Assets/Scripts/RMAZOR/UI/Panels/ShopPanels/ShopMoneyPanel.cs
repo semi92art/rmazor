@@ -25,10 +25,10 @@ namespace RMAZOR.UI.Panels.ShopPanels
     {
         #region nonpublic members
 
-        protected override Vector2 StartContentPos => Content.anchoredPosition.SetY(Content.rect.height * 0.5f);
-        protected override string ItemSetName => "shop_money_items_set";
-        protected override string PanelPrefabName => "shop_money_panel";
-        protected override string PanelItemPrefabName => "shop_money_item";
+        protected override Vector2 StartContentPos     => Content.anchoredPosition.SetY(Content.rect.height * 0.5f);
+        protected override string  ItemSetName         => "shop_money_items_set";
+        protected override string  PanelPrefabName     => "shop_money_panel";
+        protected override string  PanelItemPrefabName => "shop_money_item";
 
         protected override RectTransformLite ShopItemRectLite => new RectTransformLite
         {
@@ -94,10 +94,9 @@ namespace RMAZOR.UI.Panels.ShopPanels
                     continue;
                 Managers.ShopManager.SetPurchaseAction(
                     itemInSet.purchaseKey, 
-                    () => OnPaid(itemInSet.reward));
+                    () => OnPaid(itemInSet.purchaseKey, itemInSet.reward));
             }
             Managers.ShopManager.SetPurchaseAction(PurchaseKeys.NoAds, BuyHideAdsItem);
-            // Managers.ShopManager.SetPurchaseAction(PurchaseKeys.DarkTheme, BuyDarkTheme);
         }
 
         private void LoadItemInfos()
@@ -124,7 +123,6 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 m_ShopItemArgsDict.Add(itemInSet.purchaseKey, newArgs);
             }
             AddItemArgsToDict(PurchaseKeys.NoAds);
-            // AddItemArgsToDict(PurchaseKeys.DarkTheme);
         }
 
         private void AddItemArgsToDict(int _PurchaseKey)
@@ -170,8 +168,6 @@ namespace RMAZOR.UI.Panels.ShopPanels
                     }
                     if (showAdsEntity.Value)
                         InitBuyNoAdsItem();
-                    // if (!ColorProvider.DarkThemeAvailable)
-                    //     InitBuyDarkThemeItem();
                 }));
         }
 
@@ -192,23 +188,6 @@ namespace RMAZOR.UI.Panels.ShopPanels
             Managers.LocalizationManager.AddTextObject(itemDisableAds.title, "no_ads");
         }
 
-        // private void InitBuyDarkThemeItem()
-        // {
-        //     var argsBuyDarkTheme = m_ShopItemArgsDict[PurchaseKeys.DarkTheme];
-        //     var infoBuyDarkTheme = new ViewShopItemInfo
-        //     {
-        //         PurchaseKey = PurchaseKeys.DarkTheme,
-        //         Icon = Managers.PrefabSetManager.GetObject<Sprite>(
-        //             PrefabSetName, 
-        //             "dark_theme_on"),
-        //         BuyForWatchingAd = false,
-        //         Reward = 0
-        //     };
-        //     var itemBuyDarkTheme = InitItem(argsBuyDarkTheme, infoBuyDarkTheme, BuyHideAdsItem);
-        //     m_Items.Add(PurchaseKeys.DarkTheme, itemBuyDarkTheme);
-        //     Managers.LocalizationManager.AddTextObject(itemBuyDarkTheme.title, "dark_theme");
-        // }
-        
         private ShopMoneyItem InitItem(ShopItemArgs _Args, ViewShopItemInfo _Info, UnityAction _OnPaid = null)
         {
             void OnPaidReal()
@@ -216,7 +195,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 if (_OnPaid != null)
                     _OnPaid.Invoke();
                 else
-                    OnPaid(_Info.Reward);
+                    OnPaid(_Info.PurchaseKey, _Info.Reward);
             }
             var item = CreateItem();
             item.Init(
@@ -227,7 +206,11 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 () =>
                 {
                     if (_Info.BuyForWatchingAd)
-                        Managers.AdsManager.ShowRewardedAd(OnPaidReal);
+                    {
+                        Managers.AdsManager.ShowRewardedAd(
+                            () => CommonData.PausedByAdvertising = true,
+                            OnPaidReal);
+                    }
                     else
                         Managers.ShopManager.Purchase(_Info.PurchaseKey);
                 },
@@ -253,6 +236,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
         
         private void BuyHideAdsItem()
         {
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIds.Product1Buy);
             Managers.AdsManager.ShowAds = new BoolEntity
             {
                 Result = EEntityResult.Success,
@@ -264,16 +248,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
             RemoveItem(PurchaseKeys.NoAds);
         }
 
-        // private void BuyDarkTheme()
-        // {
-        //     ColorProvider.DarkThemeAvailable = true;
-        //     string dialogTitle = Managers.LocalizationManager.GetTranslation("purchase") + ":";
-        //     string dialogText = Managers.LocalizationManager.GetTranslation("dark_theme_available");
-        //     CommonUtils.ShowAlertDialog(dialogTitle, dialogText);
-        //     RemoveItem(PurchaseKeys.DarkTheme);
-        // }
-
-        private void OnPaid(long _Reward)
+        private void OnPaid(int _PurchaseKey, long _Reward)
         {
             var savedGameEntity = Managers.ScoreManager.GetSavedGameProgress(
                 CommonData.SavedGameFileName,
@@ -301,6 +276,19 @@ namespace RMAZOR.UI.Panels.ShopPanels
                                             .GetTranslation("coins_alt")
                                             .ToLowerInvariant();
                     CommonUtils.ShowAlertDialog(dialogTitle, dialogText);
+                    string anId = _PurchaseKey switch
+                    {
+                        1 => AnalyticIds.Product1Buy,
+                        2 => AnalyticIds.Product2Buy,
+                        3 => AnalyticIds.Product3Buy,
+                        _ => null
+                    };
+                    if (anId == null)
+                    {
+                        Dbg.LogError("Analytic Id was not found by Purchase Key");
+                        return;
+                    }
+                    Managers.AnalyticsManager.SendAnalytic(anId);
                 }));
         }
 

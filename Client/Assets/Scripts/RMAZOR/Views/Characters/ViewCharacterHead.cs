@@ -160,7 +160,6 @@ namespace RMAZOR.Views.Characters
                     {new Component[] {m_HeadShape}, () => charCol},
                     {new Component[] {m_Eye1Shape, m_Eye2Shape}, () => eyesCol}
                 },
-                Model.Character.Position,
                 () =>
                 {
                     AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared;

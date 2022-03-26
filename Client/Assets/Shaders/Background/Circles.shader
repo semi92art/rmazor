@@ -41,27 +41,23 @@
 			int    _Tiling;
 			float  _Direction;
 			float  _WarpScale;
-			float  _WarpTiling;
+			float  _WrapTiling;
 			
 			v2f vert (appdata v) {
 				return vert_default(v);
 			}
 			
-            inline fixed color_selector_anti_aliasing(float d1, float d2, float indent) {
+            inline fixed color_selector(float d1, float d2) {
                 int k = 0;
-                while (d1 > (d2 + indent) * _Radius * k && k < 100)
+                while (d1 > d2  * _Radius * k && k < 16)
                     k = k + 1;
                 return k % 2 == 0 ? 0 : 1;
             }
-            
-            inline fixed color_selector(float d1, float d2) {
-                fixed v1 = color_selector_anti_aliasing(d1, d2, 0);
-                fixed v2 = color_selector_anti_aliasing(d1, d2, 0.001);
-                return (v1 + v2) / 2;
-            }
 
 			fixed4 frag (v2f i) : SV_Target {
-				float2 pos = wrap_pos(i.uv, _Tiling, _Direction, _WarpScale, _WarpTiling);
+				if (all(_Color1 == _Color2))
+					return _Color1;
+				float2 pos = wrap_pos(i.uv, _Tiling, _Direction, _WarpScale, _WrapTiling);
 				float ratio = _ScreenParams.x / _ScreenParams.y;
 				float x = (pos.x - _CenterX) * ratio;
 				float y = pos.y - _CenterY;
