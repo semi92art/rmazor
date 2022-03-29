@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Common.Constants;
 using Common.Entities;
 using Common.Enums;
-using Common.Exceptions;
 using Common.Extensions;
 using Common.Managers;
 using Common.Providers;
 using RMAZOR.Models;
+using RMAZOR.Views.MazeItems.Additional;
 using RMAZOR.Views.Utils;
 using UnityEngine;
 using UnityEngine.Events;
@@ -32,9 +31,8 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         private static AudioClipArgs AudioClipArgsCollectMoneyItem => 
             new AudioClipArgs("collect_point", EAudioClipType.GameSound);
         
-        private SpriteRenderer m_Renderer;
-        private Animator       m_MoneyItemAnimator;
-        private bool           m_Active;
+        private GameMoneyItemMonoBeh m_Beh;
+        private bool                 m_Active;
 
         #endregion
 
@@ -75,13 +73,13 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         public void UpdateShape()
         {
             const float commonScaleCoeff = 0.3f;
-            if (m_Renderer.IsNull())
+            if (m_Beh.IsNull() || m_Beh.icon.IsNull())
                 return;
             float scale = CoordinateConverter.Scale;
-            m_Renderer.transform.localScale = Vector3.one * scale * commonScaleCoeff;
+            m_Beh.icon.transform.localScale = Vector3.one * scale * commonScaleCoeff;
         }
 
-        public IEnumerable<Component> Renderers => new Component[] {m_Renderer};
+        public IEnumerable<Component> Renderers => new Component[] {m_Beh.IsNull() ? null : m_Beh.icon};
 
         public event UnityAction Collected;
         public bool              IsCollected { get; set; }
@@ -92,9 +90,9 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
             set
             {
                 m_Active = value;
-                if (m_Renderer.IsNull())
+                if (m_Beh.IsNull() || m_Beh.icon.IsNull())
                     return;
-                m_Renderer.enabled = value;
+                m_Beh.icon.enabled = value;
             }
         }
 
@@ -117,25 +115,7 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         {
             if (!Active)
                 return;
-            m_MoneyItemAnimator.speed = _Args.Stage == ELevelStage.Paused ? 0f : 1f;
-            switch (_Args.Stage)
-            {
-                case ELevelStage.ReadyToStart:
-                    m_MoneyItemAnimator.SetTrigger(AnimKeys.Anim);
-                    break;
-                case ELevelStage.Unloaded:
-                    m_MoneyItemAnimator.SetTrigger(AnimKeys.Stop);
-                    break;
-                case ELevelStage.Loaded:
-                case ELevelStage.StartedOrContinued:
-                case ELevelStage.Paused:
-                case ELevelStage.Finished:
-                case ELevelStage.ReadyToUnloadLevel:
-                case ELevelStage.CharacterKilled:
-                    break;
-                default:
-                    throw new SwitchCaseNotImplementedException(_Args.Stage);
-            }
+            m_Beh.OnLevelStageChanged(_Args);
         }
 
         #endregion
@@ -146,11 +126,11 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         {
             var go = PrefabSetManager.InitPrefab(
                 _Parent, "views", "money_item");
-            m_Renderer = go.GetCompItem<SpriteRenderer>("renderer_1");
-            m_MoneyItemAnimator = go.GetCompItem<Animator>("animator");
+            m_Beh = go.GetCompItem<GameMoneyItemMonoBeh>("beh");
+            m_Beh.icon.sprite = PrefabSetManager.GetObject<Sprite>("icons", "icon_coin");
             var col = ColorProvider.GetColor(ColorIds.MoneyItem);
-            m_Renderer.color = col;
-            m_Renderer.sortingOrder = SortingOrders.MoneyItem;
+            m_Beh.icon.color = col;
+            m_Beh.icon.sortingOrder = SortingOrders.MoneyItem;
             go.transform.SetLocalPosXY(Vector2.zero);
             UpdateShape();
         }
@@ -159,7 +139,7 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         {
             if (_ColorId != ColorIds.MoneyItem || !Active || IsCollected)
                 return;
-            m_Renderer.color = _Color;
+            m_Beh.icon.color = _Color;
         }
 
         #endregion

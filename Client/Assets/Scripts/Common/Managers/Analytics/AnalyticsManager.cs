@@ -39,4 +39,9 @@ namespace Common.Managers.Analytics
         
         #endregion
     }
+
+    public class AnalyticsManagerFake : InitBase, IAnalyticsManager
+    {
+        public void SendAnalytic(string _AnalyticId, IDictionary<string, object> _EventData = null) { }
+    }
 }

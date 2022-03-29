@@ -57,10 +57,7 @@ namespace RMAZOR.Helpers
         
         private void CacheLevels(int _GameId)
         {
-            int heapIndex = 1;
-            #if UNITY_EDITOR
-            heapIndex = SaveUtilsInEditor.GetValue(SaveKeysInEditor.StartHeapIndex);
-            #endif
+            int heapIndex = Application.isEditor ? SaveUtilsInEditor.GetValue(SaveKeysInEditor.StartHeapIndex) : 1;
             m_GameId = _GameId;
             var asset = PrefabSetManager.GetObject<TextAsset>(PrefabSetName(_GameId),
                 LevelsAssetName(heapIndex));

@@ -9,8 +9,8 @@
     	_Amplitude("Waves Amplitude", Range(0, 1)) = 0.5
     	[IntRange]_Tiling ("Tiling", Range(1, 10)) = 1
 		_Direction ("Direction", Range(0, 1)) = 0
-		_WarpScale ("Warp Scale", Range(0, 1)) = 0
-		_WarpTiling ("Warp Tiling", Range(1, 10)) = 1
+		_WrapScale ("Wrap Scale", Range(0, 1)) = 0
+		_WrapTiling ("Wrap Tiling", Range(1, 10)) = 1
     	[IntRange] _StencilRef ("Stencil Reference Value", Range(0,255)) = 0
 	}
 	SubShader {
@@ -35,19 +35,16 @@
 			#include "UnityCG.cginc"
 			#include "Common.cginc"
 
-			fixed4 _Color1, _Color2;
+			fixed4 _Color1,_Color2;
+			float  _Direction, _WrapScale, _WrapTiling, _Tiling;
 			float _Radius, _CenterX, _CenterY, _Amplitude;
-			int _WavesCount;
-			int    _Tiling;
-			float  _Direction;
-			float  _WarpScale;
-			float  _WrapTiling;
+			int   _WavesCount;
 			
 			v2f vert (appdata v) {
 				return vert_default(v);
 			}
 			
-            inline fixed color_selector(float d1, float d2) {
+            fixed color_selector(float d1, float d2) {
                 int k = 0;
                 while (d1 > d2  * _Radius * k && k < 16)
                     k = k + 1;
@@ -57,7 +54,7 @@
 			fixed4 frag (v2f i) : SV_Target {
 				if (all(_Color1 == _Color2))
 					return _Color1;
-				float2 pos = wrap_pos(i.uv, _Tiling, _Direction, _WarpScale, _WrapTiling);
+				float2 pos = wrap_pos(i.uv, _Tiling, _Direction, _WrapScale, _WrapTiling);
 				float ratio = _ScreenParams.x / _ScreenParams.y;
 				float x = (pos.x - _CenterX) * ratio;
 				float y = pos.y - _CenterY;

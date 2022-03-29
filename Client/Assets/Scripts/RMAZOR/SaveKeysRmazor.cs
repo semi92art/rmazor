@@ -11,7 +11,6 @@ namespace RMAZOR
 
         private static SaveKey<bool> _movementTutorialFinished;
         private static SaveKey<bool> _rotationTutorialFinished;
-        private static SaveKey<bool> _enableRotation;
         private static SaveKey<bool> _darkThemeAvailable;
         private static SaveKey<bool> _moneyFromServerLoadedFirstTime;
 
@@ -30,7 +29,6 @@ namespace RMAZOR
             SaveUtils.PutValue(AllLevelsPassed,          SaveUtils.GetValue(AllLevelsPassed),          true);
             SaveUtils.PutValue(MovementTutorialFinished, SaveUtils.GetValue(MovementTutorialFinished), true);
             SaveUtils.PutValue(RotationTutorialFinished, SaveUtils.GetValue(RotationTutorialFinished), true);
-            SaveUtils.PutValue(EnableRotation,           SaveUtils.GetValue(EnableRotation),           true);
             SaveUtils.PutValue(DarkThemeAvailable,       SaveUtils.GetValue(DarkThemeAvailable),       true);
             
             SaveUtils.PutValue(DailyBonusLastClickedDay, SaveUtils.GetValue(DailyBonusLastClickedDay), true);
@@ -49,8 +47,6 @@ namespace RMAZOR
             _movementTutorialFinished ??= new SaveKey<bool>(nameof(MovementTutorialFinished));
         public static SaveKey<bool>  RotationTutorialFinished =>
             _rotationTutorialFinished ??= new SaveKey<bool>(nameof(RotationTutorialFinished));
-        public static SaveKey<bool>  EnableRotation           => 
-            _enableRotation ??= new SaveKey<bool>(nameof(EnableRotation));
         public static SaveKey<bool>  DarkThemeAvailable       => 
             _darkThemeAvailable ??= new SaveKey<bool>(nameof(DarkThemeAvailable));
         public static SaveKey<bool>  SavedGameFromServerLoadedAtLeastOnce =>

@@ -1,12 +1,12 @@
 <dependencies>
     <unityversion>4.3.37.1</unityversion>
-  <androidPackages>
-    <androidPackage spec="com.google.android.gms:play-services-ads:20.6.0">
-      <repositories>
-        <repository>https://maven.google.com/</repository>
-      </repositories>
-    </androidPackage>
-  </androidPackages>
+<!--  <androidPackages>-->
+<!--    <androidPackage spec="com.google.android.gms:play-services-ads:20.6.0">-->
+<!--      <repositories>-->
+<!--        <repository>https://maven.google.com/</repository>-->
+<!--      </repositories>-->
+<!--    </androidPackage>-->
+<!--  </androidPackages>-->
 
     <androidPackages>
     <androidPackage spec="com.ironsource.adapters:admobadapter:4.3.27">

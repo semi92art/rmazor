@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Common.Helpers;
-using Common.Utils;
 using Unity.Services.Analytics;
 using Unity.Services.Core;
 
@@ -21,8 +20,6 @@ namespace Common.Managers.Analytics
         public void SendAnalytic(string _AnalyticId, IDictionary<string, object> _EventData = null)
         {
             if (UnityServices.State != ServicesInitializationState.Initialized)
-                return;
-            if (!CommonUtils.IsRunningOnDevice())
                 return;
             _EventData ??= new Dictionary<string, object>();
             UnityEngine.Analytics.Analytics.CustomEvent(_AnalyticId, _EventData);

@@ -29,8 +29,8 @@ namespace RMAZOR.Views.MazeItems
 {
     public interface IViewMazeItemPath : IViewMazeItem
     {
-        bool        Collected          { get; set; }
-        UnityAction MoneyItemCollected { get; set; } 
+        bool              Collected { get; set; }
+        event UnityAction MoneyItemCollected;
     }
     
     public class ViewMazeItemPath : ViewMazeItemBase, IViewMazeItemPath, IUpdateTick
@@ -149,13 +149,14 @@ namespace RMAZOR.Views.MazeItems
             }
         }
 
-        public UnityAction MoneyItemCollected { get; set; }
+        public event UnityAction MoneyItemCollected;
 
         public override void Init(ViewMazeItemProps _Props)
         {
             if (!Initialized)
                 Managers.AudioManager.InitClip(AudioClipArgsCollectMoneyItem);
-            MoneyItem.Collected += () => MoneyItemCollected?.Invoke();
+            MoneyItem.Collected -= MoneyItemCollected;
+            MoneyItem.Collected += MoneyItemCollected;
             base.Init(_Props);
         }
 

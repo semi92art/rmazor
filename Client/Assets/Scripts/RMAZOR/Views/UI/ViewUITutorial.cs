@@ -27,6 +27,7 @@ namespace RMAZOR.Views.UI
     {
         event UnityAction<ETutorialType> TutorialStarted;
         event UnityAction<ETutorialType> TutorialFinished;
+        ETutorialType?                   IsCurrentLevelTutorial();
     }
     
     public class ViewUITutorial : IViewUITutorial
@@ -113,18 +114,29 @@ namespace RMAZOR.Views.UI
             if (_Args.Stage != ELevelStage.Loaded)
                 return;
             AdditionalCheckForTutorialFinishing(_Args);
-            switch (Model.Data.Info.AdditionalInfo.Comment1)
+            var tutType = IsCurrentLevelTutorial();
+            if (!tutType.HasValue)
+                return;
+            switch (tutType.Value)
             {
-                case "movement tutorial": StartMovementTutorial(); break;
-                case "rotation tutorial": StartRotationTutorial(); break;
+                case ETutorialType.Movement: StartMovementTutorial(); break;
+                case ETutorialType.Rotation: StartRotationTutorial(); break;
             }
+        }
+        
+        public ETutorialType? IsCurrentLevelTutorial()
+        {
+            return Model.Data.Info.AdditionalInfo.Comment1 switch
+            {
+                "movement tutorial" => ETutorialType.Movement,
+                "rotation tutorial" => ETutorialType.Rotation,
+                _=> null
+            };
         }
 
         #endregion
 
         #region nonpublic methods
-
-
 
         private void OnCommand(EInputCommand _Command, object[] _Args)
         {
@@ -180,7 +192,7 @@ namespace RMAZOR.Views.UI
         {
             if (m_LastTutorialLevelIndex == -1 || _Args.LevelIndex <= m_LastTutorialLevelIndex)
                 return;
-            SaveUtils.PutValue(SaveKeysRmazor.EnableRotation, true);
+            Dbg.Log("Finish all tutorials");
             SaveUtils.PutValue(SaveKeysRmazor.MovementTutorialFinished, true);
             SaveUtils.PutValue(SaveKeysRmazor.RotationTutorialFinished, true);
         }
@@ -204,7 +216,6 @@ namespace RMAZOR.Views.UI
         {
             if (m_RotationTutorialStarted || m_RotationTutorialFinished)
                 return;
-            SaveUtils.PutValue(SaveKeysRmazor.EnableRotation, true);
             TutorialStarted?.Invoke(ETutorialType.Rotation);
             var cont = ContainersGetter.GetContainer(ContainerNames.Tutorial);
             var goRotPrompt = PrefabSetManager.InitPrefab(

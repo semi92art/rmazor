@@ -6,10 +6,10 @@
     	_StepX  ("Step X", Range(0.05, 0.5)) = 0.2
     	_StepY  ("Step Y", Range(0.05, 0.5)) = 0.2
     	[Toggle]  _AlternateX("Alternate X", Float) = 0
-    	_Tiling ("Tiling", Range(1, 10)) = 1
+    	[IntRange] _Tiling ("Tiling", Range(1, 10)) = 1
 		_Direction ("Direction", Range(0, 1)) = 0
-		_WarpScale ("Warp Scale", Range(0, 1)) = 0
-		_WarpTiling ("Warp Tiling", Range(1, 10)) = 1
+		_WrapScale ("Wrap Scale", Range(0, 1)) = 0
+		_WrapTiling ("Wrap Tiling", Range(1, 10)) = 1
     }
     SubShader {
     	Tags { 
@@ -32,21 +32,20 @@
 			#include "UnityCG.cginc"
 			#include "Common.cginc"
 
-            fixed4 _Color1, _Color2;
+			fixed4 _Color1,_Color2;
+			float  _Direction, _WrapScale, _WrapTiling, _Tiling;
             float  _StepX, _StepY, _Radius;
             float _AlternateX, _AlternateY;
-            int    _Tiling;
-			float  _Direction, _WarpScale, _WrapTiling;
 
             v2f vert(appdata v) {
                 return vert_default(v);
             }
 
-            inline float screen_ratio() {
+            float screen_ratio() {
 	            return _ScreenParams.x / _ScreenParams.y;
             }
 
-            inline float4 circle(float2 uv, float2 center, float radius, float3 color) {
+            float4 circle(float2 uv, float2 center, float radius, float3 color) {
 				radius *= screen_ratio();
             	float delta_x = uv.x - center.x;
             	float delta_y = (uv.y - center.y) / screen_ratio();
@@ -55,7 +54,7 @@
                 return float4(color, a);
             }
 
-            inline float4 mix_color(float4 color, float2 pos, float2 center, bool choose_color_1)
+            float4 mix_color(float4 color, float2 pos, float2 center, bool choose_color_1)
             {
                 float3 c = choose_color_1 ? _Color1 : _Color2;
                 float4 l = circle(pos, center, _Radius * 0.1, c);
@@ -63,7 +62,7 @@
                 return lerp(color, l, lerp_coeff);
             }
 
-            inline bool alternate_x() {
+            bool alternate_x() {
 	            return _AlternateX > EPS;
             }
 
@@ -71,7 +70,7 @@
             	if (all(_Color1 == _Color2))
 					return _Color1;
             	float2 pos = i.uv;
-            	pos = wrap_pos(i.uv, _Tiling, _Direction, _WarpScale, _WrapTiling);
+            	pos = wrap_pos(i.uv, _Tiling, _Direction, _WrapScale, _WrapTiling);
                 float3 col12 = lerp(_Color1, _Color2, 0.5);
                 float4 final_col = float4(col12, 1.0);
             	if (_StepX < 0.05 || _StepY < 0.05 || _Radius < EPS)

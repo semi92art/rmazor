@@ -84,8 +84,8 @@ namespace Mono_Installers
             Container.Bind<IContainersGetter>()       .To<ContainersGetterRmazor>() .AsSingle();
             Container.Bind<IMazeItemsCreator>()       .To<MazeItemsCreator>()       .AsSingle();
             
-            Container.Bind<IViewGame>()               .To<ViewGame>()                         .AsSingle();
-            Container.Bind<IViewMazeCommon>()         .To<ViewMazeCommon>()                   .AsSingle();
+            Container.Bind<IViewGame>()               .To<ViewGame>()               .AsSingle();
+            Container.Bind<IViewMazeCommon>()         .To<ViewMazeCommon>()         .AsSingle();
 
             Container.Bind<IViewMazeRotation>()                .To<ViewMazeRotation>()                 .AsSingle();
             Container.Bind<IViewBackground>()                  .To<ViewBackground>()                   .AsSingle();
@@ -115,12 +115,12 @@ namespace Mono_Installers
 #else
             Container.Bind<IViewInputController>()          .To<ViewInputController>()         .AsSingle();
 #endif
-            Container.Bind<IColorProvider>()     .FromComponentInNewPrefab(colorProvider) .AsSingle();
+            Container.Bind<IColorProvider>()     .FromComponentInNewPrefab(colorProvider)      .AsSingle();
         }
 
         private void BindMazeItemBlocksAndGroups()
         {
-            Container.Bind<IViewMazeMoneyItem>()             .To<ViewMazeMoneyItemCrypto>()         .AsSingle();
+            Container.Bind<IViewMazeMoneyItem>()             .To<ViewMazeMoneyItemCrypto>()          .AsSingle();
             Container.Bind<IViewMazeItemPath>()              .To<ViewMazeItemPathFilled>()           .AsSingle();
             Container.Bind<IViewMazeItemGravityBlock>()      .To<ViewMazeItemGravityBlock>()         .AsSingle();
             Container.Bind<IViewMazeItemMovingTrap>()        .To<ViewMazeItemMovingTrap>()           .AsSingle();
@@ -195,32 +195,31 @@ namespace Mono_Installers
                 Container.Bind<IShopHeadsDialogPanel>()      .To<ShopHeadsPanel>()          .AsSingle();
                 Container.Bind<IShopTailsDialogPanel>()      .To<ShopTailsPanel>()          .AsSingle();
                 Container.Bind<ISettingDialogPanel>()        .To<SettingsDialogPanel>()     .AsSingle();
-#if UNITY_ANDROID
-                Container.Bind<ICharacterDiedDialogPanel>().To<CharacterDiedDialogPanel2>().AsSingle();
-#elif UNITY_IOS
-                Container.Bind<ICharacterDiedDialogPanel>().To<CharacterDiedDialogPanel>() .AsSingle();
-#endif
-                Container.Bind<IRateGameDialogPanel>()     .To<RateGameDialogPanel>()      .AsSingle();
+                Container.Bind<IRateGameDialogPanel>()       .To<RateGameDialogPanel>()     .AsSingle();
+
+                var charDiedPanelType = Application.platform == RuntimePlatform.IPhonePlayer
+                    ? typeof(CharacterDiedDialogPanel) : typeof(CharacterDiedDialogPanel2);
+                Container.Bind<ICharacterDiedDialogPanel>().To(charDiedPanelType).AsSingle();
             }
         }
 
         private void BindTextureProviders()
         {
             // Container.Bind<IViewMazeBackgroundTextureController>()        .To<ViewMazeBackgroundTextureControllerFake>()   .AsSingle();
-            Container.Bind<IViewMazeBackgroundTextureController>()        .To<ViewMazeBackgroundTextureController>()       .AsSingle();
-            Container.Bind<IViewMazeBackgroundLinesTextureProvider>()     .To<ViewMazeBackgroundLinesTextureProvider>()    .AsSingle();
-            Container.Bind<IViewMazeBackgroundCirclesTextureProvider>()   .To<ViewMazeBackgroundCirclesTextureProvider>()  .AsSingle();
-            Container.Bind<IViewMazeBackgroundCircles2TextureProvider>()  .To<ViewMazeBackgroundCircles2TextureProvider>() .AsSingle();
-            Container.Bind<IViewMazeBackgroundTrianglesTextureProvider>() .To<ViewMazeBackgroundTrianglesTextureProvider>().AsSingle();
-            Container.Bind<IViewMazeGameLogoTextureProvider>()            .To<ViewMazeGameLogoSingleCircleTextureProvider>()           .AsSingle();
-            Container.Bind<IBetweenLevelTextureProvider>()                .To<BetweenLevelLinesTextureProvider>()               .AsSingle();
+            Container.Bind<IViewMazeBackgroundTextureController>()       .To<ViewMazeBackgroundTextureController>()        .AsSingle();
+            Container.Bind<IViewMazeBackgroundLinesTextureProvider>()    .To<ViewMazeBackgroundLinesTextureProvider>()     .AsSingle();
+            Container.Bind<IViewMazeBackgroundCirclesTextureProvider>()  .To<ViewMazeBackgroundCirclesTextureProvider>()   .AsSingle();
+            Container.Bind<IViewMazeBackgroundCircles2TextureProvider>() .To<ViewMazeBackgroundCircles2TextureProvider>()  .AsSingle();
+            Container.Bind<IViewMazeBackgroundTrianglesTextureProvider>().To<ViewMazeBackgroundTrianglesTextureProvider>() .AsSingle();
+            Container.Bind<IViewMazeGameLogoTextureProvider>()           .To<ViewMazeGameLogoSingleCircleTextureProvider>().AsSingle();
+            Container.Bind<IBetweenLevelTextureProvider>()               .To<BetweenLevelLinesTextureProvider>()           .AsSingle();
         }
 
         private void BindOther()
         {
             Container.Bind<IGameController>().To<GameController>().AsSingle();
-            Container.Bind<IDebugManager>()      .To<DebugManager>()                      .AsSingle();
-            Container.Bind<IManagersGetter>()    .To<ManagersGetter>()                    .AsSingle();
+            Container.Bind<IDebugManager>()  .To<DebugManager>()  .AsSingle();
+            Container.Bind<IManagersGetter>().To<ManagersGetter>().AsSingle();
             Container.Bind(typeof(IAudioManagerRmazor), typeof(IAudioManager))
                 .To<AudioManagerRmazor>()
                 .AsSingle();

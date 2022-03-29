@@ -15,13 +15,11 @@ using Common.Ticker;
 using Common.Utils;
 using Newtonsoft.Json;
 using RMAZOR;
-using RMAZOR.Managers;
 using RMAZOR.Views.Common.ViewMazeBackgroundPropertySets;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Utils.Editor;
 using Object = UnityEngine.Object;
 
 namespace Editor

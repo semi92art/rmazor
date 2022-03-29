@@ -41,9 +41,8 @@ namespace Common.Utils
             }
             else
             {
-#if !UNITY_EDITOR
-                value = Encryption.Cryptography.Instange.Decrypt(value);
-#endif
+                if (!Application.isEditor)
+                    value = Encryption.Cryptography.Instange.Decrypt(value);
                 result = JsonConvert.DeserializeObject<T>(value, SerializerSettings);
             }
             _Key.WasSet = true;
@@ -58,9 +57,8 @@ namespace Common.Utils
             if (_OnlyCache)
                 return;
             string value = JsonConvert.SerializeObject(_Value, SerializerSettings);
-#if !UNITY_EDITOR
-            value = Encryption.Cryptography.Instange.Encrypt(value);
-#endif
+            if (!Application.isEditor)
+                value = Encryption.Cryptography.Instange.Encrypt(value);
             PutXElementValue(_Key.Key, value);
         }
 

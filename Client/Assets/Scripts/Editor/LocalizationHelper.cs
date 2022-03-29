@@ -9,7 +9,6 @@ using Common.Extensions;
 using Common.Utils;
 using UnityEditor;
 using UnityEngine;
-using Utils;
 
 namespace Editor
 {

@@ -15,7 +15,7 @@ MonoBehaviour:
   lineWidth: 9
   cornerWidth: 9
   cornerRadius: 20
-  movingTrapRotationSpeed: 200
+  movingTrapRotationSpeed: -200
   shredingerLineOffsetSpeed: 200
   turretProjectileRotationSpeed: 100
   blockItemsCount: 100
@@ -25,7 +25,6 @@ MonoBehaviour:
   finishTimeExcellent: 3
   finishTimeGood: 5
   gravityTrapRotationSpeed: 1000
-  pauseBetweenMoveCommands: 0.1
   leftScreenOffset: 1
   rightScreenOffset: 1
   bottomScreenOffset: 5
@@ -33,9 +32,9 @@ MonoBehaviour:
   moveSwipeThreshold: 0.1
   springboardAnimatedHighlight: 1
   afterRotationEnableMoveDelay: 0.1
-  rateRequestsFrequency: 10
+  rateRequestsFrequency: 20
   adsRequestsFrequency: 5
   levelsCountMain: 360
   firstLevelToRateGame: 20
-  mazeItemTransitionTime: 0.4
+  mazeItemTransitionTime: 0.6
   mazeItemTransitionDelayCoefficient: 0

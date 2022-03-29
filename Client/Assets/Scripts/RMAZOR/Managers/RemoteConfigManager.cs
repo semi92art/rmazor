@@ -9,6 +9,8 @@ using Newtonsoft.Json;
 using RMAZOR.Views.Common.ViewMazeBackgroundPropertySets;
 using UnityEngine;
 using System.Linq;
+using System.Runtime.Serialization;
+using Common.Extensions;
 using Common.Managers.Advertising;
 using Common.Network;
 using Common.Network.DataFieldFilters;
@@ -22,8 +24,8 @@ namespace RMAZOR.Managers
     {
         #region nonpublic members
 
-        private static bool _fetchCompletedActionDone;
-        private        bool m_FailedToInit;
+        private static bool           _fetchCompletedActionDone;
+        private static ConfigResponse? _configResponse;
 
         #endregion
         
@@ -66,7 +68,6 @@ namespace RMAZOR.Managers
         public static void ResetState()
         {
             ConfigManager.FetchCompleted -= OnFetchCompleted;
-            ConfigManager.FetchCompleted -= OnInitialized;
         }
 
         public override void Init()
@@ -99,6 +100,8 @@ namespace RMAZOR.Managers
             // Common
             if ((value = GetField(_Fields, nameof(CommonGameSettings.adsProvider))?.GetValue()) != null)
                 CommonGameSettings.adsProvider = (EAdsProvider)value;
+            if ((value = GetField(_Fields, nameof(CommonGameSettings.admobRate))?.GetValue()) != null)
+                CommonGameSettings.admobRate = Convert.ToSingle(value);
             if ((value = GetField(_Fields, nameof(CommonGameSettings.unityAdsRate))?.GetValue()) != null)
                 CommonGameSettings.unityAdsRate = Convert.ToSingle(value);
             if ((value = GetField(_Fields, nameof(CommonGameSettings.showAdsEveryLevel))?.GetValue()) != null)
@@ -111,6 +114,8 @@ namespace RMAZOR.Managers
                 CommonGameSettings.ironSourceAppKeyIos = Convert.ToString(value);
             if ((value = GetField(_Fields, nameof(CommonGameSettings.showRewardedInsteadOfInterstitialOnUnpause))?.GetValue()) != null)
                 CommonGameSettings.showRewardedInsteadOfInterstitialOnUnpause = Convert.ToBoolean(value);
+            if ((value = GetField(_Fields, nameof(CommonGameSettings.moneyItemCoast))?.GetValue()) != null)
+                CommonGameSettings.moneyItemCoast = Convert.ToInt32(value);
             // Model
             if ((value = GetField(_Fields, nameof(ModelSettings.characterSpeed))?.GetValue()) != null)
                 ModelSettings.characterSpeed = Convert.ToSingle(value);
@@ -147,39 +152,40 @@ namespace RMAZOR.Managers
         
         private void FetchConfigs()
         {
-            ConfigManager.FetchCompleted += OnInitialized;
+            Cor.Run(Cor.Delay(3f, () => FinishFetching(false)));
             if (!Application.isEditor || CommonGameSettings.rewriteSettingsByRemoteConfigInEditor)
                 ConfigManager.FetchCompleted += OnFetchCompleted;
-            Cor.Run(Cor.Delay(3f,
-                () =>
-                {
-                    if (_fetchCompletedActionDone)
-                        return;
-                    m_FailedToInit = true;
-                    Dbg.Log("Failed to initialize remote config");
-                    Instance.InitBase();
-                }));
             ConfigManager.FetchConfigs(new UserAttributes(), new AppAttributes());
         }
-        
-        private static void OnInitialized(ConfigResponse _Response)
+
+        private static void FinishFetching(bool _OnFetchCompleted)
         {
-            Cor.Run(Cor.WaitWhile(() => !_fetchCompletedActionDone,
-                () =>
-                {
-                    if (Instance.m_FailedToInit)
-                        return;
-                    Dbg.Log("Remote Config Initialized with status: " + _Response.status);
-                    Instance.InitBase();
-                }));
-            if (Application.isEditor && !Instance.CommonGameSettings.rewriteSettingsByRemoteConfigInEditor)
+            if (!_configResponse.HasValue)
             {
-                _fetchCompletedActionDone = true;
+                if (!_OnFetchCompleted)
+                    Instance.InitBase();
+                return;
             }
+            Dbg.Log("Remote Config Initialized with status: " + _configResponse.Value.status);
+            if (_OnFetchCompleted)
+                Instance.InitBase();
         }
 
         private static void OnFetchCompleted(ConfigResponse _Response)
         {
+            Cor.Run(Cor.WaitWhile(
+                () => !_fetchCompletedActionDone,
+                () => FinishFetching(true)));
+            if (Application.isEditor && !Instance.CommonGameSettings.rewriteSettingsByRemoteConfigInEditor)
+            {
+                _fetchCompletedActionDone = true;
+            }
+            
+            if (_Response.status != ConfigRequestStatus.Success)
+            {
+                _fetchCompletedActionDone = true;
+                return;
+            }
             FetchCommonSettings();
             FetchModelSettings();
             FetchViewSettings();
@@ -191,7 +197,7 @@ namespace RMAZOR.Managers
 
         private static void FetchCommonSettings()
         {
-            EAdsProvider adsProviders = default;
+            EAdsProvider adsProviders = 0;
             string adsProvidersRaw = string.Empty;
             GetConfig(ref adsProvidersRaw, "ads.providers");
             if (adsProvidersRaw.Contains("admob"))
@@ -212,6 +218,7 @@ namespace RMAZOR.Managers
             GetConfig(ref Instance.CommonGameSettings.payToContinueMoneyCount,           "common.pay_to_continue_money_count");
             GetConfig(ref Instance.CommonGameSettings.showRewardedInsteadOfInterstitialOnUnpause,
                 "ads.show_rewarded_instead_of_interstitial_on_unpause");
+            GetConfig(ref Instance.CommonGameSettings.moneyItemCoast,"common.money_item_coast");
             var filter = GetDataFieldFilterForRemoteFieldIds();
             filter.Filter(_Fields =>
             {
@@ -227,6 +234,8 @@ namespace RMAZOR.Managers
                     ?.SetValue(Instance.CommonGameSettings.firstLevelToShowAds);
                 GetField(_Fields, nameof(Instance.CommonGameSettings.showRewardedInsteadOfInterstitialOnUnpause))
                     ?.SetValue(Instance.CommonGameSettings.showRewardedInsteadOfInterstitialOnUnpause);
+                GetField(_Fields, nameof(Instance.CommonGameSettings.moneyItemCoast))
+                    ?.SetValue(Instance.CommonGameSettings.moneyItemCoast);
             });
         }
 
@@ -287,7 +296,7 @@ namespace RMAZOR.Managers
             {
                 GetField(_Fields, nameof(Instance.RemoteProperties.MainColorsSet))
                     ?.SetValue(Instance.RemoteProperties.MainColorsSet);
-                GetField(_Fields, nameof(Instance.RemoteProperties.BackAndFrontColorsSet))
+                    GetField(_Fields, nameof(Instance.RemoteProperties.BackAndFrontColorsSet))
                     ?.SetValue(Instance.RemoteProperties.BackAndFrontColorsSet);
             });
         }
@@ -334,9 +343,18 @@ namespace RMAZOR.Managers
             string testDeviceIdfasJson = string.Empty;
             GetConfig(ref testDeviceIdfasJson, "common.test_device_ids", true);
             string[] deviceIds;
-            if (testDeviceIdfasJson == null 
-                || (deviceIds = JsonConvert.DeserializeObject<string[]>(testDeviceIdfasJson)) == null)
+            try
             {
+                deviceIds = JsonConvert.DeserializeObject<string[]>(testDeviceIdfasJson);
+                if (deviceIds.NullOrEmpty())
+                {
+                    _fetchCompletedActionDone = true;
+                    return;
+                }
+            }
+            catch (SerializationException ex)
+            {
+                Dbg.LogException(ex);
                 _fetchCompletedActionDone = true;
                 return;
             }
@@ -348,6 +366,8 @@ namespace RMAZOR.Managers
                         _Idfa => _Idfa.Equals(
                             idfaEntity.Value,
                             StringComparison.InvariantCultureIgnoreCase));
+                    if (isThisDeviceForTesting)
+                        Dbg.Log("This device is test");
                     Instance.CommonGameSettings.debugEnabled = isThisDeviceForTesting;
                     Instance.CommonGameSettings.testAds = isThisDeviceForTesting;
                     _fetchCompletedActionDone = true;
@@ -362,11 +382,11 @@ namespace RMAZOR.Managers
             var result1 = result;
             var @switch = new Dictionary<Type, Func<object>>
             {
-                {typeof(bool),   () => config.GetBool(  _Key, Convert.ToBoolean(result1)) },
-                {typeof(float),  () => config.GetFloat( _Key, Convert.ToSingle(result1)) },
+                {typeof(bool),   () => config.GetBool(  _Key, Convert.ToBoolean(result1))},
+                {typeof(float),  () => config.GetFloat( _Key, Convert.ToSingle(result1))},
                 {typeof(string), () => config.GetString(_Key, Convert.ToString(result1))},
-                {typeof(int),    () => config.GetInt(   _Key, Convert.ToInt32(result1)) },
-                {typeof(long),   () => config.GetLong(  _Key, Convert.ToInt64(result1)) }
+                {typeof(int),    () => config.GetInt(   _Key, Convert.ToInt32(result1))},
+                {typeof(long),   () => config.GetLong(  _Key, Convert.ToInt64(result1))}
             };
             result = !_IsJson ? @switch[typeof(T)]() : config.GetJson(_Key);
             _Parameter = (T) result;
@@ -374,28 +394,50 @@ namespace RMAZOR.Managers
 
         private static GameDataFieldFilter GetDataFieldFilterForRemoteFieldIds()
         {
-            var fildIds = new []
-                {
-                    CommonUtils.StringToHash(nameof(Instance.CommonGameSettings.adsProvider)),
-                    CommonUtils.StringToHash(nameof(Instance.CommonGameSettings.admobRate)),
-                    CommonUtils.StringToHash(nameof(Instance.CommonGameSettings.unityAdsRate)),
-                    CommonUtils.StringToHash(nameof(Instance.CommonGameSettings.showAdsEveryLevel)),
-                    CommonUtils.StringToHash(nameof(Instance.CommonGameSettings.firstLevelToShowAds)),
-                    CommonUtils.StringToHash(nameof(Instance.ModelSettings.characterSpeed)),
-                    CommonUtils.StringToHash(nameof(Instance.ModelSettings.gravityBlockSpeed)),
-                    CommonUtils.StringToHash(nameof(Instance.ModelSettings.movingItemsSpeed)),
-                    CommonUtils.StringToHash(nameof(Instance.ViewSettings.rateRequestsFrequency)),
-                    CommonUtils.StringToHash(nameof(Instance.ViewSettings.adsRequestsFrequency)),
-                    CommonUtils.StringToHash(nameof(Instance.ViewSettings.firstLevelToRateGame)),
-                    CommonUtils.StringToHash(nameof(Instance.ViewSettings.mazeItemTransitionTime)),
-                    CommonUtils.StringToHash(nameof(Instance.ViewSettings.mazeItemTransitionDelayCoefficient)),
-                    CommonUtils.StringToHash(nameof(Instance.RemoteProperties.MainColorsSet)),
-                    CommonUtils.StringToHash(nameof(Instance.RemoteProperties.BackAndFrontColorsSet)),
-                    CommonUtils.StringToHash(nameof(Instance.RemoteProperties.LinesTextureSet)),
-                    CommonUtils.StringToHash(nameof(Instance.RemoteProperties.CirclesTextureSet)),
-                    CommonUtils.StringToHash(nameof(Instance.RemoteProperties.Circles2TextureSet)),
-                    CommonUtils.StringToHash(nameof(Instance.RemoteProperties.TrianglesTextureSet)),
-                }.Select(_Id => (ushort)_Id)
+            var commonFieldIds = new[]
+            {
+                CommonUtils.StringToHash(nameof(Instance.CommonGameSettings.adsProvider)),
+                CommonUtils.StringToHash(nameof(Instance.CommonGameSettings.admobRate)),
+                CommonUtils.StringToHash(nameof(Instance.CommonGameSettings.unityAdsRate)),
+                CommonUtils.StringToHash(nameof(Instance.CommonGameSettings.showAdsEveryLevel)),
+                CommonUtils.StringToHash(nameof(Instance.CommonGameSettings.firstLevelToShowAds)),
+                CommonUtils.StringToHash(nameof(Instance.CommonGameSettings.ironSourceAppKeyAndroid)),
+                CommonUtils.StringToHash(nameof(Instance.CommonGameSettings.ironSourceAppKeyIos)),
+                CommonUtils.StringToHash(nameof(Instance.CommonGameSettings.showRewardedInsteadOfInterstitialOnUnpause)),
+                CommonUtils.StringToHash(nameof(Instance.CommonGameSettings.moneyItemCoast)),
+            };
+            var modelFieldIds = new[]
+            {
+                CommonUtils.StringToHash(nameof(Instance.ModelSettings.characterSpeed)),
+                CommonUtils.StringToHash(nameof(Instance.ModelSettings.gravityBlockSpeed)),
+                CommonUtils.StringToHash(nameof(Instance.ModelSettings.movingItemsSpeed)),
+            };
+            var viewFieldIds = new[]
+            {
+                CommonUtils.StringToHash(nameof(Instance.ViewSettings.rateRequestsFrequency)),
+                CommonUtils.StringToHash(nameof(Instance.ViewSettings.adsRequestsFrequency)),
+                CommonUtils.StringToHash(nameof(Instance.ViewSettings.firstLevelToRateGame)),
+                CommonUtils.StringToHash(nameof(Instance.ViewSettings.mazeItemTransitionTime)),
+                CommonUtils.StringToHash(nameof(Instance.ViewSettings.mazeItemTransitionDelayCoefficient)),
+            };
+            var colorSetFieldIds = new[]
+            {
+                CommonUtils.StringToHash(nameof(Instance.RemoteProperties.MainColorsSet)),
+                CommonUtils.StringToHash(nameof(Instance.RemoteProperties.BackAndFrontColorsSet)),
+            };
+            var backTexSetFieldIds = new[]
+            {
+                CommonUtils.StringToHash(nameof(Instance.RemoteProperties.LinesTextureSet)),
+                CommonUtils.StringToHash(nameof(Instance.RemoteProperties.CirclesTextureSet)),
+                CommonUtils.StringToHash(nameof(Instance.RemoteProperties.Circles2TextureSet)),
+                CommonUtils.StringToHash(nameof(Instance.RemoteProperties.TrianglesTextureSet)),
+            };
+            var fildIds = commonFieldIds
+                .Concat(modelFieldIds)
+                .Concat(viewFieldIds)
+                .Concat(colorSetFieldIds)
+                .Concat(backTexSetFieldIds)
+                .Select(_Id => (ushort) _Id)
                 .ToArray();
             return new GameDataFieldFilter(
                     Instance.GameClient, 

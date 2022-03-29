@@ -150,7 +150,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
                     var set = Managers.PrefabSetManager.GetObject<ShopPanelMoneyItemsScriptableObject>(
                         PrefabSetName, ItemSetName).set;
                     var moneyIcon = Managers.PrefabSetManager.GetObject<Sprite>(
-                        "shop_items", "shop_money_icon");
+                        "icons", "icon_coin_ui");
                     foreach (var itemInSet in set)
                     {
                         var args = m_ShopItemArgsDict[itemInSet.purchaseKey];

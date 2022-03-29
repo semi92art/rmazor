@@ -10,10 +10,9 @@ namespace Common.Utils.Encryption
         private static Cryptography _instance;
         public static  Cryptography Instange => _instance ??= new Cryptography("---");
         
-        
         private readonly Aes m_Encryptor;
 
-        public Cryptography(string _Key)
+        private Cryptography(string _Key)
         {
             m_Encryptor = Aes.Create();
             using var pdb = new Rfc2898DeriveBytes(_Key, new byte[]

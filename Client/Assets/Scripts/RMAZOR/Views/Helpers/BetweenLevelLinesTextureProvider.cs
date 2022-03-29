@@ -50,7 +50,6 @@ namespace RMAZOR.Views.Helpers
 
         public override void Init()
         {
-            Dbg.Log(nameof(BetweenLevelLinesTextureProvider) + " " + "Init");
             base.Init();
             Material.SetColor(Color2Id, new Color(0f, 0f, 0f, 0f));
         }

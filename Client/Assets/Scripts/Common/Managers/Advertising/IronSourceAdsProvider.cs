@@ -1,12 +1,14 @@
 ﻿using Common.Helpers;
 using Common.Ticker;
+using Common.Utils;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace Common.Managers.Advertising
 {
-    public class IronSourceAdsProvider
-        : AdsProviderCommonBase, IApplicationPause
+    public interface IIronSourceAdsProvider : IAdsProvider { }
+    
+    public class IronSourceAdsProvider : AdsProviderCommonBase, IIronSourceAdsProvider, IApplicationPause
     {
         private ICommonTicker              Ticker          { get; }
         private IIronSourceInterstitialAd  InterstitialAd  { get; }
@@ -18,13 +20,8 @@ namespace Common.Managers.Advertising
             ICommonTicker              _Ticker,
             IIronSourceInterstitialAd  _InterstitialAd,
             IIronSourceRewardedVideoAd _RewardedAd,
-            bool                       _TestMode,
-            float                      _ShowRate) 
-            : base(
-                _InterstitialAd,
-                _RewardedAd,
-                _TestMode,
-                _ShowRate)
+            IViewGameTicker            _ViewGameTicker) 
+            : base(_InterstitialAd, _RewardedAd, _ViewGameTicker)
         {
             Ticker         = _Ticker;
             InterstitialAd = _InterstitialAd;
@@ -69,7 +66,7 @@ namespace Common.Managers.Advertising
             Dbg.Log ("IronSource.Agent.init");
             string appKey = Application.isEditor
                 ? "unexpected_platform"
-                : (Application.platform == RuntimePlatform.Android
+                : (CommonUtils.Platform == RuntimePlatform.Android
                     ? Settings.ironSourceAppKeyAndroid
                     : Settings.ironSourceAppKeyIos);
             IronSource.Agent.init (appKey);

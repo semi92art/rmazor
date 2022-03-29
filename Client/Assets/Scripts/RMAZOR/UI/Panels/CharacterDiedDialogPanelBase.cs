@@ -118,7 +118,7 @@ namespace RMAZOR.UI.Panels
             m_TextContinue.text       = Managers.LocalizationManager.GetTranslation("continue");
             m_TextNotEnoughMoney.text = Managers.LocalizationManager.GetTranslation("not_enough_money");
             var moneyIconSprite = Managers.PrefabSetManager.GetObject<Sprite>(
-                "shop_items", "shop_money_icon");
+                "icons", "icon_coin_ui");
             m_MoneyIcon1.sprite = moneyIconSprite;
             m_MoneyIcon2.sprite = moneyIconSprite;
             m_ButtonWatchAds.onClick.AddListener(OnWatchAdsButtonClick);

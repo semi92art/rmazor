@@ -2,7 +2,6 @@
 using RMAZOR.Helpers;
 using UnityEditor;
 using UnityEngine;
-using Utils;
 
 namespace GameHelpers.Editor
 {

@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Common.Entities;
+using Common.Ticker;
 using Common.Utils;
 using UnityEngine;
 using UnityEngine.Advertisements;
@@ -7,7 +7,9 @@ using UnityEngine.Events;
 
 namespace Common.Managers.Advertising
 {
-    public class UnityAdsProvider : AdsProviderCommonBase, IUnityAdsInitializationListener
+    public interface IUnityAdsProvider : IAdsProvider { }
+    
+    public class UnityAdsProvider : AdsProviderCommonBase, IUnityAdsProvider, IUnityAdsInitializationListener
     {
         private IUnityAdsInterstitialAd InterstitialAd { get; }
         private IUnityAdsRewardedAd     RewardedAd     { get; }
@@ -15,16 +17,11 @@ namespace Common.Managers.Advertising
         public UnityAdsProvider(
             IUnityAdsInterstitialAd _InterstitialAd,
             IUnityAdsRewardedAd     _RewardedAd,
-            bool                    _TestMode,
-            float                   _ShowRate) 
-            : base(
-                _InterstitialAd,
-                _RewardedAd,
-                _TestMode,
-                _ShowRate)
+            IViewGameTicker         _ViewGameTicker) 
+            : base(_InterstitialAd, _RewardedAd, _ViewGameTicker)
         {
             InterstitialAd = _InterstitialAd;
-            RewardedAd = _RewardedAd;
+            RewardedAd     = _RewardedAd;
         }
 
         public override EAdsProvider Provider => EAdsProvider.UnityAds;
@@ -110,14 +107,8 @@ namespace Common.Managers.Advertising
 
         private string GetGameId()
         {
-            string os = null;
-#if UNITY_ANDROID
-            os = "android";
-#elif UNITY_IOS || UNITY_IPHONE
-            os = "ios";
-#endif
             return AdsData.Elements("game_id")
-                .FirstOrDefault(_El => _El.Attribute("os")?.Value == os)
+                .FirstOrDefault(_El => _El.Attribute("os")?.Value == CommonUtils.GetOsName())
                 ?.Value;
         }
         

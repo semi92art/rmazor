@@ -256,7 +256,7 @@ namespace RMAZOR
         
         private static List<ProductInfo> GetProductInfos()
         {
-            string suffix = Application.platform == RuntimePlatform.Android ? string.Empty : "_2";
+            string suffix = CommonUtils.Platform == RuntimePlatform.Android ? string.Empty : "_2";
             const ProductType ptCons = ProductType.Consumable;
             const ProductType ptNonCons = ProductType.NonConsumable;
             return new List<ProductInfo>
@@ -271,7 +271,7 @@ namespace RMAZOR
 
         private static List<LeaderBoardIdKeyPair> GetLeaderBoardIdKeyPairs()
         {
-            string levelLbKey = Application.platform == RuntimePlatform.Android ?
+            string levelLbKey = CommonUtils.Platform == RuntimePlatform.Android ?
                 "CgkI1IvonNkDEAIQBg" : "level";
             return new List<LeaderBoardIdKeyPair>
             {

@@ -34,7 +34,6 @@ Shader "RMAZOR/Background/Additional Background" {
 			#pragma vertex   vert
 			#pragma fragment frag
 			#pragma multi_compile _ PIXELSNAP_ON
-			#include "UnityCG.cginc"
 			#include "../Common.cginc"
 		
 			v2f vert(appdata v) {
@@ -45,7 +44,7 @@ Shader "RMAZOR/Background/Additional Background" {
 			sampler2D _MainTex;
 			float     _AlphaSplitEnabled;
 
-			inline fixed4 sample_sprite_texture (float2 uv)
+			fixed4 sample_sprite_texture (float2 uv)
 			{
 				fixed4 color = tex2D (_MainTex, uv);
 #if UNITY_TEXTURE_ALPHASPLIT_ALLOWED

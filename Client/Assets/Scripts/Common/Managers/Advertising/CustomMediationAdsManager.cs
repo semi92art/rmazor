@@ -28,15 +28,24 @@ namespace Common.Managers.Advertising
 
         #region inject
 
-        private CommonGameSettings GameSettings { get; }
-        private ICommonTicker      Ticker       { get; }
+        private CommonGameSettings     GameSettings          { get; }
+        private ICommonTicker          Ticker                { get; }
+        private IAdMobAdsProvider      AdMobAdsProvider      { get; }
+        private IUnityAdsProvider      UnityAdsProvider      { get; }
+        private IIronSourceAdsProvider IronSourceAdsProvider { get; }
 
         public CustomMediationAdsManager(
-            CommonGameSettings _GameSettings,
-            ICommonTicker      _Ticker)
+            CommonGameSettings     _GameSettings,
+            ICommonTicker          _Ticker,
+            IAdMobAdsProvider      _AdMobAdsProvider,
+            IUnityAdsProvider      _UnityAdsProvider,
+            IIronSourceAdsProvider _IronSourceAdsProvider)
         {
-            GameSettings = _GameSettings;
-            Ticker = _Ticker;
+            GameSettings          = _GameSettings;
+            Ticker                = _Ticker;
+            AdMobAdsProvider      = _AdMobAdsProvider;
+            UnityAdsProvider      = _UnityAdsProvider;
+            IronSourceAdsProvider = _IronSourceAdsProvider;
         }
 
         #endregion
@@ -95,26 +104,18 @@ namespace Common.Managers.Advertising
             var adsProvider = GameSettings.adsProvider;
             if (adsProvider.HasFlag(EAdsProvider.AdMob))
             {
-                var man = new GoogleAdMobAdsProvider(testMode, GameSettings.admobRate);
-                man.Init(adsConfig);
-                m_Providers.Add(man);
+                AdMobAdsProvider.Init(testMode, GameSettings.admobRate, adsConfig);
+                m_Providers.Add(AdMobAdsProvider);
             }
             if (adsProvider.HasFlag(EAdsProvider.UnityAds))
             {
-                var intAd = new UnityAdsInterstitialAd(GameSettings, Ticker);
-                var rewAd = new UnityAdsRewardedAd(GameSettings, Ticker);
-                var man = new UnityAdsProvider(intAd, rewAd, testMode, GameSettings.unityAdsRate);
-                man.Init(adsConfig);
-                m_Providers.Add(man);
+                UnityAdsProvider.Init(testMode, GameSettings.unityAdsRate, adsConfig);
+                m_Providers.Add(UnityAdsProvider);
             }
             if (adsProvider.HasFlag(EAdsProvider.IronSource))
             {
-                var intAd = new IronSourceInterstitialAd();
-                var rewAd = new IronSourceRewardedVideoAd();
-                var man = new IronSourceAdsProvider(
-                    GameSettings, Ticker, intAd, rewAd, testMode, GameSettings.ironSourceRate);
-                man.Init(adsConfig);
-                m_Providers.Add(man);
+                IronSourceAdsProvider.Init(testMode, GameSettings.ironSourceRate, adsConfig);
+                m_Providers.Add(IronSourceAdsProvider);
             }
         }
 

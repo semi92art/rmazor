@@ -3,10 +3,10 @@ Shader "RMAZOR/Background/Lines"
     Properties {
 		_Color1 ("Color 1", Color) = (0,0,0,1)
 		_Color2 ("Color 2", Color) = (1,1,1,1)
-		_Tiling ("Tiling", Range(1, 10)) = 1
+		[IntRange] _Tiling ("Tiling", Range(1, 10)) = 1
 		_Direction ("Direction", Range(-1, 2)) = 0
-		_WarpScale ("Warp Scale", Range(0, 1)) = 0
-		_WarpTiling ("Warp Tiling", Range(1, 10)) = 1
+		_WrapScale ("Wrap Scale", Range(0, 1)) = 0
+		_WrapTiling ("Wrap Tiling", Range(1, 10)) = 1
 	}
 
 	SubShader {
@@ -28,13 +28,9 @@ Shader "RMAZOR/Background/Lines"
 
 			#include "Common.cginc"
 
-			fixed4 _Color1;
-			fixed4 _Color2;
-			int    _Tiling;
-			float  _Direction;
-			float  _WarpScale;
-			float  _WrapTiling;
-
+			fixed4 _Color1,_Color2;
+			float  _Direction, _WrapScale, _WrapTiling, _Tiling;
+			
 			v2f vert (appdata v) {
 				return vert_default(v);
 			}
@@ -42,7 +38,7 @@ Shader "RMAZOR/Background/Lines"
 			fixed4 frag (v2f i) : SV_Target {
 				if (all(_Color1 == _Color2))
 					return _Color1;
-				float2 pos = wrap_pos(i.uv, _Tiling, _Direction, _WarpScale, _WrapTiling);
+				float2 pos = wrap_pos(i.uv, _Tiling, _Direction, _WrapScale, _WrapTiling);
 				fixed lerp_coeff = floor(frac(pos.x) + 0.5);
 				return lerp(_Color1, _Color2, lerp_coeff);
 			}

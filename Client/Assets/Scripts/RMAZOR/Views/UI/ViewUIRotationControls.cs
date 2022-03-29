@@ -27,17 +27,20 @@ namespace RMAZOR.Views.UI
         private IColorProvider                ColorProvider  { get; }
         private IRotatingPossibilityIndicator Indicator      { get; }
         private ICameraProvider               CameraProvider { get; }
+        private IViewUITutorial               Tutorial       { get; }
 
         public ViewUIRotationControls(
             IModelGame                    _Model,
             IColorProvider                _ColorProvider,
             IRotatingPossibilityIndicator _Indicator,
-            ICameraProvider               _CameraProvider)
+            ICameraProvider               _CameraProvider,
+            IViewUITutorial               _Tutorial)
         {
-            Model         = _Model;
-            ColorProvider = _ColorProvider;
-            Indicator     = _Indicator;
+            Model          = _Model;
+            ColorProvider  = _ColorProvider;
+            Indicator      = _Indicator;
             CameraProvider = _CameraProvider;
+            Tutorial       = _Tutorial;
         }
 
         #endregion
@@ -59,17 +62,26 @@ namespace RMAZOR.Views.UI
             {
                 case ELevelStage.ReadyToStart when
                     _Args.PreviousStage != ELevelStage.Paused
-                    && RazorMazeUtils.MazeContainsGravityItems(Model.GetAllProceedInfos())
-                    && SaveUtils.GetValue(SaveKeysRmazor.EnableRotation):
+                    && RazorMazeUtils.MazeContainsGravityItems(Model.GetAllProceedInfos()):
+                {
+                    var tutType = Tutorial.IsCurrentLevelTutorial();
+                    if (tutType.HasValue && tutType.Value == ETutorialType.Rotation)
+                        return;
+                    Indicator.Animator.enabled = true;
                     Indicator.Shape.enabled = true;
                     Indicator.Shape.Color = ColorProvider.GetColor(ColorIdsCommon.UI).SetA(0f);
                     Indicator.Animator.SetTrigger(AnimKeys.Anim);
+                }
                     break;
-                case ELevelStage.StartedOrContinued when 
+                case ELevelStage.StartedOrContinued when
                     _Args.PreviousStage != ELevelStage.CharacterKilled
-                    && RazorMazeUtils.MazeContainsGravityItems(Model.GetAllProceedInfos())
-                    && SaveUtils.GetValue(SaveKeysRmazor.EnableRotation):
+                    && RazorMazeUtils.MazeContainsGravityItems(Model.GetAllProceedInfos()):
+                {
+                    var tutType = Tutorial.IsCurrentLevelTutorial();
+                    if (tutType.HasValue && tutType.Value == ETutorialType.Rotation)
+                        return;
                     Indicator.Animator.SetTrigger(AnimKeys.Stop);
+                }
                     break;
                 case ELevelStage.ReadyToUnloadLevel when _Args.PreviousStage != ELevelStage.Paused:
                     Indicator.Shape.enabled = false;
@@ -90,14 +102,7 @@ namespace RMAZOR.Views.UI
             Indicator.Shape.enabled = false;
         }
 
-        public void OnTutorialFinished(ETutorialType _Type)
-        {
-            if (_Type != ETutorialType.Rotation)
-                return;
-            Cor.Run(Cor.WaitWhile(
-                () => Model.LevelStaging.LevelStage != ELevelStage.Loaded,
-                () => Indicator.Animator.enabled = true));
-        }
+        public void OnTutorialFinished(ETutorialType _Type) { }
 
         #endregion
     }

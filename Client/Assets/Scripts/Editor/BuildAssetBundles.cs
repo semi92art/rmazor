@@ -10,8 +10,6 @@ using Common.Utils;
 using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
-using Utils;
-using Utils.Editor;
 
 namespace Editor
 {

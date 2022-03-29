@@ -13,14 +13,14 @@ public class UnsupportedPlatformAgent : IronSourceIAgent
 
 	public void start ()
 	{
-		Debug.Log ("Unsupported Platform");
+		// Debug.Log ("Unsupported Platform");
 	}
 
 	//******************* Base API *******************//
 
 	public void onApplicationPause (bool pause)
 	{
-		Debug.Log ("Unsupported Platform");
+		// Debug.Log ("Unsupported Platform");
 	}
 
 	public void setMediationSegment (string segment)

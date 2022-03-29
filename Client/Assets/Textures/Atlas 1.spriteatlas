@@ -52,7 +52,6 @@ SpriteAtlas:
   m_PackedSprites:
   - {fileID: 21300000, guid: e2b3b24047bbb6146be8c4686e47db21, type: 3}
   - {fileID: 21300000, guid: 51953f40069ceef4694aa58053d12cd7, type: 3}
-  - {fileID: 21300000, guid: a72d9290f8656dc4585b1b8a6bb93e27, type: 3}
   - {fileID: 21300000, guid: 1b2939b040932a340b29854f260fff67, type: 3}
   - {fileID: 21300000, guid: 8dbe85d08b27850478f0837efd9b267a, type: 3}
   - {fileID: 21300000, guid: f1cf26219a94e46969962dc097a6e73b, type: 3}
@@ -80,6 +79,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: cabe37a9abc3133448c33e4875d74d02, type: 3}
   - {fileID: 21300000, guid: 391f98c9a9c0e4845869a10852dd777c, type: 3}
   - {fileID: 21300000, guid: f6f1b9c9caa40fc49bec4713881d8e98, type: 3}
+  - {fileID: 21300000, guid: 4e8b812ab2cc280439984225c94b532d, type: 3}
   - {fileID: 21300000, guid: 0ceb244af4948444591f8499f8be594b, type: 3}
   - {fileID: 21300000, guid: 8d112c4addc64ab40a3397928e8708e6, type: 3}
   - {fileID: 21300000, guid: 7b3d669a4bd374949bd345582865e998, type: 3}
@@ -99,7 +99,6 @@ SpriteAtlas:
   m_PackedSpriteNamesToIndex:
   - icon_haptics_off
   - border
-  - icon_coin_2
   - spikes_custom_3
   - hand-1-finger
   - sickle
@@ -127,12 +126,13 @@ SpriteAtlas:
   - turret_projectile_mask
   - icon_cart
   - icon_music_on
+  - coin-texture
   - hand-2-fingers
   - saw24_2
   - throwingStar5
   - trap_react2
   - background
-  - coin-icon
+  - icon_coin
   - icon_notifications_off
   - icon_update
   - icon_tail

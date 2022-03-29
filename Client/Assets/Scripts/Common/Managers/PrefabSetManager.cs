@@ -5,10 +5,6 @@ using Common.Utils;
 using UnityEditor;
 using UnityEngine;
 
-#if UNITY_EDITOR
-
-#endif
-
 namespace Common.Managers
 {
     public class PrefabEntity<T> : Entity<T> where T : Object { }

@@ -49,10 +49,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   content:
     array:
-    - item: {fileID: 9222142128777630753}
-      name: renderer_1
     - item: {fileID: 3312965024029319640}
-      name: animator
+      name: beh
 --- !u!95 &191887446923651631
 Animator:
   serializedVersion: 4
@@ -85,6 +83,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fa65927f5dc494db6f185e7fd811cd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  icon: {fileID: 6707876398005217300}
+  anim: {fileID: 191887446923651631}
 --- !u!1 &9222142128777630753
 GameObject:
   m_ObjectHideFlags: 0

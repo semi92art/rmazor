@@ -31,14 +31,14 @@
 				return vert_default(v);
 			}
 
-			inline fixed color_selector(float d1, float d2) {
+			fixed color_selector(float d1, float d2) {
                 int k = 0;
                 while (d1 > d2 * _Radius)
                     k = k + 1;
                 return d1 > d2 * _Radius ? 0 : 1;
             }
 
-			inline fixed4 circle(float2 uv, float2 pos, float rad, float3 color) {
+			fixed4 circle(float2 uv, float2 pos, float rad, float3 color) {
 				float d = length(pos - uv) - rad;
 				float t = d > rad ? 1 : 0;
 				return fixed4(color, t);

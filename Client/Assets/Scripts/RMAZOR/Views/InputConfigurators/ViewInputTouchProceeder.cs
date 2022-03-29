@@ -48,17 +48,15 @@ namespace RMAZOR.Views.InputConfigurators
 
         #region inject
 
-        protected CommonGameSettings          CommonGameSettings { get; }
-        protected ViewSettings                ViewSettings       { get; }
-        protected IModelGame                  Model              { get; }
-        protected IContainersGetter           ContainersGetter   { get; }
-        protected IViewInputCommandsProceeder CommandsProceeder  { get; }
-        protected IViewGameTicker             GameTicker         { get; }
-        protected ICameraProvider             CameraProvider     { get; }
-        protected IPrefabSetManager           PrefabSetManager   { get; }
+        private ViewSettings                ViewSettings      { get; }
+        private IModelGame                  Model             { get; }
+        private IContainersGetter           ContainersGetter  { get; }
+        private IViewInputCommandsProceeder CommandsProceeder { get; }
+        private IViewGameTicker             GameTicker        { get; }
+        private ICameraProvider             CameraProvider    { get; }
+        private IPrefabSetManager           PrefabSetManager  { get; }
 
         protected ViewInputTouchProceeder(
-            CommonGameSettings          _CommonGameSettings,
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
             IContainersGetter           _ContainersGetter,
@@ -67,7 +65,6 @@ namespace RMAZOR.Views.InputConfigurators
             ICameraProvider             _CameraProvider,
             IPrefabSetManager           _PrefabSetManager)
         {
-            CommonGameSettings = _CommonGameSettings;
             ViewSettings       = _ViewSettings;
             Model              = _Model;
             ContainersGetter   = _ContainersGetter;
@@ -134,9 +131,11 @@ namespace RMAZOR.Views.InputConfigurators
             lt.PinchTwistKey = KeyCode.LeftControl;
             lt.MovePivotKey = KeyCode.LeftAlt;
             lt.MultiDragKey = KeyCode.LeftAlt;
-#if UNITY_EDITOR
-            lt.FingerTexture = PrefabSetManager.GetObject<Texture2D>("icons", "finger_texture");
-#endif
+            if (Application.isEditor)
+            {
+                lt.FingerTexture = PrefabSetManager.GetObject<Texture2D>(
+                    "icons", "finger_texture");
+            }
             var goLeanMultiUpdate = new GameObject("Lean Multi Update");
             goLeanMultiUpdate.SetParent(GetContainer());
             var lmu = goLeanMultiUpdate.AddComponent<LeanMultiUpdate>();
@@ -234,8 +233,6 @@ namespace RMAZOR.Views.InputConfigurators
         {
             if (!m_EnableRotation)
                 return;
-            if (!SaveUtils.GetValue(SaveKeysRmazor.EnableRotation))
-                return;
             var pos = _Finger.ScreenPosition;
             for (int i = m_TouchPositionsQueue2.Count - 1; i >= 0; i--)
             {
@@ -254,19 +251,14 @@ namespace RMAZOR.Views.InputConfigurators
         public bool AreFingersOnScreen(int _Count)
         {
             if (_Count == 1)
-            {
                 return m_FingerOnScreen;
-            }
-            
-#if UNITY_EDITOR
+            if (!Application.isEditor) 
+                return LeanInput.GetTouchCount() == _Count;
             if (_Count > 1)
                 return false;
             var view = CameraProvider.MainCamera.ScreenToViewportPoint(LeanInput.GetMousePosition());
-            var isOutside = view.x < 0 || view.x > 1 || view.y < 0 || view.y > 1;
+            bool isOutside = view.x < 0 || view.x > 1 || view.y < 0 || view.y > 1;
             return !isOutside && LeanInput.GetMousePressed(0);
-#else
-            return LeanInput.GetTouchCount() == _Count;
-#endif
         }
         
         public Vector2 GetFingerPosition(int _Index)

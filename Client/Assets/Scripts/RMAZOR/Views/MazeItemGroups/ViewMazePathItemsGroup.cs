@@ -32,22 +32,22 @@ namespace RMAZOR.Views.MazeItemGroups
         #endregion
 
         #region inject
-        
-        private ViewSettings      ViewSettings     { get; }
-        private IModelGame        Model            { get; }
-        private IMazeItemsCreator MazeItemsCreator { get; }
-        private IManagersGetter   Managers         { get; }
+
+        private CommonGameSettings CommonGameSettings { get; }
+        private ViewSettings       ViewSettings       { get; }
+        private IModelGame         Model              { get; }
+        private IMazeItemsCreator  MazeItemsCreator   { get; }
 
         public ViewMazePathItemsGroup(
+            CommonGameSettings _CommonGameSettings,
             ViewSettings      _ViewSettings,
             IModelGame        _Model,
-            IMazeItemsCreator _MazeItemsCreator,
-            IManagersGetter   _Managers)
+            IMazeItemsCreator _MazeItemsCreator)
         {
-            ViewSettings     = _ViewSettings;
-            Model            = _Model;
-            MazeItemsCreator = _MazeItemsCreator;
-            Managers         = _Managers;
+            CommonGameSettings = _CommonGameSettings;
+            ViewSettings       = _ViewSettings;
+            Model              = _Model;
+            MazeItemsCreator   = _MazeItemsCreator;
         }
         
         #endregion
@@ -111,7 +111,11 @@ namespace RMAZOR.Views.MazeItemGroups
                 .Select(_ => MazeItemsCreator.CloneDefaultPath())
                 .ToList();
             foreach (var item in pathItems)
-                item.MoneyItemCollected = OnMoneyItemCollected;
+            {
+                item.MoneyItemCollected -= OnMoneyItemCollected;
+                item.MoneyItemCollected += OnMoneyItemCollected;
+            }
+            
             m_PathsPool.AddRange(pathItems);
         }
         
@@ -134,7 +138,7 @@ namespace RMAZOR.Views.MazeItemGroups
 
         private void OnMoneyItemCollected()
         {
-            MoneyItemsCollectedCount++;
+            MoneyItemsCollectedCount += CommonGameSettings.moneyItemCoast;
         }
         
         #endregion

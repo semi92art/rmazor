@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Linq;
-using System.Net;
-using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 using Common.Entities;
-using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
@@ -19,53 +13,32 @@ namespace Common.Utils
 {
     public static class CommonUtils
     {
-        public static bool IsRunningOnDevice()
-        {
-            return new[] {RuntimePlatform.Android, RuntimePlatform.IPhonePlayer}.Contains(Application.platform);
+        public static RuntimePlatform Platform 
+        { 
+            get
+            {
+#if UNITY_ANDROID
+                 return RuntimePlatform.Android;
+#elif UNITY_IOS || UNITY_IPHONE
+                 return RuntimePlatform.IPhonePlayer;
+#elif UNITY_STANDALONE_OSX
+                 return RuntimePlatform.OSXPlayer;
+#elif UNITY_STANDALONE_WIN
+                 return RuntimePlatform.WindowsPlayer;
+#endif
+            }
         }
-
+        
         public static string GetOsName()
         {
-#if UNITY_ANDROID
-            return "Android";
-#elif UNITY_IPHONE || UNITY_IOS
-            return "iOS";
-#endif
-            return null;
-        }
-
-        public static bool CheckForInternetConnection()
-        {
-            return CheckForConnection("http://google.com/generate_204");
-        }
-
-        private static bool CheckForConnection(string _Url)
-        {
-            int tryCount = 0;
-            while (tryCount < 3)
+            switch (Platform)
             {
-                try
-                {
-                    using (var client = new WebClient())
-                    using (client.OpenRead(_Url)) 
-                        return true; 
-                }
-                catch
-                {
-                    tryCount++;
-                }
+                case RuntimePlatform.IPhonePlayer:
+                    return "ios";
+                case RuntimePlatform.Android:
+                    return "android";
+                default: return null;
             }
-            return false;
-        }
-
-        public static UnityAction WaitForSecs(float _Seconds, Action _OnFinish)
-        {
-            return () =>
-            {
-                int millisecs = Mathf.RoundToInt(_Seconds * 1000);
-                Thread.Sleep(millisecs);
-                _OnFinish?.Invoke();
-            };
         }
         
         //https://answers.unity.com/questions/246116/how-can-i-generate-a-guid-or-a-uuid-from-within-un.html
@@ -73,11 +46,10 @@ namespace Common.Utils
         {
             var epochStart = new DateTime(1970, 1, 1, 8, 0, 0, DateTimeKind.Utc);
             double timestamp = (DateTime.UtcNow - epochStart).TotalSeconds;
-         
-            string uniqueId = Application.systemLanguage                           //Language
-                              + "-" + Application.platform                         //Device    
-                              + "-" + $"{Convert.ToInt32(timestamp):X}"            //Time
-                              + "-" + $"{Convert.ToInt32(Time.time * 1000000):X}"  //Time in game
+            string uniqueId = Application.systemLanguage                           // Language
+                              + "-" + Platform                                     // Device    
+                              + "-" + $"{Convert.ToInt32(timestamp):X}"            // Time
+                              + "-" + $"{Convert.ToInt32(Time.time * 1000000):X}"  // Time in game
                               + "-" + $"{MathUtils.RandomGen.Next(1000000000):X}"; //random number
             return uniqueId;
         }
@@ -120,7 +92,7 @@ namespace Common.Utils
         {
 #if UNITY_EDITOR
             EditorUtility.DisplayDialog(_Title, _Text, "OK");
-#elif UNITY_ANDROID
+// #elif UNITY_ANDROID
             var message = new SA.Android.App.AN_AlertDialog(SA.Android.App.AN_DialogTheme.Material)
             {
                 Title = _Title,
@@ -128,7 +100,7 @@ namespace Common.Utils
             };
             message.SetPositiveButton("Ok", () => { });
             message.Show();
-#elif UNITY_IPHONE || UNITY_IOS
+// #elif UNITY_IPHONE || UNITY_IOS
             var alert = new SA.iOS.UIKit.ISN_UIAlertController(
                 _Title, _Text, SA.iOS.UIKit.ISN_UIAlertControllerStyle.Alert);
             var action = new SA.iOS.UIKit.ISN_UIAlertAction(

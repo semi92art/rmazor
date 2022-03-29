@@ -3,11 +3,11 @@
     Properties {
 		_Color1 ("Color 1", Color) = (0,0,0,1)
 		_Color2 ("Color 2", Color) = (0,0,0,0)
-    	_Tiling ("Tiling", Range(1, 10)) = 1
+    	[IntRange] _Tiling ("Tiling", Range(1, 10)) = 1
 		_Direction ("Direction", Range(-5, 5)) = 0
     	_Indent("Indent", Range(0, 1)) = 0.5
-		_WrapTiling ("Warp Tiling", Range(0, 3)) = 1
-    	_WrapScale ("Warp Scale", Range(0, 0.1)) = 0
+		_WrapTiling ("Wrap Tiling", Range(0, 3)) = 1
+    	_WrapScale ("Wrap Scale", Range(0, 0.1)) = 0
 	}
 
 	SubShader {
@@ -29,13 +29,10 @@
 
 			#include "Common.cginc"
 
-			fixed4 _Color1;
-			fixed4 _Color2;
-			int  _Tiling;
-			float  _Direction;
+			fixed4 _Color1,_Color2;
+			float  _Direction, _WrapScale, _WrapTiling, _Tiling;
 			float  _Indent;
-			float  _WrapTiling;
-			float  _WrapScale;
+
 
 			v2f vert (appdata v) {
 				return vert_default(v);

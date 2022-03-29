@@ -30,7 +30,7 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
             TilingId     = Shader.PropertyToID("_Tiling"),
             DirectionId  = Shader.PropertyToID("_Direction"),
             WrapScaleId  = Shader.PropertyToID("_WrapScale"),
-            WrapTilingId = Shader.PropertyToID("_WarpTiling");
+            WrapTilingId = Shader.PropertyToID("_WrapTiling");
 
         private IEnumerator m_LastCoroutine;
 

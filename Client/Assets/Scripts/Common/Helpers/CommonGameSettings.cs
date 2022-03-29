@@ -21,5 +21,6 @@ namespace Common.Helpers
         public bool         showRewardedInsteadOfInterstitialOnUnpause;
         public string       ironSourceAppKeyAndroid;
         public string       ironSourceAppKeyIos;
+        public int          moneyItemCoast;
     }
 }

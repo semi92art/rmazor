@@ -11,9 +11,9 @@ namespace Common.Managers.Advertising
     [Flags]
     public enum EAdsProvider
     {
-        AdMob    = 1,
-        UnityAds = 2,
-        IronSource = 3
+        AdMob      = 1 << 0,
+        UnityAds   = 1 << 1,
+        IronSource = 1 << 2
     }
     
     public interface IAdsProviderBase
@@ -26,31 +26,27 @@ namespace Common.Managers.Advertising
     
     public interface IAdsProvider : IAdsProviderBase
     {
-        void Init(XElement _AdsData);
-        void ShowRewardedAd(UnityAction _OnShown, BoolEntity _ShowAds);
-        void ShowInterstitialAd(UnityAction _OnShown, BoolEntity _ShowAds);
+        void Init(bool                      _TestMode, float      _ShowRate, XElement _AdsData);
+        void ShowRewardedAd(UnityAction     _OnShown,  BoolEntity _ShowAds);
+        void ShowInterstitialAd(UnityAction _OnShown,  BoolEntity _ShowAds);
     }
     
     public abstract class AdsProviderBase : IAdsProvider
     {
-        protected readonly bool        TestMode;
-        protected          XElement    AdsData;
-        protected          UnityAction OnRewardedAdShown;
-        protected          UnityAction OnInterstitialAdShown;
+        protected bool        TestMode;
+        protected XElement    AdsData;
+        protected UnityAction OnRewardedAdShown;
+        protected UnityAction OnInterstitialAdShown;
 
-        protected AdsProviderBase(bool _TestMode, float _ShowRate)
-        {
-            TestMode = _TestMode;
-            ShowRate = _ShowRate;
-        }
-        
         public abstract EAdsProvider Provider            { get; }
         public abstract bool         RewardedAdReady     { get; }
         public abstract bool         InterstitialAdReady { get; }
-        public          float        ShowRate            { get; }
+        public          float        ShowRate            { get; private set; }
 
-        public virtual void Init(XElement _AdsData)
+        public void Init(bool _TestMode, float _ShowRate, XElement _AdsData)
         {
+            TestMode = _TestMode;
+            ShowRate = _ShowRate;
             AdsData = _AdsData;
             InitConfigs(() =>
             {

@@ -70,12 +70,10 @@ namespace Common.Utils
         {
             var item = new GameObject().AddComponent<RectTransform>();
             Set(item, _Parent, _Name, _Anchor, _AnchoredPosition, _Pivot, _SizeDelta);
-            
-#if UNITY_EDITOR
-            item.gameObject.GetOrAddComponent<RectTransformHelper>();
-#else
-            item.gameObject.RemoveComponentIfExist<RectTransformHelper>();
-#endif
+            if (Application.isEditor)
+                item.gameObject.GetOrAddComponent<RectTransformHelper>();
+            else
+                item.gameObject.RemoveComponentIfExist<RectTransformHelper>();
             return item;
         }
         

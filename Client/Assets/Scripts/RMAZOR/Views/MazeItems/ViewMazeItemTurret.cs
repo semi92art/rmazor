@@ -62,7 +62,7 @@ namespace RMAZOR.Views.MazeItems
         private IViewBackground               Background           { get; }
         private IViewMazeAdditionalBackground AdditionalBackground { get; }
         private IViewTurretProjectile         Projectile           { get; }
-        private IViewTurretProjectile         ProjectileFake       { get; set; }
+        private IViewTurretProjectile         ProjectileFake       { get; }
 
         public ViewMazeItemTurret(
             ViewSettings                  _ViewSettings,

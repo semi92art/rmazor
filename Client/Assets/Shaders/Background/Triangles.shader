@@ -6,10 +6,10 @@ Shader "RMAZOR/Background/Triangles" {
         _Ratio("Ratio", Range(1, 2)) = 1.224744
         _A("A", Float) = 0
         _B("B", Float) = 0
-        _Tiling ("Tiling", Range(1, 10)) = 1
+        [IntRange] _Tiling ("Tiling", Range(1, 10)) = 1
 		_Direction ("Direction", Range(0, 1)) = 0
-		_WarpScale ("Warp Scale", Range(0, 1)) = 0
-		_WarpTiling ("Warp Tiling", Range(1, 10)) = 1
+		_WrapScale ("Wrap Scale", Range(0, 1)) = 0
+		_WrapTiling ("Wrap Tiling", Range(1, 10)) = 1
     }
     SubShader {
 		Tags { 
@@ -29,19 +29,16 @@ Shader "RMAZOR/Background/Triangles" {
             #pragma vertex vert
             #pragma fragment frag
             #include "Common.cginc"
-            
-            fixed4 _Color1, _Color2;
-            float _Size, _Ratio, _A, _B;
-            int    _Tiling;
-			float  _Direction;
-			float  _WarpScale;
-			float  _WrapTiling;
 
-            inline float rand(float2 co) {
+			fixed4 _Color1,_Color2;
+			float  _Direction, _WrapScale, _WrapTiling, _Tiling;
+            float _Size, _Ratio, _A, _B;
+
+            float rand(float2 co) {
                 return frac(dot(co, float2(_A, _B)));
             }
 
-            inline float2 get_triangle_coords(float2 uv) {
+            float2 get_triangle_coords(float2 uv) {
                 uv.y *= _Ratio;
                 float2 coords = floor(uv);
                 coords.x *= 2.0;
@@ -61,7 +58,7 @@ Shader "RMAZOR/Background/Triangles" {
             fixed4 frag(v2f i) : SV_Target {
             	if (all(_Color1 == _Color2))
 					return _Color1;
-                float2 pos = wrap_pos(i.uv, _Tiling, _Direction, _WarpScale, _WrapTiling);
+                float2 pos = wrap_pos(i.uv, _Tiling, _Direction, _WrapScale, _WrapTiling);
                 pos /= _Size * 0.02f;
                 float2 triang = get_triangle_coords(pos);
                 return rand(triang) < 0.5 ? _Color1 : _Color2;
