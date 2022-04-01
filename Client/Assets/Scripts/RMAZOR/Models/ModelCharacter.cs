@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Common;
 using Common.Entities;
 using Common.Ticker;
 using Common.Utils;
@@ -50,10 +51,10 @@ namespace RMAZOR.Models
         private IModelGameTicker GameTicker { get; }
 
         public ModelCharacter(
-            ModelSettings _Settings, 
-            IModelData _Data, 
+            ModelSettings      _Settings,
+            IModelData         _Data,
             IModelLevelStaging _LevelStaging,
-            IModelGameTicker _GameTicker)
+            IModelGameTicker   _GameTicker)
         {
             Settings = _Settings;
             Data = _Data;
@@ -106,6 +107,7 @@ namespace RMAZOR.Models
         
         public void OnPortal(PortalEventArgs _Args)
         {
+            Dbg.Log(nameof(OnPortal));
             Position = _Args.Info.Pair;
             Move(_Args.Direction);
         }

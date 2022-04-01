@@ -33,17 +33,34 @@
 			float  _Direction, _WrapScale, _WrapTiling, _Tiling;
 			float  _Indent;
 
-
 			v2f vert (appdata v) {
 				return vert_default(v);
+			}
+
+			bool inverse_indent(float2 pos)
+			{
+				if (pos.x + pos.y < 0.4)
+					return false;
+				if (pos.x + pos.y < 0.8)
+					return true;
+				if (pos.x + pos.y < 1.2)
+					return false;
+				if (pos.x + pos.y < 1.6)
+					return true;
+				return false;
 			}
 
 			fixed4 frag (v2f i) : SV_Target {
 				if (all(_Color1 == _Color2))
 					return _Color1;
+				const fixed4 colEmpty = fixed4(0, 0, 0, 0); 
 				float2 pos = wrap_pos(i.uv, _Tiling, _Direction, _WrapScale, _WrapTiling);
-				fixed lerp_coeff = floor(frac(pos.x) + 1.0 - _Indent);
-				return lerp(_Color1, _Color2, lerp_coeff);
+				fixed lerp_coeff_1 = frac(pos.x);
+				lerp_coeff_1 = inverse_indent(i.uv) ? lerp_coeff_1 : 1.0 - lerp_coeff_1;
+				fixed lerp_coeff_2 = floor(lerp_coeff_1 + _Indent);
+				fixed4 col2 = lerp(_Color1, _Color2, lerp_coeff_1);
+				fixed4 col3 = lerp(col2, colEmpty, lerp_coeff_2);
+				return col3;
 			}
 			ENDCG
 		}

@@ -19,7 +19,13 @@ MonoBehaviour:
   logLevel: 5
   admobRate: 80
   unityAdsRate: 20
+  ironSourceRate: 0
   showAdsEveryLevel: 3
   firstLevelToShowAds: 10
   rewriteSettingsByRemoteConfigInEditor: 1
   payToContinueMoneyCount: 100
+  showRewardedInsteadOfInterstitialOnUnpause: 0
+  ironSourceAppKeyAndroid: 
+  ironSourceAppKeyIos: 
+  moneyItemCoast: 0
+  gameId: 1

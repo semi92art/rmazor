@@ -49,87 +49,93 @@ namespace Editor
 
         private void OnGUI()
         {
+            var languages = GetLanguages();
+            DisplayLanguagesRow(languages);
+            EditorUtilsEx.HorizontalLine(Color.gray);
             EditorUtilsEx.ScrollViewZone(ref m_ScrollPos, () =>
             {
-                var boldStyle = new GUIStyle(EditorStyles.label)
+                DisplayKeysAndValues(languages);
+                EditorUtilsEx.HorizontalLine(Color.gray);
+                GUILayout.Space(10);
+                DisplayButtons();
+                CheckForErrors();
+            });
+        }
+
+        private static void DisplayLanguagesRow(IEnumerable<Language> _Languages)
+        {
+            var firstRow = new List<string> {"Key"}
+                .Concat(_Languages.Select(_Lang => _Lang.ToString()))
+                .ToList();
+            var boldStyle = new GUIStyle(EditorStyles.label)
+            {
+                fontStyle = FontStyle.Bold,
+                fontSize = 13
+            };
+            EditorUtilsEx.HorizontalZone(() =>
+            {
+                GUI.enabled = false;
+                for (int i = 0; i < firstRow.Count; i++)
                 {
-                    fontStyle = FontStyle.Bold,
-                    fontSize = 13
-                };
-        
-                // languages row
-                var languages = GetLanguages();
-                var firstRow = new List<string> {"Key"}
-                    .Concat(languages.Select(_Lang => _Lang.ToString()))
-                    .ToList();
-        
+                    string item = firstRow[i];
+                    if (i == 0)
+                        EditorGUILayout.TextField(item, boldStyle, GUILayout.Width(150));
+                    else
+                        EditorGUILayout.TextField(item, boldStyle);
+                }
+                GUILayout.TextField(string.Empty, boldStyle, GUILayout.Width(50));
+            });
+            GUI.enabled = true;
+        }
+
+        private void DisplayKeysAndValues(IEnumerable<Language> _Languages)
+        {
+            foreach ((string key, var _) in m_LocalizedDict.ToArray())
+            {
                 EditorUtilsEx.HorizontalZone(() =>
                 {
                     GUI.enabled = false;
-                    for (int i = 0; i < firstRow.Count; i++)
-                    {
-                        var item = firstRow[i];
-                        if (i == 0)
-                            EditorGUILayout.TextField(item, boldStyle, GUILayout.Width(150));
-                        else
-                            EditorGUILayout.TextField(item, boldStyle);
-                    }
-
-                    GUILayout.TextField(string.Empty, boldStyle, GUILayout.Width(50));
-                });
-
-                GUI.enabled = true;
-        
-                EditorUtilsEx.HorizontalLine(Color.gray);
-        
-                //values rows
-                foreach (var kvp in m_LocalizedDict.ToArray())
-                {
-                    EditorUtilsEx.HorizontalZone(() =>
-                    {
-                        GUI.enabled = false;
-                        GUILayout.TextField(kvp.Key, GUILayout.Width(150));
-                        GUI.enabled = true;
-                        var dict = m_LocalizedDict.GetSafe(kvp.Key, out _);
-                        foreach (var lang in languages)
-                        {
-                            string value = dict.Values.GetSafe(lang, out bool containsKey);
-                            if (!containsKey)
-                                continue;
-                            EditorUtilsEx.GUIColorZone(value == "[Empty]" ? new Color(0.51f, 0.13f, 0.12f) : GUI.color, () =>
-                            {
-                                m_LocalizedDict[kvp.Key].Values[lang] = EditorGUILayout.TextField(value);    
-                            });
-                        }
-                        if (GUILayout.Button("-", GUILayout.Width(50)))
-                            DeleteKey(kvp.Key);
-                    });
-                }
-                EditorUtilsEx.HorizontalLine(Color.gray);
-                GUILayout.Space(10);
-                EditorUtilsEx.HorizontalZone(() =>
-                {
-                    if (GUILayout.Button("Save", GUILayout.Height(40)))
-                        Save();
-                    if (GUILayout.Button("Discard", GUILayout.Height(40)))
-                        Discard();
-                });
-            
-                GUILayout.Space(10);
-                EditorUtilsEx.HorizontalZone(() =>
-                {
-                    if (!string.IsNullOrEmpty(m_ErrorText))
-                        GUI.enabled = false;
-                    if (GUILayout.Button("Add key", GUILayout.Width(100)))
-                        AddKey(m_NewKey);
+                    GUILayout.TextField(key, GUILayout.Width(150));
                     GUI.enabled = true;
-                    m_NewKey = EditorGUILayout.TextField(m_NewKey, GUILayout.Width(200));
-                    var defaultContentColor = GUI.contentColor;
-                    GUI.contentColor = Color.red;
-                    GUILayout.Label(m_ErrorText, EditorStyles.boldLabel);
-                    GUI.contentColor = defaultContentColor;
+                    var dict = m_LocalizedDict.GetSafe(key, out _);
+                    foreach (var lang in _Languages)
+                    {
+                        string value = dict.Values.GetSafe(lang, out bool containsKey);
+                        if (!containsKey)
+                            continue;
+                        EditorUtilsEx.GUIColorZone(value == "[Empty]" ? new Color(0.51f, 0.13f, 0.12f) : GUI.color, () =>
+                        {
+                            m_LocalizedDict[key].Values[lang] = EditorGUILayout.TextField(value);    
+                        });
+                    }
+                    if (GUILayout.Button("-", GUILayout.Width(50)))
+                        DeleteKey(key);
                 });
-                CheckForErrors();
+            }
+        }
+
+        private void DisplayButtons()
+        {
+            EditorUtilsEx.HorizontalZone(() =>
+            {
+                if (GUILayout.Button("Save", GUILayout.Height(40)))
+                    Save();
+                if (GUILayout.Button("Discard", GUILayout.Height(40)))
+                    Discard();
+            });
+            GUILayout.Space(10);
+            EditorUtilsEx.HorizontalZone(() =>
+            {
+                if (!string.IsNullOrEmpty(m_ErrorText))
+                    GUI.enabled = false;
+                if (GUILayout.Button("Add key", GUILayout.Width(100)))
+                    AddKey(m_NewKey);
+                GUI.enabled = true;
+                m_NewKey = EditorGUILayout.TextField(m_NewKey, GUILayout.Width(200));
+                var defaultContentColor = GUI.contentColor;
+                GUI.contentColor = Color.red;
+                GUILayout.Label(m_ErrorText, EditorStyles.boldLabel);
+                GUI.contentColor = defaultContentColor;
             });
         }
 
@@ -150,7 +156,7 @@ namespace Editor
                 m_Assets.Add(language, textAsset);
                 var lines = textAsset.text.Split(new[] {"\r\n"}, StringSplitOptions.None)
                     .Except(new[] {string.Empty, null});
-                foreach (var line in lines)
+                foreach (string line in lines)
                 {
                     var keyAndValue = line.Split(new[] {" = "}, StringSplitOptions.None);
                     string key = keyAndValue[0];
@@ -193,7 +199,7 @@ namespace Editor
             foreach (var key in m_Assets.Keys.ToArray())
             {
                 sb.Clear();
-                foreach (var line in langKeysDict[key])
+                foreach (string line in langKeysDict[key])
                     sb.Append(line);
                 File.WriteAllText($@"Assets\Resources\texts\{m_Assets[key].name}.txt", sb.ToString());
             }
@@ -209,7 +215,7 @@ namespace Editor
             Dbg.Log("Localization changes were discarded");
         }
 
-        private Language[] GetLanguages()
+        private static Language[] GetLanguages()
         {
             return Enum.GetValues(typeof(Language))
                 .Cast<Language>().ToArray();

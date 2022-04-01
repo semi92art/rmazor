@@ -2,11 +2,11 @@
 #if UNITY_ANDROID
 using Common.Constants;
 using Common.Entities;
+using Common.Helpers;
 using Common.Network;
 using Common.Ticker;
 using GooglePlayGames;
 using GooglePlayGames.BasicApi;
-using GooglePlayGames.BasicApi.SavedGame;
 using UnityEngine.Events;
 
 namespace Common.Managers.Scores
@@ -16,11 +16,13 @@ namespace Common.Managers.Scores
         #region inject
         
         public AndroidScoreManager(
+            CommonGameSettings       _Settings,
             IGameClient              _GameClient,
             ILocalizationManager     _LocalizationManager,
             ICommonTicker            _Ticker,
             IRemoteSavedGameProvider _RemoteSavedGameProvider)
             : base(
+                _Settings,
                 _GameClient,
                 _LocalizationManager,
                 _Ticker,

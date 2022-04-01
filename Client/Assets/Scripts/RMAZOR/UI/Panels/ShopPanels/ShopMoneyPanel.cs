@@ -207,6 +207,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 {
                     if (_Info.BuyForWatchingAd)
                     {
+                        Managers.AnalyticsManager.SendAnalytic(AnalyticIds.WatchAdInShopPanelPressed);
                         Managers.AdsManager.ShowRewardedAd(
                             () => CommonData.PausedByAdvertising = true,
                             OnPaidReal);
@@ -236,7 +237,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
         
         private void BuyHideAdsItem()
         {
-            Managers.AnalyticsManager.SendAnalytic(AnalyticIds.Product1Buy);
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIds.NoAdsBuy);
             Managers.AdsManager.ShowAds = new BoolEntity
             {
                 Result = EEntityResult.Success,

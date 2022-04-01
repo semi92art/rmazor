@@ -36,16 +36,16 @@ namespace RMAZOR.Models.ItemProceeders
         #region nonpublic members
 
         private PortalEventArgs m_LastArgs;
-        private V2Int[]     m_CurrentFullPath;
+        private V2Int[]         m_CurrentFullPath;
 
         #endregion
 
         #region inject
         
         public PortalsProceeder(
-            ModelSettings _Settings,
-            IModelData _Data, 
-            IModelCharacter _Character,
+            ModelSettings    _Settings,
+            IModelData       _Data,
+            IModelCharacter  _Character,
             IModelGameTicker _GameTicker) 
             : base(_Settings, _Data, _Character, _GameTicker) { }
         

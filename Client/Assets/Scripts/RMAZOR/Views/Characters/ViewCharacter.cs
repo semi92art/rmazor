@@ -137,7 +137,7 @@ namespace RMAZOR.Views.Characters
             Cor.Run(MazeShaker.HitMazeCoroutine(_Args));
             int randClipId = 1 + Mathf.FloorToInt(AudioCharacterEndMoveCount * Random.value);
             Managers.AudioManager.PlayClip(GetCharacterEndMoveArgs(randClipId));
-            Managers.HapticsManager.PlayPreset(EHapticsPresetType.LightImpact);
+            Managers.HapticsManager.PlayPreset(EHapticsPresetType.RigidImpact);
         }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)

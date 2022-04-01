@@ -81,10 +81,15 @@ namespace Mono_Installers
             }
 
             Container.Bind<ILocalizationManager>()      .To<LeanLocalizationManager>()       .AsSingle();
-            Container.Bind<IHapticsManager>()           .To<HapticsManager>()                .AsSingle();
+#if NICE_VIBRATIONS_3_9
+            Container.Bind<IHapticsManager>()           .To<HapticsManagerNiceVibrations_3_9>().AsSingle();
+#else
+            Container.Bind<IHapticsManager>()           .To<HapticsManagerNiceVibrations_4_1>().AsSingle();
+#endif
             Container.Bind<IAdsManager>()               .To<CustomMediationAdsManager>()     .AsSingle();
             Container.Bind<IPrefabSetManager>()         .To<PrefabSetManager>()              .AsSingle();
-            Container.Bind<IAssetBundleManager>()       .To<AssetBundleManager>()            .AsSingle();
+            // TODO пока что отключим подгрузку бандлов
+            Container.Bind<IAssetBundleManager>()       .To<AssetBundleManagerFake>()        .AsSingle();
 
             #endregion
             

@@ -60,12 +60,12 @@ Material:
     - _BumpScale: 1
     - _Cutoff: 0.469
     - _DetailNormalMapScale: 1
-    - _Direction: -0.64
+    - _Direction: -4.22
     - _DstBlend: 10
     - _GlossMapScale: 1
     - _Glossiness: 0
     - _GlossyReflections: 1
-    - _Indent: 0.637
+    - _Indent: 0
     - _Metallic: 0
     - _Mode: 2
     - _OcclusionStrength: 1
@@ -73,12 +73,12 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 5
-    - _Tiling: 3.69
+    - _Tiling: 1
     - _UVSec: 0
     - _WarpScale: 0.034
     - _WarpTiling: 0
-    - _WrapScale: 0
-    - _WrapTiling: 1
+    - _WrapScale: 0.1
+    - _WrapTiling: 0.7
     - _ZWrite: 0
     m_Colors:
     - _Color: {r: 0.6509804, g: 0.5372549, b: 0.32156864, a: 0}

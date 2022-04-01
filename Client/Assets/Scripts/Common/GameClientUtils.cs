@@ -35,12 +35,6 @@ namespace Common
             set => SaveUtils.PutValue(SaveKeysCommon.PasswordHash, value);
         }
 
-        public static int GameId
-        {
-            get => SaveUtils.GetValue(SaveKeysCommon.GameId);
-            set => SaveUtils.PutValue(SaveKeysCommon.GameId, value);
-        }
-
         public static int GetDefaultGameId()
         {
             return 1;

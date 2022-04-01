@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8466737568279639255
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 950131539713063068}
+  - component: {fileID: 5898956905066118941}
+  - component: {fileID: 5929227896154893671}
+  m_Layer: 0
+  m_Name: Haptics Mamager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &950131539713063068
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8466737568279639255}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5898956905066118941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8466737568279639255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05f8e4e6b070458db5796d88c331b8e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clip1: {fileID: -8404250095460277587, guid: af02b65c457d94ccf9a10f2d8c02306f, type: 3}
+  clip2: {fileID: -8404250095460277587, guid: a02b8c3506c0548f3aa0b48d6e61c292, type: 3}
+  clip3: {fileID: -8404250095460277587, guid: ca886bcb673e641da8e4593706441f96, type: 3}
+  clip4: {fileID: -8404250095460277587, guid: c5d2ba1f5ebb54ab09a2dc0591e8891a, type: 3}
+  clip5: {fileID: -8404250095460277587, guid: 03da26f88e0db4741b648883f8bc1542, type: 3}
+--- !u!114 &5929227896154893671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8466737568279639255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d20df93fb7de8457baa15a213a53ab19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clip: {fileID: -8404250095460277587, guid: 604d8523122314dc18e0de35004df07c, type: 3}
+  priority: 128
+  _fallbackPreset: -1
+  _loop: 0
+  _level: 1
+  _frequencyShift: 0

@@ -25,8 +25,8 @@ namespace RMAZOR.UI.Panels
     public abstract class CharacterDiedDialogPanelBase : DialogPanelBase, ICharacterDiedDialogPanel
     {
         #region constants
-        
-        private const float  CountdownTime              = 5f;
+
+        private const float CountdownTime = 5f;
 
         #endregion
         
@@ -147,7 +147,6 @@ namespace RMAZOR.UI.Panels
                 () => !Managers.AdsManager.RewardedAdReady,
                 () => IndicateAdsLoading(false),
                 () => !m_PanelShowing));
-
             var savedGameEntity = Managers.ScoreManager.GetSavedGameProgress(
                 CommonData.SavedGameFileName, 
                 true);
@@ -213,6 +212,7 @@ namespace RMAZOR.UI.Panels
 
         private void OnWatchAdsButtonClick()
         {
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIds.WatchAdInCharacterDiedPanelPressed);
             Managers.AdsManager.ShowRewardedAd(
                 () => CommonData.PausedByAdvertising = true, 
                 () => m_AdsWatched = true);

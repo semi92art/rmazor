@@ -1,4 +1,5 @@
 ﻿using Common.Entities;
+using Common.Helpers;
 using Common.Network;
 using Common.Ticker;
 using UnityEngine.Events;
@@ -9,11 +10,13 @@ namespace Common.Managers.Scores
     public class ScoreManagerFake : ScoreManagerBase
     {
         public ScoreManagerFake(
+            CommonGameSettings       _Settings,
             IGameClient              _GameClient,
             ILocalizationManager     _LocalizationManager,
             ICommonTicker            _Ticker,
             IRemoteSavedGameProvider _RemoteSavedGameProvider)
             : base(
+                _Settings,
                 _GameClient,
                 _LocalizationManager,
                 _Ticker,

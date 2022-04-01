@@ -12,11 +12,13 @@ using Common;
 using Common.Constants;
 using Common.Entities;
 using Common.Extensions;
+using Common.Managers;
 using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace RMAZOR
 {
@@ -232,6 +234,44 @@ namespace RMAZOR
                 if (!value)
                     return;
                 _managers.HapticsManager.Play(Amplitude, Frequency, Duration);
+            }
+        }
+        
+        [Category(CategoryHaptics)]
+        public bool Play_Emphasis
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                _managers.HapticsManager.Play(Amplitude, Frequency);
+            }
+        }
+        
+        [Category(CategoryHaptics)]
+        public bool Play_Random_Preset
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                var preset = (EHapticsPresetType) Mathf.FloorToInt(Random.value * 8.99f);
+                Dbg.Log("Haptics preset: " +  Enum.GetName(typeof(EHapticsPresetType), preset));
+                _managers.HapticsManager.PlayPreset(preset);
+            }
+        }
+        
+        [Category(CategoryHaptics)]
+        public bool Is_Haptics_Supported
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                Dbg.Log("isVersionSupported: " + _managers.HapticsManager.IsHapticsSupported());
             }
         }
 

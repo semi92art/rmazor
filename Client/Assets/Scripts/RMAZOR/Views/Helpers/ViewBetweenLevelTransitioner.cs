@@ -69,7 +69,10 @@ namespace RMAZOR.Views.Helpers
         public override void Init()
         {
             BetweenLevelTextureProvider.Init();
-            BetweenLevelTextureProvider.SetColor(CommonData.CompanyLogoBackgroundColor);
+            var col1 = CommonData.CompanyLogoBackgroundColor;
+            Color.RGBToHSV(col1, out float h, out float s, out float v);
+            var col2 = Color.HSVToRGB(h, s + 0.05f, v + 0.05f);
+            BetweenLevelTextureProvider.SetColors(col1, col2);
             base.Init();
         }
         

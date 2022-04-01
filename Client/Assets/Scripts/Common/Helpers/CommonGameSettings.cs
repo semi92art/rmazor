@@ -22,5 +22,6 @@ namespace Common.Helpers
         public string       ironSourceAppKeyAndroid;
         public string       ironSourceAppKeyIos;
         public int          moneyItemCoast;
+        public int          gameId;
     }
 }

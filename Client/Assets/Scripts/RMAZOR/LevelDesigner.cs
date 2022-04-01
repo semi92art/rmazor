@@ -7,6 +7,7 @@ using Common.Constants;
 using Common.Entities;
 using Common.Exceptions;
 using Common.Extensions;
+using Common.Helpers;
 using Common.Utils;
 using RMAZOR.Controllers;
 using RMAZOR.Models.MazeInfos;
@@ -15,32 +16,27 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using Zenject;
 
 namespace RMAZOR
 {
     public class LevelDesigner : MonoBehaviour
     {
         private static LevelDesigner _instance;
-        public static LevelDesigner Instance
-        {
-            get
-            {
-                if (_instance.IsNull())
-                    _instance = FindObjectOfType<LevelDesigner>();
-                return _instance;
-            }
-        }
-        
-        [HideInInspector] public HeapReorderableList    LevelsList;
+        public static LevelDesigner Instance => _instance.IsNotNull() ?
+            _instance : _instance = FindObjectOfType<LevelDesigner>();
+
+        [HideInInspector] public int                    width;
+        [HideInInspector] public int                    height;
+        [HideInInspector] public HeapReorderableList    levelsList;
         [HideInInspector] public string                 pathLengths;
-        [HideInInspector] public int                    sizeIdx;
         [HideInInspector] public float                  aParam;
         [HideInInspector] public bool                   valid;
         [SerializeField]  public List<ViewMazeItemProt> maze;
         [HideInInspector] public V2Int                  size;
-        [SerializeField]  public int                    loadedLevelIndex     = -1;
-        [SerializeField]  public int                    loadedLevelHeapIndex = -1;
-        public                   GameObject             mazeObject;
+        [HideInInspector] public int                    loadedLevelIndex     = -1;
+        [HideInInspector] public int                    loadedLevelHeapIndex = -1;
+        [HideInInspector] public GameObject             mazeObject;
         public static            UnityAction            SceneUnloaded;
 
         private static MazeInfo MazeInfo
@@ -55,6 +51,14 @@ namespace RMAZOR
             _instance = null;
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+        }
+        
+        private static CommonGameSettings CommonGameSettings { get; set; }
+
+        [Inject]
+        private void Inject(CommonGameSettings _CommonGameSettings)
+        {
+            CommonGameSettings = _CommonGameSettings;
         }
         
         public MazeInfo GetLevelInfoFromScene()
@@ -114,20 +118,10 @@ namespace RMAZOR
                     }).ToList()
             };
         }
-        
-        public static List<Tuple<int, int>> GetSizes()
-        {
-            var widths  = new [] {12, 13, 14, 15};
-            var heights = new[] {12, 13, 14, 15, 16}; 
-            return (from width in widths from height in heights
-                    select new Tuple<int, int>(width, height))
-                .ToList();
-        }
 
         public V2Int GetSizeByIndex()
         {
-            (int item1, int item2) = GetSizes()[sizeIdx];
-            return new V2Int(item1, item2);
+            return new V2Int(width, height);
         }
         
         private static void OnPlayModeStateChanged(PlayModeStateChange _Change)
@@ -145,7 +139,7 @@ namespace RMAZOR
                     break;
                 case PlayModeStateChange.EnteredPlayMode:
                     MazeInfo = Instance.GetLevelInfoFromScene();
-                    GameClientUtils.GameId = 1;
+                    CommonGameSettings.gameId = 1;
                     CommonData.Release = false;
                     SceneManager.sceneLoaded -= OnSceneLoaded;
                     SceneManager.sceneLoaded += OnSceneLoaded;

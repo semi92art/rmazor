@@ -1,5 +1,6 @@
 ﻿using System;
 using Common;
+using Common.Constants;
 using Common.Enums;
 using Common.Extensions;
 using Common.Helpers;
@@ -87,11 +88,13 @@ namespace RMAZOR.Views.UI
             switch (_Key)
             {
                 case EInputCommand.SettingsMenu:
+                    Managers.AnalyticsManager.SendAnalytic(AnalyticIds.SettingsButtonPressed);
                     DialogPanels.SettingDialogPanel.LoadPanel();
                     BigDialogViewer.Show(DialogPanels.SettingDialogPanel);
                     CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);
                     break;
                 case EInputCommand.ShopMenu:
+                    Managers.AnalyticsManager.SendAnalytic(AnalyticIds.ShopButtonPressed);
                     DialogPanels.ShopMoneyDialogPanel.LoadPanel();
                     BigDialogViewer.Show(DialogPanels.ShopMoneyDialogPanel);
                     CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);

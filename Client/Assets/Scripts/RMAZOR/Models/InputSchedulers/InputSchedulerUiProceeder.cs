@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Common;
+using Common.Helpers;
 using RMAZOR.Helpers;
 using RMAZOR.Models.MazeInfos;
 using UnityEngine;
@@ -18,19 +18,22 @@ namespace RMAZOR.Models.InputSchedulers
     {
         #region inject
 
+        private CommonGameSettings Settings     { get; }
         private IModelLevelStaging LevelStaging { get; }
-        private IModelData Data { get; }
-        private ILevelsLoader LevelsLoader { get; }
+        private IModelData         Data         { get; }
+        private ILevelsLoader      LevelsLoader { get; }
 
         public InputSchedulerUiProceeder(
+            CommonGameSettings _Settings,
             IModelLevelStaging _LevelStaging,
-            IModelData _Data,
-            ILevelsLoader _LevelsLoader)
+            IModelData         _Data,
+            ILevelsLoader      _LevelsLoader)
         {
+            Settings     = _Settings;
             LevelStaging = _LevelStaging;
-            Data = _Data;
+            Data         = _Data;
             LevelsLoader = _LevelsLoader;
-            UiCommand += OnUiCommand;
+            UiCommand    += OnUiCommand;
         }
 
         #endregion
@@ -71,7 +74,7 @@ namespace RMAZOR.Models.InputSchedulers
         {
             MazeInfo info;
             long levelIndex;
-            int gameId = GameClientUtils.GameId;
+            int gameId = Settings.gameId;
             switch (_Command)
             {
                 case EInputCommand.LoadCurrentLevel:

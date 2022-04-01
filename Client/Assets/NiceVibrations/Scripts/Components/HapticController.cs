@@ -125,8 +125,10 @@ namespace Lofelt.NiceVibrations
                 {
                     LofeltHaptics.SetAmplitudeMultiplication(_outputLevel * _clipLevel);
                 }
+#if ((!UNITY_ANDROID && !UNITY_IOS) || UNITY_EDITOR) && NICE_VIBRATIONS_INPUTSYSTEM_INSTALLED && ENABLE_INPUT_SYSTEM && !NICE_VIBRATIONS_DISABLE_GAMEPAD_SUPPORT
                 GamepadRumbler.lowFrequencyMotorSpeedMultiplication = _outputLevel * _clipLevel;
                 GamepadRumbler.highFrequencyMotorSpeedMultiplication = _outputLevel * _clipLevel;
+#endif
             }
         }
 
@@ -174,8 +176,10 @@ namespace Lofelt.NiceVibrations
                 {
                     LofeltHaptics.SetAmplitudeMultiplication(_outputLevel * _clipLevel);
                 }
+#if ((!UNITY_ANDROID && !UNITY_IOS) || UNITY_EDITOR) && NICE_VIBRATIONS_INPUTSYSTEM_INSTALLED && ENABLE_INPUT_SYSTEM && !NICE_VIBRATIONS_DISABLE_GAMEPAD_SUPPORT
                 GamepadRumbler.lowFrequencyMotorSpeedMultiplication = _outputLevel * _clipLevel;
                 GamepadRumbler.highFrequencyMotorSpeedMultiplication = _outputLevel * _clipLevel;
+#endif
             }
         }
 
@@ -391,13 +395,19 @@ namespace Lofelt.NiceVibrations
         }
 
         /// <summary>
-        /// Stops playback of the haptic clip that was previously started with Play().
+        /// Stops haptic playback
+        ///
         /// </summary>
         public static void Stop()
         {
+
             if (Init())
             {
                 LofeltHaptics.Stop();
+            }
+            else
+            {
+                LofeltHaptics.StopPattern();
             }
             GamepadRumbler.Stop();
             HandleFinishedPlayback();

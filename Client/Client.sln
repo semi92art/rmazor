@@ -69,8 +69,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA.Android.Manifest.Editor"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{9cf74455-0653-9f90-c855-53d6959d5dfd}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lofelt.NiceVibrations.Editor", "Lofelt.NiceVibrations.Editor.csproj", "{e23a20b8-bdc8-3ba8-140b-6724d85f8207}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA.Android.Editor", "SA.Android.Editor.csproj", "{8fe23955-c20c-8f8e-1d8a-501909f6939c}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StansAssets.IOS.XCode", "StansAssets.IOS.XCode.csproj", "{a0582a18-e061-4f96-98da-1b6b6149bdee}"
@@ -100,6 +98,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleMobileAds.Editor", "GoogleMobileAds.Editor.csproj", "{7e00453d-07e2-cf85-0fe7-60952118f595}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject-Editor", "Zenject-Editor.csproj", "{41c99686-a020-df23-0a15-667f30a831c4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lofelt.NiceVibrations.Editor", "Lofelt.NiceVibrations.Editor.csproj", "{e23a20b8-bdc8-3ba8-140b-6724d85f8207}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -174,8 +174,6 @@ Global
 		{0f8537a7-0d72-2f6b-cce0-195626c8c6cf}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9cf74455-0653-9f90-c855-53d6959d5dfd}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9cf74455-0653-9f90-c855-53d6959d5dfd}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{e23a20b8-bdc8-3ba8-140b-6724d85f8207}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{e23a20b8-bdc8-3ba8-140b-6724d85f8207}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8fe23955-c20c-8f8e-1d8a-501909f6939c}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8fe23955-c20c-8f8e-1d8a-501909f6939c}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{a0582a18-e061-4f96-98da-1b6b6149bdee}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -206,6 +204,8 @@ Global
 		{7e00453d-07e2-cf85-0fe7-60952118f595}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41c99686-a020-df23-0a15-667f30a831c4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{41c99686-a020-df23-0a15-667f30a831c4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{e23a20b8-bdc8-3ba8-140b-6724d85f8207}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{e23a20b8-bdc8-3ba8-140b-6724d85f8207}.Debug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

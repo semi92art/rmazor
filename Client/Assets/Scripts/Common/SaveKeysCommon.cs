@@ -19,7 +19,6 @@ namespace Common
         private static SaveKey<bool>      _debugUtilsOn;
         private static SaveKey<bool>      _darkTheme;
         private static SaveKey<int?>      _accountId;               
-        private static SaveKey<int>       _gameId;
         private static SaveKey<string>    _login;        
         private static SaveKey<string>    _passwordHash;
         private static SaveKey<int?>      _previousAccountId; 
@@ -45,7 +44,6 @@ namespace Common
             SaveUtils.PutValue(DebugUtilsOn,            SaveUtils.GetValue(DebugUtilsOn),            true);
             SaveUtils.PutValue(DarkTheme,                SaveUtils.GetValue(DarkTheme),               true);
             SaveUtils.PutValue(AccountId,               SaveUtils.GetValue(AccountId),               true);
-            SaveUtils.PutValue(GameId,                  SaveUtils.GetValue(GameId),                  true);
             SaveUtils.PutValue(Login,                   SaveUtils.GetValue(Login),                   true);
             SaveUtils.PutValue(PasswordHash,            SaveUtils.GetValue(PasswordHash),            true);
             SaveUtils.PutValue(PreviousAccountId,       SaveUtils.GetValue(PreviousAccountId),       true);
@@ -85,8 +83,6 @@ namespace Common
             _debugUtilsOn ??= new SaveKey<bool>(nameof(DebugUtilsOn));
         public static SaveKey<int?>   AccountId                =>
             _accountId ??= new SaveKey<int?>(nameof(AccountId));
-        public static SaveKey<int>    GameId                   => 
-            _gameId ??= new SaveKey<int>(nameof(GameId));
         public static SaveKey<string> Login                    => 
             _login ??= new SaveKey<string>(nameof(Login));
         public static SaveKey<string> PasswordHash             => 

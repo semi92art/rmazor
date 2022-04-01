@@ -302,6 +302,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   colorProvider: {fileID: 5801256520906685625, guid: c93dbf76a6376f148b36a1c337a4924c,
     type: 3}
+  subtitle: {fileID: 4627561977199846195, guid: 54073638572e35d439dc5a67916b195f,
+    type: 3}
 --- !u!114 &703413959
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Common;
 using Common.Entities;
+using Common.Extensions;
 using Common.Managers;
 using RMAZOR.Helpers;
 using RMAZOR.Models.MazeInfos;
@@ -37,14 +38,15 @@ namespace RMAZOR
         #region serialized fields
 
         [SerializeField] private SerializableDictionary<EMazeItemType, bool> filters;
-        [SerializeField] private int                                         gameId;
-        [SerializeField] public  int                                         heapIndex;
-        [SerializeField] private int                                         selectedIndexCheck   = -1;
-        [SerializeField] private int                                         loadedLevelIndex     = -1;
-        [SerializeField] private int                                         loadedLevelHeapIndex = -1;
-        [SerializeField] private bool                                        fastMode;
-        [SerializeField] public  List<MazeInfo>                              levels;
-        [SerializeField] private int                                         page = 1;
+        
+        public                   int            gameId;
+        [SerializeField] public  int            heapIndex;
+        [SerializeField] private int            selectedIndexCheck   = -1;
+        [SerializeField] private int            loadedLevelIndex     = -1;
+        [SerializeField] private int            loadedLevelHeapIndex = -1;
+        [SerializeField] private bool           fastMode;
+        [SerializeField] public  List<MazeInfo> levels;
+        [SerializeField] private int            page = 1;
 
         #endregion
 
@@ -59,16 +61,6 @@ namespace RMAZOR
 
         public HeapReorderableList(int _GameId, int _HeapIndex, UnityAction<int> _OnSelect, List<MazeInfo> _Levels)
         {
-            void InitFilters()
-            {
-                var filters = Enum.GetValues(typeof(EMazeItemType))
-                    .Cast<EMazeItemType>()
-                    .Except(new[] {EMazeItemType.Block, EMazeItemType.MovingBlockFree})
-                    .ToList();
-                this.filters = new SerializableDictionary<EMazeItemType, bool>();
-                foreach (var filter in filters)
-                    this.filters.Add(filter, true);
-            }
             gameId = _GameId;
             heapIndex = _HeapIndex;
             LevelsCached = levels = _Levels ?? GetLevelsSaver().LoadHeapLevels(_GameId, _HeapIndex).Levels;
@@ -79,6 +71,8 @@ namespace RMAZOR
 
         public void ReloadList()
         {
+            if (filters.NullOrEmpty())
+                InitFilters();
             var lvls = levels ?? LevelsCached;
             var levelsOnPage = Enumerable.Range(
                     (page - 1) * LevelsOnPage,
@@ -208,6 +202,17 @@ namespace RMAZOR
 
         #region nonpublic methods
 
+        private void InitFilters()
+        {
+            var fltrs = Enum.GetValues(typeof(EMazeItemType))
+                .Cast<EMazeItemType>()
+                .Except(new[] {EMazeItemType.Block, EMazeItemType.MovingBlockFree})
+                .ToList();
+            filters = new SerializableDictionary<EMazeItemType, bool>();
+            foreach (var filter in fltrs)
+                filters.Add(filter, true);
+        }
+        
         private void OnDrawHeaderCallback(Rect _Rect)
         {
             float x, y, w;

@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text;
-using Common.Entities;
 using Common.Helpers;
 using Common.Network;
 using Common.Network.Packets;
@@ -28,11 +26,13 @@ namespace Common.Managers
         #endregion
 
         #region inject
-        
-        private ICommonTicker Ticker { get; }
 
-        public GameClient(ICommonTicker _Ticker)
+        private CommonGameSettings Settings { get; }
+        private ICommonTicker      Ticker   { get; }
+
+        public GameClient(CommonGameSettings _Settings, ICommonTicker _Ticker)
         {
+            Settings = _Settings;
             Ticker = _Ticker;
         }
 
@@ -40,12 +40,10 @@ namespace Common.Managers
         
         #region api
         
-        public List<GameDataField> ExecutingGameFields { get; } = new List<GameDataField>();
-        
         public override void Init()
         {
-            if (GameClientUtils.GameId == 0)
-                GameClientUtils.GameId = GameClientUtils.GetDefaultGameId();
+            if (Settings.gameId == 0)
+                Settings.gameId = GameClientUtils.GetDefaultGameId();
             base.Init();
         }
         

@@ -442,7 +442,7 @@ namespace RMAZOR.Managers
             return new GameDataFieldFilter(
                     Instance.GameClient, 
                     GameClientUtils.AccountId, 
-                    GameClientUtils.GameId,
+                    Instance.CommonGameSettings.gameId,
                     fildIds) 
                 {OnlyLocal = true};
         }

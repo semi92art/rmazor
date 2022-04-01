@@ -70,16 +70,19 @@ namespace Common.Managers.Scores
         
         #region inject
 
+        private CommonGameSettings   Settings            { get; }
         private IGameClient          GameClient          { get; }
         private ILocalizationManager LocalizationManager { get; }
         private ICommonTicker        Ticker              { get; }
 
         protected ScoreManagerBase(
+            CommonGameSettings       _Settings,
             IGameClient              _GameClient,
             ILocalizationManager     _LocalizationManager,
             ICommonTicker            _Ticker,
             IRemoteSavedGameProvider _RemoteSavedGameProvider)
         {
+            Settings                = _Settings;
             GameClient              = _GameClient;
             LocalizationManager     = _LocalizationManager;
             Ticker                  = _Ticker;
@@ -158,7 +161,7 @@ namespace Common.Managers.Scores
             var gdff = new GameDataFieldFilter(
                 GameClient,
                 GameClientUtils.AccountId, 
-                GameClientUtils.GameId,
+                Settings.gameId,
                 _Id)
                 {OnlyLocal = true};
             gdff.Filter(_Fields =>
@@ -181,7 +184,7 @@ namespace Common.Managers.Scores
         {
             var gdff = new GameDataFieldFilter(
                 GameClient, GameClientUtils.AccountId, 
-                GameClientUtils.GameId,
+                Settings.gameId,
                 _Id) {OnlyLocal = true};
             gdff.Filter(_Fields =>
             {
@@ -231,7 +234,7 @@ namespace Common.Managers.Scores
             var gdff = new GameDataFieldFilter(
                 GameClient, 
                 GameClientUtils.AccountId, 
-                GameClientUtils.GameId,
+                Settings.gameId,
                 (ushort)CommonUtils.StringToHash(fileNameData.FileName)) 
                 {OnlyLocal = true};
             gdff.Filter(_Fields =>
@@ -256,7 +259,7 @@ namespace Common.Managers.Scores
             var gdff = new GameDataFieldFilter(
                 GameClient,
                 GameClientUtils.AccountId, 
-                GameClientUtils.GameId,
+                Settings.gameId,
                 (ushort)CommonUtils.StringToHash(_FileName))
                 {OnlyLocal = true};
             gdff.Filter(_Fields =>

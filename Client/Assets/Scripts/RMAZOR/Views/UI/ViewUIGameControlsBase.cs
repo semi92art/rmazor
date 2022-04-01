@@ -34,12 +34,6 @@ namespace RMAZOR.Views.UI
             var type = _Args.Info.Type;
             if (!RazorMazeUtils.GravityItemTypes.ContainsAlt(type)) 
                 return;
-            //FIXME говняный алгоритм, нужно переработать
-            if (Model.GravityItemsProceeder.ProceedInfos
-                .Count(_I => _I.ProceedingStage != GravityItemsProceeder.StageDrop) != 1)
-            {
-                return;
-            }
             CommandsProceeder.LockCommands(
                 RazorMazeUtils.MoveAndRotateCommands, 
                 nameof(IViewUIGameControls));

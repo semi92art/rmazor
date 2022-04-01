@@ -20,7 +20,8 @@ namespace RMAZOR.Views.UI
     public enum ETutorialType
     {
         Movement,
-        Rotation
+        Rotation,
+        Setting
     }
     
     public interface IViewUITutorial : IOnLevelStageChanged, IInitViewUIItem
@@ -34,16 +35,17 @@ namespace RMAZOR.Views.UI
     {
         #region nonpublic members
 
-        private bool              m_MovementTutorialStarted;
-        private bool              m_RotationTutorialStarted;
-        private bool              m_MovementTutorialFinished;
-        private bool              m_RotationTutorialFinished;
-        private bool              m_ReadyToSecondMovementStep;
-        private bool              m_ReadyToThirdMovementStep;
-        private bool              m_ReadyToFourthMovementStep;
-        private bool              m_ReadyToFinishMovementTutorial;
-        private bool              m_ReadyToSecondRotationStep;
-        private bool              m_ReadyToFinishRotationTutorial;
+        private bool m_MovementTutorialStarted, m_MovementTutorialFinished;
+        private bool m_RotationTutorialStarted, m_RotationTutorialFinished;
+        private bool m_SettingTutorialStarted,  m_SettingTutorialFinished;
+
+        private bool m_ReadyToSecondMovementStep;
+        private bool m_ReadyToThirdMovementStep;
+        private bool m_ReadyToFourthMovementStep;
+        private bool m_ReadyToFinishMovementTutorial;
+        private bool m_ReadyToSecondRotationStep;
+        private bool m_ReadyToFinishRotationTutorial;
+        
         private Vector4           m_Offsets;
         private HandSwipeMovement m_Hsm;
         private HandSwipeRotation m_Hsr;
@@ -55,6 +57,7 @@ namespace RMAZOR.Views.UI
 
         #region inject
 
+        private CommonGameSettings            Settings            { get; }
         private IModelGame                    Model               { get; }
         private IPrefabSetManager             PrefabSetManager    { get; }
         private IContainersGetter             ContainersGetter    { get; }
@@ -66,20 +69,24 @@ namespace RMAZOR.Views.UI
         private IViewGameTicker               Ticker              { get; }
         private IRotatingPossibilityIndicator RotationIndicator   { get; }
         private ILevelsLoader                 LevelsLoader        { get; }
+        private IViewUISubtitles              Subtitles           { get; }
 
         public ViewUITutorial(
-            IModelGame                           _Model,
-            IPrefabSetManager                    _PrefabSetManager,
-            IContainersGetter                    _ContainersGetter,
-            IMazeCoordinateConverter             _CoordinateConverter,
-            IViewInputCommandsProceeder          _CommandsProceeder,
-            ICameraProvider                      _CameraProvider,
-            IColorProvider                       _ColorProvider,
-            ILocalizationManager                 _LocalizationManager,
-            IViewGameTicker                      _Ticker, 
-            IRotatingPossibilityIndicator        _RotationIndicator,
-            ILevelsLoader                        _LevelsLoader)
+            CommonGameSettings            _Settings,
+            IModelGame                    _Model,
+            IPrefabSetManager             _PrefabSetManager,
+            IContainersGetter             _ContainersGetter,
+            IMazeCoordinateConverter      _CoordinateConverter,
+            IViewInputCommandsProceeder   _CommandsProceeder,
+            ICameraProvider               _CameraProvider,
+            IColorProvider                _ColorProvider,
+            ILocalizationManager          _LocalizationManager,
+            IViewGameTicker               _Ticker,
+            IRotatingPossibilityIndicator _RotationIndicator,
+            ILevelsLoader                 _LevelsLoader,
+            IViewUISubtitles              _Subtitles)
         {
+            Settings            = _Settings;
             Model               = _Model;
             PrefabSetManager    = _PrefabSetManager;
             ContainersGetter    = _ContainersGetter;
@@ -90,7 +97,8 @@ namespace RMAZOR.Views.UI
             LocalizationManager = _LocalizationManager;
             Ticker              = _Ticker;
             RotationIndicator   = _RotationIndicator;
-            LevelsLoader = _LevelsLoader;
+            LevelsLoader        = _LevelsLoader;
+            Subtitles           = _Subtitles;
         }
 
         #endregion
@@ -121,6 +129,7 @@ namespace RMAZOR.Views.UI
             {
                 case ETutorialType.Movement: StartMovementTutorial(); break;
                 case ETutorialType.Rotation: StartRotationTutorial(); break;
+                case ETutorialType.Setting:  StartSettingTutorial(); break;
             }
         }
         
@@ -130,7 +139,8 @@ namespace RMAZOR.Views.UI
             {
                 "movement tutorial" => ETutorialType.Movement,
                 "rotation tutorial" => ETutorialType.Rotation,
-                _=> null
+                "setting tutorial"  => ETutorialType.Setting,
+                _ => null
             };
         }
 
@@ -175,10 +185,10 @@ namespace RMAZOR.Views.UI
                 return;
             }
 
-            int levelsCount = LevelsLoader.GetLevelsCount(GameClientUtils.GameId);
+            int levelsCount = LevelsLoader.GetLevelsCount(Settings.gameId);
             for (int i = 0; i < levelsCount; i++)
             {
-                var info = LevelsLoader.LoadLevel(GameClientUtils.GameId, i);
+                var info = LevelsLoader.LoadLevel(Settings.gameId, i);
                 if (info.AdditionalInfo.Comment1 != "rotation tutorial")
                     continue;
                 lastIdx = i;
@@ -226,6 +236,34 @@ namespace RMAZOR.Views.UI
             CommandsProceeder.LockCommands(RazorMazeUtils.MoveCommands, GetGroupName());
             Cor.Run(RotationTutorialFirstStepCoroutine());
             m_RotationTutorialStarted = true;
+        }
+
+        private void StartSettingTutorial()
+        {
+            if (m_SettingTutorialStarted || m_SettingTutorialFinished)
+                return;
+            TutorialStarted?.Invoke(ETutorialType.Setting);
+            Cor.Run(ShowSubtitleCoroutine(1, 6, () =>
+            {
+                Subtitles.HideSubtitle();
+                m_SettingTutorialFinished = true;
+            }));
+            m_SettingTutorialStarted = true;
+        }
+
+        private IEnumerator ShowSubtitleCoroutine(int _ReplicaIndex, int _ReplicasCount, UnityAction _OnFinish)
+        {
+            while (!Subtitles.CanShowSubtitle)
+                yield return null;
+            string replic = LocalizationManager.GetTranslation($"char_replica_{_ReplicaIndex}");
+            float showDuration = replic.Length * 0.3f;
+            Subtitles.ShowSubtitle(replic, showDuration, "character");
+            if (_ReplicaIndex >= _ReplicasCount)
+            {
+                _OnFinish?.Invoke();
+                yield break;
+            }
+            yield return ShowSubtitleCoroutine(_ReplicaIndex + 1, _ReplicasCount, _OnFinish);
         }
 
         

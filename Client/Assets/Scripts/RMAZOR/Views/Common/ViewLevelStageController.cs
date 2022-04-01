@@ -267,7 +267,7 @@ namespace RMAZOR.Views.Common
             bool allLevelsPassed = SaveUtils.GetValue(SaveKeysRmazor.AllLevelsPassed);
             if (!allLevelsPassed && _Args.LevelIndex + 1 >= ViewSettings.levelsCountMain)
                 SaveUtils.PutValue(SaveKeysRmazor.AllLevelsPassed, true);
-            SendConcreteAnalyticsLevelFinished(_Args.LevelIndex);
+            
             if (PathItemsGroup.MoneyItemsCollectedCount <= 0)
                 return;
             var savedGameEntity = Managers.ScoreManager.
@@ -285,12 +285,14 @@ namespace RMAZOR.Views.Common
                                        $" _Value: {savedGameEntity.Value}");
                         return;
                     }
+                    long newMoneyCount = savedGame.Money + PathItemsGroup.MoneyItemsCollectedCount;
                     var newSavedGame = new SavedGame
                     {
                         FileName = CommonData.SavedGameFileName,
-                        Money = savedGame.Money + PathItemsGroup.MoneyItemsCollectedCount,
+                        Money = newMoneyCount,
                         Level = _Args.LevelIndex
                     };
+                    SendLevelFinishedAnalyticEvent(_Args.LevelIndex, newMoneyCount);
                     Managers.ScoreManager.SaveGameProgress(
                         newSavedGame, false);
                 }));
@@ -446,33 +448,48 @@ namespace RMAZOR.Views.Common
             }
         }
 
-        private void SendConcreteAnalyticsLevelFinished(long _LevelIndex)
+        private void SendLevelFinishedAnalyticEvent(long _LevelIndex, long _MoneyCount)
         {
             string anId = _LevelIndex switch
             {
-                5   => AnalyticIds.Level5Finished,
-                10  => AnalyticIds.Level10Finished,
-                20  => AnalyticIds.Level20Finished,
-                50  => AnalyticIds.Level50Finished,
-                100 => AnalyticIds.Level100Finished,
-                _   => AnalyticIds.LevelFinished
+                1    => AnalyticIds.Level1Finished,
+                2    => AnalyticIds.Level2Finished,
+                3    => AnalyticIds.Level3Finished,
+                4    => AnalyticIds.Level4Finished,
+                5    => AnalyticIds.Level5Finished,
+                6    => AnalyticIds.Level6Finished,
+                7    => AnalyticIds.Level7Finished,
+                8    => AnalyticIds.Level8Finished,
+                9    => AnalyticIds.Level9Finished,
+                10   => AnalyticIds.Level10Finished,
+                20   => AnalyticIds.Level20Finished,
+                30   => AnalyticIds.Level30Finished,
+                40   => AnalyticIds.Level40Finished,
+                50   => AnalyticIds.Level50Finished,
+                60   => AnalyticIds.Level60Finished,
+                70   => AnalyticIds.Level70Finished,
+                80   => AnalyticIds.Level80Finished,
+                90   => AnalyticIds.Level90Finished,
+                100  => AnalyticIds.Level100Finished,
+                200  => AnalyticIds.Level200Finished,
+                300  => AnalyticIds.Level300Finished,
+                400  => AnalyticIds.Level400Finished,
+                500  => AnalyticIds.Level500Finished,
+                600  => AnalyticIds.Level600Finished,
+                700  => AnalyticIds.Level700Finished,
+                800  => AnalyticIds.Level800Finished,
+                900  => AnalyticIds.Level900Finished,
+                1000 => AnalyticIds.Level1000Finished,
+                _    => null
             };
-            if (anId != AnalyticIds.LevelFinished)
-            {
-                Managers.AnalyticsManager.SendAnalytic(AnalyticIds.LevelFinished, 
-                    new Dictionary<string, object>
-                    {
-                        {"level_index", _LevelIndex},
-                        {"level_time", Model.LevelStaging.LevelTime},
-                        {"dies_count", Model.LevelStaging.DiesCount}
-                    });
-            }
+            if (string.IsNullOrEmpty(anId))
+                return;
             Managers.AnalyticsManager.SendAnalytic(anId, 
                 new Dictionary<string, object>
                 {
-                    {"level_index", _LevelIndex},
                     {"level_time", Model.LevelStaging.LevelTime},
-                    {"dies_count", Model.LevelStaging.DiesCount}
+                    {"dies_count", Model.LevelStaging.DiesCount},
+                    {"money_count", _MoneyCount}
                 });
         }
         

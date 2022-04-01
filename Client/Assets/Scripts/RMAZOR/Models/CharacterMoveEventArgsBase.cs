@@ -12,11 +12,11 @@ namespace RMAZOR.Models
         public V2Int              To        { get; }
         public float              Progress  { get; }
 
-        protected CharacterMoveEventArgsBase(   
-            EMazeMoveDirection _Direction, 
-            V2Int _From,
-            V2Int _To,
-            float _Progress)
+        protected CharacterMoveEventArgsBase(
+            EMazeMoveDirection _Direction,
+            V2Int              _From,
+            V2Int              _To,
+            float              _Progress)
         {
             Direction = _Direction;
             From = _From;
@@ -41,11 +41,11 @@ namespace RMAZOR.Models
         public Vector2 PreviousPrecisePosition      { get; }
 
         public CharacterMovingContinuedEventArgs(
-            EMazeMoveDirection _Direction, 
-            V2Int _From,
-            V2Int _To,
-            float _Progress,
-            float _PreviousProgress) 
+            EMazeMoveDirection _Direction,
+            V2Int              _From,
+            V2Int              _To,
+            float              _Progress,
+            float              _PreviousProgress) 
             : base(_Direction, _From, _To, _Progress)
         {
             PrecisePosition = V2Int.Lerp(_From, _To, _Progress);
@@ -60,9 +60,9 @@ namespace RMAZOR.Models
         public IMazeItemProceedInfo BlockWhoStopped { get; }
 
         public CharacterMovingFinishedEventArgs(
-            EMazeMoveDirection _Direction,
-            V2Int _From,
-            V2Int _To,
+            EMazeMoveDirection   _Direction,
+            V2Int                _From,
+            V2Int                _To,
             IMazeItemProceedInfo _BlockOnFinish,
             IMazeItemProceedInfo _BlockWhoStopped) 
             : base(_Direction, _From, _To, 1)

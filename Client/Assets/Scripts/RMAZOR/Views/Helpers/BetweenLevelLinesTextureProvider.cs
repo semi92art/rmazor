@@ -13,7 +13,7 @@ namespace RMAZOR.Views.Helpers
     {
         void Activate(bool            _Active);
         void SetTransitionValue(float _Value);
-        void SetColor(Color           _Color);
+        void SetColors(Color          _Color1, Color _Color2);
     }
     
     public class BetweenLevelLinesTextureProvider 
@@ -48,20 +48,15 @@ namespace RMAZOR.Views.Helpers
         
         #region api
 
-        public override void Init()
-        {
-            base.Init();
-            Material.SetColor(Color2Id, new Color(0f, 0f, 0f, 0f));
-        }
-
         public void SetTransitionValue(float _Value)
         {
-            Material.SetFloat(IndentId, _Value);
+            Material.SetFloat(IndentId, 1f - _Value);
         }
 
-        public void SetColor(Color _Color)
+        public void SetColors(Color _Color1, Color _Color2)
         {
-            Material.SetColor(Color1Id, _Color);
+            Material.SetColor(Color1Id, _Color1);
+            Material.SetColor(Color2Id, _Color2);
         }
         
         public void Activate(bool _Active)

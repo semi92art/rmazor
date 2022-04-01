@@ -108,13 +108,14 @@ namespace RMAZOR.Controllers
         {
             if (!Settings.debugEnabled && !Application.isEditor)
                 return;
-            SRDebug.Init();
+            if (SRDebug.Instance == null)
+                SRDebug.Init();
             SROptions.Init(
-                Model.Settings, 
-                View.Settings, 
-                Model.LevelStaging,
-                View.Managers, 
-                View.CommandsProceeder);
+                    Model.Settings, 
+                    View.Settings, 
+                    Model.LevelStaging,
+                    View.Managers, 
+                    View.CommandsProceeder);
             View.Managers.DebugManager.Init();
         }
 

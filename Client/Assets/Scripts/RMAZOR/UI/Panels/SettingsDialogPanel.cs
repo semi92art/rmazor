@@ -199,6 +199,7 @@ namespace RMAZOR.UI.Panels
                         itemSelector.setting.text = _Value;
                         if (typeof(T) == typeof(Language))
                         {
+                            Managers.AnalyticsManager.SendAnalytic(AnalyticIds.LanguageButtonPressed);
                             var lang = LanguageTitles.FirstOrDefault(_Kvp => _Kvp.Value == _Value).Key;
                             T val = ConvertValue<T>(lang);
                             _Setting.Put(val);
@@ -227,7 +228,11 @@ namespace RMAZOR.UI.Panels
                 Managers,
                 Ticker,
                 ColorProvider,
-                () => Managers.ShopManager.RateGame(false));
+                () =>
+                {
+                    Managers.AnalyticsManager.SendAnalytic(AnalyticIds.RateGameButton1Pressed);
+                    Managers.ShopManager.RateGame(false);
+                });
             Managers.LocalizationManager.AddTextObject(item.title, "rate_game");
             item.Highlighted = true;
         }
@@ -241,6 +246,7 @@ namespace RMAZOR.UI.Panels
                 ColorProvider,
                 () =>
                 {
+                    Managers.AnalyticsManager.SendAnalytic(AnalyticIds.LeaderboardsButtonPressed);
                     var scoreEntity = Managers.ScoreManager.GetScoreFromLeaderboard(DataFieldIds.Level, false);
                     Cor.Run(Cor.WaitWhile(
                         () => scoreEntity.Result == EEntityResult.Pending,
@@ -286,7 +292,11 @@ namespace RMAZOR.UI.Panels
                 Managers,
                 Ticker,
                 ColorProvider,
-                () => Managers.ShopManager.RestorePurchases());
+                () =>
+                {
+                    Managers.AnalyticsManager.SendAnalytic(AnalyticIds.RestorePurchasesButtonPressed);
+                    Managers.ShopManager.RestorePurchases();
+                });
             Managers.LocalizationManager.AddTextObject(item.title, "restore_purchases");
         }
 

@@ -35,6 +35,7 @@ namespace Mono_Installers
     public class LevelMonoInstaller : MonoInstallerImplBase
     {
         public GameObject colorProvider;
+        public GameObject subtitle;
 
         public override void InstallBindings()
         {
@@ -110,12 +111,14 @@ namespace Mono_Installers
             Container.Bind<IViewInputCommandsProceeder>()  .To<ViewInputCommandsProceeder>()  .AsSingle();
             Container.Bind<IViewInputTouchProceeder>()     .To<ViewInputTouchProceeder>()     .AsSingle();
             Container.Bind<IRotatingPossibilityIndicator>().To<RotatingPossibilityIndicator>().AsTransient();
-#if UNITY_EDITOR
-            Container.Bind<IViewInputController>()          .To<ViewInputControllerInEditor>() .AsSingle();
-#else
-            Container.Bind<IViewInputController>()          .To<ViewInputController>()         .AsSingle();
-#endif
-            Container.Bind<IColorProvider>()     .FromComponentInNewPrefab(colorProvider)      .AsSingle();
+
+            var inputControllerType = Application.isEditor ? 
+                typeof(ViewInputControllerInEditor) : typeof(ViewInputController);
+            Container.Bind<IViewInputController>().To(inputControllerType) .AsSingle();
+
+            Container.Bind<IColorProvider>()       .FromComponentInNewPrefab(colorProvider).AsSingle();
+            Container.Bind<ViewUISubtitleWithCharacterMonoBeh>().FromComponentInNewPrefab(subtitle)     .AsSingle();
+            Container.Bind<IViewUISubtitles>()     .To<ViewUISubtitles>()                  .AsSingle();
         }
 
         private void BindMazeItemBlocksAndGroups()

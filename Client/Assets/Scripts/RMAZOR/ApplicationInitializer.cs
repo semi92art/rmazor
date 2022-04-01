@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using Common;
 using Common.CameraProviders;
 using Common.Constants;
@@ -71,10 +72,10 @@ namespace RMAZOR
         #endregion
     
         #region engine methods
-    
+
         private IEnumerator Start()
         {
-            Dbg.Log("Application started, platform: " + Application.platform);
+            LogAppInfo();
             yield return Cor.Delay(0.5f, null); // для более плавной загрузки логотипа компании
             var permissionsEntity = PermissionsRequester.RequestPermissions();
             while (permissionsEntity.Result == EEntityResult.Pending)
@@ -83,8 +84,28 @@ namespace RMAZOR
             InitLogging();
             InitGameManagers();
             InitDefaultData();
+            SceneManager.sceneLoaded -= OnSceneLoaded;
             SceneManager.sceneLoaded += OnSceneLoaded;
             yield return LoadSceneLevel();
+        }
+
+        private static void LogAppInfo()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("Application started");
+            sb.AppendLine("Platform: "              + Application.platform);
+            sb.AppendLine("Installer name: "        + Application.installerName);
+            sb.AppendLine("Identifier: "            + Application.identifier);
+            sb.AppendLine("Version: "               + Application.version);
+            sb.AppendLine("Data path: "             + Application.dataPath);
+            sb.AppendLine("Install mode: "          + Application.installMode);
+            sb.AppendLine("Sandbox type: "          + Application.sandboxType);
+            sb.AppendLine("Unity version: "         + Application.unityVersion);
+            sb.AppendLine("Console log path: "      + Application.consoleLogPath);
+            sb.AppendLine("Streaming assets path: " + Application.streamingAssetsPath);
+            sb.AppendLine("Temporary cache path: "  + Application.temporaryCachePath);
+            sb.AppendLine("Absolute url: "          + Application.absoluteURL);
+            Dbg.Log(sb.ToString());
         }
 
         private static IEnumerator LoadSceneLevel()
@@ -102,11 +123,7 @@ namespace RMAZOR
                 return;
             Cor.Run(Cor.WaitWhile(
                 () => !RemoteConfigManager.Initialized,
-                () =>
-                {
-                    GameClientUtils.GameId = 1; // если игра будет только одна, то и париться с GameId нет смысла
-                    InitGameController();
-                }));
+                InitGameController));
         }
 
         #endregion
@@ -115,7 +132,11 @@ namespace RMAZOR
     
         private void InitGameManagers()
         {
+            
+            if (CommonData.DevelopmentBuild)
+                RemoteConfigManager.Initialize += SRDebug.Init;
             RemoteConfigManager.Initialize += AdsManager.Init;
+            RemoteConfigManager.Initialize += HapticsManager.Init;
             RemoteConfigManager.Init();
             ShopManager.RegisterProductInfos(GetProductInfos());
             ShopManager        .Init();
@@ -124,7 +145,6 @@ namespace RMAZOR
             ScoreManager       .Init();
             GameClient         .Init();
             LocalizationManager.Init();
-            HapticsManager     .Init();
         }
 
         private void InitGameController()

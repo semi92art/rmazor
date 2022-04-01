@@ -24,7 +24,7 @@ namespace RMAZOR.Editor
     {
         #region singleton
 
-        public static  LevelDesignerEditor Instance { get; private set; }
+        public static LevelDesignerEditor Instance { get; private set; }
 
         #endregion
         
@@ -32,19 +32,19 @@ namespace RMAZOR.Editor
 
         private HeapReorderableList LevelsList
         {
-            get => Des.LevelsList;
-            set => Des.LevelsList = value;
+            get => Des.levelsList;
+            set => Des.levelsList = value;
         }
 
         private static LevelDesigner Des => LevelDesigner.Instance;
-        private static int           _gameId;
         
-        private IPrefabSetManager        m_PrefabSetManager;
-        private IAssetBundleManager      m_AssetBundleManager;
-        private ViewSettings             m_ViewSettings;
-        private IMazeCoordinateConverter m_CoordinateConverter;
-        private IContainersGetter        m_ContainersGetter;
-        private IMazeItemsCreator        m_MazeItemsCreator;
+        private        IPrefabSetManager        m_PrefabSetManager;
+        private        IAssetBundleManager      m_AssetBundleManager;
+        private        ViewSettings             m_ViewSettings;
+        private        IMazeCoordinateConverter m_CoordinateConverter;
+        private        IContainersGetter        m_ContainersGetter;
+        private        IMazeItemsCreator        m_MazeItemsCreator;
+        private static CommonGameSettings       _commonGameSettings;
         
         private static int HeapIndex
         {
@@ -79,7 +79,6 @@ namespace RMAZOR.Editor
             int startHeapIndex = SaveUtilsInEditor.GetValue(saveKey);
             if (startHeapIndex == default)
                 SaveUtilsInEditor.PutValue(saveKey, 1);
-            _gameId = 1;
         }
 
         private void OnEnable()
@@ -112,6 +111,12 @@ namespace RMAZOR.Editor
 
         public void OnGUI()
         {
+            if (_commonGameSettings == null)
+            {
+                _commonGameSettings =
+                    AssetDatabase.LoadAssetAtPath<CommonGameSettings>(
+                        "Assets/Prefabs/Configs and Sets/common_game_settings.asset");
+            }
             if (SceneManager.GetActiveScene().name == SceneNames.Prototyping)
             {
                 ReloadReorderableLevels();
@@ -181,7 +186,7 @@ namespace RMAZOR.Editor
                 return;
             void ReInitLevelsList()
             {
-                LevelsList = new HeapReorderableList(_gameId, HeapIndex, _SelectedIndex =>
+                LevelsList = new HeapReorderableList(_commonGameSettings.gameId, HeapIndex, _SelectedIndex =>
                 {
                     SaveUtilsInEditor.PutValue(SaveKeysInEditor.DesignerSelectedLevel, _SelectedIndex);
                 }, HeapReorderableList.LevelsCached);
@@ -192,6 +197,7 @@ namespace RMAZOR.Editor
             }
             else if (LevelsList.NeedToReload() || _Forced)
             {
+                LevelsList.gameId = _commonGameSettings.gameId;
                 LevelsList.Reload(
                     HeapIndex, 
                     HeapIndex != LevelsList.heapIndex ? null : LevelsList.levels);
@@ -314,12 +320,12 @@ namespace RMAZOR.Editor
             GUILayout.Label("Maze Generator", m_HeaderStyle);
             EditorUtilsEx.HorizontalZone(() =>
             {
-                GUILayout.Label("Size:", GUILayout.Width(35));
-                Des.sizeIdx = EditorGUILayout.Popup(Des.sizeIdx, 
-                    LevelDesigner.GetSizes().Select(_S => $"{_S.Item1}x{_S.Item2}").ToArray(),
-                    GUILayout.Width(100));
+                GUILayout.Label("w", GUILayout.Width(15));
+                Des.width = EditorGUILayout.IntField(Des.width, GUILayout.Width(40));
+                GUILayout.Label("h", GUILayout.Width(15));
+                Des.height = EditorGUILayout.IntField(Des.height, GUILayout.Width(40));
                 GUILayout.Label("Fullness:", GUILayout.Width(50));
-                Des.aParam = EditorGUILayout.Slider(Des.aParam, 0, 1, GUILayout.Width(150));
+                Des.aParam = EditorGUILayout.Slider(Des.aParam, 0, 1);
             });
             EditorUtilsEx.HorizontalZone(() =>
             {

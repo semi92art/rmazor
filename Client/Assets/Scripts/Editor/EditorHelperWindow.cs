@@ -26,19 +26,18 @@ namespace Editor
 {
     public class EditorHelperWindow : EditorWindow
     {
-        private int     m_DailyBonusIndex;
-        private int     m_TestUsersCount = 3;
-        private string  m_DebugServerUrl;
-        private string  m_TestUrlCheck;
-        private int     m_GameId = -1;
-        private int     m_GameIdCheck;
-        private int     m_Quality = -1;
-        private int     m_QualityCheck;
-        private int     m_TabPage;
-        private int     m_TabPageSettings;
-        private Vector2 m_CommonScrollPos;
-        private Vector2 m_CachedDataScrollPos;
-        private Vector2 m_SettingsScrollPos;
+        private int                m_DailyBonusIndex;
+        private int                m_TestUsersCount = 3;
+        private string             m_DebugServerUrl;
+        private string             m_TestUrlCheck;
+        private int                m_Quality = -1;
+        private int                m_QualityCheck;
+        private int                m_TabPage;
+        private int                m_TabPageSettings;
+        private Vector2            m_CommonScrollPos;
+        private Vector2            m_CachedDataScrollPos;
+        private Vector2            m_SettingsScrollPos;
+        private static CommonGameSettings _commonGameSettings;
 
         [MenuItem("Tools/\u2699 Editor Helper _%h", false, 0)]
         public static void ShowWindow()
@@ -56,11 +55,16 @@ namespace Editor
         private void OnEnable()
         {
             UpdateTestUrl();
-            UpdateGameId();
         }
 
         private void OnGUI()
         {
+            if (_commonGameSettings == null)
+            {
+                _commonGameSettings =
+                    AssetDatabase.LoadAssetAtPath<CommonGameSettings>(
+                        "Assets/Prefabs/Configs and Sets/common_game_settings.asset");
+            }
             m_TabPage = GUILayout.Toolbar (
                 m_TabPage, 
                 new [] {"Common", "Cached Data", "Settings", "Remote"});
@@ -124,7 +128,6 @@ namespace Editor
                 }
             });
             UpdateTestUrl();
-            UpdateGameId();
         }
 
         private void CachedDataTabPage()
@@ -271,19 +274,10 @@ namespace Editor
             m_TestUrlCheck = m_DebugServerUrl;
         }
 
-        private void UpdateGameId()
-        {
-            if (m_GameId == -1)
-                m_GameId = SaveUtils.GetValue(SaveKeysCommon.GameId);
-            if (m_GameId != m_GameIdCheck)
-                SaveUtils.PutValue(SaveKeysCommon.GameId, m_GameId);
-            m_GameIdCheck = m_GameId;
-        }
-
         private static void CreateTestUsers(int _Count)
         {
             CommonData.Testing = true;
-            var gc = new GameClient(new CommonTicker());
+            var gc = new GameClient(_commonGameSettings, new CommonTicker());
             const int gameId = 1;
             gc.Initialize += () =>
             {
@@ -297,14 +291,7 @@ namespace Editor
                             GameId = gameId
                         });
                     int ii = i;
-                    packet.OnSuccess(() =>
-                        {
-                            // int accId = packet.Response.Id;
-                            // new GameDataField(gc, 100, accId,
-                            //                   GameClientUtils.GameId, DataFieldIds.Money).Save();
-                            // Dbg.Log("All test users were created successfully");
-                        })
-                        .OnFail(() =>
+                    packet.OnFail(() =>
                         {
                             Dbg.LogError($"Creating test user #{ii + 1} of {_Count} failed");
                             Dbg.LogError(packet.Response);
@@ -319,7 +306,7 @@ namespace Editor
         private static void DeleteTestUsers()
         {
             CommonData.Testing = true;
-            var gc = new GameClient(new CommonTicker());
+            var gc = new GameClient(_commonGameSettings, new CommonTicker());
             gc.Initialize += () =>
             {
                 IPacket packet = new DeleteTestUsersPacket();
@@ -354,7 +341,6 @@ namespace Editor
                 {"Login", SaveUtils.GetValue(SaveKeysCommon.Login) ?? "not exist"},
                 {"Password hash", SaveUtils.GetValue(SaveKeysCommon.PasswordHash) ?? "not exist"},
                 {"Account id", GameClientUtils.AccountId.ToString()},
-                {"Game id", SaveUtils.GetValue(SaveKeysCommon.GameId).ToString()},
             };
     }
 }
