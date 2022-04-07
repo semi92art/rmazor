@@ -35,8 +35,11 @@ MonoBehaviour:
     - item: {fileID: 2100000, guid: a8c16c09af8be9740afcc17ed482e3d1, type: 2}
       name: circles2_background
       bundle: 0
-    - item: {fileID: 2100000, guid: a5c570590e56b044e9563ead2d884b7f, type: 2}
+    - item: {fileID: 2100000, guid: 43dc65d468299d1449428e04b69370cf, type: 2}
       name: triangles_background
+      bundle: 0
+    - item: {fileID: 2100000, guid: a5c570590e56b044e9563ead2d884b7f, type: 2}
+      name: triangles2_background
       bundle: 0
     - item: {fileID: 2100000, guid: 8df20dfe3c9094c4e9e31170a1885f48, type: 2}
       name: solid_background

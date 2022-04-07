@@ -92,7 +92,7 @@ namespace RMAZOR.Views.UI
 
         protected virtual void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId != ColorIdsCommon.UI)
+            if (_ColorId != ColorIds.UI)
                 return;
             hand.color = _Color;
         }

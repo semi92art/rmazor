@@ -57,6 +57,10 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
             Material.SetFloat(RatioId, _Item.ratio);
             Material.SetFloat(AId, _Item.a);
             Material.SetFloat(BId, _Item.b);
+            Material.SetFloat(TilingId, _Item.tiling);
+            Material.SetFloat(DirectionId, _Item.direction);
+            Material.SetFloat(WrapScaleId, _Item.wrapScale);
+            Material.SetFloat(WrapTilingId, _Item.wrapTiling);
         }
 
         #endregion

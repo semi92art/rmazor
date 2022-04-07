@@ -3,7 +3,7 @@
     Properties {
 		_Color1 ("Color 1", Color) = (0,0,0,1)
 		_Color2 ("Color 2", Color) = (0,0,0,0)
-    	[IntRange] _Tiling ("Tiling", Range(1, 10)) = 1
+    	_Tiling ("Tiling", Range(1, 10)) = 1
 		_Direction ("Direction", Range(-5, 5)) = 0
     	_Indent("Indent", Range(0, 1)) = 0.5
 		_WrapTiling ("Wrap Tiling", Range(0, 3)) = 1
@@ -51,8 +51,6 @@
 			}
 
 			fixed4 frag (v2f i) : SV_Target {
-				if (all(_Color1 == _Color2))
-					return _Color1;
 				const fixed4 colEmpty = fixed4(0, 0, 0, 0); 
 				float2 pos = wrap_pos(i.uv, _Tiling, _Direction, _WrapScale, _WrapTiling);
 				fixed lerp_coeff_1 = frac(pos.x);

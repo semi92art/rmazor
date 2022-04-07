@@ -9,10 +9,7 @@ namespace Common.SpawnPools
         
         public override bool Remove(T _Item)
         {
-            if (!Contains( _Item))
-                return false;
-            //_Item?.Destroy();
-            return Collection.Remove(Collection[IndexOf(_Item)]);
+            return Contains( _Item) && Collection.Remove(Collection[IndexOf(_Item)]);
         }
         
         protected override void Activate(T _Item, bool _Active)

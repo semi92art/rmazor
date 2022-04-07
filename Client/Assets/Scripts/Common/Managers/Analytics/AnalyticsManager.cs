@@ -9,13 +9,16 @@ namespace Common.Managers.Analytics
     {
         #region inject
 
+        private CommonGameSettings         GameSettings              { get; }
         private IUnityAnalyticsProvider    UnityAnalyticsProvider    { get; }
         private IFirebaseAnalyticsProvider FirebaseAnalyticsProvider { get; }
 
         public AnalyticsManager(
+            CommonGameSettings         _GameSettings,
             IUnityAnalyticsProvider    _UnityAnalyticsProvider,
             IFirebaseAnalyticsProvider _FirebaseAnalyticsProvider)
         {
+            GameSettings = _GameSettings;
             UnityAnalyticsProvider    = _UnityAnalyticsProvider;
             FirebaseAnalyticsProvider = _FirebaseAnalyticsProvider;
         }
@@ -26,13 +29,18 @@ namespace Common.Managers.Analytics
         
         public override void Init()
         {
-            UnityAnalyticsProvider.Init();
-            FirebaseAnalyticsProvider.Init();
+            if (!GameSettings.debugEnabled)
+            {
+                UnityAnalyticsProvider.Init();
+                FirebaseAnalyticsProvider.Init();
+            }
             base.Init();
         }
         
         public void SendAnalytic(string _AnalyticId, IDictionary<string, object> _EventData = null)
         {
+            if (GameSettings.debugEnabled)
+                return;
             UnityAnalyticsProvider.SendAnalytic(_AnalyticId, _EventData);
             FirebaseAnalyticsProvider.SendAnalytic(_AnalyticId, _EventData);
         }

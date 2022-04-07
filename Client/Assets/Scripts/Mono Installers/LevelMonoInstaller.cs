@@ -65,7 +65,6 @@ namespace Mono_Installers
             Container.Bind<IShredingerBlocksProceeder>()  .To<ShredingerBlocksProceeder>()                .AsSingle();
             Container.Bind<ISpringboardProceeder>()       .To<SpringboardProceeder>()                     .AsSingle();
             Container.Bind<IModelMazeInfoCorrector>()     .To<ModelMazeInfoCorrectorWithWallSurrounding>().AsSingle();
-            
         }
 
         private void BindView()
@@ -88,18 +87,19 @@ namespace Mono_Installers
             Container.Bind<IViewGame>()               .To<ViewGame>()               .AsSingle();
             Container.Bind<IViewMazeCommon>()         .To<ViewMazeCommon>()         .AsSingle();
 
-            Container.Bind<IViewMazeRotation>()                .To<ViewMazeRotation>()                 .AsSingle();
-            Container.Bind<IViewBackground>()                  .To<ViewBackground>()                   .AsSingle();
-            Container.Bind<IViewMazeAdditionalBackground>()    .To<ViewMazeAdditionalBackground>()     .AsSingle();
-            Container.Bind<IViewMazeBackgroundIdleItems>()     .To<ViewMazeBackgroundIdleItems>()      .AsSingle();
-            Container.Bind<IViewMazeBackgroundIdleItemDisc>()  .To<ViewMazeBackgroundIdleItemDisc>()   .AsSingle();
-            Container.Bind<IViewMazeBackgroundIdleItemSquare>().To<ViewMazeBackgroundIdleItemSquare>() .AsSingle();
-            Container.Bind<IViewMazeBackgroundCongradItems>()  .To<ViewMazeBackgroundCongradItems2>()  .AsSingle();
-            Container.Bind<IViewMazeForeground>()              .To<ViewMazeForeground>()               .AsSingle();
-            Container.Bind<IViewBetweenLevelTransitioner>()    .To<ViewBetweenLevelTransitioner>()     .AsSingle();
-            Container.Bind<IViewLevelStageController>()        .To<ViewLevelStageController>()         .AsSingle();
-            Container.Bind<IViewTurretProjectile>()            .To<ViewTurretProjectileShuriken>()     .AsSingle();
-            Container.Bind<IViewTurretProjectileTail>()        .To<ViewTurretProjectileTail>()         .AsSingle();
+            Container.Bind<IViewMazeRotation>()                  .To<ViewMazeRotation>()                  .AsSingle();
+            Container.Bind<IViewBackground>()                    .To<ViewBackground>()                    .AsSingle();
+            Container.Bind<IViewMazeAdditionalBackground>()      .To<ViewMazeAdditionalBackground>()      .AsSingle();
+            Container.Bind<IViewMazeBackgroundIdleItems>()       .To<ViewMazeBackgroundIdleItems>()       .AsSingle();
+            Container.Bind<IViewMazeBackgroundIdleItemDisc>()    .To<ViewMazeBackgroundIdleItemDisc>()    .AsSingle();
+            Container.Bind<IViewMazeBackgroundIdleItemSquare>()  .To<ViewMazeBackgroundIdleItemSquare>()  .AsSingle();
+            Container.Bind<IViewMazeBackgroundIdleItemTriangle>().To<ViewMazeBackgroundIdleItemTriangle>().AsSingle();
+            Container.Bind<IViewMazeBackgroundCongradItems>()    .To<ViewMazeBackgroundCongradItems2>()   .AsSingle();
+            Container.Bind<IViewMazeForeground>()                .To<ViewMazeForeground>()                .AsSingle();
+            Container.Bind<IViewBetweenLevelTransitioner>()      .To<ViewBetweenLevelTransitioner>()      .AsSingle();
+            Container.Bind<IViewLevelStageController>()          .To<ViewLevelStageController>()          .AsSingle();
+            Container.Bind<IViewTurretProjectile>()              .To<ViewTurretProjectileShuriken>()      .AsSingle();
+            Container.Bind<IViewTurretProjectileTail>()          .To<ViewTurretProjectileTail>()          .AsSingle();
             
             Container.Bind<IViewMazeAdditionalBackgroundGeometryInitializer>()
                 .To<ViewMazeAdditionalBackgroundGeometryInitializerSimple>()
@@ -117,7 +117,7 @@ namespace Mono_Installers
             Container.Bind<IViewInputController>().To(inputControllerType) .AsSingle();
 
             Container.Bind<IColorProvider>()       .FromComponentInNewPrefab(colorProvider).AsSingle();
-            Container.Bind<ViewUISubtitleWithCharacterMonoBeh>().FromComponentInNewPrefab(subtitle)     .AsSingle();
+            Container.Bind<ViewUISubtitleWithCharacterMonoBeh>().FromComponentInNewPrefab(subtitle).AsSingle();
             Container.Bind<IViewUISubtitles>()     .To<ViewUISubtitles>()                  .AsSingle();
         }
 
@@ -199,10 +199,7 @@ namespace Mono_Installers
                 Container.Bind<IShopTailsDialogPanel>()      .To<ShopTailsPanel>()          .AsSingle();
                 Container.Bind<ISettingDialogPanel>()        .To<SettingsDialogPanel>()     .AsSingle();
                 Container.Bind<IRateGameDialogPanel>()       .To<RateGameDialogPanel>()     .AsSingle();
-
-                var charDiedPanelType = Application.platform == RuntimePlatform.IPhonePlayer
-                    ? typeof(CharacterDiedDialogPanel) : typeof(CharacterDiedDialogPanel2);
-                Container.Bind<ICharacterDiedDialogPanel>().To(charDiedPanelType).AsSingle();
+                Container.Bind<ICharacterDiedDialogPanel>()  .To<CharacterDiedDialogPanel>().AsSingle();
             }
         }
 
@@ -214,6 +211,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazeBackgroundCirclesTextureProvider>()  .To<ViewMazeBackgroundCirclesTextureProvider>()   .AsSingle();
             Container.Bind<IViewMazeBackgroundCircles2TextureProvider>() .To<ViewMazeBackgroundCircles2TextureProvider>()  .AsSingle();
             Container.Bind<IViewMazeBackgroundTrianglesTextureProvider>().To<ViewMazeBackgroundTrianglesTextureProvider>() .AsSingle();
+            Container.Bind<IViewMazeBackgroundTriangles2TextureProvider>().To<ViewMazeBackgroundTriangles2TextureProvider>() .AsSingle();
             Container.Bind<IViewMazeGameLogoTextureProvider>()           .To<ViewMazeGameLogoSingleCircleTextureProvider>().AsSingle();
             Container.Bind<IBetweenLevelTextureProvider>()               .To<BetweenLevelLinesTextureProvider>()           .AsSingle();
         }

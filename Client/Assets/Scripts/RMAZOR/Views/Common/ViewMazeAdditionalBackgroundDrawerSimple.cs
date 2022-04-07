@@ -33,7 +33,7 @@ namespace RMAZOR.Views.Common
         private const int   BordersPoolCount      = 100;
         private const int   CornersPoolCount      = 20;
         private const int   MasksPoolCount        = 10;
-        private const int   TextureTypesCount     = 7;
+        private const int   TextureTypesCount     = 9;
         private const int   TextureRenderersCount = 3;
         private const float BorderRelativeIndent  = 0.5f;
 
@@ -115,9 +115,9 @@ namespace RMAZOR.Views.Common
                 {m_Borders.GetAllActiveItems(), () => mainCol},
                 {m_Corners.GetAllActiveItems(), () => mainCol},
                 {new[] {m_TextureRendererBack}, () => back1Col},
-                {m_TextureRenderers.GetAllActiveItems(), () => mainCol.SetA(0.3f)}
+                {m_TextureRenderers.GetAllActiveItems(), () => mainCol.SetA(0.8f)}
             };
-            Transitioner.DoAppearTransition(_Appear, dict, _OnFinish: () =>
+            Transitioner.DoAppearTransition(_Appear, dict, () =>
             {
                 AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared;
             });

@@ -241,6 +241,7 @@ namespace RMAZOR
 
         private static void InitStartData()
         {
+            RazorMazeUtils.LoadNextLevelAutomatically = true;
             SaveUtils.PutValue(SaveKeysCommon.AppVersion, Application.version);
             Application.targetFrameRate = GraphicUtils.GetTargetFps();
             CommonData.Release = true;

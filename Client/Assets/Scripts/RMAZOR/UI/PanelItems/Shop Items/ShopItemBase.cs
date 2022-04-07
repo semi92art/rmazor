@@ -87,23 +87,22 @@ namespace RMAZOR.UI.PanelItems.Shop_Items
         {
             base.SetColorsOnInit();
             if (m_IsBuyButtonNotNull)
-                buyButton.targetGraphic.color = ColorProvider.GetColor(ColorIdsCommon.UiDialogBackground);
+                buyButton.targetGraphic.color = ColorProvider.GetColor(ColorIds.UiDialogBackground);
             if (m_IsWatchAdImageNotNull)
-                watchAdImage.color = ColorProvider.GetColor(ColorIdsCommon.UI);
+                watchAdImage.color = ColorProvider.GetColor(ColorIds.UI);
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             base.OnColorChanged(_ColorId, _Color);
-            if (_ColorId == ColorIdsCommon.UiDialogBackground)
+            switch (_ColorId)
             {
-                if (m_IsBuyButtonNotNull)
+                case ColorIds.UiDialogBackground when m_IsBuyButtonNotNull:
                     buyButton.targetGraphic.color = _Color;
-            }
-            else if (_ColorId == ColorIdsCommon.UI)
-            {
-                if (m_IsWatchAdImageNotNull)
+                    break;
+                case ColorIds.UI when m_IsWatchAdImageNotNull:
                     watchAdImage.color = _Color;
+                    break;
             }
         }
 

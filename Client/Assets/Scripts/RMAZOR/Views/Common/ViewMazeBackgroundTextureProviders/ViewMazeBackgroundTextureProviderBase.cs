@@ -77,10 +77,11 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
         
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == ColorIds.Background1)
-                Material.SetColor(Color1Id, _Color);
-            else if (_ColorId == ColorIds.Background2)
-                Material.SetColor(Color2Id, _Color);
+            switch (_ColorId)
+            {
+                case ColorIds.Background1: Material.SetColor(Color1Id, _Color); break;
+                case ColorIds.Background2: Material.SetColor(Color2Id, _Color); break;
+            }
         }
         
         private IEnumerator ShowTexture(

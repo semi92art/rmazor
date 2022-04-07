@@ -12,5 +12,6 @@ namespace RMAZOR
         public IList<CirclesTextureSetItem>     CirclesTextureSet     { get; set; }
         public IList<Circles2TextureSetItem>    Circles2TextureSet    { get; set; }
         public IList<TrianglesTextureSetItem>   TrianglesTextureSet   { get; set; }
+        public IList<Triangles2TextureSetItem>  Triangles2TextureSet  { get; set; }
     }
 }

@@ -44,7 +44,6 @@ namespace Mono_Installers
             Container.Bind<IHapticsSetting>()     .To<HapticsSetting>()                     .AsSingle();
             Container.Bind<ILanguageSetting>()    .To<LanguageSetting>()                    .AsSingle();
             Container.Bind<IDebugSetting>()       .To<DebugSetting>()                       .AsSingle();
-            Container.Bind<IDarkThemeSetting>()   .To<DarkThemeSetting>()                   .AsSingle();
             
             #endregion
 

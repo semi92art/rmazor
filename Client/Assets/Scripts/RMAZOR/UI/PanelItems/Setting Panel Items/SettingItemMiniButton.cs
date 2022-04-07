@@ -30,7 +30,7 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
         {
             base.Init(_Managers.AudioManager, _UITicker, _ColorProvider);
             icon.sprite = _IsOn ? _SpriteOn : _SpriteOff;
-            icon.color = _ColorProvider.GetColor(ColorIdsCommon.UI);
+            icon.color = _ColorProvider.GetColor(ColorIds.UI);
             toggle.isOn = _IsOn;
             toggle.onValueChanged.AddListener(_Action);
             toggle.onValueChanged.AddListener(_On => SoundOnClick());
@@ -51,17 +51,16 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
         protected override void SetColorsOnInit()
         {
             base.SetColorsOnInit();
-            icon.color = ColorProvider.GetColor(ColorIdsCommon.UI);
+            icon.color = ColorProvider.GetColor(ColorIds.UI);
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             base.OnColorChanged(_ColorId, _Color);
-            if (_ColorId == ColorIdsCommon.UI)
-            {
-                if (m_IsIconNotNull)
-                    icon.color = _Color;
-            }
+            if (_ColorId != ColorIds.UI) 
+                return;
+            if (m_IsIconNotNull)
+                icon.color = _Color;
         }
     }
 }

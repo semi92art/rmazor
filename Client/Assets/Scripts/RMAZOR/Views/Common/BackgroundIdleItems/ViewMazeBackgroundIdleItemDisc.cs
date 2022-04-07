@@ -1,61 +1,58 @@
 ﻿using Common.Extensions;
+using Common.Managers;
 using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
 
 namespace RMAZOR.Views.Common.BackgroundIdleItems
 {
-    public interface IViewMazeBackgroundIdleItemDisc : IViewMazeBackgroundIdleItem
-    {
-        void SetParams(float _Radius, float _Thickness);
-    }
+    public interface IViewMazeBackgroundIdleItemDisc : IViewMazeBackgroundIdleItem { }
     
     public class ViewMazeBackgroundIdleItemDisc : ViewMazeBackgroundIdleItemBase, IViewMazeBackgroundIdleItemDisc
     {
-        private Disc             m_InnerDisc;
-        private Disc             m_OuterDisc;
-        private CircleCollider2D m_CircleCollider;
+        private Disc             m_Disc;
+        private Disc             m_Border;
+
+        public ViewMazeBackgroundIdleItemDisc(IPrefabSetManager _PrefabSetManager) 
+            : base(_PrefabSetManager) { }
         
         public override object Clone()
         {
-            return new ViewMazeBackgroundIdleItemDisc();
+            return new ViewMazeBackgroundIdleItemDisc(PrefabSetManager);
         }
 
         public override void Init(Transform _Parent, PhysicsMaterial2D _Material)
         {
-            Obj = new GameObject("Background Idle Item");
-            Obj.transform.SetParent(_Parent);
-            m_InnerDisc = Obj.AddComponentOnNewChild<Disc>("Background Idle Item", out _)
+            Obj = PrefabSetManager.InitPrefab(_Parent, "background", "idle_item_disc");
+            m_Disc = Obj.GetCompItem<Disc>("disc")
                 .SetType(DiscType.Disc)
                 .SetSortingOrder(SortingOrders.BackgroundItem);
-            m_OuterDisc = Obj.AddComponentOnNewChild<Disc>("Outer Disc", out _)
+            m_Border = Obj.GetCompItem<Disc>("border")
                 .SetType(DiscType.Ring)
                 .SetSortingOrder(SortingOrders.BackgroundItem);
             Shapes.Clear();
-            Shapes.AddRange(new[] {m_InnerDisc, m_OuterDisc});
-            var rb = Obj.AddComponent<Rigidbody2D>();
+            Shapes.AddRange(new[] {m_Disc, m_Border});
+            var rb = Obj.GetCompItem<Rigidbody2D>("rigidbody");
             rb.gravityScale = 0f;
             rb.constraints = RigidbodyConstraints2D.None;
             rb.angularDrag = 0f;
             rb.sharedMaterial = _Material;
             Rigidbody = rb;
-            var coll = Obj.AddComponent<CircleCollider2D>();
+            var coll = Obj.GetCompItem<Collider2D>("collider");
             coll.sharedMaterial = _Material;
-            m_CircleCollider = coll;
         }
 
         public override void SetColor(Color _Color)
         {
-            m_InnerDisc.Color = _Color.SetA(0.2f);
-            m_OuterDisc.Color = _Color.SetA(0.5f);
+            m_Disc.Color = _Color.SetA(0.2f);
+            m_Border.Color = _Color.SetA(0.5f);
         }
 
-        public void SetParams(float _Radius, float _Thickness)
+        public override void SetParams(float _Scale, float _Thickness)
         {
-            m_InnerDisc.SetRadius(_Radius);
-            m_OuterDisc.SetRadius(_Radius).SetThickness(_Thickness);
-            Rigidbody.mass = _Radius;
-            m_CircleCollider.radius = _Radius;
+            Obj.transform.SetLocalScaleXY(Vector2.one * _Scale);
+            m_Border.SetThickness(_Thickness);
+            Rigidbody.mass = _Scale;
         }
     }
 }

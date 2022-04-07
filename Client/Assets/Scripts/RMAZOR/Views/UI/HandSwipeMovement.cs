@@ -58,7 +58,7 @@ namespace RMAZOR.Views.UI
             Vector4                  _Offsets)
         {
             base.Init(_Ticker, _CameraProvider, _CoordinateConverter, _ColorProvider, _Offsets);
-            var uiCol = _ColorProvider.GetColor(ColorIdsCommon.UI);
+            var uiCol = _ColorProvider.GetColor(ColorIds.UI);
             hand.color = uiCol;
             trace.startColor = trace.endColor = uiCol.SetA(0f);
             trace.widthMultiplier = 1f;
@@ -107,7 +107,7 @@ namespace RMAZOR.Views.UI
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             base.OnColorChanged(_ColorId, _Color);
-            if (_ColorId != ColorIdsCommon.UI)
+            if (_ColorId != ColorIds.UI)
                 return;
             var oldCol = trace.startColor;
             var newCol = oldCol.SetR(_Color.r).SetG(_Color.g).SetB(_Color.b);

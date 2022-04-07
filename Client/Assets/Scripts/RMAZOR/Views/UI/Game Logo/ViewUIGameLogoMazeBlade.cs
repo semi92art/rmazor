@@ -97,7 +97,7 @@ namespace RMAZOR.Views.UI.Game_Logo
             ColorProvider.ColorChanged += OnColorChanged;
             m_TopOffset = _Offsets.w;
             InitGameLogo();
-            SetColors(ColorProvider.GetColor(ColorIdsCommon.UI));
+            SetColors(ColorProvider.GetColor(ColorIds.UI));
         }
         
         public void Show()
@@ -123,7 +123,7 @@ namespace RMAZOR.Views.UI.Game_Logo
         
         private void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId != ColorIdsCommon.UI)
+            if (_ColorId != ColorIds.UI)
                 return;
             if (!m_GameLogoObj.activeSelf)
                 return;

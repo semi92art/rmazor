@@ -85,7 +85,7 @@ namespace RMAZOR.UI.Panels
             m_ButtonClose.onClick.AddListener(OnCloseButtonClick);
             m_ButtonRateGame.onClick.AddListener(OnRateGameButtonClick);
             m_TextRateGame.text = Managers.LocalizationManager.GetTranslation("rate_game");
-            m_Stars.color = ColorProvider.GetColor(ColorIdsCommon.UI);
+            m_Stars.color = ColorProvider.GetColor(ColorIds.UI);
             var closeButtonAnimator = m_ButtonClose.GetComponent<Animator>();
             if (closeButtonAnimator.IsNotNull())
                 closeButtonAnimator.enabled = false;
@@ -114,10 +114,8 @@ namespace RMAZOR.UI.Panels
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             base.OnColorChanged(_ColorId, _Color);
-            if (_ColorId == ColorIdsCommon.UI)
-            {
+            if (_ColorId == ColorIds.UI)
                 m_Stars.color = _Color;
-            }
         }
 
         private IEnumerator OnPanelStartAnimationFinished()

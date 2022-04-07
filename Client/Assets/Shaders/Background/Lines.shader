@@ -3,7 +3,7 @@ Shader "RMAZOR/Background/Lines"
     Properties {
 		_Color1 ("Color 1", Color) = (0,0,0,1)
 		_Color2 ("Color 2", Color) = (1,1,1,1)
-		[IntRange] _Tiling ("Tiling", Range(1, 10)) = 1
+		_Tiling ("Tiling", Range(1, 10)) = 1
 		_Direction ("Direction", Range(-1, 2)) = 0
 		_WrapScale ("Wrap Scale", Range(0, 1)) = 0
 		_WrapTiling ("Wrap Tiling", Range(1, 10)) = 1

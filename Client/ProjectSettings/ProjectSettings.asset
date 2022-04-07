@@ -136,11 +136,11 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 1.1
+  bundleVersion: 1.2
   preloadedAssets:
   - {fileID: 1560829925993726868, guid: 2d68a274acd3438479edfdddeb2eb23a, type: 3}
   - {fileID: 1560829925993726868, guid: c2c1f5da866cb11419b2a869e97445e1, type: 3}
-  - {fileID: 11400000, guid: fcaebc104eabc2c4a9876fa77caea83d, type: 2}
+  - {fileID: 0}
   - {fileID: 11400000, guid: 243986dd30cfcce4abbf025e950c2262, type: 2}
   - {fileID: 11400000, guid: f3d7c3154fa8924409625c627996a336, type: 2}
   - {fileID: 11400000, guid: c96e47f5bfb58e54dbbf3b023c341bf7, type: 2}
@@ -220,6 +220,7 @@ PlayerSettings:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -242,10 +243,10 @@ PlayerSettings:
     iPhone: com.MazingLabCo.MazesForever
   buildNumber:
     Standalone: 0
-    iPhone: 9
+    iPhone: 1
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
-  AndroidBundleVersionCode: 24
+  AndroidBundleVersionCode: 25
   AndroidMinSdkVersion: 26
   AndroidTargetSdkVersion: 30
   AndroidPreferredInstallLocation: 1

@@ -117,8 +117,6 @@ namespace RMAZOR.UI.Panels
             InitSettingItem(SettingsGetter.LanguageSetting);
             // InitSettingItem(SettingsGetter.NotificationSetting);
             InitSettingItem(SettingsGetter.HapticsSetting);
-            if (ColorProvider.DarkThemeAvailable)
-                InitSettingItem(SettingsGetter.DarkThemeSetting);
         }
 
         private void InitOtherButtons()

@@ -1,4 +1,4 @@
-Shader "RMAZOR/Background/Triangles" {
+﻿Shader "RMAZOR/Background/Triangles" {
     Properties {
 		_Color1 ("Color 1", Color) = (0,0,0,1)
 		_Color2 ("Color 2", Color) = (1,1,1,1)
@@ -6,7 +6,7 @@ Shader "RMAZOR/Background/Triangles" {
         _Ratio("Ratio", Range(1, 2)) = 1.224744
         _A("A", Float) = 0
         _B("B", Float) = 0
-        [IntRange] _Tiling ("Tiling", Range(1, 10)) = 1
+        _Tiling ("Tiling", Range(1, 10)) = 1
 		_Direction ("Direction", Range(0, 1)) = 0
 		_WrapScale ("Wrap Scale", Range(0, 1)) = 0
 		_WrapTiling ("Wrap Tiling", Range(1, 10)) = 1
@@ -25,7 +25,7 @@ Shader "RMAZOR/Background/Triangles" {
 		Blend One OneMinusSrcAlpha
         Pass {
             CGPROGRAM
-            
+
             #pragma vertex vert
             #pragma fragment frag
             #include "Common.cginc"

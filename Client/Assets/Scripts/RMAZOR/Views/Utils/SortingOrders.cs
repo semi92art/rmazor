@@ -6,13 +6,13 @@ namespace RMAZOR.Views.Utils
     public static class SortingOrders
     {
         public const int
-            BackgroundTexture            = Path - 7,
-            BackgroundItem               = Path - 6,
-            AdditionalBackgroundTexture2 = Path - 5,
-            AdditionalBackgroundTexture  = Path - 4,
-            AdditionalBackgroundBorder   = Path - 3,
-            AdditionalBackgroundCorner   = Path - 2,
-            PathBackground               = Path - 1,
+            BackgroundTexture            = Path - 350,
+            BackgroundItem               = Path - 300,
+            AdditionalBackgroundTexture2 = Path - 250,
+            AdditionalBackgroundTexture  = Path - 200,
+            AdditionalBackgroundBorder   = Path - 150,
+            AdditionalBackgroundCorner   = Path - 100,
+            PathBackground               = Path - 50,
             Path                         = -1,
             PathLine                     = Path + 50,
             PathJoint                    = Path + 100,

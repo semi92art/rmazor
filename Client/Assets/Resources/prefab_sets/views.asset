@@ -18,7 +18,7 @@ MonoBehaviour:
         type: 3}
       name: character
       bundle: 0
-    - item: {fileID: 21300000, guid: 8d112c4addc64ab40a3397928e8708e6, type: 3}
+    - item: {fileID: 21300000, guid: beb46aabcbddc0e45b1689082e6cfb3b, type: 3}
       name: moving_trap
       bundle: 0
     - item: {fileID: 7576702748604261066, guid: 414f36fb75e457b4baba389f5f1446ab,

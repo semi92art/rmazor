@@ -201,5 +201,23 @@ namespace Common.Extensions
             _Line.EndCaps = _EndCaps;
             return _Line;
         }
+
+        public static Triangle SetRoundness(this Triangle _Triangle, float _Roundness)
+        {
+            _Triangle.Roundness = _Roundness;
+            return _Triangle;
+        }
+        
+        public static Triangle SetBorder(this Triangle _Triangle, bool _Border)
+        {
+            _Triangle.Border = _Border;
+            return _Triangle;
+        }
+        
+        public static Triangle SetThickness(this Triangle _Triangle, float _Thickness)
+        {
+            _Triangle.Thickness = _Thickness;
+            return _Triangle;
+        }
     }
 }

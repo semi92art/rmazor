@@ -4,7 +4,6 @@ using Common;
 using Common.Entities;
 using Common.Helpers;
 using Common.SpawnPools;
-using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Helpers.MazeItemsCreators;
@@ -68,7 +67,7 @@ namespace RMAZOR.Views.MazeItemGroups
         public void OnPathProceed(V2Int _PathItem)
         {
             var item = PathItems.First(_Item => _Item.Props.Position == _PathItem);
-            item.Collected = true;
+            item.Collect(true);
         }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
@@ -80,8 +79,8 @@ namespace RMAZOR.Views.MazeItemGroups
                     DeactivateAllPaths();
                     MazeItemsCreator.InitPathItems(Model.Data.Info, m_PathsPool);
                     PathItems = m_PathsPool.Where(_Item => _Item.ActivatedInSpawnPool).ToList();
-                    if (!ViewSettings.startPathItemFilledOnStart)
-                        UnfillStartPathItem();
+                    if (ViewSettings.collectStartPathItemOnLevelLoaded)
+                        CollectStartPathItem();
                     break;
                 }
                 case ELevelStage.ReadyToUnloadLevel:
@@ -94,8 +93,8 @@ namespace RMAZOR.Views.MazeItemGroups
         
         public void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
         {
-            if (!m_FirstMoveDone && ViewSettings.startPathItemFilledOnStart)
-                UnfillStartPathItem();
+            if (!m_FirstMoveDone && !ViewSettings.collectStartPathItemOnLevelLoaded)
+                CollectStartPathItem();
             m_FirstMoveDone = true;
         }
 
@@ -124,16 +123,9 @@ namespace RMAZOR.Views.MazeItemGroups
             m_PathsPool.DeactivateAll();
         }
         
-        private void UnfillStartPathItem()
+        private void CollectStartPathItem()
         {
-            for (int i = 0; i < PathItems.Count; i++)
-            {
-                var item = PathItems[i];
-                if (!item.Props.IsStartNode) 
-                    continue;
-                item.Collected = true;
-                break;
-            }
+            PathItems.First(_P => _P.Props.IsStartNode).Collect(true);
         }
 
         private void OnMoneyItemCollected()

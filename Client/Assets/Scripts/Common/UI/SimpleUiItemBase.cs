@@ -69,49 +69,47 @@ namespace Common.UI
         
         protected virtual void SetColorsOnInit()
         {
+            if (m_IsBackgroundNotNull)
+                background.color = ColorProvider.GetColor(ColorIds.UiBackground);
             if (border.IsNotNull())
-                border.color = ColorProvider.GetColor(ColorIdsCommon.UiBorder);
-            var textColor = ColorProvider.GetColor(ColorIdsCommon.UiText);
+                border.color = ColorProvider.GetColor(ColorIds.UiBorder);
+            var textColor = ColorProvider.GetColor(ColorIds.UiText);
             foreach (var text in texts.Where(_Text => _Text.IsNotNull()))
                 text.color = textColor;
-            var uiColor = ColorProvider.GetColor(ColorIdsCommon.UI); 
+            var uiColor = ColorProvider.GetColor(ColorIds.UI); 
             foreach (var image in images.Where(_Image => _Image.IsNotNull()))
                 image.color = uiColor;
-            m_BorderDefaultColor = ColorProvider.GetColor(ColorIdsCommon.UiBorder);
-            m_BorderHighlightedColor = ColorProvider.GetColor(ColorIdsCommon.UiItemHighlighted);
+            m_BorderDefaultColor = ColorProvider.GetColor(ColorIds.UiBorder);
+            m_BorderHighlightedColor = ColorProvider.GetColor(ColorIds.UiItemHighlighted);
         }
 
         protected virtual void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == ColorIdsCommon.UI)
+            switch (_ColorId)
             {
-                for (int i = 0; i < images.Count; i++)
-                {
-                    if (m_AreImagesNotNull[i])
-                        images[i].color = _Color;
-                }
-            }
-            if (_ColorId == ColorIdsCommon.UiBorder)
-            {
-                if (m_IsBorderNotNull)
+                case ColorIds.UiBorder when m_IsBorderNotNull:
                     border.color = _Color;
-            }
-            else if (_ColorId == ColorIdsCommon.UiText)
-            {
-                for (int i = 0; i < texts.Count; i++)
-                {
-                    if (m_AreTextsNotNull[i])
-                        texts[i].color = _Color;
-                }
-            }
-            else if (_ColorId == ColorIdsCommon.UiBackground)
-            {
-                if (m_IsBackgroundNotNull)
+                    break;
+                case ColorIds.UiBackground when m_IsBackgroundNotNull:
                     background.color = _Color;
-            }
-            else if (_ColorId == ColorIdsCommon.UiItemHighlighted)
-            {
-                m_BorderHighlightedColor = _Color;
+                    break;
+                case ColorIds.UiItemHighlighted:
+                    m_BorderHighlightedColor = _Color;
+                    break;
+                case ColorIds.UI:
+                {
+                    for (int i = 0; i < images.Count; i++)
+                        if (m_AreImagesNotNull[i])
+                            images[i].color = _Color;
+                    break;
+                }
+                case ColorIds.UiText:
+                {
+                    for (int i = 0; i < texts.Count; i++)
+                        if (m_AreTextsNotNull[i])
+                            texts[i].color = _Color;
+                    break;
+                }
             }
         }
         

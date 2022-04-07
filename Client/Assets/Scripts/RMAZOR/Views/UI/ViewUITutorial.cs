@@ -345,7 +345,7 @@ namespace RMAZOR.Views.UI
             var screenBounds = GraphicUtils.GetVisibleBounds();
             RotationIndicator.Init(m_Offsets);
             RotationIndicator.SetPosition(new Vector2(screenBounds.center.x, screenBounds.min.y + 10f));
-            RotationIndicator.Shape.Color = ColorProvider.GetColor(ColorIdsCommon.UI).SetA(0f);
+            RotationIndicator.Shape.Color = ColorProvider.GetColor(ColorIds.UI).SetA(0f);
             RotationIndicator.Animator.SetTrigger(AnimKeys.Anim);
             var cont = ContainersGetter.GetContainer(ContainerNames.Tutorial);
             var goRotPossText = PrefabSetManager.InitPrefab(
@@ -356,7 +356,7 @@ namespace RMAZOR.Views.UI
             m_RotPossText = goRotPossText.GetCompItem<TextMeshPro>("text");
             m_RotPossText.rectTransform.sizeDelta = m_RotPossText.rectTransform.sizeDelta.SetX(
                 screenBounds.max.x - screenBounds.min.x - 3f);
-            m_RotPossText.color = ColorProvider.GetColor(ColorIdsCommon.UI).SetA(0f);
+            m_RotPossText.color = ColorProvider.GetColor(ColorIds.UI).SetA(0f);
             m_RotPossTextAnim = goRotPossText.GetCompItem<Animator>("animator");
             LocalizationManager.AddTextObject(m_RotPossText, "rotation_possibility_text");
             bool readyToNextStage = false;

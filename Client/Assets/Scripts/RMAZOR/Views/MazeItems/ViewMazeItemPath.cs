@@ -15,7 +15,6 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
-using RMAZOR.Views.Common;
 using RMAZOR.Views.Common.ViewMazeMoneyItems;
 using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
@@ -29,15 +28,15 @@ namespace RMAZOR.Views.MazeItems
 {
     public interface IViewMazeItemPath : IViewMazeItem
     {
-        bool              Collected { get; set; }
         event UnityAction MoneyItemCollected;
+        void              Collect(bool _Collect, bool _OnStart = false);
     }
     
     public class ViewMazeItemPath : ViewMazeItemBase, IViewMazeItemPath, IUpdateTick
     {
         #region constants
 
-        protected const float AdditionalScale = 1.01f;
+        protected const float AdditionalScale = 0.01f;
 
         #endregion
         
@@ -72,13 +71,14 @@ namespace RMAZOR.Views.MazeItems
         private bool m_IsTopBorderInverseOffset;
         private float m_DashedOffset;
         
+        private bool Collected => !Props.Blank && MoneyItem.IsCollected;
+        
         #endregion
         
         #region inject
         
         protected IViewMazeMoneyItem MoneyItem { get; }
         
-        // ReSharper disable once MemberCanBeProtected.Global
         public ViewMazeItemPath(
             ViewSettings                      _ViewSettings,
             IModelGame                        _Model,
@@ -137,18 +137,6 @@ namespace RMAZOR.Views.MazeItems
             }
         }
         
-        public bool Collected
-        {
-            get => !Props.Blank && MoneyItem.IsCollected;
-            set
-            {
-                if (Props.Blank)
-                    return;
-                MoneyItem.IsCollected = value;
-                Collect(value);
-            }
-        }
-
         public event UnityAction MoneyItemCollected;
 
         public override void Init(ViewMazeItemProps _Props)
@@ -158,6 +146,16 @@ namespace RMAZOR.Views.MazeItems
             MoneyItem.Collected -= MoneyItemCollected;
             MoneyItem.Collected += MoneyItemCollected;
             base.Init(_Props);
+        }
+        
+        public virtual void Collect(bool _Collect, bool _OnStart = false)
+        {
+            if (Props.Blank)
+                return;
+            MoneyItem.IsCollected = _Collect;
+            MoneyItem.Collect(_Collect);
+            var col = ColorProvider.GetColor(GetPathItemColorId());
+            m_PathItem.Color = _Collect ? col.SetA(0f) : col;
         }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
@@ -194,18 +192,40 @@ namespace RMAZOR.Views.MazeItems
                 float offset = !m_IsTopBorderInverseOffset ? -m_DashedOffset : m_DashedOffset + 0.5f;
                 m_TopBorder.DashOffset = offset;
             }
+
+            // var col = ColorProvider.GetColor(ColorIds.Main);
+            // Color.RGBToHSV(col, out float h, out float s, out float v);
+            // const float amplitude = 0.2f;
+            // if (s > 1f - amplitude)
+            //     s = 1f - amplitude;
+            // else if (s < amplitude)
+            //     s = amplitude;
+            // s += amplitude * Mathf.Cos(Time.time * 3.0f);
+            // s = Mathf.Clamp01(s);
+            // var newCol = Color.HSVToRGB(h, s, v);
+            // if (m_LeftBorderInited)
+            //     m_LeftBorder.SetColor(newCol);
+            // if (m_RightBorderInited)
+            //     m_RightBorder.SetColor(newCol);
+            // if (m_BottomBorderInited)
+            //     m_BottomBorder.SetColor(newCol);
+            // if (m_TopBorderInited)
+            //     m_TopBorder.SetColor(newCol);
+            // if (BottomLeftCornerInited)
+            //     m_BottomLeftCorner.SetColor(newCol);
+            // if (TopLeftCornerInited)
+            //     m_TopLeftCorner.SetColor(newCol);
+            // if (TopRightCornerInited)
+            //     m_TopRightCorner.SetColor(newCol);
+            // if (BottomRightCornerInited)
+            //     m_BottomRightCorner.SetColor(newCol);
         }
 
         #endregion
         
         #region nonpublic methods
 
-        private void Collect(bool _Collect)
-        {
-            MoneyItem.Collect(_Collect);
-            var col = ColorProvider.GetColor(ColorIds.Main);
-            m_PathItem.Color = _Collect ? col.SetA(0f) : col;
-        }
+
 
         protected override void InitShape()
         {
@@ -214,7 +234,7 @@ namespace RMAZOR.Views.MazeItems
                 .SetCornerRadiusMode(Rectangle.RectangleCornerRadiusMode.Uniform)
                 .SetCornerRadius(CoordinateConverter.Scale * ViewSettings.CornerRadius)
                 .SetThickness(CoordinateConverter.Scale * ViewSettings.LineWidth * 0.5f)
-                .SetColor(ColorProvider.GetColor(ColorIds.Main))
+                // .SetColor(ColorProvider.GetColor(GetPathItemColorId()))
                 .SetSortingOrder(SortingOrders.Path);
         }
 
@@ -234,34 +254,37 @@ namespace RMAZOR.Views.MazeItems
                 m_PathItem.Width = m_PathItem.Height = CoordinateConverter.Scale * 0.4f;
                 m_PathItem.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale * 2f;
             }
-            if (Props.Blank || Model.PathItemsProceeder.PathProceeds[Props.Position])
-                Collect(true);
+            if (Props.Blank)
+                Collect(true, true);
+            if (ViewSettings.collectStartPathItemOnLevelLoaded 
+                && Model.PathItemsProceeder.PathProceeds[Props.Position])
+                Collect(true, true);
+            if (IsAnyBlockWithSamePosition(EMazeItemType.ShredingerBlock)
+                || IsAnyBlockWithSamePosition(EMazeItemType.Portal))
+            {
+                Collect(true, true);
+            }
             SetBordersAndCorners();
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
+            if (_ColorId == GetPathItemColorId())
+            {
+                if (!Collected || Props.Blank || Props.IsMoneyItem)
+                    m_PathItem.Color = _Color;
+            }
             if (_ColorId != ColorIds.Main) 
                 return;
-            if (BottomLeftCornerInited)
-                m_BottomLeftCorner.Color = _Color;
-            if (BottomRightCornerInited)
-                m_BottomRightCorner.Color = _Color;
-            if (TopLeftCornerInited)
-                m_TopLeftCorner.Color = _Color;
-            if (TopRightCornerInited)
-                m_TopRightCorner.Color = _Color;
-            if (!Collected || Props.Blank || Props.IsMoneyItem)
-                m_PathItem.Color = _Color;
-            var borderCol = MainColorToBorderColor(_Color);
-            if (m_LeftBorderInited)
-                m_LeftBorder.Color = borderCol;
-            if (m_RightBorderInited)
-                m_RightBorder.Color = borderCol;
-            if (m_BottomBorderInited)
-                m_BottomBorder.Color = borderCol;
-            if (m_TopBorderInited)
-                m_TopBorder.Color = borderCol;
+            if (BottomLeftCornerInited)  m_BottomLeftCorner.Color  = _Color;
+            if (BottomRightCornerInited) m_BottomRightCorner.Color = _Color;
+            if (TopLeftCornerInited)     m_TopLeftCorner.Color     = _Color;
+            if (TopRightCornerInited)    m_TopRightCorner.Color    = _Color;
+            var borderCol = GetBorderColor();
+            if (m_LeftBorderInited)      m_LeftBorder.Color   = borderCol;
+            if (m_RightBorderInited)     m_RightBorder.Color  = borderCol;
+            if (m_BottomBorderInited)    m_BottomBorder.Color = borderCol;
+            if (m_TopBorderInited)       m_TopBorder.Color    = borderCol;
         }
 
         private void SetBordersAndCorners()
@@ -372,27 +395,30 @@ namespace RMAZOR.Views.MazeItems
 
         private void AdjustBorders()
         {
-            bool adjStart, adjEnd;
             var pos = Props.Position;
-            AdjustBorder(pos, V2Int.Left, m_LeftBorderInited, ref m_LeftBorder, out adjStart, out adjEnd);
+            AdjustBorder(pos, V2Int.Left, m_LeftBorderInited,
+                ref m_LeftBorder, out bool adjStart, out bool adjEnd);
             if (adjStart && !adjEnd)
             {
                 m_IsLeftBorderInverseOffset = true;
                 (m_LeftBorder.Start, m_LeftBorder.End) = (m_LeftBorder.End, m_LeftBorder.Start);
             }
-            AdjustBorder(pos, V2Int.Right, m_RightBorderInited, ref m_RightBorder, out adjStart, out adjEnd);
+            AdjustBorder(pos, V2Int.Right, m_RightBorderInited,
+                ref m_RightBorder, out adjStart, out adjEnd);
             if (adjStart && !adjEnd)
             {
                 m_IsRightBorderInverseOffset = true;
                 (m_RightBorder.Start, m_RightBorder.End) = (m_RightBorder.End, m_RightBorder.Start);
             }
-            AdjustBorder(pos, V2Int.Down, m_BottomBorderInited, ref m_BottomBorder, out adjStart, out adjEnd);
+            AdjustBorder(pos, V2Int.Down, m_BottomBorderInited, 
+                ref m_BottomBorder, out adjStart, out adjEnd);
             if (adjStart && !adjEnd)
             {
                 m_IsBottomBorderInverseOffset = true;
                 (m_BottomBorder.Start, m_BottomBorder.End) = (m_BottomBorder.End, m_BottomBorder.Start);
             }
-            AdjustBorder(pos, V2Int.Up, m_TopBorderInited, ref m_TopBorder, out adjStart, out adjEnd);
+            AdjustBorder(pos, V2Int.Up, m_TopBorderInited, 
+                ref m_TopBorder, out adjStart, out adjEnd);
             if (adjStart && !adjEnd)
             {
                 m_IsTopBorderInverseOffset = true;
@@ -430,10 +456,10 @@ namespace RMAZOR.Views.MazeItems
                 m_PathItem.enabled = _Enable;
             if (MoneyItem.Renderers.All(_R => _R.IsNotNull()) && Props.IsMoneyItem && !Props.Blank)
                 MoneyItem.Active = _Enable;
-            if (m_LeftBorderInited)        m_LeftBorder.enabled        = _Enable;
-            if (m_RightBorderInited)       m_RightBorder.enabled       = _Enable;
-            if (m_BottomBorderInited)      m_BottomBorder.enabled      = _Enable;
-            if (m_TopBorderInited)         m_TopBorder.enabled         = _Enable;
+            if (m_LeftBorderInited)      m_LeftBorder.enabled        = _Enable;
+            if (m_RightBorderInited)     m_RightBorder.enabled       = _Enable;
+            if (m_BottomBorderInited)    m_BottomBorder.enabled      = _Enable;
+            if (m_TopBorderInited)       m_TopBorder.enabled         = _Enable;
             
             if (BottomLeftCornerInited)  m_BottomLeftCorner.enabled  = _Enable;
             if (BottomRightCornerInited) m_BottomRightCorner.enabled = _Enable;
@@ -455,7 +481,7 @@ namespace RMAZOR.Views.MazeItems
                 border = Object.AddComponentOnNewChild<Line>("Border", out _);
             border.SetThickness(ViewSettings.LineWidth * CoordinateConverter.Scale)
                 .SetEndCaps(LineEndCap.None)
-                .SetColor(MainColorToBorderColor(ColorProvider.GetColor(ColorIds.Main)))
+                .SetColor(GetBorderColor())
                 .SetSortingOrder(SortingOrders.PathLine)
                 .SetDashType(DashType.Rounded)
                 .SetDashSnap(DashSnapping.Off)
@@ -503,6 +529,10 @@ namespace RMAZOR.Views.MazeItems
                 .transform.SetPosXY(pos)
                 .PlusLocalPosXY(GetCornerCenter(_Right, _Up, _Inner));
             corner!.enabled = false;
+            const EMazeMoveDirection left = EMazeMoveDirection.Left;
+            const EMazeMoveDirection right = EMazeMoveDirection.Right;
+            const EMazeMoveDirection down = EMazeMoveDirection.Down;
+            const EMazeMoveDirection up = EMazeMoveDirection.Up;
             if (!_Right && !_Up)
             {
                 m_BottomLeftCorner = corner;
@@ -510,9 +540,10 @@ namespace RMAZOR.Views.MazeItems
                 IsBottomLeftCornerInner = _Inner;
                 if (!_Inner) return;
                 if (m_BottomBorder.IsNotNull())
-                    m_BottomBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Down, true, true).Item1;
+                    m_BottomBorder.Start = GetBorderPointsAndDashed(
+                        down, true, true).Item1;
                 if (m_LeftBorder.IsNotNull())
-                    m_LeftBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Left, true, true).Item1;
+                    m_LeftBorder.Start = GetBorderPointsAndDashed(left, true, true).Item1;
             }
             else if (_Right && !_Up)
             {
@@ -521,9 +552,9 @@ namespace RMAZOR.Views.MazeItems
                 IsBottomRightCornerInner = _Inner;
                 if (!_Inner) return;
                 if (m_BottomBorder.IsNotNull())
-                    m_BottomBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Down, true, true).Item2;
+                    m_BottomBorder.End = GetBorderPointsAndDashed(down, true, true).Item2;
                 if (m_RightBorder.IsNotNull())
-                    m_RightBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Right, true, true).Item1;
+                    m_RightBorder.Start = GetBorderPointsAndDashed(right, true, true).Item1;
             }
             else if (!_Right)
             {
@@ -532,9 +563,9 @@ namespace RMAZOR.Views.MazeItems
                 IsTopLeftCornerInner = _Inner;
                 if (!_Inner) return;
                 if (m_LeftBorder.IsNotNull())
-                    m_LeftBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Left, true, true).Item2;
+                    m_LeftBorder.End = GetBorderPointsAndDashed(left, true, true).Item2;
                 if (m_TopBorder.IsNotNull())
-                    m_TopBorder.Start = GetBorderPointsAndDashed(EMazeMoveDirection.Up, true, true).Item1;
+                    m_TopBorder.Start = GetBorderPointsAndDashed(up, true, true).Item1;
             }
             else
             {
@@ -543,9 +574,9 @@ namespace RMAZOR.Views.MazeItems
                 IsTopRightCornerInner = _Inner;
                 if (!_Inner) return;
                 if (m_TopBorder.IsNotNull())
-                    m_TopBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Up, true, true).Item2;
+                    m_TopBorder.End = GetBorderPointsAndDashed(up, true, true).Item2;
                 if (m_RightBorder.IsNotNull())
-                    m_RightBorder.End = GetBorderPointsAndDashed(EMazeMoveDirection.Right, true, true).Item2;
+                    m_RightBorder.End = GetBorderPointsAndDashed(right, true, true).Item2;
             }
         }
 
@@ -564,28 +595,37 @@ namespace RMAZOR.Views.MazeItems
             return GetBorderPointsAndDashed(side, _StartLimit, _EndLimit);
         }
 
-        private Tuple<Vector2, Vector2, bool> GetBorderPointsAndDashed(EMazeMoveDirection _Side, bool _StartLimit, bool _EndLimit)
+        private Tuple<Vector2, Vector2, bool> GetBorderPointsAndDashed(
+            EMazeMoveDirection _Side,
+            bool _StartLimit, 
+            bool _EndLimit)
         {
             Vector2 start, end;
             Vector2 pos = Props.Position;
             float cr = ViewSettings.CornerRadius;
+            var left  = Vector2.left;
+            var right = Vector2.right;
+            var down  = Vector2.down;
+            var up    = Vector2.up;
+            var zero  = Vector2.zero;
+            const float scale = 1f + AdditionalScale;
             switch (_Side)
             {
                 case EMazeMoveDirection.Up:
-                    start = pos + (Vector2.up + Vector2.left * AdditionalScale) * 0.5f + (_StartLimit ? Vector2.right * cr : Vector2.zero);
-                    end = pos + (Vector2.up + Vector2.right * AdditionalScale) * 0.5f + (_EndLimit ? Vector2.left * cr : Vector2.zero);
+                    start = pos + (up + left * scale) * 0.5f + (_StartLimit ? right * cr : zero);
+                    end = pos + (up + right * scale) * 0.5f + (_EndLimit ? left * cr : zero);
                     break;
                 case EMazeMoveDirection.Right:
-                    start = pos + (Vector2.right + Vector2.down * AdditionalScale) * 0.5f + (_StartLimit ? Vector2.up * cr : Vector2.zero);
-                    end = pos + (Vector2.right + Vector2.up * AdditionalScale) * 0.5f + (_EndLimit ? Vector2.down * cr : Vector2.zero);
+                    start = pos + (right +down * scale) * 0.5f + (_StartLimit ? up * cr : zero);
+                    end = pos + (right + up * scale) * 0.5f + (_EndLimit ?down * cr : zero);
                     break;
                 case EMazeMoveDirection.Down:
-                    start = pos + (Vector2.down + Vector2.left * AdditionalScale) * 0.5f + (_StartLimit ? Vector2.right * cr : Vector2.zero);
-                    end = pos + (Vector2.down + Vector2.right * AdditionalScale) * 0.5f + (_EndLimit ? Vector2.left * cr : Vector2.zero);
+                    start = pos + (down + left * scale) * 0.5f + (_StartLimit ? right * cr : zero);
+                    end = pos + (down + right * scale) * 0.5f + (_EndLimit ? left * cr : zero);
                     break;
                 case EMazeMoveDirection.Left:
-                    start = pos + (Vector2.left + Vector2.down * AdditionalScale) * 0.5f + (_StartLimit ? Vector2.up * cr : Vector2.zero);
-                    end = pos + (Vector2.left + Vector2.up * AdditionalScale) * 0.5f + (_EndLimit ? Vector2.down * cr : Vector2.zero);
+                    start = pos + (left +down * scale) * 0.5f + (_StartLimit ? up * cr : zero);
+                    end = pos + (left + up * scale) * 0.5f + (_EndLimit ?down * cr : zero);
                     break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Side);
@@ -680,12 +720,15 @@ namespace RMAZOR.Views.MazeItems
             var borderSets = GetBorderAppearSets();
             var cornerSets = GetCornerAppearSets();
             var result = borderSets.ConcatWithDictionary(cornerSets);
-            if (!Props.Blank && (_Appear && !Props.IsStartNode) || (!_Appear && !Collected))
+            var moneyItemCol = ColorProvider.GetColor(ColorIds.MoneyItem);
+            var pathItemCol = ColorProvider.GetColor(GetPathItemColorId());
+            if (!Props.Blank && _Appear && !Props.IsStartNode 
+                || !_Appear && !Collected)
             {
                 if (Props.IsMoneyItem)
-                    result.Add(MoneyItem.Renderers, () => ColorProvider.GetColor(ColorIds.MoneyItem));
+                    result.Add(MoneyItem.Renderers, () => moneyItemCol);
                 else if (!Collected)
-                    result.Add(new [] {m_PathItem}, () => ColorProvider.GetColor(ColorIds.Main));
+                    result.Add(new [] {m_PathItem}, () => pathItemCol);
             }
             else
             {
@@ -698,6 +741,7 @@ namespace RMAZOR.Views.MazeItems
         
         private Dictionary<IEnumerable<Component>, Func<Color>> GetBorderAppearSets()
         {
+            var borderCol = GetBorderColor();
             var borders = new List<Component>();
             if (m_BottomBorderInited)
                 borders.Add(m_BottomBorder);
@@ -707,10 +751,7 @@ namespace RMAZOR.Views.MazeItems
                 borders.Add(m_LeftBorder);
             if (m_RightBorderInited)
                 borders.Add(m_RightBorder);
-            var sets = new Dictionary<IEnumerable<Component>, Func<Color>>
-            {
-                {borders, () => MainColorToBorderColor(ColorProvider.GetColor(ColorIds.Main))}
-            };
+            var sets = new Dictionary<IEnumerable<Component>, Func<Color>> {{borders, () => borderCol}};
             return sets;
         }
         
@@ -734,9 +775,20 @@ namespace RMAZOR.Views.MazeItems
             return sets;
         }
 
-        protected virtual Color MainColorToBorderColor(Color _Color)
+        protected virtual Color GetBorderColor()
         {
-            return _Color.SetA(0.5f);
+            return ColorProvider.GetColor(ColorIds.Main).SetA(0.5f);
+        }
+
+        protected virtual int GetPathItemColorId()
+        {
+            return ColorIds.PathItem;
+        }
+        
+        protected bool IsAnyBlockWithSamePosition(EMazeItemType _Type)
+        {
+            return Model.GetAllProceedInfos().Any(_I =>
+                _I.Type == _Type && _I.StartPosition == Props.Position);
         }
 
         #endregion

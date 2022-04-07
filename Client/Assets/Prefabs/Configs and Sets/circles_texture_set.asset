@@ -18,9 +18,9 @@ MonoBehaviour:
       direction: 0
       wrapScale: 0
       wrapTiling: 1
-      radius: 0.019
-      wavesCount: 11
-      amplitude: 0.145
+      radius: 0.0506
+      wavesCount: 2
+      amplitude: 1
       center: 2
     - tiling: 1
       direction: 0
@@ -28,7 +28,7 @@ MonoBehaviour:
       wrapTiling: 1
       radius: 0.019
       wavesCount: 10
-      amplitude: 1
+      amplitude: 0.047
       center: 4
     - tiling: 1
       direction: 0
@@ -36,23 +36,23 @@ MonoBehaviour:
       wrapTiling: 1
       radius: 0.1
       wavesCount: 10
-      amplitude: 1
-      center: 4
+      amplitude: 0.2
+      center: 1
     - tiling: 1
       direction: 0
       wrapScale: 0
       wrapTiling: 1
       radius: 0.1
       wavesCount: 10
-      amplitude: 1
-      center: 4
+      amplitude: 0.2
+      center: 3
     - tiling: 1
       direction: 0
       wrapScale: 0
       wrapTiling: 1
-      radius: 0.1
-      wavesCount: 20
-      amplitude: 1
+      radius: 0.0627
+      wavesCount: 15
+      amplitude: 0.124
       center: 2
     - tiling: 4
       direction: 0.4

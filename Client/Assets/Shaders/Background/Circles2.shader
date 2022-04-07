@@ -6,7 +6,7 @@
     	_StepX  ("Step X", Range(0.05, 0.5)) = 0.2
     	_StepY  ("Step Y", Range(0.05, 0.5)) = 0.2
     	[Toggle]  _AlternateX("Alternate X", Float) = 0
-    	[IntRange] _Tiling ("Tiling", Range(1, 10)) = 1
+    	_Tiling ("Tiling", Range(1, 10)) = 1
 		_Direction ("Direction", Range(0, 1)) = 0
 		_WrapScale ("Wrap Scale", Range(0, 1)) = 0
 		_WrapTiling ("Wrap Tiling", Range(1, 10)) = 1

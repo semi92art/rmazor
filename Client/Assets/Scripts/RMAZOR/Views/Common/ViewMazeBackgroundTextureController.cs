@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Common;
 using Common.Exceptions;
 using Common.Extensions;
 using Common.Managers;
@@ -6,6 +8,7 @@ using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
+using RMAZOR.Views.Common.BackgroundIdleItems;
 using RMAZOR.Views.Common.ViewMazeBackgroundPropertySets;
 using RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders;
 
@@ -15,31 +18,35 @@ namespace RMAZOR.Views.Common
     {
         #region nonpublic members
 
-        private IList<LinesTextureSetItem>     m_LinesTextureSetItems;
-        private IList<CirclesTextureSetItem>   m_CirclesTextureSetItems;
-        private IList<Circles2TextureSetItem>  m_Circles2TextureSetItems;
-        private IList<TrianglesTextureSetItem> m_TrianglesTextureSetItems;
-        private bool                           m_IsFirstLoad = true;
+        private IList<LinesTextureSetItem>      m_LinesTextureSetItems;
+        private IList<CirclesTextureSetItem>    m_CirclesTextureSetItems;
+        private IList<Circles2TextureSetItem>   m_Circles2TextureSetItems;
+        private IList<TrianglesTextureSetItem>  m_TrianglesTextureSetItems;
+        private IList<Triangles2TextureSetItem> m_Triangles2TextureSetItems;
+        private bool                            m_IsFirstLoad = true;
+        private List<ITextureSetItem>           m_TextureSetItems;
         
         #endregion
         
         #region inject
         
-        private IViewMazeBackgroundLinesTextureProvider     LinesTextureProvider     { get; }
-        private IViewMazeBackgroundCirclesTextureProvider   CirclesTextureProvider   { get; }
-        private IViewMazeBackgroundTrianglesTextureProvider TrianglesTextureProvider { get; }
-        private IModelGame                                  Model                    { get; }
-        private IViewGameTicker                             Ticker                   { get; }
+        private IViewMazeBackgroundLinesTextureProvider      LinesTextureProvider      { get; }
+        private IViewMazeBackgroundCirclesTextureProvider    CirclesTextureProvider    { get; }
+        private IViewMazeBackgroundTrianglesTextureProvider  TrianglesTextureProvider  { get; }
+        private IModelGame                                   Model                     { get; }
+        private IViewGameTicker                              Ticker                    { get; }
+        private IViewMazeBackgroundIdleItems                 IdleItems                 { get; }
 
         public ViewMazeBackgroundTextureController(
-            RemoteProperties                            _RemoteProperties,
-            IViewMazeBackgroundLinesTextureProvider     _LinesTextureProvider,
-            IViewMazeBackgroundCirclesTextureProvider   _CirclesTextureProvider,
-            IViewMazeBackgroundTrianglesTextureProvider _TrianglesTextureProvider,
-            IPrefabSetManager                           _PrefabSetManager,
-            IColorProvider                              _ColorProvider,
-            IModelGame                                  _Model,
-            IViewGameTicker                             _Ticker) 
+            RemoteProperties                             _RemoteProperties,
+            IViewMazeBackgroundLinesTextureProvider      _LinesTextureProvider,
+            IViewMazeBackgroundCirclesTextureProvider    _CirclesTextureProvider,
+            IViewMazeBackgroundTrianglesTextureProvider  _TrianglesTextureProvider,
+            IPrefabSetManager                            _PrefabSetManager,
+            IColorProvider                               _ColorProvider,
+            IModelGame                                   _Model,
+            IViewGameTicker                              _Ticker,
+            IViewMazeBackgroundIdleItems                 _IdleItems) 
             : base(
                 _RemoteProperties,
                 _ColorProvider, 
@@ -49,6 +56,7 @@ namespace RMAZOR.Views.Common
             CirclesTextureProvider   = _CirclesTextureProvider;
             Model                    = _Model;
             Ticker                   = _Ticker;
+            IdleItems = _IdleItems;
             TrianglesTextureProvider = _TrianglesTextureProvider;
         }
 
@@ -59,10 +67,10 @@ namespace RMAZOR.Views.Common
         public override void Init()
         {
             Ticker.Register(this);
-            ColorProvider.ColorThemeChanged += OnColorThemeChanged;
             LinesTextureProvider     .Init();
             CirclesTextureProvider   .Init();
             TrianglesTextureProvider .Init();
+            IdleItems                .Init();
             base.Init();
         }
 
@@ -82,11 +90,6 @@ namespace RMAZOR.Views.Common
         
         #region nonpublic methods
 
-        private void OnColorThemeChanged(EColorTheme _Theme)
-        {
-            SetColorsOnNewLevelOrNewTheme(Model.LevelStaging.LevelIndex, _Theme);
-        }
-        
         protected override void LoadSets()
         {
             base.LoadSets();
@@ -105,13 +108,6 @@ namespace RMAZOR.Views.Common
                     (set, "circles_texture_set");
                 m_CirclesTextureSetItems = circlesTextureSet.set;
             }
-            m_Circles2TextureSetItems = RemoteProperties.Circles2TextureSet;
-            if (m_Circles2TextureSetItems.NullOrEmpty())
-            {
-                var circles2TextureSet = PrefabSetManager.GetObject<Circles2TexturePropertiesSetScriptableObject>
-                    (set, "circles2_texture_set");
-                m_Circles2TextureSetItems = circles2TextureSet.set;
-            }
             m_TrianglesTextureSetItems = RemoteProperties.TrianglesTextureSet;
             if (m_TrianglesTextureSetItems.NullOrEmpty())
             {
@@ -119,21 +115,36 @@ namespace RMAZOR.Views.Common
                     (set, "triangles_texture_set");
                 m_TrianglesTextureSetItems = trianglesTextureSet.set;
             }
-
+            static int CalculateTextureHash(string _Value)
+            {
+                ulong hashedValue = 3074457345618258791ul;
+                for(int i=0; i<_Value.Length; i++)
+                {
+                    hashedValue += _Value[i];
+                    hashedValue *= 3074457345618258799ul;
+                }
+                return (int)hashedValue;
+            }
+            m_TextureSetItems = m_LinesTextureSetItems
+                .Cast<ITextureSetItem>()
+                .Concat(m_CirclesTextureSetItems)
+                .Concat(m_TrianglesTextureSetItems)
+                .OrderBy(_Item => CalculateTextureHash(
+                    _Item.ToString(null, null)))
+                .ToList();
         }
 
         private void OnLevelLoaded(LevelStageArgs _Args)
         {
-            int providerIndex = IndexOfCorrespondingTextureSet(_Args.LevelIndex);
-            ActivateCorrespondingTextureProvider(providerIndex);
-            ActivateTexturePropertiesSet(providerIndex, _Args.LevelIndex);
-            var texProvider = GetCurrentTextureProvider(_Args.LevelIndex);
+            ActivateTexturePropertiesSet(_Args.LevelIndex, out var provider);
+            IdleItems.SetSpawnPool(GetProviderIndex(provider));
             int group = RazorMazeUtils.GetGroupIndex(_Args.LevelIndex);
             long firstLevInGroup = RazorMazeUtils.GetFirstLevelInGroup(group);
-            var colFrom1 = _Args.LevelIndex == firstLevInGroup || m_IsFirstLoad ? BackCol1Current : BackCol1Prev;
-            var colFrom2 = _Args.LevelIndex == firstLevInGroup || m_IsFirstLoad ? BackCol2Current : BackCol2Prev;
+            bool predicate = _Args.LevelIndex == firstLevInGroup || m_IsFirstLoad;
+            var colFrom1 = predicate ? BackCol1Current : BackCol1Prev;
+            var colFrom2 = predicate ? BackCol2Current : BackCol2Prev;
             m_IsFirstLoad = false;
-            texProvider.Show(
+            provider.Show(
                 MathUtils.Epsilon, 
                 colFrom1, 
                 colFrom2, 
@@ -141,49 +152,44 @@ namespace RMAZOR.Views.Common
                 BackCol2Current);
         }
 
-        private void ActivateCorrespondingTextureProvider(int _ProviderIndex)
-        {
-            LinesTextureProvider.Activate(_ProviderIndex == 1);
-            CirclesTextureProvider.Activate(_ProviderIndex == 2);
-            TrianglesTextureProvider.Activate(_ProviderIndex == 3);
-        }
-
-        private static int IndexOfCorrespondingTextureSet(long _LevelIndex)
+        private void ActivateTexturePropertiesSet(long _LevelIndex, out IViewMazeBackgroundTextureProvider _Provider)
         {
             int group = RazorMazeUtils.GetGroupIndex(_LevelIndex);
-            return (group % 3) switch { 0 => 1, 1 => 2, 2 => 3, _ => 1 };
-        }
-
-        private void ActivateTexturePropertiesSet(int _ProviderIndex, long _LevelIndex)
-        {
-            int group = RazorMazeUtils.GetGroupIndex(_LevelIndex);
-            switch (_ProviderIndex)
+            int idx = group % m_TextureSetItems.Count;
+            Dbg.Log("group: " + group + ", idx: " + idx);
+            var setItem = m_TextureSetItems[idx];
+            LinesTextureProvider.Activate(false);
+            CirclesTextureProvider.Activate(false);
+            TrianglesTextureProvider.Activate(false);
+            switch (setItem)
             {
-                case 1:
-                    var set1 = m_LinesTextureSetItems[group % m_LinesTextureSetItems.Count];
-                    LinesTextureProvider.SetProperties(set1);
+                case CirclesTextureSetItem circlesSetItem:
+                    CirclesTextureProvider.Activate(true);
+                    CirclesTextureProvider.SetProperties(circlesSetItem);
+                    _Provider = CirclesTextureProvider;
                     break;
-                case 2:
-                    var set2 = m_CirclesTextureSetItems[group % m_CirclesTextureSetItems.Count];
-                    CirclesTextureProvider.SetProperties(set2);
+                case TrianglesTextureSetItem trianglesSetItem:
+                    TrianglesTextureProvider.Activate(true);
+                    TrianglesTextureProvider.SetProperties(trianglesSetItem);
+                    _Provider = TrianglesTextureProvider;
                     break;
-                case 3:
-                    var set4 = m_TrianglesTextureSetItems[group % m_TrianglesTextureSetItems.Count];
-                    TrianglesTextureProvider.SetProperties(set4);
+                case LinesTextureSetItem linesSetItem:
+                    LinesTextureProvider.Activate(true);
+                    LinesTextureProvider.SetProperties(linesSetItem);
+                    _Provider = LinesTextureProvider;
                     break;
-                default: throw new SwitchCaseNotImplementedException(_ProviderIndex);
+                default: throw new SwitchCaseNotImplementedException(setItem);
             }
         }
 
-        private IViewMazeBackgroundTextureProvider GetCurrentTextureProvider(long _LevelIndex)
+        private int GetProviderIndex(IViewMazeBackgroundTextureProvider _Provider)
         {
-            int idx = IndexOfCorrespondingTextureSet(_LevelIndex);
-            return idx switch
+            return _Provider switch
             {
-                1 => LinesTextureProvider,
-                2 => CirclesTextureProvider,
-                3 => TrianglesTextureProvider,
-                _ => throw new SwitchCaseNotImplementedException(idx)
+                IViewMazeBackgroundCirclesTextureProvider   => 0,
+                IViewMazeBackgroundLinesTextureProvider     => 1,
+                IViewMazeBackgroundTrianglesTextureProvider => 2,
+                _ => throw new SwitchCaseNotImplementedException(_Provider)
             };
         }
 

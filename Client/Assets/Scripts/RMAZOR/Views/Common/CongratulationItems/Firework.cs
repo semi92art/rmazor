@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using Common;
 using Common.Extensions;
 using Common.Providers;
 using Common.SpawnPools;
@@ -67,7 +66,6 @@ namespace RMAZOR.Views.Common.CongratulationItems
             m_Bodies = _Bodies;
             m_Ticker = _Ticker;
             m_ColorProvider = _ColorProvider;
-            _ColorProvider.ColorThemeChanged += OnColorThemeChanged;
             int count = m_Discs.Length;
             for (int i = 0; i < count; i++)
             {
@@ -86,13 +84,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
         #endregion
 
         #region nonpublic methods
-        
-        private void OnColorThemeChanged(EColorTheme _Theme)
-        {
-            foreach (var disc in m_Discs)
-                SetColorByTheme(disc, _Theme);
-        }
- 
+
         private IEnumerator LaunchFireworkCoroutine()
         {
             int colIdx = Mathf.FloorToInt(Random.value * CongradColorSet.Length);
@@ -108,7 +100,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
                 m_Bodies[i].constraints = RigidbodyConstraints.FreezeRotation;
                 m_Bodies[i].transform.localPosition = Vector3.zero;
                 m_Bodies[i].AddForce(force * dir, ForceMode.VelocityChange);
-                SetColorByTheme(m_Discs[i], m_ColorProvider.CurrentTheme, col);
+                SetColorByTheme(m_Discs[i], col);
             }
             yield return Cor.Lerp(
                 1f,
@@ -131,9 +123,9 @@ namespace RMAZOR.Views.Common.CongratulationItems
                 });
         }
         
-        private void SetColorByTheme(ShapeRenderer _Renderer, EColorTheme _Theme, Color? _Color = null)
+        private void SetColorByTheme(ShapeRenderer _Renderer, Color? _Color = null)
         {
-            float saturation = _Theme == EColorTheme.Light ? 80f / 100f : 50f / 100f;
+            const float saturation = 80f / 100f;
             var col = _Color ?? _Renderer.Color;
             Color.RGBToHSV(col, out float h, out _, out float v);
             col = Color.HSVToRGB(h, saturation, v);

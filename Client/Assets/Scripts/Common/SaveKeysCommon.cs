@@ -17,7 +17,6 @@ namespace Common
         private static SaveKey<bool>      _lastDbConnectionSuccess;
         private static SaveKey<bool>      _notFirstLaunch;
         private static SaveKey<bool>      _debugUtilsOn;
-        private static SaveKey<bool>      _darkTheme;
         private static SaveKey<int?>      _accountId;               
         private static SaveKey<string>    _login;        
         private static SaveKey<string>    _passwordHash;
@@ -42,7 +41,6 @@ namespace Common
             SaveUtils.PutValue(LastDbConnectionSuccess, SaveUtils.GetValue(LastDbConnectionSuccess), true);
             SaveUtils.PutValue(NotFirstLaunch,          SaveUtils.GetValue(NotFirstLaunch),          true);
             SaveUtils.PutValue(DebugUtilsOn,            SaveUtils.GetValue(DebugUtilsOn),            true);
-            SaveUtils.PutValue(DarkTheme,                SaveUtils.GetValue(DarkTheme),               true);
             SaveUtils.PutValue(AccountId,               SaveUtils.GetValue(AccountId),               true);
             SaveUtils.PutValue(Login,                   SaveUtils.GetValue(Login),                   true);
             SaveUtils.PutValue(PasswordHash,            SaveUtils.GetValue(PasswordHash),            true);
@@ -77,8 +75,6 @@ namespace Common
             _lastDbConnectionSuccess ??= new SaveKey<bool>(nameof(LastDbConnectionSuccess));
         public static SaveKey<bool>   NotFirstLaunch           =>
             _notFirstLaunch ??= new SaveKey<bool>(nameof(NotFirstLaunch));
-        public static SaveKey<bool> DarkTheme => 
-            _darkTheme ??= new SaveKey<bool>(nameof(DarkTheme));
         public static SaveKey<bool>   DebugUtilsOn             => 
             _debugUtilsOn ??= new SaveKey<bool>(nameof(DebugUtilsOn));
         public static SaveKey<int?>   AccountId                =>

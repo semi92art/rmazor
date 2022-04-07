@@ -30,13 +30,13 @@ namespace Common.UI
         {
             base.SetColorsOnInit();
             if (m_IsDialogBackgroundNotNull)
-                dialogBackground.color = ColorProvider.GetColor(ColorIdsCommon.UiDialogBackground);
+                dialogBackground.color = ColorProvider.GetColor(ColorIds.UiDialogBackground);
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             base.OnColorChanged(_ColorId, _Color);
-            if (_ColorId != ColorIdsCommon.UiDialogBackground) 
+            if (_ColorId != ColorIds.UiDialogBackground) 
                 return;
             if (m_IsDialogBackgroundNotNull)
                 dialogBackground.color = _Color;

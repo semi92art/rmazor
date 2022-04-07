@@ -72,7 +72,12 @@ namespace RMAZOR.UI.Panels
             IColorProvider              _ColorProvider,
             IProposalDialogViewer       _ProposalDialogViewer,
             IViewInputCommandsProceeder _CommandsProceeder)
-            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider, _ColorProvider)
+            : base(
+                _Managers,
+                _UITicker, 
+                _DialogViewer, 
+                _CameraProvider,
+                _ColorProvider)
         {
             CommonGameSettings   = _CommonGameSettings;
             Model                = _Model;
@@ -123,7 +128,7 @@ namespace RMAZOR.UI.Panels
             m_MoneyIcon2.sprite = moneyIconSprite;
             m_ButtonWatchAds.onClick.AddListener(OnWatchAdsButtonClick);
             m_ButtonPayMoney.onClick.AddListener(OnPayMoneyButtonClick);
-            
+            m_RoundFilledBorder.color = ColorProvider.GetColor(ColorIds.UiBorder);
             go.GetCompItem<SimpleUiButtonView>("watch_ads_button").Init(Managers.AudioManager, Ticker, ColorProvider);
             go.GetCompItem<SimpleUiButtonView>("pay_money_button").Init(Managers.AudioManager, Ticker, ColorProvider);
             go.GetCompItem<SimpleUiDialogPanelView>("dialog_panel_view").Init(Managers.AudioManager, Ticker, ColorProvider);
@@ -137,8 +142,9 @@ namespace RMAZOR.UI.Panels
             m_PanelShowing = true;
             Cor.Run(Cor.WaitEndOfFrame(() =>
             {
-                CommandsProceeder.LockCommand(EInputCommand.ShopMenu, nameof(ICharacterDiedDialogPanel));
-                CommandsProceeder.LockCommand(EInputCommand.SettingsMenu, nameof(ICharacterDiedDialogPanel));    
+                CommandsProceeder.LockCommands(
+                    new [] { EInputCommand.ShopMenu, EInputCommand.SettingsMenu},
+                    nameof(ICharacterDiedDialogPanel));
             }));
             m_Animator.speed = ProposalDialogViewer.AnimationSpeed;
             m_Animator.SetTrigger(AnimKeys.Anim);
@@ -172,14 +178,22 @@ namespace RMAZOR.UI.Panels
         public override void OnDialogHide()
         {
             m_PanelShowing = true;
-            CommandsProceeder.UnlockCommand(EInputCommand.ShopMenu, nameof(ICharacterDiedDialogPanel));
-            CommandsProceeder.UnlockCommand(EInputCommand.SettingsMenu, nameof(ICharacterDiedDialogPanel));
+            CommandsProceeder.UnlockCommands(
+                new [] { EInputCommand.ShopMenu, EInputCommand.SettingsMenu},
+                nameof(ICharacterDiedDialogPanel));
             CommandsProceeder.UnlockCommands(RazorMazeUtils.MoveAndRotateCommands, "all");
         }
 
         #endregion
         
         #region nonpublic methods
+
+        protected override void OnColorChanged(int _ColorId, Color _Color)
+        {
+            base.OnColorChanged(_ColorId, _Color);
+            if (_ColorId == ColorIds.UiBorder)
+                m_RoundFilledBorder.color = _Color;
+        }
 
         private void IndicateAdsLoading(bool _Indicate)
         {

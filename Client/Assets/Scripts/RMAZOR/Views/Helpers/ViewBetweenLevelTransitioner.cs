@@ -6,9 +6,11 @@ using Common;
 using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
+using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
+using RMAZOR.Views.Common;
 using Shapes;
 using TMPro;
 using UnityEngine;
@@ -42,6 +44,7 @@ namespace RMAZOR.Views.Helpers
 
         private MeshRenderer m_BetweenLevelTextureRend;
         private float        m_FullTransitionTime;
+        private Color        m_NextTextureColor;
 
         #endregion
         
@@ -49,15 +52,18 @@ namespace RMAZOR.Views.Helpers
         
         private IViewGameTicker              GameTicker                  { get; }
         private IBetweenLevelTextureProvider BetweenLevelTextureProvider { get; }
+        private IColorProvider               ColorProvider               { get; }
         private ViewSettings                 ViewSettings                { get; }
 
         public ViewBetweenLevelTransitioner(
             IViewGameTicker              _GameTicker,
             IBetweenLevelTextureProvider _BetweenLevelTextureProvider,
+            IColorProvider               _ColorProvider,
             ViewSettings                 _ViewSettings)
         {
             GameTicker                  = _GameTicker;
             BetweenLevelTextureProvider = _BetweenLevelTextureProvider;
+            ColorProvider               = _ColorProvider;
             ViewSettings                = _ViewSettings;
         }
 
@@ -68,14 +74,21 @@ namespace RMAZOR.Views.Helpers
 
         public override void Init()
         {
+            ColorProvider.ColorChanged += OnColorChanged;
             BetweenLevelTextureProvider.Init();
-            var col1 = CommonData.CompanyLogoBackgroundColor;
-            Color.RGBToHSV(col1, out float h, out float s, out float v);
-            var col2 = Color.HSVToRGB(h, s + 0.05f, v + 0.05f);
-            BetweenLevelTextureProvider.SetColors(col1, col2);
+            // var col1 = CommonData.CompanyLogoBackgroundColor;
+            // Color.RGBToHSV(col1, out float h, out float s, out float v);
+            // var col2 = Color.HSVToRGB(h, s + 0.05f, v + 0.05f);
+            // BetweenLevelTextureProvider.SetColors(col1, col2);
             base.Init();
         }
-        
+
+        private void OnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId == ColorIds.Background2)
+                m_NextTextureColor = _Color;
+        }
+
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             switch (_Args.Stage)
@@ -85,6 +98,7 @@ namespace RMAZOR.Views.Helpers
                     Cor.Run(DoTextureTransition(false));
                     break;
                 case ELevelStage.ReadyToUnloadLevel:
+                    BetweenLevelTextureProvider.SetColors(m_NextTextureColor, m_NextTextureColor);
                     Cor.Run(DoTextureTransition(true));
                     break;
             }

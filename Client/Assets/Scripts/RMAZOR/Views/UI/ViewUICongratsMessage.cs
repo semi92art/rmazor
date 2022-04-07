@@ -158,7 +158,7 @@ namespace RMAZOR.Views.UI
         
         private void ShowCongratsPanel(bool _Show)
         {
-            var col = ColorProvider.GetColor(ColorIdsCommon.UI);
+            var col = ColorProvider.GetColor(ColorIds.UI);
             if (!_Show)
                 col = col.SetA(0f);
             m_CompletedText.color = m_CongratsText.color = m_CongratsLine.Color = col;

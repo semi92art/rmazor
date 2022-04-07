@@ -95,8 +95,11 @@ namespace RMAZOR.Views.Characters
                 return;
             m_EnableMoving = false;
         }
-        
-        public override void OnRotationAfterFinished(MazeRotationEventArgs _Args) { }
+
+        public override void OnRotationFinished(MazeRotationEventArgs _Args)
+        {
+            Head.OnRotationFinished(_Args);
+        }
 
         public override void OnAllPathProceed(V2Int _LastPath)
         {

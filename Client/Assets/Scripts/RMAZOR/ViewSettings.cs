@@ -15,7 +15,7 @@ namespace RMAZOR
         public float turretProjectileRotationSpeed;
         public int   blockItemsCount;
         public int   pathItemsCount;
-        public bool  startPathItemFilledOnStart;
+        public bool  collectStartPathItemOnLevelLoaded;
         public float mazeRotationSpeed;
         public float finishTimeExcellent;
         public float finishTimeGood;
@@ -56,12 +56,6 @@ namespace RMAZOR
         {
             get => shredingerLineOffsetSpeed * 0.01f;
             set => shredingerLineOffsetSpeed = value / 0.01f;
-        }
-
-        public float TurretProjectileRotationSpeed
-        {
-            get => turretProjectileRotationSpeed * -10f;
-            set => turretProjectileRotationSpeed = value / -10f;
         }
 
         public float FinishTimeExcellent

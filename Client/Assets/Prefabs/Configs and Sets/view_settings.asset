@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edbe76a02fa3404f9e04b54b4caf98f8, type: 3}
   m_Name: view_settings
   m_EditorClassIdentifier: 
-  lineWidth: 9
-  cornerWidth: 9
+  lineWidth: 13
+  cornerWidth: 13
   cornerRadius: 20
-  movingTrapRotationSpeed: -200
+  movingTrapRotationSpeed: -400
   shredingerLineOffsetSpeed: 200
-  turretProjectileRotationSpeed: 100
+  turretProjectileRotationSpeed: -1000
   blockItemsCount: 100
   pathItemsCount: 300
-  startPathItemFilledOnStart: 0
+  collectStartPathItemOnLevelLoaded: 0
   mazeRotationSpeed: 5
   finishTimeExcellent: 3
   finishTimeGood: 5
@@ -30,7 +30,7 @@ MonoBehaviour:
   bottomScreenOffset: 5
   topScreenOffset: 10
   moveSwipeThreshold: 0.1
-  springboardAnimatedHighlight: 1
+  springboardAnimatedHighlight: 0
   afterRotationEnableMoveDelay: 0.1
   rateRequestsFrequency: 20
   adsRequestsFrequency: 5

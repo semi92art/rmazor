@@ -148,6 +148,8 @@ namespace RMAZOR.Managers
                 RemoteProperties.Circles2TextureSet = value as IList<Circles2TextureSetItem>;
             if ((value = GetField(_Fields, nameof(RemoteProperties.TrianglesTextureSet))?.GetValue()) != null)
                 RemoteProperties.TrianglesTextureSet = (IList<TrianglesTextureSetItem>) value;
+            if ((value = GetField(_Fields, nameof(RemoteProperties.Triangles2TextureSet))?.GetValue()) != null)
+                RemoteProperties.Triangles2TextureSet = (IList<Triangles2TextureSetItem>) value;
         }
         
         private void FetchConfigs()
@@ -303,22 +305,22 @@ namespace RMAZOR.Managers
 
         private static void FetchBackgroundTextureSets()
         {
-            string linesTexturePropsSetRaw = string.Empty;
-            GetConfig(ref linesTexturePropsSetRaw, "common.background_texture_lines_props_set", true);
-            Instance.RemoteProperties.LinesTextureSet = JsonConvert.DeserializeObject<IList<LinesTextureSetItem>>(
-                linesTexturePropsSetRaw);
-            string circlesTexturePropsSetRaw = string.Empty;
-            GetConfig(ref linesTexturePropsSetRaw, "common.background_texture_circles_props_set", true);
-            Instance.RemoteProperties.CirclesTextureSet = JsonConvert.DeserializeObject<IList<CirclesTextureSetItem>>(
-                circlesTexturePropsSetRaw);
-            string circles2TexturePropsSetRaw = string.Empty;
-            GetConfig(ref linesTexturePropsSetRaw, "common.background_texture_circles2_props_set", true);
-            Instance.RemoteProperties.Circles2TextureSet = JsonConvert.DeserializeObject<IList<Circles2TextureSetItem>>(
-                circles2TexturePropsSetRaw);
-            string trianglesTexturePropsSetRaw = string.Empty;
-            GetConfig(ref linesTexturePropsSetRaw, "common.background_texture_triangles_props_set", true);
-            Instance.RemoteProperties.TrianglesTextureSet = JsonConvert.DeserializeObject<IList<TrianglesTextureSetItem>>(
-                trianglesTexturePropsSetRaw);
+            string setRaw = string.Empty;
+            GetConfig(ref setRaw, "common.background_texture_lines_props_set", true);
+            Instance.RemoteProperties.LinesTextureSet = 
+                JsonConvert.DeserializeObject<IList<LinesTextureSetItem>>(setRaw);
+            GetConfig(ref setRaw, "common.background_texture_circles_props_set", true);
+            Instance.RemoteProperties.CirclesTextureSet = 
+                JsonConvert.DeserializeObject<IList<CirclesTextureSetItem>>(setRaw);
+            GetConfig(ref setRaw, "common.background_texture_circles2_props_set", true);
+            Instance.RemoteProperties.Circles2TextureSet = 
+                JsonConvert.DeserializeObject<IList<Circles2TextureSetItem>>(setRaw);
+            GetConfig(ref setRaw, "common.background_texture_triangles_props_set", true);
+            Instance.RemoteProperties.TrianglesTextureSet = 
+                JsonConvert.DeserializeObject<IList<TrianglesTextureSetItem>>(setRaw);
+            GetConfig(ref setRaw, "common.background_texture_triangles2_props_set", true);
+            Instance.RemoteProperties.Triangles2TextureSet = 
+                JsonConvert.DeserializeObject<IList<Triangles2TextureSetItem>>(setRaw);
             var filter = GetDataFieldFilterForRemoteFieldIds();
             filter.Filter(_Fields =>
             {
@@ -330,6 +332,8 @@ namespace RMAZOR.Managers
                     ?.SetValue(Instance.RemoteProperties.Circles2TextureSet);
                 GetField(_Fields, nameof(Instance.RemoteProperties.TrianglesTextureSet))
                     ?.SetValue(Instance.RemoteProperties.TrianglesTextureSet);
+                GetField(_Fields, nameof(Instance.RemoteProperties.Triangles2TextureSet))
+                    ?.SetValue(Instance.RemoteProperties.Triangles2TextureSet);
             });
         }
 
@@ -431,6 +435,7 @@ namespace RMAZOR.Managers
                 CommonUtils.StringToHash(nameof(Instance.RemoteProperties.CirclesTextureSet)),
                 CommonUtils.StringToHash(nameof(Instance.RemoteProperties.Circles2TextureSet)),
                 CommonUtils.StringToHash(nameof(Instance.RemoteProperties.TrianglesTextureSet)),
+                CommonUtils.StringToHash(nameof(Instance.RemoteProperties.Triangles2TextureSet)),
             };
             var fildIds = commonFieldIds
                 .Concat(modelFieldIds)

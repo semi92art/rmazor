@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Common;
 using Common.Constants;
 using Common.Entities;
 using Common.Enums;
@@ -275,29 +276,17 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == ColorIds.MazeItem1)
+            switch (_ColorId)
             {
-                m_HolderBorder.Color = _Color;
-                Projectile.MainRenderer.color = _Color;
-                ProjectileFake.MainRenderer.color = _Color;
-            }
-            else if (_ColorId == ColorIds.Main)
-            {
-                m_Body.Color = _Color;
-            }
-            else if (_ColorId == ColorIds.Background1)
-            {
-                m_TurretBackground.Color = Color.Lerp(
-                    _Color, 
-                    ColorProvider.GetColor(ColorIds.Background2),
-                    0.5f);
-            }
-            else if (_ColorId == ColorIds.Background2)
-            {
-                m_TurretBackground.Color = Color.Lerp(
-                    ColorProvider.GetColor(ColorIds.Background1), 
-                    _Color,
-                    0.5f);
+                case ColorIds.MazeItem1:
+                    m_HolderBorder.Color = _Color;
+                    Projectile.MainRenderer.color = _Color;
+                    ProjectileFake.MainRenderer.color = _Color;
+                    break;
+                case ColorIds.Main:
+                    m_Body.Color = _Color; break;
+                case ColorIds.Background1:
+                    m_TurretBackground.Color = _Color; break;
             }
         }
 
@@ -322,7 +311,7 @@ namespace RMAZOR.Views.MazeItems
                 0f, 
                 1f,
                 _Duration, 
-                _Progress => m_RotatingSpeed = ViewSettings.TurretProjectileRotationSpeed * _Progress,
+                _Progress => m_RotatingSpeed = ViewSettings.turretProjectileRotationSpeed * _Progress,
                 GameTicker);
         }
 
@@ -442,7 +431,7 @@ namespace RMAZOR.Views.MazeItems
             V2Int point;
             bool movedToTheEnd = false;
             m_ProjRotating = true;
-            m_RotatingSpeed = ViewSettings.TurretProjectileRotationSpeed;
+            m_RotatingSpeed = ViewSettings.turretProjectileRotationSpeed;
             var fullPath = RazorMazeUtils.GetFullPath(_Args.From, _Args.To);
             bool Predicate()
             {
@@ -574,10 +563,7 @@ namespace RMAZOR.Views.MazeItems
             var projectileRenderersCol = _Appear ? 
                 ColorProvider.GetColor(ColorIds.MazeItem1) 
                 : ProjectileFake.MainRenderer.color;
-            var mask3Col = Color.Lerp(
-                ColorProvider.GetColor(ColorIds.Background1), 
-                ColorProvider.GetColor(ColorIds.Background2),
-                0.5f);
+            var mask3Col = ColorProvider.GetColor(ColorIds.Background1);
             return new Dictionary<IEnumerable<Component>, Func<Color>>
             {
                 {new [] {m_HolderBorder}, () => ColorProvider.GetColor(ColorIds.MazeItem1)},

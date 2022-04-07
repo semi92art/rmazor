@@ -69,7 +69,7 @@ namespace RMAZOR.Views.UI
                         return;
                     Indicator.Animator.enabled = true;
                     Indicator.Shape.enabled = true;
-                    Indicator.Shape.Color = ColorProvider.GetColor(ColorIdsCommon.UI).SetA(0f);
+                    Indicator.Shape.Color = ColorProvider.GetColor(ColorIds.UI).SetA(0f);
                     Indicator.Animator.SetTrigger(AnimKeys.Anim);
                 }
                     break;

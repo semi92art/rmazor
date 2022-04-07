@@ -122,7 +122,7 @@ namespace Common.UI
             m_CloseButton.RTransform().anchoredPosition = new Vector2(0f, 100f);
             m_CloseButtonBorder = m_CloseButton.GetCompItem<Image>("border");
             m_CloseButtonIcon = m_CloseButton.GetCompItem<Image>("icon");
-            var borderColor = ColorProvider.GetColor(ColorIdsCommon.UiBorder);
+            var borderColor = ColorProvider.GetColor(ColorIds.UiBorder);
             m_CloseButtonBorder.color = borderColor;
             m_CloseButtonIcon.color = borderColor;
             m_CloseButton.SetOnClick(() =>
@@ -158,7 +158,7 @@ namespace Common.UI
 
         private void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId != ColorIdsCommon.UiBorder)
+            if (_ColorId != ColorIds.UiBorder)
                 return;
             m_CloseButtonBorder.color = _Color;
             m_CloseButtonIcon.color = _Color;

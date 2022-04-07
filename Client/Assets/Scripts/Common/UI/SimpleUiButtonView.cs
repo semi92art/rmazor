@@ -20,13 +20,13 @@ namespace Common.UI
         {
             base.SetColorsOnInit();
             if (button.IsNotNull())
-                button.targetGraphic.color = ColorProvider.GetColor(ColorIdsCommon.UiDialogItemNormal);
+                button.targetGraphic.color = ColorProvider.GetColor(ColorIds.UiDialogItemNormal);
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             base.OnColorChanged(_ColorId, _Color);
-            if (_ColorId != ColorIdsCommon.UiDialogItemNormal)
+            if (_ColorId != ColorIds.UiDialogItemNormal)
                 return;
             if (m_IsButtonNotNull)
                 button.targetGraphic.color = _Color;

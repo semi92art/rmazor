@@ -36,7 +36,7 @@ namespace RMAZOR.Views.Characters
 
         public abstract EAppearingState AppearingState { get; }
         public virtual  bool            Activated      { get; set; }
-        public abstract void            OnRotationAfterFinished(MazeRotationEventArgs _Args);
+        public abstract void            OnRotationFinished(MazeRotationEventArgs _Args);
         public abstract void            OnAllPathProceed(V2Int _LastPath);
         public abstract void            OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args);
         public abstract void            OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args);

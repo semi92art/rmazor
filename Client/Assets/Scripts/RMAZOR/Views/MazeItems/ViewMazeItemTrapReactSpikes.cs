@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Common;
 using Common.Constants;
 using Common.Entities;
 using Common.Enums;
@@ -208,7 +209,7 @@ namespace RMAZOR.Views.MazeItems
             trapTr.localRotation = Quaternion.Euler(0f, 0f, GetTrapAngle(Props.Directions.First()));
             trapTr.SetLocalPosXY(dir * scale * StartPos);
             trapTr.localScale = Vector3.one * scale * 0.95f;
-            m_Line.Thickness = ViewSettings.LineWidth * scale;
+            m_Line.Thickness = 9f * 0.01f * scale;
             mask.Width = mask.Height = scale * 0.8f;
         }
 

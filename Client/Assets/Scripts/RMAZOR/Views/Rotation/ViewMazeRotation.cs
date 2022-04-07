@@ -97,7 +97,7 @@ namespace RMAZOR.Views.Rotation
                 rotationAngleDistance / (90f * ViewSettings.mazeRotationSpeed),
                 _Angle => m_Rb.transform.rotation = Quaternion.Euler(0f, 0f, _Angle),
                 GameTicker, 
-                (_, __) =>
+                (_Broken, _Progress) =>
                 {
                     RotationFinished?.Invoke(_Args);
                     Cor.Run(Cor.Lerp(
@@ -106,7 +106,7 @@ namespace RMAZOR.Views.Rotation
                         1 / (ViewSettings.mazeRotationSpeed * 2f),
                         _Angle => m_Rb.transform.rotation = Quaternion.Euler(0f, 0f, _Angle),
                         GameTicker,
-                        (___, ____) => Character.OnRotationAfterFinished(_Args)));
+                        (_Broken1, _Progress1) => Character.OnRotationFinished(_Args)));
                 });
         }
 

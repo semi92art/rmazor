@@ -17,6 +17,15 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundPropertySets
         [Range(0, 1), JsonProperty(PropertyName = "C3")]
         public float amplitude;
         [JsonProperty(PropertyName = "C4")] public EBackgroundCircleCenterPosition center;
+        
+        public override string ToString(string _Format, IFormatProvider _FormatProvider)
+        {
+            return nameof(radius) + " " + radius + ", "
+                   + nameof(wavesCount) + " " + wavesCount + ", "
+                   + nameof(amplitude) + " " + amplitude + ", "
+                   + nameof(center) + " " + center + ", "
+                   + base.ToString(_Format, _FormatProvider);
+        }
     }
 
     [Serializable]

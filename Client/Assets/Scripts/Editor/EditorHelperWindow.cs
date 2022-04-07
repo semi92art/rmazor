@@ -222,6 +222,13 @@ namespace Editor
                 string json = JsonConvert.SerializeObject(set.set);
                 CommonUtils.CopyToClipboard(json);
             });
+            EditorUtilsEx.GuiButtonAction("Background Triangles 2 Texture Parameters Set", () =>
+            {
+                var set = GetPrefLoader().GetObject<Triangles2TexturePropertiesSetScriptableObject>
+                    (setName, "triangles2_texture_set");
+                string json = JsonConvert.SerializeObject(set.set);
+                CommonUtils.CopyToClipboard(json);
+            });
         }
 
         private void ModelSettingsTabPage()

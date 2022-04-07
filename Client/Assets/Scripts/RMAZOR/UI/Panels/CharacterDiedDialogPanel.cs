@@ -5,6 +5,7 @@ using Common.Ticker;
 using Common.UI;
 using RMAZOR.Managers;
 using RMAZOR.Models;
+using RMAZOR.UI.Panels.ShopPanels;
 using RMAZOR.Views.InputConfigurators;
 
 namespace RMAZOR.UI.Panels

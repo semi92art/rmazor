@@ -120,8 +120,8 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 "ui_game", "money_mini_panel");
             m_MoneyText = obj.GetCompItem<TextMeshProUGUI>("money");
             m_MoneyIcon = obj.GetCompItem<Image>("icon");
-            m_MoneyText.color = ColorProvider.GetColor(ColorIdsCommon.UiText);
-            m_MoneyIcon.color = ColorProvider.GetColor(ColorIdsCommon.UI);
+            m_MoneyText.color = ColorProvider.GetColor(ColorIds.UiText);
+            m_MoneyIcon.color = ColorProvider.GetColor(ColorIds.UI);
             var savedGameEntity = Managers.ScoreManager.GetSavedGameProgress(
                 CommonData.SavedGameFileName, 
                 true);
@@ -165,15 +165,10 @@ namespace RMAZOR.UI.Panels.ShopPanels
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == ColorIdsCommon.UI)
+            switch (_ColorId)
             {
-                if (m_MoneyIcon.IsNotNull())
-                    m_MoneyIcon.color = _Color;
-            }
-            else if (_ColorId == ColorIdsCommon.UiText)
-            {
-                if (m_MoneyText.IsNotNull())
-                    m_MoneyText.color = _Color;
+                case ColorIds.UI when m_MoneyIcon.IsNotNull():     m_MoneyIcon.color = _Color; break;
+                case ColorIds.UiText when m_MoneyText.IsNotNull(): m_MoneyText.color = _Color; break;
             }
         }
 

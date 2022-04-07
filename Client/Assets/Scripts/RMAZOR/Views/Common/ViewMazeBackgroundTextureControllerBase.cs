@@ -71,9 +71,7 @@ namespace RMAZOR.Views.Common
                 return;
             if (_Args.Args.Contains("set_back_editor"))
                 return;
-            SetColorsOnNewLevelOrNewTheme(
-                _Args.LevelIndex,
-                ColorProvider.CurrentTheme);
+            SetColorsOnNewLevel(_Args.LevelIndex);
         }
 
         public void GetBackgroundColors(
@@ -107,29 +105,38 @@ namespace RMAZOR.Views.Common
             }
         }
 
-        private Color GetBackgroundColor(int _ColorId, long _LevelIndex, EColorTheme _Theme)
+        private Color GetBackgroundColor(int _ColorId, long _LevelIndex)
         {
             var colorsSet = m_BackAndFrontColorsSetItemsLight;
             int group = RazorMazeUtils.GetGroupIndex(_LevelIndex);
             int setItemIdx = group % colorsSet.Count;
             var setItem = colorsSet[setItemIdx];
-            if (_ColorId == ColorIds.Background1)
-                return setItem.bacground1;
-            return _ColorId == ColorIds.Background2 ? setItem.bacground2 : Color.magenta;
+            return _ColorId switch
+            {
+                ColorIds.Background1    => setItem.bacground1,
+                ColorIds.Background2    => setItem.bacground2,
+                ColorIds.PathItem       => setItem.GetColor(setItem.pathItemFillType),
+                ColorIds.PathBackground => setItem.GetColor(setItem.pathBackgroundFillType),
+                ColorIds.PathFill       => setItem.GetColor(setItem.pathFillFillType),
+                ColorIds.Character2     => setItem.GetColor(setItem.characterBorderFillType),
+                _                       => Color.magenta
+            };
         }
-        
-        protected void SetColorsOnNewLevelOrNewTheme(
-            long        _LevelIndex,
-            EColorTheme _Theme)
+
+        private void SetColorsOnNewLevel(long _LevelIndex)
         {
-            int idx1 = ColorIds.Background1;
-            int idx2 = ColorIds.Background2;
-            BackCol1Current = GetBackgroundColor(idx1, _LevelIndex, _Theme);
-            BackCol2Current = GetBackgroundColor(idx2, _LevelIndex, _Theme);
-            BackCol1Prev    = GetBackgroundColor(idx1, _LevelIndex - 1, _Theme);
-            BackCol2Prev    = GetBackgroundColor(idx2, _LevelIndex - 1, _Theme);
-            BackCol1Next    = GetBackgroundColor(idx1, _LevelIndex + 1, _Theme);
-            BackCol2Next    = GetBackgroundColor(idx2, _LevelIndex + 1, _Theme);
+            ColorProvider.SetColor(ColorIds.PathItem, GetBackgroundColor(ColorIds.PathItem, _LevelIndex));
+            ColorProvider.SetColor(ColorIds.PathFill, GetBackgroundColor(ColorIds.PathFill, _LevelIndex));
+            ColorProvider.SetColor(ColorIds.PathBackground, GetBackgroundColor(ColorIds.PathBackground, _LevelIndex));
+            ColorProvider.SetColor(ColorIds.Character2,  GetBackgroundColor(ColorIds.Character2, _LevelIndex));
+            const int idx1 = ColorIds.Background1;
+            const int idx2 = ColorIds.Background2;
+            BackCol1Current = GetBackgroundColor(idx1, _LevelIndex);
+            BackCol2Current = GetBackgroundColor(idx2, _LevelIndex);
+            BackCol1Prev = GetBackgroundColor(idx1, _LevelIndex - 1);
+            BackCol2Prev = GetBackgroundColor(idx2, _LevelIndex - 1);
+            BackCol1Next = GetBackgroundColor(idx1, _LevelIndex + 1);
+            BackCol2Next = GetBackgroundColor(idx2, _LevelIndex + 1);
             ColorProvider.SetColor(ColorIds.Background1, BackCol1Current);
             ColorProvider.SetColor(ColorIds.Background2, BackCol2Current);
         }

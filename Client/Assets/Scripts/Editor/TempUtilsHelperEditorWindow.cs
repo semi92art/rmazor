@@ -1,6 +1,4 @@
-﻿using System;
-using Common;
-using Common.Extensions;
+﻿using Common;
 using Common.Managers;
 using Common.Utils;
 using RMAZOR;
@@ -14,7 +12,8 @@ namespace Editor
 {
     public class TempUtilsHelperEditorWindow : EditorWindow
     {
-        private int m_LevelIndex;
+        private int             m_LevelIndex;
+        private IGameController m_GameController;
         
         [MenuItem("Tools/Test Utils Helper", false)]
         public static void ShowWindow()
@@ -24,26 +23,37 @@ namespace Editor
 
         private void OnGUI()
         {
-            EditorUtilsEx.GuiButtonAction(SetNextBackgroundTexture);
+            EditorUtilsEx.HorizontalZone(() =>
+            {
+                EditorUtilsEx.GuiButtonAction(SetPreviousBackgroundTexture);
+                EditorUtilsEx.GuiButtonAction(SetNextBackgroundTexture);
+            });
+        }
+
+        private void SetPreviousBackgroundTexture()
+        {
+            if (!ValidAction())
+                return;
+            var args = GetLevelStageArgsForBackgroundTexture(true);
+            m_GameController.View.Background.OnLevelStageChanged(args);
+            m_GameController.View.AdditionalBackground.OnLevelStageChanged(args);
         }
 
         private void SetNextBackgroundTexture()
         {
-            if (!Application.isPlaying)
-            {
-                Dbg.LogWarning("This option is available only in play mode");
+            if (!ValidAction())
                 return;
-            }
-            var gc = FindObjectOfType<GameController>();
-            if (gc.IsNull())
-            {
-                Dbg.LogError("Game Controller was not found.");
-                return;
-            }
+            var args = GetLevelStageArgsForBackgroundTexture(false);
+            m_GameController.View.Background.OnLevelStageChanged(args);
+            m_GameController.View.AdditionalBackground.OnLevelStageChanged(args);
+        }
+
+        private LevelStageArgs GetLevelStageArgsForBackgroundTexture(bool _Previous)
+        {
             var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ViewSettings>(
                 "configs", "view_settings");
             int group = RazorMazeUtils.GetGroupIndex(m_LevelIndex);
-            int levels = RazorMazeUtils.GetLevelsInGroup(group);
+            int levels = (_Previous ? -1 : 1) * RazorMazeUtils.GetLevelsInGroup(_Previous ? group - 1 : group);
             m_LevelIndex = MathUtils.ClampInverse(m_LevelIndex + levels, 0, settings.levelsCountMain - 1);
             var fakeArgs = new LevelStageArgs(
                 m_LevelIndex, 
@@ -53,9 +63,23 @@ namespace Editor
             {
                 Args = new [] {"set_back_editor"}
             };
-            
-            gc.View.Background.OnLevelStageChanged(fakeArgs);
-            gc.View.AdditionalBackground.OnLevelStageChanged(fakeArgs);
+            return fakeArgs;
+        }
+
+        private bool ValidAction()
+        {
+            if (!Application.isPlaying)
+            {
+                Dbg.LogWarning("This option is available only in play mode");
+                return false;
+            }
+            m_GameController = FindObjectOfType<GameController>();
+            if (m_GameController == null)
+            {
+                Dbg.LogError("Game Controller was not found.");
+                return false;
+            }
+            return true;
         }
     }
 }

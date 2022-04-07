@@ -48,18 +48,26 @@ namespace RMAZOR.Views.UI
 
         private void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == ColorIds.Character)
-                charHead.SetColor(_Color);
-            else if (_ColorId == ColorIds.Background1 || _ColorId == ColorIds.Background2)
+            switch (_ColorId)
             {
-                var avCol = Color.Lerp(
-                    ColorProvider.GetColor(ColorIds.Background1),
-                    ColorProvider.GetColor(ColorIds.Background2),
-                    0.5f);
-                charEyes.ForEach(_Eye => _Eye.SetColor(avCol));
+                case ColorIds.Character: charHead.SetColor(_Color); break;
+                case ColorIds.Background1:
+                case ColorIds.Background2:
+                {
+                    var avCol = Color.Lerp(
+                        ColorProvider.GetColor(ColorIds.Background1),
+                        ColorProvider.GetColor(ColorIds.Background2),
+                        0.5f);
+                    charEyes.ForEach(_Eye => _Eye.SetColor(avCol));
+                    break;
+                }
+                default:
+                {
+                    if (_ColorId == ColorIds.UiText)
+                        text.color = _Color;
+                    break;
+                }
             }
-            else if (_ColorId == ColorIdsCommon.UiText)
-                text.color = _Color;
         }
 
         public void ShowSubtitle(string _Text, float _Seconds, bool _WithCharacter)

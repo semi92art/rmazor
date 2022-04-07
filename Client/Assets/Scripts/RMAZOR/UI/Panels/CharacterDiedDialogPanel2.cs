@@ -5,9 +5,8 @@ using Common.Ticker;
 using Common.UI;
 using RMAZOR.Managers;
 using RMAZOR.Models;
+using RMAZOR.UI.Panels.ShopPanels;
 using RMAZOR.Views.InputConfigurators;
-// ReSharper disable UnusedType.Global
-// ReSharper disable ClassNeverInstantiated.Global
 
 namespace RMAZOR.UI.Panels
 {

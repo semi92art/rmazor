@@ -14,23 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   set:
     array:
-    - tiling: 6
-      direction: 0.82
-      wrapScale: 0.012
-      wrapTiling: 3.69
-    - tiling: 7
+    - tiling: 3
       direction: 1
-      wrapScale: 0.078
-      wrapTiling: 3.25
-    - tiling: 8
+      wrapScale: 0
+      wrapTiling: 1
+    - tiling: 6
+      direction: 0.59
+      wrapScale: 0.012
+      wrapTiling: 5.74
+    - tiling: 3
       direction: 0.05
       wrapScale: 0.065
       wrapTiling: 3.22
-    - tiling: 5
-      direction: 0
-      wrapScale: 1
-      wrapTiling: 1
-    - tiling: 10
-      direction: 1
-      wrapScale: 1
-      wrapTiling: 1
+    - tiling: 7
+      direction: 0.42
+      wrapScale: 0.078
+      wrapTiling: 2

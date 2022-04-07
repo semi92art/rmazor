@@ -16,6 +16,15 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundPropertySets
         [Range(0.05f, 0.5f), JsonProperty(PropertyName = "C2_3")]
         public float stepY;
         [JsonProperty(PropertyName = "C2_4")] public bool alternateX;
+
+        public override string ToString(string _Format, IFormatProvider _FormatProvider)
+        {
+            return nameof(radius) + " " + radius + ", "
+                   + nameof(stepX) + " " + stepX + ", "
+                   + nameof(stepY) + " " + stepY + ", "
+                   + nameof(alternateX) + " " + alternateX + ", "
+                   + base.ToString(_Format, _FormatProvider);
+        }
     }
 
     [Serializable]

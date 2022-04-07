@@ -14,7 +14,8 @@ namespace RMAZOR.Views.Characters
         ICharacterMoveFinished,
         IAppear
     {
-        void OnRotationAfterFinished(MazeRotationEventArgs _Args);
+        
+        void OnRotationFinished(MazeRotationEventArgs _Args);
         void OnAllPathProceed(V2Int _LastPath);
     }
 }

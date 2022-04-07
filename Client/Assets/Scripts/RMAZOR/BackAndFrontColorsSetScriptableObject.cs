@@ -6,12 +6,34 @@ using UnityEngine;
 
 namespace RMAZOR
 {
+    public enum EBackAndFrontColorType
+    {
+        Main = 0,
+        Background1 = 1,
+        Background2 = 2
+    }
+    
     [Serializable]
     public class BackAndFrontColorsSetItem
     {
-        public Color main;
-        public Color bacground1;
-        public Color bacground2;
+        public                       Color                  main;
+        public                       Color                  bacground1;
+        public                       Color                  bacground2;
+        [JsonProperty("F1")] public EBackAndFrontColorType pathItemFillType;
+        [JsonProperty("F2")] public EBackAndFrontColorType pathBackgroundFillType;
+        [JsonProperty("F3")] public EBackAndFrontColorType pathFillFillType;
+        [JsonProperty("F4")] public EBackAndFrontColorType characterBorderFillType;
+
+        public Color GetColor(EBackAndFrontColorType _Type)
+        {
+            return _Type switch
+            {
+                EBackAndFrontColorType.Main        => main,
+                EBackAndFrontColorType.Background1 => bacground1,
+                EBackAndFrontColorType.Background2 => bacground2,
+                _                                  => Color.magenta
+            };
+        }
     }
     
     [Serializable]

@@ -10,16 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f30d60f3598f45498545678c775ac8db, type: 3}
-  m_Name: color_set_light
+  m_Name: main_color_set
   m_EditorClassIdentifier: 
   set:
     array:
     - name: Main
-      color: {r: 1, g: 1, b: 1, a: 1}
+      color: {r: 0.27450982, g: 0.227451, b: 0.2901961, a: 1}
     - name: Maze Item 1
       color: {r: 1, g: 1, b: 1, a: 1}
-    - name: Maze Item 2
-      color: {r: 0, g: 0.92168856, b: 1, a: 1}
     - name: Money Item
       color: {r: 1, g: 0.8855696, b: 0.3820755, a: 1}
     - name: Character
@@ -27,24 +25,20 @@ MonoBehaviour:
     - name: Character Tail
       color: {r: 1, g: 1, b: 1, a: 0.5019608}
     - name: Background 1
-      color: {r: 0.20369403, g: 0.23529412, b: 0.1254902, a: 1}
+      color: {r: 0.42352948, g: 0.726053, b: 0.9647059, a: 1}
     - name: Background 2
-      color: {r: 0.24761711, g: 0.26415092, b: 0.1956212, a: 1}
-    - name: Background Idle Items
-      color: {r: 1, g: 1, b: 1, a: 0.12156863}
+      color: {r: 0.36850303, g: 0.6598669, b: 0.8584906, a: 1}
     - name: UI
-      color: {r: 1, g: 0.8527537, b: 0.504717, a: 1}
+      color: {r: 1, g: 1, b: 1, a: 1}
     - name: Ui Dialog Item Normal
-      color: {r: 1, g: 0.8527537, b: 0.504717, a: 0.29803923}
+      color: {r: 1, g: 1, b: 1, a: 0.29803923}
     - name: Ui Dialog Background
-      color: {r: 1, g: 0.8527537, b: 0.504717, a: 0.23529412}
+      color: {r: 1, g: 1, b: 1, a: 0.23529412}
     - name: Ui Border
-      color: {r: 1, g: 0.8527537, b: 0.504717, a: 1}
+      color: {r: 1, g: 1, b: 1, a: 1}
     - name: Ui Text
-      color: {r: 1, g: 0.92660695, b: 0.759434, a: 1}
+      color: {r: 1, g: 1, b: 1, a: 1}
     - name: Ui Background
-      color: {r: 1, g: 0.8527537, b: 0.504717, a: 1}
+      color: {r: 1, g: 1, b: 1, a: 0.07058824}
     - name: Ui Item Highlighted
       color: {r: 0.8679245, g: 0.24670237, b: 0.20879315, a: 1}
-    - name: Ui Start Logo
-      color: {r: 1, g: 1, b: 1, a: 1}

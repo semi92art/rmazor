@@ -1,7 +1,6 @@
 ﻿using Common;
 using Common.Providers;
 using RMAZOR.Models;
-using RMAZOR.Views.Common.BackgroundIdleItems;
 using RMAZOR.Views.Common.CongratulationItems;
 
 namespace RMAZOR.Views.Common
@@ -12,21 +11,17 @@ namespace RMAZOR.Views.Common
     {
         #region inject
 
-        private IViewMazeBackgroundIdleItems         IdleItems            { get; }
-        private IViewMazeBackgroundCongradItems      CongratItems         { get; }
-        private IViewMazeBackgroundTextureController TextureController    { get; }
+        private IViewMazeBackgroundCongradItems      FireworkItems     { get; }
+        private IViewMazeBackgroundTextureController TextureController { get; }
 
         public ViewBackground(
-            IModelGame                           _Model,
             IColorProvider                       _ColorProvider,
-            IViewMazeBackgroundIdleItems         _IdleItems,
-            IViewMazeBackgroundCongradItems      _CongratItems,
+            IViewMazeBackgroundCongradItems      _FireworkItems,
             IViewMazeBackgroundTextureController _TextureController) 
-            : base(_Model, _ColorProvider)
+            : base(_ColorProvider)
         {
-            IdleItems            = _IdleItems;
-            CongratItems         = _CongratItems;
-            TextureController    = _TextureController;
+            FireworkItems     = _FireworkItems;
+            TextureController = _TextureController;
         }
         
         #endregion
@@ -37,16 +32,15 @@ namespace RMAZOR.Views.Common
         {
             ColorProvider.AddIgnorableForThemeSwitchColor(ColorIds.Background1);
             ColorProvider.AddIgnorableForThemeSwitchColor(ColorIds.Background2);
-            IdleItems           .Init();
-            CongratItems        .Init();
-            TextureController   .Init();
+            FireworkItems    .Init();
+            TextureController.Init();
             base.Init();
         }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            CongratItems        .OnLevelStageChanged(_Args);
-            TextureController   .OnLevelStageChanged(_Args);
+            FireworkItems    .OnLevelStageChanged(_Args);
+            TextureController.OnLevelStageChanged(_Args);
         }
 
         #endregion

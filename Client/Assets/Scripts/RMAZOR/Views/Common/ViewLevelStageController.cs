@@ -223,9 +223,9 @@ namespace RMAZOR.Views.Common
                     if (savedGameEntity.Result == EEntityResult.Fail || !castSuccess)
                     {
                         Dbg.LogWarning("Failed to load saved game: " +
-                                       $"_Result: {savedGameEntity.Result}," +
-                                       $" castSuccess: {castSuccess}," +
-                                       $" _Value: {savedGameEntity.Value}");
+                                       $"_Result: {savedGameEntity.Result}, " +
+                                       $"castSuccess: {castSuccess}, " +
+                                       $"_Value: {savedGameEntity.Value}");
                         return;
                     }
                     var newSavedGame = new SavedGame
@@ -248,7 +248,7 @@ namespace RMAZOR.Views.Common
             foreach (var pathItem in PathItemsGroup.PathItems)
             {
                 bool collect = Model.PathItemsProceeder.PathProceeds[pathItem.Props.Position];
-                pathItem.Collected = collect;
+                pathItem.Collect(collect, true);
             }
             foreach (var mazeItem in _MazeItems)
                 mazeItem.Appear(true);
@@ -280,9 +280,9 @@ namespace RMAZOR.Views.Common
                     if (savedGameEntity.Result == EEntityResult.Fail || !castSuccess)
                     {
                         Dbg.LogWarning("Failed to load saved game: " +
-                                       $"_Result: {savedGameEntity.Result}," +
-                                       $" castSuccess: {castSuccess}," +
-                                       $" _Value: {savedGameEntity.Value}");
+                                       $"_Result: {savedGameEntity.Result}, " +
+                                       $"castSuccess: {castSuccess}, " +
+                                       $"_Value: {savedGameEntity.Value}");
                         return;
                     }
                     long newMoneyCount = savedGame.Money + PathItemsGroup.MoneyItemsCollectedCount;

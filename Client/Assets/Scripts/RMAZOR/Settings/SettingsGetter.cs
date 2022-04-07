@@ -12,7 +12,6 @@ namespace RMAZOR.Settings
         IHapticsSetting      HapticsSetting      { get; }
         ILanguageSetting     LanguageSetting     { get; }
         IDebugSetting        DebugSetting        { get; }
-        IDarkThemeSetting    DarkThemeSetting    { get; }
     }
     
     public class SettingsGetter : ISettingsGetter
@@ -23,7 +22,6 @@ namespace RMAZOR.Settings
         public IHapticsSetting      HapticsSetting      { get; }
         public ILanguageSetting     LanguageSetting     { get; }
         public IDebugSetting        DebugSetting        { get; }
-        public IDarkThemeSetting    DarkThemeSetting    { get; }
 
         public SettingsGetter(
             ISoundSetting        _SoundSetting,
@@ -31,8 +29,7 @@ namespace RMAZOR.Settings
             INotificationSetting _NotificationSetting, 
             IHapticsSetting      _HapticsSetting,
             ILanguageSetting     _LanguageSetting,
-            IDebugSetting        _DebugSetting,
-            IDarkThemeSetting    _DarkThemeSetting)
+            IDebugSetting        _DebugSetting)
         {
             SoundSetting        = _SoundSetting;
             MusicSetting        = _MusicSetting;
@@ -40,7 +37,6 @@ namespace RMAZOR.Settings
             HapticsSetting      = _HapticsSetting;
             LanguageSetting     = _LanguageSetting;
             DebugSetting        = _DebugSetting;
-            DarkThemeSetting    = _DarkThemeSetting;
         }
     }
 }

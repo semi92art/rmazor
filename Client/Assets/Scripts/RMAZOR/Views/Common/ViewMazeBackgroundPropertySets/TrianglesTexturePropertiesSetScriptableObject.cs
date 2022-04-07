@@ -15,6 +15,15 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundPropertySets
         public float ratio;
         [JsonProperty(PropertyName = "T3")] public float a;
         [JsonProperty(PropertyName = "T4")] public float b;
+        
+        public override string ToString(string _Format, IFormatProvider _FormatProvider)
+        {
+            return nameof(size) + " " + size + ", "
+                   + nameof(ratio) + " " + ratio + ", "
+                   + nameof(a) + " " + a + ", "
+                   + nameof(b) + " " + b + ", "
+                   + base.ToString(_Format, _FormatProvider);
+        }
     }
 
     [Serializable]

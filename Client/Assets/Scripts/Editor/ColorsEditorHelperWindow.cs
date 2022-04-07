@@ -18,6 +18,8 @@ namespace Editor
 {
     public class ColorsEditorHelperWindow : EditorWindow
     {
+        private static ColorsEditorHelperWindow _instance;
+        
         private IColorProvider                        m_ColorProvider;
         private MainColorsSetScriptableObject         m_MainColorsSetScrObj;
         private BackAndFrontColorsSetScriptableObject m_BackAndFrontColorsSetScrObj;
@@ -33,45 +35,55 @@ namespace Editor
         {
             var window = GetWindow<ColorsEditorHelperWindow>("Color Palette Helper");
             window.minSize = new Vector2(500, 200);
+            _instance = window;
+            _instance.LoadSets();
         }
-    
+
+        [InitializeOnLoadMethod]
+        private static void OnInitializeOnLoad()
+        {
+            static void OnSceneLoaded(Scene _Scene, LoadSceneMode _Mode)
+            {
+                if (_Scene.name != SceneNames.Level || _instance == null) 
+                    return;
+                _instance.m_ColorProvider = FindObjectOfType<ColorProvider>();
+                _instance.LoadSets();
+            }
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+        
+        private void OnFocus()
+        {
+            _instance = this;
+            LoadColorsProvider(true);
+        }
+
         private void OnGUI()
         {
-            if (m_MainColorsSet == null || m_BackAndFrontColorsSet == null)
-                LoadSets();
+            LoadColorsProvider(false);
             DisplayColorSetObjectFields();
             EditorUtilsEx.GuiButtonAction(CopyMainColorsToClipboard);
             EditorUtilsEx.GuiButtonAction(CopyBackAndFrontColorsToClipboard);
-            EditorUtilsEx.GuiButtonAction("Next color set", SetNextBackAndFrontColorSet);
+            EditorUtilsEx.HorizontalZone(() =>
+            {
+                EditorUtilsEx.GuiButtonAction("Previous color set", SetPreviousBackAndFrontColorSet);
+                EditorUtilsEx.GuiButtonAction("Next color set", SetNextBackAndFrontColorSet);
+            });
             DisplayColors();
-            if ((m_ColorProvider == null || m_MainColorsSetScrObj == null)
+            EditorUtilsEx.HorizontalLine(Color.gray);
+            DisplayUiColorsEditorZone();
+            EditorUtilsEx.HorizontalLine(Color.gray);
+        }
+
+        private void LoadColorsProvider(bool _Forced)
+        {
+            if ((m_ColorProvider == null || _Forced)
                 && Application.isPlaying
                 && SceneManager.GetActiveScene().name.Contains(SceneNames.Level))
             {
                 m_ColorProvider = FindObjectOfType<ColorProvider>();
             }
-            EditorUtilsEx.HorizontalLine(Color.gray);
-            GUILayout.Label("UI Color:");
-            if (!m_UiColor.HasValue)
-            {
-                var uiSetItem = m_MainColorsSet.FirstOrDefault(
-                    _Item => ColorIdsCommon.GetHash(_Item.name) == ColorIdsCommon.UI);
-                if (uiSetItem != null)
-                {
-                    m_UiColor = EditorGUILayout.ColorField(uiSetItem.color);
-                    m_UiColorCheck = uiSetItem.color;
-                }
-            }
-            else
-            {
-                m_UiColor = EditorGUILayout.ColorField(m_UiColor.Value);
-            }
-            m_ChangeOnlyHueUi = EditorGUILayout.Toggle("Only Hue", m_ChangeOnlyHueUi);
-            if (m_UiColor.HasValue && m_UiColor != m_UiColorCheck)
-                SetUiColors(m_UiColor.Value);
-            if (m_UiColor.HasValue)
-                m_UiColorCheck = m_UiColor.Value;
-            EditorUtilsEx.HorizontalLine(Color.gray);
         }
 
         private void LoadSets()
@@ -103,16 +115,16 @@ namespace Editor
         {
             var coloIds = new []
             {
-                ColorIdsCommon.UI,
-                ColorIdsCommon.UiBackground,
-                ColorIdsCommon.UiBorder,
-                ColorIdsCommon.UiText,
-                ColorIdsCommon.UiDialogItemNormal,
-                ColorIdsCommon.UiDialogBackground
+                ColorIds.UI,
+                ColorIds.UiBackground,
+                ColorIds.UiBorder,
+                ColorIds.UiText,
+                ColorIds.UiDialogItemNormal,
+                ColorIds.UiDialogBackground
             };
             foreach (int id in coloIds)
             {
-                var item = m_MainColorsSet.FirstOrDefault(_Item => ColorIdsCommon.GetHash(_Item.name) == id);
+                var item = m_MainColorsSet.FirstOrDefault(_Item => ColorIds.GetColorIdByName(_Item.name) == id);
                 if (item == null) 
                     continue;
                 var col = item.color;
@@ -134,6 +146,18 @@ namespace Editor
 
         private void SetNextBackAndFrontColorSet()
         {
+            SetNextOrPreviousBackAndFrontColorSet(false);
+            SetBackAndFrontColorSetColors();
+        }
+        
+        private void SetPreviousBackAndFrontColorSet()
+        {
+            SetNextOrPreviousBackAndFrontColorSet(true);
+            SetBackAndFrontColorSetColors();
+        }
+
+        private void SetBackAndFrontColorSetColors()
+        {
             if (!Application.isPlaying)
             {
                 Dbg.LogWarning("This option is available only in play mode");
@@ -144,12 +168,22 @@ namespace Editor
                 Dbg.LogError("Color provider is null");
                 return;
             }
-            var set = m_BackAndFrontColorsSet[m_CurrSetIdx];
-            m_ColorProvider.SetColor(ColorIds.Background1, set.bacground1);
-            m_ColorProvider.SetColor(ColorIds.Main, set.main);
-            m_ColorProvider.SetColor(ColorIds.Background2, set.bacground2);
+            var setItem = m_BackAndFrontColorsSet[m_CurrSetIdx];
+            m_ColorProvider.SetColor(ColorIds.Main, setItem.main);
+            m_ColorProvider.SetColor(ColorIds.Background1, setItem.bacground1);
+            m_ColorProvider.SetColor(ColorIds.Background2, setItem.bacground2);
+            m_ColorProvider.SetColor(ColorIds.PathItem, setItem.GetColor(setItem.pathItemFillType));
+            m_ColorProvider.SetColor(ColorIds.PathBackground, setItem.GetColor(setItem.pathBackgroundFillType));
+            m_ColorProvider.SetColor(ColorIds.PathFill, setItem.GetColor(setItem.pathFillFillType));
+            m_ColorProvider.SetColor(ColorIds.Character2, setItem.GetColor(setItem.characterBorderFillType));
+            Dbg.Log("Color set index: " + m_CurrSetIdx);
+        }
+
+        private void SetNextOrPreviousBackAndFrontColorSet(bool _Previous)
+        {
+            int addict = _Previous ? -1 : 1;
             m_CurrSetIdx = MathUtils.ClampInverse(
-                m_CurrSetIdx + 1, 0, m_BackAndFrontColorsSet.Count - 1);
+                m_CurrSetIdx + addict, 0, m_BackAndFrontColorsSet.Count - 1);
         }
 
         private void DisplayColors()
@@ -161,20 +195,44 @@ namespace Editor
                 {
                     EditorUtilsEx.GUIEnabledZone(false, () =>
                     {
-                        EditorGUILayout.TextField(ColorIdsCommon.GetHash(item.name).ToString(), GUILayout.Width(80));
+                        EditorGUILayout.TextField(ColorIds.GetColorIdByName(item.name).ToString(), GUILayout.Width(80));
                         EditorGUILayout.TextField(item.name, GUILayout.Width(170));
                     });
                     var newColor = EditorGUILayout.ColorField(item.color);
                     if (newColor != item.color)
-                        m_ColorProvider?.SetColor(ColorIdsCommon.GetHash(item.name), item.color);
+                        m_ColorProvider?.SetColor(ColorIds.GetColorIdByName(item.name), item.color);
                     item.color = newColor;
                 });
             }
         }
+
+        private void DisplayUiColorsEditorZone()
+        {
+            GUILayout.Label("UI Color:");
+            if (!m_UiColor.HasValue)
+            {
+                var uiSetItem = m_MainColorsSet.FirstOrDefault(
+                    _Item => ColorIds.GetColorIdByName(_Item.name) == ColorIds.UI);
+                if (uiSetItem != null)
+                {
+                    m_UiColor = EditorGUILayout.ColorField(uiSetItem.color);
+                    m_UiColorCheck = uiSetItem.color;
+                }
+            }
+            else
+            {
+                m_UiColor = EditorGUILayout.ColorField(m_UiColor.Value);
+            }
+            m_ChangeOnlyHueUi = EditorGUILayout.Toggle("Only Hue", m_ChangeOnlyHueUi);
+            if (m_UiColor.HasValue && m_UiColor != m_UiColorCheck)
+                SetUiColors(m_UiColor.Value);
+            if (m_UiColor.HasValue)
+                m_UiColorCheck = m_UiColor.Value;
+        }
         
         private void CopyMainColorsToClipboard()
         {
-            var converter = new MainColorItemsSetConverter();
+            var converter = new ColorJsonConverter();
             string json = JsonConvert.SerializeObject(
                 m_MainColorsSet,
                 converter);
@@ -183,7 +241,7 @@ namespace Editor
 
         private void CopyBackAndFrontColorsToClipboard()
         {
-            var converter = new BackAndFrontColorsSetConverter();
+            var converter = new ColorJsonConverter();
             string json = JsonConvert.SerializeObject(
                 m_BackAndFrontColorsSet,
                 converter);

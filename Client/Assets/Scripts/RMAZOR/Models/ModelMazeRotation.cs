@@ -11,21 +11,21 @@ namespace RMAZOR.Models
 
     public class MazeRotationEventArgs
     {
-        public EMazeRotateDirection Direction { get; }
-        public MazeOrientation CurrentOrientation { get; }
-        public MazeOrientation NextOrientation { get; }
-        public bool Instantly { get; }
+        public EMazeRotateDirection Direction          { get; }
+        public MazeOrientation      CurrentOrientation { get; }
+        public MazeOrientation      NextOrientation    { get; }
+        public bool                 Instantly          { get; }
 
         public MazeRotationEventArgs(
-            EMazeRotateDirection _Direction, 
-            MazeOrientation _CurrentOrientation,
-            MazeOrientation _NextOrientation,
-            bool _Instantly)
+            EMazeRotateDirection _Direction,
+            MazeOrientation      _CurrentOrientation,
+            MazeOrientation      _NextOrientation,
+            bool                 _Instantly)
         {
-            Direction = _Direction;
+            Direction          = _Direction;
             CurrentOrientation = _CurrentOrientation;
-            NextOrientation = _NextOrientation;
-            Instantly = _Instantly;
+            NextOrientation    = _NextOrientation;
+            Instantly          = _Instantly;
         }
     }
     
@@ -41,7 +41,6 @@ namespace RMAZOR.Models
     
     public class ModelMazeRotation : InitBase, IModelMazeRotation 
     {
-
         private IModelData Data { get; }
 
         public ModelMazeRotation(IModelData _Data)
@@ -53,8 +52,8 @@ namespace RMAZOR.Models
         public event MazeOrientationHandler RotationFinished;
 
         public void StartRotation(
-            EMazeRotateDirection _Direction, 
-            MazeOrientation? _NextOrientation = null)
+            EMazeRotateDirection _Direction,
+            MazeOrientation?     _NextOrientation = null)
         {
             if (!Data.ProceedingControls)
                 return;
@@ -101,17 +100,15 @@ namespace RMAZOR.Models
         
         private static MazeOrientation GetNextOrientation(
             EMazeRotateDirection _Direction,
-            MazeOrientation _Orientation)
+            MazeOrientation      _Orientation)
         {
             int orient = (int) _Orientation;
-            switch (_Direction)
+            orient = _Direction switch
             {
-                case EMazeRotateDirection.Clockwise:
-                    orient = MathUtils.ClampInverse(orient + 1, 0, 3); break;
-                case EMazeRotateDirection.CounterClockwise:
-                    orient = MathUtils.ClampInverse(orient - 1, 0, 3); break;
-                default: throw new SwitchCaseNotImplementedException(_Direction);
-            }
+                EMazeRotateDirection.Clockwise        => MathUtils.ClampInverse(orient + 1, 0, 3),
+                EMazeRotateDirection.CounterClockwise => MathUtils.ClampInverse(orient - 1, 0, 3),
+                _                                     => throw new SwitchCaseNotImplementedException(_Direction)
+            };
             return (MazeOrientation) orient;
         }
     }

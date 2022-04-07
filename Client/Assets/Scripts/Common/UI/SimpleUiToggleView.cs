@@ -20,13 +20,13 @@ namespace Common.UI
         {
             base.SetColorsOnInit();
             if (m_IsToggleNotNull)
-                toggle.targetGraphic.color = ColorProvider.GetColor(ColorIdsCommon.UI);
+                toggle.targetGraphic.color = ColorProvider.GetColor(ColorIds.UI);
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             base.OnColorChanged(_ColorId, _Color);
-            if (_ColorId != ColorIdsCommon.UI) 
+            if (_ColorId != ColorIds.UI) 
                 return;
             if (m_IsToggleNotNull)
                 toggle.targetGraphic.color = _Color;

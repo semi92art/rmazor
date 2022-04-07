@@ -32,8 +32,11 @@ MonoBehaviour:
     - item: {fileID: 11400000, guid: 11f57dde74a677f41a82337d2189bb22, type: 2}
       name: circles2_texture_set
       bundle: 0
-    - item: {fileID: 11400000, guid: 3f7ee430962a6224aac784e5ddc40db9, type: 2}
+    - item: {fileID: 11400000, guid: 1bc0e589c0093c44aa6a7fd8a7e759b1, type: 2}
       name: triangles_texture_set
+      bundle: 0
+    - item: {fileID: 11400000, guid: 3f7ee430962a6224aac784e5ddc40db9, type: 2}
+      name: triangles2_texture_set
       bundle: 0
     - item: {fileID: 11400000, guid: 8f61b1750b52d734dabc81c3db819e86, type: 2}
       name: back_and_front_colors_set_light

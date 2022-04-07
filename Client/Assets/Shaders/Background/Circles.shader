@@ -7,7 +7,7 @@
     	_CenterY ("Center Y", Range(0, 1)) = 0
     	[IntRange]_WavesCount ("Waves Count", Range(0, 20)) = 4
     	_Amplitude("Waves Amplitude", Range(0, 1)) = 0.5
-    	[IntRange]_Tiling ("Tiling", Range(1, 10)) = 1
+    	_Tiling ("Tiling", Range(1, 10)) = 1
 		_Direction ("Direction", Range(0, 1)) = 0
 		_WrapScale ("Wrap Scale", Range(0, 1)) = 0
 		_WrapTiling ("Wrap Tiling", Range(1, 10)) = 1

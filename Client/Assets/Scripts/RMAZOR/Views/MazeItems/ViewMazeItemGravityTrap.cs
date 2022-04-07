@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Common;
 using Common.Entities;
 using Common.Enums;
 using Common.Exceptions;
@@ -279,14 +280,19 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == ColorIds.MazeItem1)
+            switch (_ColorId)
             {
-                m_OuterDisc.Color = _Color;
-                foreach (var cone in m_Cones)
-                    cone.Color = _Color;
+                case ColorIds.MazeItem1:
+                {
+                    m_OuterDisc.Color = _Color;
+                    foreach (var cone in m_Cones)
+                        cone.Color = _Color;
+                    break;
+                }
+                case ColorIds.Background1:
+                    m_InnerDisc.Color = _Color;
+                    break;
             }
-            else if (_ColorId == ColorIds.Background1)
-                m_InnerDisc.Color = _Color;
         }
 
         private static AudioClipArgs GetAudioClipArgsTrapRotate()

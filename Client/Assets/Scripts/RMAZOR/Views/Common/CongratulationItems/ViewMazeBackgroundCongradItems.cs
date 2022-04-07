@@ -72,12 +72,6 @@ namespace RMAZOR.Views.Common.CongratulationItems
 
         #region api
 
-        public override void Init()
-        {
-            base.Init();
-            ColorProvider.ColorThemeChanged += OnColorThemeChanged;
-        }
-        
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             m_DoAnimateCongrats = false;
@@ -106,15 +100,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
         #endregion
 
         #region nonpublic methods
-        
-        private void OnColorThemeChanged(EColorTheme _Theme)
-        {
-            m_BackCongratsItemsDict.Values
-                .SelectMany(_Renderers => _Renderers)
-                .ToList()
-                .ForEach(_Rend => SetColorByTheme(_Rend, _Theme));
-        }
-        
+
         protected override void InitItems()
         {
             var sourceGos = new List<GameObject>();
@@ -138,12 +124,12 @@ namespace RMAZOR.Views.Common.CongratulationItems
                     .SelectMany(_T => content.GetComponentsInChildren(_T))
                     .Cast<ShapeRenderer>()
                     .ToArray();
-                int colIdx = Mathf.FloorToInt(UnityEngine.Random.value * CongradColorSet.Length);
+                int colIdx = Mathf.FloorToInt(Random.value * CongradColorSet.Length);
                 var col = CongradColorSet[colIdx];
                 triggerer.Trigger1 = () =>
                 {
                     foreach (var shape in shapes)
-                        SetColorByTheme(shape, ColorProvider.CurrentTheme, col);
+                        SetColorByTheme(shape, col);
                 };
                 triggerer.Trigger2 = () =>
                 {
@@ -182,9 +168,9 @@ namespace RMAZOR.Views.Common.CongratulationItems
             item.SetTrigger(AnimKeys.Anim);
         }
 
-        private void SetColorByTheme(ShapeRenderer _Renderer, EColorTheme _Theme, Color? _Color = null)
+        private void SetColorByTheme(ShapeRenderer _Renderer, Color? _Color = null)
         {
-            float saturation = _Theme == EColorTheme.Light ? 80f / 100f : 50f / 100f;
+            const float saturation = 80f / 100f;
             var col = _Color ?? _Renderer.Color;
             Color.RGBToHSV(col, out float h, out _, out float v);
             col = Color.HSVToRGB(h, saturation, v);

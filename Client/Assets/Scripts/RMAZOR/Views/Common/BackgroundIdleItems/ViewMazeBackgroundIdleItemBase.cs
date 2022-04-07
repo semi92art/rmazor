@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Common.Extensions;
+using Common.Managers;
 using Common.SpawnPools;
 using Shapes;
 using UnityEngine;
@@ -10,14 +11,16 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
 {
     public interface IViewMazeBackgroundIdleItem : ISpawnPoolItem, ICloneable
     {
-        void    Init(Transform _Parent, PhysicsMaterial2D _Material);
+        void    SetParams(float _Scale,  float             _Thickness);
+        void    Init(Transform  _Parent, PhysicsMaterial2D _Material);
         Vector2 Position { get; set; }
-        void    SetVelocity(Vector2 _Velocity);
+        void    SetVelocity(Vector2 _Velocity, float _AngularVelocity);
         void    SetColor(Color      _Color);
     }
     
     public abstract class ViewMazeBackgroundIdleItemBase : IViewMazeBackgroundIdleItem
     {
+
         #region nonpublic members
 
         private GameObject m_Obj;
@@ -36,6 +39,17 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
 
         #endregion
 
+        #region inject
+        
+        protected IPrefabSetManager PrefabSetManager { get; }
+
+        protected ViewMazeBackgroundIdleItemBase(IPrefabSetManager _PrefabSetManager)
+        {
+            PrefabSetManager = _PrefabSetManager;
+        }
+
+        #endregion
+
         #region api
 
         public bool ActivatedInSpawnPool
@@ -43,8 +57,9 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             get => Shapes.First().enabled;
             set => Shapes.ForEach(_S => _S.enabled = value);
         }
-        
-        public abstract object Clone();
+
+        public abstract          object Clone();
+        public          abstract void   SetParams(float _Scale, float _Thickness);
 
 
         public abstract void    Init(Transform _Parent, PhysicsMaterial2D _Material);
@@ -55,9 +70,10 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             set => Obj.transform.SetPosXY(value);
         }
 
-        public void SetVelocity(Vector2 _Velocity)
+        public void SetVelocity(Vector2 _Velocity, float _AngularVelocity)
         {
             Rigidbody.velocity = _Velocity;
+            Rigidbody.angularVelocity = _AngularVelocity;
         }
 
         public abstract void SetColor(Color _Color);

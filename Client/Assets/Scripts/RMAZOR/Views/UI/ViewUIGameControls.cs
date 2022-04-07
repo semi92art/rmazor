@@ -128,7 +128,7 @@ namespace RMAZOR.Views.UI
 
         private void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId != ColorIdsCommon.UI) 
+            if (_ColorId != ColorIds.UI) 
                 return;
             var allRenderers = 
                 CongratsMessage.GetRenderers()
@@ -136,12 +136,12 @@ namespace RMAZOR.Views.UI
                     .Concat(TopButtons.GetRenderers());
             foreach (var rendComp in allRenderers)
             {
-                if (rendComp is ShapeRenderer rend1)
-                    rend1.Color = _Color;
-                else if (rendComp is SpriteRenderer rend2)
-                    rend2.color = _Color;
-                else if (rendComp is TMP_Text rend3)
-                    rend3.color = _Color;
+                switch (rendComp)
+                {
+                    case ShapeRenderer rend1:  rend1.Color = _Color; break;
+                    case SpriteRenderer rend2: rend2.color = _Color; break;
+                    case TMP_Text rend3:       rend3.color = _Color; break;
+                }
             }
         }
         
@@ -158,7 +158,7 @@ namespace RMAZOR.Views.UI
                 _Show, 
                 new Dictionary<IEnumerable<Component>, Func<Color>>
                 {
-                    {allRenderers, () => ColorProvider.GetColor(ColorIdsCommon.UI)}
+                    {allRenderers, () => ColorProvider.GetColor(ColorIds.UI)}
                 },
                 _Type: EAppearTransitionType.WithoutDelay);
         }

@@ -2,7 +2,6 @@
 using Common;
 using Common.Managers;
 using Common.Providers;
-using RMAZOR.Models;
 using UnityEngine;
 
 namespace RMAZOR.Views.Common
@@ -24,10 +23,9 @@ namespace RMAZOR.Views.Common
 
         public ViewMazeForeground(
             RemoteProperties _RemoteProperties,
-            IModelGame        _Model,
             IColorProvider    _ColorProvider,
             IPrefabSetManager _PrefabSetManager)
-            : base(_Model, _ColorProvider)
+            : base(_ColorProvider)
         {
             RemoteProperties = _RemoteProperties;
             PrefabSetManager = _PrefabSetManager;
@@ -60,13 +58,13 @@ namespace RMAZOR.Views.Common
             }
         }
         
-        protected override void SetColorsOnNewLevelOrNewTheme(long _LevelIndex, EColorTheme _Theme)
+        protected override void SetColorsOnNewLevel(long _LevelIndex)
         {
-            var color = GetMainColor(_LevelIndex, _Theme);
+            var color = GetMainColor(_LevelIndex);
             ColorProvider.SetColor(ColorIds.Main, color);
         }
 
-        private Color GetMainColor(long _LevelIndex, EColorTheme _Theme)
+        private Color GetMainColor(long _LevelIndex)
         {
             var colorsSet = m_BackAndFrontColorsSetItemsLight;
             int group = RazorMazeUtils.GetGroupIndex(_LevelIndex);

@@ -46,13 +46,13 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
         protected override void SetColorsOnInit()
         {
             base.SetColorsOnInit();
-            title.color = ColorProvider.GetColor(ColorIdsCommon.UiText);
+            title.color = ColorProvider.GetColor(ColorIds.UiText);
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             base.OnColorChanged(_ColorId, _Color);
-            if (_ColorId != ColorIdsCommon.UiText) 
+            if (_ColorId != ColorIds.UiText) 
                 return;
             if (m_IsTitleNotNull)
                 title.color = _Color;

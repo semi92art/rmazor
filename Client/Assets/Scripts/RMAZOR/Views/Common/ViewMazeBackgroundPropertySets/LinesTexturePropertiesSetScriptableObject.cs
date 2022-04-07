@@ -6,8 +6,10 @@ using UnityEngine;
 
 namespace RMAZOR.Views.Common.ViewMazeBackgroundPropertySets
 {
+    public interface ITextureSetItem : IFormattable { }
+    
     [Serializable]
-    public class LinesTextureSetItem
+    public class LinesTextureSetItem : ITextureSetItem
     {
         [Range(1, 10), JsonProperty(PropertyName = "L1")]
         public int tiling;
@@ -17,6 +19,14 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundPropertySets
         public float wrapScale;
         [Range(1, 10), JsonProperty(PropertyName = "L4")]
         public float wrapTiling;
+
+        public virtual string ToString(string _Format, IFormatProvider _FormatProvider)
+        {
+            return nameof(tiling) + " " + tiling + ", "
+                   + nameof(direction) + " " + direction + ", "
+                   + nameof(wrapScale) + " " + wrapScale + ", "
+                   + nameof(wrapScale) + " " + wrapScale + ". ";
+        }
     }
 
     [Serializable]
