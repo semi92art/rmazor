@@ -233,7 +233,7 @@ namespace RMAZOR.UI.Panels
         {
             Managers.AnalyticsManager.SendAnalytic(AnalyticIds.WatchAdInCharacterDiedPanelPressed);
             Managers.AdsManager.ShowRewardedAd(
-                () => CommonData.PausedByAdvertisingOrPurchasing = true, 
+                null, 
                 () => m_AdsWatched = true);
         }
 

@@ -235,7 +235,7 @@ namespace RMAZOR.Views
             var dict = new Dictionary<string, DateTime>
             {
                 {locMan.GetTranslation("notification_1"), DateTime.Now.AddDays(1)},
-                {locMan.GetTranslation("notification_2"), DateTime.Now.AddDays(2)}
+                {locMan.GetTranslation("notification_2"), DateTime.Now.AddDays(3)}
             };
             foreach ((string body, var dateTime) in dict)
             {

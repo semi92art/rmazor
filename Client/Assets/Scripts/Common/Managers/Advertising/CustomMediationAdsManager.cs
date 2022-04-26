@@ -149,6 +149,7 @@ namespace Common.Managers.Advertising
                 }
             }
             _OnBeforeShown?.Invoke();
+            CommonData.DoNotShowAdvertisingAfterAppUnpause = true;
             if (_Interstitial)
                 selectedProvider?.ShowInterstitialAd(_OnShown, ShowAds);
             else

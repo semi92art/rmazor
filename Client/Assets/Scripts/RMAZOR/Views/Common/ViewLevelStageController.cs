@@ -309,7 +309,7 @@ namespace RMAZOR.Views.Common
                 UnityAction<UnityAction, UnityAction> act = Managers.AdsManager.ShowRewardedAd;
                 if (GameSettings.showRewardedInsteadOfInterstitialOnUnpause)
                     act = Managers.AdsManager.ShowInterstitialAd;
-                act(() => CommonData.PausedByAdvertisingOrPurchasing = true, null);
+                act(null, null);
             }
             foreach (var mazeItem in _MazeItems)
                 mazeItem.Appear(false);

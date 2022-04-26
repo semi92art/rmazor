@@ -79,6 +79,7 @@ namespace Common.Managers.IAP
 
         public override void Purchase(int _Key)
         {
+            CommonData.PurchasingSomething = true;
             if (!NetworkUtils.IsInternetConnectionAvailable())
             {
                 string oopsText = LocalizationManager.GetTranslation("oops");
@@ -93,6 +94,7 @@ namespace Common.Managers.IAP
 
         public override bool RateGame(bool _JustSuggest = true)
         {
+            CommonData.DoNotShowAdvertisingAfterAppUnpause = true;
             if (NetworkUtils.IsInternetConnectionAvailable())
                 return true;
             string oopsText = LocalizationManager.GetTranslation("oops");
@@ -121,6 +123,7 @@ namespace Common.Managers.IAP
 
         public override void RestorePurchases()
         {
+            CommonData.PurchasingSomething = true;
             if (!NetworkUtils.IsInternetConnectionAvailable())
             {
                 string oopsText = LocalizationManager.GetTranslation("oops");
@@ -171,6 +174,7 @@ namespace Common.Managers.IAP
             action?.Invoke();
             Dbg.Log($"ProcessPurchase: PASS. Product: '{_Args.purchasedProduct.definition.id}'");
             return PurchaseProcessingResult.Complete;
+            CommonData.PurchasingSomething = false;
         }
 
         #endregion

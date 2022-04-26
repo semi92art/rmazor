@@ -129,9 +129,11 @@ namespace RMAZOR.Views.UI
         {
             if (!_Focus)
                 return;
-            if (CommonData.PausedByAdvertisingOrPurchasing)
+            if (CommonData.PurchasingSomething)
+                return;
+            if (CommonData.DoNotShowAdvertisingAfterAppUnpause)
             {
-                CommonData.PausedByAdvertisingOrPurchasing = false;
+                CommonData.DoNotShowAdvertisingAfterAppUnpause = false;
                 return;
             }
             if (MustShowRateGamePanel())

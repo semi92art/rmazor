@@ -214,12 +214,11 @@ namespace RMAZOR.UI.Panels.ShopPanels
                     {
                         Managers.AnalyticsManager.SendAnalytic(AnalyticIds.WatchAdInShopPanelPressed);
                         Managers.AdsManager.ShowRewardedAd(
-                            () => CommonData.PausedByAdvertisingOrPurchasing = true,
+                            null,
                             OnPaidReal);
                     }
                     else
                     {
-                        CommonData.PausedByAdvertisingOrPurchasing = true;
                         Managers.ShopManager.Purchase(_Info.PurchaseKey);
                     }
                 },
